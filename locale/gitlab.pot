@@ -197,9 +197,6 @@ msgid_plural "%d commits,"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d commits"
-msgstr ""
-
 msgid "%d completed issue"
 msgid_plural "%d completed issues"
 msgstr[0] ""
