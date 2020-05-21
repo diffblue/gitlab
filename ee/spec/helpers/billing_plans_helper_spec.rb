@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BillingPlansHelper do
+RSpec.describe BillingPlansHelper, :saas do
   include Devise::Test::ControllerHelpers
 
   before do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialsController do
+RSpec.describe TrialsController, :saas do
   let_it_be(:user) { create(:user, email_opted_in: true, last_name: 'Doe') }
   let_it_be(:remove_known_trial_form_fields_context) do
     {

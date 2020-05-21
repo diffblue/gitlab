@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupsWithTemplatesFinder do
+RSpec.describe GroupsWithTemplatesFinder, :saas do
   let_it_be(:group_1, reload: true) { create(:group, name: 'group-1') }
   let_it_be(:group_2, reload: true) { create(:group, name: 'group-2') }
   let_it_be(:group_3, reload: true) { create(:group, name: 'group-3') }

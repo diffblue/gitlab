@@ -144,7 +144,7 @@ RSpec.describe Projects::CreateService, '#execute' do
           end
         end
 
-        context 'when licensed on a namespace' do
+        context 'when licensed on a namespace', :saas do
           it 'allows enabling mirrors' do
             create(:gitlab_subscription, :ultimate, namespace: user.namespace)
 

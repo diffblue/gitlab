@@ -1838,7 +1838,7 @@ RSpec.describe Project do
     end
   end
 
-  describe '#licensed_features' do
+  describe '#licensed_features', :saas do
     let(:plan_license) { :free }
     let(:global_license) { create(:license) }
     let(:group) { create(:group) }

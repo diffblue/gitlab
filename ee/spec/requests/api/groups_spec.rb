@@ -608,7 +608,7 @@ RSpec.describe API::Groups do
 
       subject { get api("/groups/#{group.id}/projects", user), params: { with_security_reports: true } }
 
-      context 'when security dashboard is enabled for a group' do
+      context 'when security dashboard is enabled for a group', :saas do
         let(:group) { create(:group_with_plan, plan: :ultimate_plan) } # overriding group from parent context
 
         before do
@@ -889,7 +889,7 @@ RSpec.describe API::Groups do
           end
         end
 
-        it 'does not mark the group for deletion when the group has a paid gitlab.com subscription' do
+        it 'does not mark the group for deletion when the group has a paid gitlab.com subscription', :saas do
           create(:gitlab_subscription, :ultimate, namespace: group)
 
           subject
@@ -900,7 +900,7 @@ RSpec.describe API::Groups do
           expect(group.deleting_user).to be_nil
         end
 
-        it 'marks for deletion a subgroup of a group with a paid gitlab.com subscription' do
+        it 'marks for deletion a subgroup of a group with a paid gitlab.com subscription', :saas do
           create(:gitlab_subscription, :ultimate, namespace: group)
           subgroup = create(:group, parent: group)
 
@@ -928,7 +928,7 @@ RSpec.describe API::Groups do
 
       it_behaves_like 'immediately enqueues the job to delete the group'
 
-      it 'does not delete the group when the group has a paid gitlab.com subscription' do
+      it 'does not delete the group when the group has a paid gitlab.com subscription', :saas do
         create(:gitlab_subscription, :ultimate, namespace: group)
 
         expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
@@ -936,7 +936,7 @@ RSpec.describe API::Groups do
         expect(json_response['message']).to eq("This group can't be removed because it is linked to a subscription.")
       end
 
-      it 'deletes a subgroup of a group with a paid gitlab.com subscription' do
+      it 'deletes a subgroup of a group with a paid gitlab.com subscription', :saas do
         create(:gitlab_subscription, :ultimate, namespace: group)
         subgroup = create(:group, parent: group)
 

@@ -114,11 +114,11 @@ RSpec.describe Projects::TransferService do
   end
 
   describe 'updating paid features' do
-    let_it_be(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
+    let(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
+
     let_it_be(:free_group) { create(:group) }
 
     before do
-      premium_group.add_owner(user)
       free_group.add_owner(user)
     end
 
@@ -143,8 +143,9 @@ RSpec.describe Projects::TransferService do
         end
       end
 
-      context 'with GL.com' do
+      context 'with GL.com', :saas do
         before do
+          premium_group.add_owner(user)
           stub_ee_application_setting(should_check_namespace_plan: true)
         end
 
@@ -164,12 +165,13 @@ RSpec.describe Projects::TransferService do
       end
     end
 
-    describe 'pipeline subscriptions' do
+    describe 'pipeline subscriptions', :saas do
       let_it_be(:project_2) { create(:project, :public) }
 
       before do
         project.upstream_project_subscriptions.create!(upstream_project: project_2)
         stub_ee_application_setting(should_check_namespace_plan: true)
+        premium_group.add_owner(user)
       end
 
       context 'when target namespace has a premium plan' do
@@ -191,7 +193,7 @@ RSpec.describe Projects::TransferService do
       end
     end
 
-    describe 'test cases' do
+    describe 'test cases', :saas do
       before do
         create(:quality_test_case, project: project, author: user)
         stub_ee_application_setting(should_check_namespace_plan: true)

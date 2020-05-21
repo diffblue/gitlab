@@ -140,7 +140,7 @@ RSpec.describe GroupMember do
     end
   end
 
-  context 'group member webhooks', :sidekiq_inline do
+  context 'group member webhooks', :sidekiq_inline, :saas do
     let_it_be_with_refind(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }
     let_it_be(:user) { create(:user) }
@@ -247,7 +247,7 @@ RSpec.describe GroupMember do
     end
   end
 
-  context 'group member welcome email', :sidekiq_inline do
+  context 'group member welcome email', :sidekiq_inline, :saas do
     let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     let(:user) { create(:user) }

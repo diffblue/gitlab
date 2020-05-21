@@ -1734,13 +1734,9 @@ RSpec.describe ProjectPolicy do
   context 'project access tokens' do
     it_behaves_like 'GitLab.com Core resource access tokens'
 
-    context 'on GitLab.com paid' do
+    context 'on GitLab.com paid', :saas do
       let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
       let_it_be(:project) { create(:project, group: group) }
-
-      before do
-        allow(::Gitlab).to receive(:com?).and_return(true)
-      end
 
       context 'with maintainer access' do
         let(:current_user) { maintainer }

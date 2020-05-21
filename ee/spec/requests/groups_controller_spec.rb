@@ -335,7 +335,7 @@ RSpec.describe GroupsController, type: :request do
     end
   end
 
-  describe 'PUT #transfer' do
+  describe 'PUT #transfer', :saas do
     let(:new_parent_group) { create(:group) }
 
     before do
@@ -373,7 +373,7 @@ RSpec.describe GroupsController, type: :request do
       login_as(user)
     end
 
-    it 'does not delete a group with a gitlab.com subscription' do
+    it 'does not delete a group with a gitlab.com subscription', :saas do
       create(:gitlab_subscription, :ultimate, namespace: group)
 
       Sidekiq::Testing.fake! do
@@ -382,7 +382,7 @@ RSpec.describe GroupsController, type: :request do
       end
     end
 
-    it 'deletes a subgroup with a parent group with a gitlab.com subscription' do
+    it 'deletes a subgroup with a parent group with a gitlab.com subscription', :saas do
       create(:gitlab_subscription, :ultimate, namespace: group)
       subgroup = create(:group, parent: group)
 

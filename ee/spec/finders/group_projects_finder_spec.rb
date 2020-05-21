@@ -34,7 +34,7 @@ RSpec.describe GroupProjectsFinder do
     let!(:project_with_security_scans) { create(:project, :with_security_scans, :public, group: group) }
     let!(:project_without_security_scans) { create(:project, :public, group: group) }
 
-    context 'when security dashboard is enabled for a group' do
+    context 'when security dashboard is enabled for a group', :saas do
       let(:group) { create(:group_with_plan, plan: :ultimate_plan) } # overriding group from 'GroupProjectsFinder context'
 
       before do

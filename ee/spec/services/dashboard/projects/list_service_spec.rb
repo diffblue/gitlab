@@ -87,7 +87,7 @@ RSpec.describe Dashboard::Projects::ListService do
       end
     end
 
-    describe 'checking plans' do
+    describe 'checking plans', :saas do
       let(:projects) { [project] }
 
       using RSpec::Parameterized::TableSyntax
@@ -124,7 +124,7 @@ RSpec.describe Dashboard::Projects::ListService do
       end
     end
 
-    describe 'checking availability of public projects on GitLab.com' do
+    describe 'checking availability of public projects on GitLab.com', :saas do
       let(:projects) { [project] }
 
       using RSpec::Parameterized::TableSyntax
