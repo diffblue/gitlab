@@ -915,7 +915,7 @@ class User < ApplicationRecord
   end
 
   def two_factor_u2f_enabled?
-    return false if Feature.enabled?(:webauthn)
+    return false if Feature.enabled?(:webauthn, default_enabled: :yaml)
 
     if u2f_registrations.loaded?
       u2f_registrations.any?
@@ -929,7 +929,7 @@ class User < ApplicationRecord
   end
 
   def two_factor_webauthn_enabled?
-    return false unless Feature.enabled?(:webauthn)
+    return false unless Feature.enabled?(:webauthn, default_enabled: :yaml)
 
     (webauthn_registrations.loaded? && webauthn_registrations.any?) || (!webauthn_registrations.loaded? && webauthn_registrations.exists?)
   end
