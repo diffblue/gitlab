@@ -28,7 +28,7 @@ Supported attributes:
 
 | Attribute   | Type           | Required | Description |
 | :---------- | :------------- | :------- | :---------- |
-| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `id`        | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `path`      | string         | no       | The path inside repository. Used to get content of subdirectories. |
 | `ref`       | string         | no       | The name of a repository branch or tag or if not given the default branch. |
 | `recursive` | boolean        | no       | Boolean value used to get a recursive tree (false by default). |
@@ -104,7 +104,7 @@ Supported attributes:
 
 | Attribute | Type           | Required | Description |
 | :-------- | :------------- | :------- | :---------- |
-| `id`      | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `id`      | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `sha`     | string         | yes      | The blob SHA. |
 
 ## Raw blob content
@@ -146,7 +146,7 @@ Supported attributes:
 
 | Attribute   | Type           | Required | Description           |
 |:------------|:---------------|:---------|:----------------------|
-| `id`        | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `id`        | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `sha`       | string         | no       | The commit SHA to download. A tag, branch reference, or SHA can be used. This defaults to the tip of the default branch if not specified. |
 | `path`      | string         | no       | The subpath of the repository to download. This defaults to the whole repository (empty string).  |
 
@@ -169,7 +169,7 @@ Supported attributes:
 
 | Attribute         | Type           | Required | Description |
 | :---------        | :------------- | :------- | :---------- |
-| `id`              | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `id`              | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `from`            | string         | yes      | The commit SHA or branch name. |
 | `to`              | string         | yes      | The commit SHA or branch name. |
 | `from_project_id` | integer        | no       | The ID to compare from |
@@ -231,7 +231,7 @@ Supported attributes:
 
 | Attribute  | Type           | Required | Description |
 | :--------- | :------------- | :------- | :---------- |
-| `id`       | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
+| `id`       | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `order_by` | string         | no       | Return contributors ordered by `name`, `email`, or `commits` (orders by commit date) fields. Default is `commits`. |
 | `sort`     | string         | no       | Return contributors sorted in `asc` or `desc` order. Default is `asc`. |
 
@@ -263,7 +263,7 @@ GET /projects/:id/repository/merge_base
 
 | Attribute | Type           | Required | Description |
 | --------- | -------------- | -------- | ------------------------------------------------------------------------------- |
-| `id`      | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) |
+| `id`      | integer or string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) |
 | `refs`    | array          | yes      | The refs to find the common ancestor of, multiple refs can be passed            |
 
 Example request:
