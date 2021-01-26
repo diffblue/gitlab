@@ -65,9 +65,8 @@ export default {
     </header>
     <div class="row-content-block second-block gl-pb-0">
       <div class="gl-display-flex gl-justify-content-space-between gl-flex-wrap">
-        <div class="gl-mb-5 gl-w-full">
+        <div v-if="showFilter" class="gl-mb-5 gl-w-full">
           <audit-events-filter
-            v-if="showFilter"
             :filter-token-options="filterTokenOptions"
             :value="filterValue"
             @selected="setFilterValue"
