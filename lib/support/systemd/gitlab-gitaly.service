@@ -2,7 +2,7 @@
 Description=GitLab Gitaly
 ReloadPropagatedFrom=gitlab.target
 PartOf=gitlab.target
-After=network.target gitlab-puma.service
+After=network.target
 
 [Service]
 Type=simple

@@ -3,12 +3,6 @@ Description=GitLab
 Conflicts=gitlab.service
 ReloadPropagatedFrom=gitlab.target
 PartOf=gitlab.target
-# # You might want to add these if you run redis and postgres on the same
-# # machine as gitlab. Do this by either uncommenting the following `Requires=`
-# # and `After=` or, preferedly, running `systemctl edit gitlab-puma.service`
-# # and adding a `[Unit]` section and the respective keys below it.
-# Requires=redis-server.service postgresql.service
-# After=redis-server.service postgresql.service
 After=network.target
 StartLimitIntervalSec=100s
 
