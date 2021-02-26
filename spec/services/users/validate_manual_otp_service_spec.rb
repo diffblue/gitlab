@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::ValidateOtpService do
+RSpec.describe Users::ValidateManualOtpService do
   let_it_be(:user) { create(:user) }
 
   let(:otp_code) { 42 }
@@ -25,8 +25,8 @@ RSpec.describe Users::ValidateOtpService do
       allow(::Gitlab.config.forti_authenticator).to receive(:enabled).and_return(true)
     end
 
-    it 'calls FortiAuthenticator strategy' do
-      expect_next_instance_of(::Gitlab::Auth::Otp::Strategies::FortiAuthenticator) do |strategy|
+    it 'calls ManualOtp strategy' do
+      expect_next_instance_of(::Gitlab::Auth::Otp::Strategies::FortiAuthenticator::ManualOtp) do |strategy|
         expect(strategy).to receive(:validate).with(otp_code).once
       end
 
