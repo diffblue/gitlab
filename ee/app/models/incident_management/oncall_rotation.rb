@@ -2,6 +2,8 @@
 
 module IncidentManagement
   class OncallRotation < ApplicationRecord
+    include EachBatch
+
     ActivePeriod = Struct.new(:start_time, :end_time) do
       def present?
         start_time && end_time
