@@ -1206,22 +1206,6 @@ To stop `systemd` from cleaning the Pages related content:
    sudo gitlab-ctl restart gitlab-pages
    ```
 
-### 404 error after transferring the project to a different group or user, or changing project path
-
-If you encounter a `404 Not Found` error a Pages site after transferring a project to
-another group or user, or changing project path, you must trigger a domain configuration
-update for Pages. To do so, write something in the `.update` file. The Pages daemon
-monitors for changes to this file, and reloads the configuration when changes occur.
-
-Use this example to fix a `404 Not Found` error after transferring a project or changing
-a project path with Pages:
-
-```shell
-date > /var/opt/gitlab/gitlab-rails/shared/pages/.update
-```
-
-If you've customized the Pages storage path, adjust the command above to use your custom path.
-
 ### 404 error after promoting a Geo secondary to a primary node
 
 These are due to the Pages files not being among the
@@ -1233,7 +1217,7 @@ For example, you can adapt the `rsync` strategy from the
 [moving repositories documentation](../operations/moving_repositories.md).
 Alternatively, run the CI pipelines of those projects that contain a `pages` job again.
 
-## 404 or 500 error when accessing GitLab Pages in a Geo setup
+### 404 or 500 error when accessing GitLab Pages in a Geo setup
 
 Pages sites are only available on the primary Geo site, while the codebase of the project is available on all sites.
 
