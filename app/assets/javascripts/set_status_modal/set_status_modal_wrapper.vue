@@ -243,9 +243,8 @@ export default {
   <gl-modal
     :title="s__('SetStatusModal|Set a status')"
     :modal-id="modalId"
-    :ok-title="s__('SetStatusModal|Set status')"
-    :cancel-title="s__('SetStatusModal|Remove status')"
-    ok-variant="success"
+    :action-primary="{ text: s__('SetStatusModal|Set status') }"
+    :action-cancel="{ text: s__('SetStatusModal|Remove status') }"
     modal-class="set-user-status-modal"
     @shown="setupEmojiListAndAutocomplete"
     @hide="hideEmojiMenu"
