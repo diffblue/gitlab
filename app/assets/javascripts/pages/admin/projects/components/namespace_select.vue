@@ -127,3 +127,10 @@ export default {
     </gl-dropdown>
   </div>
 </template>
+
+<style>
+/* workaround position: relative imposed by .top-area .nav-controls */
+.top-area .nav-controls .gl-search-box-by-type-input {
+  position: static;
+}
+</style>
