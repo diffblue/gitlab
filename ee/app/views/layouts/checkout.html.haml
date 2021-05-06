@@ -1,7 +1,7 @@
 !!! 5
 %html.subscriptions-layout-html{ lang: 'en' }
   = render 'layouts/head'
-  %body.ui-indigo.gl-display-flex{ data: body_data }
+  %body.gl-display-flex{ class: user_application_theme, data: body_data }
     = render "layouts/header/logo_with_title"
     .container.gl-display-flex.gl-flex-direction-column.gl-m-0.gl-px-0
       = render "layouts/broadcast"
