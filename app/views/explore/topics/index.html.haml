@@ -1,0 +1,13 @@
+- @hide_top_links = true
+- page_title    _("Topics")
+- header_title  _("Topics"), explore_topics_path
+
+- if current_user
+  = render 'dashboard/topics_head'
+- else
+  = render 'explore/head'
+
+- if @topics.empty?
+  = render 'shared/empty_states/topics'
+- else
+  = render partial: 'shared/topics/list'

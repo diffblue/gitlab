@@ -1,0 +1,9 @@
+.col-lg-3.col-md-4.col-sm-12
+  .gl-card.gl-mb-5
+    .gl-card-body
+      .gl-float-left.gl-mr-4
+        = sprite_icon('label', size: 32)
+      .topic-info
+        %h5.gl-m-0
+          = topic.name
+        = link_to n_('%d project', '%d projects', topic.count) % topic.count, explore_projects_path(topic: topic.name)

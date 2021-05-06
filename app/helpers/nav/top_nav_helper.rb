@@ -82,6 +82,14 @@ module Nav
         )
       end
 
+      if explore_nav_link?(:topics)
+        builder.add_primary_menu_item_with_shortcut(
+          active: active_nav_link?(controller: :topics),
+          href: explore_topics_path,
+          **topics_menu_item_attrs
+        )
+      end
+
       builder.add_secondary_menu_item(
         id: 'help',
         title: _('Help'),
@@ -138,6 +146,15 @@ module Nav
           data: { qa_selector: 'snippets_link' },
           href: dashboard_snippets_path,
           **snippets_menu_item_attrs
+        )
+      end
+
+      if dashboard_nav_link?(:topics)
+        builder.add_primary_menu_item_with_shortcut(
+          active: active_nav_link?(controller: 'dashboard/topics'),
+          data: { qa_selector: 'topics_link' },
+          href: dashboard_topics_path,
+          **topics_menu_item_attrs
         )
       end
 
@@ -224,6 +241,15 @@ module Nav
         title: _('Snippets'),
         icon: 'snippet',
         shortcut_class: 'dashboard-shortcuts-snippets'
+      }
+    end
+
+    def topics_menu_item_attrs
+      {
+        id: 'topics',
+        title: _('Topics'),
+        icon: 'label',
+        shortcut_class: 'dashboard-shortcuts-topics'
       }
     end
 

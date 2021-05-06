@@ -1,0 +1,2 @@
+= form_tag request.path, method: :get, class: "topic-filter-form js-topic-filter-form", id: 'topic-filter-form' do |f|
+  = search_field_tag :name, params[:name], placeholder: s_('Topics|Search by name'), class: 'topic-filter-form-field form-control js-topics-list-filter qa-topics-filter', spellcheck: false, id: 'topic-filter-form-field'

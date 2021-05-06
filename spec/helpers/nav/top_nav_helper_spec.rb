@@ -71,6 +71,12 @@ RSpec.describe Nav::TopNavHelper do
             icon: 'snippet',
             id: 'snippets',
             title: 'Snippets'
+          ),
+          ::Gitlab::Nav::TopNavMenuItem.build(
+            href: '/explore/topics',
+            icon: 'label',
+            id: 'topics',
+            title: 'Topics'
           )
         ]
         expect(subject[:primary]).to eq(expected_primary)
@@ -95,6 +101,12 @@ RSpec.describe Nav::TopNavHelper do
             id: 'snippets-shortcut',
             title: 'Snippets',
             css_class: 'dashboard-shortcuts-snippets'
+          ),
+          ::Gitlab::Nav::TopNavMenuItem.build(
+            href: '/explore/topics',
+            id: 'topics-shortcut',
+            title: 'Topics',
+            css_class: 'dashboard-shortcuts-topics'
           )
         ]
         expect(subject[:shortcuts]).to eq(expected_shortcuts)

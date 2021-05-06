@@ -23,6 +23,7 @@ import {
   GO_TO_YOUR_GROUPS,
   GO_TO_MILESTONE_LIST,
   GO_TO_YOUR_SNIPPETS,
+  GO_TO_YOUR_TOPICS,
   GO_TO_PROJECT_FIND_FILE,
 } from './keybindings';
 import { disableShortcuts, shouldDisableShortcuts } from './shortcuts_toggle';
@@ -105,6 +106,9 @@ export default class Shortcuts {
     );
     Mousetrap.bind(keysFor(GO_TO_YOUR_SNIPPETS), () =>
       findAndFollowLink('.dashboard-shortcuts-snippets'),
+    );
+    Mousetrap.bind(keysFor(GO_TO_YOUR_TOPICS), () =>
+      findAndFollowLink('.dashboard-shortcuts-topics'),
     );
 
     Mousetrap.bind(keysFor(TOGGLE_MARKDOWN_PREVIEW), Shortcuts.toggleMarkdownPreview);

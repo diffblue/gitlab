@@ -41,6 +41,10 @@ RSpec.describe 'Dashboard shortcuts', :js do
       find('body').send_keys([:shift, 'L'])
 
       check_page_title('Milestones')
+
+      find('body').send_keys([:shift, 'O'])
+
+      check_page_title('Topics')
     end
   end
 
@@ -61,6 +65,16 @@ RSpec.describe 'Dashboard shortcuts', :js do
       expect(page).to have_content('No snippets found')
 
       find('body').send_keys([:shift, 'P'])
+
+      find('.nothing-here-block')
+      expect(page).to have_content('Explore public groups to find projects to contribute to.')
+
+      find('body').send_keys([:shift, 'O'])
+
+      find('.empty-state')
+      expect(page).to have_content('There are no topics to show')
+    end
+  end
 
       find('.nothing-here-block')
       expect(page).to have_content('Explore public groups to find projects to contribute to.')

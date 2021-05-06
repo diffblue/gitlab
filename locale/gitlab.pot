@@ -11983,7 +11983,7 @@ msgstr ""
 msgid "Discover GitLab Geo"
 msgstr ""
 
-msgid "Discover projects, groups and snippets. Share your projects with others"
+msgid "Discover projects, groups, snippets and topics. Share your projects with others"
 msgstr ""
 
 msgid "Discover|Check your application for security vulnerabilities that may lead to unauthorized access, data leaks, and denial of services."
@@ -13872,6 +13872,9 @@ msgid "Explore projects"
 msgstr ""
 
 msgid "Explore public groups"
+msgstr ""
+
+msgid "Explore topics"
 msgstr ""
 
 msgid "Export"
@@ -15903,6 +15906,9 @@ msgid "Go to your projects"
 msgstr ""
 
 msgid "Go to your snippets"
+msgstr ""
+
+msgid "Go to your topics"
 msgstr ""
 
 msgid "Goal of the changes and what reviewers should be aware of"
@@ -35812,7 +35818,19 @@ msgstr ""
 msgid "TopNav|Go back"
 msgstr ""
 
+msgid "Topics"
+msgstr ""
+
 msgid "Topics (optional)"
+msgstr ""
+
+msgid "TopicsEmptyState|No topics found"
+msgstr ""
+
+msgid "TopicsEmptyState|There are no topics to show."
+msgstr ""
+
+msgid "Topics|Search by name"
 msgstr ""
 
 msgid "Total"
@@ -38840,6 +38858,9 @@ msgstr ""
 msgid "You can always edit this later"
 msgstr ""
 
+msgid "You can apply topics to projects to categorize them."
+msgstr ""
+
 msgid "You can create a new %{link}."
 msgstr ""
 
@@ -39588,6 +39609,9 @@ msgid "Your subscription will expire in %{remaining_days} day."
 msgid_plural "Your subscription will expire in %{remaining_days} days."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Your topics"
+msgstr ""
 
 msgid "Your username is %{username}."
 msgstr ""

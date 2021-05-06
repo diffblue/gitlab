@@ -1,0 +1,14 @@
+.page-title-holder.d-flex.align-items-center
+  %h1.page-title= _('Topics')
+
+.top-area
+  %ul.nav-links.mobile-separator.nav.nav-tabs
+    = nav_link(page: dashboard_topics_path) do
+      = link_to dashboard_topics_path, title: _("Your topics") do
+        Your topics
+    = nav_link(page: explore_topics_path) do
+      = link_to explore_topics_path, title: _("Explore topics") do
+        Explore topics
+  .nav-controls
+    = render 'shared/topics/search_form'
+    = render 'shared/topics/dropdown'
