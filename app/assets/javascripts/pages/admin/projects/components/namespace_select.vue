@@ -92,7 +92,13 @@ export default {
 
 <template>
   <div class="gl-display-flex">
-    <input v-if="fieldName" :name="fieldName" :value="selectedNamespaceId" type="hidden" />
+    <input
+      v-if="fieldName"
+      :name="fieldName"
+      :value="selectedNamespaceId"
+      type="hidden"
+      data-testid="hidden-input"
+    />
     <gl-dropdown
       :text="selectedNamespaceName"
       :header-text="$options.i18n.dropdownHeader"
