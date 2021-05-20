@@ -103,6 +103,7 @@ export default {
       <template #header>
         <gl-search-box-by-type
           v-model.trim="searchTerm"
+          class="namespace-search-box"
           debounce="250"
           :placeholder="$options.i18n.searchPlaceholder"
         />
@@ -128,9 +129,9 @@ export default {
   </div>
 </template>
 
-<style>
+<style scoped>
 /* workaround position: relative imposed by .top-area .nav-controls */
-.top-area .nav-controls .gl-search-box-by-type-input {
+.namespace-search-box >>> input {
   position: static;
 }
 </style>
