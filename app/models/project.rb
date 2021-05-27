@@ -73,7 +73,6 @@ class Project < ApplicationRecord
   default_value_for :packages_enabled, true
   default_value_for :archived, false
   default_value_for :resolve_outdated_diff_discussions, false
-  default_value_for :container_registry_enabled, gitlab_config_features.container_registry
   default_value_for(:repository_storage) do
     Repository.pick_storage_shard
   end
@@ -94,9 +93,6 @@ class Project < ApplicationRecord
   before_validation :mark_remote_mirrors_for_removal, if: -> { RemoteMirror.table_exists? }
 
   before_save :ensure_runners_token
-
-  # https://api.rubyonrails.org/v6.0.3.4/classes/ActiveRecord/AttributeMethods/Dirty.html#method-i-will_save_change_to_attribute-3F
-  before_update :set_container_registry_access_level, if: :will_save_change_to_container_registry_enabled?
 
   after_save :update_project_statistics, if: :saved_change_to_namespace_id?
 
@@ -2654,20 +2650,6 @@ class Project < ApplicationRecord
   end
 
   private
-
-  def set_container_registry_access_level
-    # changes_to_save = { 'container_registry_enabled' => [value_before_update, value_after_update] }
-    value = changes_to_save['container_registry_enabled'][1]
-
-    access_level =
-      if value
-        ProjectFeature::ENABLED
-      else
-        ProjectFeature::DISABLED
-      end
-
-    project_feature.update!(container_registry_access_level: access_level)
-  end
 
   def find_integration(integrations, name)
     integrations.find { _1.to_param == name }
