@@ -96,8 +96,8 @@ module EE
     end
 
     def email_does_not_match_any_allowed_domains(email)
-      n_("email '%{email}' does not match the allowed domain of %{email_domains}", "email '%{email}' does not match the allowed domains: %{email_domains}", group_allowed_email_domains.size) %
-        { email: email, email_domains: group_allowed_email_domains.map(&:domain).join(', ') }
+      n_("email does not match the allowed domain of %{email_domains}", "email does not match the allowed domains: %{email_domains}", group_allowed_email_domains.size) %
+        { email_domains: group_allowed_email_domains.map(&:domain).join(', ') }
     end
 
     def email_not_verified
