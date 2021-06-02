@@ -105,7 +105,7 @@ export default {
         </div>
         <div class="table-mobile-content gl-display-flex gl-align-items-center">
           <div class="gl-display-flex gl-mr-3 gl-align-items-center">
-            <gl-icon :size="10" :name="iconName" use-deprecated-sizes class="gl-mr-2" />
+            <gl-icon :size="12" :name="iconName" class="gl-mr-2" />
             <gl-icon name="bookmark" />
           </div>
           <div>
