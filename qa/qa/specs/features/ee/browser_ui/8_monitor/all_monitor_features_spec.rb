@@ -11,18 +11,6 @@ module QA
       @project.visit!
     end
 
-    it 'allows configuration of alerts', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1337' do
-      Page::Project::Menu.perform(&:go_to_monitor_metrics)
-
-      Page::Project::Monitor::Metrics::Show.perform do |on_dashboard|
-        verify_metrics(on_dashboard)
-        verify_add_alert(on_dashboard)
-        verify_edit_alert(on_dashboard)
-        verify_persist_alert(on_dashboard)
-        verify_delete_alert(on_dashboard)
-      end
-    end
-
     it 'creates an incident template and opens an incident with template applied', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1262' do
       create_incident_template
 
@@ -49,33 +37,6 @@ module QA
       on_dashboard.wait_for_metrics
 
       expect(on_dashboard).to have_metrics
-      expect(on_dashboard).not_to have_alert
-    end
-
-    def verify_add_alert(on_dashboard)
-      on_dashboard.write_first_alert('>', 0)
-
-      expect(on_dashboard).to have_alert
-    end
-
-    def verify_edit_alert(on_dashboard)
-      on_dashboard.write_first_alert('<', 0)
-
-      expect(on_dashboard).to have_alert('<')
-    end
-
-    def verify_persist_alert(on_dashboard)
-      on_dashboard.refresh
-      on_dashboard.wait_for_metrics
-      on_dashboard.wait_for_alert('<')
-
-      expect(on_dashboard).to have_alert('<')
-    end
-
-    def verify_delete_alert(on_dashboard)
-      on_dashboard.delete_first_alert
-
-      expect(on_dashboard).not_to have_alert('<')
     end
 
     def create_incident_template
