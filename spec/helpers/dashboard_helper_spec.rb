@@ -12,7 +12,7 @@ RSpec.describe DashboardHelper do
 
   describe '#dashboard_nav_links' do
     it 'has all the expected links by default' do
-      menu_items = [:projects, :groups, :activity, :milestones, :snippets, :topics]
+      menu_items = [:projects, :groups, :activity, :milestones, :snippets]
 
       expect(helper.dashboard_nav_links).to include(*menu_items)
     end

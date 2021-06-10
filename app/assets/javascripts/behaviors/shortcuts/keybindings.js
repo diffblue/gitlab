@@ -69,12 +69,6 @@ export const GO_TO_YOUR_SNIPPETS = {
   defaultKeys: ['shift+s'],
 };
 
-export const GO_TO_YOUR_TOPICS = {
-  id: 'globalShortcuts.goToYourTopics',
-  description: __('Go to your topics'),
-  defaultKeys: ['shift+o'],
-};
-
 export const START_SEARCH = {
   id: 'globalShortcuts.startSearch',
   description: __('Start search'),
@@ -504,7 +498,6 @@ export const GLOBAL_SHORTCUTS_GROUP = {
     GO_TO_ACTIVITY_FEED,
     GO_TO_MILESTONE_LIST,
     GO_TO_YOUR_SNIPPETS,
-    GO_TO_YOUR_TOPICS,
     START_SEARCH,
     FOCUS_FILTER_BAR,
     GO_TO_YOUR_ISSUES,

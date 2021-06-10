@@ -5,12 +5,12 @@ namespace :explore do
     collection do
       get :trending
       get :starred
+      get :topics
     end
   end
 
   resources :groups, only: [:index]
   resources :snippets, only: [:index]
-  resources :topics, only: [:index]
   root to: 'projects#index'
 end
 

@@ -7,8 +7,8 @@
 # Arguments:
 #   current_user - which user is requesting groups
 #   params:
-#     all_available: boolean (defaults to true)
-#     name: string
+#     personal: boolean (defaults to false)
+#     search: string
 #     sort: string
 module Projects
   class TopicsFinder
@@ -26,15 +26,15 @@ module Projects
     private
 
     def projects_relation
-      if current_user.nil? || all_available?
-        Project.public_or_visible_to_user(current_user)
-      else
+      if current_user && personal?
         current_user.authorized_projects
+      else
+        Project.public_or_visible_to_user(current_user)
       end
     end
 
-    def all_available?
-      params.fetch(:all_available, true)
+    def personal?
+      params.fetch(:personal, false)
     end
 
     def options
@@ -45,7 +45,7 @@ module Projects
     end
 
     def filter_by_name
-      ActsAsTaggableOn::Tag.arel_table[:name].matches("%#{params[:name]}%") if params[:name].present?
+      ActsAsTaggableOn::Tag.arel_table[:name].matches("%#{params[:search]}%") if params[:search].present?
     end
 
     def sort_by_attribute

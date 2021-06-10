@@ -11,9 +11,9 @@ RSpec.describe 'Explore Topics' do
 
   context 'when no topics exist' do
     it 'renders empty message' do
-      visit explore_topics_path
+      visit topics_explore_projects_path
 
-      expect(current_path).to eq explore_topics_path
+      expect(current_path).to eq topics_explore_projects_path
       expect(page).to have_content('There are no topics to show')
     end
   end
@@ -31,22 +31,32 @@ RSpec.describe 'Explore Topics' do
         sign_in(user)
       end
 
-      it 'renders correct topics' do
-        visit explore_topics_path
+      it 'renders all topics correcty' do
+        visit topics_explore_projects_path
 
-        expect(current_path).to eq explore_topics_path
+        expect(current_path).to eq topics_explore_projects_path
         expect(page).to have_content('topic1')
         expect(page).not_to have_content('topic2')
         expect(page).to have_content('topic3')
         expect(page).to have_content('topic4')
       end
+
+      it 'renders personal topics correcty' do
+        visit topics_explore_projects_path(personal: true)
+
+        expect(current_path).to eq topics_explore_projects_path
+        expect(page).to have_content('topic1')
+        expect(page).not_to have_content('topic2')
+        expect(page).not_to have_content('topic3')
+        expect(page).not_to have_content('topic4')
+      end
     end
 
     context 'as anonymous user' do
-      it 'renders correct topics' do
-        visit explore_topics_path
+      it 'renders all topics correcty' do
+        visit topics_explore_projects_path
 
-        expect(current_path).to eq explore_topics_path
+        expect(current_path).to eq topics_explore_projects_path
         expect(page).not_to have_content('topic1')
         expect(page).not_to have_content('topic2')
         expect(page).not_to have_content('topic3')

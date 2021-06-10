@@ -35,6 +35,17 @@ module ExploreHelper
     request_path_with_options(options)
   end
 
+  def filter_topics_path(options = {})
+    exist_opts = {
+      sort: params[:sort] || @sort,
+      search: params[:search],
+      personal: params[:personal]
+    }
+
+    options = exist_opts.merge(options).delete_if { |key, value| value.blank? }
+    request_path_with_options(options)
+  end
+
   def explore_controller?
     controller.class.name.split("::").first == "Explore"
   end
@@ -58,7 +69,7 @@ module ExploreHelper
   private
 
   def get_explore_nav_links
-    [:projects, :groups, :snippets, :topics]
+    [:projects, :groups, :snippets]
   end
 
   def request_path_with_options(options = {})

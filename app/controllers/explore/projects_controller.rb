@@ -12,7 +12,8 @@ class Explore::ProjectsController < Explore::ApplicationController
   PAGE_LIMIT = 50
 
   before_action :set_non_archived_param
-  before_action :set_sorting
+  before_action :set_sorting, except: [:topics]
+  before_action :set_topics_sorting, only: [:topics]
 
   # For background information on the limit, see:
   #   https://gitlab.com/gitlab-org/gitlab/-/issues/38357
@@ -68,6 +69,11 @@ class Explore::ProjectsController < Explore::ApplicationController
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
+  def topics
+    load_project_counts
+    load_topics
+  end
+
   private
 
   def load_project_counts
@@ -84,6 +90,10 @@ class Explore::ProjectsController < Explore::ApplicationController
     projects = projects.page(params[:page]).without_count
 
     prepare_projects_for_rendering(projects)
+  end
+
+  def load_topics
+    @topics = Projects::TopicsFinder.new(current_user: current_user, params: params.permit(:search, :personal, :sort)).execute.page(params[:page])
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
@@ -103,6 +113,10 @@ class Explore::ProjectsController < Explore::ApplicationController
 
   def sorting_field
     Project::SORTING_PREFERENCE_FIELD
+  end
+
+  def set_topics_sorting
+    @sort = params[:sort] ||= sort_value_most_popular
   end
 
   def page_out_of_bounds(error)

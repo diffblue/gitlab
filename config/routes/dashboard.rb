@@ -12,7 +12,6 @@ resource :dashboard, controller: 'dashboard', only: [] do
 
     resources :groups, only: [:index]
     resources :snippets, only: [:index]
-    resources :topics, only: [:index]
 
     resources :todos, only: [:index, :destroy] do
       collection do

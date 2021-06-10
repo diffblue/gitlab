@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: replace 'tag_list' by 'topic_list' as soon as the following MR is merged:
-# https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60834
-
 require 'spec_helper'
 
 RSpec.describe Projects::TopicsFinder do
@@ -29,10 +26,10 @@ RSpec.describe Projects::TopicsFinder do
 
     context 'count' do
       before do
-        user_public_project.update!(tag_list: 'aaa, bbb, ccc, ddd')
-        other_user_public_project.update!(tag_list: 'bbb, ccc, ddd')
-        group_public_project.update!(tag_list: 'ccc, ddd')
-        other_group_public_project.update!(tag_list: 'ddd')
+        user_public_project.update!(topic_list: 'aaa, bbb, ccc, ddd')
+        other_user_public_project.update!(topic_list: 'bbb, ccc, ddd')
+        group_public_project.update!(topic_list: 'ccc, ddd')
+        other_group_public_project.update!(topic_list: 'ddd')
       end
 
       it 'returns topics with correct count' do
@@ -44,23 +41,23 @@ RSpec.describe Projects::TopicsFinder do
 
     context 'filter projects' do
       before do
-        user_private_project.update!(tag_list: 'topic1')
-        user_public_project.update!(tag_list: 'topic2')
-        other_user_private_project.update!(tag_list: 'topic3')
-        other_user_public_project.update!(tag_list: 'topic4')
-        group_private_project.update!(tag_list: 'topic5')
-        group_public_project.update!(tag_list: 'topic6')
-        other_group_private_project.update!(tag_list: 'topic7')
-        other_group_public_project.update!(tag_list: 'topic8')
+        user_private_project.update!(topic_list: 'topic1')
+        user_public_project.update!(topic_list: 'topic2')
+        other_user_private_project.update!(topic_list: 'topic3')
+        other_user_public_project.update!(topic_list: 'topic4')
+        group_private_project.update!(topic_list: 'topic5')
+        group_public_project.update!(topic_list: 'topic6')
+        other_group_private_project.update!(topic_list: 'topic7')
+        other_group_public_project.update!(topic_list: 'topic8')
       end
 
       context 'with current_user' do
         using RSpec::Parameterized::TableSyntax
 
         where(:params, :expected_topics) do
-          {}                       | %w[topic1 topic2 topic4 topic5 topic6 topic8]
-          { all_available: true }  | %w[topic1 topic2 topic4 topic5 topic6 topic8]
-          { all_available: false } | %w[topic1 topic2 topic5 topic6]
+          {}                  | %w[topic1 topic2 topic4 topic5 topic6 topic8]
+          { personal: false } | %w[topic1 topic2 topic4 topic5 topic6 topic8]
+          { personal: true }  | %w[topic1 topic2 topic5 topic6]
         end
 
         with_them do
@@ -76,9 +73,9 @@ RSpec.describe Projects::TopicsFinder do
         using RSpec::Parameterized::TableSyntax
 
         where(:params, :expected_topics) do
-          {}                       | %w[topic2 topic4 topic6 topic8]
-          { all_available: true }  | %w[topic2 topic4 topic6 topic8]
-          { all_available: false } | %w[topic2 topic4 topic6 topic8]
+          {}                  | %w[topic2 topic4 topic6 topic8]
+          { personal: false } | %w[topic2 topic4 topic6 topic8]
+          { personal: true }  | %w[topic2 topic4 topic6 topic8]
         end
 
         with_them do
@@ -93,7 +90,7 @@ RSpec.describe Projects::TopicsFinder do
 
     context 'filter by name' do
       before do
-        user_public_project.update!(tag_list: 'aaabbb, bbbccc, dDd, dddddd')
+        user_public_project.update!(topic_list: 'aaabbb, bbbccc, dDd, dddddd')
       end
 
       using RSpec::Parameterized::TableSyntax
@@ -109,7 +106,7 @@ RSpec.describe Projects::TopicsFinder do
 
       with_them do
         it 'returns correct topics filtered by name' do
-          topics = described_class.new(params: { name: search }).execute
+          topics = described_class.new(params: { search: search }).execute
 
           expect(topics.map(&:name)).to contain_exactly(*expected_topics)
         end
@@ -118,10 +115,10 @@ RSpec.describe Projects::TopicsFinder do
 
     context 'sort by attribute' do
       before do
-        user_public_project.update!(tag_list: 'aaa, bbb, ccc, ddd')
-        other_user_public_project.update!(tag_list: 'bbb, ccc, ddd')
-        group_public_project.update!(tag_list: 'bbb, ccc')
-        other_group_public_project.update!(tag_list: 'ccc')
+        user_public_project.update!(topic_list: 'aaa, bbb, ccc, ddd')
+        other_user_public_project.update!(topic_list: 'bbb, ccc, ddd')
+        group_public_project.update!(topic_list: 'bbb, ccc')
+        other_group_public_project.update!(topic_list: 'ccc')
       end
 
       using RSpec::Parameterized::TableSyntax
