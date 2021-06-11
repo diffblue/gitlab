@@ -1,10 +1,11 @@
 import { GlPagination } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-
 import Pagination from 'ee/compliance_dashboard/components/shared/pagination.vue';
+import setWindowLocation from 'helpers/set_window_location_helper';
 
 describe('Pagination component', () => {
   let wrapper;
+  const origin = 'https://localhost';
 
   const findGlPagination = () => wrapper.find(GlPagination);
   const getLink = (query) => wrapper.find(query).element.getAttribute('href');
@@ -23,8 +24,7 @@ describe('Pagination component', () => {
   };
 
   beforeEach(() => {
-    delete window.location;
-    window.location = new URL('https://localhost');
+    setWindowLocation(origin);
   });
 
   afterEach(() => {
@@ -33,7 +33,7 @@ describe('Pagination component', () => {
 
   describe('when initialized', () => {
     beforeEach(() => {
-      window.location.search = '?page=2';
+      setWindowLocation('?page=2');
       wrapper = createComponent();
     });
 
@@ -42,17 +42,17 @@ describe('Pagination component', () => {
     });
 
     it('should create a link to the previous page', () => {
-      expect(findPrevPageLink()).toEqual('https://localhost/?page=1');
+      expect(findPrevPageLink()).toBe(`${origin}/?page=1`);
     });
 
     it('should create a link to the next page', () => {
-      expect(findNextPageLink()).toEqual('https://localhost/?page=3');
+      expect(findNextPageLink()).toBe(`${origin}/?page=3`);
     });
   });
 
   describe('when on last page', () => {
     beforeEach(() => {
-      window.location.search = '?page=2';
+      setWindowLocation('?page=2');
       wrapper = createComponent(true);
     });
 
@@ -63,7 +63,7 @@ describe('Pagination component', () => {
 
   describe('when there is only one page', () => {
     beforeEach(() => {
-      window.location.search = '?page=1';
+      setWindowLocation('?page=1');
       wrapper = createComponent(true);
     });
 

@@ -10,6 +10,7 @@ import { addScheduleModalId } from 'ee/oncall_schedules/components/oncall_schedu
 import updateOncallScheduleMutation from 'ee/oncall_schedules/graphql/mutations/update_oncall_schedule.mutation.graphql';
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   getOncallSchedulesQueryResponse,
@@ -250,19 +251,7 @@ describe('AddScheduleModal', () => {
     });
 
     describe('when the schedule timezone is updated', () => {
-      const { location } = window;
-
-      beforeEach(() => {
-        delete window.location;
-        window.location = {
-          reload: jest.fn(),
-          hash: location.hash,
-        };
-      });
-
-      afterEach(() => {
-        window.location = location;
-      });
+      useMockLocationHelper();
 
       it('it should not reload the page if the timezone has not changed', async () => {
         mutate.mockResolvedValueOnce({});

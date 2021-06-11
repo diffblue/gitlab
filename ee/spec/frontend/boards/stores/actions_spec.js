@@ -8,6 +8,7 @@ import actions, { gqlClient } from 'ee/boards/stores/actions';
 import boardsStoreEE from 'ee/boards/stores/boards_store_ee';
 import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import { mockMoveIssueParams, mockMoveData, mockMoveState } from 'jest/boards/mock_data';
@@ -32,6 +33,7 @@ Vue.use(Vuex);
 let mock;
 
 beforeEach(() => {
+  setWindowLocation(TEST_HOST);
   mock = new MockAdapter(axios);
   window.gon = { features: {} };
   jest.spyOn(commonUtils, 'historyPushState');
@@ -615,9 +617,7 @@ describe('fetchIssuesForEpic', () => {
 describe('toggleEpicSwimlanes', () => {
   it('should commit mutation TOGGLE_EPICS_SWIMLANES', () => {
     const startURl = `${TEST_HOST}/groups/gitlab-org/-/boards/1?group_by=epic`;
-    global.jsdom.reconfigure({
-      url: startURl,
-    });
+    setWindowLocation(startURl);
 
     const state = {
       isShowingEpicsSwimlanes: false,
@@ -643,9 +643,7 @@ describe('toggleEpicSwimlanes', () => {
   });
 
   it('should dispatch fetchEpicsSwimlanes and fetchLists actions when isShowingEpicsSwimlanes is true', () => {
-    global.jsdom.reconfigure({
-      url: `${TEST_HOST}/groups/gitlab-org/-/boards/1`,
-    });
+    setWindowLocation(`${TEST_HOST}/groups/gitlab-org/-/boards/1`);
 
     jest.spyOn(gqlClient, 'query').mockResolvedValue({});
 
