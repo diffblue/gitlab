@@ -16475,7 +16475,8 @@ CREATE TABLE plan_limits (
     ci_daily_pipeline_schedule_triggers integer DEFAULT 0 NOT NULL,
     ci_max_artifact_size_running_container_scanning integer DEFAULT 0 NOT NULL,
     ci_max_artifact_size_cluster_image_scanning integer DEFAULT 0 NOT NULL,
-    ci_jobs_trace_size_limit integer DEFAULT 100 NOT NULL
+    ci_jobs_trace_size_limit integer DEFAULT 100 NOT NULL,
+    pages_file_entries integer DEFAULT 100000 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq

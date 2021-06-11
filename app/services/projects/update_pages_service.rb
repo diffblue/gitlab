@@ -157,6 +157,10 @@ module Projects
       entries_count = build.artifacts_metadata_entry("", recursive: true).entries.count
       sha256 = build.job_artifacts_archive.file_sha256
 
+      if pages_file_entries_limit > 0 && entries_count > pages_file_entries_limit
+        raise InvalidStateError, "pages site contains #{entries_count} file entries, while limit is set to #{pages_file_entries_limit}"
+      end
+
       deployment = nil
       File.open(artifacts_path) do |file|
         deployment = project.pages_deployments.create!(file: file,
@@ -196,6 +200,12 @@ module Projects
       return ::Gitlab::Pages::MAX_SIZE if max_pages_size == 0
 
       max_pages_size
+    end
+
+    def pages_file_entries_limit
+      return 0 unless Feature.enabled?(:pages_limit_entries_count, project, default_enabled: :yaml)
+
+      project.actual_limits.pages_file_entries
     end
 
     def tmp_path
