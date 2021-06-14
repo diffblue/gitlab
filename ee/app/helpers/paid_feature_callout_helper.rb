@@ -10,6 +10,7 @@ module PaidFeatureCalloutHelper
       e.exclude! unless group && eligible_for_trial_upgrade_callout?(group)
       e.use { nil } # control gets nothing new added to the existing UI
       e.try(&block)
+      e.record!
     end
   end
 

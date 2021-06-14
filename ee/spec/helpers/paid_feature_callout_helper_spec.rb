@@ -22,20 +22,35 @@ RSpec.describe PaidFeatureCalloutHelper do
 
     subject { helper.run_highlight_paid_features_during_active_trial_experiment(group, &candidate_block).run }
 
-    context 'when the user is in the candidate' do
-      let(:variant) { :candidate }
+    shared_examples 'records an ExperimentSubject' do
+      it 'records the group as an ExperimentSubject' do
+        expect { subject }.to change { ExperimentSubject.count }
+      end
+    end
 
-      it { is_expected.to eq('in candidate') }
+    shared_examples 'does not record an ExperimentSubject' do
+      it 'does not record the group as an ExperimentSubject' do
+        expect { subject }.not_to change { ExperimentSubject.count }
+      end
     end
 
     shared_examples 'user receives control experience' do
       it { is_expected.to be_nil }
     end
 
+    context 'when the user is in the candidate' do
+      let(:variant) { :candidate }
+
+      it { is_expected.to eq('in candidate') }
+
+      include_examples 'records an ExperimentSubject'
+    end
+
     context 'when the user is in the control' do
       let(:variant) { :control }
 
       include_examples 'user receives control experience'
+      include_examples 'records an ExperimentSubject'
     end
 
     context 'when the user would be in the candidate' do
@@ -45,18 +60,21 @@ RSpec.describe PaidFeatureCalloutHelper do
         let(:trials_available) { false }
 
         include_examples 'user receives control experience'
+        include_examples 'does not record an ExperimentSubject'
       end
 
       context 'but the group is not in an active trial' do
         let(:group_has_active_trial) { false }
 
         include_examples 'user receives control experience'
+        include_examples 'does not record an ExperimentSubject'
       end
 
       context 'but the user is not an admin of the group' do
         let(:user_can_admin_group) { false }
 
         include_examples 'user receives control experience'
+        include_examples 'does not record an ExperimentSubject'
       end
     end
   end
