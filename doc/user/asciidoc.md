@@ -492,10 +492,12 @@ image::screenshot.png[block image,800,450]
 Press image:reload.svg[reload,16,opts=interactive] to reload the page.
 
 video::movie.mp4[width=640,start=60,end=140,options=autoplay]
+```
 
-video::aHjpOzsQ9YI[youtube]
-
-video::300817511[vimeo]
+Embedding YouTube and Vimeo videos is not supported in GitLab for the moment,
+use a normal link like this for now:
+```plaintext
+https://youtu.be/1W5fEku4-_A[Link text for the video]
 ```
 
 ### Breaks
