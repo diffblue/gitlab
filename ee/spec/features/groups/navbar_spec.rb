@@ -70,7 +70,7 @@ RSpec.describe 'Group navbar' do
 
     it 'redirects to value stream when Analytics item is clicked' do
       page.within('.sidebar-top-level-items') do
-        find('[data-qa-selector=analytics_anchor]').click
+        find('[data-qa-selector=analytics_anchor]').click # rubocop:disable QA/SelectorUsage
       end
 
       wait_for_requests

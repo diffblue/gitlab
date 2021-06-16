@@ -43,7 +43,7 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        find('[data-qa-panel-name="create_from_template"]').click
+        find('[data-qa-panel-name="create_from_template"]').click # rubocop:disable QA/SelectorUsage
         find('.project-template .custom-instance-project-templates-tab').click
         find("label[for='#{projects.first.name}']").click
 
@@ -68,7 +68,7 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        find('[data-qa-panel-name="create_from_template"]').click
+        find('[data-qa-panel-name="create_from_template"]').click # rubocop:disable QA/SelectorUsage
         find('.project-template .custom-instance-project-templates-tab').click
         find("label[for='#{projects.first.name}']").click
 
@@ -90,7 +90,7 @@ RSpec.describe 'Project' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
-        find('[data-qa-panel-name="create_from_template"]').click
+        find('[data-qa-panel-name="create_from_template"]').click # rubocop:disable QA/SelectorUsage
         find('.project-template .custom-instance-project-templates-tab').click
         find("label[for='#{projects.first.name}']").click
 
@@ -111,7 +111,7 @@ RSpec.describe 'Project' do
       it 'has a working pagination', :js do
         last_project = "label[for='#{projects.last.name}']"
 
-        find('[data-qa-panel-name="create_from_template"]').click
+        find('[data-qa-panel-name="create_from_template"]').click # rubocop:disable QA/SelectorUsage
         find('.project-template .custom-instance-project-templates-tab').click
 
         expect(page).to have_css('.custom-project-templates .gl-pagination')

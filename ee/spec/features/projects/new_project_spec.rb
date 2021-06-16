@@ -17,7 +17,7 @@ RSpec.describe 'New project', :js do
 
       it 'shows mirror repository checkbox enabled', :js do
         visit new_project_path
-        find('[data-qa-panel-name="import_project"]').click
+        find('[data-qa-panel-name="import_project"]').click # rubocop:disable QA/SelectorUsage
         first('.js-import-git-toggle-button').click
 
         expect(page).to have_unchecked_field('Mirror repository', disabled: false)
@@ -31,7 +31,7 @@ RSpec.describe 'New project', :js do
 
       it 'does not show mirror repository option' do
         visit new_project_path
-        find('[data-qa-panel-name="import_project"]').click
+        find('[data-qa-panel-name="import_project"]').click # rubocop:disable QA/SelectorUsage
         first('.js-import-git-toggle-button').click
 
         expect(page).not_to have_content('Mirror repository')
@@ -60,16 +60,16 @@ RSpec.describe 'New project', :js do
       it 'shows CI/CD tab and pane' do
         visit new_project_path
 
-        expect(page).to have_css('[data-qa-panel-name="cicd_for_external_repo"]')
+        expect(page).to have_css('[data-qa-panel-name="cicd_for_external_repo"]') # rubocop:disable QA/SelectorUsage
 
-        find('[data-qa-panel-name="cicd_for_external_repo"]').click
+        find('[data-qa-panel-name="cicd_for_external_repo"]').click # rubocop:disable QA/SelectorUsage
 
         expect(page).to have_css('#ci-cd-project-pane')
       end
 
       it '"Import project" tab creates projects with features enabled' do
         visit new_project_path
-        find('[data-qa-panel-name="import_project"]').click
+        find('[data-qa-panel-name="import_project"]').click # rubocop:disable QA/SelectorUsage
 
         page.within '#import-project-pane' do
           first('.js-import-git-toggle-button').click
@@ -89,7 +89,7 @@ RSpec.describe 'New project', :js do
 
       it 'creates CI/CD project from repo URL', :sidekiq_might_not_need_inline do
         visit new_project_path
-        find('[data-qa-panel-name="cicd_for_external_repo"]').click
+        find('[data-qa-panel-name="cicd_for_external_repo"]').click # rubocop:disable QA/SelectorUsage
 
         page.within '#ci-cd-project-pane' do
           find('.js-import-git-toggle-button').click
@@ -109,7 +109,7 @@ RSpec.describe 'New project', :js do
 
       it 'creates CI/CD project from GitHub' do
         visit new_project_path
-        find('[data-qa-panel-name="cicd_for_external_repo"]').click
+        find('[data-qa-panel-name="cicd_for_external_repo"]').click # rubocop:disable QA/SelectorUsage
 
         page.within '#ci-cd-project-pane' do
           find('.js-import-github').click
@@ -146,7 +146,7 @@ RSpec.describe 'New project', :js do
 
       it 'stays on GitHub import page after access token failure' do
         visit new_project_path
-        find('[data-qa-panel-name="cicd_for_external_repo"]').click
+        find('[data-qa-panel-name="cicd_for_external_repo"]').click # rubocop:disable QA/SelectorUsage
 
         page.within '#ci-cd-project-pane' do
           find('.js-import-github').click
@@ -170,7 +170,7 @@ RSpec.describe 'New project', :js do
       it 'does not show CI/CD only tab' do
         visit new_project_path
 
-        expect(page).not_to have_css('[data-qa-panel-name="cicd_for_external_repo"]')
+        expect(page).not_to have_css('[data-qa-panel-name="cicd_for_external_repo"]') # rubocop:disable QA/SelectorUsage
       end
     end
   end
@@ -458,7 +458,7 @@ RSpec.describe 'New project', :js do
     def visit_create_from_built_in_templates_tab
       visit new_project_path
 
-      find('[data-qa-panel-name="create_from_template"]').click
+      find('[data-qa-panel-name="create_from_template"]').click # rubocop:disable QA/SelectorUsage
     end
   end
 end
