@@ -5,6 +5,14 @@ require 'spec_helper'
 RSpec.describe Gitlab::Utils::UsageData do
   include Database::DatabaseHelpers
 
+  describe '#add_metric' do
+    let(:metric) { double(:metric, value: 1) }
+
+    it 'computes the metric value for given metric' do
+      expect(described_class.add_metric(metric)).to eq(1)
+    end
+  end
+
   describe '#count' do
     let(:relation) { double(:relation) }
 

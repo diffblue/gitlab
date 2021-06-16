@@ -11,9 +11,13 @@ module Gitlab
           attr_reader :time_frame
           attr_reader :options
 
-          def initialize(time_frame:, options: {})
+          def initialize(time_frame: 'none', options: {})
             @time_frame = time_frame
             @options = options
+          end
+
+          def to_sql
+            value
           end
         end
       end

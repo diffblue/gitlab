@@ -16,6 +16,14 @@ RSpec.describe Gitlab::Usage::Metrics::NamesSuggestions::Generator do
       end
     end
 
+    describe '#add_metric' do
+      let(:metric) { double(:metric, suggested_name: 'counts_issues') }
+
+      it 'computes the metric value for given metric' do
+        expect(described_class.add_metric(metric)).to eq('counts_issues')
+      end
+    end
+
     context 'for count with default column metrics' do
       it_behaves_like 'name suggestion' do
         # corresponding metric is collected with count(Board)

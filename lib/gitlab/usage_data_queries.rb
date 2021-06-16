@@ -5,6 +5,10 @@ module Gitlab
   # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/41091
   class UsageDataQueries < UsageData
     class << self
+      def add_metric(metric)
+        metric.to_sql
+      end
+
       def count(relation, column = nil, *args, **kwargs)
         Gitlab::Usage::Metrics::Query.for(:count, relation, column)
       end

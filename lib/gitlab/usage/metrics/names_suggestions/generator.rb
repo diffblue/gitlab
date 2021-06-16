@@ -10,6 +10,10 @@ module Gitlab
               uncached_data.deep_stringify_keys.dig(*key_path.split('.'))
             end
 
+            def add_metric(metric)
+              metric.suggested_name
+            end
+
             private
 
             def count(relation, column = nil, batch: true, batch_size: nil, start: nil, finish: nil)

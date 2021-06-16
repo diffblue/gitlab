@@ -5,6 +5,10 @@ module Gitlab
     SQL_METRIC_DEFAULT = -3
 
     class << self
+      def add_metric(metric)
+        metric.value unless metric.is_a?(Gitlab::Usage::Metrics::Instrumentations::DatabaseMetric)
+      end
+
       def count(relation, column = nil, batch: true, batch_size: nil, start: nil, finish: nil)
         SQL_METRIC_DEFAULT
       end

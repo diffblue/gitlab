@@ -44,6 +44,10 @@ module Gitlab
       DISTRIBUTED_HLL_FALLBACK = -2
       MAX_BUCKET_SIZE = 100
 
+      def add_metric(metric)
+        metric.value
+      end
+
       def count(relation, column = nil, batch: true, batch_size: nil, start: nil, finish: nil)
         if batch
           Gitlab::Database::BatchCount.batch_count(relation, column, batch_size: batch_size, start: start, finish: finish)
