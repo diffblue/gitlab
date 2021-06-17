@@ -185,19 +185,20 @@ RSpec.describe Ci::RunDastScanService do
       end
 
       context 'when the pipeline fails to save' do
-        before do
-          allow_any_instance_of(Ci::Pipeline).to receive(:created_successfully?).and_return(false)
-          allow_any_instance_of(Ci::Pipeline).to receive(:full_error_messages).and_return(full_error_messages)
-        end
+        let(:fake_pipeline) { instance_double 'Ci::Pipeline', created_successfully?: false, full_error_messages: 'Fake full error messages' }
+        let(:fake_response) { ServiceResponse.error(message: 'Fake error message', payload: fake_pipeline) }
+        let(:fake_service) { instance_double "Ci::CreatePipelineService", execute: fake_response }
 
-        let(:full_error_messages) { SecureRandom.hex }
+        before do
+          allow(Ci::CreatePipelineService).to receive(:new).and_return(fake_service)
+        end
 
         it 'returns an error status' do
           expect(status).to eq(:error)
         end
 
         it 'populates message' do
-          expect(message).to eq(full_error_messages)
+          expect(message).to eq('Fake full error messages')
         end
       end
 

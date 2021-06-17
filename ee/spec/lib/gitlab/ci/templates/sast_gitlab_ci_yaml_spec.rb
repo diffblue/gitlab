@@ -11,7 +11,7 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
     let(:project) { create(:project, :custom_repo, files: files) }
     let(:user) { project.owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
-    let(:pipeline) { service.execute!(:push) }
+    let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     before do

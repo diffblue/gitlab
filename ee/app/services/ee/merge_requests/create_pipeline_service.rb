@@ -7,17 +7,19 @@ module EE
 
       override :execute
       def execute(merge_request)
-        create_merged_result_pipeline_for(merge_request) || super
+        response = create_merged_result_pipeline_for(merge_request)
+
+        return response if response.success?
+
+        super
       end
 
       def create_merged_result_pipeline_for(merge_request)
-        return unless can_create_merged_result_pipeline_for?(merge_request)
+        return cannot_create_pipeline_error unless can_create_merged_result_pipeline_for?(merge_request)
 
         result = ::MergeRequests::MergeabilityCheckService.new(merge_request).execute(recheck: true)
 
-        if result.success? &&
-           merge_request.mergeable_state?(skip_ci_check: true, skip_discussions_check: true)
-
+        if result.success? && merge_request.mergeable_state?(skip_ci_check: true, skip_discussions_check: true)
           ref_payload = result.payload.fetch(:merge_ref_head)
 
           ::Ci::CreatePipelineService.new(merge_request.target_project, current_user,
@@ -26,6 +28,8 @@ module EE
                                           target_sha: ref_payload[:target_id],
                                           source_sha: ref_payload[:source_id])
             .execute(:merge_request_event, merge_request: merge_request)
+        else
+          cannot_create_pipeline_error
         end
       end
 

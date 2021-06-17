@@ -50,7 +50,7 @@ RSpec.describe Ci::CreatePipelineService do
       .to_runner_variables
   end
 
-  subject { described_class.new(project, user, ref: 'refs/heads/master').execute(:push) }
+  subject { described_class.new(project, user, ref: 'refs/heads/master').execute(:push).payload }
 
   before do
     stub_ci_pipeline_yaml_file(config)

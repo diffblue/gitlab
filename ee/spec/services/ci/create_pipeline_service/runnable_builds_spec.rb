@@ -33,8 +33,8 @@ RSpec.describe Ci::CreatePipelineService, :sidekiq_inline do
     stub_ci_pipeline_yaml_file(config)
   end
 
-  it 'drops builds that match shared runners' do
-    pipeline = create_pipeline!
+  it 'drops builds that match shared runners', :aggregate_failures do
+    pipeline = create_pipeline
 
     job1 = pipeline.builds.find_by_name('job1')
     job2 = pipeline.builds.find_by_name('job2')
@@ -49,8 +49,8 @@ RSpec.describe Ci::CreatePipelineService, :sidekiq_inline do
       create(:ci_runner, :project, :online, projects: [project])
     end
 
-    it 'does not drop the builds' do
-      pipeline = create_pipeline!
+    it 'does not drop the builds', :aggregate_failures do
+      pipeline = create_pipeline
 
       job1 = pipeline.builds.find_by_name('job1')
       job2 = pipeline.builds.find_by_name('job2')
@@ -60,7 +60,7 @@ RSpec.describe Ci::CreatePipelineService, :sidekiq_inline do
     end
   end
 
-  def create_pipeline!
-    service.execute(:push)
+  def create_pipeline
+    service.execute(:push).payload
   end
 end
