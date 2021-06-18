@@ -67,4 +67,98 @@ RSpec.describe Member, type: :model do
       it { is_expected.to eq('Project') }
     end
   end
+
+  describe '#group_saml_identity' do
+    shared_examples_for 'member with group saml identity' do
+      context 'without saml_provider' do
+        it { is_expected.to eq nil }
+      end
+
+      context 'with saml_provider enabled' do
+        let!(:saml_provider) { create(:saml_provider, group: member.group) }
+
+        context 'when member has no connected identity' do
+          it { is_expected.to eq nil }
+        end
+
+        context 'when member has connected identity' do
+          let!(:group_related_identity) do
+            create(:group_saml_identity, user: member.user, saml_provider: saml_provider)
+          end
+
+          it 'returns related identity' do
+            expect(group_saml_identity).to eq group_related_identity
+          end
+        end
+
+        context 'when member has connected identity of different group' do
+          before do
+            create(:group_saml_identity, user: member.user)
+          end
+
+          it { is_expected.to eq nil }
+        end
+      end
+    end
+
+    shared_examples_for 'member with group saml identity on the top level' do
+      let!(:saml_provider) { create(:saml_provider, group: parent_group) }
+
+      let!(:group_related_identity) do
+        create(:group_saml_identity, user: member.user, saml_provider: saml_provider)
+      end
+
+      it 'returns related identity' do
+        expect(member.group_saml_identity(root_ancestor: true)).to eq group_related_identity
+      end
+    end
+
+    describe 'for group members' do
+      context 'when member is in a top-level group' do
+        let(:member) { create :group_member }
+
+        subject(:group_saml_identity) { member.group_saml_identity }
+
+        it_behaves_like 'member with group saml identity'
+      end
+
+      context 'when member is in a subgroup' do
+        let(:parent_group) { create(:group) }
+        let(:group) { create(:group, parent: parent_group) }
+        let(:member) { create(:group_member, source: group) }
+
+        it_behaves_like 'member with group saml identity on the top level'
+      end
+    end
+
+    describe 'for project members' do
+      context 'when project is nested in a group' do
+        let(:group) { create(:group) }
+        let(:project) { create(:project, namespace: group)}
+        let(:member) { create :project_member, source: project }
+
+        subject(:group_saml_identity) { member.group_saml_identity }
+
+        it_behaves_like 'member with group saml identity'
+      end
+
+      context 'when project is nested in a subgroup' do
+        let(:parent_group) { create(:group)}
+        let(:group) { create(:group, parent: parent_group) }
+        let(:project) { create(:project, namespace: group)}
+        let(:member) { create :project_member, source: project }
+
+        it_behaves_like 'member with group saml identity on the top level'
+      end
+
+      context 'when project is nested in a personal namespace' do
+        let(:project) { create(:project, namespace: create(:user).namespace )}
+        let(:member) { create :project_member, source: project }
+
+        it 'returns nothing' do
+          expect(member.group_saml_identity(root_ancestor: true)).to be_nil
+        end
+      end
+    end
+  end
 end
