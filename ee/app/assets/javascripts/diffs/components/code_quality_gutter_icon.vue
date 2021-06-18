@@ -1,30 +1,21 @@
 <script>
-import { GlTooltipDirective, GlIcon, GlModalDirective, GlModal } from '@gitlab/ui';
-import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { __, s__, sprintf } from '~/locale';
+import { GlPopover, GlIcon } from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
-
-const i18n = {
-  tooltip: s__('CodeQuality|Code quality: %{severity} - %{description}'),
-};
 
 export default {
   components: {
     GlIcon,
-    GlModal,
+    GlPopover,
     CodequalityIssueBody,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
-    GlModal: GlModalDirective,
   },
   modalCloseButton: {
     text: __('Close'),
     attributes: [{ variant: 'info' }],
   },
   i18n: {
-    modalTitle: s__('CodeQuality|New code quality degradations on this line'),
+    popoverTitle: s__('CodeQuality|New code quality degradations on this line'),
   },
   props: {
     filePath: {
@@ -38,12 +29,6 @@ export default {
     },
   },
   computed: {
-    tooltipText() {
-      return sprintf(i18n.tooltip, {
-        severity: capitalizeFirstCharacter(this.severity),
-        description: this.codequality[0].description,
-      });
-    },
     severity() {
       return this.codequality[0].severity;
     },
@@ -61,8 +46,6 @@ export default {
         return {
           name: degradation.description,
           severity: degradation.severity,
-          path: this.filePath,
-          line: this.line,
         };
       });
     },
@@ -73,24 +56,24 @@ export default {
 <template>
   <div>
     <gl-icon
-      v-gl-modal="`codequality-${filePath}:${line}`"
-      v-gl-tooltip.hover
-      :title="tooltipText"
+      :id="`codequality-${filePath}:${line}`"
       :size="12"
       :name="severityIcon"
       :class="severityClass"
       class="gl-hover-cursor-pointer codequality-severity-icon"
     />
-    <gl-modal
-      :modal-id="`codequality-${filePath}:${line}`"
-      :title="$options.i18n.modalTitle"
-      :action-primary="$options.modalCloseButton"
+    <gl-popover
+      triggers="click blur"
+      placement="topright"
+      :css-classes="['gl-max-w-none', 'gl-w-half']"
+      :target="`codequality-${filePath}:${line}`"
+      :title="$options.i18n.popoverTitle"
     >
       <codequality-issue-body
         v-for="(degradation, index) in degradations"
         :key="index"
         :issue="degradation"
       />
-    </gl-modal>
+    </gl-popover>
   </div>
 </template>
