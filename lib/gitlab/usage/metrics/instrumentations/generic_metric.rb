@@ -28,6 +28,11 @@ module Gitlab
             end
           end
 
+          def initialize(time_frame: 'none', options: {})
+            @time_frame = time_frame
+            @options = options
+          end
+
           def value
             alt_usage_data(fallback: self.class.fallback) do
               self.class.metric_value.call
