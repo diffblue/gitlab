@@ -106,7 +106,7 @@ $top-nav-hover-bg: var(--indigo-900-alpha-008, $indigo-900-alpha-008) !important
 
     &.menu-expanded {
       @include media-breakpoint-down(xs) {
-        .hide-when-menu-expanded {
+        .hide-when-top-nav-responsive-open {
           display: none;
         }
 
