@@ -16,6 +16,7 @@ exports[`dashboard should match the snapshot 1`] = `
     titletag="h4"
   >
     <project-selector-stub
+      maxlistheight="402"
       projectsearchresults=""
       selectedprojects=""
       totalresults="0"
