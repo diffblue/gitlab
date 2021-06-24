@@ -2029,55 +2029,6 @@ RSpec.describe Project do
     end
   end
 
-  describe '#update_root_ref' do
-    let(:project) { create(:project, :repository) }
-    let(:url) { 'http://git.example.com/remote-repo.git' }
-    let(:auth) { 'Basic secret' }
-
-    it 'updates the default branch when HEAD has changed' do
-      stub_find_remote_root_ref(project, ref: 'feature')
-
-      expect { project.update_root_ref('origin', url, auth) }
-        .to change { project.default_branch }
-        .from('master')
-        .to('feature')
-    end
-
-    it 'always updates the default branch even when HEAD does not change' do
-      stub_find_remote_root_ref(project, ref: 'master')
-
-      expect(project).to receive(:change_head).with('master').and_call_original
-
-      project.update_root_ref('origin', url, auth)
-
-      # For good measure, expunge the root ref cache and reload.
-      project.repository.expire_all_method_caches
-      expect(project.reload.default_branch).to eq('master')
-    end
-
-    it 'does not update the default branch when HEAD does not exist' do
-      stub_find_remote_root_ref(project, ref: 'foo')
-
-      expect { project.update_root_ref('origin', url, auth) }
-        .not_to change { project.default_branch }
-    end
-
-    it 'does not raise error when repository does not exist' do
-      allow(project.repository).to receive(:find_remote_root_ref)
-        .with('origin', url, auth)
-        .and_raise(Gitlab::Git::Repository::NoRepository)
-
-      expect { project.update_root_ref('origin', url, auth) }.not_to raise_error
-    end
-
-    def stub_find_remote_root_ref(project, ref:)
-      allow(project.repository)
-        .to receive(:find_remote_root_ref)
-        .with('origin', url, auth)
-        .and_return(ref)
-    end
-  end
-
   describe '#feature_flags_client_token' do
     let(:project) { create(:project) }
 

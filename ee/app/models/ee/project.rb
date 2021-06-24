@@ -684,15 +684,6 @@ module EE
         ::Gitlab::CurrentSettings.custom_project_templates_enabled?
     end
 
-    # Update the default branch querying the remote to determine its HEAD
-    def update_root_ref(remote, remote_url, authorization)
-      root_ref = repository.find_remote_root_ref(remote, remote_url, authorization)
-      change_head(root_ref) if root_ref.present?
-    rescue ::Gitlab::Git::Repository::NoRepository => e
-      ::Gitlab::AppLogger.error("Error updating root ref for project #{full_path} (#{id}): #{e.message}.")
-      nil
-    end
-
     override :lfs_http_url_to_repo
     def lfs_http_url_to_repo(operation = nil)
       return super unless ::Gitlab::Geo.secondary_with_primary?

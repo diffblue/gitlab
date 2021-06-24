@@ -38,6 +38,7 @@ module Geo
     def sync_repository
       start_registry_sync!
       fetch_repository
+      update_root_ref
       mark_sync_as_successful
     rescue Gitlab::Git::Repository::NoRepository => e
       log_info('Marking the repository for a forced re-download')
@@ -257,6 +258,14 @@ module Geo
 
     def replicable_name
       replicator.replicable_name
+    end
+
+    def update_root_ref
+      authorization = ::Gitlab::Geo::RepoSyncRequest.new(
+        scope: repository.full_path
+      ).authorization
+
+      repository.update_root_ref(GEO_REMOTE_NAME, replicator.remote_url, authorization)
     end
   end
 end
