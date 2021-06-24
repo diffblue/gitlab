@@ -203,10 +203,7 @@ $body.on('ajax:complete, ajax:beforeSend, submit', 'form', function ajaxComplete
 });
 
 $('.navbar-toggler').on('click', () => {
-  // The order is important. The `menu-expanded` is used as a source of truth for now.
-  // This can be simplified when the :combined_menu feature flag is removed.
-  // https://gitlab.com/gitlab-org/gitlab/-/issues/333180
-  navEventHub.$emit(EVENT_RESPONSIVE_TOGGLE);
+  document.body.classList.toggle('top-nav-responsive-open');
 });
 
 /**
