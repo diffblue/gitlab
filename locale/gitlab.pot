@@ -14594,6 +14594,9 @@ msgstr ""
 msgid "Filter by name"
 msgstr ""
 
+msgid "Filter by name..."
+msgstr ""
+
 msgid "Filter by test cases that are currently archived."
 msgstr ""
 
@@ -17288,6 +17291,9 @@ msgid "Import project from"
 msgstr ""
 
 msgid "Import project members"
+msgstr ""
+
+msgid "Import project/repository"
 msgstr ""
 
 msgid "Import projects from Bitbucket"
@@ -35825,9 +35831,6 @@ msgid "Topics (optional)"
 msgstr ""
 
 msgid "TopicsEmptyState|There are no topics to show."
-msgstr ""
-
-msgid "Topics|Search by name"
 msgstr ""
 
 msgid "Total"

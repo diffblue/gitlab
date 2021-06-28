@@ -1,5 +1,10 @@
 = form_tag filter_topics_path, method: :get, class: "topic-filter-form js-topic-filter-form", id: 'topic-filter-form' do |f|
-  = search_field_tag :search, params[:search], placeholder: s_('Topics|Search by name'), class: 'topic-filter-form-field form-control js-topics-list-filter qa-topics-filter', spellcheck: false, id: 'topic-filter-form-field'
+  = search_field_tag :search, params[:search],
+    placeholder: s_('Filter by name...'),
+    class: 'topic-filter-form-field form-control input-short js-topics-list-filter',
+    spellcheck: false,
+    id: 'topic-filter-form-field',
+    autofocus: local_assigns[:autofocus]
 
   - if params[:sort].present?
     = hidden_field_tag :sort, params[:sort]

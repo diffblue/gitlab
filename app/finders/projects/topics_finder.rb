@@ -52,9 +52,9 @@ module Projects
       case params[:sort]
       when 'name_asc'        then 'tags.name asc'
       when 'name_desc'       then 'tags.name desc'
-      when 'popularity_desc' then 'count desc'
+      when 'popularity_desc' then 'count desc, tags.name asc'
       else
-        'count desc'
+        'count desc, tags.name asc'
       end
     end
   end
