@@ -3,7 +3,6 @@ import ResponsiveApp from '~/nav/components/responsive_app.vue';
 import ResponsiveHeader from '~/nav/components/responsive_header.vue';
 import ResponsiveHome from '~/nav/components/responsive_home.vue';
 import TopNavContainerView from '~/nav/components/top_nav_container_view.vue';
-import eventHub, { EVENT_RESPONSIVE_TOGGLE } from '~/nav/event_hub';
 import { resetMenuItemsActive } from '~/nav/utils/reset_menu_items_active';
 import KeepAliveSlots from '~/vue_shared/components/keep_alive_slots.vue';
 import { TEST_NAV_DATA } from '../mock_data';
@@ -26,8 +25,7 @@ describe('~/nav/components/responsive_app.vue', () => {
       },
     });
   };
-  const triggerResponsiveToggle = () => eventHub.$emit(EVENT_RESPONSIVE_TOGGLE);
-
+  const triggerResponsiveToggle = () => document.body.classList.toggle('top-nav-responsive-open');
   const findHome = () => wrapper.findComponent(ResponsiveHome);
   const findMobileOverlay = () => wrapper.find('[data-testid="mobile-overlay"]');
   const findSubviewHeader = () => wrapper.findComponent(ResponsiveHeader);
@@ -68,7 +66,8 @@ describe('~/nav/components/responsive_app.vue', () => {
       ({ bodyHtml, expectation }) => {
         document.body.innerHTML = bodyHtml;
 
-        triggerResponsiveToggle();
+        if (bodyHtml === HTML_HEADER_WITH_MENU_EXPANDED)
+          triggerResponsiveToggle();
 
         expect(hasBodyResponsiveOpen()).toBe(expectation);
       },
@@ -99,6 +98,7 @@ describe('~/nav/components/responsive_app.vue', () => {
   describe('with menu expanded in body', () => {
     beforeEach(() => {
       document.body.innerHTML = HTML_HEADER_WITH_MENU_EXPANDED;
+      triggerResponsiveToggle();
       createComponent();
     });
 
@@ -167,8 +167,6 @@ describe('~/nav/components/responsive_app.vue', () => {
     });
 
     it('responsive toggle event does nothing', () => {
-      triggerResponsiveToggle();
-
       expect(hasBodyResponsiveOpen()).toBe(false);
     });
   });
