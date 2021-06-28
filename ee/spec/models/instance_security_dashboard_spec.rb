@@ -19,7 +19,7 @@ RSpec.describe InstanceSecurityDashboard do
     user.security_dashboard_projects << [project1, project2, project3]
   end
 
-  subject { described_class.new(user, project_ids: project_ids) }
+  subject(:instance_dashboard) { described_class.new(user, project_ids: project_ids) }
 
   describe '#all_pipelines' do
     it 'returns pipelines for the projects with security reports' do
@@ -85,50 +85,64 @@ RSpec.describe InstanceSecurityDashboard do
   end
 
   describe '#projects' do
-    context 'when the user cannot read all resources' do
+    subject { instance_dashboard.projects }
+
+    before do
+      project1.team.truncate
+    end
+
+    shared_examples_for 'project permissions' do
+      context 'when the `security_and_compliance` is disabled for the project' do
+        before do
+          ProjectFeature.update_all(security_and_compliance_access_level: Featurable::DISABLED)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
       context 'when the `security_and_compliance` is enabled for the project' do
         before do
           ProjectFeature.update_all(security_and_compliance_access_level: Featurable::ENABLED)
         end
 
-        it 'returns only projects on their dashboard that they can read' do
-          expect(subject.projects).to contain_exactly(project1)
-        end
-      end
-
-      context 'when the `security_and_compliance` is disabled for the project' do
-        before do
-          project1.project_feature.update_column(:security_and_compliance_access_level, Featurable::DISABLED)
-        end
-
-        it 'returns only projects on their dashboard that they can read' do
-          expect(subject.projects).to be_empty
-        end
+        it { is_expected.to match_array(expected_projects) }
       end
     end
 
-    context 'when the user can read all resources' do
-      let(:project_ids) { [project1.id, project2.id] }
+    context 'when the user is auditor' do
       let(:user) { create(:auditor) }
 
-      context 'when the `security_and_compliance` is enabled for the project' do
-        before do
-          ProjectFeature.update_all(security_and_compliance_access_level: Featurable::ENABLED)
-        end
+      it_behaves_like 'project permissions' do
+        let(:expected_projects) { [project1, project2, project3] }
+      end
+    end
 
-        it "returns all projects on the user's dashboard" do
-          expect(subject.projects).to contain_exactly(project1, project2, project3)
+    context 'when the user is not an auditor' do
+      context 'when the user is project owner' do
+        let(:user) { project1.owner }
+
+        it_behaves_like 'project permissions' do
+          let(:expected_projects) { project1 }
         end
       end
 
-      context 'when the `security_and_compliance` is disabled for the project' do
-        before do
-          project1.project_feature.update_column(:security_and_compliance_access_level, Featurable::DISABLED)
+      context 'when the user is not project owner' do
+        shared_examples_for 'user with project role' do |as:, permitted:|
+          let(:expected_projects) { permitted ? project1 : [] }
+
+          before do
+            project1.add_role(user, as)
+          end
+
+          it_behaves_like 'project permissions'
         end
 
-        it "returns only the feature enabled projects on the user's dashboard" do
-          expect(subject.projects).to contain_exactly(project2, project3)
-        end
+        all_roles = Gitlab::Access.sym_options.keys
+        permitted_roles = %i(developer maintainer).freeze
+        unpermitted_roles = all_roles - permitted_roles
+
+        permitted_roles.each { |role| it_behaves_like 'user with project role', as: role, permitted: true }
+        unpermitted_roles.each { |role| it_behaves_like 'user with project role', as: role, permitted: false }
       end
     end
   end

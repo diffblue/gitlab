@@ -16,7 +16,7 @@ module EE
         extend ::Gitlab::Utils::Override
 
         def vulnerability_access_levels
-          @vulnerability_access_levels ||= options_with_owner.except('Guest')
+          @vulnerability_access_levels ||= sym_options_with_owner.values_at(:developer, :maintainer, :owner).freeze
         end
 
         def options_with_minimal_access
