@@ -35,10 +35,10 @@
   if: '$CI_MERGE_REQUEST_IID'
 
 .if-merge-request-approved: &if-merge-request-approved
-  if: '$CI_MERGE_REQUEST_APPROVED'
+  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVED'
 
 .if-merge-request-not-approved: &if-merge-request-not-approved
-  if: '$CI_MERGE_REQUEST_APPROVED != "true"'
+  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVED != "true"'
 
 .if-merge-request-title-as-if-foss: &if-merge-request-title-as-if-foss
   if: '$CI_MERGE_REQUEST_TITLE =~ /RUN AS-IF-FOSS/'
