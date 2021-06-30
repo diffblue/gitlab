@@ -354,9 +354,15 @@ RSpec.describe Projects::UpdatePagesService do
       create(:ci_job_artifact, :archive, file: file, job: build)
       create(:ci_job_artifact, :metadata, file: metafile, job: build)
 
-      allow(build).to receive(:artifacts_metadata_entry)
+      allow(build).to receive(:artifacts_metadata_entry).with('public/', recursive: true)
                         .and_return(metadata)
       allow(metadata).to receive(:total_size).and_return(100)
+
+      # to pass entries count check
+      root_metadata = double('root metadata')
+      allow(build).to receive(:artifacts_metadata_entry).with('', recursive: true)
+                        .and_return(root_metadata)
+      allow(root_metadata).to receive_message_chain(:entries, :count).and_return(10)
     end
 
     it 'raises an error' do
