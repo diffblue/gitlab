@@ -98,42 +98,42 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
 
         context 'when message is provided' do
           it 'sets message from the report as a finding name' do
-            vulnerability = report.findings.find { |x| x.compare_key == 'CVE-1020' }
-            expected_name = Gitlab::Json.parse(vulnerability.raw_metadata)['message']
+            finding = report.findings.find { |x| x.compare_key == 'CVE-1020' }
+            expected_name = Gitlab::Json.parse(finding.raw_metadata)['message']
 
-            expect(vulnerability.name).to eq(expected_name)
+            expect(finding.name).to eq(expected_name)
           end
         end
 
         context 'when message is not provided' do
           context 'and name is provided' do
             it 'sets name from the report as a name' do
-              vulnerability = report.findings.find { |x| x.compare_key == 'CVE-1030' }
-              expected_name = Gitlab::Json.parse(vulnerability.raw_metadata)['name']
+              finding = report.findings.find { |x| x.compare_key == 'CVE-1030' }
+              expected_name = Gitlab::Json.parse(finding.raw_metadata)['name']
 
-              expect(vulnerability.name).to eq(expected_name)
+              expect(finding.name).to eq(expected_name)
             end
           end
 
           context 'and name is not provided' do
             context 'when CVE identifier exists' do
               it 'combines identifier with location to create name' do
-                vulnerability = report.findings.find { |x| x.compare_key == 'CVE-2017-11429' }
-                expect(vulnerability.name).to eq("CVE-2017-11429 in yarn.lock")
+                finding = report.findings.find { |x| x.compare_key == 'CVE-2017-11429' }
+                expect(finding.name).to eq("CVE-2017-11429 in yarn.lock")
               end
             end
 
             context 'when CWE identifier exists' do
               it 'combines identifier with location to create name' do
-                vulnerability = report.findings.find { |x| x.compare_key == 'CWE-2017-11429' }
-                expect(vulnerability.name).to eq("CWE-2017-11429 in yarn.lock")
+                finding = report.findings.find { |x| x.compare_key == 'CWE-2017-11429' }
+                expect(finding.name).to eq("CWE-2017-11429 in yarn.lock")
               end
             end
 
             context 'when neither CVE nor CWE identifier exist' do
               it 'combines identifier with location to create name' do
-                vulnerability = report.findings.find { |x| x.compare_key == 'OTHER-2017-11429' }
-                expect(vulnerability.name).to eq("other-2017-11429 in yarn.lock")
+                finding = report.findings.find { |x| x.compare_key == 'OTHER-2017-11429' }
+                expect(finding.name).to eq("other-2017-11429 in yarn.lock")
               end
             end
           end
@@ -143,17 +143,17 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
       describe 'parsing finding.details' do
         context 'when details are provided' do
           it 'sets details from the report' do
-            vulnerability = report.findings.find { |x| x.compare_key == 'CVE-1020' }
-            expected_details = Gitlab::Json.parse(vulnerability.raw_metadata)['details']
+            finding = report.findings.find { |x| x.compare_key == 'CVE-1020' }
+            expected_details = Gitlab::Json.parse(finding.raw_metadata)['details']
 
-            expect(vulnerability.details).to eq(expected_details)
+            expect(finding.details).to eq(expected_details)
           end
         end
 
         context 'when details are not provided' do
           it 'sets empty hash' do
-            vulnerability = report.findings.find { |x| x.compare_key == 'CVE-1030' }
-            expect(vulnerability.details).to eq({})
+            finding = report.findings.find { |x| x.compare_key == 'CVE-1030' }
+            expect(finding.details).to eq({})
           end
         end
       end
@@ -162,19 +162,19 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
         let(:expected_remediation) { create(:ci_reports_security_remediation, diff: '') }
 
         it 'finds remediation with same cve' do
-          vulnerability = report.findings.find { |x| x.compare_key == "CVE-1020" }
+          finding = report.findings.find { |x| x.compare_key == "CVE-1020" }
           remediation = { 'fixes' => [{ 'cve' => 'CVE-1020' }], 'summary' => '', 'diff' => '' }
 
-          expect(Gitlab::Json.parse(vulnerability.raw_metadata).dig('remediations').first).to include remediation
-          expect(vulnerability.remediations.first.checksum).to eq(expected_remediation.checksum)
+          expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
+          expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
         end
 
         it 'finds remediation with same id' do
-          vulnerability = report.findings.find { |x| x.compare_key == "CVE-1030" }
+          finding = report.findings.find { |x| x.compare_key == "CVE-1030" }
           remediation = { 'fixes' => [{ 'cve' => 'CVE', 'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3' }], 'summary' => '', 'diff' => '' }
 
-          expect(Gitlab::Json.parse(vulnerability.raw_metadata).dig('remediations').first).to include remediation
-          expect(vulnerability.remediations.first.checksum).to eq(expected_remediation.checksum)
+          expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
+          expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
         end
 
         it 'does not find remediation with different id' do
@@ -189,8 +189,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             "diff": ""
           }
 
-          report.findings.map do |vulnerability|
-            expect(Gitlab::Json.parse(vulnerability.raw_metadata).dig('remediations')).not_to include(fix_with_id)
+          report.findings.map do |finding|
+            expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations')).not_to include(fix_with_id)
           end
         end
       end
