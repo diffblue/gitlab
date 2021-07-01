@@ -452,7 +452,6 @@ describe('SidebarDropdownWidget', () => {
               fullPath: mockIssue.groupPath,
               sort: 'TITLE_ASC',
               state: 'opened',
-              title: '',
             });
           });
 
@@ -501,8 +500,21 @@ describe('SidebarDropdownWidget', () => {
                 fullPath: mockIssue.groupPath,
                 sort: 'TITLE_ASC',
                 state: 'opened',
-                title: '',
-                in: undefined,
+              });
+            });
+
+            it('sends a groupEpics query for an IID with the entered search term "&1"', async () => {
+              findSearchBox().vm.$emit('input', '&1');
+              await wrapper.vm.$nextTick();
+
+              // Account for debouncing
+              jest.runAllTimers();
+
+              expect(groupEpicsSpy).toHaveBeenNthCalledWith(2, {
+                fullPath: mockIssue.groupPath,
+                iidStartsWith: '1',
+                sort: 'TITLE_ASC',
+                state: 'opened',
               });
             });
           });

@@ -5,6 +5,7 @@ query issueEpics(
   $title: String
   $state: EpicState
   $in: [IssuableSearchableField!]
+  $iidStartsWith: String
 ) {
   workspace: group(fullPath: $fullPath) {
     attributes: epics(
@@ -13,6 +14,7 @@ query issueEpics(
       state: $state
       includeAncestorGroups: true
       includeDescendantGroups: false
+      iidStartsWith: $iidStartsWith
     ) {
       nodes {
         ...EpicFragment
