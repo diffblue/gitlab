@@ -8,6 +8,17 @@ class Admin::IntegrationsController < Admin::ApplicationController
 
   feature_category :integrations
 
+  def overrides
+    respond_to do |format|
+      format.json do
+        collection = Project.with_active_integration(integration.class).merge(::Integration.not_inherited)
+
+        render json: collection.page(params[:page]).per(20).to_json
+      end
+      # TODO frontend will add format.html
+    end
+  end
+
   private
 
   def find_or_initialize_non_project_specific_integration(name)
