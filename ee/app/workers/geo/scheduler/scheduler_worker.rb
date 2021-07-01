@@ -182,7 +182,7 @@ module Geo
 
       def update_pending_resources
         if reload_queue?
-          @pending_resources = Gitlab::Database.geo_uncached_queries { load_pending_resources }
+          @pending_resources = Gitlab::Database.main.geo_uncached_queries { load_pending_resources }
           set_backoff_time! if should_apply_backoff?
         end
       end

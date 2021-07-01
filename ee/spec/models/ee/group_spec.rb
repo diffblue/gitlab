@@ -840,7 +840,7 @@ RSpec.describe Group do
 
       context 'in read-only mode' do
         before do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
           allow(group).to receive(:create_or_update).and_raise(ActiveRecord::ReadOnlyRecord)
         end
 
