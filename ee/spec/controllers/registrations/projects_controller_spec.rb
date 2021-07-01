@@ -97,6 +97,14 @@ RSpec.describe Registrations::ProjectsController do
         subject
       end
 
+      it 'tracks an event for the force_company_trial experiment', :experiment do
+        expect(experiment(:force_company_trial)).to track(:create_project, namespace: namespace, project: an_instance_of(Project), user: user)
+          .with_context(user: user)
+          .on_next_instance
+
+        subject
+      end
+
       it 'tracks learn gitlab experiments' do
         allow_next_instance_of(::Projects::CreateService) do |service|
           allow(service).to receive(:execute).and_return(first_project)

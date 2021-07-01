@@ -185,7 +185,7 @@ RSpec.describe TrialsController do
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
 
-    context 'on success' do
+    context 'on success', :experiment do
       let(:apply_trial_result) { true }
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
@@ -194,6 +194,7 @@ RSpec.describe TrialsController do
         expect(controller).to receive(:record_experiment_user).with(:trial_onboarding_issues, namespace_id: namespace.id)
         expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields)
         expect(controller).to receive(:record_experiment_conversion_event).with(:trial_onboarding_issues)
+        expect(experiment(:force_company_trial)).to track(:create_trial, namespace: namespace, user: user, label: 'trials_controller').with_context(user: user).on_next_instance
 
         subject
       end
@@ -233,6 +234,16 @@ RSpec.describe TrialsController do
 
         it 'creates the Group' do
           expect { subject }.to change { Group.count }.by(1)
+        end
+      end
+
+      context 'with an old namespace' do
+        it 'does not track for the force_company_trial experiment' do
+          namespace.update!(created_at: 2.days.ago)
+
+          expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
+
+          subject
         end
       end
     end

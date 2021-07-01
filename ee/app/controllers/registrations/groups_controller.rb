@@ -23,6 +23,9 @@ module Registrations
       if @group.persisted?
         experiment(:jobs_to_be_done, user: current_user)
           .track(:create_group, namespace: @group)
+
+        force_company_trial_experiment.track(:create_group, namespace: @group, user: current_user)
+
         create_successful_flow
       else
         render action: :new
@@ -36,6 +39,11 @@ module Registrations
     end
 
     private
+
+    def force_company_trial_experiment
+      @force_company_trial_experiment ||=
+        experiment(:force_company_trial, user: current_user)
+    end
 
     def create_successful_flow
       if helpers.in_trial_onboarding_flow?
@@ -123,7 +131,11 @@ module Registrations
       result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
       flash[:alert] = result&.dig(:errors) unless result&.dig(:success)
 
-      result&.dig(:success)
+      success = result&.dig(:success)
+
+      force_company_trial_experiment.track(:create_trial, namespace: @group, user: current_user, label: 'registrations_groups_controller') if success
+
+      success
     end
 
     def learn_gitlab_context
