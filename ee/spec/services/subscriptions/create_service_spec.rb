@@ -36,7 +36,7 @@ RSpec.describe Subscriptions::CreateService do
 
   describe '#execute' do
     before do
-      allow(client).to receive(:customers_oauth_app_id).and_return( { data: { 'oauth_app_id' => oauth_app.uid } } )
+      allow(client).to receive(:customers_oauth_app_uid).and_return( data: { 'oauth_app_id' => oauth_app.uid })
       allow(Doorkeeper::OAuth::Helpers::UniqueToken).to receive(:generate).and_return('foo_token')
     end
 
@@ -72,6 +72,14 @@ RSpec.describe Subscriptions::CreateService do
 
       it 'saves oauth token' do
         expect { execute }.to change { Doorkeeper::AccessToken.count }.by(1)
+      end
+
+      it 'creates oauth token with correct application id' do
+        execute
+
+        created_oauth_token = Doorkeeper::AccessToken.find_by_token('foo_token')
+
+        expect(created_oauth_token.application_id).to eq(oauth_app.id)
       end
 
       context 'when failing to create a subscription' do

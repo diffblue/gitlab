@@ -33,7 +33,7 @@ module Gitlab
             http_get("api/payment_methods/#{id}", admin_headers)
           end
 
-          def customers_oauth_app_id
+          def customers_oauth_app_uid
             http_get("api/v1/oauth_app_id", admin_headers)
           end
 

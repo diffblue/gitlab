@@ -6,7 +6,7 @@ module Subscriptions
 
     attr_reader :current_user, :customer_params, :subscription_params
 
-    CUSTOMERS_OAUTH_APP_ID_CACHE_KEY = 'customers_oauth_app_id'
+    CUSTOMERS_OAUTH_APP_UID_CACHE_KEY = 'customers_oauth_app_uid'
 
     def initialize(current_user, group:, customer_params:, subscription_params:)
       @current_user = current_user
@@ -97,9 +97,9 @@ module Subscriptions
       Gitlab::SubscriptionPortal::Client
     end
 
-    def customers_oauth_app_id
-      Rails.cache.fetch(CUSTOMERS_OAUTH_APP_ID_CACHE_KEY, expires_in: 1.hour) do
-        response = client.customers_oauth_app_id
+    def customers_oauth_app_uid
+      Rails.cache.fetch(CUSTOMERS_OAUTH_APP_UID_CACHE_KEY, expires_in: 1.hour) do
+        response = client.customers_oauth_app_uid
 
         response.dig(:data, 'oauth_app_id')
       end
@@ -107,15 +107,15 @@ module Subscriptions
 
     def oauth_token
       strong_memoize(:oauth_token) do
-        next unless customers_oauth_app_id
+        next unless customers_oauth_app_uid
 
-        application = Doorkeeper::Application.find_by_uid(customers_oauth_app_id)
+        application = Doorkeeper::Application.find_by_uid(customers_oauth_app_uid)
         existing_token = Doorkeeper::AccessToken.matching_token_for(application, current_user.id, application.scopes)
 
         next existing_token if existing_token
 
         Doorkeeper::AccessToken.new(
-          application_id: customers_oauth_app_id,
+          application_id: application.id,
           resource_owner_id: current_user.id,
           token: Doorkeeper::OAuth::Helpers::UniqueToken.generate,
           scopes: application.scopes.to_s
