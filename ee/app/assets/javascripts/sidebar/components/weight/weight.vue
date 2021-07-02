@@ -162,7 +162,7 @@ export default {
       />
       <a
         v-if="editable"
-        class="float-right edit-link js-weight-edit-link"
+        class="float-right edit-link btn gl-text-gray-900! gl-ml-auto hide-collapsed btn-default btn-sm gl-button btn-default-tertiary js-weight-edit-link"
         data-qa-selector="edit_weight_link"
         href="#"
         @click.prevent="onEditClick(!shouldShowEditField)"
