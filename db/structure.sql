@@ -10800,6 +10800,7 @@ CREATE TABLE analytics_devops_adoption_snapshots (
     runner_configured boolean NOT NULL,
     pipeline_succeeded boolean NOT NULL,
     deploy_succeeded boolean NOT NULL,
+    security_scan_succeeded boolean,
     end_time timestamp with time zone NOT NULL,
     total_projects_count integer,
     code_owners_used_count integer,
@@ -11291,7 +11292,6 @@ CREATE TABLE application_settings (
     inactive_projects_send_warning_email_after_months integer DEFAULT 1 NOT NULL,
     delayed_group_deletion boolean DEFAULT true NOT NULL,
     arkose_labs_namespace text DEFAULT 'client'::text NOT NULL,
-    max_export_size integer DEFAULT 0,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
     CONSTRAINT app_settings_ext_pipeline_validation_service_url_text_limit CHECK ((char_length(external_pipeline_validation_service_url) <= 255)),
@@ -13035,7 +13035,6 @@ CREATE TABLE ci_runners (
     executor_type smallint,
     maintainer_note text,
     token_expires_at timestamp with time zone,
-    allowed_plans text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT check_ce275cee06 CHECK ((char_length(maintainer_note) <= 1024))
 );
 
@@ -17358,11 +17357,6 @@ ALTER SEQUENCE namespace_admin_notes_id_seq OWNED BY namespace_admin_notes.id;
 
 CREATE TABLE namespace_aggregation_schedules (
     namespace_id integer NOT NULL
-);
-
-CREATE TABLE namespace_ci_cd_settings (
-    namespace_id bigint NOT NULL,
-    allow_stale_runner_pruning boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE namespace_limits (
@@ -24895,9 +24889,6 @@ ALTER TABLE ONLY namespace_admin_notes
 ALTER TABLE ONLY namespace_aggregation_schedules
     ADD CONSTRAINT namespace_aggregation_schedules_pkey PRIMARY KEY (namespace_id);
 
-ALTER TABLE ONLY namespace_ci_cd_settings
-    ADD CONSTRAINT namespace_ci_cd_settings_pkey PRIMARY KEY (namespace_id);
-
 ALTER TABLE ONLY namespace_limits
     ADD CONSTRAINT namespace_limits_pkey PRIMARY KEY (namespace_id);
 
@@ -27327,8 +27318,6 @@ CREATE INDEX index_ci_variables_on_key ON ci_variables USING btree (key);
 
 CREATE UNIQUE INDEX index_ci_variables_on_project_id_and_key_and_environment_scope ON ci_variables USING btree (project_id, key, environment_scope);
 
-CREATE INDEX index_cicd_settings_on_namespace_id_where_stale_pruning_enabled ON namespace_ci_cd_settings USING btree (namespace_id) WHERE (allow_stale_runner_pruning = true);
-
 CREATE INDEX index_cluster_agent_tokens_on_agent_id_status_last_used_at ON cluster_agent_tokens USING btree (agent_id, status, last_used_at DESC NULLS LAST);
 
 CREATE INDEX index_cluster_agent_tokens_on_created_by_user_id ON cluster_agent_tokens USING btree (created_by_user_id);
@@ -28383,7 +28372,7 @@ CREATE UNIQUE INDEX index_namespace_root_storage_statistics_on_namespace_id ON n
 
 CREATE UNIQUE INDEX index_namespace_statistics_on_namespace_id ON namespace_statistics USING btree (namespace_id);
 
-CREATE INDEX index_namespaces_id_parent_id_is_not_null ON namespaces USING btree (id) WHERE (parent_id IS NOT NULL);
+CREATE INDEX index_namespaces_id_parent_id_is_null ON namespaces USING btree (id) WHERE (parent_id IS NULL);
 
 CREATE UNIQUE INDEX index_namespaces_name_parent_id_type ON namespaces USING btree (name, parent_id, type);
 
@@ -29545,8 +29534,6 @@ CREATE INDEX index_vulnerability_external_issue_links_on_author_id ON vulnerabil
 
 CREATE INDEX index_vulnerability_external_issue_links_on_vulnerability_id ON vulnerability_external_issue_links USING btree (vulnerability_id);
 
-CREATE INDEX index_vulnerability_feedback_finding_uuid ON vulnerability_feedback USING hash (finding_uuid);
-
 CREATE INDEX index_vulnerability_feedback_on_author_id ON vulnerability_feedback USING btree (author_id);
 
 CREATE INDEX index_vulnerability_feedback_on_comment_author_id ON vulnerability_feedback USING btree (comment_author_id);
@@ -29752,8 +29739,6 @@ CREATE INDEX tmp_index_integrations_on_id_where_type_droneci_or_teamcity ON inte
 CREATE INDEX tmp_index_issues_on_issue_type_and_id ON issues USING btree (issue_type, id);
 
 CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (state = 2);
-
-CREATE INDEX tmp_index_merge_requests_draft_and_status ON merge_requests USING btree (id) WHERE ((draft = false) AND (state_id = 1) AND ((title)::text ~* '^(\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP)'::text));
 
 CREATE INDEX tmp_index_namespaces_empty_traversal_ids_with_child_namespaces ON namespaces USING btree (id) WHERE ((parent_id IS NOT NULL) AND (traversal_ids = '{}'::integer[]));
 
@@ -33161,9 +33146,6 @@ ALTER TABLE ONLY vulnerability_occurrence_identifiers
 
 ALTER TABLE ONLY alert_management_http_integrations
     ADD CONSTRAINT fk_rails_bec49f52cc FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY namespace_ci_cd_settings
-    ADD CONSTRAINT fk_rails_bf04185d54 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerability_occurrences
     ADD CONSTRAINT fk_rails_bf5b788ca7 FOREIGN KEY (scanner_id) REFERENCES vulnerability_scanners(id) ON DELETE CASCADE;
