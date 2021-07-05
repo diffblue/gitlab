@@ -5,6 +5,8 @@ module IncidentManagement
     class AlertCheckWorker
       include ApplicationWorker
 
+      data_consistency :always
+
       urgency :high
 
       idempotent!

@@ -4,6 +4,8 @@ module RequirementsManagement
   class ImportRequirementsCsvWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
     include Gitlab::Utils::StrongMemoize
 

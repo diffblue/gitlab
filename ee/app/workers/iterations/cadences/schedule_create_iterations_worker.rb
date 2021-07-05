@@ -5,6 +5,8 @@ module Iterations
     class ScheduleCreateIterationsWorker
       include ApplicationWorker
 
+      data_consistency :always
+
       BATCH_SIZE = 1000
 
       idempotent!

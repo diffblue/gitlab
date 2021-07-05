@@ -7,6 +7,8 @@ module Geo
   class VerificationCronWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
     include ::Gitlab::Geo::LogHelpers
 

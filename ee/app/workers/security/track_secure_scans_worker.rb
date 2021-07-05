@@ -7,7 +7,7 @@ module Security
     include SecurityScansQueue
 
     sidekiq_options retry: 1
-
+    data_consistency :always
     worker_resource_boundary :cpu
 
     def perform(build_id)

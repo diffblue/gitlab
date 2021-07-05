@@ -2,6 +2,8 @@
 
 class ElasticDeleteProjectWorker
   include ApplicationWorker
+
+  data_consistency :always
   include Elasticsearch::Model::Client::ClassMethods
   prepend Elastic::IndexingControl
 

@@ -3,6 +3,8 @@
 module Geo
   class VerificationWorker
     include ApplicationWorker
+
+    data_consistency :always
     include GeoQueue
     include ::Gitlab::Geo::LogHelpers
 

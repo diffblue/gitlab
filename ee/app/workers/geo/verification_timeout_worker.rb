@@ -4,6 +4,8 @@ module Geo
   # Fail verification for records which started verification a long time ago
   class VerificationTimeoutWorker
     include ApplicationWorker
+
+    data_consistency :always
     include GeoQueue
     include ::Gitlab::Geo::LogHelpers
 

@@ -2,6 +2,8 @@
 
 class ElasticClusterReindexingCronWorker
   include ApplicationWorker
+
+  data_consistency :always
   include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
   include Gitlab::ExclusiveLeaseHelpers
 

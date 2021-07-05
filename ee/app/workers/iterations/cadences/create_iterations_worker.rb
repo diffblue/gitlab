@@ -5,6 +5,8 @@ module Iterations
     class CreateIterationsWorker
       include ApplicationWorker
 
+      data_consistency :always
+
       idempotent!
       deduplicate :until_executed, including_scheduled: true
 

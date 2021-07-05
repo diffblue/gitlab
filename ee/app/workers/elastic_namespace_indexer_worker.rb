@@ -3,6 +3,8 @@
 class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
+  data_consistency :always
+
   feature_category :global_search
   sidekiq_options retry: 2
   loggable_arguments 1

@@ -2,6 +2,8 @@
 
 class ElasticCommitIndexerWorker
   include ApplicationWorker
+
+  data_consistency :always
   prepend Elastic::IndexingControl
   include Gitlab::ExclusiveLeaseHelpers
 

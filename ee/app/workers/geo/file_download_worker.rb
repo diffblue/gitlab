@@ -3,6 +3,8 @@
 module Geo
   class FileDownloadWorker # rubocop:disable Scalability/IdempotentWorker
     include ApplicationWorker
+
+    data_consistency :always
     include GeoQueue
 
     sidekiq_options retry: 3, dead: false
