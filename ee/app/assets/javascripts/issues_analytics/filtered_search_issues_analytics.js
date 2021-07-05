@@ -2,8 +2,7 @@ import FilteredSearchManager from 'ee_else_ce/filtered_search/filtered_search_ma
 import IssuableFilteredSearchTokenKeys from 'ee_else_ce/filtered_search/issuable_filtered_search_token_keys';
 import FilteredSearchTokenKeys from '~/filtered_search/filtered_search_token_keys';
 import { historyPushState } from '~/lib/utils/common_utils';
-// eslint-disable-next-line import/no-deprecated
-import { urlParamsToObject } from '~/lib/utils/url_utility';
+import { queryToObject } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import issueAnalyticsStore from './stores';
 
@@ -37,8 +36,7 @@ export default class FilteredSearchIssueAnalytics extends FilteredSearchManager 
   updateObject = (path) => {
     historyPushState(path);
 
-    // eslint-disable-next-line import/no-deprecated
-    const filters = urlParamsToObject(path);
+    const filters = queryToObject(path, { gatherArrays: true });
     issueAnalyticsStore.dispatch('issueAnalytics/setFilters', filters);
   };
 }
