@@ -66,8 +66,7 @@ describe('~/nav/components/responsive_app.vue', () => {
       ({ bodyHtml, expectation }) => {
         document.body.innerHTML = bodyHtml;
 
-        if (bodyHtml === HTML_HEADER_WITH_MENU_EXPANDED)
-          triggerResponsiveToggle();
+        if (bodyHtml === HTML_HEADER_WITH_MENU_EXPANDED) triggerResponsiveToggle();
 
         expect(hasBodyResponsiveOpen()).toBe(expectation);
       },
