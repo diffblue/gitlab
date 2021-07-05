@@ -5,10 +5,12 @@ import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findin
 import { preparePageInfo } from 'ee/security_dashboard/helpers';
 import { VULNERABILITIES_PER_PAGE } from 'ee/security_dashboard/store/constants';
 import VulnerabilityList from '../shared/vulnerability_list.vue';
+import VulnerabilityFindingModal from './vulnerability_finding_modal.vue';
 
 export default {
   name: 'PipelineFindings',
   components: {
+    VulnerabilityFindingModal,
     GlAlert,
     GlIntersectionObserver,
     GlLoadingIcon,
@@ -29,6 +31,7 @@ export default {
       errorLoadingFindings: false,
       sortBy: 'severity',
       sortDirection: 'desc',
+      modalFinding: undefined,
     };
   },
   computed: {
@@ -83,7 +86,7 @@ export default {
     },
   },
   methods: {
-    onErrorDismiss() {
+    dismissError() {
       this.errorLoadingFindings = false;
     },
     fetchNextPage() {
@@ -101,9 +104,15 @@ export default {
         });
       }
     },
-    handleSortChange({ sortBy, sortDesc }) {
+    updateSortSettings({ sortBy, sortDesc }) {
       this.sortDirection = sortDesc ? 'desc' : 'asc';
       this.sortBy = sortBy;
+    },
+    showFindingModal(finding) {
+      this.modalFinding = finding;
+    },
+    hideFindingModal() {
+      this.modalFinding = undefined;
     },
   },
 };
@@ -111,12 +120,7 @@ export default {
 
 <template>
   <div>
-    <gl-alert
-      v-if="errorLoadingFindings"
-      class="gl-mb-6"
-      variant="danger"
-      @dismiss="onErrorDismiss"
-    >
+    <gl-alert v-if="errorLoadingFindings" class="gl-mb-6" variant="danger" @dismiss="dismissError">
       {{
         s__(
           'SecurityReports|Error fetching the vulnerability list. Please check your network connection and try again.',
@@ -128,7 +132,8 @@ export default {
       :filters="filters"
       :is-loading="isLoadingFirstResult"
       :vulnerabilities="findings"
-      @sort-changed="handleSortChange"
+      @sort-changed="updateSortSettings"
+      @vulnerability-clicked="showFindingModal"
     />
     <gl-intersection-observer
       v-if="pageInfo.hasNextPage"
@@ -137,5 +142,11 @@ export default {
     >
       <gl-loading-icon v-if="isLoadingQuery" size="md" />
     </gl-intersection-observer>
+
+    <vulnerability-finding-modal
+      v-if="modalFinding"
+      :finding="modalFinding"
+      @hide="hideFindingModal"
+    />
   </div>
 </template>
