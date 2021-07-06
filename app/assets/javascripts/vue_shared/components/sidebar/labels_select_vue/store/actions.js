@@ -21,15 +21,17 @@ export const receiveLabelsFailure = ({ commit }) => {
   });
 };
 export const fetchLabels = ({ state, dispatch }) => {
-  if (!state.labelsFetched) {
-    dispatch('requestLabels');
-    return axios
-      .get(state.labelsFetchPath)
-      .then(({ data }) => {
-        dispatch('receiveLabelsSuccess', data);
-      })
-      .catch(() => dispatch('receiveLabelsFailure'));
+  if (state.labelsFetched) {
+    return Promise.resolve();
   }
+
+  dispatch('requestLabels');
+  return axios
+    .get(state.labelsFetchPath)
+    .then(({ data }) => {
+      dispatch('receiveLabelsSuccess', data);
+    })
+    .catch(() => dispatch('receiveLabelsFailure'));
 };
 
 export const requestCreateLabel = ({ commit }) => commit(types.REQUEST_CREATE_LABEL);
