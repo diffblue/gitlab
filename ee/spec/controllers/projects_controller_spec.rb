@@ -749,6 +749,34 @@ RSpec.describe ProjectsController do
             expect(response).to redirect_to(dashboard_projects_path)
           end
         end
+
+        context 'when project is already marked for deletion' do
+          let(:project) { create(:project, group: group, marked_for_deletion_at: Date.current) }
+
+          context 'when permanently_delete param is set' do
+            it 'deletes project right away' do
+              expect(ProjectDestroyWorker).to receive(:perform_async)
+
+              delete :destroy, params: { namespace_id: project.namespace, id: project, permanently_delete: true }
+
+              expect(project.reload.pending_delete).to eq(true)
+              expect(response).to have_gitlab_http_status(:found)
+              expect(response).to redirect_to(dashboard_projects_path)
+            end
+          end
+
+          context 'when permanently_delete param is not set' do
+            it 'does nothing' do
+              expect(ProjectDestroyWorker).not_to receive(:perform_async)
+
+              delete :destroy, params: { namespace_id: project.namespace, id: project }
+
+              expect(project.reload.pending_delete).to eq(false)
+              expect(response).to have_gitlab_http_status(:found)
+              expect(response).to redirect_to(project_path(project))
+            end
+          end
+        end
       end
 
       context 'when feature is disabled for group' do

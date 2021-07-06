@@ -36,6 +36,8 @@ module EE
     override :destroy
     def destroy
       return super unless project.adjourned_deletion?
+      return super if project.marked_for_deletion? && params[:permanently_delete].present?
+
       return access_denied! unless can?(current_user, :remove_project, project)
 
       result = ::Projects::MarkForDeletionService.new(project, current_user, {}).execute

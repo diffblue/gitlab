@@ -2,12 +2,12 @@
 
 - date = permanent_deletion_date(project.marked_for_deletion_at)
 .sub-section
-  %h4.danger-title= _('Restore project')
+  %h4= _('Restore project')
   %p
     %strong= _('This project will be deleted on %{date}') %{ date: date }
   %p
     = _("Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it.")
     = _("The repository can be committed to, and issues, comments and other entities can be created.")
-    %strong= _('Only active this projects shows up in the search and on the dashboard.')
+    %strong= _('Only active projects show up in the search and on the dashboard.')
   = link_to _('Restore project'), namespace_project_restore_path(project.namespace, project),
-      method: :post, class: "gl-button btn btn-danger"
+      method: :post, class: "gl-button btn"
