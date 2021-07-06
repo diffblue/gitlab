@@ -35,14 +35,14 @@ export default {
 <template>
   <span class="vertical-align-middle text-muted js-help ml-2">
     <gl-icon
-      id="reportInfo"
+      :id="'reportInfo' + title"
       name="question"
       class="author-link suggestion-help-hover"
       :aria-label="__('help')"
       :size="14"
       data-testid="icon2"
     />
-    <gl-popover target="reportInfo" placement="top" :title="title">
+    <gl-popover :target="'reportInfo' + title" placement="top" :title="title">
       <div class="mb-2">{{ text }}</div>
       <gl-link v-if="documentationLink" target="_blank" :href="documentationLink">
         <span class="vertical-align-middle">{{ documentationText }}</span>
