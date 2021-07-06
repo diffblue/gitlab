@@ -26,6 +26,7 @@ RSpec.describe Vulnerabilities::Finding do
       it { is_expected.to have_many(:finding_identifiers).class_name('Vulnerabilities::FindingIdentifier').with_foreign_key('occurrence_id') }
       it { is_expected.to have_many(:finding_links).class_name('Vulnerabilities::FindingLink').with_foreign_key('vulnerability_occurrence_id') }
       it { is_expected.to have_many(:finding_remediations).class_name('Vulnerabilities::FindingRemediation').with_foreign_key('vulnerability_occurrence_id') }
+      it { is_expected.to have_many(:vulnerability_flags).class_name('Vulnerabilities::Flag').with_foreign_key('vulnerability_occurrence_id') }
       it { is_expected.to have_many(:remediations).through(:finding_remediations) }
       it { is_expected.to have_one(:evidence).class_name('Vulnerabilities::Finding::Evidence').with_foreign_key('vulnerability_occurrence_id') }
     end
@@ -453,6 +454,19 @@ RSpec.describe Vulnerabilities::Finding do
         expect(project1_high_count).to be(0)
         expect(project2_critical_count).to be(0)
         expect(project2_high_count).to be(1)
+      end
+    end
+
+    describe '#false_positive?' do
+      let_it_be(:finding) { create(:vulnerabilities_finding) }
+      let_it_be(:finding_with_fp) { create(:vulnerabilities_finding, vulnerability_flags: [create(:vulnerabilities_flag)]) }
+
+      it 'returns false if the finding does not have any false_positive' do
+        expect(finding.false_positive?).to eq(false)
+      end
+
+      it 'returns true if the finding has false_positives' do
+        expect(finding_with_fp.false_positive?).to eq(true)
       end
     end
 

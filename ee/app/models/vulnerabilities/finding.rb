@@ -37,6 +37,8 @@ module Vulnerabilities
 
     has_many :signatures, class_name: 'Vulnerabilities::FindingSignature', inverse_of: :finding
 
+    has_many :vulnerability_flags, class_name: 'Vulnerabilities::Flag', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
+
     has_one :evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
     serialize :config_options, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
@@ -91,6 +93,7 @@ module Vulnerabilities
     end
 
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
+    scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
 
     def self.for_pipelines_with_sha(pipelines)
       joins(:pipelines)
@@ -385,6 +388,10 @@ module Vulnerabilities
 
     def pipeline_branch
       pipelines&.last&.sha || project.default_branch
+    end
+
+    def false_positive?
+      vulnerability_flags.false_positive.any?
     end
 
     protected
