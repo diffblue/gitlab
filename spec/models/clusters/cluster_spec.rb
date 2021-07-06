@@ -8,7 +8,7 @@ RSpec.describe Clusters::Cluster, :use_clean_rails_memory_store_caching do
 
   it_behaves_like 'having unique enum values'
 
-  subject { build(:cluster) }
+  subject(:cluster) { build(:cluster) }
 
   it { is_expected.to include_module(HasEnvironmentScope) }
   it { is_expected.to belong_to(:user) }
@@ -35,8 +35,6 @@ RSpec.describe Clusters::Cluster, :use_clean_rails_memory_store_caching do
 
   it { is_expected.to delegate_method(:status).to(:provider) }
   it { is_expected.to delegate_method(:status_reason).to(:provider) }
-  it { is_expected.to delegate_method(:on_creation?).to(:provider) }
-  it { is_expected.to delegate_method(:knative_pre_installed?).to(:provider) }
   it { is_expected.to delegate_method(:active?).to(:platform_kubernetes).with_prefix }
   it { is_expected.to delegate_method(:rbac?).to(:platform_kubernetes).with_prefix }
   it { is_expected.to delegate_method(:available?).to(:application_helm).with_prefix }
