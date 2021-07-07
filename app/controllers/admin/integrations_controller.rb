@@ -11,9 +11,10 @@ class Admin::IntegrationsController < Admin::ApplicationController
   def overrides
     respond_to do |format|
       format.json do
-        collection = Project.with_active_integration(integration.class).merge(::Integration.not_inherited)
+        projects = Project.with_active_integration(integration.class).merge(::Integration.not_inherited)
+        serializer = ::Integrations::ProjectSerializer.new.with_pagination(request, response)
 
-        render json: collection.page(params[:page]).per(20).to_json
+        render json: serializer.represent(projects)
       end
       # TODO frontend will add format.html
     end

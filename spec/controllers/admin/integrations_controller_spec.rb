@@ -114,7 +114,8 @@ RSpec.describe Admin::IntegrationsController do
       subject
 
       expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response).to contain_exactly(a_hash_including('id' => overridden_integration.project_id))
+      expect(response).to include_pagination_headers
+      expect(json_response).to contain_exactly(a_hash_including('full_name' => overridden_integration.project.full_name))
     end
   end
 end
