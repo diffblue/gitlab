@@ -31,7 +31,9 @@ class SubscriptionsController < ApplicationController
 
   def buy_minutes
     return render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, default_enabled: :yaml)
+
     @group = current_user.manageable_groups.top_most.find(params[:namespace_id])
+
     return render_404 if @group.nil?
   end
 
