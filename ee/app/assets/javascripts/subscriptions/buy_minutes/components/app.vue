@@ -23,7 +23,6 @@ export default {
   emptySvg,
   data() {
     return {
-      plans: null,
       hasError: false,
     };
   },
@@ -59,10 +58,10 @@ export default {
   />
   <step-order-app v-else-if="!$apollo.loading">
     <template #checkout>
-      <checkout :plans="plans" />
+      <checkout :plan="plans[0]" />
     </template>
     <template #order-summary>
-      <order-summary :plans="plans" />
+      <order-summary :plan="plans[0]" />
     </template>
   </step-order-app>
 </template>

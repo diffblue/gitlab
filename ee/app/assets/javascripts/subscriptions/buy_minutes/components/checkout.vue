@@ -8,8 +8,8 @@ import PaymentMethod from './checkout/payment_method.vue';
 export default {
   components: { AddonPurchaseDetails, BillingAddress, PaymentMethod, ConfirmOrder },
   props: {
-    plans: {
-      type: Array,
+    plan: {
+      type: Object,
       required: true,
     },
   },
@@ -22,7 +22,7 @@ export default {
   <div class="checkout gl-display-flex gl-flex-direction-column gl-align-items-center">
     <div class="flash-container"></div>
     <h2 class="gl-mt-6 gl-mb-7 gl-mb-lg-5">{{ $options.i18n.checkout }}</h2>
-    <addon-purchase-details :plans="plans" />
+    <addon-purchase-details :plan="plan" />
     <billing-address />
     <payment-method />
     <confirm-order />
