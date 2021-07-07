@@ -1,3 +1,4 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "./epic.fragment.graphql"
 
 query groupEpics(
@@ -12,8 +13,9 @@ query groupEpics(
   $myReactionEmoji: String
   $confidential: Boolean
   $search: String = ""
-  $first: Int = 1001
+  $first: Int = 50
   $not: NegatedEpicFilterInput
+  $endCursor: String = ""
 ) {
   group(fullPath: $fullPath) {
     id
@@ -31,6 +33,7 @@ query groupEpics(
       first: $first
       timeframe: $timeframe
       not: $not
+      after: $endCursor
     ) {
       edges {
         node {
@@ -39,6 +42,9 @@ query groupEpics(
             id
           }
         }
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

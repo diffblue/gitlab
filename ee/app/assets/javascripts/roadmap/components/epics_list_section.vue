@@ -1,4 +1,5 @@
 <script>
+import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
@@ -13,6 +14,8 @@ export default {
   EpicItem,
   epicItemHeight: EPIC_ITEM_HEIGHT,
   components: {
+    GlIntersectionObserver,
+    GlLoadingIcon,
     EpicItem,
     CurrentDayIndicator,
   },
@@ -49,7 +52,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(['bufferSize', 'epicIid', 'childrenEpics', 'childrenFlags', 'epicIds']),
+    ...mapState([
+      'bufferSize',
+      'epicIid',
+      'childrenEpics',
+      'childrenFlags',
+      'epicIds',
+      'pageInfo',
+      'epicsFetchForNextPageInProgress',
+    ]),
     emptyRowContainerVisible() {
       return this.displayedEpics.length < this.bufferSize;
     },
@@ -90,7 +101,7 @@ export default {
     window.removeEventListener('resize', this.syncClientWidth);
   },
   methods: {
-    ...mapActions(['setBufferSize', 'toggleEpic']),
+    ...mapActions(['setBufferSize', 'toggleEpic', 'fetchEpics']),
     initMounted() {
       this.roadmapShellEl = this.$root.$el && this.$root.$el.querySelector('.js-roadmap-shell');
       this.setBufferSize(Math.ceil((window.innerHeight - this.$el.offsetTop) / EPIC_ITEM_HEIGHT));
@@ -138,6 +149,12 @@ export default {
     handleEpicsListScroll({ scrollTop, clientHeight, scrollHeight }) {
       this.showBottomShadow = Math.ceil(scrollTop) + clientHeight < scrollHeight;
     },
+    handleScrolledToEnd() {
+      const { hasNextPage, endCursor } = this.pageInfo;
+      if (!this.epicsFetchForNextPageInProgress && hasNextPage) {
+        this.fetchEpics({ endCursor });
+      }
+    },
     toggleIsEpicExpanded(epic) {
       this.toggleEpic({ parentItem: epic });
     },
@@ -172,6 +189,16 @@ export default {
         <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
       </span>
     </div>
+    <gl-intersection-observer v-if="glFeatures.performanceRoadmap" @appear="handleScrolledToEnd">
+      <div
+        v-if="epicsFetchForNextPageInProgress"
+        class="gl-text-center gl-py-3"
+        data-testid="next-page-loading"
+      >
+        <gl-loading-icon inline class="gl-mr-2" />
+        {{ s__('GroupRoadmap|Loading epics') }}
+      </div>
+    </gl-intersection-observer>
     <div
       v-show="showBottomShadow"
       :style="shadowCellStyles"

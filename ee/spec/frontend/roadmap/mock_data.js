@@ -548,6 +548,14 @@ export const mockEpicNode2 = {
 
 export const mockGroupEpics = [mockEpicNode1, mockEpicNode2];
 
+export const mockPageInfo = {
+  endCursor: 'eyJzdGFydF9kYXRlIjoiMjAyMC0wOS0wMSIsImlkIjoiMzExIn0',
+  hasNextPage: true,
+  hasPreviousPage: true,
+  startCursor: 'eyJzdGFydF9kYXRlIjoiMjAyMC0wNC0xOCIsImlkIjoiMjQ1In0',
+  __typename: 'PageInfo',
+};
+
 export const mockGroupEpicsQueryResponse = {
   data: {
     group: {
@@ -568,6 +576,9 @@ export const mockGroupEpicsQueryResponse = {
             __typename: 'EpicEdge',
           },
         ],
+        pageInfo: {
+          ...mockPageInfo,
+        },
         __typename: 'EpicConnection',
       },
       __typename: 'Group',
