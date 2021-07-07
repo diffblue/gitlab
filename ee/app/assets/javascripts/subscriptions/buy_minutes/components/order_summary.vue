@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
-import { TAX_RATE, NEW_GROUP } from 'ee/subscriptions/new/constants';
+import { TAX_RATE } from 'ee/subscriptions/new/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { sprintf, s__ } from '~/locale';
 import SummaryDetails from './order_summary/summary_details.vue';
@@ -17,8 +17,8 @@ export default {
   },
   mixins: [formattingMixins],
   props: {
-    plans: {
-      type: Array,
+    plan: {
+      type: Object,
       required: true,
     },
   },
@@ -27,12 +27,8 @@ export default {
       query: stateQuery,
       manual: true,
       result({ data }) {
-        this.subscription = data.subscription;
         this.namespaces = data.namespaces;
-        this.isSetupForCompany = data.isSetupForCompany;
-        this.fullName = data.fullName;
-        this.customer = data.customer;
-        this.selectedPlanId = data.selectedPlanId;
+        this.subscription = data.subscription;
       },
     },
   },
@@ -40,22 +36,16 @@ export default {
     return {
       subscription: {},
       namespaces: [],
-      isSetupForCompany: false,
       isBottomSummaryVisible: false,
-      fullName: null,
-      customer: {},
-      selectedPlanId: null,
     };
   },
+  mounted() {},
   computed: {
-    selectedPlan() {
-      return this.plans.find((plan) => plan.id === this.selectedPlanId);
-    },
     selectedPlanPrice() {
-      return this.selectedPlan.pricePerYear;
+      return this.plan.pricePerYear;
     },
     selectedGroup() {
-      return this.namespaces.find((group) => group.id === this.subscription.namespaceId);
+      return this.namespaces.find((group) => group.id === +this.subscription.namespaceId);
     },
     totalExVat() {
       return this.subscription.quantity * this.selectedPlanPrice;
@@ -66,46 +56,21 @@ export default {
     totalAmount() {
       return this.totalExVat + this.vat;
     },
-    usersPresent() {
+    quantityPresent() {
       return this.subscription.quantity > 0;
     },
-    isGroupSelected() {
-      return this.subscription.namespaceId && this.subscription.namespaceId !== NEW_GROUP;
-    },
-    isSelectedGroupPresent() {
-      return (
-        this.isGroupSelected &&
-        this.namespaces.some((namespace) => namespace.id === this.subscription.namespaceId)
-      );
-    },
-    name() {
-      if (this.isSetupForCompany && this.customer.company) {
-        return this.customer.company;
-      }
-
-      if (this.isGroupSelected && this.isSelectedGroupPresent) {
-        return this.selectedGroup.name;
-      }
-
-      if (this.isSetupForCompany) {
-        return s__('Checkout|Your organization');
-      }
-
-      return this.fullName;
+    namespaceName() {
+      return this.selectedGroup.name;
     },
     titleWithName() {
-      return sprintf(this.$options.i18n.title, { name: this.name });
+      return sprintf(this.$options.i18n.title, { name: this.namespaceName });
     },
     isVisible() {
-      return (
-        !this.$apollo.loading &&
-        (!this.isGroupSelected || this.isSelectedGroupPresent) &&
-        this.selectedPlan
-      );
+      return !this.$apollo.loading;
     },
   },
   i18n: {
-    title: s__("Checkout|%{name}'s GitLab subscription"),
+    title: s__("Checkout|%{name}'s CI minutes"),
   },
   taxRate: TAX_RATE,
 };
@@ -123,18 +88,18 @@ export default {
             <gl-icon v-else name="chevron-right" />
             <div>{{ titleWithName }}</div>
           </div>
-          <div class="gl-ml-3">{{ formatAmount(totalAmount, usersPresent) }}</div>
+          <div class="gl-ml-3">{{ formatAmount(totalAmount, quantityPresent) }}</div>
         </h4>
       </div>
       <gl-collapse id="summary-details" v-model="isBottomSummaryVisible">
         <summary-details
           :vat="vat"
           :total-ex-vat="totalExVat"
-          :users-present="usersPresent"
-          :selected-plan-text="selectedPlan.name"
+          :quantity-present="quantityPresent"
+          :selected-plan-text="plan.name"
           :selected-plan-price="selectedPlanPrice"
           :total-amount="totalAmount"
-          :number-of-users="subscription.quantity"
+          :quantity="subscription.quantity"
           :tax-rate="$options.taxRate"
         />
       </gl-collapse>
@@ -148,11 +113,11 @@ export default {
       <summary-details
         :vat="vat"
         :total-ex-vat="totalExVat"
-        :users-present="usersPresent"
-        :selected-plan-text="selectedPlan.name"
+        :quantity-present="quantityPresent"
+        :selected-plan-text="plan.name"
         :selected-plan-price="selectedPlanPrice"
         :total-amount="totalAmount"
-        :number-of-users="subscription.quantity"
+        :quantity="subscription.quantity"
         :tax-rate="$options.taxRate"
       />
     </div>
