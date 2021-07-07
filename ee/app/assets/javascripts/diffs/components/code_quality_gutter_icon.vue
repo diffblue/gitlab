@@ -63,9 +63,9 @@ export default {
       class="gl-hover-cursor-pointer codequality-severity-icon"
     />
     <gl-popover
-      triggers="click blur"
+      triggers="hover focus"
       placement="topright"
-      :css-classes="['gl-max-w-none', 'gl-w-half']"
+      :css-classes="['gl-max-w-max-content', 'gl-w-half']"
       :target="`codequality-${filePath}:${line}`"
       :title="$options.i18n.popoverTitle"
     >

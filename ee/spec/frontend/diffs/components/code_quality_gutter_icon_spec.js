@@ -73,10 +73,10 @@ describe('EE CodeQualityGutterIcon', () => {
       createComponent();
     });
 
-    it('opens a popover on click', () => {
+    it('shows a popover on hover', () => {
       const popoverTarget = 'codequality-index.js:3';
 
-      wrapper.findComponent(GlIcon).trigger('click');
+      wrapper.findComponent(GlIcon).trigger('mouseover');
 
       expect(wrapper.find(GlPopover).props().target).toBe(popoverTarget);
     });
