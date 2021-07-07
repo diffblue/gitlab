@@ -39,13 +39,12 @@ export default {
       isBottomSummaryVisible: false,
     };
   },
-  mounted() {},
   computed: {
     selectedPlanPrice() {
       return this.plan.pricePerYear;
     },
     selectedGroup() {
-      return this.namespaces.find((group) => group.id === +this.subscription.namespaceId);
+      return this.namespaces.find((group) => group.id === Number(this.subscription.namespaceId));
     },
     totalExVat() {
       return this.subscription.quantity * this.selectedPlanPrice;
