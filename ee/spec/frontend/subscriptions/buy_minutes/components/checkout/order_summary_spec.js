@@ -7,6 +7,7 @@ import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
 import {
   mockCiMinutesPlans,
+  mockParsedNamespaces,
   stateData as mockStateData,
 } from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -17,7 +18,11 @@ localVue.use(VueApollo);
 describe('Order Summary', () => {
   const resolvers = { ...purchaseFlowResolvers, ...subscriptionsResolvers };
   const initialStateData = {
-    selectedPlanId: 'secondPlanId',
+    selectedPlanId: 'ciMinutesPackPlanId',
+    namespaces: [mockParsedNamespaces[0]],
+    subscription: {
+      namespaceId: mockParsedNamespaces[0].id,
+    },
   };
   let wrapper;
 
@@ -41,7 +46,7 @@ describe('Order Summary', () => {
       localVue,
       apolloProvider,
       propsData: {
-        plans: mockCiMinutesPlans,
+        plan: mockCiMinutesPlans[0],
       },
     });
   };
@@ -50,161 +55,50 @@ describe('Order Summary', () => {
     wrapper.destroy();
   });
 
-  describe('Changing the company name', () => {
-    describe('When purchasing for a single user', () => {
-      beforeEach(() => {
-        createComponent({ isSetupForCompany: false });
-      });
-
-      it('should display the title with the passed name', () => {
-        expect(wrapper.find('h4').text()).toContain("Full Name's GitLab subscription");
-      });
-    });
-
-    describe('When purchasing for a company or group', () => {
-      describe('Without a group name provided', () => {
-        beforeEach(() => {
-          createComponent({ isSetupForCompany: true });
-        });
-
-        it('should display the title with the default name', () => {
-          expect(wrapper.find('h4').text()).toContain("Your organization's GitLab subscription");
-        });
-      });
-
-      describe('With a group name provided', () => {
-        beforeEach(() => {
-          createComponent({
-            isSetupForCompany: true,
-            customer: { company: 'My group' },
-          });
-        });
-
-        it('when given a group name, it should display the title with the group name', () => {
-          expect(wrapper.find('h4').text()).toContain("My group's GitLab subscription");
-        });
-      });
-    });
-  });
-
-  describe('Changing the plan', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    describe('the selected plan', () => {
-      it('should display the chosen plan', () => {
-        expect(wrapper.find('.js-selected-plan').text()).toContain('silver plan');
-      });
-
-      it('should display the correct formatted amount price per user', () => {
-        expect(wrapper.find('.js-per-user').text()).toContain('$228 per user per year');
-      });
-    });
-
-    describe('the default plan', () => {
-      beforeEach(() => {
-        createComponent({
-          subscription: { quantity: 1 },
-          selectedPlanId: 'firstPlanId',
-        });
-      });
-
-      it('should display the chosen plan', () => {
-        expect(wrapper.find('.js-selected-plan').text()).toContain('bronze plan');
-      });
-
-      it('should display the correct formatted amount price per user', () => {
-        expect(wrapper.find('.js-per-user').text()).toContain('$48 per user per year');
-      });
-
-      it('should display the correct formatted total amount', () => {
-        expect(wrapper.find('.js-total-amount').text()).toContain('$48');
-      });
-    });
-  });
-
-  describe('Changing the number of users', () => {
+  describe('the default plan', () => {
     beforeEach(() => {
       createComponent({
         subscription: { quantity: 1 },
+        selectedPlanId: 'ciMinutesPackPlanId',
       });
     });
 
-    describe('the default of 1 selected user', () => {
-      it('should display the correct number of users', () => {
-        expect(wrapper.find('.js-number-of-users').text()).toContain('(x1)');
-      });
+    it('displays the chosen plan', () => {
+      expect(wrapper.find('.js-selected-plan').text()).toMatchInterpolatedText(
+        '1000 CI minutes pack plan (x1)',
+      );
+    });
 
-      it('should display the correct formatted amount price per user', () => {
-        expect(wrapper.find('.js-per-user').text()).toContain('$228 per user per year');
-      });
+    it('displays the correct formatted amount price per pack', () => {
+      expect(wrapper.find('.js-per-unit').text()).toContain('$10 per pack per year');
+    });
 
-      it('should display the correct multiplied formatted amount of the chosen plan', () => {
-        expect(wrapper.find('.js-amount').text()).toContain('$228');
-      });
+    it('displays the correct formatted total amount', () => {
+      expect(wrapper.find('.js-total-amount').text()).toContain('$10');
+    });
+  });
 
-      it('should display the correct formatted total amount', () => {
-        expect(wrapper.find('.js-total-amount').text()).toContain('$228');
+  describe('changing quantity', () => {
+    beforeEach(() => {
+      createComponent({
+        subscription: { quantity: 3 },
       });
     });
 
-    describe('3 selected users', () => {
-      beforeEach(() => {
-        createComponent({
-          subscription: { quantity: 3 },
-        });
-      });
-
-      it('should display the correct number of users', () => {
-        expect(wrapper.find('.js-number-of-users').text()).toContain('(x3)');
-      });
-
-      it('should display the correct formatted amount price per user', () => {
-        expect(wrapper.find('.js-per-user').text()).toContain('$228 per user per year');
-      });
-
-      it('should display the correct multiplied formatted amount of the chosen plan', () => {
-        expect(wrapper.find('.js-amount').text()).toContain('$684');
-      });
-
-      it('should display the correct formatted total amount', () => {
-        expect(wrapper.find('.js-total-amount').text()).toContain('$684');
-      });
+    it('displays the correct quantity', () => {
+      expect(wrapper.find('.js-quantity').text()).toContain('(x3)');
     });
 
-    describe('no selected users', () => {
-      beforeEach(() => {
-        createComponent({
-          subscription: { quantity: 0 },
-        });
-      });
-
-      it('should not display the number of users', () => {
-        expect(wrapper.find('.js-number-of-users').exists()).toBe(false);
-      });
-
-      it('should display the correct formatted amount price per user', () => {
-        expect(wrapper.find('.js-per-user').text()).toContain('$228 per user per year');
-      });
-
-      it('should not display the amount', () => {
-        expect(wrapper.find('.js-amount').text()).toContain('-');
-      });
-
-      it('should display the correct formatted total amount', () => {
-        expect(wrapper.find('.js-total-amount').text()).toContain('-');
-      });
+    it('displays the correct formatted amount price per unit', () => {
+      expect(wrapper.find('.js-per-unit').text()).toContain('$10 per pack per year');
     });
 
-    describe('date range', () => {
-      beforeEach(() => {
-        createComponent();
-      });
+    it('displays the correct multiplied formatted amount of the chosen plan', () => {
+      expect(wrapper.find('.js-amount').text()).toContain('$30');
+    });
 
-      it('shows the formatted date range from the start date to one year in the future', () => {
-        expect(wrapper.find('.js-dates').text()).toContain('Jul 6, 2020 - Jul 6, 2021');
-      });
+    it('displays the correct formatted total amount', () => {
+      expect(wrapper.find('.js-total-amount').text()).toContain('$30');
     });
 
     describe('tax rate', () => {
