@@ -2,9 +2,9 @@
 
 class SubscriptionsController < ApplicationController
   layout 'checkout'
-  skip_before_action :authenticate_user!, only: [:new, :buy_minutes]
+  skip_before_action :authenticate_user!, only: [:new]
 
-  before_action :load_eligible_groups, only: %i[new buy_minutes]
+  before_action :load_eligible_groups, only: :new
 
   feature_category :purchase
 
@@ -30,8 +30,9 @@ class SubscriptionsController < ApplicationController
   end
 
   def buy_minutes
-    render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, default_enabled: :yaml)
-    redirect_unauthenticated_user
+    return render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, default_enabled: :yaml)
+    @group = current_user.manageable_groups.top_most.find(params[:namespace_id])
+    return render_404 if @group.nil?
   end
 
   def payment_form

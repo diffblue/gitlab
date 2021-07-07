@@ -65,53 +65,31 @@ RSpec.describe SubscriptionsController do
   end
 
   describe 'GET #buy_minutes' do
-    subject(:buy_minutes) { get :buy_minutes, params: { plan_id: 'bronze_id' } }
+    let_it_be(:group) { create(:group) }
 
-    it_behaves_like 'unauthenticated subscription request', 'buy_minutes'
+    subject(:buy_minutes) { get :buy_minutes, params: { namespace_id: group.id } }
 
     context 'with authenticated user' do
       before do
+        group.add_owner(user)
+        stub_feature_flags(new_route_ci_minutes_purchase: true)
         sign_in(user)
       end
 
       it { is_expected.to render_template 'layouts/checkout' }
       it { is_expected.to render_template :buy_minutes }
 
-      context 'when there are groups eligible for the subscription' do
-        let_it_be(:group) { create(:group) }
+      it 'assigns the eligible groups for the subscription' do
+        buy_minutes
 
-        before do
-          group.add_owner(user)
-
-          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: [group]) do |instance|
-            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
-          end
-        end
-
-        it 'assigns the eligible groups for the subscription' do
-          buy_minutes
-
-          expect(assigns(:eligible_groups)).to eq [group]
-        end
-      end
-
-      context 'when there are no eligible groups for the subscription' do
-        it 'assigns eligible groups as an empty array' do
-          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: []) do |instance|
-            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: []))
-          end
-
-          buy_minutes
-
-          expect(assigns(:eligible_groups)).to eq []
-        end
+        expect(assigns(:group)).to eq group
       end
     end
 
     context 'with :new_route_ci_minutes_purchase disabled' do
       before do
-        sign_in(user)
         stub_feature_flags(new_route_ci_minutes_purchase: false)
+        sign_in(user)
       end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
