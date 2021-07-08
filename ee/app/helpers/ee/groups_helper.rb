@@ -26,24 +26,6 @@ module EE
       "Max size for repositories within this group #{show_lfs}. Can be overridden inside each project. For no limit, enter 0. To inherit the global value, leave blank."
     end
 
-    override :group_packages_nav_link_paths
-    def group_packages_nav_link_paths
-      %w[
-        groups/packages#index
-        groups/dependency_proxies#show
-        groups/container_registries#index
-      ]
-    end
-
-    override :group_packages_nav?
-    def group_packages_nav?
-      super || group_dependency_proxy_nav?
-    end
-
-    def group_dependency_proxy_nav?
-      @group.dependency_proxy_feature_available?
-    end
-
     def group_path_params(group)
       { group_id: group }
     end
