@@ -32,10 +32,6 @@ module QA
                 element :ldap_synchronization_link
                 element :billing_link
               end
-
-              view 'ee/app/views/layouts/nav/_group_insights_link.html.haml' do
-                element :group_insights_link
-              end
             end
           end
 
@@ -71,10 +67,18 @@ module QA
             end
           end
 
+          def click_contribution_analytics_item
+            hover_group_analytics do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Contribution')
+              end
+            end
+          end
+
           def click_group_insights_link
-            hover_element(:analytics_link) do
-              within_submenu(:analytics_sidebar_submenu) do
-                click_element(:group_insights_link)
+            hover_group_analytics do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Insights')
               end
             end
           end
@@ -137,6 +141,15 @@ module QA
             within_sidebar do
               scroll_to_element(:sidebar_menu_link, menu_item: 'Security & Compliance')
               find_element(:sidebar_menu_link, menu_item: 'Security & Compliance').hover
+
+              yield
+            end
+          end
+
+          def hover_group_analytics
+            within_sidebar do
+              scroll_to_element(:sidebar_menu_link, menu_item: 'Analytics')
+              find_element(:sidebar_menu_link, menu_item: 'Analytics').hover
 
               yield
             end

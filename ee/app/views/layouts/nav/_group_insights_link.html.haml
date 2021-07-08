@@ -1,5 +1,0 @@
-- return unless group_sidebar_link?(:group_insights)
-
-= nav_link(path: 'groups/insights#show') do
-  = link_to group_insights_path(@group), title: _('Insights'), class: 'shortcuts-group-insights', data: { qa_selector: 'group_insights_link' } do
-    %span= _('Insights')
