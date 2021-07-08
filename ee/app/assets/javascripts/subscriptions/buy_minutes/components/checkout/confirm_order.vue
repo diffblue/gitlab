@@ -46,7 +46,6 @@ export default {
             zip_code: customer.zipCode,
             company: customer.company,
           },
-          selected_group: data.subscription.namespaceId,
           subscription: {
             plan_id: data.selectedPlanId,
             payment_method_id: data.paymentMethod.id,

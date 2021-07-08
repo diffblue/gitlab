@@ -67,7 +67,7 @@ RSpec.describe SubscriptionsController do
   describe 'GET #buy_minutes' do
     let_it_be(:group) { create(:group) }
 
-    subject(:buy_minutes) { get :buy_minutes, params: { namespace_id: group.id } }
+    subject(:buy_minutes) { get :buy_minutes, params: { selected_group: group.id } }
 
     context 'with authenticated user' do
       before do
@@ -76,13 +76,25 @@ RSpec.describe SubscriptionsController do
         sign_in(user)
       end
 
-      it { is_expected.to render_template 'layouts/checkout' }
-      it { is_expected.to render_template :buy_minutes }
+      context 'when there are groups eligible for the addon' do
+        let_it_be(:group) { create(:group) }
 
-      it 'assigns the eligible groups for the subscription' do
-        buy_minutes
+        before do
+          group.add_owner(user)
 
-        expect(assigns(:group)).to eq group
+          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: [group]) do |instance|
+            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
+          end
+        end
+
+        it { is_expected.to render_template 'layouts/checkout' }
+        it { is_expected.to render_template :buy_minutes }
+
+        it 'assigns the group for the addon' do
+          buy_minutes
+
+          expect(assigns(:group)).to eq group
+        end
       end
     end
 
