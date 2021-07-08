@@ -108,7 +108,7 @@ export default {
 };
 </script>
 <template>
-  <div class="mb-3 mb-lg-5">
+  <div class="mb-3 mb-lg-5 gl-w-full">
     <step-header :title="title" :is-finished="isFinished" />
     <div :class="['card', snakeCasedStep]">
       <div v-show="isActive" @keyup.enter="nextStep">
