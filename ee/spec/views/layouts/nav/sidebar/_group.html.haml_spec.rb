@@ -584,16 +584,13 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
   end
 
-  describe 'wiki tab' do
-    let(:can_read_wiki) { true }
-
-    let_it_be(:current_user) { create(:user) }
+  describe 'Wiki Menu' do
+    let(:wiki_enabled) { true }
 
     before do
-      group.add_guest(current_user)
+      stub_licensed_features(group_wikis: wiki_enabled)
 
-      allow(view).to receive(:current_user).and_return(current_user)
-      allow(view).to receive(:can?).with(current_user, :read_wiki, group).and_return(can_read_wiki)
+      allow(view).to receive(:current_user).and_return(user)
     end
 
     describe 'when wiki is available to user' do
@@ -605,7 +602,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
 
     describe 'when wiki is unavailable to user' do
-      let(:can_read_wiki) { false }
+      let(:wiki_enabled) { false }
 
       it 'does not show the wiki tab' do
         render

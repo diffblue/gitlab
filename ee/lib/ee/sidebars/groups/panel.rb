@@ -15,6 +15,7 @@ module EE
           insert_menu_after(::Sidebars::Groups::Menus::MergeRequestsMenu, ::Sidebars::Groups::Menus::SecurityComplianceMenu.new(context))
           insert_menu_after(::Sidebars::Groups::Menus::SecurityComplianceMenu, ::Sidebars::Groups::Menus::PushRulesMenu.new(context))
           insert_menu_after(::Sidebars::Groups::Menus::PackagesRegistriesMenu, ::Sidebars::Groups::Menus::AnalyticsMenu.new(context))
+          insert_menu_after(::Sidebars::Groups::Menus::AnalyticsMenu, ::Sidebars::Groups::Menus::WikiMenu.new(context))
         end
       end
     end
