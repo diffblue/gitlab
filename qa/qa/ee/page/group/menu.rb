@@ -34,9 +34,6 @@ module QA
                 element :ldap_synchronization_link
                 element :billing_link
               end
-              view 'ee/app/views/layouts/nav/ee/_epic_link.html.haml' do
-                element :group_epics_link
-              end
 
               view 'ee/app/views/layouts/nav/ee/_security_link.html.haml' do
                 element :security_compliance_link
@@ -120,7 +117,7 @@ module QA
 
           def click_group_epics_link
             within_sidebar do
-              click_element(:group_epics_link)
+              click_element(:sidebar_menu_link, menu_item: 'Epics')
             end
           end
 

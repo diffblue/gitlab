@@ -76,6 +76,51 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
   end
 
+  describe 'Epics menu' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) do
+      create(:group).tap do |g|
+        g.add_maintainer(user)
+      end
+    end
+
+    before do
+      stub_licensed_features(epics: true)
+
+      allow(view).to receive(:current_user).and_return(user)
+    end
+
+    it 'has a link to the epic list path' do
+      render
+
+      expect(rendered).to have_link('Epics', href: group_epics_path(group))
+    end
+
+    describe 'List' do
+      it 'has a link to the epic list path' do
+        render
+
+        expect(rendered).to have_link('List', href: group_epics_path(group))
+      end
+    end
+
+    describe 'Boards' do
+      it 'has a link to the epic boards path' do
+        render
+
+        expect(rendered).to have_link('Boards', href: group_epic_boards_path(group))
+      end
+    end
+
+    describe 'Roadmap' do
+      it 'has a link to the epic roadmap path' do
+        render
+
+        expect(rendered).to have_link('Roadmap', href: group_roadmap_path(group))
+      end
+    end
+  end
+
   describe 'DevOps adoption link' do
     let!(:current_user) { create(:user) }
 

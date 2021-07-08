@@ -11,6 +11,7 @@ module EE
           super
 
           insert_menu_before(::Sidebars::Groups::Menus::GroupInformationMenu, ::Sidebars::Groups::Menus::TrialExperimentMenu.new(context))
+          insert_menu_after(::Sidebars::Groups::Menus::GroupInformationMenu, ::Sidebars::Groups::Menus::EpicsMenu.new(context))
         end
       end
     end
