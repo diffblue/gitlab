@@ -1,4 +1,7 @@
 <script>
+import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
+import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import createFlash from '~/flash';
 import { s__ } from '~/locale';
 import AddonPurchaseDetails from './checkout/addon_purchase_details.vue';
 import BillingAddress from './checkout/billing_address.vue';
@@ -11,6 +14,23 @@ export default {
     plan: {
       type: Object,
       required: true,
+    },
+  },
+  mounted() {
+    this.updateSelectedPlanId(this.plan.id);
+  },
+  methods: {
+    updateSelectedPlanId(planId) {
+      this.$apollo
+        .mutate({
+          mutation: updateState,
+          variables: {
+            input: { selectedPlanId: planId },
+          },
+        })
+        .catch((error) => {
+          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        });
     },
   },
   i18n: {

@@ -31,21 +31,8 @@ export default {
     confirmOrderParams: {
       query: stateQuery,
       update(data) {
-        const { customer } = data;
-
         return {
-          setup_for_company: data.isSetupForCompany,
           selected_group: data.subscription.namespaceId,
-          new_user: data.isNewUser,
-          customer: {
-            country: customer.country,
-            address_1: customer.address1,
-            address_2: customer.address2,
-            city: customer.city,
-            state: customer.state,
-            zip_code: customer.zipCode,
-            company: customer.company,
-          },
           subscription: {
             plan_id: data.selectedPlanId,
             payment_method_id: data.paymentMethod.id,
