@@ -11,5 +11,12 @@ module EE
         show_discover_project_security: show_discover_project_security?(project)
       })
     end
+
+    override :group_sidebar_context_data
+    def group_sidebar_context_data(group, user)
+      super.merge(
+        show_discover_group_security: show_discover_group_security?(group)
+      )
+    end
   end
 end
