@@ -90,7 +90,7 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_group_members_item)
+          Page::Group::Menu.perform(&:click_subgroup_members_item)
           Page::Group::Members.perform do |members_page|
             members_page.add_member(user.username, 'Guest')
             members_page.update_access_level(user.username, "Developer")
