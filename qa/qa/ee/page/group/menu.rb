@@ -13,10 +13,9 @@ module QA
             base.class_eval do
               prepend QA::Page::Group::SubMenus::Common
 
-              view 'app/views/layouts/nav/sidebar/_group.html.haml' do
+              view 'app/views/layouts/nav/sidebar/_group_menus.html.haml' do
                 element :group_issue_boards_link
                 element :group_issues_item
-                element :group_sidebar
                 element :group_sidebar_submenu
                 element :group_settings
               end
