@@ -4,13 +4,6 @@ module EE
   module GroupsHelper
     extend ::Gitlab::Utils::Override
 
-    override :issuables_count_service_class
-    def issuables_count_service_class(type)
-      return super unless type == :epics
-
-      ::Groups::EpicsCountService
-    end
-
     def group_nav_link_paths
       %w[saml_providers#show usage_quotas#index billings#index]
     end
