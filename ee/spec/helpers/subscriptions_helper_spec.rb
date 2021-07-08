@@ -141,7 +141,7 @@ RSpec.describe SubscriptionsHelper do
 
     before do
       allow(helper).to receive(:current_user).and_return(user)
-      allow(helper).to receive(:params).and_return({ namespace_id: group.id.to_s, source: 'some_source' })
+      allow(helper).to receive(:params).and_return({ selected_group: group.id.to_s, source: 'some_source' })
       group.add_owner(user)
     end
 

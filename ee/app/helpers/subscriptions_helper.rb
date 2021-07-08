@@ -19,7 +19,7 @@ module SubscriptionsHelper
   def addon_data(group)
     {
       group_data: [present_group(group)].to_json,
-      namespace_id: params[:namespace_id],
+      namespace_id: params[:selected_group],
       source: params[:source]
     }
   end
