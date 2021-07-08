@@ -19,26 +19,5 @@ module EE
       controllers = %w(audit_logs)
       super.concat(controllers)
     end
-
-    override :group_issues_sub_menu_items
-    def group_issues_sub_menu_items
-      controllers = %w(issues_analytics#show)
-
-      if @group&.feature_available?(:iterations)
-        controllers = iterations_sub_menu_controllers
-      end
-
-      super.concat(controllers)
-    end
-
-    def iterations_sub_menu_controllers
-      paths = ['iterations#index', 'iterations#show']
-
-      if ::Feature.enabled?(:iteration_cadences, @group, default_enabled: :yaml)
-        paths << 'iteration_cadences#index'
-      end
-
-      paths
-    end
   end
 end
