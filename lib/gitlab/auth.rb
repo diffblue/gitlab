@@ -203,10 +203,10 @@ module Gitlab
         if project && token.user.project_bot? && !project.bots.include?(token.user)
           return unless project.group
 
-          group_ids = project.group.self_and_ancestors.pluck(:id)
-          user_groups = token.user.groups.pluck(:id)
+          group_ancestor_ids = project.group.self_and_ancestors.pluck(:id)
+          user_group_ids = token.user.groups.pluck(:id)
 
-          return if (group_ids & user_groups).empty?
+          return if (group_ancestor_ids & user_group_ids).empty?
         end
 
         if can_user_login_with_non_expired_password?(token.user) || token.user.project_bot?

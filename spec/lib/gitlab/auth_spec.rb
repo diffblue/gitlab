@@ -406,38 +406,39 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching do
           it_behaves_like 'with an invalid access token'
         end
 
-        context 'when using a group namespace project access token' do
+        context 'when in a group namespace' do
           let_it_be(:group) { create(:group) }
           let_it_be(:project) { create(:project, group: group) }
-          let_it_be(:project_bot_user) { create(:user, :project_bot) }
-          let_it_be(:access_token) { create(:personal_access_token, user: project_bot_user) }
 
-          context 'when the token belongs to the project' do
-            before do
-              project.add_maintainer(project_bot_user)
+          context 'when using a project access token' do
+            let_it_be(:project_bot_user) { create(:user, :project_bot) }
+            let_it_be(:access_token) { create(:personal_access_token, user: project_bot_user) }
+
+            context 'when token user belongs to the project' do
+              before do
+                project.add_maintainer(project_bot_user)
+              end
+
+              it_behaves_like 'with a valid access token'
             end
 
-            it_behaves_like 'with a valid access token'
+            it_behaves_like 'with an invalid access token'
           end
 
-          it_behaves_like 'with an invalid access token'
-        end
+          context 'when using a group access token' do
+            let_it_be(:project_bot_user) { create(:user, name: 'Group token bot', email: "group_#{group.id}_bot@example.com", username: "group_#{group.id}_bot", user_type: :project_bot) }
+            let_it_be(:access_token) { create(:personal_access_token, user: project_bot_user) }
 
-        context 'when using a group access token' do
-          let_it_be(:group) { create(:group) }
-          let_it_be(:project) { create(:project, group: group) }
-          let_it_be(:project_bot_user) { create(:user, name: 'Group token bot', email: "group_#{group.id}_bot@example.com", username: "group_#{group.id}_bot", user_type: 'project_bot'.to_sym) }
-          let_it_be(:access_token) { create(:personal_access_token, user: project_bot_user) }
+            context 'when the token belongs to the group' do
+              before do
+                group.add_maintainer(project_bot_user)
+              end
 
-          context 'when the token belongs to the group' do
-            before do
-              group.add_maintainer(project_bot_user)
+              it_behaves_like 'with a valid access token'
             end
 
-            it_behaves_like 'with a valid access token'
+            it_behaves_like 'with an invalid access token'
           end
-
-          it_behaves_like 'with an invalid access token'
         end
       end
     end
