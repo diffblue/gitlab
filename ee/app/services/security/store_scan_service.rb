@@ -43,7 +43,7 @@ module Security
     end
 
     def update_deduplicated_findings
-      ActiveRecord::Base.transaction do
+      Security::Scan.transaction do
         security_scan.findings.update_all(deduplicated: false)
 
         security_scan.findings

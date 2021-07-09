@@ -18,7 +18,7 @@ module Iterations
       from_iteration.issues.opened.each_batch(of: BATCH_SIZE) do |issues|
         add_iteration_events, remove_iteration_events = iteration_events(issues)
 
-        ActiveRecord::Base.transaction do
+        ApplicationRecord.transaction do
           issues.update_all(sprint_id: to_iteration.id, updated_at: rolled_over_at)
           Gitlab::Database.bulk_insert(ResourceIterationEvent.table_name, remove_iteration_events) # rubocop:disable Gitlab/BulkInsert
           Gitlab::Database.bulk_insert(ResourceIterationEvent.table_name, add_iteration_events) # rubocop:disable Gitlab/BulkInsert

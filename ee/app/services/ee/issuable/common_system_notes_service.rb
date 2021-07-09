@@ -10,7 +10,7 @@ module EE
       def execute(issuable, old_labels: [], old_milestone: nil, is_update: true)
         super
 
-        ActiveRecord::Base.no_touching do
+        ApplicationRecord.no_touching do
           handle_weight_change
           handle_iteration_change
 

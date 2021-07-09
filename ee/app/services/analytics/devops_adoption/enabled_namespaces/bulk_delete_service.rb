@@ -14,7 +14,7 @@ module Analytics
 
           result = nil
 
-          ActiveRecord::Base.transaction do
+          ApplicationRecord.transaction do
             deletion_services.each do |service|
               response = service.execute
 

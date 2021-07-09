@@ -21,7 +21,7 @@ module AppSec
 
           return ServiceResponse.error(message: _('Cannot modify %{profile_name} referenced in security policy') % { profile_name: dast_site_profile.name }) if referenced_in_security_policy?
 
-          ActiveRecord::Base.transaction do
+          ApplicationRecord.transaction do
             auditor = AppSec::Dast::SiteProfiles::Audit::UpdateService.new(project, current_user, {
               dast_site_profile: dast_site_profile,
               new_params: params.dup,

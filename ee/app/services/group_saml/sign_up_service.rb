@@ -11,7 +11,7 @@ module GroupSaml
     end
 
     def execute
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         new_user.managing_group = group if group.saml_provider&.enforced_group_managed_accounts?
 
         if new_user.save
