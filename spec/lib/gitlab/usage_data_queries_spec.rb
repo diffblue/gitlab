@@ -8,7 +8,7 @@ RSpec.describe Gitlab::UsageDataQueries do
   end
 
   describe '#add_metric' do
-    let(:metric) { double(:metric, for_data_warehouse: 'SELECT COUNT("users"."id") FROM "users"') }
+    let(:metric) { double(:metric, instrumentation: 'SELECT COUNT("users"."id") FROM "users"') }
 
     it 'computes the metric value for given metric' do
       expect(described_class.add_metric(metric)).to eq('SELECT COUNT("users"."id") FROM "users"')

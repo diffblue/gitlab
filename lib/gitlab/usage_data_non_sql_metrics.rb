@@ -6,7 +6,7 @@ module Gitlab
 
     class << self
       def add_metric(metric)
-        metric.for_data_warehouse
+        metric.instrumentation
       end
 
       def count(relation, column = nil, batch: true, batch_size: nil, start: nil, finish: nil)

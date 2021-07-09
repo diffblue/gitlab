@@ -6,7 +6,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
   let(:default_count) { Gitlab::UsageDataNonSqlMetrics::SQL_METRIC_DEFAULT }
 
   describe '#add_metric' do
-    let(:metric) { double(:metric, for_data_warehouse: 1) }
+    let(:metric) { double(:metric, instrumentation: 1) }
 
     it 'computes the metric value for given metric' do
       expect(described_class.add_metric(metric)).to eq(1)

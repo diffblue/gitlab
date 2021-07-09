@@ -16,7 +16,7 @@ module Gitlab
             @options = options
           end
 
-          def for_data_warehouse
+          def instrumentation
             value
           end
         end

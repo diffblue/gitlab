@@ -6,7 +6,7 @@ module Gitlab
   class UsageDataQueries < UsageData
     class << self
       def add_metric(metric)
-        metric.for_data_warehouse
+        metric.instrumentation
       end
 
       def count(relation, column = nil, *args, **kwargs)
