@@ -27,7 +27,11 @@ module PolicyHelper
   private
 
   def details(project)
+    disable_scan_execution_update = !can_update_security_orchestration_policy_project?(project)
+
     {
+      assigned_policy_project: assigned_policy_project(project).to_json,
+      disable_scan_execution_update: disable_scan_execution_update.to_s,
       network_policies_endpoint: project_security_network_policies_path(project),
       configure_agent_help_path: help_page_url('user/clusters/agent/repository.html'),
       create_agent_help_path: help_page_url('user/clusters/agent/index.md', anchor: 'create-an-agent-record-in-gitlab'),

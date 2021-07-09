@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormSelect } from '@gitlab/ui';
+import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import EnvironmentPicker from '../environment_picker.vue';
@@ -9,6 +9,7 @@ import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_po
 
 export default {
   components: {
+    GlAlert,
     GlFormGroup,
     GlFormSelect,
     EnvironmentPicker,
@@ -17,6 +18,10 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   props: {
+    assignedPolicyProject: {
+      type: Object,
+      required: true,
+    },
     existingPolicy: {
       type: Object,
       required: false,
@@ -25,6 +30,7 @@ export default {
   },
   data() {
     return {
+      error: '',
       policyType: POLICY_KIND_OPTIONS.network.value,
     };
   },
@@ -44,6 +50,9 @@ export default {
   },
   methods: {
     ...mapActions('threatMonitoring', ['fetchEnvironments']),
+    setError(error) {
+      this.error = error;
+    },
     updatePolicyType(type) {
       this.policyType = type;
     },
@@ -54,6 +63,9 @@ export default {
 
 <template>
   <section class="policy-editor">
+    <gl-alert v-if="error" dissmissable="true" variant="danger" @dismiss="setError('')">
+      {{ error }}
+    </gl-alert>
     <header class="gl-pb-5">
       <h3>{{ s__('NetworkPolicies|Policy description') }}</h3>
     </header>
@@ -69,6 +81,11 @@ export default {
       </gl-form-group>
       <environment-picker v-if="shouldShowEnvironmentPicker" />
     </div>
-    <component :is="policyComponent" :existing-policy="existingPolicy" />
+    <component
+      :is="policyComponent"
+      :existing-policy="existingPolicy"
+      :assigned-policy-project="assignedPolicyProject"
+      @error="setError($event)"
+    />
   </section>
 </template>

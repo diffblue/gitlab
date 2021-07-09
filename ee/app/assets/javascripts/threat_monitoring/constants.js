@@ -1,5 +1,7 @@
 import { s__ } from '~/locale';
 
+export const DEFAULT_ASSIGNED_POLICY_PROJECT = { fullPath: '', branch: '' };
+
 export const INVALID_CURRENT_ENVIRONMENT_NAME = '–';
 
 export const PREDEFINED_NETWORK_POLICIES = [

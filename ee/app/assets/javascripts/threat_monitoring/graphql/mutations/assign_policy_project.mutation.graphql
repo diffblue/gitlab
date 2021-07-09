@@ -1,0 +1,5 @@
+mutation assignPolicyProject($projectPath: ID!, $id: ProjectID!) {
+  securityPolicyProjectAssign(input: { projectPath: $projectPath, securityPolicyProjectId: $id }) {
+    errors
+  }
+}

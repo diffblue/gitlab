@@ -23,6 +23,11 @@ export default {
       required: false,
       default: EDITOR_MODE_RULE,
     },
+    disableUpdate: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     editorModes: {
       type: Array,
       required: false,
@@ -132,6 +137,7 @@ export default {
       variant="success"
       data-testid="save-policy"
       :loading="isUpdatingPolicy"
+      :disabled="disableUpdate"
       @click="savePolicy"
     >
       <slot name="save-button-text">

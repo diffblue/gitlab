@@ -1,18 +1,22 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import createDefaultClient from '~/lib/graphql';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import PolicyEditorApp from './components/policy_editor/policy_editor.vue';
+import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import createStore from './store';
+import { gqClient } from './utils';
 
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
+  defaultClient: gqClient,
 });
 
 export default () => {
   const el = document.querySelector('#js-policy-builder-app');
   const {
+    assignedPolicyProject,
+    disableScanExecutionUpdate,
     environmentsEndpoint,
     configureAgentHelpPath,
     createAgentHelpPath,
@@ -36,7 +40,16 @@ export default () => {
     store.dispatch('threatMonitoring/setCurrentEnvironmentId', parseInt(environmentId, 10));
   }
 
-  const props = policy ? { existingPolicy: JSON.parse(policy) } : {};
+  const policyProject = JSON.parse(assignedPolicyProject);
+  const props = {
+    assignedPolicyProject: policyProject
+      ? convertObjectPropsToCamelCase(policyProject)
+      : DEFAULT_ASSIGNED_POLICY_PROJECT,
+  };
+
+  if (policy) {
+    props.existingPolicy = JSON.parse(policy);
+  }
 
   return new Vue({
     el,
@@ -44,6 +57,7 @@ export default () => {
     provide: {
       configureAgentHelpPath,
       createAgentHelpPath,
+      disableScanExecutionUpdate: parseBoolean(disableScanExecutionUpdate),
       projectId,
       projectPath,
       threatMonitoringPath,

@@ -7,6 +7,11 @@ module Projects::Security::PoliciesHelper
     orchestration_policy_configuration = project.security_orchestration_policy_configuration
     security_policy_management_project = orchestration_policy_configuration.security_policy_management_project
 
-    { id: security_policy_management_project.to_global_id.to_s, name: security_policy_management_project.name }
+    {
+      id: security_policy_management_project.to_global_id.to_s,
+      name: security_policy_management_project.name,
+      full_path: security_policy_management_project.full_path,
+      branch: security_policy_management_project.default_branch_or_main
+    }
   end
 end

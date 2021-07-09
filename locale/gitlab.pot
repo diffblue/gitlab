@@ -29442,6 +29442,12 @@ msgstr ""
 msgid "SecurityOrchestration|Select security project"
 msgstr ""
 
+msgid "SecurityOrchestration|There was a problem creating the new security policy"
+msgstr ""
+
+msgid "SecurityOrchestration|Update scan execution policies"
+msgstr ""
+
 msgid "SecurityPolicies|+%{count} more"
 msgstr ""
 
