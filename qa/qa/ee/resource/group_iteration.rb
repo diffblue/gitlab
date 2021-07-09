@@ -20,7 +20,8 @@ module QA
                    :start_date,
                    :due_date,
                    :created_at,
-                   :updated_at
+                   :updated_at,
+                   :cadence
 
         def initialize
           @start_date = current_date_yyyy_mm_dd
@@ -30,11 +31,17 @@ module QA
         end
 
         def fabricate!
-          group.visit!
+          @cadence ||= QA::EE::Resource::GroupCadence.fabricate_via_browser_ui! do |cadence|
+            cadence.group = group
+          end
+
+          @cadence.group.visit!
 
           QA::Page::Group::Menu.perform(&:go_to_group_iterations)
 
-          QA::EE::Page::Group::Iteration::Index.perform(&:click_new_iteration_button)
+          QA::EE::Page::Group::Iteration::Cadence::Index.perform do |cadence_list|
+            cadence_list.click_new_iteration_button(@cadence.title)
+          end
 
           QA::EE::Page::Group::Iteration::New.perform do |iteration_page|
             iteration_page.fill_title(@title)

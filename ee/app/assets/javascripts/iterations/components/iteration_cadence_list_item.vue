@@ -250,8 +250,13 @@ export default {
         right
         text-sr-only
         no-caret
+        data-qa-selector="cadence_options_button"
       >
-        <gl-dropdown-item v-if="!automatic" :to="newIteration">
+        <gl-dropdown-item
+          v-if="!automatic"
+          :to="newIteration"
+          data-qa-selector="new_iteration_button"
+        >
           {{ s__('Iterations|Add iteration') }}
         </gl-dropdown-item>
 
