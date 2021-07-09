@@ -38,6 +38,28 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
             ]
           )
         end
+
+        context 'with delete flag' do
+          let(:params) do
+            {
+              deploy_access_levels_attributes: [
+                { group_id: group.id },
+                { group_id: other_group.id, '_destroy' => 1 },
+                { group_id: child_group.id }
+              ]
+            }
+          end
+
+          it 'contains inappropriate group id for deleting it' do
+            is_expected.to eq(
+              deploy_access_levels_attributes: [
+                { group_id: group.id },
+                { group_id: other_group.id, '_destroy' => 1 },
+                { group_id: child_group.id }
+              ]
+            )
+          end
+        end
       end
 
       context 'with user-based access control' do
@@ -70,6 +92,23 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
               { user_id: group_maintainer.id }
             ]
           )
+        end
+
+        context 'with delte flag' do
+          let(:params) do
+            {
+              deploy_access_levels_attributes: [
+                { user_id: group_maintainer.id },
+                { user_id: group_developer.id, '_destroy' => 1 },
+                { user_id: other_group_maintainer.id, '_destroy' => 1 },
+                { user_id: child_group_maintainer.id, '_destroy' => 1 }
+              ]
+            }
+          end
+
+          it 'contains inappropriate user ids for deleting it' do
+            is_expected.to eq(params)
+          end
         end
       end
     end
