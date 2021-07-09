@@ -19,12 +19,12 @@ module Ci
 
         before do
           project.update!(shared_runners_enabled: false)
+
+          allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
+          allow(Gitlab::Database::LoadBalancing).to receive(:enable?).and_return(true)
         end
 
         it 'result is valid if replica did caught-up' do
-          allow(Gitlab::Database::LoadBalancing).to receive(:enable?)
-            .and_return(true)
-
           expect(Gitlab::Database::LoadBalancing::Sticking).to receive(:all_caught_up?)
             .with(:runner, shared_runner.id) { true }
 
@@ -32,9 +32,6 @@ module Ci
         end
 
         it 'result is invalid if replica did not caught-up' do
-          allow(Gitlab::Database::LoadBalancing).to receive(:enable?)
-            .and_return(true)
-
           expect(Gitlab::Database::LoadBalancing::Sticking).to receive(:all_caught_up?)
             .with(:runner, shared_runner.id) { false }
 

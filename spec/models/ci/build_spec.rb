@@ -347,6 +347,7 @@ RSpec.describe Ci::Build do
     it 'sticks the build if the status changed' do
       job = create(:ci_build, :pending)
 
+      allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
       allow(Gitlab::Database::LoadBalancing).to receive(:enable?)
         .and_return(true)
 

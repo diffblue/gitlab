@@ -128,8 +128,6 @@ RSpec.describe ProjectFeatureUsage, type: :model do
   end
 
   context 'ProjectFeatureUsage with DB Load Balancing', :request_store do
-    include_context 'clear DB Load Balancing configuration'
-
     describe '#log_jira_dvcs_integration_usage' do
       let!(:project) { create(:project) }
 
@@ -138,9 +136,10 @@ RSpec.describe ProjectFeatureUsage, type: :model do
       context 'database load balancing is configured' do
         before do
           # Do not pollute AR for other tests, but rather simulate effect of configure_proxy.
-          allow(ActiveRecord::Base.singleton_class).to receive(:prepend)
-          ::Gitlab::Database::LoadBalancing.configure_proxy
-          allow(ActiveRecord::Base).to receive(:connection).and_return(::Gitlab::Database::LoadBalancing.proxy)
+          allow(ActiveRecord::Base).to receive(:load_balancing_proxy=)
+          proxy = ::Gitlab::Database::LoadBalancing.configure_proxy
+          allow(ActiveRecord::Base).to receive(:connection).and_return(proxy)
+
           ::Gitlab::Database::LoadBalancing::Session.clear_session
         end
 

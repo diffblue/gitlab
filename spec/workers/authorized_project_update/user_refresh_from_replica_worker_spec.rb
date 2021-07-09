@@ -47,6 +47,7 @@ RSpec.describe AuthorizedProjectUpdate::UserRefreshFromReplicaWorker do
     context 'with load balancing enabled' do
       before do
         allow(Gitlab::Database::LoadBalancing).to receive(:enable?).and_return(true)
+        allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
       end
 
       it 'reads from the replica database' do

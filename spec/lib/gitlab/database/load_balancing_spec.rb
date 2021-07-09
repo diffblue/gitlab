@@ -3,25 +3,32 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Database::LoadBalancing do
-  include_context 'clear DB Load Balancing configuration'
-
   before do
     stub_env('ENABLE_LOAD_BALANCING_FOR_FOSS', 'true')
   end
 
   describe '.proxy' do
+    before do
+      @previous_proxy = ActiveRecord::Base.load_balancing_proxy
+
+      ActiveRecord::Base.load_balancing_proxy = connection_proxy
+    end
+
+    after do
+      ActiveRecord::Base.load_balancing_proxy = @previous_proxy
+    end
+
     context 'when configured' do
-      before do
-        allow(ActiveRecord::Base.singleton_class).to receive(:prepend)
-        subject.configure_proxy
-      end
+      let(:connection_proxy) { double(:connection_proxy) }
 
       it 'returns the connection proxy' do
-        expect(subject.proxy).to be_an_instance_of(subject::ConnectionProxy)
+        expect(subject.proxy).to eq(connection_proxy)
       end
     end
 
     context 'when not configured' do
+      let(:connection_proxy) { nil }
+
       it 'returns nil' do
         expect(subject.proxy).to be_nil
       end
@@ -132,7 +139,6 @@ RSpec.describe Gitlab::Database::LoadBalancing do
 
   describe '.enable?' do
     before do
-      clear_load_balancing_configuration
       allow(described_class).to receive(:hosts).and_return(%w(foo))
     end
 
@@ -173,10 +179,6 @@ RSpec.describe Gitlab::Database::LoadBalancing do
   end
 
   describe '.configured?' do
-    before do
-      clear_load_balancing_configuration
-    end
-
     it 'returns true when Sidekiq is being used' do
       allow(described_class).to receive(:hosts).and_return(%w(foo))
       allow(Gitlab::Runtime).to receive(:sidekiq?).and_return(true)
@@ -207,12 +209,12 @@ RSpec.describe Gitlab::Database::LoadBalancing do
 
   describe '.configure_proxy' do
     it 'configures the connection proxy' do
-      allow(ActiveRecord::Base.singleton_class).to receive(:prepend)
+      allow(ActiveRecord::Base).to receive(:load_balancing_proxy=)
 
       described_class.configure_proxy
 
-      expect(ActiveRecord::Base.singleton_class).to have_received(:prepend)
-        .with(Gitlab::Database::LoadBalancing::ActiveRecordProxy)
+      expect(ActiveRecord::Base).to have_received(:load_balancing_proxy=)
+        .with(Gitlab::Database::LoadBalancing::ConnectionProxy)
     end
   end
 
@@ -315,13 +317,9 @@ RSpec.describe Gitlab::Database::LoadBalancing do
       let(:load_balancer) { described_class::LoadBalancer.new(%w(foo)) }
 
       before do
-        allow(ActiveRecord::Base.singleton_class).to receive(:prepend)
-
         allow(described_class).to receive(:enable?).and_return(true)
         allow(described_class).to receive(:proxy).and_return(proxy)
         allow(proxy).to receive(:load_balancer).and_return(load_balancer)
-
-        subject.configure_proxy(proxy)
       end
 
       context 'when the load balancer returns :replica' do
@@ -395,9 +393,9 @@ RSpec.describe Gitlab::Database::LoadBalancing do
         model.singleton_class.prepend ::Gitlab::Database::LoadBalancing::ActiveRecordProxy
 
         # Setup load balancing
-        clear_load_balancing_configuration
-        allow(ActiveRecord::Base.singleton_class).to receive(:prepend)
-        subject.configure_proxy(::Gitlab::Database::LoadBalancing::ConnectionProxy.new(hosts))
+        allow(ActiveRecord::Base).to receive(:load_balancing_proxy).and_return(
+          ::Gitlab::Database::LoadBalancing::ConnectionProxy.new(hosts)
+        )
 
         original_db_config = Gitlab::Database.main.config
         modified_db_config = original_db_config.merge(load_balancing: { hosts: hosts })

@@ -159,6 +159,7 @@ RSpec.describe ContainerExpirationPolicyWorker do
       context 'with load balancing enabled' do
         before do
           allow(Gitlab::Database::LoadBalancing).to receive(:enable?).and_return(true)
+          allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
         end
 
         it 'reads the counts from the replica' do

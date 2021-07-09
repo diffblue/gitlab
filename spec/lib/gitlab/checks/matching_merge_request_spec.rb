@@ -54,6 +54,7 @@ RSpec.describe Gitlab::Checks::MatchingMergeRequest do
       let(:all_caught_up) { true }
 
       before do
+        allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
         expect(::Gitlab::Database::LoadBalancing).to receive(:enable?).at_least(:once).and_return(true)
         allow(::Gitlab::Database::LoadBalancing::Sticking).to receive(:all_caught_up?).and_return(all_caught_up)
 
