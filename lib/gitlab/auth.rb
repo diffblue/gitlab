@@ -190,6 +190,7 @@ module Gitlab
         end
       end
 
+      # rubocop: disable CodeReuse/ActiveRecord
       def personal_access_token_check(password, project)
         return unless password.present?
 
@@ -199,12 +200,20 @@ module Gitlab
 
         return unless valid_scoped_token?(token, all_available_scopes)
 
-        return if project && token.user.project_bot? && !project.bots.include?(token.user)
+        if project && token.user.project_bot? && !project.bots.include?(token.user)
+          return unless project.group
+
+          group_ids = project.group.self_and_ancestors.pluck(:id)
+          user_groups = token.user.groups.pluck(:id)
+
+          return if (group_ids & user_groups).empty?
+        end
 
         if can_user_login_with_non_expired_password?(token.user) || token.user.project_bot?
           Gitlab::Auth::Result.new(token.user, nil, :personal_access_token, abilities_for_scopes(token.scopes))
         end
       end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def valid_oauth_token?(token)
         token && token.accessible? && valid_scoped_token?(token, [:api])
