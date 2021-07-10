@@ -2,13 +2,11 @@ import Vue from 'vue';
 import EpicFilteredSearch from 'ee_component/boards/components/epic_filtered_search.vue';
 import store from '~/boards/stores';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-// eslint-disable-next-line import/no-deprecated
-import { urlParamsToObject } from '~/lib/utils/url_utility';
+import { queryToObject } from '~/lib/utils/url_utility';
 
 export default (apolloProvider) => {
   const el = document.getElementById('js-board-filtered-search');
-  // eslint-disable-next-line import/no-deprecated
-  const rawFilterParams = urlParamsToObject(window.location.search);
+  const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
   const initialFilterParams = {
     ...convertObjectPropsToCamelCase(rawFilterParams, {}),
   };
