@@ -5,8 +5,7 @@ import Api from '~/api';
 import createFlash from '~/flash';
 import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
 import axios from '~/lib/utils/axios_utils';
-// eslint-disable-next-line import/no-deprecated
-import { updateHistory, setUrlParams, urlParamsToObject } from '~/lib/utils/url_utility';
+import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 
 import { s__, __ } from '~/locale';
 import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -143,8 +142,7 @@ export default {
   },
   methods: {
     updateUrl() {
-      // eslint-disable-next-line import/no-deprecated
-      const queryParams = urlParamsToObject(window.location.search);
+      const queryParams = queryToObject(window.location.search, { gatherArrays: true });
       const { authorUsername, labelName, search } = this.filterParams || {};
       const { currentState, sortedBy, currentPage, prevPageCursor, nextPageCursor } = this;
 
