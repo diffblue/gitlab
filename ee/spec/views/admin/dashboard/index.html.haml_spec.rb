@@ -39,7 +39,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
       expect(rendered).to have_content "Plan:"
       expect(rendered).to have_content "Expires:"
       expect(rendered).to have_content "Licensed to:"
-      expect(rendered).to have_link 'View details', href: admin_license_path
+      expect(rendered).to have_link 'View details', href: admin_subscription_path
     end
 
     it 'includes license breakdown' do

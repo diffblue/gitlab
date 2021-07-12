@@ -1,6 +1,6 @@
 - return if Gitlab::Geo.license_allows?
 .js-vue-alert{ 'v-cloak': true, data: { variant: 'tip',
   primary_button_text: _('Manage your license'),
-  primary_button_link: admin_license_path,
+  primary_button_link: admin_subscription_path,
   dismissible: 'true' } }
   = _('This GitLab instance is licensed at the %{insufficient_license} tier. Geo is only available for users who have at least a Premium license.') % { insufficient_license: current_license_title }

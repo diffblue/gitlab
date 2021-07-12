@@ -5,10 +5,6 @@ module QA
     module Page
       module Admin
         class License < QA::Page::Base
-          view 'ee/app/views/admin/licenses/missing.html.haml' do
-            element :missing_license_content
-          end
-
           view 'ee/app/assets/javascripts/admin/subscriptions/show/components/subscription_activation_card.vue' do
             element :license_upload_link
           end
