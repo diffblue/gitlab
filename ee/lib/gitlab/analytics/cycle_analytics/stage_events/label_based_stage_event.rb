@@ -20,6 +20,10 @@ module Gitlab
             true
           end
 
+          def hash_code
+            Digest::SHA256.hexdigest("#{self.class.identifier}-#{label_id}")
+          end
+
           def column_list
             [Arel.sql("#{join_expression_name}.created_at")]
           end
