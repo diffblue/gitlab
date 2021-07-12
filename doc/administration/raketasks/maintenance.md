@@ -348,7 +348,6 @@ sudo gitlab-rake gitlab:db:reindex['public.a_specific_index']
 
 The following index types are not supported:
 
-1. Unique and primary key indexes
 1. Indexes used for constraint exclusion
 1. Partitioned indexes
 1. Expression indexes
