@@ -14,7 +14,7 @@ RSpec.describe 'Explore Topics' do
       visit topics_explore_projects_path
 
       expect(current_path).to eq topics_explore_projects_path
-      expect(page).to have_content('There are no topics to show')
+      expect(page).to have_content('There are no topics to show.')
     end
   end
 

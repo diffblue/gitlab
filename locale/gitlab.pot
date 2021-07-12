@@ -34332,6 +34332,9 @@ msgstr ""
 msgid "There are no projects shared with this group yet"
 msgstr ""
 
+msgid "There are no topics to show."
+msgstr ""
+
 msgid "There are no variables yet."
 msgstr ""
 
@@ -35828,9 +35831,6 @@ msgid "Topics"
 msgstr ""
 
 msgid "Topics (optional)"
-msgstr ""
-
-msgid "TopicsEmptyState|There are no topics to show."
 msgstr ""
 
 msgid "Total"

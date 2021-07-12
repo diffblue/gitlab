@@ -2,6 +2,6 @@
   .col-12
     .svg-content
       = image_tag 'illustrations/labels.svg', data: { qa_selector: 'svg_content' }
-    .text-content.text-center.pt-0
-      %h4.text-center= s_('TopicsEmptyState|There are no topics to show.')
-      %p= _("You can apply topics to projects to categorize them.")
+    .text-content.gl-text-center.gl-pt-0!
+      %h4= _('There are no topics to show.')
+      %p= _('You can apply topics to projects to categorize them.')
