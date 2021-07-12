@@ -14,12 +14,6 @@ module Gitlab
           Coordinator.new(index).perform
         end
       end
-
-      def self.candidate_indexes
-        Gitlab::Database::PostgresIndex
-          .not_match("#{ReindexConcurrently::TEMPORARY_INDEX_PATTERN}$")
-          .reindexing_support
-      end
     end
   end
 end

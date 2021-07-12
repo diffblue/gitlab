@@ -161,7 +161,7 @@ namespace :gitlab do
         exit
       end
 
-      indexes = Gitlab::Database::Reindexing.candidate_indexes
+      indexes = Gitlab::Database::PostgresIndex.reindexing_support
 
       if identifier = args[:index_name]
         raise ArgumentError, "Index name is not fully qualified with a schema: #{identifier}" unless identifier =~ /^\w+\.\w+$/

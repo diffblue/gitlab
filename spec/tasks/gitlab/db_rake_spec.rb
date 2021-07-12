@@ -203,7 +203,7 @@ RSpec.describe 'gitlab:db namespace rake task', :silence_stdout do
 
     context 'when no index_name is given' do
       it 'uses all candidate indexes' do
-        expect(Gitlab::Database::Reindexing).to receive(:candidate_indexes).and_return(indexes)
+        expect(Gitlab::Database::PostgresIndex).to receive(:reindexing_support).and_return(indexes)
         expect(Gitlab::Database::Reindexing).to receive(:perform).with(indexes)
 
         run_rake_task('gitlab:db:reindex')
@@ -214,7 +214,7 @@ RSpec.describe 'gitlab:db namespace rake task', :silence_stdout do
       let(:index) { double('index') }
 
       before do
-        allow(Gitlab::Database::Reindexing).to receive(:candidate_indexes).and_return(indexes)
+        allow(Gitlab::Database::PostgresIndex).to receive(:reindexing_support).and_return(indexes)
       end
 
       it 'calls the index rebuilder with the proper arguments' do
