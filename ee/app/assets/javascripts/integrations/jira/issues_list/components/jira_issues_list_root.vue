@@ -135,12 +135,14 @@ export default {
       });
     },
     onIssuableListClickTab(selectedIssueState) {
+      this.currentPage = 1;
       this.currentState = selectedIssueState;
     },
     onIssuableListPageChange(selectedPage) {
       this.currentPage = selectedPage;
     },
     onIssuableListSort(selectedSort) {
+      this.currentPage = 1;
       this.sortedBy = selectedSort;
     },
     onIssuableListFilter(filters = []) {
