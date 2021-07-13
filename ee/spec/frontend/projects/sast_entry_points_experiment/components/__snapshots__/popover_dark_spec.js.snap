@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`When the cookie is not set matches the snapshot 1`] = `
+<div
+  class="gl-popover"
+  offset="93"
+  show=""
+>
+  <div
+    class="gl-display-flex gl-mt-n2"
+  >
+    <img
+      class="gl-ml-2 gl-mr-3"
+      height="24"
+      width="24"
+    />
+     
+    <div>
+      <div
+        class="gl-font-weight-bold gl-font-lg gl-line-height-20 gl-text-theme-indigo-900 gl-mb-3"
+      >
+        
+        Catch your security vulnerabilities ahead of time!
+      
+      </div>
+       
+      <div
+        class="gl-font-base gl-line-height-20 gl-mb-3"
+      >
+        
+        GitLab can scan your code for security vulnerabilities. Static Application Security Testing (SAST) helps you worry less and build more.
+      
+      </div>
+       
+      <a
+        class="btn btn-link btn-md gl-button"
+        href="sast_documentation_path"
+      >
+        <!---->
+         
+        <!---->
+          
+        <span
+          class="gl-button-text"
+        >
+          
+        How do I set up SAST?
+      
+        </span>
+      </a>
+    </div>
+     
+    <button
+      aria-label="Close"
+      class="btn gl-align-self-start gl-mt-n3 gl-mr-n3 btn-default btn-md gl-button btn-default-tertiary btn-icon"
+      data-testid="close-btn"
+      type="button"
+    >
+      <!---->
+       
+      <svg
+        aria-hidden="true"
+        class="gl-button-icon gl-icon s16"
+        data-testid="close-icon"
+        role="img"
+      >
+        <use
+          href="#close"
+        />
+      </svg>
+        
+      <!---->
+    </button>
+  </div>
+</div>
+`;

@@ -1,0 +1,14 @@
+@import 'page_bundles/mixins_and_variables_and_functions';
+
+.marketing-popover {
+  max-width: $grid-size * 45;
+  border-top-color: $theme-indigo-900;
+
+  .arrow {
+    @include gl-mt-n2;
+
+    &::after {
+      border-bottom-color: $theme-indigo-900;
+    }
+  }
+}

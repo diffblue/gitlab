@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`When the cookie is not set matches the snapshot 1`] = `
+<gl-banner-stub
+  buttonlink="sast_documentation_path"
+  buttontext="Learn more"
+  class="gl-my-5"
+  title="Catch your security vulnerabilities ahead of time!"
+  variant="promotion"
+>
+  <p>
+    
+    GitLab can scan your code for security vulnerabilities. Static Application Security Testing (SAST) helps you worry less and build more.
+  
+  </p>
+</gl-banner-stub>
+`;

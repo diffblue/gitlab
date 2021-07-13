@@ -1903,6 +1903,9 @@ msgstr ""
 msgid "Add README"
 msgstr ""
 
+msgid "Add Security Testing"
+msgstr ""
+
 msgid "Add Zoom meeting"
 msgstr ""
 
@@ -28541,6 +28544,18 @@ msgid "SSL verification"
 msgstr ""
 
 msgid "SVG illustration"
+msgstr ""
+
+msgid "SastEntryPoints|Catch your security vulnerabilities ahead of time!"
+msgstr ""
+
+msgid "SastEntryPoints|GitLab can scan your code for security vulnerabilities. Static Application Security Testing (SAST) helps you worry less and build more."
+msgstr ""
+
+msgid "SastEntryPoints|How do I set up SAST?"
+msgstr ""
+
+msgid "SastEntryPoints|Learn more"
 msgstr ""
 
 msgid "Satisfied"

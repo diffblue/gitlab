@@ -413,4 +413,49 @@ RSpec.describe ProjectsHelper do
       })
     end
   end
+
+  describe '#enable_sast_entry_points_experiment?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(
+      can_admin_project?: [true, false],
+      empty_repo?: [true, false],
+      sast_enabled?: [true, false]
+    )
+
+    with_them do
+      before do
+        allow(helper).to receive(:can?) { can_admin_project? }
+        allow(project).to receive(:empty_repo?) { empty_repo? }
+        allow(project).to receive(:scanner_enabled?).and_call_original
+        allow(OnboardingProgress).to receive(:completed?).with(project.root_ancestor, :security_scan_enabled) { sast_enabled? }
+        allow(helper).to receive(:current_user) { double }
+      end
+
+      subject { helper.enable_sast_entry_points_experiment?(project) }
+
+      it { is_expected.to eq(can_admin_project? && !empty_repo? && !sast_enabled?) }
+    end
+  end
+
+  describe '#sast_entry_points_experiment_enabled?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(
+      enable_sast_entry_points_experiment?: [true, false],
+      experiment_enabled?: [true, false]
+    )
+
+    with_them do
+      before do
+        allow(helper).to receive(:enable_sast_entry_points_experiment?) { enable_sast_entry_points_experiment? }
+        variant = experiment_enabled? ? :banner : :control
+        stub_experiments(sast_entry_points: variant)
+      end
+
+      subject { helper.sast_entry_points_experiment_enabled?(project) }
+
+      it { is_expected.to eq(enable_sast_entry_points_experiment? && experiment_enabled?) }
+    end
+  end
 end
