@@ -11269,9 +11269,9 @@ CREATE TABLE ci_sources_pipelines (
     project_id integer,
     pipeline_id integer,
     source_project_id integer,
-    source_job_id integer,
+    source_job_id_convert_to_bigint integer,
     source_pipeline_id integer,
-    source_job_id_convert_to_bigint bigint
+    source_job_id bigint
 );
 
 CREATE SEQUENCE ci_sources_pipelines_id_seq
