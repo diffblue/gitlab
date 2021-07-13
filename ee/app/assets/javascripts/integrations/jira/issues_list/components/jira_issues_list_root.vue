@@ -74,10 +74,10 @@ export default {
     urlParams() {
       return {
         'labels[]': this.filterParams.labels,
-        page: this.currentPage,
         search: this.filterParams.search,
-        sort: this.sortedBy,
-        state: this.currentState,
+        ...(this.currentPage === 1 ? {} : { page: this.currentPage }),
+        ...(this.sortedBy === this.initialSortBy ? {} : { sort: this.sortedBy }),
+        ...(this.currentState === this.initialState ? {} : { state: this.currentState }),
       };
     },
   },

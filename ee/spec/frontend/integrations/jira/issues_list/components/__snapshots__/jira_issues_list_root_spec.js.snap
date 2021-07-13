@@ -152,10 +152,7 @@ Object {
   "totalItems": 3,
   "urlParams": Object {
     "labels[]": undefined,
-    "page": 1,
     "search": undefined,
-    "sort": "created_desc",
-    "state": "opened",
   },
   "useKeysetPagination": false,
 }
