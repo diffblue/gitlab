@@ -2563,12 +2563,6 @@ msgstr ""
 msgid "AdminUsers|Blocking user has the following effects:"
 msgstr ""
 
-msgid "AdminUsers|Can't access Git repositories."
-msgstr ""
-
-msgid "AdminUsers|Can't log in."
-msgstr ""
-
 msgid "AdminUsers|Cannot sign in or access instance information"
 msgstr ""
 
@@ -2635,6 +2629,9 @@ msgstr ""
 msgid "AdminUsers|Is using seat"
 msgstr ""
 
+msgid "AdminUsers|Issues authored by this user are hidden from other users."
+msgstr ""
+
 msgid "AdminUsers|It's you!"
 msgstr ""
 
@@ -2696,6 +2693,12 @@ msgid "AdminUsers|Send email to users"
 msgstr ""
 
 msgid "AdminUsers|Sort by"
+msgstr ""
+
+msgid "AdminUsers|The user can't access git repositories."
+msgstr ""
+
+msgid "AdminUsers|The user can't log in."
 msgstr ""
 
 msgid "AdminUsers|The user will be logged out"
@@ -2764,7 +2767,7 @@ msgstr ""
 msgid "AdminUsers|What does this mean?"
 msgstr ""
 
-msgid "AdminUsers|When banned, users:"
+msgid "AdminUsers|When banned:"
 msgstr ""
 
 msgid "AdminUsers|When the user logs back in, their account will reactivate as a fully active account"
@@ -33911,6 +33914,9 @@ msgid "This is your current session"
 msgstr ""
 
 msgid "This issue is currently blocked by the following issues:"
+msgstr ""
+
+msgid "This issue is hidden because its author has been banned"
 msgstr ""
 
 msgid "This issue is in a child epic of the filtered epic"
