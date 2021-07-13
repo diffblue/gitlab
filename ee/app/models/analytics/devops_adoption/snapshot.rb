@@ -19,6 +19,7 @@ class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
     :dast_enabled_count,
     :dependency_scanning_enabled_count,
     :coverage_fuzzing_enabled_count,
+    :vulnerability_management_used_count,
     :total_projects_count
   ].freeze
 

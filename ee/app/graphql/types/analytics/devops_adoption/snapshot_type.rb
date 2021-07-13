@@ -32,6 +32,8 @@ module Types
               description: 'Total number of projects with enabled dependency scanning.'
         field :coverage_fuzzing_enabled_count, GraphQL::INT_TYPE, null: true,
               description: 'Total number of projects with enabled coverage fuzzing.'
+        field :vulnerability_management_used_count, GraphQL::INT_TYPE, null: true,
+              description: 'Total number of projects with vulnerability management used at least once.'
         field :total_projects_count, GraphQL::INT_TYPE, null: true,
               description: 'Total number of projects.'
         field :recorded_at, Types::TimeType, null: false,
