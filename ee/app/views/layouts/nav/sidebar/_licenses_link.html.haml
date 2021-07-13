@@ -1,11 +1,11 @@
-= nav_link(controller: 'admin/subscriptions') do
+= nav_link(controller: ['admin/subscriptions', 'admin/licenses']) do
   = link_to admin_subscription_path, class: "qa-link-subscription-menu" do
     .nav-icon-container
       = sprite_icon('license')
     %span.nav-item-name
       = _('Subscription')
   %ul.sidebar-sub-level-items.is-fly-out-only
-    = nav_link(controller: controller, html_options: { class: "fly-out-top-item" } ) do
+    = nav_link(controller: ['admin/subscriptions', 'admin/licenses'], html_options: { class: "fly-out-top-item" } ) do
       = link_to admin_subscription_path do
         %strong.fly-out-top-item-name
           = _('Subscription')

@@ -43,11 +43,19 @@ RSpec.describe "Admin uploads license", :js do
       File.write(path, license.export)
     end
 
+    shared_examples 'active navigation item' do
+      it 'activates the "Subscription" navigation item' do
+        expect(find('.sidebar-top-level-items > li.active')).to have_content('Subscription')
+      end
+    end
+
     context "when license is valid" do
       let_it_be(:path) { Rails.root.join("tmp/valid_license.gitlab-license") }
 
       context "when license is active immediately" do
         let_it_be(:license) { build(:gitlab_license) }
+
+        it_behaves_like 'active navigation item'
 
         it "uploads license" do
           attach_and_upload(path)
@@ -61,6 +69,8 @@ RSpec.describe "Admin uploads license", :js do
         let_it_be(:license) { build(:gitlab_license, starts_at: Date.current + 1.month) }
 
         context "when a current license exists" do
+          it_behaves_like 'active navigation item'
+
           it "uploads license" do
             attach_and_upload(path)
 
@@ -74,6 +84,8 @@ RSpec.describe "Admin uploads license", :js do
             allow(License).to receive(:current).and_return(nil)
           end
 
+          it_behaves_like 'active navigation item'
+
           it "uploads license" do
             attach_and_upload(path)
 
@@ -86,6 +98,8 @@ RSpec.describe "Admin uploads license", :js do
     context "when license is invalid" do
       let_it_be(:license) { build(:gitlab_license, expires_at: Date.yesterday) }
       let_it_be(:path) { Rails.root.join("tmp/invalid_license.gitlab-license") }
+
+      it_behaves_like 'active navigation item'
 
       it "doesn't upload license" do
         attach_and_upload(path)
