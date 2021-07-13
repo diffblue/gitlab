@@ -17293,9 +17293,6 @@ msgstr ""
 msgid "Import project members"
 msgstr ""
 
-msgid "Import project/repository"
-msgstr ""
-
 msgid "Import projects from Bitbucket"
 msgstr ""
 

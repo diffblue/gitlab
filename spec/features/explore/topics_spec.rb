@@ -10,7 +10,7 @@ RSpec.describe 'Explore Topics' do
   let(:project_public) { create(:project, :public) }
 
   context 'when no topics exist' do
-    it 'renders empty message' do
+    it 'renders empty message', :aggregate_failures do
       visit topics_explore_projects_path
 
       expect(current_path).to eq topics_explore_projects_path
@@ -31,7 +31,7 @@ RSpec.describe 'Explore Topics' do
         sign_in(user)
       end
 
-      it 'renders all topics correcty' do
+      it 'renders all topics correcty', :aggregate_failures do
         visit topics_explore_projects_path
 
         expect(current_path).to eq topics_explore_projects_path
@@ -41,7 +41,7 @@ RSpec.describe 'Explore Topics' do
         expect(page).to have_content('topic4')
       end
 
-      it 'renders personal topics correcty' do
+      it 'renders personal topics correcty', :aggregate_failures do
         visit topics_explore_projects_path(personal: true)
 
         expect(current_path).to eq topics_explore_projects_path
@@ -53,7 +53,7 @@ RSpec.describe 'Explore Topics' do
     end
 
     context 'as anonymous user' do
-      it 'renders all topics correcty' do
+      it 'renders all topics correcty', :aggregate_failures do
         visit topics_explore_projects_path
 
         expect(current_path).to eq topics_explore_projects_path

@@ -34,7 +34,7 @@ RSpec.describe 'User explores projects' do
           visit(explore_projects_path(topic: 'topic1'))
         end
 
-        it 'shows correct projects' do
+        it 'shows correct projects', :aggregate_failures do
           expect(page).to have_content(public_project.title)
           expect(page).not_to have_content(internal_project.title)
           expect(page).not_to have_content(private_project.title)
@@ -117,7 +117,7 @@ RSpec.describe 'User explores projects' do
           visit(explore_projects_path(topic: 'topic1'))
         end
 
-        it 'shows correct projects' do
+        it 'shows correct projects', :aggregate_failures do
           expect(page).to have_content(public_project.title)
           expect(page).to have_content(internal_project.title)
           expect(page).not_to have_content(private_project.title)
