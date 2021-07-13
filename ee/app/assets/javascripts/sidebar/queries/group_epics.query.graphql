@@ -1,9 +1,15 @@
 #import "./epic.fragment.graphql"
 
-query issueEpics($fullPath: ID!, $title: String, $state: EpicState) {
+query issueEpics(
+  $fullPath: ID!
+  $title: String
+  $state: EpicState
+  $in: [IssuableSearchableField!]
+) {
   workspace: group(fullPath: $fullPath) {
     attributes: epics(
       search: $title
+      in: $in
       state: $state
       includeAncestorGroups: true
       includeDescendantGroups: false
