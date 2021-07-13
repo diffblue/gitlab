@@ -5175,6 +5175,27 @@ msgstr ""
 msgid "BillingPlan|Upgrade for free"
 msgstr ""
 
+msgid "Billings|%{planName} plan"
+msgstr ""
+
+msgid "Billings|An error occurred while exending your trial."
+msgstr ""
+
+msgid "Billings|An error occurred while reactivating your trial."
+msgstr ""
+
+msgid "Billings|By extending your trial, you will receive an additional 30 days of %{planName}. Your trial can be only extended once."
+msgstr ""
+
+msgid "Billings|By reactivating your trial, you will receive an additional 30 days of %{planName}. Your trial can be only reactivated once."
+msgstr ""
+
+msgid "Billings|Extend trial"
+msgstr ""
+
+msgid "Billings|Reactivate trial"
+msgstr ""
+
 msgid "Billings|Shared runners cannot be enabled until a valid credit card is on file."
 msgstr ""
 
