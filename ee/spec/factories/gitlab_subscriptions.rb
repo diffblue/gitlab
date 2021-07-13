@@ -20,10 +20,20 @@ FactoryBot.define do
       trial_ends_on { Date.current.advance(days: 15) }
     end
 
+    trait :extended_trial do
+      active_trial
+      trial_extension_type { GitlabSubscription.trial_extension_types[:extended] }
+    end
+
     trait :expired_trial do
       trial { true }
       trial_starts_on { Date.current.advance(days: -31) }
       trial_ends_on { Date.current.advance(days: -1) }
+    end
+
+    trait :reactivated_trial do
+      expired_trial
+      trial_extension_type { GitlabSubscription.trial_extension_types[:reactivated] }
     end
 
     trait :default do
