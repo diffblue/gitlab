@@ -7,6 +7,8 @@ pages:
     - .default-retry
     - .pages:rules
   stage: pages
+  environment: pages
+  resource_group: pages
   needs:
     - job: "rspec:coverage"
     - job: "coverage-frontend"
