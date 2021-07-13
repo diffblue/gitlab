@@ -1,13 +1,15 @@
 <script>
-import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { produce } from 'immer';
 import createFlash from '~/flash';
 import { __, sprintf } from '~/locale';
 import { todoQueries, TodoMutationTypes, todoMutations } from '~/sidebar/constants';
-import TodoButton from '~/vue_shared/components/sidebar/todo_button.vue';
+import { todoLabel } from '~/vue_shared/components/sidebar/todo_toggle//utils';
+import TodoButton from '~/vue_shared/components/sidebar/todo_toggle/todo_button.vue';
 
 export default {
   components: {
+    GlButton,
     GlIcon,
     TodoButton,
   },
@@ -96,7 +98,7 @@ export default {
       return this.hasTodo ? 'todo-done' : 'todo-add';
     },
     tootltipTitle() {
-      return this.hasTodo ? __('Mark as done') : __('Add a to do');
+      return todoLabel(this.hasTodo);
     },
   },
   methods: {
@@ -173,16 +175,21 @@ export default {
       class="hide-collapsed"
       @click.stop.prevent="toggleTodo"
     />
-    <div v-if="isClassicSidebar" class="sidebar-collapsed-icon sidebar-collapsed-container">
+    <gl-button
+      v-if="isClassicSidebar"
+      category="tertiary"
+      type="reset"
+      class="sidebar-collapsed-icon sidebar-collapsed-container gl-rounded-0! gl-shadow-none!"
+      @click.stop.prevent="toggleTodo"
+    >
       <gl-icon
-        v-gl-tooltip
+        v-gl-tooltip.left.viewport
         :title="tootltipTitle"
         :size="16"
         :class="{ 'todo-undone': hasTodo }"
         :name="collapsedButtonIcon"
         :aria-label="collapsedButtonIcon"
-        @click.stop.prevent="toggleTodo"
       />
-    </div>
+    </gl-button>
   </div>
 </template>

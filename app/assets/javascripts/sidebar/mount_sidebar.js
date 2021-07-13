@@ -2,6 +2,8 @@ import $ from 'jquery';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createFlash from '~/flash';
+import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import initInviteMembersModal from '~/invite_members/init_invite_members_modal';
 import initInviteMembersTrigger from '~/invite_members/init_invite_members_trigger';
 import { IssuableType } from '~/issue_show/constants';
@@ -22,7 +24,6 @@ import SidebarDropdownWidget from '~/sidebar/components/sidebar_dropdown_widget.
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import { apolloProvider } from '~/sidebar/graphql';
 import trackShowInviteMemberLink from '~/sidebar/track_invite_members';
-import { toIssueGid, toMergeRequestGid } from '~/sidebar/utils';
 import Translate from '../vue_shared/translate';
 import SidebarAssignees from './components/assignees/sidebar_assignees.vue';
 import CopyEmailToClipboard from './components/copy_email_to_clipboard.vue';
@@ -64,7 +65,10 @@ function mountSidebarToDoWidget() {
       createElement('sidebar-todo-widget', {
         props: {
           fullPath: projectPath,
-          issuableId: isInIssuePage() || isInDesignPage() ? toIssueGid(id) : toMergeRequestGid(id),
+          issuableId:
+            isInIssuePage() || isInDesignPage()
+              ? convertToGraphQLId(TYPE_ISSUE, id)
+              : convertToGraphQLId(TYPE_MERGE_REQUEST, id),
           issuableIid: iid,
           issuableType:
             isInIssuePage() || isInDesignPage() ? IssuableType.Issue : IssuableType.MergeRequest,
