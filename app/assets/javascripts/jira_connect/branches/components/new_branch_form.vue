@@ -114,7 +114,7 @@ export default {
 
           this.displayAlert({
             title: __('New branch was successfully created.'),
-            message: __('You can now close this window and return to Jira'),
+            message: __('You can now close this window and return to Jira.'),
             variant: 'success',
             primaryButtonLink: 'jira',
             primaryButtonText: __('Return to Jira'),

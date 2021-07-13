@@ -13461,6 +13461,12 @@ msgstr ""
 msgid "Failed to create a to-do item for the design."
 msgstr ""
 
+msgid "Failed to create branch."
+msgstr ""
+
+msgid "Failed to create branch. Please try again."
+msgstr ""
+
 msgid "Failed to create framework"
 msgstr ""
 
@@ -21901,6 +21907,9 @@ msgstr ""
 msgid "New branch unavailable"
 msgstr ""
 
+msgid "New branch was successfully created."
+msgstr ""
+
 msgid "New changes were added. %{linkStart}Reload the page to review them%{linkEnd}"
 msgstr ""
 
@@ -28023,6 +28032,9 @@ msgstr ""
 msgid "Retry verification"
 msgstr ""
 
+msgid "Return to Jira"
+msgstr ""
+
 msgid "Reveal value"
 msgid_plural "Reveal values"
 msgstr[0] ""
@@ -30853,6 +30865,9 @@ msgid "Source Editor instance is required to set up an extension."
 msgstr ""
 
 msgid "Source IP"
+msgstr ""
+
+msgid "Source branch"
 msgstr ""
 
 msgid "Source branch: %{source_branch_open}%{source_branch}%{source_branch_close}"
@@ -37444,6 +37459,9 @@ msgid "You can move around the graph by using the arrow keys."
 msgstr ""
 
 msgid "You can notify the app / group or a project by sending them an email notification"
+msgstr ""
+
+msgid "You can now close this window and return to Jira."
 msgstr ""
 
 msgid "You can now close this window."
