@@ -54,5 +54,19 @@ RSpec.describe Mutations::Boards::Issues::IssueMoveList do
         expect(issue1.relative_position).to eq(3)
       end
     end
+
+    context 'when user cannot be assigned to issue' do
+      before do
+        stub_licensed_features(board_assignee_lists: true)
+      end
+
+      it 'returns error on result' do
+        params[:to_list_id] = create(:user_list, board: board, position: 2).id
+
+        result = mutation.resolve(**params)
+
+        expect(result[:errors]).to eq(['Not authorized to assign issue to list user'])
+      end
+    end
   end
 end

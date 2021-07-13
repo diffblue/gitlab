@@ -259,6 +259,17 @@ RSpec.describe Boards::Issues::MoveService, services: true do
         expect(issue.assignees).to contain_exactly(user)
         expect(issue.milestone).to eq(milestone1)
       end
+
+      context 'when cannot assign to target list user' do
+        it 'returns error' do
+          random_list = create(:user_list, board: board1, position: 2)
+          params = { board_id: board1.id, from_list_id: user_list1.id, to_list_id: random_list.id }
+
+          result = described_class.new(parent, user, params).execute(issue)
+
+          expect(result[:status]).to eq(:error)
+        end
+      end
     end
   end
 

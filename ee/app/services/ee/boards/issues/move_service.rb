@@ -6,6 +6,15 @@ module EE
       module MoveService
         extend ::Gitlab::Utils::Override
 
+        override :execute
+        def execute(issue)
+          unless assignee_authorized_for?(issue)
+            return error(issue, 'Not authorized to assign issue to list user')
+          end
+
+          super
+        end
+
         override :issuable_params
         def issuable_params(issue)
           args = super
@@ -18,6 +27,12 @@ module EE
           end
 
           args.merge(list_movement_args(issue))
+        end
+
+        def assignee_authorized_for?(issue)
+          return true unless moving_to_list&.assignee?
+
+          Ability.allowed?(moving_to_list.user, :read_issue, issue)
         end
 
         def both_are_list_type?(type)
