@@ -1,0 +1,4 @@
+- if project.marked_for_deletion?
+  %span.badge.badge-warning.badge-pill.gl-badge.md= _('pending deletion')
+- elsif project.archived
+  %span.badge.badge-warning.badge-pill.gl-badge.md= _('archived')

@@ -1,0 +1,2 @@
+- unless project.marked_for_deletion?
+  = link_to _('Delete'), project, data: { confirm: remove_project_message(project) }, method: :delete, class: "btn gl-button btn-danger"
