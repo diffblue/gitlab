@@ -42,6 +42,18 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
         expect(resolve_requirements(iids: [requirement1.iid, requirement3.iid])).to contain_exactly(requirement1, requirement3)
       end
 
+      it 'preloads correct latest test report' do
+        requirement_2_latest_report = create(:test_report, requirement: requirement2, created_at: 1.hour.ago)
+        create(:test_report, requirement: requirement1, created_at: 2.hours.ago)
+        create(:test_report, requirement: requirement2, created_at: 4.hours.ago)
+        requirement_3_latest_report = create(:test_report, requirement: requirement3, created_at: 3.hours.ago)
+
+        requirements = resolve_requirements(sort: 'created_desc').to_a
+
+        expect(requirements[0].latest_report).to eq(requirement_2_latest_report)
+        expect(requirements[1].latest_report).to eq(requirement_3_latest_report)
+      end
+
       context 'when filtering by last test report state' do
         before do
           create(:test_report, state: :failed)
