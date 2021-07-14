@@ -3149,11 +3149,13 @@ RSpec.describe API::Projects do
       end
 
       it 'does not update an invalid squash_option' do
+        current_squash_option = project3.reload.squash_option
         project_param = { squash_option: "jawn" }
 
         put api("/projects/#{project3.id}", user), params: project_param
 
         expect(response).to have_gitlab_http_status(:bad_request)
+        expect(project3.reload.squash_option).to eq(current_squash_option)
       end
     end
 
