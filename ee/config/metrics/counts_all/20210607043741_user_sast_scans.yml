@@ -7,6 +7,7 @@ product_group: group::static analysis
 product_category: static_application_security_testing
 value_type: number
 status: data_available
+data_category: Optional
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444
 time_frame: all
 data_source: database
