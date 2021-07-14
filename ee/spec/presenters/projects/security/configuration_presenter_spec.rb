@@ -151,25 +151,6 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
         )
       end
 
-      it 'works with both legacy and current job formats' do
-        stub_feature_flags(ci_build_metadata_config: false)
-
-        create(:ci_build, :sast, pipeline: pipeline)
-
-        expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
-          security_scan(:dast, configured: false),
-          security_scan(:dast_profiles, configured: true),
-          security_scan(:sast, configured: true),
-          security_scan(:container_scanning, configured: false),
-          security_scan(:cluster_image_scanning, configured: false),
-          security_scan(:dependency_scanning, configured: false),
-          security_scan(:license_scanning, configured: false),
-          security_scan(:secret_detection, configured: false),
-          security_scan(:coverage_fuzzing, configured: false),
-          security_scan(:api_fuzzing, configured: false)
-        )
-      end
-
       it 'detects security jobs even when the job has more than one report' do
         config = { artifacts: { reports: { other_job: ['gl-other-report.json'], sast: ['gl-sast-report.json'] } } }
         complicated_job = build_stubbed(:ci_build, options: config)
