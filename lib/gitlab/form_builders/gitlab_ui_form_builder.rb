@@ -3,13 +3,25 @@
 module Gitlab
   module FormBuilders
     class GitlabUiFormBuilder < ActionView::Helpers::FormBuilder
-      def gitlab_ui_checkbox_component(method, label, help_text: nil, checkbox_options: {}, label_options: {})
+      def gitlab_ui_checkbox_component(
+        method,
+        label,
+        help_text: nil,
+        checkbox_options: {},
+        checked_value: '1',
+        unchecked_value: '0',
+        label_options: {}
+      )
         @template.content_tag(
           :div,
           class: 'gl-form-checkbox custom-control custom-checkbox'
         ) do
           @template.check_box(
-            @object_name, method, format_options(checkbox_options, ['custom-control-input'])
+            @object_name,
+            method,
+            format_options(checkbox_options, ['custom-control-input']),
+            checked_value,
+            unchecked_value
           ) +
           @template.label(
             @object_name, method, format_options(label_options, ['custom-control-label'])

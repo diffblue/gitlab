@@ -41,15 +41,17 @@ RSpec.describe Gitlab::FormBuilders::GitlabUiFormBuilder do
         {
           help_text: 'Instead of all the files changed, show only one file at a time.',
           checkbox_options: { class: 'checkbox-foo-bar' },
-          label_options: { class: 'label-foo-bar' }
+          label_options: { class: 'label-foo-bar' },
+          checked_value: '3',
+          unchecked_value: '1'
         }
       end
 
       it 'renders help text' do
         expected_html = <<~EOS
           <div class="gl-form-checkbox custom-control custom-checkbox">
-            <input name="user[view_diffs_file_by_file]" type="hidden" value="0" />
-            <input class="custom-control-input checkbox-foo-bar" type="checkbox" value="1" name="user[view_diffs_file_by_file]" id="user_view_diffs_file_by_file" />
+            <input name="user[view_diffs_file_by_file]" type="hidden" value="1" />
+            <input class="custom-control-input checkbox-foo-bar" type="checkbox" value="3" name="user[view_diffs_file_by_file]" id="user_view_diffs_file_by_file" />
             <label class="custom-control-label label-foo-bar" for="user_view_diffs_file_by_file">
               <span>Show one file at a time on merge request&#39;s Changes tab</span>
               <p class="help-text">Instead of all the files changed, show only one file at a time.</p>
@@ -58,6 +60,22 @@ RSpec.describe Gitlab::FormBuilders::GitlabUiFormBuilder do
         EOS
 
         expect(checkbox_html).to eq(html_strip_whitespace(expected_html))
+      end
+
+      it 'passes arguments to `check_box` method' do
+        allow(fake_template).to receive(:check_box).and_return('')
+
+        checkbox_html
+
+        expect(fake_template).to have_received(:check_box).with(:user, :view_diffs_file_by_file, { class: %w(custom-control-input checkbox-foo-bar), object: user }, '3', '1')
+      end
+
+      it 'passes arguments to `label` method' do
+        allow(fake_template).to receive(:label).and_return('')
+
+        checkbox_html
+
+        expect(fake_template).to have_received(:label).with(:user, :view_diffs_file_by_file, { class: %w(custom-control-label label-foo-bar), object: user })
       end
     end
   end

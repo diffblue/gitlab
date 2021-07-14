@@ -53,5 +53,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 | `method` | Attribute on the object passed to `gitlab_ui_form_for`. | `Symbol` | `true` |
 | `label` | Checkbox label. | `String` | `true` |
 | `help_text` | Help text displayed below the checkbox. | `String` | `false` (`nil`) |
-| `checkbox_options` | Options that are passed to [Rails `check_box` method](https://apidock.com/rails/ActionView/Helpers/FormHelper/check_box). | `Hash` | `false` (`{}`) |
-| `label_options` | Options that are passed to [Rails `label` method](https://apidock.com/rails/ActionView/Helpers/FormHelper/label). | `Hash` | `false` (`{}`) |
+| `checkbox_options` | Options that are passed to [Rails `check_box` method](https://api.rubyonrails.org/classes/ActionView/Helpers/FormBuilder.html#method-i-check_box). | `Hash` | `false` (`{}`) |
+| `checked_value` | Value when checkbox is checked. | `String` | `false` (`'1'`) |
+| `unchecked_value` | Value when checkbox is unchecked. | `String` | `false` (`'0'`) |
+| `label_options` | Options that are passed to [Rails `label` method](https://api.rubyonrails.org/classes/ActionView/Helpers/FormBuilder.html#method-i-label). | `Hash` | `false` (`{}`) |
