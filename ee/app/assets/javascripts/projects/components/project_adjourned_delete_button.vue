@@ -30,7 +30,7 @@ export default {
   },
   strings: {
     modalBody: __(
-      "Once a project is permanently deleted, it cannot be recovered. You will lose this project's repository and all related resources, including issues, merge requests etc.",
+      "Once a project is permanently deleted, it cannot be recovered. You will lose this project's repository and all related resources, including issues and merge requests.",
     ),
     helpLabel: __('Recovering projects'),
     recoveryMessage: __('You can recover this project until %{date}'),
