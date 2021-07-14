@@ -999,7 +999,8 @@ RSpec.describe API::Projects do
         request_access_enabled: true,
         only_allow_merge_if_all_discussions_are_resolved: false,
         ci_config_path: 'a/custom/path',
-        merge_method: 'ff'
+        merge_method: 'ff',
+        squash_option: 'always'
       }).tap do |attrs|
         attrs[:operations_access_level] = 'disabled'
         attrs[:analytics_access_level] = 'disabled'
@@ -3135,6 +3136,24 @@ RSpec.describe API::Projects do
         expect(response).to have_gitlab_http_status(:ok)
 
         expect(json_response['topics']).to eq(%w[topic2])
+      end
+
+      it 'updates squash_option' do
+        project_param = { squash_option: "default_on" }
+
+        put api("/projects/#{project3.id}", user), params: project_param
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(project3.reload.squash_option).to eq("default_on")
+        expect(json_response['squash_option']).to eq("default_on")
+      end
+
+      it 'does not update an invalid squash_option' do
+        project_param = { squash_option: "jawn" }
+
+        put api("/projects/#{project3.id}", user), params: project_param
+
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
 
