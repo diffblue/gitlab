@@ -198,6 +198,36 @@ RSpec.describe TrialsController do
         subject
       end
 
+      context 'in discover group security flow' do
+        let(:post_params) { { namespace_id: namespace.id, glm_content: 'discover-group-security' } }
+
+        context 'with redirect_trial_user_to_feature experiment variant' do
+          before do
+            stub_experiments(redirect_trial_user_to_feature: :candidate)
+          end
+
+          it { is_expected.to redirect_to(group_security_dashboard_url(namespace, { trial: true })) }
+          it 'records the subject' do
+            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: :experimental, subject: namespace)
+
+            subject
+          end
+        end
+
+        context 'with redirect_trial_user_to_feature experiment control' do
+          before do
+            stub_experiments(redirect_trial_user_to_feature: :control)
+          end
+
+          it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+          it 'records the subject' do
+            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: :control, subject: namespace)
+
+            subject
+          end
+        end
+      end
+
       context 'with a new Group' do
         let(:post_params) { { new_group_name: 'GitLab' } }
 

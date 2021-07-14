@@ -1,7 +1,9 @@
-%section.gl-banner.gl-banner-introduction{ data: { uid: 'trial_success_banner_dismissed' } }
-  .gl-banner-illustration
-    = image_tag('illustrations/illustration-congratulation-purchase.svg', alt: s_('Trial|Successful trial activation image'))
-  .gl-banner-content.gl-my-auto
-    %h3.gl-banner-title= _('Congratulations, your free trial is activated.')
-  %button.gl-banner-close.close.js-close-session.js-close-callout{ type: 'button', 'aria-label' => s_('Trial|Dismiss') }
-    = sprite_icon('close', css_class: 'dismiss-icon')
+.row
+  .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-mt-3
+    %section.gl-banner.gl-banner-introduction{ data: { uid: 'trial_success_banner_dismissed' } }
+      .gl-banner-illustration
+        = image_tag('illustrations/illustration-congratulation-purchase.svg', alt: s_('Trial|Successful trial activation image'))
+      .gl-banner-content.gl-my-auto
+        %h3.gl-banner-title= _('Congratulations, your free trial is activated.')
+      %button.gl-banner-close.close.js-close-session.js-close-callout{ type: 'button', 'aria-label' => s_('Trial|Dismiss') }
+        = sprite_icon('close', css_class: 'dismiss-icon')

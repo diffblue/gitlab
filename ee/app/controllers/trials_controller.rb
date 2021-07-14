@@ -45,7 +45,11 @@ class TrialsController < ApplicationController
       record_experiment_conversion_event(:remove_known_trial_form_fields)
       record_experiment_conversion_event(:trial_onboarding_issues)
 
-      redirect_to group_url(@namespace, { trial: true })
+      if discover_group_security_flow?
+        redirect_trial_user_to_feature_experiment_flow
+      else
+        redirect_to group_url(@namespace, { trial: true })
+      end
     else
       render :select
     end
@@ -176,5 +180,17 @@ class TrialsController < ApplicationController
       last_name_present: current_user.last_name.present?,
       company_name_present: current_user.organization.present?
     }
+  end
+
+  def redirect_trial_user_to_feature_experiment_flow
+    experiment(:redirect_trial_user_to_feature, namespace: @namespace) do |e|
+      e.record!
+      e.use { redirect_to group_url(@namespace, { trial: true }) }
+      e.try { redirect_to group_security_dashboard_url(@namespace, { trial: true }) }
+    end
+  end
+
+  def discover_group_security_flow?
+    params[:glm_content] == 'discover-group-security'
   end
 end

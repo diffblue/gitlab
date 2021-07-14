@@ -2,4 +2,5 @@
 - page_title _("Security Dashboard")
 - add_page_specific_style 'page_bundles/security_dashboard'
 
+= render 'registrations/trial_is_activated_banner' if params[:trial] == 'true'
 #js-group-security-dashboard{ data: group_level_security_dashboard_data(@group) }
