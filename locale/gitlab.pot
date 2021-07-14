@@ -28420,6 +28420,9 @@ msgstr ""
 msgid "Runners|Something went wrong while fetching the tags suggestions"
 msgstr ""
 
+msgid "Runners|Stop the runner from accepting new jobs."
+msgstr ""
+
 msgid "Runners|Tags"
 msgstr ""
 
@@ -28439,6 +28442,15 @@ msgid "Runners|To install Runner in a container follow the instructions describe
 msgstr ""
 
 msgid "Runners|Use Group runners when you want all projects in a group to have access to a set of runners."
+msgstr ""
+
+msgid "Runners|Use the runner for jobs without tags, in addition to tagged jobs."
+msgstr ""
+
+msgid "Runners|Use the runner for the currently assigned projects only."
+msgstr ""
+
+msgid "Runners|Use the runner on pipelines for protected branches only."
 msgstr ""
 
 msgid "Runners|Value"
