@@ -63,22 +63,22 @@ export default {
 <template>
   <div>
     <div class="d-flex justify-content-between bold gl-mt-3 gl-mb-3">
-      <div class="js-selected-plan">
+      <div data-testid="selected-plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span v-if="quantity > 0" class="js-quantity">{{
+        <span v-if="quantity > 0" data-testid="quantity">{{
           sprintf($options.i18n.quantity, { quantity })
         }}</span>
       </div>
-      <div class="js-amount">{{ formatAmount(totalExVat, quantity > 0) }}</div>
+      <div data-testid="amount">{{ formatAmount(totalExVat, quantity > 0) }}</div>
     </div>
-    <div class="text-secondary js-per-unit">
+    <div class="text-secondary" data-testid="price-per-unit">
       {{
         sprintf($options.i18n.pricePerUnitPerYear, {
           selectedPlanPrice: selectedPlanPrice.toLocaleString(),
         })
       }}
     </div>
-    <div v-if="purchaseHasExpiration" class="text-secondary js-dates">
+    <div v-if="purchaseHasExpiration" class="text-secondary" data-testid="subscription-period">
       {{
         sprintf($options.i18n.dates, {
           startDate: formatDate(startDate),
@@ -90,17 +90,17 @@ export default {
       <div class="border-bottom gl-mt-3 gl-mb-3"></div>
       <div class="d-flex justify-content-between text-secondary">
         <div>{{ $options.i18n.subtotal }}</div>
-        <div class="js-total-ex-vat">{{ formatAmount(totalExVat, quantity > 0) }}</div>
+        <div data-testid="total-ex-vat">{{ formatAmount(totalExVat, quantity > 0) }}</div>
       </div>
       <div class="d-flex justify-content-between text-secondary">
         <div>{{ $options.i18n.tax }}</div>
-        <div class="js-vat">{{ formatAmount(vat, quantity > 0) }}</div>
+        <div data-testid="vat">{{ formatAmount(vat, quantity > 0) }}</div>
       </div>
     </div>
     <div class="border-bottom gl-mt-3 gl-mb-3"></div>
     <div class="d-flex justify-content-between bold gl-font-lg">
       <div>{{ $options.i18n.total }}</div>
-      <div class="js-total-amount">{{ formatAmount(totalAmount, quantity > 0) }}</div>
+      <div data-itestid="total-amount">{{ formatAmount(totalAmount, quantity > 0) }}</div>
     </div>
   </div>
 </template>
