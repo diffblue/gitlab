@@ -134,3 +134,10 @@ function fail_pipeline_early() {
     scripts/api/cancel_pipeline.rb
   fi
 }
+
+function danger_as_local() {
+  # Force danger to skip CI source GitLab and fallback to "local only git repo".
+  unset GITLAB_CI
+  # We need to base SHA to help danger determine the base commit for this shallow clone.
+  bundle exec danger dry_run --fail-on-errors=true --verbose --base="${CI_MERGE_REQUEST_DIFF_BASE_SHA}"
+}
