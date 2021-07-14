@@ -40,7 +40,7 @@ RSpec.describe UsersFinder do
         end
 
         it 'returns only saml users from the provided saml_provider_id' do
-          users = described_class.new(normal_user, by_saml_provider_id: saml_provider.id).execute
+          users = described_class.new(normal_user, saml_provider_id: saml_provider.id).execute
 
           expect(users).to contain_exactly(saml_user)
         end
