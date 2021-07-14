@@ -40,7 +40,7 @@ function bundle_install_script() {
   bundle config set path 'vendor'
   bundle config set clean 'true'
 
-  echo $BUNDLE_WITHOUT
+  echo "${BUNDLE_WITHOUT}"
   bundle config
 
   run_timed_command "bundle install ${BUNDLE_INSTALL_FLAGS} ${extra_install_args} && bundle check"
