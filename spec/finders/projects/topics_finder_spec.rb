@@ -108,7 +108,7 @@ RSpec.describe Projects::TopicsFinder do
         it 'returns correct topics filtered by name' do
           topics = described_class.new(params: { search: search }).execute
 
-          expect(topics.map(&:name)).to contain_exactly(*expected_topics)
+          expect(topics.map(&:name)).to match_array(expected_topics)
         end
       end
     end
