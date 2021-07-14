@@ -170,7 +170,7 @@ class BoardsStoreEE {
     issue.epic = newEpic;
   }
 
-  updateWeight(newWeight, id) {
+  updateWeight({ id, value: newWeight }) {
     const { issue } = this.store.detail;
     if (issue.id === id && issue.sidebarInfoEndpoint) {
       issue.setLoadingState('weight', true);

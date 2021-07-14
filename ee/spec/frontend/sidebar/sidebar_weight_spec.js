@@ -36,7 +36,7 @@ describe('Sidebar Weight', () => {
       mediator: sidebarMediator,
     });
 
-    eventHub.$emit('updateWeight');
+    eventHub.$emit('updateWeight', { value: '' });
 
     expect(SidebarMediator.prototype.updateWeight).toHaveBeenCalled();
   });

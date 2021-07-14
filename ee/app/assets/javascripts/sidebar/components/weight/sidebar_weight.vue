@@ -26,7 +26,7 @@ export default {
   },
 
   methods: {
-    onUpdateWeight(newWeight) {
+    onUpdateWeight({ value: newWeight }) {
       this.mediator.updateWeight(newWeight).catch(() => {
         createFlash({
           message: __('Error occurred while updating the issue weight'),
