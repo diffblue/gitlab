@@ -31,6 +31,7 @@ import { refreshUserMergeRequestCounts } from '~/commons/nav/user_merge_requests
 import Translate from '../vue_shared/translate';
 import SidebarAssignees from './components/assignees/sidebar_assignees.vue';
 import CopyEmailToClipboard from './components/copy_email_to_clipboard.vue';
+import SidebarEscalationStatus from './components/incidents/sidebar_escalation_status.vue';
 import IssuableLockForm from './components/lock/issuable_lock_form.vue';
 import SidebarReviewers from './components/reviewers/sidebar_reviewers.vue';
 import SidebarSeverity from './components/severity/sidebar_severity.vue';
@@ -568,6 +569,36 @@ function mountSeverityComponent() {
   });
 }
 
+function mountEscalationStatusComponent() {
+  const statusContainerEl = document.querySelector('#js-escalation-status');
+
+  if (!statusContainerEl) {
+    return false;
+  }
+
+  const { issuableType } = getSidebarOptions();
+  const { canUpdate, issueIid, projectPath } = statusContainerEl.dataset;
+
+  return new Vue({
+    el: statusContainerEl,
+    apolloProvider,
+    components: {
+      SidebarEscalationStatus,
+    },
+    provide: {
+      canUpdate: parseBoolean(canUpdate),
+    },
+    render: (createElement) =>
+      createElement('sidebar-escalation-status', {
+        props: {
+          iid: issueIid,
+          issuableType,
+          projectPath,
+        },
+      }),
+  });
+}
+
 function mountCopyEmailComponent() {
   const el = document.getElementById('issuable-copy-email');
 
@@ -618,6 +649,8 @@ export function mountSidebar(mediator, store) {
   mountTimeTrackingComponent();
 
   mountSeverityComponent();
+
+  mountEscalationStatusComponent();
 
   if (window.gon?.features?.mrAttentionRequests) {
     eventHub.$on('removeCurrentUserAttentionRequested', () => {

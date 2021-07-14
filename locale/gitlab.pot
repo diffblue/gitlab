@@ -19338,6 +19338,9 @@ msgstr ""
 msgid "IncidentManagement|Achieved SLA"
 msgstr ""
 
+msgid "IncidentManagement|Acknowledged"
+msgstr ""
+
 msgid "IncidentManagement|All"
 msgstr ""
 
@@ -19345,6 +19348,15 @@ msgid "IncidentManagement|All alerts promoted to incidents are automatically dis
 msgstr ""
 
 msgid "IncidentManagement|All alerts promoted to incidents are automatically displayed within the list. You can also create a new incident using the button below."
+msgstr ""
+
+msgid "IncidentManagement|An error occurred while fetching the incident status. Please reload the page."
+msgstr ""
+
+msgid "IncidentManagement|An error occurred while updating the incident status. Please reload the page and try again."
+msgstr ""
+
+msgid "IncidentManagement|Assign paging status"
 msgstr ""
 
 msgid "IncidentManagement|Assignees"
@@ -19404,6 +19416,12 @@ msgstr ""
 msgid "IncidentManagement|Published to status page"
 msgstr ""
 
+msgid "IncidentManagement|Resolved"
+msgstr ""
+
+msgid "IncidentManagement|Setting the status to Acknowledged or Resolved stops paging when escalation policies are selected for the incident."
+msgstr ""
+
 msgid "IncidentManagement|Severity"
 msgstr ""
 
@@ -19417,6 +19435,9 @@ msgid "IncidentManagement|There was an error displaying the incidents."
 msgstr ""
 
 msgid "IncidentManagement|Time to SLA"
+msgstr ""
+
+msgid "IncidentManagement|Triggered"
 msgstr ""
 
 msgid "IncidentManagement|Unassigned"

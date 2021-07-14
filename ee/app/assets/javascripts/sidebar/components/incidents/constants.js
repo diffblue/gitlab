@@ -14,3 +14,10 @@ export const i18nPolicyText = {
   title: SIDEBAR_ESCALATION_POLICY_TITLE,
   none,
 };
+
+export const i18nStatusText = {
+  dropdownHeader: s__('IncidentManagement|Assign paging status'),
+  dropdownInfo: s__(
+    'IncidentManagement|Setting the status to Acknowledged or Resolved stops paging when escalation policies are selected for the incident.',
+  ),
+};
