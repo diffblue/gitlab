@@ -25,4 +25,32 @@ RSpec.describe Gitlab::Database::Reindexing do
       subject
     end
   end
+
+  describe '.cleanup_leftovers!' do
+    subject { described_class.cleanup_leftovers! }
+
+    before do
+      ApplicationRecord.connection.execute(<<~SQL)
+        CREATE INDEX foobar_ccnew ON users (id);
+        CREATE INDEX foobar_ccnew1 ON users (id);
+      SQL
+    end
+
+    it 'drops both leftover indexes' do
+      expect_query("SET lock_timeout TO '60000ms'")
+      expect_query("DROP INDEX CONCURRENTLY IF EXISTS \"public\".\"foobar_ccnew\"")
+      expect_query("RESET idle_in_transaction_session_timeout; RESET lock_timeout")
+      expect_query("SET lock_timeout TO '60000ms'")
+      expect_query("DROP INDEX CONCURRENTLY IF EXISTS \"public\".\"foobar_ccnew1\"")
+      expect_query("RESET idle_in_transaction_session_timeout; RESET lock_timeout")
+
+      subject
+    end
+
+    def expect_query(sql)
+      expect(ApplicationRecord.connection).to receive(:execute).ordered.with(sql).and_wrap_original do |method, sql|
+        method.call(sql.sub(/CONCURRENTLY/, ''))
+      end
+    end
+  end
 end

@@ -173,6 +173,9 @@ namespace :gitlab do
 
       ActiveRecord::Base.logger = Logger.new($stdout) if Gitlab::Utils.to_boolean(ENV['LOG_QUERIES_TO_CONSOLE'], default: false)
 
+      # Cleanup leftover temporary indexes from previous, possibly aborted runs (if any)
+      Gitlab::Database::Reindexing.cleanup_leftovers!
+
       Gitlab::Database::Reindexing.perform(indexes)
     rescue StandardError => e
       Gitlab::AppLogger.error(e)

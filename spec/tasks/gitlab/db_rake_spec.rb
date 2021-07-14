@@ -201,6 +201,12 @@ RSpec.describe 'gitlab:db namespace rake task', :silence_stdout do
     let(:reindex) { double('reindex') }
     let(:indexes) { double('indexes') }
 
+    it 'cleans up any leftover indexes' do
+      expect(Gitlab::Database::Reindexing).to receive(:cleanup_leftovers!)
+
+      run_rake_task('gitlab:db:reindex')
+    end
+
     context 'when no index_name is given' do
       it 'uses all candidate indexes' do
         expect(Gitlab::Database::PostgresIndex).to receive(:reindexing_support).and_return(indexes)
