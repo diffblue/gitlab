@@ -15,8 +15,6 @@ RSpec.describe Security::Finding do
   end
 
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:project_fingerprint) }
-    it { is_expected.to validate_length_of(:project_fingerprint).is_at_most(40) }
     it { is_expected.to validate_presence_of(:uuid) }
   end
 
