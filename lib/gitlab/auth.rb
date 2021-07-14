@@ -199,20 +199,26 @@ module Gitlab
 
         return unless valid_scoped_token?(token, all_available_scopes)
 
-        return unless token_bot_in_resource(token, project)
+        if project && token.user.project_bot?
+          return unless token_bot_in_project?(token.user, project) || token_bot_in_group?(token.user, project)
+        end
 
         if can_user_login_with_non_expired_password?(token.user) || token.user.project_bot?
           Gitlab::Auth::Result.new(token.user, nil, :personal_access_token, abilities_for_scopes(token.scopes))
         end
       end
 
+      def token_bot_in_project?(user, project)
+        project.bots.include?(user)
+      end
+
       # rubocop: disable CodeReuse/ActiveRecord
-      def token_bot_in_resource(token, project)
-        return true unless project && token.user.project_bot? && !project.bots.include?(token.user)
 
-        return false unless project.group
-
-        project.group.self_and_ancestors.where(id: token.user.groups).exists?
+      # The generic implementation of resource access token is functional
+      # but requires an additional check to verify if the token user is a member of
+      # the project's group, its ancestor groups, or its shared groups.
+      def token_bot_in_group?(user, project)
+        project.group && project.group.members_with_parents.where(user_id: user.id).exists?
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
