@@ -85,9 +85,11 @@ export default {
           <div class="d-flex">
             <gl-icon v-if="isBottomSummaryVisible" name="chevron-down" />
             <gl-icon v-else name="chevron-right" />
-            <div>{{ titleWithName }}</div>
+            <div data-testid="title">{{ titleWithName }}</div>
           </div>
-          <div class="gl-ml-3">{{ formatAmount(totalAmount, quantityPresent) }}</div>
+          <div class="gl-ml-3" data-testid="amount">
+            {{ formatAmount(totalAmount, quantityPresent) }}
+          </div>
         </h4>
       </div>
       <gl-collapse id="summary-details" v-model="isBottomSummaryVisible">

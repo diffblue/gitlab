@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import OrderSummary from 'ee/subscriptions/buy_minutes/components/order_summary.vue';
@@ -42,7 +42,7 @@ describe('Order Summary', () => {
   const createComponent = (stateData) => {
     const apolloProvider = createMockApolloProvider(stateData);
 
-    wrapper = mount(OrderSummary, {
+    wrapper = shallowMount(OrderSummary, {
       localVue,
       apolloProvider,
       propsData: {
@@ -63,58 +63,30 @@ describe('Order Summary', () => {
       });
     });
 
-    it('displays the chosen plan', () => {
-      expect(wrapper.find('.js-selected-plan').text()).toMatchInterpolatedText(
-        '1000 CI minutes pack plan (x1)',
+    it('displays the title', () => {
+      expect(wrapper.find('[data-testid="title"]').text()).toMatchInterpolatedText(
+        "Gitlab Org's CI minutes",
       );
-    });
-
-    it('displays the correct formatted amount price per pack', () => {
-      expect(wrapper.find('.js-per-unit').text()).toContain('$10 per pack per year');
-    });
-
-    it('displays the correct formatted total amount', () => {
-      expect(wrapper.find('.js-total-amount').text()).toContain('$10');
     });
   });
 
-  describe('changing quantity', () => {
+  describe('when quantity is greater than zero', () => {
     beforeEach(() => {
       createComponent({
         subscription: { quantity: 3 },
       });
     });
+  });
 
-    it('displays the correct quantity', () => {
-      expect(wrapper.find('.js-quantity').text()).toContain('(x3)');
-    });
-
-    it('displays the correct formatted amount price per unit', () => {
-      expect(wrapper.find('.js-per-unit').text()).toContain('$10 per pack per year');
-    });
-
-    it('displays the correct multiplied formatted amount of the chosen plan', () => {
-      expect(wrapper.find('.js-amount').text()).toContain('$30');
-    });
-
-    it('displays the correct formatted total amount', () => {
-      expect(wrapper.find('.js-total-amount').text()).toContain('$30');
-    });
-
-    describe('tax rate', () => {
-      beforeEach(() => {
-        createComponent();
+  describe('when quantity is less than or equal to zero', () => {
+    beforeEach(() => {
+      createComponent({
+        subscription: { quantity: 0 },
       });
+    });
 
-      describe('a tax rate of 0', () => {
-        it('should not display the total amount excluding vat', () => {
-          expect(wrapper.find('.js-total-ex-vat').exists()).toBe(false);
-        });
-
-        it('should not display the vat amount', () => {
-          expect(wrapper.find('.js-vat').exists()).toBe(false);
-        });
-      });
+    it('does not render amount', () => {
+      expect(wrapper.find('[data-testid="amount"]').text()).toBe('-');
     });
   });
 });
