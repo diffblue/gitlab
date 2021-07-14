@@ -22,7 +22,7 @@ RSpec.describe 'profiles/personal_access_tokens/_token_expiry_notification.html.
 
       it 'contains the correct content', :aggregate_failures do
         expect(rendered).to have_selector '[data-feature-id="profile_personal_access_token_expiry"]'
-        expect(rendered).to match /<use xlink:href=".+?icons-.+?#error">/
+        expect(rendered).to match /<use href=".+?icons-.+?#error">/
         expect(rendered).to have_content '2 tokens have expired'
         expect(rendered).to have_content 'Until revoked, expired personal access tokens pose a security risk.'
       end

@@ -46,7 +46,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
       end
 
       it 'has an icon' do
-        expect(rendered).to match(/<use xlink:href=".+?icons-.+?#warning">/)
+        expect(rendered).to match(/<use href=".+?icons-.+?#warning">/)
       end
     end
 
@@ -59,7 +59,7 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
       end
 
       it 'has an icon' do
-        expect(rendered).to match(/<use xlink:href=".+?icons-.+?#error">/)
+        expect(rendered).to match(/<use href=".+?icons-.+?#error">/)
       end
     end
   end
