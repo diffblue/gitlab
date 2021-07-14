@@ -20,17 +20,17 @@ RSpec.describe 'trial_registrations/new.html.haml' do
     context 'when in the control' do
       let_it_be(:trial_registration_with_reassurance_variant) { :control }
 
-      it 'does not include the reassurance sidebar content' do
-        is_expected.not_to have_content('No credit card required.')
-      end
+      it { is_expected.to have_content('Start a Free Ultimate Trial') }
+      it { is_expected.not_to have_content('Free 30-day trial') }
+      it { is_expected.not_to have_content('No credit card required.') }
     end
 
     context 'when in the candidate' do
       let_it_be(:trial_registration_with_reassurance_variant) { :candidate }
 
-      it 'includes the reassurance sidebar content' do
-        is_expected.to have_content('No credit card required.')
-      end
+      it { is_expected.not_to have_content('Start a Free Ultimate Trial') }
+      it { is_expected.to have_content('Free 30-day trial') }
+      it { is_expected.to have_content('No credit card required.') }
     end
   end
 end
