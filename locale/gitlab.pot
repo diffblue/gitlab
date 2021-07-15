@@ -25850,6 +25850,9 @@ msgstr ""
 msgid "ProjectSettings|Fast-forward merges only."
 msgstr ""
 
+msgid "ProjectSettings|Flexible tool to collaboratively develop ideas and plan work in this project."
+msgstr ""
+
 msgid "ProjectSettings|Forks"
 msgstr ""
 
@@ -25869,9 +25872,6 @@ msgid "ProjectSettings|Issues"
 msgstr ""
 
 msgid "ProjectSettings|LFS objects from this repository are available to forks. %{linkStart}How do I remove them?%{linkEnd}"
-msgstr ""
-
-msgid "ProjectSettings|Lightweight issue tracking system."
 msgstr ""
 
 msgid "ProjectSettings|Manages large files such as audio, video, and graphics files."
