@@ -108,27 +108,39 @@ module EE
       def project_issuetype_ids
         strong_memoize(:project_issuetype_ids) do
           if data_fields.deployment_server?
-            query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'project/', project_key)
-
-            client
-              .get(query_url.to_s)
-              .fetch('issueTypes', [])
-              .map { |issue_type| issue_type['id'] }
+            project_issuetype_ids_from_project_details
           elsif data_fields.deployment_cloud?
-            query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'issuetypescheme/', 'mapping')
-            query_url.query_values = { 'issueTypeSchemeId' => project_issuetype_scheme_ids }
+            # According to https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-type-schemes/#api-rest-api-3-issuetypescheme-project-get
+            # only classic projects has issue type schemes
+            next project_issuetype_ids_from_project_details if jira_project.style == "next-gen"
 
-            client
-              .get(query_url.to_s)
-              .fetch('values', [])
-              .map { |schemes| schemes['issueTypeId'] }
+            project_issuetype_ids_from_issuetypescheme_mappings
           else
             raise NotImplementedError
           end
         end
       end
 
-      # Returns list of available Issue tTpes in selected JIRA Project
+      def project_issuetype_ids_from_issuetypescheme_mappings
+        query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'issuetypescheme/', 'mapping')
+        query_url.query_values = { 'issueTypeSchemeId' => project_issuetype_scheme_ids }
+
+        client
+          .get(query_url.to_s)
+          .fetch('values', [])
+          .map { |schemes| schemes['issueTypeId'] }
+      end
+
+      def project_issuetype_ids_from_project_details
+        query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'project/', project_key)
+
+        client
+          .get(query_url.to_s)
+          .fetch('issueTypes', [])
+          .map { |issue_type| issue_type['id'] }
+      end
+
+      # Returns list of available Issue types in selected JIRA Project
       #
       # @return [Array] the array of objects with JIRA Issuetype ID, Name and Description
       def issue_types

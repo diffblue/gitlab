@@ -103,41 +103,15 @@ RSpec.describe Integrations::Jira do
         end
 
         context 'when deployment type is cloud' do
-          let(:project_info_result) { { 'id' => '10000' } }
-
-          let(:issue_type_scheme_response) do
+          let(:project_info_result) do
             {
-              values: [
-                {
-                  issueTypeScheme: {
-                    id: '10126',
-                    name: 'GV: Software Development Issue Type Scheme',
-                    defaultIssueTypeId: '10001'
-                  },
-                  projectIds: [
-                    '10000'
-                  ]
-                }
-              ]
+              'id' => '10000',
+              'style' => jira_project_style,
+              'issueTypes' => project_issue_types
             }
           end
 
-          let(:issue_type_mapping_response) do
-            {
-              values: [
-                {
-                  issueTypeSchemeId: '10126',
-                  issueTypeId: '10003'
-                },
-                {
-                  issueTypeSchemeId: '10126',
-                  issueTypeId: '10001'
-                }
-              ]
-            }
-          end
-
-          let(:issue_types_response) do
+          let(:classic_issuetypes) do
             [
               {
                 id: '10004',
@@ -166,15 +140,100 @@ RSpec.describe Integrations::Jira do
             ]
           end
 
-          before do
-            WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json )
-            WebMock.stub_request(:get, %r{api/2/project/GL\z}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: { 'id' => '10000' }.to_json, headers: headers)
-            WebMock.stub_request(:get, %r{api/2/issuetype\z}).to_return(body: issue_types_response.to_json, headers: headers)
-            WebMock.stub_request(:get, %r{api/2/issuetypescheme/project\?projectId\=10000\z}).to_return(body: issue_type_scheme_response.to_json, headers: headers)
-            WebMock.stub_request(:get, %r{api/2/issuetypescheme/mapping\?issueTypeSchemeId\=10126\z}).to_return(body: issue_type_mapping_response.to_json, headers: headers)
+          let(:nextgen_issuetypes) do
+            [
+              {
+                id: '2137',
+                description: 'Very new, yes',
+                name: 'Next Gen Issue Type 1',
+                untranslatedName: 'Next Gen Issue Type 1',
+                subtask: false,
+                avatarId: 10311
+              },
+              {
+                id: '2138',
+                description: 'Something',
+                name: 'Next Gen Issue Type 2',
+                untranslatedName: 'Next Gen Issue Type 2',
+                subtask: false,
+                avatarId: 10303
+              },
+              {
+                id: '2139',
+                description: 'Subtasks? Meh.',
+                name: 'Next Gen Issue Type 3',
+                untranslatedName: 'Next Gen Issue Type 3',
+                subtask: true,
+                avatarId: 10316
+              }
+            ]
           end
 
-          it { is_expected.to eq(success: true, result: { jira: true }, data: { issuetypes: [{ id: '10001', name: 'Bug', description: 'Jira Bug' }] }) }
+          let(:issue_types_response) { classic_issuetypes + nextgen_issuetypes }
+
+          context 'when JIRA project style is classic' do
+            let(:jira_project_style) { 'classic' }
+            let(:project_issue_types) { classic_issuetypes }
+
+            let(:issue_type_scheme_response) do
+              {
+                values: [
+                  {
+                    issueTypeScheme: {
+                      id: '10126',
+                      name: 'GV: Software Development Issue Type Scheme',
+                      defaultIssueTypeId: '10001'
+                    },
+                    projectIds: [
+                      '10000'
+                    ]
+                  }
+                ]
+              }
+            end
+
+            let(:issue_type_mapping_response) do
+              {
+                values: [
+                  {
+                    issueTypeSchemeId: '10126',
+                    issueTypeId: '10003'
+                  },
+                  {
+                    issueTypeSchemeId: '10126',
+                    issueTypeId: '10001'
+                  }
+                ]
+              }
+            end
+
+            before do
+              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json )
+              WebMock.stub_request(:get, %r{api/2/issuetype\z}).to_return(body: issue_types_response.to_json, headers: headers)
+              WebMock.stub_request(:get, %r{api/2/issuetypescheme/project\?projectId\=10000\z}).to_return(body: issue_type_scheme_response.to_json, headers: headers)
+              WebMock.stub_request(:get, %r{api/2/issuetypescheme/mapping\?issueTypeSchemeId\=10126\z}).to_return(body: issue_type_mapping_response.to_json, headers: headers)
+            end
+
+            it { is_expected.to eq(success: true, result: { jira: true }, data: { issuetypes: [{ id: '10001', name: 'Bug', description: 'Jira Bug' }] }) }
+          end
+
+          context 'when JIRA project style is next-gen' do
+            let(:jira_project_style) { 'next-gen' }
+            let(:project_issue_types) { nextgen_issuetypes }
+
+            let(:expected_data) do
+              {
+                issuetypes: nextgen_issuetypes.select { |issue_type| !issue_type[:subtask] }.map { |issue_type| issue_type.slice(*%i[id name description]) }
+              }
+            end
+
+            before do
+              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json, headers: headers)
+              WebMock.stub_request(:get, %r{api/2/issuetype\z}).to_return(body: issue_types_response.to_json, headers: headers)
+            end
+
+            it { is_expected.to eq(success: true, result: { jira: true }, data: expected_data) }
+          end
         end
 
         context 'when deployment type is server' do
