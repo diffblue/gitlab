@@ -2,6 +2,7 @@
 import {
   GlButton,
   GlForm,
+  GlFormGroup,
   GlFormInput,
   GlLoadingIcon,
   GlIcon,
@@ -23,6 +24,7 @@ export default {
   components: {
     GlButton,
     GlForm,
+    GlFormGroup,
     GlFormInput,
     GlIcon,
     GlLoadingIcon,
@@ -65,10 +67,10 @@ export default {
         };
       },
       update(data) {
-        return data.workspace?.issuable?.weight || null;
+        return data.workspace?.issuable?.weight;
       },
       result({ data }) {
-        this.$emit('weightUpdated', data.workspace?.issuable?.weight || null);
+        this.$emit('weightUpdated', data.workspace?.issuable?.weight);
       },
       error() {
         createFlash({
@@ -84,7 +86,7 @@ export default {
       return this.$apollo.queries?.weight?.loading || this.loading;
     },
     hasWeight() {
-      return this.weight !== null;
+      return this.weight != null;
     },
     weightLabel() {
       return this.hasWeight ? this.weight : this.$options.i18n.noWeightLabel;
@@ -106,7 +108,8 @@ export default {
   },
   methods: {
     setWeight(remove) {
-      const weight = remove ? null : this.weight;
+      const shouldRemoveWeight = remove || this.weight === '';
+      const weight = shouldRemoveWeight ? null : this.weight;
       this.loading = true;
       this.$apollo
         .mutate({
@@ -209,13 +212,16 @@ export default {
     </template>
     <template #default>
       <gl-form @submit.prevent="handleFormSubmit()">
-        <gl-form-input
-          v-model.number="weight"
-          v-autofocusonshow
-          type="number"
-          min="0"
-          :placeholder="$options.i18n.inputPlaceholder"
-        />
+        <gl-form-group :label="__('Weight')" label-for="weight-input" label-sr-only>
+          <gl-form-input
+            id="weight-input"
+            v-model.number="weight"
+            v-autofocusonshow
+            type="number"
+            min="0"
+            :placeholder="$options.i18n.inputPlaceholder"
+          />
+        </gl-form-group>
       </gl-form>
     </template>
   </sidebar-editable-item>

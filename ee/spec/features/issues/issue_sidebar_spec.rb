@@ -39,31 +39,39 @@ RSpec.describe 'Issue Sidebar' do
       wait_for_all_requests
     end
 
-    it 'updates weight in sidebar to 1' do
+    it 'updates weight in sidebar to 0' do
       page.within '.weight' do
         click_button 'Edit'
-        find('input').send_keys 1, :enter
+        send_keys 0, :enter
 
-        page.within '[data-testid="sidebar-weight-value"]' do
-          expect(page).to have_content '1'
-        end
+        expect(page).to have_text '0 - remove weight'
       end
     end
 
-    it 'updates weight in sidebar to no weight' do
+    it 'updates weight in sidebar to no weight by clicking `remove weight`' do
       page.within '.weight' do
         click_button 'Edit'
-        find('input').send_keys 1, :enter
+        send_keys 1, :enter
 
-        page.within '[data-testid="sidebar-weight-value"]' do
-          expect(page).to have_content '1'
-        end
+        expect(page).to have_text '1 - remove weight'
 
         click_button 'remove weight'
 
-        page.within '[data-testid="sidebar-weight-value"]' do
-          expect(page).to have_content 'None'
-        end
+        expect(page).to have_text 'None'
+      end
+    end
+
+    it 'updates weight in sidebar to no weight by setting an empty value' do
+      page.within '.weight' do
+        click_button 'Edit'
+        send_keys 1, :enter
+
+        expect(page).to have_text '1 - remove weight'
+
+        click_button 'Edit'
+        send_keys :backspace, :enter
+
+        expect(page).to have_text 'None'
       end
     end
   end
