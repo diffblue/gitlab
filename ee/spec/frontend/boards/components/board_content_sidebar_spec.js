@@ -76,6 +76,7 @@ describe('ee/BoardContentSidebar', () => {
         SidebarSubscriptionsWidget: true,
         SidebarWeightWidget: true,
         SidebarDropdownWidget: true,
+        SidebarTodoWidget: true,
         MountingPortal: true,
       },
     });

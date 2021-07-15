@@ -9,7 +9,15 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
   >
     Issue details
   </h2>
-    
+   
+  <sidebartodowidget-stub
+    class="gl-mt-3"
+    fullpath="gitlab-org/gitlab-test"
+    issuableid="gid://gitlab/Issue/436"
+    issuableiid="27"
+    issuabletype="issue"
+  />
+   
   <boardsidebartitle-stub />
    
   <sidebarassigneeswidget-stub

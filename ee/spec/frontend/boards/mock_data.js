@@ -157,6 +157,7 @@ export const mockIssueProjectPath = `${mockIssueGroupPath}/gitlab-test`;
 
 export const mockIssue = {
   id: '436',
+  fullId: 'gid://gitlab/Issue/436',
   iid: '27',
   title: 'Issue 1',
   referencePath: `${mockIssueProjectPath}#27`,
