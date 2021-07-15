@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BillingPlansHelper do
+RSpec.describe BillingPlansHelper, skip: Gitlab.jh? do
   include Devise::Test::ControllerHelpers
 
   describe '#subscription_plan_data_attributes' do
