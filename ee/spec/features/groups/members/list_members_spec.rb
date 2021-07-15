@@ -71,14 +71,14 @@ RSpec.describe 'Groups > Members > List members' do
 
       page.within '#invite-members-modal' do
         [user1, user2].each do |user_with_saml|
-          fill_in 'Select members or type email addresses', with: user_with_saml.name
+          find('[data-testid="members-token-select-input"]').set(user_with_saml.name)
           wait_for_requests
 
           expect(page).to have_content(user_with_saml.name)
         end
 
         [user3, user4].each do |user_without_saml|
-          fill_in 'Select members or type email addresses', with: user_without_saml.name
+          find('[data-testid="members-token-select-input"]').set(user_without_saml.name)
           wait_for_requests
 
           expect(page).not_to have_content(user_without_saml.name)
