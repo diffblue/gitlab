@@ -26,7 +26,8 @@ RSpec.describe 'Issue Boards new issue', :js do
       end
 
       page.within(first('.board-new-issue-form')) do
-        find('.form-control').set('new issue')
+        fill_in 'issue_title', with: 'new issue'
+
         click_button 'Create issue'
       end
 
