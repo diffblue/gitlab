@@ -258,7 +258,7 @@ patroni['postgresql']['max_replication_slots'] = X
 patroni['postgresql']['max_wal_senders'] = X+1
 
 # Replace XXX.XXX.XXX.XXX/YY with Network Address
-postgresql['trust_auth_cidr_addresses'] = %w(XXX.XXX.XXX.XXX/YY)
+postgresql['trust_auth_cidr_addresses'] = %w(XXX.XXX.XXX.XXX/YY 127.0.0.1/32)
 
 # Replace placeholders:
 #
@@ -271,8 +271,8 @@ consul['configuration'] = {
 # END user configuration
 ```
 
-You do not need an additional or different configuration for replica nodes. As a matter of fact, you don't have to have
-a predetermined primary node. Therefore all database nodes use the same configuration.
+All database nodes use the same configuration. The leader node is not determined in configuration,
+and there is no additional or different configuration for either leader or replica nodes.
 
 Once the configuration of a node is done, you must [reconfigure Omnibus GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure)
 on each node for the changes to take effect.
@@ -572,7 +572,7 @@ patroni['password'] = 'PATRONI_API_PASSWORD'
 patroni['postgresql']['max_replication_slots'] = 6
 patroni['postgresql']['max_wal_senders'] = 7
 
-postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/16)
+postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/16 127.0.0.1/32)
 
 # Configure the Consul agent
 consul['services'] = %w(postgresql)
@@ -664,7 +664,7 @@ patroni['password'] = 'PATRONI_API_PASSWORD'
 # available database connections.
 patroni['postgresql']['max_wal_senders'] = 7
 
-postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/16)
+postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/16 127.0.0.1/32)
 
 consul['configuration'] = {
   server: true,
@@ -737,6 +737,97 @@ and starts PostgreSQL which it communicates with directly over a Unix socket. Th
 functional or does not have a leader, Patroni and by extension PostgreSQL will not start. Patroni also exposes a REST
 API which can be accessed via its [default port](https://docs.gitlab.com/omnibus/package-information/defaults.html#patroni)
 on each node.
+
+### Check replication status
+
+Run `gitlab-ctl patroni members` to query Patroni for a summary of the cluster status:
+
+```plaintext
++ Cluster: postgresql-ha (6970678148837286213) ------+---------+---------+----+-----------+
+| Member                              | Host         | Role    | State   | TL | Lag in MB |
++-------------------------------------+--------------+---------+---------+----+-----------+
+| gitlab-database-1.example.com       | 172.18.0.111 | Replica | running |  5 |         0 |
+| gitlab-database-2.example.com       | 172.18.0.112 | Replica | running |  5 |       100 |
+| gitlab-database-3.example.com       | 172.18.0.113 | Leader  | running |  5 |           |
++-------------------------------------+--------------+---------+---------+----+-----------+
+```
+
+To verify the status of replication:
+
+```shell
+echo 'select * from pg_stat_wal_receiver\x\g\x \n select * from pg_stat_replication\x\g\x' | gitlab-psql
+```
+
+The same command can be run on all three database servers, and will return any information
+about replication available depending on the role the server is performing.
+
+The leader should return one record per replica:
+
+```sql
+-[ RECORD 1 ]----+------------------------------
+pid              | 371
+usesysid         | 16384
+usename          | gitlab_replicator
+application_name | gitlab-database-1.example.com
+client_addr      | 172.18.0.111
+client_hostname  |
+client_port      | 42900
+backend_start    | 2021-06-14 08:01:59.580341+00
+backend_xmin     |
+state            | streaming
+sent_lsn         | 0/EA13220
+write_lsn        | 0/EA13220
+flush_lsn        | 0/EA13220
+replay_lsn       | 0/EA13220
+write_lag        |
+flush_lag        |
+replay_lag       |
+sync_priority    | 0
+sync_state       | async
+reply_time       | 2021-06-18 19:17:14.915419+00
+```
+
+Investigate further if:
+
+- There are missing or extra records.
+- `reply_time` is not current.
+
+The `lsn` fields relate to which write-ahead-log segments have been replicated.
+Run the following on the leader to find out the current LSN:
+
+```shell
+echo 'SELECT pg_current_wal_lsn();' | gitlab-psql
+```
+
+If a replica is not in sync, `gitlab-ctl patroni members` indicates the volume
+of missing data, and the `lag` fields indicate the elapsed time.
+
+Read more about the data returned by the leader
+[in the PostgreSQL documentation](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-REPLICATION-VIEW),
+including other values for the `state` field.
+
+The replicas should return:
+
+```sql
+-[ RECORD 1 ]---------+-------------------------------------------------------------------------------------------------
+pid                   | 391
+status                | streaming
+receive_start_lsn     | 0/D000000
+receive_start_tli     | 5
+received_lsn          | 0/EA13220
+received_tli          | 5
+last_msg_send_time    | 2021-06-18 19:16:54.807375+00
+last_msg_receipt_time | 2021-06-18 19:16:54.807512+00
+latest_end_lsn        | 0/EA13220
+latest_end_time       | 2021-06-18 19:07:23.844879+00
+slot_name             | gitlab-database-1.example.com
+sender_host           | 172.18.0.113
+sender_port           | 5432
+conninfo              | user=gitlab_replicator host=172.18.0.113 port=5432 application_name=gitlab-database-1.example.com
+```
+
+Read more about the data returned by the replica
+[in the PostgreSQL documentation](https://www.postgresql.org/docs/12/monitoring-stats.html#PG-STAT-WAL-RECEIVER-VIEW).
 
 ### Selecting the appropriate Patroni replication method
 
@@ -1034,6 +1125,29 @@ postgresql['trust_auth_cidr_addresses'] = %w(123.123.123.123/32 <other_cidrs>)
 
 [Reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure) for the changes to take effect.
 
+### Reinitialize a replica
+
+If replication is not occurring, it may be necessary to reinitialize a replica.
+
+1. On any server in the cluster, determine the Cluster and Member names,
+   and check the replication lag by running `gitlab-ctl patroni members`. Here is an example:
+
+   ```plaintext
+   + Cluster: postgresql-ha (6970678148837286213) ------+---------+---------+----+-----------+
+   | Member                              | Host         | Role    | State   | TL | Lag in MB |
+   +-------------------------------------+--------------+---------+---------+----+-----------+
+   | gitlab-database-1.example.com       | 172.18.0.111 | Replica | running |  5 |         0 |
+   | gitlab-database-2.example.com       | 172.18.0.112 | Replica | running |  5 |       100 |
+   | gitlab-database-3.example.com       | 172.18.0.113 | Leader  | running |  5 |           |
+   +-------------------------------------+--------------+---------+---------+----+-----------+
+   ```
+
+1. Reinitialize the affected replica server:
+
+   ```plaintext
+   gitlab-ctl patroni reinitialize-replica postgresql-ha gitlab-database-2.example.com
+   ```
+
 ### Reset the Patroni state in Consul
 
 WARNING:
@@ -1074,6 +1188,70 @@ To reset the Patroni state in Consul:
    ```
 
 If you are still seeing issues, the next step is restoring the last healthy backup.
+
+### Errors in the Patroni log about a `pg_hba.conf` entry for `127.0.0.1`
+
+The following log entry in the Patroni log indicates the replication is not working
+and a configuration change is needed:
+
+```plaintext
+FATAL:  no pg_hba.conf entry for replication connection from host "127.0.0.1", user "gitlab_replicator"
+```
+
+To fix the problem, ensure the loopback interface is included in the CIDR addresses list:
+
+1. Edit `/etc/gitlab/gitlab.rb`:
+
+   ```ruby
+   postgresql['trust_auth_cidr_addresses'] = %w(<other_cidrs> 127.0.0.1/32)
+   ```
+
+1. [Reconfigure GitLab](../restart_gitlab.md#omnibus-gitlab-reconfigure) for the changes to take effect.
+1. Check that [all the replicas are synchronized](#check-replication-status)
+
+### Errors in Patroni logs: the requested start point is ahead of the WAL flush position
+
+This error indicates that the database is not replicating:
+
+```plaintext
+FATAL:  could not receive data from WAL stream: ERROR:  requested starting point 0/5000000 is ahead of the WAL flush position of this server 0/4000388
+```
+
+This example error is from a replica that was initially misconfigured, and had never replicated.
+
+Fix it [by reinitializing the replica](#reinitialize-a-replica).
+
+### Patroni fails to start with `MemoryError`
+
+Patroni may fail to start, logging an error and stack trace:
+
+```plaintext
+MemoryError
+Traceback (most recent call last):
+  File "/opt/gitlab/embedded/bin/patroni", line 8, in <module>
+    sys.exit(main())
+[..]
+  File "/opt/gitlab/embedded/lib/python3.7/ctypes/__init__.py", line 273, in _reset_cache
+    CFUNCTYPE(c_int)(lambda: None)
+```
+
+If the stack trace ends with `CFUNCTYPE(c_int)(lambda: None)`, this code triggers `MemoryError`
+if the Linux server has been hardened for security.
+
+The code causes Python to write temporary executable files, and if it cannot find a filesystem
+in which to do this, for example if `noexec` is set on the `/tmp` filesystem, it fails with
+`MemoryError` ([read more in the issue](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/6184)).
+
+Workarounds:
+
+- Remove `noexec` from the mount options for filesystems like `/tmp` and `/var/tmp`.
+- If set to enforcing, SELinux may also prevent these operations. Verify the issue is fixed by setting
+  SELinux to permissive.
+
+Omnibus GitLab has shipped with Patroni since 13.1 along with a build of Python 3.7.
+Workarounds should stop being required when GitLab 14.x starts shipping with
+[a later version of Python](https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/6164) as
+the code which causes this was removed from Python 3.8.
 
 ### Issues with other components
 

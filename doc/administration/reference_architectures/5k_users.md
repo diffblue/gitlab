@@ -876,7 +876,7 @@ in the second step, do not supply the `EXTERNAL_URL` value.
    patroni['password'] = '<patroni_api_password>'
 
    # Replace XXX.XXX.XXX.XXX/YY with Network Address
-   postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24)
+   postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24 127.0.0.1/32)
 
    # Set the network addresses that the exporters will listen on for monitoring
    node_exporter['listen_address'] = '0.0.0.0:9100'
@@ -1120,7 +1120,7 @@ in the second step, do not supply the `EXTERNAL_URL` value.
    postgresql['sql_user_password'] = "<praefect_postgresql_password_hash>"
 
    # Replace XXX.XXX.XXX.XXX/YY with Network Address
-   postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24)
+   postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24 127.0.0.1/32)
 
    # Set the network addresses that the exporters will listen on for monitoring
    node_exporter['listen_address'] = '0.0.0.0:9100'
