@@ -19,6 +19,7 @@ RSpec.describe GroupWiki do
 
         # Don't actually create the repository, because the storage shard doesn't exist.
         expect(subject.repository).to receive(:create_if_not_exists)
+        expect(subject).to receive(:change_head_to_default_branch)
         allow(subject).to receive(:repository_exists?).and_return(true)
 
         expect(subject).to receive(:track_wiki_repository).with(shard)
