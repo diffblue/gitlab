@@ -1467,18 +1467,6 @@ RSpec.describe User do
         it { is_expected.to be false }
       end
     end
-
-    context 'when `:gitlab_employee_badge` feature flag is disabled' do
-      let(:user) { create(:user) }
-
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-        stub_feature_flags(gitlab_employee_badge: false)
-        gitlab_group.add_user(user, Gitlab::Access::DEVELOPER)
-      end
-
-      it { is_expected.to be false }
-    end
   end
 
   describe '#gitlab_bot?' do

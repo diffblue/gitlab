@@ -47,7 +47,7 @@ module EE
     end
 
     def gitlab_team_member_badge(author, css_class: nil)
-      return unless author.gitlab_employee?
+      return unless author.gitlab_employee? && ::Feature.enabled?(:gitlab_employee_badge)
 
       default_css_class = 'd-inline-block align-middle'
       gitlab_team_member = _('GitLab Team Member')
