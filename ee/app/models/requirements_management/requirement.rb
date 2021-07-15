@@ -29,6 +29,7 @@ module RequirementsManagement
     validates :issue_id, uniqueness: true, allow_nil: true
 
     has_many :test_reports, inverse_of: :requirement
+    has_many :recent_test_reports, -> { order(created_at: :desc) }, class_name: 'TestReport', inverse_of: :requirement
 
     has_internal_id :iid, scope: :project
 
@@ -90,7 +91,7 @@ module RequirementsManagement
     end
 
     def latest_report
-      test_reports.last
+      recent_test_reports.first
     end
 
     def last_test_report_state

@@ -11,6 +11,8 @@ RSpec.describe RequirementsManagement::Requirement do
 
     it { is_expected.to belong_to(:author).class_name('User') }
     it { is_expected.to belong_to(:project) }
+    it { is_expected.to have_many(:test_reports) }
+    it { is_expected.to have_many(:recent_test_reports).order(created_at: :desc) }
 
     it_behaves_like 'a model with a requirement issue association'
   end
