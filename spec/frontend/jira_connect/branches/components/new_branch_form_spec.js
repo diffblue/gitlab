@@ -6,6 +6,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import NewBranchForm from '~/jira_connect/branches/components/new_branch_form.vue';
 import ProjectDropdown from '~/jira_connect/branches/components/project_dropdown.vue';
 import SourceBranchDropdown from '~/jira_connect/branches/components/source_branch_dropdown.vue';
+import {
+  CREATE_BRANCH_ERROR_GENERIC,
+  CREATE_BRANCH_ERROR_WITH_CONTEXT,
+  CREATE_BRANCH_SUCCESS_ALERT,
+} from '~/jira_connect/branches/constants';
 import createBranchMutation from '~/jira_connect/branches/graphql/mutations/create_branch.mutation.graphql';
 
 const mockProject = {
@@ -16,7 +21,6 @@ const mockProject = {
     rootRef: 'main',
   },
 };
-const localVue = createLocalVue();
 const mockCreateBranchMutationResponse = {
   data: {
     createBranch: {
@@ -25,11 +29,24 @@ const mockCreateBranchMutationResponse = {
     },
   },
 };
+const mockCreateBranchMutationResponseWithErrors = {
+  data: {
+    createBranch: {
+      clientMutationId: 1,
+      errors: ['everything is broken, sorry.'],
+    },
+  },
+};
 const mockCreateBranchMutationSuccess = jest
   .fn()
   .mockResolvedValue(mockCreateBranchMutationResponse);
+const mockCreateBranchMutationWithErrors = jest
+  .fn()
+  .mockResolvedValue(mockCreateBranchMutationResponseWithErrors);
 const mockCreateBranchMutationFailed = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 const mockMutationLoading = jest.fn().mockReturnValue(new Promise(() => {}));
+
+const localVue = createLocalVue();
 
 describe('NewBranchForm', () => {
   let wrapper;
@@ -57,8 +74,8 @@ describe('NewBranchForm', () => {
     return mockApollo;
   }
 
-  function createComponent({ mockApollo, mountFn = shallowMount } = {}) {
-    wrapper = mountFn(NewBranchForm, {
+  function createComponent({ mockApollo } = {}) {
+    wrapper = shallowMount(NewBranchForm, {
       localVue,
       apolloProvider: mockApollo || createMockApolloProvider(),
     });
@@ -125,10 +142,9 @@ describe('NewBranchForm', () => {
       it('displays a success message', () => {
         const alert = findAlert();
         expect(alert.exists()).toBe(true);
+        expect(alert.text()).toBe(CREATE_BRANCH_SUCCESS_ALERT.message);
         expect(alert.props()).toMatchObject({
-          primaryButtonLink: 'jira',
-          primaryButtonText: 'Return to Jira',
-          title: 'New branch was successfully created.',
+          title: CREATE_BRANCH_SUCCESS_ALERT.title,
           variant: 'success',
         });
       });
@@ -147,26 +163,33 @@ describe('NewBranchForm', () => {
     });
 
     describe('when form submission fails', () => {
-      beforeEach(async () => {
-        createComponent({
-          mockApollo: createMockApolloProvider({
-            mockCreateBranchMutation: mockCreateBranchMutationFailed,
-          }),
+      describe.each`
+        scenario                 | mutation                              | alertTitle                          | alertText
+        ${'with errors-as-data'} | ${mockCreateBranchMutationWithErrors} | ${CREATE_BRANCH_ERROR_WITH_CONTEXT} | ${mockCreateBranchMutationResponseWithErrors.data.createBranch.errors[0]}
+        ${'top-level error'}     | ${mockCreateBranchMutationFailed}     | ${''}                               | ${CREATE_BRANCH_ERROR_GENERIC}
+      `('', ({ mutation, alertTitle, alertText }) => {
+        beforeEach(async () => {
+          createComponent({
+            mockApollo: createMockApolloProvider({
+              mockCreateBranchMutation: mutation,
+            }),
+          });
+
+          await completeForm();
+
+          await findForm().vm.$emit('submit', new Event('submit'));
+          await waitForPromises();
+        });
+        it('displays an alert', () => {
+          const alert = findAlert();
+          expect(alert.exists()).toBe(true);
+          expect(alert.text()).toBe(alertText);
+          expect(alert.props()).toMatchObject({ title: alertTitle, variant: 'danger' });
         });
 
-        await completeForm();
-
-        await findForm().vm.$emit('submit', new Event('submit'));
-        await waitForPromises();
-      });
-
-      it('displays an alert', () => {
-        const alert = findAlert();
-        expect(alert.exists()).toBe(true);
-      });
-
-      it('sets submit button `loading` prop to `false`', () => {
-        expect(findButton().props('loading')).toBe(false);
+        it('sets submit button `loading` prop to `false`', () => {
+          expect(findButton().props('loading')).toBe(false);
+        });
       });
     });
   });
@@ -188,6 +211,7 @@ describe('NewBranchForm', () => {
         const alert = findAlert();
         expect(alert.exists()).toBe(true);
         expect(alert.text()).toBe(mockErrorMessage);
+        expect(alert.props('variant')).toBe('danger');
       });
 
       describe('when alert is dismissed', () => {

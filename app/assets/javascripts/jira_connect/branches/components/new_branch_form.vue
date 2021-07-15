@@ -1,6 +1,11 @@
 <script>
 import { GlFormGroup, GlButton, GlFormInput, GlForm, GlAlert } from '@gitlab/ui';
-import { __ } from '~/locale';
+import {
+  CREATE_BRANCH_ERROR_GENERIC,
+  CREATE_BRANCH_ERROR_WITH_CONTEXT,
+  CREATE_BRANCH_SUCCESS_ALERT,
+  I18N_NEW_BRANCH_FORM,
+} from '../constants';
 import createBranchMutation from '../graphql/mutations/create_branch.mutation.graphql';
 import ProjectDropdown from './project_dropdown.vue';
 import SourceBranchDropdown from './source_branch_dropdown.vue';
@@ -75,7 +80,7 @@ export default {
         ...DEFAULT_ALERT_PARAMS,
       };
     },
-    async onProjectSelect(project) {
+    onProjectSelect(project) {
       this.selectedProject = project;
       this.selectedSourceBranchName = null; // reset branch selection
     },
@@ -106,23 +111,20 @@ export default {
           const { errors } = data.createBranch;
           if (errors.length > 0) {
             this.onError({
-              title: __('Failed to create branch.'),
+              title: CREATE_BRANCH_ERROR_WITH_CONTEXT,
               message: errors[0],
             });
             return;
           }
 
           this.displayAlert({
-            title: __('New branch was successfully created.'),
-            message: __('You can now close this window and return to Jira.'),
+            ...CREATE_BRANCH_SUCCESS_ALERT,
             variant: 'success',
-            primaryButtonLink: 'jira',
-            primaryButtonText: __('Return to Jira'),
           });
         })
         .catch(() => {
           this.onError({
-            message: __('Failed to create branch. Please try again.'),
+            message: CREATE_BRANCH_ERROR_GENERIC,
           });
         })
         .finally(() => {
@@ -131,11 +133,7 @@ export default {
     },
   },
   i18n: {
-    pageTitle: __('New branch'),
-    projectDropdownLabel: __('Project'),
-    branchNameInputLabel: __('Branch name'),
-    sourceBranchDropdownLabel: __('Source branch'),
-    formSubmitButtonText: __('Create branch'),
+    I18N_NEW_BRANCH_FORM,
   },
 };
 </script>
@@ -144,7 +142,7 @@ export default {
   <div>
     <div class="gl-border-1 gl-border-b-solid gl-border-gray-100 gl-mb-5 gl-mt-7">
       <h1 class="page-title">
-        {{ $options.i18n.pageTitle }}
+        {{ $options.i18n.I18N_NEW_BRANCH_FORM.pageTitle }}
       </h1>
     </div>
 
@@ -161,7 +159,10 @@ export default {
     </gl-alert>
 
     <gl-form @submit.prevent="onSubmit">
-      <gl-form-group :label="$options.i18n.projectDropdownLabel" label-for="project-select">
+      <gl-form-group
+        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.projectDropdown"
+        label-for="project-select"
+      >
         <project-dropdown
           id="project-select"
           :selected-project="selectedProject"
@@ -170,12 +171,15 @@ export default {
         />
       </gl-form-group>
 
-      <gl-form-group :label="$options.i18n.branchNameInputLabel" label-for="branch-name-input">
+      <gl-form-group
+        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.branchNameInput"
+        label-for="branch-name-input"
+      >
         <gl-form-input id="branch-name-input" v-model="branchName" type="text" required />
       </gl-form-group>
 
       <gl-form-group
-        :label="$options.i18n.sourceBranchDropdownLabel"
+        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.sourceBranchDropdown"
         label-for="source-branch-select"
       >
         <source-branch-dropdown
@@ -194,7 +198,7 @@ export default {
           variant="confirm"
           :disabled="disableSubmitButton"
         >
-          {{ $options.i18n.formSubmitButtonText }}
+          {{ $options.i18n.I18N_NEW_BRANCH_FORM.formSubmitButtonText }}
         </gl-button>
       </div>
     </gl-form>

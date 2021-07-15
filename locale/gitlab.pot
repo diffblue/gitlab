@@ -28032,9 +28032,6 @@ msgstr ""
 msgid "Retry verification"
 msgstr ""
 
-msgid "Return to Jira"
-msgstr ""
-
 msgid "Reveal value"
 msgid_plural "Reveal values"
 msgstr[0] ""
