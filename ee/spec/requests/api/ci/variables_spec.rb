@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Variables do
+RSpec.describe API::Ci::Variables do
   let(:user) { create(:user) }
   let(:project) { create(:project) }
 

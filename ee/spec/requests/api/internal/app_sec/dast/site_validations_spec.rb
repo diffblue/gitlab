@@ -43,7 +43,7 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
     end
 
     context 'when a job token header is set' do
-      let(:headers) { { API::Helpers::Runner::JOB_TOKEN_HEADER => job.token } }
+      let(:headers) { { API::Ci::Helpers::Runner::JOB_TOKEN_HEADER => job.token } }
 
       context 'when user does not have access to the site validation' do
         let(:job) { create(:ci_build, :running, user: create(:user)) }
