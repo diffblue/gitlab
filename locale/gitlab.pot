@@ -32202,6 +32202,15 @@ msgstr ""
 msgid "Terraform"
 msgstr ""
 
+msgid "TerraformBanner|Learn more about GitLab's Backend State"
+msgstr ""
+
+msgid "TerraformBanner|The GitLab managed Terraform state backend can store your Terraform state easily and securely, and spares you from setting up additional remote resources. Its features include: versioning, encryption of the state file both in transit and at rest, locking, and remote Terraform plan/apply execution."
+msgstr ""
+
+msgid "TerraformBanner|Using Terraform? Try the GitLab Managed Terraform State"
+msgstr ""
+
 msgid "Terraform|%{name} successfully removed"
 msgstr ""
 
