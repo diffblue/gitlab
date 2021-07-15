@@ -45,6 +45,12 @@ module EE
           .where(gitlab_subscriptions: { trial: true, trial_ends_on: Date.today.. })
       end
 
+      scope :not_in_active_trial, -> do
+        left_joins(gitlab_subscription: :hosted_plan)
+          .where(gitlab_subscriptions: { trial: [nil, false] })
+          .or(GitlabSubscription.where(trial_ends_on: ..Date.yesterday))
+      end
+
       scope :in_default_plan, -> do
         left_joins(gitlab_subscription: :hosted_plan)
           .where(plans: { name: [nil, *::Plan.default_plans] })
