@@ -456,7 +456,7 @@ describe('SidebarDropdownWidget', () => {
             });
           });
 
-          describe('when a user is searching', () => {
+          describe('when a user is searching epics', () => {
             const mockSearchTerm = 'foobar';
 
             beforeEach(async () => {
@@ -466,7 +466,7 @@ describe('SidebarDropdownWidget', () => {
               await clickEdit();
             });
 
-            it('sends a groupEpics query with the entered search term "foo"', async () => {
+            it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
               findSearchBox().vm.$emit('input', mockSearchTerm);
               await wrapper.vm.$nextTick();
 
@@ -478,6 +478,31 @@ describe('SidebarDropdownWidget', () => {
                 sort: 'TITLE_ASC',
                 state: 'opened',
                 title: mockSearchTerm,
+                in: 'TITLE',
+              });
+            });
+          });
+
+          describe('when a user is not searching', () => {
+            beforeEach(async () => {
+              groupEpicsSpy = jest.fn().mockResolvedValueOnce(emptyGroupEpicsResponse);
+              await createComponentWithApollo({ groupEpicsSpy });
+
+              await clickEdit();
+            });
+
+            it('sends a groupEpics query with empty title and undefined in param', async () => {
+              await wrapper.vm.$nextTick();
+
+              // Account for debouncing
+              jest.runAllTimers();
+
+              expect(groupEpicsSpy).toHaveBeenNthCalledWith(1, {
+                fullPath: mockIssue.groupPath,
+                sort: 'TITLE_ASC',
+                state: 'opened',
+                title: '',
+                in: undefined,
               });
             });
           });
