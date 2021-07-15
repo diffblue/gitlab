@@ -212,7 +212,7 @@ class EpicsFinder < IssuableFinder
   def by_child(items)
     return items unless child_id?
 
-    ancestor_ids = Epic.find(params[:child_id]).ancestors.select(:id)
+    ancestor_ids = Epic.find(params[:child_id]).ancestors.reselect(:id)
     items.where(id: ancestor_ids)
   end
   # rubocop: enable CodeReuse/ActiveRecord

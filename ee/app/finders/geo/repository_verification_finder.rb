@@ -11,7 +11,7 @@ module Geo
       query = build_query_to_find_failed_projects(type: :repository, batch_size: batch_size)
       cte   = Gitlab::SQL::CTE.new(:failed_repositories, query)
 
-      Project.with(cte.to_arel)
+      project_with_select_all.with(cte.to_arel)
              .from(cte.alias_to(projects_table))
              .order("projects.repository_retry_at ASC")
     end
@@ -22,7 +22,7 @@ module Geo
       query = build_query_to_find_failed_projects(type: :wiki, batch_size: batch_size)
       cte   = Gitlab::SQL::CTE.new(:failed_wikis, query)
 
-      Project.with(cte.to_arel)
+      project_with_select_all.with(cte.to_arel)
              .from(cte.alias_to(projects_table))
              .order("projects.wiki_retry_at ASC")
     end
@@ -33,7 +33,7 @@ module Geo
       query = build_query_to_find_recently_updated_projects(batch_size: batch_size)
       cte   = Gitlab::SQL::CTE.new(:recently_updated_projects, query)
 
-      Project.with(cte.to_arel)
+      project_with_select_all.with(cte.to_arel)
              .from(cte.alias_to(projects_table))
              .order(last_repository_updated_at_asc)
     end
@@ -138,11 +138,15 @@ module Geo
 
       # We should prioritize less active projects first because high active
       # projects have their repositories verified more frequently.
-      Project.with(cte.to_arel)
+      project_with_select_all.with(cte.to_arel)
              .from(cte.alias_to(projects_table))
              .order(last_repository_updated_at_asc)
     end
     # rubocop: enable CodeReuse/ActiveRecord
+
+    def project_with_select_all
+      Project.select(projects_table[Arel.star])
+    end
 
     def projects_table
       Project.arel_table
