@@ -2,7 +2,7 @@
 name: dast_configuration_ui
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62014
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/330728
-milestone: '14.0'
+milestone: '14.1'
 type: development
 group: group::dynamic analysis
-default_enabled: false
+default_enabled: true
