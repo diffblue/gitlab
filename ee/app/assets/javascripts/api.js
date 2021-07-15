@@ -1,4 +1,4 @@
-import Api from '~/api';
+import Api, { DEFAULT_PER_PAGE } from '~/api';
 import axios from '~/lib/utils/axios_utils';
 import { ContentTypeMultipartFormData } from '~/lib/utils/headers';
 
@@ -61,7 +61,7 @@ export default {
       .get(url, {
         params: {
           search: query,
-          per_page: Api.DEFAULT_PER_PAGE,
+          per_page: DEFAULT_PER_PAGE,
           active: true,
         },
       })
@@ -379,7 +379,7 @@ export default {
   fetchBillableGroupMembersList(namespaceId, options = {}, callback = () => {}) {
     const url = Api.buildUrl(this.billableGroupMembersPath).replace(':id', namespaceId);
     const defaults = {
-      per_page: Api.DEFAULT_PER_PAGE,
+      per_page: DEFAULT_PER_PAGE,
       page: 1,
     };
 
