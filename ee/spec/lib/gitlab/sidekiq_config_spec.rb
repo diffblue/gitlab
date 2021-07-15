@@ -46,7 +46,7 @@ RSpec.describe Gitlab::SidekiqConfig do
   describe '.workers_for_all_queues_yml' do
     it 'returns a tuple with EE workers second' do
       expect(described_class.workers_for_all_queues_yml.second)
-        .to include(an_object_having_attributes(queue: 'repository_update_mirror'))
+        .to include(an_object_having_attributes(generated_queue_name: 'repository_update_mirror'))
     end
   end
 
