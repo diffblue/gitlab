@@ -87,11 +87,11 @@ describe('Sidebar Weight Widget', () => {
     });
 
     it('toggle is checked', () => {
-      expect(findWeightValue().text()).toBe('1');
+      expect(findWeightValue().text()).toBe('0');
     });
 
     it('emits `weightUpdated` event with a `true` payload', () => {
-      expect(wrapper.emitted('weightUpdated')).toEqual([[1]]);
+      expect(wrapper.emitted('weightUpdated')).toEqual([[0]]);
     });
   });
 

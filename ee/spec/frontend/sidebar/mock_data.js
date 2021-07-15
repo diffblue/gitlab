@@ -179,7 +179,7 @@ export const issueNoWeightResponse = () => ({
 export const issueWeightResponse = () => ({
   data: {
     workspace: {
-      issuable: { id: mockIssueId, weight: 1, __typename: 'Issue' },
+      issuable: { id: mockIssueId, weight: 0, __typename: 'Issue' },
       __typename: 'Project',
     },
   },
