@@ -6418,10 +6418,16 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
+msgid "Checkout|$%{selectedPlanPrice} per pack per year"
+msgstr ""
+
 msgid "Checkout|$%{selectedPlanPrice} per user per year"
 msgstr ""
 
 msgid "Checkout|%{cardType} ending in %{lastFourDigits}"
+msgstr ""
+
+msgid "Checkout|%{name}'s CI minutes"
 msgstr ""
 
 msgid "Checkout|%{name}'s GitLab subscription"
@@ -6440,6 +6446,9 @@ msgid "Checkout|%{totalCiMinutes} CI minutes"
 msgstr ""
 
 msgid "Checkout|(x%{numberOfUsers})"
+msgstr ""
+
+msgid "Checkout|(x%{quantity})"
 msgstr ""
 
 msgid "Checkout|Billing address"

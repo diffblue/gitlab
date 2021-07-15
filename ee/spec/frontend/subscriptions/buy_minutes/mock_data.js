@@ -1,8 +1,13 @@
 import { STEPS } from 'ee/subscriptions/constants';
 
 export const mockCiMinutesPlans = [
-  { id: 'firstPlanId', code: 'bronze', pricePerYear: 48, name: 'bronze', __typename: 'Plan' },
-  { id: 'secondPlanId', code: 'silver', pricePerYear: 228, name: 'silver', __typename: 'Plan' },
+  {
+    id: 'ciMinutesPackPlanId',
+    code: 'ci_minutes',
+    pricePerYear: 10,
+    name: '1000 CI minutes pack',
+    __typename: 'Plan',
+  },
 ];
 export const mockNamespaces =
   '[{"id":132,"name":"Gitlab Org","users":3},{"id":483,"name":"Gnuwget","users":12}]';

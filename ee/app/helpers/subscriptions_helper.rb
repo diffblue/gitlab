@@ -16,6 +16,14 @@ module SubscriptionsHelper
     }
   end
 
+  def addon_data(group)
+    {
+      group_data: [present_group(group)].to_json,
+      namespace_id: params[:selected_group],
+      source: params[:source]
+    }
+  end
+
   def plan_title
     strong_memoize(:plan_title) do
       plan = subscription_available_plans.find { |plan| plan[:id] == params[:plan_id] }
@@ -45,13 +53,15 @@ module SubscriptionsHelper
   end
 
   def present_groups(groups)
-    groups.map do |namespace|
-      {
-        id: namespace.id,
-        name: namespace.name,
-        users: namespace.member_count,
-        guests: namespace.guest_count
-      }
-    end
+    groups.map { |namespace| present_group(namespace) }
+  end
+
+  def present_group(namespace)
+    {
+      id: namespace.id,
+      name: namespace.name,
+      users: namespace.member_count,
+      guests: namespace.guest_count
+    }
   end
 end

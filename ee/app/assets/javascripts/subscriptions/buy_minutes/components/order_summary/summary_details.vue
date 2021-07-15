@@ -13,10 +13,6 @@ export default {
       type: Number,
       required: true,
     },
-    usersPresent: {
-      type: Boolean,
-      required: true,
-    },
     selectedPlanText: {
       type: String,
       required: true,
@@ -29,7 +25,7 @@ export default {
       type: Number,
       required: true,
     },
-    numberOfUsers: {
+    quantity: {
       type: Number,
       required: true,
     },
@@ -37,6 +33,10 @@ export default {
       type: Number,
       required: false,
       default: null,
+    },
+    purchaseHasExpiration: {
+      type: Boolean,
+      required: false,
     },
   },
   data() {
@@ -51,8 +51,8 @@ export default {
   },
   i18n: {
     selectedPlanText: s__('Checkout|%{selectedPlanText} plan'),
-    numberOfUsers: s__('Checkout|(x%{numberOfUsers})'),
-    pricePerUserPerYear: s__('Checkout|$%{selectedPlanPrice} per user per year'),
+    quantity: s__('Checkout|(x%{quantity})'),
+    pricePerUnitPerYear: s__('Checkout|$%{selectedPlanPrice} per pack per year'),
     dates: s__('Checkout|%{startDate} - %{endDate}'),
     subtotal: s__('Checkout|Subtotal'),
     tax: s__('Checkout|Tax'),
@@ -63,22 +63,22 @@ export default {
 <template>
   <div>
     <div class="d-flex justify-content-between bold gl-mt-3 gl-mb-3">
-      <div class="js-selected-plan">
+      <div data-testid="selected-plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span v-if="usersPresent" class="js-number-of-users">{{
-          sprintf($options.i18n.numberOfUsers, { numberOfUsers })
+        <span v-if="quantity" data-testid="quantity">{{
+          sprintf($options.i18n.quantity, { quantity })
         }}</span>
       </div>
-      <div class="js-amount">{{ formatAmount(totalExVat, usersPresent) }}</div>
+      <div data-testid="amount">{{ formatAmount(totalExVat, quantity > 0) }}</div>
     </div>
-    <div class="text-secondary js-per-user">
+    <div class="text-secondary" data-testid="price-per-unit">
       {{
-        sprintf($options.i18n.pricePerUserPerYear, {
+        sprintf($options.i18n.pricePerUnitPerYear, {
           selectedPlanPrice: selectedPlanPrice.toLocaleString(),
         })
       }}
     </div>
-    <div class="text-secondary js-dates">
+    <div v-if="purchaseHasExpiration" class="text-secondary" data-testid="subscription-period">
       {{
         sprintf($options.i18n.dates, {
           startDate: formatDate(startDate),
@@ -90,17 +90,17 @@ export default {
       <div class="border-bottom gl-mt-3 gl-mb-3"></div>
       <div class="d-flex justify-content-between text-secondary">
         <div>{{ $options.i18n.subtotal }}</div>
-        <div class="js-total-ex-vat">{{ formatAmount(totalExVat, usersPresent) }}</div>
+        <div data-testid="total-ex-vat">{{ formatAmount(totalExVat, quantity > 0) }}</div>
       </div>
       <div class="d-flex justify-content-between text-secondary">
         <div>{{ $options.i18n.tax }}</div>
-        <div class="js-vat">{{ formatAmount(vat, usersPresent) }}</div>
+        <div data-testid="vat">{{ formatAmount(vat, quantity > 0) }}</div>
       </div>
     </div>
     <div class="border-bottom gl-mt-3 gl-mb-3"></div>
     <div class="d-flex justify-content-between bold gl-font-lg">
       <div>{{ $options.i18n.total }}</div>
-      <div class="js-total-amount">{{ formatAmount(totalAmount, usersPresent) }}</div>
+      <div data-itestid="total-amount">{{ formatAmount(totalAmount, quantity > 0) }}</div>
     </div>
   </div>
 </template>
