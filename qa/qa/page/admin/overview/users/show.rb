@@ -29,7 +29,7 @@ module QA
             end
 
             def open_user_actions_dropdown(user)
-              click_element(:user_actions_dropdown_toggle, index: user.id)
+              click_element(:user_actions_dropdown_toggle, username: user.username)
             end
 
             def click_impersonate_user

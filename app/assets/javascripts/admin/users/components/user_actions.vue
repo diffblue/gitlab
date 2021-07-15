@@ -110,7 +110,7 @@ export default {
         :text-sr-only="!showButtonLabels"
         icon="settings"
         data-qa-selector="user_actions_dropdown_toggle"
-        :data-qa-index="user.id"
+        :data-qa-username="user.username"
       >
         <gl-dropdown-section-header>{{
           $options.i18n.userAdministration
