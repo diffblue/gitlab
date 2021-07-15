@@ -63,7 +63,6 @@ module EE
             next unless pipeline.can_store_security_reports?
 
             pipeline.run_after_commit do
-              StoreSecurityReportsWorker.perform_async(pipeline.id) if pipeline.default_branch?
               ::Security::StoreScansWorker.perform_async(pipeline.id)
             end
           end
