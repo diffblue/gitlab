@@ -5,7 +5,6 @@ fragment LatestSnapshot on DevopsAdoptionSnapshot {
   runnerConfigured
   pipelineSucceeded
   deploySucceeded
-  securityScanSucceeded
   recordedAt
   codeOwnersUsedCount
   sastEnabledCount

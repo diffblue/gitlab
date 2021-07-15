@@ -117,15 +117,9 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
   describe 'security_scan_succeeded' do
     subject { data[:security_scan_succeeded] }
 
-    let!(:old_security_scan) { create :security_scan, build: create(:ci_build, project: project), created_at: 100.days.ago(range_end) }
-
-    context 'with successful security scan within month' do
-      let!(:fresh_security_scan) { create :security_scan, build: create(:ci_build, project: project), created_at: 10.days.ago(range_end) }
-
-      it { is_expected.to eq true }
+    it 'is always false' do
+      is_expected.to eq false
     end
-
-    it { is_expected.to eq false }
   end
 
   describe 'total_projects_count' do
