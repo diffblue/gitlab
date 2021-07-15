@@ -13087,6 +13087,9 @@ msgstr ""
 msgid "EscalationPolicies|IF alert is not %{alertStatus} in %{minutes} minutes"
 msgstr ""
 
+msgid "EscalationPolicies|Maximum of 10 rules has been reached."
+msgstr ""
+
 msgid "EscalationPolicies|Minutes must be between 0 and 1440."
 msgstr ""
 

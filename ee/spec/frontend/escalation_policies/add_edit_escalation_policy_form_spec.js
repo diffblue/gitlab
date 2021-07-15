@@ -1,9 +1,10 @@
 import { GlLink } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import AddEscalationPolicyForm, {
   i18n,
 } from 'ee/escalation_policies/components/add_edit_escalation_policy_form.vue';
 import EscalationRule from 'ee/escalation_policies/components/escalation_rule.vue';
-import { DEFAULT_ESCALATION_RULE } from 'ee/escalation_policies/constants';
+import { DEFAULT_ESCALATION_RULE, MAX_RULES_LENGTH } from 'ee/escalation_policies/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import mockPolicies from './mocks/mockPolicies.json';
@@ -47,6 +48,7 @@ describe('AddEscalationPolicyForm', () => {
 
   const findRules = () => wrapper.findAllComponents(EscalationRule);
   const findAddRuleLink = () => wrapper.findComponent(GlLink);
+  const findMaxRulesText = () => wrapper.findByTestId('max-rules-text');
 
   describe('Escalation rules', () => {
     it('should render one default rule when rules were not provided', () => {
@@ -55,7 +57,7 @@ describe('AddEscalationPolicyForm', () => {
 
     it('should render all the rules if they were provided', async () => {
       createComponent({ props: { form: { rules: mockPolicies[1].rules } } });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(findRules()).toHaveLength(mockPolicies[1].rules.length);
     });
 
@@ -65,9 +67,24 @@ describe('AddEscalationPolicyForm', () => {
       expect(link.text()).toMatchInterpolatedText(i18n.addRule);
     });
 
+    it('should show max rules message when at max rules capacity', async () => {
+      // Create 10 rules
+      const rules = Array(MAX_RULES_LENGTH).fill(mockPolicies[1].rules[0]);
+      createComponent({ props: { form: { rules } } });
+
+      await nextTick();
+      const link = findAddRuleLink();
+      expect(findRules()).toHaveLength(MAX_RULES_LENGTH);
+      expect(link.exists()).toBe(false);
+
+      const maxRules = findMaxRulesText();
+      expect(maxRules.exists()).toBe(true);
+      expect(maxRules.text()).toMatchInterpolatedText(i18n.maxRules);
+    });
+
     it('should add an empty rule to the rules list on click', async () => {
       findAddRuleLink().vm.$emit('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const rules = findRules();
       expect(rules.length).toBe(2);
       expect(rules.at(1).props('rule')).toMatchObject(DEFAULT_ESCALATION_RULE);
@@ -75,7 +92,7 @@ describe('AddEscalationPolicyForm', () => {
 
     it('should NOT emit updates when rule is added', async () => {
       findAddRuleLink().vm.$emit('click');
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted('update-escalation-policy-form')).toBeUndefined();
     });
 

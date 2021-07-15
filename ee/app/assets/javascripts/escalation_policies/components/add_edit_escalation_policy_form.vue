@@ -3,7 +3,7 @@ import { GlLink, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
 import createFlash from '~/flash';
 import { s__, __ } from '~/locale';
-import { DEFAULT_ACTION, DEFAULT_ESCALATION_RULE } from '../constants';
+import { DEFAULT_ACTION, DEFAULT_ESCALATION_RULE, MAX_RULES_LENGTH } from '../constants';
 import getOncallSchedulesQuery from '../graphql/queries/get_oncall_schedules.query.graphql';
 import EscalationRule from './escalation_rule.vue';
 
@@ -21,6 +21,7 @@ export const i18n = {
     },
   },
   addRule: s__('EscalationPolicies|+ Add an additional rule'),
+  maxRules: s__('EscalationPolicies|Maximum of 10 rules has been reached.'),
   failedLoadingSchedules: s__('EscalationPolicies|Failed to load oncall-schedules'),
 };
 
@@ -70,6 +71,9 @@ export default {
   computed: {
     schedulesLoading() {
       return this.$apollo.queries.schedules.loading;
+    },
+    hasMaxRules() {
+      return this.rules?.length === MAX_RULES_LENGTH;
     },
   },
   mounted() {
@@ -164,8 +168,11 @@ export default {
         @remove-escalation-rule="removeEscalationRule"
       />
     </gl-form-group>
-    <gl-link @click="addRule">
+    <gl-link v-if="!hasMaxRules" @click="addRule">
       <span>{{ $options.i18n.addRule }}</span>
     </gl-link>
+    <span v-else data-testid="max-rules-text" class="gl-text-gray-500">
+      {{ $options.i18n.maxRules }}
+    </span>
   </gl-form>
 </template>
