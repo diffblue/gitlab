@@ -2188,6 +2188,15 @@ msgstr ""
 msgid "Additional text"
 msgstr ""
 
+msgid "Additional text for the sign-in and Help page."
+msgstr ""
+
+msgid "Additional text to show on the Help page"
+msgstr ""
+
+msgid "Additional text to show on the sign-in page"
+msgstr ""
+
 msgid "Address"
 msgstr ""
 
@@ -3459,7 +3468,7 @@ msgstr ""
 msgid "Also unassign this user from related issues and merge requests"
 msgstr ""
 
-msgid "Alternate support URL for help page and help dropdown"
+msgid "Alternate support URL for Help page and Help dropdown"
 msgstr ""
 
 msgid "Alternatively, you can convert your account to a managed account by the %{group_name} group."
@@ -16183,12 +16192,6 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-msgid "Help page"
-msgstr ""
-
-msgid "Help page text and support page url."
-msgstr ""
-
 msgid "Helps prevent bots from brute-force attacks."
 msgstr ""
 
@@ -16248,7 +16251,7 @@ msgstr ""
 msgid "Hide list"
 msgstr ""
 
-msgid "Hide marketing-related entries from help"
+msgid "Hide marketing-related entries from the Help page."
 msgstr ""
 
 msgid "Hide payload"
@@ -29408,7 +29411,7 @@ msgstr ""
 msgid "See metrics"
 msgstr ""
 
-msgid "See our website for getting help"
+msgid "See our website for help"
 msgstr ""
 
 msgid "See the affected projects in the GitLab admin panel"
@@ -30328,6 +30331,9 @@ msgid "Sign up"
 msgstr ""
 
 msgid "Sign up was successful! Please confirm your email to sign in."
+msgstr ""
+
+msgid "Sign-in and Help page"
 msgstr ""
 
 msgid "Sign-in count:"
