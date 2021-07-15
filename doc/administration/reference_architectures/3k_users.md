@@ -848,7 +848,7 @@ in the second step, do not supply the `EXTERNAL_URL` value.
    ```ruby
    # Disable all components except Patroni and Consul
    roles(['patroni_role'])
-   
+
    # PostgreSQL configuration
    postgresql['listen_address'] = '0.0.0.0'
 
@@ -866,7 +866,7 @@ in the second step, do not supply the `EXTERNAL_URL` value.
 
    # Prevent database migrations from running on upgrade automatically
    gitlab_rails['auto_migrate'] = false
-   
+
    # Configure the Consul agent
    consul['services'] = %w(postgresql)
    ## Enable service discovery for Prometheus
@@ -881,6 +881,10 @@ in the second step, do not supply the `EXTERNAL_URL` value.
    postgresql['sql_replication_password'] = '<postgresql_replication_password_hash>'
    # Replace POSTGRESQL_PASSWORD_HASH with a generated md5 value
    postgresql['sql_user_password'] = '<postgresql_password_hash>'
+
+   # Set up basic authentication for the Patroni API (use the same username/password in all nodes).
+   patroni['username'] = '<patroni_api_username>'
+   patroni['password'] = '<patroni_api_password>'
 
    # Replace XXX.XXX.XXX.XXX/YY with Network Address
    postgresql['trust_auth_cidr_addresses'] = %w(10.6.0.0/24)

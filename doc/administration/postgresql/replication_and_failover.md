@@ -157,6 +157,13 @@ We will need the following password information for the application's database u
   sudo gitlab-ctl pg-password-md5 POSTGRESQL_USERNAME
   ```
 
+#### Patroni information
+
+We will need the following password information for the Patroni API:
+
+- `PATRONI_API_USERNAME`. A username for basic auth to the API
+- `PATRONI_API_PASSWORD`. A password for basic auth to the API
+
 #### PgBouncer information
 
 When using default setup, minimum configuration requires:
@@ -235,6 +242,11 @@ postgresql['pgbouncer_user_password'] = 'PGBOUNCER_PASSWORD_HASH'
 postgresql['sql_replication_password'] = 'POSTGRESQL_REPLICATION_PASSWORD_HASH'
 # Replace POSTGRESQL_PASSWORD_HASH with a generated md5 value
 postgresql['sql_user_password'] = 'POSTGRESQL_PASSWORD_HASH'
+
+# Replace PATRONI_API_USERNAME with a username for Patroni Rest API calls (use the same username in all nodes)
+patroni['username'] = 'PATRONI_API_USERNAME'
+# Replace PATRONI_API_PASSWORD with a password for Patroni Rest API calls (use the same password in all nodes)
+patroni['password'] = 'PATRONI_API_PASSWORD'
 
 # Sets `max_replication_slots` to double the number of database nodes.
 # Patroni uses one extra slot per node when initiating the replication.
@@ -555,6 +567,8 @@ gitlab_rails['auto_migrate'] = false
 
 postgresql['pgbouncer_user_password'] = '771a8625958a529132abe6f1a4acb19c'
 postgresql['sql_user_password'] = '450409b85a0223a214b5fb1484f34d0f'
+patroni['username'] = 'PATRONI_API_USERNAME'
+patroni['password'] = 'PATRONI_API_PASSWORD'
 patroni['postgresql']['max_replication_slots'] = 6
 patroni['postgresql']['max_wal_senders'] = 7
 
@@ -641,6 +655,9 @@ postgresql['sql_user_password'] = '450409b85a0223a214b5fb1484f34d0f'
 # Sets `max_replication_slots` to double the number of database nodes.
 # Patroni uses one extra slot per node when initiating the replication.
 patroni['postgresql']['max_replication_slots'] = 6
+
+patroni['username'] = 'PATRONI_API_USERNAME'
+patroni['password'] = 'PATRONI_API_PASSWORD'
 
 # Set `max_wal_senders` to one more than the number of replication slots in the cluster.
 # This is used to prevent replication from using up all of the
