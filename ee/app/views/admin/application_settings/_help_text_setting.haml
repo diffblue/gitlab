@@ -1,6 +1,6 @@
 - form = local_assigns.fetch(:form)
 
 .form-group
-  = form.label :help_text, class: 'label-bold'
+  = form.label :help_text, _('Additional text to show on the sign-in page'), class: 'label-bold'
   = form.text_area :help_text, class: 'form-control gl-form-input', rows: 4
   .form-text.text-muted= _('Markdown enabled')
