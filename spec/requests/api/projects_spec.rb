@@ -3139,23 +3139,26 @@ RSpec.describe API::Projects do
       end
 
       it 'updates squash_option' do
+        project3.update!(squash_option: 'always')
+
         project_param = { squash_option: "default_on" }
 
-        put api("/projects/#{project3.id}", user), params: project_param
+        expect { put api("/projects/#{project3.id}", user), params: project_param }
+          .to change { project3.reload.squash_option }
+          .from('always')
+          .to('default_on')
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(project3.reload.squash_option).to eq("default_on")
         expect(json_response['squash_option']).to eq("default_on")
       end
 
       it 'does not update an invalid squash_option' do
-        current_squash_option = project3.reload.squash_option
         project_param = { squash_option: "jawn" }
 
-        put api("/projects/#{project3.id}", user), params: project_param
+        expect { put api("/projects/#{project3.id}", user), params: project_param }
+          .not_to change { project3.reload.squash_option }
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(project3.reload.squash_option).to eq(current_squash_option)
       end
     end
 
