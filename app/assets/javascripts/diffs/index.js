@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 import Vue from 'vue';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { getParameterValues } from '~/lib/utils/url_utility';
 import FindFile from '~/vue_shared/components/file_finder/index.vue';
 import eventHub from '../notes/event_hub';
 import diffsApp from './components/app.vue';
@@ -112,6 +113,11 @@ export default function initDiffsApp(store) {
           showWhitespace: this.showWhitespaceDefault,
           updateDatabase: false,
         });
+      }
+
+      const vScrollingParam = getParameterValues('virtual_scrolling')[0];
+      if (vScrollingParam === 'false' || vScrollingParam === 'true') {
+        Cookies.set('diffs_virtual_scrolling', vScrollingParam);
       }
     },
     methods: {
