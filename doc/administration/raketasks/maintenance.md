@@ -330,7 +330,7 @@ migrations are completed (have an `up` status).
 ## Rebuild database indexes
 
 WARNING:
-This is an experimental feature that isn't enabled by default.
+This is an experimental feature that isn't enabled by default. It requires PostgreSQL 12 or later.
 
 Database indexes can be rebuilt regularly to reclaim space and maintain healthy levels of index bloat over time.
 
