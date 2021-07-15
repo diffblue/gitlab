@@ -11,6 +11,11 @@ RSpec.describe UpdateAllMirrorsWorker do
     stub_exclusive_lease
   end
 
+  it_behaves_like 'worker with data consistency',
+                  described_class,
+                  feature_flag: :load_balancing_for_update_all_mirrors_worker,
+                  data_consistency: :sticky
+
   describe '#perform' do
     it 'does nothing if the database is read-only' do
       allow(Gitlab::Database).to receive(:read_only?).and_return(true)
