@@ -76,6 +76,10 @@ describe('Order Summary', () => {
         subscription: { quantity: 3 },
       });
     });
+
+    it('renders amount', () => {
+      expect(wrapper.find('[data-testid="amount"]').text()).toBe('$30');
+    });
   });
 
   describe('when quantity is less than or equal to zero', () => {

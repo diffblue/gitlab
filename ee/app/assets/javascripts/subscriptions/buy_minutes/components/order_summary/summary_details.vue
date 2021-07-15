@@ -65,7 +65,7 @@ export default {
     <div class="d-flex justify-content-between bold gl-mt-3 gl-mb-3">
       <div data-testid="selected-plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
-        <span v-if="quantity > 0" data-testid="quantity">{{
+        <span v-if="quantity" data-testid="quantity">{{
           sprintf($options.i18n.quantity, { quantity })
         }}</span>
       </div>
