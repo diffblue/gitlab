@@ -1,15 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`When the cookie is not set matches the snapshot 1`] = `
-<div
-  class="gl-popover"
-  offset="93"
+<gl-popover-stub
+  cssclasses="marketing-popover,gl-border-4"
+  placement="bottomright"
   show=""
+  triggers="manual"
 >
   <div
     class="gl-display-flex gl-mt-n2"
   >
     <img
+      alt=""
       class="gl-ml-2 gl-mr-3"
       height="24"
       width="24"
@@ -32,45 +34,24 @@ exports[`When the cookie is not set matches the snapshot 1`] = `
       
       </div>
        
-      <a
-        class="btn btn-link btn-md gl-button"
+      <gl-link-stub
         href="sast_documentation_path"
       >
-        <!---->
-         
-        <!---->
-          
-        <span
-          class="gl-button-text"
-        >
-          
+        
         How do I set up SAST?
       
-        </span>
-      </a>
+      </gl-link-stub>
     </div>
      
-    <button
+    <gl-button-stub
       aria-label="Close"
-      class="btn gl-align-self-start gl-mt-n3 gl-mr-n3 btn-default btn-md gl-button btn-default-tertiary btn-icon"
-      data-testid="close-btn"
-      type="button"
-    >
-      <!---->
-       
-      <svg
-        aria-hidden="true"
-        class="gl-button-icon gl-icon s16"
-        data-testid="close-icon"
-        role="img"
-      >
-        <use
-          href="#close"
-        />
-      </svg>
-        
-      <!---->
-    </button>
+      buttontextclasses=""
+      category="tertiary"
+      class="gl-align-self-start gl-mt-n3 gl-mr-n3"
+      icon="close"
+      size="medium"
+      variant="default"
+    />
   </div>
-</div>
+</gl-popover-stub>
 `;

@@ -1903,9 +1903,6 @@ msgstr ""
 msgid "Add README"
 msgstr ""
 
-msgid "Add Security Testing"
-msgstr ""
-
 msgid "Add Zoom meeting"
 msgstr ""
 
@@ -28546,6 +28543,9 @@ msgstr ""
 msgid "SVG illustration"
 msgstr ""
 
+msgid "SastEntryPoints|Add Security Testing"
+msgstr ""
+
 msgid "SastEntryPoints|Catch your security vulnerabilities ahead of time!"
 msgstr ""
 
@@ -28555,7 +28555,7 @@ msgstr ""
 msgid "SastEntryPoints|How do I set up SAST?"
 msgstr ""
 
-msgid "SastEntryPoints|Learn more"
+msgid "SastEntryPoints|Learn more."
 msgstr ""
 
 msgid "Satisfied"

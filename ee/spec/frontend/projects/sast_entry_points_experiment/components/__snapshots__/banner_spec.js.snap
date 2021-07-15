@@ -3,7 +3,7 @@
 exports[`When the cookie is not set matches the snapshot 1`] = `
 <gl-banner-stub
   buttonlink="sast_documentation_path"
-  buttontext="Learn more"
+  buttontext="Learn more."
   class="gl-my-5"
   title="Catch your security vulnerabilities ahead of time!"
   variant="promotion"

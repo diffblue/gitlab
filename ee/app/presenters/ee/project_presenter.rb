@@ -24,7 +24,7 @@ module EE
 
       ::ProjectPresenter::AnchorData.new(
         false,
-        statistic_icon + _('Add Security Testing'),
+        statistic_icon + s_('SastEntryPoints|Add Security Testing'),
         help_page_path('user/application_security/sast/index'),
         'btn-dashed js-sast-entry-point',
         nil,

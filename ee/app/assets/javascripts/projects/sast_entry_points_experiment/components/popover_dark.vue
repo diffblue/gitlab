@@ -1,12 +1,13 @@
 <script>
-import { GlPopover, GlButton } from '@gitlab/ui';
+import { GlPopover, GlButton, GlLink } from '@gitlab/ui';
 import { I18N, POPOVER_TARGET } from '../constants';
-import { isDismissed, dismiss, trackShow, trackCtaClicked } from '../utils';
+import { isDismissed, dismiss, trackShow, trackCtaClicked, trackDismissed } from '../utils';
 
 export default {
   components: {
     GlPopover,
     GlButton,
+    GlLink,
   },
   props: {
     sastDocumentationPath: {
@@ -29,8 +30,10 @@ export default {
     onDismiss() {
       this.isVisible = false;
       dismiss();
+      trackDismissed();
     },
     onClick() {
+      dismiss();
       trackCtaClicked();
     },
   },
@@ -46,11 +49,10 @@ export default {
     show
     triggers="manual"
     placement="bottomright"
-    offset="93"
-    :css-classes="['marketing-popover', 'gl-border-4', 'gl-border-t-solid']"
+    :css-classes="['marketing-popover', 'gl-border-4']"
   >
     <div class="gl-display-flex gl-mt-n2">
-      <img :src="$options.gitlabLogo" height="24" width="24" class="gl-ml-2 gl-mr-3" />
+      <img :src="$options.gitlabLogo" :alt="''" height="24" width="24" class="gl-ml-2 gl-mr-3" />
       <div>
         <div
           class="gl-font-weight-bold gl-font-lg gl-line-height-20 gl-text-theme-indigo-900 gl-mb-3"
@@ -60,15 +62,14 @@ export default {
         <div class="gl-font-base gl-line-height-20 gl-mb-3">
           {{ $options.i18n.bodyText }}
         </div>
-        <gl-button variant="link" :href="sastDocumentationPath" @click="onClick">
+        <gl-link :href="sastDocumentationPath" @click="onClick">
           {{ $options.i18n.linkText }}
-        </gl-button>
+        </gl-link>
       </div>
       <gl-button
         category="tertiary"
         class="gl-align-self-start gl-mt-n3 gl-mr-n3"
         icon="close"
-        data-testid="close-btn"
         :aria-label="__('Close')"
         @click="onDismiss"
       />

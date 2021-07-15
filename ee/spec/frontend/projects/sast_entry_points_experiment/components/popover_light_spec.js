@@ -1,9 +1,9 @@
 import '~/commons';
-import { GlPopover, GlButton } from '@gitlab/ui';
+import { GlPopover, GlButton, GlLink } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
 import Cookies from 'js-cookie';
 import PopoverLight from 'ee/projects/sast_entry_points_experiment/components/popover_light.vue';
 import { COOKIE_NAME } from 'ee/projects/sast_entry_points_experiment/constants';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ExperimentTracking from '~/experimentation/experiment_tracking';
 
 jest.mock('~/experimentation/experiment_tracking');
@@ -12,11 +12,11 @@ let wrapper;
 
 const sastDocumentationPath = 'sast_documentation_path';
 const findPopover = () => wrapper.findComponent(GlPopover);
-const findCtaButton = () => findPopover().findComponent(GlButton);
-const findCloseButton = () => wrapper.findByTestId('close-btn');
+const findCtaLink = () => findPopover().findComponent(GlLink);
+const findCloseButton = () => findPopover().findComponent(GlButton);
 
 function createComponent() {
-  wrapper = mountExtended(PopoverLight, {
+  wrapper = mount(PopoverLight, {
     propsData: { sastDocumentationPath },
   });
 }
@@ -28,7 +28,7 @@ afterEach(() => {
 
 describe('When the cookie is set', () => {
   beforeEach(() => {
-    Cookies.set(COOKIE_NAME, 'true');
+    Cookies.set(COOKIE_NAME, 'true', { expires: 365 });
     createComponent();
   });
 
@@ -51,7 +51,7 @@ describe('When the cookie is not set', () => {
   });
 
   it('uses the sastDocumentationPath from the props for the button link', () => {
-    expect(findCtaButton().attributes('href')).toBe(sastDocumentationPath);
+    expect(findCtaLink().attributes('href')).toBe(sastDocumentationPath);
   });
 
   it('matches the snapshot', () => {
@@ -60,11 +60,15 @@ describe('When the cookie is not set', () => {
 
   describe('When clicking the CTA button', () => {
     beforeEach(() => {
-      findCtaButton().vm.$emit('click');
+      findCtaLink().vm.$emit('click');
     });
 
     it('tracks the cta_clicked event', () => {
       expect(ExperimentTracking.prototype.event).toHaveBeenCalledWith('cta_clicked');
+    });
+
+    it('sets a cookie', () => {
+      expect(Cookies.get(COOKIE_NAME)).toBe('true');
     });
   });
 

@@ -10,6 +10,9 @@ export const isDismissed = () => {
 
 export const dismiss = () => {
   setCookie(COOKIE_NAME, 'true');
+};
+
+export const trackDismissed = () => {
   tracking.event('dismissed');
 };
 

@@ -11,6 +11,6 @@ export const I18N = {
   bodyText: s__(
     'SastEntryPoints|GitLab can scan your code for security vulnerabilities. Static Application Security Testing (SAST) helps you worry less and build more.',
   ),
-  buttonText: s__('SastEntryPoints|Learn more'),
+  buttonText: s__('SastEntryPoints|Learn more.'),
   linkText: s__('SastEntryPoints|How do I set up SAST?'),
 };

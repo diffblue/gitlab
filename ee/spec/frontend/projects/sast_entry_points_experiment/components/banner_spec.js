@@ -25,7 +25,7 @@ afterEach(() => {
 
 describe('When the cookie is set', () => {
   beforeEach(() => {
-    Cookies.set(COOKIE_NAME, 'true');
+    Cookies.set(COOKIE_NAME, 'true', { expires: 365 });
     createComponent();
   });
 
@@ -62,6 +62,10 @@ describe('When the cookie is not set', () => {
 
     it('tracks the cta_clicked event', () => {
       expect(ExperimentTracking.prototype.event).toHaveBeenCalledWith('cta_clicked');
+    });
+
+    it('sets a cookie', () => {
+      expect(Cookies.get(COOKIE_NAME)).toBe('true');
     });
   });
 

@@ -1,7 +1,7 @@
 <script>
 import { GlBanner } from '@gitlab/ui';
 import { I18N } from '../constants';
-import { isDismissed, dismiss, trackShow, trackCtaClicked } from '../utils';
+import { isDismissed, dismiss, trackShow, trackCtaClicked, trackDismissed } from '../utils';
 
 export default {
   components: {
@@ -27,8 +27,10 @@ export default {
     onDismiss() {
       this.isVisible = false;
       dismiss();
+      trackDismissed();
     },
     onClick() {
+      dismiss();
       trackCtaClicked();
     },
   },

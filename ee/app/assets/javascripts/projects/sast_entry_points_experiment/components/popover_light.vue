@@ -1,12 +1,13 @@
 <script>
-import { GlPopover, GlButton } from '@gitlab/ui';
+import { GlPopover, GlButton, GlLink } from '@gitlab/ui';
 import { I18N, POPOVER_TARGET } from '../constants';
-import { isDismissed, dismiss, trackShow, trackCtaClicked } from '../utils';
+import { isDismissed, dismiss, trackShow, trackCtaClicked, trackDismissed } from '../utils';
 
 export default {
   components: {
     GlPopover,
     GlButton,
+    GlLink,
   },
   props: {
     sastDocumentationPath: {
@@ -29,8 +30,10 @@ export default {
     onDismiss() {
       this.isVisible = false;
       dismiss();
+      trackDismissed();
     },
     onClick() {
+      dismiss();
       trackCtaClicked();
     },
   },
@@ -39,14 +42,7 @@ export default {
 </script>
 
 <template>
-  <gl-popover
-    v-if="isVisible"
-    :target="target"
-    show
-    triggers="manual"
-    placement="bottomright"
-    offset="53"
-  >
+  <gl-popover v-if="isVisible" :target="target" show triggers="manual" placement="bottomright">
     <template #title>
       <div class="gl-display-flex">
         <span>
@@ -57,7 +53,6 @@ export default {
           category="tertiary"
           class="gl-align-self-start close gl-opacity-10"
           icon="close"
-          data-testid="close-btn"
           :aria-label="__('Close')"
           @click="onDismiss"
         />
@@ -65,9 +60,9 @@ export default {
     </template>
     {{ $options.i18n.bodyText }}
     <div class="gl-text-right gl-font-weight-bold">
-      <gl-button variant="link" :href="sastDocumentationPath" @click="onClick">
+      <gl-link :href="sastDocumentationPath" @click="onClick">
         {{ $options.i18n.linkText }}
-      </gl-button>
+      </gl-link>
     </div>
   </gl-popover>
 </template>
