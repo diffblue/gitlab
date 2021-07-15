@@ -13,7 +13,7 @@ module EE
       override :execute
       def execute
         return super unless ::License.current.present?
-        return [] unless product_intelligence_enabled?
+        return [] unless ServicePing::ServicePingSettings.product_intelligence_enabled?
 
         optional_enabled = ::Gitlab::CurrentSettings.usage_ping_enabled?
         customer_service_enabled = ::License.current.customer_service_enabled?
@@ -22,13 +22,6 @@ module EE
           categories << OPERATIONAL_CATEGORY << OPTIONAL_CATEGORY if optional_enabled
           categories << OPERATIONAL_CATEGORY if customer_service_enabled
         end.to_set
-      end
-
-      private
-
-      override :pings_enabled?
-      def pings_enabled?
-        ::License.current&.customer_service_enabled? || super
       end
     end
   end
