@@ -16,7 +16,7 @@ export default {
 
 <template>
   <div class="context-header ide-context-header">
-    <a :href="project.web_url" :title="s__('IDE|Go to project')">
+    <a :href="project.web_url" :title="s__('IDE|Go to project')" data-testid="go-to-project-link">
       <project-avatar
         :project-name="project.name"
         :project-avatar-url="project.avatar_url"
