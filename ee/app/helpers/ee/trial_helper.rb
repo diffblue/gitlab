@@ -53,7 +53,7 @@ module EE
     end
 
     def show_extend_reactivate_trial_button?(namespace)
-      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial, namespace, default_enabled: :yaml)
+      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial, default_enabled: :yaml)
 
       namespace.can_extend_trial? || namespace.can_reactivate_trial?
     end
