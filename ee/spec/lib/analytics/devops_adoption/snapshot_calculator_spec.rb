@@ -203,6 +203,19 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator do
     include_examples 'calculates artifact type count', :coverage_fuzzing
   end
 
+  describe 'vulnerability_management_used_count' do
+    subject { data[:vulnerability_management_used_count] }
+
+    it 'returns number of projects with at least 1 vulnerability acted upon' do
+      create :vulnerability, :resolved, project: project, created_at: 1.week.before(range_end)
+      create :vulnerability, :resolved, project: subproject, created_at: 1.year.before(range_end)
+      create :vulnerability, :detected, project: subproject, created_at: 1.week.before(range_end)
+      create :vulnerability, :resolved, created_at: 1.week.before(range_end)
+
+      expect(subject).to eq 1
+    end
+  end
+
   context 'when snapshot already exists' do
     subject(:data) { described_class.new(enabled_namespace: enabled_namespace, range_end: range_end, snapshot: snapshot).calculate }
 

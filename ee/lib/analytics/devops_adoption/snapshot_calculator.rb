@@ -112,6 +112,18 @@ module Analytics
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
+      def vulnerability_management_used_count
+        subquery = Vulnerability.not_detected
+                                .created_in_time_range(from: range_start, to: range_end)
+                                .where(Vulnerability.arel_table[:project_id].eq(Project.arel_table[:id])).arel.exists
+
+        snapshot_project_ids.each_slice(1000).sum do |project_ids|
+          Project.where(id: project_ids).where(subquery).count
+        end
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
+
+      # rubocop: disable CodeReuse/ActiveRecord
       def projects_count_with_artifact(artifacts_scope)
         subquery = artifacts_scope.created_in_time_range(from: range_start, to: range_end)
           .where(Ci::JobArtifact.arel_table[:project_id].eq(Project.arel_table[:id])).arel.exists
