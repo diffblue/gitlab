@@ -3,11 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
-  let(:merge_request) { create(:merge_request) }
-  let(:rb_owners) { create_list(:user, 2) }
-  let(:doc_owners) { create_list(:user, 2) }
-  let(:rb_group_owners) { create_list(:group, 2) }
-  let(:doc_group_owners) { create_list(:group, 2) }
+  let_it_be(:merge_request) { create(:merge_request) }
+  let_it_be(:rb_owners) { create_list(:user, 2) }
+  let_it_be(:doc_owners) { create_list(:user, 2) }
+  let_it_be(:rb_group_owners) { create_list(:group, 2) }
+  let_it_be(:doc_group_owners) { create_list(:group, 2) }
+
   let(:rb_entry) { build_entry('*.rb', rb_owners, rb_group_owners) }
   let(:doc_entry) { build_entry('doc/*', doc_owners, doc_group_owners) }
   let(:entries) { [rb_entry, doc_entry] }
@@ -63,6 +64,25 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
 
       expect(other_rule.reload.users).to eq(rb_owners)
       expect(other_rule.reload.groups).to match_array(rb_group_owners)
+    end
+
+    context 'when merge request is already merged' do
+      let(:merge_request) { build(:merge_request, :merged) }
+
+      it 'logs an error' do
+        expect(Gitlab::ErrorTracking)
+          .to receive(:track_exception)
+          .with(
+            instance_of(described_class::AlreadyMergedError),
+            hash_including(
+              merge_request_id: merge_request.id,
+              merge_request_iid: merge_request.iid,
+              project_id: merge_request.project_id
+            )
+          ).and_call_original
+
+        expect(service.execute).to eq(nil)
+      end
     end
   end
 end
