@@ -28498,6 +28498,12 @@ msgstr ""
 msgid "Runners|instance"
 msgstr ""
 
+msgid "Runners|locked"
+msgstr ""
+
+msgid "Runners|paused"
+msgstr ""
+
 msgid "Runners|project"
 msgstr ""
 
@@ -39160,9 +39166,6 @@ msgstr ""
 msgid "loading"
 msgstr ""
 
-msgid "locked"
-msgstr ""
-
 msgid "locked by %{path_lock_user_name} %{created_at}"
 msgstr ""
 
@@ -39613,9 +39616,6 @@ msgstr[1] ""
 msgid "password"
 msgstr ""
 
-msgid "paused"
-msgstr ""
-
 msgid "pending comment"
 msgstr ""
 
@@ -39787,9 +39787,6 @@ msgstr ""
 msgid "severity|Unknown"
 msgstr ""
 
-msgid "shared"
-msgstr ""
-
 msgid "should be an array of %{object_name} objects"
 msgstr ""
 
@@ -39818,9 +39815,6 @@ msgid "source"
 msgstr ""
 
 msgid "source diff"
-msgstr ""
-
-msgid "specific"
 msgstr ""
 
 msgid "specified top is not part of the tree"
