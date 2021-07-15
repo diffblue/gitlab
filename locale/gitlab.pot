@@ -29039,6 +29039,9 @@ msgstr ""
 msgid "SecurityConfiguration|Enable %{feature}"
 msgstr ""
 
+msgid "SecurityConfiguration|Enable Auto DevOps"
+msgstr ""
+
 msgid "SecurityConfiguration|Enabled"
 msgstr ""
 
@@ -29070,6 +29073,9 @@ msgid "SecurityConfiguration|Not enabled"
 msgstr ""
 
 msgid "SecurityConfiguration|Once you've enabled a scan for the default branch, any subsequent feature branch you create will include the scan."
+msgstr ""
+
+msgid "SecurityConfiguration|Quickly enable all continuous testing and compliance tools by enabling %{linkStart}Auto DevOps%{linkEnd}"
 msgstr ""
 
 msgid "SecurityConfiguration|Runtime security metrics for application environments."
