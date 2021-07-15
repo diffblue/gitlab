@@ -1,4 +1,5 @@
 import Api from 'ee/api';
+import { getValueStreamStageMedian } from '~/api/analytics_api';
 import createFlash from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import httpStatus from '~/lib/utils/http_status';
@@ -99,7 +100,7 @@ export const receiveStageMedianValuesError = ({ commit }, error) => {
 };
 
 const fetchStageMedian = ({ groupId, valueStreamId, stageId, params }) =>
-  Api.cycleAnalyticsStageMedian({ groupId, valueStreamId, stageId, params }).then(({ data }) => {
+  getValueStreamStageMedian({ groupId, valueStreamId, stageId }, params).then(({ data }) => {
     return {
       id: stageId,
       ...(data?.error
