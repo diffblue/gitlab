@@ -187,3 +187,5 @@ module BillingPlansHelper
     end
   end
 end
+
+BillingPlansHelper.prepend_mod
