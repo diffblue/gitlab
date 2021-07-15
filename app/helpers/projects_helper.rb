@@ -350,6 +350,10 @@ module ProjectsHelper
     nil
   end
 
+  def show_terraform_banner?(project)
+    project.repository_languages.with_programming_language('HCL').exists? && project.terraform_states.empty?
+  end
+
   private
 
   def tab_ability_map
