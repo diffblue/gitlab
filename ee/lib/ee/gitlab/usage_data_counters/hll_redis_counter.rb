@@ -12,6 +12,11 @@ module EE
           def valid_context_list
             super + License.all_plans
           end
+
+          override :usage_ping_enabled?
+          def usage_ping_enabled?
+            ::License.current&.customer_service_enabled? || super
+          end
         end
       end
     end
