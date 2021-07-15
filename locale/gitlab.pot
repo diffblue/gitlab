@@ -24239,9 +24239,6 @@ msgstr ""
 msgid "Pipelines|Merged YAML is view only"
 msgstr ""
 
-msgid "Pipelines|Merged YAML unavailable"
-msgstr ""
-
 msgid "Pipelines|More Information"
 msgstr ""
 
@@ -24276,9 +24273,6 @@ msgid "Pipelines|The CI configuration was not loaded, please try again."
 msgstr ""
 
 msgid "Pipelines|The GitLab CI configuration could not be updated."
-msgstr ""
-
-msgid "Pipelines|The merged YAML view is only available for the default branch. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "Pipelines|There are currently no finished pipelines."
