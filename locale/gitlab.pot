@@ -17141,9 +17141,6 @@ msgstr ""
 msgid "Improves Git cloning performance."
 msgstr ""
 
-msgid "In %{time_to_now}"
-msgstr ""
-
 msgid "In case of pull mirroring, your user will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches."
 msgstr ""
 

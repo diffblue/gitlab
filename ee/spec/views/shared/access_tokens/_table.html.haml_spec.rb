@@ -18,7 +18,6 @@ RSpec.describe 'shared/access_tokens/_table.html.haml' do
 
     allow(view).to receive(:personal_access_token_expiration_enforced?).and_return(token_expiry_enforced?)
     allow(view).to receive(:show_profile_token_expiry_notification?).and_return(true)
-    allow(view).to receive(:distance_of_time_in_words_to_now).and_return('4 days')
 
     if project
       project.add_maintainer(user)
