@@ -35,15 +35,39 @@ describe('burndown_chart', () => {
     expect(findChart().exists()).toBe(true);
   });
 
-  describe('with single point', () => {
+  describe('with no points', () => {
     it('does not show guideline', () => {
       createComponent({
-        openIssuesCount: [{ '2019-08-07T00:00:00.000Z': 100 }],
+        openIssuesCount: [],
       });
 
       const data = wrapper.vm.dataSeries;
       expect(data).toHaveLength(1);
       expect(data[0].name).not.toBe('Guideline');
+    });
+  });
+
+  describe('with single point and zero issues', () => {
+    it('shows guideline', () => {
+      createComponent({
+        openIssuesCount: [{ '2019-08-07T00:00:00.000Z': 0 }],
+      });
+
+      const data = wrapper.vm.dataSeries;
+      expect(data).toHaveLength(2);
+      expect(data[1].name).toBe('Guideline');
+    });
+  });
+
+  describe('with single point', () => {
+    it('shows guideline', () => {
+      createComponent({
+        openIssuesCount: [{ '2019-08-07T00:00:00.000Z': 100 }],
+      });
+
+      const data = wrapper.vm.dataSeries;
+      expect(data).toHaveLength(2);
+      expect(data[1].name).toBe('Guideline');
     });
   });
 

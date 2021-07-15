@@ -76,8 +76,10 @@ export default {
         },
       ];
 
-      if (series[0] && series[0].data.length >= 2) {
-        const idealStart = [this.startDate, data[0][1]];
+      if (data.length > 0) {
+        const zeroStart = [this.startDate, 0];
+        const firstNonZero = data.find((dataObj) => dataObj[1] !== 0) || zeroStart;
+        const idealStart = [this.startDate, firstNonZero[1]];
         const idealEnd = [this.dueDate, 0];
         const idealData = [idealStart, idealEnd];
 
