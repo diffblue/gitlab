@@ -455,29 +455,6 @@ describe('Api', () => {
       });
     });
 
-    describe('cycleAnalyticsStageMedian', () => {
-      it('fetches stage events', (done) => {
-        const response = { value: '5 days ago' };
-        const params = { ...defaultParams };
-        const expectedUrl = valueStreamBaseUrl({
-          id: valueStreamId,
-          resource: `stages/${stageId}/median`,
-        });
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
-
-        Api.cycleAnalyticsStageMedian({ groupId, valueStreamId, stageId, params })
-          .then((responseObj) =>
-            expectRequestWithCorrectParameters(responseObj, {
-              response,
-              params,
-              expectedUrl,
-            }),
-          )
-          .then(done)
-          .catch(done.fail);
-      });
-    });
-
     describe('cycleAnalyticsDurationChart', () => {
       it('fetches stage duration data', (done) => {
         const response = [];

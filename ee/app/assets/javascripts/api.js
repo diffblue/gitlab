@@ -169,12 +169,6 @@ export default {
     return axios.get(url, { params });
   },
 
-  cycleAnalyticsStageMedian({ groupId, valueStreamId, stageId, params = {} }) {
-    const stageBase = this.cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId });
-    const url = `${stageBase}/median`;
-    return axios.get(url, { params });
-  },
-
   cycleAnalyticsStageCount({ groupId, valueStreamId, stageId, params = {} }) {
     const stageBase = this.cycleAnalyticsStageUrl({ groupId, valueStreamId, stageId });
     const url = `${stageBase}/count`;
