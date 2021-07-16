@@ -18,6 +18,7 @@ export default (Vue, VueApollo) => {
     installDocsUrl,
     getStartedDocsUrl,
     integrationDocsUrl,
+    kasAddress,
   } = el.dataset;
 
   return new Vue({
@@ -30,6 +31,7 @@ export default (Vue, VueApollo) => {
       installDocsUrl,
       getStartedDocsUrl,
       integrationDocsUrl,
+      kasAddress,
     },
     render(createElement) {
       return createElement(Agents, {

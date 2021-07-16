@@ -1,13 +1,18 @@
 <script>
-import { GlButton, GlEmptyState, GlLink, GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlButton, GlEmptyState, GlLink, GlSprintf, GlAlert, GlModalDirective } from '@gitlab/ui';
+import { INSTALL_AGENT_MODAL_ID } from '../constants';
 
 export default {
+  modalId: INSTALL_AGENT_MODAL_ID,
   components: {
     GlButton,
     GlEmptyState,
     GlLink,
     GlSprintf,
     GlAlert,
+  },
+  directives: {
+    GlModalDirective,
   },
   inject: [
     'emptyStateImage',
@@ -101,12 +106,11 @@ export default {
 
     <template #actions>
       <gl-button
+        v-gl-modal-directive="$options.modalId"
         :disabled="!hasConfigurations"
         data-testid="integration-primary-button"
         category="primary"
         variant="success"
-        :href="integrationDocsUrl"
-        target="_blank"
       >
         {{ s__('ClusterAgents|Integrate with the GitLab Agent') }}
       </gl-button>

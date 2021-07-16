@@ -7165,6 +7165,9 @@ msgstr ""
 msgid "ClusterAgents|Go to the repository"
 msgstr ""
 
+msgid "ClusterAgents|Install a new GitLab Agent"
+msgstr ""
+
 msgid "ClusterAgents|Install new Agent"
 msgstr ""
 
@@ -7178,9 +7181,6 @@ msgid "ClusterAgents|Last used"
 msgstr ""
 
 msgid "ClusterAgents|Learn how to create an agent access token"
-msgstr ""
-
-msgid "ClusterAgents|Learn more about installing the GitLab Agent"
 msgstr ""
 
 msgid "ClusterAgents|Name"

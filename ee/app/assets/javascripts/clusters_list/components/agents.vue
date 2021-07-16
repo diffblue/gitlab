@@ -4,6 +4,7 @@ import { MAX_LIST_COUNT } from '../constants';
 import getAgentsQuery from '../graphql/queries/get_agents.query.graphql';
 import AgentEmptyState from './agent_empty_state.vue';
 import AgentTable from './agent_table.vue';
+import InstallAgentModal from './install_agent_modal.vue';
 
 export default {
   apollo: {
@@ -25,6 +26,7 @@ export default {
   components: {
     AgentEmptyState,
     AgentTable,
+    InstallAgentModal,
     GlAlert,
     GlKeysetPagination,
     GlLoadingIcon,
@@ -76,6 +78,9 @@ export default {
     },
   },
   methods: {
+    reloadAgents() {
+      this.$apollo.queries.agents.refetch();
+    },
     nextPage() {
       this.cursor = {
         first: MAX_LIST_COUNT,
@@ -118,6 +123,7 @@ export default {
     </div>
 
     <AgentEmptyState v-else :has-configurations="hasConfigurations" />
+    <InstallAgentModal @agentRegistered="reloadAgents" />
   </section>
 
   <gl-alert v-else variant="danger" :dismissible="false">
