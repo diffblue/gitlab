@@ -43,7 +43,9 @@ RSpec.describe Security::TrackScanService do
                     }],
           idempotency_key: '82fc6391e4be61e03e51fa8c5c6bfc32b3d3f0065ad2fe0a01211606952b8d82',
           user: user.id,
-          project: project.id)
+          project: project.id,
+          label: 'gitlab-dast',
+          property: 'dast')
       end
     end
 
@@ -78,7 +80,9 @@ RSpec.describe Security::TrackScanService do
                     }],
           idempotency_key: '62bc6c62686b327dbf420f8891e1418406b60f49e574b6ff22f4d6a272dbc595',
           user: user.id,
-          project: project.id)
+          project: project.id,
+          label: nil,
+          property: 'dast')
       end
     end
   end
