@@ -1,0 +1,8 @@
+.sub-section
+  %h4.danger-title= _('Permanently delete project')
+  %p
+    %strong= _('Deleting the project will delete its repository and all related resources, including issues and merge requests.')
+  %p= permanent_delete_message(project)
+  %p
+    %strong= _('Are you ABSOLUTELY SURE you wish to delete this project?')
+  #js-project-delete-button{ data: { form_path: project_path(project, permanently_delete: true), confirm_phrase: project.path } }
