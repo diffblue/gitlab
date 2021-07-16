@@ -18,10 +18,9 @@ describe('AvailableAgentsDropdown', () => {
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findConfiguredAgentItem = () => findDropdownItems().at(0);
 
-  const createWrapper = ({ extraProvides = {}, isLoading = false }) => {
+  const createWrapper = ({ propsData = {}, isLoading = false }) => {
     const provide = {
       projectPath: 'path/to/project',
-      ...extraProvides,
     };
 
     wrapper = (() => {
@@ -36,7 +35,7 @@ describe('AvailableAgentsDropdown', () => {
           },
         };
 
-        return mount(AvailableAgentsDropdown, { mocks, provide });
+        return mount(AvailableAgentsDropdown, { mocks, provide, propsData });
       }
 
       const apolloProvider = createMockApollo([
@@ -47,6 +46,7 @@ describe('AvailableAgentsDropdown', () => {
         localVue,
         apolloProvider,
         provide,
+        propsData,
       });
     })();
   };
@@ -57,12 +57,12 @@ describe('AvailableAgentsDropdown', () => {
   });
 
   describe('there are agents available', () => {
-    const extraProvides = {
+    const propsData = {
       isRegistering: false,
     };
 
     beforeEach(() => {
-      createWrapper({ extraProvides });
+      createWrapper({ propsData });
     });
 
     it('prompts to select an agent', () => {
@@ -92,12 +92,12 @@ describe('AvailableAgentsDropdown', () => {
   });
 
   describe('registration in progress', () => {
-    const extraProvides = {
+    const propsData = {
       isRegistering: true,
     };
 
     beforeEach(() => {
-      createWrapper({ extraProvides });
+      createWrapper({ propsData });
     });
 
     it('updates the text in the dropdown', () => {
@@ -110,12 +110,12 @@ describe('AvailableAgentsDropdown', () => {
   });
 
   describe('agents query is loading', () => {
-    const extraProvides = {
+    const propsData = {
       isRegistering: false,
     };
 
     beforeEach(() => {
-      createWrapper({ extraProvides, isLoading: true });
+      createWrapper({ propsData, isLoading: true });
     });
 
     it('updates the text in the dropdown', () => {

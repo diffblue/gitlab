@@ -10,7 +10,13 @@ export default {
     GlDropdown,
     GlDropdownItem,
   },
-  inject: ['projectPath', 'isRegistering'],
+  inject: ['projectPath'],
+  props: {
+    isRegistering: {
+      required: true,
+      type: Boolean,
+    },
+  },
   apollo: {
     agents: {
       query: agentConfigurations,
