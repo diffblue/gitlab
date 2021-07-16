@@ -281,7 +281,10 @@ module EE
         enable :read_group_audit_events
       end
 
-      rule { security_dashboard_enabled & developer }.enable :read_group_security_dashboard
+      rule { security_dashboard_enabled & developer }.policy do
+        enable :read_group_security_dashboard
+        enable :admin_vulnerability
+      end
 
       rule { can?(:read_group_security_dashboard) }.policy do
         enable :create_vulnerability_export
