@@ -1,0 +1,21 @@
+description: Download code coverage as CSV
+category: Groups::Analytics::CoverageReportsController
+action: download_code_coverage_csv
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+product_section: ops
+product_stage: verify
+product_group: testing
+product_category:
+milestone: "13.4"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/40754
+distributions:
+- ce
+- ee
+tiers:
+- free
+- premium
+- ultimate

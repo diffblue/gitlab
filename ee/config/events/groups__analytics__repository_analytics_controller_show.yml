@@ -1,0 +1,21 @@
+description: Show repository analytics
+category: Groups::Analytics::RepositoryAnalyticsController
+action: show
+label_description: The string "Group ID"
+property_description:
+value_description: ID of the group
+extra_properties:
+identifiers:
+product_section: ops
+product_stage: verify
+product_group: testing
+product_category:
+milestone: "13.6"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/42376
+distributions:
+- ce
+- ee
+tiers:
+- free
+- premium
+- ultimate
