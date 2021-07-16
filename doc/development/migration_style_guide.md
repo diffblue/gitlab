@@ -605,7 +605,7 @@ perform existence checks internally.
 When adding a foreign-key constraint to either an existing or a new column also
 remember to add an index on the column.
 
-This is **required** for all foreign-keys, e.g., to support efficient cascading
+This is **required** for all foreign-keys, for example, to support efficient cascading
 deleting: when a lot of rows in a table get deleted, the referenced records need
 to be deleted too. The database has to look for corresponding records in the
 referenced table. Without an index, this results in a sequential scan on the
