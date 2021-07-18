@@ -341,6 +341,134 @@ that suggests checking that the app manifest contains these settings:
 
     Note that this configuration corresponds with the `Supported account types` setting used when creating the `IdentityExperienceFramework` app.
 
+#### Keycloak
+
+GitLab works with OpenID providers that use HTTPS. Although a Keycloak
+server can be set up using HTTP, GitLab can only communicate
+with a Keycloak server that uses HTTPS.
+
+We highly recommend configuring Keycloak to use public key encryption
+algorithms (for example, RSA256, RSA512, and so on) instead of symmetric key
+encryption algorithms (for example, HS256 or HS358) to sign tokens. Public key
+encryption algorithms are:
+
+- Easier to configure.
+- More secure because leaking the private key has severe security consequences.
+
+The signature algorithm can be configured in the Keycloak administration console under
+**Realm Settings > Tokens > Default Signature Algorithm**.
+
+Example Omnibus configuration block:
+
+```ruby
+gitlab_rails['omniauth_providers'] = [
+  {
+    'name' => 'openid_connect',
+    'label' => 'Keycloak',
+    'args' => {
+      'name' => 'openid_connect',
+      'scope' => ['openid', 'profile', 'email'],
+      'response_type' => 'code',
+      'issuer' =>  'https://keycloak.example.com/auth/realms/myrealm',
+      'client_auth_method' => 'query',
+      'discovery' => true,
+      'uid_field' => 'preferred_username',
+      'client_options' => {
+        'identifier' => '<YOUR CLIENT ID>',
+        'secret' => '<YOUR CLIENT SECRET>',
+        'redirect_uri' => 'https://gitlab.example.com/users/auth/openid_connect/callback'
+      }
+    }
+  }
+]
+```
+
+##### Configure Keycloak with a symmetric key algorithm
+
+> Introduced in GitLab 14.2.
+
+WARNING:
+The instructions below are included for completeness, but symmetric key
+encryption should only be used when absolutely necessary.
+
+To use symmetric key encryption:
+
+1. Extract the secret key from the Keycloak database. Keycloak doesn't
+expose this value in the Web interface. The client secret seen in the
+Web interface is the OAuth2 client secret, which is different from the
+secret used to sign JSON Web Tokens.
+
+    For example, if you're using PostgreSQL as the backend database for
+Keycloak, login to the database console and extract the key via this SQL
+query:
+
+    ```sql
+    $ psql -U keycloak
+    psql (13.3 (Debian 13.3-1.pgdg100+1))
+    Type "help" for help.
+
+    keycloak=# SELECT c.name, value FROM component_config CC INNER JOIN component C ON(CC.component_id = C.id) WHERE C.realm_id = 'master' and provider_id = 'hmac-generated' AND CC.name = 'secret';
+    -[ RECORD 1 ]---------------------------------------------------------------------------------
+    name  | hmac-generated
+    value | lo6cqjD6Ika8pk7qc3fpFx9ysrhf7E62-sqGc8drp3XW-wr93zru8PFsQokHZZuJJbaUXvmiOftCZM3C4KW3-g
+    -[ RECORD 2 ]---------------------------------------------------------------------------------
+    name  | fallback-HS384
+    value | UfVqmIs--U61UYsRH-NYBH3_mlluLONpg_zN7CXEwkJcO9xdRNlzZfmfDLPtf2xSTMvqu08R2VhLr-8G-oZ47A
+    ```
+
+    In this example, there are two private keys: one for HS256
+(`hmac-generated`), and another for HS384 (`fallback-HS384`). We'll use
+the first `value` to configure GitLab.
+
+1. Convert `value` to standard base64. As [discussed in the
+post](https://keycloak.discourse.group/t/invalid-signature-with-hs256-token/3228/9),
+`value` is encoded in ["Base 64 Encoding with URL and Filename Safe
+Alphabet" in RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648#section-5). This
+needs to be converted to [standard base64 as defined in RFC 2045](https://datatracker.ietf.org/doc/html/rfc2045). The following Ruby
+script does this:
+
+    ```ruby
+    require 'base64'
+
+    value = "lo6cqjD6Ika8pk7qc3fpFx9ysrhf7E62-sqGc8drp3XW-wr93zru8PFsQokHZZuJJbaUXvmiOftCZM3C4KW3-g"
+    Base64.encode64(Base64.urlsafe_decode64(value))
+    ```
+
+    This results in the following value:
+
+    ```markdown
+    lo6cqjD6Ika8pk7qc3fpFx9ysrhf7E62+sqGc8drp3XW+wr93zru8PFsQokH\nZZuJJbaUXvmiOftCZM3C4KW3+g==\n
+    ```
+
+1. Specify this base64-encoded secret in `jwt_secret_base64`. For example:
+
+    ```ruby
+    gitlab_rails['omniauth_providers'] = [
+      {
+        'name' => 'openid_connect',
+        'label' => 'Keycloak',
+        'args' => {
+          'name' => 'openid_connect',
+          'scope' => ['openid', 'profile', 'email'],
+          'response_type' => 'code',
+          'issuer' =>  'https://keycloak.example.com/auth/realms/myrealm',
+          'client_auth_method' => 'query',
+          'discovery' => true,
+          'uid_field' => 'preferred_username',
+          'jwt_secret_base64' => '<YOUR BASE64-ENCODED SECRET>',
+          'client_options' => {
+            'identifier' => '<YOUR CLIENT ID>',
+            'secret' => '<YOUR CLIENT SECRET>',
+            'redirect_uri' => 'https://gitlab.example.com/users/auth/openid_connect/callback'
+          }
+        }
+      }
+    ]
+    ```
+
+If after reconfiguring, you see the error `JSON::JWS::VerificationFailed` error message, this means
+the incorrect secret was specified.
+
 ## General troubleshooting
 
 If you're having trouble, here are some tips:
