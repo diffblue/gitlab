@@ -19,7 +19,6 @@ pages:
     # while `pages` runs for all the 2-hourly schedules.
     - job: "update-tests-metadata"
       optional: true
-
   before_script:
     - apt-get update && apt-get -y install brotli gzip
   script:
