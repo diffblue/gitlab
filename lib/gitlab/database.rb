@@ -138,10 +138,6 @@ module Gitlab
       "'f'"
     end
 
-    def self.with_connection_pool(...)
-      main.with_connection_pool(...)
-    end
-
     def self.sanitize_timestamp(timestamp)
       MAX_TIMESTAMP_VALUE > timestamp ? timestamp : MAX_TIMESTAMP_VALUE.dup
     end

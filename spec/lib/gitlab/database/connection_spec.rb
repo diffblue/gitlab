@@ -406,44 +406,6 @@ RSpec.describe Gitlab::Database::Connection do
     end
   end
 
-  describe '#with_connection_pool' do
-    it 'creates a new connection pool and disconnect it after used' do
-      closed_pool = nil
-
-      connection.with_connection_pool(1) do |pool|
-        pool.with_connection do |connection|
-          connection.execute('SELECT 1 AS value')
-        end
-
-        expect(pool).to be_connected
-
-        closed_pool = pool
-      end
-
-      expect(closed_pool).not_to be_connected
-    end
-
-    it 'disconnects the pool even an exception was raised' do
-      error = Class.new(RuntimeError)
-      closed_pool = nil
-
-      begin
-        connection.with_connection_pool(1) do |pool|
-          pool.with_connection do |connection|
-            connection.execute('SELECT 1 AS value')
-          end
-
-          closed_pool = pool
-
-          raise error, 'boom'
-        end
-      rescue error
-      end
-
-      expect(closed_pool).not_to be_connected
-    end
-  end
-
   describe '#cached_column_exists?' do
     it 'only retrieves data once' do
       expect(connection.scope.connection)
