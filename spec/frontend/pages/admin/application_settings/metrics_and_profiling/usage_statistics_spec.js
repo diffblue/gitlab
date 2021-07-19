@@ -17,8 +17,8 @@ describe('UsageStatistics', () => {
     usagePingFeaturesCheckBox = document.getElementById(
       'application_setting_usage_ping_features_enabled',
     );
-    usagePingFeaturesLabel = document.getElementById('usage_ping_features_label');
-    usagePingFeaturesHelperText = document.getElementById('usage_ping_features_helper_text');
+    usagePingFeaturesLabel = document.getElementById('service_ping_features_label');
+    usagePingFeaturesHelperText = document.getElementById('service_ping_features_helper_text');
   });
 
   const expectEnabledUsagePingFeaturesCheckBox = () => {

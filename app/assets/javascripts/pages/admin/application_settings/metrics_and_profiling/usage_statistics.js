@@ -9,9 +9,9 @@ export const HELPER_TEXT_USAGE_PING_ENABLED = __(
 );
 
 function setHelperText(usagePingCheckbox) {
-  const helperTextId = document.getElementById('usage_ping_features_helper_text');
+  const helperTextId = document.getElementById('service_ping_features_helper_text');
 
-  const usagePingFeaturesLabel = document.getElementById('usage_ping_features_label');
+  const usagePingFeaturesLabel = document.getElementById('service_ping_features_label');
 
   const usagePingFeaturesCheckbox = document.getElementById(
     'application_setting_usage_ping_features_enabled',
