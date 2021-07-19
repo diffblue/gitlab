@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Changes GL.com plan for group' do
+RSpec.describe 'Changes GL.com plan for group', :js do
   include WaitForRequests
 
   let!(:premium_plan) { create(:premium_plan) }
