@@ -20,8 +20,8 @@ export const receiveLabelsFailure = ({ commit }) => {
     message: __('Error fetching labels.'),
   });
 };
-export const fetchLabels = ({ state, dispatch }) => {
-  if (state.labelsFetched) {
+export const fetchLabels = ({ state, dispatch }, enforce) => {
+  if (!enforce && state.labelsFetched) {
     return Promise.resolve();
   }
 
@@ -50,6 +50,7 @@ export const createLabel = ({ state, dispatch }, label) => {
     })
     .then(({ data }) => {
       if (data.id) {
+        dispatch('fetchLabels', true);
         dispatch('receiveCreateLabelSuccess');
         dispatch('toggleDropdownContentsCreateView');
       } else {
