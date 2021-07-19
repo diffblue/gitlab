@@ -3,7 +3,7 @@ require 'securerandom'
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'Group access', :requires_admin, :skip_live_env, exclude: { job: 'review-qa-*' } do
+    describe 'Group access', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
       include Runtime::IPAddress
 
       before(:all) do
