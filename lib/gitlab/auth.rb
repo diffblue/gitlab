@@ -214,9 +214,9 @@ module Gitlab
 
       # rubocop: disable CodeReuse/ActiveRecord
 
-      # The generic implementation of resource access token is functional
-      # but requires an additional check to verify if the token user is a member of
-      # the project's group, its ancestor groups, or its shared groups.
+      # A workaround for adding group-level automation is to add the bot user of a project access token as a group member.
+      # In order to make project access tokens work this way during git authentication, we need to add an additional check for group membership.
+      # This is a temporary workaround until service accounts are implemented.
       def token_bot_in_group?(user, project)
         project.group && project.group.members_with_parents.where(user_id: user.id).exists?
       end
