@@ -43,6 +43,4 @@ initDatePicker(); // Used for deploy token "expires at" field
 
 fileUpload('.js-choose-file', '.js-object-map-input');
 
-document.addEventListener('DOMContentLoaded', () => {
-  initSearchSettings();
-});
+initSearchSettings();
