@@ -454,7 +454,6 @@ RSpec/AnyInstanceOf:
     - 'ee/spec/features/admin/admin_audit_logs_spec.rb'
     - 'ee/spec/features/admin/admin_reset_pipeline_minutes_spec.rb'
     - 'ee/spec/features/admin/admin_users_spec.rb'
-    - 'ee/spec/features/admin/licenses/admin_views_license_spec.rb'
     - 'ee/spec/features/boards/scoped_issue_board_spec.rb'
     - 'ee/spec/features/ci_shared_runner_warnings_spec.rb'
     - 'ee/spec/features/groups/group_settings_spec.rb'

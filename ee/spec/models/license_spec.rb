@@ -612,57 +612,6 @@ RSpec.describe License do
       end
     end
 
-    describe '.future_dated_only?' do
-      before do
-        described_class.reset_future_dated
-      end
-
-      context 'when licenses table does not exist' do
-        it 'returns false' do
-          allow(described_class).to receive(:table_exists?).and_return(false)
-
-          expect(described_class.future_dated_only?).to be_falsey
-        end
-      end
-
-      context 'when there is no license' do
-        it 'returns false' do
-          allow(described_class).to receive(:last_hundred).and_return([])
-
-          expect(described_class.future_dated_only?).to be_falsey
-        end
-      end
-
-      context 'when the license is invalid' do
-        it 'returns false' do
-          license = build(:license, data: build(:gitlab_license, starts_at: Date.current + 1.month).export)
-
-          allow(described_class).to receive(:last_hundred).and_return([license])
-          allow(license).to receive(:valid?).and_return(false)
-
-          expect(described_class.future_dated_only?).to be_falsey
-        end
-      end
-
-      context 'when the license is valid' do
-        context 'when there is a current license' do
-          it 'returns the false' do
-            expect(described_class.future_dated_only?).to be_falsey
-          end
-        end
-
-        context 'when the license is future-dated' do
-          it 'returns the true' do
-            create(:license, data: create(:gitlab_license, starts_at: Date.current + 1.month).export)
-
-            allow(described_class).to receive(:current).and_return(nil)
-
-            expect(described_class.future_dated_only?).to be_truthy
-          end
-        end
-      end
-    end
-
     describe '.future_dated' do
       before do
         described_class.reset_future_dated

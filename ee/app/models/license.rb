@@ -325,12 +325,6 @@ class License < ApplicationRecord
       Gitlab::SafeRequestStore.delete(:future_dated_license)
     end
 
-    def future_dated_only?
-      return false if current.present?
-
-      future_dated.present?
-    end
-
     def previous
       Gitlab::SafeRequestStore.fetch(:previous_license) { load_previous }
     end

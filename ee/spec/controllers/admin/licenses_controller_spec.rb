@@ -43,14 +43,14 @@ RSpec.describe Admin::LicensesController do
       expect(response.body).to include('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
     end
 
-    it 'redirects to show when a valid license is entered/uploaded' do
+    it 'redirects to the subscription page when a valid license is entered/uploaded' do
       license = build_license
 
       expect do
         post :create, params: { license: { data: license.data } }
       end.to change(License, :count).by(1)
 
-      expect(response).to redirect_to(admin_license_path)
+      expect(response).to redirect_to(admin_subscription_path)
     end
 
     context 'Trials' do
@@ -58,14 +58,14 @@ RSpec.describe Admin::LicensesController do
         stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
       end
 
-      it 'redirects to show when a valid trial license is entered/uploaded' do
+      it 'redirects to the subscription page when a valid trial license is entered/uploaded' do
         license = build_license(restrictions: { trial: true })
 
         expect do
           post :create, params: { license: { data: license.data } }
         end.to change(License, :count).by(1)
 
-        expect(response).to redirect_to(admin_license_path)
+        expect(response).to redirect_to(admin_subscription_path)
       end
     end
 
@@ -84,28 +84,6 @@ RSpec.describe Admin::LicensesController do
       )
 
       build(:license, data: gl_license.export)
-    end
-  end
-
-  describe 'GET show' do
-    context 'with an existent license' do
-      it 'redirects to new path when a valid license is entered/uploaded' do
-        allow(License).to receive(:current).and_return(create(:license))
-
-        get :show
-
-        expect(response).to redirect_to(admin_subscription_path)
-      end
-    end
-
-    context 'without a license' do
-      it 'renders missing license page' do
-        allow(License).to receive(:current).and_return(nil)
-
-        get :show
-
-        expect(response).to redirect_to(admin_subscription_path)
-      end
     end
   end
 
@@ -152,7 +130,7 @@ RSpec.describe Admin::LicensesController do
       it 'is can not be removed' do
         delete :destroy
 
-        expect(response).to redirect_to(admin_license_path)
+        expect(response).to redirect_to(admin_subscription_path)
         expect(flash[:error]).to match('Cloud licenses can not be removed.')
         expect(cloud_licenses).to be_present
       end
@@ -164,7 +142,7 @@ RSpec.describe Admin::LicensesController do
       it 'is can be removed' do
         delete :destroy
 
-        expect(response).to redirect_to(admin_license_path)
+        expect(response).to redirect_to(admin_subscription_path)
         expect(flash[:notice]).to match('The license was removed. GitLab has fallen back on the previous license.')
         expect(cloud_licenses).to be_empty
       end
