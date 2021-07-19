@@ -111,107 +111,37 @@ RSpec.describe Integrations::Jira do
             }
           end
 
-          let(:classic_issuetypes) do
-            [
-              {
-                id: '10004',
-                description: 'A new feature of the product, which has yet to be developed.',
-                name: 'New Feature',
-                untranslatedName: 'New Feature',
-                subtask: false,
-                avatarId: 10311
-              },
-              {
-                id: '10001',
-                description: 'Jira Bug',
-                name: 'Bug',
-                untranslatedName: 'Bug',
-                subtask: false,
-                avatarId: 10303
-              },
-              {
-                id: '10003',
-                description: 'A small piece of work thats part of a larger task.',
-                name: 'Sub-task',
-                untranslatedName: 'Sub-task',
-                subtask: true,
-                avatarId: 10316
-              }
-            ]
-          end
-
-          let(:nextgen_issuetypes) do
-            [
-              {
-                id: '2137',
-                description: 'Very new, yes',
-                name: 'Next Gen Issue Type 1',
-                untranslatedName: 'Next Gen Issue Type 1',
-                subtask: false,
-                avatarId: 10311
-              },
-              {
-                id: '2138',
-                description: 'Something',
-                name: 'Next Gen Issue Type 2',
-                untranslatedName: 'Next Gen Issue Type 2',
-                subtask: false,
-                avatarId: 10303
-              },
-              {
-                id: '2139',
-                description: 'Subtasks? Meh.',
-                name: 'Next Gen Issue Type 3',
-                untranslatedName: 'Next Gen Issue Type 3',
-                subtask: true,
-                avatarId: 10316
-              }
-            ]
-          end
-
-          let(:issue_types_response) { classic_issuetypes + nextgen_issuetypes }
-
           context 'when JIRA project style is classic' do
             let(:jira_project_style) { 'classic' }
-            let(:project_issue_types) { classic_issuetypes }
-
-            let(:issue_type_scheme_response) do
-              {
-                values: [
-                  {
-                    issueTypeScheme: {
-                      id: '10126',
-                      name: 'GV: Software Development Issue Type Scheme',
-                      defaultIssueTypeId: '10001'
-                    },
-                    projectIds: [
-                      '10000'
-                    ]
-                  }
-                ]
-              }
+            let(:project_issue_types) do
+              [
+                {
+                  id: '10001',
+                  description: 'Jira Bug',
+                  name: 'Bug',
+                  untranslatedName: 'Bug',
+                  subtask: false,
+                  avatarId: 10303
+                },
+                {
+                  id: '10003',
+                  description: 'A small piece of work thats part of a larger task.',
+                  name: 'Sub-task',
+                  untranslatedName: 'Sub-task',
+                  subtask: true,
+                  avatarId: 10316
+                }
+              ]
             end
 
-            let(:issue_type_mapping_response) do
+            let(:expected_data) do
               {
-                values: [
-                  {
-                    issueTypeSchemeId: '10126',
-                    issueTypeId: '10003'
-                  },
-                  {
-                    issueTypeSchemeId: '10126',
-                    issueTypeId: '10001'
-                  }
-                ]
+                issuetypes: project_issue_types.select { |it| !it[:subtask] }.map { |it| it.slice(*%i[id name description]) }
               }
             end
 
             before do
               WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json )
-              WebMock.stub_request(:get, %r{api/2/issuetype\z}).to_return(body: issue_types_response.to_json, headers: headers)
-              WebMock.stub_request(:get, %r{api/2/issuetypescheme/project\?projectId\=10000\z}).to_return(body: issue_type_scheme_response.to_json, headers: headers)
-              WebMock.stub_request(:get, %r{api/2/issuetypescheme/mapping\?issueTypeSchemeId\=10126\z}).to_return(body: issue_type_mapping_response.to_json, headers: headers)
             end
 
             it { is_expected.to eq(success: true, result: { jira: true }, data: { issuetypes: [{ id: '10001', name: 'Bug', description: 'Jira Bug' }] }) }
@@ -219,17 +149,43 @@ RSpec.describe Integrations::Jira do
 
           context 'when JIRA project style is next-gen' do
             let(:jira_project_style) { 'next-gen' }
-            let(:project_issue_types) { nextgen_issuetypes }
+            let(:project_issue_types) do
+              [
+                {
+                  id: '2137',
+                  description: 'Very new, yes',
+                  name: 'Next Gen Issue Type 1',
+                  untranslatedName: 'Next Gen Issue Type 1',
+                  subtask: false,
+                  avatarId: 10311
+                },
+                {
+                  id: '2138',
+                  description: 'Something',
+                  name: 'Next Gen Issue Type 2',
+                  untranslatedName: 'Next Gen Issue Type 2',
+                  subtask: false,
+                  avatarId: 10303
+                },
+                {
+                  id: '2139',
+                  description: 'Subtasks? Meh.',
+                  name: 'Next Gen Issue Type 3',
+                  untranslatedName: 'Next Gen Issue Type 3',
+                  subtask: true,
+                  avatarId: 10316
+                }
+              ]
+            end
 
             let(:expected_data) do
               {
-                issuetypes: nextgen_issuetypes.select { |issue_type| !issue_type[:subtask] }.map { |issue_type| issue_type.slice(*%i[id name description]) }
+                issuetypes: project_issue_types.select { |it| !it[:subtask] }.map { |it| it.slice(*%i[id name description]) }
               }
             end
 
             before do
               WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json, headers: headers)
-              WebMock.stub_request(:get, %r{api/2/issuetype\z}).to_return(body: issue_types_response.to_json, headers: headers)
             end
 
             it { is_expected.to eq(success: true, result: { jira: true }, data: expected_data) }
