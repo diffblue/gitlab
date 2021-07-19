@@ -17,7 +17,7 @@ RSpec.describe ProjectImportScheduleWorker do
       end
 
       it 'does nothing if the database is read-only' do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
         expect(ProjectImportState).not_to receive(:project_id).with(project_id: project.id)
 
         subject

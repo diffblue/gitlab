@@ -10,7 +10,7 @@ module EE
 
           override :update_user
           def update_user
-            return if ::Gitlab::Database.read_only?
+            return if ::Gitlab::Database.main.read_only?
 
             update_user_attributes
             update_memberships

@@ -20,8 +20,8 @@ module Iterations
 
         ApplicationRecord.transaction do
           issues.update_all(sprint_id: to_iteration.id, updated_at: rolled_over_at)
-          Gitlab::Database.bulk_insert(ResourceIterationEvent.table_name, remove_iteration_events) # rubocop:disable Gitlab/BulkInsert
-          Gitlab::Database.bulk_insert(ResourceIterationEvent.table_name, add_iteration_events) # rubocop:disable Gitlab/BulkInsert
+          Gitlab::Database.main.bulk_insert(ResourceIterationEvent.table_name, remove_iteration_events) # rubocop:disable Gitlab/BulkInsert
+          Gitlab::Database.main.bulk_insert(ResourceIterationEvent.table_name, add_iteration_events) # rubocop:disable Gitlab/BulkInsert
         end
       end
 

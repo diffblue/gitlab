@@ -66,7 +66,7 @@ module EE
             action = route_hash[:action]
 
             if ALLOWLISTED_GEO_ROUTES[controller]&.include?(action)
-              ::Gitlab::Database.db_read_write?
+              ::Gitlab::Database.main.db_read_write?
             else
               ALLOWLISTED_GEO_ROUTES_TRACKING_DB[controller]&.include?(action)
             end

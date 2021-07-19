@@ -121,7 +121,7 @@ RSpec.describe Namespace do
 
     context 'when DB is read-only' do
       before do
-        expect(Gitlab::Database).to receive(:read_only?) { true }
+        expect(Gitlab::Database.main).to receive(:read_only?) { true }
       end
 
       it 'returns free plan' do

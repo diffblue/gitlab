@@ -10,7 +10,7 @@ RSpec.describe ApplicationHelper do
 
     context 'when not in a Geo secondary' do
       it 'returns a fallback message if database is readonly' do
-        expect(Gitlab::Database).to receive(:read_only?) { true }
+        expect(Gitlab::Database.main).to receive(:read_only?) { true }
 
         expect(helper.read_only_message).to match('You are on a read-only GitLab instance')
       end
@@ -38,7 +38,7 @@ RSpec.describe ApplicationHelper do
 
           context 'when database is read-only' do
             it 'stacks read-only and maintenance mode messages' do
-              expect(Gitlab::Database).to receive(:read_only?).twice { true }
+              expect(Gitlab::Database.main).to receive(:read_only?).twice { true }
 
               expect(helper.read_only_message).to match('You are on a read-only GitLab instance')
               expect(helper.read_only_message).to match(/#{default_maintenance_mode_message}/)

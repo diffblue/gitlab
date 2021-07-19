@@ -250,6 +250,8 @@ module Gitlab
         @open_transactions_baseline = 0
       end
 
+      private
+
       def connection
         scope.connection
       end

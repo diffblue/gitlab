@@ -25,7 +25,7 @@ module EE
       end
 
       def geo_custom_action?
-        return unless ::Gitlab::Database.read_only?
+        return unless ::Gitlab::Database.main.read_only?
         return unless ::Gitlab::Geo.secondary_with_primary?
 
         receive_pack? || upload_pack_and_not_replicated?
@@ -55,7 +55,7 @@ module EE
       end
 
       def current_replication_lag_message
-        return if ::Gitlab::Database.read_write? || current_replication_lag == 0
+        return if ::Gitlab::Database.main.read_write? || current_replication_lag == 0
 
         "Current replication lag: #{current_replication_lag} seconds"
       end

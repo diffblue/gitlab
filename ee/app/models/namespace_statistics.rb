@@ -19,7 +19,7 @@ class NamespaceStatistics < ApplicationRecord
   COLUMNS_TO_REFRESH = [:wiki_size].freeze
 
   def refresh!(only: [])
-    return if Gitlab::Database.read_only?
+    return if Gitlab::Database.main.read_only?
     return unless group?
 
     COLUMNS_TO_REFRESH.each do |column|

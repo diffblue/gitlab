@@ -122,7 +122,7 @@ RSpec.describe Gitlab::Database::Connection do
 
   describe '#disable_prepared_statements' do
     around do |example|
-      original_config = ::Gitlab::Database.config
+      original_config = ::Gitlab::Database.main.config
 
       example.run
 
@@ -131,7 +131,7 @@ RSpec.describe Gitlab::Database::Connection do
 
     it 'disables prepared statements' do
       connection.scope.establish_connection(
-        ::Gitlab::Database.config.merge(prepared_statements: true)
+        ::Gitlab::Database.main.config.merge(prepared_statements: true)
       )
 
       expect(connection.scope.connection.prepared_statements).to eq(true)
