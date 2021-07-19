@@ -6,6 +6,7 @@ import SubscriptionTable from 'ee/billings/subscriptions/components/subscription
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';
 import initialStore from 'ee/billings/subscriptions/store';
 import * as types from 'ee/billings/subscriptions/store/mutation_types';
+import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -361,4 +362,33 @@ describe('SubscriptionTable component', () => {
       expect(findRefreshSeatsButton().exists()).toBe(false);
     });
   });
+
+  describe.each`
+    availableTrialAction | buttonVisible
+    ${null}              | ${false}
+    ${'extend'}          | ${true}
+    ${'reactivate'}      | ${true}
+  `(
+    'with availableTrialAction=$availableTrialAction',
+    ({ availableTrialAction, buttonVisible }) => {
+      beforeEach(() => {
+        createComponentWithStore({
+          provide: {
+            namespaceId: 1,
+            availableTrialAction,
+          },
+        });
+      });
+
+      if (buttonVisible) {
+        it('renders the trial button', () => {
+          expect(wrapper.findComponent(ExtendReactivateTrialButton).isVisible()).toBe(true);
+        });
+      } else {
+        it('does not render the trial button', () => {
+          expect(wrapper.findComponent(ExtendReactivateTrialButton).exists()).toBe(false);
+        });
+      }
+    },
+  );
 });

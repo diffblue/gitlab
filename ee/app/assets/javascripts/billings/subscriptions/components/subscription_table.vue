@@ -9,6 +9,7 @@ import {
   DAYS_FOR_RENEWAL,
   PLAN_TITLE_TRIAL_TEXT,
 } from 'ee/billings/constants';
+import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { getDayDifference } from '~/lib/utils/datetime/date_calculation_utility';
@@ -24,6 +25,7 @@ export default {
     GlButton,
     GlLoadingIcon,
     SubscriptionTableRow,
+    ExtendReactivateTrialButton,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
@@ -34,7 +36,7 @@ export default {
       default: '',
     },
     namespaceId: {
-      default: '',
+      default: null,
     },
     customerPortalUrl: {
       default: '',
@@ -53,6 +55,9 @@ export default {
     },
     refreshSeatsHref: {
       default: '',
+    },
+    availableTrialAction: {
+      default: null,
     },
   },
   computed: {
@@ -182,7 +187,14 @@ export default {
         data-testid="subscription-header"
       >
         <strong>{{ subscriptionHeader }}</strong>
-        <div class="controls">
+        <div class="gl-display-flex">
+          <extend-reactivate-trial-button
+            v-if="availableTrialAction"
+            :namespace-id="namespaceId"
+            :action="availableTrialAction"
+            :plan-name="planName"
+            class="gl-mr-3"
+          />
           <gl-button
             v-for="(button, index) in buttons"
             :key="button.text"
