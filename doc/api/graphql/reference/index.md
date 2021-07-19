@@ -294,7 +294,7 @@ Returns [`QueryComplexity`](#querycomplexity).
 
 ### `Query.runner`
 
-Find a runner. Available only when feature flag `runner_graphql_query` is enabled.
+Find a runner. Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
 
 Returns [`CiRunner`](#cirunner).
 
@@ -331,7 +331,7 @@ Returns [`RunnerSetup`](#runnersetup).
 
 ### `Query.runners`
 
-Find runners visible to the current user. Available only when feature flag `runner_graphql_query` is enabled.
+Find runners visible to the current user. Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
 
 Returns [`CiRunnerConnection`](#cirunnerconnection).
 
@@ -1121,7 +1121,7 @@ Input type: `CreateComplianceFrameworkInput`
 
 ### `Mutation.createCustomEmoji`
 
-Available only when feature flag `custom_emoji` is enabled.
+Available only when feature flag `custom_emoji` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
 
 Input type: `CreateCustomEmojiInput`
 
@@ -3618,7 +3618,7 @@ Input type: `RepositionImageDiffNoteInput`
 
 ### `Mutation.runnerDelete`
 
-Available only when feature flag `runner_graphql_query` is enabled.
+Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
 
 Input type: `RunnerDeleteInput`
 
@@ -3638,7 +3638,7 @@ Input type: `RunnerDeleteInput`
 
 ### `Mutation.runnerUpdate`
 
-Available only when feature flag `runner_graphql_query` is enabled.
+Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
 
 Input type: `RunnerUpdateInput`
 
@@ -3668,7 +3668,7 @@ Input type: `RunnerUpdateInput`
 
 ### `Mutation.runnersRegistrationTokenReset`
 
-Available only when feature flag `runner_graphql_query` is enabled.
+Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
 
 Input type: `RunnersRegistrationTokenResetInput`
 
@@ -9271,7 +9271,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupbillablememberscount"></a>`billableMembersCount` | [`Int`](#int) | The number of billable users in the group. |
 | <a id="groupcontainerrepositoriescount"></a>`containerRepositoriesCount` | [`Int!`](#int) | Number of container repositories in the group. |
 | <a id="groupcontainslockedprojects"></a>`containsLockedProjects` | [`Boolean!`](#boolean) | Includes at least one project where the repository size exceeds the limit. |
-| <a id="groupcustomemoji"></a>`customEmoji` | [`CustomEmojiConnection`](#customemojiconnection) | Custom emoji within this namespace. Available only when feature flag `custom_emoji` is enabled. (see [Connections](#connections)) |
+| <a id="groupcustomemoji"></a>`customEmoji` | [`CustomEmojiConnection`](#customemojiconnection) | Custom emoji within this namespace. Available only when feature flag `custom_emoji` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. (see [Connections](#connections)) |
 | <a id="groupdescription"></a>`description` | [`String`](#string) | Description of the namespace. |
 | <a id="groupdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="groupdora"></a>`dora` | [`Dora`](#dora) | The group's DORA metrics. |
