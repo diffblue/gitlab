@@ -4,9 +4,7 @@ module Ci
   module Minutes
     # Track usage of Shared Runners minutes at root namespace level.
     # This class ensures that we keep 1 record per namespace per month.
-    class NamespaceMonthlyUsage < ApplicationRecord
-      self.table_name = "ci_namespace_monthly_usages"
-
+    class NamespaceMonthlyUsage < Ci::ApplicationRecord
       belongs_to :namespace
 
       scope :current_month, -> { where(date: beginning_of_month) }
