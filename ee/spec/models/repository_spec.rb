@@ -264,4 +264,50 @@ RSpec.describe Repository do
       end
     end
   end
+
+  describe '#update_root_ref' do
+    let(:url) { 'http://git.example.com/remote-repo.git' }
+    let(:auth) { 'Basic secret' }
+
+    it 'updates the default branch when HEAD has changed' do
+      stub_find_remote_root_ref(repository, ref: 'feature')
+
+      expect { repository.update_root_ref('origin', url, auth) }
+        .to change { project.default_branch }
+        .from('master')
+        .to('feature')
+    end
+
+    it 'always updates the default branch even when HEAD does not change' do
+      stub_find_remote_root_ref(repository, ref: 'master')
+
+      expect(repository).to receive(:change_head).with('master').and_call_original
+
+      repository.update_root_ref('origin', url, auth)
+
+      expect(project.default_branch).to eq('master')
+    end
+
+    it 'does not update the default branch when HEAD does not exist' do
+      stub_find_remote_root_ref(repository, ref: 'foo')
+
+      expect { repository.update_root_ref('origin', url, auth) }
+        .not_to change { project.default_branch }
+    end
+
+    it 'does not raise error when repository does not exist' do
+      allow(repository).to receive(:find_remote_root_ref)
+        .with('origin', url, auth)
+        .and_raise(Gitlab::Git::Repository::NoRepository)
+
+      expect { repository.update_root_ref('origin', url, auth) }.not_to raise_error
+    end
+
+    def stub_find_remote_root_ref(repository, ref:)
+      allow(repository)
+        .to receive(:find_remote_root_ref)
+        .with('origin', url, auth)
+        .and_return(ref)
+    end
+  end
 end

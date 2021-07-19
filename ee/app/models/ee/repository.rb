@@ -101,6 +101,15 @@ module EE
       blob_data_at(sha, ::Gitlab::Insights::CONFIG_FILE_PATH)
     end
 
+    # Update the default branch querying the remote to determine its HEAD
+    def update_root_ref(remote, remote_url, authorization)
+      root_ref = find_remote_root_ref(remote, remote_url, authorization)
+      change_head(root_ref) if root_ref.present?
+    rescue ::Gitlab::Git::Repository::NoRepository => e
+      ::Gitlab::AppLogger.error("Error updating root ref for repository #{full_path} (#{container.id}): #{e.message}.")
+      nil
+    end
+
     private
 
     def diverged?(branch_name, remote_ref)

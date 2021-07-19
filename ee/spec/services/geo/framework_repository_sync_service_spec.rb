@@ -53,7 +53,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
       allow_any_instance_of(Repository)
         .to receive(:find_remote_root_ref)
-        .with('geo')
+        .with('geo', url_to_repo, anything)
         .and_return('master')
     end
 
@@ -72,8 +72,8 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
     end
 
     it 'expires repository caches' do
-      expect_any_instance_of(Repository).to receive(:expire_all_method_caches).once
-      expect_any_instance_of(Repository).to receive(:expire_branch_cache).once
+      expect_any_instance_of(Repository).to receive(:expire_all_method_caches).twice
+      expect_any_instance_of(Repository).to receive(:expire_branch_cache).twice
       expect_any_instance_of(Repository).to receive(:expire_content_cache).once
 
       subject.execute
@@ -171,6 +171,53 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
           expect(registry.reload.retry_count).to be_zero
           expect(registry.retry_at).to be_nil
+        end
+
+        context 'with non empty repositories' do
+          context 'when HEAD change' do
+            before do
+              allow(repository)
+                .to receive(:find_remote_root_ref)
+                .with('geo', url_to_repo, anything)
+                .and_return('feature')
+            end
+
+            it 'syncs gitattributes to info/attributes' do
+              expect(repository).to receive(:copy_gitattributes)
+
+              subject.execute
+            end
+
+            it 'updates the default branch' do
+              expect(repository).to receive(:with_config)
+                .with("http.#{url_to_repo}.extraHeader" => anything)
+                .and_call_original
+                .once
+
+              expect(repository).to receive(:change_head).with('feature').once
+
+              subject.execute
+            end
+          end
+
+          context 'when HEAD does not change' do
+            it 'syncs gitattributes to info/attributes' do
+              expect(repository).to receive(:copy_gitattributes)
+
+              subject.execute
+            end
+
+            it 'updates the default branch' do
+              expect(repository).to receive(:with_config)
+                .with("http.#{url_to_repo}.extraHeader" => anything)
+                .and_call_original
+                .once
+
+              expect(repository).to receive(:change_head).with('master').once
+
+              subject.execute
+            end
+          end
         end
       end
 

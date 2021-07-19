@@ -253,35 +253,28 @@ RSpec.describe Geo::RepositorySyncService, :geo do
                 .and_call_original
                 .once
 
-              expect(project).to receive(:change_head).with('feature').once
+              expect(repository).to receive(:change_head).with('feature').once
+
+              subject.execute
+            end
+          end
+
+          context 'when HEAD does not change' do
+            it 'syncs gitattributes to info/attributes' do
+              expect(repository).to receive(:copy_gitattributes)
 
               subject.execute
             end
 
-            context 'when HEAD does not change' do
-              before do
-                allow(project.repository)
-                  .to receive(:find_remote_root_ref)
-                  .with('geo', url_to_repo, anything)
-                  .and_return(project.default_branch)
-              end
+            it 'updates the default branch' do
+              expect(repository).to receive(:with_config)
+                .with("http.#{url_to_repo}.extraHeader" => anything)
+                .and_call_original
+                .once
 
-              it 'syncs gitattributes to info/attributes' do
-                expect(repository).to receive(:copy_gitattributes)
+              expect(repository).to receive(:change_head).with('master').once
 
-                subject.execute
-              end
-
-              it 'updates the default branch' do
-                expect(repository).to receive(:with_config)
-                  .with("http.#{url_to_repo}.extraHeader" => anything)
-                  .and_call_original
-                  .once
-
-                expect(project).to receive(:change_head).with('master').once
-
-                subject.execute
-              end
+              subject.execute
             end
           end
         end
