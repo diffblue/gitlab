@@ -40,7 +40,6 @@ export const devopsAdoptionNamespaceData = {
         runnerConfigured: true,
         pipelineSucceeded: false,
         deploySucceeded: false,
-        securityScanSucceeded: false,
         codeOwnersUsedCount: 0,
         sastEnabledCount: 0,
         dastEnabledCount: 0,
@@ -128,10 +127,6 @@ export const overallAdoptionData = {
     {
       adopted: false,
       title: 'SAST',
-    },
-    {
-      adopted: false,
-      title: 'Scanning',
     },
     {
       adopted: false,

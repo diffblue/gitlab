@@ -21,7 +21,8 @@ module Types
         field :deploy_succeeded, GraphQL::BOOLEAN_TYPE, null: false,
               description: 'At least one deployment succeeded.'
         field :security_scan_succeeded, GraphQL::BOOLEAN_TYPE, null: false,
-              description: 'At least one security scan succeeded.'
+              description: 'At least one security scan succeeded.',
+              deprecated: { reason: 'Substituted with specific security metrics. Always false', milestone: '14.1' }
         field :code_owners_used_count, GraphQL::INT_TYPE, null: true,
               description: 'Total number of projects with existing CODEOWNERS file.'
         field :sast_enabled_count, GraphQL::INT_TYPE, null: true,
