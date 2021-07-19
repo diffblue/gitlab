@@ -19,6 +19,7 @@ module EE
           include FromUnion
 
           self.inheritance_column = :_type_disabled
+          self.enumerate_columns_in_select_statements = true
         end
 
         class GroupGroupLink < ActiveRecord::Base
