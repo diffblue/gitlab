@@ -1,10 +1,10 @@
 import { __ } from '~/locale';
 
-export const HELPER_TEXT_USAGE_PING_DISABLED = __(
+export const HELPER_TEXT_SERVICE_PING_DISABLED = __(
   'To enable Registration Features, make sure "Enable service ping" is checked.',
 );
 
-export const HELPER_TEXT_USAGE_PING_ENABLED = __(
+export const HELPER_TEXT_SERVICE_PING_ENABLED = __(
   'You can enable Registration Features because Service Ping is enabled. To continue using Registration Features in the future, you will also need to register with GitLab via a new cloud licensing service.',
 );
 
@@ -18,8 +18,8 @@ function setHelperText(usagePingCheckbox) {
   );
 
   helperTextId.textContent = usagePingCheckbox.checked
-    ? HELPER_TEXT_USAGE_PING_ENABLED
-    : HELPER_TEXT_USAGE_PING_DISABLED;
+    ? HELPER_TEXT_SERVICE_PING_ENABLED
+    : HELPER_TEXT_SERVICE_PING_DISABLED;
 
   usagePingFeaturesLabel.classList.toggle('gl-cursor-not-allowed', !usagePingCheckbox.checked);
 
