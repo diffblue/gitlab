@@ -89,8 +89,8 @@ module EE
 
         # rubocop: disable CodeReuse/ActiveRecord
         def find_user(board)
-          user_ids = user_finder(board).execute.select(:user_id)
-          ::User.where(id: user_ids).find_by(id: params['assignee_id'])
+          user_ids = user_finder(board).execute.reselect(:user_id)
+          ::User.id_in(user_ids).find_by(id: params['assignee_id'])
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
