@@ -268,7 +268,7 @@ RSpec.describe 'Admin updates EE-only settings' do
 
     it 'allows you to change the npm_forwaring setting' do
       page.within('#js-package-settings') do
-        check 'Enable forwarding of npm package requests to npmjs.org'
+        check 'Forward npm package requests to the npm Registry if the packages are not found in the GitLab Package Registry'
         click_button 'Save'
       end
 
