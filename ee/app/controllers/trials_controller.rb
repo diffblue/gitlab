@@ -56,7 +56,7 @@ class TrialsController < ApplicationController
   end
 
   def extend_reactivate
-    render_404 unless Feature.enabled?(:allow_extend_reactivate_trial)
+    render_404 unless Feature.enabled?(:allow_extend_reactivate_trial, default_enabled: :yaml)
 
     result = GitlabSubscriptions::ExtendReactivateTrialService.new.execute(extend_reactivate_trial_params) if valid_extension?
 
