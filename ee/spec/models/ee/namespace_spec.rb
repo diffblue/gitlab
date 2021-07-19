@@ -1232,54 +1232,82 @@ RSpec.describe Namespace do
   describe '#can_extend_trial?' do
     subject { namespace.can_extend_trial? }
 
-    where(:trial_active, :trial_extended_or_reactivated, :can_extend_trial) do
-      false | false | false
-      false | true  | false
-      true  | false | true
-      true  | true  | false
-    end
-
-    with_them do
+    context 'feature flag is disabled' do
       before do
-        allow(namespace).to receive(:trial_active?).and_return(trial_active)
-        allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(trial_extended_or_reactivated)
+        allow(namespace).to receive(:trial_active?).and_return(true)
+        allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
+
+        stub_feature_flags(allow_extend_reactivate_trial: false)
       end
 
-      it { is_expected.to be can_extend_trial }
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when feature flag is enabled' do
+      where(:trial_active, :trial_extended_or_reactivated, :can_extend_trial) do
+        false | false | false
+        false | true  | false
+        true  | false | true
+        true  | true  | false
+      end
+
+      with_them do
+        before do
+          allow(namespace).to receive(:trial_active?).and_return(trial_active)
+          allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(trial_extended_or_reactivated)
+        end
+
+        it { is_expected.to be can_extend_trial }
+      end
     end
   end
 
   describe '#can_reactivate_trial?' do
     subject { namespace.can_reactivate_trial? }
 
-    where(:trial_active, :never_had_trial, :trial_extended_or_reactivated, :free_plan, :can_reactivate_trial) do
-      false | false | false | false | false
-      false | false | false | true  | true
-      false | false | true  | false | false
-      false | false | true  | true  | false
-      false | true  | false | false | false
-      false | true  | false | true  | false
-      false | true  | true  | false | false
-      false | true  | true  | true  | false
-      true  | false | false | false | false
-      true  | false | false | true  | false
-      true  | false | true  | false | false
-      true  | false | true  | true  | false
-      true  | true  | false | false | false
-      true  | true  | false | true  | false
-      true  | true  | true  | false | false
-      true  | true  | true  | true  | false
-    end
-
-    with_them do
+    context 'when feature flag is disabled' do
       before do
-        allow(namespace).to receive(:trial_active?).and_return(trial_active)
-        allow(namespace).to receive(:never_had_trial?).and_return(never_had_trial)
-        allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(trial_extended_or_reactivated)
-        allow(namespace).to receive(:free_plan?).and_return(free_plan)
+        allow(namespace).to receive(:trial_active?).and_return(false)
+        allow(namespace).to receive(:never_had_trial?).and_return(false)
+        allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
+        allow(namespace).to receive(:free_plan?).and_return(true)
+
+        stub_feature_flags(allow_extend_reactivate_trial: false)
       end
 
-      it { is_expected.to be can_reactivate_trial }
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when feature flag is enabled' do
+      where(:trial_active, :never_had_trial, :trial_extended_or_reactivated, :free_plan, :can_reactivate_trial) do
+        false | false | false | false | false
+        false | false | false | true  | true
+        false | false | true  | false | false
+        false | false | true  | true  | false
+        false | true  | false | false | false
+        false | true  | false | true  | false
+        false | true  | true  | false | false
+        false | true  | true  | true  | false
+        true  | false | false | false | false
+        true  | false | false | true  | false
+        true  | false | true  | false | false
+        true  | false | true  | true  | false
+        true  | true  | false | false | false
+        true  | true  | false | true  | false
+        true  | true  | true  | false | false
+        true  | true  | true  | true  | false
+      end
+
+      with_them do
+        before do
+          allow(namespace).to receive(:trial_active?).and_return(trial_active)
+          allow(namespace).to receive(:never_had_trial?).and_return(never_had_trial)
+          allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(trial_extended_or_reactivated)
+          allow(namespace).to receive(:free_plan?).and_return(free_plan)
+        end
+
+        it { is_expected.to be can_reactivate_trial }
+      end
     end
   end
 

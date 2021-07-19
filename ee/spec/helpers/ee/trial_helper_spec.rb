@@ -228,14 +228,32 @@ RSpec.describe EE::TrialHelper do
     end
 
     context 'when feature flag is disabled' do
-      it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: nil })}
+      before do
+        stub_feature_flags(allow_extend_reactivate_trial: false)
+      end
+
+      context 'when trial can be extended' do
+        before do
+          allow(namespace).to receive(:trial_active?).and_return(true)
+          allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
+        end
+
+        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: nil })}
+      end
+
+      context 'when trial can be reactivated' do
+        before do
+          allow(namespace).to receive(:trial_active?).and_return(false)
+          allow(namespace).to receive(:never_had_trial?).and_return(false)
+          allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
+          allow(namespace).to receive(:free_plan?).and_return(true)
+        end
+
+        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: nil }) }
+      end
     end
 
     context 'when feature flag is enabled' do
-      before do
-        stub_feature_flags(allow_extend_reactivate_trial: true)
-      end
-
       context 'when trial can be extended' do
         before do
           allow(namespace).to receive(:can_extend_trial?).and_return(true)
