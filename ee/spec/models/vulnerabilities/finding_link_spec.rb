@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Vulnerabilities::FindingLink do
   describe 'associations' do
-    it { is_expected.to belong_to(:finding).class_name('Vulnerabilities::Finding') }
+    it { is_expected.to belong_to(:finding).class_name('Vulnerabilities::Finding').inverse_of(:finding_links) }
   end
 
   describe 'validations' do
