@@ -1,9 +1,7 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, __ } from '~/locale';
 
-const qrtlyReconciliationHelpPageUrl = helpPagePath('subscriptions/self_managed/index', {
-  anchor: 'quarterly-subscription-reconciliation',
-});
+const qrtlyReconciliationHelpPageUrl = helpPagePath('subscriptions/quarterly_reconciliation');
 
 export const i18n = {
   title: s__('Admin|Quarterly reconciliation will occur on %{qrtlyDate}'),
