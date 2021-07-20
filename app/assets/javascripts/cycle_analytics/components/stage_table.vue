@@ -17,6 +17,8 @@ import {
   PAGINATION_SORT_FIELD_DURATION,
   PAGINATION_SORT_DIRECTION_ASC,
   PAGINATION_SORT_DIRECTION_DESC,
+  STAGE_TITLE_STAGING,
+  STAGE_TITLE_TEST,
 } from '../constants';
 import TotalTime from './total_time_component.vue';
 
@@ -49,7 +51,8 @@ export default {
   props: {
     selectedStage: {
       type: Object,
-      required: true,
+      required: false,
+      default: () => ({ custom: false }),
     },
     isLoading: {
       type: Boolean,
@@ -68,6 +71,11 @@ export default {
       type: String,
       required: true,
     },
+    emptyStateTitle: {
+      type: String,
+      required: false,
+      default: null,
+    },
     emptyStateMessage: {
       type: String,
       required: false,
@@ -75,33 +83,41 @@ export default {
     },
     pagination: {
       type: Object,
-      required: true,
+      required: false,
+      default: null,
     },
   },
   data() {
-    const {
-      pagination: { sort, direction },
-    } = this;
-    return {
-      sort,
-      sortDesc: direction === PAGINATION_SORT_DIRECTION_DESC,
-    };
+    if (this.pagination) {
+      const {
+        pagination: { sort, direction },
+      } = this;
+      return {
+        sort,
+        direction,
+        sortDesc: direction === PAGINATION_SORT_DIRECTION_DESC,
+      };
+    }
+    return { sort: null, direction: null, sortDesc: null };
   },
   computed: {
     isEmptyStage() {
       return !this.stageEvents.length;
     },
-    emptyStateTitle() {
-      const { emptyStateMessage } = this;
-      return emptyStateMessage || NOT_ENOUGH_DATA_ERROR;
+    emptyStateTitleText() {
+      return this.emptyStateTitle || NOT_ENOUGH_DATA_ERROR;
     },
     isDefaultTestStage() {
       const { selectedStage } = this;
-      return !selectedStage.custom && selectedStage.title?.toLowerCase().trim() === 'test';
+      return (
+        !selectedStage.custom && selectedStage.title?.toLowerCase().trim() === STAGE_TITLE_TEST
+      );
     },
     isDefaultStagingStage() {
       const { selectedStage } = this;
-      return !selectedStage.custom && selectedStage.title?.toLowerCase().trim() === 'staging';
+      return (
+        !selectedStage.custom && selectedStage.title?.toLowerCase().trim() === STAGE_TITLE_STAGING
+      );
     },
     isMergeRequestStage() {
       const [firstEvent] = this.stageEvents;
@@ -139,6 +155,9 @@ export default {
     isMrLink(url = '') {
       return url.includes('/merge_request');
     },
+    itemId({ url, iid }) {
+      return this.isMrLink(url) ? `!${iid}` : `#${iid}`;
+    },
     itemTitle(item) {
       return item.title || item.name;
     },
@@ -160,7 +179,12 @@ export default {
 <template>
   <div data-testid="vsa-stage-table">
     <gl-loading-icon v-if="isLoading" class="gl-mt-4" size="md" />
-    <gl-empty-state v-else-if="isEmptyStage" :title="emptyStateTitle" :svg-path="noDataSvgPath" />
+    <gl-empty-state
+      v-else-if="isEmptyStage"
+      :title="emptyStateTitleText"
+      :description="emptyStateMessage"
+      :svg-path="noDataSvgPath"
+    />
     <gl-table
       v-else
       head-variant="white"
@@ -168,18 +192,18 @@ export default {
       thead-class="border-bottom"
       show-empty
       :sort-by.sync="sort"
-      :sort-direction.sync="pagination.direction"
+      :sort-direction.sync="direction"
       :sort-desc.sync="sortDesc"
       :fields="fields"
       :items="stageEvents"
       :empty-text="emptyStateMessage"
       @sort-changed="onSort"
     >
-      <template #head(end_event)="data">
+      <template v-if="stageCount" #head(end_event)="data">
         <span>{{ data.label }}</span
-        ><gl-badge class="gl-ml-2" size="sm">
-          <formatted-stage-count :stage-count="stageCount" />
-        </gl-badge>
+        ><gl-badge class="gl-ml-2" size="sm"
+          ><formatted-stage-count :stage-count="stageCount"
+        /></gl-badge>
       </template>
       <template #cell(end_event)="{ item }">
         <div data-testid="vsa-stage-event">
@@ -245,12 +269,7 @@ export default {
               <gl-link class="gl-text-black-normal" :href="item.url">{{ itemTitle(item) }}</gl-link>
             </h5>
             <p class="gl-m-0">
-              <template v-if="isMrLink(item.url)">
-                <gl-link class="gl-text-black-normal" :href="item.url">!{{ item.iid }}</gl-link>
-              </template>
-              <template v-else>
-                <gl-link class="gl-text-black-normal" :href="item.url">#{{ item.iid }}</gl-link>
-              </template>
+              <gl-link class="gl-text-black-normal" :href="item.url">{{ itemId(item) }}</gl-link>
               <span class="gl-font-lg">&middot;</span>
               <span data-testid="vsa-stage-event-date">
                 {{ s__('OpenedNDaysAgo|Opened') }}
@@ -273,7 +292,7 @@ export default {
       </template>
     </gl-table>
     <gl-pagination
-      v-if="!isLoading && !isEmptyStage"
+      v-if="pagination && !isLoading && !isEmptyStage"
       :value="pagination.page"
       :prev-page="prevPage"
       :next-page="nextPage"

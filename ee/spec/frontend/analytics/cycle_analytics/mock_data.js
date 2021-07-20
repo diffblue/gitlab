@@ -2,9 +2,6 @@ import { uniq } from 'lodash';
 import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
-  PAGINATION_TYPE,
-  PAGINATION_SORT_DIRECTION_DESC,
-  PAGINATION_SORT_FIELD_END_EVENT,
 } from 'ee/analytics/cycle_analytics/constants';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
@@ -21,6 +18,11 @@ import {
   createdBefore,
   createdAfter,
 } from 'jest/cycle_analytics/mock_data';
+import {
+  PAGINATION_TYPE,
+  PAGINATION_SORT_DIRECTION_DESC,
+  PAGINATION_SORT_FIELD_END_EVENT,
+} from '~/cycle_analytics/constants';
 import { transformStagesForPathNavigation } from '~/cycle_analytics/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';

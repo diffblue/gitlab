@@ -1,9 +1,9 @@
 import { GlEmptyState, GlLoadingIcon, GlTable } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
-import StageTable from 'ee/analytics/cycle_analytics/components/stage_table.vue';
-import { PAGINATION_SORT_FIELD_DURATION } from 'ee/analytics/cycle_analytics/constants';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import StageTable from '~/cycle_analytics/components/stage_table.vue';
+import { PAGINATION_SORT_FIELD_DURATION } from '~/cycle_analytics/constants';
 import {
   stagingEvents,
   stagingStage,
@@ -13,13 +13,13 @@ import {
   testStage,
   reviewStage,
   reviewEvents,
-} from '../mock_data';
+} from './mock_data';
 
 let wrapper = null;
 let trackingSpy = null;
 
 const noDataSvgPath = 'path/to/no/data';
-const emptyStateMessage = 'Too much data';
+const emptyStateTitle = 'Too much data';
 const notEnoughDataError = "We don't have enough data to show this stage.";
 const [firstIssueEvent] = issueEvents;
 const [firstStagingEvent] = stagingEvents;
@@ -273,14 +273,14 @@ describe('StageTable', () => {
     });
   });
 
-  describe('emptyStateMessage set', () => {
+  describe('emptyStateTitle set', () => {
     beforeEach(() => {
-      wrapper = createComponent({ stageEvents: [], emptyStateMessage });
+      wrapper = createComponent({ stageEvents: [], emptyStateTitle });
     });
 
     it('will display the custom message', () => {
       expect(wrapper.html()).not.toContain(notEnoughDataError);
-      expect(wrapper.html()).toContain(emptyStateMessage);
+      expect(wrapper.html()).toContain(emptyStateTitle);
     });
   });
 
@@ -300,6 +300,8 @@ describe('StageTable', () => {
     });
 
     it('clicking prev or next will emit an event', async () => {
+      expect(wrapper.emitted('handleUpdatePagination')).toBeUndefined();
+
       findPagination().vm.$emit('input', 2);
       await wrapper.vm.$nextTick();
 
@@ -349,6 +351,7 @@ describe('StageTable', () => {
     });
 
     it('clicking a table column will update the sort field', () => {
+      expect(wrapper.emitted('handleUpdatePagination')).toBeUndefined();
       triggerTableSort();
 
       expect(wrapper.emitted('handleUpdatePagination')[0]).toEqual([
@@ -360,6 +363,7 @@ describe('StageTable', () => {
     });
 
     it('with sortDesc=false will toggle the direction field', async () => {
+      expect(wrapper.emitted('handleUpdatePagination')).toBeUndefined();
       triggerTableSort(false);
 
       expect(wrapper.emitted('handleUpdatePagination')[0]).toEqual([
