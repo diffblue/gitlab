@@ -1,66 +1,58 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapActions, mapGetters } from 'vuex';
-import BoardNewIssueFoss from '~/boards/components/board_new_issue.vue';
+import BoardNewItem from '~/boards/components/board_new_item.vue';
 import { toggleFormEventPrefix } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
-import createFlash from '~/flash';
-import { __, s__ } from '~/locale';
 
 import { fullEpicBoardId } from '../boards_util';
 
 export default {
-  extends: BoardNewIssueFoss,
-  inject: {
-    boardId: {
-      default: '',
+  components: {
+    BoardNewItem,
+  },
+  inject: ['boardId'],
+  props: {
+    list: {
+      type: Object,
+      required: true,
     },
   },
   computed: {
     ...mapGetters(['isGroupBoard']),
-    submitButtonTitle() {
-      return __('Create epic');
+    formEventPrefix() {
+      return toggleFormEventPrefix.epic;
     },
-    disabled() {
-      return this.title === '';
+    formEvent() {
+      return `${this.formEventPrefix}${this.list.id}`;
     },
   },
   methods: {
     ...mapActions(['addListNewEpic']),
-    submit() {
-      const {
-        title,
-        boardId,
-        list: { id },
-      } = this;
-
-      eventHub.$emit(`scroll-board-list-${id}`);
-
-      this.addListNewEpic({
+    submit({ title }) {
+      return this.addListNewEpic({
         epicInput: {
           title,
-          boardId: fullEpicBoardId(boardId),
-          listId: id,
+          boardId: fullEpicBoardId(this.boardId),
+          listId: this.list.id,
         },
         list: this.list,
-      })
-        .then(() => {
-          this.reset();
-        })
-        .catch((error) => {
-          createFlash({
-            message: s__('Board|Failed to create epic. Please try again.'),
-            captureError: true,
-            error,
-          });
-        });
+      }).then(() => {
+        eventHub.$emit(this.formEvent);
+      });
     },
-    reset() {
-      this.title = '';
-      eventHub.$emit(`${toggleFormEventPrefix.epic}${this.list.id}`);
+    cancel() {
+      eventHub.$emit(this.formEvent);
     },
   },
 };
 </script>
+
+<template>
+  <board-new-item
+    :list="list"
+    :form-event-prefix="formEventPrefix"
+    :submit-button-title="__('Create epic')"
+    @form-submit="submit"
+    @form-cancel="cancel"
+  />
+</template>
