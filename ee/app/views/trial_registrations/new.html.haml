@@ -5,9 +5,6 @@
 = render "layouts/google_tag_manager_body"
 
 - registration_form_content = capture do
-  %h2.gl-text-center.gl-pb-5.gl-my-0
-    = _('Start a Free Ultimate Trial')
-
   .signup-page
     = render 'devise/shared/signup_box',
       url: trial_registrations_path,
@@ -21,11 +18,18 @@
   - experiment(:trial_registration_with_reassurance) do |e|
     - e.use do
       .col-md-6.offset-md-3
+        %h2.gl-text-center.gl-pb-5.gl-my-0
+          = _('Start a Free Ultimate Trial')
         = registration_form_content
 
     - e.try do
-      .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-justify-content-center.gl-align-items-center
+      .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center
         .gl-w-grid-size-28
           = render 'reassurances'
       .col-md-6.offset-md-3.offset-lg-0
+        %h2.gl-lg-display-none.gl-mb-3.gl-mt-0.gl-text-gray-800
+          = s_('InProductMarketing|Free 30-day trial')
+        %p.gl-lg-display-none.gl-font-lg.gl-text-gray-800
+          = s_('InProductMarketing|No credit card required.')
+
         = registration_form_content
