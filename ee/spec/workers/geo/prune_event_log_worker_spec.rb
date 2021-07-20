@@ -29,8 +29,11 @@ RSpec.describe Geo::PruneEventLogWorker, :geo do
       end
 
       it 'does nothing when database is not feeling healthy' do
-        allow(Gitlab::Database.main).to receive(:healthy?).and_return(false)
+        allow(Postgresql::ReplicationSlot)
+          .to receive(:lag_too_great?)
+          .and_return(true)
 
+        expect(GeoNode).not_to receive(:secondary_nodes)
         expect(Geo::PruneEventLogService).not_to receive(:new)
 
         worker.perform
