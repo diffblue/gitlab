@@ -30,6 +30,7 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     create(:cycle_analytics_group_stage, {
       name: 'label-based-stage',
       parent: group,
+      value_stream: value_stream,
       start_event_identifier: :issue_label_added,
       start_event_label_id: label.id,
       end_event_identifier: :issue_label_removed,
@@ -76,7 +77,7 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
   end
 
   def additional_cycle_analytics_metrics
-    create(:cycle_analytics_group_stage, parent: group)
+    create(:cycle_analytics_group_stage, parent: group, value_stream: value_stream)
 
     update_metrics
 
@@ -133,7 +134,7 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     end
 
     it 'analytics/value_stream_analytics/stages.json' do
-      get(:index, params: { group_id: group.name }, format: :json)
+      get(:index, params: { group_id: group.name, value_stream_id: value_stream.id }, format: :json)
 
       expect(response).to be_successful
     end
