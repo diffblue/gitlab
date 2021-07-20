@@ -6,11 +6,11 @@ class Groups::AuditEventsController < Groups::ApplicationController
   include AuditEvents::AuditLogsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
-  include Analytics::UniqueVisitsHelper
+  include RedisTracking
 
   before_action :check_audit_events_available!
 
-  track_unique_visits :index, target_id: 'g_compliance_audit_events'
+  track_redis_hll_event :index, name: 'g_compliance_audit_events'
 
   feature_category :audit_events
 

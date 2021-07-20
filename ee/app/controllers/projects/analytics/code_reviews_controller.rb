@@ -3,11 +3,11 @@
 module Projects
   module Analytics
     class CodeReviewsController < Projects::ApplicationController
-      include ::Analytics::UniqueVisitsHelper
+      include RedisTracking
 
       before_action :authorize_read_code_review_analytics!
 
-      track_unique_visits :index, target_id: 'p_analytics_code_reviews'
+      track_redis_hll_event :index, name: 'p_analytics_code_reviews'
 
       feature_category :planning_analytics
 

@@ -2,12 +2,12 @@
 
 class Groups::InsightsController < Groups::ApplicationController
   include InsightsActions
-  include Analytics::UniqueVisitsHelper
+  include RedisTracking
 
   before_action :authorize_read_group!
   before_action :authorize_read_insights_config_project!
 
-  track_unique_visits :show, target_id: 'g_analytics_insights'
+  track_redis_hll_event :show, name: 'g_analytics_insights'
 
   feature_category :insights
 

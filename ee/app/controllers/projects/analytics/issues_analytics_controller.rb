@@ -2,11 +2,11 @@
 
 class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationController
   include IssuableCollections
-  include ::Analytics::UniqueVisitsHelper
+  include RedisTracking
 
   before_action :authorize_read_issue_analytics!
 
-  track_unique_visits :show, target_id: 'p_analytics_issues'
+  track_redis_hll_event :show, name: 'p_analytics_issues'
 
   feature_category :planning_analytics
 

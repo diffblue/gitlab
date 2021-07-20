@@ -2,14 +2,14 @@
 
 class Projects::InsightsController < Projects::ApplicationController
   include InsightsActions
-  include Analytics::UniqueVisitsHelper
+  include RedisTracking
 
   helper_method :project_insights_config
 
   before_action :authorize_read_project!
   before_action :authorize_read_insights!
 
-  track_unique_visits :show, target_id: 'p_analytics_insights'
+  track_redis_hll_event :show, name: 'p_analytics_insights'
 
   feature_category :insights
 

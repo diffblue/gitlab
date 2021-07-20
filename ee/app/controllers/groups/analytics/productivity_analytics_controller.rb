@@ -20,9 +20,9 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
   before_action :validate_params, only: :show, if: -> { request.format.json? }
 
   include IssuableCollections
-  include Analytics::UniqueVisitsHelper
+  include RedisTracking
 
-  track_unique_visits :show, target_id: 'g_analytics_productivity'
+  track_redis_hll_event :show, name: 'g_analytics_productivity'
 
   def show
     respond_to do |format|
