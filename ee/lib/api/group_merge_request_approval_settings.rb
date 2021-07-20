@@ -21,7 +21,7 @@ module API
           success ::API::Entities::GroupMergeRequestApprovalSetting
         end
         get do
-          setting = GroupMergeRequestApprovalSetting.find_or_initialize_by_group(user_group)
+          setting = ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(user_group).execute
 
           present setting, with: ::API::Entities::GroupMergeRequestApprovalSetting
         end
@@ -52,7 +52,9 @@ module API
             .new(container: user_group, current_user: current_user, params: setting_params).execute
 
           if response.success?
-            present response.payload, with: ::API::Entities::GroupMergeRequestApprovalSetting
+            setting = ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(user_group).execute
+
+            present setting, with: ::API::Entities::GroupMergeRequestApprovalSetting
           else
             render_api_error!(response.message, :bad_request)
           end

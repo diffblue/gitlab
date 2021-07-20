@@ -1,11 +1,31 @@
 {
   "type": "object",
   "properties": {
-    "allow_author_approval": { "type": "boolean" },
-    "allow_committer_approval": { "type": "boolean" },
-    "allow_overrides_to_approver_list_per_merge_request": { "type": "boolean" },
-    "retain_approvals_on_push": { "type": "boolean" },
-    "require_password_to_approve": { "type": "boolean" }
+    "allow_author_approval": {
+      "value": { "type":  "boolean" },
+      "locked": { "type":  "boolean" },
+      "inherited_from": { "type":  "string" }
+    },
+    "allow_committer_approval": {
+      "value": { "type":  "boolean" },
+      "locked": { "type":  "boolean" },
+      "inherited_from": { "type":  "string" }
+    },
+    "allow_overrides_to_approver_list_per_merge_request": {
+      "value": { "type":  "boolean" },
+      "locked": { "type":  "boolean" },
+      "inherited_from": { "type":  "string" }
+    },
+    "retain_approvals_on_push": {
+      "value": { "type":  "boolean" },
+      "locked": { "type":  "boolean" },
+      "inherited_from": { "type":  "string" }
+    },
+    "require_password_to_approve": {
+      "value": { "type":  "boolean" },
+      "locked": { "type":  "boolean" },
+      "inherited_from": { "type":  "string" }
+    }
   },
   "additionalProperties": false
 }

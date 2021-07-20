@@ -9,6 +9,7 @@ import createStore from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings/';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { createGroupApprovalsPayload } from '../mocks';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -18,6 +19,7 @@ describe('ApprovalSettings', () => {
   let store;
   let actions;
 
+  const groupApprovalsPayload = createGroupApprovalsPayload();
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
 
   const setupStore = (data = {}) => {
@@ -192,7 +194,7 @@ describe('ApprovalSettings', () => {
 
           await waitForPromises();
           await findForm().vm.$emit('submit', { preventDefault: () => {} });
-          await store.commit('UPDATE_SETTINGS_SUCCESS', {});
+          await store.commit('UPDATE_SETTINGS_SUCCESS', groupApprovalsPayload);
         });
 
         it('update the settings', () => {
