@@ -29,7 +29,9 @@ module Security
                                context: [context],
                                idempotency_key: Digest::SHA256.hexdigest(idempotency_key),
                                user: build.user_id,
-                               project: build.project_id)
+                               project: build.project_id,
+                               label: analyzer_id(report),
+                               property: scan_type(report, report_type))
     end
 
     def data_to_track(report_type, report)
@@ -38,7 +40,7 @@ module Security
       primary_scanner = report&.primary_scanner
 
       {
-        analyzer: analyzer&.id,
+        analyzer: analyzer_id(report),
         analyzer_vendor: analyzer&.vendor,
         analyzer_version: analyzer&.version,
         end_time: scan&.end_time,
@@ -54,6 +56,10 @@ module Security
 
     def scan_type(report, report_type)
       report&.scan&.type || report_type
+    end
+
+    def analyzer_id(report)
+      report&.analyzer&.id
     end
   end
 end
