@@ -87,59 +87,22 @@ module EE
         end
       end
 
-      # Returns list of Issue Type Scheme IDs in selected JIRA Project
-      #
-      # @return [Array] the array of IDs
-      def project_issuetype_scheme_ids
-        raise NotImplementedError unless data_fields.deployment_cloud?
-
-        query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'issuetypescheme/', 'project')
-        query_url.query_values = { 'projectId' => jira_project_id }
-
-        client
-          .get(query_url.to_s)
-          .fetch('values', [])
-          .map { |schemes| schemes.dig('issueTypeScheme', 'id') }
-      end
-
-      # Returns list of Issue Type IDs available in active Issue Type Scheme in selected JIRA Project
-      #
-      # @return [Array] the array of IDs
-      def project_issuetype_ids
-        strong_memoize(:project_issuetype_ids) do
-          if data_fields.deployment_server?
-            query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'project/', project_key)
-
-            client
-              .get(query_url.to_s)
-              .fetch('issueTypes', [])
-              .map { |issue_type| issue_type['id'] }
-          elsif data_fields.deployment_cloud?
-            query_url = Addressable::URI.join("#{client.options[:rest_base_path]}/", 'issuetypescheme/', 'mapping')
-            query_url.query_values = { 'issueTypeSchemeId' => project_issuetype_scheme_ids }
-
-            client
-              .get(query_url.to_s)
-              .fetch('values', [])
-              .map { |schemes| schemes['issueTypeId'] }
-          else
-            raise NotImplementedError
-          end
-        end
-      end
-
-      # Returns list of available Issue tTpes in selected JIRA Project
+      # Returns list of available Issue types in selected JIRA Project
       #
       # @return [Array] the array of objects with JIRA Issuetype ID, Name and Description
       def issue_types
         return [] if jira_project.blank?
 
-        client
-          .Issuetype
-          .all
-          .select { |issue_type| issue_type.id.in?(project_issuetype_ids) }
+        jira_project
+          .issuetypes
           .reject { |issue_type| issue_type.subtask }
-          .map { |issue_type| { id: issue_type.id, name: issue_type.name, description: issue_type.description } }
+          .map do |issue_type|
+          {
+            id: issue_type.id,
+            name: issue_type.name,
+            description: issue_type.description
+          }
+        end
       end
     end
   end
