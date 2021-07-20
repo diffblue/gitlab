@@ -33,7 +33,9 @@ RSpec.describe Security::StoreScansService do
     subject(:store_group_of_artifacts) { service_object.execute }
 
     before do
+      allow(StoreSecurityReportsWorker).to receive(:perform_async)
       allow(Security::StoreGroupedScansService).to receive(:execute)
+
       stub_licensed_features(sast: true, dast: false)
     end
 
@@ -42,6 +44,30 @@ RSpec.describe Security::StoreScansService do
 
       expect(Security::StoreGroupedScansService).to have_received(:execute).with([sast_artifact])
       expect(Security::StoreGroupedScansService).not_to have_received(:execute).with([dast_artifact])
+    end
+
+    context 'when the pipeline is for the default branch' do
+      before do
+        allow(pipeline).to receive(:default_branch?).and_return(true)
+      end
+
+      it 'schedules the `StoreSecurityReportsWorker`' do
+        store_group_of_artifacts
+
+        expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+      end
+    end
+
+    context 'when the pipeline is not for the default branch' do
+      before do
+        allow(pipeline).to receive(:default_branch?).and_return(false)
+      end
+
+      it 'does not schedule the `StoreSecurityReportsWorker`' do
+        store_group_of_artifacts
+
+        expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+      end
     end
   end
 end

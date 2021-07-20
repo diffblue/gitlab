@@ -12,6 +12,8 @@ module Security
 
     def execute
       grouped_report_artifacts.each { |artifacts| StoreGroupedScansService.execute(artifacts) }
+
+      schedule_store_reports_worker
     end
 
     private
@@ -30,6 +32,10 @@ module Security
 
     def parse_report_file?(file_type)
       project.feature_available?(Ci::Build::LICENSED_PARSER_FEATURES.fetch(file_type))
+    end
+
+    def schedule_store_reports_worker
+      StoreSecurityReportsWorker.perform_async(pipeline.id) if pipeline.default_branch?
     end
   end
 end
