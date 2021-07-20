@@ -1,26 +1,39 @@
 - user_has_edit_permissions = current_user.can?(:admin_compliance_framework, @project)
-.row
-  .form-group.col-md-9.gl-mb-6
-    - frameworks = @project.namespace.root_ancestor.compliance_management_frameworks
-    - if user_has_edit_permissions
-      = f.fields_for :compliance_framework_setting, ComplianceManagement::ComplianceFramework::ProjectSettings.new do |cf|
-        = cf.label :framework, class: 'gl-font-weight-bold' do
-          = _('Compliance framework (optional)')
-        - if frameworks.any?
-          - selected_default_framework = @project.compliance_framework_setting&.compliance_management_framework&.id
-          = cf.select :framework, options_for_select(frameworks.map { |fw| [fw.name.truncate(88), fw.id] }, selected_default_framework), { selected: '', prompt: _('Choose your framework'), include_blank: _('None') }, { class: 'form-control', disabled: false }
+- compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/settings/index.md', anchor: 'compliance-frameworks') }
+
+%section.settings.compliance-framework.no-animate#js-compliance-framework{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Compliance framework')
+    %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }= expanded ? _('Collapse') : _('Expand')
+    %p= html_escape(_('Select a framework that applies to this project. %{linkStart}How are these added?%{linkEnd}')) % { linkStart: compliance_framework_doc_link, linkEnd: '</a>'.html_safe }
+
+  .settings-content
+    = form_for @project, html: { multipart: true, class: "compliance-framework-form" }, authenticity_token: true do |f|
+      - frameworks = @project.namespace.root_ancestor.compliance_management_frameworks
+
+      .form-group
+        - if user_has_edit_permissions
+          = f.fields_for :compliance_framework_setting, ComplianceManagement::ComplianceFramework::ProjectSettings.new do |cf|
+            = cf.label :framework, class: 'gl-font-weight-bold' do
+              = _('Compliance framework (optional)')
+            - if frameworks.any?
+              - selected_default_framework = @project.compliance_framework_setting&.compliance_management_framework&.id
+              = cf.select :framework, options_for_select(frameworks.map { |fw| [fw.name.truncate(88), fw.id] }, selected_default_framework), { selected: '', prompt: _('Choose your framework'), include_blank: _('None') }, { class: 'form-control', disabled: false }
+            - else
+              %p.form-text.text-muted
+                = _("No compliance frameworks are in use. Create one from the %{link} section in Group Settings.").html_safe % { link: link_to('Compliance frameworks', edit_group_path(@project.namespace.root_ancestor)).html_safe }
         - else
-          %p.form-text.text-muted
-            = _("No compliance frameworks are in use. Create one from the %{link} section in Group Settings.").html_safe % { link: link_to('Compliance frameworks', edit_group_path(@project.namespace.root_ancestor)).html_safe }
-    - else
-      = f.fields_for :compliance_framework_setting, ComplianceManagement::ComplianceFramework::ProjectSettings.new do |cf|
-        = cf.label :framework, class: 'gl-font-weight-bold' do
-          = _('Compliance framework')
-        - if frameworks.any?
-          - selected_framework = @project.compliance_framework_setting&.compliance_management_framework&.name&.truncate(88) || _('None')
-          = cf.text_field :framework, value: selected_framework, class: 'form-control read-only', disabled: true
-          %p.form-text.text-muted
-            = _("Customizable by owners.")
-        - else
-          %p.form-text.text-muted
-            = _("No compliance frameworks are in use.")
+          = f.fields_for :compliance_framework_setting, ComplianceManagement::ComplianceFramework::ProjectSettings.new do |cf|
+            = cf.label :framework, class: 'gl-font-weight-bold' do
+              = _('Compliance framework')
+            - if frameworks.any?
+              - selected_framework = @project.compliance_framework_setting&.compliance_management_framework&.name&.truncate(88) || _('None')
+              = cf.text_field :framework, value: selected_framework, class: 'form-control read-only', disabled: true
+              %p.form-text.text-muted
+                = _("Customizable by owners.")
+            - else
+              %p.form-text.text-muted
+                = _("No compliance frameworks are in use.")
+
+      - if user_has_edit_permissions && frameworks.any?
+        = f.submit _('Save changes'), class: "btn gl-button btn-confirm"
