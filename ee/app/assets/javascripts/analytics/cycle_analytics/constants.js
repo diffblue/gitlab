@@ -33,16 +33,6 @@ export const OVERVIEW_STAGE_CONFIG = {
   icon: 'home',
 };
 
-export const NOT_ENOUGH_DATA_ERROR = s__(
-  "ValueStreamAnalyticsStage|We don't have enough data to show this stage.",
-);
-
-export const PAGINATION_TYPE = 'keyset';
-export const PAGINATION_SORT_FIELD_END_EVENT = 'end_event';
-export const PAGINATION_SORT_FIELD_DURATION = 'duration';
-export const PAGINATION_SORT_DIRECTION_DESC = 'desc';
-export const PAGINATION_SORT_DIRECTION_ASC = 'asc';
-
 export const METRICS_POPOVER_CONTENT = {
   'lead-time': {
     description: s__('ValueStreamAnalytics|Median time from issue created to issue closed.'),

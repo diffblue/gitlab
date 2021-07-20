@@ -27061,9 +27061,6 @@ msgstr ""
 msgid "Rejected (closed)"
 msgstr ""
 
-msgid "Related Issues"
-msgstr ""
-
 msgid "Related feature flags"
 msgstr ""
 
@@ -32488,9 +32485,6 @@ msgstr ""
 msgid "The character highlighter helps you keep the subject line to %{titleLength} characters and wrap the body at %{bodyLength} so they are readable in git."
 msgstr ""
 
-msgid "The collection of events added to the data gathered for that stage."
-msgstr ""
-
 msgid "The comment you are editing has been changed by another user. Would you like to keep your changes and overwrite the new description or discard your changes?"
 msgstr ""
 
@@ -32851,9 +32845,6 @@ msgid "The subject will be used as the title of the new issue, and the message w
 msgstr ""
 
 msgid "The tag name can't be changed for an existing release."
-msgstr ""
-
-msgid "The time taken by each data entry gathered by that stage."
 msgstr ""
 
 msgid "The update action will time out after %{number_of_minutes} minutes. For big repositories, use a clone/push combination."
