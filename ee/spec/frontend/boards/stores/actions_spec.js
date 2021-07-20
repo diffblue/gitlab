@@ -345,6 +345,19 @@ describe('fetchItemsForList', () => {
     [listId]: pageInfo,
   };
 
+  describe('when listId is undefined', () => {
+    it('does not call the query', async () => {
+      jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+      await actions.fetchItemsForList(
+        { state, getters: () => {}, commit: () => {} },
+        { listId: undefined },
+      );
+
+      expect(gqlClient.query).toHaveBeenCalledTimes(0);
+    });
+  });
+
   it('add epicWildcardId with NONE as value when noEpicIssues is true', () => {
     state = {
       ...state,

@@ -262,6 +262,8 @@ export default {
     { state, commit, getters },
     { listId, fetchNext = false, noEpicIssues = false },
   ) => {
+    if (!listId) return null;
+
     if (!fetchNext && !state.isShowingEpicsSwimlanes) {
       commit(types.RESET_ITEMS_FOR_LIST, listId);
     }
