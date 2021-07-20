@@ -5,16 +5,20 @@ require 'spec_helper'
 RSpec.describe 'registrations/welcome/show' do
   using RSpec::Parameterized::TableSyntax
 
+  let_it_be(:user) { create(:user) }
+
+  before do
+    allow(view).to receive(:current_user).and_return(user)
+    allow(Gitlab).to receive(:com?).and_return(true)
+  end
+
   describe 'forms and progress bar' do
-    let_it_be(:user) { create(:user) }
     let_it_be(:user_other_role_details_enabled) { false }
     let_it_be(:stubbed_experiments) { {} }
 
     before do
-      allow(view).to receive(:current_user).and_return(user)
       allow(view).to receive(:redirect_path).and_return(redirect_path)
       allow(view).to receive(:signup_onboarding_enabled?).and_return(signup_onboarding_enabled)
-      allow(Gitlab).to receive(:com?).and_return(true)
       stub_feature_flags(user_other_role_details: user_other_role_details_enabled)
       stub_experiments(stubbed_experiments)
 
@@ -77,5 +81,12 @@ RSpec.describe 'registrations/welcome/show' do
     else
       is_expected.not_to have_selector('#progress-bar')
     end
+  end
+
+  context 'rendering the hidden email opt in checkbox' do
+    subject { render }
+
+    it { is_expected.to have_selector('input[name="user[email_opted_in]"]') }
+    it { is_expected.to have_css('.js-email-opt-in.hidden') }
   end
 end
