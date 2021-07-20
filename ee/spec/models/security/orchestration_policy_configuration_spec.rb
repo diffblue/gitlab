@@ -51,6 +51,20 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
+  describe '.policy_management_project?' do
+    before do
+      create(:security_orchestration_policy_configuration, security_policy_management_project: security_policy_management_project)
+    end
+
+    it 'returns true when security_policy_management_project with id exists' do
+      expect(described_class.policy_management_project?(security_policy_management_project.id)).to be_truthy
+    end
+
+    it 'returns false when security_policy_management_project with id does not exist' do
+      expect(described_class.policy_management_project?(non_existing_record_id)).to be_falsey
+    end
+  end
+
   describe '#enabled?' do
     subject { security_orchestration_policy_configuration.enabled? }
 
