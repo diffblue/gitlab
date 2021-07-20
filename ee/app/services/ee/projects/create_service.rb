@@ -5,6 +5,15 @@ module EE
     module CreateService
       extend ::Gitlab::Utils::Override
 
+      attr_reader :security_policy_target_project_id
+
+      override :initialize
+      def initialize(user, params)
+        super
+
+        @security_policy_target_project_id = @params.delete(:security_policy_target_project_id)
+      end
+
       override :execute
       def execute
         limit = params.delete(:repository_size_limit)
@@ -45,9 +54,23 @@ module EE
 
       override :after_create_actions
       def after_create_actions
-        super
+        super do
+          create_security_policy_configuration if security_policy_target_project?
+        end
 
         create_predefined_push_rule
+      end
+
+      def security_policy_target_project?
+        security_policy_target_project_id && ::Feature.enabled?(:security_orchestration_policies_configuration, project)
+      end
+
+      def create_security_policy_configuration
+        if (security_policy_target_project = ::Project.find(security_policy_target_project_id))
+          ::Security::Orchestration::AssignService
+            .new(security_policy_target_project, current_user, policy_project_id: project.id)
+            .execute
+        end
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
