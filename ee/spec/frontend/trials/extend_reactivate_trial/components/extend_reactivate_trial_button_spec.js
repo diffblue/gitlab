@@ -35,10 +35,6 @@ describe('ExtendReactivateTrialButton', () => {
       });
     });
 
-    it('renders the button visible', () => {
-      expect(findButton().isVisible()).toBe(true);
-    });
-
     it('does not have loading icon', () => {
       expect(findButton().props('loading')).toBe(false);
     });

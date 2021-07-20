@@ -18,7 +18,6 @@ export const i18n = Object.freeze({
     modalText: s__(
       'Billings|By reactivating your trial, you will receive an additional 30 days of %{planName}. Your trial can be only reactivated once.',
     ),
-    flashText: s__('Billings|Your trial has been reactivated for an additional 30 days.'),
     trialActionError: s__('Billings|An error occurred while reactivating your trial.'),
   },
 });

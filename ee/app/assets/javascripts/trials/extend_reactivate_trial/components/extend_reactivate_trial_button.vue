@@ -1,7 +1,8 @@
 <script>
 import { GlButton, GlModal, GlModalDirective } from '@gitlab/ui';
 import { extendTrial, reactivateTrial } from 'ee/api/subscriptions_api';
-import createFlash, { FLASH_TYPES } from '~/flash';
+import createFlash from '~/flash';
+import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import { sprintf, __ } from '~/locale';
 import { i18n, TRIAL_ACTION_EXTEND, TRIAL_ACTIONS } from '../constants';
 
@@ -29,7 +30,6 @@ export default {
   },
   data() {
     return {
-      isButtonVisible: true,
       isLoading: false,
     };
   },
@@ -65,8 +65,7 @@ export default {
 
       await action(this.namespaceId)
         .then(() => {
-          createFlash({ message: this.i18nContext.flashText, type: FLASH_TYPES.SUCCESS });
-          this.isButtonVisible = false;
+          refreshCurrentPage();
         })
         .catch((error) => {
           createFlash({
