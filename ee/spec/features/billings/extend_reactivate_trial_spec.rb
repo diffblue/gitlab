@@ -14,15 +14,20 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
     end
   end
 
+  let(:initial_trial_end_date) { Date.current }
+  let(:extended_or_reactivated_trial_end_date) { initial_trial_end_date + 30.days }
+
   before do
     group.add_owner(user)
+
+    allow(Gitlab).to receive(:com?).and_return(true)
     stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_feature_flags(allow_extend_reactivate_trial: true)
     stub_full_request("#{EE::SUBSCRIPTIONS_URL}/gitlab_plans?plan=#{plan.name}&namespace_id=#{group.id}")
       .to_return(status: 200, body: plans_data.to_json)
     stub_full_request("#{EE::SUBSCRIPTIONS_URL}/trials/extend_reactivate_trial", method: :put)
       .to_return(status: 200)
     sign_in(user)
-    stub_feature_flags(allow_extend_reactivate_trial: true)
   end
 
   shared_examples 'a non-reactivatable trial' do
@@ -47,34 +52,57 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
 
   shared_examples 'a reactivatable trial' do
     before do
+      allow_next_instance_of(GitlabSubscriptions::ExtendReactivateTrialService) do |service|
+        group.gitlab_subscription.update!(trial_extension_type: GitlabSubscription.trial_extension_types[:reactivated],
+                                          end_date: extended_or_reactivated_trial_end_date,
+                                          trial_ends_on: extended_or_reactivated_trial_end_date)
+      end
+
       visit group_billings_path(group)
     end
 
     it 'reactivates trial' do
-      click_button('Reactivate trial')
+      expect(page).to have_content("trial expired on #{initial_trial_end_date}")
+
+      within '.billing-plan-header' do
+        click_button('Reactivate trial')
+      end
 
       within '[data-testid="extend-reactivate-trial-modal"]' do
         click_button('Reactivate trial')
       end
 
-      expect(page).to have_content('Your trial has been reactivated')
+      wait_for_requests
+
+      expect(page).to have_content("trial will expire after #{extended_or_reactivated_trial_end_date}")
       expect(page).not_to have_button('Reactivate trial')
     end
   end
 
   shared_examples 'an extendable trial' do
     before do
+      allow_next_instance_of(GitlabSubscriptions::ExtendReactivateTrialService) do |service|
+        group.gitlab_subscription.update!(trial_extension_type: GitlabSubscription.trial_extension_types[:extended],
+                                          end_date: initial_trial_end_date,
+                                          trial_ends_on: extended_or_reactivated_trial_end_date)
+      end
       visit group_billings_path(group)
     end
 
     it 'extends the trial' do
-      click_button('Extend trial')
+      expect(page).to have_content("trial will expire after #{initial_trial_end_date}")
+
+      within '.billing-plan-header' do
+        click_button('Extend trial')
+      end
 
       within '[data-testid="extend-reactivate-trial-modal"]' do
         click_button('Extend trial')
       end
 
-      expect(page).to have_content('Your trial has been extended')
+      wait_for_requests
+
+      expect(page).to have_content("trial will expire after #{extended_or_reactivated_trial_end_date}")
       expect(page).not_to have_button('Extend trial')
     end
   end
@@ -110,6 +138,8 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
   end
 
   context 'with active trial near the expiration date' do
+    let(:initial_trial_end_date) { Date.tomorrow }
+
     let_it_be(:subscription) { create(:gitlab_subscription, :active_trial, trial_ends_on: Date.tomorrow, hosted_plan: plan, namespace: group) }
 
     it_behaves_like 'an extendable trial'
@@ -131,6 +161,8 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
   end
 
   context 'with expired trial' do
+    let(:initial_trial_end_date) { Date.current.advance(days: -1) }
+
     let_it_be(:subscription) { create(:gitlab_subscription, :expired_trial, hosted_plan: plan, namespace: group) }
 
     it_behaves_like 'a reactivatable trial'
