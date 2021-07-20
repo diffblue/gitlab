@@ -52,6 +52,28 @@ module EE
       namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.dig(:errors)&.presence
     end
 
+    def show_extend_reactivate_trial_button?(namespace)
+      return false unless ::Feature.enabled?(:allow_extend_reactivate_trial, default_enabled: :yaml)
+
+      namespace.can_extend_trial? || namespace.can_reactivate_trial?
+    end
+
+    def extend_reactivate_trial_button_data(namespace)
+      action = if namespace.can_extend_trial?
+                 'extend'
+               elsif namespace.can_reactivate_trial?
+                 'reactivate'
+               else
+                 nil
+               end
+
+      {
+        namespace_id: namespace.id,
+        plan_name: namespace.actual_plan_name.titleize,
+        action: action
+      }
+    end
+
     private
 
     def trial_group_namespaces
