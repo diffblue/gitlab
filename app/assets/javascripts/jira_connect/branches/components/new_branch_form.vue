@@ -4,7 +4,11 @@ import {
   CREATE_BRANCH_ERROR_GENERIC,
   CREATE_BRANCH_ERROR_WITH_CONTEXT,
   CREATE_BRANCH_SUCCESS_ALERT,
-  I18N_NEW_BRANCH_FORM,
+  I18N_NEW_BRANCH_PAGE_TITLE,
+  I18N_NEW_BRANCH_LABEL_DROPDOWN,
+  I18N_NEW_BRANCH_LABEL_BRANCH,
+  I18N_NEW_BRANCH_LABEL_SOURCE,
+  I18N_NEW_BRANCH_SUBMIT_BUTTON_TEXT,
 } from '../constants';
 import createBranchMutation from '../graphql/mutations/create_branch.mutation.graphql';
 import ProjectDropdown from './project_dropdown.vue';
@@ -60,19 +64,11 @@ export default {
     },
   },
   methods: {
-    displayAlert({
-      title,
-      message,
-      variant = DEFAULT_ALERT_VARIANT,
-      primaryButtonLink,
-      primaryButtonText,
-    } = {}) {
+    displayAlert({ title, message, variant = DEFAULT_ALERT_VARIANT } = {}) {
       this.alertParams = {
         title,
         message,
         variant,
-        primaryButtonLink,
-        primaryButtonText,
       };
     },
     onAlertDismiss() {
@@ -98,42 +94,43 @@ export default {
     },
     async createBranch() {
       this.createBranchLoading = true;
-      this.$apollo
-        .mutate({
+
+      try {
+        const { data } = await this.$apollo.mutate({
           mutation: createBranchMutation,
           variables: {
             name: this.branchName,
             ref: this.selectedSourceBranchName,
             projectPath: this.selectedProject.fullPath,
           },
-        })
-        .then(({ data }) => {
-          const { errors } = data.createBranch;
-          if (errors.length > 0) {
-            this.onError({
-              title: CREATE_BRANCH_ERROR_WITH_CONTEXT,
-              message: errors[0],
-            });
-            return;
-          }
-
+        });
+        const { errors } = data.createBranch;
+        if (errors.length > 0) {
+          this.onError({
+            title: CREATE_BRANCH_ERROR_WITH_CONTEXT,
+            message: errors[0],
+          });
+        } else {
           this.displayAlert({
             ...CREATE_BRANCH_SUCCESS_ALERT,
             variant: 'success',
           });
-        })
-        .catch(() => {
-          this.onError({
-            message: CREATE_BRANCH_ERROR_GENERIC,
-          });
-        })
-        .finally(() => {
-          this.createBranchLoading = false;
+        }
+      } catch (e) {
+        this.onError({
+          message: CREATE_BRANCH_ERROR_GENERIC,
         });
+      }
+
+      this.createBranchLoading = false;
     },
   },
   i18n: {
-    I18N_NEW_BRANCH_FORM,
+    I18N_NEW_BRANCH_PAGE_TITLE,
+    I18N_NEW_BRANCH_LABEL_DROPDOWN,
+    I18N_NEW_BRANCH_LABEL_BRANCH,
+    I18N_NEW_BRANCH_LABEL_SOURCE,
+    I18N_NEW_BRANCH_SUBMIT_BUTTON_TEXT,
   },
 };
 </script>
@@ -142,7 +139,7 @@ export default {
   <div>
     <div class="gl-border-1 gl-border-b-solid gl-border-gray-100 gl-mb-5 gl-mt-7">
       <h1 class="page-title">
-        {{ $options.i18n.I18N_NEW_BRANCH_FORM.pageTitle }}
+        {{ $options.i18n.I18N_NEW_BRANCH_PAGE_TITLE }}
       </h1>
     </div>
 
@@ -151,8 +148,6 @@ export default {
       class="gl-mb-5"
       :variant="alertParams.variant"
       :title="alertParams.title"
-      :primary-button-link="alertParams.primaryButtonLink"
-      :primary-button-text="alertParams.primaryButtonText"
       @dismiss="onAlertDismiss"
     >
       {{ alertParams.message }}
@@ -160,7 +155,7 @@ export default {
 
     <gl-form @submit.prevent="onSubmit">
       <gl-form-group
-        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.projectDropdown"
+        :label="$options.i18n.I18N_NEW_BRANCH_LABEL_DROPDOWN"
         label-for="project-select"
       >
         <project-dropdown
@@ -172,14 +167,14 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.branchNameInput"
+        :label="$options.i18n.I18N_NEW_BRANCH_LABEL_BRANCH"
         label-for="branch-name-input"
       >
         <gl-form-input id="branch-name-input" v-model="branchName" type="text" required />
       </gl-form-group>
 
       <gl-form-group
-        :label="$options.i18n.I18N_NEW_BRANCH_FORM.labels.sourceBranchDropdown"
+        :label="$options.i18n.I18N_NEW_BRANCH_LABEL_SOURCE"
         label-for="source-branch-select"
       >
         <source-branch-dropdown
@@ -198,7 +193,7 @@ export default {
           variant="confirm"
           :disabled="disableSubmitButton"
         >
-          {{ $options.i18n.I18N_NEW_BRANCH_FORM.formSubmitButtonText }}
+          {{ $options.i18n.I18N_NEW_BRANCH_SUBMIT_BUTTON_TEXT }}
         </gl-button>
       </div>
     </gl-form>

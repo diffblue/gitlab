@@ -180,6 +180,7 @@ describe('NewBranchForm', () => {
           await findForm().vm.$emit('submit', new Event('submit'));
           await waitForPromises();
         });
+
         it('displays an alert', () => {
           const alert = findAlert();
           expect(alert.exists()).toBe(true);

@@ -13461,12 +13461,6 @@ msgstr ""
 msgid "Failed to create a to-do item for the design."
 msgstr ""
 
-msgid "Failed to create branch."
-msgstr ""
-
-msgid "Failed to create branch. Please try again."
-msgstr ""
-
 msgid "Failed to create framework"
 msgstr ""
 
@@ -18535,6 +18529,18 @@ msgstr ""
 msgid "Jira-GitLab user mapping template"
 msgstr ""
 
+msgid "JiraConnect|Failed to create branch."
+msgstr ""
+
+msgid "JiraConnect|Failed to create branch. Please try again."
+msgstr ""
+
+msgid "JiraConnect|New branch was successfully created."
+msgstr ""
+
+msgid "JiraConnect|You can now close this window and return to Jira."
+msgstr ""
+
 msgid "JiraService| on branch %{branch_link}"
 msgstr ""
 
@@ -21905,9 +21911,6 @@ msgid "New branch"
 msgstr ""
 
 msgid "New branch unavailable"
-msgstr ""
-
-msgid "New branch was successfully created."
 msgstr ""
 
 msgid "New changes were added. %{linkStart}Reload the page to review them%{linkEnd}"
@@ -37456,9 +37459,6 @@ msgid "You can move around the graph by using the arrow keys."
 msgstr ""
 
 msgid "You can notify the app / group or a project by sending them an email notification"
-msgstr ""
-
-msgid "You can now close this window and return to Jira."
 msgstr ""
 
 msgid "You can now close this window."
