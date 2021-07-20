@@ -8,6 +8,7 @@ const COLUMNS = [
   { name: 'mergeRequestsCreated', text: __('Opened MRs') },
   { name: 'mergeRequestsApproved', text: __('Approved MRs') },
   { name: 'mergeRequestsMerged', text: __('Merged MRs') },
+  { name: 'mergeRequestsClosed', text: __('Closed MRs') },
   { name: 'totalEvents', text: __('Total Contributions') },
 ];
 

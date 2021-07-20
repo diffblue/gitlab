@@ -9,6 +9,7 @@ RSpec.describe UserAnalyticsEntity do
       push: {},
       issues_created: {},
       issues_closed: {},
+      merge_requests_closed: {},
       merge_requests_created: {},
       merge_requests_merged: {},
       merge_requests_approved: {},

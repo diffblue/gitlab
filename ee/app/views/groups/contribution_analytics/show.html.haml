@@ -42,10 +42,11 @@
 
   %div{ data: { qa_selector: 'merge_request_content' } }
     %h3= s_('ContributionAnalytics|Merge requests')
+    - mr_closed_count = @data_collector.total_merge_requests_closed_count
     - mr_created_count = @data_collector.total_merge_requests_created_count
     - mr_merged_count = @data_collector.total_merge_requests_merged_count
-    - if mr_created_count > 0 || mr_merged_count > 0
-      = html_escape(s_('ContributionAnalytics|%{created_count} created, %{merged_count} merged.')) % { created_count: tag.strong(mr_created_count), merged_count: tag.strong(mr_merged_count) }
+    - if mr_closed_count > 0 || mr_created_count > 0 || mr_merged_count > 0
+      = html_escape(s_('ContributionAnalytics|%{created_count} created, %{merged_count} merged, %{closed_count} closed.')) % { mr_closed_count: tag.strong(mr_closed_count), created_count: tag.strong(mr_created_count), merged_count: tag.strong(mr_merged_count) }
     - else
       = s_('ContributionAnalytics|No merge requests for the selected time period.')
 
