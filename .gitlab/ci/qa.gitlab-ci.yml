@@ -52,12 +52,6 @@ update-qa-cache:
   stage: qa
   retry: 0
   before_script:
-    - if [ -n "$CI_MERGE_REQUEST_SOURCE_BRANCH_SHA" ]; then
-        export QA_IMAGE_TAG=$CI_MERGE_REQUEST_SOURCE_BRANCH_SHA;
-      else
-        export QA_IMAGE_TAG=$CI_COMMIT_SHA;
-      fi;
-    - 'export QA_IMAGE="${CI_REGISTRY}/${CI_PROJECT_PATH}/gitlab-ee-qa:${QA_IMAGE_TAG}"'
     - source scripts/utils.sh
     - install_gitlab_gem
   script:
