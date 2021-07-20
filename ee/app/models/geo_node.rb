@@ -299,19 +299,19 @@ class GeoNode < ApplicationRecord
   def replication_slots_count
     return unless primary?
 
-    PgReplicationSlot.count
+    Postgresql::ReplicationSlot.count
   end
 
   def replication_slots_used_count
     return unless primary?
 
-    PgReplicationSlot.used_slots_count
+    Postgresql::ReplicationSlot.used_slots_count
   end
 
   def replication_slots_max_retained_wal_bytes
     return unless primary?
 
-    PgReplicationSlot.max_retained_wal
+    Postgresql::ReplicationSlot.max_retained_wal
   end
 
   def find_or_build_status
