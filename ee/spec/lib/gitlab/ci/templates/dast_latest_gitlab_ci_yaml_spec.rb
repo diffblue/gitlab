@@ -23,7 +23,7 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
     let(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
     let(:user) { project.owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch ) }
-    let(:pipeline) { service.execute!(:push) }
+    let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
     let(:ci_pipeline_yaml) { "stages: [\"dast\"]\n" }
 

@@ -126,6 +126,6 @@ RSpec.describe Ci::CreatePipelineService do
   end
 
   def create_pipeline!
-    service.execute(:push)
+    service.execute(:push).payload
   end
 end

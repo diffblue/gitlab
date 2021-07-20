@@ -29,9 +29,10 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
 
   describe 'CI/CD Quotas / Limits' do
     context 'when there are not limits enabled' do
-      it 'enqueues a new pipeline' do
-        pipeline = create_pipeline!
+      it 'enqueues a new pipeline', :aggregate_failures do
+        response, pipeline = create_pipeline!
 
+        expect(response).to be_success
         expect(pipeline).to be_created_successfully
       end
     end
@@ -44,9 +45,10 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
         create(:ci_pipeline, project: project, status: 'running')
       end
 
-      it 'drops the pipeline and does not process jobs' do
-        pipeline = create_pipeline!
+      it 'drops the pipeline and does not process jobs', :aggregate_failures do
+        response, pipeline = create_pipeline!
 
+        expect(response).to be_error
         expect(pipeline).to be_persisted
         expect(pipeline).to be_failed
         expect(pipeline.statuses).not_to be_empty
@@ -60,9 +62,10 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
         plan_limits.update_column(:ci_pipeline_size, 2)
       end
 
-      it 'drops pipeline without creating jobs' do
-        pipeline = create_pipeline!
+      it 'drops pipeline without creating jobs', :aggregate_failures do
+        response, pipeline = create_pipeline!
 
+        expect(response).to be_error
         expect(pipeline).to be_persisted
         expect(pipeline).to be_failed
         expect(pipeline.statuses).to be_empty
@@ -85,12 +88,13 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
       YAML
     end
 
-    it 'creates bridge jobs correctly' do
-      pipeline = create_pipeline!
+    it 'creates bridge jobs correctly', :aggregate_failures do
+      response, pipeline = create_pipeline!
 
       test = pipeline.statuses.find_by(name: 'test')
       bridge = pipeline.statuses.find_by(name: 'deploy')
 
+      expect(response).to be_success
       expect(pipeline).to be_persisted
       expect(test).to be_a Ci::Build
       expect(bridge).to be_a Ci::Bridge
@@ -124,7 +128,7 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
 
       context 'that include the bridge job' do
         it 'persists the bridge job' do
-          pipeline = create_pipeline!
+          _, pipeline = create_pipeline!
 
           expect(pipeline.processables.pluck(:name)).to contain_exactly('hello', 'bridge-job')
         end
@@ -134,7 +138,7 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
         let(:ref_name) { 'refs/heads/wip' }
 
         it 'does not include the bridge job' do
-          pipeline = create_pipeline!
+          _, pipeline = create_pipeline!
 
           expect(pipeline.processables.pluck(:name)).to eq(%w[hello])
         end
@@ -154,9 +158,10 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
       YAML
     end
 
-    it 'persists secrets as job metadata' do
-      pipeline = create_pipeline!
+    it 'persists secrets as job metadata', :aggregate_failures do
+      response, pipeline = create_pipeline!
 
+      expect(response).to be_success
       expect(pipeline).to be_persisted
 
       build = Ci::Build.find(pipeline.builds.first.id)
@@ -175,9 +180,10 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
 
   describe 'credit card requirement' do
     shared_examples 'creates a successful pipeline' do
-      it 'creates a successful pipeline' do
-        pipeline = create_pipeline!
+      it 'creates a successful pipeline', :aggregate_failures do
+        response, pipeline = create_pipeline!
 
+        expect(response).to be_success
         expect(pipeline).to be_created_successfully
       end
     end
@@ -200,7 +206,7 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
 
         context 'when user does not have credit card' do
           it 'creates a pipeline with errors', :aggregate_failures do
-            pipeline = create_pipeline!
+            _, pipeline = create_pipeline!
 
             expect(pipeline).not_to be_created_successfully
             expect(pipeline.failure_reason).to eq('user_not_verified')
@@ -212,8 +218,9 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
             end
 
             it 'does not create a pipeline', :aggregate_failures do
-              pipeline = create_pipeline!
+              response, pipeline = create_pipeline!
 
+              expect(response).to be_error
               expect(pipeline).not_to be_persisted
             end
           end
@@ -235,6 +242,8 @@ RSpec.describe Ci::CreatePipelineService, '#execute' do
   end
 
   def create_pipeline!
-    service.execute(:push)
+    response = service.execute(:push)
+
+    [response, response.payload]
   end
 end

@@ -24,7 +24,7 @@ module AppSec
 
           response = create_scan(dast_profile)
 
-          return response if response.error?
+          return error(response.message) if response.error?
 
           success(dast_profile: dast_profile, pipeline_url: response.payload.fetch(:pipeline_url))
         end

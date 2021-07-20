@@ -32,14 +32,14 @@ RSpec.describe 'Running a DAST Profile' do
     end
 
     context 'when pipeline creation fails' do
+      let(:fake_pipeline) { instance_double('Ci::Pipeline', created_successfully?: false, full_error_messages: 'full error messages') }
+      let(:fake_service) { instance_double('Ci::CreatePipelineService', execute: ServiceResponse.error(message: 'error message', payload: fake_pipeline)) }
+
       before do
-        allow_next_instance_of(Ci::Pipeline) do |instance|
-          allow(instance).to receive(:created_successfully?).and_return(false)
-          allow(instance).to receive(:full_error_messages).and_return('error message')
-        end
+        allow(Ci::CreatePipelineService).to receive(:new).and_return(fake_service)
       end
 
-      it_behaves_like 'a mutation that returns errors in the response', errors: ['error message']
+      it_behaves_like 'a mutation that returns errors in the response', errors: ['full error messages']
     end
   end
 end

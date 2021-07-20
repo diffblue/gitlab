@@ -7,7 +7,7 @@ module Ci
 
       service = Ci::CreatePipelineService.new(project, current_user, ref: branch)
 
-      pipeline = service.execute(:ondemand_dast_scan, content: ci_configuration) do |pipeline|
+      response = service.execute(:ondemand_dast_scan, content: ci_configuration) do |pipeline|
         if dast_profile
           pipeline.dast_profile = dast_profile
         else
@@ -16,6 +16,7 @@ module Ci
         end
       end
 
+      pipeline = response.payload
       if pipeline.created_successfully?
         ServiceResponse.success(payload: pipeline)
       else

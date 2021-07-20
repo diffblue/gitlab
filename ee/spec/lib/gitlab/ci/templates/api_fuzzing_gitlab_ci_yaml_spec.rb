@@ -35,7 +35,7 @@ RSpec.describe 'API-Fuzzing.gitlab-ci.yml' do
     let(:pipeline_branch) { default_branch }
     let(:user) { project.owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch) }
-    let(:pipeline) { service.execute!(:push) }
+    let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     context 'when no stages' do

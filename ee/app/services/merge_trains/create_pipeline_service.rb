@@ -39,16 +39,16 @@ module MergeTrains
     end
 
     def create_pipeline(merge_request, merge_status)
-      pipeline = ::Ci::CreatePipelineService.new(merge_request.target_project, merge_request.merge_user,
+      response = ::Ci::CreatePipelineService.new(merge_request.target_project, merge_request.merge_user,
                                                  ref: merge_request.train_ref_path,
                                                  checkout_sha: merge_status[:commit_id],
                                                  target_sha: merge_status[:target_id],
                                                  source_sha: merge_status[:source_id])
                                             .execute(:merge_request_event, merge_request: merge_request)
 
-      return error(pipeline.full_error_messages) unless pipeline.persisted?
+      return error(response.message) if response.error? && !response.payload.persisted?
 
-      success(pipeline: pipeline)
+      success(pipeline: response.payload)
     end
 
     def can_add_to_merge_train?(merge_request)

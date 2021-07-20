@@ -41,12 +41,16 @@ RSpec.describe Ci::CreatePipelineService do
       compliance_project.add_maintainer(project.owner)
     end
 
+    it 'responds with success' do
+      is_expected.to be_success
+    end
+
     it 'persists pipeline' do
-      is_expected.to be_persisted
+      expect(execute.payload).to be_persisted
     end
 
     it 'sets the correct source' do
-      expect(execute.config_source).to eq("compliance_source")
+      expect(execute.payload.config_source).to eq("compliance_source")
     end
 
     it 'persists jobs' do
@@ -54,13 +58,13 @@ RSpec.describe Ci::CreatePipelineService do
     end
 
     it do
-      expect(execute.processables.map(&:name)).to contain_exactly('compliance_build', 'compliance_test')
+      expect(execute.payload.processables.map(&:name)).to contain_exactly('compliance_build', 'compliance_test')
     end
   end
 
   context 'when user does not have access to compliance project' do
     it 'includes access denied error' do
-      expect(execute.yaml_errors).to eq "Project `compliance/hippa` not found or access denied!"
+      expect(execute.payload.yaml_errors).to eq "Project `compliance/hippa` not found or access denied!"
     end
 
     it 'does not persist jobs' do
