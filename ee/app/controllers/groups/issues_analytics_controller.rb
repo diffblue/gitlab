@@ -2,12 +2,12 @@
 
 class Groups::IssuesAnalyticsController < Groups::ApplicationController
   include IssuableCollections
-  include Analytics::UniqueVisitsHelper
+  include RedisTracking
 
   before_action :authorize_read_group!
   before_action :authorize_read_issue_analytics!
 
-  track_unique_visits :show, target_id: 'g_analytics_issues'
+  track_redis_hll_event :show, name: 'g_analytics_issues'
 
   feature_category :planning_analytics
 

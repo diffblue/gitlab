@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::ApplicationController
-  include Analytics::UniqueVisitsHelper
   include CycleAnalyticsParams
+  include RedisTracking
   extend ::Gitlab::Utils::Override
 
   increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
@@ -18,7 +18,7 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   layout 'group'
 
-  track_unique_visits :show, target_id: 'g_analytics_valuestream'
+  track_redis_hll_event :show, name: 'g_analytics_valuestream'
 
   private
 
