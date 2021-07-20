@@ -35,6 +35,8 @@ module EE
             optional :fallback_approvals_required, type: Integer, desc: 'Overall approvals required when no rule is present'
             optional :issues_template, type: String, desc: 'Default description for Issues. Description is parsed with GitLab Flavored Markdown.'
             optional :merge_requests_template, type: String, desc: 'Default description for merge requests. Description is parsed with GitLab Flavored Markdown.'
+            optional :merge_pipelines_enabled, type: Grape::API::Boolean, desc: 'Enable merged results pipelines.'
+            optional :merge_trains_enabled, type: Grape::API::Boolean, desc: 'Enable merge trains.'
           end
         end
 
@@ -53,7 +55,9 @@ module EE
               :fallback_approvals_required,
               :import_url,
               :issues_template,
-              :merge_requests_template
+              :merge_requests_template,
+              :merge_pipelines_enabled,
+              :merge_trains_enabled
             ]
           end
         end

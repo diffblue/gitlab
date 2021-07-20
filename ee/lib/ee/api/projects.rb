@@ -83,6 +83,7 @@ module EE
 
             verify_mirror_attrs!(project, attrs)
             verify_issuable_default_templates_attrs!(project, attrs)
+            verify_merge_pipelines_attrs!(project, attrs)
           end
 
           def verify_mirror_attrs!(project, attrs)
@@ -98,6 +99,13 @@ module EE
               attrs.delete(:issues_template)
               attrs.delete(:merge_requests_template)
             end
+          end
+
+          def verify_merge_pipelines_attrs!(project, attrs)
+            return if can?(current_user, :admin_project, project)
+
+            attrs.delete(:merge_pipelines_enabled) unless project.feature_available?(:merge_pipelines)
+            attrs.delete(:merge_trains_enabled) unless project.feature_available?(:merge_trains)
           end
 
           def check_audit_events_available!(project)

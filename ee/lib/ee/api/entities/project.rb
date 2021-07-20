@@ -39,6 +39,8 @@ module EE
           end
           expose :issues_template, if: ->(project, _) { project.feature_available?(:issuable_default_templates) }
           expose :merge_requests_template, if: ->(project, _) { project.feature_available?(:issuable_default_templates) }
+          expose :merge_pipelines_enabled?, as: :merge_pipelines_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
+          expose :merge_trains_enabled?, as: :merge_trains_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
         end
       end
     end
