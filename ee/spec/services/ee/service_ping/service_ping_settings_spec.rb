@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::ServicePing::ServicePingSettings do
+RSpec.describe ServicePing::ServicePingSettings do
   using RSpec::Parameterized::TableSyntax
 
   describe '#product_intelligence_enabled?' do

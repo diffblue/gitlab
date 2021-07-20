@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe ServicePing::PermitDataCategoriesService do
-  using RSpec::Parameterized::TableSyntax
-
   describe '#execute', :without_license do
     subject(:permitted_categories) { described_class.new.execute }
 

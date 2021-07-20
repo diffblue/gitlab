@@ -13,7 +13,7 @@ module EE
       override :execute
       def execute
         return super unless ::License.current.present?
-        return [] unless ServicePing::ServicePingSettings.product_intelligence_enabled?
+        return [] unless ServicePingSettings.product_intelligence_enabled?
 
         optional_enabled = ::Gitlab::CurrentSettings.usage_ping_enabled?
         customer_service_enabled = ::License.current.customer_service_enabled?
