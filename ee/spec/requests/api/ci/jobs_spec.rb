@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Jobs do
+RSpec.describe API::Ci::Jobs do
   let_it_be(:project) do
     create(:project, :repository, public_builds: false)
   end
@@ -29,7 +29,7 @@ RSpec.describe API::Jobs do
     let_it_be(:agent) { create(:cluster_agent, project: project) }
 
     let(:api_user) { developer }
-    let(:headers) { { API::Helpers::Runner::JOB_TOKEN_HEADER => job.token } }
+    let(:headers) { { API::Ci::Helpers::Runner::JOB_TOKEN_HEADER => job.token } }
     let(:job) { create(:ci_build, :artifacts, pipeline: pipeline, user: api_user, status: job_status) }
     let(:job_status) { 'running' }
     let(:params) { {} }
@@ -92,7 +92,7 @@ RSpec.describe API::Jobs do
     end
 
     context 'when token is invalid' do
-      let(:headers) { { API::Helpers::Runner::JOB_TOKEN_HEADER => 'bad_token' } }
+      let(:headers) { { API::Ci::Helpers::Runner::JOB_TOKEN_HEADER => 'bad_token' } }
 
       it 'returns unauthorized' do
         expect(response).to have_gitlab_http_status(:unauthorized)

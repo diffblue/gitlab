@@ -9,7 +9,7 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
   let_it_be(:runner) { create(:ci_runner, :instance) }
   let_it_be(:user) { create(:user) }
 
-  let(:headers) { { API::Helpers::Runner::JOB_TOKEN_HEADER => job.token, 'Content-Type' => 'text/plain' } }
+  let(:headers) { { API::Ci::Helpers::Runner::JOB_TOKEN_HEADER => job.token, 'Content-Type' => 'text/plain' } }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
