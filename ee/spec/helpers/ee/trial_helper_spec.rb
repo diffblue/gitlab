@@ -197,24 +197,20 @@ RSpec.describe EE::TrialHelper do
       it { is_expected.to be_falsey }
     end
 
-    context 'when feature flag is enabled' do
-      where(:can_extend_trial, :can_reactivate_trial, :result) do
-        false | false | false
-        true  | false | true
-        false | true  | true
-        true  | true  | true
+    where(:can_extend_trial, :can_reactivate_trial, :result) do
+      false | false | false
+      true  | false | true
+      false | true  | true
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        allow(namespace).to receive(:can_extend_trial?).and_return(can_extend_trial)
+        allow(namespace).to receive(:can_reactivate_trial?).and_return(can_reactivate_trial)
       end
 
-      with_them do
-        before do
-          stub_feature_flags(allow_extend_reactivate_trial: true)
-
-          allow(namespace).to receive(:can_extend_trial?).and_return(can_extend_trial)
-          allow(namespace).to receive(:can_reactivate_trial?).and_return(can_reactivate_trial)
-        end
-
-        it { is_expected.to eq(result) }
-      end
+      it { is_expected.to eq(result) }
     end
   end
 
@@ -253,22 +249,20 @@ RSpec.describe EE::TrialHelper do
       end
     end
 
-    context 'when feature flag is enabled' do
-      context 'when trial can be extended' do
-        before do
-          allow(namespace).to receive(:can_extend_trial?).and_return(true)
-        end
-
-        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'extend' }) }
+    context 'when trial can be extended' do
+      before do
+        allow(namespace).to receive(:can_extend_trial?).and_return(true)
       end
 
-      context 'when trial can be reactivated' do
-        before do
-          allow(namespace).to receive(:can_reactivate_trial?).and_return(true)
-        end
+      it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'extend' }) }
+    end
 
-        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'reactivate' }) }
+    context 'when trial can be reactivated' do
+      before do
+        allow(namespace).to receive(:can_reactivate_trial?).and_return(true)
       end
+
+      it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'reactivate' }) }
     end
   end
 end
