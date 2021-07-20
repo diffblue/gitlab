@@ -30,7 +30,7 @@ module Security
         params = {
           name: policy_project.default_branch_or_main,
           push_access_levels_attributes: [{ access_level: Gitlab::Access::NO_ACCESS }],
-          merge_access_levels_attributes: [{ access_level: Gitlab::Access::DEVELOPER }]
+          merge_access_levels_attributes: [{ access_level: Gitlab::Access::MAINTAINER }]
         }
 
         if protected_branch.present?

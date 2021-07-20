@@ -23,7 +23,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
         expect(project.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
         expect(policy_project.namespace).to eq(project.namespace)
         expect(policy_project.protected_branches.map(&:name)).to contain_exactly(project.default_branch_or_main)
-        expect(policy_project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::DEVELOPER])
+        expect(policy_project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
         expect(policy_project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::NO_ACCESS])
         expect(policy_project.team.developers).to contain_exactly(maintainer)
       end
