@@ -225,7 +225,7 @@ describe('LabelsSelect Actions', () => {
           [],
           [
             { type: 'requestCreateLabel' },
-            { payload: true, type: 'fetchLabels' },
+            { payload: { refetch: true }, type: 'fetchLabels' },
             { type: 'receiveCreateLabelSuccess' },
             { type: 'toggleDropdownContentsCreateView' },
           ],
