@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# See https://docs.gitlab.com/ee/development/migration_style_guide.html
-# for more information on how to write migrations for GitLab.
-
 class AddRequestResponseToSupporingMessage < ActiveRecord::Migration[6.1]
   def change
     change_column_null(:vulnerability_finding_evidence_requests, :vulnerability_finding_evidence_id, true)

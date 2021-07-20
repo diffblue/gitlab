@@ -11,11 +11,13 @@ module Vulnerabilities
         belongs_to :evidence,
                    class_name: 'Vulnerabilities::Finding::Evidence',
                    inverse_of: :response,
-                   foreign_key: 'vulnerability_finding_evidence_id'
+                   foreign_key: 'vulnerability_finding_evidence_id',
+                   optional: true
         belongs_to :supporting_message,
                    class_name: 'Vulnerabilities::Finding::Evidence::SupportingMessage',
                    inverse_of: :response,
-                   foreign_key: 'vulnerability_finding_evidence_supporting_message_id'
+                   foreign_key: 'vulnerability_finding_evidence_supporting_message_id',
+                   optional: true
 
         has_many :headers,
                  class_name: 'Vulnerabilities::Finding::Evidence::Header',
