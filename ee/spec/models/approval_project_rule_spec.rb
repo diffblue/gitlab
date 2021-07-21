@@ -47,6 +47,26 @@ RSpec.describe ApprovalProjectRule do
     end
   end
 
+  describe '.vulnerability_reports scope' do
+    subject { described_class.vulnerability_reports }
+
+    context 'with vulnerability reports' do
+      before do
+        create(:approval_project_rule, :vulnerability_report)
+      end
+
+      it { is_expected.to be_present }
+    end
+
+    context 'without vulnerability reports' do
+      before do
+        create(:approval_project_rule)
+      end
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#regular?' do
     let(:vulnerability_approver_rule) { build(:approval_project_rule, :vulnerability_report) }
 
@@ -139,9 +159,22 @@ RSpec.describe ApprovalProjectRule do
       end
 
       context "with a `Vulnerability-Check` rule" do
-        subject { vulnerability_check_rule }
+        using RSpec::Parameterized::TableSyntax
 
-        specify { expect(subject).to be_valid }
+        where(:is_valid, :scanners) do
+          true  | []
+          true  | %w(dast)
+          true  | %w(dast sast)
+          true  | %w(dast dast)
+          false | %w(dast unknown_scanner)
+          false | %w(unknown_scanner)
+        end
+
+        with_them do
+          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners) }
+
+          specify { expect(vulnerability_check_rule.valid?).to be(is_valid) }
+        end
       end
     end
   end

@@ -22,6 +22,9 @@ class ApprovalProjectRule < ApplicationRecord
   validates :name, uniqueness: { scope: [:project_id, :rule_type] }
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
 
+  validates :scanners, inclusion: { in: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES }
+  default_value_for :scanners, allows_nil: false, value: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES
+
   def applies_to_branch?(branch)
     return true if protected_branches.empty?
 
