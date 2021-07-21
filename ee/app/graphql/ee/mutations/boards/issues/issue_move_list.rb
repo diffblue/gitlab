@@ -20,11 +20,11 @@ module EE
           def move_issue(board, issue, move_params)
             super
           rescue ::Issues::BaseService::EpicAssignmentError => e
-            issue.errors.add(:epic_issue, e.message)
+            ServiceResponse.error(message: e.message)
           rescue ::Gitlab::Access::AccessDeniedError
-            issue.errors.add(:base, 'You are not allowed to move the issue')
+            ServiceResponse.error(message: 'You are not allowed to move the issue')
           rescue ActiveRecord::RecordNotFound
-            issue.errors.add(:base, 'Resource not found')
+            ServiceResponse.error(message: 'Resource not found')
           end
 
           override :move_arguments
