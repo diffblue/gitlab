@@ -11267,6 +11267,12 @@ msgstr ""
 msgid "DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Last updated: %{timestamp}."
 msgstr ""
 
+msgid "DevopsAdoption|Fuzz Testing"
+msgstr ""
+
+msgid "DevopsAdoption|Fuzz Testing enabled for at least one project"
+msgstr ""
+
 msgid "DevopsAdoption|Issues"
 msgstr ""
 
