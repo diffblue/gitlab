@@ -43,6 +43,7 @@ export const devopsAdoptionNamespaceData = {
         codeOwnersUsedCount: 0,
         sastEnabledCount: 0,
         dastEnabledCount: 0,
+        coverageFuzzingEnabledCount: 0,
         recordedAt: '2020-10-31T23:59:59Z',
         __typename: 'latestSnapshot',
       },
@@ -127,6 +128,10 @@ export const overallAdoptionData = {
     {
       adopted: false,
       title: 'SAST',
+    },
+    {
+      adopted: false,
+      title: 'Fuzz Testing',
     },
     {
       adopted: false,

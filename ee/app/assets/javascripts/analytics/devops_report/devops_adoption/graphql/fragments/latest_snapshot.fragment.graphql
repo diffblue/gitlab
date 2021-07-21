@@ -9,4 +9,5 @@ fragment LatestSnapshot on DevopsAdoptionSnapshot {
   codeOwnersUsedCount
   sastEnabledCount
   dastEnabledCount
+  coverageFuzzingEnabledCount
 }
