@@ -31,6 +31,7 @@ import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
+import subGroupsQuery from '../graphql/sub_groups.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
@@ -449,6 +450,46 @@ export default {
       });
   },
 
+  fetchSubGroups: ({ commit, state }, { search = '', fetchNext = false } = {}) => {
+    commit(types.REQUEST_SUB_GROUPS, fetchNext);
+
+    const { fullPath } = state;
+
+    const variables = {
+      fullPath,
+      search: search !== '' ? search : undefined,
+      after: fetchNext ? state.subGroupsFlags.pageInfo.endCursor : undefined,
+    };
+
+    return gqlClient
+      .query({
+        query: subGroupsQuery,
+        variables,
+      })
+      .then(({ data }) => {
+        const { id, name, fullName, descendantGroups, __typename } = data.group;
+        const currentGroup = {
+          __typename,
+          id,
+          name,
+          fullName,
+          fullPath: data.group.fullPath,
+        };
+        const subGroups = [currentGroup, ...descendantGroups.nodes];
+        commit(types.RECEIVE_SUB_GROUPS_SUCCESS, {
+          subGroups,
+          pageInfo: descendantGroups.pageInfo,
+          fetchNext,
+        });
+        commit(types.SET_SELECTED_GROUP, currentGroup);
+      })
+      .catch(() => commit(types.RECEIVE_SUB_GROUPS_FAILURE));
+  },
+
+  setSelectedGroup: ({ commit }, group) => {
+    commit(types.SET_SELECTED_GROUP, group);
+  },
+
   createList: (
     { getters, dispatch },
     { backlog, labelId, milestoneId, assigneeId, iterationId },
@@ -495,14 +536,9 @@ export default {
   },
 
   addListNewEpic: (
-    { state: { fullPath }, dispatch, commit },
+    { dispatch, commit },
     { epicInput, list, placeholderId = `tmp-${new Date().getTime()}` },
   ) => {
-    const input = {
-      ...epicInput,
-      groupPath: fullPath,
-    };
-
     const placeholderEpic = {
       ...epicInput,
       id: placeholderId,
@@ -516,11 +552,11 @@ export default {
     gqlClient
       .mutate({
         mutation: epicCreateMutation,
-        variables: { input },
+        variables: { input: epicInput },
       })
       .then(({ data }) => {
         if (data.boardEpicCreate.errors?.length) {
-          throw new Error();
+          throw new Error(data.boardEpicCreate.errors[0]);
         }
 
         const rawEpic = data.boardEpicCreate?.epic;

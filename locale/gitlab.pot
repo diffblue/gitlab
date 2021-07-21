@@ -5397,6 +5397,21 @@ msgstr ""
 msgid "Board scope affects which issues are displayed for anyone who visits this board"
 msgstr ""
 
+msgid "BoardNewEpic|Groups"
+msgstr ""
+
+msgid "BoardNewEpic|Loading groups"
+msgstr ""
+
+msgid "BoardNewEpic|No matching results"
+msgstr ""
+
+msgid "BoardNewEpic|Search groups"
+msgstr ""
+
+msgid "BoardNewEpic|Select a group"
+msgstr ""
+
 msgid "BoardNewIssue|No matching results"
 msgstr ""
 
@@ -5472,6 +5487,9 @@ msgid "Boards|An error occurred while creating the issue. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while creating the list. Please try again."
+msgstr ""
+
+msgid "Boards|An error occurred while fetching child groups. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching group projects. Please try again."
