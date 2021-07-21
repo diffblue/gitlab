@@ -33,7 +33,8 @@
               = f.text_field :path, class: 'form-control js-validate-group-path js-autofill-group-path',
                 required: true,
                 pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS,
-                title: _('Please choose a group URL with no special characters.')
+                title: group_url_error_message,
+                maxlength: ::Namespace::URL_MAX_LENGTH
             %p.validation-error.gl-field-error.field-validation.hide
               = _("Group path is already taken. We've suggested one that is available.")
             %p.validation-success.gl-field-success.field-validation.hide= _('Group path is available.')
