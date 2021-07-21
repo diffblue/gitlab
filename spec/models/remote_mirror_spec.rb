@@ -157,34 +157,20 @@ RSpec.describe RemoteMirror, :mailer do
   end
 
   describe '#update_repository' do
-    shared_examples 'an update' do
-      it 'performs update including options' do
-        git_remote_mirror = stub_const('Gitlab::Git::RemoteMirror', spy)
-        mirror = build(:remote_mirror)
+    it 'performs update including options' do
+      git_remote_mirror = stub_const('Gitlab::Git::RemoteMirror', spy)
+      mirror = build(:remote_mirror)
 
-        expect(mirror).to receive(:options_for_update).and_return(keep_divergent_refs: true)
-        mirror.update_repository(inmemory_remote: inmemory)
+      expect(mirror).to receive(:options_for_update).and_return(keep_divergent_refs: true)
+      mirror.update_repository
 
-        expect(git_remote_mirror).to have_received(:new).with(
-          mirror.project.repository.raw,
-          mirror.remote_name,
-          inmemory ? mirror.url : nil,
-          keep_divergent_refs: true
-        )
-        expect(git_remote_mirror).to have_received(:update)
-      end
-    end
-
-    context 'with inmemory remote' do
-      let(:inmemory) { true }
-
-      it_behaves_like 'an update'
-    end
-
-    context 'with on-disk remote' do
-      let(:inmemory) { false }
-
-      it_behaves_like 'an update'
+      expect(git_remote_mirror).to have_received(:new).with(
+        mirror.project.repository.raw,
+        mirror.remote_name,
+        mirror.url,
+        keep_divergent_refs: true
+      )
+      expect(git_remote_mirror).to have_received(:update)
     end
   end
 

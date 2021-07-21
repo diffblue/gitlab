@@ -100,11 +100,11 @@ class RemoteMirror < ApplicationRecord
     update_status == 'started'
   end
 
-  def update_repository(inmemory_remote:)
+  def update_repository
     Gitlab::Git::RemoteMirror.new(
       project.repository.raw,
       remote_name,
-      inmemory_remote ? remote_url : nil,
+      remote_url,
       **options_for_update
     ).update
   end
