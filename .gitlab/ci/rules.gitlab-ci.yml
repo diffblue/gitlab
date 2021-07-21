@@ -205,6 +205,7 @@
   - "{,ee/,jh/}spec/support/helpers/database/**/*"
   - "config/prometheus/common_metrics.yml"  # Used by Gitlab::DatabaseImporters::CommonMetrics::Importer
   - "{,ee/,jh/}app/models/project_statistics.rb"  # Used to calculate sizes in migration specs
+  - "GITALY_SERVER_VERSION" # Has interactions with background migrations:https://gitlab.com/gitlab-org/gitlab/-/issues/336538
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
