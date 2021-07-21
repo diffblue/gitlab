@@ -1099,7 +1099,6 @@ RSpec.describe Repository do
     let(:remote_name) { "remote-name" }
 
     it 'fetches the URL without creating a remote' do
-      expect(repository).not_to receive(:add_remote)
       expect(repository)
         .to receive(:fetch_remote)
         .with(remote_name, url: url, forced: false, prune: true, refmap: :all_refs)

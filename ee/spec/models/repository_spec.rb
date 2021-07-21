@@ -53,7 +53,6 @@ RSpec.describe Repository do
     let(:url) { "http://example.com" }
 
     it 'fetches the URL without creating a remote' do
-      expect(repository).not_to receive(:add_remote)
       expect(repository)
         .to receive(:fetch_remote)
         .with(described_class::MIRROR_REMOTE, url: url, refmap: ['+refs/heads/*:refs/remotes/upstream/*'], ssh_auth: nil, forced: true, check_tags_changed: true)
