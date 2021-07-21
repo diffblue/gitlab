@@ -29,6 +29,7 @@ module ApprovalRuleLike
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
     scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
+    scope :vulnerability_reports, -> { where(rule_type: :report_approver, name: ApprovalRuleLike::DEFAULT_NAME_FOR_VULNERABILITY_REPORT) }
   end
 
   def audit_add

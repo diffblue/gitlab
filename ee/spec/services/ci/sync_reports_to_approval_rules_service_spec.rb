@@ -19,6 +19,11 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
 
   context 'with security rules' do
     let(:report_approver_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 2) }
+    let(:scanners) { %w[dependency_scanning] }
+
+    before do
+      create(:approval_project_rule, :vulnerability, project: project, approvals_required: 2, scanners: scanners)
+    end
 
     context 'when there are security reports' do
       context 'when pipeline passes' do
@@ -42,6 +47,15 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
             it "won't change approvals_required count" do
               expect { subject }
                 .not_to change { report_approver_rule.reload.approvals_required }
+            end
+          end
+
+          context 'without any scanners related to the security reports' do
+            let(:scanners) { %w[sast] }
+
+            it 'lowers approvals_required count to zero' do
+              expect { subject }
+                .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
             end
           end
         end

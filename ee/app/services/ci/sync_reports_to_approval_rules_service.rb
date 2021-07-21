@@ -2,6 +2,8 @@
 
 module Ci
   class SyncReportsToApprovalRulesService < ::BaseService
+    include Gitlab::Utils::StrongMemoize
+
     def initialize(pipeline)
       @pipeline = pipeline
     end
@@ -52,7 +54,15 @@ module Ci
     end
 
     def reports
-      @reports ||= pipeline.security_reports
+      strong_memoize(:reports) do
+        project_vulnerability_rules ? pipeline.security_reports(report_types: project_vulnerability_rules) : []
+      end
+    end
+
+    def project_vulnerability_rules
+      strong_memoize(:project_vulnerability_rules) do
+        pipeline.project.approval_rules.vulnerability_reports.first&.scanners
+      end
     end
 
     def merge_requests_approved_coverage
@@ -66,7 +76,7 @@ module Ci
 
     def merge_requests_approved_security_reports
       pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports)
+        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports)
       end
     end
 
