@@ -13,6 +13,10 @@ class ProjectImportScheduleWorker
   sidekiq_options retry: false
   loggable_arguments 1 # For the job waiter key
 
+  # UpdateAllMirrorsWorker depends on the queue size of this worker:
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/325496#note_550866012
+  tags :needs_own_queue
+
   def perform(project_id)
     return if Gitlab::Database.read_only?
 
