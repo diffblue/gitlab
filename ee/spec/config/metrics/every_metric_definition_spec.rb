@@ -67,6 +67,7 @@ RSpec.describe 'Every metric definition' do
     allow(Gitlab::Geo).to receive(:enabled?).and_return(true)
     stub_licensed_features(requirements: true)
     stub_prometheus_queries
+    stub_usage_data_connections
   end
 
   it 'is included in the Usage Ping hash structure' do
