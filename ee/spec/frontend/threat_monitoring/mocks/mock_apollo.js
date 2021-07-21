@@ -17,6 +17,8 @@ export const emptyGetAlertsQuerySpy = jest.fn().mockResolvedValue({
 
 export const loadingQuerySpy = jest.fn().mockReturnValue(new Promise(() => {}));
 
+export const apolloFailureResponse = jest.fn().mockRejectedValue();
+
 export const getAlertDetailsQuerySpy = jest.fn().mockResolvedValue({
   data: { project: { alertManagementAlerts: { nodes: [mockAlertDetails] } } },
 });
@@ -49,3 +51,10 @@ export const scanExecutionPolicies = (nodes) =>
       },
     },
   });
+
+export const mockAssignSecurityPolicyProjectResponses = {
+  success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: [] } } }),
+  failure: jest
+    .fn()
+    .mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: ['mutation failed'] } } }),
+};

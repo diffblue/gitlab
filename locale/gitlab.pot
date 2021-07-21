@@ -22991,9 +22991,6 @@ msgstr ""
 msgid "Only include features new to your current subscription tier."
 msgstr ""
 
-msgid "Only owners can update Security Policy Project"
-msgstr ""
-
 msgid "Only policy:"
 msgstr ""
 
@@ -23073,9 +23070,6 @@ msgid "OpenedNDaysAgo|Opened"
 msgstr ""
 
 msgid "Opens in a new window"
-msgstr ""
-
-msgid "Operation completed"
 msgstr ""
 
 msgid "Operation failed. Check pod logs for %{pod_name} for more details."
@@ -29024,13 +29018,22 @@ msgstr ""
 msgid "SecurityConfiguration|You can quickly enable all security scanning tools by enabling %{linkStart}Auto DevOps%{linkEnd}."
 msgstr ""
 
-msgid "SecurityOrchestration|A security policy project can be used enforce policies for a given project, group, or instance. It allows you to specify security policies that are important to you  and enforce them with every commit."
+msgid "SecurityOrchestration|A security policy project can enforce policies for a given project, group, or instance. With a security policy project, you can specify security policies that are important to you and enforce them with every commit. %{linkStart}More information.%{linkEnd}"
+msgstr ""
+
+msgid "SecurityOrchestration|An error occurred assigning your security policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|Create a policy"
 msgstr ""
 
+msgid "SecurityOrchestration|Only owners can update Security Policy Project"
+msgstr ""
+
 msgid "SecurityOrchestration|Security policy project"
+msgstr ""
+
+msgid "SecurityOrchestration|Security policy project was linked successfully"
 msgstr ""
 
 msgid "SecurityPolicies|+%{count} more"
