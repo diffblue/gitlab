@@ -22,13 +22,13 @@ module EE
               description: 'Total repository size of all projects in the root namespace in bytes.'
 
         field :contains_locked_projects,
-              GraphQL::BOOLEAN_TYPE,
+              GraphQL::Types::Boolean,
               null: false,
               description: 'Includes at least one project where the repository size exceeds the limit.',
               method: :contains_locked_projects?
 
         field :repository_size_excess_project_count,
-              GraphQL::INT_TYPE,
+              GraphQL::Types::Int,
               null: false,
               description: 'Number of projects in the root namespace where the repository size exceeds the limit.'
 
@@ -44,7 +44,7 @@ module EE
               description: 'Total storage limit of the root namespace in bytes.'
 
         field :is_temporary_storage_increase_enabled,
-              GraphQL::BOOLEAN_TYPE,
+              GraphQL::Types::Boolean,
               null: false,
               description: 'Status of the temporary storage increase.',
               method: :temporary_storage_increase_enabled?

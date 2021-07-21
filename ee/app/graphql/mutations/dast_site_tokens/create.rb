@@ -11,7 +11,7 @@ module Mutations
             null: true,
             description: 'ID of the site token.'
 
-      field :token, GraphQL::STRING_TYPE,
+      field :token, GraphQL::Types::String,
             null: true,
             description: 'Token string.'
 
@@ -19,11 +19,11 @@ module Mutations
             null: true,
             description: 'The current validation status of the target.'
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                required: true,
                description: 'The project the site token belongs to.'
 
-      argument :target_url, GraphQL::STRING_TYPE,
+      argument :target_url, GraphQL::Types::String,
                required: false,
                description: 'The URL of the target to be validated.'
 

@@ -16,7 +16,7 @@ module Mutations
               null: true,
               description: 'The updated profile.'
 
-        field :pipeline_url, GraphQL::STRING_TYPE,
+        field :pipeline_url, GraphQL::Types::String,
               null: true,
               description: 'The URL of the pipeline that was created. Requires the input ' \
                            'argument `runAfterUpdate` to be set to `true` when calling the ' \
@@ -26,20 +26,20 @@ module Mutations
                  required: true,
                  description: 'ID of the profile to be deleted.'
 
-        argument :full_path, GraphQL::ID_TYPE,
+        argument :full_path, GraphQL::Types::ID,
                  required: true,
                  description: 'The project the profile belongs to.'
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: false,
                  description: 'The name of the profile.'
 
-        argument :description, GraphQL::STRING_TYPE,
+        argument :description, GraphQL::Types::String,
                  required: false,
                  description: 'The description of the profile. Defaults to an empty string.',
                  default_value: ''
 
-        argument :branch_name, GraphQL::STRING_TYPE,
+        argument :branch_name, GraphQL::Types::String,
                  required: false,
                  description: 'The associated branch.'
 
@@ -51,7 +51,7 @@ module Mutations
                  required: false,
                  description: 'ID of the scanner profile to be associated.'
 
-        argument :run_after_update, GraphQL::BOOLEAN_TYPE,
+        argument :run_after_update, GraphQL::Types::Boolean,
                  required: false,
                  description: 'Run scan using profile after update. Defaults to false.',
                  default_value: false

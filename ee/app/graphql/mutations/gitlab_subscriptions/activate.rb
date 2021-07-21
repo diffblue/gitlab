@@ -7,7 +7,7 @@ module Mutations
 
       authorize :manage_subscription
 
-      argument :activation_code, GraphQL::STRING_TYPE,
+      argument :activation_code, GraphQL::Types::String,
                required: true,
                description: 'Activation code received after purchasing a GitLab subscription.'
 

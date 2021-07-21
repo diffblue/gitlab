@@ -8,7 +8,7 @@ module Mutations
 
         graphql_name 'BoardEpicCreate'
 
-        argument :group_path, GraphQL::ID_TYPE,
+        argument :group_path, GraphQL::Types::ID,
                  required: true,
                  description: 'Group the epic to create is in.'
 
@@ -21,7 +21,7 @@ module Mutations
                  description: 'Global ID of the epic board list in which epic will be created.'
 
         argument :title,
-                 GraphQL::STRING_TYPE,
+                 GraphQL::Types::String,
                  required: true,
                  description: 'Title of the epic.'
 

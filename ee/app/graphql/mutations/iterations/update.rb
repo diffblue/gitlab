@@ -15,34 +15,34 @@ module Mutations
             null: true,
             description: 'Updated iteration.'
 
-      argument :group_path, GraphQL::ID_TYPE,
+      argument :group_path, GraphQL::Types::ID,
                required: true,
                description: 'Group of the iteration.'
 
       # rubocop:disable Graphql/IDType
       argument :id,
-               GraphQL::ID_TYPE,
+               GraphQL::Types::ID,
                required: true,
                description: 'Global ID of the iteration.'
       # rubocop:enable Graphql/IDType
 
       argument :title,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'Title of the iteration.'
 
       argument :description,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'Description of the iteration.'
 
       argument :start_date,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'Start date of the iteration.'
 
       argument :due_date,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'End date of the iteration.'
 

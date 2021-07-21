@@ -11,7 +11,7 @@ module Mutations
                required: false,
                description: 'State of the requirement.'
 
-      argument :iid, GraphQL::STRING_TYPE,
+      argument :iid, GraphQL::Types::String,
                required: true,
                description: 'The IID of the requirement to update.'
 

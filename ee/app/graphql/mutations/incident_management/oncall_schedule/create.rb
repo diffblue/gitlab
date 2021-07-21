@@ -8,19 +8,19 @@ module Mutations
 
         graphql_name 'OncallScheduleCreate'
 
-        argument :project_path, GraphQL::ID_TYPE,
+        argument :project_path, GraphQL::Types::ID,
                  required: true,
                  description: 'The project to create the on-call schedule in.'
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: true,
                  description: 'The name of the on-call schedule.'
 
-        argument :description, GraphQL::STRING_TYPE,
+        argument :description, GraphQL::Types::String,
                  required: false,
                  description: 'The description of the on-call schedule.'
 
-        argument :timezone, GraphQL::STRING_TYPE,
+        argument :timezone, GraphQL::Types::String,
                  required: true,
                  description: 'The timezone of the on-call schedule.'
 

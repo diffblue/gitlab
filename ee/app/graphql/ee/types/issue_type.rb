@@ -12,17 +12,17 @@ module EE
         field :iteration, ::Types::IterationType, null: true,
               description: 'Iteration of the issue.'
 
-        field :weight, GraphQL::INT_TYPE, null: true,
+        field :weight, GraphQL::Types::Int, null: true,
               description: 'Weight of the issue.'
 
-        field :blocked, GraphQL::BOOLEAN_TYPE, null: false,
+        field :blocked, GraphQL::Types::Boolean, null: false,
               description: 'Indicates the issue is blocked.'
 
-        field :blocking_count, GraphQL::INT_TYPE, null: false,
+        field :blocking_count, GraphQL::Types::Int, null: false,
               method: :blocking_issues_count,
               description: 'Count of issues this issue is blocking.'
 
-        field :blocked_by_count, GraphQL::INT_TYPE, null: true,
+        field :blocked_by_count, GraphQL::Types::Int, null: true,
               description: 'Count of issues blocking this issue.'
 
         field :blocked_by_issues, ::Types::IssueType.connection_type, null: true,
@@ -32,7 +32,7 @@ module EE
         field :health_status, ::Types::HealthStatusEnum, null: true,
               description: 'Current health status.'
 
-        field :status_page_published_incident, GraphQL::BOOLEAN_TYPE, null: true,
+        field :status_page_published_incident, GraphQL::Types::Boolean, null: true,
               description: 'Indicates whether an issue is published to the status page.'
 
         field :sla_due_at, ::Types::TimeType, null: true,

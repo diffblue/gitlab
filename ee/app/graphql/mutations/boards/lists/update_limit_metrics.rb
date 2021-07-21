@@ -17,12 +17,12 @@ module Mutations
                  description: 'The new limit metric type for the list.'
 
         argument :max_issue_count,
-                 GraphQL::INT_TYPE,
+                 GraphQL::Types::Int,
                  required: false,
                  description: 'The new maximum issue count limit.'
 
         argument :max_issue_weight,
-                 GraphQL::INT_TYPE,
+                 GraphQL::Types::Int,
                  required: false,
                  description: 'The new maximum issue weight limit.'
 

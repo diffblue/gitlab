@@ -7,11 +7,11 @@ module Mutations
 
       graphql_name 'DastSiteValidationRevoke'
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                required: true,
                description: 'The project the site validation belongs to.'
 
-      argument :normalized_target_url, GraphQL::STRING_TYPE,
+      argument :normalized_target_url, GraphQL::Types::String,
                required: true,
                description: 'Normalized URL of the target to be revoked.'
 

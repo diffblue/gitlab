@@ -10,11 +10,11 @@ module Mutations
 
         graphql_name 'CreateClusterAgent'
 
-        argument :project_path, GraphQL::ID_TYPE,
+        argument :project_path, GraphQL::Types::ID,
                  required: true,
                  description: 'Full path of the associated project for this cluster agent.'
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: true,
                  description: 'Name of the cluster agent.'
 

@@ -16,17 +16,17 @@ module Mutations
                  description: 'Global ID of the cluster agent that will be associated with the new token.'
 
         argument :description,
-                 GraphQL::STRING_TYPE,
+                 GraphQL::Types::String,
                  required: false,
                  description: 'Description of the token.'
 
         argument :name,
-                 GraphQL::STRING_TYPE,
+                 GraphQL::Types::String,
                  required: true,
                  description: 'Name of the token.'
 
         field :secret,
-              GraphQL::STRING_TYPE,
+              GraphQL::Types::String,
               null: true,
               description: "Token secret value. Make sure you save it - you won't be able to access it again."
 

@@ -21,22 +21,22 @@ module Mutations
                description: 'Global ID of the iterations cadence to be assigned to newly created iteration.'
 
       argument :title,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'The title of the iteration.'
 
       argument :description,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'The description of the iteration.'
 
       argument :start_date,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'The start date of the iteration.'
 
       argument :due_date,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'The end date of the iteration.'
 

@@ -11,7 +11,7 @@ module Mutations
               null: true,
               description: 'The created compliance framework.'
 
-        argument :namespace_path, GraphQL::ID_TYPE,
+        argument :namespace_path, GraphQL::Types::ID,
                  required: true,
                  description: 'Full path of the namespace to add the compliance framework to.'
 

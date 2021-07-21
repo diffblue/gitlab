@@ -10,11 +10,11 @@ module Mutations
 
       authorize :export_requirements
 
-      argument :project_path, GraphQL::ID_TYPE,
+      argument :project_path, GraphQL::Types::ID,
                required: true,
                description: 'Full project path the requirements are associated with.'
 
-      argument :selected_fields, [GraphQL::STRING_TYPE],
+      argument :selected_fields, [GraphQL::Types::String],
                required: false,
                description: 'List of selected requirements fields to be exported.'
 

@@ -9,7 +9,7 @@ module Mutations
 
       authorize :update_security_orchestration_policy_project
 
-      argument :project_path, GraphQL::ID_TYPE,
+      argument :project_path, GraphQL::Types::ID,
                required: true,
                description: 'Full path of the project.'
 

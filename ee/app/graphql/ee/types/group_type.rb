@@ -7,7 +7,7 @@ module EE
 
       prepended do
         %i[epics].each do |feature|
-          field "#{feature}_enabled", GraphQL::BOOLEAN_TYPE, null: true,
+          field "#{feature}_enabled", GraphQL::Types::Boolean, null: true,
                 description: "Indicates if #{feature.to_s.humanize} are enabled for namespace"
 
           define_method "#{feature}_enabled" do
@@ -83,7 +83,7 @@ module EE
               description: 'Group statistics.',
               method: :itself
 
-        field :billable_members_count, ::GraphQL::INT_TYPE,
+        field :billable_members_count, ::GraphQL::Types::Int,
               null: true,
               description: 'The number of billable users in the group.'
 

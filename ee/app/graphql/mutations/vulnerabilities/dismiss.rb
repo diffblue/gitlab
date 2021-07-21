@@ -17,7 +17,7 @@ module Mutations
                description: 'ID of the vulnerability to be dismissed.'
 
       argument :comment,
-               GraphQL::STRING_TYPE,
+               GraphQL::Types::String,
                required: false,
                description: 'Comment why vulnerability should be dismissed.'
 

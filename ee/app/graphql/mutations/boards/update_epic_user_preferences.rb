@@ -16,7 +16,7 @@ module Mutations
                description: 'ID of an epic to set preferences for.'
 
       argument :collapsed,
-               GraphQL::BOOLEAN_TYPE,
+               GraphQL::Types::Boolean,
                required: true,
                description: 'Whether the epic should be collapsed in the board.'
 

@@ -13,7 +13,7 @@ module Mutations
             null: true,
             description: 'ID of the site profile.'
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                required: true,
                description: 'The project the site profile belongs to.'
 
@@ -21,11 +21,11 @@ module Mutations
                required: true,
                description: 'ID of the site profile to be updated.'
 
-      argument :profile_name, GraphQL::STRING_TYPE,
+      argument :profile_name, GraphQL::Types::String,
                required: true,
                description: 'The name of the site profile.'
 
-      argument :target_url, GraphQL::STRING_TYPE,
+      argument :target_url, GraphQL::Types::String,
                required: false,
                description: 'The URL of the target to be scanned.'
 
@@ -33,11 +33,11 @@ module Mutations
                required: false,
                description: 'The type of target to be scanned.'
 
-      argument :excluded_urls, [GraphQL::STRING_TYPE],
+      argument :excluded_urls, [GraphQL::Types::String],
                required: false,
                description: 'The URLs to skip during an authenticated scan.'
 
-      argument :request_headers, GraphQL::STRING_TYPE,
+      argument :request_headers, GraphQL::Types::String,
                required: false,
                description: 'Comma-separated list of request header names and values to be ' \
                             'added to every request made by DAST.'
