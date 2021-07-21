@@ -9,7 +9,7 @@ module Types
       graphql_name 'TerraformStateVersionRegistry'
       description 'Represents the Geo sync and verification state of a terraform state version'
 
-      field :terraform_state_version_id, GraphQL::ID_TYPE, null: false, description: 'ID of the terraform state version.'
+      field :terraform_state_version_id, GraphQL::Types::ID, null: false, description: 'ID of the terraform state version.'
     end
   end
 end

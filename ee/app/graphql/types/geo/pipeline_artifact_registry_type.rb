@@ -9,7 +9,7 @@ module Types
       graphql_name 'PipelineArtifactRegistry'
       description 'Represents the Geo sync and verification state of a pipeline artifact'
 
-      field :pipeline_artifact_id, GraphQL::ID_TYPE, null: false, description: 'ID of the pipeline artifact.'
+      field :pipeline_artifact_id, GraphQL::Types::ID, null: false, description: 'ID of the pipeline artifact.'
     end
   end
 end

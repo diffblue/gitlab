@@ -10,17 +10,17 @@ module Types
 
       expose_permissions Types::PermissionTypes::Requirement
 
-      field :id, GraphQL::ID_TYPE, null: false,
+      field :id, GraphQL::Types::ID, null: false,
             description: 'ID of the requirement.'
 
-      field :iid, GraphQL::ID_TYPE, null: false,
+      field :iid, GraphQL::Types::ID, null: false,
             description: 'Internal ID of the requirement.'
 
-      field :title, GraphQL::STRING_TYPE, null: true,
+      field :title, GraphQL::Types::String, null: true,
             description: 'Title of the requirement.'
       markdown_field :title_html, null: true
 
-      field :description, GraphQL::STRING_TYPE, null: true,
+      field :description, GraphQL::Types::String, null: true,
             description: 'Description of the requirement.'
       markdown_field :description_html, null: true
 
@@ -31,7 +31,7 @@ module Types
             description: 'Latest requirement test report state.'
 
       field :last_test_report_manually_created,
-            GraphQL::BOOLEAN_TYPE,
+            GraphQL::Types::Boolean,
             method: :last_test_report_manually_created?,
             null: true,
             description: 'Indicates if latest test report was created by user.'

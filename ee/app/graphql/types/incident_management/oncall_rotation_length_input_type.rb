@@ -6,7 +6,7 @@ module Types
       graphql_name 'OncallRotationLengthInputType'
       description 'The rotation length of the on-call rotation'
 
-      argument :length, GraphQL::INT_TYPE,
+      argument :length, GraphQL::Types::Int,
                 required: true,
                 description: 'The rotation length of the on-call rotation.'
 

@@ -7,7 +7,7 @@ module Types
     description 'Represents the network policy'
 
     field :name,
-          GraphQL::STRING_TYPE,
+          GraphQL::Types::String,
           null: false,
           description: 'Name of the policy.'
 
@@ -17,22 +17,22 @@ module Types
           description: 'Kind of the policy.'
 
     field :namespace,
-          GraphQL::STRING_TYPE,
+          GraphQL::Types::String,
           null: false,
           description: 'Namespace of the policy.'
 
     field :enabled,
-          GraphQL::BOOLEAN_TYPE,
+          GraphQL::Types::Boolean,
           null: false,
           description: 'Indicates whether this policy is enabled.'
 
     field :from_auto_devops,
-          GraphQL::BOOLEAN_TYPE,
+          GraphQL::Types::Boolean,
           null: false,
           description: 'Indicates whether this policy is created from AutoDevops.'
 
     field :yaml,
-          GraphQL::STRING_TYPE,
+          GraphQL::Types::String,
           null: false,
           description: 'YAML definition of the policy.'
 

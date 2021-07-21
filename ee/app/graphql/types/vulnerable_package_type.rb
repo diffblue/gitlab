@@ -6,7 +6,7 @@ module Types
     graphql_name 'VulnerablePackage'
     description 'Represents a vulnerable package. Used in vulnerability dependency data'
 
-    field :name, GraphQL::STRING_TYPE, null: true,
+    field :name, GraphQL::Types::String, null: true,
           description: 'The name of the vulnerable package.'
   end
 end

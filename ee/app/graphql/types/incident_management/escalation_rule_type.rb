@@ -15,7 +15,7 @@ module Types
             null: true,
             description: 'The on-call schedule to notify.'
 
-      field :elapsed_time_seconds, GraphQL::INT_TYPE,
+      field :elapsed_time_seconds, GraphQL::Types::Int,
             null: true,
             description: 'The time in seconds before the rule is activated.'
 

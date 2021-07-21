@@ -13,7 +13,7 @@ module Types
           description: 'Type of the security report that found the vulnerability finding.'
 
     field :name,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Name of the vulnerability finding.'
 
@@ -23,7 +23,7 @@ module Types
           description: 'Severity of the vulnerability finding.'
 
     field :confidence,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Type of the security report that found the vulnerability.'
 
@@ -38,12 +38,12 @@ module Types
           description: 'Identifiers of the vulnerabilit finding.'
 
     field :project_fingerprint,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Name of the vulnerability finding.'
 
     field :uuid,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Name of the vulnerability finding.'
 
@@ -53,7 +53,7 @@ module Types
           description: 'The project on which the vulnerability finding was found.'
 
     field :description,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Description of the vulnerability finding.'
 
@@ -66,7 +66,7 @@ module Types
           DESC
 
     field :solution,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: "URL to the vulnerability's details page."
 

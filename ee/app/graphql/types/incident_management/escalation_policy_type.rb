@@ -12,11 +12,11 @@ module Types
             null: true,
             description: 'ID of the escalation policy.'
 
-      field :name, GraphQL::STRING_TYPE,
+      field :name, GraphQL::Types::String,
             null: true,
             description: 'The name of the escalation policy.'
 
-      field :description, GraphQL::STRING_TYPE,
+      field :description, GraphQL::Types::String,
             null: true,
             description: 'The description of the escalation policy.'
 

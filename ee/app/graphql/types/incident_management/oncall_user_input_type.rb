@@ -6,7 +6,7 @@ module Types
       graphql_name 'OncallUserInputType'
       description 'The rotation user and color palette'
 
-      argument :username, GraphQL::STRING_TYPE,
+      argument :username, GraphQL::Types::String,
                 required: true,
                 description: 'The username of the user to participate in the on-call rotation, such as `user_one`.'
 

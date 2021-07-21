@@ -6,10 +6,10 @@ module Types
     graphql_name 'TimeboxMetrics'
     description 'Represents measured stats metrics for timeboxes'
 
-    field :count, GraphQL::INT_TYPE, null: false,
+    field :count, GraphQL::Types::Int, null: false,
           description: 'The count metric.'
 
-    field :weight, GraphQL::INT_TYPE, null: false,
+    field :weight, GraphQL::Types::Int, null: false,
           description: 'The weight metric.'
   end
 end

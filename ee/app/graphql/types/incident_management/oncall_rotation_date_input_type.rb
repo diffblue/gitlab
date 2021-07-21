@@ -6,11 +6,11 @@ module Types
       graphql_name 'OncallRotationDateInputType'
       description 'Date input type for on-call rotation'
 
-      argument :date, GraphQL::STRING_TYPE,
+      argument :date, GraphQL::Types::String,
                 required: true,
                 description: 'The date component of the date in YYYY-MM-DD format.'
 
-      argument :time, GraphQL::STRING_TYPE,
+      argument :time, GraphQL::Types::String,
                 required: true,
                 description: 'The time component of the date in 24hr HH:MM format.'
 

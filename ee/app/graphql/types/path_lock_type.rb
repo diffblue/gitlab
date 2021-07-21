@@ -7,7 +7,7 @@ module Types
     field :id, ::Types::GlobalIDType[PathLock], null: false,
           description: 'ID of the path lock.'
 
-    field :path, GraphQL::STRING_TYPE, null: true,
+    field :path, GraphQL::Types::String, null: true,
           description: 'The locked path.'
 
     field :user, ::Types::UserType, null: true,
