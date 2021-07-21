@@ -95,7 +95,7 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
     context 'with only url' do
       before do
         stub_jira_integration_test
-        jira_integration.update!(api_url: nil)
+        jira_integration.update!(api_url: nil, password: 'password')
       end
 
       it 'returns URLs with the web url' do
