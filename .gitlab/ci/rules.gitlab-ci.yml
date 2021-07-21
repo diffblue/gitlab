@@ -40,6 +40,9 @@
 .if-merge-request-not-approved: &if-merge-request-not-approved
   if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVED != "true"'
 
+.if-automated-merge-request: &if-automated-merge-request
+  if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "release-tools/update-gitaly" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /stable-ee$/'
+
 .if-merge-request-title-as-if-foss: &if-merge-request-title-as-if-foss
   if: '$CI_MERGE_REQUEST_TITLE =~ /RUN AS-IF-FOSS/'
 
@@ -616,6 +619,8 @@
 .rails:rules:ee-and-foss-migration:
   rules:
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *db-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *db-patterns
@@ -623,6 +628,8 @@
 .rails:rules:ee-and-foss-migration:minimal:
   rules:
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -649,6 +656,8 @@
 .rails:rules:ee-and-foss-unit:
   rules:
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *backend-patterns
@@ -656,6 +665,8 @@
 .rails:rules:ee-and-foss-unit:minimal:
   rules:
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -668,6 +679,8 @@
 .rails:rules:ee-and-foss-integration:
   rules:
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *backend-patterns
@@ -675,6 +688,8 @@
 .rails:rules:ee-and-foss-integration:minimal:
   rules:
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -687,6 +702,8 @@
 .rails:rules:ee-and-foss-system:
   rules:
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *code-backstage-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *code-backstage-patterns
@@ -694,6 +711,8 @@
 .rails:rules:ee-and-foss-system:minimal:
   rules:
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -706,6 +725,8 @@
 .rails:rules:ee-and-foss-fast_spec_helper:
   rules:
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: ["config/**/*"]
     - <<: *if-merge-request-not-approved
       when: never
     - changes: ["config/**/*"]
@@ -713,6 +734,8 @@
 .rails:rules:ee-and-foss-fast_spec_helper:minimal:
   rules:
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -732,6 +755,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *db-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *db-patterns
@@ -741,6 +766,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -755,6 +782,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *backend-patterns
@@ -764,6 +793,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -778,6 +809,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *backend-patterns
@@ -787,6 +820,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -801,6 +836,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *code-backstage-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - changes: *code-backstage-patterns
@@ -810,6 +847,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-title-run-all-rspec
       when: never
@@ -824,6 +863,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *db-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-security-merge-request
@@ -839,6 +880,8 @@
       when: never
     - <<: *if-merge-request-approved
       when: never
+    - <<: *if-automated-merge-request
+      when: never
     - <<: *if-merge-request
       changes: *ci-patterns
       when: never
@@ -852,6 +895,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-security-merge-request
@@ -867,6 +912,8 @@
       when: never
     - <<: *if-merge-request-approved
       when: never
+    - <<: *if-automated-merge-request
+      when: never
     - <<: *if-merge-request
       changes: *ci-patterns
       when: never
@@ -880,6 +927,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-security-merge-request
@@ -895,6 +944,8 @@
       when: never
     - <<: *if-merge-request-approved
       when: never
+    - <<: *if-automated-merge-request
+      when: never
     - <<: *if-merge-request
       changes: *ci-patterns
       when: never
@@ -908,6 +959,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-title-run-all-rspec
+    - <<: *if-automated-merge-request
+      changes: *code-backstage-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-security-merge-request
@@ -922,6 +975,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
