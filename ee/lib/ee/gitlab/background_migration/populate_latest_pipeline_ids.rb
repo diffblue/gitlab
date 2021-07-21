@@ -6,6 +6,14 @@ module EE
       module PopulateLatestPipelineIds
         extend ::Gitlab::Utils::Override
 
+        module LogUtils
+          MIGRATOR = 'PopulateLatestPipelineIds'
+
+          def log_info(log_attributes)
+            ::Gitlab::BackgroundMigration::Logger.info(log_attributes.merge(migrator: MIGRATOR))
+          end
+        end
+
         module Routable
           extend ActiveSupport::Concern
 
@@ -26,30 +34,16 @@ module EE
           end
         end
 
-        module Visibility
-          PUBLIC_LEVEL = 20
-
-          def public?
-            visibility_level == PUBLIC_LEVEL
-          end
-        end
-
         class Namespace < ActiveRecord::Base
           include Routable
-          include Visibility
 
           self.table_name = 'namespaces'
+          self.inheritance_column = :_type_disabled
 
           belongs_to :parent, class_name: '::EE::Gitlab::BackgroundMigration::PopulateLatestPipelineIds::Namespace'
 
-          def self.find_sti_class(type_name)
-            super("EE::Gitlab::BackgroundMigration::PopulateLatestPipelineIds::#{type_name}")
-          end
-        end
-
-        class Group < Namespace
           def self.polymorphic_name
-            'Group'
+            'Namespace'
           end
         end
 
@@ -57,10 +51,9 @@ module EE
           self.table_name = 'routes'
         end
 
-        class Project < ActiveRecord::Base
+        class Project < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
           include Routable
-          include Visibility
-          include ::Gitlab::Utils::StrongMemoize
+          include LogUtils
 
           self.table_name = 'projects'
 
@@ -114,7 +107,7 @@ module EE
             LIMIT 1
           SQL
 
-          belongs_to :namespace
+          belongs_to :namespace, class_name: '::EE::Gitlab::BackgroundMigration::PopulateLatestPipelineIds::Namespace'
           alias_method :parent, :namespace
 
           has_many :all_pipelines, class_name: '::EE::Gitlab::BackgroundMigration::PopulateLatestPipelineIds::Pipeline'
@@ -132,9 +125,15 @@ module EE
           end
 
           def stats_tuple
-            return unless latest_pipeline_id
+            unless latest_pipeline_id
+              log_info(message: 'No latest_pipeline_id found', project_id: id)
 
-            [id, DEFAULT_LETTER_GRADE, latest_pipeline_id, quoted_time, quoted_time].join(', ').then { |s| "(#{s})" }
+              return
+            end
+
+            log_info(message: 'latest_pipeline_id found', project_id: id)
+
+            [id, DEFAULT_LETTER_GRADE, latest_pipeline_id, current_time, current_time].join(', ').then { |s| "(#{s})" }
           rescue StandardError => e
             ::Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
 
@@ -145,12 +144,12 @@ module EE
 
           delegate :connection, to: :'self.class', private: true
 
-          def quoted_time
-            @quoted_time ||= connection.quote(Time.zone.now)
+          def current_time
+            @current_time ||= connection.quote(Time.zone.now)
           end
 
           def latest_pipeline_id
-            strong_memoize(:latest_pipeline_id) { pipeline_with_reports&.fetch('id') }
+            @latest_pipeline_id ||= pipeline_with_reports&.fetch('id')
           end
 
           def pipeline_with_reports
@@ -158,10 +157,11 @@ module EE
           end
 
           def pipeline_with_reports_sql
+            log_info(message: 'Pipeline with reports SQL requested', project_id: id, ref: default_branch)
+
             format(LATEST_PIPELINE_WITH_REPORTS_SQL, project_id: id, ref: connection.quote(default_branch), file_types: FILE_TYPES.join(', '))
           end
 
-          ### Default branch related logic
           def default_branch
             @default_branch ||= repository.root_ref || default_branch_from_preferences
           end
@@ -277,6 +277,8 @@ module EE
         end
 
         class VulnerabilityStatistic < ActiveRecord::Base
+          extend LogUtils
+
           self.table_name = 'vulnerability_statistics'
 
           UPSERT_SQL = <<~SQL
@@ -294,7 +296,9 @@ module EE
             def update_latest_pipeline_ids_for(projects)
               upsert_tuples = projects.map(&:stats_tuple).compact
 
-              run_upsert(upsert_tuples) if upsert_tuples.present?
+              return log_info(message: 'No projects to update') unless upsert_tuples.present?
+
+              run_upsert(upsert_tuples)
             end
 
             private
@@ -303,12 +307,20 @@ module EE
               upsert_sql = format(UPSERT_SQL, insert_tuples: tuples.join(', '))
 
               connection.execute(upsert_sql)
+              log_info(message: 'Update query has been executed')
             end
           end
         end
 
+        include LogUtils
+
+        override :perform
         def perform(start_id, end_id)
+          log_info(message: 'Migration started', start_id: start_id, end_id: end_id)
+
           projects = Project.by_range(start_id, end_id)
+
+          log_info(message: 'Projects fetched', count: projects.length)
 
           VulnerabilityStatistic.update_latest_pipeline_ids_for(projects)
         end
