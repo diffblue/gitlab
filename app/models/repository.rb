@@ -939,17 +939,7 @@ class Repository
   end
 
   def fetch_as_mirror(url, forced: false, refmap: :all_refs, remote_name: nil, prune: true)
-    return fetch_remote(remote_name, url: url, refmap: refmap, forced: forced, prune: prune) if Feature.enabled?(:fetch_remote_params, project, default_enabled: :yaml)
-
-    unless remote_name
-      remote_name = "tmp-#{SecureRandom.hex}"
-      tmp_remote_name = true
-    end
-
-    add_remote(remote_name, url, mirror_refmap: refmap)
-    fetch_remote(remote_name, forced: forced, prune: prune)
-  ensure
-    async_remove_remote(remote_name) if tmp_remote_name
+    fetch_remote(remote_name, url: url, refmap: refmap, forced: forced, prune: prune)
   end
 
   def async_remove_remote(remote_name)

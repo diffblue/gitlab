@@ -52,35 +52,14 @@ RSpec.describe Repository do
   describe '#fetch_upstream' do
     let(:url) { "http://example.com" }
 
-    context 'when :fetch_remote_params is enabled' do
-      it 'fetches the URL without creating a remote' do
-        expect(repository).not_to receive(:add_remote)
-        expect(repository)
-          .to receive(:fetch_remote)
-          .with(described_class::MIRROR_REMOTE, url: url, refmap: ['+refs/heads/*:refs/remotes/upstream/*'], ssh_auth: nil, forced: true, check_tags_changed: true)
-          .and_return(nil)
+    it 'fetches the URL without creating a remote' do
+      expect(repository).not_to receive(:add_remote)
+      expect(repository)
+        .to receive(:fetch_remote)
+        .with(described_class::MIRROR_REMOTE, url: url, refmap: ['+refs/heads/*:refs/remotes/upstream/*'], ssh_auth: nil, forced: true, check_tags_changed: true)
+        .and_return(nil)
 
-        repository.fetch_upstream(url, forced: true, check_tags_changed: true)
-      end
-    end
-
-    context 'when :fetch_remote_params is disabled' do
-      before do
-        stub_feature_flags(fetch_remote_params: false)
-      end
-
-      it 'creates a remote and fetches it' do
-        expect(repository)
-          .to receive(:add_remote)
-          .with(described_class::MIRROR_REMOTE, url)
-          .and_return(nil)
-        expect(repository)
-          .to receive(:fetch_remote)
-          .with(described_class::MIRROR_REMOTE, ssh_auth: nil, forced: true, check_tags_changed: true)
-          .and_return(nil)
-
-        repository.fetch_upstream(url, forced: true, check_tags_changed: true)
-      end
+      repository.fetch_upstream(url, forced: true, check_tags_changed: true)
     end
   end
 
