@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
+import { accessValue } from '../accessors/linked_pipelines_accessors';
 
 export default {
   directives: {
@@ -8,6 +9,11 @@ export default {
   },
   components: {
     GlIcon,
+  },
+  inject: {
+    dataMethod: {
+      default: 'rest',
+    },
   },
   props: {
     triggeredBy: {
@@ -64,12 +70,18 @@ export default {
   },
   methods: {
     pipelineTooltipText(pipeline) {
-      return `${pipeline.project.name} - ${pipeline.details.status.label}`;
+      const { label } = accessValue(pipeline, this.dataMethod, 'detailedStatus');
+
+      return `${pipeline.project.name} - ${label}`;
     },
-    getStatusIcon(iconName) {
-      return `${iconName}_borderless`;
+    getStatusIcon(pipeline) {
+      const { icon } = accessValue(pipeline, this.dataMethod, 'detailedStatus');
+
+      return `${icon}_borderless`;
     },
-    triggerButtonClass(group) {
+    triggerButtonClass(pipeline) {
+      const { group } = accessValue(pipeline, this.dataMethod, 'detailedStatus');
+
       return `ci-status-icon-${group}`;
     },
   },
@@ -92,10 +104,10 @@ export default {
       :key="pipeline.id"
       v-gl-tooltip="{ title: pipelineTooltipText(pipeline) }"
       :href="pipeline.path"
-      :class="triggerButtonClass(pipeline.details.status.group)"
+      :class="triggerButtonClass(pipeline)"
       class="linked-pipeline-mini-item"
     >
-      <gl-icon :name="getStatusIcon(pipeline.details.status.icon)" />
+      <gl-icon :name="getStatusIcon(pipeline)" />
     </a>
 
     <a
