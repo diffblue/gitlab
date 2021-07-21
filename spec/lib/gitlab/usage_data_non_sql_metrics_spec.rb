@@ -6,10 +6,10 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
   let(:default_count) { Gitlab::UsageDataNonSqlMetrics::SQL_METRIC_DEFAULT }
 
   describe '#add_metric' do
-    let(:metric) { double(:metric, instrumentation: 1) }
+    let(:metric) { 'UuidMetric' }
 
     it 'computes the metric value for given metric' do
-      expect(described_class.add_metric(metric)).to eq(1)
+      expect(described_class.add_metric(metric)).to eq(Gitlab::CurrentSettings.uuid)
     end
   end
 

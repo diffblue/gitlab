@@ -400,7 +400,7 @@ For example, we have the following instrumentation class:
 You should add it to `usage_data.rb` as follows:
 
 ```ruby
-boards: add_metric(Gitlab::Usage::Metrics::Instrumentations::CountBoardsMetric.new(time_frame: 'all')),
+boards: add_metric('CountBoardsMetric', time_frame: 'all'),
 ```
 
 ### Why batch counting
