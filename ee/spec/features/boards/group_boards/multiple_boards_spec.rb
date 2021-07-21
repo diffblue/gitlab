@@ -3,10 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe 'Multiple Issue Boards', :js do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
-  let_it_be(:planning) { create(:group_label, group: group, name: 'Planning') }
-  let_it_be(:board) { create(:board, group: group) }
+  let!(:user) { create(:user) }
+  let!(:group) { create(:group, :public) }
+  let!(:planning) { create(:group_label, group: group, name: 'Planning') }
+  let!(:board) { create(:board, group: group, name: 'Board1') }
+  let!(:board2) { create(:board, group: group, name: 'Board2') }
 
   let(:parent) { group }
   let(:boards_path) { group_boards_path(group) }
@@ -53,12 +54,18 @@ RSpec.describe 'Multiple Issue Boards', :js do
     end
   end
 
-  context 'with multiple group issue boards enabled', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/334552' do
-    let!(:board2) { create(:board, group: group) }
-
+  context 'with multiple group issue boards enabled' do
     before do
       stub_licensed_features(multiple_group_issue_boards: true)
+    end
+
+    it_behaves_like 'multiple issue boards'
+  end
+
+  context 'when graphql_board_lists FF disabled' do
+    before do
       stub_feature_flags(graphql_board_lists: false)
+      stub_licensed_features(multiple_group_issue_boards: true)
     end
 
     it_behaves_like 'multiple issue boards'

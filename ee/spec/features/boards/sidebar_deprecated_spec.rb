@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# To be removed as :graphql_board_lists defaults on
+# To be removed as :graphql_board_lists gets removed
 # https://gitlab.com/gitlab-org/gitlab/-/issues/248908
 
 require 'spec_helper'
