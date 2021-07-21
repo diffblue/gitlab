@@ -325,7 +325,7 @@ log data to build up in `pg_xlog`. Removing the unused slots can reduce the amou
 Slots where `active` is `f` are not active.
 
 - When this slot should be active, because you have a **secondary** node configured using that slot,
-  log in to that **secondary** node and check the PostgreSQL logs
+  log in to that **secondary** node and check the [PostgreSQL logs](../../logs.md#postgresql-logs)
   to view why the replication is not running.
 
 - If you are no longer using the slot (for example, you no longer have Geo enabled), you can remove it with in the
@@ -522,7 +522,7 @@ to start again from scratch, there are a few steps that can help you:
    gitlab-ctl stop geo-logcursor
    ```
 
-   You can watch the Sidekiq logs to know when Sidekiq jobs processing has finished:
+   You can watch the [Sidekiq logs](../../logs.md#sidekiq-logs) to know when Sidekiq jobs processing has finished:
 
    ```shell
    gitlab-ctl tail sidekiq
