@@ -7,6 +7,8 @@
 class ElasticFullIndexWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
+  data_consistency :always
+
   sidekiq_options retry: 2
   feature_category :global_search
 

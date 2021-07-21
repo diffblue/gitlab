@@ -5,6 +5,8 @@ module Dora
     class RefreshWorker
       include ApplicationWorker
 
+      data_consistency :always
+
       sidekiq_options retry: 3
 
       deduplicate :until_executing

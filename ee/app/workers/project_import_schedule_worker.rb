@@ -4,6 +4,8 @@ class ProjectImportScheduleWorker
   ImportStateNotFound = Class.new(StandardError)
 
   include ApplicationWorker
+
+  data_consistency :always
   prepend WaitableWorker
 
   idempotent!

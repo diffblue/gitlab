@@ -4,6 +4,8 @@ module Geo
   class VerificationBatchWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
     include GeoQueue
     include LimitedCapacity::Worker

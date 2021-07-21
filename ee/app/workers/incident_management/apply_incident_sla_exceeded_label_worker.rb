@@ -4,6 +4,8 @@ module IncidentManagement
   class ApplyIncidentSlaExceededLabelWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
 
     idempotent!

@@ -4,6 +4,8 @@ module Geo
   # Fail sync for records which started syncing a long time ago
   class SyncTimeoutCronWorker
     include ApplicationWorker
+
+    data_consistency :always
     include ::Gitlab::Geo::LogHelpers
 
     # This worker does not perform work scoped to a context

@@ -5,6 +5,8 @@
 class ScanSecurityReportSecretsWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
 
+  data_consistency :always
+
   queue_namespace :security_scans
   feature_category :secret_detection
 

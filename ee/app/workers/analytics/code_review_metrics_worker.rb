@@ -4,6 +4,8 @@ module Analytics
   class CodeReviewMetricsWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
 
     feature_category :code_analytics

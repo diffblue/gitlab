@@ -3,6 +3,8 @@
 module StatusPage
   class PublishWorker
     include ApplicationWorker
+
+    data_consistency :always
     include Gitlab::Utils::StrongMemoize
 
     sidekiq_options retry: 5

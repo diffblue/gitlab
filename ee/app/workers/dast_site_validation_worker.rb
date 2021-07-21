@@ -3,6 +3,8 @@
 class DastSiteValidationWorker
   include ApplicationWorker
 
+  data_consistency :always
+
   idempotent!
 
   sidekiq_options retry: 3, dead: false

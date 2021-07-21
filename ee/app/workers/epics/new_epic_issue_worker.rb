@@ -4,6 +4,8 @@ module Epics
   class NewEpicIssueWorker # rubocop:disable Scalability/IdempotentWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     feature_category :epics
 
     def perform(params)

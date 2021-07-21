@@ -4,6 +4,8 @@ module IncidentManagement
   module PendingEscalations
     class ScheduleCheckCronWorker
       include ApplicationWorker
+
+      data_consistency :always
       # This worker does not perform work scoped to a context
       include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 

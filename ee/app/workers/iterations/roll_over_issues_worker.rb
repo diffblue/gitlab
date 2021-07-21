@@ -4,6 +4,8 @@ module Iterations
   class RollOverIssuesWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     BATCH_SIZE = 1000
 
     idempotent!

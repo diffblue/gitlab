@@ -4,6 +4,8 @@ class RepositoryUpdateMirrorWorker # rubocop:disable Scalability/IdempotentWorke
   UpdateError = Class.new(StandardError)
 
   include ApplicationWorker
+
+  data_consistency :always
   include Gitlab::ShellAdapter
   include ProjectStartImport
 

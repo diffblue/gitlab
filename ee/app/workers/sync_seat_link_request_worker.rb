@@ -3,6 +3,8 @@
 class SyncSeatLinkRequestWorker
   include ApplicationWorker
 
+  data_consistency :always
+
   feature_category :license
 
   # Retry for up to approximately 6 days

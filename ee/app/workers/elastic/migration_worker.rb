@@ -4,6 +4,8 @@ module Elastic
   class MigrationWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
     include Gitlab::ExclusiveLeaseHelpers
     # There is no onward scheduling and this cron handles work from across the

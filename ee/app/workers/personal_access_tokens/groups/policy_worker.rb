@@ -5,6 +5,8 @@ module PersonalAccessTokens
     class PolicyWorker
       include ApplicationWorker
 
+      data_consistency :always
+
       sidekiq_options retry: 3
 
       idempotent!

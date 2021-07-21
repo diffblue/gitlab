@@ -4,6 +4,8 @@ module Security
   class AutoFixWorker
     include ApplicationWorker
 
+    data_consistency :always
+
     sidekiq_options retry: 3
 
     feature_category :vulnerability_management

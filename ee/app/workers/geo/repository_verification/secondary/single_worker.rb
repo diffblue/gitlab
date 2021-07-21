@@ -5,6 +5,8 @@ module Geo
     module Secondary
       class SingleWorker # rubocop:disable Scalability/IdempotentWorker
         include ApplicationWorker
+
+        data_consistency :always
         include GeoQueue
         include ExclusiveLeaseGuard
         include Gitlab::Geo::ProjectLogHelpers
