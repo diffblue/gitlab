@@ -29969,6 +29969,9 @@ msgstr ""
 msgid "Setting"
 msgstr ""
 
+msgid "Setting enforced"
+msgstr ""
+
 msgid "Setting this to 0 means using the system default timeout value."
 msgstr ""
 
