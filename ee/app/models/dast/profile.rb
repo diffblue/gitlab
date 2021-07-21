@@ -13,6 +13,8 @@ module Dast
     has_many :dast_profiles_pipelines, class_name: 'Dast::ProfilesPipeline', foreign_key: :dast_profile_id, inverse_of: :dast_profile
     has_many :ci_pipelines, class_name: 'Ci::Pipeline', through: :dast_profiles_pipelines
 
+    has_many :dast_profile_schedules, class_name: 'Dast::ProfileSchedule', foreign_key: :dast_profile_id, inverse_of: :dast_profile
+
     validates :description, length: { maximum: 255 }
     validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
     validates :branch_name, length: { maximum: 255 }

@@ -50,6 +50,15 @@
   :idempotent: true
   :tags:
   - :exclude_from_kubernetes
+- :name: cronjob:app_sec_dast_profile_schedule
+  :worker_name: AppSec::Dast::ProfileScheduleWorker
+  :feature_category: :dynamic_application_security_testing
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:clear_shared_runners_minutes
   :worker_name: ClearSharedRunnersMinutesWorker
   :feature_category: :continuous_integration
