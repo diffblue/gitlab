@@ -11,7 +11,6 @@ module EE
       def build_view_model(builder:, project:, group:)
         super
 
-        # These come from `ee/app/views/dashboard/_nav_link_list.html.haml`
         if dashboard_nav_link?(:environments)
           builder.add_primary_menu_item(
             id: 'environments',
@@ -42,7 +41,6 @@ module EE
           )
         end
 
-        # These come from `ee/app/views/layouts/nav/_geo_primary_node_url.html.haml`
         if ::Gitlab::Geo.secondary? && ::Gitlab::Geo.primary_node_configured?
           builder.add_secondary_menu_item(
             id: 'geo',

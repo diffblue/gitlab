@@ -62,7 +62,6 @@ module QA
 
       module Main
         autoload :Banner, 'qa/ee/page/main/banner'
-        autoload :Menu, 'qa/ee/page/main/menu'
       end
 
       module Registration

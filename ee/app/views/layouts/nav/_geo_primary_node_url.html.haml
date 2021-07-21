@@ -1,8 +1,0 @@
--# WARNING! This file is slated to be removed along with the `combined_menu`
--# feature flag. The logic here will be migrated to an upcoming `top_nav_helper`.
--# Please see [this MR][1] for more context.
--# [1]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56587
-- if Gitlab::Geo.secondary? && Gitlab::Geo.primary_node_configured?
-  %li
-    = link_to Gitlab::Geo.primary_node.url, title: 'Go to primary node', data: {toggle: 'tooltip', placement: 'bottom', container: 'body'} do
-      = sprite_icon('location-dot', size: 18)
