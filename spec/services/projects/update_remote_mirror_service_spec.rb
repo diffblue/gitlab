@@ -24,12 +24,6 @@ RSpec.describe Projects::UpdateRemoteMirrorService do
         .and_return(double(divergent_refs: []))
     end
 
-    it 'does not ensure the remote exists' do
-      expect(remote_mirror).not_to receive(:ensure_remote!)
-
-      execute!
-    end
-
     it 'does not fetch the remote repository' do
       # See https://gitlab.com/gitlab-org/gitaly/-/issues/2670
       expect(project.repository).not_to receive(:fetch_remote)

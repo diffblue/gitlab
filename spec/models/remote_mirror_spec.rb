@@ -388,30 +388,6 @@ RSpec.describe RemoteMirror, :mailer do
     end
   end
 
-  describe '#ensure_remote!' do
-    let(:remote_mirror) { create(:project, :repository, :remote_mirror).remote_mirrors.first }
-    let(:project) { remote_mirror.project }
-    let(:repository) { project.repository }
-
-    it 'adds a remote multiple times with no errors' do
-      expect(repository).to receive(:add_remote).with(remote_mirror.remote_name, remote_mirror.url).twice.and_call_original
-
-      2.times do
-        remote_mirror.ensure_remote!
-      end
-    end
-
-    context 'SSH public-key authentication' do
-      it 'omits the password from the URL' do
-        remote_mirror.update!(auth_method: 'ssh_public_key', url: 'ssh://git:pass@example.com')
-
-        expect(repository).to receive(:add_remote).with(remote_mirror.remote_name, 'ssh://git@example.com')
-
-        remote_mirror.ensure_remote!
-      end
-    end
-  end
-
   describe '#url=' do
     let(:remote_mirror) { create(:project, :repository, :remote_mirror).remote_mirrors.first }
 

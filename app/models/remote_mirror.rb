@@ -227,15 +227,6 @@ class RemoteMirror < ApplicationRecord
     Gitlab::UrlSanitizer.new(read_attribute(:url)).full_url
   end
 
-  def ensure_remote!
-    return unless project
-    return unless remote_name && remote_url
-
-    # If this fails or the remote already exists, we won't know due to
-    # https://gitlab.com/gitlab-org/gitaly/issues/1317
-    project.repository.add_remote(remote_name, remote_url)
-  end
-
   def after_sent_notification
     update_column(:error_notification_sent, true)
   end
