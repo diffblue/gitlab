@@ -942,21 +942,6 @@ class Repository
     fetch_remote(remote_name, url: url, refmap: refmap, forced: forced, prune: prune)
   end
 
-  def async_remove_remote(remote_name)
-    return unless remote_name
-    return unless project
-
-    job_id = RepositoryRemoveRemoteWorker.perform_async(project.id, remote_name)
-
-    if job_id
-      Gitlab::AppLogger.info("Remove remote job scheduled for #{project.id} with remote name: #{remote_name} job ID #{job_id}.")
-    else
-      Gitlab::AppLogger.info("Remove remote job failed to create for #{project.id} with remote name #{remote_name}.")
-    end
-
-    job_id
-  end
-
   def fetch_source_branch!(source_repository, source_branch, local_ref)
     raw_repository.fetch_source_branch!(source_repository.raw_repository, source_branch, local_ref)
   end

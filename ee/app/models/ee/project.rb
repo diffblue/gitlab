@@ -29,9 +29,6 @@ module EE
       before_save :set_override_pull_mirror_available, unless: -> { ::Gitlab::CurrentSettings.mirror_available }
       before_save :set_next_execution_timestamp_to_now, if: ->(project) { project.mirror? && project.mirror_changed? && project.import_state }
 
-      after_update :remove_mirror_repository_reference,
-        if: ->(project) { project.mirror? && project.import_url_updated? }
-
       after_create :create_security_setting, unless: :security_setting
 
       belongs_to :mirror_user, class_name: 'User'
@@ -567,12 +564,6 @@ module EE
     def import_url_updated?
       # check if import_url has been updated and it's not just the first assignment
       saved_change_to_import_url? && saved_changes['import_url'].first
-    end
-
-    def remove_mirror_repository_reference
-      run_after_commit do
-        repository.async_remove_remote(::Repository::MIRROR_REMOTE)
-      end
     end
 
     def username_only_import_url
