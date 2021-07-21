@@ -180,8 +180,8 @@ RSpec.describe Registrations::GroupsController do
                 expect(controller).to receive(:record_experiment_conversion_event).with(:trial_onboarding_issues)
               end
 
-              context 'with separate invite page' do
-                it { is_expected.to redirect_to(new_users_sign_up_group_invite_path(group_id: group.id, trial: false, trial_onboarding_flow: true)) }
+              context 'with redirection to projects page' do
+                it { is_expected.to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false, trial_onboarding_flow: true)) }
               end
             end
 
@@ -270,8 +270,8 @@ RSpec.describe Registrations::GroupsController do
                     end
                   end
 
-                  context 'with separate invite page' do
-                    it { is_expected.to redirect_to(new_users_sign_up_group_invite_path(group_id: group.id, trial: true)) }
+                  context 'with redirection to projects page' do
+                    it { is_expected.to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: true)) }
                   end
 
                   it 'tracks for the force_company_trial experiment', :experiment do
@@ -302,12 +302,12 @@ RSpec.describe Registrations::GroupsController do
               context 'when user chooses no trial' do
                 let_it_be(:trial_form_params) { { trial: 'false' } }
 
-                it 'redirects user to a separate invite page' do
+                it 'redirects user to projects page' do
                   expect_next_instance_of(Groups::CreateService) do |service|
                     expect(service).to receive(:execute).and_return(group)
                   end
 
-                  expect(subject).to redirect_to(new_users_sign_up_group_invite_path(group_id: group.id, trial: false))
+                  expect(subject).to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false))
                 end
 
                 it 'does not call trial creation methods' do

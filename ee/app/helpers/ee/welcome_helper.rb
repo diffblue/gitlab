@@ -24,10 +24,6 @@ module EE
       params[:trial] == 'true'
     end
 
-    def already_showed_trial_activation?
-      params[:hide_trial_activation_banner] == 'true'
-    end
-
     def in_oauth_flow?
       redirect_path&.starts_with?(oauth_authorization_path)
     end

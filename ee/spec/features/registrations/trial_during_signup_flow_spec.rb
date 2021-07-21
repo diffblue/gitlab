@@ -37,7 +37,7 @@ RSpec.describe 'User sees new onboarding flow', :js do
     click_on 'Create group'
 
     expect(page).not_to have_content('Congratulations, your free trial is activated.')
-    expect(page).to have_content('Invite your teammates')
+    expect(page).to have_content('Create/import your first project')
   end
 
   it 'shows the expected behavior with trial chosen' do
@@ -83,6 +83,6 @@ RSpec.describe 'User sees new onboarding flow', :js do
     click_on 'Create group'
 
     expect(page).to have_content('Congratulations, your free trial is activated.')
-    expect(page).to have_content('Invite your teammates')
+    expect(page).to have_content('Create/import your first project')
   end
 end
