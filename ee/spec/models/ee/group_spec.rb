@@ -1491,6 +1491,56 @@ RSpec.describe Group do
     end
   end
 
+  describe '#user_cap_reached?' do
+    let(:new_user_signups_cap) { nil }
+
+    before do
+      allow(group.namespace_settings).to receive(:new_user_signups_cap).and_return(new_user_signups_cap)
+    end
+
+    subject(:user_cap_reached_for_group?) { group.user_cap_reached? }
+
+    context 'when the :saas_user_caps feature flag is not enabled' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the :saas_user_caps feature flag is enabled' do
+      before do
+        stub_feature_flags(saas_user_caps: true)
+      end
+
+      context 'when no user cap has been set' do
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when a user cap has been set' do
+        let(:new_user_signups_cap) { 100 }
+
+        before do
+          allow(group).to receive(:billable_members_count).and_return(billable_members_count)
+        end
+
+        context 'when this cap is higher than the number of billable members' do
+          let(:billable_members_count) { new_user_signups_cap - 10 }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when this cap is the same as the number of billable members' do
+          let(:billable_members_count) { new_user_signups_cap }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when this cap is lower than the number of billable members' do
+          let(:billable_members_count) { new_user_signups_cap + 10 }
+
+          it { is_expected.to be_truthy }
+        end
+      end
+    end
+  end
+
   it_behaves_like 'can move repository storage' do
     let_it_be(:container) { create(:group, :wiki_repo) }
 
