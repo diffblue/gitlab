@@ -70,7 +70,7 @@ exports[`ee/BoardContentSidebar matches the snapshot 1`] = `
   />
    
   <boardsidebarlabelsselect-stub
-    class="labels"
+    class="block labels"
   />
    
   <sidebarweightwidget-stub
