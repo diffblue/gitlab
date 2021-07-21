@@ -27,17 +27,35 @@ RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
       allow(project).to receive(:default_branch).and_return(default_branch)
     end
 
-    describe 'dast' do
-      let_it_be(:build_name) { 'dast' }
+    shared_examples 'an offline image download job' do
+      let(:build) { pipeline.builds.find_by(name: build_name) }
 
-      it 'creates a dast job' do
+      it 'creates the job' do
         expect(build_names).to include(build_name)
       end
 
       it 'sets SECURE_BINARIES_ANALYZER_VERSION to the correct version' do
-        build = pipeline.builds.find_by(name: build_name)
+        expect(build.variables.to_hash).to include('SECURE_BINARIES_ANALYZER_VERSION' => String(version))
+      end
+    end
 
-        expect(build.variables.to_hash).to include('SECURE_BINARIES_ANALYZER_VERSION' => '2')
+    describe 'dast' do
+      let_it_be(:build_name) { 'dast' }
+      let_it_be(:version) { 2 }
+
+      it_behaves_like 'an offline image download job'
+    end
+
+    describe 'dast-runner-validation' do
+      let_it_be(:build_name) { 'dast-runner-validation' }
+      let_it_be(:version) { 1 }
+
+      it_behaves_like 'an offline image download job' do
+        it 'sets SECURE_BINARIES_IMAGE explicitly' do
+          image = 'registry.gitlab.com/security-products/${CI_JOB_NAME}:${SECURE_BINARIES_ANALYZER_VERSION}'
+
+          expect(build.variables.to_hash).to include('SECURE_BINARIES_IMAGE' => image)
+        end
       end
     end
   end
