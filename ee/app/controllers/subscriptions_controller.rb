@@ -69,6 +69,8 @@ class SubscriptionsController < ApplicationController
                             edit_subscriptions_group_path(group.path, plan_id: plan_id, quantity: quantity, new_user: params[:new_user])
                           end
 
+      experiment(:force_company_trial, user: current_user).track(:create_subscription, namespace: group, user: current_user)
+
       response[:data] = { location: redirect_location }
     end
 

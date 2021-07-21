@@ -62,6 +62,14 @@ module EE
           helpers.signup_onboarding_enabled?
       end
 
+      override :trial_params
+      def trial_params
+        experiment(:force_company_trial, user: current_user) do |e|
+          e.try { { trial: true } }
+          e.run
+        end
+      end
+
       def authorized_for_trial_onboarding!
         access_denied! unless can?(current_user, :owner_access, learn_gitlab_project)
       end

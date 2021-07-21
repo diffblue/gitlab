@@ -229,6 +229,16 @@ RSpec.describe Registrations::WelcomeController do
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
           end
 
+          context 'and force_company_trial experiment is candidate' do
+            let(:setup_for_company) { 'true' }
+
+            before do
+              stub_experiments(force_company_trial: :candidate)
+            end
+
+            it { is_expected.to redirect_to new_users_sign_up_group_path(trial: true) }
+          end
+
           it { is_expected.to redirect_to new_users_sign_up_group_path }
 
           context 'when in subscription flow' do

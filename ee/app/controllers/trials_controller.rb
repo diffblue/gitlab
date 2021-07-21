@@ -45,6 +45,8 @@ class TrialsController < ApplicationController
       record_experiment_conversion_event(:remove_known_trial_form_fields)
       record_experiment_conversion_event(:trial_onboarding_issues)
 
+      experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
+
       if discover_group_security_flow?
         redirect_trial_user_to_feature_experiment_flow
       else

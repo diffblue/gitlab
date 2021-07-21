@@ -305,6 +305,12 @@ RSpec.describe SubscriptionsController do
 
             expect(response.body).to eq({ location: "/#{selected_group.path}?plan_id=#{plan_id}&purchased_quantity=#{quantity}" }.to_json)
           end
+
+          it 'tracks for the force_company_trial experiment', :experiment do
+            expect(experiment(:force_company_trial)).to track(:create_subscription, namespace: selected_group, user: user).with_context(user: user).on_next_instance
+
+            subject
+          end
         end
 
         context 'when the selected group is ineligible for a new subscription' do

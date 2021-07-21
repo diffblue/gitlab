@@ -273,6 +273,16 @@ RSpec.describe Registrations::GroupsController do
                   context 'with separate invite page' do
                     it { is_expected.to redirect_to(new_users_sign_up_group_invite_path(group_id: group.id, trial: true)) }
                   end
+
+                  it 'tracks for the force_company_trial experiment', :experiment do
+                    wrapped_experiment(experiment(:force_company_trial)) do |e|
+                      expect(e.context.value).to include(user: user)
+                      expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group), user: user)
+                      expect(e).to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user, label: 'registrations_groups_controller')
+                    end
+
+                    subject
+                  end
                 end
 
                 context 'when failing to create a lead and apply trial' do
@@ -303,6 +313,16 @@ RSpec.describe Registrations::GroupsController do
                 it 'does not call trial creation methods' do
                   expect(controller).not_to receive(:create_lead)
                   expect(controller).not_to receive(:apply_trial)
+
+                  subject
+                end
+
+                it 'selectivly tracks for the force_company_trial experiment', :experiment do
+                  wrapped_experiment(experiment(:force_company_trial)) do |e|
+                    expect(e.context.value).to include(user: user)
+                    expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
+                    expect(e).not_to receive(:track).with(:create_trial, namespace: an_instance_of(Group))
+                  end
 
                   subject
                 end

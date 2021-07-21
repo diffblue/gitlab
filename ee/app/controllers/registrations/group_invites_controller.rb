@@ -15,6 +15,8 @@ module Registrations
     def create
       Members::CreateService.new(current_user, invite_params).execute
 
+      experiment(:force_company_trial, user: current_user).track(:create_invite, namespace: group, user: current_user)
+
       redirect_to new_users_sign_up_project_path(namespace_id: group.id,
                                                  trial: helpers.in_trial_during_signup_flow?,
                                                  trial_onboarding_flow: helpers.in_trial_onboarding_flow?,
