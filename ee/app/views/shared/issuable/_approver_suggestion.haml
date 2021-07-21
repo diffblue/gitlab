@@ -16,9 +16,4 @@
   'eligible_approvers_docs_path': help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
   'project_settings_path': presenter.api_project_approval_settings_path } }
   = sprite_icon('spinner', size: 24, css_class: 'gl-spinner')
-- if can_update_approvers && show_code_owner_tip && Feature.disabled?(:mr_collapsed_approval_rules, @project, default_enabled: :yaml)
-  .form-text.text-muted
-    = _('Tip: add a')
-    = link_to 'CODEOWNERS', help_page_path('user/project/code_owners'), target: '_blank', tabindex: -1
-    = _('to automatically add approvers based on file paths and file types.')
 = render 'projects/merge_requests/code_owner_approval_rules', merge_request: @mr_presenter
