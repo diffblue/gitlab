@@ -33,8 +33,8 @@ RSpec.describe Namespaces::InProductMarketingEmailsService, '#execute' do
     context 'on a trial' do
       let(:group) { create(:group_with_plan, trial_ends_on: frozen_time + 10.days) }
 
-      it 'sends an email' do
-        expect(Notify).to have_received(:in_product_marketing_email)
+      it 'does not send an email' do
+        expect(Notify).not_to have_received(:in_product_marketing_email)
       end
     end
 
