@@ -19,7 +19,6 @@ module Security
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
 
-    validates :project_fingerprint, presence: true, length: { maximum: 40 }
     validates :uuid, presence: true
 
     scope :by_uuid, -> (uuids) { where(uuid: uuids) }
