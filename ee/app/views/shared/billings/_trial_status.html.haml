@@ -4,7 +4,7 @@
 - if show_start_free_trial_messages?(namespace)
   = html_escape(s_("BillingPlans|Learn more about each plan by reading our %{faq_link}, or start a free 30-day trial of GitLab.com Ultimate.")) % { faq_link: faq_link.html_safe }
 - elsif namespace.trial_active?
-  = html_escape(s_("BillingPlans|Your GitLab.com %{plan} trial will %{strong_open}expire after %{expiration_date}%{strong_close}. You can retain access to the %{plan} features by upgrading below.")) % { plan: namespace.gitlab_subscription&.plan_title, expiration_date: namespace.trial_ends_on, strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
+  = html_escape(s_("BillingPlans|Your GitLab.com %{plan} trial will %{strong_open}expire after %{expiration_date}%{strong_close}. You can retain access to the %{plan} features by upgrading below.")) % { plan: namespace.gitlab_subscription&.plan_title&.remove(' Trial'), expiration_date: namespace.trial_ends_on, strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }
 - elsif namespace.trial_expired? && namespace.free_plan?
   = s_("BillingPlans|Your GitLab.com trial expired on %{expiration_date}. You can restore access to the features at any time by upgrading below.") % { expiration_date: namespace.trial_ends_on }
 - else
