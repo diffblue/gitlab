@@ -474,6 +474,13 @@ module EE
       ::Feature.enabled?(:iteration_cadences, self, default_enabled: :yaml)
     end
 
+    def user_cap_reached?(requested_hosted_plan = nil)
+      return false unless ::Feature.enabled?(:saas_user_caps, self, default_enabled: :yaml)
+      return false unless new_user_signups_cap
+
+      new_user_signups_cap <= billable_members_count(requested_hosted_plan)
+    end
+
     private
 
     override :post_create_hook
