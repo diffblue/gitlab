@@ -28,12 +28,15 @@ export default {
   inheritAttrs: false,
   computed: {
     ...mapGetters(['isSidebarOpen', 'activeBoardItem']),
-    ...mapState(['sidebarType', 'fullPath', 'issuableType']),
+    ...mapState(['sidebarType', 'issuableType']),
     isIssuableSidebar() {
       return this.sidebarType === ISSUABLE;
     },
     showSidebar() {
       return this.isIssuableSidebar && this.isSidebarOpen;
+    },
+    fullPath() {
+      return this.activeBoardItem?.referencePath?.split('&')[0] || '';
     },
   },
   methods: {

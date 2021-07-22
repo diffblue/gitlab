@@ -87,8 +87,11 @@ describe('EpicBoardContentSidebar', () => {
     expect(wrapper.findComponent(GlDrawer).props('open')).toBe(true);
   });
 
-  it('renders SidebarTodoWidget', () => {
+  it('renders SidebarTodoWidget passing correct epic fullPath', () => {
     expect(wrapper.findComponent(SidebarTodoWidget).exists()).toBe(true);
+    expect(wrapper.findComponent(SidebarTodoWidget).props('fullPath')).toBe(
+      'gitlab-org/gitlab-subgroup',
+    );
   });
 
   it('renders BoardSidebarLabelsSelect', () => {
