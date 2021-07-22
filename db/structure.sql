@@ -11371,7 +11371,7 @@ CREATE TABLE ci_builds (
     coverage_regex character varying,
     auto_canceled_by_id integer,
     retried boolean,
-    stage_id integer,
+    stage_id_convert_to_bigint integer,
     protected boolean,
     failure_reason integer,
     scheduled_at timestamp with time zone,
@@ -11382,7 +11382,7 @@ CREATE TABLE ci_builds (
     processed boolean,
     scheduling_type smallint,
     id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
-    stage_id_convert_to_bigint bigint,
+    stage_id bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 );
 
