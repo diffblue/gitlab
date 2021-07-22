@@ -11,6 +11,6 @@ class RevertBackfillCiBuildTraceSectionsForBigintConversion < ActiveRecord::Migr
   end
 
   def down
-    backfill_conversion_of_integer_to_bigint TABLE, COLUMN, batch_size: 15000, sub_batch_size: 100, primary_key: COLUMN
+    # no-op
   end
 end
