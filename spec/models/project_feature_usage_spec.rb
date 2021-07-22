@@ -133,12 +133,9 @@ RSpec.describe ProjectFeatureUsage, type: :model do
 
       subject { project.feature_usage }
 
-      context 'database load balancing is configured' do
+      context 'database load balancing is configured', :db_load_balancing do
         before do
-          # Do not pollute AR for other tests, but rather simulate effect of configure_proxy.
-          allow(ActiveRecord::Base).to receive(:load_balancing_proxy=)
-          proxy = ::Gitlab::Database::LoadBalancing.configure_proxy
-          allow(ActiveRecord::Base).to receive(:connection).and_return(proxy)
+          allow(ActiveRecord::Base).to receive(:connection).and_return(::Gitlab::Database::LoadBalancing.proxy)
 
           ::Gitlab::Database::LoadBalancing::Session.clear_session
         end

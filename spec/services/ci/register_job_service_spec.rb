@@ -14,14 +14,11 @@ module Ci
     let!(:pending_job) { create(:ci_build, :pending, :queued, pipeline: pipeline) }
 
     describe '#execute' do
-      context 'checks database loadbalancing stickiness' do
+      context 'checks database loadbalancing stickiness', :db_load_balancing do
         subject { described_class.new(shared_runner).execute }
 
         before do
           project.update!(shared_runners_enabled: false)
-
-          allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
-          allow(Gitlab::Database::LoadBalancing).to receive(:enable?).and_return(true)
         end
 
         it 'result is valid if replica did caught-up' do

@@ -291,12 +291,7 @@ RSpec.describe Gitlab::SidekiqLogging::StructuredLogger do
         include_examples 'performs database queries'
       end
 
-      context 'when load balancing is enabled' do
-        before do
-          allow(Gitlab::Database::LoadBalancing).to receive(:enable?).and_return(true)
-          allow(ActiveRecord::Base).to receive(:load_balancing_proxy)
-        end
-
+      context 'when load balancing is enabled', :db_load_balancing do
         let(:db_config_name) { ::Gitlab::Database.db_config_name(ApplicationRecord.connection) }
 
         let(:expected_end_payload_with_db) do

@@ -364,7 +364,7 @@ RSpec.describe Gitlab::Database::LoadBalancing do
   # - In each test, we listen to the SQL queries (via sql.active_record
   # instrumentation) while triggering real queries from the defined model.
   # - We assert the desinations (replica/primary) of the queries in order.
-  describe 'LoadBalancing integration tests', :delete do
+  describe 'LoadBalancing integration tests', :db_load_balancing, :delete do
     before(:all) do
       ActiveRecord::Schema.define do
         create_table :load_balancing_test, force: true do |t|
@@ -379,30 +379,14 @@ RSpec.describe Gitlab::Database::LoadBalancing do
       end
     end
 
-    shared_context 'LoadBalancing setup' do
-      let(:development_db_config) { ActiveRecord::Base.configurations.configs_for(env_name: 'development').first.configuration_hash }
-      let(:hosts) { [development_db_config[:host]] }
-      let(:model) do
-        Class.new(ApplicationRecord) do
-          self.table_name = "load_balancing_test"
-        end
+    let(:model) do
+      Class.new(ApplicationRecord) do
+        self.table_name = "load_balancing_test"
       end
+    end
 
-      before do
-        # Preloading testing class
-        model.singleton_class.prepend ::Gitlab::Database::LoadBalancing::ActiveRecordProxy
-
-        # Setup load balancing
-        allow(ActiveRecord::Base).to receive(:load_balancing_proxy).and_return(
-          ::Gitlab::Database::LoadBalancing::ConnectionProxy.new(hosts)
-        )
-
-        original_db_config = Gitlab::Database.main.config
-        modified_db_config = original_db_config.merge(load_balancing: { hosts: hosts })
-        allow(Gitlab::Database.main).to receive(:config).and_return(modified_db_config)
-
-        ::Gitlab::Database::LoadBalancing::Session.clear_session
-      end
+    before do
+      model.singleton_class.prepend ::Gitlab::Database::LoadBalancing::ActiveRecordProxy
     end
 
     where(:queries, :include_transaction, :expected_results) do
@@ -713,8 +697,6 @@ RSpec.describe Gitlab::Database::LoadBalancing do
     end
 
     with_them do
-      include_context 'LoadBalancing setup'
-
       it 'redirects queries to the right roles' do
         roles = []
 
@@ -783,8 +765,6 @@ RSpec.describe Gitlab::Database::LoadBalancing do
       end
 
       with_them do
-        include_context 'LoadBalancing setup'
-
         it 'redirects queries to the right roles' do
           roles = []
 
@@ -803,8 +783,6 @@ RSpec.describe Gitlab::Database::LoadBalancing do
     end
 
     context 'a write inside a transaction inside fallback_to_replicas_for_ambiguous_queries block' do
-      include_context 'LoadBalancing setup'
-
       it 'raises an exception' do
         expect do
           ::Gitlab::Database::LoadBalancing::Session.current.fallback_to_replicas_for_ambiguous_queries do
