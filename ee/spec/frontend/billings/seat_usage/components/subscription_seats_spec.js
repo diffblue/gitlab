@@ -147,7 +147,7 @@ describe('Subscription Seats', () => {
 
     describe('table content', () => {
       it('renders the correct data', () => {
-        const serializedTable = findSerializedTable(wrapper.find(GlTable));
+        const serializedTable = findSerializedTable(findTable());
 
         expect(serializedTable).toMatchSnapshot();
       });
@@ -173,6 +173,29 @@ describe('Subscription Seats', () => {
         await findAllRemoveUserItems().at(2).trigger('click');
 
         expect(findErrorModal().text()).toContain(CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT);
+      });
+    });
+
+    describe('member badges', () => {
+      it('shows the correct badge based on membership_type', () => {
+        const avatarLinks = findTable().findAllComponents(GlAvatarLink);
+
+        expect(avatarLinks.length).toBe(4);
+
+        avatarLinks.wrappers.forEach((avatarLinkWrapper) => {
+          const currentMember = mockTableItems.find(
+            (item) => item.user.name === avatarLinkWrapper.attributes().alt,
+          );
+          const currentMembershipType = currentMember.user.membership_type;
+          const membershipTypesWithBadge = ['group_invite', 'project_invite'];
+
+          if (membershipTypesWithBadge.includes(currentMembershipType)) {
+            const badgeText = (
+              currentMembershipType.charAt(0).toUpperCase() + currentMembershipType.slice(1)
+            ).replace('_', ' ');
+            expect(avatarLinkWrapper.find(GlBadge).text()).toBe(badgeText);
+          }
+        });
       });
     });
   });

@@ -10,7 +10,7 @@ Array [
       "avatarLabeled": Object {
         "size": "32",
         "src": "path/to/img_administrator",
-        "text": "Administrator  @root",
+        "text": "Administrator   @root",
       },
       "avatarLink": Object {
         "alt": "Administrator",
@@ -26,7 +26,7 @@ Array [
       "avatarLabeled": Object {
         "size": "32",
         "src": "path/to/img_agustin_walker",
-        "text": "Agustin Walker  @lester.orn",
+        "text": "Agustin Walker   @lester.orn",
       },
       "avatarLink": Object {
         "alt": "Agustin Walker",
@@ -44,11 +44,29 @@ Array [
         "src": "path/to/img_joella_miller",
         "text": "Joella Miller  
                 Group invite
-               @era",
+                @era",
       },
       "avatarLink": Object {
         "alt": "Joella Miller",
         "href": "path/to/joella_miller",
+      },
+    },
+  },
+  Object {
+    "dropdownExists": true,
+    "email": "jdoe@email.com",
+    "tooltip": undefined,
+    "user": Object {
+      "avatarLabeled": Object {
+        "size": "32",
+        "src": "path/to/img_john_doe",
+        "text": "John Doe   
+                Project invite
+               @jdoe",
+      },
+      "avatarLink": Object {
+        "alt": "John Doe",
+        "href": "path/to/john_doe",
       },
     },
   },

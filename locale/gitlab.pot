@@ -5207,6 +5207,9 @@ msgstr ""
 msgid "Billing|Private"
 msgstr ""
 
+msgid "Billing|Project invite"
+msgstr ""
+
 msgid "Billing|Remove user %{username} from your subscription"
 msgstr ""
 

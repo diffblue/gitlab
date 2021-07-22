@@ -199,9 +199,20 @@ export default {
               :label="item.user.name"
               :sub-label="item.user.username"
             >
-              <template v-if="item.user.membership_type === 'group_invite'" #meta>
-                <gl-badge size="sm" variant="muted">
+              <template #meta>
+                <gl-badge
+                  v-if="item.user.membership_type === 'group_invite'"
+                  size="sm"
+                  variant="muted"
+                >
                   {{ s__('Billing|Group invite') }}
+                </gl-badge>
+                <gl-badge
+                  v-if="item.user.membership_type === 'project_invite'"
+                  size="sm"
+                  variant="muted"
+                >
+                  {{ s__('Billing|Project invite') }}
                 </gl-badge>
               </template>
             </gl-avatar-labeled>
