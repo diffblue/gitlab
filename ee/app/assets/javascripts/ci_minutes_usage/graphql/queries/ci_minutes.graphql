@@ -1,0 +1,14 @@
+query getCiMinutesUsage {
+  ciMinutesUsage {
+    nodes {
+      month
+      minutes
+      projects {
+        nodes {
+          name
+          minutes
+        }
+      }
+    }
+  }
+}
