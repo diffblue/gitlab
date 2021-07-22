@@ -6,6 +6,9 @@ RSpec.describe GroupPolicy do
   include AdminModeHelper
 
   include_context 'GroupPolicy context'
+  # Can't move to GroupPolicy context because auditor trait is not present
+  # outside of EE context and foss-impact will fail on this
+  let_it_be(:auditor) { create(:user, :auditor) }
 
   let(:epic_rules) do
     %i(read_epic create_epic admin_epic destroy_epic read_confidential_epic
@@ -842,6 +845,66 @@ RSpec.describe GroupPolicy do
         let(:current_user) { maintainer }
 
         it { is_expected.to be_disallowed(:change_prevent_group_forking) }
+      end
+    end
+  end
+
+  describe 'admin_vulnerability' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
+    context 'with guest' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+    end
+
+    context 'with reporter' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+    end
+
+    context 'with developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
+    end
+
+    context 'with maintainer' do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
+    end
+
+    context 'with owner' do
+      let(:current_user) { owner }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
+    end
+
+    context 'with auditor' do
+      let(:current_user) { auditor }
+
+      context "when auditor is not a group member" do
+        it { is_expected.to be_disallowed(:admin_vulnerability) }
+      end
+
+      context "when developer doesn't have developer-level access to a group" do
+        before do
+          group.add_reporter(auditor)
+        end
+
+        it { is_expected.to be_disallowed(:admin_vulnerability) }
+      end
+
+      context 'when auditor has developer-level access to a group' do
+        before do
+          group.add_developer(auditor)
+        end
+
+        it { is_expected.to be_allowed(:admin_vulnerability) }
       end
     end
   end

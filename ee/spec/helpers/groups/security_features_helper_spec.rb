@@ -154,20 +154,26 @@ RSpec.describe Groups::SecurityFeaturesHelper do
   end
 
   describe '#group_level_security_dashboard_data' do
+    subject { helper.group_level_security_dashboard_data(group) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(:user)
+      allow(helper).to receive(:can?).and_return(true)
+    end
+
     let(:expected_data) do
       {
         projects_endpoint: "http://localhost/api/v4/groups/#{group.id}/projects",
         group_full_path: group.full_path,
-        no_vulnerabilities_svg_path: '/images/illustrations/issues.svg',
-        empty_state_svg_path: '/images/illustrations/security-dashboard-empty-state.svg',
-        survey_request_svg_path: '/images/illustrations/security-dashboard_empty.svg',
-        dashboard_documentation: '/help/user/application_security/security_dashboard/index',
+        no_vulnerabilities_svg_path: helper.image_path('illustrations/issues.svg'),
+        empty_state_svg_path: helper.image_path('illustrations/security-dashboard-empty-state.svg'),
+        survey_request_svg_path: helper.image_path('illustrations/security-dashboard_empty.svg'),
+        dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
         vulnerabilities_export_endpoint: "/api/v4/security/groups/#{group.id}/vulnerability_exports",
-        scanners: '[]'
+        scanners: '[]',
+        can_admin_vulnerability: 'true'
       }
     end
-
-    subject { group_level_security_dashboard_data(group) }
 
     it { is_expected.to eq(expected_data) }
   end

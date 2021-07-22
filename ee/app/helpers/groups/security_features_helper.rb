@@ -46,7 +46,8 @@ module Groups::SecurityFeaturesHelper
       survey_request_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
       dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
       vulnerabilities_export_endpoint: expose_path(api_v4_security_groups_vulnerability_exports_path(id: group.id)),
-      scanners: VulnerabilityScanners::ListService.new(group).execute.to_json
+      scanners: VulnerabilityScanners::ListService.new(group).execute.to_json,
+      can_admin_vulnerability: can?(current_user, :admin_vulnerability, group).to_s
     }
   end
 end
