@@ -22378,9 +22378,6 @@ msgstr ""
 msgid "Not confidential"
 msgstr ""
 
-msgid "Not enough data"
-msgstr ""
-
 msgid "Not found."
 msgstr ""
 
