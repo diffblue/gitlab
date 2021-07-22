@@ -293,18 +293,6 @@ RSpec.describe ProjectsController do
         expect(project.reload.merge_pipelines_enabled).to be_truthy
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(merge_pipelines: false)
-        end
-
-        it 'does not update the attribute' do
-          request
-
-          expect(project.reload.merge_pipelines_enabled).to be_falsy
-        end
-      end
-
       context 'when license is not sufficient' do
         before do
           stub_licensed_features(merge_pipelines: false)
@@ -335,18 +323,6 @@ RSpec.describe ProjectsController do
         expect(project.merge_trains_enabled).to be_truthy
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(merge_trains: false)
-        end
-
-        it 'does not update the attribute' do
-          request
-
-          expect(project.merge_trains_enabled).to be_falsy
-        end
-      end
-
       context 'when license is not sufficient' do
         before do
           stub_licensed_features(merge_trains: false)
@@ -375,18 +351,6 @@ RSpec.describe ProjectsController do
         request
 
         expect(project.reload.auto_rollback_enabled).to be_truthy
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(auto_rollback: false)
-        end
-
-        it 'does not update the attribute' do
-          request
-
-          expect(project.reload.auto_rollback_enabled).to be_falsy
-        end
       end
 
       context 'when license is not sufficient' do
