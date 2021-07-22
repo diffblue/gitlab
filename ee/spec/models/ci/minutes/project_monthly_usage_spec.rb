@@ -22,7 +22,7 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
   end
 
   describe '.find_or_create_current' do
-    subject { described_class.find_or_create_current(project) }
+    subject { described_class.find_or_create_current(project_id: project.id) }
 
     shared_examples 'creates usage record' do
       it 'creates new record and resets minutes consumption' do

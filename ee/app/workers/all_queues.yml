@@ -800,6 +800,15 @@
   :weight: 1
   :idempotent:
   :tags: []
+- :name: pipeline_background:ci_minutes_update_project_and_namespace_usage
+  :worker_name: Ci::Minutes::UpdateProjectAndNamespaceUsageWorker
+  :feature_category: :continuous_integration
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: pipeline_background:ci_sync_reports_to_report_approval_rules
   :worker_name: Ci::SyncReportsToReportApprovalRulesWorker
   :feature_category: :continuous_integration

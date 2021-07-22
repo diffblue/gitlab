@@ -22,8 +22,8 @@ module Ci
       #
       # Here we will also do any recalculation of additional minutes based on the
       # previous month usage.
-      def self.find_or_create_current(namespace)
-        current_month.safe_find_or_create_by(namespace: namespace)
+      def self.find_or_create_current(namespace_id:)
+        current_month.safe_find_or_create_by(namespace_id: namespace_id)
       end
 
       def self.increase_usage(usage, amount)

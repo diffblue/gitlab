@@ -19,8 +19,8 @@ module Ci
       # since this will lazily create an entry if it doesn't exist.
       # For example, on the 1st of each month, when we update the usage for a project,
       # we will automatically generate new records and reset usage for the current month.
-      def self.find_or_create_current(project)
-        current_month.safe_find_or_create_by(project: project)
+      def self.find_or_create_current(project_id:)
+        current_month.safe_find_or_create_by(project_id: project_id)
       end
 
       def self.increase_usage(usage, amount)
