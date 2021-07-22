@@ -44,7 +44,7 @@ module QA
 
           Page::Project::Menu.perform(&:click_members)
           Page::Project::Members.perform do |members|
-            members.add_member(user.username)
+            members.add_member(user.username, 'Guest')
           end
         end
 
