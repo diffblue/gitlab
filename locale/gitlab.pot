@@ -29351,6 +29351,9 @@ msgstr ""
 msgid "Select a file from the left sidebar to begin editing. Afterwards, you'll be able to commit your changes."
 msgstr ""
 
+msgid "Select a framework that applies to this project. %{linkStart}How are these added?%{linkEnd}"
+msgstr ""
+
 msgid "Select a group to invite"
 msgstr ""
 
