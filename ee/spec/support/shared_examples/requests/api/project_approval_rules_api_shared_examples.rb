@@ -85,6 +85,18 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       end
     end
   end
+
+  context 'with vulnerabilities_allowed' do
+    let(:vulnerabilities_allowed) { 10 }
+
+    it 'returns 201 status' do
+      expect do
+        post api(url, current_user), params: params.merge({ vulnerabilities_allowed: vulnerabilities_allowed })
+      end.to change { project.approval_rules.count}.from(0).to(1)
+      expect(response).to have_gitlab_http_status(:created)
+      expect(project.approval_rules.first.vulnerabilities_allowed).to eql(vulnerabilities_allowed)
+    end
+  end
 end
 
 RSpec.shared_examples 'an API endpoint for updating project approval rule' do
@@ -148,6 +160,17 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       expect(approval_rule.groups).to be_empty
 
       expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    context 'with vulnerabilities_allowed' do
+      let(:vulnerabilities_allowed) { 10 }
+
+      it 'returns 200 status' do
+        expect do
+          put api(url, current_user), params: { vulnerabilities_allowed: vulnerabilities_allowed }
+        end.to change { approval_rule.reload.vulnerabilities_allowed }.from(0).to(vulnerabilities_allowed)
+        expect(response).to have_gitlab_http_status(:ok)
+      end
     end
   end
 

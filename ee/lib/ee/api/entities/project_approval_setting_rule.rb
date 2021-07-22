@@ -10,6 +10,7 @@ module EE
       class ProjectApprovalSettingRule < ProjectApprovalRule
         expose :approvers, using: ::API::Entities::UserBasic, override: true
         expose :scanners, override: true
+        expose :vulnerabilities_allowed, override: true
       end
     end
   end
