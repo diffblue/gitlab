@@ -13,8 +13,11 @@ import {
   usersOverSubscriptionTitle,
 } from '../constants';
 
-export const billableUsersURL = helpPagePath('licenses/self_managed/index');
-export const trueUpURL = 'https://about.gitlab.com/license-faq/';
+export const billableUsersURL = helpPagePath('subscriptions/self_managed/index', {
+  anchor: 'billable-users',
+});
+export const trueUpURL =
+  'https://about.gitlab.com/pricing/licensing-faq/#what-does-users-over-license-mean';
 
 export default {
   i18n: {
