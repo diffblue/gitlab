@@ -17924,6 +17924,7 @@ CREATE TABLE security_findings (
     deduplicated boolean DEFAULT false NOT NULL,
     "position" integer,
     uuid uuid,
+    overridden_uuid uuid,
     CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40))
 );
 
