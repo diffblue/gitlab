@@ -27,8 +27,7 @@ module EE
         feature_category :dependency_scanning, [:dependency_scanning_reports]
         feature_category :fuzz_testing, [:coverage_fuzzing_reports, :api_fuzzing_reports]
         feature_category :license_compliance, [:license_scanning_reports]
-        feature_category :static_application_security_testing, [:sast_reports]
-        feature_category :secret_detection, [:secret_detection_reports]
+        feature_category :vulnerability_management, [:sast_reports, :secret_detection_reports]
         feature_category :dynamic_application_security_testing, [:dast_reports]
         feature_category :metrics, [:metrics_reports]
       end
