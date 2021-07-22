@@ -53,7 +53,7 @@ module EE
 
         override :create_member
         def create_member(current_user, user, source, params)
-          member = source.add_user(user, params[:access_level], current_user: current_user, expires_at: params[:expires_at])
+          member = super
 
           return false unless member
 
