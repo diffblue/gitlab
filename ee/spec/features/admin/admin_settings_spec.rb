@@ -313,15 +313,43 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
     end
 
-    it 'changes the user cap to unlimited' do
-      visit general_admin_application_settings_path
+    context 'with a user cap assigned' do
+      before do
+        current_settings.update_attribute(:new_user_signups_cap, 5)
+      end
 
-      page.within('#js-signup-settings') do
-        fill_in 'application_setting[new_user_signups_cap]', with: nil
+      it 'changes the user cap to unlimited' do
+        visit general_admin_application_settings_path
 
-        click_button 'Save changes'
+        page.within('#js-signup-settings') do
+          fill_in 'application_setting[new_user_signups_cap]', with: nil
 
-        expect(current_settings.new_user_signups_cap).to be_nil
+          click_button 'Save changes'
+
+          expect(current_settings.new_user_signups_cap).to be_nil
+        end
+      end
+
+      context 'with pending users' do
+        before do
+          create(:user, :blocked_pending_approval)
+        end
+
+        it 'displays a modal confirmation when removing the cap' do
+          visit general_admin_application_settings_path
+
+          page.within('#js-signup-settings') do
+            fill_in 'application_setting[new_user_signups_cap]', with: nil
+
+            click_button 'Save changes'
+          end
+
+          page.within('.modal') do
+            click_button 'Approve 1 user'
+          end
+
+          expect(current_settings.new_user_signups_cap).to be_nil
+        end
       end
     end
   end
