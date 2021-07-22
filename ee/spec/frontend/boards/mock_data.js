@@ -246,6 +246,7 @@ export const mockFormattedBoardEpic = {
   id: 41,
   iid: '1',
   title: 'Epic title',
+  referencePath: 'gitlab-org/gitlab-subgroup&41',
   state: 'opened',
   webUrl: '/groups/gitlab-org/-/epics/1',
   group: { fullPath: 'gitlab-org' },
