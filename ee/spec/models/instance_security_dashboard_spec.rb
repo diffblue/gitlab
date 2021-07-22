@@ -21,12 +21,6 @@ RSpec.describe InstanceSecurityDashboard do
 
   subject { described_class.new(user, project_ids: project_ids) }
 
-  describe '#all_pipelines' do
-    it 'returns pipelines for the projects with security reports' do
-      expect(subject.all_pipelines).to contain_exactly(pipeline1)
-    end
-  end
-
   describe '#project_ids_with_security_reports' do
     context 'when given project IDs' do
       it "returns the project IDs that are also on the user's security dashboard" do

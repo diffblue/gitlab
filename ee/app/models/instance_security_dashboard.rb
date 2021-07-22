@@ -10,10 +10,6 @@ class InstanceSecurityDashboard
     @user = user
   end
 
-  def all_pipelines
-    ::Ci::Pipeline.where(project_id: users_projects_with_security_reports)
-  end
-
   def project_ids_with_security_reports
     users_projects_with_security_reports.pluck(:project_id)
   end
