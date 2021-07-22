@@ -49,7 +49,7 @@ RSpec.describe Gitlab::Geo::Oauth::Session, :geo do
 
   describe '#authenticate' do
     let(:api_url) { "#{primary_node.internal_url.chomp('/')}/api/v4/user" }
-    let(:user_json) { ActiveSupport::JSON.encode({ id: 555, email: 'user@example.com' }.as_json) }
+    let(:user_json) { Gitlab::Json.dump({ id: 555, email: 'user@example.com' }.as_json) }
 
     context 'on success' do
       before do
@@ -96,7 +96,7 @@ RSpec.describe Gitlab::Geo::Oauth::Session, :geo do
   describe '#get_token' do
     context 'primary is configured with relative URL' do
       it "makes the request to a primary's relative URL" do
-        response = ActiveSupport::JSON.encode({ access_token: 'fake-token' }.as_json)
+        response = Gitlab::Json.dump({ access_token: 'fake-token' }.as_json)
         primary_node.update!(url: 'http://example.com/gitlab/')
         api_url = "#{primary_node.internal_url}oauth/token"
 
