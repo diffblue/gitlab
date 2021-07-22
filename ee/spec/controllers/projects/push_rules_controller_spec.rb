@@ -81,7 +81,7 @@ RSpec.describe Projects::PushRulesController do
           before do
             project.add_maintainer(user)
           end
-          it_behaves_like 'a setting with global default', rule_attr, updates: true, updates_when_global_enabled: false
+          it_behaves_like 'a setting with global default', rule_attr, updates: true
         end
 
         context 'as a developer user' do
