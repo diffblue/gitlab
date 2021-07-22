@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlDropdown, GlDropdownItem, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlSorting, GlSortingItem, GlTooltipDirective } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
@@ -13,9 +13,8 @@ export default {
   name: 'DependenciesActions',
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
-    GlIcon,
+    GlSorting,
+    GlSortingItem,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -29,6 +28,9 @@ export default {
     },
   },
   computed: {
+    isSortAscending() {
+      return this.sortOrder === SORT_ASCENDING;
+    },
     ...mapState({
       sortField(state) {
         return state[this.namespace].sortField;
@@ -43,9 +45,6 @@ export default {
     sortFieldName() {
       return this.$options.i18n.sortFields[this.sortField];
     },
-    sortOrderIcon() {
-      return this.sortOrder === SORT_ASCENDING ? 'sort-lowest' : 'sort-highest';
-    },
   },
   methods: {
     ...mapActions({
@@ -56,49 +55,41 @@ export default {
         dispatch(`${this.namespace}/toggleSortOrder`);
       },
     }),
-    isCurrentSortField(id) {
-      return id === this.sortField;
+    isCurrentSortField(field) {
+      return field === this.sortField;
     },
   },
 };
 </script>
 
 <template>
-  <div class="btn-toolbar">
-    <div class="btn-group flex-grow-1 mr-2">
-      <gl-dropdown :text="sortFieldName" class="flex-grow-1 text-center" right>
-        <gl-dropdown-item
-          v-for="(name, id) in $options.i18n.sortFields"
-          :key="id"
-          @click="setSortField(id)"
-        >
-          <span class="d-flex">
-            <gl-icon
-              class="flex-shrink-0 gl-mr-2"
-              :class="{ invisible: !isCurrentSortField(id) }"
-              name="mobile-issue-close"
-            />
-            {{ name }}
-          </span>
-        </gl-dropdown-item>
-      </gl-dropdown>
-      <gl-button
-        v-gl-tooltip
-        :title="$options.i18n.sortDirectionLabel"
-        :aria-label="$options.i18n.sortDirectionLabel"
-        class="flex-grow-0 js-sort-order"
-        @click="toggleSortOrder"
+  <div class="gl-display-flex">
+    <gl-sorting
+      :text="sortFieldName"
+      :is-ascending="isSortAscending"
+      :sort-direction-tool-tip="$options.i18n.sortDirectionLabel"
+      class="gl-flex-grow-1"
+      dropdown-class="gl-flex-grow-1"
+      sort-direction-toggle-class="gl-flex-grow-0!"
+      @sortDirectionChange="toggleSortOrder"
+    >
+      <gl-sorting-item
+        v-for="(name, field) in $options.i18n.sortFields"
+        :key="field"
+        :active="isCurrentSortField(field)"
+        @click="setSortField(field)"
       >
-        <gl-icon :name="sortOrderIcon" />
-      </gl-button>
-    </div>
+        {{ name }}
+      </gl-sorting-item>
+    </gl-sorting>
     <gl-button
       v-gl-tooltip
       :href="downloadEndpoint"
       download="dependencies.json"
       :title="s__('Dependencies|Export as JSON')"
-      class="js-download"
+      class="gl-ml-3"
       icon="export"
+      data-testid="export"
     >
       {{ __('Export') }}
     </gl-button>
