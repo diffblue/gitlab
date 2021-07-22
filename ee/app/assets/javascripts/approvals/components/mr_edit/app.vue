@@ -32,9 +32,6 @@ export default {
     accordionTitle() {
       return s__('ApprovalRule|Approval rules');
     },
-    isCollapseFeatureEnabled() {
-      return this.glFeatures.mrCollapsedApprovalRules;
-    },
     hasOptionalRules() {
       return this.rules.every((r) => r.approvalsRequired === 0);
     },
@@ -105,7 +102,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="isCollapseFeatureEnabled" class="gl-mt-2">
+  <div class="gl-mt-2">
     <p
       v-safe-html="collapsedSummary"
       class="gl-mb-0 gl-text-gray-500"
@@ -146,12 +143,4 @@ export default {
       </gl-accordion-item>
     </gl-accordion>
   </div>
-  <app v-else>
-    <template #rules>
-      <mr-rules />
-    </template>
-    <template #footer>
-      <mr-rules-hidden-inputs />
-    </template>
-  </app>
 </template>

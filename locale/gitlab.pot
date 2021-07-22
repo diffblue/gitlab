@@ -16496,9 +16496,6 @@ msgstr ""
 msgid "Image details"
 msgstr ""
 
-msgid "ImageAltText|Sparkling golden tanuki logo"
-msgstr ""
-
 msgid "ImageDiffViewer|2-up"
 msgstr ""
 
@@ -34126,9 +34123,6 @@ msgstr ""
 msgid "Tip: Hover over a job to see the jobs it depends on to run."
 msgstr ""
 
-msgid "Tip: add a"
-msgstr ""
-
 msgid "Tip: add a %{linkStart}CODEOWNERS%{linkEnd} to automatically add approvers based on file paths and file types."
 msgstr ""
 
@@ -38955,9 +38949,6 @@ msgid_plural "merge requests"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "merge request approvals"
-msgstr ""
-
 msgid "merged %{timeAgo}"
 msgstr ""
 
@@ -39653,9 +39644,6 @@ msgid "this issue cannot be made public since it belongs to a confidential epic"
 msgstr ""
 
 msgid "time summary"
-msgstr ""
-
-msgid "to automatically add approvers based on file paths and file types."
 msgstr ""
 
 msgid "to help your contributors communicate effectively!"
