@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Capture Lead', :js, skip: Gitlab.jh? do
+RSpec.describe 'Trial Capture Lead', :js do
   include Select2Helper
   let(:user) { create(:user) }
 
