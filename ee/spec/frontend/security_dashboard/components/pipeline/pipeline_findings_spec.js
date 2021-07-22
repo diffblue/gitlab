@@ -1,7 +1,9 @@
 import { GlAlert, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import PipelineFindings from 'ee/security_dashboard/components/pipeline/pipeline_findings.vue';
+import FindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
 import VulnerabilityList from 'ee/security_dashboard/components/shared/vulnerability_list.vue';
 import pipelineFindingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -45,10 +47,11 @@ describe('Pipeline findings', () => {
     });
   };
 
-  const findIntersectionObserver = () => wrapper.find(GlIntersectionObserver);
-  const findAlert = () => wrapper.find(GlAlert);
-  const findVulnerabilityList = () => wrapper.find(VulnerabilityList);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findVulnerabilityList = () => wrapper.findComponent(VulnerabilityList);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findModal = () => wrapper.findComponent(FindingModal);
 
   afterEach(() => {
     wrapper.destroy();
@@ -81,8 +84,30 @@ describe('Pipeline findings', () => {
       ]);
     });
 
-    it('does not show the insersection loader when there is no next page', () => {
+    it('does not show the intersection loader when there is no next page', () => {
       expect(findIntersectionObserver().exists()).toBe(false);
+    });
+
+    describe('vulnerability finding modal', () => {
+      it('is hidden per default', () => {
+        expect(findModal().exists()).toBe(false);
+      });
+
+      it('is visible when a vulnerability is clicked', async () => {
+        findVulnerabilityList().vm.$emit('vulnerability-clicked', {});
+        await nextTick();
+
+        expect(findModal().exists()).toBe(true);
+      });
+
+      it('gets passes the clicked finding as a prop', async () => {
+        const vulnerability = {};
+
+        findVulnerabilityList().vm.$emit('vulnerability-clicked', vulnerability);
+        await nextTick();
+
+        expect(findModal().props('finding')).toBe(vulnerability);
+      });
     });
   });
 
@@ -93,14 +118,14 @@ describe('Pipeline findings', () => {
       );
     });
 
-    it('shows the insersection loader', () => {
+    it('shows the intersection loader', () => {
       expect(findIntersectionObserver().exists()).toBe(true);
     });
   });
 
   describe('with failed query', () => {
     beforeEach(() => {
-      createWrapperWithApollo(jest.fn().mockRejectedValue(new Error('GrahpQL error')));
+      createWrapperWithApollo(jest.fn().mockRejectedValue(new Error('GraphQL error')));
     });
 
     it('does not show the vulnerability list', () => {
