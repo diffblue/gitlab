@@ -10,6 +10,7 @@ export const rawMembers = [
     issues_closed: 4,
     merge_requests_created: 2,
     merge_requests_merged: 0,
+    merge_requests_closed: 0,
     total_events: 51,
   },
   {
@@ -21,6 +22,7 @@ export const rawMembers = [
     issues_closed: 1,
     merge_requests_created: 5,
     merge_requests_merged: 0,
+    merge_requests_closed: 0,
     total_events: 49,
   },
   {
@@ -32,7 +34,8 @@ export const rawMembers = [
     issues_closed: 1,
     merge_requests_created: 1,
     merge_requests_merged: 0,
-    total_events: 44,
+    merge_requests_closed: 1,
+    total_events: 45,
   },
 ];
 
@@ -40,6 +43,7 @@ export const mockSortOrders = {
   fullname: 1,
   issuesClosed: 1,
   issuesCreated: 1,
+  mergeRequestsClosed: 1,
   mergeRequestsCreated: 1,
   mergeRequestsApproved: 1,
   mergeRequestsMerged: 1,

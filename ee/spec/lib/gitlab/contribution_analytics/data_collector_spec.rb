@@ -16,6 +16,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
       create(:event, :closed, project: project1, target: issue, author: user)
       create(:event, :created, project: project2, target: mr, author: user)
       create(:event, :approved, project: project2, target: mr, author: user)
+      create(:event, :closed, project: project2, target: mr, author: user)
 
       data_collector = described_class.new(group: group)
       expect(data_collector.totals).to eq({
@@ -24,8 +25,9 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
         merge_requests_created: { user.id => 1 },
         merge_requests_merged: {},
         merge_requests_approved: { user.id => 1 },
+        merge_requests_closed: { user.id => 1 },
         push: {},
-        total_events: { user.id => 3 }
+        total_events: { user.id => 4 }
       })
     end
   end
@@ -40,6 +42,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
         [5, MergeRequest.name, Event.actions[:created]] => 0,
         [6, MergeRequest.name, Event.actions[:created]] => 1,
         [6, MergeRequest.name, Event.actions[:approved]] => 1,
+        [6, MergeRequest.name, Event.actions[:closed]] => 1,
         [10, Issue.name, Event.actions[:closed]] => 10,
         [11, Issue.name, Event.actions[:closed]] => 11
       }
@@ -62,6 +65,10 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
 
       it 'for #total_push_count' do
         expect(data_collector.total_push_count).to eq(4)
+      end
+
+      it 'for #total_merge_requests_closed_count' do
+        expect(data_collector.total_merge_requests_closed_count).to eq(1)
       end
 
       it 'for #total_merge_requests_created_count' do

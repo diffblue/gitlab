@@ -5,7 +5,7 @@
 module Gitlab
   module ContributionAnalytics
     class DataCollector
-      EVENT_TYPES = %i[push issues_created issues_closed merge_requests_created merge_requests_merged merge_requests_approved total_events].freeze
+      EVENT_TYPES = %i[push issues_created issues_closed merge_requests_closed merge_requests_created merge_requests_merged merge_requests_approved total_events].freeze
 
       attr_reader :group, :from
 
@@ -29,6 +29,12 @@ module Gitlab
       def issues_closed_by_author_count
         all_counts.each_with_object({}) do |(event, count), hash|
           hash[event.author_id] = count if event.issue? && event.closed_action?
+        end
+      end
+
+      def merge_requests_closed_by_author_count
+        all_counts.each_with_object({}) do |(event, count), hash|
+          hash[event.author_id] = count if event.merge_request? && event.closed_action?
         end
       end
 
@@ -67,6 +73,10 @@ module Gitlab
 
       def total_commit_count
         PushEventPayload.commit_count_for(base_query.pushed_action)
+      end
+
+      def total_merge_requests_closed_count
+        all_counts.sum { |event, count| event.merge_request? && event.closed_action? ? count : 0 }
       end
 
       def total_merge_requests_created_count
@@ -111,6 +121,7 @@ module Gitlab
           push: push_by_author_count,
           issues_created: issues_created_by_author_count,
           issues_closed: issues_closed_by_author_count,
+          merge_requests_closed: merge_requests_closed_by_author_count,
           merge_requests_created: merge_requests_created_by_author_count,
           merge_requests_merged: merge_requests_merged_by_author_count,
           merge_requests_approved: merge_requests_approved_by_author_count,

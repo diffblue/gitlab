@@ -23,6 +23,7 @@ export default {
       <td>{{ row.mergeRequestsCreated }}</td>
       <td>{{ row.mergeRequestsApproved }}</td>
       <td>{{ row.mergeRequestsMerged }}</td>
+      <td>{{ row.mergeRequestsClosed }}</td>
       <td>{{ row.totalEvents }}</td>
     </tr>
   </tbody>
