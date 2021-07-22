@@ -52,9 +52,7 @@ module EE
         state_machine :status do
           after_transition any => [:success, :failed, :canceled] do |build|
             build.run_after_commit do
-              # TODO(Issue #331891): before enabling this feature flag. Move update consumption to async while keeping consumption calculation sync.
-              # This will ensure consumption is calculated before related records are deleted.
-              if ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, default_enabled: :yaml)
+              if ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, build.project, default_enabled: :yaml)
                 ::Ci::Minutes::UpdateBuildMinutesService.new(build.project, nil).execute(build)
               end
             end

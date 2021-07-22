@@ -22,7 +22,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
   end
 
   describe '.find_or_create_current' do
-    subject { described_class.find_or_create_current(namespace) }
+    subject { described_class.find_or_create_current(namespace_id: namespace.id) }
 
     shared_examples 'creates usage record' do
       it 'creates new record and resets minutes consumption' do

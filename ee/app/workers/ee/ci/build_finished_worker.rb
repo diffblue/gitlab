@@ -4,7 +4,7 @@ module EE
   module Ci
     module BuildFinishedWorker
       def process_build(build)
-        unless ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, default_enabled: :yaml)
+        unless ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, build.project, default_enabled: :yaml)
           ::Ci::Minutes::UpdateBuildMinutesService.new(build.project, nil).execute(build)
         end
 
