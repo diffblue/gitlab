@@ -9,6 +9,12 @@ export const SORT_FIELDS = {
 export const SORT_ASCENDING = 'asc';
 export const SORT_DESCENDING = 'desc';
 
+export const SORT_FIELD_ORDER = {
+  name: SORT_ASCENDING,
+  packager: SORT_ASCENDING,
+  severity: SORT_DESCENDING,
+};
+
 export const REPORT_STATUS = {
   ok: 'ok',
   jobNotSetUp: 'job_not_set_up',

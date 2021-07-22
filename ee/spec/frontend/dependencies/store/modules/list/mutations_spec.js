@@ -90,11 +90,17 @@ describe('Dependencies mutations', () => {
   });
 
   describe(types.SET_SORT_FIELD, () => {
-    it('sets the sort field', () => {
-      const field = 'foo';
+    it.each`
+      field         | order
+      ${'name'}     | ${SORT_ASCENDING}
+      ${'packager'} | ${SORT_ASCENDING}
+      ${'severity'} | ${SORT_DESCENDING}
+      ${'foo'}      | ${undefined}
+    `('sets the sort field to $field and sort order to $order', ({ field, order }) => {
       mutations[types.SET_SORT_FIELD](state, field);
 
       expect(state.sortField).toBe(field);
+      expect(state.sortOrder).toBe(order);
     });
   });
 
