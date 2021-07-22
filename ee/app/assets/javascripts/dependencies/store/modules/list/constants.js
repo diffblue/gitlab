@@ -6,10 +6,8 @@ export const SORT_FIELDS = {
   severity: s__('Vulnerability|Severity'),
 };
 
-export const SORT_ORDER = {
-  ascending: 'asc',
-  descending: 'desc',
-};
+export const SORT_ASCENDING = 'asc';
+export const SORT_DESCENDING = 'desc';
 
 export const REPORT_STATUS = {
   ok: 'ok',

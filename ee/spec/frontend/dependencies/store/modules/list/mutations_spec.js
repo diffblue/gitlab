@@ -1,4 +1,8 @@
-import { REPORT_STATUS, SORT_ORDER } from 'ee/dependencies/store/modules/list/constants';
+import {
+  REPORT_STATUS,
+  SORT_ASCENDING,
+  SORT_DESCENDING,
+} from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import mutations from 'ee/dependencies/store/modules/list/mutations';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
@@ -96,14 +100,14 @@ describe('Dependencies mutations', () => {
 
   describe(types.TOGGLE_SORT_ORDER, () => {
     it('toggles the sort order', () => {
-      const sortState = { sortOrder: SORT_ORDER.ascending };
+      const sortState = { sortOrder: SORT_ASCENDING };
       mutations[types.TOGGLE_SORT_ORDER](sortState);
 
-      expect(sortState.sortOrder).toBe(SORT_ORDER.descending);
+      expect(sortState.sortOrder).toBe(SORT_DESCENDING);
 
       mutations[types.TOGGLE_SORT_ORDER](sortState);
 
-      expect(sortState.sortOrder).toBe(SORT_ORDER.ascending);
+      expect(sortState.sortOrder).toBe(SORT_ASCENDING);
     });
   });
 });

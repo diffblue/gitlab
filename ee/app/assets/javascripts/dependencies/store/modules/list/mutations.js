@@ -1,4 +1,4 @@
-import { REPORT_STATUS, SORT_ORDER } from './constants';
+import { REPORT_STATUS, SORT_ASCENDING, SORT_DESCENDING } from './constants';
 import * as types from './mutation_types';
 
 export default {
@@ -38,7 +38,6 @@ export default {
     state.sortField = payload;
   },
   [types.TOGGLE_SORT_ORDER](state) {
-    state.sortOrder =
-      state.sortOrder === SORT_ORDER.ascending ? SORT_ORDER.descending : SORT_ORDER.ascending;
+    state.sortOrder = state.sortOrder === SORT_ASCENDING ? SORT_DESCENDING : SORT_ASCENDING;
   },
 };

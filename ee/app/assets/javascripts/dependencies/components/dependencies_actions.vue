@@ -3,7 +3,7 @@ import { GlButton, GlDropdown, GlDropdownItem, GlIcon, GlTooltipDirective } from
 import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { SORT_FIELDS, SORT_ORDER } from '../store/modules/list/constants';
+import { SORT_FIELDS, SORT_ASCENDING } from '../store/modules/list/constants';
 
 export default {
   i18n: {
@@ -48,7 +48,7 @@ export default {
       return this.sortFields[this.sortField];
     },
     sortOrderIcon() {
-      return this.sortOrder === SORT_ORDER.ascending ? 'sort-lowest' : 'sort-highest';
+      return this.sortOrder === SORT_ASCENDING ? 'sort-lowest' : 'sort-highest';
     },
   },
   methods: {
