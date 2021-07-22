@@ -14,7 +14,7 @@ module SystemCheck
           'Follow Geo setup instructions to configure primary and secondary nodes'
         )
 
-        for_more_information('doc/gitlab-geo/README.md')
+        for_more_information('doc/administration/geo/index.md')
       end
     end
   end

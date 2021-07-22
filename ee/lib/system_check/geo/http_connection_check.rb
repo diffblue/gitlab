@@ -80,7 +80,7 @@ module SystemCheck
       end
 
       def see_custom_certificate_doc
-        'https://docs.gitlab.com/omnibus/common_installation_problems/README.html#using-self-signed-certificate-or-custom-certificate-authorities'
+        'https://docs.gitlab.com/omnibus/common_installation_problems/index.html#using-self-signed-certificate-or-custom-certificate-authorities'
       end
     end
   end

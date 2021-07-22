@@ -14,7 +14,7 @@ module SystemCheck
           'Enable HTTP/HTTPS repository cloning for Geo repository synchronization'
         )
 
-        for_more_information('doc/gitlab-geo/README.md')
+        for_more_information('doc/administration/geo/index.md')
       end
 
       private
