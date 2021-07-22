@@ -50,14 +50,23 @@ export const APPROVAL_RULE_CONFIGS = {
 export const APPROVALS_HELP_PATH = 'user/project/merge_requests/merge_request_approvals';
 
 export const APPROVAL_SETTINGS_I18N = {
-  authorApprovalLabel: __('Prevent MR approvals by the author.'),
-  preventMrApprovalRuleEditLabel: __('Prevent users from modifying MR approval rules.'),
-  preventCommittersApprovalLabel: __(
-    'Prevent approval of merge requests by merge request committers.',
+  authorApprovalLabel: s__('ApprovalSettings|Prevent MR approvals by the author.'),
+  preventMrApprovalRuleEditLabel: s__(
+    'ApprovalSettings|Prevent users from modifying MR approval rules.',
   ),
-  requireUserPasswordLabel: __('Require user password for approvals.'),
-  removeApprovalsOnPushLabel: __(
-    'Remove all approvals in a merge request when new commits are pushed to its source branch.',
+  preventCommittersApprovalLabel: s__(
+    'ApprovalSettings|Prevent approval of merge requests by merge request committers.',
+  ),
+  requireUserPasswordLabel: s__('ApprovalSettings|Require user password for approvals.'),
+  removeApprovalsOnPushLabel: s__(
+    'ApprovalSettings|Remove all approvals in a merge request when new commits are pushed to its source branch.',
   ),
   saveChanges: __('Save changes'),
+  loadingErrorMessage: s__(
+    'ApprovalSettings|There was an error loading merge request approval settings.',
+  ),
+  savingErrorMessage: s__(
+    'ApprovalSettings|There was an error updating merge request approval settings.',
+  ),
+  savingSuccessMessage: s__('ApprovalSettings|Merge request approval settings have been updated.'),
 };

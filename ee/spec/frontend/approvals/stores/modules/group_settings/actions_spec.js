@@ -1,13 +1,11 @@
+import * as Sentry from '@sentry/browser';
 import MockAdapter from 'axios-mock-adapter';
 import * as actions from 'ee/approvals/stores/modules/group_settings/actions';
 import * as types from 'ee/approvals/stores/modules/group_settings/mutation_types';
 import getInitialState from 'ee/approvals/stores/modules/group_settings/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
-
-jest.mock('~/flash');
 
 describe('EE approvals group settings module actions', () => {
   let state;
@@ -18,10 +16,10 @@ describe('EE approvals group settings module actions', () => {
   beforeEach(() => {
     state = getInitialState();
     mock = new MockAdapter(axios);
+    jest.spyOn(Sentry, 'captureException');
   });
 
   afterEach(() => {
-    createFlash.mockClear();
     mock.restore();
   });
 
@@ -53,17 +51,10 @@ describe('EE approvals group settings module actions', () => {
           actions.fetchSettings,
           approvalSettingsPath,
           state,
-          [
-            { type: types.REQUEST_SETTINGS },
-            { type: types.RECEIVE_SETTINGS_ERROR, payload: data.message },
-          ],
+          [{ type: types.REQUEST_SETTINGS }, { type: types.RECEIVE_SETTINGS_ERROR }],
           [],
         ).then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error loading merge request approval settings.',
-            captureError: true,
-            error: 'Internal Server Error',
-          });
+          expect(Sentry.captureException.mock.calls[0][0]).toBe(data.message);
         });
       });
     });
@@ -102,12 +93,7 @@ describe('EE approvals group settings module actions', () => {
             { type: types.UPDATE_SETTINGS_SUCCESS, payload: data },
           ],
           [],
-        ).then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'Merge request approval settings have been updated.',
-            type: 'notice',
-          });
-        });
+        );
       });
     });
 
@@ -120,19 +106,36 @@ describe('EE approvals group settings module actions', () => {
           actions.updateSettings,
           approvalSettingsPath,
           state,
-          [
-            { type: types.REQUEST_UPDATE_SETTINGS },
-            { type: types.UPDATE_SETTINGS_ERROR, payload: data.message },
-          ],
+          [{ type: types.REQUEST_UPDATE_SETTINGS }, { type: types.UPDATE_SETTINGS_ERROR }],
           [],
         ).then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error updating merge request approval settings.',
-            captureError: true,
-            error: 'Internal Server Error',
-          });
+          expect(Sentry.captureException.mock.calls[0][0]).toBe(data.message);
         });
       });
+    });
+  });
+
+  describe('dismissSuccessMessage', () => {
+    it('commits DISMISS_SUCCESS_MESSAGE', () => {
+      return testAction(
+        actions.dismissSuccessMessage,
+        {},
+        state,
+        [{ type: types.DISMISS_SUCCESS_MESSAGE }],
+        [],
+      );
+    });
+  });
+
+  describe('dismissErrorMessage', () => {
+    it('commits DISMISS_ERROR_MESSAGE', () => {
+      return testAction(
+        actions.dismissErrorMessage,
+        {},
+        state,
+        [{ type: types.DISMISS_ERROR_MESSAGE }],
+        [],
+      );
     });
   });
 

@@ -1,3 +1,4 @@
+import { APPROVAL_SETTINGS_I18N } from 'ee/approvals/constants';
 import mutations from 'ee/approvals/stores/modules/group_settings/mutations';
 import getInitialState from 'ee/approvals/stores/modules/group_settings/state';
 
@@ -13,6 +14,7 @@ describe('Group settings store mutations', () => {
       mutations.REQUEST_SETTINGS(state);
 
       expect(state.isLoading).toBe(true);
+      expect(state.errorMessage).toBe('');
     });
   });
 
@@ -40,6 +42,7 @@ describe('Group settings store mutations', () => {
       mutations.RECEIVE_SETTINGS_ERROR(state);
 
       expect(state.isLoading).toBe(false);
+      expect(state.errorMessage).toBe(APPROVAL_SETTINGS_I18N.loadingErrorMessage);
     });
   });
 
@@ -48,6 +51,8 @@ describe('Group settings store mutations', () => {
       mutations.REQUEST_UPDATE_SETTINGS(state);
 
       expect(state.isLoading).toBe(true);
+      expect(state.isUpdated).toBe(false);
+      expect(state.errorMessage).toBe('');
     });
   });
 
@@ -65,6 +70,7 @@ describe('Group settings store mutations', () => {
       expect(state.settings.requireUserPassword).toBe(true);
       expect(state.settings.removeApprovalsOnPush).toBe(false);
       expect(state.isLoading).toBe(false);
+      expect(state.isUpdated).toBe(true);
     });
   });
 
@@ -73,6 +79,23 @@ describe('Group settings store mutations', () => {
       mutations.UPDATE_SETTINGS_ERROR(state);
 
       expect(state.isLoading).toBe(false);
+      expect(state.errorMessage).toBe(APPROVAL_SETTINGS_I18N.savingErrorMessage);
+    });
+  });
+
+  describe('DISMISS_SUCCESS_MESSAGE', () => {
+    it('resets isUpdated', () => {
+      mutations.DISMISS_SUCCESS_MESSAGE(state);
+
+      expect(state.isUpdated).toBe(false);
+    });
+  });
+
+  describe('DISMISS_ERROR_MESSAGE', () => {
+    it('resets errorMessage', () => {
+      mutations.DISMISS_ERROR_MESSAGE(state);
+
+      expect(state.errorMessage).toBe('');
     });
   });
 

@@ -1,6 +1,5 @@
-import createFlash from '~/flash';
+import * as Sentry from '@sentry/browser';
 import axios from '~/lib/utils/axios_utils';
-import { __ } from '~/locale';
 import * as types from './mutation_types';
 
 const mapStateToPayload = (state) => ({
@@ -19,15 +18,11 @@ export const fetchSettings = ({ commit }, endpoint) => {
     .then(({ data }) => {
       commit(types.RECEIVE_SETTINGS_SUCCESS, data);
     })
-    .catch(({ response }) => {
-      const error = response?.data?.message;
+    .catch((e) => {
+      const error = e?.response?.data?.message || e;
 
-      commit(types.RECEIVE_SETTINGS_ERROR, error);
-      createFlash({
-        message: __('There was an error loading merge request approval settings.'),
-        captureError: true,
-        error,
-      });
+      Sentry.captureException(error);
+      commit(types.RECEIVE_SETTINGS_ERROR);
     });
 };
 
@@ -38,21 +33,21 @@ export const updateSettings = ({ commit, state }, endpoint) => {
     .put(endpoint, { ...mapStateToPayload(state) })
     .then(({ data }) => {
       commit(types.UPDATE_SETTINGS_SUCCESS, data);
-      createFlash({
-        message: __('Merge request approval settings have been updated.'),
-        type: 'notice',
-      });
     })
-    .catch(({ response }) => {
-      const error = response?.data?.message;
+    .catch((e) => {
+      const error = e?.response?.data?.message || e;
 
-      commit(types.UPDATE_SETTINGS_ERROR, error);
-      createFlash({
-        message: __('There was an error updating merge request approval settings.'),
-        captureError: true,
-        error,
-      });
+      Sentry.captureException(error);
+      commit(types.UPDATE_SETTINGS_ERROR);
     });
+};
+
+export const dismissSuccessMessage = ({ commit }) => {
+  commit(types.DISMISS_SUCCESS_MESSAGE);
+};
+
+export const dismissErrorMessage = ({ commit }) => {
+  commit(types.DISMISS_ERROR_MESSAGE);
 };
 
 export const setPreventAuthorApproval = ({ commit }, { preventAuthorApproval }) => {
