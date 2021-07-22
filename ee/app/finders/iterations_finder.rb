@@ -82,8 +82,7 @@ class IterationsFinder
 
   # rubocop: disable CodeReuse/ActiveRecord
   def order(items)
-    order_statement = Gitlab::Database.nulls_last_order('due_date', 'ASC')
-    items.reorder(order_statement).order(:title)
+    items.reorder(:due_date).order(:title, { id: :asc })
   end
   # rubocop: enable CodeReuse/ActiveRecord
 

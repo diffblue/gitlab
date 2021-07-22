@@ -66,8 +66,8 @@ RSpec.describe IterationsFinder do
         expect(subject).to contain_exactly(root_closed_iteration, root_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration)
       end
 
-      it 'orders iterations by due date' do
-        expect(subject.to_a).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration])
+      it 'orders iterations by due date and title' do
+        expect(subject.to_a).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration].sort_by { |a| [a.due_date, a.title, a.id] })
       end
     end
 
