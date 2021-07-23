@@ -11,7 +11,7 @@ module ApprovalRules
     def execute
       return unless merge_request.merged?
 
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         if merge_request.approval_rules.regular.exists?
           merge_group_members_into_users
         else

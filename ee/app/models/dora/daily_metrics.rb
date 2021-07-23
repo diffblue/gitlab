@@ -43,7 +43,7 @@ module Dora
           )
           VALUES (
             #{environment.id},
-            #{ActiveRecord::Base.connection.quote(date.to_s)},
+            #{connection.quote(date.to_s)},
             (#{deployment_frequency}),
             (#{lead_time_for_changes})
           )

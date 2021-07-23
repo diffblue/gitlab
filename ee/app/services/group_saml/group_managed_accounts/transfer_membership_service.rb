@@ -18,7 +18,7 @@ module GroupSaml
 
         return false unless current_user.verified_email?(saml_email)
 
-        ActiveRecord::Base.transaction do
+        ApplicationRecord.transaction do
           if destroy_non_gma_identities && leave_non_gma_memberships && transfer_user
             identity_linker = Gitlab::Auth::GroupSaml::IdentityLinker.new(current_user, oauth_data, session, group.saml_provider)
             identity_linker.link

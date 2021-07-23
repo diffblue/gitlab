@@ -9,7 +9,7 @@ module ApprovalRules
     end
 
     def execute
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         # Removes only MR rules associated with project rule
         remove_associated_approval_rules_from_unmerged_merge_requests
 

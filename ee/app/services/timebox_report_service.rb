@@ -168,7 +168,7 @@ class TimeboxReportService
     strong_memoize(:resource_events) do
       union = Gitlab::SQL::Union.new([resource_timebox_events, state_events, weight_events]) # rubocop: disable Gitlab/Union
 
-      ActiveRecord::Base.connection.execute("(#{union.to_sql}) ORDER BY created_at LIMIT #{EVENT_COUNT_LIMIT + 1}")
+      ApplicationRecord.connection.execute("(#{union.to_sql}) ORDER BY created_at LIMIT #{EVENT_COUNT_LIMIT + 1}")
     end
   end
   # rubocop: enable CodeReuse/ActiveRecord
