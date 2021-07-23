@@ -336,7 +336,7 @@ RSpec.describe AuditEventService, :request_store do
 
     context 'on a read-only instance' do
       before do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
       end
 
       it 'does not create an event record in the database' do

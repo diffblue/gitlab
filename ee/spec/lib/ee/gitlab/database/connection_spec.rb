@@ -2,10 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Database do
+RSpec.describe Gitlab::Database::Connection do
   include ::EE::GeoHelpers
 
-  describe '.read_only?' do
+  let(:connection) { described_class.new }
+
+  describe '#read_only?' do
     context 'with Geo enabled' do
       before do
         allow(Gitlab::Geo).to receive(:enabled?) { true }
@@ -16,7 +18,7 @@ RSpec.describe Gitlab::Database do
         let(:geo_node) { create(:geo_node) }
 
         it 'returns true' do
-          expect(described_class.read_only?).to be_truthy
+          expect(connection.read_only?).to be_truthy
         end
       end
 
@@ -24,14 +26,14 @@ RSpec.describe Gitlab::Database do
         let(:geo_node) { create(:geo_node, :primary) }
 
         it 'returns false when is Geo primary node' do
-          expect(described_class.read_only?).to be_falsey
+          expect(connection.read_only?).to be_falsey
         end
       end
     end
 
     context 'with Geo disabled' do
       it 'returns false' do
-        expect(described_class.read_only?).to be_falsey
+        expect(connection.read_only?).to be_falsey
       end
     end
 
@@ -41,30 +43,30 @@ RSpec.describe Gitlab::Database do
       end
 
       it 'returns true' do
-        expect(described_class.read_only?).to be_truthy
+        expect(connection.read_only?).to be_truthy
       end
     end
   end
 
-  describe '.healthy?' do
+  describe '#healthy?' do
     it 'returns true when replication lag is not too great' do
       allow(Postgresql::ReplicationSlot).to receive(:lag_too_great?).and_return(false)
 
-      expect(described_class.healthy?).to be_truthy
+      expect(connection.healthy?).to be_truthy
     end
 
     it 'returns false when replication lag is too great' do
       allow(Postgresql::ReplicationSlot).to receive(:lag_too_great?).and_return(true)
 
-      expect(described_class.healthy?).to be_falsey
+      expect(connection.healthy?).to be_falsey
     end
   end
 
-  describe '.geo_uncached_queries' do
+  describe '#geo_uncached_queries' do
     context 'when no block is given' do
       it 'raises error' do
         expect do
-          described_class.geo_uncached_queries
+          connection.geo_uncached_queries
         end.to raise_error('No block given')
       end
     end
@@ -79,7 +81,7 @@ RSpec.describe Gitlab::Database do
         expect(ActiveRecord::Base).to receive(:uncached).and_call_original
 
         expect do |b|
-          described_class.geo_uncached_queries(&b)
+          connection.geo_uncached_queries(&b)
         end.to yield_control
       end
     end
@@ -95,7 +97,7 @@ RSpec.describe Gitlab::Database do
         expect(ActiveRecord::Base).to receive(:uncached).and_call_original
 
         expect do |b|
-          described_class.geo_uncached_queries(&b)
+          connection.geo_uncached_queries(&b)
         end.to yield_control
       end
     end
@@ -106,7 +108,7 @@ RSpec.describe Gitlab::Database do
         expect(ActiveRecord::Base).to receive(:uncached).and_call_original
 
         expect do |b|
-          described_class.geo_uncached_queries(&b)
+          connection.geo_uncached_queries(&b)
         end.to yield_control
       end
     end

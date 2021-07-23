@@ -3,9 +3,8 @@
 module EE
   module Gitlab
     module Database
-      extend ActiveSupport::Concern
-
-      class_methods do
+      module Connection
+        extend ActiveSupport::Concern
         extend ::Gitlab::Utils::Override
 
         override :read_only?
@@ -20,7 +19,7 @@ module EE
         def geo_uncached_queries(&block)
           raise 'No block given' unless block_given?
 
-          ActiveRecord::Base.uncached do
+          scope.uncached do
             if ::Gitlab::Geo.secondary?
               Geo::TrackingBase.uncached(&block)
             else
