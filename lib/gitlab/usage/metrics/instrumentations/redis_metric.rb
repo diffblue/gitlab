@@ -14,8 +14,6 @@ module Gitlab
         #   counter_class: SourceCodeCounter
         #
         class RedisMetric < BaseMetric
-          include Gitlab::UsageDataCounters::RedisCounter
-
           def initialize(time_frame:, options: {})
             super
 
