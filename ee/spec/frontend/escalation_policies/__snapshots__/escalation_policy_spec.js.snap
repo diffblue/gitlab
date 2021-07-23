@@ -3,7 +3,7 @@
 exports[`EscalationPolicy renders a policy with rules 1`] = `
 <div>
   <gl-card-stub
-    bodyclass="[object Object]"
+    bodyclass=""
     class="gl-mt-5"
     footerclass=""
     headerclass="[object Object]"

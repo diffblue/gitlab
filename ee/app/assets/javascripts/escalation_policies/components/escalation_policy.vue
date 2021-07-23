@@ -70,6 +70,7 @@ export default {
   data() {
     return {
       isPolicyVisible: this.index === 0,
+      bodyClass: '',
     };
   },
   computed: {
@@ -94,7 +95,7 @@ export default {
     <gl-card
       class="gl-mt-5"
       :class="{ 'gl-border-bottom-0': !isPolicyVisible }"
-      :body-class="{ 'gl-p-0': !isPolicyVisible }"
+      :body-class="bodyClass"
       :header-class="{ 'gl-py-3': true, 'gl-rounded-base': !isPolicyVisible }"
     >
       <template #header>
@@ -129,7 +130,11 @@ export default {
           </gl-button-group>
         </div>
       </template>
-      <gl-collapse :visible="isPolicyVisible">
+      <gl-collapse
+        :visible="isPolicyVisible"
+        @hidden="bodyClass = 'gl-p-0'"
+        @show="bodyClass = 'gl-p-5'"
+      >
         <p v-if="policy.description" class="gl-text-gray-500 gl-mb-5">
           {{ policy.description }}
         </p>

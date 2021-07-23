@@ -102,6 +102,7 @@ describe('On-call schedule', () => {
   const findLoadPreviousTimeframeBtn = () => wrapper.findByTestId('previous-timeframe-btn');
   const findLoadNextTimeframeBtn = () => wrapper.findByTestId('next-timeframe-btn');
   const findCollapsible = () => wrapper.findComponent(GlCollapse);
+  const findGlCard = () => wrapper.findComponent(GlCard);
   const findCollapsibleIcon = () => wrapper.findComponent(GlIcon);
 
   it('shows schedule title', () => {
@@ -253,6 +254,20 @@ describe('On-call schedule', () => {
           expectedVariables,
         );
       });
+    });
+  });
+
+  describe('Card collapsing behavior', () => {
+    it('adds content body padding when it is expanded', async () => {
+      findCollapsible().vm.$emit('show');
+      await nextTick();
+      expect(findGlCard().props('bodyClass')).toBe('gl-p-5');
+    });
+
+    it('removes content body padding when it is collapsed', async () => {
+      findCollapsible().vm.$emit('hidden');
+      await nextTick();
+      expect(findGlCard().props('bodyClass')).toBe('gl-p-0');
     });
   });
 
