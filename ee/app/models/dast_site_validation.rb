@@ -36,7 +36,7 @@ class DastSiteValidation < ApplicationRecord
 
   state_machine :state, initial: INITIAL_STATE.to_sym do
     event :start do
-      transition pending: :inprogress
+      transition any => :inprogress
     end
 
     event :retry do

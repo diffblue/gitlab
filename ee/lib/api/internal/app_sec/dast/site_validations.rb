@@ -45,7 +45,9 @@ module API
 
                   bad_request!('Could not update DAST site validation') unless success
 
-                  status 200, { state: validation.state }
+                  status 200
+
+                  { state: validation.state }
                 end
               end
             end

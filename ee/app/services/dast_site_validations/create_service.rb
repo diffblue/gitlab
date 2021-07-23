@@ -22,7 +22,7 @@ module DastSiteValidations
     private
 
     def allowed?
-      container.feature_available?(:security_on_demand_scans) &&
+      can?(current_user, :create_on_demand_dast_scan, container) &&
         dast_site_token.project == container
     end
 
@@ -67,6 +67,14 @@ module DastSiteValidations
     end
 
     def perform_async_validation(dast_site_validation)
+      if Feature.enabled?(:dast_runner_site_validation, dast_site_validation.project, default_enabled: :yaml)
+        runner_validation(dast_site_validation)
+      else
+        worker_validation(dast_site_validation)
+      end
+    end
+
+    def worker_validation(dast_site_validation)
       jid = DastSiteValidationWorker.perform_async(dast_site_validation.id)
 
       unless jid.present?
@@ -78,6 +86,14 @@ module DastSiteValidations
       end
 
       ServiceResponse.success(payload: dast_site_validation)
+    end
+
+    def runner_validation(dast_site_validation)
+      AppSec::Dast::SiteValidations::RunnerService.new(
+        project: dast_site_validation.project,
+        current_user: current_user,
+        params: { dast_site_validation: dast_site_validation }
+      ).execute
     end
   end
 end
