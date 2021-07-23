@@ -10,4 +10,5 @@ fragment LatestSnapshot on DevopsAdoptionSnapshot {
   sastEnabledCount
   dastEnabledCount
   coverageFuzzingEnabledCount
+  dependencyScanningEnabledCount
 }

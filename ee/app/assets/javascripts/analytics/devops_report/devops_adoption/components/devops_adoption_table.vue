@@ -40,8 +40,10 @@ const formatter = (value, key, item) => {
   return 0;
 };
 
+const thClass = ['gl-bg-white!', 'gl-text-gray-400'];
+
 const fieldOptions = {
-  thClass: 'gl-bg-white! gl-text-gray-400',
+  thClass,
   thAttr: { 'data-testid': TABLE_TEST_IDS_HEADERS },
   formatter,
   sortable: true,
@@ -105,6 +107,7 @@ export default {
           key: 'name',
           label: I18N_GROUP_COL_LABEL,
           ...fieldOptions,
+          thClass: ['gl-w-grid-size-30', ...thClass],
         },
         ...this.cols.map((item) => ({
           ...item,

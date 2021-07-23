@@ -122,14 +122,19 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
         tooltip: s__('DevopsAdoption|DAST enabled for at least one project'),
       },
       {
-        key: 'sastEnabledCount',
-        label: s__('DevopsAdoption|SAST'),
-        tooltip: s__('DevopsAdoption|SAST enabled for at least one project'),
+        key: 'dependencyScanningEnabledCount',
+        label: s__('DevopsAdoption|Dependency Scanning'),
+        tooltip: s__('DevopsAdoption|Dependency Scanning enabled for at least one project'),
       },
       {
         key: 'coverageFuzzingEnabledCount',
         label: s__('DevopsAdoption|Fuzz Testing'),
         tooltip: s__('DevopsAdoption|Fuzz Testing enabled for at least one project'),
+      },
+      {
+        key: 'sastEnabledCount',
+        label: s__('DevopsAdoption|SAST'),
+        tooltip: s__('DevopsAdoption|SAST enabled for at least one project'),
       },
     ],
   },
