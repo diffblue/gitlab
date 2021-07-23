@@ -34,7 +34,7 @@ describe('ApprovalStatus component', () => {
 
     it('links to the approval status', () => {
       expect(findLink().attributes('href')).toEqual(
-        'https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties',
+        'https://docs.gitlab.com/ee/user/compliance/compliance_report/#approval-status-and-separation-of-duties',
       );
     });
 

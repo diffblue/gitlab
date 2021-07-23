@@ -34,7 +34,7 @@ describe('EmptyState component', () => {
 
     it('sets the description', () => {
       expect(emptyStateProp('description')).toBe(
-        'The Compliance Report captures merged changes that violate compliance best practices.',
+        'The compliance report captures merged changes that violate compliance best practices.',
       );
     });
   });
