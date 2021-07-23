@@ -93,7 +93,11 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       end
     end
 
-    resources :billings, only: [:index]
+    resources :billings, only: [:index] do
+      collection do
+        post :refresh_seats
+      end
+    end
 
     get :seat_usage, to: 'seat_usage#show'
 

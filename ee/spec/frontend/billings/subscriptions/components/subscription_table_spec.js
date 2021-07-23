@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue, mount } from '@vue/test-utils';
+import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import SubscriptionTable from 'ee/billings/subscriptions/components/subscription_table.vue';
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';
@@ -7,6 +8,11 @@ import initialStore from 'ee/billings/subscriptions/store';
 import * as types from 'ee/billings/subscriptions/store/mutation_types';
 import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import createFlash from '~/flash';
+import axios from '~/lib/utils/axios_utils';
+
+jest.mock('~/flash');
 
 const defaultInjectedProps = {
   namespaceName: 'GitLab.com',
@@ -26,13 +32,14 @@ describe('SubscriptionTable component', () => {
   const findManageButton = () => wrapper.findByTestId('manage-button');
   const findRenewButton = () => wrapper.findByTestId('renew-button');
   const findUpgradeButton = () => wrapper.findByTestId('upgrade-button');
+  const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
 
   const createComponentWithStore = ({ props = {}, provide = {}, state = {} } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = extendedWrapper(
-      shallowMount(SubscriptionTable, {
+      mount(SubscriptionTable, {
         store,
         localVue,
         provide: {
@@ -257,5 +264,81 @@ describe('SubscriptionTable component', () => {
         });
       },
     );
+  });
+
+  describe('Refresh Seats feature flag is on', () => {
+    let mock;
+
+    const refreshSeatsHref = '/url';
+
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+
+      createComponentWithStore({
+        state: {
+          isLoadingSubscription: false,
+        },
+        provide: {
+          refreshSeatsHref,
+          glFeatures: { refreshBillingsSeats: true },
+        },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('displays the Refresh Seats button', () => {
+      expect(findRefreshSeatsButton().exists()).toBe(true);
+    });
+
+    describe('when clicked', () => {
+      beforeEach(async () => {
+        mock.onPost(refreshSeatsHref).reply(200);
+        findRefreshSeatsButton().trigger('click');
+
+        await waitForPromises();
+      });
+
+      it('makes call to BE to refresh seats', () => {
+        expect(mock.history.post).toHaveLength(1);
+        expect(createFlash).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when clicked and BE error', () => {
+      beforeEach(async () => {
+        mock.onPost(refreshSeatsHref).reply(500);
+        findRefreshSeatsButton().trigger('click');
+
+        await waitForPromises();
+      });
+
+      it('flashes error', () => {
+        expect(createFlash).toHaveBeenCalledWith({
+          message: 'Something went wrong trying to refresh seats',
+          captureError: true,
+          error: expect.any(Error),
+        });
+      });
+    });
+  });
+
+  describe('Refresh Seats feature flag is off', () => {
+    beforeEach(() => {
+      createComponentWithStore({
+        state: {
+          isLoadingSubscription: false,
+        },
+        provide: {
+          glFeatures: { refreshBillingsSeats: false },
+        },
+      });
+    });
+
+    it('does not display the Refresh Seats button', () => {
+      expect(findRefreshSeatsButton().exists()).toBe(false);
+    });
   });
 });
