@@ -7,8 +7,6 @@ RSpec.describe DastScannerProfile, type: :model do
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to have_many(:dast_scanner_profiles_builds).class_name('Dast::ScannerProfilesBuild').with_foreign_key(:dast_scanner_profile_id).inverse_of(:dast_scanner_profile) }
-    it { is_expected.to have_many(:ci_builds).class_name('Ci::Build').through(:dast_scanner_profiles_builds) }
   end
 
   describe 'validations' do

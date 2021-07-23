@@ -41,7 +41,11 @@ RSpec.describe Ci::Build do
   end
 
   describe 'associations' do
-    it { is_expected.to have_many(:security_scans) }
+    it { is_expected.to have_many(:security_scans).class_name('Security::Scan') }
+    it { is_expected.to have_one(:dast_site_profiles_build).class_name('Dast::SiteProfilesBuild').with_foreign_key(:ci_build_id) }
+    it { is_expected.to have_one(:dast_site_profile).class_name('DastSiteProfile').through(:dast_site_profiles_build) }
+    it { is_expected.to have_one(:dast_scanner_profiles_build).class_name('Dast::ScannerProfilesBuild').with_foreign_key(:ci_build_id) }
+    it { is_expected.to have_one(:dast_scanner_profile).class_name('DastScannerProfile').through(:dast_scanner_profiles_build) }
   end
 
   describe '#shared_runners_minutes_limit_enabled?' do

@@ -28,7 +28,7 @@ RSpec.shared_examples 'it creates a DAST on-demand scan pipeline' do
   it 'creates an association between the dast_profile and the ci_pipeline' do
     subject
 
-    expect(dast_profile.ci_pipelines).to include(pipeline)
+    expect(pipeline.dast_profile).to eq(dast_profile)
   end
 
   it 'returns the pipeline_url' do

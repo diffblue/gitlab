@@ -6,8 +6,8 @@ RSpec.describe Dast::SiteProfilesBuild, type: :model do
   subject { create(:dast_site_profiles_build) }
 
   describe 'associations' do
-    it { is_expected.to belong_to(:ci_build).class_name('Ci::Build').inverse_of(:dast_site_profiles_build).required }
-    it { is_expected.to belong_to(:dast_site_profile).class_name('DastSiteProfile').inverse_of(:dast_site_profiles_builds).required }
+    it { is_expected.to belong_to(:ci_build).class_name('Ci::Build').required }
+    it { is_expected.to belong_to(:dast_site_profile).class_name('DastSiteProfile').required }
   end
 
   describe 'validations' do
