@@ -8,14 +8,7 @@ Object {
   "enableLabelPermalinks": true,
   "hasNextPage": false,
   "hasPreviousPage": false,
-  "initialFilterValue": Array [
-    Object {
-      "type": "filtered-search-term",
-      "value": Object {
-        "data": "",
-      },
-    },
-  ],
+  "initialFilterValue": Array [],
   "initialSortBy": "created_desc",
   "isManualOrdering": false,
   "issuableSymbol": "#",
@@ -107,7 +100,24 @@ Object {
   "previousPage": 0,
   "recentSearchesStorageKey": "jira_issues",
   "searchInputPlaceholder": "Search Jira issues",
-  "searchTokens": Array [],
+  "searchTokens": Array [
+    Object {
+      "defaultLabels": Array [],
+      "fetchLabels": [Function],
+      "icon": "labels",
+      "operators": Array [
+        Object {
+          "description": "is",
+          "value": "=",
+        },
+      ],
+      "symbol": "~",
+      "title": "Label",
+      "token": "LabelTokenMock",
+      "type": "labels",
+      "unique": false,
+    },
+  ],
   "showBulkEditSidebar": false,
   "showPaginationControls": true,
   "sortOptions": Array [

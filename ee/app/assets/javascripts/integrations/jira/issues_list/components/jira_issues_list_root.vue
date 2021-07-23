@@ -10,6 +10,14 @@ import {
   AvailableSortOptions,
   DEFAULT_PAGE_SIZE,
 } from '~/issuable_list/constants';
+import {
+  FILTERED_SEARCH_LABELS,
+  FILTERED_SEARCH_TERM,
+  OPERATOR_IS_ONLY,
+  TOKEN_TITLE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
+import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
+
 import { ISSUES_LIST_FETCH_ERROR } from '../constants';
 import getJiraIssuesQuery from '../graphql/queries/get_jira_issues.query.graphql';
 import JiraIssuesListEmptyState from './jira_issues_list_empty_state.vue';
@@ -117,15 +125,47 @@ export default {
     },
   },
   methods: {
-    getFilteredSearchValue() {
+    getFilteredSearchTokens() {
       return [
         {
-          type: 'filtered-search-term',
-          value: {
-            data: this.filterParams.search || '',
+          type: FILTERED_SEARCH_LABELS,
+          icon: 'labels',
+          symbol: '~',
+          title: TOKEN_TITLE_LABEL,
+          unique: false,
+          token: LabelToken,
+          operators: OPERATOR_IS_ONLY,
+          defaultLabels: [],
+          fetchLabels: () => {
+            return Promise.resolve([]);
           },
         },
       ];
+    },
+
+    getFilteredSearchValue() {
+      const { labels, search } = this.filterParams || {};
+      const filteredSearchValue = [];
+
+      if (labels) {
+        filteredSearchValue.push(
+          ...labels.map((label) => ({
+            type: FILTERED_SEARCH_LABELS,
+            value: { data: label },
+          })),
+        );
+      }
+
+      if (search) {
+        filteredSearchValue.push({
+          type: FILTERED_SEARCH_TERM,
+          value: {
+            data: search,
+          },
+        });
+      }
+
+      return filteredSearchValue;
     },
     onJiraIssuesQueryError(error) {
       createFlash({
@@ -147,16 +187,30 @@ export default {
     },
     onIssuableListFilter(filters = []) {
       const filterParams = {};
+      const labels = [];
       const plainText = [];
 
       filters.forEach((filter) => {
-        if (filter.type === 'filtered-search-term' && filter.value.data) {
-          plainText.push(filter.value.data);
+        if (!filter.value.data) return;
+
+        switch (filter.type) {
+          case FILTERED_SEARCH_LABELS:
+            labels.push(filter.value.data);
+            break;
+          case FILTERED_SEARCH_TERM:
+            plainText.push(filter.value.data);
+            break;
+          default:
+            break;
         }
       });
 
       if (plainText.length) {
         filterParams.search = plainText.join(' ');
+      }
+
+      if (labels.length) {
+        filterParams.labels = labels;
       }
 
       this.filterParams = filterParams;
@@ -171,7 +225,7 @@ export default {
     :tabs="$options.IssuableListTabs"
     :current-tab="currentState"
     :search-input-placeholder="s__('Integrations|Search Jira issues')"
-    :search-tokens="[]"
+    :search-tokens="getFilteredSearchTokens()"
     :sort-options="$options.AvailableSortOptions"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"

@@ -23,6 +23,10 @@ jest.mock('~/issuable_list/constants', () => ({
   IssuableListTabs: jest.requireActual('~/issuable_list/constants').IssuableListTabs,
   AvailableSortOptions: jest.requireActual('~/issuable_list/constants').AvailableSortOptions,
 }));
+jest.mock(
+  '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue',
+  () => 'LabelTokenMock',
+);
 
 const resolvedValue = {
   headers: {
@@ -49,7 +53,12 @@ describe('JiraIssuesListRoot', () => {
   let wrapper;
   let mock;
 
+  const mockSearchTerm = 'test issue';
+  const mockLabel = 'ecosystem';
+
   const findIssuableList = () => wrapper.findComponent(IssuableList);
+  const createLabelFilterEvent = (data) => ({ type: 'labels', value: { data } });
+  const createSearchFilterEvent = (data) => ({ type: 'filtered-search-term', value: { data } });
 
   const createComponent = ({
     apolloProvider = createMockApolloProvider(),
@@ -109,12 +118,15 @@ describe('JiraIssuesListRoot', () => {
   });
 
   describe('with `initialFilterParams` prop', () => {
-    const mockSearchTerm = 'foo';
-
     beforeEach(async () => {
       jest.spyOn(axios, 'get').mockResolvedValue(resolvedValue);
 
-      createComponent({ initialFilterParams: { search: mockSearchTerm } });
+      createComponent({
+        initialFilterParams: {
+          labels: [mockLabel],
+          search: mockSearchTerm,
+        },
+      });
       await waitForPromises();
     });
 
@@ -122,6 +134,7 @@ describe('JiraIssuesListRoot', () => {
       const issuableList = findIssuableList();
 
       expect(issuableList.props('initialFilterValue')).toEqual([
+        { type: 'labels', value: { data: mockLabel } },
         { type: 'filtered-search-term', value: { data: mockSearchTerm } },
       ]);
       expect(issuableList.props('urlParams').search).toBe(mockSearchTerm);
@@ -215,32 +228,31 @@ describe('JiraIssuesListRoot', () => {
         expect(issuableList.props('initialSortBy')).toBe(mockSortBy);
       });
 
-      it('filter event sets `filterParams` value and calls fetchIssues', async () => {
-        const mockFilterTerm = 'foo';
-        const issuableList = findIssuableList();
+      it.each`
+        desc                        | input                                                                           | expected
+        ${'with label and search'}  | ${[createLabelFilterEvent(mockLabel), createSearchFilterEvent(mockSearchTerm)]} | ${{ labels: [mockLabel], search: mockSearchTerm }}
+        ${'with multiple lables'}   | ${[createLabelFilterEvent('label1'), createLabelFilterEvent('label2')]}         | ${{ labels: ['label1', 'label2'], search: undefined }}
+        ${'with multiple searches'} | ${[createSearchFilterEvent('foo bar'), createSearchFilterEvent('lorem')]}       | ${{ labels: undefined, search: 'foo bar lorem' }}
+      `(
+        '$desc, filter event sets "filterParams" value and calls fetchIssues',
+        async ({ input, expected }) => {
+          const issuableList = findIssuableList();
 
-        issuableList.vm.$emit('filter', [
-          {
-            type: 'filtered-search-term',
-            value: {
-              data: mockFilterTerm,
+          issuableList.vm.$emit('filter', input);
+          await waitForPromises();
+
+          expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
+            params: {
+              page: 1,
+              per_page: 2,
+              sort: 'created_desc',
+              state: 'opened',
+              with_labels_details: true,
+              ...expected,
             },
-          },
-        ]);
-        await waitForPromises();
-
-        expect(axios.get).toHaveBeenCalledWith(mockProvide.issuesFetchPath, {
-          params: {
-            labels: undefined,
-            page: 1,
-            per_page: 2,
-            search: mockFilterTerm,
-            sort: 'created_desc',
-            state: 'opened',
-            with_labels_details: true,
-          },
-        });
-      });
+          });
+        },
+      );
     });
   });
 
