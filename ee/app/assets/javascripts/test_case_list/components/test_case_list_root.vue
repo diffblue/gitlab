@@ -339,7 +339,7 @@ export default {
     @sort="handleSortTestCases"
   >
     <template v-if="canCreateTestCase" #nav-actions>
-      <gl-button :href="testCaseNewPath" category="primary" variant="success">{{
+      <gl-button :href="testCaseNewPath" category="primary" variant="confirm">{{
         s__('TestCases|New test case')
       }}</gl-button>
     </template>

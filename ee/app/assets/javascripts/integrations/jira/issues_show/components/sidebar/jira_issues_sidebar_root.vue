@@ -149,6 +149,7 @@ export default {
     <labels-select
       :allow-label-edit="canUpdateLabels"
       :allow-multiselect="true"
+      :allow-scoped-labels="true"
       :selected-labels="issue.labels"
       :labels-fetch-path="issueLabelsPath"
       :labels-filter-base-path="issuesListPath"
