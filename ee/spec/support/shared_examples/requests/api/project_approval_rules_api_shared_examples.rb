@@ -72,6 +72,18 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
         end
       end
     end
+
+    context 'with valid scanners' do
+      let(:scanners) { ['sast'] }
+
+      it 'returns 201 status' do
+        expect do
+          post api(url, current_user), params: params.merge({ scanners: scanners })
+        end.to change { project.approval_rules.count}.from(0).to(1)
+        expect(response).to have_gitlab_http_status(:created)
+        expect(project.approval_rules.first.scanners).to eql(scanners)
+      end
+    end
   end
 end
 
@@ -95,6 +107,17 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
           a_hash_including('id' => protected_branches.first.id),
           a_hash_including('id' => protected_branches.last.id)
         )
+      end
+    end
+
+    context 'with valid scanners' do
+      let(:scanners) { ['sast'] }
+
+      it 'returns 200 status' do
+        expect do
+          put api(url, current_user), params: { scanners: scanners }
+        end.to change { approval_rule.reload.scanners.count }.from(::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES.count).to(scanners.count)
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
 

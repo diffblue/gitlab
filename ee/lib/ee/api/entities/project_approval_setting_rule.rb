@@ -9,6 +9,7 @@ module EE
       # To be removed in https://gitlab.com/gitlab-org/gitlab/issues/13574.
       class ProjectApprovalSettingRule < ProjectApprovalRule
         expose :approvers, using: ::API::Entities::UserBasic, override: true
+        expose :scanners, override: true
       end
     end
   end

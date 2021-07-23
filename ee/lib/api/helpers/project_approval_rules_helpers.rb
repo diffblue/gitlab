@@ -12,6 +12,7 @@ module API
         optional :users, as: :user_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The user ids for this rule'
         optional :groups, as: :group_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The group ids for this rule'
         optional :protected_branch_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The protected branch ids for this rule'
+        optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
       end
 
       params :update_project_approval_rule do
@@ -22,6 +23,7 @@ module API
         optional :groups, as: :group_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The group ids for this rule'
         optional :protected_branch_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The protected branch ids for this rule'
         optional :remove_hidden_groups, type: Boolean, desc: 'Whether hidden groups should be removed'
+        optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
       end
 
       params :delete_project_approval_rule do
