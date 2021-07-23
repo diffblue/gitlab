@@ -68,17 +68,17 @@ The built-in applications are intended to provide an easy way to get started wit
 
 The [built-in supported applications](https://gitlab.com/gitlab-org/project-templates/cluster-management/-/tree/master/applications) are:
 
-- Apparmor
-- Cert-manager
-- Cilium
-- Elastic Stack
-- Falco
-- Fluentd
-- GitLab Runner
-- Ingress
-- Prometheus
-- Sentry
-- Vault
+- [Apparmor](management_project_applications/apparmor.md)
+- [Cert-manager](management_project_applications/certmanager.md)
+- [Cilium](management_project_applications/cilium.md)
+- [Elastic Stack](management_project_applications/elasticstack.md)
+- [Falco](management_project_applications/falco.md)
+- [Fluentd](management_project_applications/fluentd.md)
+- [GitLab Runner](management_project_applications/runner.md)
+- [Ingress](management_project_applications/ingress.md)
+- [Prometheus](management_project_applications/prometheus.md)
+- [Sentry](management_project_applications/sentry.md)
+- [Vault](management_project_applications/vault.md)
 
 ### Migrating from GitLab Managed Apps
 
