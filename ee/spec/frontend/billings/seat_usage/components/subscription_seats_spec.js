@@ -176,27 +176,31 @@ describe('Subscription Seats', () => {
       });
     });
 
-    describe('member badges', () => {
-      it('shows the correct badge based on membership_type', () => {
+    describe('members avatar', () => {
+      it('shows the correct avatarLinks length', () => {
         const avatarLinks = findTable().findAllComponents(GlAvatarLink);
-
         expect(avatarLinks.length).toBe(4);
-
-        avatarLinks.wrappers.forEach((avatarLinkWrapper) => {
-          const currentMember = mockTableItems.find(
-            (item) => item.user.name === avatarLinkWrapper.attributes().alt,
-          );
-          const currentMembershipType = currentMember.user.membership_type;
-          const membershipTypesWithBadge = ['group_invite', 'project_invite'];
-
-          if (membershipTypesWithBadge.includes(currentMembershipType)) {
-            const badgeText = (
-              currentMembershipType.charAt(0).toUpperCase() + currentMembershipType.slice(1)
-            ).replace('_', ' ');
-            expect(avatarLinkWrapper.find(GlBadge).text()).toBe(badgeText);
-          }
-        });
       });
+
+      it.each(['group_invite', 'project_invite'])(
+        'shows the correct badge for membership_type %s',
+        (membershipType) => {
+          const avatarLinks = findTable().findAllComponents(GlAvatarLink);
+          const badgeText = (
+            membershipType.charAt(0).toUpperCase() + membershipType.slice(1)
+          ).replace('_', ' ');
+
+          avatarLinks.wrappers.forEach((avatarLinkWrapper) => {
+            const currentMember = mockTableItems.find(
+              (item) => item.user.name === avatarLinkWrapper.attributes().alt,
+            );
+
+            if (membershipType === currentMember.user.membership_type) {
+              expect(avatarLinkWrapper.find(GlBadge).text()).toBe(badgeText);
+            }
+          });
+        },
+      );
     });
   });
 
