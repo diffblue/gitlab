@@ -12,7 +12,7 @@ import {
 import {
   allowedStages,
   issueStage,
-  stageMedians,
+  stageMediansWithNumericIds,
   stageCounts,
   basePaginationResult,
   initialPaginationState,
@@ -212,7 +212,7 @@ describe('Value Stream Analytics getters', () => {
     it('returns the transformed data', () => {
       state = {
         stages: allowedStages,
-        medians: stageMedians,
+        medians: stageMediansWithNumericIds,
         selectedStage: issueStage,
         stageCounts,
       };

@@ -17,13 +17,14 @@ import {
   rawStageMedians,
   createdBefore,
   createdAfter,
+  deepCamelCase,
 } from 'jest/cycle_analytics/mock_data';
 import {
   PAGINATION_TYPE,
   PAGINATION_SORT_DIRECTION_DESC,
   PAGINATION_SORT_FIELD_END_EVENT,
 } from '~/cycle_analytics/constants';
-import { transformStagesForPathNavigation } from '~/cycle_analytics/utils';
+import { transformStagesForPathNavigation, formatMedianValues } from '~/cycle_analytics/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
 
@@ -105,8 +106,6 @@ export const stagingStage = getStageByTitle(dummyState.stages, 'staging');
 
 export const allowedStages = [issueStage, planStage, codeStage];
 
-const deepCamelCase = (obj) => convertObjectPropsToCamelCase(obj, { deep: true });
-
 const stageFixtures = defaultStages.reduce((acc, stage) => {
   const events = getJSONFixture(fixtureEndpoints.stageEvents(stage));
   return {
@@ -115,43 +114,29 @@ const stageFixtures = defaultStages.reduce((acc, stage) => {
   };
 }, {});
 
-export const stageMedians = rawStageMedians.reduce(
-  (acc, { id, value }) => ({
-    ...acc,
-    [id]: value,
-  }),
-  {},
-);
+const getStageId = (name) => {
+  const { id } = getStageByTitle(dummyState.stages, name);
+  return id;
+};
 
-export const stageMediansWithNumericIds = rawStageMedians.reduce((acc, { id, value }) => {
-  const { id: stageId } = getStageByTitle(dummyState.stages, id);
-  return {
-    ...acc,
-    [stageId]: value,
-  };
-}, {});
+export const stageMediansWithNumericIds = formatMedianValues(
+  rawStageMedians.map(({ id: name, ...rest }) => {
+    const id = getStageId(name);
+    return { ...rest, name, id };
+  }),
+);
 
 export const rawStageCounts = defaultStages.map((id) => ({
   id,
   ...getJSONFixture(fixtureEndpoints.stageCount(id)),
 }));
 
-// Once https://gitlab.com/gitlab-org/gitlab/-/issues/328422 is fixed
-// we should be able to use the rawStageCounts for building
-// the stage counts mock data
-/*
-export const stageCounts = rawStageCounts.reduce(
-  (acc, { id, value }) => ({
+export const stageCounts = rawStageCounts.reduce((acc, { id: name, count }) => {
+  const id = getStageId(name);
+  return {
     ...acc,
-    [id]: value,
-  }),
-  {},
-);
-*/
-
-export const stageCounts = rawStageMedians.reduce((acc, { id, value }) => {
-  const { id: stageId } = getStageByTitle(dummyState.stages, id);
-  return { ...acc, [stageId]: value };
+    [id]: count,
+  };
 }, {});
 
 export const issueEvents = deepCamelCase(stageFixtures.issue);
@@ -172,7 +157,7 @@ export const rawCustomStage = {
   end_event_identifier: 'issue_first_added_to_board',
 };
 
-export const medians = stageMedians;
+export const medians = stageMediansWithNumericIds;
 
 export const rawCustomStageEvents = customizableStagesAndEvents.events;
 export const camelCasedStageEvents = rawCustomStageEvents.map(deepCamelCase);
