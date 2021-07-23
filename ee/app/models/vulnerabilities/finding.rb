@@ -95,12 +95,6 @@ module Vulnerabilities
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
     scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
 
-    def self.for_pipelines_with_sha(pipelines)
-      joins(:pipelines)
-        .where(ci_pipelines: { id: pipelines })
-        .select("vulnerability_occurrences.*, ci_pipelines.sha")
-    end
-
     def self.for_pipelines(pipelines)
       joins(:finding_pipelines)
         .where(vulnerability_occurrence_pipelines: { pipeline_id: pipelines })

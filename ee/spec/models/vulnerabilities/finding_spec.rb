@@ -129,21 +129,6 @@ RSpec.describe Vulnerabilities::Finding do
       end
     end
 
-    describe '.for_pipelines_with_sha' do
-      let(:project) { create(:project) }
-      let(:pipeline) { create(:ci_pipeline, :success, project: project) }
-
-      before do
-        create(:vulnerabilities_finding, pipelines: [pipeline], project: project)
-      end
-
-      subject(:findings) { described_class.for_pipelines_with_sha([pipeline]) }
-
-      it 'sets the sha' do
-        expect(findings.first.sha).to eq(pipeline.sha)
-      end
-    end
-
     describe '.by_report_types' do
       let!(:vulnerability_sast) { create(:vulnerabilities_finding, report_type: :sast) }
       let!(:vulnerability_secret_detection) { create(:vulnerabilities_finding, report_type: :secret_detection) }
