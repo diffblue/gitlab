@@ -129,21 +129,6 @@ RSpec.describe Vulnerabilities::Finding do
       end
     end
 
-    describe '.for_pipelines_with_sha' do
-      let(:project) { create(:project) }
-      let(:pipeline) { create(:ci_pipeline, :success, project: project) }
-
-      before do
-        create(:vulnerabilities_finding, pipelines: [pipeline], project: project)
-      end
-
-      subject(:findings) { described_class.for_pipelines_with_sha([pipeline]) }
-
-      it 'sets the sha' do
-        expect(findings.first.sha).to eq(pipeline.sha)
-      end
-    end
-
     describe '.by_report_types' do
       let!(:vulnerability_sast) { create(:vulnerabilities_finding, report_type: :sast) }
       let!(:vulnerability_secret_detection) { create(:vulnerabilities_finding, report_type: :secret_detection) }
@@ -354,106 +339,6 @@ RSpec.describe Vulnerabilities::Finding do
 
       it 'returns dismissed findings for project' do
         expect(project.vulnerability_findings.dismissed).to contain_exactly(finding1)
-      end
-    end
-
-    describe '.batch_count_by_project_and_severity' do
-      let(:pipeline) { create(:ci_pipeline, :success, project: project) }
-      let(:project) { create(:project) }
-
-      it 'fetches a vulnerability count for the given project and severity' do
-        create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :high)
-
-        count = described_class.batch_count_by_project_and_severity(project.id, 'high')
-
-        expect(count).to be(1)
-      end
-
-      it 'only returns vulnerabilities from the latest successful pipeline' do
-        old_pipeline = create(:ci_pipeline, :success, project: project)
-        latest_pipeline = create(:ci_pipeline, :success, project: project)
-        latest_failed_pipeline = create(:ci_pipeline, :failed, project: project)
-        create(:vulnerabilities_finding, pipelines: [old_pipeline], project: project, severity: :critical)
-        create(
-          :vulnerabilities_finding,
-          pipelines: [latest_failed_pipeline],
-          project: project,
-          severity: :critical
-        )
-        create_list(
-          :vulnerabilities_finding, 2,
-          pipelines: [latest_pipeline],
-          project: project,
-          severity: :critical
-        )
-
-        count = described_class.batch_count_by_project_and_severity(project.id, 'critical')
-
-        expect(count).to be(2)
-      end
-
-      it 'returns 0 when there are no vulnerabilities for that severity level' do
-        count = described_class.batch_count_by_project_and_severity(project.id, 'high')
-
-        expect(count).to be(0)
-      end
-
-      it 'batch loads the counts' do
-        projects = create_list(:project, 2)
-
-        projects.each do |project|
-          pipeline = create(:ci_pipeline, :success, project: project)
-
-          create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :high)
-          create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :low)
-        end
-
-        projects_and_severities = [
-          [projects.first, 'high'],
-          [projects.first, 'low'],
-          [projects.second, 'high'],
-          [projects.second, 'low']
-        ]
-
-        counts = projects_and_severities.map do |(project, severity)|
-          described_class.batch_count_by_project_and_severity(project.id, severity)
-        end
-
-        expect { expect(counts).to all(be 1) }.not_to exceed_query_limit(1)
-      end
-
-      it 'does not include dismissed vulnerabilities in the counts' do
-        create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :high)
-        dismissed_vulnerability = create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :high)
-        create(
-          :vulnerability_feedback,
-          project: project,
-          project_fingerprint: dismissed_vulnerability.project_fingerprint,
-          feedback_type: :dismissal
-        )
-
-        count = described_class.batch_count_by_project_and_severity(project.id, 'high')
-
-        expect(count).to be(1)
-      end
-
-      it "does not overwrite one project's counts with another's" do
-        project1 = create(:project)
-        project2 = create(:project)
-        pipeline1 = create(:ci_pipeline, :success, project: project1)
-        pipeline2 = create(:ci_pipeline, :success, project: project2)
-        create(:vulnerabilities_finding, pipelines: [pipeline1], project: project1, severity: :critical)
-        create(:vulnerabilities_finding, pipelines: [pipeline2], project: project2, severity: :high)
-
-        project1_critical_count = described_class.batch_count_by_project_and_severity(project1.id, 'critical')
-        project1_high_count = described_class.batch_count_by_project_and_severity(project1.id, 'high')
-        project2_critical_count = described_class.batch_count_by_project_and_severity(project2.id, 'critical')
-        project2_high_count = described_class.batch_count_by_project_and_severity(project2.id, 'high')
-
-        expect(project1_critical_count).to be(1)
-        expect(project1_high_count).to be(0)
-        expect(project2_critical_count).to be(0)
-        expect(project2_high_count).to be(1)
       end
     end
 

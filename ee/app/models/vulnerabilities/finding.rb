@@ -95,12 +95,6 @@ module Vulnerabilities
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
     scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
 
-    def self.for_pipelines_with_sha(pipelines)
-      joins(:pipelines)
-        .where(ci_pipelines: { id: pipelines })
-        .select("vulnerability_occurrences.*, ci_pipelines.sha")
-    end
-
     def self.for_pipelines(pipelines)
       joins(:finding_pipelines)
         .where(vulnerability_occurrence_pipelines: { pipeline_id: pipelines })
@@ -146,29 +140,6 @@ module Vulnerabilities
 
     def self.undismissed
       where('NOT EXISTS (?)', related_dismissal_feedback.select(1))
-    end
-
-    def self.batch_count_by_project_and_severity(project_id, severity)
-      BatchLoader.for(project_id: project_id, severity: severity).batch(default_value: 0) do |items, loader|
-        project_ids = items.map { |i| i[:project_id] }.uniq
-        severities = items.map { |i| i[:severity] }.uniq
-
-        latest_pipelines = Ci::Pipeline
-          .where(project_id: project_ids)
-          .with_vulnerabilities
-          .latest_successful_ids_per_project
-
-        counts = for_pipelines(latest_pipelines)
-          .undismissed
-          .by_severities(severities)
-          .group(:project_id, :severity)
-          .count
-
-        counts.each do |(found_project_id, found_severity), count|
-          loader_key = { project_id: found_project_id, severity: found_severity }
-          loader.call(loader_key, count)
-        end
-      end
     end
 
     def feedback(feedback_type:)
