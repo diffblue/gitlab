@@ -50,6 +50,7 @@ module Gitlab
   end
 end
 ```
+
 ## Redis metrics
 
 [Example of a merge request that adds a `Redis` metric](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66582).
