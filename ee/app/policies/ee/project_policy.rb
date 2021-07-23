@@ -373,7 +373,7 @@ module EE
 
       rule { quality_management_available & can?(:reporter_access) & can?(:create_issue) }.enable :create_test_case
 
-      rule { compliance_framework_available & can?(:maintainer_access) }.enable :admin_compliance_framework
+      rule { compliance_framework_available & can?(:owner_access) }.enable :admin_compliance_framework
 
       rule { status_page_available & can?(:owner_access) }.enable :mark_issue_for_publication
       rule { status_page_available & can?(:developer_access) }.enable :publish_status_page
