@@ -100,32 +100,26 @@ RSpec.describe DastSiteValidation, type: :model do
   end
 
   describe '#start' do
-    context 'when state=pending' do
-      it 'returns true' do
+    it 'is always possible to start over', :aggregate_failures do
+      described_class.state_machine.states.map(&:name).each do |state|
+        subject.state = state
+
         expect(subject.start).to eq(true)
-      end
-
-      it 'records a timestamp' do
-        freeze_time do
-          subject.start
-
-          expect(subject.reload.validation_started_at).to eq(Time.now.utc)
-        end
-      end
-
-      it 'transitions to the correct state' do
-        subject.start
-
-        expect(subject.state).to eq('inprogress')
       end
     end
 
-    context 'otherwise' do
-      subject { create(:dast_site_validation, state: :failed) }
+    it 'records a timestamp' do
+      freeze_time do
+        subject.start
 
-      it 'returns false' do
-        expect(subject.start).to eq(false)
+        expect(subject.reload.validation_started_at).to eq(Time.now.utc)
       end
+    end
+
+    it 'transitions to the correct state' do
+      subject.start
+
+      expect(subject.state).to eq('inprogress')
     end
   end
 

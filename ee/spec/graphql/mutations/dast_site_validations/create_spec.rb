@@ -3,11 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::DastSiteValidations::Create do
-  let(:group) { create(:group) }
-  let(:project) { dast_site_token.project }
+  let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
   let(:full_path) { project.full_path }
-  let(:dast_site) { create(:dast_site, project: create(:project, group: group)) }
+  let(:dast_site) { create(:dast_site, project: project) }
   let(:dast_site_token) { create(:dast_site_token, project: dast_site.project, url: dast_site.url) }
   let(:dast_site_validation) { DastSiteValidation.find_by!(url_path: validation_path) }
   let(:validation_path) { SecureRandom.hex }
@@ -30,28 +29,42 @@ RSpec.describe Mutations::DastSiteValidations::Create do
       )
     end
 
-    context 'when on demand scan feature is enabled' do
-      context 'when the project does not exist' do
-        let(:full_path) { SecureRandom.hex }
+    shared_examples 'a validation mutation' do
+      context 'when on demand scan feature is enabled' do
+        context 'when the project does not exist' do
+          let(:full_path) { SecureRandom.hex }
 
-        it 'raises an exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          it 'raises an exception' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
+        end
+
+        context 'when the user can run a dast scan' do
+          before do
+            project.add_developer(user)
+          end
+
+          it 'returns the dast_site_validation id' do
+            expect(subject[:id]).to eq(dast_site_validation.to_global_id)
+          end
+
+          it 'returns the dast_site_validation status' do
+            expect(subject[:status]).to eq(dast_site_validation.state)
+          end
         end
       end
+    end
 
-      context 'when the user can run a dast scan' do
-        before do
-          project.add_developer(user)
-        end
-
-        it 'returns the dast_site_validation id' do
-          expect(subject[:id]).to eq(dast_site_validation.to_global_id)
-        end
-
-        it 'returns the dast_site_validation status' do
-          expect(subject[:status]).to eq(dast_site_validation.state)
-        end
+    context 'worker validation' do
+      before do
+        stub_feature_flags(dast_runner_site_validation: false)
       end
+
+      it_behaves_like 'a validation mutation'
+    end
+
+    context 'runner validation' do
+      it_behaves_like 'a validation mutation'
     end
   end
 end

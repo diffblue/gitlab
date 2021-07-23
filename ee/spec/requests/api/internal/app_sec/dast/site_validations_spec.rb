@@ -135,8 +135,19 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
             end
           end
 
-          shared_examples 'it transitions' do |event|
+          shared_examples 'it transitions' do |event, initial_state|
             let(:event_param) { event }
+
+            before do
+              site_validation.update_column(:state, initial_state)
+            end
+
+            it 'returns 200 and the new state', :aggregate_failures do
+              subject
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to eq('state' => site_validation.reload.state)
+            end
 
             it "calls the underlying transition method: ##{event}", :aggregate_failures do
               expect(DastSiteValidation).to receive(:find).with(String(site_validation.id)).and_return(site_validation)
@@ -153,10 +164,10 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
               expect { subject }.to change { site_validation.reload.state }.from('pending').to('inprogress')
             end
 
-            it_behaves_like 'it transitions', :start
-            it_behaves_like 'it transitions', :fail_op
-            it_behaves_like 'it transitions', :retry
-            it_behaves_like 'it transitions', :pass
+            it_behaves_like 'it transitions', :start, :pending
+            it_behaves_like 'it transitions', :fail_op, :inprogress
+            it_behaves_like 'it transitions', :retry, :failed
+            it_behaves_like 'it transitions', :pass, :inprogress
           end
         end
       end

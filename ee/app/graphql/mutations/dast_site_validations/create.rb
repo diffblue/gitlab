@@ -40,6 +40,7 @@ module Mutations
 
         response = ::DastSiteValidations::CreateService.new(
           container: project,
+          current_user: current_user,
           params: {
             dast_site_token: dast_site_token,
             url_path: validation_path,
