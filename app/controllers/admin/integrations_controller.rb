@@ -17,7 +17,7 @@ class Admin::IntegrationsController < Admin::ApplicationController
 
         render json: serializer.represent(projects)
       end
-      # TODO frontend will add format.html
+      format.html { render 'shared/integrations/overrides' }
     end
   end
 
