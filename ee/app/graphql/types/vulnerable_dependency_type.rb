@@ -9,7 +9,7 @@ module Types
     field :package, ::Types::VulnerablePackageType, null: true,
           description: 'The package associated with the vulnerable dependency.'
 
-    field :version, GraphQL::STRING_TYPE, null: true,
+    field :version, GraphQL::Types::String, null: true,
           description: 'The version of the vulnerable dependency.'
   end
 end

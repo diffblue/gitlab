@@ -9,7 +9,7 @@ module Types
     authorize :read_project
 
     field :reject_unsigned_commits,
-      GraphQL::BOOLEAN_TYPE,
+      GraphQL::Types::Boolean,
       null: false,
       description: 'Indicates whether commits not signed through GPG will be rejected.'
 

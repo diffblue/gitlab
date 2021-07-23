@@ -17,19 +17,19 @@ module Types
     implements(Types::CurrentUserTodos)
     implements(Types::EventableType)
 
-    field :id, GraphQL::ID_TYPE, null: false,
+    field :id, GraphQL::Types::ID, null: false,
           description: 'ID of the epic.'
-    field :iid, GraphQL::ID_TYPE, null: false,
+    field :iid, GraphQL::Types::ID, null: false,
           description: 'Internal ID of the epic.'
-    field :title, GraphQL::STRING_TYPE, null: true,
+    field :title, GraphQL::Types::String, null: true,
           description: 'Title of the epic.'
     markdown_field :title_html, null: true
-    field :description, GraphQL::STRING_TYPE, null: true,
+    field :description, GraphQL::Types::String, null: true,
           description: 'Description of the epic.'
     markdown_field :description_html, null: true
     field :state, EpicStateEnum, null: false,
           description: 'State of the epic.'
-    field :confidential, GraphQL::BOOLEAN_TYPE, null: true,
+    field :confidential, GraphQL::Types::Boolean, null: true,
           description: 'Indicates if the epic is confidential.'
 
     field :group, GroupType, null: false,
@@ -41,7 +41,7 @@ module Types
 
     field :start_date, Types::TimeType, null: true,
           description: 'Start date of the epic.'
-    field :start_date_is_fixed, GraphQL::BOOLEAN_TYPE, null: true,
+    field :start_date_is_fixed, GraphQL::Types::Boolean, null: true,
           description: 'Indicates if the start date has been manually set.',
           method: :start_date_is_fixed?, authorize: :admin_epic
     field :start_date_fixed, Types::TimeType, null: true,
@@ -53,7 +53,7 @@ module Types
 
     field :due_date, Types::TimeType, null: true,
           description: 'Due date of the epic.'
-    field :due_date_is_fixed, GraphQL::BOOLEAN_TYPE, null: true,
+    field :due_date_is_fixed, GraphQL::Types::Boolean, null: true,
           description: 'Indicates if the due date has been manually set.',
           method: :due_date_is_fixed?, authorize: :admin_epic
     field :due_date_fixed, Types::TimeType, null: true,
@@ -63,15 +63,15 @@ module Types
           description: 'Inherited due date of the epic from milestones.',
           authorize: :admin_epic
 
-    field :upvotes, GraphQL::INT_TYPE, null: false,
+    field :upvotes, GraphQL::Types::Int, null: false,
           description: 'Number of upvotes the epic has received.'
-    field :downvotes, GraphQL::INT_TYPE, null: false,
+    field :downvotes, GraphQL::Types::Int, null: false,
           description: 'Number of downvotes the epic has received.'
 
-    field :user_notes_count, GraphQL::INT_TYPE, null: false,
+    field :user_notes_count, GraphQL::Types::Int, null: false,
           description: 'Number of user notes of the epic.',
           resolver: Resolvers::UserNotesCountResolver
-    field :user_discussions_count, GraphQL::INT_TYPE, null: false,
+    field :user_discussions_count, GraphQL::Types::Int, null: false,
           description: 'Number of user discussions in the epic.',
           resolver: Resolvers::UserDiscussionsCountResolver
 
@@ -89,31 +89,31 @@ module Types
     field :labels, Types::LabelType.connection_type, null: true,
           description: 'Labels assigned to the epic.'
 
-    field :has_children, GraphQL::BOOLEAN_TYPE, null: false,
+    field :has_children, GraphQL::Types::Boolean, null: false,
           description: 'Indicates if the epic has children.'
-    field :has_issues, GraphQL::BOOLEAN_TYPE, null: false,
+    field :has_issues, GraphQL::Types::Boolean, null: false,
           description: 'Indicates if the epic has direct issues.'
-    field :has_parent, GraphQL::BOOLEAN_TYPE, null: false,
+    field :has_parent, GraphQL::Types::Boolean, null: false,
           method: :has_parent?,
           description: 'Indicates if the epic has a parent epic.'
 
-    field :web_path, GraphQL::STRING_TYPE, null: false,
+    field :web_path, GraphQL::Types::String, null: false,
           description: 'Web path of the epic.',
           method: :group_epic_path
-    field :web_url, GraphQL::STRING_TYPE, null: false,
+    field :web_url, GraphQL::Types::String, null: false,
           description: 'Web URL of the epic.',
           method: :group_epic_url
 
-    field :relative_position, GraphQL::INT_TYPE, null: true,
+    field :relative_position, GraphQL::Types::Int, null: true,
           description: 'The relative position of the epic in the epic tree.'
-    field :relation_path, GraphQL::STRING_TYPE, null: true,
+    field :relation_path, GraphQL::Types::String, null: true,
            description: 'URI path of the epic-issue relationship.',
            method: :group_epic_link_path
 
-    field :reference, GraphQL::STRING_TYPE, null: false,
+    field :reference, GraphQL::Types::String, null: false,
           description: 'Internal reference of the epic. Returned in shortened format by default.',
           method: :epic_reference do
-            argument :full, GraphQL::BOOLEAN_TYPE, required: false, default_value: false,
+            argument :full, GraphQL::Types::Boolean, required: false, default_value: false,
                       description: 'Indicates if the reference should be returned in full.'
           end
 
@@ -121,7 +121,7 @@ module Types
           description: 'List of participants for the epic.',
           complexity: 5
 
-    field :subscribed, GraphQL::BOOLEAN_TYPE,
+    field :subscribed, GraphQL::Types::Boolean,
           method: :subscribed?,
           null: false,
           complexity: 5,

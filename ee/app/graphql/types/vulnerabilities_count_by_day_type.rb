@@ -9,11 +9,11 @@ module Types
     field :date, GraphQL::Types::ISO8601Date, null: false,
           description: 'Date for the count.'
 
-    field :total, GraphQL::INT_TYPE, null: false,
+    field :total, GraphQL::Types::Int, null: false,
           description: 'Total number of vulnerabilities on a particular day.'
 
     ::Enums::Vulnerability.severity_levels.keys.each do |severity|
-      field severity.to_s, GraphQL::INT_TYPE, null: false,
+      field severity.to_s, GraphQL::Types::Int, null: false,
             description: "Total number of vulnerabilities on a particular day with #{severity} severity"
     end
   end

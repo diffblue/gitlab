@@ -8,7 +8,7 @@ module Types
       description 'Configuration details for an Agent'
 
       field :agent_name,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Name of the agent.'
     end

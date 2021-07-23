@@ -6,19 +6,19 @@ module Types
     graphql_name 'ExternalIssue'
     description 'Represents an external issue'
 
-    field :title, GraphQL::STRING_TYPE, null: true,
+    field :title, GraphQL::Types::String, null: true,
           description: 'Title of the issue in the external tracker.'
 
-    field :relative_reference, GraphQL::STRING_TYPE, null: true,
+    field :relative_reference, GraphQL::Types::String, null: true,
           description: 'Relative reference of the issue in the external tracker.'
 
-    field :status, GraphQL::STRING_TYPE, null: true,
+    field :status, GraphQL::Types::String, null: true,
           description: 'Status of the issue in the external tracker.'
 
-    field :external_tracker, GraphQL::STRING_TYPE, null: true,
+    field :external_tracker, GraphQL::Types::String, null: true,
           description: 'Type of external tracker.'
 
-    field :web_url, GraphQL::STRING_TYPE, null: true,
+    field :web_url, GraphQL::Types::String, null: true,
           description: 'URL to the issue in the external tracker.'
 
     field :created_at, Types::TimeType, null: true,

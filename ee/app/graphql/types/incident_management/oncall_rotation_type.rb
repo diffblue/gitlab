@@ -16,7 +16,7 @@ module Types
             description: 'ID of the on-call rotation.'
 
       field :name,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: false,
             description: 'Name of the on-call rotation.'
 
@@ -31,7 +31,7 @@ module Types
             description: 'End date and time of the on-call rotation.'
 
       field :length,
-            GraphQL::INT_TYPE,
+            GraphQL::Types::Int,
             null: true,
             description: 'Length of the on-call schedule, in the units specified by lengthUnit.'
 

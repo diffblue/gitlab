@@ -9,7 +9,7 @@ module Types
     field :grade, Types::VulnerabilityGradeEnum, null: false,
           description: "Grade based on the highest severity vulnerability present."
 
-    field :count, GraphQL::INT_TYPE, null: false,
+    field :count, GraphQL::Types::Int, null: false,
           description: 'Number of projects within this grade.',
           complexity: 5
 

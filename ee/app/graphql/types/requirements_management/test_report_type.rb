@@ -8,7 +8,7 @@ module Types
 
       authorize :read_requirement
 
-      field :id, GraphQL::ID_TYPE, null: false,
+      field :id, GraphQL::Types::ID, null: false,
             description: 'ID of the test report.'
 
       field :state, TestReportStateEnum, null: false,
