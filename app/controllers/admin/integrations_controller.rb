@@ -25,8 +25,4 @@ class Admin::IntegrationsController < Admin::ApplicationController
   def find_or_initialize_non_project_specific_integration(name)
     Integration.find_or_initialize_non_project_specific_integration(name, instance: true)
   end
-
-  def scoped_edit_integration_path(integration)
-    edit_admin_application_settings_integration_path(integration)
-  end
 end
