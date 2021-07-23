@@ -125,6 +125,7 @@ export default {
       rotations: this.schedule.rotations.nodes,
       rotationToUpdate: {},
       scheduleVisible: this.scheduleIndex === 0,
+      bodyClass: this.scheduleIndex === 0 ? 'gl-p-5' : 'gl-p-0',
     };
   },
   computed: {
@@ -236,7 +237,7 @@ export default {
     <gl-card
       class="gl-mt-5"
       :class="{ 'gl-border-bottom-0': !scheduleVisible }"
-      :body-class="{ 'gl-p-0': !scheduleVisible }"
+      :body-class="bodyClass"
       :header-class="{ 'gl-py-3': true, 'gl-rounded-small': !scheduleVisible }"
     >
       <template #header>
@@ -270,7 +271,11 @@ export default {
           </gl-button-group>
         </div>
       </template>
-      <gl-collapse :visible="scheduleVisible">
+      <gl-collapse
+        :visible="scheduleVisible"
+        @hidden="bodyClass = 'gl-p-0'"
+        @show="bodyClass = 'gl-p-5'"
+      >
         <p class="gl-text-gray-500 gl-mb-5" data-testid="scheduleBody">
           {{ scheduleInfo }}
         </p>
