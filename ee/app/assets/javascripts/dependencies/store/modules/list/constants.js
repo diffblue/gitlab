@@ -1,18 +1,24 @@
 import { __, s__ } from '~/locale';
 
+export const SORT_FIELD_NAME = 'name';
+export const SORT_FIELD_PACKAGER = 'packager';
+export const SORT_FIELD_SEVERITY = 'severity';
+
+export const DEFAULT_SORT_FIELD = SORT_FIELD_SEVERITY;
+
 export const SORT_FIELDS = {
-  name: s__('Dependencies|Component name'),
-  packager: s__('Dependencies|Packager'),
-  severity: s__('Vulnerability|Severity'),
+  [SORT_FIELD_NAME]: s__('Dependencies|Component name'),
+  [SORT_FIELD_PACKAGER]: s__('Dependencies|Packager'),
+  [SORT_FIELD_SEVERITY]: s__('Vulnerability|Severity'),
 };
 
 export const SORT_ASCENDING = 'asc';
 export const SORT_DESCENDING = 'desc';
 
-export const SORT_FIELD_ORDER = {
-  name: SORT_ASCENDING,
-  packager: SORT_ASCENDING,
-  severity: SORT_DESCENDING,
+export const SORT_ORDERS = {
+  [SORT_FIELD_NAME]: SORT_ASCENDING,
+  [SORT_FIELD_PACKAGER]: SORT_ASCENDING,
+  [SORT_FIELD_SEVERITY]: SORT_DESCENDING,
 };
 
 export const REPORT_STATUS = {
