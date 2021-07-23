@@ -5,6 +5,7 @@ class Admin::IntegrationsController < Admin::ApplicationController
   include IntegrationsHelper
 
   before_action :not_found, unless: -> { instance_level_integrations? }
+  before_action :not_found, unless: -> { instance_level_integration_overrides? }, only: :overrides
 
   feature_category :integrations
 
@@ -24,5 +25,9 @@ class Admin::IntegrationsController < Admin::ApplicationController
 
   def find_or_initialize_non_project_specific_integration(name)
     Integration.find_or_initialize_non_project_specific_integration(name, instance: true)
+  end
+
+  def instance_level_integration_overrides?
+    Feature.enabled?(:instance_level_integration_overrides, default_enabled: :yaml)
   end
 end
