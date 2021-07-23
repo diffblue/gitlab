@@ -6,30 +6,46 @@ RSpec.describe BillingPlansHelper, skip: Gitlab.jh? do
   include Devise::Test::ControllerHelpers
 
   describe '#subscription_plan_data_attributes' do
-    let(:customer_portal_url) { "#{EE::SUBSCRIPTIONS_URL}/subscriptions" }
-
     let(:group) { build(:group) }
+    let(:customer_portal_url) { "#{EE::SUBSCRIPTIONS_URL}/subscriptions" }
+    let(:add_seats_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats" }
+    let(:plan_renew_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew" }
+    let(:billable_seats_href) { helper.group_seat_usage_path(group) }
+    let(:refresh_seats_href) { helper.refresh_seats_group_billings_url(group) }
+
     let(:plan) do
       OpenStruct.new(id: 'external-paid-plan-hash-code', name: 'Bronze Plan')
     end
 
     context 'when group and plan with ID present' do
-      it 'returns data attributes' do
-        add_seats_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
-        upgrade_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/upgrade/#{plan.id}"
-        renew_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
-        billable_seats_href = helper.group_seat_usage_path(group)
+      let(:base_attrs) do
+        {
+          namespace_id: group.id,
+          namespace_name: group.name,
+          add_seats_href: add_seats_href,
+          plan_upgrade_href: "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/upgrade/#{plan.id}",
+          plan_renew_href: plan_renew_href,
+          customer_portal_url: customer_portal_url,
+          billable_seats_href: billable_seats_href,
+          plan_name: plan.name,
+          free_personal_namespace: 'false'
+        }
+      end
 
+      it 'returns data attributes' do
         expect(helper.subscription_plan_data_attributes(group, plan))
-          .to eq(namespace_id: group.id,
-                 namespace_name: group.name,
-                 add_seats_href: add_seats_href,
-                 plan_upgrade_href: upgrade_href,
-                 plan_renew_href: renew_href,
-                 customer_portal_url: customer_portal_url,
-                 billable_seats_href: billable_seats_href,
-                 plan_name: plan.name,
-                 free_personal_namespace: 'false')
+          .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
+      end
+
+      context 'with refresh_billings_seats feature flag off' do
+        before do
+          stub_feature_flags(refresh_billings_seats: false)
+        end
+
+        it 'returns data attributes' do
+          expect(helper.subscription_plan_data_attributes(group, plan))
+            .to eq(base_attrs)
+        end
       end
     end
 
@@ -44,42 +60,68 @@ RSpec.describe BillingPlansHelper, skip: Gitlab.jh? do
     context 'when plan not present' do
       let(:plan) { nil }
 
-      it 'returns attributes' do
-        add_seats_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
-        billable_seats_href = helper.group_seat_usage_path(group)
-        renew_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
+      let(:base_attrs) do
+        {
+          add_seats_href: add_seats_href,
+          billable_seats_href: billable_seats_href,
+          customer_portal_url: customer_portal_url,
+          namespace_id: nil,
+          namespace_name: group.name,
+          plan_renew_href: plan_renew_href,
+          plan_upgrade_href: nil,
+          plan_name: nil,
+          free_personal_namespace: 'false'
+        }
+      end
 
+      it 'returns attributes' do
         expect(helper.subscription_plan_data_attributes(group, plan))
-          .to eq(add_seats_href:  add_seats_href,
-                 billable_seats_href: billable_seats_href,
-                 customer_portal_url: customer_portal_url,
-                 namespace_id: nil,
-                 namespace_name: group.name,
-                 plan_renew_href: renew_href,
-                 plan_upgrade_href: nil,
-                 plan_name: nil,
-                 free_personal_namespace: 'false')
+          .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
+      end
+
+      context 'with refresh_billings_seats feature flag off' do
+        before do
+          stub_feature_flags(refresh_billings_seats: false)
+        end
+
+        it 'returns data attributes' do
+          expect(helper.subscription_plan_data_attributes(group, plan))
+            .to eq(base_attrs)
+        end
       end
     end
 
     context 'when plan with ID not present' do
       let(:plan) { OpenStruct.new(id: nil, name: 'Bronze Plan') }
 
-      it 'returns data attributes without upgrade href' do
-        add_seats_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
-        renew_href = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
-        billable_seats_href = helper.group_seat_usage_path(group)
+      let(:base_attrs) do
+        {
+          namespace_id: group.id,
+          namespace_name: group.name,
+          customer_portal_url: customer_portal_url,
+          billable_seats_href: billable_seats_href,
+          add_seats_href: add_seats_href,
+          plan_renew_href: plan_renew_href,
+          plan_upgrade_href: nil,
+          plan_name: plan.name,
+          free_personal_namespace: 'false'
+        }
+      end
 
+      it 'returns data attributes without upgrade href' do
         expect(helper.subscription_plan_data_attributes(group, plan))
-          .to eq(namespace_id: group.id,
-                 namespace_name: group.name,
-                 customer_portal_url: customer_portal_url,
-                 billable_seats_href: billable_seats_href,
-                 add_seats_href: add_seats_href,
-                 plan_renew_href: renew_href,
-                 plan_upgrade_href: nil,
-                 plan_name: plan.name,
-                 free_personal_namespace: 'false')
+          .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
+      end
+
+      context 'with refresh_billings_seats feature flag off' do
+        before do
+          stub_feature_flags(refresh_billings_seats: false)
+        end
+
+        it 'returns data attributes' do
+          expect(helper.subscription_plan_data_attributes(group, plan))
+            .to eq(base_attrs)
+        end
       end
     end
 

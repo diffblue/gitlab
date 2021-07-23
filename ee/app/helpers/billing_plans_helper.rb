@@ -47,7 +47,11 @@ module BillingPlansHelper
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name,
       free_personal_namespace: namespace.free_personal?.to_s
-    }
+    }.tap do |attrs|
+      if Feature.enabled?(:refresh_billings_seats, type: :ops, default_enabled: :yaml)
+        attrs[:refresh_seats_href] = refresh_seats_group_billings_url(namespace)
+      end
+    end
   end
 
   def use_new_purchase_flow?(namespace)

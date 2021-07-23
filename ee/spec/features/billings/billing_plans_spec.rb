@@ -430,6 +430,31 @@ RSpec.describe 'Billing plan pages', :feature, :js do
         it_behaves_like 'plan with subscription table'
       end
     end
+
+    context 'seat refresh button' do
+      let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
+
+      let(:page_path) { group_billings_path(namespace) }
+      let(:plan) { ultimate_plan }
+
+      it 'updates seat counts on click' do
+        visit page_path
+
+        expect(seats_in_use).to eq '0'
+
+        click_button 'Refresh Seats'
+        wait_for_requests
+
+        expect(seats_in_use).to eq '1'
+      end
+    end
+
+    def seats_in_use
+      all('[data-testid="content-cell"]').each do |cell|
+        label = cell.first('[data-testid="property-label"]')
+        break cell.find('[data-testid="property-value"]').text if label&.text == 'Seats currently in use'
+      end
+    end
   end
 
   context 'with unexpected JSON' do
