@@ -1,4 +1,8 @@
-import { REPORT_STATUS, SORT_ORDER } from 'ee/dependencies/store/modules/list/constants';
+import {
+  REPORT_STATUS,
+  SORT_ASCENDING,
+  SORT_DESCENDING,
+} from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import mutations from 'ee/dependencies/store/modules/list/mutations';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
@@ -86,24 +90,30 @@ describe('Dependencies mutations', () => {
   });
 
   describe(types.SET_SORT_FIELD, () => {
-    it('sets the sort field', () => {
-      const field = 'foo';
+    it.each`
+      field         | order
+      ${'name'}     | ${SORT_ASCENDING}
+      ${'packager'} | ${SORT_ASCENDING}
+      ${'severity'} | ${SORT_DESCENDING}
+      ${'foo'}      | ${undefined}
+    `('sets the sort field to $field and sort order to $order', ({ field, order }) => {
       mutations[types.SET_SORT_FIELD](state, field);
 
       expect(state.sortField).toBe(field);
+      expect(state.sortOrder).toBe(order);
     });
   });
 
   describe(types.TOGGLE_SORT_ORDER, () => {
     it('toggles the sort order', () => {
-      const sortState = { sortOrder: SORT_ORDER.ascending };
+      const sortState = { sortOrder: SORT_ASCENDING };
       mutations[types.TOGGLE_SORT_ORDER](sortState);
 
-      expect(sortState.sortOrder).toBe(SORT_ORDER.descending);
+      expect(sortState.sortOrder).toBe(SORT_DESCENDING);
 
       mutations[types.TOGGLE_SORT_ORDER](sortState);
 
-      expect(sortState.sortOrder).toBe(SORT_ORDER.ascending);
+      expect(sortState.sortOrder).toBe(SORT_ASCENDING);
     });
   });
 });

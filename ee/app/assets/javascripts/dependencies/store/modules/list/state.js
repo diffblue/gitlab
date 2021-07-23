@@ -1,4 +1,4 @@
-import { FILTER, REPORT_STATUS, SORT_ORDER } from './constants';
+import { FILTER, REPORT_STATUS, SORT_ORDERS, DEFAULT_SORT_FIELD } from './constants';
 
 export default () => ({
   endpoint: '',
@@ -15,6 +15,6 @@ export default () => ({
     generatedAt: '',
   },
   filter: FILTER.all,
-  sortField: 'severity',
-  sortOrder: SORT_ORDER.descending,
+  sortField: DEFAULT_SORT_FIELD,
+  sortOrder: SORT_ORDERS[DEFAULT_SORT_FIELD],
 });

@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import * as actions from 'ee/dependencies/store/modules/list/actions';
 import {
   FILTER,
-  SORT_ORDER,
+  SORT_DESCENDING,
   FETCH_ERROR_MESSAGE,
 } from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
@@ -194,7 +194,7 @@ describe('Dependencies actions', () => {
       describe('given params', () => {
         const paramsGiven = {
           sort_by: 'packager',
-          sort: SORT_ORDER.descending,
+          sort: SORT_DESCENDING,
           page: 4,
           filter: FILTER.vulnerable,
         };

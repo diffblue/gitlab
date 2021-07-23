@@ -3,11 +3,12 @@ import { GlButton, GlDropdown, GlDropdownItem, GlIcon, GlTooltipDirective } from
 import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { SORT_FIELDS, SORT_ORDER } from '../store/modules/list/constants';
+import { SORT_FIELDS, SORT_ASCENDING } from '../store/modules/list/constants';
 
 export default {
   i18n: {
     sortDirectionLabel: __('Sort direction'),
+    sortFields: SORT_FIELDS,
   },
   name: 'DependenciesActions',
   components: {
@@ -27,11 +28,6 @@ export default {
         Object.values(DEPENDENCY_LIST_TYPES).some(({ namespace }) => value === namespace),
     },
   },
-  data() {
-    return {
-      sortFields: SORT_FIELDS,
-    };
-  },
   computed: {
     ...mapState({
       sortField(state) {
@@ -45,10 +41,10 @@ export default {
       },
     }),
     sortFieldName() {
-      return this.sortFields[this.sortField];
+      return this.$options.i18n.sortFields[this.sortField];
     },
     sortOrderIcon() {
-      return this.sortOrder === SORT_ORDER.ascending ? 'sort-lowest' : 'sort-highest';
+      return this.sortOrder === SORT_ASCENDING ? 'sort-lowest' : 'sort-highest';
     },
   },
   methods: {
@@ -71,7 +67,11 @@ export default {
   <div class="btn-toolbar">
     <div class="btn-group flex-grow-1 mr-2">
       <gl-dropdown :text="sortFieldName" class="flex-grow-1 text-center" right>
-        <gl-dropdown-item v-for="(name, id) in sortFields" :key="id" @click="setSortField(id)">
+        <gl-dropdown-item
+          v-for="(name, id) in $options.i18n.sortFields"
+          :key="id"
+          @click="setSortField(id)"
+        >
           <span class="d-flex">
             <gl-icon
               class="flex-shrink-0 gl-mr-2"
