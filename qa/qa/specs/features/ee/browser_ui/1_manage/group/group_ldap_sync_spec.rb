@@ -95,7 +95,7 @@ module QA
             settings.click_add_sync_button
           end
 
-          Page::Group::Menu.perform(&:click_group_members_item)
+          Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
         it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/670' do
@@ -151,7 +151,7 @@ module QA
             settings.click_add_sync_button
           end
 
-          Page::Group::Menu.perform(&:click_group_members_item)
+          Page::Group::Menu.perform(&:click_subgroup_members_item)
         end
 
         it 'has LDAP users synced', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/669' do
