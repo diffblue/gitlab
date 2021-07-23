@@ -4790,6 +4790,9 @@ msgstr ""
 msgid "AutoDevOps|The Auto DevOps pipeline has been enabled and will be used if no alternative CI configuration file is found."
 msgstr ""
 
+msgid "AutoDevopsAlert|Security testing tools enabled with %{linkStart}Auto DevOps%{linkEnd}"
+msgstr ""
+
 msgid "AutoRemediation| 1 Merge Request"
 msgstr ""
 
