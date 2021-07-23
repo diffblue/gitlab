@@ -6,4 +6,4 @@
   = form.label :email_additional_text, _('Additional text'), class: 'label-bold'
   = form.text_area :email_additional_text, class: 'form-control gl-form-input', maxlength: Gitlab::CurrentSettings.email_additional_text_character_limit, rows: 4, data: { qa_selector: 'additional_text_textarea_field' }
   .form-text.text-muted
-    = _('Add additional text to appear in all email communications. %{character_limit} character limit') % { character_limit: number_with_delimiter(Gitlab::CurrentSettings.email_additional_text_character_limit) }
+    = _('Text added to the body of all email messages. %{character_limit} character limit') % { character_limit: number_with_delimiter(Gitlab::CurrentSettings.email_additional_text_character_limit) }
