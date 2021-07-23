@@ -11267,6 +11267,12 @@ msgstr ""
 msgid "DevopsAdoption|DAST enabled for at least one project"
 msgstr ""
 
+msgid "DevopsAdoption|Dependency Scanning"
+msgstr ""
+
+msgid "DevopsAdoption|Dependency Scanning enabled for at least one project"
+msgstr ""
+
 msgid "DevopsAdoption|Deploys"
 msgstr ""
 
