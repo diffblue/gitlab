@@ -61,6 +61,11 @@ module Security
         finding.project = project
         finding.sha = pipeline.sha
         finding.scanner = security_finding.scanner
+
+        if calculate_false_positive?
+          finding.vulnerability_flags = existing_vulnerability_flags.fetch(security_finding.uuid, [])
+        end
+
         finding.identifiers = identifiers
         finding.signatures = signatures
       end
@@ -72,6 +77,14 @@ module Security
 
     def vulnerability_for(security_finding)
       existing_vulnerabilities.dig(security_finding.scan.scan_type, security_finding.project_fingerprint)&.first
+    end
+
+    def existing_vulnerability_flags
+      @existing_vulnerability_flags ||= project.vulnerability_flags_for(security_findings.map(&:uuid))
+    end
+
+    def calculate_false_positive?
+      ::Feature.enabled?(:vulnerability_flags, project) && project.licensed_feature_available?(:sast_fp_reduction)
     end
 
     def existing_vulnerabilities

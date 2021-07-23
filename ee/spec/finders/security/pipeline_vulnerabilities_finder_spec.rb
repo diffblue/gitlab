@@ -38,7 +38,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
     end
 
     before do
-      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true)
+      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, sast_fp_reduction: true)
       # Stub out deduplication, if not done the expectations will vary based on the fixtures (which may/may not have duplicates)
       disable_deduplication
     end
@@ -136,6 +136,33 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
           expect(subject.findings.map(&:location_fingerprint)).to match_array(sast_report_fingerprints)
           expect(subject.findings.map(&:uuid)).to match_array(sast_report_uuids)
           expect(subject.findings.count).to eq(sast_count)
+        end
+
+        context "false-positive" do
+          before do
+            vulnerability_finding = create(:vulnerabilities_finding, uuid: sast_report_uuids.first, project: pipeline.project)
+            create(:vulnerabilities_flag, finding: vulnerability_finding)
+          end
+
+          it 'includes findings with false-positive' do
+            expect(subject.findings.flat_map(&:vulnerability_flags)).to be_present
+          end
+
+          it 'does not include findings with false-positive if license is not available' do
+            stub_licensed_features(sast_fp_reduction: false)
+
+            expect(subject.findings).to all(have_attributes(vulnerability_flags: be_empty))
+          end
+
+          context 'with vulnerability_flags FF disabled' do
+            before do
+              stub_feature_flags(vulnerability_flags: false)
+            end
+
+            it 'does not include findings with false-positive' do
+              expect(subject.findings).to all(have_attributes(vulnerability_flags: be_empty))
+            end
+          end
         end
       end
 
