@@ -127,49 +127,80 @@ RSpec.describe Projects::TransferService do
     end
   end
 
-  describe 'project access tokens' do
+  describe 'updating paid features' do
     let_it_be(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
     let_it_be(:free_group) { create(:group) }
 
     before do
       premium_group.add_owner(user)
       free_group.add_owner(user)
-
-      ResourceAccessTokens::CreateService.new(user, project).execute
     end
 
-    def revoked_tokens
-      PersonalAccessToken.without_impersonation.for_users(project.bots).revoked
-    end
-
-    context 'with a self managed instance' do
+    describe 'project access tokens' do
       before do
-        stub_ee_application_setting(should_check_namespace_plan: false)
+        ResourceAccessTokens::CreateService.new(user, project).execute
       end
 
-      it 'does not revoke PATs' do
-        subject.execute(group)
-
-        expect { subject.execute(group) }.not_to change { revoked_tokens.count }
-      end
-    end
-
-    context 'with GL.com' do
-      before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
+      def revoked_tokens
+        PersonalAccessToken.without_impersonation.for_users(project.bots).revoked
       end
 
-      context 'when target namespace has a premium plan' do
+      context 'with a self managed instance' do
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: false)
+        end
+
         it 'does not revoke PATs' do
-          subject.execute(premium_group)
+          subject.execute(group)
 
           expect { subject.execute(group) }.not_to change { revoked_tokens.count }
         end
       end
 
+      context 'with GL.com' do
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: true)
+        end
+
+        context 'when target namespace has a premium plan' do
+          it 'does not revoke PATs' do
+            subject.execute(premium_group)
+
+            expect { subject.execute(group) }.not_to change { revoked_tokens.count }
+          end
+        end
+
+        context 'when target namespace has a free plan' do
+          it 'revoke PATs' do
+            expect { subject.execute(free_group) }.to change { revoked_tokens.count }.from(0).to(1)
+          end
+        end
+      end
+    end
+
+    describe 'pipeline subscriptions' do
+      let_it_be(:project_2) { create(:project, :public) }
+
+      before do
+        project.upstream_project_subscriptions.create!(upstream_project: project_2)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'when target namespace has a premium plan' do
+        it 'does not delete the pipeline subscriptions' do
+          subject.execute(premium_group)
+
+          expect { subject.execute(premium_group) }.not_to change { project.upstream_project_subscriptions.count }
+        end
+      end
+
       context 'when target namespace has a free plan' do
-        it 'revoke PATs' do
-          expect { subject.execute(free_group) }.to change { revoked_tokens.count }.from(0).to(1)
+        it 'deletes the upstream subscriptions' do
+          expect { subject.execute(free_group) }.to change { project.upstream_project_subscriptions.count }.from(1).to(0)
+        end
+
+        it 'deletes the downstream subscriptions' do
+          expect { subject.execute(free_group) }.to change { project_2.downstream_project_subscriptions.count }.from(1).to(0)
         end
       end
     end

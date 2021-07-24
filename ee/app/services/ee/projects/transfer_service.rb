@@ -49,6 +49,7 @@ module EE
       override :remove_paid_features
       def remove_paid_features
         revoke_project_access_tokens
+        delete_pipeline_subscriptions
       end
 
       def revoke_project_access_tokens
@@ -58,6 +59,12 @@ module EE
           .new(user: project.bots, impersonation: false)
           .execute
           .update_all(revoked: true)
+      end
+
+      def delete_pipeline_subscriptions
+        return if new_namespace.licensed_feature_available?(:ci_project_subscriptions)
+
+        project.upstream_project_subscriptions.destroy_all # rubocop: disable Cop/DestroyAll
       end
     end
   end
