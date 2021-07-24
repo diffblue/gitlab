@@ -1,8 +1,0 @@
----
-name: gitlab_subscription_future_renewal
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56235
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/324157
-milestone: '13.11'
-type: development
-group: group::utilization
-default_enabled: false

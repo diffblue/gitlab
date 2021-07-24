@@ -61,13 +61,5 @@ RSpec.describe GitlabSubscriptions::CheckFutureRenewalService, :use_clean_rails_
 
       it { is_expected.to be false }
     end
-
-    context 'when the `gitlab_subscription_future_renewal` feature flag is disabled' do
-      before do
-        stub_feature_flags(gitlab_subscription_future_renewal: false)
-      end
-
-      it { is_expected.to be false }
-    end
   end
 end
