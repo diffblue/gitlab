@@ -1,5 +1,5 @@
 query instanceProjects($search: String) {
-  instanceSecurityDashboard {
+  instance: instanceSecurityDashboard {
     projects(search: $search) {
       nodes {
         id

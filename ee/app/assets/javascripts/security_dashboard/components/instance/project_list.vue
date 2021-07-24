@@ -27,7 +27,7 @@ export default {
     projects: {
       query: projectsQuery,
       update(data) {
-        const projects = data?.instanceSecurityDashboard?.projects?.nodes;
+        const projects = data?.instance?.projects?.nodes;
 
         if (projects === undefined) {
           this.showErrorFlash();

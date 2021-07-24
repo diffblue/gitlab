@@ -22,7 +22,7 @@ export default {
     projects: {
       query: instanceProjectsQuery,
       update(data) {
-        return data?.instanceSecurityDashboard?.projects?.nodes ?? [];
+        return data?.instance?.projects?.nodes ?? [];
       },
       error() {
         createFlash({ message: PROJECT_LOADING_ERROR_MESSAGE });

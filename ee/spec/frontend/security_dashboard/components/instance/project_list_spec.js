@@ -29,7 +29,7 @@ describe('Project List component', () => {
 
   const getMockData = (projects) => ({
     data: {
-      instanceSecurityDashboard: {
+      instance: {
         projects: {
           nodes: projects,
         },
