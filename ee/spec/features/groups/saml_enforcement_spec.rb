@@ -119,5 +119,20 @@ RSpec.describe 'SAML access enforcement' do
         expect(page).to have_selector('#js-auto-redirect-to-provider', visible: false)
       end
     end
+
+    context 'with a merge request' do
+      let!(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+      let(:resource_path) { project_merge_request_path(project, merge_request) }
+
+      it 'redirects to the SSO page and then merge request page after login' do
+        visit resource_path
+
+        expect(current_url).to include("redirect=#{CGI.escape(resource_path)}")
+
+        click_link 'Sign in with Single Sign-On'
+
+        expect(current_path).to eq(resource_path)
+      end
+    end
   end
 end

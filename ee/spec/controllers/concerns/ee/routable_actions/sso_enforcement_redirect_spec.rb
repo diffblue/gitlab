@@ -16,13 +16,13 @@ RSpec.describe EE::RoutableActions::SsoEnforcementRedirect do
     it 'returns false for User routables' do
       routable = build_stubbed(:user)
 
-      subject = described_class.new(routable)
+      subject = described_class.new(routable, '/')
 
       expect(subject.should_redirect_to_group_saml_sso?(double, double)).to eq(false)
     end
 
     it 'returns false when routable is nil' do
-      subject = described_class.new(nil)
+      subject = described_class.new(nil, '/')
 
       expect(subject.should_redirect_to_group_saml_sso?(double, double)).to eq(false)
     end
@@ -46,19 +46,19 @@ RSpec.describe EE::RoutableActions::SsoEnforcementRedirect do
     end
 
     context 'with a project' do
-      subject { described_class.new(project) }
+      subject { described_class.new(project, '/') }
 
       it_behaves_like 'a routable with SSO enforcement redirect'
     end
 
     context 'with a nested project' do
-      subject { described_class.new(nested_project) }
+      subject { described_class.new(nested_project, '/') }
 
       it_behaves_like 'a routable with SSO enforcement redirect'
     end
 
     context 'with a project in a personal namespace' do
-      subject { described_class.new(create(:project)) }
+      subject { described_class.new(create(:project), '/') }
 
       it 'returns false' do
         expect(subject.should_redirect_to_group_saml_sso?(user, double)).to eq false
@@ -66,13 +66,13 @@ RSpec.describe EE::RoutableActions::SsoEnforcementRedirect do
     end
 
     context 'with a group' do
-      subject { described_class.new(root_group) }
+      subject { described_class.new(root_group, '/') }
 
       it_behaves_like 'a routable with SSO enforcement redirect'
     end
 
     context 'with a nested group' do
-      subject { described_class.new(nested_group) }
+      subject { described_class.new(nested_group, '/') }
 
       it_behaves_like 'a routable with SSO enforcement redirect'
     end
@@ -88,25 +88,25 @@ RSpec.describe EE::RoutableActions::SsoEnforcementRedirect do
     end
 
     context 'with a group' do
-      subject { described_class.new(root_group) }
+      subject { described_class.new(root_group, "/#{root_group.full_path}") }
 
       it_behaves_like 'a routable SSO url'
     end
 
     context 'with a nested group' do
-      subject { described_class.new(nested_group) }
+      subject { described_class.new(nested_group, "/#{nested_group.full_path}") }
 
       it_behaves_like 'a routable SSO url'
     end
 
     context 'with a project' do
-      subject { described_class.new(project) }
+      subject { described_class.new(project, "/#{project.full_path}") }
 
       it_behaves_like 'a routable SSO url'
     end
 
     context 'with a nested project' do
-      subject { described_class.new(nested_project) }
+      subject { described_class.new(nested_project, "/#{nested_project.full_path}") }
 
       it_behaves_like 'a routable SSO url'
     end
