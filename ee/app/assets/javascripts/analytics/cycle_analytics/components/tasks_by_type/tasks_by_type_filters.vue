@@ -1,5 +1,6 @@
 <script>
 import { GlDropdownDivider, GlSegmentedControl, GlIcon, GlSprintf } from '@gitlab/ui';
+import { removeFlash } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
 import {
@@ -8,7 +9,6 @@ import {
   TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS,
   TASKS_BY_TYPE_MAX_LABELS,
 } from '../../constants';
-import { removeFlash } from '../../utils';
 import LabelsSelector from '../labels_selector.vue';
 
 export default {

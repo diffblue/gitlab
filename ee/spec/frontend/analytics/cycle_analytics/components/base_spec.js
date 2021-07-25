@@ -5,7 +5,6 @@ import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
-import Metrics from 'ee/analytics/cycle_analytics/components/metrics.vue';
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
@@ -20,6 +19,7 @@ import {
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import {
   OVERVIEW_STAGE_ID,
   I18N_VSA_ERROR_STAGES,
@@ -162,7 +162,7 @@ describe('EE Value Stream Analytics component', () => {
   const findStageTable = () => wrapper.findComponent(StageTable);
 
   const displaysMetrics = (flag) => {
-    expect(wrapper.findComponent(Metrics).exists()).toBe(flag);
+    expect(wrapper.findComponent(ValueStreamMetrics).exists()).toBe(flag);
   };
 
   const displaysStageTable = (flag) => {

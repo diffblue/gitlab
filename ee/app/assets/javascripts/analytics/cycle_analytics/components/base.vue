@@ -4,11 +4,12 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { toYmd } from '../../shared/utils';
+import { METRICS_REQUESTS } from '../constants';
 import DurationChart from './duration_chart.vue';
-import Metrics from './metrics.vue';
 import TypeOfWorkCharts from './type_of_work_charts.vue';
 import ValueStreamSelect from './value_stream_select.vue';
 
@@ -21,9 +22,9 @@ export default {
     StageTable,
     PathNavigation,
     ValueStreamFilters,
+    ValueStreamMetrics,
     ValueStreamSelect,
     UrlSync,
-    Metrics,
   },
   props: {
     emptyStateSvgPath: {
@@ -140,6 +141,7 @@ export default {
       this.updateStageTablePagination(data);
     },
   },
+  METRICS_REQUESTS,
 };
 </script>
 <template>
@@ -194,7 +196,11 @@ export default {
       />
       <template v-else>
         <template v-if="isOverviewStageSelected">
-          <metrics :group-path="currentGroupPath" :request-params="cycleAnalyticsRequestParams" />
+          <value-stream-metrics
+            :request-path="currentGroupPath"
+            :request-params="cycleAnalyticsRequestParams"
+            :requests="$options.METRICS_REQUESTS"
+          />
           <duration-chart class="gl-mt-3" :stages="activeStages" />
           <type-of-work-charts />
         </template>

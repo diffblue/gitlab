@@ -1,31 +1,35 @@
+import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import Metrics from 'ee/analytics/cycle_analytics/components/metrics.vue';
-import Api from 'ee/api';
+import Api from 'ee/api'; // TODO: fix this for FOSS
 import { group } from 'jest/cycle_analytics/mock_data';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import createFlash from '~/flash';
 import { timeMetricsData, recentActivityData } from '../mock_data';
 
+const allMetrics = [...timeMetricsData, ...recentActivityData];
+
 jest.mock('~/flash');
 
-describe('Metrics', () => {
-  const { full_path: groupPath } = group;
+describe('ValueStreamMetrics', () => {
+  const { full_path: requestPath } = group;
   let wrapper;
 
   const createComponent = ({ requestParams = {} } = {}) => {
-    return shallowMount(Metrics, {
+    return shallowMount(ValueStreamMetrics, {
       propsData: {
-        groupPath,
+        requestPath,
         requestParams,
       },
     });
   };
 
-  const findAllMetrics = () => wrapper.findAllComponents(GlSingleStat);
+  const findAllMetrics = () => wrapper.findComponent(GlSingleStat).props('metrics');
 
   afterEach(() => {
     wrapper.destroy();
+    wrapper = null;
   });
 
   describe('with successful requests', () => {
@@ -40,9 +44,18 @@ describe('Metrics', () => {
     it.each(['cycleAnalyticsTimeSummaryData', 'cycleAnalyticsSummaryData'])(
       'fetches data for the %s request',
       (request) => {
-        expect(Api[request]).toHaveBeenCalledWith(groupPath, {});
+        expect(Api[request]).toHaveBeenCalledWith(requestPath, {});
       },
     );
+
+    it('will not display a loading icon', () => {
+      expect(wrapper.find(GlSkeletonLoading).exists()).toBe(false);
+    });
+
+    it('will display a loading icon if `true`', () => {
+      wrapper = createComponent({ isLoading: true });
+      expect(wrapper.find(GlSkeletonLoading).exists()).toBe(true);
+    });
 
     describe('with additional params', () => {
       beforeEach(async () => {
@@ -60,7 +73,7 @@ describe('Metrics', () => {
       it.each(['cycleAnalyticsTimeSummaryData', 'cycleAnalyticsSummaryData'])(
         'sends additional parameters as query paremeters in %s request',
         (request) => {
-          expect(Api[request]).toHaveBeenCalledWith(groupPath, {
+          expect(Api[request]).toHaveBeenCalledWith(requestPath, {
             'project_ids[]': [1],
             created_after: '2020-01-01',
             created_before: '2020-02-01',

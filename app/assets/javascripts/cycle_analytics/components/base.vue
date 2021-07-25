@@ -4,7 +4,9 @@ import Cookies from 'js-cookie';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
+import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { __ } from '~/locale';
+import { METRICS_REQUESTS } from '../constants';
 
 const OVERVIEW_DIALOG_COOKIE = 'cycle_analytics_help_dismissed';
 
@@ -16,6 +18,7 @@ export default {
     GlSprintf,
     PathNavigation,
     StageTable,
+    ValueStreamMetrics,
   },
   props: {
     noDataSvgPath: {
@@ -45,8 +48,9 @@ export default {
       'daysInPast',
       'permissions',
       'stageCounts',
+      'endpoints',
     ]),
-    ...mapGetters(['pathNavigationData']),
+    ...mapGetters(['pathNavigationData', 'filterParams']),
     displayStageEvents() {
       const { selectedStageEvents, isLoadingStage, isEmptyStage } = this;
       return selectedStageEvents.length && !isLoadingStage && !isEmptyStage;
@@ -117,6 +121,7 @@ export default {
     pageTitle: __('Value Stream Analytics'),
     recentActivity: __('Recent Project Activity'),
   },
+  METRICS_REQUESTS,
 };
 </script>
 <template>
@@ -130,54 +135,44 @@ export default {
       :selected-stage="selectedStage"
       @selected="onSelectStage"
     />
-    <gl-loading-icon v-if="isLoading" size="lg" />
-    <div v-else class="wrapper">
-      <!--
-        We wont have access to the stage counts until we move to a default value stream
-        For now we can use the `withStageCounts` flag to ensure we don't display empty stage counts
-        Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/326705
-      -->
-      <div class="card" data-testid="vsa-stage-overview-metrics">
-        <div class="card-header">{{ __('Recent Project Activity') }}</div>
-        <div class="d-flex justify-content-between">
-          <div v-for="item in summary" :key="item.title" class="gl-flex-grow-1 gl-text-center">
-            <h3 class="header">{{ item.value }}</h3>
-            <p class="text">{{ item.title }}</p>
-          </div>
-          <div class="flex-grow align-self-center text-center">
-            <div class="js-ca-dropdown dropdown inline">
-              <!-- eslint-disable-next-line @gitlab/vue-no-data-toggle -->
-              <button class="dropdown-menu-toggle" data-toggle="dropdown" type="button">
-                <span class="dropdown-label">
-                  <gl-sprintf :message="$options.i18n.dropdownText">
-                    <template #days>{{ daysInPast }}</template>
-                  </gl-sprintf>
-                  <gl-icon name="chevron-down" class="dropdown-menu-toggle-icon gl-top-3" />
-                </span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li v-for="days in $options.dayRangeOptions" :key="`day-range-${days}`">
-                  <a href="#" @click.prevent="handleDateSelect(days)">
-                    <gl-sprintf :message="$options.i18n.dropdownText">
-                      <template #days>{{ days }}</template>
-                    </gl-sprintf>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+    <div class="gl-text-right flex-grow align-self-center">
+      <div class="js-ca-dropdown dropdown inline">
+        <!-- eslint-disable-next-line @gitlab/vue-no-data-toggle -->
+        <button class="dropdown-menu-toggle" data-toggle="dropdown" type="button">
+          <span class="dropdown-label">
+            <gl-sprintf :message="$options.i18n.dropdownText">
+              <template #days>{{ daysInPast }}</template>
+            </gl-sprintf>
+            <gl-icon name="chevron-down" class="dropdown-menu-toggle-icon gl-top-3" />
+          </span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li v-for="days in $options.dayRangeOptions" :key="`day-range-${days}`">
+            <a href="#" @click.prevent="handleDateSelect(days)">
+              <gl-sprintf :message="$options.i18n.dropdownText">
+                <template #days>{{ days }}</template>
+              </gl-sprintf>
+            </a>
+          </li>
+        </ul>
       </div>
-      <stage-table
-        :is-loading="isLoading || isLoadingStage"
-        :stage-events="selectedStageEvents"
-        :selected-stage="selectedStage"
-        :stage-count="selectedStageCount"
-        :empty-state-title="emptyStageTitle"
-        :empty-state-message="emptyStageText"
-        :no-data-svg-path="noDataSvgPath"
-        :pagination="null"
-      />
     </div>
+    <value-stream-metrics
+      :request-path="endpoints.fullPath"
+      :request-params="filterParams"
+      :requests="$options.METRICS_REQUESTS"
+    />
+    <gl-loading-icon v-if="isLoading" size="lg" />
+    <stage-table
+      v-else
+      :is-loading="isLoading || isLoadingStage"
+      :stage-events="selectedStageEvents"
+      :selected-stage="selectedStage"
+      :stage-count="selectedStageCount"
+      :empty-state-title="emptyStageTitle"
+      :empty-state-message="emptyStageText"
+      :no-data-svg-path="noDataSvgPath"
+      :pagination="null"
+    />
   </div>
 </template>

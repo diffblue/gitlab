@@ -1,32 +1,50 @@
 <script>
 import { GlDeprecatedSkeletonLoading as GlSkeletonLoading, GlPopover } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import Api from 'ee/api';
+import { flatten } from 'lodash';
 import createFlash from '~/flash';
-import { sprintf, __, s__ } from '~/locale';
-import { OVERVIEW_METRICS, METRICS_POPOVER_CONTENT } from '../constants';
+import { sprintf, s__ } from '~/locale';
+import { METRICS_POPOVER_CONTENT } from '../constants';
 import { removeFlash, prepareTimeMetricsData } from '../utils';
 
-const requestData = ({ requestType, groupPath, requestParams }) => {
-  return requestType === OVERVIEW_METRICS.TIME_SUMMARY
-    ? Api.cycleAnalyticsTimeSummaryData(groupPath, requestParams)
-    : Api.cycleAnalyticsSummaryData(groupPath, requestParams);
+const requestData = ({ request, path, params, name }) => {
+  return request(path, params)
+    .then(({ data }) => data)
+    .catch(() => {
+      createFlash({
+        message: sprintf(
+          s__('There was an error while fetching value stream analytics %{name} data.'),
+          { name },
+        ),
+      });
+    });
+};
+
+const fetchMetricsData = (reqs = [], path, params) => {
+  const promises = reqs.map((r) => requestData({ ...r, path, params }));
+  return Promise.all(promises).then((responses) =>
+    prepareTimeMetricsData(flatten(responses), METRICS_POPOVER_CONTENT),
+  );
 };
 
 export default {
-  name: 'OverviewActivity',
+  name: 'ValueStreamMetrics',
   components: {
-    GlSkeletonLoading,
-    GlSingleStat,
     GlPopover,
+    GlSingleStat,
+    GlSkeletonLoading,
   },
   props: {
-    groupPath: {
+    requestPath: {
       type: String,
       required: true,
     },
     requestParams: {
       type: Object,
+      required: true,
+    },
+    requests: {
+      type: Array,
       required: true,
     },
   },
@@ -48,42 +66,13 @@ export default {
     fetchData() {
       removeFlash();
       this.isLoading = true;
-
-      Promise.all([
-        this.fetchMetricsByType(OVERVIEW_METRICS.TIME_SUMMARY),
-        this.fetchMetricsByType(OVERVIEW_METRICS.RECENT_ACTIVITY),
-      ])
-        .then(([timeSummaryData = [], recentActivityData = []]) => {
-          this.metrics = [
-            ...prepareTimeMetricsData(timeSummaryData, METRICS_POPOVER_CONTENT),
-            ...prepareTimeMetricsData(recentActivityData, METRICS_POPOVER_CONTENT),
-          ];
+      return fetchMetricsData(this.requests, this.requestPath, this.requestParams)
+        .then((data) => {
+          this.metrics = data;
           this.isLoading = false;
         })
         .catch(() => {
           this.isLoading = false;
-        });
-    },
-    fetchMetricsByType(requestType) {
-      return requestData({
-        requestType,
-        groupPath: this.groupPath,
-        requestParams: this.requestParams,
-      })
-        .then(({ data }) => data)
-        .catch(() => {
-          const requestTypeName =
-            requestType === OVERVIEW_METRICS.TIME_SUMMARY
-              ? __('time summary')
-              : __('recent activity');
-          createFlash({
-            message: sprintf(
-              s__(
-                'There was an error while fetching value stream analytics %{requestTypeName} data.',
-              ),
-              { requestTypeName },
-            ),
-          });
         });
     },
   },
@@ -109,7 +98,6 @@ export default {
           <template #title>
             <span class="gl-display-block gl-text-left">{{ metric.label }}</span>
           </template>
-
           <span v-if="metric.description">{{ metric.description }}</span>
         </gl-popover>
       </div>
