@@ -67,10 +67,7 @@ module Gitlab
           end
 
           before_transition any => :verification_failed do |instance, _|
-            instance.verification_retry_count ||= 0
-            instance.verification_retry_count += 1
-            instance.verification_retry_at = instance.next_retry_time(instance.verification_retry_count)
-            instance.verified_at = Time.current
+            instance.before_verification_failed
           end
 
           before_transition any => :verification_succeeded do |instance, _|
@@ -299,6 +296,14 @@ module Gitlab
         self.verification_retry_count = 0
         self.verification_retry_at = nil
         self.verification_failure = nil
+      end
+
+      # Overridden by Geo::VerifiableRegistry
+      def before_verification_failed
+        self.verification_retry_count ||= 0
+        self.verification_retry_count += 1
+        self.verification_retry_at = self.next_retry_time(self.verification_retry_count)
+        self.verified_at = Time.current
       end
 
       # Provides a safe and easy way to manage the verification state for a
