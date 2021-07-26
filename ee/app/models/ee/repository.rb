@@ -34,20 +34,14 @@ module EE
     end
 
     def fetch_upstream(url, forced: false, check_tags_changed: false)
-      if ::Feature.enabled?(:fetch_remote_params, project, default_enabled: :yaml)
-        return fetch_remote(
-          MIRROR_REMOTE,
-          url: url,
-          refmap: ["+refs/heads/*:refs/remotes/#{MIRROR_REMOTE}/*"],
-          ssh_auth: project&.import_data,
-          forced: forced,
-          check_tags_changed: check_tags_changed
-        )
-      end
-
-      add_remote(MIRROR_REMOTE, url)
-
-      fetch_remote(MIRROR_REMOTE, ssh_auth: project&.import_data, forced: forced, check_tags_changed: check_tags_changed)
+      fetch_remote(
+        MIRROR_REMOTE,
+        url: url,
+        refmap: ["+refs/heads/*:refs/remotes/#{MIRROR_REMOTE}/*"],
+        ssh_auth: project&.import_data,
+        forced: forced,
+        check_tags_changed: check_tags_changed
+      )
     end
 
     def upstream_branches
