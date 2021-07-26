@@ -168,18 +168,14 @@ $subscriptions-full-width-lg: 541px;
     }
   }
 
-  @mixin default-widths {
+  .edit-group,
+  .edit-profile,
+  .new-project {
     max-width: 460px;
 
     .bar {
       width: 100%;
     }
-  }
-
-  .edit-group,
-  .edit-profile,
-  .new-project {
-    @include default-widths;
 
     .normal {
       font-weight: $gl-font-weight-normal;
@@ -204,9 +200,5 @@ $subscriptions-full-width-lg: 541px;
         }
       }
     }
-  }
-
-  .group-invites {
-    @include default-widths;
   }
 }

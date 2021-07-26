@@ -68,7 +68,7 @@ module Registrations
         record_experiment_conversion_event(:remove_known_trial_form_fields)
         record_experiment_conversion_event(:trial_onboarding_issues)
 
-        redirect_to new_users_sign_up_group_invite_path(group_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
+        redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
       else
         render action: :new
       end
@@ -81,13 +81,13 @@ module Registrations
       if helpers.in_trial_during_signup_flow?
         create_lead_and_apply_trial_flow
       else
-        redirect_to new_users_sign_up_group_invite_path(group_id: @group.id, trial: false)
+        redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: false)
       end
     end
 
     def create_lead_and_apply_trial_flow
       if create_lead && apply_trial
-        redirect_to new_users_sign_up_group_invite_path(group_id: @group.id, trial: true)
+        redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: true)
       else
         render action: :new
       end

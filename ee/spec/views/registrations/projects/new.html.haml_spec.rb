@@ -8,14 +8,12 @@ RSpec.describe 'registrations/projects/new' do
   let_it_be(:project) { create(:project, namespace: namespace) }
   let_it_be(:trial_onboarding_flow) { false }
   let_it_be(:trial_during_signup_flow) { false }
-  let_it_be(:already_shown_banner) { false }
 
   before do
     assign(:project, project)
     allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:in_trial_onboarding_flow?).and_return(trial_onboarding_flow)
     allow(view).to receive(:in_trial_during_signup_flow?).and_return(trial_during_signup_flow)
-    allow(view).to receive(:already_showed_trial_activation?).and_return(already_shown_banner)
     allow(view).to receive(:import_sources_enabled?).and_return(false)
 
     render
@@ -35,14 +33,6 @@ RSpec.describe 'registrations/projects/new' do
     it 'show the trial activation' do
       expect(rendered).to have_content('Congratulations, your free trial is activated.')
     end
-
-    context 'when already shown activation banner' do
-      let_it_be(:already_shown_banner) { true }
-
-      it 'does not show trial activation banner' do
-        expect(rendered).not_to have_content('Congratulations, your free trial is activated.')
-      end
-    end
   end
 
   context 'in trial flow' do
@@ -50,14 +40,6 @@ RSpec.describe 'registrations/projects/new' do
 
     it 'show the trial activation' do
       expect(rendered).to have_content('Congratulations, your free trial is activated.')
-    end
-
-    context 'when already shown activation banner' do
-      let_it_be(:already_shown_banner) { true }
-
-      it 'does not show trial activation banner' do
-        expect(rendered).not_to have_content('Congratulations, your free trial is activated.')
-      end
     end
   end
 end

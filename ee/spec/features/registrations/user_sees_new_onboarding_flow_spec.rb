@@ -28,10 +28,6 @@ RSpec.describe 'User sees new onboarding flow', :js do
 
     click_on 'Create group'
 
-    expect(page).to have_content('Invite your teammates')
-
-    click_on 'Skip this for now'
-
     expect(page).to have_content('Create/import your first project')
     expect(page).to have_content('Your profile Your GitLab group Your first project')
     expect(page).to have_css('li.current', text: 'Your first project')

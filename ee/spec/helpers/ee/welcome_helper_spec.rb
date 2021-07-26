@@ -299,20 +299,4 @@ RSpec.describe EE::WelcomeHelper do
       it { is_expected.to eq(result) }
     end
   end
-
-  describe '#already_showed_trial_activation?' do
-    subject { helper.already_showed_trial_activation? }
-
-    it 'returns true if query param hide_trial_activation_banner is set to true' do
-      allow(helper).to receive(:params).and_return({ hide_trial_activation_banner: 'true' })
-
-      is_expected.to eq(true)
-    end
-
-    it 'returns true if query param hide_trial_activation_banner is not set' do
-      allow(helper).to receive(:params).and_return({})
-
-      is_expected.to eq(false)
-    end
-  end
 end

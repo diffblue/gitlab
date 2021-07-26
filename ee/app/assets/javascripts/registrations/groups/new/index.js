@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import mountInviteMembers from 'ee/groups/invite';
 import mountVisibilityLevelDropdown from '~/groups/visibility_level';
 import 'ee/pages/trials/country_select';
 import ProgressBar from '../../components/progress_bar.vue';
@@ -64,6 +63,5 @@ function mountTrialToggle() {
 export default () => {
   mountProgressBar();
   mountVisibilityLevelDropdown();
-  mountInviteMembers();
   mountTrialToggle();
 };
