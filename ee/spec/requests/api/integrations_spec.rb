@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe API::Services do
+RSpec.describe API::Integrations do
   let_it_be(:user) { create(:user) }
 
   let_it_be(:project) do

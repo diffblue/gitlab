@@ -28,7 +28,7 @@ module EE
                 {
                   required: false,
                   name: :static_context,
-                  type: ::API::Services::Boolean,
+                  type: ::API::Integrations::Boolean,
                   desc: 'Append instance name instead of branch to status check name'
                 }
               ]
@@ -63,7 +63,7 @@ module EE
               {
                 required: false,
                 name: :vulnerability_events,
-                type: ::API::Services::Boolean,
+                type: ::API::Integrations::Boolean,
                 desc: 'Enable notifications for vulnerability_events'
               }
             ].freeze
