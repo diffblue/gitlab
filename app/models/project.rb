@@ -1184,6 +1184,15 @@ class Project < ApplicationRecord
     import_type == 'gitea'
   end
 
+  def github_import?
+    import_type == 'github'
+  end
+
+  def github_enterprise_import?
+    github_import? &&
+      URI.parse(import_url).host != URI.parse(Octokit::Default::API_ENDPOINT).host
+  end
+
   def has_remote_mirror?
     remote_mirror_available? && remote_mirrors.enabled.exists?
   end
