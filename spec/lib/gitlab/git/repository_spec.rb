@@ -491,6 +491,8 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
   end
 
   describe '#fetch_remote' do
+    let(:url) { 'http://example.clom' }
+
     it 'delegates to the gitaly RepositoryService' do
       ssh_auth = double(:ssh_auth)
       expected_opts = {
@@ -500,17 +502,17 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
         timeout: described_class::GITLAB_PROJECTS_TIMEOUT,
         prune: false,
         check_tags_changed: false,
-        url: nil,
-        refmap: nil
+        refmap: nil,
+        http_authorization_header: ""
       }
 
-      expect(repository.gitaly_repository_client).to receive(:fetch_remote).with('remote-name', expected_opts)
+      expect(repository.gitaly_repository_client).to receive(:fetch_remote).with(url, expected_opts)
 
-      repository.fetch_remote('remote-name', ssh_auth: ssh_auth, forced: true, no_tags: true, prune: false, check_tags_changed: false)
+      repository.fetch_remote(url, ssh_auth: ssh_auth, forced: true, no_tags: true, prune: false, check_tags_changed: false)
     end
 
     it_behaves_like 'wrapping gRPC errors', Gitlab::GitalyClient::RepositoryService, :fetch_remote do
-      subject { repository.fetch_remote('remote-name') }
+      subject { repository.fetch_remote(url) }
     end
   end
 
@@ -584,29 +586,29 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
       expect_any_instance_of(Gitlab::GitalyClient::RemoteService)
         .to receive(:find_remote_root_ref).and_call_original
 
-      expect(repository.find_remote_root_ref('origin', SeedHelper::GITLAB_GIT_TEST_REPO_URL)).to eq 'master'
+      expect(repository.find_remote_root_ref(SeedHelper::GITLAB_GIT_TEST_REPO_URL)).to eq 'master'
     end
 
     it 'returns UTF-8' do
-      expect(repository.find_remote_root_ref('origin', SeedHelper::GITLAB_GIT_TEST_REPO_URL)).to be_utf8
+      expect(repository.find_remote_root_ref(SeedHelper::GITLAB_GIT_TEST_REPO_URL)).to be_utf8
     end
 
     it 'returns nil when remote name is nil' do
       expect_any_instance_of(Gitlab::GitalyClient::RemoteService)
         .not_to receive(:find_remote_root_ref)
 
-      expect(repository.find_remote_root_ref(nil, nil)).to be_nil
+      expect(repository.find_remote_root_ref(nil)).to be_nil
     end
 
     it 'returns nil when remote name is empty' do
       expect_any_instance_of(Gitlab::GitalyClient::RemoteService)
         .not_to receive(:find_remote_root_ref)
 
-      expect(repository.find_remote_root_ref('', '')).to be_nil
+      expect(repository.find_remote_root_ref('')).to be_nil
     end
 
     it_behaves_like 'wrapping gRPC errors', Gitlab::GitalyClient::RemoteService, :find_remote_root_ref do
-      subject { repository.find_remote_root_ref('origin', SeedHelper::GITLAB_GIT_TEST_REPO_URL) }
+      subject { repository.find_remote_root_ref(SeedHelper::GITLAB_GIT_TEST_REPO_URL) }
     end
   end
 

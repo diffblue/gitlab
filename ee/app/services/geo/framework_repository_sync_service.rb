@@ -15,7 +15,6 @@ module Geo
 
     delegate :registry, to: :replicator
 
-    GEO_REMOTE_NAME  = 'geo'
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_ssf_service'
     RETRIES_BEFORE_REDOWNLOAD = 5
@@ -113,7 +112,7 @@ module Geo
     def fetch_geo_mirror(repository)
       # Fetch the repository, using a JWT header for authentication
       repository.with_config(replicator.jwt_authentication_header) do
-        repository.fetch_as_mirror(replicator.remote_url, remote_name: GEO_REMOTE_NAME, forced: true)
+        repository.fetch_as_mirror(replicator.remote_url, forced: true)
       end
     end
 
@@ -265,7 +264,7 @@ module Geo
         scope: repository.full_path
       ).authorization
 
-      repository.update_root_ref(GEO_REMOTE_NAME, replicator.remote_url, authorization)
+      repository.update_root_ref(replicator.remote_url, authorization)
     end
   end
 end

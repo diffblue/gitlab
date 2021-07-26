@@ -165,7 +165,7 @@ RSpec.shared_context 'lease handling' do
 
   it 'returns the lease when sync fail' do
     allow(repository).to receive(:fetch_as_mirror)
-      .with(url_to_repo, remote_name: 'geo', forced: true)
+      .with(url_to_repo, forced: true)
       .and_raise(Gitlab::Shell::Error)
 
     expect_to_cancel_exclusive_lease(lease_key, lease_uuid)

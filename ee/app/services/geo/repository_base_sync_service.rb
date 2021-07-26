@@ -15,7 +15,6 @@ module Geo
 
     attr_reader :project
 
-    GEO_REMOTE_NAME  = 'geo'
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_service'
 
@@ -97,7 +96,7 @@ module Geo
     def fetch_geo_mirror(repository)
       # Fetch the repository, using a JWT header for authentication
       repository.with_config(jwt_authentication_header) do
-        repository.fetch_as_mirror(remote_url, remote_name: GEO_REMOTE_NAME, forced: true)
+        repository.fetch_as_mirror(remote_url, forced: true)
       end
     end
 

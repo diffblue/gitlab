@@ -73,17 +73,19 @@ module Gitlab
       # rubocop: disable Metrics/ParameterLists
       # The `remote` parameter is going away soonish anyway, at which point the
       # Rubocop warning can be enabled again.
-      def fetch_remote(remote, url:, refmap:, ssh_auth:, forced:, no_tags:, timeout:, prune: true, check_tags_changed: false)
+      def fetch_remote(url, refmap:, ssh_auth:, forced:, no_tags:, timeout:, prune: true, check_tags_changed: false)
         request = Gitaly::FetchRemoteRequest.new(
-          repository: @gitaly_repo, remote: remote, force: forced,
-          no_tags: no_tags, timeout: timeout, no_prune: !prune,
-          check_tags_changed: check_tags_changed
+          repository: @gitaly_repo,
+          force: forced,
+          no_tags: no_tags,
+          timeout: timeout,
+          no_prune: !prune,
+          check_tags_changed: check_tags_changed,
+          remote_params: Gitaly::Remote.new(
+            url: url,
+            mirror_refmaps: Array.wrap(refmap).map(&:to_s)
+          )
         )
-
-        if url
-          request.remote_params = Gitaly::Remote.new(url: url,
-                                                     mirror_refmaps: Array.wrap(refmap).map(&:to_s))
-        end
 
         if ssh_auth&.ssh_mirror_url?
           if ssh_auth.ssh_key_auth? && ssh_auth.ssh_private_key.present?

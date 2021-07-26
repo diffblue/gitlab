@@ -35,8 +35,7 @@ module EE
 
     def fetch_upstream(url, forced: false, check_tags_changed: false)
       fetch_remote(
-        MIRROR_REMOTE,
-        url: url,
+        url,
         refmap: ["+refs/heads/*:refs/remotes/#{MIRROR_REMOTE}/*"],
         ssh_auth: project&.import_data,
         forced: forced,
@@ -96,8 +95,8 @@ module EE
     end
 
     # Update the default branch querying the remote to determine its HEAD
-    def update_root_ref(remote, remote_url, authorization)
-      root_ref = find_remote_root_ref(remote, remote_url, authorization)
+    def update_root_ref(remote_url, authorization)
+      root_ref = find_remote_root_ref(remote_url, authorization)
       change_head(root_ref) if root_ref.present?
     rescue ::Gitlab::Git::Repository::NoRepository => e
       ::Gitlab::AppLogger.error("Error updating root ref for repository #{full_path} (#{container.id}): #{e.message}.")
