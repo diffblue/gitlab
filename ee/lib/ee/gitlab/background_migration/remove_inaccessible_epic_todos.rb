@@ -20,6 +20,11 @@ module EE
 
           self.inheritance_column = :_type_disabled
           self.enumerate_columns_in_select_statements = true
+
+          # backported from ApplicationRecord
+          def self.cached_column_list
+            self.column_names.map { |column_name| self.arel_table[column_name] }
+          end
         end
 
         class GroupGroupLink < ActiveRecord::Base
@@ -47,7 +52,9 @@ module EE
           end
 
           def members_with_parents
-            group_hierarchy_members = Member.where(source_type: 'Namespace', source_id: source_ids)
+            group_hierarchy_members = Member
+              .where(source_type: 'Namespace', source_id: source_ids)
+              .select(*Member.cached_column_list)
 
             Member.from_union([group_hierarchy_members,
                                members_from_self_and_ancestor_group_shares])
