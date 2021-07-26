@@ -1,8 +1,0 @@
----
-name: geo_snippet_repository_verification
-introduced_by_url: 
-rollout_issue_url: 
-milestone: '13.10'
-type: development
-group: group::geo
-default_enabled: false
