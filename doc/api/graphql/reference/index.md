@@ -4176,6 +4176,7 @@ Input type: `UpdateIssueInput`
 | <a id="mutationupdateissueepicid"></a>`epicId` | [`EpicID`](#epicid) | The ID of the parent epic. NULL when removing the association. |
 | <a id="mutationupdateissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | The desired health status. |
 | <a id="mutationupdateissueiid"></a>`iid` | [`String!`](#string) | The IID of the issue to mutate. |
+| <a id="mutationupdateissuelabelids"></a>`labelIds` | [`[ID!]`](#id) | The IDs of labels to be set. Replaces existing issue labels. |
 | <a id="mutationupdateissuelocked"></a>`locked` | [`Boolean`](#boolean) | Indicates discussion is locked on the issue. |
 | <a id="mutationupdateissuemilestoneid"></a>`milestoneId` | [`ID`](#id) | The ID of the milestone to assign to the issue. On update milestone will be removed if set to null. |
 | <a id="mutationupdateissueprojectpath"></a>`projectPath` | [`ID!`](#id) | The project the issue to mutate is in. |
