@@ -22282,6 +22282,9 @@ msgstr ""
 msgid "No schedules"
 msgstr ""
 
+msgid "No severity matches the provided parameter"
+msgstr ""
+
 msgid "No source selected"
 msgstr ""
 
@@ -29837,6 +29840,9 @@ msgstr ""
 msgid "Set requirements for a user to sign-in. Enable mandatory two-factor authentication."
 msgstr ""
 
+msgid "Set severity"
+msgstr ""
+
 msgid "Set size limits for displaying diffs in the browser."
 msgstr ""
 
@@ -29981,6 +29987,9 @@ msgstr ""
 msgid "Sets the milestone to %{milestone_reference}."
 msgstr ""
 
+msgid "Sets the severity"
+msgstr ""
+
 msgid "Sets time estimate to %{time_estimate}."
 msgstr ""
 
@@ -30006,6 +30015,9 @@ msgid "Several security scans are enabled because %{linkStart}Auto DevOps%{linkE
 msgstr ""
 
 msgid "Severity"
+msgstr ""
+
+msgid "Severity updated to %{severity}."
 msgstr ""
 
 msgid "SeverityWidget|Severity"
