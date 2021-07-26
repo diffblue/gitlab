@@ -97,16 +97,36 @@ describe('SubscriptionTable component', () => {
   });
 
   describe('when it is a trial', () => {
-    it('should render the card title "GitLab.com: Trial"', async () => {
+    it('renders the card title', async () => {
       await createComponentWithStore({
+        provide: {
+          planName: 'Gold Plan',
+        },
         state: {
           plan: {
-            code: 'gold',
             trial: true,
           },
         },
       });
-      expect(wrapper.findByTestId('subscription-header').text()).toContain('Trial');
+      const subscriptionHeaderText = wrapper.findByTestId('subscription-header').text();
+
+      expect(subscriptionHeaderText).toContain('GitLab.com: Gold Plan Trial');
+    });
+
+    it('renders the title for a plan with Trial in the name', async () => {
+      await createComponentWithStore({
+        provide: {
+          planName: 'Ultimate SaaS Trial Plan',
+        },
+        state: {
+          plan: {
+            trial: true,
+          },
+        },
+      });
+      const subscriptionHeaderText = wrapper.findByTestId('subscription-header').text();
+
+      expect(subscriptionHeaderText).toContain('GitLab.com: Ultimate SaaS Plan Trial');
     });
   });
 

@@ -7,6 +7,7 @@ import {
   TABLE_TYPE_FREE,
   TABLE_TYPE_TRIAL,
   DAYS_FOR_RENEWAL,
+  PLAN_TITLE_TRIAL_TEXT,
 } from 'ee/billings/constants';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -68,7 +69,9 @@ export default {
       return !this.isFreePlan;
     },
     subscriptionHeader() {
-      const planName = this.isFreePlan ? s__('SubscriptionTable|Free') : escape(this.planName);
+      const planName = this.isFreePlan
+        ? s__('SubscriptionTable|Free')
+        : escape(this.planName.replace(PLAN_TITLE_TRIAL_TEXT, ''));
       const suffix = this.isSubscription && this.plan.trial ? s__('SubscriptionTable|Trial') : '';
 
       return `${this.namespaceName}: ${planName} ${suffix}`;
