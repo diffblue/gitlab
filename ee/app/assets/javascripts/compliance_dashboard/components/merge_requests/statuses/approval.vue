@@ -45,7 +45,7 @@ export default {
 
 <template>
   <gl-link
-    href="https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/#approval-status-and-separation-of-duties"
+    href="https://docs.gitlab.com/ee/user/compliance/compliance_report/#approval-status-and-separation-of-duties"
   >
     <ci-icon v-gl-tooltip.left="tooltip" class="gl-display-flex" :status="{ icon, group }" />
   </gl-link>

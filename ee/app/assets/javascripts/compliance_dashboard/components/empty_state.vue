@@ -16,11 +16,11 @@ export default {
   strings: {
     heading: __("A merge request hasn't yet been merged"),
     subheading: __(
-      'The Compliance Report captures merged changes that violate compliance best practices.',
+      'The compliance report captures merged changes that violate compliance best practices.',
     ),
     documentation: __('View documentation'),
   },
-  documentationPath: 'https://docs.gitlab.com/ee/user/compliance/compliance_dashboard/index.html',
+  documentationPath: 'https://docs.gitlab.com/ee/user/compliance/compliance_report/index.html',
 };
 </script>
 
