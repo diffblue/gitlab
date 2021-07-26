@@ -252,6 +252,10 @@ RSpec.describe Issues::UpdateService do
       subject { update_issue(params) }
 
       context 'when a user does not have permissions to assign an epic' do
+        before do
+          project.add_guest(author)
+        end
+
         it 'raises an exception' do
           expect { subject }.to raise_error(Gitlab::Access::AccessDeniedError)
         end

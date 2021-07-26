@@ -22,7 +22,7 @@ RSpec.describe Mutations::Issues::SetEpic do
     context 'when the user can update the issue' do
       before do
         stub_licensed_features(epics: true)
-        project.add_developer(user)
+        project.add_guest(user)
       end
 
       it 'raises an error if the epic is not accessible to the user' do

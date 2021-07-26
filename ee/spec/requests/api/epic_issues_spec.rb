@@ -120,10 +120,16 @@ RSpec.describe API::EpicIssues do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        it 'returns 403 forbidden error for a user without permissions to admin the epic' do
-          post api(url, user)
+        context 'With user without permissions to admin the issue' do
+          before do
+            project.add_guest(user)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 forbidden error' do
+            post api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
         context 'when issue project is not under the epic group' do
@@ -205,10 +211,16 @@ RSpec.describe API::EpicIssues do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        it 'returns 403 forbidden error for a user without permissions to admin the epic' do
-          delete api(url, user)
+        context 'With user without permissions to admin the issue' do
+          before do
+            project.add_guest(user)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 forbidden error' do
+            delete api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
         context 'when epic_issue association does not include the epic in the url' do

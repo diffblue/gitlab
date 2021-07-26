@@ -52,7 +52,7 @@ module EE
 
         return unless epic
 
-        unless can?(current_user, :admin_epic, epic)
+        unless can?(current_user, :admin_issue, issue)
           raise ::Gitlab::Access::AccessDeniedError
         end
 

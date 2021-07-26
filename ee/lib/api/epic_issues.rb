@@ -40,7 +40,7 @@ module API
         use :pagination
       end
       put ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
-        authorize_can_admin_epic!
+        authorize!(:admin_issue, link.issue)
 
         update_params = {
           move_before_id: params[:move_before_id],
@@ -84,9 +84,8 @@ module API
       end
       # rubocop: disable CodeReuse/ActiveRecord
       post ':id/(-/)epics/:epic_iid/issues/:issue_id' do
-        authorize_can_admin_epic!
-
         issue = Issue.find(params[:issue_id])
+        authorize!(:admin_issue, issue)
 
         create_params = { target_issuable: issue }
 
@@ -110,8 +109,7 @@ module API
         requires :epic_issue_id, type: Integer, desc: 'The ID of the association'
       end
       delete ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
-        authorize_can_admin_epic!
-
+        authorize!(:admin_issue, link.issue)
         result = ::EpicIssues::DestroyService.new(link, current_user).execute
 
         if result[:status] == :success
