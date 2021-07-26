@@ -7,7 +7,7 @@ module Mutations
 
       graphql_name 'PromoteToEpic'
 
-      argument :group_path, GraphQL::ID_TYPE,
+      argument :group_path, GraphQL::Types::ID,
                required: false,
                description: 'The group the promoted epic will belong to.'
 

@@ -48,7 +48,7 @@ module EE
               description: 'Compliance frameworks associated with the project.',
               null: true
 
-        field :security_dashboard_path, GraphQL::STRING_TYPE,
+        field :security_dashboard_path, GraphQL::Types::String,
               description: "Path to project's security dashboard.",
               null: true
 

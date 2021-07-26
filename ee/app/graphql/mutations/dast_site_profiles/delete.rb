@@ -5,7 +5,7 @@ module Mutations
     class Delete < BaseMutation
       graphql_name 'DastSiteProfileDelete'
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                required: true,
                description: 'The project the site profile belongs to.'
 

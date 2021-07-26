@@ -5,11 +5,11 @@ module Mutations
     class Base < ::Mutations::BaseMutation
       include Mutations::ResolvesIssuable
 
-      argument :iid, GraphQL::ID_TYPE,
+      argument :iid, GraphQL::Types::ID,
                required: true,
                description: "The IID of the epic to mutate."
 
-      argument :group_path, GraphQL::ID_TYPE,
+      argument :group_path, GraphQL::Types::ID,
                required: true,
                description: 'The group the epic to mutate belongs to.'
 

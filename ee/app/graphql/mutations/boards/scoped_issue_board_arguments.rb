@@ -26,7 +26,7 @@ module Mutations
                  description: 'ID of iteration to be assigned to the board.'
 
         argument :weight,
-                 GraphQL::INT_TYPE,
+                 GraphQL::Types::Int,
                  required: false,
                  description: 'Weight value to be assigned to the board.'
       end

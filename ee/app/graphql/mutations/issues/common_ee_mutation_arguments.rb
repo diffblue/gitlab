@@ -11,7 +11,7 @@ module Mutations
                  required: false,
                  description: 'The desired health status.'
 
-        argument :weight, GraphQL::INT_TYPE,
+        argument :weight, GraphQL::Types::Int,
                  required: false,
                  description: 'The weight of the issue.'
       end

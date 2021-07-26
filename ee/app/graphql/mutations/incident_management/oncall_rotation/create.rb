@@ -8,16 +8,16 @@ module Mutations
 
         graphql_name 'OncallRotationCreate'
 
-        argument :project_path, GraphQL::ID_TYPE,
+        argument :project_path, GraphQL::Types::ID,
                  required: true,
                  description: 'The project to create the on-call schedule in.'
 
-        argument :schedule_iid, GraphQL::STRING_TYPE,
+        argument :schedule_iid, GraphQL::Types::String,
                  required: true,
                  description: 'The IID of the on-call schedule to create the on-call rotation in.',
                  as: :iid
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: true,
                  description: 'The name of the on-call rotation.'
 

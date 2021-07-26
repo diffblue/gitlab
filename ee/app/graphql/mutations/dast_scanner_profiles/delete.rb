@@ -9,7 +9,7 @@ module Mutations
 
       ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                 required: true,
                 description: 'Full path for the project the scanner profile belongs to.'
 

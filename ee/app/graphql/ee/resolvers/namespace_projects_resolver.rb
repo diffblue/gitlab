@@ -7,12 +7,12 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
-        argument :has_code_coverage, GraphQL::BOOLEAN_TYPE,
+        argument :has_code_coverage, GraphQL::Types::Boolean,
                  required: false,
                  default_value: false,
                  description: 'Returns only the projects which have code coverage.'
 
-        argument :has_vulnerabilities, GraphQL::BOOLEAN_TYPE,
+        argument :has_vulnerabilities, GraphQL::Types::Boolean,
                  required: false,
                  default_value: false,
                  description: 'Returns only the projects which have vulnerabilities.'

@@ -11,11 +11,11 @@ module EE
                    required: false,
                    description: 'Filter by epic ID. Incompatible with epicWildcardId.'
 
-          argument :iteration_title, GraphQL::STRING_TYPE,
+          argument :iteration_title, GraphQL::Types::String,
                    required: false,
                    description: 'Filter by iteration title.'
 
-          argument :weight, GraphQL::STRING_TYPE,
+          argument :weight, GraphQL::Types::String,
                    required: false,
                    description: 'Filter by weight.'
 

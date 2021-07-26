@@ -23,7 +23,7 @@ module EE
         field :iteration, type: ::Types::IterationType, null: true,
               description: 'The board iteration.'
 
-        field :weight, type: GraphQL::INT_TYPE, null: true,
+        field :weight, type: GraphQL::Types::Int, null: true,
               description: 'Weight of the board.'
       end
     end

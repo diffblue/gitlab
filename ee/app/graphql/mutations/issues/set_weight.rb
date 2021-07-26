@@ -6,7 +6,7 @@ module Mutations
       graphql_name 'IssueSetWeight'
 
       argument :weight,
-               GraphQL::INT_TYPE,
+               GraphQL::Types::Int,
                required: false,
                description: 'The desired weight for the issue. ' \
                'If set to null, weight is removed.'

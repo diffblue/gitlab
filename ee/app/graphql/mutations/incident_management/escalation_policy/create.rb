@@ -8,15 +8,15 @@ module Mutations
 
         graphql_name 'EscalationPolicyCreate'
 
-        argument :project_path, GraphQL::ID_TYPE,
+        argument :project_path, GraphQL::Types::ID,
                  required: true,
                  description: 'The project to create the escalation policy for.'
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: true,
                  description: 'The name of the escalation policy.'
 
-        argument :description, GraphQL::STRING_TYPE,
+        argument :description, GraphQL::Types::String,
                  required: false,
                  description: 'The description of the escalation policy.'
 

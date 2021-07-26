@@ -7,16 +7,16 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
-        argument :iteration_id, [::GraphQL::ID_TYPE, null: true],
+        argument :iteration_id, [::GraphQL::Types::ID, null: true],
                  required: false,
                  description: 'List of iteration Global IDs applied to the issue.'
         argument :iteration_wildcard_id, ::Types::IterationWildcardIdEnum,
                  required: false,
                  description: 'Filter by iteration ID wildcard.'
-        argument :epic_id, GraphQL::STRING_TYPE,
+        argument :epic_id, GraphQL::Types::String,
                  required: false,
                  description: 'ID of an epic associated with the issues, "none" and "any" values are supported.'
-        argument :weight, GraphQL::STRING_TYPE,
+        argument :weight, GraphQL::Types::String,
                  required: false,
                  description: 'Weight applied to the issue, "none" and "any" values are supported.'
       end

@@ -10,11 +10,11 @@ module Mutations
                  required: true,
                  description: 'The ID of the on-call schedule to create the on-call rotation in.'
 
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
                  required: false,
                  description: 'The name of the escalation policy.'
 
-        argument :description, GraphQL::STRING_TYPE,
+        argument :description, GraphQL::Types::String,
                  required: false,
                  description: 'The description of the escalation policy.'
 

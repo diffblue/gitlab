@@ -10,15 +10,15 @@ module EE
               description: 'Milestone of the list.'
         field :iteration, ::Types::IterationType, null: true,
               description: 'Iteration of the list.'
-        field :max_issue_count, GraphQL::INT_TYPE, null: true,
+        field :max_issue_count, GraphQL::Types::Int, null: true,
               description: 'Maximum number of issues in the list.'
-        field :max_issue_weight, GraphQL::INT_TYPE, null: true,
+        field :max_issue_weight, GraphQL::Types::Int, null: true,
               description: 'Maximum weight of issues in the list.'
         field :assignee, ::Types::UserType, null: true,
               description: 'Assignee in the list.'
         field :limit_metric, ::EE::Types::ListLimitMetricEnum, null: true,
               description: 'The current limit metric for the list.'
-        field :total_weight, GraphQL::INT_TYPE, null: true,
+        field :total_weight, GraphQL::Types::Int, null: true,
           description: 'Total weight of all issues in the list.'
 
         def milestone

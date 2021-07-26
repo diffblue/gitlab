@@ -10,11 +10,11 @@ module Mutations
 
         ProfileID = ::Types::GlobalIDType[::Dast::Profile]
 
-        field :pipeline_url, GraphQL::STRING_TYPE,
+        field :pipeline_url, GraphQL::Types::String,
               null: true,
               description: 'URL of the pipeline that was created.'
 
-        argument :full_path, GraphQL::ID_TYPE,
+        argument :full_path, GraphQL::Types::ID,
                  required: true,
                  description: 'Full path for the project the scanner profile belongs to.'
 

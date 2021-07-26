@@ -9,11 +9,11 @@ module Mutations
 
       authorize :security_orchestration_policies
 
-      argument :project_path, GraphQL::ID_TYPE,
+      argument :project_path, GraphQL::Types::ID,
                required: true,
                description: 'Full path of the project.'
 
-      argument :policy_yaml, GraphQL::STRING_TYPE,
+      argument :policy_yaml, GraphQL::Types::String,
                required: true,
                description: 'YAML snippet of the policy.'
 
@@ -23,7 +23,7 @@ module Mutations
                description: 'Changes the operation mode.'
 
       field :branch,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Name of the branch to which the policy changes are committed.'
 

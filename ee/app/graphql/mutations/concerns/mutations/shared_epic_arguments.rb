@@ -5,50 +5,50 @@ module Mutations
     extend ActiveSupport::Concern
 
     prepended do
-      argument :group_path, GraphQL::ID_TYPE,
+      argument :group_path, GraphQL::Types::ID,
                required: true,
                description: "The group the epic to mutate is in."
 
       argument :title,
-                GraphQL::STRING_TYPE,
+                GraphQL::Types::String,
                 required: false,
                 description: 'The title of the epic.'
 
       argument :description,
-                GraphQL::STRING_TYPE,
+                GraphQL::Types::String,
                 required: false,
                 description: 'The description of the epic.'
 
       argument :confidential,
-                GraphQL::BOOLEAN_TYPE,
+                GraphQL::Types::Boolean,
                 required: false,
                 description: 'Indicates if the epic is confidential.'
 
       argument :start_date_fixed,
-                GraphQL::STRING_TYPE,
+                GraphQL::Types::String,
                 required: false,
                 description: 'The start date of the epic.'
 
       argument :due_date_fixed,
-                GraphQL::STRING_TYPE,
+                GraphQL::Types::String,
                 required: false,
                 description: 'The end date of the epic.'
 
       argument :start_date_is_fixed,
-                GraphQL::BOOLEAN_TYPE,
+                GraphQL::Types::Boolean,
                 required: false,
                 description: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones.'
 
       argument :due_date_is_fixed,
-                GraphQL::BOOLEAN_TYPE,
+                GraphQL::Types::Boolean,
                 required: false,
                 description: 'Indicates end date should be sourced from due_date_fixed field not the issue milestones.'
       argument :add_label_ids,
-               [GraphQL::ID_TYPE],
+               [GraphQL::Types::ID],
                required: false,
                description: 'The IDs of labels to be added to the epic.'
       argument :remove_label_ids,
-               [GraphQL::ID_TYPE],
+               [GraphQL::Types::ID],
                required: false,
                description: 'The IDs of labels to be removed from the epic.'
     end

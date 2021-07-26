@@ -7,7 +7,7 @@ module Mutations
 
       authorize :read_epic
 
-      argument :subscribed_state, GraphQL::BOOLEAN_TYPE,
+      argument :subscribed_state, GraphQL::Types::Boolean,
                required: true,
                description: 'The desired state of the subscription.'
 

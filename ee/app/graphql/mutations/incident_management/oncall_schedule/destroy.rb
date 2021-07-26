@@ -6,11 +6,11 @@ module Mutations
       class Destroy < OncallScheduleBase
         graphql_name 'OncallScheduleDestroy'
 
-        argument :project_path, GraphQL::ID_TYPE,
+        argument :project_path, GraphQL::Types::ID,
                  required: true,
                  description: 'The project to remove the on-call schedule from.'
 
-        argument :iid, GraphQL::STRING_TYPE,
+        argument :iid, GraphQL::Types::String,
                  required: true,
                  description: 'The on-call schedule internal ID to remove.'
 

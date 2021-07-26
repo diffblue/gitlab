@@ -8,11 +8,11 @@ module EE
         extend ::Gitlab::Utils::Override
 
         prepended do
-          argument :merge_pipelines_enabled, GraphQL::BOOLEAN_TYPE,
+          argument :merge_pipelines_enabled, GraphQL::Types::Boolean,
             required: false,
             description: 'Indicates if merge pipelines are enabled for the project.'
 
-          argument :merge_trains_enabled, GraphQL::BOOLEAN_TYPE,
+          argument :merge_trains_enabled, GraphQL::Types::Boolean,
             required: false,
             description: 'Indicates if merge trains are enabled for the project.'
         end

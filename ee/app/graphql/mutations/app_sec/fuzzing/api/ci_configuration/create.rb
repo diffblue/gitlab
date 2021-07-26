@@ -10,20 +10,20 @@ module Mutations
 
             graphql_name 'ApiFuzzingCiConfigurationCreate'
 
-            argument :project_path, GraphQL::ID_TYPE,
+            argument :project_path, GraphQL::Types::ID,
               required: true,
               description: 'Full path of the project.'
 
-            argument :api_specification_file, GraphQL::STRING_TYPE,
+            argument :api_specification_file, GraphQL::Types::String,
               required: true,
               description: 'File path or URL to the file that defines the API surface for scanning. '\
               'Must be in the format specified by the `scanMode` argument.'
 
-            argument :auth_password, GraphQL::STRING_TYPE,
+            argument :auth_password, GraphQL::Types::String,
               required: false,
               description: 'CI variable containing the password for authenticating with the target API.'
 
-            argument :auth_username, GraphQL::STRING_TYPE,
+            argument :auth_username, GraphQL::Types::String,
               required: false,
               description: 'CI variable containing the username for authenticating with the target API.'
 
@@ -31,20 +31,20 @@ module Mutations
               required: true,
               description: 'The mode for API fuzzing scans.'
 
-            argument :scan_profile, GraphQL::STRING_TYPE,
+            argument :scan_profile, GraphQL::Types::String,
               required: false,
               description: 'Name of a default profile to use for scanning. Ex: Quick-10.'
 
-            argument :target, GraphQL::STRING_TYPE,
+            argument :target, GraphQL::Types::String,
               required: true,
               description: 'URL for the target of API fuzzing scans.'
 
-            field :configuration_yaml, GraphQL::STRING_TYPE,
+            field :configuration_yaml, GraphQL::Types::String,
               null: true,
               description: "A YAML snippet that can be inserted into the project's "\
               '`.gitlab-ci.yml` to set up API fuzzing scans.'
 
-            field :gitlab_ci_yaml_edit_path, GraphQL::STRING_TYPE,
+            field :gitlab_ci_yaml_edit_path, GraphQL::Types::String,
               null: true,
               description: "The location at which the project's `.gitlab-ci.yml` file can be edited in the browser."
 

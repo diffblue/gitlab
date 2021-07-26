@@ -6,7 +6,7 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        field :weight, GraphQL::INT_TYPE, null: false, description: 'Total weight of issues collection.'
+        field :weight, GraphQL::Types::Int, null: false, description: 'Total weight of issues collection.'
       end
 
       def weight

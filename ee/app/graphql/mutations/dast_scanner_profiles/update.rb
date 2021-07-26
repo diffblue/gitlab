@@ -11,7 +11,7 @@ module Mutations
             null: true,
             description: 'ID of the scanner profile.'
 
-      argument :full_path, GraphQL::ID_TYPE,
+      argument :full_path, GraphQL::Types::ID,
                 required: true,
                 description: 'The project the scanner profile belongs to.'
 
@@ -19,15 +19,15 @@ module Mutations
                 required: true,
                 description: 'ID of the scanner profile to be updated.'
 
-      argument :profile_name, GraphQL::STRING_TYPE,
+      argument :profile_name, GraphQL::Types::String,
                 required: true,
                 description: 'The name of the scanner profile.'
 
-      argument :spider_timeout, GraphQL::INT_TYPE,
+      argument :spider_timeout, GraphQL::Types::Int,
                 required: true,
                 description: 'The maximum number of minutes allowed for the spider to traverse the site.'
 
-      argument :target_timeout, GraphQL::INT_TYPE,
+      argument :target_timeout, GraphQL::Types::Int,
                 required: true,
                 description: 'The maximum number of seconds allowed for the site under test to respond to a request.'
 
@@ -36,12 +36,12 @@ module Mutations
                 description: 'Indicates the type of DAST scan that will run. ' \
                 'Either a Passive Scan or an Active Scan.'
 
-      argument :use_ajax_spider, GraphQL::BOOLEAN_TYPE,
+      argument :use_ajax_spider, GraphQL::Types::Boolean,
                 required: false,
                 description: 'Indicates if the AJAX spider should be used to crawl the target site. ' \
                 'True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider.'
 
-      argument :show_debug_messages, GraphQL::BOOLEAN_TYPE,
+      argument :show_debug_messages, GraphQL::Types::Boolean,
                 required: false,
                 description: 'Indicates if debug messages should be included in DAST console output. ' \
                 'True to include the debug messages.'

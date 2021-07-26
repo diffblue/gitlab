@@ -6,7 +6,7 @@ module Mutations
       extend ActiveSupport::Concern
 
       prepended do
-        argument :labels, [GraphQL::STRING_TYPE],
+        argument :labels, [GraphQL::Types::String],
                  required: false,
                  description: copy_field_description(::Types::IssueType, :labels)
 
