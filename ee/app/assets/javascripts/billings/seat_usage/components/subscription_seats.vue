@@ -130,6 +130,12 @@ export default {
         this.$refs.cannotRemoveModal.show();
       }
     },
+    isGroupInvite(item) {
+      return item.user.membership_type === 'group_invite';
+    },
+    isProjectInvite(item) {
+      return item.user.membership_type === 'project_invite';
+    },
   },
   i18n: {
     emailNotVisibleTooltipText: s__(
@@ -199,9 +205,12 @@ export default {
               :label="item.user.name"
               :sub-label="item.user.username"
             >
-              <template v-if="item.user.membership_type === 'group_invite'" #meta>
-                <gl-badge size="sm" variant="muted">
+              <template #meta>
+                <gl-badge v-if="isGroupInvite(item)" size="sm" variant="muted">
                   {{ s__('Billing|Group invite') }}
+                </gl-badge>
+                <gl-badge v-if="isProjectInvite(item)" size="sm" variant="muted">
+                  {{ s__('Billing|Project invite') }}
                 </gl-badge>
               </template>
             </gl-avatar-labeled>
