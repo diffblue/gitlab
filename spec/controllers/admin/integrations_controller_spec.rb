@@ -108,7 +108,7 @@ RSpec.describe Admin::IntegrationsController do
       get :overrides, params: { id: instance_integration.class.to_param }, format: format
     end
 
-    context 'when format is HTML' do
+    context 'when format is JSON' do
       let(:format) { :json }
 
       include_context 'JSON response'
