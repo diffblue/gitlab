@@ -28189,6 +28189,9 @@ msgstr ""
 msgid "Runners|For each solution, you will choose a capacity. 1 enables warm HA through Auto Scaling group re-spawn. 2 enables hot HA because the service is available even when a node is lost. 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
+msgid "Runners|Group Runners"
+msgstr ""
+
 msgid "Runners|IP Address"
 msgstr ""
 
@@ -28259,6 +28262,9 @@ msgid "Runners|Runner is paused, last contact was %{runner_contact} ago"
 msgstr ""
 
 msgid "Runners|Runner registration"
+msgstr ""
+
+msgid "Runners|Runners"
 msgstr ""
 
 msgid "Runners|Shared runners are available to every project in a GitLab instance. If you want a runner to build only specific projects, restrict the project in the table below. After you restrict a runner to a project, you cannot change it back to a shared runner."

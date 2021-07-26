@@ -105,6 +105,7 @@ RSpec.describe 'Group navbar' do
     before do
       group.add_owner(user)
 
+      insert_after_nav_item(_('Push Rules'), new_nav_item: ci_cd_nav_item)
       insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
       insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 
@@ -120,6 +121,7 @@ RSpec.describe 'Group navbar' do
 
       group.add_owner(user)
 
+      insert_after_nav_item(_('Push Rules'), new_nav_item: ci_cd_nav_item)
       insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
       insert_after_nav_item(
         _('Settings'),
@@ -156,6 +158,7 @@ RSpec.describe 'Group navbar' do
 
       stub_licensed_features(security_dashboard: true, group_level_compliance_dashboard: true)
 
+      insert_after_nav_item(_('Push Rules'), new_nav_item: ci_cd_nav_item)
       insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
       insert_after_nav_item(_('Settings'), new_nav_item: administration_nav_item)
 
