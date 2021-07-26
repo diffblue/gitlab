@@ -12,7 +12,7 @@ module Types
           description: 'ID of the rule.'
 
     field :name,
-          type: GraphQL::STRING_TYPE,
+          type: GraphQL::Types::String,
           null: true,
           description: 'Name of the rule.'
 

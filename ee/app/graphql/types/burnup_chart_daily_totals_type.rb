@@ -9,16 +9,16 @@ module Types
     field :date, GraphQL::Types::ISO8601Date, null: false,
           description: 'Date for burnup totals.'
 
-    field :scope_count, GraphQL::INT_TYPE, null: false,
+    field :scope_count, GraphQL::Types::Int, null: false,
           description: 'Number of issues as of this day.'
 
-    field :scope_weight, GraphQL::INT_TYPE, null: false,
+    field :scope_weight, GraphQL::Types::Int, null: false,
           description: 'Total weight of issues as of this day.'
 
-    field :completed_count, GraphQL::INT_TYPE, null: false,
+    field :completed_count, GraphQL::Types::Int, null: false,
           description: 'Number of closed issues as of this day.'
 
-    field :completed_weight, GraphQL::INT_TYPE, null: false,
+    field :completed_weight, GraphQL::Types::Int, null: false,
           description: 'Total weight of closed issues as of this day.'
   end
 end

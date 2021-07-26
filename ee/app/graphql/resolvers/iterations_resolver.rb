@@ -8,20 +8,20 @@ module Resolvers
     argument :state, Types::IterationStateEnum,
              required: false,
              description: 'Filter iterations by state.'
-    argument :title, GraphQL::STRING_TYPE,
+    argument :title, GraphQL::Types::String,
              required: false,
              description: 'Fuzzy search by title.'
 
     # rubocop:disable Graphql/IDType
-    argument :id, GraphQL::ID_TYPE,
+    argument :id, GraphQL::Types::ID,
              required: false,
              description: 'Global ID of the Iteration to look up.'
     # rubocop:enable Graphql/IDType
 
-    argument :iid, GraphQL::ID_TYPE,
+    argument :iid, GraphQL::Types::ID,
              required: false,
              description: 'Internal ID of the Iteration to look up.'
-    argument :include_ancestors, GraphQL::BOOLEAN_TYPE,
+    argument :include_ancestors, GraphQL::Types::Boolean,
              required: false,
              description: 'Whether to include ancestor iterations. Defaults to true.'
 

@@ -14,7 +14,7 @@ module Types
           description: 'Status of the site validation.',
           method: :state
 
-    field :normalized_target_url, GraphQL::STRING_TYPE, null: true,
+    field :normalized_target_url, GraphQL::Types::String, null: true,
           description: 'Normalized URL of the target to be validated.'
 
     def normalized_target_url

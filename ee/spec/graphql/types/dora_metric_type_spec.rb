@@ -10,12 +10,12 @@ RSpec.describe Types::DoraMetricType do
   describe 'date field' do
     subject { described_class.fields['date'] }
 
-    it { is_expected.to have_graphql_type(GraphQL::STRING_TYPE) }
+    it { is_expected.to have_graphql_type(GraphQL::Types::String) }
   end
 
   describe 'value field' do
     subject { described_class.fields['value'] }
 
-    it { is_expected.to have_graphql_type(GraphQL::INT_TYPE) }
+    it { is_expected.to have_graphql_type(GraphQL::Types::Int) }
   end
 end

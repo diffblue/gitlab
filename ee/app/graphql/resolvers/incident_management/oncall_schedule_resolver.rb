@@ -10,7 +10,7 @@ module Resolvers
 
       type Types::IncidentManagement::OncallScheduleType.connection_type, null: true
 
-      argument :iids, [GraphQL::ID_TYPE],
+      argument :iids, [GraphQL::Types::ID],
                required: false,
                description: 'IIDs of on-call schedules.'
 

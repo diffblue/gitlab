@@ -5,7 +5,7 @@ module Resolvers
     class ProjectsResolver < BaseResolver
       type ::Types::ProjectType, null: true
 
-      argument :search, GraphQL::STRING_TYPE,
+      argument :search, GraphQL::Types::String,
                required: false,
                description: 'Search query for project name, path, or description.'
 

@@ -12,11 +12,11 @@ module CommonRequirementArguments
               required: false,
               description: 'Filter requirements by state.'
 
-    argument :search, GraphQL::STRING_TYPE,
+    argument :search, GraphQL::Types::String,
               required: false,
               description: 'Search query for requirement title.'
 
-    argument :author_username, [GraphQL::STRING_TYPE],
+    argument :author_username, [GraphQL::Types::String],
               required: false,
               description: 'Filter requirements by author username.'
   end

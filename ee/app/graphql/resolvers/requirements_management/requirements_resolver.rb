@@ -8,11 +8,11 @@ module Resolvers
 
       type ::Types::RequirementsManagement::RequirementType.connection_type, null: true
 
-      argument :iid, GraphQL::ID_TYPE,
+      argument :iid, GraphQL::Types::ID,
                required: false,
                description: 'IID of the requirement, e.g., "1".'
 
-      argument :iids, [GraphQL::ID_TYPE],
+      argument :iids, [GraphQL::Types::ID],
                required: false,
                description: 'List of IIDs of requirements, e.g., `[1, 2]`.'
 

@@ -11,23 +11,23 @@ module Types
 
       alias_method :degradation, :object
 
-      field :description, GraphQL::STRING_TYPE, null: false,
+      field :description, GraphQL::Types::String, null: false,
         description: "A description of the code quality degradation."
 
-      field :fingerprint, GraphQL::STRING_TYPE, null: false,
+      field :fingerprint, GraphQL::Types::String, null: false,
         description: 'A unique fingerprint to identify the code quality degradation. For example, an MD5 hash.'
 
       field :severity, Types::Ci::CodeQualityDegradationSeverityEnum, null: false,
         description: "Status of the degradation (#{::Gitlab::Ci::Reports::CodequalityReports::SEVERITY_PRIORITIES.keys.map(&:upcase).join(', ')})."
 
-      field :path, GraphQL::STRING_TYPE, null: false,
+      field :path, GraphQL::Types::String, null: false,
         description: 'The relative path to the file containing the code quality degradation.'
 
       def path
         degradation.dig(:location, :path)
       end
 
-      field :line, GraphQL::INT_TYPE, null: false,
+      field :line, GraphQL::Types::Int, null: false,
         description: 'The line on which the code quality degradation occurred.'
 
       def line

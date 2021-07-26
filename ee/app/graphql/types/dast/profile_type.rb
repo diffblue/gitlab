@@ -11,10 +11,10 @@ module Types
       field :id, ::Types::GlobalIDType[::Dast::Profile], null: false,
             description: 'ID of the profile.'
 
-      field :name, GraphQL::STRING_TYPE, null: true,
+      field :name, GraphQL::Types::String, null: true,
             description: 'The name of the profile.'
 
-      field :description, GraphQL::STRING_TYPE, null: true,
+      field :description, GraphQL::Types::String, null: true,
             description: 'The description of the scan.'
 
       field :dast_site_profile, DastSiteProfileType, null: true,
@@ -27,7 +27,7 @@ module Types
             description: 'The associated branch.',
             calls_gitaly: true
 
-      field :edit_path, GraphQL::STRING_TYPE, null: true,
+      field :edit_path, GraphQL::Types::String, null: true,
             description: 'Relative web path to the edit page of a profile.'
 
       def edit_path

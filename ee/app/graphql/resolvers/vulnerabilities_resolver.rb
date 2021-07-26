@@ -6,7 +6,7 @@ module Resolvers
 
     type Types::VulnerabilityType, null: true
 
-    argument :project_id, [GraphQL::ID_TYPE],
+    argument :project_id, [GraphQL::Types::ID],
              required: false,
              description: 'Filter vulnerabilities by project.'
 
@@ -22,7 +22,7 @@ module Resolvers
              required: false,
              description: 'Filter vulnerabilities by state.'
 
-    argument :scanner, [GraphQL::STRING_TYPE],
+    argument :scanner, [GraphQL::Types::String],
              required: false,
              description: 'Filter vulnerabilities by VulnerabilityScanner.externalId.'
 
@@ -35,11 +35,11 @@ module Resolvers
              default_value: 'severity_desc',
              description: 'List vulnerabilities by sort order.'
 
-    argument :has_resolution, GraphQL::BOOLEAN_TYPE,
+    argument :has_resolution, GraphQL::Types::Boolean,
              required: false,
              description: 'Returns only the vulnerabilities which have been resolved on default branch.'
 
-    argument :has_issues, GraphQL::BOOLEAN_TYPE,
+    argument :has_issues, GraphQL::Types::Boolean,
              required: false,
              description: 'Returns only the vulnerabilities which have linked issues.'
 

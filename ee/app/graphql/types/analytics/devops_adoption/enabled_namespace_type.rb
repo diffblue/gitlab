@@ -8,7 +8,7 @@ module Types
         graphql_name 'DevopsAdoptionEnabledNamespace'
         description 'Enabled namespace for DevopsAdoption'
 
-        field :id, GraphQL::ID_TYPE, null: false,
+        field :id, GraphQL::Types::ID, null: false,
               description: "ID of the enabled namespace."
 
         field :namespace, Types::NamespaceType, null: true,

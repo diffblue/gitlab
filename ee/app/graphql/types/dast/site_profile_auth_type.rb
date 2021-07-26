@@ -10,33 +10,33 @@ module Types
 
       authorize :read_on_demand_scans
 
-      field :enabled, GraphQL::BOOLEAN_TYPE,
+      field :enabled, GraphQL::Types::Boolean,
             null: true,
             method: :auth_enabled,
             description: 'Indicates whether authentication is enabled.'
 
-      field :url, GraphQL::STRING_TYPE,
+      field :url, GraphQL::Types::String,
             null: true,
             method: :auth_url,
             description: 'The URL of the page containing the sign-in HTML ' \
                          'form on the target website.'
 
-      field :username_field, GraphQL::STRING_TYPE,
+      field :username_field, GraphQL::Types::String,
             null: true,
             method: :auth_username_field,
             description: 'The name of username field at the sign-in HTML form.'
 
-      field :password_field, GraphQL::STRING_TYPE,
+      field :password_field, GraphQL::Types::String,
             null: true,
             method: :auth_password_field,
             description: 'The name of password field at the sign-in HTML form.'
 
-      field :username, GraphQL::STRING_TYPE,
+      field :username, GraphQL::Types::String,
             null: true,
             method: :auth_username,
             description: 'The username to authenticate with on the target website.'
 
-      field :password, GraphQL::STRING_TYPE,
+      field :password, GraphQL::Types::String,
             null: true,
             description: 'Redacted password to authenticate with on the target website.'
     end

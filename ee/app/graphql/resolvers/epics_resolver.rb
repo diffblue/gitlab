@@ -5,11 +5,11 @@ module Resolvers
     include TimeFrameArguments
     include LooksAhead
 
-    argument :iid, GraphQL::ID_TYPE,
+    argument :iid, GraphQL::Types::ID,
              required: false,
              description: 'IID of the epic, e.g., "1".'
 
-    argument :iids, [GraphQL::ID_TYPE],
+    argument :iids, [GraphQL::Types::ID],
              required: false,
              description: 'List of IIDs of epics, e.g., `[1, 2]`.'
 
@@ -17,7 +17,7 @@ module Resolvers
              required: false,
              description: 'Filter epics by state.'
 
-    argument :search, GraphQL::STRING_TYPE,
+    argument :search, GraphQL::Types::String,
              required: false,
              description: 'Search query for epic title or description.'
 
@@ -29,37 +29,37 @@ module Resolvers
              required: false,
              description: 'List epics by sort order.'
 
-    argument :author_username, GraphQL::STRING_TYPE,
+    argument :author_username, GraphQL::Types::String,
              required: false,
              description: 'Filter epics by author.'
 
-    argument :label_name, [GraphQL::STRING_TYPE],
+    argument :label_name, [GraphQL::Types::String],
              required: false,
              description: 'Filter epics by labels.'
 
-    argument :milestone_title, GraphQL::STRING_TYPE,
+    argument :milestone_title, GraphQL::Types::String,
              required: false,
              description: "Filter epics by milestone title, computed from epic's issues."
 
-    argument :iid_starts_with, GraphQL::STRING_TYPE,
+    argument :iid_starts_with, GraphQL::Types::String,
              required: false,
              description: 'Filter epics by IID for autocomplete.'
 
-    argument :include_ancestor_groups, GraphQL::BOOLEAN_TYPE,
+    argument :include_ancestor_groups, GraphQL::Types::Boolean,
              required: false,
              description: 'Include epics from ancestor groups.',
              default_value: false
 
-    argument :include_descendant_groups, GraphQL::BOOLEAN_TYPE,
+    argument :include_descendant_groups, GraphQL::Types::Boolean,
              required: false,
              description: 'Include epics from descendant groups.',
              default_value: true
 
-    argument :confidential, GraphQL::BOOLEAN_TYPE,
+    argument :confidential, GraphQL::Types::Boolean,
              required: false,
              description: 'Filter epics by given confidentiality.'
 
-    argument :my_reaction_emoji, GraphQL::STRING_TYPE,
+    argument :my_reaction_emoji, GraphQL::Types::String,
              required: false,
              description: 'Filter by reaction emoji applied by the current user.'
 
