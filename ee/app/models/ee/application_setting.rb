@@ -10,12 +10,6 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      include IgnorableColumns
-
-      ignore_columns %i[elasticsearch_shards elasticsearch_replicas], remove_with: '14.1', remove_after: '2021-06-22'
-      ignore_column :seat_link_enabled, remove_with: '14.2', remove_after: '2021-07-22'
-      ignore_column :cloud_license_enabled, remove_with: '14.3', remove_after: '2021-08-22'
-
       EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT = 10_000
       DEFAULT_NUMBER_OF_DAYS_BEFORE_REMOVAL = 7
       MASK_PASSWORD = '*****'

@@ -10,7 +10,6 @@ module EE
     extend ::Gitlab::Utils::Override
     extend ::Gitlab::Cache::RequestCache
     include ::Gitlab::Utils::StrongMemoize
-    include IgnorableColumns
 
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
     PUBLIC_COST_FACTOR_RELEASE_DAY = Date.new(2021, 7, 17).freeze
@@ -22,9 +21,6 @@ module EE
       include DeprecatedApprovalsBeforeMerge
       include UsageStatistics
       include ProjectSecurityScannersInformation
-
-      ignore_columns :mirror_last_update_at, :mirror_last_successful_update_at, remove_after: '2019-12-15', remove_with: '12.6'
-      ignore_columns :pull_mirror_branch_prefix, remove_after: '2021-02-22', remove_with: '14.0'
 
       before_save :set_override_pull_mirror_available, unless: -> { ::Gitlab::CurrentSettings.mirror_available }
       before_save :set_next_execution_timestamp_to_now, if: ->(project) { project.mirror? && project.mirror_changed? && project.import_state }
