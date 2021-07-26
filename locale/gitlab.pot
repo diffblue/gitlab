@@ -38369,6 +38369,9 @@ msgstr ""
 msgid "ciReport|Container scanning detects known vulnerabilities in your docker images."
 msgstr ""
 
+msgid "ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again."
+msgstr ""
+
 msgid "ciReport|Coverage Fuzzing"
 msgstr ""
 

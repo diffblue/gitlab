@@ -59,6 +59,7 @@ import * as types from 'ee/vue_shared/security_reports/store/mutation_types';
 import state from 'ee/vue_shared/security_reports/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
+import httpStatusCodes from '~/lib/utils/http_status';
 import toasted from '~/vue_shared/plugins/global_toast';
 import {
   dastFeedbacks,
@@ -411,27 +412,38 @@ describe('security reports actions', () => {
       });
     });
 
-    it('with error should dispatch `receiveDismissVulnerabilityError`', (done) => {
-      mock.onPost('dismiss_vulnerability_path').reply(500, {});
-      mockedState.vulnerabilityFeedbackPath = 'dismiss_vulnerability_path';
-      mockedState.canReadVulnerabilityFeedback = true;
+    describe.each`
+      httpStatusErrorCode                      | expectedErrorMessage
+      ${httpStatusCodes.INTERNAL_SERVER_ERROR} | ${'There was an error dismissing the vulnerability. Please try again.'}
+      ${httpStatusCodes.UNPROCESSABLE_ENTITY}  | ${'Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again.'}
+    `('with error "$httpStatusErrorCode"', ({ httpStatusErrorCode, expectedErrorMessage }) => {
+      beforeEach(() => {
+        mockedState.createVulnerabilityFeedbackDismissalPath = 'dismiss_vulnerability_path';
+        mockedState.canReadVulnerabilityFeedback = true;
+      });
 
-      testAction(
-        dismissVulnerability,
-        null,
-        mockedState,
-        [],
-        [
-          {
-            type: 'requestDismissVulnerability',
-          },
-          {
-            type: 'receiveDismissVulnerabilityError',
-            payload: 'There was an error dismissing the vulnerability. Please try again.',
-          },
-        ],
-        done,
-      );
+      it('should dispatch `receiveDismissVulnerabilityError` with the correct payload', (done) => {
+        mock
+          .onPost(mockedState.createVulnerabilityFeedbackDismissalPath)
+          .replyOnce(httpStatusErrorCode);
+
+        testAction(
+          dismissVulnerability,
+          null,
+          mockedState,
+          [],
+          [
+            {
+              type: 'requestDismissVulnerability',
+            },
+            {
+              type: 'receiveDismissVulnerabilityError',
+              payload: expectedErrorMessage,
+            },
+          ],
+          done,
+        );
+      });
     });
   });
 
