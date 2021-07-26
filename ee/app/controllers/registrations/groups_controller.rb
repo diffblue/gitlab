@@ -64,9 +64,7 @@ module Registrations
     def apply_trial_for_trial_onboarding_flow
       if apply_trial
         record_experiment_user(:remove_known_trial_form_fields, namespace_id: @group.id)
-        record_experiment_user(:trial_onboarding_issues, namespace_id: @group.id)
         record_experiment_conversion_event(:remove_known_trial_form_fields)
-        record_experiment_conversion_event(:trial_onboarding_issues)
 
         redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
       else

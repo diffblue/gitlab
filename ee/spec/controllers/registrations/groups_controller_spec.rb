@@ -102,7 +102,6 @@ RSpec.describe Registrations::GroupsController do
   describe 'POST #create', :aggregate_failure do
     let_it_be(:glm_params) { {} }
     let_it_be(:trial_form_params) { { trial: 'false' } }
-    let_it_be(:trial_onboarding_issues_enabled) { false }
     let_it_be(:trial_onboarding_flow_params) { {} }
 
     let(:dev_env_or_com) { true }
@@ -121,7 +120,6 @@ RSpec.describe Registrations::GroupsController do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        stub_experiment_for_subject(trial_onboarding_issues: trial_onboarding_issues_enabled)
         allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
       end
 
@@ -144,10 +142,9 @@ RSpec.describe Registrations::GroupsController do
             subject
           end
 
-          context 'when the trial onboarding is active - apply_trial_for_trial_onboarding_flow' do
+          context 'when in trial onboarding  - apply_trial_for_trial_onboarding_flow' do
             let_it_be(:group) { create(:group) }
             let_it_be(:trial_onboarding_flow_params) { { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' } }
-            let_it_be(:trial_onboarding_issues_enabled) { true }
             let_it_be(:apply_trial_params) do
               {
                 uid: user.id,
@@ -175,9 +172,7 @@ RSpec.describe Registrations::GroupsController do
                   expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: true })
                 end
                 expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields, namespace_id: group.id)
-                expect(controller).to receive(:record_experiment_user).with(:trial_onboarding_issues, namespace_id: group.id)
                 expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields)
-                expect(controller).to receive(:record_experiment_conversion_event).with(:trial_onboarding_issues)
               end
 
               context 'with redirection to projects page' do
