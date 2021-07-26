@@ -1100,7 +1100,7 @@ RSpec.describe Repository do
     it 'fetches the URL without creating a remote' do
       expect(repository)
         .to receive(:fetch_remote)
-        .with(url, forced: false, prune: true, refmap: :all_refs)
+        .with(url, forced: false, prune: true, refmap: :all_refs, http_authorization_header: "")
         .and_return(nil)
 
       repository.fetch_as_mirror(url)

@@ -53,13 +53,8 @@ RSpec.describe Geo::DesignRepositorySyncService do
     include_context 'lease handling'
 
     it 'fetches project repository with JWT credentials' do
-      expect(repository).to receive(:with_config)
-        .with("http.#{url_to_repo}.extraHeader" => anything)
-        .once
-        .and_call_original
-
       expect(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .once
 
       subject.execute
@@ -81,7 +76,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
 
     it 'rescues when Gitlab::Shell::Error is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error)
 
       expect { subject.execute }.not_to raise_error
@@ -89,7 +84,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
 
     it 'rescues exception when Gitlab::Git::Repository::NoRepository is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-      .with(url_to_repo, forced: true)
+      .with(url_to_repo, forced: true, http_authorization_header: anything)
       .and_raise(Gitlab::Git::Repository::NoRepository)
 
       expect { subject.execute }.not_to raise_error
@@ -97,7 +92,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
 
     it 'increases retry count when Gitlab::Git::Repository::NoRepository is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute
@@ -111,7 +106,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
       registry = create(:geo_design_registry, project: project)
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessDesign::ERROR_MESSAGES[:no_repo]))
 
       subject.execute
@@ -128,7 +123,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
       expect(Geo::DesignRegistry.last.state).to eq 'synced'
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute

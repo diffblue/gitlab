@@ -61,11 +61,9 @@ module Geo
     end
 
     def jwt_authentication_header
-      authorization = ::Gitlab::Geo::RepoSyncRequest.new(
+      ::Gitlab::Geo::RepoSyncRequest.new(
         scope: repository.full_path
       ).authorization
-
-      { "http.#{remote_url}.extraHeader" => "Authorization: #{authorization}" }
     end
 
     def deleted_params

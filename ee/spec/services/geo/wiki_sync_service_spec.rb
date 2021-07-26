@@ -39,7 +39,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
     it 'fetches wiki repository with JWT credentials' do
       expect(repository).to receive(:with_config).with("http.#{url_to_repo}.extraHeader" => anything).and_call_original
       expect(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .once
 
       subject.execute
@@ -53,7 +53,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
     it 'rescues exception when Gitlab::Shell::Error is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error)
 
       expect { subject.execute }.not_to raise_error
@@ -61,7 +61,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
     it 'rescues exception when Gitlab::Git::Repository::NoRepository is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       expect { subject.execute }.not_to raise_error
@@ -69,7 +69,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
     it 'increases retry count when Gitlab::Git::Repository::NoRepository is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute
@@ -84,7 +84,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
       registry = create(:geo_project_registry, project: project)
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessWiki::ERROR_MESSAGES[:no_repo]))
 
       subject.execute
@@ -100,7 +100,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
       described_class.new(project).execute
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute
@@ -114,7 +114,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
         create(:repository_state, :wiki_verified, project: project)
 
         allow(repository).to receive(:fetch_as_mirror)
-          .with(url_to_repo, forced: true)
+          .with(url_to_repo, forced: true, http_authorization_header: anything)
           .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessWiki::ERROR_MESSAGES[:no_repo]))
 
         subject.execute
@@ -203,7 +203,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
 
         before do
           allow(repository).to receive(:fetch_as_mirror)
-            .with(url_to_repo, forced: true)
+            .with(url_to_repo, forced: true, http_authorization_header: anything)
             .and_raise(Gitlab::Shell::Error.new('shell error'))
         end
 

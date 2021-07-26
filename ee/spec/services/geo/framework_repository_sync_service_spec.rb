@@ -60,12 +60,8 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
     include_context 'lease handling'
 
     it 'fetches project repository with JWT credentials' do
-      expect(repository).to receive(:with_config)
-        .with("http.#{url_to_repo}.extraHeader" => anything)
-        .and_call_original
-
       expect(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .once
 
       subject.execute
@@ -87,7 +83,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
     it 'rescues when Gitlab::Shell::Error is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error)
 
       expect { subject.execute }.not_to raise_error
@@ -95,7 +91,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
     it 'rescues exception and fires after_create hook when Gitlab::Git::Repository::NoRepository is raised' do
       allow(repository).to receive(:fetch_as_mirror)
-      .with(url_to_repo, forced: true)
+      .with(url_to_repo, forced: true, http_authorization_header: anything)
       .and_raise(Gitlab::Git::Repository::NoRepository)
 
       expect(repository).to receive(:after_create)
@@ -107,7 +103,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       registry.save!
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute
@@ -120,7 +116,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
     it 'marks sync as successful if no repository found' do
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessSnippet::ERROR_MESSAGES[:no_repo]))
 
       subject.execute
@@ -137,7 +133,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       expect(registry.synced?).to be true
 
       allow(repository).to receive(:fetch_as_mirror)
-        .with(url_to_repo, forced: true)
+        .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
       subject.execute
@@ -189,11 +185,6 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
             end
 
             it 'updates the default branch' do
-              expect(repository).to receive(:with_config)
-                .with("http.#{url_to_repo}.extraHeader" => anything)
-                .and_call_original
-                .once
-
               expect(repository).to receive(:change_head).with('feature').once
 
               subject.execute
@@ -208,11 +199,6 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
             end
 
             it 'updates the default branch' do
-              expect(repository).to receive(:with_config)
-                .with("http.#{url_to_repo}.extraHeader" => anything)
-                .and_call_original
-                .once
-
               expect(repository).to receive(:change_head).with('master').once
 
               subject.execute
@@ -224,7 +210,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       context 'when repository sync fail' do
         before do
           allow(repository).to receive(:fetch_as_mirror)
-            .with(url_to_repo, forced: true)
+            .with(url_to_repo, forced: true, http_authorization_header: anything)
             .and_raise(Gitlab::Shell::Error.new('shell error'))
         end
 

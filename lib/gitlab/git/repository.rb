@@ -807,7 +807,7 @@ module Gitlab
       # no_tags - should we use --no-tags flag?
       # prune - should we use --prune flag?
       # check_tags_changed - should we ask gitaly to calculate whether any tags changed?
-      def fetch_remote(url, refmap: nil, ssh_auth: nil, forced: false, no_tags: false, prune: true, check_tags_changed: false)
+      def fetch_remote(url, refmap: nil, ssh_auth: nil, forced: false, no_tags: false, prune: true, check_tags_changed: false, http_authorization_header: "")
         wrapped_gitaly_errors do
           gitaly_repository_client.fetch_remote(
             url,
@@ -817,7 +817,8 @@ module Gitlab
             no_tags: no_tags,
             prune: prune,
             check_tags_changed: check_tags_changed,
-            timeout: GITLAB_PROJECTS_TIMEOUT
+            timeout: GITLAB_PROJECTS_TIMEOUT,
+            http_authorization_header: http_authorization_header
           )
         end
       end
