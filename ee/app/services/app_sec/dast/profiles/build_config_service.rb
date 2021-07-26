@@ -17,8 +17,7 @@ module AppSec
         private
 
         def allowed?
-          can?(current_user, :create_on_demand_dast_scan, project) &&
-            ::Feature.enabled?(:dast_configuration_ui, project, default_enabled: :yaml)
+          can?(current_user, :create_on_demand_dast_scan, project)
         end
 
         def errors

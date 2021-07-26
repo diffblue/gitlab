@@ -195,16 +195,6 @@ RSpec.describe Ci::Build do
               end
             end
           end
-
-          context 'when feature is disabled' do
-            before do
-              stub_feature_flags(dast_configuration_ui: false)
-            end
-
-            it_behaves_like 'it excludes variables' do
-              let(:expected_variables) { dast_site_profile.ci_variables.concat(dast_site_profile.secret_ci_variables(user)) }
-            end
-          end
         end
 
         context 'when there is a dast_scanner_profile associated with the job' do
@@ -213,16 +203,6 @@ RSpec.describe Ci::Build do
 
           context 'when feature is enabled' do
             it_behaves_like 'it includes variables' do
-              let(:expected_variables) { dast_scanner_profile.ci_variables }
-            end
-          end
-
-          context 'when feature is disabled' do
-            before do
-              stub_feature_flags(dast_configuration_ui: false)
-            end
-
-            it_behaves_like 'it excludes variables' do
               let(:expected_variables) { dast_scanner_profile.ci_variables }
             end
           end

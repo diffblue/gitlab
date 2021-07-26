@@ -58,20 +58,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Seed::Build do
           it_behaves_like 'an insufficient permissions error'
         end
 
-        context 'when the feature is not enabled' do
-          before do
-            stub_feature_flags(dast_configuration_ui: false)
-          end
-
-          it_behaves_like 'it does not change build attributes'
-          it_behaves_like 'an insufficient permissions error'
-        end
-
-        context 'when the feature is enabled' do
-          before do
-            stub_feature_flags(dast_configuration_ui: true)
-          end
-
+        context 'dast configuration' do
           shared_examples 'it looks up dast profiles in the database' do |dast_profile_name_key|
             let(:profile_name) { public_send(dast_profile_name_key) }
 
