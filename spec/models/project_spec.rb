@@ -2407,7 +2407,7 @@ RSpec.describe Project, factory_default: :keep do
     end
   end
 
-  describe '#set_container_registry_access_level' do
+  describe '#container_registry_enabled=' do
     let_it_be_with_reload(:project) { create(:project) }
 
     it 'updates project_feature', :aggregate_failures do
