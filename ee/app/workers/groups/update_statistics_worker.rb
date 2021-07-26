@@ -9,6 +9,8 @@ module Groups
 
     sidekiq_options retry: 3
 
+    worker_resource_boundary :cpu
+
     feature_category :source_code_management
     tags :exclude_from_kubernetes
     idempotent!
