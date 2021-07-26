@@ -16,26 +16,26 @@ module Types
     field :id, ::Types::GlobalIDType[::DastSiteProfile], null: false,
           description: 'ID of the site profile.'
 
-    field :profile_name, GraphQL::STRING_TYPE, null: true,
+    field :profile_name, GraphQL::Types::String, null: true,
           description: 'The name of the site profile.',
           method: :name
 
-    field :target_url, GraphQL::STRING_TYPE, null: true,
+    field :target_url, GraphQL::Types::String, null: true,
           description: 'The URL of the target to be scanned.'
 
     field :target_type, Types::DastTargetTypeEnum, null: true,
           description: 'The type of target to be scanned.'
 
-    field :edit_path, GraphQL::STRING_TYPE, null: true,
+    field :edit_path, GraphQL::Types::String, null: true,
           description: 'Relative web path to the edit page of a site profile.'
 
     field :auth, Types::Dast::SiteProfileAuthType, null: true,
           description: 'Target authentication details.'
 
-    field :excluded_urls, [GraphQL::STRING_TYPE], null: true,
+    field :excluded_urls, [GraphQL::Types::String], null: true,
           description: 'The URLs to skip during an authenticated scan.'
 
-    field :request_headers, GraphQL::STRING_TYPE, null: true,
+    field :request_headers, GraphQL::Types::String, null: true,
           description: 'Comma-separated list of request header names and values to be ' \
                        'added to every request made by DAST.'
 
@@ -43,10 +43,10 @@ module Types
           description: 'The current validation status of the site profile.',
           method: :status
 
-    field :normalized_target_url, GraphQL::STRING_TYPE, null: true,
+    field :normalized_target_url, GraphQL::Types::String, null: true,
           description: 'Normalized URL of the target to be scanned.'
 
-    field :referenced_in_security_policies, [GraphQL::STRING_TYPE], null: true,
+    field :referenced_in_security_policies, [GraphQL::Types::String], null: true,
           calls_gitaly: true,
           description: 'List of security policy names that are referencing given project.'
 

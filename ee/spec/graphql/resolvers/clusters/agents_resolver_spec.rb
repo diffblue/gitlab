@@ -72,7 +72,8 @@ RSpec.describe Resolvers::Clusters::AgentsResolver.single do
 
       it do
         expect(subject).to be_present
-        expect(subject.type.to_s).to eq('String!')
+        expect(subject.type).to be_kind_of GraphQL::Schema::NonNull
+        expect(subject.type.unwrap).to eq GraphQL::Types::String
         expect(subject.description).to be_present
       end
     end

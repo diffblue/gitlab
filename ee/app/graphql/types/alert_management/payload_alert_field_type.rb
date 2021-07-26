@@ -14,7 +14,7 @@ module Types
             description: 'Path to value inside payload JSON.'
 
       field :label,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Human-readable label of the payload path.'
 

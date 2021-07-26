@@ -25,7 +25,7 @@ module Types
             description: 'The user who created the token.'
 
       field :description,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Description of the token.'
 
@@ -40,7 +40,7 @@ module Types
             description: 'Global ID of the token.'
 
       field :name,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Name given to the token.'
 

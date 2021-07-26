@@ -4,7 +4,7 @@ module Resolvers
   class EpicAncestorsResolver < EpicsResolver
     type Types::EpicType, null: true
 
-    argument :include_ancestor_groups, GraphQL::BOOLEAN_TYPE,
+    argument :include_ancestor_groups, GraphQL::Types::Boolean,
              required: false,
              description: 'Include epics from ancestor groups.',
              default_value: true

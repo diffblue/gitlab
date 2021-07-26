@@ -5,7 +5,7 @@ module Resolvers
     class GeoNodeResolver < BaseResolver
       type Types::Geo::GeoNodeType, null: true
 
-      argument :name, GraphQL::STRING_TYPE,
+      argument :name, GraphQL::Types::String,
                required: false,
                description: 'The name of the Geo node. Defaults to the current Geo node name.'
 

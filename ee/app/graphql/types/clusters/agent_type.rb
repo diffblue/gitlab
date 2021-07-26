@@ -19,12 +19,12 @@ module Types
             null: true,
             description: 'User object, containing information about the person who created the agent.'
 
-      field :id, GraphQL::ID_TYPE,
+      field :id, GraphQL::Types::ID,
             null: false,
             description: 'ID of the cluster agent.'
 
       field :name,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Name of the cluster agent.'
 
@@ -44,7 +44,7 @@ module Types
             description: 'Timestamp the cluster agent was updated.'
 
       field :web_path,
-            GraphQL::STRING_TYPE,
+            GraphQL::Types::String,
             null: true,
             description: 'Web path of the cluster agent.'
 

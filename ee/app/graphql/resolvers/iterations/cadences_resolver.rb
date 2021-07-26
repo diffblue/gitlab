@@ -9,19 +9,19 @@ module Resolvers
       argument :id, ::Types::GlobalIDType[::Iterations::Cadence], required: false,
         description: 'Global ID of the iteration cadence to look up.'
 
-      argument :title, GraphQL::STRING_TYPE, required: false,
+      argument :title, GraphQL::Types::String, required: false,
         description: 'Fuzzy search by title.'
 
-      argument :duration_in_weeks, GraphQL::INT_TYPE, required: false,
+      argument :duration_in_weeks, GraphQL::Types::Int, required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :duration_in_weeks)
 
-      argument :automatic, GraphQL::BOOLEAN_TYPE, required: false,
+      argument :automatic, GraphQL::Types::Boolean, required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :automatic)
 
-      argument :active, GraphQL::BOOLEAN_TYPE, required: false,
+      argument :active, GraphQL::Types::Boolean, required: false,
         description: copy_field_description(Types::Iterations::CadenceType, :active)
 
-      argument :include_ancestor_groups, GraphQL::BOOLEAN_TYPE, required: false,
+      argument :include_ancestor_groups, GraphQL::Types::Boolean, required: false,
         description: 'Whether to include ancestor groups to search iterations cadences in.'
 
       type ::Types::Iterations::CadenceType.connection_type, null: true

@@ -15,7 +15,7 @@ module Resolvers
         type replicator_class.graphql_registry_type, null: true
 
         argument :ids,
-                 [GraphQL::ID_TYPE],
+                 [GraphQL::Types::ID],
                  required: false,
                  description: 'Filters registries by their ID.'
 

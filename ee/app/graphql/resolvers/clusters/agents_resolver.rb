@@ -10,7 +10,7 @@ module Resolvers
       extras [:lookahead]
 
       when_single do
-        argument :name, GraphQL::STRING_TYPE,
+        argument :name, GraphQL::Types::String,
             required: true,
             description: 'Name of the cluster agent.'
       end

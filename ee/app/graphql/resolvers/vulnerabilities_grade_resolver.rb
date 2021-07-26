@@ -4,7 +4,7 @@ module Resolvers
   class VulnerabilitiesGradeResolver < VulnerabilitiesBaseResolver
     type [::Types::VulnerableProjectsByGradeType], null: true
 
-    argument :include_subgroups, GraphQL::BOOLEAN_TYPE,
+    argument :include_subgroups, GraphQL::Types::Boolean,
               required: false,
               default_value: false,
               description: 'Include grades belonging to subgroups.'

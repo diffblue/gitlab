@@ -10,7 +10,7 @@ module Types
       field :average_coverage, GraphQL::FLOAT_TYPE, null: true,
             description: 'Average percentage of the different code coverage results available for the project.'
 
-      field :coverage_count, GraphQL::INT_TYPE, null: true,
+      field :coverage_count, GraphQL::Types::Int, null: true,
             description: 'Number of different code coverage results available.'
 
       field :last_updated_on, Types::DateType, null: true,

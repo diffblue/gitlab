@@ -9,13 +9,13 @@ module Types
           graphql_name 'ApiFuzzingScanProfile'
           description 'An API Fuzzing scan profile.'
 
-          field :name, GraphQL::STRING_TYPE, null: true,
+          field :name, GraphQL::Types::String, null: true,
                 description: 'The unique name of the profile.'
 
-          field :description, GraphQL::STRING_TYPE, null: true,
+          field :description, GraphQL::Types::String, null: true,
                 description: 'A short description of the profile.'
 
-          field :yaml, GraphQL::STRING_TYPE, null: true,
+          field :yaml, GraphQL::Types::String, null: true,
                 description: 'A syntax highlit HTML representation of the YAML.'
         end
         # rubocop: enable Graphql/AuthorizeTypes
