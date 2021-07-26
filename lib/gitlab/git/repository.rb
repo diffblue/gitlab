@@ -924,12 +924,6 @@ module Gitlab
         end
       end
 
-      def delete_config(*keys)
-        wrapped_gitaly_errors do
-          gitaly_repository_client.delete_config(keys)
-        end
-      end
-
       def disconnect_alternates
         wrapped_gitaly_errors do
           gitaly_repository_client.disconnect_alternates

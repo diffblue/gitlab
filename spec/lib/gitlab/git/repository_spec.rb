@@ -1815,34 +1815,6 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
     end
   end
 
-  describe '#delete_config' do
-    let(:repository) { mutable_repository }
-    let(:entries) do
-      {
-        'test.foo1' => 'bla bla',
-        'test.foo2' => 1234,
-        'test.foo3' => true
-      }
-    end
-
-    it 'can delete config settings' do
-      entries.each do |key, value|
-        repository_rugged.config[key] = value
-      end
-
-      expect(repository.delete_config(*%w[does.not.exist test.foo1 test.foo2])).to be_nil
-
-      # Workaround for https://github.com/libgit2/rugged/issues/785: If
-      # Gitaly changes .gitconfig while Rugged has the file loaded
-      # Rugged::Repository#each_key will report stale values unless a
-      # lookup is done first.
-      expect(repository_rugged.config['test.foo1']).to be_nil
-      config_keys = repository_rugged.config.each_key.to_a
-      expect(config_keys).not_to include('test.foo1')
-      expect(config_keys).not_to include('test.foo2')
-    end
-  end
-
   describe '#merge_to_ref' do
     let(:repository) { mutable_repository }
     let(:branch_head) { '6d394385cf567f80a8fd85055db1ab4c5295806f' }

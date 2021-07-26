@@ -285,22 +285,6 @@ module Gitlab
         nil
       end
 
-      def delete_config(keys)
-        return if keys.empty?
-
-        request = Gitaly::DeleteConfigRequest.new(repository: @gitaly_repo, keys: keys)
-
-        GitalyClient.call(
-          @storage,
-          :repository_service,
-          :delete_config,
-          request,
-          timeout: GitalyClient.fast_timeout
-        )
-
-        nil
-      end
-
       def license_short_name
         request = Gitaly::FindLicenseRequest.new(repository: @gitaly_repo)
 
