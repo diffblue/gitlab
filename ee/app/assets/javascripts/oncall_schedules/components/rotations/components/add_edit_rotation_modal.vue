@@ -12,7 +12,6 @@ import {
   parseHour,
   parseRotationDate,
 } from 'ee/oncall_schedules/utils/common_utils';
-import createFlash, { FLASH_TYPES } from '~/flash';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import { format24HourTimeStringFromInt, formatDate } from '~/lib/utils/datetime_utility';
 import { s__, __ } from '~/locale';
@@ -226,11 +225,7 @@ export default {
             }
 
             this.$refs.addEditScheduleRotationModal.hide();
-            this.$emit('fetch-rotation-shifts');
-            return createFlash({
-              message: this.$options.i18n.rotationCreated,
-              type: FLASH_TYPES.SUCCESS,
-            });
+            this.$emit('rotation-updated', i18n.rotationCreated);
           },
         )
         .catch((error) => {
@@ -275,11 +270,7 @@ export default {
             }
 
             this.$refs.addEditScheduleRotationModal.hide();
-            this.$emit('fetch-rotation-shifts');
-            return createFlash({
-              message: this.$options.i18n.editedRotation,
-              type: FLASH_TYPES.SUCCESS,
-            });
+            this.$emit('rotation-updated', i18n.editedRotation);
           },
         )
         .catch((error) => {

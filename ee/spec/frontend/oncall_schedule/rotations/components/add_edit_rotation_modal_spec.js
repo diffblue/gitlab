@@ -10,7 +10,6 @@ import createOncallScheduleRotationMutation from 'ee/oncall_schedules/graphql/mu
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash, { FLASH_TYPES } from '~/flash';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import {
   participants,
@@ -331,18 +330,17 @@ describe('AddEditRotationModal', () => {
 
     it('calls a mutation with correct parameters and creates a rotation', async () => {
       createComponentWithApollo();
-      expect(wrapper.emitted('fetch-rotation-shifts')).toBeUndefined();
+      expect(wrapper.emitted('rotation-updated')).toBeUndefined();
 
       await createRotation(wrapper);
       await awaitApolloDomMock();
 
       expect(mockHideModal).toHaveBeenCalled();
       expect(createRotationHandler).toHaveBeenCalled();
-      expect(createFlash).toHaveBeenCalledWith({
-        message: i18n.rotationCreated,
-        type: FLASH_TYPES.SUCCESS,
-      });
-      expect(wrapper.emitted('fetch-rotation-shifts')).toHaveLength(1);
+      const emittedEvents = wrapper.emitted('rotation-updated');
+      const emittedMsg = emittedEvents[0][0];
+      expect(emittedEvents).toHaveLength(1);
+      expect(emittedMsg).toBe(i18n.rotationCreated);
     });
 
     it('displays alert if mutation had a recoverable error', async () => {

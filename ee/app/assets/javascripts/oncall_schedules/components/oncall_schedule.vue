@@ -222,7 +222,11 @@ export default {
           break;
       }
     },
-    fetchRotationShifts() {
+    onRotationUpdate(message) {
+      this.$apollo.queries.rotations.refetch();
+      this.$emit('rotation-updated', message);
+    },
+    onRotationDelete() {
       this.$apollo.queries.rotations.refetch();
     },
     setRotationToUpdate(rotation) {
@@ -343,20 +347,20 @@ export default {
     <add-edit-rotation-modal
       :schedule="schedule"
       :modal-id="addRotationModalId"
-      @fetch-rotation-shifts="fetchRotationShifts"
+      @rotation-updated="onRotationUpdate"
     />
     <add-edit-rotation-modal
       :schedule="schedule"
       :modal-id="editRotationModalId"
       :rotation="rotationToUpdate"
       is-edit-mode
-      @fetch-rotation-shifts="fetchRotationShifts"
+      @rotation-updated="onRotationUpdate"
     />
     <delete-rotation-modal
       :rotation="rotationToUpdate"
       :schedule="schedule"
       :modal-id="deleteRotationModalId"
-      @fetch-rotation-shifts="fetchRotationShifts"
+      @rotation-deleted="onRotationDelete"
     />
   </div>
 </template>

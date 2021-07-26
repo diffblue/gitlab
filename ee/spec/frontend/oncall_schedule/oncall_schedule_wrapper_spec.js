@@ -1,12 +1,12 @@
-import { GlEmptyState, GlLoadingIcon, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import AddScheduleModal from 'ee/oncall_schedules/components/add_edit_schedule_modal.vue';
 import OnCallSchedule from 'ee/oncall_schedules/components/oncall_schedule.vue';
 import OnCallScheduleWrapper, {
   i18n,
 } from 'ee/oncall_schedules/components/oncall_schedules_wrapper.vue';
-import { escalationPolicyUrl } from 'ee/oncall_schedules/constants';
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -19,6 +19,7 @@ describe('On-call schedule wrapper', () => {
   let wrapper;
   const emptyOncallSchedulesSvgPath = 'illustration/path.svg';
   const projectPath = 'group/project';
+  const escalationPoliciesPath = 'group/project/-/escalation_policies';
 
   function mountComponent({ loading, schedules } = {}) {
     const $apollo = {
@@ -39,6 +40,7 @@ describe('On-call schedule wrapper', () => {
         provide: {
           emptyOncallSchedulesSvgPath,
           projectPath,
+          escalationPoliciesPath,
         },
         directives: {
           GlTooltip: createMockDirective(),
@@ -70,6 +72,7 @@ describe('On-call schedule wrapper', () => {
       provide: {
         emptyOncallSchedulesSvgPath,
         projectPath,
+        escalationPoliciesPath,
       },
     });
   }
@@ -83,7 +86,8 @@ describe('On-call schedule wrapper', () => {
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findSchedules = () => wrapper.findAllComponents(OnCallSchedule);
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findTipAlert = () => wrapper.findByTestId('tip-alert');
+  const findSuccessAlert = () => wrapper.findByTestId('success-alert');
   const findAlertLink = () => wrapper.findComponent(GlLink);
   const findModal = () => wrapper.findComponent(AddScheduleModal);
   const findAddAdditionalButton = () => wrapper.findByTestId('add-additional-schedules-button');
@@ -127,12 +131,25 @@ describe('On-call schedule wrapper', () => {
       expect(button.attributes('title')).toBe(i18n.add.tooltip);
     });
 
-    it('shows success alert on new schedule creation', async () => {
+    it('shows alert with a tip on new schedule creation', async () => {
       await findModal().vm.$emit('scheduleCreated');
-      const alert = findAlert();
+      const alert = findTipAlert();
       expect(alert.exists()).toBe(true);
       expect(alert.props('title')).toBe(i18n.successNotification.title);
-      expect(findAlertLink().attributes('href')).toBe(escalationPolicyUrl);
+      expect(findAlertLink().attributes('href')).toBe(escalationPoliciesPath);
+    });
+
+    it("hides tip alert and shows success alert on schedule's rotation update", async () => {
+      await findModal().vm.$emit('scheduleCreated');
+      expect(findTipAlert().exists()).toBe(true);
+
+      const rotationUpdateMsg = 'Rotation updated';
+      findSchedules().at(0).vm.$emit('rotation-updated', rotationUpdateMsg);
+      await nextTick();
+      expect(findTipAlert().exists()).toBe(false);
+      const successAlert = findSuccessAlert();
+      expect(successAlert.exists()).toBe(true);
+      expect(successAlert.text()).toBe(rotationUpdateMsg);
     });
   });
 
@@ -152,7 +169,7 @@ describe('On-call schedule wrapper', () => {
     it('should render newly created schedule', async () => {
       mountComponentWithApollo();
       jest.runOnlyPendingTimers();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       const schedule = findSchedules().at(1);
       expect(schedule.props('schedule')).toEqual(newlyCreatedSchedule);
     });

@@ -12,7 +12,8 @@ RSpec.describe IncidentManagement::OncallScheduleHelper do
       is_expected.to eq(
         'project-path' => project.full_path,
         'empty-oncall-schedules-svg-path' => helper.image_path('illustrations/empty-state/empty-on-call.svg'),
-        'timezones' => helper.timezone_data(format: :full).to_json
+        'timezones' => helper.timezone_data(format: :full).to_json,
+        'escalation-policies-path' => project_incident_management_escalation_policies_path(project)
       )
     end
   end

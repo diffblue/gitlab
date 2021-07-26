@@ -11,7 +11,12 @@ export default () => {
 
   if (!el) return null;
 
-  const { projectPath, emptyOncallSchedulesSvgPath, timezones } = el.dataset;
+  const {
+    projectPath,
+    emptyOncallSchedulesSvgPath,
+    timezones,
+    escalationPoliciesPath,
+  } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
     query: getTimelineWidthQuery,
@@ -27,6 +32,7 @@ export default () => {
       projectPath,
       emptyOncallSchedulesSvgPath,
       timezones: JSON.parse(timezones),
+      escalationPoliciesPath,
     },
     render(createElement) {
       return createElement(OnCallSchedulesWrapper);

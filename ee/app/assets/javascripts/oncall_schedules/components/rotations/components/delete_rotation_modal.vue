@@ -93,7 +93,7 @@ export default {
           if (error) {
             throw error;
           }
-          this.$emit('fetch-rotation-shifts');
+          this.$emit('rotation-deleted');
           this.$refs.deleteRotationModal.hide();
         })
         .catch((error) => {
