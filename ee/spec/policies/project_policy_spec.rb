@@ -1476,7 +1476,7 @@ RSpec.describe ProjectPolicy do
       :reporter   | true  | nil   | false
       :developer  | false | nil   | false
       :maintainer | false | nil   | false
-      :maintainer | true  | nil   | true
+      :maintainer | true  | nil   | false
       :owner      | false | nil   | false
       :owner      | true  | nil   | true
       :admin      | false | false | false
