@@ -8,6 +8,7 @@ import {
   GlFormInput,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
@@ -70,9 +71,11 @@ export default {
               title: this.title,
               description: this.description,
               confidential: this.confidential,
-              startDateFixed: this.startDateFixed,
+              startDateFixed: this.startDateFixed
+                ? formatDate(this.startDateFixed, 'yyyy-mm-dd')
+                : null,
               startDateIsFixed: Boolean(this.startDateFixed),
-              dueDateFixed: this.dueDateFixed,
+              dueDateFixed: this.dueDateFixed ? formatDate(this.dueDateFixed, 'yyyy-mm-dd') : null,
               dueDateIsFixed: Boolean(this.dueDateFixed),
             },
           },
