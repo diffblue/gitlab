@@ -1,0 +1,20 @@
+---
+description: Clicks a date range button in audit events
+category: admin:audit_logs:index
+action: click_date_range_button
+label_description: Notes which date range was selected
+property_description:
+value_description:
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: manage
+product_group: compliance
+product_category: audit_events
+milestone: "14.2"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66443
+distributions:
+- ee
+tiers:
+- premium
+

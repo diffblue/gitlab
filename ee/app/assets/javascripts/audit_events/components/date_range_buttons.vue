@@ -1,6 +1,7 @@
 <script>
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { datesMatch, dateAtFirstDayOfMonth, getDateInPast } from '~/lib/utils/datetime_utility';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { n__, s__ } from '~/locale';
 import { CURRENT_DATE } from '../constants';
 
@@ -41,6 +42,9 @@ export default {
       const { dateRange } = this;
       return datesMatch(startDate, dateRange.startDate) && datesMatch(endDate, dateRange.endDate);
     },
+    trackingLabel({ text }) {
+      return `date_range_button_${convertToSnakeCase(text)}`;
+    },
   },
   DATE_RANGE_OPTIONS,
 };
@@ -52,6 +56,8 @@ export default {
       v-for="(dateRangeOption, idx) in $options.DATE_RANGE_OPTIONS"
       :key="idx"
       :selected="isCurrentDateRange(dateRangeOption)"
+      data-track-action="click_date_range_button"
+      :data-track-label="trackingLabel(dateRangeOption)"
       @click="onDateRangeClicked(dateRangeOption)"
       >{{ dateRangeOption.text }}</gl-button
     >
