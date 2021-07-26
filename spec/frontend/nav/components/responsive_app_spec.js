@@ -7,11 +7,6 @@ import { resetMenuItemsActive } from '~/nav/utils/reset_menu_items_active';
 import KeepAliveSlots from '~/vue_shared/components/keep_alive_slots.vue';
 import { TEST_NAV_DATA } from '../mock_data';
 
-const HTML_HEADER_CONTENT = '<div class="header-content"></div>';
-const HTML_MENU_EXPANDED = '<div class="menu-expanded"></div>';
-const HTML_HEADER_WITH_MENU_EXPANDED =
-  '<div></div><div class="header-content menu-expanded"></div>';
-
 describe('~/nav/components/responsive_app.vue', () => {
   let wrapper;
 
@@ -25,12 +20,10 @@ describe('~/nav/components/responsive_app.vue', () => {
       },
     });
   };
-  const triggerResponsiveToggle = () => document.body.classList.toggle('top-nav-responsive-open');
   const findHome = () => wrapper.findComponent(ResponsiveHome);
   const findMobileOverlay = () => wrapper.find('[data-testid="mobile-overlay"]');
   const findSubviewHeader = () => wrapper.findComponent(ResponsiveHeader);
   const findSubviewContainer = () => wrapper.findComponent(TopNavContainerView);
-  const hasBodyResponsiveOpen = () => document.body.classList.contains('top-nav-responsive-open');
   const hasMobileOverlayVisible = () => findMobileOverlay().classes('mobile-nav-open');
 
   beforeEach(() => {
@@ -56,23 +49,6 @@ describe('~/nav/components/responsive_app.vue', () => {
     });
 
     it.each`
-      bodyHtml                          | expectation
-      ${''}                             | ${false}
-      ${HTML_HEADER_CONTENT}            | ${false}
-      ${HTML_MENU_EXPANDED}             | ${false}
-      ${HTML_HEADER_WITH_MENU_EXPANDED} | ${true}
-    `(
-      'with responsive toggle event and html set to $bodyHtml, responsive open = $expectation',
-      ({ bodyHtml, expectation }) => {
-        document.body.innerHTML = bodyHtml;
-
-        if (bodyHtml === HTML_HEADER_WITH_MENU_EXPANDED) triggerResponsiveToggle();
-
-        expect(hasBodyResponsiveOpen()).toBe(expectation);
-      },
-    );
-
-    it.each`
       events                                          | expectation
       ${[]}                                           | ${false}
       ${['bv::dropdown::show']}                       | ${true}
@@ -92,18 +68,6 @@ describe('~/nav/components/responsive_app.vue', () => {
         expect(hasMobileOverlayVisible()).toBe(expectation);
       },
     );
-  });
-
-  describe('with menu expanded in body', () => {
-    beforeEach(() => {
-      document.body.innerHTML = HTML_HEADER_WITH_MENU_EXPANDED;
-      triggerResponsiveToggle();
-      createComponent();
-    });
-
-    it('sets the body responsive open', () => {
-      expect(hasBodyResponsiveOpen()).toBe(true);
-    });
   });
 
   const projectsContainerProps = {
@@ -156,17 +120,6 @@ describe('~/nav/components/responsive_app.vue', () => {
       it('shows home', () => {
         expect(findHome().isVisible()).toBe(true);
       });
-    });
-  });
-
-  describe('when destroyed', () => {
-    beforeEach(() => {
-      createComponent();
-      wrapper.destroy();
-    });
-
-    it('responsive toggle event does nothing', () => {
-      expect(hasBodyResponsiveOpen()).toBe(false);
     });
   });
 });
