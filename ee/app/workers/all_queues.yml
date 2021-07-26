@@ -82,7 +82,7 @@
   :feature_category: :global_search
   :has_external_dependencies:
   :urgency: :throttled
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent:
   :tags: []
@@ -963,7 +963,7 @@
   :feature_category: :global_search
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent:
   :tags:
@@ -1009,7 +1009,7 @@
   :feature_category: :global_search
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent:
   :tags: []

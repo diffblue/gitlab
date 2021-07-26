@@ -8,6 +8,7 @@ class ElasticAssociationIndexerWorker # rubocop:disable Scalability/IdempotentWo
   sidekiq_options retry: 3
 
   feature_category :global_search
+  worker_resource_boundary :cpu
   tags :exclude_from_kubernetes
   loggable_arguments 0, 2
 
