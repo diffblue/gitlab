@@ -4,11 +4,11 @@
   .user-callout-copy
     %h4
       - if Gitlab::CurrentSettings.should_check_namespace_plan?
-        = _('Upgrade your plan to activate Audit Events.')
+        = s_('Promotions|Upgrade your plan to activate Audit Events.')
       - else
-        = _('Track your project with Audit Events.')
+        = s_('Promotions|Track your project with Audit Events.')
     %p
-      = _('Audit Events is a way to keep track of important events that happened in GitLab.')
+      = s_('Promotions|Audit Events is a way to keep track of important events that happened in GitLab.')
       = link_to _('Read more'), help_page_path('administration/audit_events.md'), target: '_blank'
 
     = render 'shared/promotions/promotion_link_project', location: :audit_events

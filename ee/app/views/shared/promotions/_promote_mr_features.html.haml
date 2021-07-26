@@ -6,14 +6,14 @@
       .user-callout-copy
         %h4
           - if Gitlab::CurrentSettings.should_check_namespace_plan?
-            = _('Upgrade your plan to improve merge requests.')
+            = s_('Promotions|Upgrade your plan to improve merge requests.')
           - else
-            = _('Improve merge requests and customer support with GitLab Enterprise Edition.')
+            = s_('Promotions|Improve merge requests and customer support with GitLab Enterprise Edition.')
         %ul
           - unless @project.feature_available?(:merge_request_approvers)
             %li
-              = link_to _('Merge request approvals'), help_page_path('user/project/merge_requests/merge_request_approvals.md'), target: '_blank'
+              = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/merge_request_approvals.md'), target: '_blank'
               %p
-                = _('Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
+                = s_('Promotions|Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
 
         = render 'shared/promotions/promotion_link_project', location: :mr_features
