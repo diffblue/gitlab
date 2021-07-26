@@ -37,7 +37,6 @@ RSpec.describe Geo::WikiSyncService, :geo do
     include_context 'lease handling'
 
     it 'fetches wiki repository with JWT credentials' do
-      expect(repository).to receive(:with_config).with("http.#{url_to_repo}.extraHeader" => anything).and_call_original
       expect(repository).to receive(:fetch_as_mirror)
         .with(url_to_repo, forced: true, http_authorization_header: anything)
         .once

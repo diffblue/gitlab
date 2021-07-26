@@ -17,15 +17,6 @@ module EE
       delegate :checksum, :find_remote_root_ref, to: :raw_repository
     end
 
-    # Transiently sets a configuration variable
-    def with_config(values = {})
-      raw_repository.set_config(values)
-
-      yield
-    ensure
-      raw_repository.delete_config(*values.keys)
-    end
-
     # Runs code after a repository has been synced.
     def after_sync
       expire_all_method_caches
