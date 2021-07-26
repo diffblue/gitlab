@@ -9204,9 +9204,6 @@ msgstr ""
 msgid "Create New Domain"
 msgstr ""
 
-msgid "Create Project"
-msgstr ""
-
 msgid "Create a GitLab account first, and then connect it to your %{label} account."
 msgstr ""
 
@@ -10555,6 +10552,9 @@ msgid "Delete project"
 msgstr ""
 
 msgid "Delete project. Are you ABSOLUTELY SURE?"
+msgstr ""
+
+msgid "Delete self monitoring project"
 msgstr ""
 
 msgid "Delete serverless domain?"
@@ -29525,6 +29525,9 @@ msgstr ""
 msgid "Selective synchronization"
 msgstr ""
 
+msgid "Self monitoring"
+msgstr ""
+
 msgid "Self monitoring project does not exist"
 msgstr ""
 
@@ -29537,28 +29540,28 @@ msgstr ""
 msgid "Self-monitoring project was not deleted. Please check logs for any error messages"
 msgstr ""
 
-msgid "SelfMonitoring|Disable self monitoring?"
+msgid "SelfMonitoring|Activate or deactivate instance self monitoring."
 msgstr ""
 
-msgid "SelfMonitoring|Disabling this feature will delete the self monitoring project. Are you sure you want to delete the project?"
+msgid "SelfMonitoring|Activate self monitoring to create a project to use to monitor the health of your instance."
 msgstr ""
 
-msgid "SelfMonitoring|Enable or disable instance self monitoring"
+msgid "SelfMonitoring|Deactivate self monitoring?"
 msgstr ""
 
-msgid "SelfMonitoring|Enabling this feature creates a %{projectLinkStart}project%{projectLinkEnd} that can be used to monitor the health of your instance."
-msgstr ""
-
-msgid "SelfMonitoring|Enabling this feature creates a project that can be used to monitor the health of your instance."
+msgid "SelfMonitoring|Deactivating self monitoring deletes the self monitoring project. Are you sure you want to deactivate self monitoring and delete the project?"
 msgstr ""
 
 msgid "SelfMonitoring|Self monitoring"
 msgstr ""
 
-msgid "SelfMonitoring|Self monitoring project has been successfully created."
+msgid "SelfMonitoring|Self monitoring is active. Use the %{projectLinkStart}self monitoring project%{projectLinkEnd} to monitor the health of your instance."
 msgstr ""
 
-msgid "SelfMonitoring|Self monitoring project has been successfully deleted."
+msgid "SelfMonitoring|Self monitoring project successfully created."
+msgstr ""
+
+msgid "SelfMonitoring|Self monitoring project successfully deleted."
 msgstr ""
 
 msgid "Send"
