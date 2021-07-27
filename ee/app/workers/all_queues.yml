@@ -841,7 +841,7 @@
   :feature_category: :vulnerability_management
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 2
   :idempotent:
   :tags:
