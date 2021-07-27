@@ -5216,9 +5216,6 @@ msgstr ""
 msgid "Billing|Type %{username} to confirm"
 msgstr ""
 
-msgid "Billing|Type to search"
-msgstr ""
-
 msgid "Billing|User was successfully removed"
 msgstr ""
 
@@ -14050,6 +14047,9 @@ msgstr ""
 msgid "Filter results..."
 msgstr ""
 
+msgid "Filter users"
+msgstr ""
+
 msgid "Filter your repositories by name"
 msgstr ""
 
@@ -19117,6 +19117,9 @@ msgid "Last 90 days"
 msgstr ""
 
 msgid "Last Accessed On"
+msgstr ""
+
+msgid "Last Activity"
 msgstr ""
 
 msgid "Last Pipeline"

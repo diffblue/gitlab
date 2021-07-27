@@ -9,4 +9,6 @@ export default ({ namespaceId = null, namespaceName = null } = {}) => ({
   perPage: null,
   billableMemberToRemove: null,
   userDetails: {},
+  search: null,
+  sort: 'last_activity_on_desc',
 });

@@ -45,9 +45,6 @@ export default {
   issueMetricImagesPath: '/api/:version/projects/:id/issues/:issue_iid/metric_images',
   issueMetricSingleImagePath:
     '/api/:version/projects/:id/issues/:issue_iid/metric_images/:image_id',
-  billableGroupMembersPath: '/api/:version/groups/:id/billable_members',
-  billableGroupMemberMembershipsPath:
-    '/api/:version/groups/:group_id/billable_members/:member_id/memberships',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
@@ -368,41 +365,6 @@ export default {
       .replace(':image_id', encodeURIComponent(imageId));
 
     return axios.delete(individualMetricImageUrl);
-  },
-
-  fetchBillableGroupMembersList(namespaceId, options = {}, callback = () => {}) {
-    const url = Api.buildUrl(this.billableGroupMembersPath).replace(':id', namespaceId);
-    const defaults = {
-      per_page: DEFAULT_PER_PAGE,
-      page: 1,
-    };
-
-    const passedOptions = options;
-
-    // calling search API with empty string will not return results
-    if (!passedOptions.search) {
-      passedOptions.search = undefined;
-    }
-
-    return axios
-      .get(url, {
-        params: {
-          ...defaults,
-          ...passedOptions,
-        },
-      })
-      .then(({ data, headers }) => {
-        callback(data);
-        return { data, headers };
-      });
-  },
-
-  fetchBillableGroupMemberMemberships(namespaceId, memberId) {
-    const url = Api.buildUrl(this.billableGroupMemberMembershipsPath)
-      .replace(':group_id', namespaceId)
-      .replace(':member_id', memberId);
-
-    return axios.get(url);
   },
 
   projectGroups(id, options) {

@@ -1,5 +1,4 @@
 import MockAdapter from 'axios-mock-adapter';
-import Api from 'ee/api';
 import * as GroupsApi from 'ee/api/groups_api';
 import * as actions from 'ee/billings/seat_usage/store/actions';
 import * as types from 'ee/billings/seat_usage/store/mutation_types';
@@ -32,8 +31,9 @@ describe('seats actions', () => {
     });
 
     it('passes correct arguments to Api call', () => {
-      const payload = { page: 5, search: 'search string' };
-      const spy = jest.spyOn(Api, 'fetchBillableGroupMembersList');
+      const payload = { page: 5, search: 'search string', sort: 'last_activity_on_desc' };
+      state = Object.assign(state, payload);
+      const spy = jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
 
       testAction({
         action: actions.fetchBillableMembersList,
@@ -58,12 +58,12 @@ describe('seats actions', () => {
           action: actions.fetchBillableMembersList,
           state,
           expectedActions: [
-            { type: 'requestBillableMembersList' },
             {
               type: 'receiveBillableMembersListSuccess',
               payload: mockDataSeats,
             },
           ],
+          expectedMutations: [{ type: types.REQUEST_BILLABLE_MEMBERS }],
         });
       });
     });
@@ -77,21 +77,9 @@ describe('seats actions', () => {
         testAction({
           action: actions.fetchBillableMembersList,
           state,
-          expectedActions: [
-            { type: 'requestBillableMembersList' },
-            { type: 'receiveBillableMembersListError' },
-          ],
+          expectedActions: [{ type: 'receiveBillableMembersListError' }],
+          expectedMutations: [{ type: types.REQUEST_BILLABLE_MEMBERS }],
         });
-      });
-    });
-  });
-
-  describe('requestBillableMembersList', () => {
-    it('should commit the request mutation', () => {
-      testAction({
-        action: actions.requestBillableMembersList,
-        state,
-        expectedMutations: [{ type: types.REQUEST_BILLABLE_MEMBERS }],
       });
     });
   });
@@ -224,7 +212,7 @@ describe('seats actions', () => {
     const member = mockDataSeats.data[0];
 
     beforeAll(() => {
-      Api.fetchBillableGroupMemberMemberships = jest
+      GroupsApi.fetchBillableGroupMemberMemberships = jest
         .fn()
         .mockResolvedValue({ data: mockMemberDetails });
     });
@@ -258,7 +246,7 @@ describe('seats actions', () => {
         ],
       });
 
-      expect(Api.fetchBillableGroupMemberMemberships).toHaveBeenCalledWith(null, 2);
+      expect(GroupsApi.fetchBillableGroupMemberMemberships).toHaveBeenCalledWith(null, 2);
     });
 
     it('calls fetchBillableGroupMemberMemberships api only once', async () => {
@@ -289,12 +277,12 @@ describe('seats actions', () => {
         ],
       });
 
-      expect(Api.fetchBillableGroupMemberMemberships).toHaveBeenCalledTimes(1);
+      expect(GroupsApi.fetchBillableGroupMemberMemberships).toHaveBeenCalledTimes(1);
     });
 
     describe('on API error', () => {
       beforeAll(() => {
-        Api.fetchBillableGroupMemberMemberships = jest.fn().mockRejectedValue();
+        GroupsApi.fetchBillableGroupMemberMemberships = jest.fn().mockRejectedValue();
       });
 
       it('dispatches fetchBillableMemberDetailsError', async () => {

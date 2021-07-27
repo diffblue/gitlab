@@ -32,9 +32,9 @@ describe('EE billings seats module mutations', () => {
     it('sets state as expected', () => {
       expect(state.members).toMatchObject(mockDataSeats.data);
 
-      expect(state.total).toBe('3');
-      expect(state.page).toBe('1');
-      expect(state.perPage).toBe('1');
+      expect(state.total).toBe(3);
+      expect(state.page).toBe(1);
+      expect(state.perPage).toBe(1);
     });
 
     it('sets isLoading to false', () => {
@@ -56,15 +56,19 @@ describe('EE billings seats module mutations', () => {
     });
   });
 
-  describe(types.SET_SEARCH, () => {
-    const SEARCH_STRING = 'a search string';
+  describe(types.SET_SEARCH_QUERY, () => {
+    it('sets the search state', () => {
+      const SEARCH_STRING = 'a search string';
 
-    beforeEach(() => {
-      mutations[types.SET_SEARCH](state, SEARCH_STRING);
+      mutations[types.SET_SEARCH_QUERY](state, SEARCH_STRING);
+
+      expect(state.search).toBe(SEARCH_STRING);
     });
 
-    it('sets the search state', () => {
-      expect(state.search).toBe(SEARCH_STRING);
+    it('sets the search state item to null', () => {
+      mutations[types.SET_SEARCH_QUERY](state);
+
+      expect(state.search).toBe(null);
     });
   });
 
@@ -174,6 +178,22 @@ describe('EE billings seats module mutations', () => {
         mutations[types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR](state, { memberId: member.id });
 
         expect(state.userDetails[member.id.toString()].isLoading).toBe(false);
+      });
+    });
+
+    describe(types.SET_CURRENT_PAGE, () => {
+      it('sets the page state', () => {
+        mutations[types.SET_CURRENT_PAGE](state, 1);
+
+        expect(state.page).toBe(1);
+      });
+    });
+
+    describe(types.SET_SORT_OPTION, () => {
+      it('sets the sort state', () => {
+        mutations[types.SET_SORT_OPTION](state, 'last_activity_on_desc');
+
+        expect(state.sort).toBe('last_activity_on_desc');
       });
     });
   });
