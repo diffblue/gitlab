@@ -1,46 +1,57 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'store ActiveRecord info in RequestStore' do |db_role|
+  let(:db_config_name) { ::Gitlab::Database.db_config_name(ApplicationRecord.connection) }
+
+  let(:expected_payload_defaults) do
+    metrics =
+      ::Gitlab::Metrics::Subscribers::ActiveRecord.load_balancing_metric_counter_keys +
+      ::Gitlab::Metrics::Subscribers::ActiveRecord.load_balancing_metric_duration_keys +
+      ::Gitlab::Metrics::Subscribers::ActiveRecord.db_counter_keys
+
+    metrics.each_with_object({}) do |key, result|
+      result[key] = 0
+    end
+  end
+
   it 'prevents db counters from leaking to the next transaction' do
     2.times do
       Gitlab::WithRequestStore.with_request_store do
         subscriber.sql(event)
-        connection = event.payload[:connection]
 
+        # rubocop:disable Style/ConditionalAssignment
         if db_role == :primary
-          expected = {
+          expected = expected_payload_defaults.merge({
             db_count: record_query ? 1 : 0,
             db_write_count: record_write_query ? 1 : 0,
             db_cached_count: record_cached_query ? 1 : 0,
-            db_primary_cached_count:  record_cached_query ? 1 : 0,
-            db_primary_count:  record_query ? 1 : 0,
-            db_primary_duration_s:  record_query ? 0.002 : 0,
-            db_replica_cached_count:  0,
-            db_replica_count:  0,
-            db_replica_duration_s:  0.0,
+            db_primary_cached_count: record_cached_query ? 1 : 0,
+            "db_primary_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
+            db_primary_count: record_query ? 1 : 0,
+            "db_primary_#{db_config_name}_count": record_query ? 1 : 0,
+            db_primary_duration_s: record_query ? 0.002 : 0,
+            "db_primary_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
             db_primary_wal_count: record_wal_query ? 1 : 0,
+            "db_primary_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
             db_primary_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
-            db_replica_wal_cached_count: 0,
-            db_replica_wal_count: 0
-          }
-          expected[:"db_primary_#{::Gitlab::Database.db_config_name(connection)}_duration_s"] = 0.002 if record_query
+            "db_primary_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
+          })
         elsif db_role == :replica
-          expected = {
+          expected = expected_payload_defaults.merge({
             db_count: record_query ? 1 : 0,
             db_write_count: record_write_query ? 1 : 0,
             db_cached_count: record_cached_query ? 1 : 0,
-            db_primary_cached_count:  0,
-            db_primary_count:  0,
-            db_primary_duration_s:  0.0,
-            db_replica_cached_count:  record_cached_query ? 1 : 0,
-            db_replica_count:  record_query ? 1 : 0,
-            db_replica_duration_s:  record_query ? 0.002 : 0,
+            db_replica_cached_count: record_cached_query ? 1 : 0,
+            "db_replica_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
+            db_replica_count: record_query ? 1 : 0,
+            "db_replica_#{db_config_name}_count": record_query ? 1 : 0,
+            db_replica_duration_s: record_query ? 0.002 : 0,
+            "db_replica_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
             db_replica_wal_count: record_wal_query ? 1 : 0,
+            "db_replica_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
             db_replica_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
-            db_primary_wal_cached_count: 0,
-            db_primary_wal_count: 0
-          }
-          expected[:"db_replica_#{::Gitlab::Database.db_config_name(connection)}_duration_s"] = 0.002 if record_query
+            "db_replica_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
+          })
         else
           expected = {
             db_count: record_query ? 1 : 0,
@@ -48,6 +59,7 @@ RSpec.shared_examples 'store ActiveRecord info in RequestStore' do |db_role|
             db_cached_count: record_cached_query ? 1 : 0
           }
         end
+        # rubocop:enable Style/ConditionalAssignment
 
         expect(described_class.db_counter_payload).to eq(expected)
       end
@@ -62,9 +74,9 @@ RSpec.shared_examples 'store ActiveRecord info in RequestStore' do |db_role|
     it 'does not include per database metrics' do
       Gitlab::WithRequestStore.with_request_store do
         subscriber.sql(event)
-        connection = event.payload[:connection]
 
-        expect(described_class.db_counter_payload).not_to include(:"db_replica_#{::Gitlab::Database.db_config_name(connection)}_duration_s")
+        expect(described_class.db_counter_payload).not_to include(:"db_replica_#{db_config_name}_duration_s")
+        expect(described_class.db_counter_payload).not_to include(:"db_replica_#{db_config_name}_count")
       end
     end
   end
