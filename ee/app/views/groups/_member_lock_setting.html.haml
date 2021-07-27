@@ -2,7 +2,6 @@
 
 %h5= _('Member lock')
 .form-group
-  .gl-form-checkbox.custom-control.custom-checkbox
-    = f.check_box :membership_lock, class: 'custom-control-input', data: { qa_selector: 'membership_lock_checkbox' }
-    = f.label :membership_lock, class: 'custom-control-label' do
-      = _('Prevent adding new members to project membership within this group')
+  = f.gitlab_ui_checkbox_component :membership_lock,
+      _('Prevent adding new members to project membership within this group'),
+      checkbox_options: { data: { qa_selector: 'membership_lock_checkbox' } }
