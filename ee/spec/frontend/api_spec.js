@@ -742,37 +742,6 @@ describe('Api', () => {
     });
   });
 
-  describe('Billable members list', () => {
-    const namespaceId = 1000;
-
-    describe('fetchBillableGroupMembersList', () => {
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members`;
-
-      it('GETs the right url', () => {
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
-
-        return Api.fetchBillableGroupMembersList(namespaceId).then(({ data }) => {
-          expect(data).toEqual([]);
-        });
-      });
-    });
-
-    describe('fetchBillableGroupMemberMemberships', () => {
-      const memberId = 2;
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members/${memberId}/memberships`;
-
-      it('fetches memberships for the member', async () => {
-        jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(httpStatus.OK, []);
-
-        const { data } = await Api.fetchBillableGroupMemberMemberships(namespaceId, memberId);
-
-        expect(data).toEqual([]);
-        expect(axios.get).toHaveBeenCalledWith(expectedUrl);
-      });
-    });
-  });
-
   describe('Project analytics: deployment frequency', () => {
     const projectPath = 'test/project';
     const encodedProjectPath = encodeURIComponent(projectPath);

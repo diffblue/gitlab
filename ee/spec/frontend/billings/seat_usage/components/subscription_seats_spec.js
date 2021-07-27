@@ -4,7 +4,6 @@ import {
   GlTable,
   GlAvatarLink,
   GlAvatarLabeled,
-  GlSearchBoxByType,
   GlBadge,
   GlModal,
 } from '@gitlab/ui';
@@ -14,6 +13,7 @@ import SubscriptionSeats from 'ee/billings/seat_usage/components/subscription_se
 import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/billings/seat_usage/constants';
 import { mockDataSeats, mockTableItems } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -22,6 +22,7 @@ const actionSpies = {
   fetchBillableMembersList: jest.fn(),
   resetBillableMembers: jest.fn(),
   setBillableMemberToRemove: jest.fn(),
+  setSearchQuery: jest.fn(),
 };
 
 const providedFields = {
@@ -39,11 +40,12 @@ const fakeStore = ({ initialState, initialGetters }) =>
     state: {
       isLoading: false,
       hasError: false,
-      namespaceId: null,
+      namespaceId: 1,
       members: [...mockDataSeats.data],
       total: 300,
       page: 1,
       perPage: 5,
+      sort: 'last_activity_on_desc',
       ...providedFields,
       ...initialState,
     },
@@ -65,22 +67,21 @@ describe('Subscription Seats', () => {
     );
   };
 
-  const findTable = () => wrapper.find(GlTable);
-  const findTableEmptyText = () => findTable().attributes('empty-text');
+  const findTable = () => wrapper.findComponent(GlTable);
 
   const findPageHeading = () => wrapper.find('[data-testid="heading-info"]');
   const findPageHeadingText = () => findPageHeading().find('[data-testid="heading-info-text"]');
   const findPageHeadingBadge = () => findPageHeading().find(GlBadge);
 
-  const findSearchBox = () => wrapper.find(GlSearchBoxByType);
-  const findPagination = () => wrapper.find(GlPagination);
+  const findSearchBox = () => wrapper.findComponent(FilterSortContainerRoot);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
   const findErrorModal = () => wrapper.findComponent(GlModal);
 
   const serializeUser = (rowWrapper) => {
-    const avatarLink = rowWrapper.find(GlAvatarLink);
-    const avatarLabeled = rowWrapper.find(GlAvatarLabeled);
+    const avatarLink = rowWrapper.findComponent(GlAvatarLink);
+    const avatarLabeled = rowWrapper.findComponent(GlAvatarLabeled);
 
     return {
       avatarLink: {
@@ -102,7 +103,7 @@ describe('Subscription Seats', () => {
       user: serializeUser(rowWrapper),
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
-      dropdownExists: rowWrapper.find(GlDropdown).exists(),
+      dropdownExists: rowWrapper.findComponent(GlDropdown).exists(),
     };
   };
 
@@ -204,22 +205,6 @@ describe('Subscription Seats', () => {
     });
   });
 
-  describe('pagination', () => {
-    it.each([null, NaN, undefined, 'a string', false])(
-      'will not render given %s for currentPage',
-      (value) => {
-        wrapper = createComponent({
-          initialState: {
-            page: value,
-          },
-        });
-        expect(findPagination().exists()).toBe(false);
-
-        wrapper.destroy();
-      },
-    );
-  });
-
   describe('is loading', () => {
     beforeEach(() => {
       wrapper = createComponent({ initialState: { isLoading: true } });
@@ -239,82 +224,17 @@ describe('Subscription Seats', () => {
       wrapper = createComponent();
     });
 
-    it('input event triggers the fetchBillableMembersList action', async () => {
+    it('input event triggers the setSearchQuery action', async () => {
       const SEARCH_STRING = 'search string';
 
       // fetchBillableMembersList is called once on created()
       expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
 
-      await findSearchBox().vm.$emit('input', SEARCH_STRING);
+      await findSearchBox().vm.$emit('onFilter', [
+        { type: 'filtered-search-term', value: { data: SEARCH_STRING } },
+      ]);
 
-      // fetchBillableMembersList is triggered a second time on input
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(2);
-
-      // fetchBillableMembersList is triggered the second time with the correct argument
-      expect(actionSpies.fetchBillableMembersList.mock.calls[1][1]).toEqual({
-        search: SEARCH_STRING,
-      });
-    });
-  });
-
-  describe('typing inside of the search box', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-    });
-
-    it('causes the empty table text to change based on the number of typed characters', async () => {
-      const EMPTY_TEXT_TOO_SHORT = 'Enter at least three characters to search.';
-      const EMPTY_TEXT_NO_USERS = 'No users to display.';
-
-      expect(findTableEmptyText()).toBe(EMPTY_TEXT_TOO_SHORT);
-
-      await findSearchBox().vm.$emit('input', 'a');
-      expect(findTableEmptyText()).toBe(EMPTY_TEXT_TOO_SHORT);
-
-      await findSearchBox().vm.$emit('input', 'aa');
-      expect(findTableEmptyText()).toBe(EMPTY_TEXT_TOO_SHORT);
-
-      await findSearchBox().vm.$emit('input', 'aaa');
-      expect(findTableEmptyText()).toBe(EMPTY_TEXT_NO_USERS);
-    });
-
-    it('dispatches the.resetBillableMembers action when 1 or 2 characters have been typed', async () => {
-      expect(actionSpies.resetBillableMembers).not.toHaveBeenCalled();
-
-      await findSearchBox().vm.$emit('input', 'a');
-      expect(actionSpies.resetBillableMembers).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', 'aa');
-      expect(actionSpies.resetBillableMembers).toHaveBeenCalledTimes(2);
-
-      await findSearchBox().vm.$emit('input', 'aaa');
-      expect(actionSpies.resetBillableMembers).toHaveBeenCalledTimes(2);
-    });
-
-    it('dispatches fetchBillableMembersList action when search box is emptied out', async () => {
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', 'a');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', '');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(2);
-    });
-
-    it('dispatches fetchBillableMembersList action when more than 2 characters are typed', async () => {
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', 'a');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', 'aa');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
-
-      await findSearchBox().vm.$emit('input', 'aaa');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(2);
-
-      await findSearchBox().vm.$emit('input', 'aaaa');
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(3);
+      expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), SEARCH_STRING);
     });
   });
 });

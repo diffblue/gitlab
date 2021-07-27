@@ -16,9 +16,9 @@ export default {
     const { data, headers } = payload;
     state.members = data;
 
-    state.total = headers[HEADER_TOTAL_ENTRIES];
-    state.page = headers[HEADER_PAGE_NUMBER];
-    state.perPage = headers[HEADER_ITEMS_PER_PAGE];
+    state.total = Number(headers[HEADER_TOTAL_ENTRIES]);
+    state.page = Number(headers[HEADER_PAGE_NUMBER]);
+    state.perPage = Number(headers[HEADER_ITEMS_PER_PAGE]);
 
     state.isLoading = false;
   },
@@ -28,8 +28,16 @@ export default {
     state.hasError = true;
   },
 
-  [types.SET_SEARCH](state, searchString) {
-    state.search = searchString ?? '';
+  [types.SET_SEARCH_QUERY](state, searchString) {
+    state.search = searchString ?? null;
+  },
+
+  [types.SET_CURRENT_PAGE](state, pageNumber) {
+    state.page = pageNumber;
+  },
+
+  [types.SET_SORT_OPTION](state, sortOption) {
+    state.sort = sortOption;
   },
 
   [types.RESET_BILLABLE_MEMBERS](state) {

@@ -10,22 +10,21 @@ import {
   GlModalDirective,
   GlIcon,
   GlPagination,
-  GlSearchBoxByType,
   GlTable,
   GlTooltipDirective,
 } from '@gitlab/ui';
-import { parseInt, debounce } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import {
   FIELDS,
   AVATAR_SIZE,
-  SEARCH_DEBOUNCE_MS,
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
+  SORT_OPTIONS,
 } from 'ee/billings/seat_usage/constants';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
 
@@ -44,15 +43,10 @@ export default {
     GlModal,
     GlIcon,
     GlPagination,
-    GlSearchBoxByType,
     GlTable,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
-  },
-  data() {
-    return {
-      searchQuery: '',
-    };
+    FilterSortContainerRoot,
   },
   computed: {
     ...mapState([
@@ -63,44 +57,26 @@ export default {
       'namespaceName',
       'namespaceId',
       'billableMemberToRemove',
+      'search',
+      'sort',
     ]),
     ...mapGetters(['tableItems']),
     currentPage: {
       get() {
-        return parseInt(this.page, 10);
+        return this.page;
       },
       set(val) {
-        this.fetchBillableMembersList({ page: val, search: this.searchQuery });
+        this.setCurrentPage(val);
       },
     },
-    perPageFormatted() {
-      return parseInt(this.perPage, 10);
-    },
-    totalFormatted() {
-      return parseInt(this.total, 10);
-    },
     emptyText() {
-      if (this.searchQuery?.length < 3) {
+      if (this.search?.length < 3) {
         return s__('Billing|Enter at least three characters to search.');
       }
       return s__('Billing|No users to display.');
     },
   },
-  watch: {
-    searchQuery() {
-      this.executeQuery();
-    },
-  },
   created() {
-    // This method is defined here instead of in `methods`
-    // because we need to access the .cancel() method
-    // lodash attaches to the function, which is
-    // made inaccessible by Vue. More info:
-    // https://stackoverflow.com/a/52988020/1063392
-    this.debouncedSearch = debounce(function search() {
-      this.fetchBillableMembersList({ search: this.searchQuery });
-    }, SEARCH_DEBOUNCE_MS);
-
     this.fetchBillableMembersList();
   },
   methods: {
@@ -108,20 +84,22 @@ export default {
       'fetchBillableMembersList',
       'resetBillableMembers',
       'setBillableMemberToRemove',
+      'setSearchQuery',
+      'setCurrentPage',
+      'setSortOption',
     ]),
-    onSearchEnter() {
-      this.debouncedSearch.cancel();
-      this.executeQuery();
-    },
-    executeQuery() {
-      const queryLength = this.searchQuery?.length;
-      const MIN_SEARCH_LENGTH = 3;
+    applyFilter(searchTerms) {
+      const searchQuery = searchTerms.reduce((terms, searchTerm) => {
+        if (searchTerm.type !== 'filtered-search-term') {
+          return '';
+        }
 
-      if (queryLength === 0 || queryLength >= MIN_SEARCH_LENGTH) {
-        this.debouncedSearch();
-      } else if (queryLength < MIN_SEARCH_LENGTH) {
-        this.resetBillableMembers();
-      }
+        return `${terms} ${searchTerm.value.data}`;
+      }, '');
+      this.setSearchQuery(searchQuery.trim() || null);
+    },
+    handleSortOptionChange(sortOption) {
+      this.setSortOption(sortOption);
     },
     displayRemoveMemberModal(user) {
       if (user.removable) {
@@ -141,6 +119,7 @@ export default {
     emailNotVisibleTooltipText: s__(
       'Billing|An email address is only visible for users with public emails.',
     ),
+    filterUsersPlaceholder: __('Filter users'),
   },
   avatarSize: AVATAR_SIZE,
   fields: FIELDS,
@@ -148,6 +127,7 @@ export default {
   cannotRemoveModalId: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   cannotRemoveModalTitle: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   cannotRemoveModalText: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
+  sortOptions: SORT_OPTIONS,
 };
 </script>
 
@@ -166,11 +146,17 @@ export default {
         </h4>
         <gl-badge>{{ total }}</gl-badge>
       </div>
+    </div>
 
-      <gl-search-box-by-type
-        v-model.trim="searchQuery"
-        :placeholder="s__('Billing|Type to search')"
-        @keydown.enter.prevent="onSearchEnter"
+    <div class="gl-bg-gray-10 gl-p-3">
+      <filter-sort-container-root
+        :namespace="namespaceId"
+        :tokens="[]"
+        :search-input-placeholder="$options.i18n.filterUsersPlaceholder"
+        :sort-options="$options.sortOptions"
+        initial-sort-by="last_activity_on_desc"
+        @onFilter="applyFilter"
+        @onSort="handleSortOptionChange"
       />
     </div>
 
@@ -258,8 +244,8 @@ export default {
     <gl-pagination
       v-if="currentPage"
       v-model="currentPage"
-      :per-page="perPageFormatted"
-      :total-items="totalFormatted"
+      :per-page="perPage"
+      :total-items="total"
       align="center"
       class="gl-mt-5"
     />
