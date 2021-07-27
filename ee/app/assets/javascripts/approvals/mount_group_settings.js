@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import GroupSettingsApp from './components/group_settings/app.vue';
+import { groupApprovalsMappers } from './mappers';
 import createStore from './stores';
-import groupSettingsModule from './stores/modules/group_settings';
+import approvalSettingsModule from './stores/modules/approval_settings';
 
 const mountGroupApprovalSettings = (el) => {
   if (!el) {
@@ -10,7 +11,7 @@ const mountGroupApprovalSettings = (el) => {
   }
 
   const { defaultExpanded, approvalSettingsPath } = el.dataset;
-  const store = createStore(groupSettingsModule());
+  const store = createStore(approvalSettingsModule(groupApprovalsMappers));
 
   return new Vue({
     el,

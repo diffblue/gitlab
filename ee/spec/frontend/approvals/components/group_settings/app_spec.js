@@ -6,8 +6,9 @@ import Vuex from 'vuex';
 
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import GroupSettingsApp from 'ee/approvals/components/group_settings/app.vue';
+import { groupApprovalsMappers } from 'ee/approvals/mappers';
 import { createStoreOptions } from 'ee/approvals/stores';
-import groupSettingsModule from 'ee/approvals/stores/modules/group_settings';
+import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings';
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
 
 const localVue = createLocalVue();
@@ -42,7 +43,7 @@ describe('EE Approvals Group Settings App', () => {
     axiosMock = new MockAdapter(axios);
     axiosMock.onGet('*');
 
-    store = createStoreOptions(groupSettingsModule());
+    store = createStoreOptions(approvalSettingsModule(groupApprovalsMappers));
   });
 
   afterEach(() => {

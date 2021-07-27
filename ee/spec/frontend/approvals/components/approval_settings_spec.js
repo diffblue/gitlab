@@ -4,8 +4,9 @@ import Vuex from 'vuex';
 
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import { APPROVAL_SETTINGS_I18N } from 'ee/approvals/constants';
+import { groupApprovalsMappers } from 'ee/approvals/mappers';
 import createStore from 'ee/approvals/stores';
-import groupSettingsModule from 'ee/approvals/stores/modules/group_settings';
+import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings/';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -20,7 +21,7 @@ describe('ApprovalSettings', () => {
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
 
   const setupStore = (data = {}) => {
-    const module = groupSettingsModule();
+    const module = approvalSettingsModule(groupApprovalsMappers);
 
     module.state.settings = data;
     actions = module.actions;
