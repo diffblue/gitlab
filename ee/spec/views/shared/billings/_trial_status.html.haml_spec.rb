@@ -45,6 +45,26 @@ RSpec.describe 'shared/billings/_trial_status.html.haml' do
         expect(rendered).to have_content("Your GitLab.com Premium trial will expire after #{trial_ends_on}. You can retain access to the Premium features by upgrading below.")
       end
     end
+
+    context 'with an ultimate trial using the new trial plan' do
+      let(:plan) { create(:ultimate_trial_plan) }
+
+      it 'displays expiry date and Ultimate' do
+        render 'shared/billings/trial_status', namespace: group
+
+        expect(rendered).to have_content("Your GitLab.com Ultimate trial will expire after #{trial_ends_on}. You can retain access to the Ultimate features by upgrading below.")
+      end
+    end
+
+    context 'with a premium trial using the new trial plan' do
+      let(:plan) { create(:premium_trial_plan) }
+
+      it 'displays expiry date and Premium' do
+        render 'shared/billings/trial_status', namespace: group
+
+        expect(rendered).to have_content("Your GitLab.com Premium trial will expire after #{trial_ends_on}. You can retain access to the Premium features by upgrading below.")
+      end
+    end
   end
 
   context 'when trial expired' do
