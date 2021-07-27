@@ -257,6 +257,29 @@ RSpec.describe EE::UserCalloutsHelper do
     end
   end
 
+  describe '.show_profile_token_expiry_notification?' do
+    subject { helper.show_profile_token_expiry_notification? }
+
+    let_it_be(:user) { create(:user) }
+
+    where(:expiration_enforced?, :dismissed_callout?, :result) do
+      true  | true  | false
+      true  | false | false
+      false | true  | false
+      false | false | true
+    end
+
+    with_them do
+      before do
+        allow(helper).to receive(:current_user).and_return(user)
+        allow(helper).to receive(:token_expiration_enforced?).and_return(expiration_enforced?)
+        allow(helper).to receive(:user_dismissed?).and_return(dismissed_callout?)
+      end
+
+      it { is_expected.to be result }
+    end
+  end
+
   describe '.show_new_user_signups_cap_reached?' do
     subject { helper.show_new_user_signups_cap_reached? }
 
