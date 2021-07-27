@@ -2,5 +2,5 @@
   = form.label :shared_runners_minutes, _('Pipeline minutes quota'), class: 'label-bold'
   = form.number_field :shared_runners_minutes, class: 'form-control gl-form-input'
   .form-text.text-muted
-    = _('Set the maximum number of pipeline minutes that a group can use on shared Runners per month. 0 for unlimited.')
-    = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank'
+    = _('The maximum number of pipeline minutes that a group can use on shared runners per month. 0 for unlimited.')
+    = link_to _('What are shared runner pipeline minutes?'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank'
