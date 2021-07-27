@@ -1,6 +1,0 @@
-- if group_sidebar_link?(:iteration_cadences) || group_sidebar_link?(:iterations)
-  - iterations_path = Feature.enabled?(:iteration_cadences, @group, default_enabled: :yaml) ? group_iteration_cadences_path(@group) : group_iterations_path(@group)
-  = nav_link(path: iterations_sub_menu_controllers) do
-    = link_to iterations_path, data: { qa_selector: 'group_iterations_link' } do
-      %span
-        = _('Iterations')
