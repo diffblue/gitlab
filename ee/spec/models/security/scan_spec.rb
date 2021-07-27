@@ -108,4 +108,14 @@ RSpec.describe Security::Scan do
   end
 
   it_behaves_like 'having unique enum values'
+
+  it 'sets `project_id` and `pipeline_id` before save' do
+    scan = create(:security_scan)
+    scan.update_columns(project_id: nil, pipeline_id: nil)
+
+    scan.save!
+
+    expect(scan.project_id).to eq(scan.build.project_id)
+    expect(scan.pipeline_id).to eq(scan.build.commit_id)
+  end
 end
