@@ -105,7 +105,7 @@ export default {
         <gl-avatar v-if="!hasRotationMobileViewAvatar" :src="assignee.user.avatarUrl" :size="16" />
         <span
           v-if="!hasRotationMobileViewText"
-          class="gl-ml-2"
+          class="gl-ml-2 gl-line-height-24"
           data-testid="rotation-assignee-name"
           >{{ assigneeName }}</span
         >
