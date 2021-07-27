@@ -40,7 +40,7 @@ export default {
       );
     },
     runnersPath() {
-      return helpPagePath('ci/runners/index.html', {
+      return helpPagePath('ci/runners/configure_runners.html', {
         anchor: 'set-maximum-job-timeout-for-a-runner',
       });
     },
