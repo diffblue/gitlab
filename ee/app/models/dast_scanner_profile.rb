@@ -3,9 +3,6 @@
 class DastScannerProfile < ApplicationRecord
   belongs_to :project
 
-  has_many :dast_scanner_profiles_builds, class_name: 'Dast::ScannerProfilesBuild', foreign_key: :dast_scanner_profile_id, inverse_of: :dast_scanner_profile
-  has_many :ci_builds, class_name: 'Ci::Build', through: :dast_scanner_profiles_builds
-
   validates :project_id, presence: true
   validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
 

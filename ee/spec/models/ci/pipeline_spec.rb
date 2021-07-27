@@ -18,9 +18,9 @@ RSpec.describe Ci::Pipeline do
     it { is_expected.to have_many(:downstream_bridges) }
     it { is_expected.to have_many(:vulnerability_findings).through(:vulnerabilities_finding_pipelines).class_name('Vulnerabilities::Finding') }
     it { is_expected.to have_many(:vulnerabilities_finding_pipelines).class_name('Vulnerabilities::FindingPipeline') }
-    it { is_expected.to have_one(:dast_profiles_pipeline).class_name('Dast::ProfilesPipeline').with_foreign_key(:ci_pipeline_id).inverse_of(:ci_pipeline) }
+    it { is_expected.to have_one(:dast_profiles_pipeline).class_name('Dast::ProfilesPipeline').with_foreign_key(:ci_pipeline_id) }
     it { is_expected.to have_one(:dast_profile).class_name('Dast::Profile').through(:dast_profiles_pipeline) }
-    it { is_expected.to have_one(:dast_site_profiles_pipeline).class_name('Dast::SiteProfilesPipeline').with_foreign_key(:ci_pipeline_id).inverse_of(:ci_pipeline) }
+    it { is_expected.to have_one(:dast_site_profiles_pipeline).class_name('Dast::SiteProfilesPipeline').with_foreign_key(:ci_pipeline_id) }
     it { is_expected.to have_one(:dast_site_profile).class_name('DastSiteProfile').through(:dast_site_profiles_pipeline) }
   end
 

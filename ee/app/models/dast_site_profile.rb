@@ -6,12 +6,6 @@ class DastSiteProfile < ApplicationRecord
 
   has_many :secret_variables, class_name: 'Dast::SiteProfileSecretVariable'
 
-  has_many :dast_site_profiles_pipelines, class_name: 'Dast::SiteProfilesPipeline', foreign_key: :dast_site_profile_id, inverse_of: :dast_site_profile
-  has_many :ci_pipelines, class_name: 'Ci::Pipeline', through: :dast_site_profiles_pipelines
-
-  has_many :dast_site_profiles_builds, class_name: 'Dast::SiteProfilesBuild', foreign_key: :dast_site_profile_id, inverse_of: :dast_site_profile
-  has_many :ci_builds, class_name: 'Ci::Build', through: :dast_site_profiles_builds
-
   validates :excluded_urls, length: { maximum: 25 }
   validates :auth_url, addressable_url: true, length: { maximum: 1024 }, allow_nil: true
   validates :auth_username_field, :auth_password_field, :auth_username, length: { maximum: 255 }

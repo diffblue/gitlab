@@ -11,8 +11,6 @@ RSpec.describe DastSiteProfile, type: :model do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:dast_site) }
     it { is_expected.to have_many(:secret_variables).class_name('Dast::SiteProfileSecretVariable') }
-    it { is_expected.to have_many(:dast_site_profiles_builds).class_name('Dast::SiteProfilesBuild').with_foreign_key(:dast_site_profile_id).inverse_of(:dast_site_profile) }
-    it { is_expected.to have_many(:ci_builds).class_name('Ci::Build').through(:dast_site_profiles_builds) }
   end
 
   describe 'validations' do

@@ -20,11 +20,11 @@ module EE
         has_many :security_scans, class_name: 'Security::Scan', through: :builds
         has_many :security_findings, class_name: 'Security::Finding', through: :security_scans, source: :findings
 
-        has_one :dast_profiles_pipeline, class_name: 'Dast::ProfilesPipeline', foreign_key: :ci_pipeline_id, inverse_of: :ci_pipeline
+        has_one :dast_profiles_pipeline, class_name: 'Dast::ProfilesPipeline', foreign_key: :ci_pipeline_id
         has_one :dast_profile, class_name: 'Dast::Profile', through: :dast_profiles_pipeline
 
         # Temporary location to be moved in the future. Please see gitlab-org/gitlab#330950 for more info.
-        has_one :dast_site_profiles_pipeline, class_name: 'Dast::SiteProfilesPipeline', foreign_key: :ci_pipeline_id, inverse_of: :ci_pipeline
+        has_one :dast_site_profiles_pipeline, class_name: 'Dast::SiteProfilesPipeline', foreign_key: :ci_pipeline_id
         has_one :dast_site_profile, class_name: 'DastSiteProfile', through: :dast_site_profiles_pipeline
 
         has_one :source_project, class_name: 'Ci::Sources::Project', foreign_key: :pipeline_id
