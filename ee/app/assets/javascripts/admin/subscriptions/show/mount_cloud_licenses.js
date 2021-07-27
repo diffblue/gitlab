@@ -33,6 +33,7 @@ export default () => {
     licenseUploadPath,
     subscriptionActivationBannerCalloutName,
     subscriptionSyncPath,
+    licenseUsageFilePath,
   } = el.dataset;
   const connectivityHelpURL = helpPagePath('/user/admin_area/license.html', {
     anchor: 'there-is-a-connectivity-issue',
@@ -56,6 +57,7 @@ export default () => {
       h(CloudLicenseShowApp, {
         props: {
           hasActiveLicense: parseBoolean(hasActiveLicense),
+          licenseUsageFilePath,
         },
       }),
   });

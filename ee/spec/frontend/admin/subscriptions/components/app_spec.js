@@ -1,3 +1,4 @@
+import { GlButton } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import SubscriptionManagementApp from 'ee/admin/subscriptions/show/components/app.vue';
@@ -28,6 +29,7 @@ describe('SubscriptionManagementApp', () => {
   const findSubscriptionMainTitle = () => wrapper.findByTestId('subscription-main-title');
   const findSubscriptionActivationSuccessAlert = () =>
     wrapper.findByTestId('subscription-activation-success-alert');
+  const findExportLicenseUsageFileLink = () => wrapper.findComponent(GlButton);
 
   let currentSubscriptionResolver;
   let subscriptionHistoryResolver;
@@ -45,6 +47,7 @@ describe('SubscriptionManagementApp', () => {
         localVue,
         apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
+          licenseUsageFilePath: 'about:blank',
           ...props,
         },
       }),
@@ -91,6 +94,10 @@ describe('SubscriptionManagementApp', () => {
 
       it('does not show the activation success notification', () => {
         expect(findSubscriptionActivationSuccessAlert().exists()).toBe(false);
+      });
+
+      it('does not render the "Export license usage file" link', () => {
+        expect(findExportLicenseUsageFileLink().exists()).toBe(false);
       });
     });
 
@@ -153,6 +160,10 @@ describe('SubscriptionManagementApp', () => {
 
       it('does not the activation success notification', () => {
         expect(findSubscriptionActivationSuccessAlert().exists()).toBe(false);
+      });
+
+      it('renders the "Export license usage file" link', () => {
+        expect(findExportLicenseUsageFileLink().exists()).toBe(true);
       });
     });
   });

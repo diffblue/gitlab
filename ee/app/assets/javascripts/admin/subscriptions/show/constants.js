@@ -144,3 +144,4 @@ export const subscriptionBannerText = s__(
 );
 export const subscriptionBannerBlogPostUrl =
   'https://about.gitlab.com/blog/2021/07/20/improved-billing-and-subscription-management/';
+export const exportLicenseUsageBtnText = s__('SuperSonics|Export license usage file');

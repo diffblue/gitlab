@@ -10,6 +10,12 @@ RSpec.describe 'Admin views Subscription', :js do
     gitlab_enable_admin_mode_sign_in(admin)
   end
 
+  shared_examples 'an "Export license usage file" button' do
+    it 'displays the Export License Usage File button' do
+      expect(page).to have_link('Export license usage file', href: admin_license_usage_export_path(format: :csv))
+    end
+  end
+
   context 'with a cloud license' do
     let!(:license) { create_current_license(cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN) }
 
@@ -43,6 +49,8 @@ RSpec.describe 'Admin views Subscription', :js do
           expect(page).to have_content('You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by troubleshooting the activation code')
         end
       end
+
+      it_behaves_like 'an "Export license usage file" button'
     end
   end
 
@@ -52,6 +60,8 @@ RSpec.describe 'Admin views Subscription', :js do
     before do
       visit(admin_subscription_path)
     end
+
+    it_behaves_like 'an "Export license usage file" button'
 
     context 'when removing a license file' do
       before do
@@ -116,6 +126,10 @@ RSpec.describe 'Admin views Subscription', :js do
       page.within(find('#content-body', match: :first)) do
         expect(page).to have_content('You do not have an active subscription')
       end
+    end
+
+    it 'does not display the Export License Usage File button' do
+      expect(page).not_to have_link('Export license usage file', href: admin_license_usage_export_path(format: :csv))
     end
 
     context 'when activating a new subscription' do

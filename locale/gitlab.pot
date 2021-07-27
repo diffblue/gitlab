@@ -31809,6 +31809,9 @@ msgstr ""
 msgid "SuperSonics|Expires on"
 msgstr ""
 
+msgid "SuperSonics|Export license usage file"
+msgstr ""
+
 msgid "SuperSonics|Free trial"
 msgstr ""
 

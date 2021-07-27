@@ -1,5 +1,5 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlButton } from '@gitlab/ui';
 import {
   activateSubscription,
   noActiveSubscription,
@@ -7,6 +7,7 @@ import {
   subscriptionHistoryQueries,
   subscriptionMainTitle,
   subscriptionQueries,
+  exportLicenseUsageBtnText,
 } from '../constants';
 import SubscriptionActivationCard from './subscription_activation_card.vue';
 import SubscriptionBreakdown from './subscription_breakdown.vue';
@@ -17,6 +18,7 @@ export default {
   name: 'CloudLicenseApp',
   components: {
     GlAlert,
+    GlButton,
     SubscriptionActivationCard,
     SubscriptionBreakdown,
     SubscriptionPurchaseCard,
@@ -24,11 +26,16 @@ export default {
   },
   i18n: {
     activateSubscription,
+    exportLicenseUsageBtnText,
     noActiveSubscription,
     subscriptionActivationNotificationText,
     subscriptionMainTitle,
   },
   props: {
+    licenseUsageFilePath: {
+      type: String,
+      required: true,
+    },
     hasActiveLicense: {
       type: Boolean,
       required: false,
@@ -81,8 +88,15 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-justify-content-center gl-flex-direction-column">
-    <h4 data-testid="subscription-main-title">{{ $options.i18n.subscriptionMainTitle }}</h4>
+  <div>
+    <div
+      class="gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-align-items-center"
+    >
+      <h4 data-testid="subscription-main-title">{{ $options.i18n.subscriptionMainTitle }}</h4>
+      <gl-button v-if="canShowSubscriptionDetails" :href="licenseUsageFilePath">{{
+        $options.i18n.exportLicenseUsageBtnText
+      }}</gl-button>
+    </div>
     <hr />
     <gl-alert
       v-if="shouldShowActivationNotification"
