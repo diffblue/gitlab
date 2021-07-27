@@ -221,6 +221,32 @@ RSpec.describe GroupsController do
             expect(flash[:alert]).to include 'error'
           end
         end
+
+        context 'when group is already marked for deletion' do
+          before do
+            create(:group_deletion_schedule, group: group, marked_for_deletion_on: Date.current)
+          end
+
+          context 'when permanently_remove param is set' do
+            it 'deletes the group immediately' do
+              expect(GroupDestroyWorker).to receive(:perform_async)
+
+              delete :destroy, params: { id: group.to_param, permanently_remove: true }
+
+              expect(response).to redirect_to(root_path)
+              expect(flash[:alert]).to include "Group '#{group.name}' was scheduled for deletion."
+            end
+          end
+
+          context 'when permanently_remove param is not set' do
+            it 'does nothing' do
+              subject
+
+              expect(response).to redirect_to(edit_group_path(group))
+              expect(flash[:alert]).to include "Group has been already marked for deletion"
+            end
+          end
+        end
       end
 
       context 'delayed deletion feature is not available' do

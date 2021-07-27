@@ -1,0 +1,13 @@
+- if group.marked_for_deletion?
+  .sub-section
+    %h4.gl-text-red-500= _('Permanently remove group')
+    = form_tag(group, method: :delete) do
+      %p
+        %strong= _('Removing this group also removes all child projects, including archived projects, and their resources.')
+      %p= immediately_remove_group_message(group)
+      %p
+        %strong= _('Are you ABSOLUTELY SURE you wish to remove this group?')
+
+      = hidden_field_tag(:permanently_remove, true)
+
+      = render 'groups/settings/remove_button', group: group

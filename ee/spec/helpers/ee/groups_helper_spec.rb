@@ -176,6 +176,17 @@ RSpec.describe GroupsHelper do
       it 'returns the message related to delayed deletion' do
         expect(subject).to include("The contents of this group, its subgroups and projects will be permanently removed after")
       end
+
+      context 'group is already marked for deletion' do
+        before do
+          create(:group_deletion_schedule, group: group, marked_for_deletion_on: Date.current)
+        end
+
+        it 'returns the message related to permanent deletion' do
+          expect(subject).to include("You are going to remove #{group.name}")
+          expect(subject).to include("Removed groups CANNOT be restored!")
+        end
+      end
     end
 
     context 'delayed deletion feature is not available' do
@@ -187,6 +198,14 @@ RSpec.describe GroupsHelper do
         expect(subject).to include("You are going to remove #{group.name}")
         expect(subject).to include("Removed groups CANNOT be restored!")
       end
+    end
+  end
+
+  describe '#immediately_remove_group_message' do
+    subject { helper.immediately_remove_group_message(group) }
+
+    it 'returns the message related to immediate deletion' do
+      expect(subject).to match(/permanently remove.*#{group.path}.*immediately/)
     end
   end
 
