@@ -2,6 +2,7 @@ import { GlPagination, GlTable } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 
 import AuditEventsTable from 'ee/audit_events/components/audit_events_table.vue';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import createEvents from '../mock_data';
 
 const EVENTS = createEvents();
@@ -24,8 +25,7 @@ describe('AuditEventsTable component', () => {
   };
 
   beforeEach(() => {
-    delete window.location;
-    window.location = new URL('https://localhost');
+    setWindowLocation('https://localhost');
 
     wrapper = createComponent();
   });
@@ -60,21 +60,21 @@ describe('AuditEventsTable component', () => {
     });
 
     it('should get the page number from the URL', () => {
-      window.location.search = '?page=2';
+      setWindowLocation('?page=2');
       wrapper = createComponent();
 
       expect(wrapper.find(GlPagination).props().value).toBe(2);
     });
 
     it('should not have a prevPage if the page is 1', () => {
-      window.location.search = '?page=1';
+      setWindowLocation('?page=1');
       wrapper = createComponent();
 
       expect(wrapper.find(GlPagination).props().prevPage).toBe(null);
     });
 
     it('should set the prevPage to 1 if the page is 2', () => {
-      window.location.search = '?page=2';
+      setWindowLocation('?page=2');
       wrapper = createComponent();
 
       expect(wrapper.find(GlPagination).props().prevPage).toBe(1);
@@ -88,7 +88,7 @@ describe('AuditEventsTable component', () => {
     });
 
     it('should set the nextPage to 2 if the page is 1', () => {
-      window.location.search = '?page=1';
+      setWindowLocation('?page=1');
       wrapper = createComponent();
 
       expect(wrapper.find(GlPagination).props().nextPage).toBe(2);

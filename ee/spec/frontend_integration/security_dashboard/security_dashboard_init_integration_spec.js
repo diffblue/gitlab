@@ -1,5 +1,6 @@
 import initSecurityDashboard from 'ee/security_dashboard/security_dashboard_init';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 
 const EMPTY_DIV = document.createElement('div');
@@ -19,9 +20,7 @@ describe('Security Dashboard', () => {
     root = document.createElement('div');
     document.body.appendChild(root);
 
-    global.jsdom.reconfigure({
-      url: `${TEST_HOST}/-/security/dashboard`,
-    });
+    setWindowLocation(`${TEST_HOST}/-/security/dashboard`);
   });
 
   afterEach(() => {

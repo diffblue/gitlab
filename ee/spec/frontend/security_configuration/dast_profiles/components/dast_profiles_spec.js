@@ -5,11 +5,16 @@ import { merge } from 'lodash';
 import DastFailedSiteValidations from 'ee/security_configuration/dast_profiles/components/dast_failed_site_validations.vue';
 import DastProfiles from 'ee/security_configuration/dast_profiles/components/dast_profiles.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import { TEST_HOST } from 'helpers/test_constants';
 
 const TEST_NEW_DAST_SAVED_SCAN_PATH = '/-/on_demand_scans/new';
 const TEST_NEW_DAST_SCANNER_PROFILE_PATH = '/-/on_demand_scans/scanner_profiles/new';
 const TEST_NEW_DAST_SITE_PROFILE_PATH = '/-/on_demand_scans/site_profiles/new';
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
+
+beforeEach(() => {
+  setWindowLocation(TEST_HOST);
+});
 
 describe('EE - DastProfiles', () => {
   let wrapper;
@@ -115,8 +120,6 @@ describe('EE - DastProfiles', () => {
   });
 
   describe('tabs', () => {
-    const originalLocation = window.location;
-
     describe('without location hash set', () => {
       beforeEach(() => {
         createFullComponent();
@@ -148,17 +151,13 @@ describe('EE - DastProfiles', () => {
 
     describe.each`
       tabName               | index | givenLocationHash
-      ${'Saved Scans'}      | ${0}  | ${'saved-scans'}
-      ${'Site Profiles'}    | ${1}  | ${'site-profiles'}
-      ${'Scanner Profiles'} | ${2}  | ${'scanner-profiles'}
+      ${'Saved Scans'}      | ${0}  | ${'#saved-scans'}
+      ${'Site Profiles'}    | ${1}  | ${'#site-profiles'}
+      ${'Scanner Profiles'} | ${2}  | ${'#scanner-profiles'}
     `('with location hash set to "$givenLocationHash"', ({ tabName, index, givenLocationHash }) => {
       beforeEach(() => {
-        setWindowLocation(`http://foo.com/index#${givenLocationHash}`);
+        setWindowLocation(givenLocationHash);
         createFullComponent();
-      });
-
-      afterEach(() => {
-        window.location = originalLocation;
       });
 
       it(`has "${tabName}" selected`, () => {
@@ -171,7 +170,8 @@ describe('EE - DastProfiles', () => {
       });
 
       it('updates the browsers URL to contain the selected tab', () => {
-        window.location.hash = '';
+        setWindowLocation('#');
+        expect(window.location.hash).toBe('');
 
         getTabsComponent().vm.$emit('input', index);
 

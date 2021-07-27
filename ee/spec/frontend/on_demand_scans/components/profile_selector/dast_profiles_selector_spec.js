@@ -8,9 +8,9 @@ import SiteProfileSelector from 'ee/on_demand_scans/components/profile_selector/
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import createApolloProvider from 'helpers/mock_apollo_helper';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { setUrlParams } from '~/lib/utils/url_utility';
 import * as responses from '../../mocks/apollo_mocks';
 import { scannerProfiles, siteProfiles } from '../../mocks/mock_data';
 
@@ -20,6 +20,10 @@ const fullPath = '/project/path';
 
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
 const [nonValidatedSiteProfile, validatedSiteProfile] = siteProfiles;
+
+beforeEach(() => {
+  setWindowLocation(URL_HOST);
+});
 
 describe('EE - DAST Profiles Selector', () => {
   let wrapper;
@@ -179,27 +183,21 @@ describe('EE - DAST Profiles Selector', () => {
     const [scannerProfile] = scannerProfiles;
 
     it('scanner profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ scanner_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation(`?scanner_profile_id=1`);
       createComponent();
 
       expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
     });
 
     it('site profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ site_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation(`?site_profile_id=1`);
       createComponent();
 
       expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
     });
 
     it('both scanner & site profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ site_profile_id: 1, scanner_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation(`?site_profile_id=1&scanner_profile_id=1`);
       createComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);

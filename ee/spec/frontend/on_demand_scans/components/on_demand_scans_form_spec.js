@@ -11,15 +11,15 @@ import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/gr
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
-import { redirectTo, setUrlParams } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import * as responses from '../mocks/apollo_mocks';
 import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
 
-const URL_HOST = 'https://localhost/';
 const helpPagePath = '/application_security/dast/index#on-demand-scans';
 const projectPath = 'group/project';
 const defaultBranch = 'main';
@@ -52,7 +52,6 @@ useLocalStorageSpy();
 jest.mock('~/lib/utils/url_utility', () => ({
   isAbsolute: jest.requireActual('~/lib/utils/url_utility').isAbsolute,
   queryToObject: jest.requireActual('~/lib/utils/url_utility').queryToObject,
-  setUrlParams: jest.requireActual('~/lib/utils/url_utility').setUrlParams,
   redirectTo: jest.fn(),
 }));
 
@@ -578,27 +577,21 @@ describe('OnDemandScansForm', () => {
     const [scannerProfile] = scannerProfiles;
 
     it('scanner profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ scanner_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation('?scanner_profile_id=1');
       createShallowComponent();
 
       expect(wrapper.find(ScannerProfileSelector).attributes('value')).toBe(scannerProfile.id);
     });
 
     it('site profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ site_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation('?site_profile_id=1');
       createShallowComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
     });
 
     it('both scanner & site profile', () => {
-      global.jsdom.reconfigure({
-        url: setUrlParams({ site_profile_id: 1, scanner_profile_id: 1 }, URL_HOST),
-      });
+      setWindowLocation('?site_profile_id=1&scanner_profile_id=1');
       createShallowComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
@@ -613,10 +606,6 @@ describe('OnDemandScansForm', () => {
           selectedSiteProfileId: dastScan.siteProfileId,
         }),
       );
-
-      global.jsdom.reconfigure({
-        url: setUrlParams({ site_profile_id: 1, scanner_profile_id: 1 }, URL_HOST),
-      });
 
       createShallowComponent();
       await wrapper.vm.$nextTick();
