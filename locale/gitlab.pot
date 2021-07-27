@@ -16796,6 +16796,9 @@ msgstr ""
 msgid "InProductMarketing|Automated security scans directly within GitLab"
 msgstr ""
 
+msgid "InProductMarketing|Be a DevOps hero"
+msgstr ""
+
 msgid "InProductMarketing|Beef up your security"
 msgstr ""
 
@@ -16836,6 +16839,9 @@ msgid "InProductMarketing|Do you have a minute?"
 msgstr ""
 
 msgid "InProductMarketing|Easy"
+msgstr ""
+
+msgid "InProductMarketing|Expand your DevOps journey with a free GitLab trial"
 msgstr ""
 
 msgid "InProductMarketing|Explore GitLab CI/CD"
@@ -17028,6 +17034,9 @@ msgid "InProductMarketing|Start with a GitLab Ultimate free trial"
 msgstr ""
 
 msgid "InProductMarketing|Start your trial now!"
+msgstr ""
+
+msgid "InProductMarketing|Start your trial today to experience single application success and discover all the features of GitLab Ultimate for free!"
 msgstr ""
 
 msgid "InProductMarketing|Stop wondering and use GitLab to answer questions like:"
