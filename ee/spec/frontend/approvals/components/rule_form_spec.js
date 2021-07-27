@@ -5,7 +5,12 @@ import Vuex from 'vuex';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rule_form.vue';
-import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
+import {
+  TYPE_USER,
+  TYPE_GROUP,
+  TYPE_HIDDEN_GROUPS,
+  VULNERABILITY_CHECK_NAME,
+} from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
@@ -81,6 +86,7 @@ describe('EE Approvals RuleForm', () => {
   const findApproversList = () => wrapper.findComponent(ApproversList);
   const findProtectedBranchesSelector = () => wrapper.findComponent(ProtectedBranchesSelector);
   const findBranchesValidation = () => wrapper.findByTestId('branches-group');
+  const findScannersGroup = () => wrapper.findByTestId('scanners-group');
 
   const inputsAreValid = (inputs) => inputs.every((x) => x.props('state'));
 
@@ -180,6 +186,7 @@ describe('EE Approvals RuleForm', () => {
             userRecords,
             groupRecords,
             removeHiddenGroups: false,
+            scanners: [],
             protectedBranchIds: branches.map((x) => x.id),
           };
 
@@ -257,6 +264,7 @@ describe('EE Approvals RuleForm', () => {
           userRecords,
           groupRecords,
           removeHiddenGroups: false,
+          scanners: [],
           protectedBranchIds: branches.map((x) => x.id),
         };
 
@@ -335,6 +343,7 @@ describe('EE Approvals RuleForm', () => {
           userRecords,
           groupRecords,
           removeHiddenGroups: false,
+          scanners: [],
           protectedBranchIds: [],
         };
 
@@ -512,14 +521,14 @@ describe('EE Approvals RuleForm', () => {
 
     describe('with approval suggestions', () => {
       describe.each`
-        defaultRuleName          | expectedDisabledAttribute
-        ${'Vulnerability-Check'} | ${true}
-        ${'License-Check'}       | ${true}
-        ${'Coverage-Check'}      | ${true}
-        ${'Foo Bar Baz'}         | ${false}
+        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners
+        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}
+        ${'License-Check'}          | ${true}                   | ${false}
+        ${'Coverage-Check'}         | ${true}                   | ${false}
+        ${'Foo Bar Baz'}            | ${false}                  | ${false}
       `(
         'with defaultRuleName set to $defaultRuleName',
-        ({ defaultRuleName, expectedDisabledAttribute }) => {
+        ({ defaultRuleName, expectedDisabledAttribute, expectedDisplayedScanners }) => {
           beforeEach(() => {
             createComponent({
               initRule: null,
@@ -532,6 +541,12 @@ describe('EE Approvals RuleForm', () => {
             expectedDisabledAttribute ? 'disables' : 'does not disable'
           } the name text field`, () => {
             expect(findNameInput().props('disabled')).toBe(expectedDisabledAttribute);
+          });
+
+          it(`it ${
+            expectedDisplayedScanners ? 'shows' : 'does not show'
+          } scanners dropdown`, () => {
+            expect(findScannersGroup().exists()).toBe(expectedDisplayedScanners);
           });
         },
       );
@@ -559,6 +574,48 @@ describe('EE Approvals RuleForm', () => {
 
         it(`it disables the name text field`, () => {
           expect(findNameInput().props('disabled')).toBe(true);
+        });
+      });
+    });
+
+    describe(`with ${VULNERABILITY_CHECK_NAME}`, () => {
+      describe('and without any scanners selected', () => {
+        beforeEach(() => {
+          createComponent({
+            initRule: {
+              ...TEST_RULE,
+              id: null,
+              name: VULNERABILITY_CHECK_NAME,
+              scanners: [],
+            },
+          });
+          findForm().trigger('submit');
+        });
+
+        it('does not dispatch the action on submit', () => {
+          expect(actions.postRule).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('and with two scanners selected', () => {
+        const scanners = ['sast', 'dast'];
+        beforeEach(() => {
+          createComponent({
+            initRule: {
+              ...TEST_RULE,
+              id: null,
+              name: VULNERABILITY_CHECK_NAME,
+              scanners,
+            },
+          });
+          findForm().trigger('submit');
+        });
+
+        it('dispatches the action on submit', () => {
+          expect(actions.postRule).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ scanners }),
+          );
         });
       });
     });
