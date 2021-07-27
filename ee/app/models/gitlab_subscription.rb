@@ -162,7 +162,9 @@ class GitlabSubscription < ApplicationRecord
     return false unless ::Gitlab.dev_env_or_com?
     return false if expired?
 
-    has_a_paid_hosted_plan?(include_trials: true)
+    # We only index paid groups on dot com for now.
+    # If the namespace is in trial, seats will be ignored.
+    Plan::PAID_HOSTED_PLANS.include?(plan_name) && (trial? || seats > 0)
   end
 
   # Kick off Elasticsearch indexing for paid groups with new or upgraded paid, hosted subscriptions
