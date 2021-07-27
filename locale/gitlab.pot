@@ -3282,6 +3282,9 @@ msgstr ""
 msgid "Allow \"%{group_name}\" to sign you in"
 msgstr ""
 
+msgid "Allow access to members of the following group"
+msgstr ""
+
 msgid "Allow access to the following IP addresses"
 msgstr ""
 
@@ -3289,6 +3292,9 @@ msgid "Allow commits from members who can merge to the target branch."
 msgstr ""
 
 msgid "Allow group owners to manage LDAP-related settings"
+msgstr ""
+
+msgid "Allow non-administrators to access to the performance bar"
 msgstr ""
 
 msgid "Allow only the selected protocols to be used for Git access."
@@ -3352,9 +3358,6 @@ msgid "Allowed characters: +, 0-9, -, and spaces."
 msgstr ""
 
 msgid "Allowed email domain restriction only permitted for top-level groups"
-msgstr ""
-
-msgid "Allowed group"
 msgstr ""
 
 msgid "Allowed to create:"
@@ -12124,10 +12127,7 @@ msgstr ""
 msgid "Enable a Prometheus metrics endpoint at %{metrics_path} to expose a variety of statistics on the health and performance of GitLab. Additional information on authenticating and connecting to the metrics endpoint is available %{link}."
 msgstr ""
 
-msgid "Enable access to the Performance Bar"
-msgstr ""
-
-msgid "Enable access to the Performance Bar for a given group."
+msgid "Enable access to the performance bar for non-administrators in a given group."
 msgstr ""
 
 msgid "Enable and configure Prometheus metrics."
