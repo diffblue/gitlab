@@ -1,5 +1,6 @@
 import { GlForm } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { ApolloMutation } from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/createEpic.mutation.graphql';
@@ -85,55 +86,63 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       findResetter().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
+      return nextTick().then(() => {
         expect(wrapper.vm[field]).toBe(null);
       });
     });
   });
 
   describe('save', () => {
-    it('submits successfully if form data is provided', async () => {
-      createWrapper();
+    const addLabelIds = [1];
+    const title = 'Status page MVP';
+    const description = '### Goal\n\n- [ ] Item';
+    const confidential = true;
 
-      const addLabelIds = [1];
-      const title = 'Status page MVP';
-      const description = '### Goal\n\n- [ ] Item';
-      const confidential = true;
-      const startDateFixed = new Date();
-      const startDateIsFixed = true;
-      const dueDateFixed = null;
-      const dueDateIsFixed = false;
+    it.each`
+      startDateFixed  | dueDateFixed    | startDateIsFixed | dueDateIsFixed
+      ${null}         | ${null}         | ${false}         | ${false}
+      ${'2021-07-01'} | ${null}         | ${true}          | ${false}
+      ${null}         | ${'2021-07-02'} | ${false}         | ${true}
+      ${'2021-07-01'} | ${'2021-07-02'} | ${true}          | ${true}
+    `(
+      'requests mutation with correct data with all start and due date configurations',
+      async ({ startDateFixed, dueDateFixed, startDateIsFixed, dueDateIsFixed }) => {
+        createWrapper();
 
-      findTitle().vm.$emit('input', title);
-      findDescription().setValue(description);
-      findConfidentialityCheck().vm.$emit('input', confidential);
-      findLabels().vm.$emit('updateSelectedLabels', [{ id: 1, set: 1 }]);
-      findStartDate().vm.$emit('input', startDateFixed);
-      findDueDate().vm.$emit('input', dueDateFixed);
+        findTitle().vm.$emit('input', title);
+        findDescription().setValue(description);
+        findConfidentialityCheck().vm.$emit('input', confidential);
+        findLabels().vm.$emit('updateSelectedLabels', [{ id: 1, set: 1 }]);
 
-      findForm().vm.$emit('submit', { preventDefault: () => {} });
+        // Make sure the submitted values for start and due dates are date strings without timezone info.
+        // (Datepicker emits a Date object but the submitted value must be a date string).
+        findStartDate().vm.$emit('input', startDateFixed ? new Date(startDateFixed) : null);
+        findDueDate().vm.$emit('input', dueDateFixed ? new Date(dueDateFixed) : null);
 
-      expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
-        mutation: createEpic,
-        variables: {
-          input: {
-            groupPath: TEST_GROUP_PATH,
-            addLabelIds,
-            title,
-            description,
-            confidential,
-            startDateFixed,
-            startDateIsFixed,
-            dueDateFixed,
-            dueDateIsFixed,
+        findForm().vm.$emit('submit', { preventDefault: () => {} });
+
+        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
+          mutation: createEpic,
+          variables: {
+            input: {
+              groupPath: TEST_GROUP_PATH,
+              addLabelIds,
+              title,
+              description,
+              confidential,
+              startDateFixed,
+              startDateIsFixed,
+              dueDateFixed,
+              dueDateIsFixed,
+            },
           },
-        },
-      });
+        });
 
-      await wrapper.vm.$nextTick();
+        await nextTick();
 
-      expect(visitUrl).toHaveBeenCalled();
-    });
+        expect(visitUrl).toHaveBeenCalled();
+      },
+    );
 
     it.each`
       status        | result           | loading
