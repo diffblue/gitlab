@@ -70,3 +70,37 @@ export const APPROVAL_SETTINGS_I18N = {
   ),
   savingSuccessMessage: s__('ApprovalSettings|Merge request approval settings have been updated.'),
 };
+
+export const APPROVAL_DIALOG_I18N = {
+  form: {
+    approvalsRequiredLabel: s__('ApprovalRule|Approvals required'),
+    approvalTypeLabel: s__('ApprovalRule|Approver Type'),
+    approversLabel: s__('ApprovalRule|Add approvers'),
+    nameLabel: s__('ApprovalRule|Rule name'),
+    nameDescription: s__('ApprovalRule|Examples: QA, Security.'),
+    protectedBranchLabel: s__('ApprovalRule|Target branch'),
+    protectedBranchDescription: __(
+      'Apply this approval rule to any branch or a specific protected branch.',
+    ),
+    scannersLabel: s__('ApprovalRule|Security scanners'),
+    scannersSelectLabel: s__('ApprovalRule|Select scanners'),
+    scannersDescription: s__(
+      'ApprovalRule|Apply this approval rule to consider only the selected security scanners.',
+    ),
+    selectAllScannersLabel: s__('ApprovalRule|Select All'),
+    allScannersSelectedLabel: s__('ApprovalRule|All scanners'),
+    multipleSelectedScannersLabel: s__('ApprovalRule|%{scanner} +%{additionalScanners} more'),
+  },
+  validations: {
+    approvalsRequiredNegativeNumber: __('Please enter a non-negative number'),
+    approvalsRequiredNotNumber: __('Please enter a valid number'),
+    approvalsRequiredMinimum: __(
+      'Please enter a number greater than %{number} (from the project settings)',
+    ),
+    approversRequired: __('Please select and add a member'),
+    branchesRequired: __('Please select a valid target branch'),
+    ruleNameTaken: __('Rule name is already taken.'),
+    ruleNameMissing: __('Please provide a name'),
+    scannersRequired: s__('ApprovalRule|Please select at least one security scanner'),
+  },
+};

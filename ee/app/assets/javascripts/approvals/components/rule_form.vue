@@ -1,9 +1,16 @@
 <script>
-import { GlFormGroup, GlFormInput } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlFormInput,
+  GlDropdown,
+  GlFormCheckbox,
+  GlFormCheckboxGroup,
+} from '@gitlab/ui';
 import { groupBy, isEqual, isNumber } from 'lodash';
 import { mapState, mapActions } from 'vuex';
+import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
-import { sprintf, __, s__ } from '~/locale';
+import { sprintf } from '~/locale';
 import {
   ANY_BRANCH,
   TYPE_USER,
@@ -12,6 +19,7 @@ import {
   LICENSE_CHECK_NAME,
   VULNERABILITY_CHECK_NAME,
   COVERAGE_CHECK_NAME,
+  APPROVAL_DIALOG_I18N,
 } from '../constants';
 import ApproversList from './approvers_list.vue';
 import ApproversSelect from './approvers_select.vue';
@@ -31,6 +39,9 @@ export default {
     GlFormGroup,
     GlFormInput,
     ProtectedBranchesSelector,
+    GlDropdown,
+    GlFormCheckbox,
+    GlFormCheckboxGroup,
   },
   props: {
     initRule: {
@@ -62,6 +73,7 @@ export default {
       isFallback: false,
       containsHiddenGroups: false,
       serverValidationErrors: [],
+      scanners: [],
       ...this.getInitialData(),
     };
   },
@@ -89,11 +101,11 @@ export default {
     invalidName() {
       if (this.isMultiSubmission) {
         if (this.serverValidationErrors.includes('name has already been taken')) {
-          return this.$options.i18n.validations.ruleNameTaken;
+          return this.$options.APPROVAL_DIALOG_I18N.validations.ruleNameTaken;
         }
 
         if (!this.name) {
-          return this.$options.i18n.validations.ruleNameMissing;
+          return this.$options.APPROVAL_DIALOG_I18N.validations.ruleNameMissing;
         }
       }
 
@@ -101,15 +113,15 @@ export default {
     },
     invalidApprovalsRequired() {
       if (!isNumber(this.approvalsRequired)) {
-        return this.$options.i18n.validations.approvalsRequiredNotNumber;
+        return this.$options.APPROVAL_DIALOG_I18N.validations.approvalsRequiredNotNumber;
       }
 
       if (this.approvalsRequired < 0) {
-        return this.$options.i18n.validations.approvalsRequiredNegativeNumber;
+        return this.$options.APPROVAL_DIALOG_I18N.validations.approvalsRequiredNegativeNumber;
       }
 
       if (this.approvalsRequired < this.minApprovalsRequired) {
-        return sprintf(this.$options.i18n.validations.approvalsRequiredMinimum, {
+        return sprintf(this.$options.APPROVAL_DIALOG_I18N.validations.approvalsRequiredMinimum, {
           number: this.minApprovalsRequired,
         });
       }
@@ -118,7 +130,7 @@ export default {
     },
     invalidApprovers() {
       if (this.isMultiSubmission && this.approvers.length <= 0) {
-        return this.$options.i18n.validations.approversRequired;
+        return this.$options.APPROVAL_DIALOG_I18N.validations.approversRequired;
       }
 
       return '';
@@ -128,7 +140,14 @@ export default {
         !this.isMrEdit &&
         !this.branches.every((branch) => isEqual(branch, ANY_BRANCH) || isNumber(branch?.id))
       ) {
-        return this.$options.i18n.validations.branchesRequired;
+        return this.$options.APPROVAL_DIALOG_I18N.validations.branchesRequired;
+      }
+
+      return '';
+    },
+    invalidScanners() {
+      if (this.scanners.length <= 0) {
+        return this.$options.APPROVAL_DIALOG_I18N.validations.scannersRequired;
       }
 
       return '';
@@ -138,7 +157,8 @@ export default {
         this.isValidName &&
         this.isValidBranches &&
         this.isValidApprovalsRequired &&
-        this.isValidApprovers
+        this.isValidApprovers &&
+        this.areValidScanners
       );
     },
     isValidName() {
@@ -152,6 +172,9 @@ export default {
     },
     isValidApprovers() {
       return !this.showValidation || !this.invalidApprovers;
+    },
+    areValidScanners() {
+      return !this.showValidation || !this.isVulnerabilityCheck || !this.invalidScanners;
     },
     isMultiSubmission() {
       return this.settings.allowMultiRule && !this.isFallbackSubmission;
@@ -189,10 +212,32 @@ export default {
         groupRecords: this.groups,
         removeHiddenGroups: this.removeHiddenGroups,
         protectedBranchIds: this.branches.map((x) => x.id),
+        scanners: this.scanners,
       };
     },
     isEditing() {
       return Boolean(this.initRule);
+    },
+    isVulnerabilityCheck() {
+      return VULNERABILITY_CHECK_NAME === this.name;
+    },
+    areAllScannersSelected() {
+      return this.scanners.length === Object.values(this.$options.REPORT_TYPES).length;
+    },
+    scannersText() {
+      switch (this.scanners.length) {
+        case Object.values(this.$options.REPORT_TYPES).length:
+          return this.$options.APPROVAL_DIALOG_I18N.form.allScannersSelectedLabel;
+        case 0:
+          return this.$options.APPROVAL_DIALOG_I18N.form.scannersSelectLabel;
+        case 1:
+          return this.$options.REPORT_TYPES[this.scanners[0]];
+        default:
+          return sprintf(this.$options.APPROVAL_DIALOG_I18N.form.multipleSelectedScannersLabel, {
+            scanner: this.$options.REPORT_TYPES[this.scanners[0]],
+            additionalScanners: this.scanners.length - 1,
+          });
+      }
     },
   },
   watch: {
@@ -309,33 +354,15 @@ export default {
             containsHiddenGroups && !removeHiddenGroups ? [{ type: TYPE_HIDDEN_GROUPS }] : [],
           ),
         branches,
+        scanners: this.initRule.scanners || [],
       };
     },
-  },
-  i18n: {
-    form: {
-      approvalsRequiredLabel: s__('ApprovalRule|Approvals required'),
-      approvalTypeLabel: s__('ApprovalRule|Approver Type'),
-      approversLabel: s__('ApprovalRule|Add approvers'),
-      nameLabel: s__('ApprovalRule|Rule name'),
-      nameDescription: s__('ApprovalRule|Examples: QA, Security.'),
-      protectedBranchLabel: s__('ApprovalRule|Target branch'),
-      protectedBranchDescription: __(
-        'Apply this approval rule to any branch or a specific protected branch.',
-      ),
-    },
-    validations: {
-      approvalsRequiredNegativeNumber: __('Please enter a non-negative number'),
-      approvalsRequiredNotNumber: __('Please enter a valid number'),
-      approvalsRequiredMinimum: __(
-        'Please enter a number greater than %{number} (from the project settings)',
-      ),
-      approversRequired: __('Please select and add a member'),
-      branchesRequired: __('Please select a valid target branch'),
-      ruleNameTaken: __('Rule name is already taken.'),
-      ruleNameMissing: __('Please provide a name'),
+    setAllSelectedScanners() {
+      this.scanners = this.areAllScannersSelected ? [] : Object.keys(this.$options.REPORT_TYPES);
     },
   },
+  APPROVAL_DIALOG_I18N,
+  REPORT_TYPES,
 };
 </script>
 
@@ -343,8 +370,8 @@ export default {
   <form novalidate @submit.prevent.stop="submit">
     <gl-form-group
       v-if="showName"
-      :label="$options.i18n.form.nameLabel"
-      :description="$options.i18n.form.nameDescription"
+      :label="$options.APPROVAL_DIALOG_I18N.form.nameLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.nameDescription"
       :state="isValidName"
       :invalid-feedback="invalidName"
       data-testid="name-group"
@@ -359,8 +386,8 @@ export default {
     </gl-form-group>
     <gl-form-group
       v-if="showProtectedBranch"
-      :label="$options.i18n.form.protectedBranchLabel"
-      :description="$options.i18n.form.protectedBranchDescription"
+      :label="$options.APPROVAL_DIALOG_I18N.form.protectedBranchLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.protectedBranchDescription"
       :state="isValidBranches"
       :invalid-feedback="invalidBranches"
       data-testid="branches-group"
@@ -373,7 +400,30 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      :label="$options.i18n.form.approvalsRequiredLabel"
+      v-if="isVulnerabilityCheck"
+      :label="$options.APPROVAL_DIALOG_I18N.form.scannersLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.scannersDescription"
+      :state="areValidScanners"
+      :invalid-feedback="invalidScanners"
+      data-testid="scanners-group"
+    >
+      <gl-dropdown :text="scannersText">
+        <gl-form-checkbox
+          :checked="areAllScannersSelected"
+          class="gl-ml-2"
+          @change="setAllSelectedScanners"
+        >
+          {{ $options.APPROVAL_DIALOG_I18N.form.selectAllScannersLabel }}
+        </gl-form-checkbox>
+        <gl-form-checkbox-group
+          v-model="scanners"
+          :options="this.$options.REPORT_TYPES"
+          class="gl-ml-2"
+        />
+      </gl-dropdown>
+    </gl-form-group>
+    <gl-form-group
+      :label="$options.APPROVAL_DIALOG_I18N.form.approvalsRequiredLabel"
       :state="isValidApprovalsRequired"
       :invalid-feedback="invalidApprovalsRequired"
       data-testid="approvals-required-group"
@@ -389,7 +439,7 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      :label="$options.i18n.form.approversLabel"
+      :label="$options.APPROVAL_DIALOG_I18N.form.approversLabel"
       :state="isValidApprovers"
       :invalid-feedback="invalidApprovers"
       data-testid="approvers-group"
