@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/browser';
 import MockAdapter from 'axios-mock-adapter';
-import * as actions from 'ee/approvals/stores/modules/group_settings/actions';
-import * as types from 'ee/approvals/stores/modules/group_settings/mutation_types';
-import getInitialState from 'ee/approvals/stores/modules/group_settings/state';
+import actionsFactory from 'ee/approvals/stores/modules/approval_settings/actions';
+import * as types from 'ee/approvals/stores/modules/approval_settings/mutation_types';
+import getInitialState from 'ee/approvals/stores/modules/approval_settings/state';
 import testAction from 'helpers/vuex_action_helper';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
@@ -11,6 +11,7 @@ describe('EE approvals group settings module actions', () => {
   let state;
   let mock;
 
+  const actions = actionsFactory((data) => data);
   const approvalSettingsPath = 'groups/22/merge_request_approval_setting';
 
   beforeEach(() => {
@@ -63,13 +64,7 @@ describe('EE approvals group settings module actions', () => {
   describe('updateSettings', () => {
     beforeEach(() => {
       state = {
-        settings: {
-          preventAuthorApproval: false,
-          preventCommittersApproval: false,
-          preventMrApprovalRuleEdit: false,
-          requireUserPassword: false,
-          removeApprovalsOnPush: false,
-        },
+        settings: {},
       };
     });
 

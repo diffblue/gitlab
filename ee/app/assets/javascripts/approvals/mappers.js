@@ -95,3 +95,20 @@ export const mapMRApprovalSettingsResponse = (res) => {
     minFallbackApprovalsRequired: 0,
   };
 };
+
+export const groupApprovalsMappers = {
+  mapDataToState: (data) => ({
+    preventAuthorApproval: !data.allow_author_approval,
+    preventMrApprovalRuleEdit: !data.allow_overrides_to_approver_list_per_merge_request,
+    requireUserPassword: data.require_password_to_approve,
+    removeApprovalsOnPush: !data.retain_approvals_on_push,
+    preventCommittersApproval: !data.allow_committer_approval,
+  }),
+  mapStateToPayload: (state) => ({
+    allow_author_approval: !state.settings.preventAuthorApproval,
+    allow_overrides_to_approver_list_per_merge_request: !state.settings.preventMrApprovalRuleEdit,
+    require_password_to_approve: state.settings.requireUserPassword,
+    retain_approvals_on_push: !state.settings.removeApprovalsOnPush,
+    allow_committer_approval: !state.settings.preventCommittersApproval,
+  }),
+};

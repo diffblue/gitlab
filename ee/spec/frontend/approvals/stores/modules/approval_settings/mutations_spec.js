@@ -1,9 +1,18 @@
 import { APPROVAL_SETTINGS_I18N } from 'ee/approvals/constants';
-import mutations from 'ee/approvals/stores/modules/group_settings/mutations';
-import getInitialState from 'ee/approvals/stores/modules/group_settings/state';
+import mutationsFactory from 'ee/approvals/stores/modules/approval_settings/mutations';
+import getInitialState from 'ee/approvals/stores/modules/approval_settings/state';
 
 describe('Group settings store mutations', () => {
   let state;
+
+  const mapperFn = jest.fn((data) => data);
+  const mutations = mutationsFactory(mapperFn);
+  const settings = {
+    preventAuthorApproval: true,
+    preventMrApprovalRuleEdit: true,
+    requireUserPassword: true,
+    removeApprovalsOnPush: true,
+  };
 
   beforeEach(() => {
     state = getInitialState();
@@ -20,19 +29,10 @@ describe('Group settings store mutations', () => {
 
   describe('RECEIVE_SETTINGS_SUCCESS', () => {
     it('updates settings', () => {
-      mutations.RECEIVE_SETTINGS_SUCCESS(state, {
-        allow_author_approval: true,
-        allow_committer_approval: true,
-        allow_overrides_to_approver_list_per_merge_request: true,
-        require_password_to_approve: true,
-        retain_approvals_on_push: true,
-      });
+      mutations.RECEIVE_SETTINGS_SUCCESS(state, settings);
 
-      expect(state.settings.preventAuthorApproval).toBe(false);
-      expect(state.settings.preventCommittersApproval).toBe(false);
-      expect(state.settings.preventMrApprovalRuleEdit).toBe(false);
-      expect(state.settings.requireUserPassword).toBe(true);
-      expect(state.settings.removeApprovalsOnPush).toBe(false);
+      expect(mapperFn).toHaveBeenCalledWith(settings);
+      expect(state.settings).toStrictEqual(settings);
       expect(state.isLoading).toBe(false);
     });
   });
@@ -58,17 +58,10 @@ describe('Group settings store mutations', () => {
 
   describe('UPDATE_SETTINGS_SUCCESS', () => {
     it('updates settings', () => {
-      mutations.UPDATE_SETTINGS_SUCCESS(state, {
-        allow_author_approval: true,
-        allow_overrides_to_approver_list_per_merge_request: true,
-        require_password_to_approve: true,
-        retain_approvals_on_push: true,
-      });
+      mutations.UPDATE_SETTINGS_SUCCESS(state, settings);
 
-      expect(state.settings.preventAuthorApproval).toBe(false);
-      expect(state.settings.preventMrApprovalRuleEdit).toBe(false);
-      expect(state.settings.requireUserPassword).toBe(true);
-      expect(state.settings.removeApprovalsOnPush).toBe(false);
+      expect(mapperFn).toHaveBeenCalledWith(settings);
+      expect(state.settings).toStrictEqual(settings);
       expect(state.isLoading).toBe(false);
       expect(state.isUpdated).toBe(true);
     });
