@@ -134,15 +134,10 @@ export default {
       <assignee-select
         v-if="isIssueBoard"
         :board="board"
-        :selected="board.assignee"
         :can-edit="canAdminBoard"
         :project-id="projectId"
         :group-id="groupId"
-        any-user-text="Any assignee"
-        field-name="assignee_id"
-        label="Assignee"
-        placeholder-text="Select assignee"
-        wrapper-class="assignee"
+        @set-assignee="$emit('set-assignee', $event)"
       />
 
       <!-- eslint-disable vue/no-mutating-props -->

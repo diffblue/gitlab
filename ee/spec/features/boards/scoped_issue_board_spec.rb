@@ -229,7 +229,7 @@ RSpec.describe 'Scoped issue boards', :js do
         edit_board.click
 
         expect(find('.milestone .value')).to have_content(milestone.title)
-        expect(find('.assignee .value')).to have_content(user.name)
+        expect(find('[data-testid="selected-assignee"]')).to have_content(user.name)
         expect(find('.weight .value')).to have_content(2)
       end
 
@@ -564,7 +564,7 @@ RSpec.describe 'Scoped issue boards', :js do
             click_button value
           end
         else
-          click_link value
+          click_on value
         end
       end
     end

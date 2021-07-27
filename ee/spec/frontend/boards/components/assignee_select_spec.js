@@ -1,117 +1,152 @@
-import MockAdapter from 'axios-mock-adapter';
-import Vue from 'vue';
-
+import { GlButton, GlDropdown } from '@gitlab/ui';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import Vuex from 'vuex';
 import AssigneeSelect from 'ee/boards/components/assignee_select.vue';
+
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+
 import { boardObj } from 'jest/boards/mock_data';
+import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/sidebar/mock_data';
 
-import boardsStore from '~/boards/stores/boards_store';
-import IssuableContext from '~/issuable_context';
-import axios from '~/lib/utils/axios_utils';
+import defaultStore from '~/boards/stores';
+import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
+import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
+import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
 
-let vm;
-
-function selectedText() {
-  return vm.$el.querySelector('.value').innerText.trim();
-}
-
-function activeDropdownItem(index) {
-  const items = document.querySelectorAll('.is-active');
-  if (!items[index]) return '';
-  return items[index].innerText.trim();
-}
-
-const assignee = {
-  id: 1,
-  name: 'first assignee',
-};
-
-const assignee2 = {
-  id: 2,
-  name: 'second assignee',
-};
+const localVue = createLocalVue();
+localVue.use(VueApollo);
 
 describe('Assignee select component', () => {
-  beforeEach((done) => {
-    setFixtures('<div class="test-container"></div>');
-    boardsStore.create();
+  let wrapper;
+  let fakeApollo;
+  let store;
 
-    // eslint-disable-next-line no-new
-    new IssuableContext();
+  const selectedText = () => wrapper.find('[data-testid="selected-assignee"]').text();
+  const findEditButton = () => wrapper.findComponent(GlButton);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
 
-    const Component = Vue.extend(AssigneeSelect);
-    vm = new Component({
+  const usersQueryHandlerSuccess = jest.fn().mockResolvedValue(projectMembersResponse);
+  const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(groupMembersResponse);
+
+  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+    store = new Vuex.Store({
+      ...defaultStore,
+      getters: {
+        isGroupBoard: () => isGroupBoard,
+        isProjectBoard: () => isProjectBoard,
+      },
+    });
+  };
+
+  const createComponent = ({ props = {}, usersQueryHandler = usersQueryHandlerSuccess } = {}) => {
+    fakeApollo = createMockApollo([
+      [searchProjectUsersQuery, usersQueryHandler],
+      [searchGroupUsersQuery, groupUsersQueryHandlerSuccess],
+    ]);
+    wrapper = shallowMount(AssigneeSelect, {
+      localVue,
+      store,
+      apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
-        assigneePath: '/test/issue-boards/assignees.json',
         canEdit: true,
-        label: 'Assignee',
-        selected: {},
-        fieldName: 'assignee_id',
-        anyUserText: 'Any assignee',
+        ...props,
       },
-    }).$mount('.test-container');
-
-    setImmediate(done);
-  });
-
-  describe('canEdit', () => {
-    it('hides Edit button', (done) => {
-      vm.canEdit = false;
-      Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.edit-link')).toBeFalsy();
-        done();
-      });
+      provide: {
+        fullPath: 'gitlab-org',
+      },
     });
 
-    it('shows Edit button if true', (done) => {
-      vm.canEdit = true;
-      Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.edit-link')).toBeTruthy();
-        done();
-      });
-    });
+    // We need to mock out `showDropdown` which
+    // invokes `show` method of BDropdown used inside GlDropdown.
+    jest.spyOn(wrapper.vm, 'showDropdown').mockImplementation();
+  };
+
+  beforeEach(() => {
+    createStore({ isProjectBoard: true });
+    createComponent();
   });
 
-  describe('selected value', () => {
+  afterEach(() => {
+    wrapper.destroy();
+    fakeApollo = null;
+    store = null;
+  });
+
+  describe('when not editing', () => {
     it('defaults to Any Assignee', () => {
       expect(selectedText()).toContain('Any assignee');
     });
 
-    it('shows selected assignee', (done) => {
-      vm.selected = assignee;
-      Vue.nextTick(() => {
-        expect(selectedText()).toContain('first assignee');
-        done();
-      });
-    });
-
-    describe('clicking dropdown items', () => {
-      let mock;
-
-      beforeEach(() => {
-        mock = new MockAdapter(axios);
-        mock.onGet('/-/autocomplete/users.json').reply(200, [assignee, assignee2]);
-      });
-
-      afterEach(() => {
-        mock.restore();
-      });
-
-      it('sets assignee', (done) => {
-        vm.$el.querySelector('.edit-link').click();
-
-        jest.runOnlyPendingTimers();
-
-        setImmediate(() => {
-          vm.$el.querySelectorAll('li a')[2].click();
-
-          setImmediate(() => {
-            expect(activeDropdownItem(0)).toEqual('second assignee');
-            expect(vm.board.assignee).toEqual(assignee2);
-            done();
-          });
-        });
-      });
+    it('skips the queries and does not render dropdown', () => {
+      expect(usersQueryHandlerSuccess).not.toHaveBeenCalled();
+      expect(findDropdown().isVisible()).toBe(false);
     });
   });
+
+  describe('when editing', () => {
+    it('trigger query and renders dropdown with returned users', async () => {
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
+      await nextTick();
+      expect(usersQueryHandlerSuccess).toHaveBeenCalled();
+
+      expect(findDropdown().isVisible()).toBe(true);
+      expect(wrapper.findAll('[data-testid="unselected-user"]')).toHaveLength(3); // 2 users + Any assignee item
+    });
+
+    it('renders selected assignee', async () => {
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
+      await nextTick();
+
+      wrapper
+        .findAll('[data-testid="unselected-user"]')
+        .at(1)
+        .vm.$emit('click', new Event('click'));
+
+      await waitForPromises();
+      expect(selectedText()).toContain(mockUser2.username);
+    });
+  });
+
+  describe('canEdit', () => {
+    it('hides Edit button', async () => {
+      wrapper.setProps({ canEdit: false });
+      await nextTick();
+
+      expect(findEditButton().exists()).toBe(false);
+    });
+
+    it('shows Edit button if true', () => {
+      expect(findEditButton().exists()).toBe(true);
+    });
+  });
+
+  it.each`
+    boardType    | mockedResponse            | queryHandler                     | notCalledHandler
+    ${'group'}   | ${groupMembersResponse}   | ${groupUsersQueryHandlerSuccess} | ${usersQueryHandlerSuccess}
+    ${'project'} | ${projectMembersResponse} | ${usersQueryHandlerSuccess}      | ${groupUsersQueryHandlerSuccess}
+  `(
+    'fetches $boardType users',
+    async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
+      createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
+      createComponent({
+        [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
+      });
+
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
+      await nextTick();
+
+      expect(queryHandler).toHaveBeenCalled();
+      expect(notCalledHandler).not.toHaveBeenCalled();
+    },
+  );
 });

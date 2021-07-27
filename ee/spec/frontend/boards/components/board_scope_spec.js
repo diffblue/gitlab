@@ -1,13 +1,12 @@
-import { createLocalVue, mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardScope from 'ee/boards/components/board_scope.vue';
 import { useMockIntersectionObserver } from 'helpers/mock_dom_observer';
 import { TEST_HOST } from 'helpers/test_constants';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('BoardScope', () => {
   let wrapper;
@@ -25,7 +24,6 @@ describe('BoardScope', () => {
 
   function mountComponent() {
     wrapper = mount(BoardScope, {
-      localVue,
       store,
       propsData: {
         collapseScope: false,
@@ -36,6 +34,9 @@ describe('BoardScope', () => {
         },
         labelsPath: `${TEST_HOST}/labels`,
         labelsWebUrl: `${TEST_HOST}/-/labels`,
+      },
+      stubs: {
+        AssigneeSelect: true,
       },
     });
   }
