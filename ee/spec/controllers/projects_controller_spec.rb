@@ -105,6 +105,28 @@ RSpec.describe ProjectsController do
 
       it_behaves_like 'namespace storage limit alert'
     end
+
+    context 'sast_entry_points experiment' do
+      before do
+        allow(controller).to receive(:enable_sast_entry_points_experiment?).with(public_project).and_return(true)
+        stub_experiments(sast_entry_points: :banner)
+      end
+
+      it 'tracks the assignment', :experiment do
+        expect(experiment(:sast_entry_points))
+          .to track(:assignment)
+          .with_context(namespace: public_project.namespace)
+          .on_next_instance
+
+        subject
+      end
+
+      it 'records the subject' do
+        expect(Experiment).to receive(:add_subject).with('sast_entry_points', variant: :experimental, subject: public_project.namespace)
+
+        subject
+      end
+    end
   end
 
   describe 'GET edit' do

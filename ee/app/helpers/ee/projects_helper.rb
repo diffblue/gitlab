@@ -243,6 +243,17 @@ module EE
       project.marked_for_deletion_at.present?
     end
 
+    def enable_sast_entry_points_experiment?(project)
+      can?(current_user, :admin_project, project) &&
+        !project.empty_repo? &&
+        !OnboardingProgress.completed?(project.root_ancestor, :security_scan_enabled)
+    end
+
+    def sast_entry_points_experiment_enabled?(project)
+      enable_sast_entry_points_experiment?(project) &&
+        experiment(:sast_entry_points, namespace: project.root_ancestor).variant.group == :experiment
+    end
+
     private
 
     def remove_message_data(project)

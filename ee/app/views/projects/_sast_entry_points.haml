@@ -1,0 +1,4 @@
+- if sast_entry_points_experiment_enabled?(project)
+  - variant = experiment(:sast_entry_points, namespace: project.root_ancestor).variant.name
+  - add_page_specific_style 'page_bundles/marketing_popover'
+  .js-sast-entry-points-experiment{ data: { variant: variant, sast_documentation_path: help_page_path('user/application_security/sast/index') } }

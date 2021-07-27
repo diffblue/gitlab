@@ -1,0 +1,33 @@
+@import 'page_bundles/mixins_and_variables_and_functions';
+
+.marketing-popover {
+  max-width: $grid-size * 45;
+
+  &.bs-popover-bottom {
+    @include gl-border-t-solid;
+
+    border-top-color: $theme-indigo-900;
+
+    .arrow {
+      @include gl-mt-n2;
+
+      &::after {
+        border-bottom-color: $theme-indigo-900;
+      }
+    }
+  }
+
+  &.bs-popover-top {
+    @include gl-border-b-solid;
+
+    border-bottom-color: $theme-indigo-900;
+
+    .arrow {
+      margin-bottom: -$gl-spacing-scale-2;
+
+      &::after {
+        border-top-color: $theme-indigo-900;
+      }
+    }
+  }
+}

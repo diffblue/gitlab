@@ -12,6 +12,7 @@ module EE
 
       before_action only: :show do
         push_frontend_feature_flag(:cve_id_request_button, project)
+        enable_sast_entry_points_experiment
       end
 
       feature_category :projects, [:restore]
@@ -189,6 +190,19 @@ module EE
 
     def log_unarchive_audit_event
       log_audit_event(message: 'Project unarchived')
+    end
+
+    def enable_sast_entry_points_experiment
+      return unless enable_sast_entry_points_experiment?(project)
+
+      experiment(:sast_entry_points, namespace: project.root_ancestor) do |e|
+        e.control {}
+        e.candidate(:banner) {}
+        e.candidate(:popover_light) {}
+        e.candidate(:popover_dark) {}
+
+        e.record!
+      end
     end
   end
 end
