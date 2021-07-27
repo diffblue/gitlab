@@ -11,7 +11,6 @@ module Projects
       feature_category :dynamic_application_security_testing
 
       def show
-        not_found unless Feature.enabled?(:dast_configuration_ui, @project, default_enabled: :yaml)
       end
     end
   end

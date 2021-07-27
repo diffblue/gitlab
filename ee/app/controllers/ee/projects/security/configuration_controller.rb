@@ -15,7 +15,6 @@ module EE
           before_action only: [:show] do
             push_frontend_feature_flag(:security_auto_fix, project, default_enabled: false)
             push_frontend_feature_flag(:sec_dependency_scanning_ui_enable, project, default_enabled: :yaml)
-            push_frontend_feature_flag(:dast_configuration_ui, project, default_enabled: :yaml)
           end
 
           before_action only: [:auto_fix] do
