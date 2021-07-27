@@ -27,11 +27,10 @@ class TrialsController < ApplicationController
     render(:new) && return unless @result[:success]
 
     if params[:glm_source] == 'about.gitlab.com'
-      record_experiment_user(:trial_onboarding_issues)
-      return redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true))) if experiment_enabled?(:trial_onboarding_issues)
+      redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true)))
+    else
+      redirect_to select_trials_url(url_params)
     end
-
-    redirect_to select_trials_url(url_params)
   end
 
   def apply
@@ -41,9 +40,7 @@ class TrialsController < ApplicationController
 
     if @result&.dig(:success)
       record_experiment_user(:remove_known_trial_form_fields, namespace_id: @namespace.id)
-      record_experiment_user(:trial_onboarding_issues, namespace_id: @namespace.id)
       record_experiment_conversion_event(:remove_known_trial_form_fields)
-      record_experiment_conversion_event(:trial_onboarding_issues)
 
       experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
 
