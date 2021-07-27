@@ -12088,9 +12088,6 @@ msgstr ""
 msgid "Enable PlantUML"
 msgstr ""
 
-msgid "Enable Prometheus Metrics"
-msgstr ""
-
 msgid "Enable Pseudonymizer data collection"
 msgstr ""
 
@@ -12112,16 +12109,13 @@ msgstr ""
 msgid "Enable What's new: Current tier only"
 msgstr ""
 
-msgid "Enable a Prometheus metrics endpoint at %{metrics_path} to expose a variety of statistics on the health and performance of GitLab. Additional information on authenticating and connecting to the metrics endpoint is available %{link}."
+msgid "Enable a Prometheus endpoint that exposes health and performance statistics. The Health Check menu item appears in the Monitoring section of the Admin Area. Restart required."
 msgstr ""
 
 msgid "Enable access to the Performance Bar"
 msgstr ""
 
 msgid "Enable access to the Performance Bar for a given group."
-msgstr ""
-
-msgid "Enable and configure Prometheus metrics."
 msgstr ""
 
 msgid "Enable and disable Service Desk. Some additional configuration might be required. %{link_start}Learn more%{link_end}."
@@ -12155,6 +12149,9 @@ msgid "Enable group runners"
 msgstr ""
 
 msgid "Enable header and footer in emails"
+msgstr ""
+
+msgid "Enable health and performance metrics endpoint"
 msgstr ""
 
 msgid "Enable in-product marketing emails"
@@ -19230,6 +19227,9 @@ msgstr ""
 msgid "Learn More"
 msgstr ""
 
+msgid "Learn More."
+msgstr ""
+
 msgid "Learn how to %{link_start}contribute to the built-in templates%{link_end}"
 msgstr ""
 
@@ -20693,7 +20693,7 @@ msgstr ""
 msgid "Method"
 msgstr ""
 
-msgid "Method Call Threshold (ms)"
+msgid "Method call threshold (ms)"
 msgstr ""
 
 msgid "Metric was successfully added."
@@ -21322,6 +21322,9 @@ msgid "Monitor"
 msgstr ""
 
 msgid "Monitor Settings"
+msgstr ""
+
+msgid "Monitor the health and performance of GitLab with Prometheus."
 msgstr ""
 
 msgid "Monitor your errors by integrating with Sentry."
@@ -33723,9 +33726,6 @@ msgstr ""
 msgid "This setting can be overridden in each project."
 msgstr ""
 
-msgid "This setting requires a %{link_to_restart} to take effect."
-msgstr ""
-
 msgid "This subscription is for"
 msgstr ""
 
@@ -38786,9 +38786,6 @@ msgstr ""
 msgid "help"
 msgstr ""
 
-msgid "here"
-msgstr ""
-
 msgid "http:"
 msgstr ""
 
@@ -39527,9 +39524,6 @@ msgid "required"
 msgstr ""
 
 msgid "reset it."
-msgstr ""
-
-msgid "restart"
 msgstr ""
 
 msgid "revised"
