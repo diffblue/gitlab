@@ -905,7 +905,7 @@ module Gitlab
       end
       # rubocop:enable Metrics/ParameterLists
 
-      def write_config(full_path:)
+      def set_full_path(full_path:)
         return unless full_path.present?
 
         # This guard avoids Gitaly log/error spam
