@@ -19,19 +19,19 @@ module BillingPlansHelper
   end
 
   def has_upgrade?(upgrade_offer)
-    upgrade_offer == :upgrade_for_free || upgrade_offer == :upgrade_for_offer
+    [:upgrade_for_free, :upgrade_for_offer].include?(upgrade_offer)
   end
 
   def show_contact_sales_button?(purchase_link_action, upgrade_offer)
     return false unless purchase_link_action == 'upgrade'
 
-    upgrade_offer == :upgrade_for_offer ||
-      (experiment_enabled?(:contact_sales_btn_in_app) && upgrade_offer == :no_offer)
+    [:upgrade_for_offer, :no_offer].include?(upgrade_offer)
   end
 
   def show_upgrade_button?(purchase_link_action, upgrade_offer)
-    purchase_link_action == 'upgrade' &&
-      (upgrade_offer == :no_offer || upgrade_offer == :upgrade_for_free)
+    return false unless purchase_link_action == 'upgrade'
+
+    [:no_offer, :upgrade_for_free].include?(upgrade_offer)
   end
 
   def subscription_plan_data_attributes(namespace, plan)
@@ -60,18 +60,6 @@ module BillingPlansHelper
     return false unless current_user.last_name.present?
 
     namespace.group? && (namespace.actual_plan_name == Plan::FREE || namespace.trial_active?)
-  end
-
-  def experiment_tracking_data_for_button_click(button_label)
-    return {} unless Gitlab::Experimentation.active?(:contact_sales_btn_in_app)
-
-    {
-      track: {
-        event: 'click_button',
-        label: button_label,
-        property: experiment_tracking_category_and_group(:contact_sales_btn_in_app)
-      }
-    }
   end
 
   def plan_feature_list(plan)
@@ -116,11 +104,16 @@ module BillingPlansHelper
     _('Seats usage data is updated every day at 12:00pm UTC')
   end
 
+  def upgrade_button_text(plan_offer_type)
+    plan_offer_type === :upgrade_for_free ? s_('BillingPlan|Upgrade for free') : s_('BillingPlan|Upgrade')
+  end
+
   def upgrade_button_css_classes(namespace, plan, is_current_plan)
-    css_classes = %w[btn btn-success gl-button]
+    css_classes = []
 
     css_classes << 'disabled' if is_current_plan && !namespace.trial_active?
     css_classes << 'invisible' if ::Feature.enabled?(:hide_deprecated_billing_plans) && plan.deprecated?
+    css_classes << "billing-cta-purchase#{'-new' if use_new_purchase_flow?(namespace)}"
 
     css_classes.join(' ')
   end

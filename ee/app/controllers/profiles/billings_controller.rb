@@ -11,10 +11,7 @@ class Profiles::BillingsController < Profiles::ApplicationController
       .new(plan: current_user.namespace.plan_name_for_upgrading, namespace_id: current_user.namespace_id)
       .execute
 
-    if @plans_data
-      track_experiment_event(:contact_sales_btn_in_app, 'page_view:billing_plans:profile')
-      record_experiment_user(:contact_sales_btn_in_app)
-    else
+    unless @plans_data
       render 'shared/billings/customers_dot_unavailable'
     end
   end

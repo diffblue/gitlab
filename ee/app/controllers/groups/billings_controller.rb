@@ -21,10 +21,7 @@ class Groups::BillingsController < Groups::ApplicationController
       .new(plan: current_plan, namespace_id: relevant_group.id)
       .execute
 
-    if @plans_data
-      track_experiment_event(:contact_sales_btn_in_app, 'page_view:billing_plans:group')
-      record_experiment_user(:contact_sales_btn_in_app)
-    else
+    unless @plans_data
       render 'shared/billings/customers_dot_unavailable'
     end
   end

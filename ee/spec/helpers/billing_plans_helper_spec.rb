@@ -277,22 +277,16 @@ RSpec.describe BillingPlansHelper do
   describe '#show_contact_sales_button?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:experiment_enabled, :link_action, :upgrade_offer, :result) do
-      true  | 'upgrade'     | :no_offer           | true
-      true  | 'upgrade'     | :upgrade_for_offer  | true
-      true  | 'no_upgrade'  | :no_offer           | false
-      true  | 'no_upgrade'  | :upgrade_for_offer  | false
-      false | 'upgrade'     | :no_offer           | false
-      false | 'upgrade'     | :upgrade_for_offer  | true
-      false | 'no_upgrade'  | :no_offer           | false
-      false | 'no_upgrade'  | :upgrade_for_offer  | false
+    where(:link_action, :upgrade_offer, :result) do
+      'upgrade'     | :no_offer           | true
+      'upgrade'     | :upgrade_for_free   | false
+      'upgrade'     | :upgrade_for_offer  | true
+      'no_upgrade'  | :no_offer           | false
+      'no_upgrade'  | :upgrade_for_free   | false
+      'no_upgrade'  | :upgrade_for_offer  | false
     end
 
     with_them do
-      before do
-        allow(helper).to receive(:experiment_enabled?).with(:contact_sales_btn_in_app).and_return(experiment_enabled)
-      end
-
       subject { helper.show_contact_sales_button?(link_action, upgrade_offer) }
 
       it { is_expected.to eq(result) }
@@ -315,39 +309,6 @@ RSpec.describe BillingPlansHelper do
       subject { helper.show_upgrade_button?(link_action, upgrade_offer) }
 
       it { is_expected.to eq(result) }
-    end
-  end
-
-  describe '#experiment_tracking_data_for_button_click' do
-    let(:button_label) { 'some_label' }
-    let(:experiment_enabled) { false }
-
-    subject { helper.experiment_tracking_data_for_button_click(button_label) }
-
-    before do
-      stub_experiment(contact_sales_btn_in_app: experiment_enabled)
-    end
-
-    context 'when the experiment is not enabled' do
-      it { is_expected.to eq({}) }
-    end
-
-    context 'when the experiment is enabled' do
-      let(:experiment_enabled) { true }
-
-      before do
-        allow(helper).to receive(:experiment_tracking_category_and_group).with(:contact_sales_btn_in_app).and_return("Category:control_group")
-      end
-
-      it 'returns a hash to be used as data-attributes in a view' do
-        is_expected.to eq({
-          track: {
-            event: 'click_button',
-            label: button_label,
-            property: 'Category:control_group'
-          }
-        })
-      end
     end
   end
 
@@ -430,36 +391,48 @@ RSpec.describe BillingPlansHelper do
     end
   end
 
-  describe '#upgrade_button_css_classes' do
+  describe '#upgrade_button_text' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:plan) { double('Plan', deprecated?: false) }
+    subject { helper.upgrade_button_text(plan_offer_type) }
 
-    it 'returns button-related classes only' do
-      expect(helper.upgrade_button_css_classes(nil, plan, false)).to eq('btn btn-success gl-button')
-    end
-
-    where(:is_current_plan, :trial_active, :result) do
-      false | false | 'btn btn-success gl-button'
-      false | true  | 'btn btn-success gl-button'
-      true  | true  | 'btn btn-success gl-button'
-      true  | false | 'btn btn-success gl-button disabled'
-      false | false | 'btn btn-success gl-button'
+    where(:plan_offer_type, :result) do
+      :no_offer           | 'Upgrade'
+      :upgrade_for_free   | 'Upgrade for free'
+      :upgrade_for_offer  | 'Upgrade'
     end
 
     with_them do
-      let(:namespace) { OpenStruct.new(trial_active: trial_active) }
+      it { is_expected.to eq(result) }
+    end
+  end
 
-      subject { helper.upgrade_button_css_classes(namespace, plan, is_current_plan) }
+  describe '#upgrade_button_css_classes' do
+    let(:plan) { double('Plan', deprecated?: plan_is_deprecated) }
+    let(:namespace) { double('Namespace', trial_active?: trial_active) }
 
-      it { is_expected.to include(result) }
+    subject { helper.upgrade_button_css_classes(namespace, plan, is_current_plan) }
+
+    before do
+      allow(helper).to receive(:use_new_purchase_flow?).and_return(use_new_purchase_flow)
     end
 
-    context 'when plan is deprecated' do
-      let(:deprecated_plan) { double('Plan', deprecated?: true) }
+    where(
+      is_current_plan: [true, false],
+      trial_active: [true, false],
+      plan_is_deprecated: [true, false],
+      use_new_purchase_flow: [true, false]
+    )
 
-      it 'returns invisible class' do
-        expect(helper.upgrade_button_css_classes(nil, deprecated_plan, false)).to include('invisible')
+    with_them do
+      it 'returns the expected list of CSS classes' do
+        expected_classes = [].tap do |ary|
+          ary << 'disabled' if is_current_plan && !trial_active
+          ary << 'invisible' if plan_is_deprecated
+          ary << "billing-cta-purchase#{'-new' if use_new_purchase_flow}"
+        end.join(' ')
+
+        is_expected.to eq(expected_classes)
       end
     end
   end

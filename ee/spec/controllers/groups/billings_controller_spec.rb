@@ -50,18 +50,6 @@ RSpec.describe Groups::BillingsController do
         expect(assigns(:plans_data)).to eq(data)
       end
 
-      it 'tracks the page view for the contact_sales_btn_in_app experiment' do
-        expect(controller).to receive(:track_experiment_event).with(:contact_sales_btn_in_app, 'page_view:billing_plans:group')
-
-        get_index
-      end
-
-      it 'records user for the contact_sales_btn_in_app experiment' do
-        expect(controller).to receive(:record_experiment_user).with(:contact_sales_btn_in_app)
-
-        get_index
-      end
-
       context 'when CustomersDot is unavailable' do
         before do
           allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
@@ -69,17 +57,7 @@ RSpec.describe Groups::BillingsController do
           end
         end
 
-        it 'does not track the page view for the contact_sales_btn_in_app experiment' do
-          expect(controller).not_to receive(:track_experiment_event)
-
-          get_index
-
-          expect(response).to render_template('shared/billings/customers_dot_unavailable')
-        end
-
-        it 'does not record the user for the contact_sales_btn_in_app experiment' do
-          expect(controller).not_to receive(:record_experiment_user)
-
+        it 'renders a different partial' do
           get_index
 
           expect(response).to render_template('shared/billings/customers_dot_unavailable')
