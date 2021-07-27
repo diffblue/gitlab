@@ -229,7 +229,7 @@ RSpec.describe 'Login' do
 
         fake_successful_u2f_authentication
 
-        expect(current_path).to eq root_path
+        expect(current_path).to eq group_path(group)
       end
     end
 
@@ -263,7 +263,7 @@ RSpec.describe 'Login' do
 
         fake_successful_webauthn_authentication
 
-        expect(current_path).to eq root_path
+        expect(current_path).to eq group_path(group)
       end
     end
   end

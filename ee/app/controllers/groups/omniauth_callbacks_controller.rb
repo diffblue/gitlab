@@ -13,6 +13,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
     identity_linker = Gitlab::Auth::GroupSaml::IdentityLinker.new(current_user, oauth, session, @saml_provider)
 
+    store_location_for(:redirect, saml_redirect_path)
     omniauth_flow(Gitlab::Auth::GroupSaml, identity_linker: identity_linker)
   rescue Gitlab::Auth::Saml::IdentityLinker::UnverifiedRequest
     redirect_unverified_saml_initiation
@@ -131,7 +132,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def saml_redirect_path
-    params['RelayState'].presence if current_user
+    params['RelayState'].presence
   end
 
   override :find_message

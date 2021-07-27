@@ -10,7 +10,7 @@ RSpec.describe RoutableActions do
 
     def routable
       @klass = params[:type].constantize
-      @routable = find_routable!(params[:type].constantize, params[:id])
+      @routable = find_routable!(params[:type].constantize, params[:id], '/')
     end
 
     def show
