@@ -1,5 +1,6 @@
 import { GlForm } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { ApolloMutation } from 'vue-apollo';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/createEpic.mutation.graphql';
@@ -85,7 +86,7 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       findResetter().vm.$emit('click');
 
-      return wrapper.vm.$nextTick().then(() => {
+      return nextTick().then(() => {
         expect(wrapper.vm[field]).toBe(null);
       });
     });
@@ -137,7 +138,7 @@ describe('ee/epic/components/epic_form.vue', () => {
           },
         });
 
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(visitUrl).toHaveBeenCalled();
       },
