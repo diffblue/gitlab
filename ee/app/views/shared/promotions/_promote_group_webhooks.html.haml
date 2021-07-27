@@ -4,11 +4,11 @@
   .user-callout-copy
     %h4
       - if Gitlab::CurrentSettings.should_check_namespace_plan?
-        = _('Upgrade your plan to activate Group Webhooks.')
+        = s_('Promotions|Upgrade your plan to activate Group Webhooks.')
       - else
-        = _('Add Group Webhooks and GitLab Enterprise Edition.')
+        = s_('Promotions|Add Group Webhooks and GitLab Enterprise Edition.')
     %p
-      = _('Webhooks allow you to trigger a URL if, for example, new code is pushed or a new issue is created. You can configure webhooks to listen for specific events like pushes, issues or merge requests. Group webhooks will apply to all projects in a group, allowing you to standardize webhook functionality across your entire group.')
+      = s_('Promotions|Webhooks allow you to trigger a URL if, for example, new code is pushed or a new issue is created. You can configure webhooks to listen for specific events like pushes, issues or merge requests. Group webhooks will apply to all projects in a group, allowing you to standardize webhook functionality across your entire group.')
       = link_to _('Read more'), help_page_path('user/project/integrations/webhooks.md'), target: '_blank'
     .gl-mt-5
       = render 'shared/promotions/promotion_link_project', location: :group_webhooks

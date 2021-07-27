@@ -1,7 +1,7 @@
 .form-text.text-muted
   = _('Add')
-  = link_to 'description templates', '#', id: 'promotion-issue-template-link', data: { toggle: 'dropdown' }, tabindex: -1
-  = _('to help your contributors communicate effectively!')
+  = link_to s_('Promotions|description templates'), '#', id: 'promotion-issue-template-link', data: { toggle: 'dropdown' }, tabindex: -1
+  = s_('Promotions|to help your contributors communicate effectively!')
   .dropdown.promotion-issue-template
     .dropdown-menu.promotion-issue-template-message
       .dropdown-title.gl-display-flex.gl-justify-content-end
@@ -9,7 +9,7 @@
           = sprite_icon('close', size: 16, css_class: 'dropdown-menu-close-icon')
       %div
         %p
-          = _('Description templates allow you to define context-specific templates for issue and merge request description fields for your project.')
+          = s_('Promotions|Description templates allow you to define context-specific templates for issue and merge request description fields for your project.')
           = link_to _('Read more'), help_page_path('user/project/description_templates'), class: 'btn-link'
         %div
           = render 'shared/promotions/promotion_link_project', location: :issue_templates
