@@ -6847,9 +6847,6 @@ msgstr ""
 msgid "Click %{link_to} to view the request."
 msgstr ""
 
-msgid "Click the button below."
-msgstr ""
-
 msgid "Click the link below to confirm your email address (%{email})"
 msgstr ""
 
@@ -14386,9 +14383,6 @@ msgstr ""
 msgid "From merge request merge until deploy to production"
 msgstr ""
 
-msgid "From the Kubernetes cluster details view, applications list, install GitLab Runner."
-msgstr ""
-
 msgid "Full"
 msgstr ""
 
@@ -17535,9 +17529,6 @@ msgid "Insights|This project is filtered out in the insights.yml file (see the p
 msgstr ""
 
 msgid "Install GitLab Runner and ensure it's running."
-msgstr ""
-
-msgid "Install GitLab Runner on Kubernetes"
 msgstr ""
 
 msgid "Install on clusters"
@@ -27013,9 +27004,6 @@ msgstr ""
 msgid "Register WebAuthn Device"
 msgstr ""
 
-msgid "Register a runner on a Kubernetes cluster. %{link_to_help_page}"
-msgstr ""
-
 msgid "Register as many runners as you want. You can register runners as separate users, on separate servers, and on your local machine. Runners are either:"
 msgstr ""
 
@@ -29447,9 +29435,6 @@ msgstr ""
 msgid "Select an assignee"
 msgstr ""
 
-msgid "Select an existing Kubernetes cluster or create a new one."
-msgstr ""
-
 msgid "Select an iteration"
 msgstr ""
 
@@ -29927,7 +29912,7 @@ msgstr ""
 msgid "Set up Jira Integration"
 msgstr ""
 
-msgid "Set up a %{type} runner automatically"
+msgid "Set up a %{type} Runner for a project"
 msgstr ""
 
 msgid "Set up a %{type} runner manually"
