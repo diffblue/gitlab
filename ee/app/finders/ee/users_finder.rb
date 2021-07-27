@@ -17,7 +17,7 @@ module EE
     end
 
     def by_saml_provider_id(users)
-      saml_provider_id = params[:by_saml_provider_id]
+      saml_provider_id = params[:saml_provider_id]
       return users unless saml_provider_id
 
       users.limit_to_saml_provider(saml_provider_id)

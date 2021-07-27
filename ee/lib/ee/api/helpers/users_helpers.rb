@@ -16,6 +16,7 @@ module EE
 
           params :optional_index_params_ee do
             optional :skip_ldap, type: Grape::API::Boolean, default: false, desc: 'Skip LDAP users'
+            optional :saml_provider_id, type: Integer, desc: 'Return only users from the specified SAML provider Id'
           end
         end
       end
