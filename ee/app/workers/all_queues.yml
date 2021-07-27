@@ -1162,7 +1162,8 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags: []
+  :tags:
+  - :needs_own_queue
 - :name: project_template_export
   :worker_name: ProjectTemplateExportWorker
   :feature_category: :templates
