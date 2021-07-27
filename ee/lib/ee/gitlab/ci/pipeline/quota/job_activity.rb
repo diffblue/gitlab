@@ -38,13 +38,11 @@ module EE
               @excessive ||= jobs_in_alive_pipelines_count - ci_active_jobs_limit
             end
 
-            # rubocop: disable CodeReuse/ActiveRecord
             def jobs_in_alive_pipelines_count
               strong_memoize(:jobs_in_alive_pipelines_count) do
-                @project.all_pipelines.created_after(24.hours.ago).alive.joins(:builds).count
+                @project.all_pipelines.jobs_count_in_alive_pipelines
               end
             end
-            # rubocop: enable CodeReuse/ActiveRecord
 
             def ci_active_jobs_limit
               strong_memoize(:ci_active_jobs_limit) do
