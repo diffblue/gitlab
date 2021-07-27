@@ -11,38 +11,65 @@ RSpec.describe EE::API::Entities::Experiment do
   it do
     is_expected.to match(
       key: "null_hypothesis",
-      state: :off,
-      enabled: false,
-      name: "null_hypothesis",
-      introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/45840",
-      rollout_issue_url: nil,
-      milestone: "13.7",
-      type: "experiment",
-      group: "group::adoption",
-      default_enabled: false
+      definition: {
+        name: 'null_hypothesis',
+        introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/45840',
+        rollout_issue_url: nil,
+        milestone: '13.7',
+        type: 'experiment',
+        group: 'group::adoption',
+        default_enabled: false
+      },
+      current_status: {
+        state: :off,
+        gates: [
+          {
+            key: :boolean,
+            value: false
+          }
+        ]
+      }
     )
   end
 
   it "understands conditional state and what that means" do
     Feature.enable_percentage_of_time(:null_hypothesis, 1)
 
-    expect(subject).to include(
-      state: :conditional,
-      enabled: true
-    )
+    expect(subject[:current_status]).to match({
+                                                state: :conditional,
+                                                gates: [
+                                                  {
+                                                    key: :boolean,
+                                                    value: false
+                                                  },
+                                                  {
+                                                    key: :percentage_of_time,
+                                                    value: 1
+                                                  }
+                                                ]
+                                              })
   end
 
   it "understands state and what that means for if its enabled or not" do
     Feature.enable_percentage_of_time(:null_hypothesis, 100)
 
-    expect(subject).to include(
-      state: :on,
-      enabled: true
-    )
+    expect(subject[:current_status]).to match({
+                                                state: :on,
+                                                gates: [
+                                                  {
+                                                    key: :boolean,
+                                                    value: false
+                                                  },
+                                                  {
+                                                    key: :percentage_of_time,
+                                                    value: 100
+                                                  }
+                                                ]
+                                              })
   end
 
   it "truncates the name since some experiments include extra data in their feature flag name" do
-    experiment.attributes[:name] = 'foo_experiment_percentage'
+    allow(experiment).to receive(:attributes).and_return({ name: 'foo_experiment_percentage' })
 
     expect(subject).to include(
       key: 'foo'

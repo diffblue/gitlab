@@ -50,34 +50,54 @@ RSpec.describe API::Experiments do
           group.add_developer(user)
         end
 
-        it 'returns the feature flag details' do
+        it 'returns the feature flag details', :aggregate_failures do
           get api('/experiments', user)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to include({
             key: 'null_hypothesis',
-            state: :off,
-            enabled: false,
-            name: 'null_hypothesis',
-            introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/45840',
-            rollout_issue_url: nil,
-            milestone: '13.7',
-            type: 'experiment',
-            group: 'group::adoption',
-            default_enabled: false
+            definition: {
+              name: 'null_hypothesis',
+              introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/45840',
+              rollout_issue_url: nil,
+              milestone: '13.7',
+              type: 'experiment',
+              group: 'group::adoption',
+              default_enabled: false
+            },
+            current_status: {
+              state: :off,
+              gates: [
+                {
+                  key: :boolean,
+                  value: false
+                }
+              ]
+            }
           }.as_json)
         end
 
-        it 'understands the state of the feature flag and what that means for an experiment' do
+        it 'understands the state of the feature flag and what that means for an experiment', :aggregate_failures do
           Feature.enable_percentage_of_actors(:null_hypothesis, 1)
 
           get api('/experiments', user)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to include(hash_including({
-            state: :conditional,
-            enabled: true,
-            name: 'null_hypothesis'
+            key: 'null_hypothesis',
+            current_status: {
+              state: :conditional,
+              gates: [
+                {
+                  key: :boolean,
+                  value: false
+                },
+                {
+                  key: :percentage_of_actors,
+                  value: 1
+                }
+              ]
+            }
           }.as_json))
         end
 
@@ -127,7 +147,7 @@ RSpec.describe API::Experiments do
             })
           end
 
-          it 'returns a 400 if experimentation seems broken' do
+          it 'returns a 400 if experimentation seems broken', :aggregate_failures do
             # we assume that rendering control would only be done in error.
             stub_experiments(null_hypothesis: :control)
 
