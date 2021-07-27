@@ -11222,6 +11222,9 @@ msgstr ""
 msgid "DevOps adoption"
 msgstr ""
 
+msgid "Devices (optional)"
+msgstr ""
+
 msgid "DevopsAdoption|%{adoptedCount}/%{featuresCount} %{title} features adopted"
 msgstr ""
 
@@ -26807,34 +26810,34 @@ msgstr ""
 msgid "PushoverService|%{user_name} pushed new branch \"%{ref}\"."
 msgstr ""
 
+msgid "PushoverService|Enter your application key."
+msgstr ""
+
+msgid "PushoverService|Enter your user key."
+msgstr ""
+
 msgid "PushoverService|Get real-time notifications on your device."
 msgstr ""
 
-msgid "PushoverService|High Priority"
+msgid "PushoverService|High priority"
 msgstr ""
 
-msgid "PushoverService|Leave blank for all active devices"
+msgid "PushoverService|Leave blank for all active devices."
 msgstr ""
 
-msgid "PushoverService|Low Priority"
+msgid "PushoverService|Low priority"
 msgstr ""
 
-msgid "PushoverService|Lowest Priority"
+msgid "PushoverService|Lowest priority"
 msgstr ""
 
-msgid "PushoverService|Normal Priority"
+msgid "PushoverService|Normal priority"
 msgstr ""
 
 msgid "PushoverService|See project %{project_full_name}"
 msgstr ""
 
 msgid "PushoverService|Total commits count: %{total_commits_count}"
-msgstr ""
-
-msgid "PushoverService|Your application key"
-msgstr ""
-
-msgid "PushoverService|Your user key"
 msgstr ""
 
 msgid "Quarters"
@@ -35698,6 +35701,9 @@ msgid "User identity was successfully updated."
 msgstr ""
 
 msgid "User is not allowed to resolve thread"
+msgstr ""
+
+msgid "User key"
 msgstr ""
 
 msgid "User key was successfully removed."
