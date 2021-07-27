@@ -72,4 +72,4 @@
         - if show_contact_sales_button
           = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-success-secondary" : "btn-success"], data: { **experiment_tracking_data_for_button_click('contact_sales') }
         - if show_upgrade_button
-          = link_to upgrade_button_text, plan_purchase_or_upgrade_url(namespace, plan), class: "#{upgrade_button_classes} billing-cta-purchase#{cta_class} gl-ml-3", data: { **experiment_tracking_data_for_button_click('upgrade') }
+          = link_to upgrade_button_text, plan_purchase_or_upgrade_url(namespace, plan), class: "#{upgrade_button_classes} billing-cta-purchase#{cta_class} gl-ml-3", data: { **experiment_tracking_data_for_button_click('upgrade'), qa_selector: "upgrade_to_#{plan.code}" }
