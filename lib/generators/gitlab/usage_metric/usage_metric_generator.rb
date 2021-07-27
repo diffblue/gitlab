@@ -38,7 +38,7 @@ module Gitlab
     def validate!
       raise ArgumentError, "Type is required, valid options are #{ALLOWED_SUPERCLASSES.keys.join(', ')}" unless type.present?
       raise ArgumentError, "Unknown type '#{type}', valid options are #{ALLOWED_SUPERCLASSES.keys.join(', ')}" if metric_superclass.nil?
-      raise ArgumentError, "Unknown operation '#{operation}' valid operations are #{ALLOWED_OPERATIONS.join(', ')}" if type == 'database' && operation.nil?
+      raise ArgumentError, "Unknown operation '#{operation}' valid operations are #{ALLOWED_OPERATIONS.join(', ')}" if type == 'database' && !ALLOWED_OPERATIONS.include?(operation)
     end
 
     def ee?

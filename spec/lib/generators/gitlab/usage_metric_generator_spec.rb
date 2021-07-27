@@ -86,5 +86,13 @@ RSpec.describe Gitlab::UsageMetricGenerator, :silence_stdout do
         expect { described_class.new(args, options).invoke_all }.to raise_error(ArgumentError, /Unknown operation ''/)
       end
     end
+
+    context 'with wrong operation for database metric' do
+      let(:options) { { 'type' => 'database', 'operation' => 'sleep' } }
+
+      it 'raises an ArgumentError' do
+        expect { described_class.new(args, options).invoke_all }.to raise_error(ArgumentError, /Unknown operation 'sleep'/)
+      end
+    end
   end
 end
