@@ -1,21 +1,34 @@
 <script>
-import { GlLoadingIcon, GlIcon } from '@gitlab/ui';
-import { __ } from '~/locale';
-import UsersSelect from '~/users_select';
+import {
+  GlButton,
+  GlDropdown,
+  GlDropdownForm,
+  GlDropdownDivider,
+  GlDropdownItem,
+  GlSearchBoxByType,
+  GlLoadingIcon,
+} from '@gitlab/ui';
+import { isEmpty } from 'lodash';
+import { mapActions, mapGetters } from 'vuex';
+import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
+import searchProjectUsers from '~/graphql_shared/queries/users_search.query.graphql';
+import { s__ } from '~/locale';
+import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
 import UserAvatarImage from '~/vue_shared/components/user_avatar/user_avatar_image.vue';
 
 export default {
   components: {
     UserAvatarImage,
+    GlButton,
+    GlDropdown,
+    GlDropdownForm,
+    GlDropdownDivider,
+    GlDropdownItem,
+    GlSearchBoxByType,
     GlLoadingIcon,
-    GlIcon,
   },
+  inject: ['fullPath'],
   props: {
-    anyUserText: {
-      type: String,
-      required: false,
-      default: __('Any user'),
-    },
     board: {
       type: Object,
       required: true,
@@ -25,150 +38,200 @@ export default {
       required: false,
       default: false,
     },
-    fieldName: {
-      type: String,
-      required: true,
-    },
     groupId: {
       type: Number,
       required: false,
       default: 0,
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    placeholderText: {
-      type: String,
-      required: false,
-      default: __('Select user'),
     },
     projectId: {
       type: Number,
       required: false,
       default: 0,
     },
-    selected: {
-      type: Object,
-      required: false,
-      default: () => null,
-    },
-    wrapperClass: {
-      type: String,
-      required: false,
-      default: '',
+  },
+  data() {
+    return {
+      search: '',
+      searchUsers: [],
+      selected: this.board.assignee,
+      isEditing: false,
+      isDropdownShowing: false,
+    };
+  },
+  apollo: {
+    searchUsers: {
+      query() {
+        return this.isProjectBoard ? searchProjectUsers : searchGroupUsers;
+      },
+      variables() {
+        return {
+          fullPath: this.fullPath,
+          search: this.search,
+          first: 20,
+        };
+      },
+      skip() {
+        return !this.isEditing;
+      },
+      update(data) {
+        // TODO Remove null filter (BE fix required)
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/329750
+        return data.workspace?.users?.nodes.filter((x) => x?.user).map(({ user }) => user) || [];
+      },
+      debounce: ASSIGNEES_DEBOUNCE_DELAY,
+      error() {
+        this.setError({ message: this.$options.i18n.errorSearchingUsers });
+      },
     },
   },
   computed: {
-    hasValue() {
-      return this.selected && this.selected.id > 0;
+    ...mapGetters(['isProjectBoard']),
+    isLoading() {
+      return this.$apollo.queries.searchUsers.loading;
     },
-    selectedId() {
-      return this.selected ? this.selected.id : null;
+    isSearchEmpty() {
+      return this.search === '' && !this.isLoading;
     },
-  },
-  watch: {
-    selected() {
-      this.initSelect();
+    selectedIsEmpty() {
+      return isEmpty(this.selected);
     },
-  },
-  mounted() {
-    this.initSelect();
+    noUsersFound() {
+      return !this.isSearchEmpty && this.users.length === 0;
+    },
+    users() {
+      const filteredUsers = this.searchUsers.filter(
+        (user) => user.name.includes(this.search) || user.username.includes(this.search),
+      );
+
+      // TODO this de-duplication is temporary (BE fix required)
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/327822
+      return filteredUsers
+        .concat(this.searchUsers)
+        .reduce(
+          (acc, current) => (acc.some((user) => current.id === user.id) ? acc : [...acc, current]),
+          [],
+        );
+    },
   },
   methods: {
-    initSelect() {
-      this.userDropdown = new UsersSelect(null, this.$refs.dropdown, {
-        handleClick: this.selectUser,
-      });
+    ...mapActions(['setError']),
+    selectAssignee(user) {
+      this.selected = user;
+      this.toggleEdit();
+      this.$emit('set-assignee', user?.id || null);
     },
-    selectUser(user, isMarking) {
-      let assignee = user;
-      if (!isMarking) {
-        // correctly select "unassigned" in Assignee dropdown
-        assignee = {
-          id: undefined,
-        };
+    toggleEdit() {
+      if (!this.isEditing && !this.isDropdownShowing) {
+        this.isEditing = true;
+        this.showDropdown();
+      } else {
+        this.isEditing = false;
+        this.isDropdownShowing = false;
       }
-      // eslint-disable-next-line vue/no-mutating-props
-      this.board.assignee_id = assignee.id;
-      // eslint-disable-next-line vue/no-mutating-props
-      this.board.assignee = assignee;
     },
+    isSelected(user) {
+      return this.selected?.username === user.username;
+    },
+    showDropdown() {
+      this.$refs.editDropdown.show();
+      this.isDropdownShowing = true;
+    },
+    setFocus() {
+      this.$refs.search.focusInput();
+    },
+    hideDropdown() {
+      this.isEditing = false;
+    },
+  },
+  i18n: {
+    label: s__('BoardScope|Assignee'),
+    anyAssignee: s__('BoardScope|Any assignee'),
+    selectAssignee: s__('BoardScope|Select assignee'),
+    noMatchingResults: s__('BoardScope|No matching results'),
+    errorSearchingUsers: s__(
+      'BoardScope|An error occurred while searching for users, please try again.',
+    ),
+    edit: s__('BoardScope|Edit'),
   },
 };
 </script>
 
 <template>
-  <div :class="wrapperClass" class="block">
+  <div class="block assignee">
     <div class="title gl-mb-3">
-      {{ label }}
-      <button v-if="canEdit" type="button" class="edit-link btn btn-blank float-right">
-        {{ __('Edit') }}
-      </button>
+      {{ $options.i18n.label }}
+      <gl-button
+        v-if="canEdit"
+        variant="link"
+        class="edit-link float-right gl-text-gray-900!"
+        @click="toggleEdit"
+      >
+        {{ $options.i18n.edit }}
+      </gl-button>
     </div>
-    <div class="value">
-      <div v-if="hasValue" class="media gl-display-flex gl-align-items-center">
-        <div class="align-center">
-          <user-avatar-image :img-src="selected.avatar_url" :size="32" />
-        </div>
-        <div class="media-body">
-          <div class="bold author">{{ selected.name }}</div>
-          <div class="username">@{{ selected.username }}</div>
-        </div>
-      </div>
-      <div v-else class="text-secondary">{{ anyUserText }}</div>
-    </div>
-
-    <div class="selectbox" style="display: none">
-      <div class="dropdown">
-        <!-- eslint-disable @gitlab/vue-no-data-toggle -->
-        <button
-          ref="dropdown"
-          :data-field-name="fieldName"
-          :data-dropdown-title="placeholderText"
-          :data-any-user="anyUserText"
-          :data-group-id="groupId"
-          :data-project-id="projectId"
-          :data-selected="selectedId"
-          class="dropdown-menu-toggle wide"
-          data-toggle="dropdown"
-          aria-expanded="false"
-          type="button"
-        >
-          <span class="dropdown-toggle-text">{{ placeholderText }}</span>
-          <gl-icon
-            name="chevron-down"
-            class="gl-absolute gl-top-3 gl-right-3 gl-text-gray-500"
-            :size="16"
-          />
-        </button>
-        <!-- eslint-enable @gitlab/vue-no-data-toggle -->
-
-        <div
-          class="dropdown-menu dropdown-select dropdown-menu-paging dropdown-menu-user dropdown-menu-selectable dropdown-menu-author"
-        >
-          <div class="dropdown-input">
-            <input
-              autocomplete="off"
-              class="dropdown-input-field"
-              :placeholder="__('Search')"
-              type="search"
-            />
-            <gl-icon
-              name="search"
-              class="dropdown-input-search gl-absolute gl-top-3 gl-right-5 gl-text-gray-300 gl-pointer-events-none"
-            />
-            <gl-icon
-              name="close"
-              class="dropdown-input-clear js-dropdown-input-clear gl-absolute gl-top-3 gl-right-5 gl-text-gray-500"
-            />
-          </div>
-          <div class="dropdown-content"></div>
-          <div class="dropdown-loading">
-            <gl-loading-icon size="sm" />
-          </div>
+    <div v-if="!isEditing" data-testid="selected-assignee">
+      <div v-if="!selectedIsEmpty" class="gl-display-flex gl-align-items-center">
+        <user-avatar-image :img-src="selected.avatarUrl || selected.avatar_url" :size="32" />
+        <div>
+          <div class="gl-font-weight-bold">{{ selected.name }}</div>
+          <div>@{{ selected.username }}</div>
         </div>
       </div>
+      <div v-else class="gl-text-gray-500">{{ $options.i18n.anyAssignee }}</div>
     </div>
+
+    <gl-dropdown
+      v-show="isEditing"
+      ref="editDropdown"
+      :text="$options.i18n.selectAssignee"
+      lazy
+      menu-class="gl-w-full!"
+      class="gl-w-full"
+      @shown="setFocus"
+      @hide="hideDropdown"
+    >
+      <template #header>
+        <gl-search-box-by-type ref="search" v-model.trim="search" class="js-dropdown-input-field" />
+      </template>
+      <gl-dropdown-form class="gl-relative gl-min-h-7">
+        <gl-loading-icon
+          v-if="isLoading"
+          size="md"
+          class="gl-absolute gl-left-0 gl-top-0 gl-right-0"
+        />
+        <template v-else>
+          <gl-dropdown-item
+            v-if="isSearchEmpty"
+            :is-checked="selectedIsEmpty"
+            :is-check-centered="true"
+            @click="selectAssignee(null)"
+          >
+            <span :class="selectedIsEmpty ? 'gl-pl-0' : 'gl-pl-6'" class="gl-font-weight-bold">
+              {{ $options.i18n.anyAssignee }}
+            </span>
+          </gl-dropdown-item>
+          <gl-dropdown-divider />
+          <gl-dropdown-item
+            v-for="user in users"
+            :key="user.id"
+            :is-checked="isSelected(user)"
+            :is-check-centered="true"
+            :is-check-item="true"
+            :avatar-url="user.avatar_url || user.avatarUrl"
+            :secondary-text="user.username"
+            data-testid="unselected-user"
+            @click="selectAssignee(user)"
+          >
+            {{ user.name }}
+          </gl-dropdown-item>
+          <gl-dropdown-item v-if="noUsersFound" class="gl-pl-6!">
+            {{ $options.i18n.noMatchingResults }}
+          </gl-dropdown-item>
+        </template>
+      </gl-dropdown-form>
+      <template #footer>
+        <slot name="footer"></slot>
+      </template>
+    </gl-dropdown>
   </div>
 </template>

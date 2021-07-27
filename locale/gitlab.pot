@@ -3912,9 +3912,6 @@ msgstr ""
 msgid "Any namespace"
 msgstr ""
 
-msgid "Any user"
-msgstr ""
-
 msgid "App ID"
 msgstr ""
 
@@ -5297,6 +5294,24 @@ msgid "BoardNewIssue|Search projects"
 msgstr ""
 
 msgid "BoardNewIssue|Select a project"
+msgstr ""
+
+msgid "BoardScope|An error occurred while searching for users, please try again."
+msgstr ""
+
+msgid "BoardScope|Any assignee"
+msgstr ""
+
+msgid "BoardScope|Assignee"
+msgstr ""
+
+msgid "BoardScope|Edit"
+msgstr ""
+
+msgid "BoardScope|No matching results"
+msgstr ""
+
+msgid "BoardScope|Select assignee"
 msgstr ""
 
 msgid "Boards"
@@ -29583,9 +29598,6 @@ msgid "Select timezone"
 msgstr ""
 
 msgid "Select type"
-msgstr ""
-
-msgid "Select user"
 msgstr ""
 
 msgid "Selected"
