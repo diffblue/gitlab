@@ -32,7 +32,7 @@ describe('EE Approvals MREditApp', () => {
     axiosMock = new MockAdapter(axios);
     axiosMock.onGet('*');
 
-    store = createStoreOptions(MREditModule());
+    store = createStoreOptions({ approvals: MREditModule() });
     store.modules.approvals.state.hasLoaded = true;
   });
 

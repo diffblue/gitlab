@@ -38,10 +38,13 @@ describe('EE Approvals App', () => {
       rules: `<div class="${TEST_RULES_CLASS}">These are the rules!</div>`,
     };
 
-    store = createStoreOptions(settingsModule(), {
-      canEdit: true,
-      prefix: APP_PREFIX,
-    });
+    store = createStoreOptions(
+      { approvals: settingsModule() },
+      {
+        canEdit: true,
+        prefix: APP_PREFIX,
+      },
+    );
 
     store.modules.approvals.actions = {
       fetchRules: jest.fn().mockResolvedValue(),

@@ -34,7 +34,7 @@ describe('EE Approvlas MRRulesHiddenInputs', () => {
   };
 
   beforeEach(() => {
-    store = createStoreOptions(MREditModule());
+    store = createStoreOptions({ approvals: MREditModule() });
     store.modules.approvals.state = {
       rules: [],
       rulesToDelete: [],

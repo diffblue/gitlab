@@ -43,7 +43,7 @@ describe('EE Approvals Group Settings App', () => {
     axiosMock = new MockAdapter(axios);
     axiosMock.onGet('*');
 
-    store = createStoreOptions(approvalSettingsModule(groupApprovalsMappers));
+    store = createStoreOptions({ approvalSettings: approvalSettingsModule(groupApprovalsMappers) });
   });
 
   afterEach(() => {

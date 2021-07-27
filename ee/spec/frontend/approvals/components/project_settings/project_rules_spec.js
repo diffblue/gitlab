@@ -41,7 +41,7 @@ describe('Approvals ProjectRules', () => {
   };
 
   beforeEach(() => {
-    store = createStoreOptions(projectSettingsModule());
+    store = createStoreOptions({ approvals: projectSettingsModule() });
     store.modules.approvals.state.rules = TEST_RULES;
   });
 

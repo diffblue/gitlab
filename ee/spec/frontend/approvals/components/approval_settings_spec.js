@@ -30,7 +30,7 @@ describe('ApprovalSettings', () => {
     jest.spyOn(actions, 'dismissErrorMessage').mockImplementation();
     jest.spyOn(actions, 'dismissSuccessMessage').mockImplementation();
 
-    store = createStore(module);
+    store = createStore({ approvalSettings: module });
   };
 
   const createWrapper = () => {
