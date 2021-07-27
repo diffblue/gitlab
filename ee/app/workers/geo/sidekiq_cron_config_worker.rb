@@ -13,6 +13,7 @@ module Geo
     # rubocop:enable Scalability/CronWorkerContext
 
     feature_category :geo_replication
+    worker_resource_boundary :cpu
 
     def perform
       Gitlab::Geo::CronManager.new.execute

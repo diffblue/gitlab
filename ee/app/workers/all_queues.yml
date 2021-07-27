@@ -259,7 +259,7 @@
   :feature_category: :geo_replication
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent:
   :tags: []
