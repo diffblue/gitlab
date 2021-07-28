@@ -54,6 +54,16 @@ Returns [`CiConfig`](#ciconfig).
 | <a id="queryciconfigprojectpath"></a>`projectPath` | [`ID!`](#id) | The project of the CI config. |
 | <a id="queryciconfigsha"></a>`sha` | [`String`](#string) | Sha for the pipeline. |
 
+### `Query.ciMinutesUsage`
+
+The monthly CI minutes usage data for the current user.
+
+Returns [`CiMinutesNamespaceMonthlyUsageConnection`](#ciminutesnamespacemonthlyusageconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
 ### `Query.containerRepository`
 
 Find a container repository.
@@ -4876,6 +4886,52 @@ The edge type for [`CiJob`](#cijob).
 | <a id="cijobedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="cijobedgenode"></a>`node` | [`CiJob`](#cijob) | The item at the end of the edge. |
 
+#### `CiMinutesNamespaceMonthlyUsageConnection`
+
+The connection type for [`CiMinutesNamespaceMonthlyUsage`](#ciminutesnamespacemonthlyusage).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesnamespacemonthlyusageconnectionedges"></a>`edges` | [`[CiMinutesNamespaceMonthlyUsageEdge]`](#ciminutesnamespacemonthlyusageedge) | A list of edges. |
+| <a id="ciminutesnamespacemonthlyusageconnectionnodes"></a>`nodes` | [`[CiMinutesNamespaceMonthlyUsage]`](#ciminutesnamespacemonthlyusage) | A list of nodes. |
+| <a id="ciminutesnamespacemonthlyusageconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CiMinutesNamespaceMonthlyUsageEdge`
+
+The edge type for [`CiMinutesNamespaceMonthlyUsage`](#ciminutesnamespacemonthlyusage).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesnamespacemonthlyusageedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="ciminutesnamespacemonthlyusageedgenode"></a>`node` | [`CiMinutesNamespaceMonthlyUsage`](#ciminutesnamespacemonthlyusage) | The item at the end of the edge. |
+
+#### `CiMinutesProjectMonthlyUsageConnection`
+
+The connection type for [`CiMinutesProjectMonthlyUsage`](#ciminutesprojectmonthlyusage).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesprojectmonthlyusageconnectionedges"></a>`edges` | [`[CiMinutesProjectMonthlyUsageEdge]`](#ciminutesprojectmonthlyusageedge) | A list of edges. |
+| <a id="ciminutesprojectmonthlyusageconnectionnodes"></a>`nodes` | [`[CiMinutesProjectMonthlyUsage]`](#ciminutesprojectmonthlyusage) | A list of nodes. |
+| <a id="ciminutesprojectmonthlyusageconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CiMinutesProjectMonthlyUsageEdge`
+
+The edge type for [`CiMinutesProjectMonthlyUsage`](#ciminutesprojectmonthlyusage).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesprojectmonthlyusageedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="ciminutesprojectmonthlyusageedgenode"></a>`node` | [`CiMinutesProjectMonthlyUsage`](#ciminutesprojectmonthlyusage) | The item at the end of the edge. |
+
 #### `CiRunnerConnection`
 
 The connection type for [`CiRunner`](#cirunner).
@@ -7857,6 +7913,25 @@ Represents the total number of issues and their weights for a particular day.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cijobtokenscopetypeprojects"></a>`projects` | [`ProjectConnection!`](#projectconnection) | Allow list of projects that can be accessed by CI Job tokens created by this project. (see [Connections](#connections)) |
+
+### `CiMinutesNamespaceMonthlyUsage`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesnamespacemonthlyusageminutes"></a>`minutes` | [`Int`](#int) | The total number of minutes used by all projects in the namespace. |
+| <a id="ciminutesnamespacemonthlyusagemonth"></a>`month` | [`String`](#string) | The month related to the usage data. |
+| <a id="ciminutesnamespacemonthlyusageprojects"></a>`projects` | [`CiMinutesProjectMonthlyUsageConnection`](#ciminutesprojectmonthlyusageconnection) | CI minutes usage data for projects in the namespace. (see [Connections](#connections)) |
+
+### `CiMinutesProjectMonthlyUsage`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="ciminutesprojectmonthlyusageminutes"></a>`minutes` | [`Int`](#int) | The number of CI minutes used by the project in the month. |
+| <a id="ciminutesprojectmonthlyusagename"></a>`name` | [`String`](#string) | The name of the project. |
 
 ### `CiRunner`
 

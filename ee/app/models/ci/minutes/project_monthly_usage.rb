@@ -11,6 +11,13 @@ module Ci
 
       scope :current_month, -> { where(date: beginning_of_month) }
 
+      scope :for_namespace_monthly_usage, -> (namespace_monthly_usage) do
+        where(
+          date: namespace_monthly_usage.date,
+          project: namespace_monthly_usage.namespace.projects
+        )
+      end
+
       def self.beginning_of_month(time = Time.current)
         time.utc.beginning_of_month
       end
