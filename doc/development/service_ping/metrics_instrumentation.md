@@ -57,6 +57,11 @@ end
 
 Count unique values for `source_code_pushes` event.
 
+Required options:
+
+- `event`: the event name.
+- `counter_class`: one of the counter classes from the `Gitlab::UsageDataCounters` namespace; it should implement `read` method or inherit it from `BaseCounter`.
+
 ```yaml
 time_frame: all
 data_source: redis
