@@ -51,7 +51,6 @@ RSpec.describe 'Every metric definition' do
     Gitlab::Usage::MetricDefinition
       .definitions
       .select { |k, v| v.respond_to?(:value_json_schema) }
-      .keys
   end
 
   # Recursively traverse nested Hash of a generated Usage Ping to return an Array of key paths
@@ -67,7 +66,7 @@ RSpec.describe 'Every metric definition' do
   end
 
   def object_with_schema?(key_path)
-    metric_files_with_schema.include?(key_path)
+    metric_files_with_schema.keys.include?(key_path)
   end
 
   before do
@@ -80,5 +79,15 @@ RSpec.describe 'Every metric definition' do
 
   it 'is included in the Usage Ping hash structure' do
     expect(metric_files_key_paths).to match_array(usage_ping_key_paths)
+  end
+
+  context 'with value json schema' do
+    it 'has a valid structure' do
+      metric_files_with_schema.each do |key_path, metric|
+        structure = usage_ping.dig(*key_path.split('.').map(&:to_sym))
+
+        expect(structure).to match_metric_definition_schema(metric.value_json_schema)
+      end
+    end
   end
 end
