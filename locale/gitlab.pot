@@ -25701,9 +25701,6 @@ msgstr ""
 msgid "ProjectSettings|Allow"
 msgstr ""
 
-msgid "ProjectSettings|Allow editing commit messages"
-msgstr ""
-
 msgid "ProjectSettings|Always show thumbs-up and thumbs-down award emoji buttons on issues, merge requests, and snippets."
 msgstr ""
 
@@ -25729,9 +25726,6 @@ msgid "ProjectSettings|Choose your merge method, merge options, merge checks, an
 msgstr ""
 
 msgid "ProjectSettings|Choose your merge method, merge options, merge checks, merge suggestions, and set up a default description template for merge requests."
-msgstr ""
-
-msgid "ProjectSettings|Commit authors can edit commit messages on unprotected branches."
 msgstr ""
 
 msgid "ProjectSettings|Configure your project resources and monitor their health."
@@ -38302,9 +38296,6 @@ msgid "can only be changed by a group admin."
 msgstr ""
 
 msgid "can only have one escalation policy"
-msgstr ""
-
-msgid "can't be enabled because signed commits are required for this project"
 msgstr ""
 
 msgid "can't be the same as the source project"
