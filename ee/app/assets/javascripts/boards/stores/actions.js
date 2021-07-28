@@ -225,7 +225,7 @@ export default {
     commit(types.SET_SHOW_LABELS, val);
   },
 
-  updateListWipLimit({ commit, getters }, { maxIssueCount, listId }) {
+  updateListWipLimit({ commit, getters, dispatch }, { maxIssueCount, listId }) {
     if (getters.shouldUseGraphQL) {
       return gqlClient
         .mutate({
@@ -239,16 +239,17 @@ export default {
         })
         .then(({ data }) => {
           if (data?.boardListUpdateLimitMetrics?.errors.length) {
-            commit(types.UPDATE_LIST_FAILURE);
-          } else {
-            const list = data.boardListUpdateLimitMetrics?.list;
-            commit(types.UPDATE_LIST_SUCCESS, {
-              listId,
-              list,
-            });
+            throw new Error();
           }
+
+          commit(types.UPDATE_LIST_SUCCESS, {
+            listId,
+            list: data.boardListUpdateLimitMetrics?.list,
+          });
         })
-        .catch(() => commit(types.UPDATE_LIST_FAILURE));
+        .catch(() => {
+          dispatch('handleUpdateListFailure');
+        });
     }
 
     return axios.put(`${boardsStoreEE.store.state.endpoints.listsEndpoint}/${listId}`, {

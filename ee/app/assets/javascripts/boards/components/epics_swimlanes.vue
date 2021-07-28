@@ -148,18 +148,6 @@ export default {
       'fetchItemsForList',
       'doneLoadingSwimlanesItems',
     ]),
-    handleDragOnEnd(params) {
-      const { newIndex, oldIndex, item, to } = params;
-      const { listId } = item.dataset;
-      const replacedListId = to.children[newIndex].dataset.listId;
-
-      this.moveList({
-        listId,
-        replacedListId,
-        newIndex,
-        adjustmentValue: newIndex < oldIndex ? 1 : -1,
-      });
-    },
     fetchMoreEpics() {
       this.fetchEpicsSwimlanes({ fetchNext: true });
     },
@@ -215,7 +203,7 @@ export default {
         v-bind="treeRootOptions"
         class="board-swimlanes-headers gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-bg-white gl-top-0 gl-z-index-3"
         data-testid="board-swimlanes-headers"
-        @end="handleDragOnEnd"
+        @end="moveList"
       >
         <div
           v-for="list in lists"
