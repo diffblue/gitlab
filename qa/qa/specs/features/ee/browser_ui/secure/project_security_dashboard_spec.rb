@@ -47,9 +47,7 @@ module QA
         @merge_request.visit!
         Page::MergeRequest::Show.perform do |merge_request|
           # Give time for the runner on Staging to complete pipeline
-          Support::Retrier.retry_until(max_attempts: 5, sleep_interval: 5) do
-            merge_request.has_pipeline_status?('passed')
-          end
+          merge_request.has_pipeline_status?('passed')
           merge_request.merge!
         end
         Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
