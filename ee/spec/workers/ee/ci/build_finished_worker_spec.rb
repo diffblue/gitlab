@@ -27,29 +27,6 @@ RSpec.describe Ci::BuildFinishedWorker do
         allow_any_instance_of(EE::Project).to receive(:shared_runners_minutes_limit_enabled?).and_return(true) # rubocop:disable RSpec/AnyInstanceOf
       end
 
-      context 'when cancel_pipelines_prior_to_destroy is disabled' do
-        before do
-          stub_feature_flags(cancel_pipelines_prior_to_destroy: false)
-        end
-
-        it 'updates the project stats' do
-          expect { subject }.to change { project_stats.reload.shared_runners_seconds }
-        end
-
-        it 'updates the namespace stats' do
-          expect { subject }.to change { namespace_stats.reload.shared_runners_seconds }
-        end
-
-        it 'notifies the owners of Groups' do
-          namespace.update_attribute(:shared_runners_minutes_limit, 2000)
-          namespace_stats.update_attribute(:shared_runners_seconds, 2100 * 60)
-
-          expect(CiMinutesUsageMailer).to receive(:notify).once.with(namespace, [namespace.owner.email]).and_return(spy)
-
-          subject
-        end
-      end
-
       it 'tracks secure scans' do
         expect(::Security::TrackSecureScansWorker).to receive(:perform_async)
 

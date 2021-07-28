@@ -52,9 +52,7 @@ module EE
         state_machine :status do
           after_transition any => [:success, :failed, :canceled] do |build|
             build.run_after_commit do
-              if ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, build.project, default_enabled: :yaml)
-                ::Ci::Minutes::UpdateBuildMinutesService.new(build.project, nil).execute(build)
-              end
+              ::Ci::Minutes::UpdateBuildMinutesService.new(build.project, nil).execute(build)
             end
           end
         end

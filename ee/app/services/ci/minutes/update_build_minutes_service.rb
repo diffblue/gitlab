@@ -21,11 +21,7 @@ module Ci
       private
 
       def update_minutes(consumption)
-        if ::Feature.enabled?(:cancel_pipelines_prior_to_destroy, project, default_enabled: :yaml)
-          ::Ci::Minutes::UpdateProjectAndNamespaceUsageWorker.perform_async(consumption, project.id, namespace.id)
-        else
-          ::Ci::Minutes::UpdateProjectAndNamespaceUsageService.new(project.id, namespace.id).execute(consumption)
-        end
+        ::Ci::Minutes::UpdateProjectAndNamespaceUsageWorker.perform_async(consumption, project.id, namespace.id)
       end
 
       def compare_with_live_consumption(build, consumption)
