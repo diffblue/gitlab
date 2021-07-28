@@ -75,22 +75,17 @@ module QA
           merge_request.visit!
 
           Page::MergeRequest::Show.perform do |show|
-            check_pipeline_status(show)
-
+            # Wait for MR first pipeline to pass first before starting merge trains
+            show.has_pipeline_status?('passed')
             show.merge_via_merge_train
-            check_merge_train_starts(show)
 
             # This is also tested in pipelines_for_merged_results_and_merge_trains_spec.rb as a regular e2e test.
-            # That test reloads the page at this point to avoid the problem of the merge status failing to update
-            # That's the transient UX issue this test is checking for, so if the MR is merged but the UI still shows the
-            # status as unmerged, the test will fail.
-
-            merge_request = project.merge_request_with_title(title)
-
-            expect(merge_request).not_to be_nil, 'There was a problem fetching the merge request'
+            show.wait_until(sleep_interval: 5, reload: false) do
+              show.has_content?('started a merge train')
+            end
 
             # Merge train should start another pipeline and MR won't merged until this is finished
-            check_pipeline_status(show)
+            show.has_pipeline_status?('passed')
 
             # We use the API to wait until the MR has been merged so that we know the UI should be ready to update
             show.wait_until(reload: false) do
@@ -108,26 +103,10 @@ module QA
         SecureRandom.hex(8)
       end
 
-      def check_pipeline_status(page_object)
-        pipeline_passed = page_object.retry_until(max_attempts: 5, sleep_interval: 5) do
-          page_object.has_pipeline_status?('passed')
-        end
-
-        expect(pipeline_passed).to be_truthy, 'Expected the merged result pipeline to pass.'
-      end
-
-      def check_merge_train_starts(page_object)
-        train_started = page_object.wait_until(reload: false) do
-          page_object.has_content? 'started a merge train'
-        end
-
-        expect(train_started).to be_truthy, 'Expected to have system note indicating merge train has started.'
-      end
-
       def merge_request_state(merge_request)
         Resource::MergeRequest.fabricate_via_api! do |mr|
           mr.project = project
-          mr.iid = merge_request[:iid]
+          mr.iid = merge_request.iid
         end.state
       end
     end
