@@ -1306,6 +1306,8 @@
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-qa-patterns
       allow_failure: true
+    - <<: *if-dot-com-gitlab-org-schedule
+      allow_failure: true
 
 # The rule needs to be duplicated between `on_success` and `on_failure`
 # because the jobs `needs` the previous job to complete.
@@ -1331,6 +1333,10 @@
       when: on_success
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-qa-patterns
+      when: on_failure
+    - <<: *if-dot-com-ee-schedule
+      when: on_success
+    - <<: *if-dot-com-ee-schedule
       when: on_failure
 
 .review:rules:review-qa-all:
