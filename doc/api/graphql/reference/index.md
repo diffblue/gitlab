@@ -2533,7 +2533,7 @@ Input type: `IssueSetDueDateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationissuesetduedateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationissuesetduedateduedate"></a>`dueDate` | [`Time`](#time) | The desired due date for the issue, due date will be removed if absent or set to null. |
+| <a id="mutationissuesetduedateduedate"></a>`dueDate` | [`Time`](#time) | The desired due date for the issue. Due date is removed if null. |
 | <a id="mutationissuesetduedateiid"></a>`iid` | [`String!`](#string) | The IID of the issue to mutate. |
 | <a id="mutationissuesetduedateprojectpath"></a>`projectPath` | [`ID!`](#id) | The project the issue to mutate is in. |
 
