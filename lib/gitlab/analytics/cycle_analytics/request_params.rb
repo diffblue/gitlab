@@ -44,6 +44,7 @@ module Gitlab
         attribute :sort
         attribute :direction
         attribute :page
+        attribute :project
         attribute :stage_id
         attribute :end_event_filter
 
@@ -176,7 +177,7 @@ module Gitlab
           return unless value_stream
 
           strong_memoize(:stage) do
-            ::Analytics::CycleAnalytics::StageFinder.new(parent: group, stage_id: stage_id).execute if stage_id
+            ::Analytics::CycleAnalytics::StageFinder.new(parent: project || group, stage_id: stage_id).execute if stage_id
           end
         end
       end

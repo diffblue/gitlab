@@ -4,24 +4,18 @@ module Groups
   module Analytics
     module CycleAnalytics
       class StagesController < Groups::Analytics::ApplicationController
-        include CycleAnalyticsParams
+        include ::Analytics::CycleAnalytics::StageActions
         extend ::Gitlab::Utils::Override
 
         before_action :load_group
-        before_action :load_value_stream
         before_action :validate_params, only: %i[median average records average_duration_chart count]
         before_action :authorize_read_group_stage, only: %i[median average records average_duration_chart count]
 
+        override :index
         def index
           return render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
 
-          result = list_service.execute
-
-          if result.success?
-            render json: cycle_analytics_configuration(result.payload[:stages])
-          else
-            render json: { message: result.message }, status: result.http_status
-          end
+          super
         end
 
         def create
@@ -42,51 +36,20 @@ module Groups
           render_stage_service_result(delete_service.execute)
         end
 
-        def median
-          render json: { value: data_collector.median.seconds }
-        end
-
-        def average
-          render json: { value: data_collector.average.seconds }
-        end
-
-        def records
-          serialized_records = data_collector.serialized_records do |relation|
-            add_pagination_headers(relation)
-          end
-
-          render json: serialized_records
-        end
-
         def average_duration_chart
           render json: ::Analytics::CycleAnalytics::DurationChartAverageItemEntity.represent(data_collector.duration_chart_average_data)
         end
 
-        def count
-          render json: { count: data_collector.count }
-        end
-
         private
 
-        def data_collector
-          @data_collector ||= Gitlab::Analytics::CycleAnalytics::DataCollector.new(
-            stage: stage,
-            params: request_params.to_data_collector_params
-          )
+        override :parent
+        def parent
+          @group
         end
 
-        def stage
-          @stage ||= ::Analytics::CycleAnalytics::StageFinder.new(parent: @group, stage_id: params[:id]).execute
-        end
-
-        def cycle_analytics_configuration(stages)
-          stage_presenters = stages.map { |s| ::Analytics::CycleAnalytics::StagePresenter.new(s) }
-
-          ::Analytics::CycleAnalytics::ConfigurationEntity.new(stages: stage_presenters)
-        end
-
-        def list_service
-          ::Analytics::CycleAnalytics::Stages::ListService.new(parent: @group, current_user: current_user, params: list_params)
+        override :value_stream_class
+        def value_stream_class
+          ::Analytics::CycleAnalytics::GroupValueStream
         end
 
         def create_service
@@ -115,10 +78,6 @@ module Groups
           super.merge({ group: @group })
         end
 
-        def list_params
-          { value_stream: @value_stream }
-        end
-
         def update_params
           params.permit(:name, :start_event_identifier, :end_event_identifier, :id, :move_after_id, :move_before_id, :hidden, :start_event_label_id, :end_event_label_id).merge(list_params)
         end
@@ -131,21 +90,12 @@ module Groups
           params.permit(:id)
         end
 
-        def load_value_stream
-          if params[:value_stream_id] && params[:value_stream_id] != ::Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME
-            @value_stream = @group.value_streams.find(params[:value_stream_id])
-          end
-        end
-
-        def add_pagination_headers(relation)
-          Gitlab::Pagination::OffsetHeaderBuilder.new(
-            request_context: self,
-            per_page: relation.limit_value,
-            page: relation.current_page,
-            next_page: relation.next_page,
-            prev_page: relation.prev_page,
-            params: permitted_cycle_analytics_params
-          ).execute(exclude_total_headers: true, data_without_counts: true)
+        def value_stream
+          @value_stream ||= if params[:value_stream_id] && params[:value_stream_id] != ::Analytics::CycleAnalytics::Stages::BaseService::DEFAULT_VALUE_STREAM_NAME
+                              @group.value_streams.find(params[:value_stream_id])
+                            else
+                              super
+                            end
         end
 
         def authorize_read_group_stage
