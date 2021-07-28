@@ -16,34 +16,6 @@ RSpec.describe GroupsHelper do
     group.add_owner(owner)
   end
 
-  describe '#cached_issuables_count' do
-    context 'with epics type' do
-      let(:type) { :epics }
-      let(:count_service) { ::Groups::EpicsCountService }
-
-      it_behaves_like 'cached issuables count'
-
-      context 'with subgroup epics' do
-        before do
-          stub_licensed_features(epics: true)
-          allow(helper).to receive(:current_user) { owner }
-          allow(count_service).to receive(:new).and_call_original
-        end
-
-        it 'counts also epics from subgroups not visible to user' do
-          parent_group = create(:group, :public)
-          subgroup = create(:group, :private, parent: parent_group)
-          create(:epic, :opened, group: parent_group)
-          create(:epic, :opened, group: subgroup)
-
-          expect(Ability.allowed?(owner, :read_epic, parent_group)).to be_truthy
-          expect(Ability.allowed?(owner, :read_epic, subgroup)).to be_falsey
-          expect(helper.cached_issuables_count(parent_group, type: type)).to eq('2')
-        end
-      end
-    end
-  end
-
   describe '#group_sidebar_links' do
     before do
       allow(helper).to receive(:can?) { |*args| Ability.allowed?(*args) }
