@@ -4,7 +4,9 @@ const CLICK_BUTTON_ACTION = 'click_button';
 const RESIZE_EVENT_DEBOUNCE_MS = 150;
 
 export const RESIZE_EVENT = 'resize';
-export const TRACKING_PROPERTY = 'experiment:show_trial_status_in_sidebar';
+export const EXPERIMENT_KEY = 'forcibly_show_trial_status_popover';
+export const TRACKING_PROPERTY_WHEN_FORCED = 'forced';
+export const TRACKING_PROPERTY_WHEN_VOLUNTARY = 'voluntary';
 
 export const WIDGET = {
   i18n: {
@@ -19,7 +21,11 @@ export const WIDGET = {
     },
   },
   trackingEvents: {
-    widgetClick: { action: 'click_link', label: 'trial_status_widget' },
+    widgetClick: {
+      action: 'click_link',
+      label: 'trial_status_widget',
+      property: TRACKING_PROPERTY_WHEN_VOLUNTARY,
+    },
   },
 };
 

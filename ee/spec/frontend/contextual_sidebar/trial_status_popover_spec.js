@@ -2,7 +2,11 @@ import { GlPopover } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
-import { POPOVER, TRACKING_PROPERTY } from 'ee/contextual_sidebar/components/constants';
+import {
+  POPOVER,
+  TRACKING_PROPERTY_WHEN_FORCED,
+  TRACKING_PROPERTY_WHEN_VOLUNTARY,
+} from 'ee/contextual_sidebar/components/constants';
 import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_popover.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -15,13 +19,15 @@ describe('TrialStatusPopover component', () => {
   let trackingSpy;
 
   const { trackingEvents } = POPOVER;
+  const defaultDaysRemaining = 20;
 
   const findGlPopover = () => wrapper.findComponent(GlPopover);
 
   const expectTracking = ({ action, ...options } = {}) => {
     return expect(trackingSpy).toHaveBeenCalledWith(undefined, action, {
+      property: TRACKING_PROPERTY_WHEN_VOLUNTARY,
+      value: defaultDaysRemaining,
       ...options,
-      property: TRACKING_PROPERTY,
     });
   };
 
@@ -30,6 +36,7 @@ describe('TrialStatusPopover component', () => {
       mountFn(TrialStatusPopover, {
         provide: {
           containerId: undefined,
+          daysRemaining: defaultDaysRemaining,
           groupName: 'Some Test Group',
           planName: 'Ultimate',
           plansHref: 'billing/path-for/group',
@@ -209,5 +216,27 @@ describe('TrialStatusPopover component', () => {
         expectTracking(trackingEvents.popoverShown);
       });
     });
+  });
+
+  describe('trackingPropertyAndValue', () => {
+    it.each`
+      daysRemaining | startInitiallyShown | property
+      ${14}         | ${false}            | ${TRACKING_PROPERTY_WHEN_VOLUNTARY}
+      ${14}         | ${true}             | ${TRACKING_PROPERTY_WHEN_FORCED}
+    `(
+      'sets the expected values for `property` & `value`',
+      ({ daysRemaining, startInitiallyShown, property }) => {
+        wrapper = createComponent({ daysRemaining, startInitiallyShown });
+
+        // We'll use the "onShown" method to exercise trackingPropertyAndValue
+        findGlPopover().vm.$emit('shown');
+
+        expectTracking({
+          ...trackingEvents.popoverShown,
+          property,
+          value: daysRemaining,
+        });
+      },
+    );
   });
 });

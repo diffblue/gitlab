@@ -8,24 +8,15 @@ RSpec.describe TrialStatusWidgetHelper do
     let(:today_for_specs) { Date.parse('2021-01-15') }
     let(:trial_days_remaining) { 18 }
     let(:trial_end_date) { Date.current.advance(days: trial_days_remaining) }
+    let(:trial_start_date) { Date.current.advance(days: trial_days_remaining - trial_length) }
     let(:trial_percentage_complete) { (trial_length - trial_days_remaining) * 100 / trial_length }
-    let(:subscription) { instance_double(GitlabSubscription, plan_title: 'Ultimate') }
 
-    let(:group) do
-      instance_double(Group,
-        id: 123,
-        name: 'Pants Group',
-        to_param: 'pants-group',
-        gitlab_subscription: subscription,
-        trial_days_remaining: trial_days_remaining,
-        trial_ends_on: trial_end_date,
-        trial_percentage_complete: trial_percentage_complete
-      )
-    end
+    let_it_be(:group) { create(:group) }
 
     let(:shared_expected_attrs) do
       {
         container_id: 'trial-status-sidebar-widget',
+        days_remaining: trial_days_remaining,
         plan_name: 'Ultimate',
         plans_href: group_billings_path(group)
       }
@@ -33,6 +24,11 @@ RSpec.describe TrialStatusWidgetHelper do
 
     before do
       travel_to today_for_specs
+      build(:gitlab_subscription, :active_trial,
+        namespace: group,
+        trial_starts_on: trial_start_date,
+        trial_ends_on: trial_end_date
+      )
       stub_experiments(forcibly_show_trial_status_popover: :candidate)
     end
 
@@ -45,6 +41,9 @@ RSpec.describe TrialStatusWidgetHelper do
 
       d14_callout_id = described_class::D14_CALLOUT_ID
       d3_callout_id = described_class::D3_CALLOUT_ID
+
+      let(:user_callouts_feature_id) { nil }
+      let(:dismissed_callout) { true }
 
       let_it_be(:user) { create(:user) }
 
@@ -126,6 +125,10 @@ RSpec.describe TrialStatusWidgetHelper do
 
         with_them { include_examples 'has correct data attributes' }
       end
+
+      it 'records the experiment subject' do
+        expect { data_attrs }.to change { ExperimentSubject.count }
+      end
     end
 
     describe '#trial_status_widget_data_attrs' do
@@ -138,7 +141,6 @@ RSpec.describe TrialStatusWidgetHelper do
       it 'returns the needed data attributes for mounting the widget Vue component' do
         expect(data_attrs).to match(
           shared_expected_attrs.merge(
-            days_remaining: trial_days_remaining,
             nav_icon_image_path: '/image-path/for-file.svg',
             percentage_complete: trial_percentage_complete
           )

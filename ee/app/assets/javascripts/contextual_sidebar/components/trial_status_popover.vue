@@ -6,7 +6,13 @@ import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import { POPOVER, RESIZE_EVENT, TRACKING_PROPERTY } from './constants';
+import {
+  POPOVER,
+  RESIZE_EVENT,
+  EXPERIMENT_KEY,
+  TRACKING_PROPERTY_WHEN_FORCED,
+  TRACKING_PROPERTY_WHEN_VOLUNTARY,
+} from './constants';
 
 const {
   i18n,
@@ -15,7 +21,7 @@ const {
   resizeEventDebounceMS,
   disabledBreakpoints,
 } = POPOVER;
-const trackingMixin = Tracking.mixin({ property: TRACKING_PROPERTY });
+const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
 
 export default {
   components: {
@@ -26,6 +32,7 @@ export default {
   mixins: [trackingMixin],
   inject: {
     containerId: {},
+    daysRemaining: {}, // for tracking purposes
     groupName: {},
     planName: {},
     plansHref: {},
@@ -45,7 +52,6 @@ export default {
     };
   },
   i18n,
-  trackingEvents,
   computed: {
     formattedTrialEndDate() {
       return formatDate(this.trialEndDate, trialEndDateFormatString);
@@ -79,8 +85,8 @@ export default {
       this.forciblyShowing = false;
       this.show = false;
 
-      const { action, ...options } = this.$options.trackingEvents.closeBtnClick;
-      this.track(action, options);
+      const { action, ...options } = trackingEvents.closeBtnClick;
+      this.track(action, { ...options, ...this.trackingPropertyAndValue() });
     },
     onForciblyShown() {
       if (this.userCalloutsPath && this.userCalloutsFeatureId) {
@@ -98,16 +104,24 @@ export default {
       this.updateDisabledState();
     },
     onShown() {
-      const { action, ...options } = this.$options.trackingEvents.popoverShown;
-      this.track(action, options);
+      const { action, ...options } = trackingEvents.popoverShown;
+      this.track(action, { ...options, ...this.trackingPropertyAndValue() });
     },
     onUpgradeBtnClick() {
-      const { action, ...options } = this.$options.trackingEvents.upgradeBtnClick;
-      this.track(action, options);
+      const { action, ...options } = trackingEvents.upgradeBtnClick;
+      this.track(action, { ...options, ...this.trackingPropertyAndValue() });
     },
     onCompareBtnClick() {
-      const { action, ...options } = this.$options.trackingEvents.compareBtnClick;
-      this.track(action, options);
+      const { action, ...options } = trackingEvents.compareBtnClick;
+      this.track(action, { ...options, ...this.trackingPropertyAndValue() });
+    },
+    trackingPropertyAndValue() {
+      return {
+        property: this.forciblyShowing
+          ? TRACKING_PROPERTY_WHEN_FORCED
+          : TRACKING_PROPERTY_WHEN_VOLUNTARY,
+        value: this.daysRemaining,
+      };
     },
     updateDisabledState() {
       this.disabled = disabledBreakpoints.includes(bp.getBreakpointSize());

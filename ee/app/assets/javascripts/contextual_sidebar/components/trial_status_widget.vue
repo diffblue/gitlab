@@ -2,10 +2,10 @@
 import { GlLink, GlProgressBar } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import { TRACKING_PROPERTY, WIDGET } from './constants';
+import { EXPERIMENT_KEY, WIDGET } from './constants';
 
 const { i18n, trackingEvents } = WIDGET;
-const trackingMixin = Tracking.mixin({ property: TRACKING_PROPERTY });
+const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
 
 export default {
   components: {
@@ -21,13 +21,9 @@ export default {
     planName: {},
     plansHref: {},
   },
-  i18n,
-  trackingEvents,
   computed: {
     widgetTitle() {
-      const i18nWidgetTitle = this.$options.i18n.widgetTitle.countableTranslator(
-        this.daysRemaining,
-      );
+      const i18nWidgetTitle = i18n.widgetTitle.countableTranslator(this.daysRemaining);
 
       return sprintf(i18nWidgetTitle, {
         planName: this.planName,
@@ -38,8 +34,8 @@ export default {
   },
   methods: {
     onWidgetClick() {
-      const { action, ...options } = this.$options.trackingEvents.widgetClick;
-      this.track(action, options);
+      const { action, ...options } = trackingEvents.widgetClick;
+      this.track(action, { ...options, value: this.daysRemaining });
     },
   },
 };
