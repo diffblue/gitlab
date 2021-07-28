@@ -199,7 +199,7 @@ describe('Project Licenses', () => {
     `(
       'when window.location contains the hash "$givenLocationHash"',
       ({ givenLocationHash, expectedActiveTab }) => {
-        const originalLocation = window.location;
+        const originalLocation = window.location.href;
 
         beforeEach(() => {
           setWindowLocation(`http://foo.com/index${givenLocationHash}`);
@@ -224,7 +224,7 @@ describe('Project Licenses', () => {
         });
 
         afterEach(() => {
-          window.location = originalLocation;
+          setWindowLocation(originalLocation);
         });
 
         it(`sets the active tab to be "${expectedActiveTab}"`, () => {

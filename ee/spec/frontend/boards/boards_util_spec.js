@@ -4,6 +4,7 @@ import {
   formatEpicListsPageInfo,
   transformBoardConfig,
 } from 'ee/boards/boards_util';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { mockLabel } from './mock_data';
 
 const listId = 'gid://gitlab/Boards::EpicList/3';
@@ -105,10 +106,6 @@ describe('formatEpicListsPageInfo', () => {
 });
 
 describe('transformBoardConfig', () => {
-  beforeEach(() => {
-    delete window.location;
-  });
-
   const boardConfig = {
     milestoneTitle: 'milestone',
     assigneeUsername: 'username',
@@ -120,18 +117,17 @@ describe('transformBoardConfig', () => {
   };
 
   it('formats url parameters from boardConfig object', () => {
-    window.location = { search: '' };
     const result = transformBoardConfig(boardConfig);
 
-    expect(result).toContain(
+    expect(result).toBe(
       'milestone_title=milestone&weight=0&assignee_username=username&label_name[]=Deliverable&label_name[]=On%20hold',
     );
   });
 
   it('formats url parameters from boardConfig object preventing duplicates with passed filter query', () => {
-    window.location = { search: '?label_name[]=Deliverable&label_name[]=On%20hold' };
+    setWindowLocation('?label_name[]=Deliverable&label_name[]=On%20hold');
     const result = transformBoardConfig(boardConfig);
 
-    expect(result).toContain('milestone_title=milestone&weight=0&assignee_username=username');
+    expect(result).toBe('milestone_title=milestone&weight=0&assignee_username=username');
   });
 });
