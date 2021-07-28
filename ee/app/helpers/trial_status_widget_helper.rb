@@ -21,6 +21,7 @@ module TrialStatusWidgetHelper
   def trial_status_popover_data_attrs(group)
     base_attrs = trial_status_common_data_attrs(group)
     base_attrs.merge(
+      days_remaining: group.trial_days_remaining, # for experiment tracking
       group_name: group.name,
       purchase_href: ultimate_subscription_path_for_group(group),
       start_initially_shown: force_popover_to_be_shown?(group),
@@ -57,6 +58,7 @@ module TrialStatusWidgetHelper
     experiment(:forcibly_show_trial_status_popover, group: group) do |e|
       e.use { false }
       e.try { !dismissed_feature_callout?(current_user_callout_feature_id(group.trial_days_remaining)) }
+      e.record!
       e.run
     end
   end

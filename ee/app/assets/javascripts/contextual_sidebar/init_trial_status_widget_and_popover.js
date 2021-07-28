@@ -37,6 +37,7 @@ export const initTrialStatusPopover = () => {
 
   const {
     containerId,
+    daysRemaining, // for tracking purposes
     groupName,
     planName,
     plansHref,
@@ -52,6 +53,7 @@ export const initTrialStatusPopover = () => {
     el,
     provide: {
       containerId,
+      daysRemaining, // for tracking purposes
       groupName,
       planName,
       plansHref,

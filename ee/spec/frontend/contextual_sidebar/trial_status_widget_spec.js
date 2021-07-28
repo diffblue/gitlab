@@ -1,6 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { TRACKING_PROPERTY, WIDGET } from 'ee/contextual_sidebar/components/constants';
+import { WIDGET } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusWidget from 'ee/contextual_sidebar/components/trial_status_widget.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 
@@ -8,13 +8,14 @@ describe('TrialStatusWidget component', () => {
   let wrapper;
 
   const { trackingEvents } = WIDGET;
+  const defaultDaysRemaining = 20;
 
   const findGlLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = (providers = {}) => {
     return shallowMount(TrialStatusWidget, {
       provide: {
-        daysRemaining: 20,
+        daysRemaining: defaultDaysRemaining,
         navIconImagePath: 'illustrations/golden_tanuki.svg',
         percentageComplete: 10,
         planName: 'Ultimate',
@@ -58,7 +59,7 @@ describe('TrialStatusWidget component', () => {
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, action, {
         ...options,
-        property: TRACKING_PROPERTY,
+        value: defaultDaysRemaining,
       });
 
       unmockTracking();
