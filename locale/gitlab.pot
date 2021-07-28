@@ -17001,6 +17001,9 @@ msgstr ""
 msgid "InProductMarketing|Invite your team now"
 msgstr ""
 
+msgid "InProductMarketing|Invite your team today to build better code (and processes) together"
+msgstr ""
+
 msgid "InProductMarketing|It's all in the stats"
 msgstr ""
 
@@ -17082,6 +17085,9 @@ msgstr ""
 msgid "InProductMarketing|Take your source code management to the next level"
 msgstr ""
 
+msgid "InProductMarketing|Team up in GitLab for greater efficiency"
+msgstr ""
+
 msgid "InProductMarketing|Team work makes the dream work"
 msgstr ""
 
@@ -17116,6 +17122,9 @@ msgid "InProductMarketing|Try it out"
 msgstr ""
 
 msgid "InProductMarketing|Try it yourself"
+msgstr ""
+
+msgid "InProductMarketing|Turn coworkers into collaborators"
 msgstr ""
 
 msgid "InProductMarketing|Twitter"
