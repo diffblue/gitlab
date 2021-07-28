@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SubscriptionsController < ApplicationController
+  include InternalRedirect
+
   layout 'checkout'
   skip_before_action :authenticate_user!, only: [:new]
 
@@ -62,22 +64,23 @@ class SubscriptionsController < ApplicationController
     ).execute
 
     if response[:success]
-      plan_id, quantity = subscription_params.values_at(:plan_id, :quantity)
-      redirect_location = if params[:selected_group]
-                            group_path(group, plan_id: plan_id, purchased_quantity: quantity)
-                          else
-                            edit_subscriptions_group_path(group.path, plan_id: plan_id, quantity: quantity, new_user: params[:new_user])
-                          end
-
       experiment(:force_company_trial, user: current_user).track(:create_subscription, namespace: group, user: current_user)
-
-      response[:data] = { location: redirect_location }
+      response[:data] = { location: redirect_location(group) }
     end
 
     render json: response[:data]
   end
 
   private
+
+  def redirect_location(group)
+    return safe_redirect_path(params[:redirect_after_success]) if params[:redirect_after_success]
+
+    plan_id, quantity = subscription_params.values_at(:plan_id, :quantity)
+    return group_path(group, plan_id: plan_id, purchased_quantity: quantity) if params[:selected_group]
+
+    edit_subscriptions_group_path(group.path, plan_id: plan_id, quantity: quantity, new_user: params[:new_user])
+  end
 
   def customer_params
     params.require(:customer).permit(:country, :address_1, :address_2, :city, :state, :zip_code, :company)

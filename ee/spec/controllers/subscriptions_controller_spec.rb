@@ -272,9 +272,12 @@ RSpec.describe SubscriptionsController do
           {
             selected_group: selected_group.id,
             customer: { country: 'NL' },
-            subscription: { plan_id: 'x', quantity: 1, source: 'another_source' }
+            subscription: { plan_id: 'x', quantity: 1, source: 'another_source' },
+            redirect_after_success: redirect_after_success
           }
         end
+
+        let_it_be(:redirect_after_success) { nil }
 
         context 'when the selected group is eligible for a new subscription' do
           let_it_be(:selected_group) { create(:group) }
@@ -310,6 +313,18 @@ RSpec.describe SubscriptionsController do
             expect(experiment(:force_company_trial)).to track(:create_subscription, namespace: selected_group, user: user).with_context(user: user).on_next_instance
 
             subject
+          end
+
+          context 'when having an explicit redirect' do
+            let_it_be(:redirect_after_success) { '/-/path/to/redirect' }
+
+            it { is_expected.to have_gitlab_http_status(:ok) }
+
+            it 'returns the provided redirect path as location' do
+              subject
+
+              expect(response.body).to eq({ location: redirect_after_success }.to_json)
+            end
           end
         end
 

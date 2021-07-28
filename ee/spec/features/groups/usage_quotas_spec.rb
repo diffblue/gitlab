@@ -95,6 +95,20 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
+  context 'when successfully purchasing CI Minutes' do
+    let(:group) { create(:group, :with_build_minutes) }
+    let!(:project) { create(:project, namespace: group, shared_runners_enabled: true) }
+
+    it 'does show a banner' do
+      visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
+
+      page.within('#content-body') do
+        expect(page).to have_content('Thanks for your purchase!')
+        expect(page).to have_content('You have successfully purchased CI minutes.')
+      end
+    end
+  end
+
   context 'minutes under quota' do
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
@@ -162,7 +176,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'when accesing root group' do
+  context 'when accessing root group' do
     let!(:subgroup) { create(:group, parent: group) }
     let!(:subproject) { create(:project, namespace: subgroup, shared_runners_enabled: true) }
 
