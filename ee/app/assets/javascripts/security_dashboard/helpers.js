@@ -3,6 +3,7 @@ import { REPORT_TYPES, SEVERITY_LEVELS } from 'ee/security_dashboard/store/const
 import { BASE_FILTERS } from 'ee/security_dashboard/store/modules/filters/constants';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { s__, __ } from '~/locale';
 import { DEFAULT_SCANNER } from './constants';
@@ -10,8 +11,8 @@ import { DEFAULT_SCANNER } from './constants';
 const parseOptions = (obj) =>
   Object.entries(obj).map(([id, name]) => ({ id: id.toUpperCase(), name }));
 
-export const mapProjects = (projects) =>
-  projects.map((p) => ({ id: p.id.split('/').pop(), name: p.name }));
+export const mapProjects = (projects = []) =>
+  projects.map((p) => ({ id: getIdFromGraphQLId(p.id).toString(), name: p.name }));
 
 const stateOptions = parseOptions(VULNERABILITY_STATES);
 const defaultStateOptions = stateOptions.filter((x) => ['DETECTED', 'CONFIRMED'].includes(x.id));

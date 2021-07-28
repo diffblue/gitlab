@@ -36,10 +36,10 @@ export default {
       return new Set(this.selectedOptions);
     },
     isNoOptionsSelected() {
-      return this.selectedOptions.length <= 0;
+      return this.selectedOptions?.length <= 0;
     },
     selectedOptionsOrAll() {
-      return this.selectedOptions.length ? this.selectedOptions : [this.filter.allOption];
+      return this.selectedOptions?.length ? this.selectedOptions : [this.filter.allOption];
     },
     filterObject() {
       // This is passed to the vulnerability list's GraphQL query as a variable.
@@ -52,7 +52,9 @@ export default {
     },
     querystringIds() {
       const ids = this.$route?.query[this.filter.id] || [];
-      return Array.isArray(ids) ? ids : [ids];
+      const idArray = Array.isArray(ids) ? ids : [ids];
+
+      return idArray.sort();
     },
     querystringOptions() {
       // If the querystring IDs includes the All option, return an empty array. We'll do this even
@@ -75,15 +77,13 @@ export default {
   },
   watch: {
     selectedOptions() {
-      this.$emit('filter-changed', this.filterObject);
+      this.emitFilterChanged(this.filterObject);
     },
   },
   created() {
-    this.selectedOptions = this.querystringOptions;
+    this.processQuerystringIds();
     // When the user clicks the forward/back browser buttons, update the selected options.
-    window.addEventListener('popstate', () => {
-      this.selectedOptions = this.querystringOptions;
-    });
+    window.addEventListener('popstate', this.processQuerystringIds);
   },
   methods: {
     toggleOption(option) {
@@ -107,6 +107,12 @@ export default {
     },
     isSelected(option) {
       return this.selectedSet.has(option);
+    },
+    processQuerystringIds() {
+      this.selectedOptions = this.querystringOptions;
+    },
+    emitFilterChanged(data) {
+      this.$emit('filter-changed', data);
     },
   },
 };
