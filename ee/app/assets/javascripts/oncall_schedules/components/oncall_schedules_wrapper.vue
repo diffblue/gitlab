@@ -11,7 +11,6 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
-import { escalationPolicyUrl } from '../constants';
 import getOncallSchedulesWithRotationsQuery from '../graphql/queries/get_oncall_schedules.query.graphql';
 import AddScheduleModal from './add_edit_schedule_modal.vue';
 import OncallSchedule from './oncall_schedule.vue';
@@ -31,7 +30,7 @@ export const i18n = {
   successNotification: {
     title: s__('OnCallSchedules|Try adding a rotation'),
     description: s__(
-      'OnCallSchedules|Your schedule has been successfully created. To add individual users to this schedule, use the add a rotation button. To create an escalation policy that defines which schedule is used when, visit the %{linkStart}escalation policy%{linkEnd} page.',
+      'OnCallSchedules|Your schedule has been successfully created. To add individual users to this schedule, use the Add a rotation button. To enable notifications for this schedule, you must also create an %{linkStart}escalation policy%{linkEnd}.',
     ),
   },
 };
@@ -39,7 +38,6 @@ export const i18n = {
 export default {
   i18n,
   addScheduleModalId,
-  escalationPolicyUrl,
   components: {
     GlAlert,
     GlButton,
@@ -54,11 +52,13 @@ export default {
     GlModal: GlModalDirective,
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['emptyOncallSchedulesSvgPath', 'projectPath'],
+  inject: ['emptyOncallSchedulesSvgPath', 'projectPath', 'escalationPoliciesPath'],
   data() {
     return {
       schedules: [],
-      showSuccessNotification: false,
+      showScheduleCreatedNotification: false,
+      showRotationUpdatedNotification: false,
+      rotationUpdateMsg: null,
     };
   },
   apollo: {
@@ -85,6 +85,13 @@ export default {
       return this.schedules.length;
     },
   },
+  methods: {
+    onRotationUpdate(message) {
+      this.showScheduleCreatedNotification = false;
+      this.showRotationUpdatedNotification = true;
+      this.rotationUpdateMsg = message;
+    },
+  },
 };
 </script>
 
@@ -108,26 +115,38 @@ export default {
           {{ $options.i18n.add.button }}
         </gl-button>
       </div>
+
       <gl-alert
-        v-if="showSuccessNotification"
+        v-if="showScheduleCreatedNotification"
+        data-testid="tip-alert"
         variant="tip"
         :title="$options.i18n.successNotification.title"
         class="gl-my-3"
-        @dismiss="showSuccessNotification = false"
+        @dismiss="showScheduleCreatedNotification = false"
       >
         <gl-sprintf :message="$options.i18n.successNotification.description">
           <template #link="{ content }">
-            <gl-link :href="$options.escalationPolicyUrl" target="_blank">
-              {{ content }}
-            </gl-link>
+            <gl-link :href="escalationPoliciesPath" target="_blank">{{ content }}</gl-link>
           </template>
         </gl-sprintf>
       </gl-alert>
+
+      <gl-alert
+        v-if="showRotationUpdatedNotification"
+        data-testid="success-alert"
+        variant="success"
+        class="gl-my-3"
+        @dismiss="showRotationUpdatedNotification = false"
+      >
+        {{ rotationUpdateMsg }}
+      </gl-alert>
+
       <oncall-schedule
         v-for="(schedule, scheduleIndex) in schedules"
         :key="schedule.iid"
         :schedule="schedule"
         :schedule-index="scheduleIndex"
+        @rotation-updated="onRotationUpdate"
       />
     </template>
 
@@ -145,7 +164,7 @@ export default {
     </gl-empty-state>
     <add-schedule-modal
       :modal-id="$options.addScheduleModalId"
-      @scheduleCreated="showSuccessNotification = true"
+      @scheduleCreated="showScheduleCreatedNotification = true"
     />
   </div>
 </template>
