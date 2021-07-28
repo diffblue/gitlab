@@ -71,7 +71,7 @@ module Ci
 
       def namespace_eligible?
         strong_memoize(:namespace_eligible) do
-          namespace.root? && namespace.any_project_with_shared_runners_enabled?
+          namespace.root?
         end
       end
 

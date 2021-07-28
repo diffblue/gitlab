@@ -68,7 +68,7 @@ module EE
       end
 
       def shared_runners_minutes_limit_enabled?
-        project.shared_runners_minutes_limit_enabled? && runner&.cost_factor_enabled?(project)
+        runner&.cost_factor_enabled?(project)
       end
 
       def log_geo_deleted_event

@@ -38,13 +38,13 @@ RSpec.describe Ci::Minutes::Quota do
         end
       end
 
-      context 'when namespace does not have projects with shared runners enabled' do
+      context 'when namespace has a limit but does not have projects with shared runners enabled' do
         before do
           project.update!(shared_runners_enabled: false)
           allow(namespace).to receive(:shared_runners_minutes_limit).and_return(1000)
         end
 
-        it { is_expected.to be_falsey }
+        it { is_expected.to be_truthy }
       end
     end
 
@@ -422,24 +422,8 @@ RSpec.describe Ci::Minutes::Quota do
     end
 
     context 'when namespace is root' do
-      before do
-        create(:project, namespace: namespace, shared_runners_enabled: shared_runners_enabled)
-      end
-
-      context 'and it has a project without any shared runner enabled' do
-        let(:shared_runners_enabled) { false }
-
-        it 'is false' do
-          expect(subject).to be_falsey
-        end
-      end
-
-      context 'and it has a project with shared runner enabled' do
-        let(:shared_runners_enabled) { true }
-
-        it 'is true' do
-          expect(subject).to be_truthy
-        end
+      it 'is true' do
+        expect(subject).to be_truthy
       end
     end
 
