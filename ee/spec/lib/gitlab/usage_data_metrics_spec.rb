@@ -21,6 +21,17 @@ RSpec.describe Gitlab::UsageDataMetrics do
         expect(subject).to include(:license_md5)
         expect(subject).to include(:license_subscription_id)
       end
+
+      it 'includes compliance monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:compliance].keys).to contain_exactly(*[
+          :g_compliance_dashboard_monthly, :g_compliance_dashboard_weekly,
+          :g_compliance_audit_events_monthly, :g_compliance_audit_events_weekly,
+          :i_compliance_audit_events_monthly, :i_compliance_audit_events_weekly,
+          :i_compliance_credential_inventory_monthly, :i_compliance_credential_inventory_weekly,
+          :a_compliance_audit_events_api_monthly, :a_compliance_audit_events_api_weekly,
+          :compliance_total_unique_counts_monthly, :compliance_total_unique_counts_weekly
+        ])
+      end
     end
   end
 end
