@@ -10918,28 +10918,28 @@ msgstr ""
 msgid "DeployTokens|Active Deploy Tokens (%{active_tokens})"
 msgstr ""
 
-msgid "DeployTokens|Add a deploy token"
+msgid "DeployTokens|Allows read and write access to registry images."
 msgstr ""
 
-msgid "DeployTokens|Allows read access to the package registry."
+msgid "DeployTokens|Allows read and write access to the package registry."
 msgstr ""
 
 msgid "DeployTokens|Allows read-only access to registry images."
 msgstr ""
 
+msgid "DeployTokens|Allows read-only access to the package registry."
+msgstr ""
+
 msgid "DeployTokens|Allows read-only access to the repository."
-msgstr ""
-
-msgid "DeployTokens|Allows write access to registry images."
-msgstr ""
-
-msgid "DeployTokens|Allows write access to the package registry."
 msgstr ""
 
 msgid "DeployTokens|Copy deploy token"
 msgstr ""
 
 msgid "DeployTokens|Copy username"
+msgstr ""
+
+msgid "DeployTokens|Create a new deploy token for all projects in this group. %{link_start}What are deploy tokens?%{link_end}"
 msgstr ""
 
 msgid "DeployTokens|Create deploy token"
@@ -10954,6 +10954,15 @@ msgstr ""
 msgid "DeployTokens|Deploy tokens allow access to packages, your repository, and registry images."
 msgstr ""
 
+msgid "DeployTokens|Enter a unique name for your deploy token."
+msgstr ""
+
+msgid "DeployTokens|Enter a username for your token. Defaults to %{code_start}gitlab+deploy-token-{n}%{code_end}."
+msgstr ""
+
+msgid "DeployTokens|Enter an expiration date for your token. Defaults to never expire."
+msgstr ""
+
 msgid "DeployTokens|Expires"
 msgstr ""
 
@@ -10963,7 +10972,7 @@ msgstr ""
 msgid "DeployTokens|Name"
 msgstr ""
 
-msgid "DeployTokens|Pick a name for your unique deploy token."
+msgid "DeployTokens|New deploy token"
 msgstr ""
 
 msgid "DeployTokens|Revoke"
@@ -10982,12 +10991,6 @@ msgid "DeployTokens|This action cannot be undone."
 msgstr ""
 
 msgid "DeployTokens|This username supports access. %{link_start}What kind of access?%{link_end}"
-msgstr ""
-
-msgid "DeployTokens|Unless you enter a date, the token does not expire."
-msgstr ""
-
-msgid "DeployTokens|Unless you specify a username, it is set to \"gitlab+deploy-token-{n}\"."
 msgstr ""
 
 msgid "DeployTokens|Use this token as a password. Save it. This password can %{i_start}not%{i_end} be recovered."
@@ -13333,6 +13336,9 @@ msgstr ""
 msgid "Expiration date"
 msgstr ""
 
+msgid "Expiration date (optional)"
+msgstr ""
+
 msgid "Expired"
 msgstr ""
 
@@ -13343,9 +13349,6 @@ msgid "Expired:"
 msgstr ""
 
 msgid "Expires"
-msgstr ""
-
-msgid "Expires at (optional)"
 msgstr ""
 
 msgid "Expires in %{expires_at}"
@@ -28658,7 +28661,7 @@ msgstr ""
 msgid "Scopes"
 msgstr ""
 
-msgid "Scopes [Select 1 or more]"
+msgid "Scopes (select at least one)"
 msgstr ""
 
 msgid "Scopes can't be blank"
