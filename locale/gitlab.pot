@@ -17711,6 +17711,9 @@ msgstr ""
 msgid "Integrations|Note: this integration only works with accounts on GitLab.com (SaaS)."
 msgstr ""
 
+msgid "Integrations|Projects using custom settings"
+msgstr ""
+
 msgid "Integrations|Projects using custom settings will not be affected."
 msgstr ""
 
