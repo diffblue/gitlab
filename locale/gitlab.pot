@@ -29288,6 +29288,9 @@ msgstr ""
 msgid "SecurityReports|Manage and track vulnerabilities identified in your selected projects. Vulnerabilities for selected projects with security testing configured are shown here."
 msgstr ""
 
+msgid "SecurityReports|Maximum selected projects limit reached"
+msgstr ""
+
 msgid "SecurityReports|Monitor vulnerabilities in all of your projects"
 msgstr ""
 
