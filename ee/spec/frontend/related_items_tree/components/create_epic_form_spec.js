@@ -112,7 +112,12 @@ describe('RelatedItemsTree', () => {
           wrapper.vm.onFormSubmit();
 
           expect(wrapper.emitted().createEpicFormSubmit).toBeTruthy();
-          expect(wrapper.emitted().createEpicFormSubmit[0]).toEqual([value, undefined]);
+          expect(wrapper.emitted().createEpicFormSubmit[0]).toEqual([
+            {
+              value,
+              groupFullPath: undefined,
+            },
+          ]);
         });
       });
 
