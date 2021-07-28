@@ -130,7 +130,10 @@ describe('Weight', () => {
     await wrapper.vm.$nextTick;
 
     expect(containsInputError()).toBe(false);
-    expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', expectedWeightValue, mockId);
+    expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', {
+      id: mockId,
+      value: expectedWeightValue,
+    });
   });
 
   it('emits event on remove weight link click', async () => {
@@ -149,7 +152,7 @@ describe('Weight', () => {
     await wrapper.vm.$nextTick;
 
     expect(containsInputError()).toBe(false);
-    expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', '', mockId);
+    expect(eventHub.$emit).toHaveBeenCalledWith('updateWeight', { id: mockId, value: '' });
   });
 
   it('triggers error on invalid negative integer value', async () => {
