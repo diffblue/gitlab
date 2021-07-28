@@ -36,11 +36,11 @@ export default {
     addComment(comment) {
       this.notes.push(comment);
     },
-    updateComment(data, comment) {
+    updateComment({ response, comment }) {
       const index = this.notes.indexOf(comment);
 
       if (index > -1) {
-        this.notes.splice(index, 1, { ...comment, ...data });
+        this.notes.splice(index, 1, { ...comment, ...response });
       }
     },
     removeComment(comment) {
