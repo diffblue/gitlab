@@ -68,9 +68,10 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size do
       end
 
       it 'logs the error' do
-        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
           instance_of(Gitlab::Ci::Limit::LimitExceededError),
-          project_id: project.id, plan: namespace.actual_plan_name
+          project_id: project.id, plan: namespace.actual_plan_name,
+          project_full_path: project.full_path, pipeline_source: pipeline.source
         )
 
         subject
@@ -130,6 +131,33 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size do
       expect(Gitlab::ErrorTracking).not_to receive(:track_exception)
 
       subject
+    end
+  end
+
+  context 'when pipeline size limit is disabled' do
+    before do
+      ultimate_plan = create(:ultimate_plan)
+      create(:plan_limits, plan: ultimate_plan, ci_pipeline_size: 0)
+      create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
+    end
+
+    context 'when global pipeline size limit is exceeded' do
+      let(:command) do
+        double(:command,
+          project: project,
+          current_user: user,
+          pipeline_seed: double(:seed, size: 2001))
+      end
+
+      it 'logs the pipeline' do
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
+          instance_of(Gitlab::Ci::Limit::LimitExceededError),
+          project_id: project.id, plan: namespace.actual_plan_name,
+          project_full_path: project.full_path, pipeline_source: pipeline.source
+        )
+
+        subject
+      end
     end
   end
 end
