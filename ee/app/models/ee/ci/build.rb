@@ -67,7 +67,7 @@ module EE
         end
       end
 
-      def shared_runners_minutes_limit_enabled?
+      def cost_factor_enabled?
         runner&.cost_factor_enabled?(project)
       end
 

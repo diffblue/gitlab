@@ -77,8 +77,8 @@ module Ci
           ServiceResponse.error(message: 'Feature not enabled')
         elsif !build.running?
           ServiceResponse.error(message: 'Build is not running')
-        elsif !build.shared_runners_minutes_limit_enabled?
-          ServiceResponse.error(message: 'CI minutes limit not enabled for build')
+        elsif !build.cost_factor_enabled?
+          ServiceResponse.error(message: 'Cost factor not enabled for build')
         else
           ServiceResponse.success
         end

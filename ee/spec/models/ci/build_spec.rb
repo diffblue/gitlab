@@ -48,8 +48,8 @@ RSpec.describe Ci::Build do
     it { is_expected.to have_one(:dast_scanner_profile).class_name('DastScannerProfile').through(:dast_scanner_profiles_build) }
   end
 
-  describe '#shared_runners_minutes_limit_enabled?' do
-    subject { job.shared_runners_minutes_limit_enabled? }
+  describe '#cost_factor_enabled?' do
+    subject { job.cost_factor_enabled? }
 
     context 'for shared runner' do
       before do
