@@ -3,14 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe Projects::PathLocksController do
-  let(:project) { create(:project, :repository, :public) }
-  let(:user)    { project.owner }
+  let_it_be(:project) { create(:project, :repository, :public) }
+  let_it_be(:user)    { project.owner }
+
   let(:file_path) { 'files/lfs/lfs_object.iso' }
+  let(:lfs_enabled) { true }
 
   before do
     sign_in(user)
 
     allow_any_instance_of(Repository).to receive(:root_ref).and_return('lfs')
+    allow_next_found_instance_of(Project) do |project|
+      allow(project).to receive(:lfs_enabled?) { lfs_enabled }
+    end
   end
 
   describe 'GET #index' do
@@ -34,9 +39,7 @@ RSpec.describe Projects::PathLocksController do
 
   describe 'POST #toggle' do
     context 'when LFS is enabled' do
-      before do
-        allow_any_instance_of(Project).to receive(:lfs_enabled?).and_return(true)
-      end
+      let(:lfs_enabled) { true }
 
       context 'when locking a file' do
         it 'locks the file' do
@@ -71,6 +74,21 @@ RSpec.describe Projects::PathLocksController do
         end
       end
 
+      context 'when file does not exist' do
+        let(:file_path) { 'unknown-file' }
+
+        it 'locks the file' do
+          toggle_lock(file_path)
+
+          expect(PathLock.count).to eq(1)
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'does not lock the file in LFS' do
+          expect { toggle_lock(file_path) }.not_to change { LfsFileLock.count }
+        end
+      end
+
       context 'when unlocking a file' do
         context 'with files' do
           before do
@@ -85,6 +103,24 @@ RSpec.describe Projects::PathLocksController do
 
           it "unlocks the file in LFS" do
             expect { toggle_lock(file_path) }.to change { LfsFileLock.count }.to(0)
+          end
+        end
+
+        context 'when file does not exist' do
+          let(:file_path) { 'unknown-file' }
+
+          before do
+            toggle_lock(file_path)
+          end
+
+          it 'unlocks the file' do
+            expect { toggle_lock(file_path) }.to change { PathLock.count }.to(0)
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+
+          it 'does not unlock the file in LFS' do
+            expect { toggle_lock(file_path) }.not_to change { LfsFileLock.count }
           end
         end
       end
@@ -109,6 +145,8 @@ RSpec.describe Projects::PathLocksController do
     end
 
     context 'when LFS is not enabled' do
+      let(:lfs_enabled) { false }
+
       it 'locks the file' do
         expect { toggle_lock(file_path) }.to change { PathLock.count }.to(1)
 
