@@ -279,7 +279,7 @@
   :feature_category: :service_ping
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent:
   :tags: []
@@ -2374,7 +2374,7 @@
   :feature_category: :product_analytics
   :has_external_dependencies:
   :urgency: :low
-  :resource_boundary: :unknown
+  :resource_boundary: :cpu
   :weight: 1
   :idempotent: true
   :tags:
