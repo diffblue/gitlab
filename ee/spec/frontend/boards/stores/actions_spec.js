@@ -533,7 +533,7 @@ describe('updateListWipLimit', () => {
     );
   });
 
-  it('graphql - commit UPDATE_LIST_FAILURE mutation on failure', () => {
+  it('graphql - dispatch handleUpdateListFailure on failure', () => {
     const maxIssueCount = 0;
     const activeId = 1;
     getters.shouldUseGraphQL = true;
@@ -543,8 +543,8 @@ describe('updateListWipLimit', () => {
       actions.updateListWipLimit,
       { maxIssueCount, listId: activeId },
       { isShowingEpicsSwimlanes: true, ...getters },
-      [{ type: types.UPDATE_LIST_FAILURE }],
       [],
+      [{ type: 'handleUpdateListFailure' }],
     );
   });
 });

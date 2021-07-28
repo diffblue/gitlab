@@ -328,7 +328,7 @@ RSpec.describe 'epic boards', :js do
   end
 
   def list_header(list)
-    find(".board[data-id='gid://gitlab/Boards::EpicList/#{list.id}'] .board-header")
+    find(".board[data-list-id='gid://gitlab/Boards::EpicList/#{list.id}'] .board-header")
   end
 
   def drag(selector: '.board-list', list_from_index: 0, from_index: 0, to_index: 0, list_to_index: 0, perform_drop: true)
