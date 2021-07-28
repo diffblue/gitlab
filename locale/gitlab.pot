@@ -38745,13 +38745,13 @@ msgstr ""
 msgid "element is not a hierarchy"
 msgstr ""
 
-msgid "email '%{email}' does not match the allowed domain of %{email_domains}"
-msgid_plural "email '%{email}' does not match the allowed domains: %{email_domains}"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "email '%{email}' is not a verified email."
 msgstr ""
+
+msgid "email does not match the allowed domain of %{email_domains}"
+msgid_plural "email does not match the allowed domains: %{email_domains}"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "enabled"
 msgstr ""

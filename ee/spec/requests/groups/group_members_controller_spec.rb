@@ -53,7 +53,7 @@ RSpec.describe Groups::GroupMembersController do
         it 'returns error message' do
           subject
 
-          expect(json_response).to eq({ 'message' => "User email 'test@gmail.com' does not match the allowed domain of gitlab.com" })
+          expect(json_response).to eq({ 'message' => "User email does not match the allowed domain of gitlab.com" })
         end
       end
     end
