@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# Backported from Rails 7.0
+# Initial support for has_many :through was implemented in https://github.com/rails/rails/pull/41937
+# Support for has_one :through was implemented in https://github.com/rails/rails/pull/42079
+raise 'DisableJoins patch is only to be used with versions of Rails < 7.0' unless Rails::VERSION::MAJOR < 7
+
 module DisableJoins
   module ConfigurableDisableJoins
     extend ActiveSupport::Concern
@@ -110,29 +115,50 @@ module DisableJoins
       unscoped = association.klass.unscoped
       reverse_chain = get_chain(source_reflection, association, unscoped.alias_tracker).reverse
 
-      last_reflection, last_ordered, last_join_ids = last_scope_chain(reverse_chain, owner)
+      previous_reflection, last_reflection, last_ordered, last_join_ids = last_scope_chain(reverse_chain, owner)
 
-      add_constraints(last_reflection, last_reflection.join_primary_key, last_join_ids, owner, last_ordered)
+      add_constraints(last_reflection, last_reflection.join_primary_key, last_join_ids, owner, last_ordered,
+          previous_reflection: previous_reflection)
     end
 
     private
 
     def last_scope_chain(reverse_chain, owner)
-      first_scope = [reverse_chain.shift, false, [owner.id]]
+      # Pulled from https://github.com/rails/rails/pull/42448
+      # Fixes cases where the foreign key is not id
+      first_item = reverse_chain.shift
+      first_scope = [nil, first_item, false, [owner._read_attribute(first_item.join_foreign_key)]]
 
-      reverse_chain.inject(first_scope) do |(reflection, ordered, join_ids), next_reflection|
+      reverse_chain.inject(first_scope) do |(previous_reflection, reflection, ordered, join_ids), next_reflection|
         key = reflection.join_primary_key
-        records = add_constraints(reflection, key, join_ids, owner, ordered)
+        records = add_constraints(reflection, key, join_ids, owner, ordered, previous_reflection: previous_reflection)
         foreign_key = next_reflection.join_foreign_key
         record_ids = records.pluck(foreign_key)
         records_ordered = records && records.order_values.any?
 
-        [next_reflection, records_ordered, record_ids]
+        [reflection, next_reflection, records_ordered, record_ids]
       end
     end
 
-    def add_constraints(reflection, key, join_ids, owner, ordered)
+    def add_constraints(reflection, key, join_ids, owner, ordered, previous_reflection: nil)
       scope = reflection.build_scope(reflection.aliased_table).where(key => join_ids)
+
+      # Pulled from https://github.com/rails/rails/pull/42590
+      # Fixes cases where used with an STI type
+      relation = reflection.klass.scope_for_association
+      scope.merge!(
+        relation.except(:select, :create_with, :includes, :preload, :eager_load, :joins, :left_outer_joins)
+      )
+
+      # Attempt to fix use case where we have a polymorphic relationship
+      # Build on an additional scope to filter by the polymorphic type
+      if reflection.type
+        polymorphic_class = previous_reflection.try(:klass) || owner.class
+
+        polymorphic_type = transform_value(polymorphic_class.polymorphic_name)
+        scope = apply_scope(scope, reflection.aliased_table, reflection.type, polymorphic_type)
+      end
+
       scope = reflection.constraints.inject(scope) do |memo, scope_chain_item|
         item = eval_scope(reflection, scope_chain_item, owner)
         scope.unscope!(*item.unscope_values)
