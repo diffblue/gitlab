@@ -11,7 +11,6 @@ RSpec.describe 'Every metric definition' do
       geo_node_usage
       license_add_ons
       testing_total_unique_counts
-      topology
       user_auth_by_provider
     ).freeze
   end
@@ -19,7 +18,7 @@ RSpec.describe 'Every metric definition' do
   let(:usage_ping_key_paths) do
     parse_usage_ping_keys(usage_ping)
       .flatten
-      .reject { |v| v =~ Regexp.union(ignored_usage_ping_key_patterns)}
+      .reject { |v| v =~ Regexp.union(ignored_usage_ping_key_patterns) }
       .sort
   end
 
@@ -29,7 +28,6 @@ RSpec.describe 'Every metric definition' do
       geo_node_usage
       mock_ci
       mock_monitoring
-      projects_with_enabled_alert_integrations_histogram
       user_auth_by_provider
       user_dast_scans
       user_sast_scans
@@ -38,28 +36,38 @@ RSpec.describe 'Every metric definition' do
       user_secret_detection_scans
       user_coverage_fuzzing_scans
       user_api_fuzzing_scans
-      topology
     ).freeze
   end
 
   let(:metric_files_key_paths) do
     Gitlab::Usage::MetricDefinition
       .definitions
-      .reject { |k, v| v.status == 'removed' || v.key_path =~ Regexp.union(ignored_metric_files_key_patterns)}
+      .reject { |k, v| v.status == 'removed' || v.key_path =~ Regexp.union(ignored_metric_files_key_patterns) }
       .keys
       .sort
+  end
+
+  let(:metric_files_with_schema) do
+    Gitlab::Usage::MetricDefinition
+      .definitions
+      .select { |k, v| v.respond_to?(:value_json_schema) }
+      .keys
   end
 
   # Recursively traverse nested Hash of a generated Usage Ping to return an Array of key paths
   # in the dotted format used in metric definition YAML files, e.g.: 'count.category.metric_name'
   def parse_usage_ping_keys(object, key_path = [])
-    if object.is_a? Hash
+    if object.is_a?(Hash) && !object_with_schema?(key_path.join('.'))
       object.each_with_object([]) do |(key, value), result|
         result.append parse_usage_ping_keys(value, key_path + [key])
       end
     else
       key_path.join('.')
     end
+  end
+
+  def object_with_schema?(key_path)
+    metric_files_with_schema.include?(key_path)
   end
 
   before do
