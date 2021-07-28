@@ -2,6 +2,9 @@
 - url_to_purchase_storage = purchase_storage_url if purchase_storage_link_enabled?(@group)
 - other_storage_enabled = Feature.enabled?(:other_storage_tab, @group)
 
+- if show_product_purchase_success_alert?
+  = render 'product_purchase_success_alert', product_name: params[:purchased_product]
+
 %h3.page-title
   = s_('UsageQuota|Usage Quotas')
 

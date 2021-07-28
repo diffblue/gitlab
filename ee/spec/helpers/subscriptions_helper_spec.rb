@@ -149,4 +149,22 @@ RSpec.describe SubscriptionsHelper do
     it { is_expected.to include(source: 'some_source') }
     it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":1,"guests":0}]}) }
   end
+
+  describe '#buy_minutes_addon_data' do
+    subject(:buy_minutes_addon_data) { helper.buy_minutes_addon_data(group) }
+
+    let_it_be(:user) { create(:user, name: 'First Last') }
+    let_it_be(:group) { create(:group, name: 'My Namespace') }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      allow(helper).to receive(:params).and_return({ selected_group: group.id.to_s, source: 'some_source' })
+      group.add_owner(user)
+    end
+
+    it { is_expected.to include(namespace_id: group.id.to_s) }
+    it { is_expected.to include(source: 'some_source') }
+    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":1,"guests":0}]}) }
+    it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, purchased_product: 'CI minutes')) }
+  end
 end

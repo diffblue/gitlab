@@ -16,6 +16,12 @@ module SubscriptionsHelper
     }
   end
 
+  def buy_minutes_addon_data(group)
+    {
+      redirect_after_success: group_usage_quotas_path(group, purchased_product: _('CI minutes'))
+    }.merge(addon_data(group))
+  end
+
   def addon_data(group)
     {
       group_data: [present_group(group)].to_json,

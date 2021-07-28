@@ -105,6 +105,10 @@ module EE
       group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
     end
 
+    def show_product_purchase_success_alert?
+      !params[:purchased_product].blank?
+    end
+
     private
 
     def get_group_sidebar_links

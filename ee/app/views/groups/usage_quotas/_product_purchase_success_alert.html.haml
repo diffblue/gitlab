@@ -1,0 +1,6 @@
+= render 'shared/global_alert',
+  title: _('Thanks for your purchase!'),
+  variant: :success,
+  close_button_data: { testid: 'close-product-purchase-success' } do
+  .gl-alert-body
+    = _('You have successfully purchased %{product}. You\'ll receive a receipt by mail.') % { product: product_name }

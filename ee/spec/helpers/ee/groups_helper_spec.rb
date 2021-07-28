@@ -380,4 +380,26 @@ RSpec.describe GroupsHelper do
       it { expect(helper.show_delayed_project_removal_setting?(group)).to be result }
     end
   end
+
+  describe '#show_product_purchase_success_alert?' do
+    describe 'when purchased_product is present' do
+      before do
+        allow(controller).to receive(:params) { { purchased_product: product } }
+      end
+
+      where(:product, :result) do
+        'product' | true
+        ''        | false
+        nil       | false
+      end
+
+      with_them do
+        it { expect(helper.show_product_purchase_success_alert?).to be result }
+      end
+    end
+
+    describe 'when purchased_product is not present' do
+      it { expect(helper.show_product_purchase_success_alert?).to be false }
+    end
+  end
 end
