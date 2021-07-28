@@ -250,9 +250,9 @@ module EE
       @ci_minutes_quota ||= ::Ci::Minutes::Quota.new(self)
     end
 
-    # The same method name is used also at project and job level
+    # The same method name is used also at project level
     def shared_runners_minutes_limit_enabled?
-      ci_minutes_quota.enabled?
+      any_project_with_shared_runners_enabled? && ci_minutes_quota.enabled?
     end
 
     def any_project_with_shared_runners_enabled?
