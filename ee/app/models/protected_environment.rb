@@ -22,12 +22,19 @@ class ProtectedEnvironment < ApplicationRecord
              ' AND protected_environments.project_id = environments.project_id')
   end
 
-  scope :deploy_access_levels_by_group, -> (group) do
-    ProtectedEnvironment::DeployAccessLevel
-      .joins(:protected_environment).where(group: group)
-  end
-
   class << self
+    def deploy_access_levels_by_user(user)
+      ProtectedEnvironment::DeployAccessLevel
+        .where(protected_environment_id: select(:id))
+        .where(user: user)
+    end
+
+    def deploy_access_levels_by_group(group)
+      ProtectedEnvironment::DeployAccessLevel
+        .where(protected_environment_id: select(:id))
+        .where(group: group)
+    end
+
     def for_environment(environment)
       raise ArgumentError unless environment.is_a?(::Environment)
 

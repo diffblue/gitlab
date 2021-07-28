@@ -11,6 +11,7 @@ module EE
       validate :gma_enforcement, if: :group, unless: :project_bot
 
       before_destroy :delete_member_branch_protection
+      before_destroy :delete_protected_environment_acceses
     end
 
     def group
@@ -26,6 +27,12 @@ module EE
         project.protected_branches.merge_access_by_user(user).destroy_all # rubocop: disable Cop/DestroyAll
         project.protected_branches.push_access_by_user(user).destroy_all # rubocop: disable Cop/DestroyAll
       end
+    end
+
+    def delete_protected_environment_acceses
+      return unless user.present? && project.present?
+
+      project.protected_environments.deploy_access_levels_by_user(user).delete_all
     end
 
     def gma_enforcement
