@@ -10,6 +10,7 @@ module Ci
       belongs_to :namespace
 
       scope :current_month, -> { where(date: beginning_of_month) }
+      scope :for_namespace, -> (namespace) { where(namespace: namespace) }
 
       def self.beginning_of_month(time = Time.current)
         time.utc.beginning_of_month

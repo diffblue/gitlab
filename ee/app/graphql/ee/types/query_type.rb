@@ -61,6 +61,10 @@ module EE
               null: true,
               resolver: ::Resolvers::Admin::CloudLicenses::LicenseHistoryEntriesResolver,
               description: 'Fields related to entries in the license history.'
+
+        field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
+              null: true,
+              description: 'The monthly CI minutes usage data for the current user.'
       end
 
       def vulnerability(id:)
@@ -75,6 +79,10 @@ module EE
         # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
         id = ::Types::GlobalIDType[Iteration].coerce_isolated_input(id)
         ::GitlabSchema.find_by_gid(id)
+      end
+
+      def ci_minutes_usage
+        ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(current_user.namespace)
       end
     end
   end

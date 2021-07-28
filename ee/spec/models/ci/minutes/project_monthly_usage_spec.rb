@@ -90,4 +90,19 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
       end
     end
   end
+
+  describe '.for_namespace_monthly_usage' do
+    it "fetches project monthly usages matching the namespace monthly usage's date and namespace" do
+      date_for_usage = Date.new(2021, 5, 1)
+      date_not_for_usage = date_for_usage + 1.month
+      namespace_usage = create(:ci_namespace_monthly_usage, namespace: project.namespace, amount_used: 50, date: date_for_usage)
+      matching_project_usage = create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_for_usage)
+      create(:ci_project_monthly_usage, project: project, amount_used: 50, date: date_not_for_usage)
+      create(:ci_project_monthly_usage, project: create(:project), amount_used: 50, date: date_for_usage)
+
+      project_usages = described_class.for_namespace_monthly_usage(namespace_usage)
+
+      expect(project_usages).to contain_exactly(matching_project_usage)
+    end
+  end
 end

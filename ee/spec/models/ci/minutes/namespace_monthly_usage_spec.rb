@@ -90,4 +90,15 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
       end
     end
   end
+
+  describe '.for_namespace' do
+    it 'returns usages for the namespace' do
+      matching_usage = create(:ci_namespace_monthly_usage, namespace: namespace)
+      create(:ci_namespace_monthly_usage, namespace: create(:namespace))
+
+      usages = described_class.for_namespace(namespace)
+
+      expect(usages).to contain_exactly(matching_usage)
+    end
+  end
 end
