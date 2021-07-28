@@ -23,7 +23,7 @@ module Ci
       )
       error("Failed to update approval rules")
     ensure
-      [:project_rule_vulnerabilities_allowed, :project_vulnerability_rule, :reports].each do |memoization|
+      [:project_rule_vulnerabilities_allowed, :project_rule_scanners, :project_rule_severity_levels, :project_vulnerability_report, :reports].each do |memoization|
         clear_memoization(memoization)
       end
     end
@@ -59,19 +59,19 @@ module Ci
 
     def reports
       strong_memoize(:reports) do
-        project_vulnerability_rule ? pipeline.security_reports(report_types: project_vulnerability_rule) : []
+        project_rule_scanners ? pipeline.security_reports(report_types: project_rule_scanners) : []
       end
     end
 
-    def project_vulnerability_rule
-      strong_memoize(:project_vulnerability_rule) do
-        pipeline.project.vulnerability_report_rule&.scanners
+    def project_rule_scanners
+      strong_memoize(:project_rule_scanners) do
+        project_vulnerability_report&.scanners
       end
     end
 
     def project_rule_vulnerabilities_allowed
       strong_memoize(:project_rule_vulnerabilities_allowed) do
-        pipeline.project.vulnerability_report_rule&.vulnerabilities_allowed
+        project_vulnerability_report&.vulnerabilities_allowed
       end
     end
 
@@ -86,7 +86,7 @@ module Ci
 
     def merge_requests_approved_security_reports
       pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed)
+        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed, project_rule_severity_levels)
       end
     end
 
@@ -94,6 +94,18 @@ module Ci
       rules
         .for_unmerged_merge_requests(merge_requests)
         .update_all(approvals_required: 0)
+    end
+
+    def project_rule_severity_levels
+      strong_memoize(:project_rule_severity_levels) do
+        project_vulnerability_report&.severity_levels
+      end
+    end
+
+    def project_vulnerability_report
+      strong_memoize(:project_vulnerability_report) do
+        pipeline.project.vulnerability_report_rule
+      end
     end
   end
 end

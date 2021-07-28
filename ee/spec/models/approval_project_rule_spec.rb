@@ -161,19 +161,20 @@ RSpec.describe ApprovalProjectRule do
       context "with a `Vulnerability-Check` rule" do
         using RSpec::Parameterized::TableSyntax
 
-        where(:is_valid, :scanners, :vulnerabilities_allowed) do
-          true  | []                                     | 0
-          true  | %w(dast)                               | 1
-          true  | %w(dast sast)                          | 10
-          true  | %w(dast dast)                          | 100
-          false | %w(dast unknown_scanner)               | 100
-          false | [described_class::UNSUPPORTED_SCANNER] | 100
-          false | %w(dast sast)                          | 1.1
-          false | %w(dast sast)                          | 'one'
+        where(:is_valid, :scanners, :vulnerabilities_allowed, :severity_levels) do
+          true  | []                                     | 0     | []
+          true  | %w(dast)                               | 1     | %w(critical high medium)
+          true  | %w(dast sast)                          | 10    | %w(critical high)
+          true  | %w(dast dast)                          | 100   | %w(critical)
+          false | %w(dast dast)                          | 100   | %w(unknown_severity)
+          false | %w(dast unknown_scanner)               | 100   | %w(critical)
+          false | [described_class::UNSUPPORTED_SCANNER] | 100   | %w(critical)
+          false | %w(dast sast)                          | 1.1   | %w(critical)
+          false | %w(dast sast)                          | 'one' | %w(critical)
         end
 
         with_them do
-          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed) }
+          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels) }
 
           specify { expect(vulnerability_check_rule.valid?).to be(is_valid) }
         end
