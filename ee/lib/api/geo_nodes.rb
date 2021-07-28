@@ -25,7 +25,7 @@ module API
       end
 
       def update_geo_nodes_endpoint?
-        request.put? && request.path.match?(/\/geo_nodes\/\d+/)
+        request.put? && request.path.match?(%r{/geo_nodes/\d+})
       end
     end
 
