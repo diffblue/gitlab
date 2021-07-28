@@ -9,6 +9,8 @@ module EE
             include ::Gitlab::Utils::StrongMemoize
             include ActionView::Helpers::TextHelper
 
+            LOGGABLE_JOBS_COUNT = 2000  # log large pipelines to determine a future global pipeline size limit
+
             def initialize(namespace, pipeline, command)
               @namespace = namespace
               @pipeline = pipeline
@@ -25,9 +27,11 @@ module EE
               seeds_size > ci_pipeline_size_limit
             end
 
-            def message
-              return unless exceeded?
+            def log_exceeded_limit?
+              seeds_size > LOGGABLE_JOBS_COUNT
+            end
 
+            def message
               "Pipeline has too many jobs! Requested #{seeds_size}, but the limit is #{ci_pipeline_size_limit}."
             end
 

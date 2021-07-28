@@ -84,9 +84,31 @@ RSpec.describe EE::Gitlab::Ci::Pipeline::Quota::Size do
     context 'when limit is exceeded' do
       include_context 'pipeline size limit exceeded'
 
-      it 'returns infor about pipeline size limit exceeded' do
+      it 'returns info about pipeline size limit exceeded' do
         expect(subject.message)
           .to eq "Pipeline has too many jobs! Requested 2, but the limit is 1."
+      end
+    end
+  end
+
+  describe '#log_exceeded_limit?' do
+    context 'when there are more than 2000 jobs in the pipeline' do
+      let(:command) do
+        double(:command, pipeline_seed: double(:pipeline_seed, size: 2001))
+      end
+
+      it 'returns true' do
+        expect(subject.log_exceeded_limit?).to be_truthy
+      end
+    end
+
+    context 'when there are 2000 or less jobs in the pipeline' do
+      let(:command) do
+        double(:command, pipeline_seed: double(:pipeline_seed, size: 2000))
+      end
+
+      it 'returns false' do
+        expect(subject.log_exceeded_limit?).to be_falsey
       end
     end
   end
