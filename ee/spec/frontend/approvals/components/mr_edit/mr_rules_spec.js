@@ -46,7 +46,7 @@ describe('EE Approvals MRRules', () => {
       .fn()
       .mockImplementation((args) => new OriginalMutationObserver(args));
 
-    store = createStoreOptions(MREditModule());
+    store = createStoreOptions({ approvals: MREditModule() });
     store.modules.approvals.state = {
       hasLoaded: true,
       rules: [],

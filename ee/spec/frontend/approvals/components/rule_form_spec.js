@@ -104,7 +104,10 @@ describe('EE Approvals RuleForm', () => {
   ];
 
   beforeEach(() => {
-    store = createStoreOptions(projectSettingsModule(), { projectId: TEST_PROJECT_ID });
+    store = createStoreOptions(
+      { approvals: projectSettingsModule() },
+      { projectId: TEST_PROJECT_ID },
+    );
 
     ['postRule', 'putRule', 'deleteRule', 'putFallbackRule'].forEach((actionName) => {
       jest.spyOn(store.modules.approvals.actions, actionName).mockImplementation(() => {});

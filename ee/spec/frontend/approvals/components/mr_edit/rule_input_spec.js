@@ -26,7 +26,7 @@ describe('Rule Input', () => {
   };
 
   beforeEach(() => {
-    store = createStoreOptions(MREditModule());
+    store = createStoreOptions({ approvals: MREditModule() });
     store.state.settings.canEdit = true;
 
     store.modules.approvals.actions = {

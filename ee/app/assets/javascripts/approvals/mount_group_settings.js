@@ -11,7 +11,9 @@ const mountGroupApprovalSettings = (el) => {
   }
 
   const { defaultExpanded, approvalSettingsPath } = el.dataset;
-  const store = createStore(approvalSettingsModule(groupApprovalsMappers));
+  const store = createStore({
+    approvalSettings: approvalSettingsModule(groupApprovalsMappers),
+  });
 
   return new Vue({
     el,
