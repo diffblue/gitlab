@@ -19,6 +19,21 @@ RSpec.shared_examples 'a Geo verifiable registry' do
     end
   end
 
+  context 'verification_state machine' do
+    context 'when transitioning to verification_failed' do
+      it 'changes state from synced to failed' do
+        registry = create(registry_class_factory, :synced)
+
+        registry.verification_failed_with_message!('foo')
+
+        expect(registry.reload).to be_failed
+        expect(registry.verification_failure).to eq('foo')
+        expect(registry.last_sync_failure).to eq('Verification failed with: foo')
+        expect(registry.retry_count).to eq(1)
+      end
+    end
+  end
+
   describe '.verification_pending_batch' do
     before do
       subject.save!
@@ -51,13 +66,22 @@ RSpec.shared_examples 'a Geo verifiable registry' do
 
   describe '.verification_failed_batch' do
     before do
-      subject.verification_failed_with_message!('foo')
+      # The setup is unusual because we don't want
+      # `before_verification_failure` to set the sync state to `:failed`.
+      # This lets us test things that are synced but failed verification, which
+      # should not happen anymore, but may exist from before we implemented
+      # automatic resync of verification failures.
+      subject.synced
+      subject.verification_state = verification_state_value(:verification_failed)
+      subject.verification_failure = 'foo'
+      subject.verification_retry_count = 1
+      subject.verified_at = Time.current
+      subject.verification_retry_at = verification_retry_at
+      subject.save!
     end
 
     context 'with a failed record with retry due' do
-      before do
-        subject.update!(verification_retry_at: 1.minute.ago)
-      end
+      let(:verification_retry_at) { 1.minute.ago }
 
       it 'returns IDs of rows which are synced and have failed verification' do
         expect(described_class.verification_failed_batch(batch_size: 4)).to match_array([subject.model_record_id])
@@ -85,9 +109,9 @@ RSpec.shared_examples 'a Geo verifiable registry' do
     end
 
     context 'when verification_retry_at is in the future' do
-      it 'does not return the row which failed verification' do
-        subject.update!(verification_retry_at: 1.minute.from_now)
+      let(:verification_retry_at) { 1.minute.from_now }
 
+      it 'does not return the row which failed verification' do
         expect(subject.class.verification_failed_batch(batch_size: 4)).not_to include(subject.model_record_id)
       end
     end

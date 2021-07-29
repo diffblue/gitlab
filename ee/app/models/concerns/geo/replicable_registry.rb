@@ -104,7 +104,7 @@ module Geo::ReplicableRegistry
       end
 
       event :failed do
-        transition [:started] => :failed
+        transition [:started, :synced] => :failed
       end
 
       event :resync do
@@ -120,6 +120,7 @@ module Geo::ReplicableRegistry
     def failed!(message, error = nil)
       self.last_sync_failure = message
       self.last_sync_failure += ": #{error.message}" if error.respond_to?(:message)
+      self.last_sync_failure.truncate(255)
 
       super()
     end
