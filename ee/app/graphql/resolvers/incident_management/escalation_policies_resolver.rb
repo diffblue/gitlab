@@ -25,7 +25,7 @@ module Resolvers
 
       def preloads
         {
-          rules: [:ordered_rules]
+          rules: [:active_rules]
         }
       end
     end

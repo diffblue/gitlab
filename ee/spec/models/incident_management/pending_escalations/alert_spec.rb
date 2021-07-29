@@ -9,14 +9,11 @@ RSpec.describe IncidentManagement::PendingEscalations::Alert do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:process_at) }
-    it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to delegate_method(:project).to(:alert) }
-    it { is_expected.to delegate_method(:policy).to(:rule).allow_nil }
     it { is_expected.to validate_uniqueness_of(:rule_id).scoped_to([:alert_id]) }
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:oncall_schedule) }
     it { is_expected.to belong_to(:alert) }
     it { is_expected.to belong_to(:rule) }
   end

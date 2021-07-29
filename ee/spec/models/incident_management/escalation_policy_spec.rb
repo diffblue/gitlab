@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe IncidentManagement::EscalationPolicy do
-  let_it_be(:project) { create(:project) }
-
   subject { build(:incident_management_escalation_policy) }
 
   it { is_expected.to be_valid }
@@ -12,7 +10,17 @@ RSpec.describe IncidentManagement::EscalationPolicy do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:rules) }
-    it { is_expected.to have_many(:ordered_rules).order(elapsed_time_seconds: :asc, status: :asc) }
+    it { is_expected.to have_many(:active_rules).order(elapsed_time_seconds: :asc, status: :asc).class_name('EscalationRule').inverse_of(:policy) }
+
+    describe '.active_rules' do
+      let(:policy) { create(:incident_management_escalation_policy) }
+      let(:rule) { policy.rules.first }
+      let(:removed_rule) { create(:incident_management_escalation_rule, :removed, policy: policy) }
+
+      subject { policy.reload.active_rules }
+
+      it { is_expected.to contain_exactly(rule) }
+    end
   end
 
   describe 'validations' do
