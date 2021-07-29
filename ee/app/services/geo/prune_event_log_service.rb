@@ -15,7 +15,7 @@ module Geo
     end
 
     def execute
-      return if Gitlab::Database.read_only?
+      return if Gitlab::Database.main.read_only?
 
       try_obtain_lease do
         log_info('Prune Geo Event Log entries up to id', geo_event_log_id: event_log_min_id)

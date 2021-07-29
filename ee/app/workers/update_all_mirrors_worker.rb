@@ -14,7 +14,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   RESCHEDULE_WAIT = 1.second
 
   def perform
-    return if Gitlab::Database.read_only?
+    return if Gitlab::Database.main.read_only?
 
     scheduled = 0
     with_lease do

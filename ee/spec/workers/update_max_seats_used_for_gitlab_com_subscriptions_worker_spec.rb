@@ -14,7 +14,7 @@ RSpec.describe UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker do
     let(:subscription_attrs) { nil }
 
     before do
-      allow(Gitlab::Database).to receive(:read_only?) { db_is_read_only }
+      allow(Gitlab::Database.main).to receive(:read_only?) { db_is_read_only }
       allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
     end
 

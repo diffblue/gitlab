@@ -37,7 +37,7 @@ RSpec.describe Gitlab::Geo::HealthCheck, :geo do
         before do
           allow(Gitlab::Geo).to receive(:secondary?) { true }
           allow(Gitlab::Geo).to receive(:geo_database_configured?) { geo_database_configured }
-          allow(Gitlab::Database).to receive(:db_read_only?) { db_read_only }
+          allow(Gitlab::Database.main).to receive(:db_read_only?) { db_read_only }
         end
 
         context 'when the Geo tracking DB is not configured' do
@@ -124,8 +124,8 @@ RSpec.describe Gitlab::Geo::HealthCheck, :geo do
   describe '#db_replication_lag_seconds' do
     before do
       query = 'SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE EXTRACT (EPOCH FROM now() - pg_last_xact_replay_timestamp())::INTEGER END AS replication_lag'
-      allow(Gitlab::Database).to receive(:pg_last_wal_receive_lsn).and_return('pg_last_wal_receive_lsn')
-      allow(Gitlab::Database).to receive(:pg_last_wal_replay_lsn).and_return('pg_last_wal_replay_lsn')
+      allow(Gitlab::Database.main).to receive(:pg_last_wal_receive_lsn).and_return('pg_last_wal_receive_lsn')
+      allow(Gitlab::Database.main).to receive(:pg_last_wal_replay_lsn).and_return('pg_last_wal_replay_lsn')
       allow(ActiveRecord::Base).to receive_message_chain('connection.execute').with(query).and_return([{ 'replication_lag' => lag_in_seconds }])
     end
 

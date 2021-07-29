@@ -82,7 +82,7 @@ describe('RoadmapApp', () => {
       beforeEach(() => {
         wrapper = createComponent();
         if (epicList) {
-          store.commit(types.RECEIVE_EPICS_SUCCESS, epicList);
+          store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: epicList });
         }
       });
 
@@ -103,7 +103,7 @@ describe('RoadmapApp', () => {
   describe('empty state view', () => {
     beforeEach(() => {
       wrapper = createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, []);
+      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: [] });
     });
 
     it('contains path for the empty state illustration', () => {
@@ -138,7 +138,7 @@ describe('RoadmapApp', () => {
   describe('roadmap view', () => {
     beforeEach(() => {
       wrapper = createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, epics);
+      store.commit(types.RECEIVE_EPICS_SUCCESS, { epics });
     });
 
     it('contains roadmap filters UI', () => {
@@ -239,7 +239,9 @@ describe('RoadmapApp', () => {
   describe('roadmap epics limit warning', () => {
     beforeEach(() => {
       wrapper = createComponent();
-      store.commit(types.RECEIVE_EPICS_SUCCESS, [mockFormattedEpic, mockFormattedChildEpic2]);
+      store.commit(types.RECEIVE_EPICS_SUCCESS, {
+        epics: [mockFormattedEpic, mockFormattedChildEpic2],
+      });
       window.gon.roadmap_epics_limit = 1;
     });
 

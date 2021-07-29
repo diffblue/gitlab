@@ -1,7 +1,7 @@
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
 
-import { EXTEND_AS } from '../constants';
+import { EXTEND_AS, ROADMAP_PAGE_SIZE } from '../constants';
 import epicChildEpics from '../queries/epicChildEpics.query.graphql';
 import groupEpics from '../queries/groupEpics.query.graphql';
 import groupMilestones from '../queries/groupMilestones.query.graphql';
@@ -19,13 +19,14 @@ export const setInitialData = ({ commit }, data) => commit(types.SET_INITIAL_DAT
 
 const fetchGroupEpics = (
   { epicIid, fullPath, epicsState, sortedBy, presetType, filterParams, timeframe },
-  defaultTimeframe,
+  { timeframe: defaultTimeframe, endCursor },
 ) => {
   let query;
   let variables = {
     fullPath,
     state: epicsState,
     sort: sortedBy,
+    endCursor,
     ...getEpicsTimeframeRange({
       presetType,
       timeframe: defaultTimeframe || timeframe,
@@ -45,7 +46,7 @@ const fetchGroupEpics = (
     variables = {
       ...variables,
       ...transformedFilterParams,
-      first: gon.roadmap_epics_limit + 1,
+      first: ROADMAP_PAGE_SIZE,
     };
 
     if (transformedFilterParams?.epicIid) {
@@ -63,7 +64,10 @@ const fetchGroupEpics = (
         ? data?.group?.epic?.children?.edges || []
         : data?.group?.epics?.edges || [];
 
-      return edges.map((e) => e.node);
+      return {
+        rawEpics: edges.map((e) => e.node),
+        pageInfo: data?.group?.epics?.pageInfo,
+      };
     });
 };
 
@@ -84,7 +88,7 @@ export const fetchChildrenEpics = (state, { parentItem }) => {
 
 export const receiveEpicsSuccess = (
   { commit, dispatch, state },
-  { rawEpics, newEpic, timeframeExtended },
+  { rawEpics, pageInfo, newEpic, timeframeExtended, appendToList },
 ) => {
   const epicIds = [];
   const epics = rawEpics.reduce((filteredEpics, epic) => {
@@ -119,8 +123,11 @@ export const receiveEpicsSuccess = (
     const updatedEpics = state.epics.concat(epics);
     sortEpics(updatedEpics, state.sortedBy);
     commit(types.RECEIVE_EPICS_FOR_TIMEFRAME_SUCCESS, updatedEpics);
+  } else if (appendToList) {
+    const updatedEpics = state.epics.concat(epics);
+    commit(types.RECEIVE_EPICS_FOR_NEXT_PAGE_SUCCESS, { epics: updatedEpics, pageInfo });
   } else {
-    commit(types.RECEIVE_EPICS_SUCCESS, epics);
+    commit(types.RECEIVE_EPICS_SUCCESS, { epics, pageInfo });
   }
 };
 export const receiveEpicsFailure = ({ commit }) => {
@@ -160,12 +167,20 @@ export const receiveChildrenSuccess = (
   commit(types.RECEIVE_CHILDREN_SUCCESS, { parentItemId, children });
 };
 
-export const fetchEpics = ({ state, commit, dispatch }) => {
-  commit(types.REQUEST_EPICS);
+export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
+  if (endCursor) {
+    commit(types.REQUEST_EPICS_FOR_NEXT_PAGE);
+  } else {
+    commit(types.REQUEST_EPICS);
+  }
 
-  fetchGroupEpics(state)
-    .then((rawEpics) => {
-      dispatch('receiveEpicsSuccess', { rawEpics });
+  fetchGroupEpics(state, { endCursor })
+    .then(({ rawEpics, pageInfo }) => {
+      dispatch('receiveEpicsSuccess', {
+        rawEpics,
+        pageInfo,
+        appendToList: Boolean(endCursor),
+      });
     })
     .catch(() => dispatch('receiveEpicsFailure'));
 };
@@ -173,10 +188,11 @@ export const fetchEpics = ({ state, commit, dispatch }) => {
 export const fetchEpicsForTimeframe = ({ state, commit, dispatch }, { timeframe }) => {
   commit(types.REQUEST_EPICS_FOR_TIMEFRAME);
 
-  return fetchGroupEpics(state, timeframe)
-    .then((rawEpics) => {
+  return fetchGroupEpics(state, { timeframe })
+    .then(({ rawEpics, pageInfo }) => {
       dispatch('receiveEpicsSuccess', {
         rawEpics,
+        pageInfo,
         newEpic: true,
         timeframeExtended: true,
       });

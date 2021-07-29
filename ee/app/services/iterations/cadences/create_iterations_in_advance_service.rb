@@ -15,7 +15,7 @@ module Iterations
         return ::ServiceResponse.error(message: _('Cadence is not automated'), http_status: 422) unless cadence.can_be_automated?
 
         update_existing_iterations!
-        ::Gitlab::Database.bulk_insert(Iteration.table_name, build_new_iterations) # rubocop:disable Gitlab/BulkInsert
+        ::Gitlab::Database.main.bulk_insert(Iteration.table_name, build_new_iterations) # rubocop:disable Gitlab/BulkInsert
 
         cadence.update!(last_run_date: compute_last_run_date)
 

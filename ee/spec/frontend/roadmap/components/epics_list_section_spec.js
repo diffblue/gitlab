@@ -1,4 +1,6 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
+
+import { createLocalVue } from '@vue/test-utils';
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
 import {
@@ -7,6 +9,7 @@ import {
   TIMELINE_CELL_MIN_WIDTH,
 } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
+import { REQUEST_EPICS_FOR_NEXT_PAGE } from 'ee/roadmap/store/mutation_types';
 import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockFormattedChildEpic1,
@@ -16,8 +19,10 @@ import {
   rawEpics,
   mockEpicsWithParents,
   mockSortedBy,
+  mockPageInfo,
   basePath,
 } from 'ee_jest/roadmap/mock_data';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
 const store = createStore();
@@ -30,7 +35,11 @@ store.dispatch('setInitialData', {
   basePath,
 });
 
-store.dispatch('receiveEpicsSuccess', { rawEpics });
+store.dispatch('receiveEpicsSuccess', {
+  rawEpics,
+  pageInfo: mockPageInfo,
+  appendToList: true,
+});
 
 const mockEpics = store.state.epics;
 
@@ -44,8 +53,9 @@ const createComponent = ({
   currentGroupId = mockGroupId,
   presetType = PRESET_TYPES.MONTHS,
   hasFiltersApplied = false,
+  performanceRoadmap = false,
 } = {}) => {
-  return shallowMount(EpicsListSection, {
+  return shallowMountExtended(EpicsListSection, {
     localVue,
     store,
     stubs: {
@@ -59,6 +69,11 @@ const createComponent = ({
       currentGroupId,
       hasFiltersApplied,
     },
+    provide: {
+      glFeatures: {
+        performanceRoadmap,
+      },
+    },
   });
 };
 
@@ -66,6 +81,7 @@ describe('EpicsListSectionComponent', () => {
   let wrapper;
 
   beforeEach(() => {
+    gon.features = { performanceRoadmap: false };
     wrapper = createComponent();
   });
 
@@ -252,6 +268,38 @@ describe('EpicsListSectionComponent', () => {
       });
 
       expect(wrapper.find('.epic-scroll-bottom-shadow').exists()).toBe(true);
+    });
+
+    describe('when `performanceRoadmap` feature flag is enabled', () => {
+      const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+
+      beforeEach(() => {
+        gon.features = { performanceRoadmap: true };
+        wrapper = createComponent({ performanceRoadmap: true });
+      });
+
+      it('renders gl-intersection-observer component', () => {
+        expect(findIntersectionObserver().exists()).toBe(true);
+      });
+
+      it('calls action `fetchEpics` when gl-intersection-observer appears in viewport', () => {
+        const fakeFetchEpics = jest.spyOn(wrapper.vm, 'fetchEpics').mockImplementation();
+
+        findIntersectionObserver().vm.$emit('appear');
+
+        expect(fakeFetchEpics).toHaveBeenCalledWith({
+          endCursor: mockPageInfo.endCursor,
+        });
+      });
+
+      it('renders gl-loading icon when epicsFetchForNextPageInProgress is true', async () => {
+        wrapper.vm.$store.commit(REQUEST_EPICS_FOR_NEXT_PAGE);
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.findByTestId('next-page-loading').text()).toContain('Loading epics');
+        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
+      });
     });
   });
 

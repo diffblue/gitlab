@@ -9,6 +9,7 @@ module Groups
     before_action :persist_roadmap_layout, only: [:show]
     before_action do
       push_frontend_feature_flag(:async_filtering, @group, default_enabled: true)
+      push_frontend_feature_flag(:performance_roadmap, @group, default_enabled: :yaml)
     end
 
     feature_category :roadmaps
@@ -53,7 +54,7 @@ module Groups
       if params[:state].present?
         preference.roadmap_epics_state = Epic.state_ids[params[:state]]
 
-        preference.save if preference.changed? && Gitlab::Database.read_write?
+        preference.save if preference.changed? && Gitlab::Database.main.read_write?
       end
 
       Epic.state_ids.key(preference.roadmap_epics_state)

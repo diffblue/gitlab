@@ -27,11 +27,15 @@ export default {
   [types.REQUEST_EPICS_FOR_TIMEFRAME](state) {
     state.epicsFetchForTimeframeInProgress = true;
   },
-  [types.RECEIVE_EPICS_SUCCESS](state, epics) {
+  [types.REQUEST_EPICS_FOR_NEXT_PAGE](state) {
+    state.epicsFetchForNextPageInProgress = true;
+  },
+  [types.RECEIVE_EPICS_SUCCESS](state, { epics, pageInfo }) {
     state.epicsFetchResultEmpty = epics.length === 0;
 
     if (!state.epicsFetchResultEmpty) {
       state.epics = epics;
+      state.pageInfo = pageInfo;
     }
 
     state.epicsFetchInProgress = false;
@@ -40,9 +44,15 @@ export default {
     state.epics = epics;
     state.epicsFetchForTimeframeInProgress = false;
   },
+  [types.RECEIVE_EPICS_FOR_NEXT_PAGE_SUCCESS](state, { epics, pageInfo }) {
+    state.epics = epics;
+    state.pageInfo = pageInfo;
+    state.epicsFetchForNextPageInProgress = false;
+  },
   [types.RECEIVE_EPICS_FAILURE](state) {
     state.epicsFetchInProgress = false;
     state.epicsFetchForTimeframeInProgress = false;
+    state.epicsFetchForNextPageInProgress = false;
     state.epicsFetchFailure = true;
     Object.keys(state.childrenEpics).forEach((id) => {
       Vue.set(state.childrenFlags, id, {
