@@ -864,15 +864,6 @@
   :weight: 2
   :idempotent:
   :tags: []
-- :name: security_scans:store_security_scans
-  :worker_name: StoreSecurityScansWorker
-  :feature_category: :vulnerability_management
-  :has_external_dependencies:
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 2
-  :idempotent:
-  :tags: []
 - :name: todos_destroyer:todos_destroyer_confidential_epic
   :worker_name: TodosDestroyer::ConfidentialEpicWorker
   :feature_category: :epics
