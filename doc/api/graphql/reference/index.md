@@ -380,6 +380,28 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="querysnippetstype"></a>`type` | [`TypeEnum`](#typeenum) | The type of snippet. |
 | <a id="querysnippetsvisibility"></a>`visibility` | [`VisibilityScopesEnum`](#visibilityscopesenum) | The visibility of the snippet. |
 
+### `Query.timelogs`
+
+Find timelogs visible to the current user.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="querytimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="querytimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="querytimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="querytimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="querytimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="querytimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="querytimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
+
 ### `Query.usageTrendsMeasurements`
 
 Get statistics on the instance.
@@ -9925,10 +9947,13 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="grouptimelogsenddate"></a>`endDate` | [`Time`](#time) | List time logs within a date range where the logged date is equal to or before endDate. |
-| <a id="grouptimelogsendtime"></a>`endTime` | [`Time`](#time) | List time-logs within a time range where the logged time is equal to or before endTime. |
-| <a id="grouptimelogsstartdate"></a>`startDate` | [`Time`](#time) | List time logs within a date range where the logged date is equal to or after startDate. |
-| <a id="grouptimelogsstarttime"></a>`startTime` | [`Time`](#time) | List time-logs within a time range where the logged time is equal to or after startTime. |
+| <a id="grouptimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="grouptimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="grouptimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="grouptimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="grouptimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="grouptimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="grouptimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
 ##### `Group.vulnerabilities`
 
@@ -10810,6 +10835,28 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneestarredprojectssearch"></a>`search` | [`String`](#string) | Search query. |
 
+##### `MergeRequestAssignee.timelogs`
+
+Time logged by the user.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestassigneetimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="mergerequestassigneetimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="mergerequestassigneetimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="mergerequestassigneetimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="mergerequestassigneetimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="mergerequestassigneetimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="mergerequestassigneetimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
+
 ##### `MergeRequestAssignee.todos`
 
 To-do items of the user.
@@ -11016,6 +11063,28 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerstarredprojectssearch"></a>`search` | [`String`](#string) | Search query. |
+
+##### `MergeRequestReviewer.timelogs`
+
+Time logged by the user.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewertimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="mergerequestreviewertimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="mergerequestreviewertimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="mergerequestreviewertimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="mergerequestreviewertimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="mergerequestreviewertimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="mergerequestreviewertimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
 ##### `MergeRequestReviewer.todos`
 
@@ -12418,6 +12487,28 @@ Returns [`TerraformState`](#terraformstate).
 | ---- | ---- | ----------- |
 | <a id="projectterraformstatename"></a>`name` | [`String!`](#string) | Name of the Terraform state. |
 
+##### `Project.timelogs`
+
+Time logged on issues and merge requests in the project.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projecttimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="projecttimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="projecttimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="projecttimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="projecttimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="projecttimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="projecttimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
+
 ##### `Project.vulnerabilities`
 
 Vulnerabilities reported on the project.
@@ -13792,6 +13883,28 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="usercorestarredprojectssearch"></a>`search` | [`String`](#string) | Search query. |
+
+##### `UserCore.timelogs`
+
+Time logged by the user.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usercoretimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="usercoretimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="usercoretimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="usercoretimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="usercoretimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="usercoretimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="usercoretimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
 ##### `UserCore.todos`
 
@@ -16646,6 +16759,28 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="userstarredprojectssearch"></a>`search` | [`String`](#string) | Search query. |
+
+###### `User.timelogs`
+
+Time logged by the user.
+
+Returns [`TimelogConnection`](#timelogconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usertimelogsenddate"></a>`endDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or before endDate. |
+| <a id="usertimelogsendtime"></a>`endTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or before endTime. |
+| <a id="usertimelogsgroupid"></a>`groupId` | [`GroupID`](#groupid) | List timelogs for a group. |
+| <a id="usertimelogsprojectid"></a>`projectId` | [`ProjectID`](#projectid) | List timelogs for a project. |
+| <a id="usertimelogsstartdate"></a>`startDate` | [`Time`](#time) | List timelogs within a date range where the logged date is equal to or after startDate. |
+| <a id="usertimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
+| <a id="usertimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
 ###### `User.todos`
 

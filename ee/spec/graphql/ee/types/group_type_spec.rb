@@ -13,7 +13,6 @@ RSpec.describe GitlabSchema.types['Group'] do
 
   it { expect(described_class).to have_graphql_field(:iterations) }
   it { expect(described_class).to have_graphql_field(:iteration_cadences) }
-  it { expect(described_class).to have_graphql_field(:timelogs, complexity: 5) }
   it { expect(described_class).to have_graphql_field(:vulnerabilities) }
   it { expect(described_class).to have_graphql_field(:vulnerability_scanners) }
   it { expect(described_class).to have_graphql_field(:vulnerabilities_count_by_day) }
@@ -21,16 +20,6 @@ RSpec.describe GitlabSchema.types['Group'] do
   it { expect(described_class).to have_graphql_field(:code_coverage_activities) }
   it { expect(described_class).to have_graphql_field(:stats) }
   it { expect(described_class).to have_graphql_field(:billable_members_count) }
-
-  describe 'timelogs field' do
-    subject { described_class.fields['timelogs'] }
-
-    it 'finds timelogs between start time and end time' do
-      is_expected.to have_graphql_arguments(:start_time, :end_time, :start_date, :end_date, :after, :before, :first, :last)
-      is_expected.to have_graphql_resolver(Resolvers::TimelogResolver)
-      is_expected.to have_non_null_graphql_type(Types::TimelogType.connection_type)
-    end
-  end
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }
