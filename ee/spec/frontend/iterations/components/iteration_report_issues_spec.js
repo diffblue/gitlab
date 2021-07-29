@@ -56,7 +56,6 @@ describe('Iterations report issues', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   it('shows spinner while loading', () => {

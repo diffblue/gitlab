@@ -3,6 +3,7 @@
 # todo: should this use IterationsCadenceID! ?
 query IterationCadence($fullPath: ID!, $id: ID!) {
   group(fullPath: $fullPath) {
+    id
     iterationCadences(id: $id) {
       nodes {
         ...IterationCadence
