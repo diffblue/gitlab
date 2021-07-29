@@ -17,10 +17,6 @@ export default {
     Vue.set(state.boardLists, listId, list);
   },
 
-  [mutationTypes.UPDATE_LIST_FAILURE]: (state) => {
-    state.error = s__('Boards|An error occurred while updating the list. Please try again.');
-  },
-
   [mutationTypes.RECEIVE_ITEMS_FOR_LIST_SUCCESS]: (
     state,
     { listItems, listPageInfo, listId, noEpicIssues },
