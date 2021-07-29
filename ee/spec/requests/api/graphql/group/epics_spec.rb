@@ -194,12 +194,10 @@ RSpec.describe 'Epics through GroupQuery' do
           epics_with_parent = create_list(:epic, 3, group: group) do |epic|
             epic.update!(parent: create(:epic, group: group))
           end
-          group.reload
 
-          # Threshold of 3 due to an existing N+1 with licenses
           expect do
             post_graphql(query({ iids: epics_with_parent.pluck(:iid) }), current_user: user)
-          end.not_to exceed_query_limit(control_count).with_threshold(3)
+          end.not_to exceed_query_limit(control_count)
         end
       end
 
