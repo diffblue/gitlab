@@ -140,20 +140,13 @@ RSpec.describe Projects::Security::ConfigurationController do
       context 'with sufficient permissions' do
         let(:user) { maintainer }
 
-        it 'shows auto fix disable for dependency scanning for json format' do
-          get :show, params: { namespace_id: project.namespace, project_id: project, format: :json }
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response['auto_fix_enabled']).to include({ 'dependency_scanning' => false })
-        end
-
         context 'with setup feature param' do
           let(:feature) { :dependency_scanning }
 
           it 'processes request and updates setting' do
             expect(response).to have_gitlab_http_status(:ok)
             expect(project.security_setting.reload.auto_fix_dependency_scanning).to be_falsey
-            expect(response[:dependency_scanning]).to be_falsey
+            expect(json_response['dependency_scanning']).to be(false)
           end
         end
 
@@ -166,7 +159,8 @@ RSpec.describe Projects::Security::ConfigurationController do
             expect(response).to have_gitlab_http_status(:ok)
             expect(setting.auto_fix_dependency_scanning).to be_falsey
             expect(setting.auto_fix_dast).to be_falsey
-            expect(response[:container_scanning]).to be_falsey
+            expect(json_response['dependency_scanning']).to be(false)
+            expect(json_response['container_scanning']).to be(false)
           end
         end
 
