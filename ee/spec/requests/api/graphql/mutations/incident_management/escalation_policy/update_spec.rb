@@ -74,7 +74,7 @@ RSpec.describe 'Updating an escalation policy' do
     expect(escalation_policy.reload).to have_attributes(
       name: variables[:name],
       description: variables[:description],
-      rules: [
+      active_rules: [
         have_attributes(
           oncall_schedule: schedule,
           status: rule_variables[:status].downcase,

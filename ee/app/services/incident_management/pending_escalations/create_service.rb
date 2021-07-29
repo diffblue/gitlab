@@ -12,20 +12,16 @@ module IncidentManagement
       def execute
         return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project) && !target.resolved?
 
-        policy = escalation_policies.first
+        policy = project.incident_management_escalation_policies.first
 
         return unless policy
 
-        create_escalations(policy.rules)
+        create_escalations(policy.active_rules)
       end
 
       private
 
-      attr_reader :target, :project, :escalation, :process_time
-
-      def escalation_policies
-        project.incident_management_escalation_policies.with_rules
-      end
+      attr_reader :target, :project, :process_time
 
       def create_escalations(rules)
         escalation_ids = rules.map do |rule|
@@ -40,8 +36,6 @@ module IncidentManagement
         IncidentManagement::PendingEscalations::Alert.create!(
           target: target,
           rule: rule,
-          schedule_id: rule.oncall_schedule_id,
-          status: rule.status,
           process_at: rule.elapsed_time_seconds.seconds.after(process_time)
         )
       end

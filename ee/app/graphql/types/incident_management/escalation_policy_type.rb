@@ -23,7 +23,7 @@ module Types
       field :rules, [Types::IncidentManagement::EscalationRuleType],
             null: true,
             description: 'Steps of the escalation policy.',
-            method: :ordered_rules
+            method: :active_rules
     end
   end
 end

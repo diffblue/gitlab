@@ -8,6 +8,7 @@ RSpec.describe IncidentManagement::PendingEscalations::CreateService do
   let_it_be(:rule_count) { 2 }
 
   let!(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rule_count: rule_count) }
+  let!(:removed_rule) { create(:incident_management_escalation_rule, :removed, policy: escalation_policy) }
   let(:rules) { escalation_policy.rules }
 
   let(:service) { described_class.new(target) }
@@ -46,6 +47,7 @@ RSpec.describe IncidentManagement::PendingEscalations::CreateService do
 
     context 'when there is no escalation policy for the project' do
       let!(:escalation_policy) { nil }
+      let!(:removed_rule) { nil }
 
       it 'does nothing' do
         expect { execute }.not_to change { IncidentManagement::PendingEscalations::Alert.count }
@@ -64,8 +66,6 @@ RSpec.describe IncidentManagement::PendingEscalations::CreateService do
       expect(escalation).to have_attributes(
         rule_id: rule.id,
         alert_id: target.id,
-        schedule_id: rule.oncall_schedule_id,
-        status: rule.status,
         process_at: be_within(1.minute).of(rule.elapsed_time_seconds.seconds.after(execution_time))
       )
     end

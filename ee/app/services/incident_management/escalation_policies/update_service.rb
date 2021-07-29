@@ -46,36 +46,45 @@ module IncidentManagement
         params[:rules_attributes] && params[:rules_attributes].empty?
       end
 
-      # Limits rules_attributes to only new records & prepares
-      # to delete existing rules which are no longer needed
-      # when the policy is saved.
-      #
-      # Context: Rules are managed via `accepts_nested_attributes_for`
-      # on the IncidentManagement::EscalationPolicy.
-      # `accepts_nested_attributes_for` requires explicit
-      # removal of records, so we'll limit `rules_attributes`
-      # to new records, then rely on `autosave` to actually
-      # destroy the unwanted rules after marking them for
-      # deletion.
+      # Replaces rules params with records for existing rules,
+      # creates records for new rules, and marks appropriate
+      # rule records for removal. Records are not actually
+      # deleted as there may be pending escalations for the rule.
       def reconcile_rules!
-        return unless rules_attributes = params.delete(:rules_attributes)
+        return unless expected_rules_by_uniq_id.present?
 
-        params[:rules_attributes] = remove_obsolete_rules(rules_attributes).to_a
+        update_existing_rules!
+
+        params[:rules] = expected_rules_by_uniq_id.merge(existing_rules_by_uniq_id).values
       end
 
-      def remove_obsolete_rules(rules_attrs)
-        expected_rules = rules_attrs.to_set { |attrs| normalize(::IncidentManagement::EscalationRule.new(**attrs)) }
-
-        escalation_policy.rules.each_with_object(expected_rules) do |existing_rule, new_rules|
-          # Exclude an expected rule which already corresponds to a persisted record - it's a no-op.
-          next if new_rules.delete?(normalize(existing_rule))
-
-          # Destroy a persisted record, since we don't expect this rule to be on the policy anymore.
-          existing_rule.mark_for_destruction
+      # Prepares existing rules to be removed or un-removed
+      # based on whether they're included in the input params
+      def update_existing_rules!
+        existing_rules_by_uniq_id.each do |uniq_id, rule|
+          rule.is_removed = !expected_rules_by_uniq_id.key?(uniq_id)
         end
       end
 
-      def normalize(rule)
+      # @return [Hash<Array, IncidentManagement::EscalationRule>]
+      def existing_rules_by_uniq_id
+        strong_memoize(:existing_rules_by_uniq_id) do
+          escalation_policy.rules.index_by { |rule| unique_id(rule) }
+        end
+      end
+
+      # @return [Hash<Array, IncidentManagement::EscalationRule>]
+      def expected_rules_by_uniq_id
+        strong_memoize(:expected_rules_by_uniq_id) do
+          params.delete(:rules_attributes).to_h do |attrs|
+            rule = ::IncidentManagement::EscalationRule.new(**attrs)
+
+            [unique_id(rule), rule]
+          end
+        end
+      end
+
+      def unique_id(rule)
         rule.slice(:oncall_schedule_id, :elapsed_time_seconds, :status)
       end
     end

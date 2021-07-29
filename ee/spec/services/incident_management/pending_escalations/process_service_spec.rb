@@ -15,7 +15,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
 
   let(:target) { alert }
   let(:process_at) { 5.minutes.ago }
-  let(:escalation) { create(:incident_management_pending_alert_escalation, rule: escalation_rule, oncall_schedule: schedule_1, target: target, status: IncidentManagement::EscalationRule.statuses[:acknowledged], process_at: process_at) }
+  let(:escalation) { create(:incident_management_pending_alert_escalation, rule: escalation_rule, alert: target, process_at: process_at) }
 
   let(:service) { described_class.new(escalation) }
 
@@ -31,7 +31,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
 
       it 'does not delete the escalation' do
         subject
-        expect { escalation.reload }.not_to raise_error(ActiveRecord::RecordNotFound)
+        expect { escalation.reload }.not_to raise_error
       end
     end
 
@@ -50,7 +50,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
 
       it 'creates a system note' do
         expect(SystemNoteService)
-          .to receive(:notify_via_escalation).with(alert, project, [a_kind_of(User)], escalation_policy, schedule_1)
+          .to receive(:notify_via_escalation).with(alert, project, [a_kind_of(User)], escalation_policy)
           .and_call_original
 
         expect { execute }.to change(Note, :count).by(1)

@@ -47,7 +47,7 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Update do
 
         expect(resolve[:escalation_policy]).to have_attributes(escalation_policy.reload.attributes)
         expect(escalation_policy).to have_attributes(args.slice(:name, :description))
-        expect(escalation_policy.rules).to match_array(expected_rules)
+        expect(escalation_policy.active_rules).to match_array(expected_rules)
       end
     end
 
