@@ -5,17 +5,18 @@ module EE
     module Integrations
       module StiType
         extend ActiveSupport::Concern
-        extend ::Gitlab::Utils::Override
 
         EE_NAMESPACED_INTEGRATIONS = (::Gitlab::Integrations::StiType::NAMESPACED_INTEGRATIONS + %w(
           Github GitlabSlackApplication
         )).freeze
 
-        private
+        class_methods do
+          extend ::Gitlab::Utils::Override
 
-        override :namespaced_integrations
-        def namespaced_integrations
-          EE_NAMESPACED_INTEGRATIONS
+          override :namespaced_integrations
+          def namespaced_integrations
+            EE_NAMESPACED_INTEGRATIONS
+          end
         end
       end
     end
