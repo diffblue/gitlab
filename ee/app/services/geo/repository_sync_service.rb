@@ -54,7 +54,7 @@ module Geo
         scope: repository.full_path
       ).authorization
 
-      repository.update_root_ref(GEO_REMOTE_NAME, remote_url, authorization)
+      repository.update_root_ref(remote_url, authorization)
     end
 
     def execute_housekeeping

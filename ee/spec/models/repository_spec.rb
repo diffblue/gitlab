@@ -55,39 +55,10 @@ RSpec.describe Repository do
     it 'fetches the URL without creating a remote' do
       expect(repository)
         .to receive(:fetch_remote)
-        .with(described_class::MIRROR_REMOTE, url: url, refmap: ['+refs/heads/*:refs/remotes/upstream/*'], ssh_auth: nil, forced: true, check_tags_changed: true)
+        .with(url, refmap: ['+refs/heads/*:refs/remotes/upstream/*'], ssh_auth: nil, forced: true, check_tags_changed: true)
         .and_return(nil)
 
       repository.fetch_upstream(url, forced: true, check_tags_changed: true)
-    end
-  end
-
-  describe '#with_config' do
-    let(:rugged) { rugged_repo(repository) }
-    let(:entries) do
-      {
-        'test.foo1' => 'hello',
-        'test.foo2' => 'world',
-        'http.http://gitlab-primary.geo/gitlab-qa-sandbox-group/qa-test-10-07-2018-07-22-41/geo-project-ac55ec2cd134afea.wiki.git.extraHeader' => 'Authorization: blabla'
-      }
-    end
-
-    it 'sets config only during the block' do
-      keys_should_not_be_set
-
-      repository.with_config(entries) do
-        entries.each do |key, value|
-          expect(rugged.config[key]).to eq(value)
-        end
-      end
-
-      keys_should_not_be_set
-    end
-
-    def keys_should_not_be_set
-      entries.each do |key, value|
-        expect(rugged.config[key]).to be_blank
-      end
     end
   end
 
@@ -250,7 +221,7 @@ RSpec.describe Repository do
     it 'updates the default branch when HEAD has changed' do
       stub_find_remote_root_ref(repository, ref: 'feature')
 
-      expect { repository.update_root_ref('origin', url, auth) }
+      expect { repository.update_root_ref(url, auth) }
         .to change { project.default_branch }
         .from('master')
         .to('feature')
@@ -261,7 +232,7 @@ RSpec.describe Repository do
 
       expect(repository).to receive(:change_head).with('master').and_call_original
 
-      repository.update_root_ref('origin', url, auth)
+      repository.update_root_ref(url, auth)
 
       expect(project.default_branch).to eq('master')
     end
@@ -269,22 +240,22 @@ RSpec.describe Repository do
     it 'does not update the default branch when HEAD does not exist' do
       stub_find_remote_root_ref(repository, ref: 'foo')
 
-      expect { repository.update_root_ref('origin', url, auth) }
+      expect { repository.update_root_ref(url, auth) }
         .not_to change { project.default_branch }
     end
 
     it 'does not raise error when repository does not exist' do
       allow(repository).to receive(:find_remote_root_ref)
-        .with('origin', url, auth)
+        .with(url, auth)
         .and_raise(Gitlab::Git::Repository::NoRepository)
 
-      expect { repository.update_root_ref('origin', url, auth) }.not_to raise_error
+      expect { repository.update_root_ref(url, auth) }.not_to raise_error
     end
 
     def stub_find_remote_root_ref(repository, ref:)
       allow(repository)
         .to receive(:find_remote_root_ref)
-        .with('origin', url, auth)
+        .with(url, auth)
         .and_return(ref)
     end
   end
