@@ -31828,6 +31828,9 @@ msgstr ""
 msgid "Summary"
 msgstr ""
 
+msgid "Summary / Note"
+msgstr ""
+
 msgid "Sunday"
 msgstr ""
 

@@ -13482,6 +13482,7 @@ Represents a historically accurate report about the timebox.
 | <a id="timelogmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | The merge request that logged time was added to. |
 | <a id="timelognote"></a>`note` | [`Note`](#note) | The note where the quick action to add the logged time was executed. |
 | <a id="timelogspentat"></a>`spentAt` | [`Time`](#time) | Timestamp of when the time tracked was spent at. |
+| <a id="timelogsummary"></a>`summary` | [`String`](#string) | The summary of how the time was spent. |
 | <a id="timelogtimespent"></a>`timeSpent` | [`Int!`](#int) | The time spent displayed in seconds. |
 | <a id="timeloguser"></a>`user` | [`UserCore!`](#usercore) | The user that logged the time. |
 
