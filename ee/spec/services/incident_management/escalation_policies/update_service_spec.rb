@@ -38,6 +38,7 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
   end
 
   let(:new_rule) { have_attributes(**new_rule_params.except(:status), status: 'acknowledged') }
+  let(:removed_rules) { [] }
 
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
@@ -62,7 +63,8 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
 
         expect(execute.payload).to eq(escalation_policy: escalation_policy.reload)
         expect(escalation_policy).to have_attributes(params.slice(:name, :description))
-        expect(escalation_policy.rules).to match_array(expected_rules)
+        expect(escalation_policy.active_rules).to match_array(expected_rules)
+        expect(escalation_policy.rules.removed).to match_array(removed_rules)
       end
     end
 
@@ -97,6 +99,7 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
     context 'when all old rules are replaced' do
       let(:rule_params) { [new_rule_params] }
       let(:expected_rules) { [new_rule] }
+      let(:removed_rules) { escalation_rules }
 
       it_behaves_like 'successful update with no errors'
     end
@@ -104,6 +107,15 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
     context 'when some rules are preserved, added, and deleted' do
       let(:rule_params) { [existing_rules_params.first, new_rule_params] }
       let(:expected_rules) { [escalation_rules.first, new_rule] }
+      let(:removed_rules) { [escalation_rules.last] }
+
+      it_behaves_like 'successful update with no errors'
+    end
+
+    context 'when rules are only deleted' do
+      let(:rule_params) { [existing_rules_params.first] }
+      let(:expected_rules) { [escalation_rules.first] }
+      let(:removed_rules) { [escalation_rules.last] }
 
       it_behaves_like 'successful update with no errors'
     end
