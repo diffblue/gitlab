@@ -113,18 +113,6 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
         end
       end
 
-      context 'when the target url is localhost' do
-        let(:new_target_url) { 'http://localhost:3000/hello-world' }
-
-        it 'returns an error status' do
-          expect(status).to eq(:error)
-        end
-
-        it 'populates errors' do
-          expect(errors).to include('Url is blocked: Requests to localhost are not allowed')
-        end
-      end
-
       context 'when the target url is nil' do
         let(:params) { default_params.merge(target_url: nil) }
 
