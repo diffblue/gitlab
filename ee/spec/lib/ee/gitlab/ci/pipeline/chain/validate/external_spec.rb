@@ -56,7 +56,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::External do
     it 'does not fire N+1 SQL queries' do
       stub_request(:post, validation_service_url)
 
-      expect { step.perform! }.not_to exceed_query_limit(4)
+      expect { step.perform! }.not_to exceed_query_limit(16)
     end
 
     context 'with a project in a subgroup' do
