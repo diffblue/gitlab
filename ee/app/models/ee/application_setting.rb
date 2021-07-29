@@ -413,19 +413,19 @@ module EE
     end
 
     def elasticsearch_indexing_column_exists?
-      ::Gitlab::Database.cached_column_exists?(:application_settings, :elasticsearch_indexing)
+      ::Gitlab::Database.main.cached_column_exists?(:application_settings, :elasticsearch_indexing)
     end
 
     def elasticsearch_pause_indexing_column_exists?
-      ::Gitlab::Database.cached_column_exists?(:application_settings, :elasticsearch_pause_indexing)
+      ::Gitlab::Database.main.cached_column_exists?(:application_settings, :elasticsearch_pause_indexing)
     end
 
     def elasticsearch_search_column_exists?
-      ::Gitlab::Database.cached_column_exists?(:application_settings, :elasticsearch_search)
+      ::Gitlab::Database.main.cached_column_exists?(:application_settings, :elasticsearch_search)
     end
 
     def email_additional_text_column_exists?
-      ::Gitlab::Database.cached_column_exists?(:application_settings, :email_additional_text)
+      ::Gitlab::Database.main.cached_column_exists?(:application_settings, :email_additional_text)
     end
 
     def check_geo_node_allowed_ips

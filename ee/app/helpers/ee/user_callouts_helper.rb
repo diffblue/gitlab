@@ -131,7 +131,7 @@ module EE
     end
 
     def show_ultimate_trial_suitable_env?
-      ::Gitlab.com? && !::Gitlab::Database.read_only?
+      ::Gitlab.com? && !::Gitlab::Database.main.read_only?
     end
 
     def token_expiration_enforced?

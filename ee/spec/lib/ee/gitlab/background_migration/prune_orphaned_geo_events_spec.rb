@@ -49,7 +49,7 @@ RSpec.describe Gitlab::BackgroundMigration::PruneOrphanedGeoEvents, geo: false, 
     end
 
     it 'does nothing if the database is read-only' do
-      allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+      allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
       expect { background_migration.perform(event_table_name) }.not_to change { Geo::RepositoryUpdatedEvent.count }
     end

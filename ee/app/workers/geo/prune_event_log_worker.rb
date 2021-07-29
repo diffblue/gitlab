@@ -16,7 +16,7 @@ module Geo
     tags :exclude_from_gitlab_com
 
     def perform
-      return if Gitlab::Database.read_only?
+      return if Gitlab::Database.main.read_only?
       return unless Gitlab::Database.main.healthy?
 
       unless ::GeoNode.secondary_nodes.any?

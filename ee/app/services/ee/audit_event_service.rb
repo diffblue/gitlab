@@ -133,7 +133,7 @@ module EE
     # @return [AuditEvent, nil] if record is persisted or nil if audit events
     #   features are not enabled
     def unauth_security_event
-      return unless audit_events_enabled? && ::Gitlab::Database.read_write?
+      return unless audit_events_enabled? && ::Gitlab::Database.main.read_write?
 
       add_security_event_admin_details!
 

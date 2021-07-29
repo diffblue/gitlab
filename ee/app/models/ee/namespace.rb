@@ -454,7 +454,7 @@ module EE
 
     def generate_subscription
       return unless persisted?
-      return if ::Gitlab::Database.read_only?
+      return if ::Gitlab::Database.main.read_only?
 
       create_gitlab_subscription(
         plan_code: Plan::FREE,

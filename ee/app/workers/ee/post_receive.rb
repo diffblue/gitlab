@@ -46,7 +46,7 @@ module EE
     end
 
     def audit_push?(project)
-      project.push_audit_events_enabled? && !::Gitlab::Database.read_only?
+      project.push_audit_events_enabled? && !::Gitlab::Database.main.read_only?
     end
   end
 end

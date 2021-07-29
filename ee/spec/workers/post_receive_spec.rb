@@ -33,7 +33,7 @@ RSpec.describe PostReceive do
 
       context 'when DB is readonly' do
         before do
-          allow(Gitlab::Database).to receive(:read_only?) { true }
+          allow(Gitlab::Database.main).to receive(:read_only?) { true }
         end
 
         it 'does not call RepositoryPushAuditEventWorker' do
@@ -45,7 +45,7 @@ RSpec.describe PostReceive do
 
       context 'when DB is not readonly' do
         before do
-          allow(Gitlab::Database).to receive(:read_only?) { false }
+          allow(Gitlab::Database.main).to receive(:read_only?) { false }
         end
 
         it 'calls RepositoryPushAuditEventWorker' do

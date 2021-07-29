@@ -26,7 +26,7 @@ RSpec.describe NamespaceStatistics do
 
     context 'when database is read_only' do
       it 'does not save the object' do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
         expect(statistics).not_to receive(:save!)
 

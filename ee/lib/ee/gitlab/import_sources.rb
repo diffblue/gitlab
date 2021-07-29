@@ -14,7 +14,7 @@ module EE
         # This method can be called/loaded before the database
         # has been created. With this guard clause we prevent querying
         # the License table until the table exists
-        return [] unless ::Gitlab::Database.cached_table_exists?('licenses') &&
+        return [] unless ::Gitlab::Database.main.cached_table_exists?('licenses') &&
           License.feature_available?(:custom_project_templates)
 
         [::Gitlab::ImportSources::ImportSource.new('gitlab_custom_project_template',

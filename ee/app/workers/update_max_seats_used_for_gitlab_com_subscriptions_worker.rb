@@ -12,7 +12,7 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
 
   # rubocop: disable CodeReuse/ActiveRecord
   def perform
-    return if ::Gitlab::Database.read_only?
+    return if ::Gitlab::Database.main.read_only?
     return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
     GitlabSubscription.with_a_paid_hosted_plan.preload_for_refresh_seat.find_in_batches(batch_size: 100) do |subscriptions|

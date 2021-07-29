@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
 
           context 'on a read-only instance' do
             before do
-              allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+              allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
             end
 
             it 'does not block user in GitLab' do
@@ -76,7 +76,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
 
           context 'on a read-only instance' do
             before do
-              allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+              allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
             end
 
             it 'does not unblock user in GitLab' do
@@ -102,7 +102,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
 
         context 'on a read-only instance' do
           before do
-            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+            allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
           end
 
           it 'does not block user in GitLab' do
@@ -145,7 +145,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it 'does not update the email when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
           expect { access.update_user }.not_to change(user, :email)
         end
@@ -181,7 +181,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it 'does not update the name when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
           expect { access.update_user }.not_to change(user, :name)
         end
@@ -202,7 +202,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it 'does not update the name when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
           expect { access.update_user }.not_to change(user, :name)
         end
@@ -240,7 +240,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it "doesn't trigger a sync when in a read-only GitLab instance" do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
           create(:ldap_group_link, cn: 'Group1', provider: provider)
           create(:ldap_group_link, cn: 'Group2', provider: provider)
 
@@ -313,7 +313,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
       end
 
       it 'does not add a SSH key when in a read-only GitLab instance' do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
         stub_ldap_person_find_by_dn(entry, provider)
 
         expect { access.update_user }.not_to change(user.keys, :count)
@@ -377,7 +377,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
       end
 
       it 'does not add a Kerberos identity when in a read-only GitLab instance' do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+        allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
         allow_any_instance_of(EE::Gitlab::Auth::Ldap::Person).to receive_messages(kerberos_principal: 'mylogin@FOO.COM')
 
         expect { access.update_user }.not_to change(user.identities.where(provider: :kerberos), :count)
@@ -398,7 +398,7 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it 'does not update the external UID when in a read-only GitLab instance' do
-          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
 
           access.update_user
 
