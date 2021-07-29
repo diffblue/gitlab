@@ -8,7 +8,7 @@ class Elastic::ReindexingTask < ApplicationRecord
   validates :max_slices_running, presence: true
   validates :slice_multiplier, presence: true
 
-  ignore_columns %i[documents_count index_name_from index_name_to elastic_task documents_count_target], remove_with: '14.0', remove_after: '2021-04-22'
+  ignore_columns %i[documents_count index_name_from index_name_to elastic_task documents_count_target], remove_with: '14.3', remove_after: '2021-09-10'
 
   has_many :subtasks, class_name: 'Elastic::ReindexingSubtask', foreign_key: :elastic_reindexing_task_id
 
