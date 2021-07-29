@@ -31,21 +31,6 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
-  describe '#with_vulnerabilities scope' do
-    let!(:pipeline_1) { create(:ci_pipeline, project: project) }
-    let!(:pipeline_2) { create(:ci_pipeline, project: project) }
-    let!(:pipeline_3) { create(:ci_pipeline, project: project) }
-
-    before do
-      create(:vulnerabilities_finding, pipelines: [pipeline_1], project: pipeline.project)
-      create(:vulnerabilities_finding, pipelines: [pipeline_2], project: pipeline.project)
-    end
-
-    it "returns pipeline with vulnerabilities" do
-      expect(described_class.with_vulnerabilities).to contain_exactly(pipeline_1, pipeline_2)
-    end
-  end
-
   describe '#batch_lookup_report_artifact_for_file_type' do
     shared_examples '#batch_lookup_report_artifact_for_file_type' do |file_type, license|
       context 'when feature is available' do
