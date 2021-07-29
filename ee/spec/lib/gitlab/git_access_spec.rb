@@ -77,7 +77,7 @@ RSpec.describe Gitlab::GitAccess do
       end
 
       it 'allows githook for new branch with an old bad commit' do
-        bad_commit = double("Commit", safe_message: 'Some change').as_null_object
+        bad_commit = double("Commit", safe_message: 'Some change', id: end_sha).as_null_object
         ref_object = double(name: 'heads/master')
         allow(bad_commit).to receive(:refs).and_return([ref_object])
         allow_next_instance_of(Repository) do |instance|
@@ -91,7 +91,7 @@ RSpec.describe Gitlab::GitAccess do
       end
 
       it 'allows githook for any change with an old bad commit' do
-        bad_commit = double("Commit", safe_message: 'Some change').as_null_object
+        bad_commit = double("Commit", safe_message: 'Some change', id: end_sha).as_null_object
         ref_object = double(name: 'heads/master')
         allow(bad_commit).to receive(:refs).and_return([ref_object])
         allow(project.repository).to receive(:commits_between).and_return([bad_commit])
@@ -103,7 +103,7 @@ RSpec.describe Gitlab::GitAccess do
       end
 
       it 'does not allow any change from Web UI with bad commit' do
-        bad_commit = double("Commit", safe_message: 'Some change').as_null_object
+        bad_commit = double("Commit", safe_message: 'Some change', id: end_sha).as_null_object
         # We use tmp ref a a temporary for Web UI commiting
         ref_object = double(name: 'refs/tmp')
         allow(bad_commit).to receive(:refs).and_return([ref_object])
