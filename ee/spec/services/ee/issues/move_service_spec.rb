@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Issues::MoveService do
   let(:user) { create(:user) }
-  let(:old_project) { create(:project) }
-  let(:new_project) { create(:project, group: create(:group)) }
+  let(:group) { create(:group) }
+  let(:old_project) { create(:project, group: group) }
+  let(:new_project) { create(:project, group: group) }
   let(:old_issue) { create(:issue, project: old_project, author: user) }
   let(:move_service) { described_class.new(project: old_project, current_user: user) }
 
@@ -79,7 +80,8 @@ RSpec.describe Issues::MoveService do
 
   describe '#rewrite_epic_issue' do
     context 'issue assigned to epic' do
-      let!(:epic_issue) { create(:epic_issue, issue: old_issue) }
+      let(:epic) { create(:epic, group: group) }
+      let!(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
 
       before do
         stub_licensed_features(epics: true)
@@ -112,6 +114,19 @@ RSpec.describe Issues::MoveService do
           expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).not_to receive(:track_issue_changed_epic_action)
 
           move_service.execute(old_issue, new_project)
+        end
+      end
+
+      context 'when epic is not in the same group hierarchy' do
+        let(:new_group) { create(:group) }
+        let(:new_project) { create(:project, group: new_group) }
+
+        it 'does not rewrite epic' do
+          new_group.add_reporter(user)
+          epic_issue.epic.group.add_reporter(user)
+
+          new_issue = move_service.execute(old_issue, new_project)
+          expect(new_issue.epic_issue).to be_nil
         end
       end
 

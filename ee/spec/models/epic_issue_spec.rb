@@ -77,4 +77,31 @@ RSpec.describe EpicIssue do
       end
     end
   end
+
+  describe '#epic_and_issue_at_same_group_hierarchy?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:group_a) { create(:group, parent: group) }
+    let_it_be(:group_b) { create(:group, parent: group) }
+    let_it_be(:group_a_project_1) { create(:project, group: group) }
+
+    let(:epic) { build(:epic, group: group_a) }
+
+    subject { described_class.new(epic: epic, issue: issue).epic_and_issue_at_same_group_hierarchy? }
+
+    context 'when epic and issue are at same group hierarchy' do
+      let_it_be(:group_a_project_2) { create(:project, group: group_a) }
+
+      let(:issue) { build(:issue, project: group_a_project_2) }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when epic and issue are at different group hierarchies' do
+      let_it_be(:group_b_project_1) { create(:project, group: group_b) }
+
+      let(:issue) { build(:issue, project: group_b_project_1) }
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end
