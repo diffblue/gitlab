@@ -14,6 +14,7 @@ export const mockIterationNode = {
 export const mockGroupIterations = {
   data: {
     group: {
+      id: 'gid://gitlab/Group/114',
       iterations: {
         nodes: [mockIterationNode],
         __typename: 'IterationConnection',
@@ -26,6 +27,7 @@ export const mockGroupIterations = {
 export const mockProjectIterations = {
   data: {
     project: {
+      id: 'gid://gitlab/Project/114',
       iterations: {
         nodes: [mockIterationNode],
         __typename: 'IterationConnection',

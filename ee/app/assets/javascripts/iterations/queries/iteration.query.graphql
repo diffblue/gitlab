@@ -2,6 +2,7 @@
 
 query Iteration($fullPath: ID!, $id: ID!, $isGroup: Boolean = true) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
     iterations(id: $id, first: 1, includeAncestors: true) {
       nodes {
         ...IterationReport
@@ -10,6 +11,7 @@ query Iteration($fullPath: ID!, $id: ID!, $isGroup: Boolean = true) {
   }
 
   project(fullPath: $fullPath) @skip(if: $isGroup) {
+    id
     iterations(id: $id, first: 1, includeAncestors: true) {
       nodes {
         ...IterationReport

@@ -51,6 +51,7 @@ describe('Iteration cadence form', () => {
   const getCadenceSuccess = {
     data: {
       group: {
+        id: 'gid://gitlab/Group/114',
         iterationCadences: {
           nodes: [iterationCadence],
         },
