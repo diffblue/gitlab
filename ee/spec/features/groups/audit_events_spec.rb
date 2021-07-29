@@ -36,7 +36,7 @@ RSpec.describe 'Groups > Audit Events', :js do
   end
 
   it 'has Audit Events button in head nav bar' do
-    visit group_security_dashboard_path(group)
+    visit group_audit_events_path(group)
 
     expect(page).to have_link('Audit Events')
   end

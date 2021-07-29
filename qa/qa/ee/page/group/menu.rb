@@ -33,14 +33,6 @@ module QA
                 element :billing_link
               end
 
-              view 'ee/app/views/layouts/nav/ee/_security_link.html.haml' do
-                element :security_compliance_link
-                element :group_secure_submenu
-                element :security_dashboard_link
-                element :vulnerability_report_link
-                element :audit_events_settings_link
-              end
-
               view 'ee/app/views/layouts/nav/_group_insights_link.html.haml' do
                 element :group_insights_link
               end
@@ -49,14 +41,6 @@ module QA
                 element :group_packages_item
                 element :group_packages_link
                 element :group_packages_submenu
-              end
-            end
-          end
-
-          def go_to_audit_events_settings
-            hover_element(:security_compliance_link) do
-              within_submenu(:group_secure_submenu) do
-                click_element(:audit_events_settings_link)
               end
             end
           end
@@ -116,17 +100,25 @@ module QA
           end
 
           def click_group_security_link
-            hover_element(:security_compliance_link) do
-              within_submenu(:group_secure_submenu) do
-                click_element(:security_dashboard_link)
+            hover_security_and_compliance do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Security Dashboard')
               end
             end
           end
 
           def click_group_vulnerability_link
-            hover_element(:security_compliance_link) do
-              within_submenu(:group_secure_submenu) do
-                click_element(:vulnerability_report_link)
+            hover_security_and_compliance do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability Report')
+              end
+            end
+          end
+
+          def go_to_audit_events
+            hover_security_and_compliance do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'Audit Events')
               end
             end
           end
@@ -150,6 +142,17 @@ module QA
               within_submenu(:group_sidebar_submenu) do
                 click_element(:billing_link)
               end
+            end
+          end
+
+          private
+
+          def hover_security_and_compliance
+            within_sidebar do
+              scroll_to_element(:sidebar_menu_link, menu_item: 'Security & Compliance')
+              find_element(:sidebar_menu_link, menu_item: 'Security & Compliance').hover
+
+              yield
             end
           end
         end

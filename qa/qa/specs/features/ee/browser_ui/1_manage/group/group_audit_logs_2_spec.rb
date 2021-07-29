@@ -5,7 +5,7 @@ module QA
   RSpec.describe 'Manage' do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
-        Page::Group::Menu.perform(&:go_to_audit_events_settings)
+        Page::Group::Menu.perform(&:go_to_audit_events)
         expected_events.each do |expected_event|
           expect(page).to have_text(expected_event)
         end

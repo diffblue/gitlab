@@ -11,7 +11,7 @@ module QA
       it 'logs audit events for UI operations' do
         wait_for_audit_events(expected_events, group)
 
-        Page::Group::Menu.perform(&:go_to_audit_events_settings)
+        Page::Group::Menu.perform(&:go_to_audit_events)
         expected_events.each do |expected_event|
           # Sometimes the audit logs are not displayed in the UI
           # right away so a refresh may be needed.
