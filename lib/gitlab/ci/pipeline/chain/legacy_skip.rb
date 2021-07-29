@@ -4,13 +4,14 @@ module Gitlab
   module Ci
     module Pipeline
       module Chain
-        class Skip < Chain::Base
+        # This will be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/337167
+        class LegacySkip < Chain::Skip
           include ::Gitlab::Utils::StrongMemoize
 
           SKIP_PATTERN = /\[(ci[ _-]skip|skip[ _-]ci)\]/i.freeze
 
           def perform!
-            return unless ::Feature.enabled?(:ci_skip_before_parsing_yaml, project, default_enabled: :yaml)
+            return if ::Feature.enabled?(:ci_skip_before_parsing_yaml, project, default_enabled: :yaml)
 
             if skipped?
               if @command.save_incompleted
@@ -25,7 +26,7 @@ module Gitlab
           end
 
           def break?
-            return unless ::Feature.enabled?(:ci_skip_before_parsing_yaml, project, default_enabled: :yaml)
+            return if ::Feature.enabled?(:ci_skip_before_parsing_yaml, project, default_enabled: :yaml)
 
             skipped?
           end
