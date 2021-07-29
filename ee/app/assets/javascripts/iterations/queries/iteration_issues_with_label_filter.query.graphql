@@ -11,6 +11,7 @@ query IterationIssuesWithLabelFilter(
   $lastPageSize: Int
 ) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
     issues(
       iterationId: [$id]
       labelName: $labelName
@@ -24,6 +25,7 @@ query IterationIssuesWithLabelFilter(
     }
   }
   project(fullPath: $fullPath) @skip(if: $isGroup) {
+    id
     issues(
       iterationId: [$id]
       labelName: $labelName

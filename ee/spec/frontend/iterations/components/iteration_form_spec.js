@@ -38,7 +38,9 @@ describe('Iteration Form', () => {
   };
 
   const readMutationSuccess = {
-    data: { group: { iterations: { nodes: [iteration] }, errors: [] } },
+    data: {
+      group: { id: 'gid://gitlab/Group/114', iterations: { nodes: [iteration] }, errors: [] },
+    },
   };
   const createMutationSuccess = { data: { iterationCreate: { iteration, errors: [] } } };
   const createMutationFailure = {

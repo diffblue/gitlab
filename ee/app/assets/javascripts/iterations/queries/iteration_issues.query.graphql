@@ -10,6 +10,7 @@ query IterationIssues(
   $lastPageSize: Int
 ) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
     issues(
       iterationId: [$id]
       before: $beforeCursor
@@ -22,6 +23,7 @@ query IterationIssues(
     }
   }
   project(fullPath: $fullPath) @skip(if: $isGroup) {
+    id
     issues(
       iterationId: [$id]
       before: $beforeCursor

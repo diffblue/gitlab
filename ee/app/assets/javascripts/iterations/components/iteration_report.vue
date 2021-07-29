@@ -13,7 +13,7 @@ import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Namespace } from '../constants';
 import query from '../queries/iteration.query.graphql';
@@ -51,7 +51,9 @@ export default {
         return data[this.namespaceType]?.iterations?.nodes[0] || {};
       },
       error(err) {
-        this.error = err.message;
+        this.error = s__('Iterations|Unable to find iteration.');
+        // eslint-disable-next-line no-console
+        console.error(err.message);
       },
     },
   },
