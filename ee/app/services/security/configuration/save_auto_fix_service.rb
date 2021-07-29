@@ -13,14 +13,31 @@ module Security
       end
 
       def execute(enabled:)
-        return unless valid?
+        return error("Auto fix is not available for #{feature} feature") unless valid?
+        return error("Project has no security setting") unless setting
 
-        project&.security_setting&.update(toggle_params(enabled))
+        if setting&.update(toggle_params(enabled))
+          success(updated_setting)
+        else
+          error('Error during updating the auto fix param')
+        end
       end
 
       private
 
       attr_reader :enabled, :feature, :project
+
+      def error(message)
+        ServiceResponse.error(message: message)
+      end
+
+      def setting
+        @setting ||= project&.security_setting
+      end
+
+      def success(payload)
+        ServiceResponse.success(payload: payload)
+      end
 
       def toggle_params(enabled)
         if feature == 'all'
@@ -35,6 +52,13 @@ module Security
             "auto_fix_#{feature}" => enabled
           }
         end
+      end
+
+      def updated_setting
+        {
+          container_scanning: setting.auto_fix_container_scanning,
+          dependency_scanning: setting.auto_fix_dependency_scanning
+        }
       end
 
       def valid?

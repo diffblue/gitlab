@@ -47,11 +47,13 @@ module EE
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
         def auto_fix
-          service = ::Security::Configuration::SaveAutoFixService.new(project, auto_fix_params[:feature])
+          service = ::Security::Configuration::SaveAutoFixService
+                      .new(project, auto_fix_params[:feature])
+                      .execute(enabled: auto_fix_params[:enabled])
 
-          return respond_422 unless service.execute(enabled: auto_fix_params[:enabled])
+          return respond_422 unless service.success?
 
-          render status: :ok, json: auto_fix_settings
+          render status: :ok, json: service.payload
         end
 
         private
@@ -75,15 +77,6 @@ module EE
 
         def check_feature_flag!
           render_404 if ::Feature.disabled?(:security_auto_fix, project)
-        end
-
-        def auto_fix_settings
-          setting = project.security_setting
-
-          {
-            dependency_scanning: setting.auto_fix_dependency_scanning,
-            container_scanning: setting.auto_fix_container_scanning
-          }
         end
 
         def security_dashboard_feature_enabled?
