@@ -39,6 +39,8 @@ module Gitlab
       end
 
       def authentication_abilities_include?(ability)
+        return false if authentication_abilities.blank?
+
         authentication_abilities.include?(ability)
       end
     end
