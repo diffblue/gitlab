@@ -10,7 +10,6 @@ module Geo
 
       data_consistency :always
 
-      sidekiq_options retry: 3
       prepend Reenqueuer
       include ::Gitlab::Geo::LogHelpers
 

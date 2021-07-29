@@ -5,7 +5,6 @@ class LdapSyncWorker # rubocop:disable Scalability/IdempotentWorker
 
   data_consistency :always
 
-  sidekiq_options retry: 3
   include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
   feature_category :authentication_and_authorization

@@ -9,7 +9,6 @@ module Geo
 
     data_consistency :always
 
-    sidekiq_options retry: 3
     include ::Gitlab::Geo::LogHelpers
 
     # This worker does not perform work scoped to a context
