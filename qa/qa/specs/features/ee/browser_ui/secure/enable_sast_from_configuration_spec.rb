@@ -79,7 +79,7 @@ module QA
         end
         Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
-        EE::Page::Project::Secure::ConfigurationForm.perform do |config_form|
+        Page::Project::Secure::ConfigurationForm.perform do |config_form|
           expect(config_form).to have_sast_status('Not enabled')
 
           config_form.click_sast_enable_button
@@ -131,7 +131,7 @@ module QA
 
         Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
-        EE::Page::Project::Secure::ConfigurationForm.perform do |config_form|
+        Page::Project::Secure::ConfigurationForm.perform do |config_form|
           aggregate_failures "test SAST status is Enabled" do
             expect(config_form).to have_sast_status('Enabled')
             expect(config_form).not_to have_sast_status('Not enabled')

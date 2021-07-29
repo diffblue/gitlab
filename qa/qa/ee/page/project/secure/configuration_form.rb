@@ -5,16 +5,21 @@ module QA
     module Page
       module Project
         module Secure
-          class ConfigurationForm < QA::Page::Base
-            include QA::Page::Component::Select2
-            include QA::Page::Settings::Common
+          module ConfigurationForm
+            extend QA::Page::PageConcern
 
-            view 'ee/app/assets/javascripts/security_configuration/sast/components/configuration_form.vue' do
-              element :submit_button
-            end
+            def self.prepended(base)
+              super
 
-            view 'ee/app/assets/javascripts/security_configuration/sast/components/analyzer_configuration.vue' do
-              element :entity_checkbox, "`${entity.name}_checkbox`" # rubocop:disable QA/ElementWithPattern
+              base.class_eval do
+                view 'ee/app/assets/javascripts/security_configuration/sast/components/configuration_form.vue' do
+                  element :submit_button
+                end
+
+                view 'ee/app/assets/javascripts/security_configuration/sast/components/analyzer_configuration.vue' do
+                  element :entity_checkbox, "`${entity.name}_checkbox`" # rubocop:disable QA/ElementWithPattern
+                end
+              end
             end
 
             def click_expand_button
@@ -25,22 +30,12 @@ module QA
               click_element(:submit_button)
             end
 
-            def click_sast_enable_button
-              click_element('sast_enable_button')
-            end
-
             def fill_dynamic_field(field_name, content)
               fill_element("#{field_name}_field", content)
             end
 
             def unselect_dynamic_checkbox(checkbox_name)
               uncheck_element("#{checkbox_name}_checkbox", true)
-            end
-
-            def has_sast_status?(status_text)
-              within_element('sast_status') do
-                has_text?(status_text)
-              end
             end
           end
         end
