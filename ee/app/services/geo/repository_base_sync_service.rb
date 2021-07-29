@@ -15,7 +15,6 @@ module Geo
 
     attr_reader :project
 
-    GEO_REMOTE_NAME  = 'geo'
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_service'
 
@@ -96,18 +95,14 @@ module Geo
 
     def fetch_geo_mirror(repository)
       # Fetch the repository, using a JWT header for authentication
-      repository.with_config(jwt_authentication_header) do
-        repository.fetch_as_mirror(remote_url, remote_name: GEO_REMOTE_NAME, forced: true)
-      end
+      repository.fetch_as_mirror(remote_url, forced: true, http_authorization_header: jwt_authentication_header)
     end
 
     # Build a JWT header for authentication
     def jwt_authentication_header
-      authorization = ::Gitlab::Geo::RepoSyncRequest.new(
+      ::Gitlab::Geo::RepoSyncRequest.new(
         scope: repository.full_path
       ).authorization
-
-      { "http.#{remote_url}.extraHeader" => "Authorization: #{authorization}" }
     end
 
     def remote_url
