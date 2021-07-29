@@ -111,10 +111,6 @@ class SubscriptionsController < ApplicationController
     Gitlab::SubscriptionPortal::Client
   end
 
-  def customer_portal_new_subscription_url
-    "#{EE::SUBSCRIPTIONS_URL}/subscriptions/new?plan_id=#{params[:plan_id]}&transaction=create_subscription"
-  end
-
   def redirect_unauthenticated_user(from = action_name)
     return if current_user
 
