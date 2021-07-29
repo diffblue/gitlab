@@ -312,6 +312,17 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
   end
 
+  describe 'Push Rules menu' do
+    it 'has a link to the push rules list path' do
+      group.add_owner(user)
+      allow(view).to receive(:current_user).and_return(user)
+
+      render
+
+      expect(rendered).to have_link('Push Rules', href: edit_group_push_rules_path(group))
+    end
+  end
+
   describe 'DevOps adoption link' do
     let!(:current_user) { create(:user) }
 
