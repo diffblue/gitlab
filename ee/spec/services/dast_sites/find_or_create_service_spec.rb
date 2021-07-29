@@ -49,12 +49,12 @@ RSpec.describe DastSites::FindOrCreateService do
         end
       end
 
-      context 'when the target url is localhost' do
-        let(:url) { 'http://localhost:3000/hello-world' }
+      context 'when the record is invalid' do
+        let(:url) { 'i-am-not-a-url' }
 
         it 'raises an exception' do
           expect { subject }.to raise_error(ActiveRecord::RecordInvalid) do |err|
-            expect(err.record.errors.full_messages).to include('Url is blocked: Requests to localhost are not allowed')
+            expect(err.record.errors.full_messages).to include('Url is blocked: Only allowed schemes are http, https')
           end
         end
       end

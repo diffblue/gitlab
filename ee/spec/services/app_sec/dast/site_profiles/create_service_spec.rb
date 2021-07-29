@@ -36,7 +36,6 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
 
     let(:status) { subject.status }
     let(:message) { subject.message }
-    let(:errors) { subject.errors }
     let(:payload) { subject.payload }
 
     context 'when a user does not have access to the project' do
@@ -108,18 +107,6 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
 
         it 'does not create a new dast_site' do
           expect { subject }.not_to change(DastSite, :count)
-        end
-      end
-
-      context 'when the target url is localhost' do
-        let(:target_url) { 'http://localhost:3000/hello-world' }
-
-        it 'returns an error status' do
-          expect(status).to eq(:error)
-        end
-
-        it 'populates errors' do
-          expect(errors).to include('Url is blocked: Requests to localhost are not allowed')
         end
       end
 
