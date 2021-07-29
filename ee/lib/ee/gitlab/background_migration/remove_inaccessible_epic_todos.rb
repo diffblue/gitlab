@@ -19,7 +19,6 @@ module EE
           include FromUnion
 
           self.inheritance_column = :_type_disabled
-          self.enumerate_columns_in_select_statements = true
 
           # backported from ApplicationRecord
           def self.cached_column_list
