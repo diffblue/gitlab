@@ -31,7 +31,7 @@ describe('UnconfiguredSecurityRules component', () => {
 
   beforeEach(() => {
     store = new Vuex.Store(
-      createStoreOptions(projectSettingsModule(), { projectId: TEST_PROJECT_ID }),
+      createStoreOptions({ approvals: projectSettingsModule() }, { projectId: TEST_PROJECT_ID }),
     );
     jest.spyOn(store, 'dispatch');
   });

@@ -15,12 +15,15 @@ export default function mountProjectSettingsApprovals(el) {
     coverageCheckHelpPagePath,
   } = el.dataset;
 
-  const store = createStore(projectSettingsModule(), {
-    ...el.dataset,
-    prefix: 'project-settings',
-    allowMultiRule: parseBoolean(el.dataset.allowMultiRule),
-    canEdit: parseBoolean(el.dataset.canEdit),
-  });
+  const store = createStore(
+    { approvals: projectSettingsModule() },
+    {
+      ...el.dataset,
+      prefix: 'project-settings',
+      allowMultiRule: parseBoolean(el.dataset.allowMultiRule),
+      canEdit: parseBoolean(el.dataset.canEdit),
+    },
+  );
 
   return new Vue({
     el,

@@ -23,10 +23,10 @@ export default {
   },
   computed: {
     ...mapState({
-      isLoading: (state) => state.approvals.isLoading,
-      isUpdated: (state) => state.approvals.isUpdated,
-      settings: (state) => state.approvals.settings,
-      errorMessage: (state) => state.approvals.errorMessage,
+      isLoading: (state) => state.approvalSettings.isLoading,
+      isUpdated: (state) => state.approvalSettings.isUpdated,
+      settings: (state) => state.approvalSettings.settings,
+      errorMessage: (state) => state.approvalSettings.errorMessage,
     }),
     ...mapComputed(
       [
@@ -37,7 +37,7 @@ export default {
         { key: 'requireUserPassword', updateFn: 'setRequireUserPassword' },
       ],
       undefined,
-      (state) => state.approvals.settings,
+      (state) => state.approvalSettings.settings,
     ),
     hasSettings() {
       return !isEmpty(this.settings);

@@ -33,7 +33,7 @@ describe('EE Approvals RuleControls', () => {
   const findRemoveButton = () => findButton('Remove');
 
   beforeEach(() => {
-    store = createStoreOptions(MREditModule());
+    store = createStoreOptions({ approvals: MREditModule() });
     ({ actions } = store.modules.approvals);
     ['requestEditRule', 'requestDeleteRule'].forEach((actionName) =>
       jest.spyOn(actions, actionName),

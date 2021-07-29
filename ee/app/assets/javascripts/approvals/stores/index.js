@@ -3,10 +3,10 @@ import securityConfigurationModule from 'ee/security_configuration/modules/confi
 import modalModule from '~/vuex_shared/modules/modal';
 import state from './state';
 
-export const createStoreOptions = (approvalsModule, settings) => ({
+export const createStoreOptions = (approvalsModules, settings) => ({
   state: state(settings),
   modules: {
-    ...(approvalsModule ? { approvals: approvalsModule } : {}),
+    ...approvalsModules,
     createModal: modalModule(),
     deleteModal: modalModule(),
     securityConfiguration: securityConfigurationModule({
@@ -15,5 +15,5 @@ export const createStoreOptions = (approvalsModule, settings) => ({
   },
 });
 
-export default (approvalsModule, settings = {}) =>
-  new Vuex.Store(createStoreOptions(approvalsModule, settings));
+export default (approvalModules, settings = {}) =>
+  new Vuex.Store(createStoreOptions(approvalModules, settings));
