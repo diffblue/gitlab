@@ -7,6 +7,7 @@ export default () => ({
   // Data
   epicIid: '',
   epics: [],
+  pageInfo: null,
   childrenEpics: {},
   childrenFlags: {},
   visibleEpics: [],
@@ -27,6 +28,7 @@ export default () => ({
   hasFiltersApplied: false,
   epicsFetchInProgress: false,
   epicsFetchForTimeframeInProgress: false,
+  epicsFetchForNextPageInProgress: false,
   epicsFetchFailure: false,
   epicsFetchResultEmpty: false,
   milestonesFetchInProgress: false,

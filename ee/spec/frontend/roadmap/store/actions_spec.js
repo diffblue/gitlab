@@ -30,6 +30,7 @@ import {
   mockGroupMilestones,
   mockMilestone,
   mockFormattedMilestone,
+  mockPageInfo,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -78,13 +79,17 @@ describe('Roadmap Vuex Actions', () => {
         actions.receiveEpicsSuccess,
         {
           rawEpics: [mockRawEpic2],
+          pageInfo: mockPageInfo,
         },
         state,
         [
-          { type: types.UPDATE_EPIC_IDS, payload: [mockRawEpic2.id] },
+          {
+            type: types.UPDATE_EPIC_IDS,
+            payload: [mockRawEpic2.id],
+          },
           {
             type: types.RECEIVE_EPICS_SUCCESS,
-            payload: [mockFormattedEpic2],
+            payload: { epics: [mockFormattedEpic2], pageInfo: mockPageInfo },
           },
         ],
         [
@@ -174,7 +179,7 @@ describe('Roadmap Vuex Actions', () => {
 
         return testAction(
           actions.fetchEpics,
-          null,
+          {},
           state,
           [
             {
@@ -184,7 +189,7 @@ describe('Roadmap Vuex Actions', () => {
           [
             {
               type: 'receiveEpicsSuccess',
-              payload: { rawEpics: mockGroupEpics },
+              payload: { rawEpics: mockGroupEpics, pageInfo: mockPageInfo, appendToList: false },
             },
           ],
         );
@@ -197,7 +202,7 @@ describe('Roadmap Vuex Actions', () => {
 
         return testAction(
           actions.fetchEpics,
-          null,
+          {},
           state,
           [
             {
@@ -237,6 +242,7 @@ describe('Roadmap Vuex Actions', () => {
               type: 'receiveEpicsSuccess',
               payload: {
                 rawEpics: mockGroupEpics,
+                pageInfo: mockPageInfo,
                 newEpic: true,
                 timeframeExtended: true,
               },

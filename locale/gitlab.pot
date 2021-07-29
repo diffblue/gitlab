@@ -15638,6 +15638,9 @@ msgstr ""
 msgid "GroupRoadmap|%{startDateInWords} – %{endDateInWords}"
 msgstr ""
 
+msgid "GroupRoadmap|Loading epics"
+msgstr ""
+
 msgid "GroupRoadmap|No start and end date"
 msgstr ""
 

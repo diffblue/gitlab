@@ -9,6 +9,7 @@ module Groups
     before_action :persist_roadmap_layout, only: [:show]
     before_action do
       push_frontend_feature_flag(:async_filtering, @group, default_enabled: true)
+      push_frontend_feature_flag(:performance_roadmap, @group, default_enabled: :yaml)
     end
 
     feature_category :roadmaps
