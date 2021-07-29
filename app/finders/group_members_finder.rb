@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class GroupMembersFinder < UnionFinder
-  RELATIONS = %i(direct inherited descendants).freeze
+  RELATIONS = %i(direct inherited descendants shared_with_groups).freeze
   DEFAULT_RELATIONS = %i(direct inherited).freeze
   INVALID_RELATION_TYPE_ERROR_MSG = "is not a valid relation type. Valid relation types are #{RELATIONS.join(', ')}."
 
   RELATIONS_DESCRIPTIONS = {
     direct: 'Members in the group itself',
     inherited: "Members in the group's ancestor groups",
-    descendants: "Members in the group's subgroups"
+    descendants: "Members in the group's subgroups",
+    shared_with_groups: "Invited Groups members"
   }.freeze
 
   include CreatedAtFilter

@@ -192,13 +192,16 @@ RSpec.describe GroupMembersFinder, '#execute' do
   end
 
   context 'when :shared_with_groups is passed' do
+    let(:member1) { group.add_owner(user1) }
+    let(:member2) { shared_group.add_maintainer(user5) }
+
     subject { described_class.new(group, user1).execute(include_relations: [:direct, :inherited, :shared_with_groups]) }
 
-    it 'includes all the shared_with_groups members' do
-      member1 = group.add_owner(user1)
-      member2 = shared_group.add_maintainer(user5)
+    before do
       create(:group_group_link, shared_group: group, shared_with_group: shared_group)
+    end
 
+    it 'includes all the shared_with_groups members' do
       expect(subject).to match_array([member1, member2])
     end
   end
