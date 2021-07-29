@@ -25140,6 +25140,9 @@ msgstr ""
 msgid "Profiles|Edit Profile"
 msgstr ""
 
+msgid "Profiles|Enter how your name is pronounced to help people address you correctly"
+msgstr ""
+
 msgid "Profiles|Enter your name, so people you know can recognize you"
 msgstr ""
 
@@ -35954,6 +35957,9 @@ msgid "UserProfile|Overview"
 msgstr ""
 
 msgid "UserProfile|Personal projects"
+msgstr ""
+
+msgid "UserProfile|Pronounced as: %{pronunciation}"
 msgstr ""
 
 msgid "UserProfile|Report abuse"
