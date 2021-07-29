@@ -91,15 +91,16 @@ RSpec.describe Epic do
       let_it_be(:epic1) { create(:epic, title: 'foo') }
       let_it_be(:epic2) { create(:epic, title: 'bar') }
       let_it_be(:epic3) { create(:epic, title: 'baz') }
+      let_it_be(:epic4) { create(:epic, title: 'Baz 2') }
 
       describe '.order_title_asc' do
         it 'returns epics ordered by title, ascending' do
-          expect(described_class.order_title_asc).to eq([epic2, epic3, epic1, confidential_epic, public_epic])
+          expect(described_class.order_title_asc).to eq([epic2, epic3, epic4, epic1, confidential_epic, public_epic])
         end
 
         describe '.order_title_desc' do
           it 'returns epics ordered by title, decending' do
-            expect(described_class.order_title_desc).to eq([public_epic, confidential_epic, epic1, epic3, epic2])
+            expect(described_class.order_title_desc).to eq([public_epic, confidential_epic, epic1, epic4, epic3, epic2])
           end
         end
       end
