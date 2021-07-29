@@ -86,5 +86,23 @@ module Geo
     def after_synced
       self.verification_pending!
     end
+
+    override :before_verification_failed
+    def before_verification_failed
+      # Let verification failure fields get set as usual
+      super
+
+      # When this registry became synced, retry_count was set to 0. This line
+      # ensures that resyncs due to verification failures use progressive
+      # backoff behavior. One is subtracted to compensate for 1 being
+      # automatically added to `retry_count` on transition to failed.
+      self.retry_count = self.verification_retry_count - 1
+
+      self.last_sync_failure = "Verification failed with: #{verification_failure}".truncate(255)
+
+      # This registry was successfully synced, and now it has failed
+      # verification. This line makes Geo automatically resync it.
+      self.failed
+    end
   end
 end
