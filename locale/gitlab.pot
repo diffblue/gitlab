@@ -5178,7 +5178,7 @@ msgstr ""
 msgid "Billings|%{planName} plan"
 msgstr ""
 
-msgid "Billings|An error occurred while exending your trial."
+msgid "Billings|An error occurred while extending your trial."
 msgstr ""
 
 msgid "Billings|An error occurred while reactivating your trial."
