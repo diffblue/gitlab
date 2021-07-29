@@ -66,7 +66,7 @@ RSpec.describe 'Every metric definition' do
   end
 
   def object_with_schema?(key_path)
-    metric_files_with_schema.keys.include?(key_path)
+    metric_files_with_schema.key?(key_path)
   end
 
   before do
