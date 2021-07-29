@@ -37,6 +37,7 @@ RSpec.describe 'Creating a DAST Site Profile' do
   end
 
   it_behaves_like 'an on-demand scan mutation when user cannot run an on-demand scan'
+
   it_behaves_like 'an on-demand scan mutation when user can run an on-demand scan' do
     it 'updates the dast_site_profile' do
       subject
@@ -49,10 +50,17 @@ RSpec.describe 'Creating a DAST Site Profile' do
       end
     end
 
-    context 'when there is an issue updating the dast_site_profile' do
-      let(:new_target_url) { 'http://localhost:3000' }
+    context 'when there is a validation error' do
+      before do
+        allow(dast_site_profile).to receive(:valid?).and_return(false)
+        allow(dast_site_profile).to receive_message_chain(:errors, :full_messages).and_return(['There was a validation error'])
 
-      it_behaves_like 'a mutation that returns errors in the response', errors: ['Url is blocked: Requests to localhost are not allowed']
+        allow_next_instance_of(DastSiteProfilesFinder) do |instance|
+          allow(instance).to receive_message_chain(:execute, :first!).and_return(dast_site_profile)
+        end
+      end
+
+      it_behaves_like 'a mutation that returns errors in the response', errors: ['There was a validation error']
     end
 
     context 'when the dast_site_profile does not exist' do

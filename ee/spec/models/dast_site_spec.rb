@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe DastSite, type: :model do
-  subject { create(:dast_site) }
+  let_it_be(:project) { create(:project) }
+
+  subject { create(:dast_site, project: project) }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -32,11 +34,26 @@ RSpec.describe DastSite, type: :model do
     end
 
     context 'when the url is not public' do
-      subject { build(:dast_site, url: 'http://127.0.0.1') }
+      let_it_be(:message) { 'Url is blocked: Requests to localhost are not allowed' }
 
-      it 'is not valid' do
-        expect(subject.valid?).to be_falsey
-        expect(subject.errors.full_messages).to include('Url is blocked: Requests to localhost are not allowed')
+      subject { build(:dast_site, project: project, url: 'http://127.0.0.1') }
+
+      context 'worker validation' do
+        before do
+          stub_feature_flags(dast_runner_site_validation: false)
+        end
+
+        it 'is not valid', :aggregate_failures do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to include(message)
+        end
+      end
+
+      context 'runner validation' do
+        it 'is is valid', :aggregate_failures do
+          expect(subject).to be_valid
+          expect(subject.errors.full_messages).not_to include(message)
+        end
       end
     end
   end
