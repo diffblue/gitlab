@@ -474,7 +474,7 @@ Use local includes instead of symbolic links.
 > - For GitLab self-managed instances, GitLab administrators can opt to disable it. **(CORE ONLY)**
 
 There can be
-[risks when disabling released features](../../user/feature_flags.md#risks-when-disabling-released-features).
+[risks when disabling released features](../../administration/feature_flags.md#risks-when-disabling-released-features).
 Refer to this feature's version history for more details.
 
 You can use wildcard paths (`*` and `**`) with `include:local`.
