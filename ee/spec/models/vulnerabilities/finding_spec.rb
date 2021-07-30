@@ -12,6 +12,7 @@ RSpec.describe Vulnerabilities::Finding do
   with_them do
     before do
       stub_feature_flags(vulnerability_finding_tracking_signatures: vulnerability_finding_signatures_enabled)
+      stub_feature_flags(vulnerability_finding_replace_metadata: false)
       stub_licensed_features(vulnerability_finding_signatures: vulnerability_finding_signatures_enabled)
     end
 
@@ -360,7 +361,7 @@ RSpec.describe Vulnerabilities::Finding do
         create(
           :vulnerabilities_finding,
           raw_metadata: {
-            links: [{ url: 'https://raw.gitlab.com', name: 'raw_metadata_link' }]
+            links: [{ url: 'https://raw.example.com', name: 'raw_metadata_link' }]
           }.to_json
         )
       end
@@ -369,15 +370,27 @@ RSpec.describe Vulnerabilities::Finding do
 
       context 'when there are no finding links' do
         it 'returns links from raw_metadata' do
-          expect(links).to eq([{ 'url' => 'https://raw.gitlab.com', 'name' => 'raw_metadata_link' }])
+          expect(links).to eq([{ 'url' => 'https://raw.example.com', 'name' => 'raw_metadata_link' }])
         end
       end
 
       context 'when there are finding links assigned to given finding' do
-        let_it_be(:finding_link) { create(:finding_link, name: 'finding_link', url: 'https://link.gitlab.com', finding: finding) }
+        let_it_be(:finding_link) { create(:finding_link, name: 'finding_link', url: 'https://link.example.com', finding: finding) }
 
-        it 'returns links from finding link' do
-          expect(links).to eq([{ 'url' => 'https://link.gitlab.com', 'name' => 'finding_link' }])
+        context 'when the feature flag is enabled' do
+          before do
+            stub_feature_flags(vulnerability_finding_replace_metadata: true)
+          end
+
+          it 'returns links from finding link' do
+            expect(links).to eq([{ 'url' => 'https://link.example.com', 'name' => 'finding_link' }])
+          end
+        end
+
+        context 'when the feature flag is disabled' do
+          it 'returns links from raw_metadata' do
+            expect(links).to eq([{ 'url' => 'https://raw.example.com', 'name' => 'raw_metadata_link' }])
+          end
         end
       end
     end

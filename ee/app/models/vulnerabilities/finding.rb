@@ -209,7 +209,7 @@ module Vulnerabilities
     end
 
     def links
-      return metadata.fetch('links', []) if finding_links.load.empty?
+      return metadata.fetch('links', []) if Feature.disabled?(:vulnerability_finding_replace_metadata) || finding_links.load.empty?
 
       finding_links.as_json(only: [:name, :url])
     end
