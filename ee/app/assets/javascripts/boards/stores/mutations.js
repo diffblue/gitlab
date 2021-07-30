@@ -171,20 +171,6 @@ export default {
     }
   },
 
-  [mutationTypes.RECEIVE_MILESTONES_REQUEST](state) {
-    state.milestonesLoading = true;
-  },
-
-  [mutationTypes.RECEIVE_MILESTONES_SUCCESS](state, milestones) {
-    state.milestones = milestones;
-    state.milestonesLoading = false;
-  },
-
-  [mutationTypes.RECEIVE_MILESTONES_FAILURE](state) {
-    state.milestonesLoading = false;
-    state.error = __('Failed to load milestones.');
-  },
-
   [mutationTypes.RECEIVE_ITERATIONS_REQUEST](state) {
     state.iterationsLoading = true;
   },
