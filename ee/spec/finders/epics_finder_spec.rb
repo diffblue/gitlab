@@ -162,6 +162,26 @@ RSpec.describe EpicsFinder do
               is_expected.to contain_exactly(subgroup_epic, subgroup2_epic)
             end
 
+            context 'when user is a member of a subgroup project' do
+              let_it_be(:subgroup3) { create(:group, :private, parent: group) }
+              let_it_be(:subgroup3_epic) { create(:epic, group: subgroup3) }
+              let_it_be(:subgroup3_project) { create(:project, group: subgroup3) }
+              let_it_be(:project_member) { create(:user) }
+
+              let(:finder) { described_class.new(project_member, finder_params) }
+              let(:finder_params) { { include_descendant_groups: true, include_ancestor_groups: true, group_id: group.id } }
+
+              before do
+                subgroup3_project.add_reporter(project_member)
+              end
+
+              subject { finder.execute }
+
+              it 'gets only epics from the project ancestor groups' do
+                is_expected.to contain_exactly(epic1, epic2, epic3, subgroup3_epic)
+              end
+            end
+
             context 'when include_descendant_groups is false' do
               context 'and include_ancestor_groups is false' do
                 let(:finder_params) { { include_descendant_groups: false, include_ancestor_groups: false } }
