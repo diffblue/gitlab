@@ -1,5 +1,6 @@
 import { GlModal, GlAlert } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import AddEditScheduleForm from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
 import AddEditScheduleModal, {
@@ -58,9 +59,9 @@ describe('AddScheduleModal', () => {
   };
 
   async function awaitApolloDomMock() {
-    await wrapper.vm.$nextTick(); // kick off the DOM update
+    await nextTick(); // kick off the DOM update
     await jest.runOnlyPendingTimers(); // kick off the mocked GQL stuff (promises)
-    await wrapper.vm.$nextTick(); // kick off the DOM update for flash
+    await nextTick(); // kick off the DOM update for flash
   }
 
   async function updateSchedule(localWrapper) {
@@ -119,6 +120,8 @@ describe('AddScheduleModal', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModalForm = () => wrapper.findComponent(AddEditScheduleForm);
 
+  const submitForm = () => findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+
   describe('Schedule create', () => {
     beforeEach(() => {
       createComponent({ modalId: addScheduleModalId });
@@ -134,9 +137,32 @@ describe('AddScheduleModal', () => {
       });
     });
 
-    it('makes a request with form data to create a schedule', () => {
-      mutate.mockResolvedValueOnce({});
-      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+    it('prevents form submit if schedule is invalid', () => {
+      createComponent({
+        modalId: addScheduleModalId,
+        data: { form: { name: 'schedule', timezone: null } },
+      });
+      submitForm();
+      expect(mutate).not.toHaveBeenCalled();
+    });
+
+    it("doesn't hide a modal and shows error alert on fail", async () => {
+      const error = 'some error';
+      mutate.mockImplementation(() => Promise.reject(error));
+
+      submitForm();
+      await waitForPromises();
+      const alert = findAlert();
+      expect(mockHideModal).not.toHaveBeenCalled();
+      expect(alert.exists()).toBe(true);
+      expect(alert.text()).toContain(error);
+    });
+
+    it('makes a request with form data to create a schedule and hides a modal', async () => {
+      mutate.mockImplementation(() =>
+        Promise.resolve({ data: { oncallScheduleCreate: { errors: [] } } }),
+      );
+      submitForm();
       expect(mutate).toHaveBeenCalledWith({
         mutation: expect.any(Object),
         update: expect.any(Function),
@@ -148,29 +174,15 @@ describe('AddScheduleModal', () => {
           },
         },
       });
-    });
-
-    it('hides the modal on successful schedule creation', async () => {
-      mutate.mockResolvedValueOnce({ data: { oncallScheduleCreate: { errors: [] } } });
-      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
       expect(mockHideModal).toHaveBeenCalled();
     });
 
-    it("doesn't hide a modal and shows error alert on fail", async () => {
-      const error = 'some error';
-      mutate.mockResolvedValueOnce({ data: { oncallScheduleCreate: { errors: [error] } } });
-      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-      await waitForPromises();
-      const alert = findAlert();
-      expect(mockHideModal).not.toHaveBeenCalled();
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toContain(error);
-    });
-
     it('should clear the schedule form on a successful creation', () => {
-      mutate.mockResolvedValueOnce({});
-      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+      mutate.mockImplementation(() =>
+        Promise.resolve({ data: { oncallScheduleCreate: { errors: [] } } }),
+      );
+      submitForm();
       expect(findModalForm().props('form')).toMatchObject({
         name: '',
         description: '',
@@ -194,37 +206,31 @@ describe('AddScheduleModal', () => {
       });
     });
 
-    describe('Schedule update apollo API call', () => {
-      it('makes a request with `oncallScheduleUpdate` to update a schedule', () => {
-        mutate.mockResolvedValueOnce({});
-        findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-        expect(mutate).toHaveBeenCalledWith({
-          mutation: expect.any(Object),
-          update: expect.anything(),
-          variables: {
-            iid: mockSchedule.iid,
-            projectPath,
-            name: mockSchedule.name,
-            description: mockSchedule.description,
-            timezone: mockSchedule.timezone.identifier,
-          },
-        });
-      });
+    it("doesn't hide the modal on fail", async () => {
+      const error = 'some error';
+      mutate.mockRejectedValueOnce(error);
+      submitForm();
+      await waitForPromises();
+      expect(mockHideModal).not.toHaveBeenCalled();
+    });
 
-      it('hides the modal on successful schedule creation', async () => {
-        mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
-        findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-        await waitForPromises();
-        expect(mockHideModal).toHaveBeenCalled();
-      });
+    it('makes a request with `oncallScheduleUpdate` to update a schedule and hides a modal on successful update', async () => {
+      mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
+      submitForm();
 
-      it("doesn't hide the modal on fail", async () => {
-        const error = 'some error';
-        mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [error] } } });
-        findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-        await waitForPromises();
-        expect(mockHideModal).not.toHaveBeenCalled();
+      expect(mutate).toHaveBeenCalledWith({
+        mutation: expect.any(Object),
+        update: expect.anything(),
+        variables: {
+          iid: mockSchedule.iid,
+          projectPath,
+          name: mockSchedule.name,
+          description: mockSchedule.description,
+          timezone: mockSchedule.timezone.identifier,
+        },
       });
+      await waitForPromises();
+      expect(mockHideModal).toHaveBeenCalled();
     });
 
     describe('with mocked Apollo client', () => {
@@ -255,7 +261,7 @@ describe('AddScheduleModal', () => {
 
       it('it should not reload the page if the timezone has not changed', async () => {
         mutate.mockResolvedValueOnce({});
-        findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+        submitForm();
         await waitForPromises();
         expect(window.location.reload).not.toHaveBeenCalled();
       });
@@ -268,7 +274,7 @@ describe('AddScheduleModal', () => {
           modalId: editScheduleModalId,
         });
         mutate.mockResolvedValueOnce({});
-        findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+        submitForm();
         expect(mutate).toHaveBeenCalledWith({
           mutation: updateOncallScheduleMutation,
           update: expect.anything(),

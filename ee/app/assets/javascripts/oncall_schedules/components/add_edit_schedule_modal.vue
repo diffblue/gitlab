@@ -96,7 +96,16 @@ export default {
     },
   },
   methods: {
+    triggerFormValidation() {
+      this.validateForm('timezone');
+    },
     createSchedule() {
+      this.triggerFormValidation();
+
+      if (!this.isFormValid) {
+        return;
+      }
+
       this.loading = true;
       const { projectPath } = this;
 
@@ -127,6 +136,7 @@ export default {
             if (error) {
               throw error;
             }
+
             this.$refs.addUpdateScheduleModal.hide();
             this.$emit('scheduleCreated');
             this.clearScheduleForm();
@@ -140,11 +150,12 @@ export default {
         });
     },
     editSchedule() {
+      this.loading = true;
+
       const {
         projectPath,
         form: { timezone },
       } = this;
-      this.loading = true;
 
       this.$apollo
         .mutate({
