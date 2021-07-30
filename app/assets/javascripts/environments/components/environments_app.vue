@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlButton, GlModalDirective, GlTab, GlTabs } from '@gitlab/ui';
+import { GlBadge, GlButton, GlModalDirective, GlTab, GlTabs, GlAlert } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
 import eventHub from '../event_hub';
@@ -15,6 +15,11 @@ export default {
   i18n: {
     newEnvironmentButtonLabel: s__('Environments|New environment'),
     reviewAppButtonLabel: s__('Environments|Enable review app'),
+    surveyAlertTitle: s__('Environments|Help us improve environments'),
+    surveyAlertText: s__(
+      'Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a $30 giftcard.',
+    ),
+    surveyAlertButtonLabel: s__('Environments|Take the survey'),
   },
   modal: {
     id: 'enable-review-app-info',
@@ -25,6 +30,7 @@ export default {
     EnableReviewAppModal,
     GlBadge,
     GlButton,
+    GlAlert,
     GlTab,
     GlTabs,
     StopEnvironmentModal,
@@ -135,6 +141,17 @@ export default {
           >{{ $options.i18n.newEnvironmentButtonLabel }}</gl-button
         >
       </div>
+      <gl-alert
+        class="gl-my-4"
+        title="$options.i18n.surveyAlertTitle"
+        primary-button-text="$options.i18n.surveyAlertButtonLabel"
+        variant="info"
+        dismissible
+        dismiss-label="Dismiss"
+        primary-button-link="https://gitlab.fra1.qualtrics.com/jfe/form/SV_a2xyFsAA4D0w0Jg"
+      >
+        <span>{{ $options.i18n.surveyAlertText }}</span>
+      </gl-alert>
       <gl-tabs :value="activeTab" content-class="gl-display-none">
         <gl-tab
           v-for="(tab, idx) in tabs"
