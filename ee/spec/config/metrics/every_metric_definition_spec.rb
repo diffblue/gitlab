@@ -82,7 +82,7 @@ RSpec.describe 'Every metric definition' do
   end
 
   context 'with value json schema' do
-    it 'has a valid structure' do
+    it 'has a valid structure', :aggregate_failures do
       metric_files_with_schema.each do |key_path, metric|
         structure = usage_ping.dig(*key_path.split('.').map(&:to_sym))
 
