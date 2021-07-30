@@ -222,10 +222,7 @@ export default {
         class="card-body"
       />
     </div>
-    <related-jira-issues
-      v-if="createJiraIssueUrl || glFeatures.createVulnerabilityJiraIssueViaGraphql"
-      class="gl-mt-6"
-    />
+    <related-jira-issues v-if="createJiraIssueUrl" class="gl-mt-6" />
     <related-issues
       v-else
       :endpoint="issueLinksEndpoint"
