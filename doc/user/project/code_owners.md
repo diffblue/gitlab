@@ -41,13 +41,13 @@ To set up Code Owners:
    filename @username1 @username2
 
    # Code Owners for a directory
-   directoryname @username1 @username2
+   directoryname/ @username1 @username2
 
    # All group members as Code Owners for a file
    filename @groupname
 
    # All group members as Code Owners for a directory
-   directoryname @groupname
+   directoryname/ @groupname
    ```
 
 The Code Owners are now displayed in the UI. They apply to the current branch only.
@@ -152,12 +152,12 @@ Also, section headings are not case-sensitive. For example:
 
 ```plaintext
 [Documentation]
-ee/docs    @docs
-docs       @docs
+ee/docs/    @docs
+docs/       @docs
 
 [Database]
 README.md  @database
-model/db   @database
+model/db/   @database
 
 [DOCUMENTATION]
 README.md  @docs
