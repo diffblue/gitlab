@@ -11,4 +11,6 @@ RSpec.describe Vulnerabilities::Finding::Evidence::Request do
   it { is_expected.to validate_length_of(:url).is_at_most(2048) }
 
   it_behaves_like 'body shared examples', :vulnerabilties_finding_evidence_request
+
+  it_behaves_like 'validates presence of any field'
 end

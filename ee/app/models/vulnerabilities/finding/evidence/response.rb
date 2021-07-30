@@ -24,7 +24,7 @@ module Vulnerabilities
                  inverse_of: :response,
                  foreign_key: 'vulnerability_finding_evidence_response_id'
 
-        validates :reason_phrase, length: { maximum: 2048 }
+        validates :reason_phrase, length: { maximum: 2048 }, presence: true
       end
     end
   end
