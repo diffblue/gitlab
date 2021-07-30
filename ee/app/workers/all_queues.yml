@@ -1157,7 +1157,7 @@
   - :needs_own_queue
 - :name: project_template_export
   :worker_name: ProjectTemplateExportWorker
-  :feature_category: :templates
+  :feature_category: :importers
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
