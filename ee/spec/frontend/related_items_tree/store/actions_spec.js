@@ -448,6 +448,71 @@ describe('RelatedItemTree', () => {
           );
         });
 
+        it('should not dispatch `setWeightSum`, `setChildrenCount`, `setHealthStatus` when isSubItem is true', () => {
+          jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
+            Promise.resolve({
+              data: mockQueryResponse.data,
+            }),
+          );
+
+          const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
+
+          const {
+            children: { pageInfo: epicPageInfo },
+            issues: { pageInfo: issuesPageInfo },
+          } = mockQueryResponse.data.group.epic;
+
+          testAction(
+            actions.fetchItems,
+            { parentItem: mockParentItem, isSubItem: true },
+            {},
+            [],
+            [
+              {
+                type: 'requestItems',
+                payload: { parentItem: mockParentItem, isSubItem: true },
+              },
+              {
+                type: 'receiveItemsSuccess',
+                payload: {
+                  parentItem: mockParentItem,
+                  isSubItem: true,
+                  children,
+                },
+              },
+              {
+                type: 'setItemChildren',
+                payload: {
+                  parentItem: mockParentItem,
+                  isSubItem: true,
+                  children,
+                },
+              },
+              {
+                type: 'setItemChildrenFlags',
+                payload: {
+                  isSubItem: true,
+                  children,
+                },
+              },
+              {
+                type: 'setEpicPageInfo',
+                payload: {
+                  parentItem: mockParentItem,
+                  pageInfo: epicPageInfo,
+                },
+              },
+              {
+                type: 'setIssuePageInfo',
+                payload: {
+                  parentItem: mockParentItem,
+                  pageInfo: issuesPageInfo,
+                },
+              },
+            ],
+          );
+        });
+
         it('should dispatch `receiveItemsFailure` on request failure', () => {
           jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(Promise.reject());
 
