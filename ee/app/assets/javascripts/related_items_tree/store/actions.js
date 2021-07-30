@@ -124,9 +124,8 @@ export const fetchItems = ({ dispatch }, { parentItem, isSubItem = false }) => {
         pageInfo: data.group.epic.issues.pageInfo,
       });
 
-      dispatch('setWeightSum', data.group.epic.descendantWeightSum);
-
       if (!isSubItem) {
+        dispatch('setWeightSum', data.group.epic.descendantWeightSum);
         dispatch('setChildrenCount', data.group.epic.descendantCounts);
         dispatch('setHealthStatus', data.group.epic.healthStatus);
       }
