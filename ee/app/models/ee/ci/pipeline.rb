@@ -34,10 +34,6 @@ module EE
           joins(:downloadable_artifacts).where(ci_builds: { name: %w[sast secret_detection dependency_scanning container_scanning dast] })
         end
 
-        scope :with_vulnerabilities, -> do
-          where('EXISTS (?)', ::Vulnerabilities::FindingPipeline.where('ci_pipelines.id=vulnerability_occurrence_pipelines.pipeline_id').select(1))
-        end
-
         # This structure describes feature levels
         # to access the file types for given reports
         REPORT_LICENSED_FEATURES = {
