@@ -44,14 +44,14 @@ module EE
           custom_file_templates: :file_template_project_id,
           pseudonymizer: :pseudonymizer_enabled,
           default_project_deletion_protection: :default_project_deletion_protection,
-          adjourned_deletion_for_projects_and_groups: :deletion_adjourned_period,
+          adjourned_deletion_for_projects_and_groups: [:delayed_project_deletion, :deletion_adjourned_period],
           required_ci_templates: :required_instance_ci_template,
           disable_name_update_for_users: :updating_name_disabled_for_users,
           package_forwarding: :npm_package_requests_forwarding,
           default_branch_protection_restriction_in_groups: :group_owners_can_manage_default_branch_protection
-        }.each do |license_feature, attribute_name|
+        }.each do |license_feature, attribute_names|
           if License.feature_available?(license_feature)
-            attrs << attribute_name
+            attrs += Array.wrap(attribute_names)
           end
         end
 
