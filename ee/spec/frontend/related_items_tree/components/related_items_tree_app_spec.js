@@ -134,10 +134,11 @@ describe('RelatedItemsTreeApp', () => {
         const newValue = 'foo';
         jest.spyOn(wrapper.vm, 'createItem').mockImplementation();
 
-        wrapper.vm.handleCreateEpicFormSubmit(newValue);
+        wrapper.vm.handleCreateEpicFormSubmit({ value: newValue });
 
         expect(wrapper.vm.createItem).toHaveBeenCalledWith({
           itemTitle: newValue,
+          groupFullPath: undefined,
         });
       });
     });

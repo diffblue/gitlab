@@ -93,7 +93,7 @@ export default {
     ...mapActions(['fetchDescendantGroups']),
     onFormSubmit() {
       const groupFullPath = this.selectedGroup?.full_path;
-      this.$emit('createEpicFormSubmit', this.inputValue.trim(), groupFullPath);
+      this.$emit('createEpicFormSubmit', { value: this.inputValue.trim(), groupFullPath });
     },
     onFormCancel() {
       this.$emit('createEpicFormCancel');
