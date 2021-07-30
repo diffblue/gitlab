@@ -29,7 +29,6 @@ const providedFields = {
   namespaceName: 'Test Group Name',
   namespaceId: '1000',
   seatUsageExportPath: '/groups/test_group/-/seat_usage.csv',
-
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -75,7 +74,7 @@ describe('Subscription Seats', () => {
   const findPageHeadingText = () => findPageHeading().find('[data-testid="heading-info-text"]');
   const findPageHeadingBadge = () => findPageHeading().find(GlBadge);
 
-  const findExportButton= () => wrapper.findByTestId('export-button');
+  const findExportButton = () => wrapper.findByTestId('export-button');
 
   const findSearchBox = () => wrapper.findComponent(FilterSortContainerRoot);
   const findPagination = () => wrapper.findComponent(GlPagination);

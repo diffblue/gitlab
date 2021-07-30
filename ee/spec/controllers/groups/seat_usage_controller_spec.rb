@@ -12,8 +12,8 @@ RSpec.describe Groups::SeatUsageController do
       stub_application_setting(check_namespace_plan: true)
     end
 
-    def get_show(format: :html)
-      get :show, params: { group_id: group }, format: format
+    def get_show(format: :html, group_id: group)
+      get :show, params: { group_id: group_id }, format: format
     end
 
     subject { response }
@@ -34,9 +34,26 @@ RSpec.describe Groups::SeatUsageController do
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:show)
         end
+
+        it 'responds with 404 Not Found if the group is not top-level group' do
+          subgroup = create(:group, :private, :nested)
+          subgroup.add_owner(user)
+
+          get_show(group_id: subgroup)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
       end
 
       context 'when csv format' do
+        it 'responds with 404 Not Found if the group is not top-level group' do
+          subgroup = create(:group, :private, :nested)
+          subgroup.add_owner(user)
+          get_show(group_id: subgroup, format: :csv)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+
         context 'when seat_usage_export feature flag is disabled' do
           before do
             stub_feature_flags(seat_usage_export: false)
