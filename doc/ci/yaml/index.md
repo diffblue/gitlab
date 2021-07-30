@@ -1575,7 +1575,7 @@ production:
   name, they overwrite each other and only the last one downloaded is saved.
 - `needs:` is similar to `dependencies:` in that it must use jobs from prior stages,
   meaning it's impossible to create circular dependencies. Depending on jobs in the
-  current stage is not possible either, but support [is planned](https://gitlab.com/gitlab-org/gitlab/-/issues/30632).
+  current stage is not possible either, but [an issue exists](https://gitlab.com/gitlab-org/gitlab/-/issues/30632).
 - Stages must be explicitly defined for all jobs
   that have the keyword `needs:` or are referred to by one.
 
