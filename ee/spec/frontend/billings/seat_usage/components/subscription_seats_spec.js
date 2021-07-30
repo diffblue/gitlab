@@ -28,6 +28,8 @@ const actionSpies = {
 const providedFields = {
   namespaceName: 'Test Group Name',
   namespaceId: '1000',
+  seatUsageExportPath: '/groups/test_group/-/seat_usage.csv',
+
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -72,6 +74,8 @@ describe('Subscription Seats', () => {
   const findPageHeading = () => wrapper.find('[data-testid="heading-info"]');
   const findPageHeadingText = () => findPageHeading().find('[data-testid="heading-info-text"]');
   const findPageHeadingBadge = () => findPageHeading().find(GlBadge);
+
+  const findExportButton= () => wrapper.findByTestId('export-button');
 
   const findSearchBox = () => wrapper.findComponent(FilterSortContainerRoot);
   const findPagination = () => wrapper.findComponent(GlPagination);
@@ -143,6 +147,12 @@ describe('Subscription Seats', () => {
       it('contains the group name and total seats number', () => {
         expect(findPageHeadingText().text()).toMatch(providedFields.namespaceName);
         expect(findPageHeadingBadge().text()).toMatch('300');
+      });
+    });
+
+    describe('export button', () => {
+      it('has the correct href', () => {
+        expect(findExportButton().attributes().href).toBe(providedFields.seatUsageExportPath);
       });
     });
 
