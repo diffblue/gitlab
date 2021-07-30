@@ -733,9 +733,6 @@ msgstr ""
 msgid "%{name_with_link} namespace has run out of Shared Runner Pipeline minutes. No new jobs or pipelines in its projects will run."
 msgstr ""
 
-msgid "%{name} %{status}"
-msgstr ""
-
 msgid "%{name} (Busy)"
 msgstr ""
 
