@@ -7,7 +7,7 @@
 # since project_export queue can get congested by export requests
 # which significantly delays project creation from custom templates.
 class ProjectTemplateExportWorker < ProjectExportWorker # rubocop:disable Scalability/IdempotentWorker
-  feature_category :templates
+  feature_category :importers
   tags :exclude_from_kubernetes
   loggable_arguments 2, 3
   sidekiq_options retry: false, dead: false
