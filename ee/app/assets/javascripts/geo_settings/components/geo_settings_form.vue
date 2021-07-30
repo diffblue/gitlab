@@ -14,7 +14,7 @@ export default {
     GlButton,
   },
   computed: {
-    ...mapState(['formErrors']),
+    ...mapState(['formErrors', 'nodesPath']),
     ...mapGetters(['formHasError']),
     ...mapComputed([
       { key: 'timeout', updateFn: 'setTimeout' },
@@ -24,7 +24,7 @@ export default {
   methods: {
     ...mapActions(['updateGeoSettings', 'setFormError']),
     redirect() {
-      visitUrl('/admin/geo/nodes');
+      visitUrl(this.nodesPath);
     },
     checkTimeout() {
       this.setFormError({

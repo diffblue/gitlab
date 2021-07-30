@@ -8,9 +8,13 @@ Vue.use(Translate);
 export default () => {
   const el = document.getElementById('js-geo-settings-form');
 
+  const {
+    dataset: { nodesPath },
+  } = el;
+
   return new Vue({
     el,
-    store: createStore(),
+    store: createStore(nodesPath),
     components: {
       GeoSettingsApp,
     },

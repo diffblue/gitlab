@@ -67,3 +67,5 @@ export const MOCK_ERROR_MESSAGE = {
   name: ["can't be blank"],
   url: ["can't be blank", 'must be a valid URL'],
 };
+
+export const MOCK_NODES_PATH = 'gitlab/admin/geo/nodes';
