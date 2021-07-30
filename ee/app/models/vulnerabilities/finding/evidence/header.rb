@@ -9,8 +9,8 @@ module Vulnerabilities
         belongs_to :request, class_name: 'Vulnerabilities::Finding::Evidence::Request', inverse_of: :headers, foreign_key: 'vulnerability_finding_evidence_request_id'
         belongs_to :response, class_name: 'Vulnerabilities::Finding::Evidence::Response', inverse_of: :headers, foreign_key: 'vulnerability_finding_evidence_response_id'
 
-        validates :name, length: { maximum: 255 }
-        validates :value, length: { maximum: 8192 }
+        validates :name, length: { maximum: 255 }, presence: true
+        validates :value, length: { maximum: 8192 }, presence: true
         validate :request_or_response_is_set
         validate :request_and_response_cannot_be_set
 

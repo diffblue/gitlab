@@ -8,6 +8,8 @@ module Vulnerabilities
 
         self.table_name = 'vulnerability_finding_evidence_requests'
 
+        DATA_FIELDS = %w[method url].freeze
+
         belongs_to :evidence,
                    class_name: 'Vulnerabilities::Finding::Evidence',
                    inverse_of: :request,
@@ -26,6 +28,7 @@ module Vulnerabilities
 
         validates :method, length: { maximum: 32 }
         validates :url, length: { maximum: 2048 }
+        validates_with AnyFieldValidator, fields: DATA_FIELDS
       end
     end
   end
