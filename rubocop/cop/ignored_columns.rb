@@ -25,14 +25,14 @@ module RuboCop
           add_offense(node, location: :expression, message: USE_CONCERN_MSG)
         end
 
-        if concern_usage?(node) && used_in_wrong_model?
+        if using_ignore?(node) && used_in_wrong_model?
           add_offense(node, location: :expression, message: WRONG_MODEL_MSG)
         end
       end
 
       private
 
-      def concern_usage?(node)
+      def using_ignore?(node)
         ignore_columns?(node) || ignore_column?(node)
       end
 
