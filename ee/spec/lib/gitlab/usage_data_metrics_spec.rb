@@ -32,6 +32,15 @@ RSpec.describe Gitlab::UsageDataMetrics do
           :compliance_total_unique_counts_monthly, :compliance_total_unique_counts_weekly
         ])
       end
+
+      it 'includes search monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:search].keys).to contain_exactly(*[
+          :i_search_total_monthly, :i_search_total_weekly,
+          :i_search_advanced_monthly, :i_search_advanced_weekly,
+          :i_search_paid_monthly, :i_search_paid_weekly,
+          :search_total_unique_counts_monthly, :search_total_unique_counts_weekly
+        ])
+      end
     end
   end
 end
