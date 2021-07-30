@@ -12,7 +12,13 @@ export const initGroupRunners = (selector = '#js-group-runners') => {
     return null;
   }
 
-  const { registrationToken, runnerInstallHelpPage, groupId, groupFullPath } = el.dataset;
+  const {
+    registrationToken,
+    runnerInstallHelpPage,
+    groupId,
+    groupFullPath,
+    groupRunnersLimitedCount,
+  } = el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(
@@ -35,6 +41,7 @@ export const initGroupRunners = (selector = '#js-group-runners') => {
         props: {
           registrationToken,
           groupFullPath,
+          groupRunnersLimitedCount: parseInt(groupRunnersLimitedCount, 10),
         },
       });
     },
