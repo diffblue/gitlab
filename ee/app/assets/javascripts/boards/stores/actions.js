@@ -34,11 +34,9 @@ import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
 import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import groupBoardIterationsQuery from '../graphql/group_board_iterations.query.graphql';
-import groupBoardMilestonesQuery from '../graphql/group_board_milestones.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
 import projectBoardIterationsQuery from '../graphql/project_board_iterations.query.graphql';
-import projectBoardMilestonesQuery from '../graphql/project_board_milestones.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
@@ -422,50 +420,6 @@ export default {
       .catch(() =>
         commit(types.MOVE_EPIC_FAILURE, { originalEpic, fromListId, toListId, originalIndex }),
       );
-  },
-
-  fetchMilestones({ state, commit }, searchTerm) {
-    commit(types.RECEIVE_MILESTONES_REQUEST);
-
-    const { fullPath, boardType } = state;
-
-    const variables = {
-      fullPath,
-      searchTerm,
-    };
-
-    let query;
-    if (boardType === BoardType.project) {
-      query = projectBoardMilestonesQuery;
-    }
-    if (boardType === BoardType.group) {
-      query = groupBoardMilestonesQuery;
-    }
-
-    if (!query) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      throw new Error('Unknown board type');
-    }
-
-    return gqlClient
-      .query({
-        query,
-        variables,
-      })
-      .then(({ data }) => {
-        const errors = data[boardType]?.errors;
-        const milestones = data[boardType]?.milestones.nodes;
-
-        if (errors?.[0]) {
-          throw new Error(errors[0]);
-        }
-
-        commit(types.RECEIVE_MILESTONES_SUCCESS, milestones);
-      })
-      .catch((e) => {
-        commit(types.RECEIVE_MILESTONES_FAILURE);
-        throw e;
-      });
   },
 
   fetchIterations({ state, commit }, title) {
