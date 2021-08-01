@@ -11,18 +11,17 @@
     .settings-content
       .row
         .col-lg-12
-          = form_for @project, url: project_settings_ci_cd_path(@project, anchor: 'auto-rollback-settings') do |f|
+          = gitlab_ui_form_for @project, url: project_settings_ci_cd_path(@project, anchor: 'auto-rollback-settings') do |f|
             = form_errors(@project)
             %fieldset.builds-feature
               .gl-form-group.form-group
                 .card
                   .card-body
                     .gl-form.form-check
-                      = f.check_box :auto_rollback_enabled, class: 'gl-form-checkbox form-check-input'
-                      = f.label :auto_rollback_enabled, class: 'form-check-label col-form-label' do
-                        = s_('AutoRollback|Enable automatic rollbacks')
-                      %small.form-text.text-gl-muted
-                        = s_('AutoRollback|Automatic rollbacks start when a critical alert is triggered. If the last successful deployment fails to roll back automatically, it can still be done manually.')
-                        = link_to _('More information'), help_page_path('ci/environments/index.md', anchor: 'auto-rollback'), target: '_blank'
+                      - help_text = s_('AutoRollback|Automatic rollbacks start when a critical alert is triggered. If the last successful deployment fails to roll back automatically, it can still be done manually.')
+                      - more_info_link = link_to(_('More information'), help_page_path('ci/environments/index.md', anchor: 'auto-rollback'), target: '_blank', rel: 'noopener noreferrer')
+                      = f.gitlab_ui_checkbox_component :auto_rollback_enabled,
+                          s_('AutoRollback|Enable automatic rollbacks'),
+                          help_text: '%{help_text} %{more_info_link}'.html_safe % { help_text: help_text, more_info_link: more_info_link }
 
               = f.submit _('Save changes'), class: "gl-button btn btn-confirm gl-mt-5", data: { qa_selector: 'save_changes_button' }
