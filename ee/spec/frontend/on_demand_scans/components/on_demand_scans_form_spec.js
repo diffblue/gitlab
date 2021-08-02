@@ -610,8 +610,8 @@ describe('OnDemandScansForm', () => {
       createShallowComponent();
       await wrapper.vm.$nextTick();
 
-      expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
-      expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
+      expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.scannerProfileId);
+      expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.siteProfileId);
     });
   });
 

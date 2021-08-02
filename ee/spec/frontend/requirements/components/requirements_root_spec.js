@@ -24,6 +24,7 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
+import { queryToObject } from '~/lib/utils/url_utility';
 import FilteredSearchBarRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 import {
@@ -904,9 +905,12 @@ describe('RequirementsRoot', () => {
 
         expect(wrapper.vm.prevPageCursor).toBe('');
         expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
-        expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?page=2&state=opened&sort=created_desc&next=${mockPageInfo.endCursor}`,
-        );
+        expect(queryToObject(window.location.search)).toEqual({
+          page: '2',
+          state: 'opened',
+          sort: 'created_desc',
+          next: mockPageInfo.endCursor,
+        });
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_navigation', {
           label: 'next',
         });
@@ -926,9 +930,12 @@ describe('RequirementsRoot', () => {
 
         expect(wrapper.vm.prevPageCursor).toBe(mockPageInfo.startCursor);
         expect(wrapper.vm.nextPageCursor).toBe('');
-        expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?page=1&state=opened&sort=created_desc&prev=${mockPageInfo.startCursor}`,
-        );
+        expect(queryToObject(window.location.search)).toEqual({
+          page: '1',
+          state: 'opened',
+          sort: 'created_desc',
+          prev: mockPageInfo.startCursor,
+        });
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_navigation', {
           label: 'prev',
         });
