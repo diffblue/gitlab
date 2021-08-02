@@ -25,6 +25,9 @@ class ApprovalProjectRule < ApplicationRecord
   validates :scanners, inclusion: { in: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES }
   default_value_for :scanners, allows_nil: false, value: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES
 
+  validates :vulnerabilities_allowed, numericality: { only_integer: true }
+  default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
+
   def applies_to_branch?(branch)
     return true if protected_branches.empty?
 

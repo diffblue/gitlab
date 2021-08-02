@@ -22,6 +22,10 @@ module Ci
         backtrace: error.backtrace
       )
       error("Failed to update approval rules")
+    ensure
+      [:project_rule_vulnerabilities_allowed, :project_vulnerability_rule, :reports].each do |memoization|
+        clear_memoization(memoization)
+      end
     end
 
     private
@@ -55,13 +59,19 @@ module Ci
 
     def reports
       strong_memoize(:reports) do
-        project_vulnerability_rules ? pipeline.security_reports(report_types: project_vulnerability_rules) : []
+        project_vulnerability_rule ? pipeline.security_reports(report_types: project_vulnerability_rule) : []
       end
     end
 
-    def project_vulnerability_rules
-      strong_memoize(:project_vulnerability_rules) do
-        pipeline.project.approval_rules.vulnerability_reports.first&.scanners
+    def project_vulnerability_rule
+      strong_memoize(:project_vulnerability_rule) do
+        pipeline.project.vulnerability_report_rule&.scanners
+      end
+    end
+
+    def project_rule_vulnerabilities_allowed
+      strong_memoize(:project_rule_vulnerabilities_allowed) do
+        pipeline.project.vulnerability_report_rule&.vulnerabilities_allowed
       end
     end
 
@@ -76,7 +86,7 @@ module Ci
 
     def merge_requests_approved_security_reports
       pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports)
+        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed)
       end
     end
 

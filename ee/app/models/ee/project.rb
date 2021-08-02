@@ -804,6 +804,10 @@ module EE
         namespace.created_at >= PUBLIC_COST_FACTOR_RELEASE_DAY
     end
 
+    def vulnerability_report_rule
+      approval_rules.vulnerability_reports.first
+    end
+
     private
 
     def github_integration_enabled?
