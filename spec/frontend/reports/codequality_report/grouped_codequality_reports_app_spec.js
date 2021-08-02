@@ -127,21 +127,6 @@ describe('Grouped code quality reports app', () => {
     });
   });
 
-  describe('when there is a head report but no base report', () => {
-    beforeEach(() => {
-      mockStore.state.basePath = null;
-      mockStore.state.hasError = true;
-    });
-
-    it('renders error text', () => {
-      expect(findWidget().text()).toContain('Failed to load codeclimate report');
-    });
-
-    it('renders a help icon with more information', () => {
-      expect(findWidget().find('[data-testid="question-icon"]').exists()).toBe(true);
-    });
-  });
-
   describe('on error', () => {
     beforeEach(() => {
       mockStore.state.hasError = true;
@@ -153,6 +138,16 @@ describe('Grouped code quality reports app', () => {
 
     it('does not render a help icon', () => {
       expect(findWidget().find('[data-testid="question-icon"]').exists()).toBe(false);
+    });
+
+    describe('when base report was not found', () => {
+      beforeEach(() => {
+        mockStore.state.status = 'not_found';
+      });
+
+      it('renders a help icon with more information', () => {
+        expect(findWidget().find('[data-testid="question-icon"]').exists()).toBe(true);
+      });
     });
   });
 });

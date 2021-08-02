@@ -8,6 +8,7 @@ export default () => ({
 
   isLoading: false,
   hasError: false,
+  status: '',
   statusReason: '',
 
   newIssues: [],

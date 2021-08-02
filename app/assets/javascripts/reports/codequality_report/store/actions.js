@@ -7,11 +7,11 @@ export const setPaths = ({ commit }, paths) => commit(types.SET_PATHS, paths);
 export const fetchReports = ({ state, dispatch, commit }) => {
   commit(types.REQUEST_REPORTS);
 
-  if (!state.basePath) {
-    return dispatch('receiveReportsError');
-  }
   return pollUntilComplete(state.reportsPath)
     .then(({ data }) => {
+      if (data.status === 'not_found') {
+        return dispatch('receiveReportsError', data);
+      }
       return dispatch('receiveReportsSuccess', {
         newIssues: parseCodeclimateMetrics(data.new_errors, state.headBlobPath),
         resolvedIssues: parseCodeclimateMetrics(data.resolved_errors, state.baseBlobPath),

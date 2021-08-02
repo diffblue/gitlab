@@ -58,9 +58,10 @@ describe('Codequality Reports mutations', () => {
       expect(localState.hasError).toEqual(false);
     });
 
-    it('clears statusReason', () => {
+    it('clears status and statusReason', () => {
       mutations.RECEIVE_REPORTS_SUCCESS(localState, {});
 
+      expect(localState.status).toEqual('');
       expect(localState.statusReason).toEqual('');
     });
 
@@ -84,6 +85,13 @@ describe('Codequality Reports mutations', () => {
       mutations.RECEIVE_REPORTS_ERROR(localState);
 
       expect(localState.hasError).toEqual(true);
+    });
+
+    it('sets status based on error object', () => {
+      const error = { status: 'not_found' };
+      mutations.RECEIVE_REPORTS_ERROR(localState, error);
+
+      expect(localState.status).toEqual(error.status);
     });
 
     it('sets statusReason to string from error response data', () => {

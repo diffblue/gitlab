@@ -14,6 +14,7 @@ export default {
   },
   [types.RECEIVE_REPORTS_SUCCESS](state, data) {
     state.hasError = false;
+    state.status = '';
     state.statusReason = '';
     state.isLoading = false;
     state.newIssues = data.newIssues;
@@ -22,6 +23,7 @@ export default {
   [types.RECEIVE_REPORTS_ERROR](state, error) {
     state.isLoading = false;
     state.hasError = true;
+    state.status = error?.status || '';
     state.statusReason = error?.response?.data?.status_reason;
   },
 };

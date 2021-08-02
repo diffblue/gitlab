@@ -92,16 +92,17 @@ describe('Codequality Reports actions', () => {
       });
     });
 
-    describe('with no base path', () => {
+    describe('when base report is not found', () => {
       it('commits REQUEST_REPORTS and dispatches receiveReportsError', (done) => {
-        localState.basePath = null;
+        const data = { status: 'not_found' };
+        mock.onGet(`${TEST_HOST}/codequality_reports.json`).reply(200, data);
 
         testAction(
           actions.fetchReports,
           null,
           localState,
           [{ type: types.REQUEST_REPORTS }],
-          [{ type: 'receiveReportsError' }],
+          [{ type: 'receiveReportsError', payload: data }],
           done,
         );
       });

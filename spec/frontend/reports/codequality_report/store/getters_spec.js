@@ -76,10 +76,9 @@ describe('Codequality reports store getters', () => {
   });
 
   describe('codequalityPopover', () => {
-    describe('when head report is available but base report is not', () => {
+    describe('when base report is not available', () => {
       it('returns a popover with a documentation link', () => {
-        localState.headPath = 'head.json';
-        localState.basePath = undefined;
+        localState.status = 'not_found';
         localState.helpPath = 'codequality_help.html';
 
         expect(getters.codequalityPopover(localState).title).toEqual(
