@@ -9,4 +9,5 @@
 - else
   = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan
 
-  #js-billing-plans{ data: subscription_plan_data_attributes(@group, current_plan) }
+  - data_attributes = subscription_plan_data_attributes(@group, current_plan).merge(extend_reactivate_trial_button_data(@group))
+  #js-billing-plans{ data: data_attributes }

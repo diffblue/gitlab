@@ -3,7 +3,7 @@
 - if namespace_for_user
   = render_if_exists 'trials/banner', namespace: namespace
 
-.billing-plan-header.content-block.center.gl-mb-5
+.billing-plan-header.content-block.center.gl-mb-3
   .billing-plan-logo
     - if namespace_for_user
       .avatar-container.s96.home-panel-avatar.gl-mr-3.float-none.mx-auto.mb-4.mt-1
@@ -34,3 +34,7 @@
   - if show_start_free_trial_messages?(namespace)
     - glm_content = namespace_for_user ? 'user-billing' : 'group-billing'
     %p= link_to 'Start your free trial', new_trial_registration_path(glm_source: 'gitlab.com', glm_content: glm_content), class: 'btn btn-confirm gl-button', data: { qa_selector: 'start_your_free_trial' }
+
+  - if show_extend_reactivate_trial_button?(namespace)
+    .gl-mt-3
+      .js-extend-reactivate-trial-button.gl-mt-3{ data: extend_reactivate_trial_button_data(namespace) }

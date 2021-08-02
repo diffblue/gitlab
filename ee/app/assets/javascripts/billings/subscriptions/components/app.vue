@@ -9,7 +9,7 @@ export default {
   },
   inject: {
     namespaceId: {
-      default: '',
+      default: null,
     },
   },
   created() {
