@@ -37459,6 +37459,9 @@ msgstr ""
 msgid "You are going to turn on confidentiality. Only team members with %{strongStart}at least Reporter access%{strongEnd} will be able to see and leave comments on the %{issuableType}."
 msgstr ""
 
+msgid "You are not allowed to %{action} a user"
+msgstr ""
+
 msgid "You are not allowed to approve a user"
 msgstr ""
 
@@ -38362,6 +38365,9 @@ msgid "attach a new file"
 msgstr ""
 
 msgid "authored"
+msgstr ""
+
+msgid "banned user already exists"
 msgstr ""
 
 msgid "blocks"

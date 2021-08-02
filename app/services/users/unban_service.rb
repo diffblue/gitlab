@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 module Users
-  class BanService < BannedUserBaseService
+  class UnbanService < BannedUserBaseService
     private
 
     def update_user(user)
-      user.ban
+      user.activate
     end
 
     def action
-      :ban
+      :unban
     end
   end
 end
