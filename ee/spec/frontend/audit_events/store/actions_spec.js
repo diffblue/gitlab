@@ -1,6 +1,7 @@
 import * as actions from 'ee/audit_events/store/actions';
 import * as types from 'ee/audit_events/store/mutation_types';
 import createState from 'ee/audit_events/store/state';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import * as urlUtility from '~/lib/utils/url_utility';
 
@@ -48,8 +49,7 @@ describe('Audit Event actions', () => {
     let spy;
 
     beforeEach(() => {
-      delete window.location;
-      window.location = new URL('https://test/');
+      setWindowLocation('https://test/');
       spy = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
     });
 
@@ -81,8 +81,7 @@ describe('Audit Event actions', () => {
   describe('initializeAuditEvents', () => {
     describe('with an empty search query', () => {
       beforeEach(() => {
-        delete window.location;
-        window.location = { search: '' };
+        setWindowLocation('?');
       });
 
       it(`commits "${types.INITIALIZE_AUDIT_EVENTS}" with empty dates`, () => {
@@ -100,11 +99,9 @@ describe('Audit Event actions', () => {
 
     describe('with a full search query', () => {
       beforeEach(() => {
-        delete window.location;
-        window.location = {
-          search:
-            'sort=created_desc&entity_type=User&entity_id=44&created_after=2020-06-05&created_before=2020-06-25',
-        };
+        setWindowLocation(
+          '?sort=created_desc&entity_type=User&entity_id=44&created_after=2020-06-05&created_before=2020-06-25',
+        );
       });
 
       it(`commits "${types.INITIALIZE_AUDIT_EVENTS}" with the query data`, () => {

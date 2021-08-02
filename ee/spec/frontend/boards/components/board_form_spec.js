@@ -44,7 +44,6 @@ const defaultProps = {
 describe('BoardForm', () => {
   let wrapper;
   let mutate;
-  let location;
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findModalActionPrimary = () => findModal().props('actionPrimary');
@@ -81,16 +80,10 @@ describe('BoardForm', () => {
     });
   };
 
-  beforeAll(() => {
-    location = window.location;
-    delete window.location;
-  });
-
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
     mutate = null;
-    window.location = location;
   });
 
   describe('when creating a new epic board', () => {
@@ -192,7 +185,6 @@ describe('BoardForm', () => {
           },
         },
       });
-      window.location = new URL('https://test/boards/1');
       createComponent({ canAdminBoard: true, currentPage: formType.edit });
 
       findInput().trigger('keyup.enter', { metaKey: true });
