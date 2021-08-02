@@ -44,7 +44,7 @@ module QA
           @runner = Resource::Runner.fabricate_via_api! do |runner|
             runner.project = @project
             runner.name = "runner-for-#{@project.name}"
-            runner.tags = %w[qa test]
+            runner.tags = ['secure_report']
           end
 
           # Push fixture to generate Secure reports

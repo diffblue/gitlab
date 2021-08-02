@@ -17,7 +17,7 @@ module QA
         @runner = Resource::Runner.fabricate! do |runner|
           runner.project = @project
           runner.name = "runner-for-#{@project.name}"
-          runner.tags = %w[qa test]
+          runner.tags = ['secure_license']
         end
       end
 

@@ -2,9 +2,7 @@ include:
   template: License-Scanning.gitlab-ci.yml
 
 license_scanning:
-  tags:
-    - qa
-    - test
+  tags: [secure_license]
   script:
     - echo "Skipped"
   artifacts:
