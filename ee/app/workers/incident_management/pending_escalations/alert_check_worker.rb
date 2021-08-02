@@ -13,7 +13,8 @@ module IncidentManagement
       feature_category :incident_management
 
       def perform(escalation_id)
-        escalation = IncidentManagement::PendingEscalations::Alert.find(escalation_id)
+        escalation = IncidentManagement::PendingEscalations::Alert.find_by_id(escalation_id)
+        return unless escalation
 
         IncidentManagement::PendingEscalations::ProcessService.new(escalation).execute
       end
