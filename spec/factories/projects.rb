@@ -51,7 +51,7 @@ FactoryBot.define do
       ci_job_token_scope_enabled { nil }
     end
 
-    before(:create) do |project, evaluator|
+    after(:build) do |project, evaluator|
       # Builds and MRs can't have higher visibility level than repository access level.
       builds_access_level = [evaluator.builds_access_level, evaluator.repository_access_level].min
       merge_requests_access_level = [evaluator.merge_requests_access_level, evaluator.repository_access_level].min
