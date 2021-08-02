@@ -3,30 +3,12 @@
 exports[`Value Stream Analytics utils transformRawStages retains all the stage properties 1`] = `
 Array [
   Object {
-    "custom": false,
-    "description": "Time before an issue gets scheduled",
-    "endEvent": Object {
-      "htmlDescription": "<p data-sourcepos=\\"1:1-1:71\\" dir=\\"auto\\">Issue first associated with a milestone or issue first added to a board</p>",
-    },
-    "endEventHtmlDescription": "<p data-sourcepos=\\"1:1-1:71\\" dir=\\"auto\\">Issue first associated with a milestone or issue first added to a board</p>",
-    "hidden": false,
-    "id": 1,
-    "legend": "",
-    "name": "Issue",
-    "slug": 1,
-    "startEvent": Object {
-      "htmlDescription": "<p data-sourcepos=\\"1:1-1:13\\" dir=\\"auto\\">Issue created</p>",
-    },
-    "startEventHtmlDescription": "<p data-sourcepos=\\"1:1-1:13\\" dir=\\"auto\\">Issue created</p>",
-    "title": "Issue",
-  },
-  Object {
     "custom": true,
-    "description": "",
+    "description": "Time before an issue gets scheduled",
     "endEventIdentifier": "issue_first_added_to_board",
     "hidden": false,
     "id": 18,
-    "legend": "",
+    "legend": "Cool legend",
     "name": "Coolest beans stage",
     "slug": 18,
     "startEventIdentifier": "issue_first_mentioned_in_commit",

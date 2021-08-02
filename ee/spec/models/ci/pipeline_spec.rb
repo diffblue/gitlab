@@ -634,4 +634,18 @@ RSpec.describe Ci::Pipeline do
       it { is_expected.to eq(true) }
     end
   end
+
+  describe '#authorized_cluster_agents' do
+    let(:finder) { double(execute: agents) }
+    let(:agents) { double }
+
+    it 'retrieves agent records from the finder and caches the result' do
+      expect(Clusters::DeployableAgentsFinder).to receive(:new).once
+        .with(pipeline.project)
+        .and_return(finder)
+
+      expect(pipeline.authorized_cluster_agents).to eq(agents)
+      expect(pipeline.authorized_cluster_agents).to eq(agents) # cached
+    end
+  end
 end

@@ -190,6 +190,6 @@ class TrialsController < ApplicationController
   end
 
   def discover_group_security_flow?
-    params[:glm_content] == 'discover-group-security'
+    %w(discover-group-security discover-project-security).include?(params[:glm_content])
   end
 end

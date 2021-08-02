@@ -71,14 +71,14 @@
                       "additionalItems": false,
                       "items": {
                           "required": [
-                              "scan",
-                              "site_profile"
+                              "scan"
                           ],
                           "type": "object",
                           "properties": {
                               "scan": {
                                   "enum": [
-                                      "dast"
+                                      "dast",
+                                      "secret_detection"
                                   ],
                                   "type": "string"
                               },
@@ -92,6 +92,35 @@
                                   ]
                               }
                           },
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": {
+                                  "scan": {
+                                    "const": "dast"
+                                  }
+                                }
+                              },
+                              "then": {
+                                "required": [
+                                  "site_profile"
+                                ],
+                                "maxProperties": 3
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": {
+                                  "scan": {
+                                    "const": "secret_detection"
+                                  }
+                                }
+                              },
+                              "then": {
+                                "maxProperties": 1
+                              }
+                            }
+                          ],
                           "additionalProperties": false
                       }
                   }

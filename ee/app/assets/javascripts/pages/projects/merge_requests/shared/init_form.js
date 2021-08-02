@@ -6,5 +6,7 @@ export default () => {
   const editMrApp = mountApprovals(document.getElementById('js-mr-approvals-input'));
   mountBlockingMergeRequestsInput(document.getElementById('js-blocking-merge-requests-input'));
 
-  editMrApp.$on('hidden-inputs-mounted', initCheckFormState);
+  if (editMrApp) {
+    editMrApp.$on('hidden-inputs-mounted', initCheckFormState);
+  }
 };

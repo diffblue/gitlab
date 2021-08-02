@@ -89,6 +89,7 @@ RSpec.describe User do
     it { is_expected.to have_one(:atlassian_identity) }
     it { is_expected.to have_one(:user_highest_role) }
     it { is_expected.to have_one(:credit_card_validation) }
+    it { is_expected.to have_one(:banned_user) }
     it { is_expected.to have_many(:snippets).dependent(:destroy) }
     it { is_expected.to have_many(:members) }
     it { is_expected.to have_many(:project_members) }
@@ -1466,7 +1467,7 @@ RSpec.describe User do
     end
 
     it 'does not write if the DB is in read-only mode' do
-      expect(Gitlab::Database.main).to receive(:read_only?).and_return(true)
+      expect(Gitlab::Database).to receive(:read_only?).and_return(true)
 
       expect do
         user.update_tracked_fields!(request)
@@ -1956,6 +1957,42 @@ RSpec.describe User do
       active_admins_in_recent_sign_in_desc_order = User.admins.active.order_recent_sign_in.limit(10)
 
       expect(User.instance_access_request_approvers_to_be_notified).to eq(active_admins_in_recent_sign_in_desc_order)
+    end
+  end
+
+  describe 'banning and unbanning a user', :aggregate_failures do
+    let(:user) { create(:user) }
+
+    context 'banning a user' do
+      it 'bans and blocks the user' do
+        user.ban
+
+        expect(user.banned?).to eq(true)
+        expect(user.blocked?).to eq(true)
+      end
+
+      it 'creates a BannedUser record' do
+        expect { user.ban }.to change { Users::BannedUser.count }.by(1)
+        expect(Users::BannedUser.last.user_id).to eq(user.id)
+      end
+    end
+
+    context 'unbanning a user' do
+      before do
+        user.ban!
+      end
+
+      it 'activates the user' do
+        user.activate
+
+        expect(user.banned?).to eq(false)
+        expect(user.active?).to eq(true)
+      end
+
+      it 'deletes the BannedUser record' do
+        expect { user.activate }.to change { Users::BannedUser.count }.by(-1)
+        expect(Users::BannedUser.where(user_id: user.id)).not_to exist
+      end
     end
   end
 
@@ -2864,7 +2901,7 @@ RSpec.describe User do
 
       context 'on a read-only instance' do
         before do
-          allow(Gitlab::Database.main).to receive(:read_only?).and_return(true)
+          allow(Gitlab::Database).to receive(:read_only?).and_return(true)
         end
 
         it 'does not block user' do
@@ -4968,7 +5005,7 @@ RSpec.describe User do
     end
 
     it 'does not log failed sign-in attempts when in a GitLab read-only instance' do
-      allow(Gitlab::Database.main).to receive(:read_only?) { true }
+      allow(Gitlab::Database).to receive(:read_only?) { true }
 
       expect { user.increment_failed_attempts! }.not_to change(user, :failed_attempts)
     end

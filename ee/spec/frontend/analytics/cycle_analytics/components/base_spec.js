@@ -20,7 +20,12 @@ import {
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
-import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
+import {
+  OVERVIEW_STAGE_ID,
+  I18N_VSA_ERROR_STAGES,
+  I18N_VSA_ERROR_STAGE_MEDIAN,
+  I18N_VSA_ERROR_SELECTED_STAGE,
+} from '~/cycle_analytics/constants';
 import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
@@ -343,9 +348,7 @@ describe('EE Value Stream Analytics component', () => {
         .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
       wrapper = await createComponent();
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'There was an error fetching value stream analytics stages.',
-      });
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
     });
 
     it('will display an error if the fetchStageData request fails', async () => {
@@ -357,9 +360,7 @@ describe('EE Value Stream Analytics component', () => {
 
       wrapper = await createComponent({ selectedStage: issueStage });
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'There was an error fetching data for the selected stage',
-      });
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
     });
 
     it('will display an error if the fetchTopRankedGroupLabels request fails', async () => {
@@ -398,9 +399,7 @@ describe('EE Value Stream Analytics component', () => {
         .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
       wrapper = await createComponent();
 
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'There was an error fetching median data for stages',
-      });
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
 
     it('will display an error if the fetchStageData request is successful but has an embedded error', async () => {

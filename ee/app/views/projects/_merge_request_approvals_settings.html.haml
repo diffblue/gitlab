@@ -7,7 +7,7 @@
     %button.gl-button.btn.btn-default.js-settings-toggle{ type: 'button' }= expanded ? _("Collapse") : _("Expand")
     %p
       = _("Define approval settings.")
-      = link_to _("Learn more."), help_page_path("user/project/merge_requests/merge_request_approvals"), target: '_blank'
+      = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank'
 
   .settings-content
     = form_for @project, html: { class: "merge-request-approval-settings-form js-mr-approvals-form" }, authenticity_token: true do |f|
