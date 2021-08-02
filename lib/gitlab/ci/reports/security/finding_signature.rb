@@ -14,10 +14,6 @@ module Gitlab
             @signature_value = params.dig(:signature_value)
           end
 
-          def priority
-            ::Vulnerabilities::FindingSignature.priority(algorithm_type)
-          end
-
           def signature_sha
             Digest::SHA1.digest(signature_value)
           end
@@ -34,7 +30,7 @@ module Gitlab
           end
 
           def valid?
-            ::Vulnerabilities::FindingSignature.algorithm_types.key?(algorithm_type)
+            algorithm_types.key?(algorithm_type)
           end
 
           def eql?(other)

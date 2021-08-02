@@ -7,7 +7,9 @@ module Gitlab
         module Validators
           class SchemaValidator
             class Schema
-              ROOT_PATH = File.join(__dir__, 'schemas')
+              def root_path
+                File.join(__dir__, 'schemas')
+              end
 
               def initialize(report_type)
                 @report_type = report_type
@@ -28,7 +30,7 @@ module Gitlab
               end
 
               def schema_path
-                File.join(ROOT_PATH, file_name)
+                File.join(root_path, file_name)
               end
 
               def file_name
@@ -62,3 +64,5 @@ module Gitlab
     end
   end
 end
+
+Gitlab::Ci::Parsers::Security::Validators::SchemaValidator::Schema.prepend_mod_with("Gitlab::Ci::Parsers::Security::Validators::SchemaValidator::Schema")

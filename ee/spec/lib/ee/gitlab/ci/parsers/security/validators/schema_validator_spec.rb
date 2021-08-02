@@ -11,8 +11,6 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
     :coverage_fuzzing           | ['root is missing required keys: vulnerabilities']                   | { 'version' => '10.0.0', 'vulnerabilities' => [] }
     :dast                       | ['root is missing required keys: vulnerabilities']                   | { 'version' => '10.0.0', 'vulnerabilities' => [] }
     :dependency_scanning        | ['root is missing required keys: dependency_files, vulnerabilities'] | { 'version' => '10.0.0', 'vulnerabilities' => [], 'dependency_files' => [] }
-    :sast                       | ['root is missing required keys: vulnerabilities']                   | { 'version' => '10.0.0', 'vulnerabilities' => [] }
-    :secret_detection           | ['root is missing required keys: vulnerabilities']                   | { 'version' => '10.0.0', 'vulnerabilities' => [] }
   end
 
   with_them do

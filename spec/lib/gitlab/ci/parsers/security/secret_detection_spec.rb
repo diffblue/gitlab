@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::SecretDetection do
 
       with_them do
         let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, created_at) }
-        let(:artifact) { create(:ee_ci_job_artifact, report_format) }
+        let(:artifact) { create(:ci_job_artifact, report_format) }
 
         before do
           artifact.each_blob { |blob| described_class.parse!(blob, report) }

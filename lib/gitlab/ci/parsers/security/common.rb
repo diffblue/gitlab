@@ -27,7 +27,8 @@ module Gitlab
             create_scan
             create_analyzer
             set_report_version
-            collate_remediations.each { |vulnerability| create_vulnerability(vulnerability) }
+
+            create_vulnerabilities
 
             report_data
           rescue JSON::ParserError
@@ -73,35 +74,20 @@ module Gitlab
             @analyzer_data ||= report_data.dig('scan', 'analyzer')
           end
 
-          # map remediations to relevant vulnerabilities
-          def collate_remediations
-            return report_data["vulnerabilities"] || [] unless report_data["remediations"]
-
-            report_data["vulnerabilities"].map do |vulnerability|
-              remediation = fixes[vulnerability['id']] || fixes[vulnerability['cve']]
-              vulnerability.merge("remediations" => [remediation])
-            end
-          end
-
-          def fixes
-            @fixes ||= report_data['remediations'].each_with_object({}) do |item, memo|
-              item['fixes'].each do |fix|
-                id = fix['id'] || fix['cve']
-                memo[id] = item if id
-              end
-              memo
-            end
-          end
-
           def tracking_data(data)
             data['tracking']
           end
 
-          def create_vulnerability(data)
+          def create_vulnerabilities
+            if report_data["vulnerabilities"]
+              report_data["vulnerabilities"].each { |vulnerability| create_vulnerability(vulnerability) }
+            end
+          end
+
+          def create_vulnerability(data, remediations = [])
             identifiers = create_identifiers(data['identifiers'])
             links = create_links(data['links'])
             location = create_location(data['location'] || {})
-            remediations = create_remediations(data['remediations'])
             signatures = create_signatures(tracking_data(data))
 
             if @vulnerability_finding_signatures_enabled && !signatures.empty?
@@ -231,12 +217,6 @@ module Gitlab
             ::Gitlab::Ci::Reports::Security::Link.new(name: link['name'], url: link['url'])
           end
 
-          def create_remediations(remediations_data)
-            remediations_data.to_a.compact.map do |remediation_data|
-              ::Gitlab::Ci::Reports::Security::Remediation.new(remediation_data['summary'], remediation_data['diff'])
-            end
-          end
-
           def parse_severity_level(input)
             input&.downcase.then { |value| ::Enums::Vulnerability.severity_levels.key?(value) ? value : 'unknown' }
           end
@@ -282,3 +262,5 @@ module Gitlab
     end
   end
 end
+
+Gitlab::Ci::Parsers::Security::Common.prepend_mod_with("Gitlab::Ci::Parsers::Security::Common")

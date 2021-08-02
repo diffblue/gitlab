@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Reports::Security::Reports do
   let_it_be(:pipeline) { create(:ci_pipeline) }
-  let_it_be(:artifact) { create(:ee_ci_job_artifact, :sast) }
+  let_it_be(:artifact) { create(:ci_job_artifact, :sast) }
 
   let(:security_reports) { described_class.new(pipeline) }
 

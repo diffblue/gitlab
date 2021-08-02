@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
     with_them do
       let_it_be(:pipeline) { create(:ci_pipeline) }
 
-      let(:artifact) { build(:ee_ci_job_artifact, :common_security_report) }
+      let(:artifact) { build(:ci_job_artifact, :common_security_report) }
       let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
       let(:location) { ::Gitlab::Ci::Reports::Security::Locations::DependencyScanning.new(file_path: 'yarn/yarn.lock', package_version: 'v2', package_name: 'saml2') }
       let(:tracking_data) { nil }
@@ -94,7 +94,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
       end
 
       describe 'parsing finding.name' do
-        let(:artifact) { build(:ee_ci_job_artifact, :common_security_report_with_blank_names) }
+        let(:artifact) { build(:ci_job_artifact, :common_security_report_with_blank_names) }
 
         context 'when message is provided' do
           it 'sets message from the report as a finding name' do
