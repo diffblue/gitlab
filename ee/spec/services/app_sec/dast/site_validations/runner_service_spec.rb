@@ -39,8 +39,10 @@ RSpec.describe AppSec::Dast::SiteValidations::RunnerService do
         expect(subject).to have_attributes(status: :success, payload: dast_site_validation)
       end
 
-      it 'creates a ci_pipeline with ci_pipeline_variables' do
+      it 'creates a ci_pipeline with an appropriate source', :aggregate_failures do
         expect { subject }.to change { Ci::Pipeline.count }.by(1)
+
+        expect(Ci::Pipeline.last.source).to eq('ondemand_dast_validation')
       end
 
       it 'makes the correct variables available to the ci_build' do
