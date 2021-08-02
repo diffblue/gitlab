@@ -5,12 +5,6 @@ module EE
     module Database
       module Connection
         extend ActiveSupport::Concern
-        extend ::Gitlab::Utils::Override
-
-        override :read_only?
-        def read_only?
-          ::Gitlab::Geo.secondary? || ::Gitlab.maintenance_mode?
-        end
 
         def healthy?
           !Postgresql::ReplicationSlot.lag_too_great?
