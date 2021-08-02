@@ -26,6 +26,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
         expect(policy_project.protected_branches.first.merge_access_levels.map(&:access_level)).to eq([Gitlab::Access::MAINTAINER])
         expect(policy_project.protected_branches.first.push_access_levels.map(&:access_level)).to eq([Gitlab::Access::NO_ACCESS])
         expect(policy_project.team.developers).to contain_exactly(maintainer)
+        expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
       end
     end
 
