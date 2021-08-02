@@ -83,7 +83,7 @@ export default {
           v-for="(month, index) in months"
           :key="index"
           :is-checked="selectedMonth === month"
-          :is-check-item="true"
+          is-check-item
           @click="changeSelectedMonth(month)"
         >
           {{ month }}

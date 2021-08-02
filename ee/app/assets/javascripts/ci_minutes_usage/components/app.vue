@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     minutesUsageDataByMonth() {
-      return this?.ciMinutesUsage.map((cur) => [cur.month, cur.minutes]);
+      return this.ciMinutesUsage.map((cur) => [cur.month, cur.minutes]);
     },
   },
 };
