@@ -109,7 +109,7 @@
               = f.label :elasticsearch_indexed_file_size_limit_kb, _('Maximum file size indexed (KiB)'), class: 'label-bold'
               = f.number_field :elasticsearch_indexed_file_size_limit_kb, value: @application_setting.elasticsearch_indexed_file_size_limit_kb, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('Any files larger than this limit will not be indexed, and thus will not be searchable.')
+                = _('Any files larger than this limit only index the file name. The file content is neither indexed nor searchable.')
 
             .form-group
               = f.label :elasticsearch_indexed_field_length_limit, _('Maximum field length'), class: 'label-bold'
