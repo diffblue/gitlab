@@ -56,6 +56,20 @@ RSpec.describe Ci::BuildFinishedWorker do
         subject
       end
 
+      context 'when exception is raised in `super`' do
+        before do
+          allow(::BuildHooksWorker)
+            .to receive(:perform_async)
+            .and_raise(ArgumentError)
+        end
+
+        it 'does not enqueue the worker in EE' do
+          expect { subject }.to raise_error(ArgumentError)
+
+          expect(::Security::TrackSecureScansWorker).not_to receive(:perform_async)
+        end
+      end
+
       context 'when build does not have a security report' do
         let(:build) { create(:ee_ci_build, :success, runner: ci_runner) }
 
