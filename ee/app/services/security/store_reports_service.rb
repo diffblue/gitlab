@@ -10,9 +10,9 @@ module Security
     end
 
     def execute
-      store_reports
-      mark_project_as_vulnerable!
       set_latest_pipeline!
+      mark_project_as_vulnerable!
+      store_reports
 
       errors.any? ? error(full_errors) : success
     end

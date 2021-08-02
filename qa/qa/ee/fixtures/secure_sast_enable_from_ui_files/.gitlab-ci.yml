@@ -2,9 +2,7 @@ include:
   template: License-Scanning.gitlab-ci.yml
 
 .sast-analyzer:
-  tags:
-    - qa
-    - test
+  tags: [secure_sast]
   script:
     - echo "Skipped"
   artifacts:
@@ -12,9 +10,7 @@ include:
       sast: gl-sast-report.json
 
 license_scanning:
-  tags:
-    - qa
-    - test
+  tags: [secure_sast]
   script:
     - echo "Skipped"
   artifacts:

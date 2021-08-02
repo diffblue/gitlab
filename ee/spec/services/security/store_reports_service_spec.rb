@@ -41,6 +41,26 @@ RSpec.describe Security::StoreReportsService do
         expect { execute_service_object }.to change { project.reload.vulnerability_statistic&.latest_pipeline_id }.from(nil).to(pipeline.id)
       end
 
+      context 'when the StoreReportService raises an error' do
+        let(:error) { RuntimeError.new('foo') }
+
+        before do
+          allow_next_instance_of(Security::StoreReportService) do |service_object|
+            allow(service_object).to receive(:execute).and_raise(error)
+          end
+        end
+
+        it 'marks the project as vulnerable' do
+          expect { execute_service_object }.to raise_error(error)
+                                           .and change { project.reload.project_setting.has_vulnerabilities }.from(false).to(true)
+        end
+
+        it 'updates the `latest_pipeline_id` attribute of the associated `vulnerability_statistic` record' do
+          expect { execute_service_object }.to raise_error(error)
+                                           .and change { project.reload.vulnerability_statistic&.latest_pipeline_id }.from(nil).to(pipeline.id)
+        end
+      end
+
       context 'when StoreReportService returns an error for a report' do
         let(:reports) { Gitlab::Ci::Reports::Security::Reports.new(pipeline) }
         let(:sast_report) { reports.get_report('sast', sast_artifact) }
