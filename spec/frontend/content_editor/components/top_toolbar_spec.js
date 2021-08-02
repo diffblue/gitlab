@@ -43,8 +43,10 @@ describe('content_editor/components/top_toolbar', () => {
     });
 
     it('renders the toolbar control with the provided properties', () => {
-      expect(wrapper.findByTestId(testId).props()).toEqual({
-        ...controlProps,
+      expect(wrapper.findByTestId(testId).exists()).toBe(true);
+
+      Object.keys(controlProps).forEach((propName) => {
+        expect(wrapper.findByTestId(testId).props(propName)).toBe(controlProps[propName]);
       });
     });
 
