@@ -9169,6 +9169,9 @@ msgstr ""
 msgid "CorpusManagement|Target"
 msgstr ""
 
+msgid "CorpusManagement|To use this corpus, edit the corresponding YAML file"
+msgstr ""
+
 msgid "CorpusManagement|Total Size: %{totalSize}"
 msgstr ""
 

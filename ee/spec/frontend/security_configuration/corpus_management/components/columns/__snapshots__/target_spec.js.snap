@@ -11,6 +11,7 @@ exports[`Target component renders target 1`] = `
 exports[`Target component without target renders Not Set with icon 1`] = `
 <span
   class="gl-text-gray-900"
+  title="To use this corpus, edit the corresponding YAML file"
 >
   <gl-icon-stub
     class="gl-mr-1"
