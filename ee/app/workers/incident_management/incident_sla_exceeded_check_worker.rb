@@ -5,6 +5,7 @@ module IncidentManagement
     include ApplicationWorker
 
     data_consistency :always
+    worker_resource_boundary :cpu
 
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 

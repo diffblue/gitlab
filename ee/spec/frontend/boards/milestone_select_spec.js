@@ -1,156 +1,142 @@
-import Vue from 'vue';
+import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import Vuex from 'vuex';
 import MilestoneSelect from 'ee/boards/components/milestone_select.vue';
+
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+
 import { boardObj } from 'jest/boards/mock_data';
-import Api from '~/api';
-import IssuableContext from '~/issuable_context';
+import { mockProjectMilestonesResponse, mockGroupMilestonesResponse } from 'jest/sidebar/mock_data';
 
-let vm;
+import defaultStore from '~/boards/stores';
+import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
+import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
+import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
-function selectedText() {
-  return vm.$el.querySelector('.value').innerText.trim();
-}
-
-function activeDropdownItem(index) {
-  const items = vm.$el.querySelectorAll('.is-active');
-  if (!items[index]) return '';
-  return items[index].innerText.trim();
-}
-
-const milestone = {
-  id: 1,
-  title: 'first milestone',
-  name: 'first milestone',
-  due_date: '2015-05-05',
-  expired: true,
-};
-
-const milestone2 = {
-  id: 2,
-  title: 'second milestone',
-  name: 'second milestone',
-  due_date: null,
-  expired: false,
-};
+const localVue = createLocalVue();
+localVue.use(VueApollo);
 
 describe('Milestone select component', () => {
-  beforeEach((done) => {
-    setFixtures('<div class="test-container"></div>');
+  let wrapper;
+  let fakeApollo;
+  let store;
 
-    // eslint-disable-next-line no-new
-    new IssuableContext();
+  const selectedText = () => wrapper.find('[data-testid="selected-milestone"]').text();
+  const findEditButton = () => wrapper.findComponent(GlButton);
+  const findDropdown = () => wrapper.findComponent(DropdownWidget);
 
-    const Component = Vue.extend(MilestoneSelect);
-    vm = new Component({
+  const milestonesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectMilestonesResponse);
+  const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupMilestonesResponse);
+
+  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
+    store = new Vuex.Store({
+      ...defaultStore,
+      getters: {
+        isGroupBoard: () => isGroupBoard,
+        isProjectBoard: () => isProjectBoard,
+      },
+    });
+  };
+
+  const createComponent = ({
+    props = {},
+    milestonesQueryHandler = milestonesQueryHandlerSuccess,
+  } = {}) => {
+    fakeApollo = createMockApollo([
+      [projectMilestonesQuery, milestonesQueryHandler],
+      [groupMilestonesQuery, groupUsersQueryHandlerSuccess],
+    ]);
+    wrapper = shallowMount(MilestoneSelect, {
+      localVue,
+      store,
+      apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
-        groupId: 2,
-        projectId: 2,
         canEdit: true,
+        ...props,
       },
-    }).$mount('.test-container');
+      provide: {
+        fullPath: 'gitlab-org',
+      },
+      stubs: {
+        GlDropdown,
+        GlDropdownItem,
+      },
+    });
 
-    setImmediate(done);
+    // We need to mock out `showDropdown` which
+    // invokes `show` method of BDropdown used inside GlDropdown.
+    jest.spyOn(wrapper.vm, 'showDropdown').mockImplementation();
+  };
+
+  beforeEach(() => {
+    createStore({ isProjectBoard: true });
+    createComponent();
+  });
+
+  afterEach(() => {
+    wrapper.destroy();
+    fakeApollo = null;
+    store = null;
+  });
+
+  describe('when not editing', () => {
+    it('defaults to Any milestone', () => {
+      expect(selectedText()).toContain('Any Milestone');
+    });
+
+    it('skips the queries and does not render dropdown', () => {
+      expect(milestonesQueryHandlerSuccess).not.toHaveBeenCalled();
+      expect(findDropdown().isVisible()).toBe(false);
+    });
+  });
+
+  describe('when editing', () => {
+    it('trigger query and renders dropdown with passed milestones', async () => {
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      await nextTick();
+      expect(milestonesQueryHandlerSuccess).toHaveBeenCalled();
+
+      expect(findDropdown().isVisible()).toBe(true);
+      expect(findDropdown().props('options')).toHaveLength(2);
+    });
   });
 
   describe('canEdit', () => {
-    it('hides Edit button', (done) => {
-      vm.canEdit = false;
-      Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.edit-link')).toBeFalsy();
-        done();
-      });
+    it('hides Edit button', async () => {
+      wrapper.setProps({ canEdit: false });
+      await nextTick();
+
+      expect(findEditButton().exists()).toBe(false);
     });
 
-    it('shows Edit button if true', (done) => {
-      vm.canEdit = true;
-      Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.edit-link')).toBeTruthy();
-        done();
-      });
+    it('shows Edit button if true', () => {
+      expect(findEditButton().exists()).toBe(true);
     });
   });
 
-  describe('selected value', () => {
-    it('defaults to Any milestone', () => {
-      expect(selectedText()).toContain('Any milestone');
-    });
-
-    it('shows No milestone', (done) => {
-      vm.board.milestone_id = 0;
-      Vue.nextTick(() => {
-        expect(selectedText()).toContain('No milestone');
-        done();
-      });
-    });
-
-    it('shows selected milestone title', (done) => {
-      vm.board.milestone_id = 20;
-      vm.board.milestone = {
-        id: 20,
-        title: 'Selected milestone',
-      };
-      Vue.nextTick(() => {
-        expect(selectedText()).toContain('Selected milestone');
-        done();
-      });
-    });
-
-    describe('clicking dropdown items', () => {
-      beforeEach(() => {
-        jest.spyOn(Api, 'projectMilestones').mockResolvedValue({ data: [milestone, milestone2] });
+  it.each`
+    boardType    | mockedResponse                   | queryHandler                     | notCalledHandler
+    ${'group'}   | ${mockGroupMilestonesResponse}   | ${groupUsersQueryHandlerSuccess} | ${milestonesQueryHandlerSuccess}
+    ${'project'} | ${mockProjectMilestonesResponse} | ${milestonesQueryHandlerSuccess} | ${groupUsersQueryHandlerSuccess}
+  `(
+    'fetches $boardType milestones',
+    async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
+      createStore({ isProjectBoard: boardType === 'project', isGroupBoard: boardType === 'group' });
+      createComponent({
+        [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
       });
 
-      it('sets Any milestone', async (done) => {
-        vm.board.milestone_id = 0;
-        vm.$el.querySelector('.edit-link').click();
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      await nextTick();
 
-        await vm.$nextTick();
-        jest.runOnlyPendingTimers();
-
-        setImmediate(() => {
-          vm.$el.querySelectorAll('li a')[0].click();
-        });
-
-        setImmediate(() => {
-          expect(activeDropdownItem(0)).toEqual('Any milestone');
-          expect(selectedText()).toEqual('Any milestone');
-          done();
-        });
-      });
-
-      it('sets No milestone', (done) => {
-        vm.$el.querySelector('.edit-link').click();
-
-        jest.runOnlyPendingTimers();
-
-        setImmediate(() => {
-          vm.$el.querySelectorAll('li a')[1].click();
-        });
-
-        setImmediate(() => {
-          expect(activeDropdownItem(0)).toEqual('No milestone');
-          expect(selectedText()).toEqual('No milestone');
-          done();
-        });
-      });
-
-      it('sets milestone', (done) => {
-        vm.$el.querySelector('.edit-link').click();
-
-        jest.runOnlyPendingTimers();
-
-        setImmediate(() => {
-          vm.$el.querySelectorAll('li a')[4].click();
-        });
-
-        setImmediate(() => {
-          // "second milestone" is not expired, hence it shows up to the top.
-          expect(activeDropdownItem(0)).toBe('second milestone');
-          expect(selectedText()).toBe('second milestone');
-          expect(vm.board.milestone).toEqual(milestone2);
-          done();
-        });
-      });
-    });
-  });
+      expect(queryHandler).toHaveBeenCalled();
+      expect(notCalledHandler).not.toHaveBeenCalled();
+    },
+  );
 });

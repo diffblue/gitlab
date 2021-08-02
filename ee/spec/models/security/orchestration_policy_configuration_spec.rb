@@ -191,6 +191,41 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
       it { is_expected.to eq(true) }
     end
+
+    context 'when policy is passed as argument' do
+      let_it_be(:policy_yaml) { nil }
+      let_it_be(:policy) do
+        {
+          scan_execution_policy: [
+            {
+              name: 'Run Scan in every pipeline',
+              description: 'This policy enforces to security scan for every pipeline within the project',
+              enabled: true,
+              rules: [{ type: 'pipeline', branches: %w[production] }],
+              actions: [
+                { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
+              ]
+            }
+          ]
+        }
+      end
+
+      context 'when scan type is secret_detection' do
+        it 'returns false if extra fields are present' do
+          invalid_policy = policy.deep_dup
+          invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
+
+          expect(security_orchestration_policy_configuration.policy_configuration_valid?(invalid_policy)).to be_falsey
+        end
+
+        it 'returns true if extra fields are not present' do
+          valid_policy = policy.deep_dup
+          valid_policy[:scan_execution_policy][0][:actions][0] = { scan: 'secret_detection' }
+
+          expect(security_orchestration_policy_configuration.policy_configuration_valid?(valid_policy)).to be_truthy
+        end
+      end
+    end
   end
 
   describe '#active_policies' do

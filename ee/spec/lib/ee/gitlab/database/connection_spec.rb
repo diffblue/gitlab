@@ -7,47 +7,6 @@ RSpec.describe Gitlab::Database::Connection do
 
   let(:connection) { described_class.new }
 
-  describe '#read_only?' do
-    context 'with Geo enabled' do
-      before do
-        allow(Gitlab::Geo).to receive(:enabled?) { true }
-        allow(Gitlab::Geo).to receive(:current_node) { geo_node }
-      end
-
-      context 'is Geo secondary node' do
-        let(:geo_node) { create(:geo_node) }
-
-        it 'returns true' do
-          expect(connection.read_only?).to be_truthy
-        end
-      end
-
-      context 'is Geo primary node' do
-        let(:geo_node) { create(:geo_node, :primary) }
-
-        it 'returns false when is Geo primary node' do
-          expect(connection.read_only?).to be_falsey
-        end
-      end
-    end
-
-    context 'with Geo disabled' do
-      it 'returns false' do
-        expect(connection.read_only?).to be_falsey
-      end
-    end
-
-    context 'in maintenance mode' do
-      before do
-        stub_maintenance_mode_setting(true)
-      end
-
-      it 'returns true' do
-        expect(connection.read_only?).to be_truthy
-      end
-    end
-  end
-
   describe '#healthy?' do
     it 'returns true when replication lag is not too great' do
       allow(Postgresql::ReplicationSlot).to receive(:lag_too_great?).and_return(false)

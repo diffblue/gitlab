@@ -189,26 +189,6 @@ RSpec.describe Vulnerabilities::Feedback do
     end
   end
 
-  # TODO remove once filtered data has been cleaned
-  describe '::only_valid_feedback' do
-    let(:project) { create(:project) }
-    let(:pipeline) { create(:ci_pipeline, project: project) }
-
-    let!(:feedback) { create(:vulnerability_feedback, :dismissal, :sast, project: project, pipeline: pipeline) }
-    let!(:invalid_feedback) do
-      feedback = build(:vulnerability_feedback, project: project, pipeline: create(:ci_pipeline))
-
-      feedback.save(validate: false)
-    end
-
-    it 'filters out invalid feedback' do
-      feedback_records = described_class.only_valid_feedback
-
-      expect(feedback_records.length).to eq 1
-      expect(feedback_records.first).to eq feedback
-    end
-  end
-
   describe '#has_comment?' do
     let_it_be(:project) { create(:project) }
 

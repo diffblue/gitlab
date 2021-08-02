@@ -8,9 +8,7 @@ module Vulnerabilities
     include VulnerabilityFindingSignatureHelpers
 
     belongs_to :finding, foreign_key: 'finding_id', inverse_of: :signatures, class_name: 'Vulnerabilities::Finding'
-
-    enum algorithm_type: { hash: 1, location: 2, scope_offset: 3 }, _prefix: :algorithm
-
+    enum algorithm_type: VulnerabilityFindingSignatureHelpers::ALGORITHM_TYPES, _prefix: :algorithm
     validates :finding, presence: true
 
     def signature_hex

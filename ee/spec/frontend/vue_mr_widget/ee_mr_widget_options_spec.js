@@ -30,7 +30,7 @@ import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/consta
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
 import _Deployment from '~/vue_merge_request_widget/components/deployment/deployment.vue';
-import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/queries/security_report_merge_request_download_paths.query.graphql';
+import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 
 import mockData, {
   baseBrowserPerformance,
