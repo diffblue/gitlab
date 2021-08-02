@@ -370,10 +370,15 @@ RSpec.describe Gitlab::Elastic::Indexer do
       index_repository(project)
     end
 
-    it 'does not index that file' do
+    it 'indexes the file with empty content' do
       files = indexed_file_paths_for('file')
-      expect(files).to include('small_file.txt')
-      expect(files).not_to include('large_file.txt')
+      expect(files).to include('small_file.txt', 'large_file.txt')
+
+      blobs = Repository.elastic_search('large_file', type: 'blob')[:blobs][:results].response
+      large_file_blob = blobs.find do |blob|
+        'large_file.txt' == blob['_source']['blob']['path']
+      end
+      expect(large_file_blob['_source']['blob']['content']).to eq('')
     end
   end
 
