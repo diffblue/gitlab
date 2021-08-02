@@ -184,30 +184,30 @@ RSpec.describe TrialsController do
         subject
       end
 
-      context 'in discover group security flow' do
-        let(:post_params) { { namespace_id: namespace.id, glm_content: 'discover-group-security' } }
+      context 'redirect trial user to feature' do
+        using RSpec::Parameterized::TableSyntax
 
-        context 'with redirect_trial_user_to_feature experiment variant' do
-          before do
-            stub_experiments(redirect_trial_user_to_feature: :candidate)
-          end
-
-          it { is_expected.to redirect_to(group_security_dashboard_url(namespace, { trial: true })) }
-          it 'records the subject' do
-            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: :experimental, subject: namespace)
-
-            subject
-          end
+        where(:segment, :glm_content, :redirect) do
+          :control | 'discover-group-security' | :group_url
+          :candidate | 'discover-group-security' | :group_security_dashboard_url
+          :control | 'discover-project-security' | :group_url
+          :candidate | 'discover-project-security' | :group_security_dashboard_url
         end
 
-        context 'with redirect_trial_user_to_feature experiment control' do
-          before do
-            stub_experiments(redirect_trial_user_to_feature: :control)
+        with_them do
+          let(:post_params) { { namespace_id: namespace.id, glm_content: glm_content } }
+          let(:variant) { segment == :control ? :control : :experimental }
+          let(:redirect_url) do
+            redirect == :group_url ? group_url(namespace, { trial: true }) : group_security_dashboard_url(namespace, { trial: true })
           end
 
-          it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+          before do
+            stub_experiments(redirect_trial_user_to_feature: segment)
+          end
+
+          it { is_expected.to redirect_to(redirect_url) }
           it 'records the subject' do
-            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: :control, subject: namespace)
+            expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: variant, subject: namespace)
 
             subject
           end
