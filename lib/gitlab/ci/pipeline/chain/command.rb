@@ -107,10 +107,6 @@ module Gitlab
               .increment(reason: (reason || :unknown_failure).to_s)
           end
 
-          def dangling_build?
-            %i[ondemand_dast_scan webide].include?(source)
-          end
-
           private
 
           # Verifies that origin_ref is a fully qualified tag reference (refs/tags/<tag-name>)
