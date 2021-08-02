@@ -1,4 +1,3 @@
-import assignPolicyProject from 'ee/threat_monitoring/graphql/mutations/assign_policy_project.mutation.graphql';
 import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/threat_monitoring/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/threat_monitoring/utils';
@@ -23,7 +22,7 @@ const checkForErrors = ({ errors }) => {
 const assignSecurityPolicyProject = async (projectPath) => {
   const {
     data: {
-      securityPolicyProjectCreate: { project, errors: createErrors },
+      securityPolicyProjectCreate: { project, errors },
     },
   } = await gqClient.mutate({
     mutation: createPolicyProject,
@@ -32,21 +31,7 @@ const assignSecurityPolicyProject = async (projectPath) => {
     },
   });
 
-  checkForErrors({ errors: createErrors });
-
-  const {
-    data: {
-      securityPolicyProjectAssign: { errors: assignErrors },
-    },
-  } = await gqClient.mutate({
-    mutation: assignPolicyProject,
-    variables: {
-      projectPath,
-      id: project.id,
-    },
-  });
-
-  return { ...project, errors: assignErrors };
+  return { ...project, errors };
 };
 
 /**

@@ -1,6 +1,5 @@
 import { savePolicy } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
-import assignPolicyProject from 'ee/threat_monitoring/graphql/mutations/assign_policy_project.mutation.graphql';
 import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/threat_monitoring/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/threat_monitoring/utils';
@@ -29,12 +28,6 @@ const mockApolloResponses = (shouldReject) => {
             project: newAssignedPolicyProject,
             errors: [],
           },
-        },
-      });
-    } else if (mutation === assignPolicyProject) {
-      return Promise.resolve({
-        data: {
-          securityPolicyProjectAssign: { errors: [] },
         },
       });
     } else if (mutation === createScanExecutionPolicy) {
