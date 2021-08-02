@@ -13,7 +13,8 @@ module IncidentManagement
       feature_category :incident_management
 
       def perform(alert_id)
-        alert = ::AlertManagement::Alert.find(alert_id)
+        alert = ::AlertManagement::Alert.find_by_id(alert_id)
+        return unless alert
 
         ::IncidentManagement::PendingEscalations::CreateService.new(alert).execute
       end
