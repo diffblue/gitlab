@@ -129,13 +129,6 @@ export default {
             type: 'slider',
             startValue: this.chartStartDate,
             handleIcon: this.svgs['scroll-handle'],
-            dataBackground: {
-              lineStyle: {
-                width: 1,
-                color: '#bfbfbf',
-              },
-              areaStyle: null,
-            },
           },
         ],
         toolbox: {
