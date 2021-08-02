@@ -38,13 +38,6 @@ module Vulnerabilities
     after_save :touch_pipeline, if: :for_dismissal?
     after_destroy :touch_pipeline, if: :for_dismissal?
 
-    # TODO remove once filtered data has been cleaned
-    def self.only_valid_feedback
-      pipeline = Ci::Pipeline.arel_table
-      feedback = arel_table
-      joins(:pipeline).where(pipeline[:project_id].eq(feedback[:project_id]))
-    end
-
     def self.find_or_init_for(feedback_params)
       validate_enums(feedback_params)
 

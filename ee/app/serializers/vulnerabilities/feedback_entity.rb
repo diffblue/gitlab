@@ -14,7 +14,8 @@ class Vulnerabilities::FeedbackEntity < Grape::Entity
   end
   expose :finding_uuid
 
-  expose :pipeline, if: -> (feedback, _) { feedback.pipeline.present? } do
+  # TODO: Remove project_id comparison once bad/invalid data has been deleted https://gitlab.com/gitlab-org/gitlab/-/issues/218837
+  expose :pipeline, if: -> (feedback, _) { feedback.pipeline.present? && feedback.pipeline.project_id == feedback.project_id } do
     expose :id do |feedback|
       feedback.pipeline.id
     end
