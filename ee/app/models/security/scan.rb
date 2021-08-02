@@ -11,8 +11,8 @@ module Security
     validates :info, json_schema: { filename: 'security_scan_info', draft: 7 }
 
     belongs_to :build, class_name: 'Ci::Build'
-
-    has_one :pipeline, class_name: 'Ci::Pipeline', through: :build
+    belongs_to :project
+    belongs_to :pipeline, class_name: 'Ci::Pipeline'
 
     has_many :findings, inverse_of: :scan
 
@@ -33,14 +33,14 @@ module Security
       # The `category` enum on `vulnerability_feedback` table starts from 0 but the `scan_type` enum
       # on `security_scans` from 1. For this reason, we have to decrease the value of `scan_type` by one
       # to match with category values on `vulnerability_feedback` table.
-      joins(build: { project: :vulnerability_feedback })
+      joins(project: :vulnerability_feedback)
         .where('vulnerability_feedback.category = (security_scans.scan_type - 1)')
         .merge(Vulnerabilities::Feedback.for_dismissal)
     end
 
     scope :latest_successful_by_build, -> { joins(:build).where(ci_builds: { status: 'success', retried: [nil, false] }) }
 
-    delegate :project, :name, to: :build
+    delegate :name, to: :build
 
     before_save :ensure_project_id_pipeline_id
 

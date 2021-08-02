@@ -17,7 +17,7 @@ module EE
 
         # Subscriptions to this pipeline
         has_many :downstream_bridges, class_name: '::Ci::Bridge', foreign_key: :upstream_pipeline_id
-        has_many :security_scans, class_name: 'Security::Scan', through: :builds
+        has_many :security_scans, class_name: 'Security::Scan', inverse_of: :pipeline
         has_many :security_findings, class_name: 'Security::Finding', through: :security_scans, source: :findings
 
         has_one :dast_profiles_pipeline, class_name: 'Dast::ProfilesPipeline', foreign_key: :ci_pipeline_id

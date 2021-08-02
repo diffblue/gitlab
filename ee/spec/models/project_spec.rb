@@ -62,6 +62,8 @@ RSpec.describe Project do
     it { is_expected.to have_many(:incident_management_oncall_rotations).through(:incident_management_oncall_schedules).source(:rotations) }
     it { is_expected.to have_many(:incident_management_escalation_policies).class_name('IncidentManagement::EscalationPolicy') }
 
+    it { is_expected.to have_many(:security_scans) }
+
     include_examples 'ci_cd_settings delegation'
 
     describe '#merge_pipelines_enabled?' do
