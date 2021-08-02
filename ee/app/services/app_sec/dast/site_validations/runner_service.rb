@@ -8,7 +8,7 @@ module AppSec
           return ServiceResponse.error(message: _('Insufficient permissions')) unless allowed?
 
           service = Ci::CreatePipelineService.new(project, current_user, ref: project.default_branch_or_main)
-          result = service.execute(:ondemand_dast_scan, content: ci_configuration.to_yaml, variables_attributes: dast_site_validation_variables)
+          result = service.execute(:ondemand_dast_validation, content: ci_configuration.to_yaml, variables_attributes: dast_site_validation_variables)
 
           if result.success?
             ServiceResponse.success(payload: dast_site_validation)
