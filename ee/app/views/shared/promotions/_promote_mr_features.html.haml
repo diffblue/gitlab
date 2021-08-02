@@ -12,7 +12,7 @@
         %ul
           - unless @project.feature_available?(:merge_request_approvers)
             %li
-              = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/merge_request_approvals.md'), target: '_blank'
+              = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/approvals/index.md'), target: '_blank'
               %p
                 = s_('Promotions|Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
 
