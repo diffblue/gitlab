@@ -325,6 +325,39 @@ RSpec.describe Ci::Build do
         expect(requirement_variable).to be_nil
       end
     end
+
+    describe 'kubernetes variables' do
+      let(:service) { double(execute: template) }
+      let(:template) { double(to_yaml: 'example-kubeconfig', valid?: template_valid) }
+      let(:template_valid) { true }
+
+      before do
+        allow(::Ci::GenerateKubeconfigService).to receive(:new).with(job).and_return(service)
+      end
+
+      it { is_expected.to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
+
+      context 'feature flag is disabled' do
+        before do
+          stub_feature_flags(agent_kubeconfig_ci_variable: false)
+        end
+
+        it { is_expected.not_to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
+      end
+
+      context 'job is deploying to a cluster' do
+        let(:deployment) { create(:deployment, deployment_cluster: create(:deployment_cluster)) }
+        let(:job) { create(:ci_build, pipeline: pipeline, deployment: deployment) }
+
+        it { is_expected.not_to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
+      end
+
+      context 'generated config is invalid' do
+        let(:template_valid) { false }
+
+        it { is_expected.not_to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
+      end
+    end
   end
 
   describe '#has_security_reports?' do
