@@ -143,8 +143,8 @@ export default {
       </div>
       <gl-alert
         class="gl-my-4"
-        title="$options.i18n.surveyAlertTitle"
-        primary-button-text="$options.i18n.surveyAlertButtonLabel"
+        :title="$options.i18n.surveyAlertTitle"
+        :primary-button-text="$options.i18n.surveyAlertButtonLabel"
         variant="info"
         dismissible
         dismiss-label="Dismiss"
