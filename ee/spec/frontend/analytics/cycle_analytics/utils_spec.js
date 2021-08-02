@@ -151,7 +151,7 @@ describe('Value Stream Analytics utils', () => {
 
   describe('transformRawStages', () => {
     it('retains all the stage properties', () => {
-      const transformed = transformRawStages([issueStage, rawCustomStage]);
+      const transformed = transformRawStages([rawCustomStage]);
       expect(transformed).toMatchSnapshot();
     });
 

@@ -140,17 +140,15 @@ export const stageCounts = rawStageCounts.reduce((acc, { id: name, count }) => {
 }, {});
 
 export const issueEvents = deepCamelCase(stageFixtures.issue);
-export const planEvents = deepCamelCase(stageFixtures.plan);
 export const reviewEvents = deepCamelCase(stageFixtures.review);
-export const codeEvents = deepCamelCase(stageFixtures.code);
 export const testEvents = deepCamelCase(stageFixtures.test);
 export const stagingEvents = deepCamelCase(stageFixtures.staging);
 export const rawCustomStage = {
   name: 'Coolest beans stage',
   title: 'Coolest beans stage',
   hidden: false,
-  legend: '',
-  description: '',
+  legend: 'Cool legend',
+  description: 'Time before an issue gets scheduled',
   id: 18,
   custom: true,
   start_event_identifier: 'issue_first_mentioned_in_commit',
