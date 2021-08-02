@@ -78,4 +78,19 @@ describe('Value Stream Analytics actions / filters', () => {
       });
     });
   });
+
+  describe('updateStageTablePagination', () => {
+    beforeEach(() => {
+      state = { ...state, selectedStage };
+    });
+
+    it(`will dispatch the "fetchStageData" action and commit the ${types.SET_PAGINATION} mutation`, () => {
+      return testAction({
+        action: actions.updateStageTablePagination,
+        state,
+        expectedMutations: [{ type: types.SET_PAGINATION }],
+        expectedActions: [{ type: 'fetchStageData', payload: selectedStage.id }],
+      });
+    });
+  });
 });

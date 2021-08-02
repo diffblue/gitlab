@@ -129,6 +129,24 @@ describe('Value Stream Analytics actions / value streams', () => {
     });
   });
 
+  describe('receiveCreateValueStreamSuccess', () => {
+    beforeEach(() => {
+      state = { ...state, valueStream: {} };
+    });
+
+    it(`will dispatch the "fetchCycleAnalyticsData" action and commit the ${types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS} mutation`, () => {
+      return testAction({
+        action: actions.receiveCreateValueStreamSuccess,
+        payload: selectedValueStream,
+        state,
+        expectedMutations: [
+          { type: types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS, payload: selectedValueStream },
+        ],
+        expectedActions: [{ type: 'fetchCycleAnalyticsData' }],
+      });
+    });
+  });
+
   describe('updateValueStream', () => {
     const payload = {
       name: 'cool value stream',

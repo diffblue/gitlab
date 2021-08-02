@@ -6,6 +6,11 @@ import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, currentGroup } from 'jest/cycle_analytics/mock_data';
+import {
+  I18N_VSA_ERROR_STAGES,
+  I18N_VSA_ERROR_STAGE_MEDIAN,
+  I18N_VSA_ERROR_SELECTED_STAGE,
+} from '~/cycle_analytics/constants';
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
@@ -26,9 +31,15 @@ const [selectedStage] = activeStages;
 const selectedStageSlug = selectedStage.slug;
 const [selectedValueStream] = valueStreams;
 
+const selectedProjectIds = [1, 2];
+
 const mockGetters = {
   currentGroupPath: () => currentGroup.fullPath,
   currentValueStreamId: () => selectedValueStream.id,
+  cycleAnalyticsRequestParams: () => ({
+    created_after: createdAfter,
+    project_ids: selectedProjectIds,
+  }),
 };
 
 jest.mock('~/flash');
@@ -74,6 +85,15 @@ describe('Value Stream Analytics actions / stages', () => {
         [],
         [{ type: 'setSelectedStage', payload: OVERVIEW_STAGE_CONFIG }],
       );
+    });
+  });
+
+  describe('requestStageData', () => {
+    it(`commits the ${types.REQUEST_STAGE_DATA} mutation`, () => {
+      return testAction({
+        action: actions.requestStageData,
+        expectedMutations: [{ type: types.REQUEST_STAGE_DATA }],
+      });
     });
   });
 
@@ -182,8 +202,15 @@ describe('Value Stream Analytics actions / stages', () => {
 
     it('will flash an error message', () => {
       actions.receiveStageDataError({ commit: () => {} }, {});
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'There was an error fetching data for the selected stage',
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
+    });
+  });
+
+  describe('requestStageMedianValues', () => {
+    it(`commits the ${types.REQUEST_STAGE_MEDIANS} mutation`, () => {
+      return testAction({
+        action: actions.requestStageMedianValues,
+        expectedMutations: [{ type: types.REQUEST_STAGE_MEDIANS }],
       });
     });
   });
@@ -284,9 +311,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
     it('will flash an error message', () => {
       actions.receiveStageMedianValuesError({ commit: () => {} });
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'There was an error fetching median data for stages',
-      });
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
   });
 
@@ -318,6 +343,32 @@ describe('Value Stream Analytics actions / stages', () => {
     });
   });
 
+  describe('requestGroupStages', () => {
+    it(`commits the ${types.REQUEST_GROUP_STAGES} mutation`, () => {
+      return testAction({
+        action: actions.requestGroupStages,
+        expectedMutations: [{ type: types.REQUEST_GROUP_STAGES }],
+      });
+    });
+  });
+
+  describe('receiveGroupStagesError', () => {
+    it(`commits the ${types.RECEIVE_GROUP_STAGES_ERROR} mutation`, () => {
+      return testAction({
+        action: actions.receiveGroupStagesError,
+        expectedMutations: [{ type: types.RECEIVE_GROUP_STAGES_ERROR }],
+      });
+    });
+
+    it('will flash an error message', async () => {
+      expect(createFlash).not.toHaveBeenCalled();
+
+      await actions.receiveGroupStagesError({ commit: () => {} });
+
+      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
+    });
+  });
+
   describe('receiveGroupStagesSuccess', () => {
     it(`commits the ${types.RECEIVE_GROUP_STAGES_SUCCESS} mutation'`, () => {
       return testAction(
@@ -332,6 +383,58 @@ describe('Value Stream Analytics actions / stages', () => {
         ],
         [],
       );
+    });
+  });
+
+  describe('fetchGroupStagesAndEvents', () => {
+    const { stages: groupStages, events } = customizableStagesAndEvents;
+
+    beforeEach(() => {
+      state = { ...state, ...mockGetters };
+      mock = new MockAdapter(axios);
+      mock
+        .onGet(endpoints.baseStagesEndpoint)
+        .reply(httpStatusCodes.OK, customizableStagesAndEvents);
+    });
+
+    it(`commits ${types.RECEIVE_STAGE_DATA_SUCCESS} with received data and headers on success`, () => {
+      return testAction({
+        action: actions.fetchGroupStagesAndEvents,
+        state,
+        expectedMutations: [
+          { type: types.SET_STAGE_EVENTS, payload: [] },
+          {
+            type: types.SET_STAGE_EVENTS,
+            payload: events,
+          },
+        ],
+        expectedActions: [
+          { type: 'requestGroupStages' },
+          { type: 'receiveGroupStagesSuccess', payload: groupStages },
+        ],
+      });
+    });
+
+    describe('with a failing request', () => {
+      beforeEach(() => {
+        mock = new MockAdapter(axios);
+        mock.onGet(endpoints.baseStagesEndpoint).replyOnce(httpStatusCodes.NOT_FOUND, { error });
+      });
+
+      it('dispatches receiveGroupStagesError on error', () => {
+        return testAction({
+          action: actions.fetchGroupStagesAndEvents,
+          state,
+          expectedMutations: [{ type: types.SET_STAGE_EVENTS, payload: [] }],
+          expectedActions: [
+            { type: 'requestGroupStages' },
+            {
+              type: 'receiveGroupStagesError',
+              payload: error,
+            },
+          ],
+        });
+      });
     });
   });
 });

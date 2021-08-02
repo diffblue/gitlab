@@ -5,6 +5,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, currentGroup } from 'jest/cycle_analytics/mock_data';
+import { I18N_VSA_ERROR_STAGES, I18N_VSA_ERROR_STAGE_MEDIAN } from '~/cycle_analytics/constants';
 import createFlash from '~/flash';
 import { allowedStages as stages, valueStreams } from '../mock_data';
 
@@ -149,9 +150,7 @@ describe('Value Stream Analytics actions', () => {
           commit: () => {},
         })
         .then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error fetching median data for stages',
-          });
+          expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
         });
     });
 
@@ -176,7 +175,7 @@ describe('Value Stream Analytics actions', () => {
         })
         .then(() => {
           expect(createFlash).toHaveBeenCalledWith({
-            message: 'There was an error fetching value stream analytics stages.',
+            message: I18N_VSA_ERROR_STAGES,
           });
         });
     });

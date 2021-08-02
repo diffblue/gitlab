@@ -1,8 +1,12 @@
 import Api from 'ee/api';
 import { getValueStreamStageMedian } from '~/api/analytics_api';
+import {
+  I18N_VSA_ERROR_STAGES,
+  I18N_VSA_ERROR_STAGE_MEDIAN,
+  I18N_VSA_ERROR_SELECTED_STAGE,
+} from '~/cycle_analytics/constants';
 import createFlash from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
-import { __ } from '~/locale';
 import { OVERVIEW_STAGE_CONFIG } from '../../constants';
 import { checkForDataError, flashErrorIfStatusNotOk, throwIfUserForbidden } from '../../utils';
 import * as types from '../mutation_types';
@@ -16,10 +20,7 @@ export const requestStageData = ({ commit }) => commit(types.REQUEST_STAGE_DATA)
 
 export const receiveStageDataError = ({ commit }, error) => {
   const { message = '' } = error;
-  flashErrorIfStatusNotOk({
-    error,
-    message: __('There was an error fetching data for the selected stage'),
-  });
+  flashErrorIfStatusNotOk({ error, message: I18N_VSA_ERROR_SELECTED_STAGE });
   commit(types.RECEIVE_STAGE_DATA_ERROR, message);
 };
 
@@ -54,9 +55,7 @@ export const requestStageMedianValues = ({ commit }) => commit(types.REQUEST_STA
 
 export const receiveStageMedianValuesError = ({ commit }, error) => {
   commit(types.RECEIVE_STAGE_MEDIANS_ERROR, error);
-  createFlash({
-    message: __('There was an error fetching median data for stages'),
-  });
+  createFlash({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
 };
 
 const fetchStageMedian = ({ groupId, valueStreamId, stageId, params }) =>
@@ -137,9 +136,7 @@ export const requestGroupStages = ({ commit }) => commit(types.REQUEST_GROUP_STA
 
 export const receiveGroupStagesError = ({ commit }, error) => {
   commit(types.RECEIVE_GROUP_STAGES_ERROR, error);
-  createFlash({
-    message: __('There was an error fetching value stream analytics stages.'),
-  });
+  createFlash({ message: I18N_VSA_ERROR_STAGES });
 };
 
 export const receiveGroupStagesSuccess = ({ commit }, stages) =>
