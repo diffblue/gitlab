@@ -135,7 +135,8 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report do
 
     it 'does not duplicate same vulnerability for dependency' do
       vulnerabilities = [{ name: 'problem', severity: 'high', id: 2, url: 'some_url_2' },
-                         { name: 'problem2', severity: 'medium', id: 4, url: 'some_url_4' }]
+                         { name: 'problem2', severity: 'medium', id: 4, url: 'some_url_4' },
+                         { name: 'problem3', severity: 'medium', id: nil, url: nil }]
 
       dependency[:vulnerabilities] = [vulnerabilities.first]
       with_extra_vuln_from_another_report = dependency.dup.merge(vulnerabilities: vulnerabilities)
