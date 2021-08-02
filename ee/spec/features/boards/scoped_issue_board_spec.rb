@@ -65,8 +65,8 @@ RSpec.describe 'Scoped issue boards', :js do
           expect(page).to have_selector('.board-card', count: 2)
         end
 
-        it 'creates board filtering by Any milestone' do
-          create_board_milestone('Any milestone')
+        it 'creates board filtering by Any Milestone' do
+          create_board_milestone('Any Milestone')
 
           expect(find('.tokens-container')).to have_content("")
           expect(page).to have_selector('.board-card', count: 3)
@@ -228,7 +228,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
         edit_board.click
 
-        expect(find('.milestone .value')).to have_content(milestone.title)
+        expect(find('[data-testid="selected-milestone"]')).to have_content(milestone.title)
         expect(find('[data-testid="selected-assignee"]')).to have_content(user.name)
         expect(find('.weight .value')).to have_content(2)
       end
@@ -242,7 +242,7 @@ RSpec.describe 'Scoped issue boards', :js do
         end
 
         it 'sets board to any milestone' do
-          update_board_milestone('Any milestone')
+          update_board_milestone('Any Milestone')
 
           expect(find('.tokens-container')).not_to have_content(milestone.title)
 

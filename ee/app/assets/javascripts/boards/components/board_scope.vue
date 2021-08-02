@@ -101,6 +101,7 @@ export default {
         :group-id="groupId"
         :project-id="projectId"
         :can-edit="canAdminBoard"
+        @set-milestone="$emit('set-milestone', $event)"
       />
 
       <board-scope-current-iteration

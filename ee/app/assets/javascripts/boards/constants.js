@@ -55,6 +55,30 @@ export const MilestoneIDs = {
   NONE: 0,
 };
 
+export const ANY_MILESTONE = {
+  id: 'gid://gitlab/Milestone/-1',
+  title: s__('BoardScope|Any Milestone'),
+};
+export const NO_MILESTONE = {
+  id: 'gid://gitlab/Milestone/0',
+  title: s__('BoardScope|No milestone'),
+};
+export const UPCOMING_MILESTONE = {
+  id: 'gid://gitlab/Milestone/-2',
+  title: s__('BoardScope|Upcoming'),
+};
+export const STARTED_MILESTONE = {
+  id: 'gid://gitlab/Milestone/-3',
+  title: s__('BoardScope|Started'),
+};
+
+export const MilestonesPreset = [
+  ANY_MILESTONE,
+  NO_MILESTONE,
+  UPCOMING_MILESTONE,
+  STARTED_MILESTONE,
+];
+
 export const WeightFilterType = {
   none: 'None',
 };

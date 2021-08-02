@@ -37,6 +37,7 @@ describe('BoardScope', () => {
       },
       stubs: {
         AssigneeSelect: true,
+        BoardMilestoneSelect: true,
       },
     });
   }
