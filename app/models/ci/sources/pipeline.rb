@@ -3,6 +3,8 @@
 module Ci
   module Sources
     class Pipeline < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
+
       self.table_name = "ci_sources_pipelines"
 
       belongs_to :project, class_name: "Project"

@@ -2,6 +2,8 @@
 
 module Ci
   class PipelineChatData < Ci::ApplicationRecord
+    include Ci::NamespacedModelName
+
     self.table_name = 'ci_pipeline_chat_data'
 
     belongs_to :chat_name

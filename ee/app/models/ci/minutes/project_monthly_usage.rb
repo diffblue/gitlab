@@ -5,6 +5,8 @@ module Ci
     # Track usage of Shared Runners minutes at root project level.
     # This class ensures that we keep 1 record per project per month.
     class ProjectMonthlyUsage < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
+
       belongs_to :project
 
       scope :current_month, -> { where(date: beginning_of_month) }

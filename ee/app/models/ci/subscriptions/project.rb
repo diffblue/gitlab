@@ -3,6 +3,7 @@
 module Ci
   module Subscriptions
     class Project < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
       include ::Limitable
 
       self.table_name = 'ci_subscriptions_projects'

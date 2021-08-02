@@ -3,6 +3,7 @@
 module Ci
   class FreezePeriod < Ci::ApplicationRecord
     include StripAttribute
+    include Ci::NamespacedModelName
 
     default_scope { order(created_at: :asc) } # rubocop:disable Cop/DefaultScope
 
