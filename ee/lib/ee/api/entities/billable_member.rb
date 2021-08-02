@@ -8,6 +8,7 @@ module EE
         expose :last_activity_on
         expose :membership_type
         expose :removable
+        expose :created_at
 
         private
 

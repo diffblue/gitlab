@@ -21,6 +21,10 @@ RSpec.describe ::EE::API::Entities::BillableMember do
     expect(entity_representation[:last_activity_on]).to eq last_activity_on
   end
 
+  it 'exposes the created_at field' do
+    expect(entity_representation[:created_at]).to eq(member.created_at)
+  end
+
   context 'when the user has a public_email assigned' do
     let(:public_email) { 'public@email.com' }
 
