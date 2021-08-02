@@ -27,6 +27,10 @@ RSpec.describe Elastic::IndexingControlService, :clean_gitlab_redis_shared_state
 
   subject { described_class.new(worker_class) }
 
+  before do
+    stub_const(worker_class.name, worker_class)
+  end
+
   describe '.initialize' do
     it 'raises an exception when passed wrong worker' do
       expect { described_class.new(Class.new) }.to raise_error(ArgumentError)
@@ -153,6 +157,10 @@ RSpec.describe Elastic::IndexingControlService, :clean_gitlab_redis_shared_state
     end
 
     let(:other_subject) { described_class.new(second_worker_class) }
+
+    before do
+      stub_const(second_worker_class.name, second_worker_class)
+    end
 
     it 'allows to use queues independently of each other' do
       expect { subject.add_to_waiting_queue!(worker_args, worker_context) }.to change { subject.queue_size }.from(0).to(1)
