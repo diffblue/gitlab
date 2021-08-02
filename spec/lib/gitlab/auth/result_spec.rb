@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Result do
   let_it_be(:actor) { create(:user) }
+
   subject { described_class.new(actor, nil, nil, []) }
 
   context 'when actor is User' do
