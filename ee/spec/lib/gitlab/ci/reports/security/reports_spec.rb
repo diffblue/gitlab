@@ -56,8 +56,9 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
   describe "#violates_default_policy_against?" do
     let(:low_severity_sast) { build(:ci_reports_security_finding, severity: 'low', report_type: :sast) }
     let(:high_severity_dast) { build(:ci_reports_security_finding, severity: 'high', report_type: :dast) }
+    let(:vulnerabilities_allowed) { 0 }
 
-    subject { security_reports.violates_default_policy_against?(target_reports) }
+    subject { security_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed) }
 
     context 'when the target_reports is `nil`' do
       let(:target_reports) { nil }
@@ -90,6 +91,12 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
         end
 
         it { is_expected.to be(true) }
+
+        context 'with vulnerabilities_allowed higher than the number of new vulnerabilities' do
+          let(:vulnerabilities_allowed) { 10000 }
+
+          it { is_expected.to be(false) }
+        end
       end
 
       context "when none of the reports have a new unsafe vulnerability" do

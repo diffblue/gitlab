@@ -161,17 +161,19 @@ RSpec.describe ApprovalProjectRule do
       context "with a `Vulnerability-Check` rule" do
         using RSpec::Parameterized::TableSyntax
 
-        where(:is_valid, :scanners) do
-          true  | []
-          true  | %w(dast)
-          true  | %w(dast sast)
-          true  | %w(dast dast)
-          false | %w(dast unknown_scanner)
-          false | %w(unknown_scanner)
+        where(:is_valid, :scanners, :vulnerabilities_allowed) do
+          true  | []                       | 0
+          true  | %w(dast)                 | 1
+          true  | %w(dast sast)            | 10
+          true  | %w(dast dast)            | 100
+          false | %w(dast unknown_scanner) | 100
+          false | %w(unknown_scanner)      | 100
+          false | %w(dast sast)            | 1.1
+          false | %w(dast sast)            | 'one'
         end
 
         with_them do
-          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners) }
+          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed) }
 
           specify { expect(vulnerability_check_rule.valid?).to be(is_valid) }
         end
