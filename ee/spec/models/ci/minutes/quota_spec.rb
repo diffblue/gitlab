@@ -326,6 +326,25 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
+  describe '#actual_minutes_used_up?' do
+    subject { quota.actual_minutes_used_up? }
+
+    where(:minutes_used, :minutes_limit, :result, :title) do
+      100 | 0   | false | 'limit not enabled'
+      99  | 100 | false | 'total minutes not used'
+      101 | 100 | true  | 'total minutes used'
+    end
+
+    with_them do
+      before do
+        allow(namespace).to receive(:shared_runners_seconds).and_return(minutes_used.minutes)
+        namespace.shared_runners_minutes_limit = minutes_limit
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#total_minutes' do
     subject { quota.total_minutes }
 

@@ -11,7 +11,7 @@ class ClearNamespaceSharedRunnersMinutesService < BaseService
       shared_runners_seconds: 0,
       shared_runners_seconds_last_reset: Time.current
     ).tap do
-      ::Gitlab::Ci::Minutes::CachedQuota.new(@namespace).expire!
+      ::Ci::Minutes::RefreshCachedDataService.new(@namespace).execute
     end
   end
   # rubocop: enable CodeReuse/ActiveRecord
