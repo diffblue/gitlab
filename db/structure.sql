@@ -16549,6 +16549,27 @@ CREATE SEQUENCE pool_repositories_id_seq
 
 ALTER SEQUENCE pool_repositories_id_seq OWNED BY pool_repositories.id;
 
+CREATE TABLE postgres_async_indexes (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    name text NOT NULL,
+    definition text NOT NULL,
+    table_name text NOT NULL,
+    CONSTRAINT check_083b21157b CHECK ((char_length(definition) <= 2048)),
+    CONSTRAINT check_b732c6cd1d CHECK ((char_length(name) <= 63)),
+    CONSTRAINT check_e64ff4359e CHECK ((char_length(table_name) <= 63))
+);
+
+CREATE SEQUENCE postgres_async_indexes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE postgres_async_indexes_id_seq OWNED BY postgres_async_indexes.id;
+
 CREATE VIEW postgres_foreign_keys AS
  SELECT pg_constraint.oid,
     pg_constraint.conname AS name,
@@ -20513,6 +20534,8 @@ ALTER TABLE ONLY plans ALTER COLUMN id SET DEFAULT nextval('plans_id_seq'::regcl
 
 ALTER TABLE ONLY pool_repositories ALTER COLUMN id SET DEFAULT nextval('pool_repositories_id_seq'::regclass);
 
+ALTER TABLE ONLY postgres_async_indexes ALTER COLUMN id SET DEFAULT nextval('postgres_async_indexes_id_seq'::regclass);
+
 ALTER TABLE ONLY postgres_reindex_actions ALTER COLUMN id SET DEFAULT nextval('postgres_reindex_actions_id_seq'::regclass);
 
 ALTER TABLE ONLY product_analytics_events_experimental ALTER COLUMN id SET DEFAULT nextval('product_analytics_events_experimental_id_seq'::regclass);
@@ -22076,6 +22099,9 @@ ALTER TABLE ONLY plans
 
 ALTER TABLE ONLY pool_repositories
     ADD CONSTRAINT pool_repositories_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY postgres_async_indexes
+    ADD CONSTRAINT postgres_async_indexes_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY postgres_reindex_actions
     ADD CONSTRAINT postgres_reindex_actions_pkey PRIMARY KEY (id);
@@ -24634,6 +24660,8 @@ CREATE UNIQUE INDEX index_pool_repositories_on_disk_path ON pool_repositories US
 CREATE INDEX index_pool_repositories_on_shard_id ON pool_repositories USING btree (shard_id);
 
 CREATE UNIQUE INDEX index_pool_repositories_on_source_project_id_and_shard_id ON pool_repositories USING btree (source_project_id, shard_id);
+
+CREATE UNIQUE INDEX index_postgres_async_indexes_on_name ON postgres_async_indexes USING btree (name);
 
 CREATE INDEX index_postgres_reindex_actions_on_index_identifier ON postgres_reindex_actions USING btree (index_identifier);
 
