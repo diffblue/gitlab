@@ -24720,9 +24720,6 @@ msgstr ""
 msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
 msgstr ""
 
-msgid "Please ensure your account's %{account_link_start}recovery settings%{account_link_end} are up to date."
-msgstr ""
-
 msgid "Please enter a non-negative number"
 msgstr ""
 
@@ -24868,6 +24865,9 @@ msgid "Pods in use"
 msgstr ""
 
 msgid "Point to any links you like: documentation, built binaries, or other related materials. These can be internal or external links from your GitLab instance. Duplicate URLs are not allowed."
+msgstr ""
+
+msgid "Policies"
 msgstr ""
 
 msgid "Policy project doesn't exist"
@@ -25368,6 +25368,9 @@ msgstr ""
 msgid "Profiles|Main settings"
 msgstr ""
 
+msgid "Profiles|Manage two-factor authentication"
+msgstr ""
+
 msgid "Profiles|No file chosen."
 msgstr ""
 
@@ -25471,6 +25474,9 @@ msgid "Profiles|Username successfully changed"
 msgstr ""
 
 msgid "Profiles|Using emojis in names seems fun, but please try to set a status message instead"
+msgstr ""
+
+msgid "Profiles|We recommend you ensure two-factor authentication is enabled and the settings are up to date."
 msgstr ""
 
 msgid "Profiles|What's your status?"
@@ -28815,9 +28821,6 @@ msgid "Saving"
 msgstr ""
 
 msgid "Saving project."
-msgstr ""
-
-msgid "Scan Policies"
 msgstr ""
 
 msgid "Scanner"
