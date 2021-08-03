@@ -216,7 +216,7 @@ To set up the GitLab external URL:
 
 1. To prevent the domain name from
    [resetting after a reboot](https://docs.bitnami.com/aws/apps/gitlab/configuration/change-default-address/),
-   Rename the utility that Bitnami uses:
+   rename the utility that Bitnami uses:
 
    ```shell
    sudo mv /opt/bitnami/apps/gitlab/bnconfig /opt/bitnami/apps/gitlab/bnconfig.bak
