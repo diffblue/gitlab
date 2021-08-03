@@ -18,7 +18,7 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
 
   subject { described_class.new(project, nil).execute(build) }
 
-  shared_examples 'executes service' do
+  describe '#execute', :sidekiq_inline do
     shared_examples 'new tracking matches legacy tracking' do
       it 'stores the same information in both legacy and new tracking' do
         subject
@@ -251,20 +251,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
       let(:runner) { create(:ci_runner, :project) }
 
       it_behaves_like 'does nothing'
-    end
-  end
-
-  describe '#execute' do
-    context 'when cancel_pipelines_prior_to_destroy enabled', :sidekiq_inline do
-      include_examples 'executes service'
-    end
-
-    context 'when cancel_pipelines_prior_to_destroy disabled' do
-      before do
-        stub_feature_flags(cancel_pipelines_prior_to_destroy: false)
-      end
-
-      include_examples 'executes service'
     end
   end
 end
