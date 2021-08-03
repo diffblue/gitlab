@@ -24,8 +24,6 @@ describe('Codequality Reports actions', () => {
   describe('setPaths', () => {
     it('should commit SET_PATHS mutation', (done) => {
       const paths = {
-        basePath: 'basePath',
-        headPath: 'headPath',
         baseBlobPath: 'baseBlobPath',
         headBlobPath: 'headBlobPath',
         reportsPath: 'reportsPath',
@@ -49,7 +47,6 @@ describe('Codequality Reports actions', () => {
 
     beforeEach(() => {
       localState.reportsPath = endpoint;
-      localState.basePath = '/base/path';
       mock = new MockAdapter(axios);
     });
 

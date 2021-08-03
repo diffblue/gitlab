@@ -1,6 +1,4 @@
 export default () => ({
-  basePath: null,
-  headPath: null,
   reportsPath: null,
 
   baseBlobPath: null,

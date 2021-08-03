@@ -14,8 +14,6 @@ describe('Grouped code quality reports app', () => {
 
   const PATHS = {
     codequalityHelpPath: 'codequality_help.html',
-    basePath: 'base.json',
-    headPath: 'head.json',
     baseBlobPath: 'base/blob/path/',
     headBlobPath: 'head/blob/path/',
   };
