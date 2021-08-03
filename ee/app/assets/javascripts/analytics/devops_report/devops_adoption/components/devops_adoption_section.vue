@@ -42,7 +42,7 @@ export default {
       required: false,
       default: () => {},
     },
-    disabledGroupNodes: {
+    groups: {
       type: Array,
       required: true,
     },
@@ -75,11 +75,13 @@ export default {
       <devops-adoption-add-dropdown
         class="gl-mb-3 gl-md-display-none"
         :search-term="searchTerm"
-        :groups="disabledGroupNodes"
+        :groups="groups"
+        :enabled-namespaces="enabledNamespaces"
         :is-loading-groups="isLoadingGroups"
         :has-subgroups="hasSubgroups"
         @fetchGroups="$emit('fetchGroups', $event)"
         @enabledNamespacesAdded="$emit('enabledNamespacesAdded', $event)"
+        @enabledNamespacesRemoved="$emit('enabledNamespacesRemoved', $event)"
         @trackModalOpenState="$emit('trackModalOpenState', $event)"
       />
     </div>

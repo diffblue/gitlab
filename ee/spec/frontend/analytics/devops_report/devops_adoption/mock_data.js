@@ -1,24 +1,24 @@
 export const groupData = [
-  { id: '1', full_name: 'Foo' },
-  { id: '2', full_name: 'Bar' },
+  { id: 1, full_name: 'Foo' },
+  { id: 2, full_name: 'Bar' },
 ];
 
 export const groupNodes = [
   {
     __typename: 'Group',
     full_name: 'Foo',
-    id: '1',
+    id: 1,
   },
   {
     __typename: 'Group',
     full_name: 'Bar',
-    id: '2',
+    id: 2,
   },
 ];
 
 export const groupNodeLabelValues = [
-  { label: 'Foo', value: '1' },
-  { label: 'Bar', value: '2' },
+  { label: 'Foo', value: 1 },
+  { label: 'Bar', value: 2 },
 ];
 
 export const groupIds = [1, 2];
@@ -28,7 +28,7 @@ export const groupGids = ['gid://gitlab/Group/1', 'gid://gitlab/Group/2'];
 export const devopsAdoptionNamespaceData = {
   nodes: [
     {
-      id: 1,
+      id: 'gid://gitlab/EnabledNamespace/1',
       namespace: {
         fullName: 'Group 1',
         id: 'gid://gitlab/Group/1',
@@ -51,7 +51,7 @@ export const devopsAdoptionNamespaceData = {
       __typename: 'devopsAdoptionEnabledNamespace',
     },
     {
-      id: 2,
+      id: 'gid://gitlab/EnabledNamespace/2',
       namespace: {
         fullName: 'Group 2',
         id: 'gid://gitlab/Group/2',
