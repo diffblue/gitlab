@@ -63,6 +63,7 @@ RSpec.describe EE::NamespacesHelper do
         context 'and the namespace is eligible for unlimited' do
           before do
             allow(quota).to receive(:namespace_eligible?).and_return(true)
+            allow(user_group).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
           end
 
           it 'returns Unlimited for the limit section' do

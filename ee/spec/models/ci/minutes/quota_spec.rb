@@ -68,6 +68,7 @@ RSpec.describe Ci::Minutes::Quota do
       before do
         allow(quota).to receive(:enabled?).and_return(false)
         allow(quota).to receive(:namespace_eligible?).and_return(namespace_eligible)
+        allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
       end
 
       context 'when the namespace is not eligible' do
@@ -114,6 +115,7 @@ RSpec.describe Ci::Minutes::Quota do
     context 'when limited' do
       before do
         allow(quota).to receive(:enabled?).and_return(true)
+        allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = 100
       end
 
@@ -257,6 +259,7 @@ RSpec.describe Ci::Minutes::Quota do
     with_them do
       before do
         allow(quota).to receive(:enabled?).and_return(limit_enabled)
+        allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = monthly_limit
         namespace.extra_shared_runners_minutes_limit = purchased_limit
         namespace.namespace_statistics.shared_runners_seconds = minutes_used.minutes

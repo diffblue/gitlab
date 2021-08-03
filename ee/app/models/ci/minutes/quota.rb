@@ -25,7 +25,7 @@ module Ci
       end
 
       def monthly_percent_used
-        return 0 unless enabled?
+        return 0 unless enabled? && any_project_enabled?
         return 0 if monthly_minutes == 0
 
         100 * monthly_minutes_used.to_i / monthly_minutes
@@ -81,6 +81,12 @@ module Ci
 
       private
 
+      def any_project_enabled?
+        strong_memoize(:any_project_enabled) do
+          namespace.any_project_with_shared_runners_enabled?
+        end
+      end
+
       # TODO: rename to `enabled?`
       # https://gitlab.com/gitlab-org/gitlab/-/issues/332933
       def limit_enabled?
@@ -90,9 +96,9 @@ module Ci
       end
 
       def minutes_limit
-        return monthly_minutes if enabled?
+        return monthly_minutes if enabled? && any_project_enabled?
 
-        if namespace_eligible?
+        if namespace_eligible? && any_project_enabled?
           _('Unlimited')
         else
           _('Not supported')
