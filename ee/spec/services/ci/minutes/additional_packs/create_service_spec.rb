@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
+  include AfterNextHelpers
+
   describe '#execute' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:admin) { build(:user, :admin) }
@@ -60,6 +62,12 @@ RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
           expect(pack.expires_at).to eq params[:expires_at]
           expect(pack.purchase_xid).to eq params[:purchase_xid]
           expect(pack.number_of_minutes).to eq params[:number_of_minutes]
+        end
+
+        it 'kicks off reset ci minutes service' do
+          expect_next(::Ci::Minutes::RefreshCachedDataService).to receive(:execute)
+
+          result
         end
 
         it 'returns success' do
