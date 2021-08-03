@@ -1,5 +1,5 @@
 import { s__ } from '~/locale';
-import { NEW_GROUP } from '../constants';
+import { NEW_GROUP, ULTIMATE } from '../constants';
 
 export const selectedPlanText = (state, getters) => getters.selectedPlanDetails.text;
 
@@ -8,6 +8,10 @@ export const selectedPlanPrice = (state, getters) =>
 
 export const selectedPlanDetails = (state) =>
   state.availablePlans.find((plan) => plan.value === state.selectedPlan);
+
+export const isUltimatePlan = (state, getters) => {
+  return getters.selectedPlanDetails?.code === ULTIMATE;
+};
 
 export const confirmOrderParams = (state, getters) => ({
   setup_for_company: state.isSetupForCompany,
@@ -65,6 +69,9 @@ export const isSelectedGroupPresent = (state, getters) => {
 export const selectedGroupUsers = (state, getters) => {
   if (!getters.isGroupSelected) {
     return 1;
+  } else if (getters.isSelectedGroupPresent && getters.isUltimatePlan) {
+    const selectedGroup = state.groupData.find((group) => group.value === state.selectedGroup);
+    return selectedGroup.numberOfUsers - selectedGroup.numberOfGuests;
   } else if (getters.isSelectedGroupPresent) {
     return state.groupData.find((group) => group.value === state.selectedGroup).numberOfUsers;
   }

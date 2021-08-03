@@ -34,12 +34,15 @@ describe('Subscriptions Actions', () => {
   });
 
   describe('updateSelectedPlan', () => {
-    it('updates the selected plan', async () => {
+    it('updates the selected plan and updates the number of users', async () => {
       await testAction(
         actions.updateSelectedPlan,
         'planId',
-        {},
-        [{ type: 'UPDATE_SELECTED_PLAN', payload: 'planId' }],
+        { selectedGroupUsers: 4 },
+        [
+          { type: 'UPDATE_SELECTED_PLAN', payload: 'planId' },
+          { type: 'UPDATE_NUMBER_OF_USERS', payload: 4 },
+        ],
         [],
       );
     });

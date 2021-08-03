@@ -8,8 +8,9 @@ import { sprintf, s__ } from '~/locale';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 
-export const updateSelectedPlan = ({ commit }, selectedPlan) => {
+export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
+  commit(types.UPDATE_NUMBER_OF_USERS, getters.selectedGroupUsers);
 };
 
 export const updateSelectedGroup = ({ commit, getters }, selectedGroup) => {
