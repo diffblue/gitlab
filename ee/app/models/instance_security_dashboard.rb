@@ -71,6 +71,6 @@ class InstanceSecurityDashboard
   end
 
   def authorized_access_levels
-    Gitlab::Access.vulnerability_access_levels.values
+    Gitlab::Access.vulnerability_access_levels
   end
 end

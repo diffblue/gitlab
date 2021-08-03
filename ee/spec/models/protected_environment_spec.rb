@@ -59,7 +59,7 @@ RSpec.describe ProtectedEnvironment do
 
     context 'when access has been granted to user' do
       before do
-        create_deploy_access_level(user: user)
+        create_deploy_access_level(protected_environment, user: user)
       end
 
       it { is_expected.to be_truthy }
@@ -69,7 +69,7 @@ RSpec.describe ProtectedEnvironment do
       let(:group) { create(:group) }
 
       before do
-        create_deploy_access_level(group: group)
+        create_deploy_access_level(protected_environment, group: group)
       end
 
       it 'allows members of the group' do
@@ -85,7 +85,7 @@ RSpec.describe ProtectedEnvironment do
 
     context 'when access has been granted to maintainers' do
       before do
-        create_deploy_access_level(access_level: Gitlab::Access::MAINTAINER)
+        create_deploy_access_level(protected_environment, access_level: Gitlab::Access::MAINTAINER)
       end
 
       it 'allows maintainers' do
@@ -103,7 +103,7 @@ RSpec.describe ProtectedEnvironment do
 
     context 'when access has been granted to developers' do
       before do
-        create_deploy_access_level(access_level: Gitlab::Access::DEVELOPER)
+        create_deploy_access_level(protected_environment, access_level: Gitlab::Access::DEVELOPER)
       end
 
       it 'allows maintainers' do
@@ -198,18 +198,63 @@ RSpec.describe ProtectedEnvironment do
     end
   end
 
+  describe '.deploy_access_levels_by_user' do
+    let(:user) { create(:user) }
+    let(:project) { create(:project) }
+    let(:environment) { create(:environment, project: project, name: 'production') }
+    let(:protected_environment) { create(:protected_environment, project: project, name: 'production') }
+    let(:deploy_access_level_for_user) { create_deploy_access_level(protected_environment, user: user) }
+
+    before do
+      create_deploy_access_level(protected_environment, user: create(:user))
+      create_deploy_access_level(protected_environment, group: create(:group))
+    end
+
+    it 'returns matching deploy access levels for the given user' do
+      expect(described_class.deploy_access_levels_by_user(user))
+        .to contain_exactly(deploy_access_level_for_user)
+    end
+
+    context 'when user is assigned to protected environment in the other project' do
+      let(:other_project) { create(:project) }
+      let(:other_protected_environment) { create(:protected_environment, project: other_project, name: 'production') }
+      let(:other_deploy_access_level_for_user) { create_deploy_access_level(other_protected_environment, user: user) }
+
+      it 'returns matching deploy access levels for the given user in the specific project' do
+        expect(project.protected_environments.deploy_access_levels_by_user(user))
+          .to contain_exactly(deploy_access_level_for_user)
+        expect(other_project.protected_environments.deploy_access_levels_by_user(user))
+          .to contain_exactly(other_deploy_access_level_for_user)
+      end
+    end
+  end
+
   describe '.deploy_access_levels_by_group' do
     let(:group) { create(:group) }
     let(:project) { create(:project) }
     let(:environment) { create(:environment, project: project, name: 'production') }
     let(:protected_environment) { create(:protected_environment, project: project, name: 'production') }
+    let(:deploy_access_level_for_group) { create_deploy_access_level(protected_environment, group: group) }
 
     it 'returns matching deploy access levels for the given group' do
-      _deploy_access_level_for_different_group = create_deploy_access_level(group: create(:group))
-      _deploy_access_level_for_user = create_deploy_access_level(user: create(:user))
-      deploy_access_level = create_deploy_access_level(group: group)
+      _deploy_access_level_for_different_group = create_deploy_access_level(protected_environment, group: create(:group))
+      _deploy_access_level_for_user = create_deploy_access_level(protected_environment, user: create(:user))
 
-      expect(described_class.deploy_access_levels_by_group(group)).to contain_exactly(deploy_access_level)
+      expect(described_class.deploy_access_levels_by_group(group))
+        .to contain_exactly(deploy_access_level_for_group)
+    end
+
+    context 'when user is assigned to protected environment in the other project' do
+      let(:other_project) { create(:project) }
+      let(:other_protected_environment) { create(:protected_environment, project: other_project, name: 'production') }
+      let(:other_deploy_access_level_for_group) { create_deploy_access_level(other_protected_environment, group: group) }
+
+      it 'returns matching deploy access levels for the given group in the specific project' do
+        expect(project.protected_environments.deploy_access_levels_by_group(group))
+          .to contain_exactly(deploy_access_level_for_group)
+        expect(other_project.protected_environments.deploy_access_levels_by_group(group))
+          .to contain_exactly(other_deploy_access_level_for_group)
+      end
     end
   end
 
@@ -280,7 +325,7 @@ RSpec.describe ProtectedEnvironment do
     end
   end
 
-  def create_deploy_access_level(**opts)
+  def create_deploy_access_level(protected_environment, **opts)
     protected_environment.deploy_access_levels.create(**opts)
   end
 end

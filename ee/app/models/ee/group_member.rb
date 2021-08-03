@@ -33,54 +33,6 @@ module EE
       end
     end
 
-    def group_has_domain_limitations?
-      group.licensed_feature_available?(:group_allowed_email_domains) && group_allowed_email_domains.any?
-    end
-
-    def group_domain_limitations
-      if user
-        return if user.project_bot?
-
-        validate_users_email
-        validate_email_verified
-      else
-        validate_invitation_email
-      end
-    end
-
-    def validate_email_verified
-      return if user.primary_email_verified?
-
-      # Do not validate if emails are verified
-      # for users created via SAML/SCIM.
-      return if group_saml_identity.present?
-      return if source.scim_identities.for_user(user).exists?
-
-      errors.add(:user, email_not_verified)
-    end
-
-    def validate_users_email
-      return if matches_at_least_one_group_allowed_email_domain?(user.email)
-
-      errors.add(:user, email_does_not_match_any_allowed_domains(user.email))
-    end
-
-    def validate_invitation_email
-      return if matches_at_least_one_group_allowed_email_domain?(invite_email)
-
-      errors.add(:invite_email, email_does_not_match_any_allowed_domains(invite_email))
-    end
-
-    def group_saml_identity
-      return unless source.saml_provider
-
-      if user.group_saml_identities.loaded?
-        user.group_saml_identities.detect { |i| i.saml_provider_id == source.saml_provider.id }
-      else
-        user.group_saml_identities.find_by(saml_provider: source.saml_provider)
-      end
-    end
-
     def provisioned_by_this_group?
       user&.user_detail&.provisioned_by_group_id == source_id
     end
@@ -93,25 +45,6 @@ module EE
       return if access_level.in?(levels)
 
       errors.add(:access_level, "is not included in the list")
-    end
-
-    def email_does_not_match_any_allowed_domains(email)
-      n_("email '%{email}' does not match the allowed domain of %{email_domains}", "email '%{email}' does not match the allowed domains: %{email_domains}", group_allowed_email_domains.size) %
-        { email: email, email_domains: group_allowed_email_domains.map(&:domain).join(', ') }
-    end
-
-    def email_not_verified
-      _("email '%{email}' is not a verified email." % { email: user.email })
-    end
-
-    def group_allowed_email_domains
-      group.root_ancestor_allowed_email_domains
-    end
-
-    def matches_at_least_one_group_allowed_email_domain?(email)
-      group_allowed_email_domains.any? do |allowed_email_domain|
-        allowed_email_domain.email_matches_domain?(email)
-      end
     end
 
     override :post_create_hook

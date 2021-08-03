@@ -125,9 +125,9 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     it_behaves_like 'when http call raises an exception'
   end
 
-  describe '#customers_oauth_app_id' do
+  describe '#customers_oauth_app_uid' do
     subject do
-      client.customers_oauth_app_id
+      client.customers_oauth_app_uid
     end
 
     let(:http_method) { :get }

@@ -89,11 +89,90 @@ RSpec.describe ProjectMember do
     end
   end
 
+  describe '#group_domain_validations' do
+    let(:member_type) { :project_member }
+    let(:source) { create(:project, namespace: group) }
+    let(:subgroup) { create(:group, parent: group) }
+    let(:nested_source) { create(:project, namespace: subgroup) }
+
+    it_behaves_like 'member group domain validations'
+
+    it 'does not validate personal projects' do
+      unconfirmed_gitlab_user = create(:user, :unconfirmed, email: 'unverified@gitlab.com')
+      member = create(:project, namespace: create(:user).namespace).add_developer(unconfirmed_gitlab_user)
+
+      expect(member).to be_valid
+    end
+  end
+
   describe '#provisioned_by_this_group?' do
     let_it_be(:member) { build(:project_member) }
 
     subject { member.provisioned_by_this_group? }
 
     it { is_expected.to eq(false) }
+  end
+
+  describe 'delete protected environment acceses cascadingly' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:environment) { create(:environment, project: project) }
+    let_it_be(:protected_environment) do
+      create(:protected_environment, project: project, name: environment.name)
+    end
+
+    let!(:member) { create(:project_member, project: project, user: user) }
+
+    let!(:deploy_access) do
+      create(:protected_environment_deploy_access_level, protected_environment: protected_environment, user: user)
+    end
+
+    let!(:deploy_access_for_diffent_user) do
+      create(:protected_environment_deploy_access_level, protected_environment: protected_environment, user: create(:user))
+    end
+
+    let!(:deploy_access_for_group) do
+      create(:protected_environment_deploy_access_level, protected_environment: protected_environment, group: create(:group))
+    end
+
+    let!(:deploy_access_for_maintainer_role) do
+      create(:protected_environment_deploy_access_level, :maintainer_access, protected_environment: protected_environment)
+    end
+
+    it 'deletes associated protected environment access cascadingly' do
+      expect { member.destroy! }
+        .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-1)
+
+      expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(protected_environment.reload.deploy_access_levels)
+        .to include(deploy_access_for_diffent_user, deploy_access_for_group, deploy_access_for_maintainer_role)
+    end
+
+    context 'when the user is assiged to multiple protected environments in the same project' do
+      let!(:other_protected_environment) { create(:protected_environment, project: project, name: 'staging') }
+      let!(:other_deploy_access) { create(:protected_environment_deploy_access_level, protected_environment: other_protected_environment, user: user) }
+
+      it 'deletes all associated protected environment accesses in the project' do
+        expect { member.destroy! }
+          .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-2)
+
+        expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { other_deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when the user is assiged to multiple protected environments across different projects' do
+      let!(:other_project) { create(:project) }
+      let!(:other_protected_environment) { create(:protected_environment, project: other_project, name: 'staging') }
+      let!(:other_deploy_access) { create(:protected_environment_deploy_access_level, protected_environment: other_protected_environment, user: user) }
+
+      it 'deletes all associated protected environment accesses in the project' do
+        expect { member.destroy! }
+          .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-1)
+
+        expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { other_deploy_access.reload }.not_to raise_error
+      end
+    end
   end
 end
