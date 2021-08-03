@@ -7,8 +7,11 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
   let_it_be(:user_without_permissions) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:oncall_schedule) { create(:incident_management_oncall_schedule, project: project) }
-  let_it_be_with_reload(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rule_count: 2) }
-  let_it_be_with_reload(:escalation_rules) { escalation_policy.rules }
+
+  let_it_be_with_reload(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
+  let_it_be_with_reload(:schedule_escalation_rule) { escalation_policy.rules.first }
+  let_it_be_with_reload(:user_escalation_rule) { create(:incident_management_escalation_rule, :with_user, policy: escalation_policy) }
+  let_it_be_with_reload(:escalation_rules) { escalation_policy.reload.rules }
 
   let(:service) { described_class.new(escalation_policy, current_user, params) }
   let(:current_user) { user_with_permissions }
@@ -24,14 +27,16 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
   let(:rule_params) { [*existing_rules_params, new_rule_params] }
   let(:existing_rules_params) do
     escalation_rules.map do |rule|
-      rule.slice(:oncall_schedule, :elapsed_time_seconds)
+      rule.slice(:oncall_schedule, :user, :elapsed_time_seconds)
           .merge(status: rule.status.to_sym)
     end
   end
 
+  let(:user_for_rule) {}
   let(:new_rule_params) do
     {
       oncall_schedule: oncall_schedule,
+      user: user_for_rule,
       elapsed_time_seconds: 800,
       status: :acknowledged
     }
@@ -94,6 +99,13 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
       let(:expected_rules) { [*escalation_rules, new_rule] }
 
       it_behaves_like 'successful update with no errors'
+
+      context 'with a user-based rule' do
+        let(:oncall_schedule) { nil }
+        let(:user_for_rule) { user_with_permissions }
+
+        it_behaves_like 'successful update with no errors'
+      end
     end
 
     context 'when all old rules are replaced' do
@@ -166,17 +178,18 @@ RSpec.describe IncidentManagement::EscalationPolicies::UpdateService do
       it_behaves_like 'error response', 'Escalation policies may not have more than 10 rules'
     end
 
-    context 'when the on-call schedule is not present on the rule' do
-      let(:rule_params) { [new_rule_params.except(:oncall_schedule)] }
-
-      it_behaves_like 'error response', 'All escalations rules must have a schedule in the same project as the policy'
-    end
-
     context 'when the on-call schedule is not on the project' do
       let(:other_schedule) { create(:incident_management_oncall_schedule) }
       let(:rule_params) { [new_rule_params.merge(oncall_schedule: other_schedule)] }
 
-      it_behaves_like 'error response', 'All escalations rules must have a schedule in the same project as the policy'
+      it_behaves_like 'error response', 'Schedule-based escalation rules must have a schedule in the same project as the policy'
+    end
+
+    context "when the rule's user does not have access to the project" do
+      let(:oncall_schedule) { nil }
+      let(:user_for_rule) { user_without_permissions }
+
+      it_behaves_like 'error response', 'User-based escalation rules must have a user with access to the project'
     end
 
     context 'when an error occurs during update' do

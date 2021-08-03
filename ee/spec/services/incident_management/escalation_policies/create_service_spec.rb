@@ -84,20 +84,26 @@ RSpec.describe IncidentManagement::EscalationPolicies::CreateService do
         it_behaves_like 'error response', 'Escalation policies may not have more than 10 rules'
       end
 
-      context 'oncall schedule is blank' do
-        before do
-          rule_params[0][:oncall_schedule] = nil
-        end
-
-        it_behaves_like 'error response', 'All escalations rules must have a schedule in the same project as the policy'
-      end
-
       context 'oncall schedule is on the wrong project' do
         before do
           rule_params[0][:oncall_schedule] = create(:incident_management_oncall_schedule)
         end
 
-        it_behaves_like 'error response', 'All escalations rules must have a schedule in the same project as the policy'
+        it_behaves_like 'error response', 'Schedule-based escalation rules must have a schedule in the same project as the policy'
+      end
+
+      context 'user for rule does not have project access' do
+        let(:rule_params) do
+          [
+            {
+              user: create(:user),
+              elapsed_time_seconds: 60,
+              status: :resolved
+            }
+          ]
+        end
+
+        it_behaves_like 'error response', 'User-based escalation rules must have a user with access to the project'
       end
 
       context 'project has an existing escalation policy' do
@@ -115,6 +121,39 @@ RSpec.describe IncidentManagement::EscalationPolicies::CreateService do
 
         policy = execute.payload[:escalation_policy]
         expect(policy).to be_a(::IncidentManagement::EscalationPolicy)
+        expect(policy.rules.length).to eq(1)
+        expect(policy.rules.first).to have_attributes(
+          oncall_schedule: oncall_schedule,
+          user: nil,
+          elapsed_time_seconds: 60,
+          status: 'resolved'
+        )
+      end
+
+      context 'for a user-based escalation rule' do
+        let(:rule_params) do
+          [
+            {
+              user: user_with_permissions,
+              elapsed_time_seconds: 60,
+              status: :resolved
+            }
+          ]
+        end
+
+        it 'creates the policy and rules' do
+          expect(execute).to be_success
+
+          policy = execute.payload[:escalation_policy]
+          expect(policy).to be_a(::IncidentManagement::EscalationPolicy)
+          expect(policy.rules.length).to eq(1)
+          expect(policy.rules.first).to have_attributes(
+            oncall_schedule: nil,
+            user: user_with_permissions,
+            elapsed_time_seconds: 60,
+            status: 'resolved'
+          )
+        end
       end
     end
   end

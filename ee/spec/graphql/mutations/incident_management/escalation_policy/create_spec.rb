@@ -19,7 +19,7 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
           status: ::IncidentManagement::EscalationRule.statuses[:acknowledged]
         },
         {
-          oncall_schedule_iid: oncall_schedule.iid,
+          username: current_user&.username,
           elapsed_time_seconds: 600,
           status: ::IncidentManagement::EscalationRule.statuses[:resolved]
         }
@@ -71,8 +71,8 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
 
           expect(rules.size).to eq(2)
           expect(rules).to match_array([
-            have_attributes(oncall_schedule_id: oncall_schedule.id, elapsed_time_seconds: 300, status: 'acknowledged'),
-            have_attributes(oncall_schedule_id: oncall_schedule.id, elapsed_time_seconds: 600, status: 'resolved')
+            have_attributes(oncall_schedule_id: oncall_schedule.id, user: nil, elapsed_time_seconds: 300, status: 'acknowledged'),
+            have_attributes(oncall_schedule_id: nil, user: current_user, elapsed_time_seconds: 600, status: 'resolved')
           ])
         end
 
@@ -91,7 +91,7 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
             args[:rules][0][:oncall_schedule_iid] = other_schedule.iid
           end
 
-          it_behaves_like 'returns a GraphQL error', 'All escalations rules must have a schedule in the same project as the policy'
+          it_behaves_like 'raises a resource not available error'
 
           context 'user does not have permission for project' do
             before do
@@ -100,6 +100,14 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
 
             it_behaves_like 'raises a resource not available error'
           end
+        end
+
+        context 'user for rule does not exist' do
+          before do
+            args[:rules][1][:username] = 'junk-username'
+          end
+
+          it_behaves_like 'raises a resource not available error'
         end
       end
 

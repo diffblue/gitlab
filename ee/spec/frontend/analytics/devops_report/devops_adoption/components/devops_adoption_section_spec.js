@@ -22,7 +22,7 @@ describe('DevopsAdoptionSection', () => {
           hasGroupData: true,
           cols: DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols,
           enabledNamespaces: devopsAdoptionNamespaceData,
-          disabledGroupNodes: groupNodes,
+          groups: groupNodes,
           searchTerm: '',
           isLoadingGroups: false,
           hasSubgroups: true,

@@ -66,7 +66,9 @@ module EE
           # dast: 8
           # secret_detection: 21
           # coverage_fuzzing: 23
-          FILE_TYPES = [5, 6, 7, 8, 21, 23].freeze
+          # api_fuzzing: 26
+          # cluster_image_scanning: 27
+          FILE_TYPES = [5, 6, 7, 8, 21, 23, 26, 27].freeze
           LATEST_PIPELINE_WITH_REPORTS_SQL = <<~SQL
             SELECT
               "ci_pipelines"."id"

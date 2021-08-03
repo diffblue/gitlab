@@ -4,7 +4,15 @@ import { createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionAddDropdown from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_add_dropdown.vue';
+import {
+  I18N_GROUP_DROPDOWN_TEXT,
+  I18N_GROUP_DROPDOWN_HEADER,
+  I18N_ADMIN_DROPDOWN_TEXT,
+  I18N_ADMIN_DROPDOWN_HEADER,
+  I18N_NO_SUB_GROUPS,
+} from 'ee/analytics/devops_report/devops_adoption/constants';
 import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
+import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -18,7 +26,7 @@ import {
 const localVue = createLocalVue();
 Vue.use(VueApollo);
 
-const mutate = jest.fn().mockResolvedValue({
+const mutateAdd = jest.fn().mockResolvedValue({
   data: {
     bulkEnableDevopsAdoptionNamespaces: {
       enabledNamespaces: [devopsAdoptionNamespaceData.nodes[0]],
@@ -26,14 +34,28 @@ const mutate = jest.fn().mockResolvedValue({
     },
   },
 });
+const mutateDisable = jest.fn().mockResolvedValue({
+  data: {
+    disableDevopsAdoptionNamespace: {
+      errors: [],
+    },
+  },
+});
+
 const mutateWithErrors = jest.fn().mockRejectedValue(genericDeleteErrorMessage);
 
 describe('DevopsAdoptionAddDropdown', () => {
   let wrapper;
 
-  const createComponent = ({ enableNamespaceSpy = mutate, provide = {}, props = {} } = {}) => {
+  const createComponent = ({
+    enableNamespaceSpy = mutateAdd,
+    disableNamespaceSpy = mutateDisable,
+    provide = {},
+    props = {},
+  } = {}) => {
     const mockApollo = createMockApollo([
       [bulkEnableDevopsAdoptionNamespacesMutation, enableNamespaceSpy],
+      [disableDevopsAdoptionNamespaceMutation, disableNamespaceSpy],
     ]);
 
     wrapper = shallowMountExtended(DevopsAdoptionAddDropdown, {
@@ -55,7 +77,7 @@ describe('DevopsAdoptionAddDropdown', () => {
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
 
-  const clickFirstRow = () => wrapper.findByTestId('group-row').vm.$emit('click');
+  const clickFirstRow = () => wrapper.findByTestId('group-row').trigger('click');
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -69,8 +91,8 @@ describe('DevopsAdoptionAddDropdown', () => {
     it('displays the correct text', () => {
       const dropdown = findDropdown();
 
-      expect(dropdown.props('text')).toBe('Add group to table');
-      expect(dropdown.props('headerText')).toBe('Add group');
+      expect(dropdown.props('text')).toBe(I18N_ADMIN_DROPDOWN_TEXT);
+      expect(dropdown.props('headerText')).toBe(I18N_ADMIN_DROPDOWN_HEADER);
     });
 
     it('is disabled', () => {
@@ -81,7 +103,7 @@ describe('DevopsAdoptionAddDropdown', () => {
       const tooltip = getBinding(findDropdown().element, 'gl-tooltip');
 
       expect(tooltip).toBeDefined();
-      expect(tooltip.value).toBe('This group has no sub-groups');
+      expect(tooltip.value).toBe(I18N_NO_SUB_GROUPS);
     });
   });
 
@@ -91,8 +113,8 @@ describe('DevopsAdoptionAddDropdown', () => {
 
       const dropdown = findDropdown();
 
-      expect(dropdown.props('text')).toBe('Add sub-group to table');
-      expect(dropdown.props('headerText')).toBe('Add sub-group');
+      expect(dropdown.props('text')).toBe(I18N_GROUP_DROPDOWN_TEXT);
+      expect(dropdown.props('headerText')).toBe(I18N_GROUP_DROPDOWN_HEADER);
     });
   });
 
@@ -129,31 +151,47 @@ describe('DevopsAdoptionAddDropdown', () => {
 
       describe('on row click', () => {
         describe.each`
-          level      | groupGid
-          ${'group'} | ${groupGids[0]}
-          ${'admin'} | ${null}
-        `('$level level sucessful request', ({ groupGid }) => {
+          level      | groupGid        | enabledNamespaces
+          ${'group'} | ${groupGids[0]} | ${undefined}
+          ${'group'} | ${groupGids[0]} | ${devopsAdoptionNamespaceData}
+          ${'admin'} | ${null}         | ${undefined}
+          ${'admin'} | ${null}         | ${devopsAdoptionNamespaceData}
+        `('$level level sucessful request', ({ groupGid, enabledNamespaces }) => {
           beforeEach(() => {
             createComponent({
-              props: { hasSubgroups: true, groups: groupNodes },
+              props: { hasSubgroups: true, groups: groupNodes, enabledNamespaces },
               provide: { groupGid },
             });
 
             clickFirstRow();
           });
 
-          it('makes a request to enable the selected group', () => {
-            expect(mutate).toHaveBeenCalledWith({
-              displayNamespaceId: groupGid,
-              namespaceIds: ['gid://gitlab/Group/1'],
+          if (!enabledNamespaces) {
+            it('makes a request to enable the selected group', () => {
+              expect(mutateAdd).toHaveBeenCalledWith({
+                displayNamespaceId: groupGid,
+                namespaceIds: ['gid://gitlab/Group/1'],
+              });
             });
-          });
 
-          it('emits the enabledNamespacesAdded event', () => {
-            const [params] = wrapper.emitted().enabledNamespacesAdded[0];
+            it('emits the enabledNamespacesAdded event', () => {
+              const [params] = wrapper.emitted().enabledNamespacesAdded[0];
 
-            expect(params).toStrictEqual([devopsAdoptionNamespaceData.nodes[0]]);
-          });
+              expect(params).toStrictEqual([devopsAdoptionNamespaceData.nodes[0]]);
+            });
+          } else {
+            it('makes a request to disable the selected group', () => {
+              expect(mutateDisable).toHaveBeenCalledWith({
+                id: devopsAdoptionNamespaceData.nodes[0].id,
+              });
+            });
+
+            it('emits the enabledNamespacesRemoved event', () => {
+              const [params] = wrapper.emitted().enabledNamespacesRemoved[0];
+
+              expect(params).toBe(devopsAdoptionNamespaceData.nodes[0].id);
+            });
+          }
         });
 
         describe('on error', () => {

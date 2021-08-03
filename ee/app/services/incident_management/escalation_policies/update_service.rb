@@ -28,6 +28,7 @@ module IncidentManagement
         return error_no_rules if empty_rules?
         return error_too_many_rules if too_many_rules?
         return error_bad_schedules if invalid_schedules?
+        return error_user_without_permission if users_without_permissions?
 
         reconcile_rules!
 
@@ -85,7 +86,7 @@ module IncidentManagement
       end
 
       def unique_id(rule)
-        rule.slice(:oncall_schedule_id, :elapsed_time_seconds, :status)
+        rule.slice(:oncall_schedule_id, :user_id, :elapsed_time_seconds, :status)
       end
     end
   end

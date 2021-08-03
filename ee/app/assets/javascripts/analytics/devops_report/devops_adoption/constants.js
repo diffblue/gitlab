@@ -34,13 +34,13 @@ export const I18N_TABLE_REMOVE_BUTTON_DISABLED = s__(
   'DevopsAdoption|You cannot remove the group you are currently in.',
 );
 
-export const I18N_GROUP_DROPDOWN_TEXT = s__('DevopsAdoption|Add sub-group to table');
-export const I18N_GROUP_DROPDOWN_HEADER = s__('DevopsAdoption|Add sub-group');
-export const I18N_ADMIN_DROPDOWN_TEXT = s__('DevopsAdoption|Add group to table');
-export const I18N_ADMIN_DROPDOWN_HEADER = s__('DevopsAdoption|Add group');
+export const I18N_GROUP_DROPDOWN_TEXT = s__('DevopsAdoption|Add or remove subgroups');
+export const I18N_GROUP_DROPDOWN_HEADER = s__('DevopsAdoption|Edit subgroups');
+export const I18N_ADMIN_DROPDOWN_TEXT = s__('DevopsAdoption|Add or remove groups');
+export const I18N_ADMIN_DROPDOWN_HEADER = s__('DevopsAdoption|Edit groups');
 
 export const I18N_NO_RESULTS = s__('DevopsAdoption|No results…');
-export const I18N_NO_SUB_GROUPS = s__('DevopsAdoption|This group has no sub-groups');
+export const I18N_NO_SUB_GROUPS = s__('DevopsAdoption|This group has no subgroups');
 
 export const I18N_FEATURES_ADOPTED_TEXT = s__(
   'DevopsAdoption|%{adoptedCount}/%{featuresCount} %{title} features adopted',

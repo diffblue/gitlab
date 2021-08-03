@@ -10,6 +10,7 @@ RSpec.describe 'getting Incident Management escalation policies' do
   let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
   let_it_be(:rule) { policy.rules.first }
   let_it_be(:schedule) { rule.oncall_schedule }
+  let_it_be(:user_rule) { create(:incident_management_escalation_rule, :with_user, policy: policy) }
 
   let(:params) { {} }
 
@@ -24,6 +25,9 @@ RSpec.describe 'getting Incident Management escalation policies' do
           oncallSchedule {
             iid
             name
+          }
+          user {
+            username
           }
         }
       }
@@ -49,15 +53,25 @@ RSpec.describe 'getting Incident Management escalation policies' do
   it 'includes expected data' do
     post_graphql(query, current_user: current_user)
 
-    expect(escalation_rules_response).to eq([{
-      'id' => global_id(rule),
-      'elapsedTimeSeconds' => rule.elapsed_time_seconds, # 5 min
-      'status' => rule.status.upcase, # 'ACKNOWLEDGED'
-      'oncallSchedule' => {
-        'iid' => schedule.iid.to_s,
-        'name' => schedule.name
+    expect(escalation_rules_response).to eq([
+      {
+        'id' => global_id(rule),
+        'elapsedTimeSeconds' => rule.elapsed_time_seconds, # 5 min
+        'status' => rule.status.upcase, # 'ACKNOWLEDGED'
+        'oncallSchedule' => {
+          'iid' => schedule.iid.to_s,
+          'name' => schedule.name
+        },
+        'user' => nil
+      },
+      {
+        'id' => global_id(user_rule),
+        'elapsedTimeSeconds' => user_rule.elapsed_time_seconds, # 5 min
+        'status' => user_rule.status.upcase, # 'ACKNOWLEDGED'
+        'oncallSchedule' => nil,
+        'user' => { 'username' => user_rule.user.username }
       }
-    }])
+    ])
   end
 
   context 'with multiple rules' do
@@ -68,10 +82,11 @@ RSpec.describe 'getting Incident Management escalation policies' do
     it 'orders rules by time and status' do
       post_graphql(query, current_user: current_user)
 
-      expect(escalation_rules_response.length).to eq(4)
+      expect(escalation_rules_response.length).to eq(5)
       expect(escalation_rules_response.map { |rule| rule['id'] }).to eq([
         global_id(earlier_resolved_rule),
         global_id(rule),
+        global_id(user_rule),
         global_id(equivalent_resolved_rule),
         global_id(later_acknowledged_rule)
       ])
