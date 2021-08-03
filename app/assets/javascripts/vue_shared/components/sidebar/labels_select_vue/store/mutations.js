@@ -37,13 +37,10 @@ export default {
     const selectedLabelIds = state.selectedLabels.map((label) => label.id);
     state.labelsFetchInProgress = false;
     state.labelsFetched = true;
-    state.labels = labels.reduce((allLabels, label) => {
-      allLabels.push({
-        ...label,
-        set: selectedLabelIds.includes(label.id),
-      });
-      return allLabels;
-    }, []);
+    state.labels = labels.map((label) => ({
+      ...label,
+      set: selectedLabelIds.includes(label.id),
+    }));
   },
   [types.RECEIVE_SET_LABELS_FAILURE](state) {
     state.labelsFetchInProgress = false;
@@ -79,5 +76,13 @@ export default {
         currentActiveScopedLabel.set = false;
       }
     }
+  },
+
+  [types.UPDATE_LABELS_SET_STATE](state) {
+    const selectedLabelIds = state.selectedLabels.map((label) => label.id);
+    state.labels = state.labels.map((label) => ({
+      ...label,
+      set: selectedLabelIds.includes(label.id),
+    }));
   },
 };
