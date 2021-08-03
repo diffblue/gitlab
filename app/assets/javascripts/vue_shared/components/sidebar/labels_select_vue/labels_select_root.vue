@@ -142,7 +142,7 @@ export default {
       this.setInitialState({
         selectedLabels,
       });
-      this.updateLabelsSetState();
+      setTimeout(() => this.updateLabelsSetState(), 100);
     },
     showDropdownContents(showDropdownContents) {
       this.setContentIsOnViewport(showDropdownContents);
