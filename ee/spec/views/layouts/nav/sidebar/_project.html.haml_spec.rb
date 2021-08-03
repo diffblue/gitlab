@@ -203,8 +203,8 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
         expect(rendered).to have_link('Threat Monitoring', href: project_threat_monitoring_path(project))
       end
 
-      it 'scan policies link is visible' do
-        expect(rendered).to have_link('Scan Policies', href: project_security_policy_path(project))
+      it 'policies link is visible' do
+        expect(rendered).to have_link('Policies', href: project_security_policy_path(project))
       end
 
       it 'security configuration link is visible' do
