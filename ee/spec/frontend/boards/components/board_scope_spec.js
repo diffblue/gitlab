@@ -2,7 +2,6 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import BoardScope from 'ee/boards/components/board_scope.vue';
-import { useMockIntersectionObserver } from 'helpers/mock_dom_observer';
 import { TEST_HOST } from 'helpers/test_constants';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
@@ -11,7 +10,6 @@ Vue.use(Vuex);
 describe('BoardScope', () => {
   let wrapper;
   let store;
-  useMockIntersectionObserver();
 
   const createStore = () => {
     return new Vuex.Store({
