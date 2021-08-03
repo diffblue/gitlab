@@ -4,8 +4,8 @@ module Ci
   module Minutes
     # Track usage of Shared Runners minutes at root project level.
     # This class ensures that we keep 1 record per project per month.
-    class ProjectMonthlyUsage < ApplicationRecord
-      self.table_name = "ci_project_monthly_usages"
+    class ProjectMonthlyUsage < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
 
       belongs_to :project
 

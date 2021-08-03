@@ -2,7 +2,9 @@
 
 module Ci
   module Sources
-    class Project < ApplicationRecord
+    class Project < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
+
       self.table_name = "ci_sources_projects"
 
       belongs_to :pipeline, class_name: "Ci::Pipeline", optional: false

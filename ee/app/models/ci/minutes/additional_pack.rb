@@ -7,7 +7,9 @@
 # purchase via CustomersDot/Zuora
 module Ci
   module Minutes
-    class AdditionalPack < ApplicationRecord
+    class AdditionalPack < Ci::ApplicationRecord
+      include Ci::NamespacedModelName
+
       self.table_name = 'ci_minutes_additional_packs'
 
       belongs_to :namespace
