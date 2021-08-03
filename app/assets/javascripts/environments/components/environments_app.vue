@@ -20,6 +20,7 @@ export default {
       'Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a $30 giftcard.',
     ),
     surveyAlertButtonLabel: s__('Environments|Take the survey'),
+    surveyDismissButtonLabel: s__('Environments|Dismiss'),
   },
   modal: {
     id: 'enable-review-app-info',
@@ -147,7 +148,7 @@ export default {
         :primary-button-text="$options.i18n.surveyAlertButtonLabel"
         variant="info"
         dismissible
-        dismiss-label="Dismiss"
+        :dismiss-label="$options.i18n.surveyDismissButtonLabel"
         primary-button-link="https://gitlab.fra1.qualtrics.com/jfe/form/SV_a2xyFsAA4D0w0Jg"
       >
         <span>{{ $options.i18n.surveyAlertText }}</span>
