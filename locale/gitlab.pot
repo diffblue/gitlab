@@ -24630,6 +24630,9 @@ msgstr ""
 msgid "Pipeline|Variables"
 msgstr ""
 
+msgid "Pipeline|View pipeline"
+msgstr ""
+
 msgid "Pipeline|We are currently unable to fetch pipeline data"
 msgstr ""
 
