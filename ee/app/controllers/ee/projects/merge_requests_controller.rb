@@ -17,19 +17,17 @@ module EE
         end
 
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,
-                                                        :sast_reports, :secret_detection_reports, :dast_reports,
-                                                        :metrics_reports, :coverage_fuzzing_reports,
-                                                        :api_fuzzing_reports]
+                                                        :sast_reports, :secret_detection_reports,
+                                                        :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports,
+                                                        :metrics_reports]
         before_action :authorize_read_licenses!, only: [:license_scanning_reports]
 
-        feature_category :code_review, [:delete_description_version, :description_diff]
-        feature_category :container_scanning, [:container_scanning_reports]
-        feature_category :dependency_scanning, [:dependency_scanning_reports]
-        feature_category :fuzz_testing, [:coverage_fuzzing_reports, :api_fuzzing_reports]
-        feature_category :license_compliance, [:license_scanning_reports]
-        feature_category :vulnerability_management, [:sast_reports, :secret_detection_reports]
-        feature_category :dynamic_application_security_testing, [:dast_reports]
+        feature_category :vulnerability_management, [:container_scanning_reports, :dependency_scanning_reports,
+                                                     :sast_reports, :secret_detection_reports,
+                                                     :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports]
         feature_category :metrics, [:metrics_reports]
+        feature_category :license_compliance, [:license_scanning_reports]
+        feature_category :code_review, [:delete_description_version, :description_diff]
       end
 
       def license_scanning_reports
