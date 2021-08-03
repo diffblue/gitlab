@@ -73,7 +73,7 @@ export default {
     <gl-tooltip :target="() => $refs.sidebarIcon" placement="left" boundary="viewport">
       <span v-html="tooltipText"></span>
     </gl-tooltip>
-    <div class="title hide-collapsed">{{ __('Ancestors') }}</div>
+    <div class="title hide-collapsed gl-mb-2">{{ __('Ancestors') }}</div>
 
     <ul v-if="!isFetching && ancestors.length" class="vertical-timeline hide-collapsed">
       <li v-for="(ancestor, id) in ancestors" :key="id" class="vertical-timeline-row d-flex">
@@ -87,7 +87,7 @@ export default {
     </ul>
 
     <div v-if="!isFetching && !ancestors.length" class="value hide-collapsed">
-      <span class="no-value">{{ __('None') }}</span>
+      <span class="no-value gl-text-gray-500">{{ __('None') }}</span>
     </div>
 
     <gl-loading-icon v-if="isFetching" size="sm" />

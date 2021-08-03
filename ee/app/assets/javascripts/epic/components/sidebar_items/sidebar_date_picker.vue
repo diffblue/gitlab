@@ -156,10 +156,10 @@ export default {
 <template>
   <div :class="blockClass" class="block date">
     <collapsed-calendar-icon :text="collapsedText" class="sidebar-collapsed-icon" />
-    <div class="title">
+    <div class="title gl-mb-2">
       {{ label }}
       <gl-loading-icon v-if="dateSaveInProgress" size="sm" :inline="true" />
-      <div class="float-right d-flex">
+      <div class="float-right gl-display-flex gl-align-items-center">
         <gl-icon
           ref="epicDatePopover"
           name="question-o"
@@ -181,8 +181,9 @@ export default {
         <gl-button
           v-show="canUpdate && !editing"
           ref="editButton"
-          variant="link"
-          class="btn-sidebar-action"
+          category="tertiary"
+          size="small"
+          class="btn-sidebar-action gl-mr-n2"
           @click="startEditing"
         >
           {{ __('Edit') }}

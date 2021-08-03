@@ -25,7 +25,7 @@
     }
   }
 
-  .labels-select-dropdown-contents {
+  .labels-select-wrapper.is-embedded {
     @include gl-left-0;
     @include gl-shadow-x0-y2-b4-s0;
 

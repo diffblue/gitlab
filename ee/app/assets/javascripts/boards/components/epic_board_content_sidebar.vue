@@ -55,6 +55,7 @@ export default {
       v-bind="$attrs"
       class="boards-sidebar gl-absolute"
       :open="isSidebarOpen"
+      variant="sidebar"
       @close="handleClose"
     >
       <template #title>
