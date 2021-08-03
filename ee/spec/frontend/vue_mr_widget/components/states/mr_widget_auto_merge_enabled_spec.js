@@ -15,6 +15,8 @@ describe('MRWidgetAutoMergeEnabled', () => {
     poll: () => {},
   };
 
+  const getStatusText = () => wrapper.find('[data-testid="statusText"]').attributes('message');
+
   const mr = {
     shouldRemoveSourceBranch: false,
     canRemoveSourceBranch: true,
@@ -45,34 +47,16 @@ describe('MRWidgetAutoMergeEnabled', () => {
   });
 
   describe('computed', () => {
-    describe('statusTextBeforeAuthor', () => {
-      it('should return "Added to the merge train by" if the pipeline has been added to the merge train', () => {
-        factory({ autoMergeStrategy: MT_MERGE_STRATEGY });
-
-        expect(vm.statusTextBeforeAuthor).toBe('Added to the merge train by');
-      });
-
-      it('should return "Set by" if the MTWPS is selected', () => {
-        factory({ autoMergeStrategy: MTWPS_MERGE_STRATEGY });
-
-        expect(vm.statusTextBeforeAuthor).toBe('Set by');
-      });
-
-      it('should return "Set by" if the MWPS is selected', () => {
-        factory({ autoMergeStrategy: MWPS_MERGE_STRATEGY });
-
-        expect(vm.statusTextBeforeAuthor).toBe('Set by');
-      });
-    });
-
-    describe('statusTextAfterAuthor', () => {
+    describe('status', () => {
       it('should return "to start a merge train..." if MTWPS is selected and there is no existing merge train', () => {
         factory({
           autoMergeStrategy: MTWPS_MERGE_STRATEGY,
           mergeTrainsCount: 0,
         });
 
-        expect(vm.statusTextAfterAuthor).toBe('to start a merge train when the pipeline succeeds');
+        expect(getStatusText()).toBe(
+          'Set by %{merge_author} to start a merge train when the pipeline succeeds',
+        );
       });
 
       it('should return "to be added to the merge train..." if MTWPS is selected and there is an existing merge train', () => {
@@ -81,16 +65,16 @@ describe('MRWidgetAutoMergeEnabled', () => {
           mergeTrainsCount: 1,
         });
 
-        expect(vm.statusTextAfterAuthor).toBe(
-          'to be added to the merge train when the pipeline succeeds',
+        expect(getStatusText()).toBe(
+          'Set by %{merge_author} to be added to the merge train when the pipeline succeeds',
         );
       });
 
       it('should return "to be merged automatically..." if MWPS is selected', () => {
         factory({ autoMergeStrategy: MWPS_MERGE_STRATEGY });
 
-        expect(vm.statusTextAfterAuthor).toBe(
-          'to be merged automatically when the pipeline succeeds',
+        expect(getStatusText()).toBe(
+          'Set by %{merge_author} to be merged automatically when the pipeline succeeds',
         );
       });
     });
@@ -99,7 +83,7 @@ describe('MRWidgetAutoMergeEnabled', () => {
       it('should return "Cancel start merge train" if MTWPS is selected', () => {
         factory({ autoMergeStrategy: MTWPS_MERGE_STRATEGY });
 
-        expect(vm.cancelButtonText).toBe('Cancel');
+        expect(vm.cancelButtonText).toBe('Cancel auto-merge');
       });
 
       it('should return "Remove from merge train" if the pipeline has been added to the merge train', () => {
@@ -111,40 +95,18 @@ describe('MRWidgetAutoMergeEnabled', () => {
       it('should return "Cancel" if MWPS is selected', () => {
         factory({ autoMergeStrategy: MWPS_MERGE_STRATEGY });
 
-        expect(vm.cancelButtonText).toBe('Cancel');
+        expect(vm.cancelButtonText).toBe('Cancel auto-merge');
       });
     });
   });
 
   describe('template', () => {
-    it('should render the status text as "...to start a merge train" if MTWPS is selected and there is no existing merge train', () => {
-      factory({
-        autoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        mergeTrainsCount: 0,
-      });
-
-      const statusText = wrapper.find('.js-status-text-after-author').text();
-
-      expect(statusText).toBe('to start a merge train when the pipeline succeeds');
-    });
-
-    it('should render the status text as "...to be added to the merge train" MTWPS is selected and there is an existing merge train', () => {
-      factory({
-        autoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        mergeTrainsCount: 1,
-      });
-
-      const statusText = wrapper.find('.js-status-text-after-author').text();
-
-      expect(statusText).toBe('to be added to the merge train when the pipeline succeeds');
-    });
-
     it('should render the cancel button as "Cancel" if MTWPS is selected', () => {
       factory({ autoMergeStrategy: MTWPS_MERGE_STRATEGY });
 
       const cancelButtonText = wrapper.find('.js-cancel-auto-merge').text();
 
-      expect(cancelButtonText).toBe('Cancel');
+      expect(cancelButtonText).toBe('Cancel auto-merge');
     });
   });
 
