@@ -11,7 +11,6 @@ module IncidentManagement
     validates :project_id, uniqueness: { message: _('can only have one escalation policy') }, on: :create
     validates :name, presence: true, uniqueness: { scope: [:project_id] }, length: { maximum: 72 }
     validates :description, length: { maximum: 160 }
-    validates :rules, presence: true
 
     accepts_nested_attributes_for :rules
   end

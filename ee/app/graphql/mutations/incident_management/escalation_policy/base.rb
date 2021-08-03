@@ -43,23 +43,42 @@ module Mutations
         def prepare_rules_attributes(project, args)
           return args unless rules = args.delete(:rules)
 
-          iids = rules.collect { |rule| rule[:oncall_schedule_iid] }
-          found_schedules = schedules_for_iids(project, iids)
-          rules_attributes = rules.map { |rule| prepare_rule(found_schedules, rule.to_h) }
+          schedules = find_schedules(project, rules)
+          users = find_users(rules)
+          rules_attributes = rules.map { |rule| prepare_rule(rule.to_h, schedules, users) }
 
           args.merge(rules_attributes: rules_attributes)
         end
 
-        def prepare_rule(schedules, rule)
+        def prepare_rule(rule, schedules, users)
           iid = rule.delete(:oncall_schedule_iid).to_i
+          username = rule.delete(:username)
 
-          rule.merge(oncall_schedule: schedules[iid])
+          rule.merge(
+            oncall_schedule: schedules[iid],
+            user: users[username]
+          )
         end
 
-        def schedules_for_iids(project, iids)
-          schedules = ::IncidentManagement::OncallSchedulesFinder.new(current_user, project, iid: iids).execute
+        def find_schedules(project, rules)
+          find_resource(rules, :oncall_schedule_iid) do |iids|
+            ::IncidentManagement::OncallSchedulesFinder.new(current_user, project, iid: iids).execute.index_by(&:iid)
+          end
+        end
 
-          schedules.index_by(&:iid)
+        def find_users(rules)
+          find_resource(rules, :username) do |usernames|
+            UsersFinder.new(current_user, username: usernames).execute.index_by(&:username)
+          end
+        end
+
+        def find_resource(rules, attribute)
+          identifiers = rules.collect { |rule| rule[attribute] }.uniq.compact
+          resources = yield(identifiers)
+
+          return resources if resources.length == identifiers.length
+
+          raise_resource_not_available_error!
         end
       end
     end

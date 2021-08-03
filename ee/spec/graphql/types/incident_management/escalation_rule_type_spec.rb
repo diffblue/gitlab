@@ -9,6 +9,7 @@ RSpec.describe GitlabSchema.types['EscalationRuleType'] do
     expected_fields = %i[
       id
       oncall_schedule
+      user
       elapsed_time_seconds
       status
     ]

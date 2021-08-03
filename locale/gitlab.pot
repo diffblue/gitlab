@@ -3252,9 +3252,6 @@ msgstr ""
 msgid "All epics"
 msgstr ""
 
-msgid "All escalations rules must have a schedule in the same project as the policy"
-msgstr ""
-
 msgid "All groups and projects"
 msgstr ""
 
@@ -28823,6 +28820,9 @@ msgstr ""
 msgid "Schedule a new pipeline"
 msgstr ""
 
+msgid "Schedule-based escalation rules must have a schedule in the same project as the policy"
+msgstr ""
+
 msgid "Scheduled"
 msgstr ""
 
@@ -35992,6 +35992,9 @@ msgstr ""
 msgid "User was successfully updated."
 msgstr ""
 
+msgid "User-based escalation rules must have a user with access to the project"
+msgstr ""
+
 msgid "UserAvailability|%{author} %{spanStart}(Busy)%{spanEnd}"
 msgstr ""
 
@@ -39604,7 +39607,7 @@ msgstr ""
 msgid "must be inside the fork network"
 msgstr ""
 
-msgid "must have a unique schedule, status, and elapsed time"
+msgid "must be unique by status and elapsed time within a policy"
 msgstr ""
 
 msgid "my-awesome-group"

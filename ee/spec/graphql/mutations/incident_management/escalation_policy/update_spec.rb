@@ -110,6 +110,7 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Update do
 
     context 'with rule updates' do
       let(:oncall_schedule_iid) { oncall_schedule.iid }
+      let(:username) { reporter.username }
       let(:rule_args) do
         [
           {
@@ -119,6 +120,13 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Update do
           },
           {
             oncall_schedule_iid: oncall_schedule_iid,
+            username: nil,
+            elapsed_time_seconds: 800,
+            status: :acknowledged
+          },
+          {
+            oncall_schedule_iid: nil,
+            username: username,
             elapsed_time_seconds: 800,
             status: :acknowledged
           }
@@ -128,28 +136,29 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Update do
       let(:expected_rules) do
         [
           first_rule,
-          have_attributes(oncall_schedule_id: oncall_schedule.id, elapsed_time_seconds: 800, status: 'acknowledged')
+          have_attributes(oncall_schedule_id: oncall_schedule.id, user: nil, elapsed_time_seconds: 800, status: 'acknowledged'),
+          have_attributes(oncall_schedule_id: nil, user: reporter, elapsed_time_seconds: 800, status: 'acknowledged')
         ]
       end
 
       it_behaves_like 'successful update with no errors'
 
       context 'when schedule does not exist' do
-        let(:error_message) { eq("The oncall schedule for iid #{non_existing_record_iid} could not be found") }
         let(:oncall_schedule_iid) { non_existing_record_iid }
 
-        it 'returns errors in the body of the response' do
-          expect(resolve).to eq(
-            escalation_policy: nil,
-            errors: ['All escalations rules must have a schedule in the same project as the policy']
-          )
-        end
+        it_behaves_like 'failed update with a top-level access error'
 
         context 'the user does not have permission to update policies regardless' do
           let(:current_user) { reporter }
 
           it_behaves_like 'failed update with a top-level access error'
         end
+      end
+
+      context "when rule's user does not exist" do
+        let(:username) { 'invalid-username' }
+
+        it_behaves_like 'failed update with a top-level access error'
       end
     end
   end
