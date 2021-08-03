@@ -172,4 +172,24 @@ RSpec.describe EE::NamespacesHelper do
       end
     end
   end
+
+  describe '#link_to_buy_additional_minutes_path' do
+    subject { helper.link_to_buy_additional_minutes_path(namespace) }
+
+    let_it_be(:namespace) { create(:namespace_with_plan) }
+
+    context 'new_route_ci_minutes_purchase' do
+      context 'when is disabled' do
+        before do
+          stub_feature_flags(new_route_ci_minutes_purchase: false)
+        end
+
+        it { is_expected.to be EE::SUBSCRIPTIONS_MORE_MINUTES_URL }
+      end
+
+      context 'when is enabled' do
+        it { is_expected.to eq buy_minutes_subscriptions_path(selected_group: namespace.id) }
+      end
+    end
+  end
 end

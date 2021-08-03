@@ -98,7 +98,7 @@ RSpec.describe 'Protected Branches', :js do
           it 'displays toggle off' do
             visit project_settings_repository_path(project)
 
-            page.within '.qa-protected-branches-list' do
+            page.within '.qa-protected-branches-list' do # rubocop:disable QA/SelectorUsage
               expect(page).not_to have_css('.js-code-owner-toggle.is-checked')
             end
           end
