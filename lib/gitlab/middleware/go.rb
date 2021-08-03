@@ -134,7 +134,7 @@ module Gitlab
       end
 
       def authentication_result(request, project)
-        empty_result = Gitlab::Auth::Result.new(nil, nil, nil, nil)
+        empty_result = Gitlab::Auth::Result::EMPTY
         return empty_result unless has_basic_credentials?(request)
 
         login, password = user_name_and_password(request)

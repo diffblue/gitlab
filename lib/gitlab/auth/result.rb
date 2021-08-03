@@ -3,6 +3,7 @@
 module Gitlab
   module Auth
     Result = Struct.new(:actor, :project, :type, :authentication_abilities) do
+      self::EMPTY = self.new(nil, nil, nil, nil).freeze
       def ci?(for_project)
         type == :ci &&
           project &&
