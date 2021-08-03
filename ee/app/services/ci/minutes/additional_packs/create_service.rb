@@ -15,9 +15,13 @@ module Ci
         def execute
           authorize_current_user!
 
-          return successful_response if additional_pack.persisted?
+          if additional_pack.persisted? || save_additional_pack
+            reset_ci_minutes!
 
-          save_additional_pack ? successful_response : error_response
+            successful_response
+          else
+            error_response
+          end
         end
 
         private
@@ -57,6 +61,10 @@ module Ci
 
         def error_response
           error('Unable to save additional pack')
+        end
+
+        def reset_ci_minutes!
+          ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
         end
       end
     end

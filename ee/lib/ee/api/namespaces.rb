@@ -30,7 +30,7 @@ module EE
             end
 
             if params[:extra_shared_runners_minutes_limit].present? || params[:shared_runners_minutes_limit].present?
-              ::Gitlab::Ci::Minutes::CachedQuota.new(namespace).expire!
+              ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
             end
 
             namespace.update(update_attrs)

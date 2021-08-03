@@ -48,6 +48,13 @@ module Ci
         enabled? && total_minutes_used >= total_minutes
       end
 
+      # TODO: merge this with minutes_used_up? in
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933.
+      # This method is agnostic from Project#shared_runners_enabled
+      def actual_minutes_used_up?
+        limit_enabled? && total_minutes_used >= total_minutes
+      end
+
       def total_minutes
         @total_minutes ||= monthly_minutes + purchased_minutes
       end
@@ -73,6 +80,14 @@ module Ci
       end
 
       private
+
+      # TODO: rename to `enabled?`
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933
+      def limit_enabled?
+        strong_memoize(:limit_enabled) do
+          namespace.root? && !!total_minutes.nonzero?
+        end
+      end
 
       def minutes_limit
         return monthly_minutes if enabled?
