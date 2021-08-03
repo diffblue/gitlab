@@ -22,6 +22,18 @@ RSpec.describe Gitlab::UsageDataMetrics do
         expect(subject).to include(:license_subscription_id)
       end
 
+      it 'includes incident_management_incident_published monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:incident_management]).to include(
+          :incident_management_incident_published_monthly, :incident_management_incident_published_weekly
+        )
+      end
+
+      it 'includes incident_management_oncall monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:incident_management_oncall].keys).to contain_exactly(*[
+          :i_incident_management_oncall_notification_sent_monthly, :i_incident_management_oncall_notification_sent_weekly
+        ])
+      end
+
       it 'includes compliance monthly and weekly keys' do
         expect(subject[:redis_hll_counters][:compliance].keys).to contain_exactly(*[
           :g_compliance_dashboard_monthly, :g_compliance_dashboard_weekly,
