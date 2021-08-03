@@ -12,10 +12,19 @@ module CustomersDot
     def graphql
       response = Gitlab::HTTP.post("#{BASE_URL}/graphql",
         body: request.raw_post,
-        headers: { 'Content-Type' => 'application/json' }
+        headers: forward_headers
       )
 
       render json: response.body, status: response.code
+    end
+
+    private
+
+    def forward_headers
+      {}.tap do |headers|
+        headers['Content-Type'] = 'application/json'
+        headers['Authorization'] = "Bearer #{Gitlab::CustomersDot::Jwt.new(current_user).encoded}" if current_user
+      end
     end
   end
 end
