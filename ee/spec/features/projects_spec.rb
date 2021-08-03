@@ -19,7 +19,7 @@ RSpec.describe 'Project', :js do
 
     it "defaults to correct namespace" do
       visit new_project_path
-      find('[data-qa-selector="create_from_template_link"]').click
+      find('[data-qa-selector="create_from_template_link"]').click # rubocop:disable QA/SelectorUsage
       find('.custom-group-project-templates-tab').click
       find("label[for=#{template.name}]").click
 
@@ -28,7 +28,7 @@ RSpec.describe 'Project', :js do
 
     it "uses supplied namespace" do
       visit new_project_path(namespace_id: other_subgroup.id)
-      find('[data-qa-selector="create_from_template_link"]').click
+      find('[data-qa-selector="create_from_template_link"]').click # rubocop:disable QA/SelectorUsage
       find('.custom-group-project-templates-tab').click
       find("label[for=#{template.name}]").click
 

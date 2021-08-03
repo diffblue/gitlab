@@ -179,9 +179,9 @@ RSpec.shared_examples "protected branches > access control > EE" do
     it 'unprotect/delete can be performed by a maintainer' do
       visit project_protected_branches_path(project)
 
-      expect(page).to have_selector('.qa-protected-branch')
+      expect(page).to have_selector('.qa-protected-branch') # rubocop:disable QA/SelectorUsage
       accept_alert { click_on 'Unprotect' }
-      expect(page).not_to have_selector('.qa-protected-branch')
+      expect(page).not_to have_selector('.qa-protected-branch') # rubocop:disable QA/SelectorUsage
     end
 
     context 'with unprotect access levels' do

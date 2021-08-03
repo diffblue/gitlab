@@ -9,8 +9,8 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
     it 'enables the Select parent group dropdown and does not show an alert for a group' do
       render 'groups/settings/transfer', group: group
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]'
-      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]'
+      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]' # rubocop:disable QA/SelectorUsage
+      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
       expect(rendered).not_to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
     end
 
@@ -19,7 +19,7 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
 
       render 'groups/settings/transfer', group: group
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"][disabled]'
+      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
       expect(rendered).to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
     end
 
@@ -29,8 +29,8 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
 
       render 'groups/settings/transfer', group: subgroup
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]'
-      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]'
+      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]' # rubocop:disable QA/SelectorUsage
+      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
       expect(rendered).not_to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
     end
   end
