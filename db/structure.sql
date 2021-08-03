@@ -13941,10 +13941,12 @@ ALTER SEQUENCE incident_management_escalation_policies_id_seq OWNED BY incident_
 CREATE TABLE incident_management_escalation_rules (
     id bigint NOT NULL,
     policy_id bigint NOT NULL,
-    oncall_schedule_id bigint NOT NULL,
+    oncall_schedule_id bigint,
     status smallint NOT NULL,
     elapsed_time_seconds integer NOT NULL,
-    is_removed boolean DEFAULT false NOT NULL
+    is_removed boolean DEFAULT false NOT NULL,
+    user_id bigint,
+    CONSTRAINT escalation_rules_one_of_oncall_schedule_or_user CHECK ((num_nonnulls(oncall_schedule_id, user_id) = 1))
 );
 
 CREATE SEQUENCE incident_management_escalation_rules_id_seq
@@ -23723,6 +23725,10 @@ CREATE INDEX index_esc_protected_branches_on_external_status_check_id ON externa
 
 CREATE INDEX index_esc_protected_branches_on_protected_branch_id ON external_status_checks_protected_branches USING btree (protected_branch_id);
 
+CREATE UNIQUE INDEX index_escalation_rules_on_all_attributes ON incident_management_escalation_rules USING btree (policy_id, oncall_schedule_id, status, elapsed_time_seconds, user_id);
+
+CREATE INDEX index_escalation_rules_on_user ON incident_management_escalation_rules USING btree (user_id);
+
 CREATE INDEX index_events_on_action ON events USING btree (action);
 
 CREATE INDEX index_events_on_author_id_and_created_at ON events USING btree (author_id, created_at);
@@ -24440,8 +24446,6 @@ CREATE INDEX index_on_namespaces_lower_path ON namespaces USING btree (lower((pa
 CREATE INDEX index_on_oncall_schedule_escalation_rule ON incident_management_escalation_rules USING btree (oncall_schedule_id);
 
 CREATE INDEX index_on_pages_metadata_not_migrated ON project_pages_metadata USING btree (project_id) WHERE ((deployed = true) AND (pages_deployment_id IS NULL));
-
-CREATE UNIQUE INDEX index_on_policy_schedule_status_elapsed_time_escalation_rules ON incident_management_escalation_rules USING btree (policy_id, oncall_schedule_id, status, elapsed_time_seconds);
 
 CREATE UNIQUE INDEX index_on_project_id_escalation_policy_name_unique ON incident_management_escalation_policies USING btree (project_id, name);
 
@@ -25894,6 +25898,9 @@ ALTER TABLE ONLY epics
 
 ALTER TABLE ONLY clusters_applications_runners
     ADD CONSTRAINT fk_02de2ded36 FOREIGN KEY (runner_id) REFERENCES ci_runners(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY incident_management_escalation_rules
+    ADD CONSTRAINT fk_0314ee86eb FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_03c671965c FOREIGN KEY (design_id) REFERENCES design_management_designs(id) ON DELETE CASCADE;

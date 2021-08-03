@@ -14,7 +14,13 @@ module IncidentManagement
       end
 
       def invalid_schedules?
-        params[:rules_attributes]&.any? { |attrs| attrs[:oncall_schedule]&.project != project }
+        params[:rules_attributes]&.any? { |attrs| attrs[:oncall_schedule] && attrs[:oncall_schedule].project != project }
+      end
+
+      def users_without_permissions?
+        DeclarativePolicy.subject_scope do
+          params[:rules_attributes]&.any? { |attrs| attrs[:user] && !attrs[:user].can?(:read_project, project) }
+        end
       end
 
       def error(message)
@@ -38,7 +44,11 @@ module IncidentManagement
       end
 
       def error_bad_schedules
-        error(_('All escalations rules must have a schedule in the same project as the policy'))
+        error(_('Schedule-based escalation rules must have a schedule in the same project as the policy'))
+      end
+
+      def error_user_without_permission
+        error(_('User-based escalation rules must have a user with access to the project'))
       end
 
       def error_in_save(policy)

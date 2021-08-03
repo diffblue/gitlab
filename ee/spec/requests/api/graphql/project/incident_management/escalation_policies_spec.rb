@@ -118,7 +118,8 @@ RSpec.describe 'getting Incident Management escalation policies' do
                   'name' => last_policy_rule.oncall_schedule.name,
                   'description' => last_policy_rule.oncall_schedule.description,
                   'timezone' => last_policy_rule.oncall_schedule.timezone
-                }
+                },
+                'user' => nil
               }
             ]
           )

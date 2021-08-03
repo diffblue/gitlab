@@ -7,7 +7,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
   let_it_be(:schedule_1) { create(:incident_management_oncall_schedule, :with_rotation, project: project) }
   let_it_be(:schedule_1_users) { schedule_1.participants.map(&:user) }
 
-  let(:escalation_rule) { build(:incident_management_escalation_rule, oncall_schedule: schedule_1 ) }
+  let(:escalation_rule) { build(:incident_management_escalation_rule, oncall_schedule: schedule_1) }
   let!(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rules: [escalation_rule]) }
 
   let(:alert) { create(:alert_management_alert, project: project, **alert_params) }
@@ -54,6 +54,14 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
           .and_call_original
 
         expect { execute }.to change(Note, :count).by(1)
+      end
+
+      context 'when escalation rule is for a user' do
+        let(:escalation_rule) { build(:incident_management_escalation_rule, :with_user) }
+        let(:users) { [escalation_rule.user] }
+
+        it_behaves_like 'sends on-call notification'
+        it_behaves_like 'deletes the escalation'
       end
     end
 

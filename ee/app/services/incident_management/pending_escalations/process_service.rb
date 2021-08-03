@@ -55,8 +55,12 @@ module IncidentManagement
 
       def oncall_notification_recipients
         strong_memoize(:oncall_notification_recipients) do
-          ::IncidentManagement::OncallUsersFinder.new(project, schedule: rule.oncall_schedule).execute.to_a
+          rule.user_id ? [rule.user] : schedule_recipients
         end
+      end
+
+      def schedule_recipients
+        ::IncidentManagement::OncallUsersFinder.new(project, schedule: rule.oncall_schedule).execute.to_a
       end
 
       def destroy_escalation!
