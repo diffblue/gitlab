@@ -4,7 +4,6 @@ import * as Sentry from '@sentry/browser';
 import dateformat from 'dateformat';
 import DevopsScore from '~/analytics/devops_report/components/devops_score.vue';
 import API from '~/api';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import {
   I18N_GROUPS_QUERY_ERROR,
@@ -149,13 +148,6 @@ export default {
     },
     enabledNamespaces() {
       return this.devopsAdoptionEnabledNamespaces?.nodes || [];
-    },
-    disabledGroupNodes() {
-      const enabledNamespaceIds = this.enabledNamespaces.map((group) =>
-        getIdFromGraphQLId(group.namespace.id),
-      );
-
-      return this.availableGroups.filter((group) => !enabledNamespaceIds.includes(group.id));
     },
   },
   created() {
@@ -328,7 +320,7 @@ export default {
           :cols="tab.cols"
           :enabled-namespaces="devopsAdoptionEnabledNamespaces"
           :search-term="searchTerm"
-          :disabled-group-nodes="disabledGroupNodes"
+          :groups="availableGroups"
           :is-loading-groups="isLoadingGroups"
           :has-subgroups="hasSubgroups"
           @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
@@ -350,11 +342,13 @@ export default {
         >
           <devops-adoption-add-dropdown
             :search-term="searchTerm"
-            :groups="disabledGroupNodes"
+            :groups="availableGroups"
+            :enabled-namespaces="devopsAdoptionEnabledNamespaces"
             :is-loading-groups="isLoadingGroups"
             :has-subgroups="hasSubgroups"
             @fetchGroups="fetchGroups"
             @enabledNamespacesAdded="addEnabledNamespacesToCache"
+            @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
           />
         </span>
       </template>

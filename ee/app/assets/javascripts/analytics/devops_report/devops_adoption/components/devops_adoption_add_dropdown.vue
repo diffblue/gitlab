@@ -8,7 +8,7 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { TYPE_GROUP } from '~/graphql_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   DEBOUNCE_DELAY,
   I18N_GROUP_DROPDOWN_TEXT,
@@ -19,6 +19,7 @@ import {
   I18N_NO_SUB_GROUPS,
 } from '../constants';
 import bulkEnableDevopsAdoptionNamespacesMutation from '../graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
+import disableDevopsAdoptionNamespaceMutation from '../graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 
 export default {
   name: 'DevopsAdoptionAddDropdown',
@@ -63,6 +64,11 @@ export default {
       required: false,
       default: false,
     },
+    enabledNamespaces: {
+      type: Object,
+      required: false,
+      default: () => ({ nodes: [] }),
+    },
   },
   computed: {
     filteredGroupsLength() {
@@ -77,12 +83,31 @@ export default {
     tooltipText() {
       return this.isLoadingGroups || this.hasSubgroups ? false : I18N_NO_SUB_GROUPS;
     },
+    enabledNamespaceIds() {
+      return this.enabledNamespaces.nodes.map((enabledNamespace) =>
+        getIdFromGraphQLId(enabledNamespace.namespace.id),
+      );
+    },
   },
   beforeDestroy() {
     clearTimeout(this.timeout);
     this.timeout = null;
   },
   methods: {
+    namespaceIdByGroupId(groupId) {
+      return this.enabledNamespaces.nodes?.find(
+        (enabledNamespace) => getIdFromGraphQLId(enabledNamespace.namespace.id) === groupId,
+      ).id;
+    },
+    handleGroupSelect(id) {
+      const groupEnabled = this.isGroupEnabled(id);
+
+      if (groupEnabled) {
+        this.disableGroup(id);
+      } else {
+        this.enableGroup(id);
+      }
+    },
     enableGroup(id) {
       this.$apollo
         .mutate({
@@ -102,6 +127,28 @@ export default {
         .catch((error) => {
           Sentry.captureException(error);
         });
+    },
+    disableGroup(id) {
+      const gid = this.namespaceIdByGroupId(id);
+
+      this.$apollo
+        .mutate({
+          mutation: disableDevopsAdoptionNamespaceMutation,
+          variables: {
+            id: gid,
+          },
+          update: () => {
+            this.$emit('enabledNamespacesRemoved', gid);
+          },
+        })
+        .catch((error) => {
+          Sentry.captureException(error);
+        });
+    },
+    isGroupEnabled(groupId) {
+      return this.enabledNamespaceIds.some((namespaceId) => {
+        return namespaceId === groupId;
+      });
     },
   },
 };
@@ -126,8 +173,10 @@ export default {
       <gl-dropdown-item
         v-for="group in groups"
         :key="group.id"
+        :is-check-item="true"
+        :is-checked="isGroupEnabled(group.id)"
         data-testid="group-row"
-        @click="enableGroup(group.id)"
+        @click.native.capture.stop="handleGroupSelect(group.id)"
       >
         {{ group.full_name }}
       </gl-dropdown-item>

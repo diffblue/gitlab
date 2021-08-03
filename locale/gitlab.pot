@@ -11334,16 +11334,10 @@ msgstr ""
 msgid "DevopsAdoption|Add a group to get started"
 msgstr ""
 
-msgid "DevopsAdoption|Add group"
+msgid "DevopsAdoption|Add or remove groups"
 msgstr ""
 
-msgid "DevopsAdoption|Add group to table"
-msgstr ""
-
-msgid "DevopsAdoption|Add sub-group"
-msgstr ""
-
-msgid "DevopsAdoption|Add sub-group to table"
+msgid "DevopsAdoption|Add or remove subgroups"
 msgstr ""
 
 msgid "DevopsAdoption|Adopted"
@@ -11401,6 +11395,12 @@ msgid "DevopsAdoption|Dev"
 msgstr ""
 
 msgid "DevopsAdoption|DevOps adoption tracks the use of key features across your favorite groups. Add a group to the table to begin."
+msgstr ""
+
+msgid "DevopsAdoption|Edit groups"
+msgstr ""
+
+msgid "DevopsAdoption|Edit subgroups"
 msgstr ""
 
 msgid "DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Last updated: %{timestamp}."
@@ -11463,7 +11463,7 @@ msgstr ""
 msgid "DevopsAdoption|There was an error fetching Groups. Please refresh the page."
 msgstr ""
 
-msgid "DevopsAdoption|This group has no sub-groups"
+msgid "DevopsAdoption|This group has no subgroups"
 msgstr ""
 
 msgid "DevopsAdoption|You cannot remove the group you are currently in."
