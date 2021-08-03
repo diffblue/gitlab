@@ -119,10 +119,6 @@ describe('Project Security Dashboard component', () => {
         type: 'slider',
         handleIcon: 'path://mockSvgPathContent',
         startValue: '2021-03-12',
-        dataBackground: {
-          lineStyle: { width: 1 },
-          areaStyle: null,
-        },
       });
     });
   });
