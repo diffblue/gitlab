@@ -36,9 +36,9 @@ module EE
               end
             end
 
-            override :create_vulnerabilities
-            def create_vulnerabilities
-              collate_remediations.each { |vulnerability| create_vulnerability(vulnerability, create_remediations(report_data['remediations'])) }
+            override :create_findings
+            def create_findings
+              collate_remediations.each { |finding| create_finding(finding, create_remediations(report_data['remediations'])) }
             end
           end
         end
