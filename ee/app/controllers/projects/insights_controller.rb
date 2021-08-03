@@ -11,7 +11,7 @@ class Projects::InsightsController < Projects::ApplicationController
 
   track_redis_hll_event :show, name: 'p_analytics_insights'
 
-  feature_category :insights
+  feature_category :value_stream_management
 
   private
 
