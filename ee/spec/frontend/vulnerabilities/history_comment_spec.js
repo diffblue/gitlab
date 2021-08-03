@@ -115,8 +115,9 @@ describe('History Comment', () => {
         })
         .then(() => {
           expect(mockAxios.history.post).toHaveLength(1);
-          expect(wrapper.emitted().onCommentAdded).toBeTruthy();
-          expect(wrapper.emitted().onCommentAdded[0][0]).toEqual(comment);
+          expect(wrapper.emitted().onCommentAdded[0]).toEqual([
+            { response: comment, comment: undefined },
+          ]);
         });
     });
 
@@ -239,9 +240,9 @@ describe('History Comment', () => {
         })
         .then(() => {
           expect(mockAxios.history.put).toHaveLength(1);
-          expect(wrapper.emitted().onCommentUpdated).toBeTruthy();
-          expect(wrapper.emitted().onCommentUpdated[0][0]).toEqual(responseData);
-          expect(wrapper.emitted().onCommentUpdated[0][1]).toEqual(comment);
+          expect(wrapper.emitted().onCommentUpdated[0]).toEqual([
+            { response: responseData, comment },
+          ]);
         });
     });
 

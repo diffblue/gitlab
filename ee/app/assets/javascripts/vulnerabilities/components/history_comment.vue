@@ -105,7 +105,7 @@ export default {
       axios({ method, url, data })
         .then(({ data: responseData }) => {
           this.isEditingComment = false;
-          this.$emit(emitName, responseData, this.comment);
+          this.$emit(emitName, { response: responseData, comment: this.comment });
         })
         .catch(() => {
           createFlash({

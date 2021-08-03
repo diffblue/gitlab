@@ -39,9 +39,9 @@ describe('History Entry', () => {
     });
   };
 
-  const eventItem = () => wrapper.find(EventItem);
-  const newComment = () => wrapper.find({ ref: 'newComment' });
-  const existingComments = () => wrapper.findAll({ ref: 'existingComment' });
+  const eventItem = () => wrapper.findComponent(EventItem);
+  const newComment = () => wrapper.findComponent({ ref: 'newComment' });
+  const existingComments = () => wrapper.findAllComponents({ ref: 'existingComment' });
   const commentAt = (index) => existingComments().at(index);
 
   afterEach(() => wrapper.destroy());
@@ -92,23 +92,19 @@ describe('History Entry', () => {
     });
   });
 
-  it('updates an existing comment correctly', () => {
-    const note = 'new note';
+  it('updates an existing comment correctly', async () => {
+    const response = { note: 'new note' };
     createWrapper(systemNote, commentNote);
-    commentAt(0).vm.$emit('onCommentUpdated', { note }, commentNote);
+    await commentAt(0).vm.$emit('onCommentUpdated', { response, comment: commentNote });
 
-    return wrapper.vm.$nextTick().then(() => {
-      expect(commentAt(0).props('comment').note).toBe(note);
-    });
+    expect(commentAt(0).props('comment').note).toBe(response.note);
   });
 
-  it('deletes an existing comment correctly', () => {
+  it('deletes an existing comment correctly', async () => {
     createWrapper(systemNote, commentNote);
-    commentAt(0).vm.$emit('onCommentDeleted', commentNote);
+    await commentAt(0).vm.$emit('onCommentDeleted', commentNote);
 
-    return wrapper.vm.$nextTick().then(() => {
-      expect(newComment().exists()).toBe(true);
-      expect(existingComments()).toHaveLength(0);
-    });
+    expect(newComment().exists()).toBe(true);
+    expect(existingComments()).toHaveLength(0);
   });
 });
