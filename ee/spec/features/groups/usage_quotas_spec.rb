@@ -144,8 +144,6 @@ RSpec.describe 'Groups > Usage Quotas' do
     it 'has correct tracking setup and shows correct group quota and projects info' do
       visit_pipeline_quota_page
 
-      expect(page).to have_link('Buy additional minutes', href: EE::SUBSCRIPTIONS_MORE_MINUTES_URL)
-
       page.within('.pipeline-quota') do
         expect(page).to have_content("1000 / 500 minutes")
         expect(page).to have_content("200% used")
@@ -185,6 +183,28 @@ RSpec.describe 'Groups > Usage Quotas' do
 
       expect(page).to have_content(project.full_name)
       expect(page).to have_content(subproject.full_name)
+    end
+  end
+
+  describe 'new_route_ci_minutes_purchase feature flag' do
+    context 'when is disabled' do
+      before do
+        stub_feature_flags(new_route_ci_minutes_purchase: false)
+      end
+
+      it 'points to Customers Portal purchase flow' do
+        visit_pipeline_quota_page
+
+        expect(page).to have_link('Buy additional minutes', href: EE::SUBSCRIPTIONS_MORE_MINUTES_URL)
+      end
+    end
+
+    context 'when is enabled' do
+      it 'points to GitLab purchase flow' do
+        visit_pipeline_quota_page
+
+        expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_path(selected_group: group.id))
+      end
     end
   end
 
