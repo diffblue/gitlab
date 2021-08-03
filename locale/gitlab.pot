@@ -24675,9 +24675,6 @@ msgstr ""
 msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
 msgstr ""
 
-msgid "Please ensure your account's %{account_link_start}recovery settings%{account_link_end} are up to date."
-msgstr ""
-
 msgid "Please enter a non-negative number"
 msgstr ""
 
@@ -25323,6 +25320,9 @@ msgstr ""
 msgid "Profiles|Main settings"
 msgstr ""
 
+msgid "Profiles|Manage two-factor authentication"
+msgstr ""
+
 msgid "Profiles|No file chosen."
 msgstr ""
 
@@ -25426,6 +25426,9 @@ msgid "Profiles|Username successfully changed"
 msgstr ""
 
 msgid "Profiles|Using emojis in names seems fun, but please try to set a status message instead"
+msgstr ""
+
+msgid "Profiles|We recommend you ensure two-factor authentication is enabled and the settings are up to date."
 msgstr ""
 
 msgid "Profiles|What's your status?"

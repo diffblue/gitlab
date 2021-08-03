@@ -5,25 +5,27 @@ require 'spec_helper'
 RSpec.describe 'Account recovery regular check callout' do
   context 'when signed in' do
     let(:user) { create(:user, created_at: 4.months.ago ) }
-    let(:message) { "Please ensure your account's recovery settings are up to date." }
+    let(:message) { "We recommend you ensure two-factor authentication is enabled and the settings are up to date." }
+    let(:action_button) { 'Manage two-factor authentication' }
 
     before do
       allow(Gitlab).to receive(:com?) { true }
-      gitlab_sign_in(user)
+      sign_in(user)
     end
 
     it 'shows callout if not dismissed' do
       visit root_dashboard_path
 
       expect(page).to have_content(message)
+      expect(page).to have_link(action_button, href: profile_two_factor_auth_path)
     end
 
-    it 'hides callout when user opens profile', :js do
+    it 'hides callout when user clicks action button', :js do
       visit root_dashboard_path
 
       expect(page).to have_content(message)
 
-      click_link 'recovery settings'
+      click_link action_button
       wait_for_requests
 
       expect(page).not_to have_content(message)
