@@ -35632,6 +35632,12 @@ msgstr ""
 msgid "UsageQuota|Buy additional minutes"
 msgstr ""
 
+msgid "UsageQuota|CI minutes usage by month"
+msgstr ""
+
+msgid "UsageQuota|CI minutes usage by project"
+msgstr ""
+
 msgid "UsageQuota|Current period usage"
 msgstr ""
 

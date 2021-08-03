@@ -1,3 +1,4 @@
+import ciMinutesUsage from 'ee/ci_minutes_usage';
 import otherStorageCounter from 'ee/other_storage_counter';
 import storageCounter from 'ee/storage_counter';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
@@ -23,3 +24,5 @@ if (document.querySelector('#js-other-storage-counter-app')) {
     hashedTabs: true,
   });
 }
+
+ciMinutesUsage();
