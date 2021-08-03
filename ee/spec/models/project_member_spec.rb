@@ -89,6 +89,22 @@ RSpec.describe ProjectMember do
     end
   end
 
+  describe '#group_domain_validations' do
+    let(:member_type) { :project_member }
+    let(:source) { create(:project, namespace: group) }
+    let(:subgroup) { create(:group, parent: group) }
+    let(:nested_source) { create(:project, namespace: subgroup) }
+
+    it_behaves_like 'member group domain validations'
+
+    it 'does not validate personal projects' do
+      unconfirmed_gitlab_user = create(:user, :unconfirmed, email: 'unverified@gitlab.com')
+      member = create(:project, namespace: create(:user).namespace).add_developer(unconfirmed_gitlab_user)
+
+      expect(member).to be_valid
+    end
+  end
+
   describe '#provisioned_by_this_group?' do
     let_it_be(:member) { build(:project_member) }
 
