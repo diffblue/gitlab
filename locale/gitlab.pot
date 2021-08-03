@@ -28604,6 +28604,9 @@ msgstr ""
 msgid "Runners|Tags"
 msgstr ""
 
+msgid "Runners|This runner is associated with one or more projects."
+msgstr ""
+
 msgid "Runners|This runner is associated with specific projects."
 msgstr ""
 
