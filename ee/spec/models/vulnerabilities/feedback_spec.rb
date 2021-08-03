@@ -62,7 +62,7 @@ RSpec.describe Vulnerabilities::Feedback do
       let(:feedback) { build(:vulnerability_feedback, project: project, pipeline: pipeline) }
 
       it 'is invalid' do
-        expect(feedback.project_id).not_to eq(feedback.pipeline_id)
+        expect(feedback.project_id).not_to eq(pipeline.project_id)
         expect(feedback).not_to be_valid
       end
     end
