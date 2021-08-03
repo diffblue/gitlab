@@ -9,7 +9,7 @@ class Groups::InsightsController < Groups::ApplicationController
 
   track_redis_hll_event :show, name: 'g_analytics_insights'
 
-  feature_category :insights
+  feature_category :value_stream_management
 
   private
 
