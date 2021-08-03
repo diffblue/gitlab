@@ -42,7 +42,7 @@ module QA
             Page::Trials::New.perform(&:visit)
           end
 
-          it 'registers for a new trial' do
+          it 'registers for a new trial', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1851' do
             Page::Trials::New.perform do |new|
               # setter
               new.company_name = company_name
