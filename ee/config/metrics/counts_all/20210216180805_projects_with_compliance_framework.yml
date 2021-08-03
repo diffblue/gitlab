@@ -1,16 +1,17 @@
 ---
 data_category: Optional
 key_path: usage_activity_by_stage.manage.projects_with_compliance_framework
-description: Number of projects labeled with a compliance framework label [see](https://gitlab.com/gitlab-org/gitlab/-/issues/118671)
+description: Number of projects labeled with a compliance framework label
 product_section: dev
-product_stage:
-product_group: group::manage
-product_category:
+product_stage: manage
+product_group: group::compliance
+product_category: compliance_management
 value_type: number
 status: data_available
 time_frame: all
-data_source:
+data_source: database
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- premium
+- ultimate
