@@ -7,6 +7,7 @@ query getProjectIssuesCount(
   $authorUsername: String
   $labelName: [String]
   $milestoneTitle: [String]
+  $milestoneWildcardId: MilestoneWildcardId
   $epicId: String
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
@@ -22,6 +23,7 @@ query getProjectIssuesCount(
       authorUsername: $authorUsername
       labelName: $labelName
       milestoneTitle: $milestoneTitle
+      milestoneWildcardId: $milestoneWildcardId
       epicId: $epicId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
