@@ -1224,6 +1224,20 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.diff_searches`
+
+Total count of merge request diff searches
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210723075525_diff_searches.yml)
+
+Group: `group::code review`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.environments`
 
 Total available and stopped environments
@@ -7706,20 +7720,6 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
-### `counts.user_searches_diffs`
-
-Count of users who search merge request diffs
-
-[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210723075525_user_searches_diffs.yml)
-
-Group: `group::code review`
-
-Data Category: `Optional`
-
-Status: `implemented`
-
-Tiers: `free`, `premium`, `ultimate`
-
 ### `counts.web_hooks`
 
 Missing description
@@ -8316,7 +8316,7 @@ Edition of GitLab such as EE or CE
 
 Group: `group::distribution`
 
-Data Category: `Optional`
+Data Category: `Standard`
 
 Status: `data_available`
 
@@ -10716,20 +10716,6 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
-### `redis_hll_counters.code_review.i_code_review_searches_in_diff_monthly`
-
-Count of searches in merge request diffs
-
-[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210722132444_i_code_review_searches_in_diff_monthly.yml)
-
-Group: `group::code review`
-
-Data Category: `Optional`
-
-Status: `implemented`
-
-Tiers: `free`, `premium`, `ultimate`
-
 ### `redis_hll_counters.code_review.i_code_review_user_add_suggestion_monthly`
 
 Count of unique users per month who added a suggestion
@@ -11603,6 +11589,20 @@ Tiers: `free`, `premium`, `ultimate`
 Count of users who search merge request diffs
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210720144005_i_code_review_user_searches_diff_monthly.yml)
+
+Group: `group::code review`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `redis_hll_counters.code_review.i_code_review_user_searches_diff_weekly`
+
+Count of users who search merge request diffs
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_7d/20210720144005_i_code_review_user_searches_diff_weekly.yml)
 
 Group: `group::code review`
 
@@ -23526,7 +23526,7 @@ Version of GitLab instance
 
 Group: `group::distribution`
 
-Data Category: `Optional`
+Data Category: `Standard`
 
 Status: `data_available`
 
