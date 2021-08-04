@@ -1,12 +1,14 @@
-import { GlTabs } from '@gitlab/ui';
+import { GlTabs, GlAlert } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import Cookies from 'js-cookie';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Container from '~/environments/components/container.vue';
 import DeployBoard from '~/environments/components/deploy_board.vue';
 import EmptyState from '~/environments/components/empty_state.vue';
 import EnableReviewAppModal from '~/environments/components/enable_review_app_modal.vue';
 import EnvironmentsApp from '~/environments/components/environments_app.vue';
+import { ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME } from '~/environments/constants';
 import axios from '~/lib/utils/axios_utils';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { environment, folder } from './mock_data';
@@ -48,6 +50,7 @@ describe('Environment', () => {
   const findNewEnvironmentButton = () => wrapper.findByTestId('new-environment');
   const findEnvironmentsTabAvailable = () => wrapper.find('.js-environments-tab-available > a');
   const findEnvironmentsTabStopped = () => wrapper.find('.js-environments-tab-stopped > a');
+  const findSurveyAlert = () => wrapper.find(GlAlert);
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -278,6 +281,51 @@ describe('Environment', () => {
 
     it('selects the tab for the parameter', () => {
       expect(wrapper.findComponent(GlTabs).attributes('value')).toBe('1');
+    });
+  });
+
+  describe('survey alert', () => {
+    beforeEach(async () => {
+      mockRequest(200, { environments: [] });
+      await createWrapper(true);
+    });
+
+    afterEach(() => {
+      Cookies.remove(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
+    });
+
+    describe('when the user has not dismissed the alert', () => {
+      it('shows the alert', () => {
+        expect(findSurveyAlert().exists()).toBe(true);
+      });
+
+      describe('when the user dismisses the alert', () => {
+        beforeEach(() => {
+          findSurveyAlert().vm.$emit('dismiss');
+        });
+
+        it('hides the alert', () => {
+          expect(findSurveyAlert().exists()).toBe(false);
+        });
+
+        it('persists the dismisal using a cookie', () => {
+          const cookieValue = Cookies.get(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
+
+          expect(cookieValue).toBe('true');
+        });
+      });
+    });
+
+    describe('when the user has previously dismissed the alert', () => {
+      beforeEach(async () => {
+        Cookies.set(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME, 'true', { expires: 365 * 10 });
+
+        await createWrapper(true);
+      });
+
+      it('does not show the alert', () => {
+        expect(findSurveyAlert().exists()).toBe(false);
+      });
     });
   });
 });

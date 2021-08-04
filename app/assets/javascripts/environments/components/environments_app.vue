@@ -1,7 +1,9 @@
 <script>
 import { GlBadge, GlButton, GlModalDirective, GlTab, GlTabs, GlAlert } from '@gitlab/ui';
+import Cookies from 'js-cookie';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
+import { ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME } from '../constants';
 import eventHub from '../event_hub';
 import environmentsMixin from '../mixins/environments_mixin';
 import EnvironmentsPaginationApiMixin from '../mixins/environments_pagination_api_mixin';
@@ -63,6 +65,12 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      environmentsSurveyAlertDismissed:
+        Cookies.get(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME) === 'true',
+    };
+  },
 
   created() {
     eventHub.$on('toggleFolder', this.toggleFolder);
@@ -112,6 +120,11 @@ export default {
         openFolders.forEach((folder) => this.fetchChildEnvironments(folder));
       }
     },
+
+    onSurveyAlertDismiss() {
+      Cookies.set(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME, 'true', { expires: 365 * 10 });
+      this.environmentsSurveyAlertDismissed = true;
+    },
   },
 };
 </script>
@@ -143,6 +156,7 @@ export default {
         >
       </div>
       <gl-alert
+        v-if="!environmentsSurveyAlertDismissed"
         class="gl-my-4"
         :title="$options.i18n.surveyAlertTitle"
         :primary-button-text="$options.i18n.surveyAlertButtonLabel"
@@ -150,8 +164,9 @@ export default {
         dismissible
         :dismiss-label="$options.i18n.surveyDismissButtonLabel"
         primary-button-link="https://gitlab.fra1.qualtrics.com/jfe/form/SV_a2xyFsAA4D0w0Jg"
+        @dismiss="onSurveyAlertDismiss"
       >
-        <span>{{ $options.i18n.surveyAlertText }}</span>
+        {{ $options.i18n.surveyAlertText }}
       </gl-alert>
       <gl-tabs :value="activeTab" content-class="gl-display-none">
         <gl-tab
