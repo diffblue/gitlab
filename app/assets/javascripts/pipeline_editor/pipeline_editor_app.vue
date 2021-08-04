@@ -163,10 +163,21 @@ export default {
       },
       update(data) {
         const pipelineNodes = data.project?.pipelines?.nodes ?? [];
+
+        // it's possible to query for the commit sha too early after an update
+        // (e.g. after committing a new branch, we might query for the commit sha
+        // but the pipeline nodes are still empty).
+        // in this case, we start polling until we get a commit sha.
         if (pipelineNodes.length === 0) {
+          if (![EDITOR_APP_STATUS_LOADING, EDITOR_APP_STATUS_EMPTY].includes(this.appStatus)) {
+            this.$apollo.queries.commitSha.startPolling(1000);
+            return this.commitSha;
+          }
+
           return '';
         }
 
+        this.$apollo.queries.commitSha.stopPolling();
         return pipelineNodes[0].sha;
       },
     },
@@ -316,6 +327,7 @@ export default {
         :ci-config-data="ciConfigData"
         :ci-file-content="currentCiFileContent"
         :is-new-ci-config-file="isNewCiConfigFile"
+        :commit-sha="commitSha"
         @commit="updateOnCommit"
         @resetContent="resetContent"
         @showError="showErrorAlert"
