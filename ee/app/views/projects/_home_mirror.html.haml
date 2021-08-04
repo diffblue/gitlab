@@ -1,7 +1,6 @@
-- if @project.mirror?
+- if @project.mirror? && can?(current_user, :admin_project, @project)
   %p
-    - if can?(current_user, :admin_project, @project)
-      - import_url = @project.safe_import_url
-      Mirrored from #{link_to import_url, import_url}.
-      %br
+    - import_url = @project.safe_import_url
+    Mirrored from #{link_to import_url, import_url}.
+    %br
     = render "shared/mirror_status"
