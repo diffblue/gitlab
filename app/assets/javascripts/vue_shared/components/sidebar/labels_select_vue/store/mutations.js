@@ -34,12 +34,11 @@ export default {
     // Iterate over every label and add a `set` prop
     // to determine whether it is already a part of
     // selectedLabels array.
-    const selectedLabelIds = state.selectedLabels.map((label) => label.id);
     state.labelsFetchInProgress = false;
     state.labelsFetched = true;
     state.labels = labels.map((label) => ({
       ...label,
-      set: selectedLabelIds.includes(label.id),
+      set: state.selectedLabels.some((selectedLabel) => selectedLabel.id === label.id),
     }));
   },
   [types.RECEIVE_SET_LABELS_FAILURE](state) {
@@ -79,10 +78,9 @@ export default {
   },
 
   [types.UPDATE_LABELS_SET_STATE](state) {
-    const selectedLabelIds = state.selectedLabels.map((label) => label.id);
     state.labels = state.labels.map((label) => ({
       ...label,
-      set: selectedLabelIds.includes(label.id),
+      set: state.selectedLabels.some((selectedLabel) => selectedLabel.id === label.id),
     }));
   },
 };
