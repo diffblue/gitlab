@@ -46,6 +46,7 @@ export default {
   data: () => ({
     projectsCache: {},
     projects: [],
+    searchTerm: '',
     hasDropdownBeenOpened: false,
   }),
   computed: {

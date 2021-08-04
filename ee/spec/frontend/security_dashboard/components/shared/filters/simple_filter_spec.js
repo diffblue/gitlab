@@ -1,6 +1,5 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueRouter from 'vue-router';
-import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_body.vue';
 import SimpleFilter from 'ee/security_dashboard/components/shared/filters/simple_filter.vue';
 
 const localVue = createLocalVue();
@@ -36,7 +35,6 @@ describe('Simple Filter component', () => {
   const allOptionItem = () => wrapper.find('[data-testid="allOption"]');
   const isChecked = (item) => item.props('isChecked');
   const filterQuery = () => wrapper.vm.$route.query[filter.id];
-  const filterBody = () => wrapper.find(FilterBody);
 
   const clickAllOptionItem = async () => {
     allOptionItem().vm.$emit('click');
@@ -91,37 +89,6 @@ describe('Simple Filter component', () => {
       createWrapper();
 
       expectAllOptionSelected();
-    });
-  });
-
-  describe('search box', () => {
-    it.each`
-      phrase     | count | searchBoxShowThreshold
-      ${'shows'} | ${5}  | ${5}
-      ${'hides'} | ${7}  | ${8}
-    `('$phrase search box if there are $count options', ({ count, searchBoxShowThreshold }) => {
-      createWrapper({ options: generateOptions(count) }, { searchBoxShowThreshold });
-      const shouldShow = count >= searchBoxShowThreshold;
-
-      expect(filterBody().props('showSearchBox')).toBe(shouldShow);
-    });
-
-    it('filters options when something is typed in the search box', async () => {
-      const expectedItems = filter.options.map((x) => x.name).filter((x) => x.includes('1'));
-      createWrapper({}, true);
-      filterBody().vm.$emit('input', '1');
-      await wrapper.vm.$nextTick();
-
-      expect(dropdownItems()).toHaveLength(3);
-      expect(dropdownItems().wrappers.map((x) => x.props('text'))).toEqual(expectedItems);
-    });
-  });
-
-  describe('loading prop', () => {
-    it.each([true, false])(`sets the filter body loading prop to %s`, (loading) => {
-      createWrapper({}, { loading });
-
-      expect(filterBody().props('loading')).toBe(loading);
     });
   });
 
