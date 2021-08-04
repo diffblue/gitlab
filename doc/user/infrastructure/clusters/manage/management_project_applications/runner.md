@@ -8,8 +8,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/project-templates/cluster-management/-/merge_requests/5) in GitLab 14.0.
 
-Assuming you already have a [Cluster management project](../management_project.md) created from a
-[management project template](../management_project_template.md), to install GitLab Runner you should
+Assuming you already have a [Cluster management project](../../../../../user/clusters/management_project.md) created from a
+[management project template](../../../../../user/clusters/management_project_template.md), to install GitLab Runner you should
 uncomment this line from your `helmfile.yaml`:
 
 ```yaml
@@ -24,16 +24,16 @@ For GitLab Runner to function, you _must_ specify the following in your
 - `gitlabUrl`: The GitLab server full URL (for example, `https://gitlab.example.com`)
   to register the Runner against.
 - `runnerRegistrationToken`: The registration token for adding new runners to GitLab.
-  This must be [retrieved from your GitLab instance](../../../ci/runners/index.md).
+  This must be [retrieved from your GitLab instance](../../../../../ci/runners/index.md).
 
-These values can be specified using [CI/CD variables](../../../ci/variables/index.md):
+These values can be specified using [CI/CD variables](../../../../../ci/variables/index.md):
 
 - `GITLAB_RUNNER_GITLAB_URL` is used for `gitlabUrl`.
 - `GITLAB_RUNNER_REGISTRATION_TOKEN` is used for `runnerRegistrationToken`
 
 The methods of specifying these values are mutually exclusive. Either specify variables `GITLAB_RUNNER_REGISTRATION_TOKEN` and `GITLAB_RUNNER_TOKEN` as CI variables (recommended) or provide values for `runnerRegistrationToken:` and `runnerToken:` in `applications/gitlab-runner/values.yaml.gotmpl`.
 
-The runner registration token allows connection to a project by a runner and therefore should be treated as a secret to prevent malicious use and code exfiltration through a runner. For this reason, we recommend that you specify the runner registration token as a [protected variable](../../../ci/variables/index.md#protect-a-cicd-variable) and [masked variable](../../../ci/variables/index.md#mask-a-cicd-variable) and do not commit them to the Git repository in the `values.yaml.gotmpl` file.
+The runner registration token allows connection to a project by a runner and therefore should be treated as a secret to prevent malicious use and code exfiltration through a runner. For this reason, we recommend that you specify the runner registration token as a [protected variable](../../../../../ci/variables/index.md#protect-a-cicd-variable) and [masked variable](../../../../../ci/variables/index.md#mask-a-cicd-variable) and do not commit them to the Git repository in the `values.yaml.gotmpl` file.
 
 You can customize the installation of GitLab Runner by defining
 `applications/gitlab-runner/values.yaml.gotmpl` file in your cluster

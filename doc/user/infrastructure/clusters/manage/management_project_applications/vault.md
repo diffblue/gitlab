@@ -18,10 +18,10 @@ a single source of access, control, and auditability around all your sensitive
 credentials and certificates. This feature requires giving GitLab the highest level of access and
 control. Therefore, if GitLab is compromised, the security of this Vault instance is as well. To
 avoid this security risk, GitLab recommends using your own HashiCorp Vault to leverage
-[external secrets with CI](../../../ci/secrets/index.md).
+[external secrets with CI](../../../../../ci/secrets/index.md).
 
-Assuming you already have a [Cluster management project](../management_project.md) created from a
-[management project template](../management_project_template.md), to install Vault you should
+Assuming you already have a [Cluster management project](../../../../../user/clusters/management_project.md) created from a
+[management project template](../../../../../user/clusters/management_project_template.md), to install Vault you should
 uncomment this line from your `helmfile.yaml`:
 
 ```yaml
@@ -35,7 +35,7 @@ Vault application causes downtime.
 
 To optimally use Vault in a production environment, it's ideal to have a good understanding
 of the internals of Vault and how to configure it. This can be done by reading
-the [Vault Configuration guide](../../../ci/secrets/#configure-your-vault-server),
+the [Vault Configuration guide](../../../../../ci/secrets/#configure-your-vault-server),
 the [Vault documentation](https://www.vaultproject.io/docs/internals) and
 the Vault Helm chart [`values.yaml` file](https://github.com/hashicorp/vault-helm/blob/v0.3.3/values.yaml).
 

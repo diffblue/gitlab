@@ -10,14 +10,14 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 [Cilium](https://cilium.io/) is a networking plugin for Kubernetes that you can use to implement
 support for [NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
-resources. For more information, see [Network Policies](../../../topics/autodevops/stages.md#network-policy).
+resources. For more information, see [Network Policies](../../../../../topics/autodevops/stages.md#network-policy).
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For an overview, see the
 [Container Network Security Demo for GitLab 12.8](https://www.youtube.com/watch?v=pgUEdhdhoUI).
 
-Assuming you already have a [Cluster management project](../management_project.md) created from a
-[management project template](../management_project_template.md), to install cilium you should
+Assuming you already have a [Cluster management project](../../../../../user/clusters/management_project.md) created from a
+[management project template](../../../../../user/clusters/management_project_template.md), to install cilium you should
 uncomment this line from your `helmfile.yaml`:
 
 ```yaml
@@ -47,9 +47,9 @@ for the available configuration options.
 
 You can check Cilium's installation status on the cluster management page:
 
-- [Project-level cluster](../../project/clusters/index.md): Navigate to your project's
+- [Project-level cluster](../../../../project/clusters/index.md): Navigate to your project's
   **Infrastructure > Kubernetes clusters** page.
-- [Group-level cluster](../../group/clusters/index.md): Navigate to your group's
+- [Group-level cluster](../../../../group/clusters/index.md): Navigate to your group's
   **Kubernetes** page.
 
 WARNING:
@@ -99,7 +99,7 @@ agent:
 
 The [Hubble](https://github.com/cilium/hubble) monitoring daemon is enabled by default
 and it's set to collect per namespace flow metrics. This metrics are accessible on the
-[Threat Monitoring](../../application_security/threat_monitoring/index.md)
+[Threat Monitoring](../../../../application_security/threat_monitoring/index.md)
 dashboard. You can disable Hubble by adding the following to
 `applications/cilium/values.yaml`:
 

@@ -13,8 +13,8 @@ as a runtime security tool that listens to the Linux kernel using eBPF. Falco pa
 and asserts the stream against a configurable rules engine in real-time. For more information, see
 [Falco's Documentation](https://falco.org/docs/).
 
-Assuming you already have a [Cluster management project](../management_project.md) created from a
-[management project template](../management_project_template.md), to install Falco you should
+Assuming you already have a [Cluster management project](../../../../../user/clusters/management_project.md) created from a
+[management project template](../../../../../user/clusters/management_project_template.md), to install Falco you should
 uncomment this line from your `helmfile.yaml`:
 
 ```yaml
