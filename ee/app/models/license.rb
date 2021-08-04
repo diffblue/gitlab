@@ -656,9 +656,6 @@ class License < ApplicationRecord
   end
 
   def restricted_user_count_with_threshold
-    # overage should only be applied for new subscriptions not for renewals.
-    return restricted_user_count if previous_user_count
-
     (restricted_user_count * (1 + ALLOWED_PERCENTAGE_OF_USERS_OVERAGE)).to_i
   end
 
@@ -667,7 +664,7 @@ class License < ApplicationRecord
     return unless restricted_user_count
 
     if previous_user_count && (prior_historical_max <= previous_user_count)
-      return if restricted_user_count >= daily_billable_users_count
+      return if restricted_user_count_with_threshold >= daily_billable_users_count
     else
       return if restricted_user_count_with_threshold >= prior_historical_max
     end
