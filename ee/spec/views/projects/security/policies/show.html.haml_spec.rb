@@ -21,6 +21,6 @@ RSpec.describe "projects/security/policies/show", type: :view do
   end
 
   it 'passes documentation URL' do
-    expect(rendered).to include '/help/user/project/clusters/protect/container_network_security/quick_start_guide'
+    expect(rendered).to include '/help/user/application_security/policies/index.md'
   end
 end
