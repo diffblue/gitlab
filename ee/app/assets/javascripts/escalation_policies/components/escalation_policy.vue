@@ -8,14 +8,17 @@ import {
   GlSprintf,
   GlIcon,
   GlCollapse,
+  GlToken,
+  GlAvatar,
 } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import {
   ACTIONS,
   ALERT_STATUSES,
-  DEFAULT_ACTION,
+  EMAIL_ONCALL_SCHEDULE_USER,
   deleteEscalationPolicyModalId,
   editEscalationPolicyModalId,
+  EMAIL_USER,
 } from '../constants';
 import EditEscalationPolicyModal from './add_edit_escalation_policy_modal.vue';
 import DeleteEscalationPolicyModal from './delete_escalation_policy_modal.vue';
@@ -24,22 +27,22 @@ export const i18n = {
   editPolicy: s__('EscalationPolicies|Edit escalation policy'),
   deletePolicy: s__('EscalationPolicies|Delete escalation policy'),
   escalationRule: s__(
-    'EscalationPolicies|IF alert is not %{alertStatus} in %{minutes} %{then} THEN %{doAction} %{schedule}',
+    'EscalationPolicies|IF alert is not %{alertStatus} in %{minutes} %{then} THEN %{doAction} %{scheduleOrUser}',
   ),
   minutes: s__('EscalationPolicies|mins'),
   noRules: s__('EscalationPolicies|This policy has no escalation rules.'),
 };
 
-const isRuleValid = ({ status, elapsedTimeMinutes, oncallSchedule: { name } }) =>
+const isRuleValid = ({ status, elapsedTimeMinutes, oncallSchedule, user }) =>
   Object.keys(ALERT_STATUSES).includes(status) &&
   typeof elapsedTimeMinutes === 'number' &&
-  typeof name === 'string';
+  (typeof oncallSchedule?.name === 'string' || typeof user?.username === 'string');
 
 export default {
   i18n,
   ACTIONS,
   ALERT_STATUSES,
-  DEFAULT_ACTION,
+  EMAIL_ONCALL_SCHEDULE_USER,
   components: {
     GlButton,
     GlButtonGroup,
@@ -47,6 +50,8 @@ export default {
     GlSprintf,
     GlIcon,
     GlCollapse,
+    GlToken,
+    GlAvatar,
     DeleteEscalationPolicyModal,
     EditEscalationPolicyModal,
   },
@@ -85,6 +90,20 @@ export default {
     },
     deletePolicyModalId() {
       return `${deleteEscalationPolicyModalId}-${this.policy.id}`;
+    },
+  },
+  methods: {
+    hasEscalationSchedule(rule) {
+      return rule.oncallSchedule?.iid;
+    },
+    hasEscalationUser(rule) {
+      return rule.user?.username;
+    },
+    getActionName(rule) {
+      return (this.hasEscalationSchedule(rule)
+        ? ACTIONS[EMAIL_ONCALL_SCHEDULE_USER]
+        : ACTIONS[EMAIL_USER]
+      ).toLowerCase();
     },
   },
 };
@@ -147,6 +166,7 @@ export default {
               v-for="(rule, ruleIndex) in policy.rules"
               :key="rule.id"
               :class="{ 'gl-mb-5': ruleIndex !== policy.rules.length - 1 }"
+              class="gl-display-flex gl-align-items-center"
             >
               <gl-icon name="clock" class="gl-mr-3" />
               <gl-sprintf :message="$options.i18n.escalationRule">
@@ -155,7 +175,7 @@ export default {
                 </template>
                 <template #minutes>
                   <span class="gl-font-weight-bold">
-                    {{ rule.elapsedTimeMinutes }} {{ $options.i18n.minutes }}
+                    &nbsp;{{ rule.elapsedTimeMinutes }} {{ $options.i18n.minutes }}
                   </span>
                 </template>
                 <template #then>
@@ -165,12 +185,17 @@ export default {
                   <gl-icon name="notifications" class="gl-mr-3" />
                 </template>
                 <template #doAction>
-                  {{ $options.ACTIONS[$options.DEFAULT_ACTION].toLowerCase() }}
+                  {{ getActionName(rule) }}
+                  &nbsp;
                 </template>
-                <template #schedule>
-                  <span class="gl-font-weight-bold">
+                <template #scheduleOrUser>
+                  <span v-if="hasEscalationSchedule(rule)" class="gl-font-weight-bold">
                     {{ rule.oncallSchedule.name }}
                   </span>
+                  <gl-token v-else-if="hasEscalationUser(rule)" view-only>
+                    <gl-avatar :src="rule.user.avatarUrl" :size="16" />
+                    {{ rule.user.name }}
+                  </gl-token>
                 </template>
               </gl-sprintf>
             </div>

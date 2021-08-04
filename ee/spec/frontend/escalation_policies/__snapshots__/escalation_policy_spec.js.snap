@@ -24,7 +24,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
         class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-p-5"
       >
         <div
-          class="gl-mb-5"
+          class="gl-display-flex gl-align-items-center gl-mb-5"
         >
           <gl-icon-stub
             class="gl-mr-3"
@@ -38,7 +38,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             class="gl-font-weight-bold"
           >
             
-                  1 mins
+                   1 mins
                 
           </span>
            
@@ -57,6 +57,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
           />
            THEN 
                 email on-call user in schedule
+                 
                
           <span
             class="gl-font-weight-bold"
@@ -67,7 +68,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
           </span>
         </div>
         <div
-          class=""
+          class="gl-display-flex gl-align-items-center"
         >
           <gl-icon-stub
             class="gl-mr-3"
@@ -81,7 +82,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             class="gl-font-weight-bold"
           >
             
-                  2 mins
+                   2 mins
                 
           </span>
            
@@ -99,15 +100,25 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             size="16"
           />
            THEN 
-                email on-call user in schedule
+                email user
+                 
                
-          <span
-            class="gl-font-weight-bold"
+          <gl-token-stub
+            variant="default"
+            viewonly="true"
           >
+            <gl-avatar-stub
+              alt="avatar"
+              entityid="0"
+              entityname=""
+              shape="circle"
+              size="16"
+              src="avatar.com/lena.png"
+            />
             
-                  Monitor schedule
+                  Lena
                 
-          </span>
+          </gl-token-stub>
         </div>
       </div>
     </gl-collapse-stub>

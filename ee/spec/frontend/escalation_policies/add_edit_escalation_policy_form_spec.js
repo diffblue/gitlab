@@ -96,15 +96,27 @@ describe('AddEscalationPolicyForm', () => {
       expect(wrapper.emitted('update-escalation-policy-form')).toBeUndefined();
     });
 
-    it('on rule update emitted should update rules array and emit updates up', () => {
+    it('on rule update emitted should update rules array and emit updates up', async () => {
+      const ruleBeforeUpdate = {
+        status: 'RESOLVED',
+        elapsedTimeMinutes: 3,
+        username: 'user',
+      };
+
+      createComponent({ props: { form: { rules: [ruleBeforeUpdate] } } });
+      await wrapper.vm.$nextTick();
       const updatedRule = {
         status: 'TRIGGERED',
         elapsedTimeMinutes: 3,
         oncallScheduleIid: 2,
       };
       findRules().at(0).vm.$emit('update-escalation-rule', { index: 0, rule: updatedRule });
-      expect(wrapper.emitted('update-escalation-policy-form')[0]).toEqual([
+      const emittedValue = wrapper.emitted('update-escalation-policy-form')[0];
+      expect(emittedValue).toEqual([
         { field: 'rules', value: [expect.objectContaining(updatedRule)] },
+      ]);
+      expect(emittedValue).not.toEqual([
+        { field: 'rules', value: [expect.objectContaining(ruleBeforeUpdate)] },
       ]);
     });
 

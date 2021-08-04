@@ -17,9 +17,10 @@
         "id": "gid://gitlab/IncidentManagement::EscalationRule/23",
         "status": "RESOLVED",
         "elapsedTimeSeconds": 120,
-        "oncallSchedule": {
-          "iid": "4",
-          "name": "Monitor schedule"
+        "user": {
+          "username": "sharlatenok",
+          "name": "Lena",
+          "avatarUrl": "avatar.com/lena.png"
         }
       }
     ]
