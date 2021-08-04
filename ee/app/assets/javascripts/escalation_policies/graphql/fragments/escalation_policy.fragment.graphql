@@ -10,5 +10,10 @@ fragment EscalationPolicy on EscalationPolicyType {
       iid
       name
     }
+    user {
+      username
+      name
+      avatarUrl
+    }
   }
 }

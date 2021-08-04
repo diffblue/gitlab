@@ -18,6 +18,7 @@ export const getEscalationPoliciesQueryResponse = {
                   name: 'Schedule',
                   __typename: 'IncidentManagementOncallSchedule',
                 },
+                user: null,
                 __typename: 'EscalationRuleType',
               },
             ],

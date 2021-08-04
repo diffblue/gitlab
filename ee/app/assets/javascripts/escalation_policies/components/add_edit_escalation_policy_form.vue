@@ -3,7 +3,12 @@ import { GlLink, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
 import createFlash from '~/flash';
 import { s__, __ } from '~/locale';
-import { DEFAULT_ACTION, DEFAULT_ESCALATION_RULE, MAX_RULES_LENGTH } from '../constants';
+import {
+  EMAIL_ONCALL_SCHEDULE_USER,
+  DEFAULT_ESCALATION_RULE,
+  EMAIL_USER,
+  MAX_RULES_LENGTH,
+} from '../constants';
 import getOncallSchedulesQuery from '../graphql/queries/get_oncall_schedules.query.graphql';
 import EscalationRule from './escalation_rule.vue';
 
@@ -78,17 +83,14 @@ export default {
   },
   mounted() {
     this.rules = this.form.rules.map((rule) => {
-      const {
-        status,
-        elapsedTimeMinutes,
-        oncallSchedule: { iid: oncallScheduleIid },
-      } = rule;
+      const { status, elapsedTimeMinutes, oncallSchedule, user } = rule;
 
       return {
         status,
         elapsedTimeMinutes,
-        action: DEFAULT_ACTION,
-        oncallScheduleIid,
+        action: user ? EMAIL_USER : EMAIL_ONCALL_SCHEDULE_USER,
+        oncallScheduleIid: oncallSchedule?.iid,
+        username: user?.username,
         key: uniqueId(),
       };
     });
@@ -102,7 +104,8 @@ export default {
       this.rules.push({ ...cloneDeep(DEFAULT_ESCALATION_RULE), key: uniqueId() });
     },
     updateEscalationRules({ rule, index }) {
-      this.rules[index] = { ...this.rules[index], ...rule };
+      const { key } = this.rules[index];
+      this.rules[index] = { key, ...rule };
       this.emitRulesUpdate();
     },
     removeEscalationRule(index) {

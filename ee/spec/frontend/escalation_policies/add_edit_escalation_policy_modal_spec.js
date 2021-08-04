@@ -9,6 +9,7 @@ import AddEscalationPolicyModal, {
 import {
   addEscalationPolicyModalId,
   editEscalationPolicyModalId,
+  EMAIL_ONCALL_SCHEDULE_USER,
 } from 'ee/escalation_policies/constants';
 import createEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/create_escalation_policy.mutation.graphql';
 import updateEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/update_escalation_policy.mutation.graphql';
@@ -267,7 +268,14 @@ describe('AddEditsEscalationPolicyModal', () => {
       });
       form.vm.$emit('update-escalation-policy-form', {
         field: 'rules',
-        value: [{ status: 'RESOLVED', elapsedTimeMinutes: 1, oncallScheduleIid: 1 }],
+        value: [
+          {
+            status: 'RESOLVED',
+            elapsedTimeMinutes: 1,
+            action: EMAIL_ONCALL_SCHEDULE_USER,
+            oncallScheduleIid: 1,
+          },
+        ],
       });
       await wrapper.vm.$nextTick();
       expect(findModal().props('actionPrimary').attributes).toContainEqual({ disabled: false });

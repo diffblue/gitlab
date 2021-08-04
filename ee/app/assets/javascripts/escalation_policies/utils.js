@@ -1,3 +1,6 @@
+import { pickBy, isNull, isNaN } from 'lodash';
+import { EMAIL_ONCALL_SCHEDULE_USER, EMAIL_USER } from './constants';
+
 /**
  * Returns `true` for non-empty string, otherwise returns `false`
  * @param {String} name
@@ -15,11 +18,12 @@ export const isNameFieldValid = (name) => {
  * @returns {Array}
  */
 export const getRulesValidationState = (rules) => {
-  return rules.map((rule) => {
-    const minutes = parseInt(rule.elapsedTimeMinutes, 10);
+  return rules.map(({ elapsedTimeMinutes, oncallScheduleIid, username, action }) => {
+    const minutes = parseInt(elapsedTimeMinutes, 10);
     return {
       isTimeValid: minutes >= 0 && minutes <= 1440,
-      isScheduleValid: Boolean(rule.oncallScheduleIid),
+      isScheduleValid: action === EMAIL_ONCALL_SCHEDULE_USER ? Boolean(oncallScheduleIid) : true,
+      isUserValid: action === EMAIL_USER ? Boolean(username) : true,
     };
   });
 };
@@ -30,10 +34,14 @@ export const getRulesValidationState = (rules) => {
  *
  * @returns {Object} rule
  */
-export const serializeRule = ({ elapsedTimeMinutes, ...ruleParams }) => ({
-  ...ruleParams,
-  elapsedTimeSeconds: elapsedTimeMinutes * 60,
-});
+export const serializeRule = ({ elapsedTimeMinutes, ...ruleParams }) => {
+  const params = { ...ruleParams };
+  delete params.action;
+  return {
+    ...params,
+    elapsedTimeSeconds: elapsedTimeMinutes * 60,
+  };
+};
 
 /**
  * Parses a policy by converting elapsed seconds to minutes
@@ -48,3 +56,29 @@ export const parsePolicy = (policy) => ({
     elapsedTimeMinutes: elapsedTimeSeconds / 60,
   })),
 });
+
+/**
+ * Parses a rule for the UI form usage or doe BE params serializing
+ * @param {Array} of transformed rules from BE
+ *
+ * @returns {Array} of rules
+ */
+export const getRules = (rules) => {
+  return rules.map(
+    ({ status, elapsedTimeMinutes, oncallScheduleIid, oncallSchedule, user, username }) => {
+      const actionBasedProps = pickBy(
+        {
+          username: username ?? user?.username,
+          oncallScheduleIid: parseInt(oncallScheduleIid ?? oncallSchedule?.iid, 10),
+        },
+        (prop) => !(isNull(prop) || isNaN(prop)),
+      );
+
+      return {
+        status,
+        elapsedTimeMinutes,
+        ...actionBasedProps,
+      };
+    },
+  );
+};

@@ -9,7 +9,7 @@ import {
 import createEscalationPolicyMutation from '../graphql/mutations/create_escalation_policy.mutation.graphql';
 import updateEscalationPolicyMutation from '../graphql/mutations/update_escalation_policy.mutation.graphql';
 import getEscalationPoliciesQuery from '../graphql/queries/get_escalation_policies.query.graphql';
-import { isNameFieldValid, getRulesValidationState, serializeRule } from '../utils';
+import { isNameFieldValid, getRulesValidationState, serializeRule, getRules } from '../utils';
 import AddEditEscalationPolicyForm from './add_edit_escalation_policy_form.vue';
 
 export const i18n = {
@@ -82,7 +82,8 @@ export default {
         this.validationState.name &&
         (this.isEditMode ? true : this.validationState.rules.length) &&
         this.validationState.rules.every(
-          ({ isTimeValid, isScheduleValid }) => isTimeValid && isScheduleValid,
+          ({ isTimeValid, isScheduleValid, isUserValid }) =>
+            isTimeValid && isScheduleValid && isUserValid,
         )
       );
     },
@@ -90,12 +91,12 @@ export default {
       return (
         this.form.name !== this.initialState.name ||
         this.form.description !== this.initialState.description ||
-        !isEqual(this.getRules(this.form.rules), this.getRules(this.initialState.rules))
+        !isEqual(getRules(this.form.rules), getRules(this.initialState.rules))
       );
     },
     requestParams() {
       const id = this.isEditMode ? { id: this.escalationPolicy.id } : {};
-      return { ...this.form, ...id, rules: this.getRules(this.form.rules).map(serializeRule) };
+      return { ...this.form, ...id, rules: getRules(this.form.rules).map(serializeRule) };
     },
   },
   methods: {
@@ -187,15 +188,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    getRules(rules) {
-      return rules.map(
-        ({ status, elapsedTimeMinutes, oncallScheduleIid, oncallSchedule: { iid } = {} }) => ({
-          status,
-          elapsedTimeMinutes,
-          oncallScheduleIid: oncallScheduleIid || iid,
-        }),
-      );
     },
     validateForm(field) {
       if (field === 'name') {

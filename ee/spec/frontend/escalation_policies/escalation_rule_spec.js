@@ -1,7 +1,14 @@
 import { GlDropdownItem, GlFormGroup, GlSprintf } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import EscalationRule, { i18n } from 'ee/escalation_policies/components/escalation_rule.vue';
-import { DEFAULT_ESCALATION_RULE, ACTIONS, ALERT_STATUSES } from 'ee/escalation_policies/constants';
+import UserSelect from 'ee/escalation_policies/components/user_select.vue';
+import {
+  DEFAULT_ESCALATION_RULE,
+  ACTIONS,
+  ALERT_STATUSES,
+  EMAIL_ONCALL_SCHEDULE_USER,
+  EMAIL_USER,
+} from 'ee/escalation_policies/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const mockSchedules = [
@@ -11,6 +18,7 @@ const mockSchedules = [
 ];
 
 const emptyScheduleMsg = i18n.fields.rules.emptyScheduleValidationMsg;
+const noUserSelecteddErrorMsg = i18n.fields.rules.invalidUserValidationMsg;
 const invalidTimeMsg = i18n.fields.rules.invalidTimeValidationMsg;
 
 describe('EscalationRule', () => {
@@ -48,7 +56,7 @@ describe('EscalationRule', () => {
 
   const findSchedulesDropdown = () => wrapper.findByTestId('schedules-dropdown');
   const findSchedulesDropdownOptions = () => findSchedulesDropdown().findAll(GlDropdownItem);
-
+  const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
 
   const findNoSchedulesInfoIcon = () => wrapper.findByTestId('no-schedules-info-icon');
@@ -94,25 +102,67 @@ describe('EscalationRule', () => {
       expect(findSchedulesDropdown().attributes('disabled')).toBe('true');
       expect(findNoSchedulesInfoIcon().exists()).toBe(true);
     });
+
+    it('should not render UserSelect when action is EMAIL_ONCALL_SCHEDULE_USER', () => {
+      createComponent({
+        props: {
+          rule: {
+            ...DEFAULT_ESCALATION_RULE,
+            action: EMAIL_ONCALL_SCHEDULE_USER,
+          },
+        },
+      });
+      expect(findUserSelect().exists()).toBe(false);
+    });
+  });
+
+  describe('User select', () => {
+    beforeEach(() => {
+      createComponent({
+        props: {
+          rule: {
+            ...DEFAULT_ESCALATION_RULE,
+            action: EMAIL_USER,
+          },
+        },
+      });
+    });
+
+    it('should render UserSelect when action is EMAIL USER', () => {
+      expect(findUserSelect().exists()).toBe(true);
+    });
+
+    it('should NOT render schedule selection dropdown when action is EMAIL USER', () => {
+      expect(findSchedulesDropdown().exists()).toBe(false);
+    });
   });
 
   describe('Validation', () => {
     describe.each`
-      validationState                                   | formState
-      ${{ isTimeValid: true, isScheduleValid: true }}   | ${'true'}
-      ${{ isTimeValid: false, isScheduleValid: true }}  | ${undefined}
-      ${{ isTimeValid: true, isScheduleValid: false }}  | ${undefined}
-      ${{ isTimeValid: false, isScheduleValid: false }} | ${undefined}
-    `(`when`, ({ validationState, formState }) => {
+      validationState                                                      | formState    | action
+      ${{ isTimeValid: true, isScheduleValid: true, isUserValid: true }}   | ${'true'}    | ${EMAIL_ONCALL_SCHEDULE_USER}
+      ${{ isTimeValid: false, isScheduleValid: true, isUserValid: true }}  | ${undefined} | ${EMAIL_ONCALL_SCHEDULE_USER}
+      ${{ isTimeValid: true, isScheduleValid: false, isUserValid: true }}  | ${undefined} | ${EMAIL_ONCALL_SCHEDULE_USER}
+      ${{ isTimeValid: true, isScheduleValid: true, isUserValid: false }}  | ${undefined} | ${EMAIL_USER}
+      ${{ isTimeValid: false, isScheduleValid: false, isUserValid: true }} | ${undefined} | ${EMAIL_ONCALL_SCHEDULE_USER}
+      ${{ isTimeValid: false, isScheduleValid: true, isUserValid: false }} | ${undefined} | ${EMAIL_USER}
+    `(`when`, ({ validationState, formState, action }) => {
       describe(`elapsed minutes control is ${
         validationState.isTimeValid ? 'valid' : 'invalid'
-      } and schedule control is ${validationState.isScheduleValid ? 'valid' : 'invalid'}`, () => {
+      } and schedule control is ${
+        validationState.isScheduleValid ? 'valid' : 'invalid'
+      } and user control is ${validationState.isUserValid ? 'valid' : 'invalid'}`, () => {
         beforeEach(() => {
           createComponent({
             props: {
               validationState,
+              rule: {
+                ...DEFAULT_ESCALATION_RULE,
+                action,
+              },
             },
           });
+          wrapper.setData({ hasFocus: false });
         });
 
         it(`sets form group validation state to ${formState}`, () => {
@@ -123,16 +173,25 @@ describe('EscalationRule', () => {
           validationState.isTimeValid ? 'not show' : 'show'
         } invalid time error message && does ${
           validationState.isScheduleValid ? 'not show' : 'show'
-        } invalid schedule error message `, () => {
+        } no schedule error message && does ${
+          validationState.isUserValid ? 'not show' : 'show'
+        } no user error message `, () => {
           if (validationState.isTimeValid) {
             expect(findFormGroup().text()).not.toContain(invalidTimeMsg);
           } else {
             expect(findFormGroup().text()).toContain(invalidTimeMsg);
           }
+
           if (validationState.isScheduleValid) {
             expect(findFormGroup().text()).not.toContain(emptyScheduleMsg);
           } else {
             expect(findFormGroup().text()).toContain(emptyScheduleMsg);
+          }
+
+          if (validationState.isUserValid) {
+            expect(findFormGroup().text()).not.toContain(noUserSelecteddErrorMsg);
+          } else {
+            expect(findFormGroup().text()).toContain(noUserSelecteddErrorMsg);
           }
         });
       });
