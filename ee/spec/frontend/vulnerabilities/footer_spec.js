@@ -285,27 +285,18 @@ describe('Vulnerability Footer', () => {
     const relatedJiraIssues = () => wrapper.find(RelatedJiraIssues);
 
     describe.each`
-      createJiraIssueUrl | createVulnerabilityJiraIssueViaGraphql | shouldShowRelatedJiraIssues
-      ${'http://foo'}    | ${false}                               | ${true}
-      ${'http://foo'}    | ${true}                                | ${true}
-      ${''}              | ${true}                                | ${true}
-      ${''}              | ${false}                               | ${false}
+      createJiraIssueUrl | shouldShowRelatedJiraIssues
+      ${'http://foo'}    | ${true}
+      ${''}              | ${false}
     `(
-      'with createVulnerabilityJiraIssueViaGraphql set to "$createVulnerabilityJiraIssueViaGraphql"',
-      ({
-        createJiraIssueUrl,
-        createVulnerabilityJiraIssueViaGraphql,
-        shouldShowRelatedJiraIssues,
-      }) => {
+      'with "createJiraIssueUrl" set to "$createJiraIssueUrl"',
+      ({ createJiraIssueUrl, shouldShowRelatedJiraIssues }) => {
         beforeEach(() => {
           createWrapper(
             {},
             {
               provide: {
                 createJiraIssueUrl,
-                glFeatures: {
-                  createVulnerabilityJiraIssueViaGraphql,
-                },
               },
             },
           );
