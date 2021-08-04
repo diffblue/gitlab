@@ -333,7 +333,6 @@ export default {
         @showError="showErrorAlert"
         @refetchContent="refetchContent"
         @updateCiConfig="updateCiConfig"
-        @updateCommitSha="updateCommitSha"
       />
       <confirm-unsaved-changes-dialog :has-unsaved-changes="hasUnsavedChanges" />
     </div>
