@@ -14,6 +14,7 @@ export default () => {
     groupId,
     devopsScoreMetrics,
     devopsReportDocsPath,
+    devopsScoreIntroImagePath,
     noDataImagePath,
   } = el.dataset;
 
@@ -29,6 +30,7 @@ export default () => {
       devopsScoreMetrics: isGroup ? null : JSON.parse(devopsScoreMetrics),
       devopsReportDocsPath,
       noDataImagePath,
+      devopsScoreIntroImagePath,
     },
     render(h) {
       return h(DevopsAdoptionApp);
