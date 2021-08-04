@@ -32513,13 +32513,13 @@ msgstr ""
 msgid "Terraform|Download JSON"
 msgstr ""
 
-msgid "Terraform|Find out how to use the %{linkStart}GitLab managed Terraform State%{linkEnd}"
-msgstr ""
-
 msgid "Terraform|Generating the report caused an error."
 msgstr ""
 
 msgid "Terraform|Get started with Terraform"
+msgstr ""
+
+msgid "Terraform|How to use GitLab-managed Terraform State?"
 msgstr ""
 
 msgid "Terraform|Job status"
