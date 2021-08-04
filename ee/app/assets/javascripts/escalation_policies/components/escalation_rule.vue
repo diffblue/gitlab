@@ -70,7 +70,7 @@ export default {
     validationState: {
       type: Object,
       required: false,
-      default: () => {},
+      default: () => ({}),
     },
   },
   data() {

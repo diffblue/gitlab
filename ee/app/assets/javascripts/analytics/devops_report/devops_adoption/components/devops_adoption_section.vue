@@ -40,7 +40,7 @@ export default {
     enabledNamespaces: {
       type: Object,
       required: false,
-      default: () => {},
+      default: () => ({}),
     },
     groups: {
       type: Array,
