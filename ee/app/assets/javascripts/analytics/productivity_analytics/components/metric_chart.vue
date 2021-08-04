@@ -47,7 +47,7 @@ export default {
     chartData: {
       type: [Object, Array],
       required: false,
-      default: () => {},
+      default: () => [],
     },
   },
   computed: {

@@ -9,7 +9,7 @@ export default {
     healthStatus: {
       type: Object,
       required: true,
-      default: () => {},
+      default: () => ({}),
     },
   },
   computed: {

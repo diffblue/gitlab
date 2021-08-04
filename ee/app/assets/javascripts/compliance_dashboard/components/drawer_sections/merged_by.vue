@@ -16,7 +16,7 @@ export default {
     mergedBy: {
       type: Object,
       required: false,
-      default: () => {},
+      default: () => ({}),
     },
   },
   computed: {
