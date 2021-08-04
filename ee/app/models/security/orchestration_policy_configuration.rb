@@ -36,6 +36,10 @@ module Security
         .where(arel_table[:configured_at].lt(Project.arel_table[:last_repository_updated_at]).or(arel_table[:configured_at].eq(nil)))
     end
 
+    def self.policy_management_project?(project_id)
+      self.exists?(security_policy_management_project_id: project_id)
+    end
+
     def enabled?
       ::Feature.enabled?(:security_orchestration_policies_configuration, project)
     end
