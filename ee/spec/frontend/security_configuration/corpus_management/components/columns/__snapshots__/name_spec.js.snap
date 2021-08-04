@@ -10,7 +10,7 @@ exports[`Name component renders name with correct file size 1`] = `
   <span
     data-testid="file-size"
   >
-    381.47 MiB
+    400MB
   </span>
   )
   
@@ -27,7 +27,7 @@ exports[`Name component renders the latest job 1`] = `
   <span
     data-testid="file-size"
   >
-    381.47 MiB
+    400MB
   </span>
   )
   
@@ -44,7 +44,7 @@ exports[`Name component without job path renders a - string instead of a link 1`
   <span
     data-testid="file-size"
   >
-    306.13 MiB
+    321MB
   </span>
   )
   

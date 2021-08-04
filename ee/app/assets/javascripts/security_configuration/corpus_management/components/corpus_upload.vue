@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlModal, GlModalDirective, GlSprintf } from '@gitlab/ui';
-import { numberToHumanSize } from '~/lib/utils/number_utils';
+import { decimalBytes } from '~/lib/utils/unit_format';
 import { s__, __ } from '~/locale';
 import addCorpusMutation from '../graphql/mutations/add_corpus.mutation.graphql';
 import resetCorpus from '../graphql/mutations/reset_corpus.mutation.graphql';
@@ -51,7 +51,7 @@ export default {
   },
   computed: {
     formattedFileSize() {
-      return numberToHumanSize(this.totalSize);
+      return decimalBytes(this.totalSize);
     },
     isUploaded() {
       return this.states?.uploadState.progress === 100;

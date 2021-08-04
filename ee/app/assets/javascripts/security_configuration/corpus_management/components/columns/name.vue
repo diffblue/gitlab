@@ -1,6 +1,6 @@
 <script>
 import { GlLink } from '@gitlab/ui';
-import { numberToHumanSize } from '~/lib/utils/number_utils';
+import { decimalBytes } from '~/lib/utils/unit_format';
 import { s__ } from '~/locale';
 
 export default {
@@ -18,7 +18,7 @@ export default {
   },
   computed: {
     fileSize() {
-      return numberToHumanSize(this.corpus.size);
+      return decimalBytes(this.corpus.size);
     },
     jobUrl() {
       /*
