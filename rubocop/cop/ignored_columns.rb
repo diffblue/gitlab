@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    # Cop that blacklists the usage of Group.public_or_visible_to_user
+    # Cop that blacklists the usage of `ActiveRecord::Base.ignored_columns=` directly
     class IgnoredColumns < RuboCop::Cop::Cop
       USE_CONCERN_MSG = 'Use `IgnoredColumns` concern instead of adding to `self.ignored_columns`.'
       WRONG_MODEL_MSG = 'If the model exists in CE and EE, the column has to be ignored ' \
@@ -43,11 +43,19 @@ module RuboCop
       end
 
       def ee_model?(path)
-        path.include?('ee/')
+        path.include?(ee_directory)
+      end
+
+      def ee_directory
+        File.join(rails_root, 'ee')
+      end
+
+      def rails_root
+        File.expand_path('../..', __dir__)
       end
 
       def ce_model_exists?(path)
-        File.exist?(path.gsub(%r{ee/}, ''))
+        File.exist?(path.gsub(%r{/ee/}, '/'))
       end
     end
   end

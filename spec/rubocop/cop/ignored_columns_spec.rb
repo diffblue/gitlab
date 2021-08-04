@@ -43,8 +43,6 @@ RSpec.describe RuboCop::Cop::IgnoredColumns do
     end
 
     it 'flags ignore_columns usage in EE model' do
-      file_path = full_path('ee/app/models/ee/bar.rb')
-
       expect_no_offenses(<<~RUBY, file_path)
         class Bar < ApplicationRecord
           ignore_columns :foo, remove_with: '14.3', remove_after: '2021-09-22'
@@ -90,7 +88,7 @@ RSpec.describe RuboCop::Cop::IgnoredColumns do
   private
 
   def full_path(path)
-    rails_root = '../../../../'
+    rails_root = '../../../'
 
     File.expand_path(File.join(rails_root, path), __dir__)
   end
