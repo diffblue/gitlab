@@ -10,21 +10,9 @@ export default {
       type: Object,
       required: true,
     },
-    // Number of options that must exist for the search box to show.
-    searchBoxShowThreshold: {
-      type: Number,
-      required: false,
-      default: 20,
-    },
-    loading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
   data() {
     return {
-      searchTerm: '',
       selectedOptions: undefined,
     };
   },
@@ -44,11 +32,6 @@ export default {
     filterObject() {
       // This is passed to the vulnerability list's GraphQL query as a variable.
       return { [this.filter.id]: this.selectedOptions.map((x) => x.id) };
-    },
-    filteredOptions() {
-      return this.options.filter((option) =>
-        option.name.toLowerCase().includes(this.searchTerm.toLowerCase()),
-      );
     },
     querystringIds() {
       const ids = this.$route?.query[this.filter.id] || [];
@@ -70,9 +53,6 @@ export default {
       }
 
       return options;
-    },
-    showSearchBox() {
-      return this.options.length >= this.searchBoxShowThreshold;
     },
   },
   watch: {
@@ -119,22 +99,16 @@ export default {
 </script>
 
 <template>
-  <filter-body
-    v-model.trim="searchTerm"
-    :name="filter.name"
-    :selected-options="selectedOptionsOrAll"
-    :show-search-box="showSearchBox"
-    :loading="loading"
-  >
+  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll">
     <filter-item
-      v-if="filter.allOption && !searchTerm.length"
+      v-if="filter.allOption"
       :is-checked="isNoOptionsSelected"
       :text="filter.allOption.name"
       data-testid="allOption"
       @click="deselectAllOptions"
     />
     <filter-item
-      v-for="option in filteredOptions"
+      v-for="option in options"
       :key="option.id"
       :is-checked="isSelected(option)"
       :text="option.name"
