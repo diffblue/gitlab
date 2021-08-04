@@ -115,6 +115,7 @@ module EE
         git_two_factor_session_expiry
         group_owners_can_manage_default_branch_protection
         default_project_deletion_protection
+        delayed_project_deletion
         deletion_adjourned_period
         updating_name_disabled_for_users
         npm_package_requests_forwarding

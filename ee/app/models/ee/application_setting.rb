@@ -116,6 +116,8 @@ module EE
                 presence: true,
                 numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10080 }
 
+      alias_attribute :delayed_project_deletion, :delayed_project_removal
+
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
     end

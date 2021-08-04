@@ -11,7 +11,7 @@
         setting_locked: setting_locked,
         settings_path_helper: -> (locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
         help_text: delayed_project_removal_help_text do
-      = s_('GroupSettings|Enable delayed project removal')
+      = s_('GroupSettings|Enable delayed project deletion')
     = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
         attribute: :delayed_project_removal,
         group: group,

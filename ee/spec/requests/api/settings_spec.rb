@@ -187,6 +187,13 @@ RSpec.describe API::Settings, 'EE Settings' do
     it_behaves_like 'settings for licensed features'
   end
 
+  context 'delayed project deletion' do
+    let(:settings) { { delayed_project_deletion: true } }
+    let(:feature) { :adjourned_deletion_for_projects_and_groups }
+
+    it_behaves_like 'settings for licensed features'
+  end
+
   context 'group_owners_can_manage_default_branch_protection setting' do
     let(:settings) { { group_owners_can_manage_default_branch_protection: false } }
     let(:feature) { :default_branch_protection_restriction_in_groups }

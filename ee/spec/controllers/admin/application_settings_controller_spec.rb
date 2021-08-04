@@ -83,6 +83,13 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
+    context 'default delayed project deletion' do
+      let(:settings) { { delayed_project_deletion: true } }
+      let(:feature) { :adjourned_deletion_for_projects_and_groups }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
     context 'updating name disabled for users setting' do
       let(:settings) { { updating_name_disabled_for_users: true } }
       let(:feature) { :disable_name_update_for_users }

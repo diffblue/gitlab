@@ -29,7 +29,7 @@ module EE
             end
 
             unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
-              attrs = attrs.except(:deletion_adjourned_period)
+              attrs = attrs.except(:delayed_project_deletion, :deletion_adjourned_period)
             end
 
             unless License.feature_available?(:disable_name_update_for_users)

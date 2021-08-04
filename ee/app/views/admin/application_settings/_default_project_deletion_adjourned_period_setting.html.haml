@@ -7,4 +7,3 @@
   = f.select :deletion_adjourned_period, options_for_select(0..90, @application_setting.deletion_adjourned_period), {}, class: 'form-control gl-form-input'
   = f.label :deletion_adjourned_period, class: 'form-check-label' do
     = _('How many days need to pass between marking entity for deletion and actual removing it.')
-    = _('Not applicable to personal namespaced projects, which are deleted immediately on request.')
