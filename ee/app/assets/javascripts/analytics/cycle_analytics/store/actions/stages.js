@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import { getValueStreamStageMedian } from '~/api/analytics_api';
+import { getGroupValueStreamStageMedian } from 'ee/api/analytics_api';
 import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
@@ -59,7 +59,7 @@ export const receiveStageMedianValuesError = ({ commit }, error) => {
 };
 
 const fetchStageMedian = ({ groupId, valueStreamId, stageId, params }) =>
-  getValueStreamStageMedian({ groupId, valueStreamId, stageId }, params).then(({ data }) => {
+  getGroupValueStreamStageMedian({ groupId, valueStreamId, stageId }, params).then(({ data }) => {
     return {
       id: stageId,
       ...(data?.error
