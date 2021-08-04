@@ -266,14 +266,13 @@ describe('LabelsSelect Actions', () => {
   });
 
   describe('updateLabelsSetState', () => {
-    it('updates labels `set` state to match `selectedLabels`', (done) => {
+    it('updates labels `set` state to match `selectedLabels`', () => {
       testAction(
         actions.updateLabelsSetState,
         {},
         state,
         [{ type: types.UPDATE_LABELS_SET_STATE }],
         [],
-        done,
       );
     });
   });
