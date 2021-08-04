@@ -11,7 +11,7 @@ function arrayToGraphqlArray(arr, typename) {
 }
 
 export function writeInitialDataToApolloCache(apolloProvider, dataset) {
-  const { groupData, namespaceId } = dataset;
+  const { groupData, namespaceId, redirectAfterSuccess } = dataset;
   // eslint-disable-next-line @gitlab/require-i18n-strings
   const namespaces = arrayToGraphqlArray(JSON.parse(groupData), 'Namespace');
 
@@ -23,6 +23,7 @@ export function writeInitialDataToApolloCache(apolloProvider, dataset) {
       isSetupForCompany: false,
       selectedPlanId: null,
       namespaces,
+      redirectAfterSuccess,
       subscription: {
         quantity: 1,
         namespaceId,

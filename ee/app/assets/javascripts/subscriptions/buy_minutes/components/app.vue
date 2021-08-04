@@ -10,6 +10,7 @@ import Checkout from './checkout.vue';
 import OrderSummary from './order_summary.vue';
 
 export default {
+  name: 'BuyCIMinutesApp',
   components: {
     Checkout,
     GlEmptyState,

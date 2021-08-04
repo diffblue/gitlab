@@ -9,6 +9,7 @@ const DEFAULT_DATA = {
   newUser: false,
   fullName: null,
   setupForCompany: false,
+  redirectAfterSuccess: null,
 };
 
 describe('utils', () => {
