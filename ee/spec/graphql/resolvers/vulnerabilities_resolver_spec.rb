@@ -8,7 +8,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
   describe '#resolve' do
     subject { resolve(described_class, obj: vulnerable, args: params, ctx: { current_user: current_user }) }
 
-    let_it_be(:project) { create(:project) }
+    let_it_be_with_reload(:project) { create(:project) }
     let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
 
     let_it_be(:low_vulnerability) do
