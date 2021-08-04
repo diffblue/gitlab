@@ -28,6 +28,7 @@ export const stateData = {
     namespaceId: null,
     __typename: 'Subscription',
   },
+  redirectAfterSuccess: '/path/to/redirect/',
   selectedPlanId: null,
   paymentMethod: {
     id: null,

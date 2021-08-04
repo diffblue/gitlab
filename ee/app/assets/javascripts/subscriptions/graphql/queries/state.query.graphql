@@ -8,6 +8,7 @@ query State {
   fullName @client
   isSetupForCompany @client
   selectedPlanId @client
+  redirectAfterSuccess @client
   customer @client {
     country
     address1

@@ -14,6 +14,5 @@ export function createMockApolloProvider(stepList, initialStepIndex = 0, additio
     query: activeStepQuery,
     data: { activeStep: stepList[initialStepIndex] },
   });
-
   return mockApollo;
 }

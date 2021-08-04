@@ -30,13 +30,16 @@ export default {
     },
     confirmOrderParams: {
       query: stateQuery,
+      skip() {
+        return !this.isActive;
+      },
       update(data) {
         const { customer } = data;
-
         return {
           setup_for_company: data.isSetupForCompany,
           selected_group: data.subscription.namespaceId,
           new_user: data.isNewUser,
+          redirect_after_success: data.redirectAfterSuccess,
           customer: {
             country: customer.country,
             address_1: customer.address1,
@@ -58,7 +61,6 @@ export default {
   methods: {
     confirmOrder() {
       this.isLoading = true;
-
       return Api.confirmOrder(this.confirmOrderParams)
         .then(({ data }) => {
           if (data.location) {
@@ -82,7 +84,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="isActive" class="full-width gl-mb-7">
+  <div v-if="isActive" class="full-width gl-mb-7" data-testid="confirm-order-root">
     <gl-button :disabled="isLoading" variant="success" category="primary" @click="confirmOrder">
       <gl-loading-icon v-if="isLoading" inline size="sm" />
       {{ isLoading ? $options.i18n.confirming : $options.i18n.confirm }}
