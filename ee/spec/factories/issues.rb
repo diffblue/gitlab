@@ -7,6 +7,10 @@ FactoryBot.modify do
         issue.create_status_page_published_incident!
       end
     end
+
+    trait :with_sla do
+      issuable_sla
+    end
   end
 end
 

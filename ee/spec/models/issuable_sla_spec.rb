@@ -12,33 +12,36 @@ RSpec.describe IssuableSla do
   end
 
   describe 'scopes' do
-    describe '.exceeded_for_issues' do
-      subject { described_class.exceeded_for_issues }
+    let_it_be(:project) { create(:project) }
+    let_it_be_with_reload(:issue) { create(:issue, project: project) }
+    let_it_be(:issuable_closed_sla) { create(:issuable_sla, :issuable_closed, issue: create(:issue, project: project)) }
+    let_it_be(:future_due_at_sla) { create(:issuable_sla, issue: create(:issue, project: project), due_at: 1.hour.from_now) }
 
-      let_it_be(:project) { create(:project) }
-      let_it_be_with_reload(:issue) { create(:issue, project: project) }
-      let_it_be_with_reload(:issuable_sla) { create(:issuable_sla, issue: issue, due_at: 1.hour.ago) }
+    describe '.exceeded' do
+      subject { described_class.exceeded }
 
-      context 'issue closed' do
+      let!(:issuable_sla) { create(:issuable_sla, issue: issue, due_at: 1.hour.ago) }
+
+      it { is_expected.to contain_exactly(issuable_sla) }
+
+      context 'marked as issuable closed' do
+        let!(:issuable_sla) { create(:issuable_sla, :issuable_closed, issue: issue, due_at: 1.hour.ago) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'due_at has not passed' do
         before do
-          issue.close!
+          issuable_sla.update!(due_at: 1.hour.from_now)
         end
 
         it { is_expected.to be_empty }
       end
 
-      context 'issue opened' do
-        context 'due_at has not passed' do
-          before do
-            issuable_sla.update!(due_at: 1.hour.from_now)
-          end
+      context 'label applied' do
+        let!(:issuable_sla) { create(:issuable_sla, :label_applied, issue: issue, due_at: 1.hour.ago) }
 
-          it { is_expected.to be_empty }
-        end
-
-        context 'when due date has passed' do
-          it { is_expected.to contain_exactly(issuable_sla) }
-        end
+        it { is_expected.to be_empty }
       end
     end
   end

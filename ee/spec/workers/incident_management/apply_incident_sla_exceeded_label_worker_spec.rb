@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe IncidentManagement::ApplyIncidentSlaExceededLabelWorker do
   let(:worker) { described_class.new }
 
-  let_it_be_with_refind(:incident) { create(:incident) }
+  let_it_be_with_refind(:incident) { create(:incident, :with_sla) }
   let_it_be(:project) { incident.project }
   let_it_be(:label) do
     ::IncidentManagement::CreateIncidentSlaExceededLabelService
@@ -36,12 +36,31 @@ RSpec.describe IncidentManagement::ApplyIncidentSlaExceededLabelWorker do
     expect(incident.labels.reload).to include(label)
   end
 
+  it 'sets the label applied boolean' do
+    expect { perform }.to change { incident.issuable_sla.reload.label_applied }.from(false).to(true)
+  end
+
   it 'adds a note that the label was added', :aggregate_failures do
     expect { subject }.to change { incident.resource_label_events.reload.count }
 
     event = incident.resource_label_events.first
     expect(event.action).to eq('add')
     expect(event.label).to eq(label)
+  end
+
+  context 'label is already added' do
+    before do
+      incident.labels << label
+    end
+
+    it 'does not add a label', :aggregate_failures do
+      expect { subject }.not_to change { incident.labels.reload.count }
+      expect(incident.labels.reload).to contain_exactly(label)
+    end
+
+    it 'sets the label applied boolean' do
+      expect { perform }.to change { incident.issuable_sla.reload.label_applied }.from(false).to(true)
+    end
   end
 
   context 'for plain issues' do
