@@ -4,7 +4,7 @@ import GeoSettingsForm from 'ee/geo_settings/components/geo_settings_form.vue';
 import initStore from 'ee/geo_settings/store';
 import * as types from 'ee/geo_settings/store/mutation_types';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { STRING_OVER_255 } from '../mock_data';
+import { STRING_OVER_255, MOCK_NODES_PATH } from '../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -18,7 +18,7 @@ describe('GeoSettingsForm', () => {
   let store;
 
   const createStore = () => {
-    store = initStore();
+    store = initStore(MOCK_NODES_PATH);
   };
 
   const createComponent = () => {
@@ -90,7 +90,7 @@ describe('GeoSettingsForm', () => {
     describe('cancel button', () => {
       it('calls visitUrl when clicked', () => {
         findGeoSettingsCancelButton().vm.$emit('click');
-        expect(visitUrl).toHaveBeenCalledWith('/admin/geo/nodes');
+        expect(visitUrl).toHaveBeenCalledWith(MOCK_NODES_PATH);
       });
     });
   });

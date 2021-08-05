@@ -1,6 +1,7 @@
 import { VALIDATION_FIELD_KEYS } from '../constants';
 
-const createState = () => ({
+const createState = (nodesPath) => ({
+  nodesPath,
   isLoading: false,
   synchronizationNamespaces: [],
   formErrors: Object.values(VALIDATION_FIELD_KEYS).reduce(

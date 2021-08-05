@@ -7,10 +7,10 @@ import createState from './state';
 
 Vue.use(Vuex);
 
-export default () =>
+export default (nodesPath) =>
   new Vuex.Store({
     actions,
     mutations,
     getters,
-    state: createState(),
+    state: createState(nodesPath),
   });

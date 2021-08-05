@@ -9,17 +9,17 @@ Vue.use(Translate);
 export default () => {
   const el = document.getElementById('js-geo-node-form');
 
+  const {
+    dataset: { selectiveSyncTypes, syncShardsOptions, nodeData, nodesPath },
+  } = el;
+
   return new Vue({
     el,
-    store: createStore(),
+    store: createStore(nodesPath),
     components: {
       GeoNodeFormApp,
     },
     render(createElement) {
-      const {
-        dataset: { selectiveSyncTypes, syncShardsOptions, nodeData },
-      } = this.$options.el;
-
       let node;
       if (nodeData) {
         node = JSON.parse(nodeData);

@@ -1,6 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { visitUrl } from '~/lib/utils/url_utility';
 import GeoNodeFormCapacities from './geo_node_form_capacities.vue';
 import GeoNodeFormCore from './geo_node_form_core.vue';
@@ -50,6 +50,7 @@ export default {
   },
   computed: {
     ...mapGetters(['formHasError']),
+    ...mapState(['nodesPath']),
   },
   created() {
     if (this.node) {
@@ -59,7 +60,7 @@ export default {
   methods: {
     ...mapActions(['saveGeoNode']),
     redirect() {
-      visitUrl('/admin/geo/nodes');
+      visitUrl(this.nodesPath);
     },
     addSyncOption({ key, value }) {
       this.nodeData[key].push(value);

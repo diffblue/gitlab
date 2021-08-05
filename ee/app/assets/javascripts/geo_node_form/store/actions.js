@@ -40,9 +40,9 @@ export const fetchSyncNamespaces = ({ dispatch }, search) => {
 };
 
 export const requestSaveGeoNode = ({ commit }) => commit(types.REQUEST_SAVE_GEO_NODE);
-export const receiveSaveGeoNodeSuccess = ({ commit }) => {
+export const receiveSaveGeoNodeSuccess = ({ commit, state }) => {
   commit(types.RECEIVE_SAVE_GEO_NODE_COMPLETE);
-  visitUrl('/admin/geo/nodes');
+  visitUrl(state.nodesPath);
 };
 export const receiveSaveGeoNodeError = ({ commit }, data) => {
   let errorMessage = __('There was an error saving this Geo Node.');

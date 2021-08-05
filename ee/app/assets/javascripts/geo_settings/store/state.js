@@ -1,6 +1,7 @@
 import { DEFAULT_TIMEOUT, DEFAULT_ALLOWED_IP, FORM_VALIDATION_FIELDS } from '../constants';
 
-export default () => ({
+export default (nodesPath) => ({
+  nodesPath,
   isLoading: false,
   timeout: DEFAULT_TIMEOUT,
   allowedIp: DEFAULT_ALLOWED_IP,

@@ -4,9 +4,14 @@ import GeoNodeForm from 'ee/geo_node_form/components/geo_node_form.vue';
 import GeoNodeFormCapacities from 'ee/geo_node_form/components/geo_node_form_capacities.vue';
 import GeoNodeFormCore from 'ee/geo_node_form/components/geo_node_form_core.vue';
 import GeoNodeFormSelectiveSync from 'ee/geo_node_form/components/geo_node_form_selective_sync.vue';
-import store from 'ee/geo_node_form/store';
+import initStore from 'ee/geo_node_form/store';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { MOCK_NODE, MOCK_SELECTIVE_SYNC_TYPES, MOCK_SYNC_SHARDS } from '../mock_data';
+import {
+  MOCK_NODE,
+  MOCK_SELECTIVE_SYNC_TYPES,
+  MOCK_SYNC_SHARDS,
+  MOCK_NODES_PATH,
+} from '../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -26,7 +31,7 @@ describe('GeoNodeForm', () => {
 
   const createComponent = () => {
     wrapper = shallowMount(GeoNodeForm, {
-      store,
+      store: initStore(MOCK_NODES_PATH),
       propsData,
     });
   };
@@ -109,7 +114,7 @@ describe('GeoNodeForm', () => {
 
       it('calls visitUrl when cancel is clicked', () => {
         findGeoNodeCancelButton().vm.$emit('click');
-        expect(visitUrl).toHaveBeenCalledWith('/admin/geo/nodes');
+        expect(visitUrl).toHaveBeenCalledWith(MOCK_NODES_PATH);
       });
     });
 

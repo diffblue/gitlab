@@ -2,6 +2,6 @@
 = render partial: 'admin/geo/shared/license_alert'
 
 - if Gitlab::Geo.license_allows?
-  #js-geo-settings-form
+  #js-geo-settings-form{ data: { "nodes-path" => admin_geo_nodes_path } }
 - else
   = render 'shared/empty_states/geo'
