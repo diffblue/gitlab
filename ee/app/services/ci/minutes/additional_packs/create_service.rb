@@ -28,15 +28,6 @@ module Ci
 
         attr_reader :current_user, :namespace, :purchase_xid, :expires_at, :number_of_minutes
 
-        # rubocop: disable Cop/UserAdmin
-        def authorize_current_user!
-          # Using #admin? is discouraged as it will bypass admin mode authorisation checks,
-          # however those checks are not in place in our REST API yet, and this service is only
-          # going to be used by the API for admin-only actions
-          raise Gitlab::Access::AccessDeniedError unless current_user&.admin?
-        end
-        # rubocop: enable Cop/UserAdmin
-
         # rubocop: disable CodeReuse/ActiveRecord
         def additional_pack
           @additional_pack ||= Ci::Minutes::AdditionalPack.find_or_initialize_by(
