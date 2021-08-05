@@ -1,6 +1,5 @@
-import { shallowMount } from '@vue/test-utils';
 import { mockTracking } from 'helpers/tracking_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TopToolbar from '~/content_editor/components/top_toolbar.vue';
 import {
   TOOLBAR_CONTROL_TRACKING_ACTION,
@@ -12,7 +11,7 @@ describe('content_editor/components/top_toolbar', () => {
   let trackingSpy;
 
   const buildWrapper = () => {
-    wrapper = extendedWrapper(shallowMount(TopToolbar));
+    wrapper = shallowMountExtended(TopToolbar);
   };
 
   beforeEach(() => {
@@ -50,12 +49,10 @@ describe('content_editor/components/top_toolbar', () => {
       });
     });
 
-    it.each`
-      eventData
-      ${{ contentType: 'bold' }}
-      ${{ contentType: 'blockquote', value: 1 }}
-    `('tracks the execution of toolbar controls', ({ eventData }) => {
+    it('tracks the execution of toolbar controls', () => {
+      const eventData = { contentType: 'blockquote', value: 1 };
       const { contentType, value } = eventData;
+
       wrapper.findByTestId(testId).vm.$emit('execute', eventData);
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, TOOLBAR_CONTROL_TRACKING_ACTION, {

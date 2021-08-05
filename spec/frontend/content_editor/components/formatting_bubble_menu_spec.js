@@ -1,7 +1,6 @@
 import { BubbleMenu } from '@tiptap/vue-2';
-import { shallowMount } from '@vue/test-utils';
 import { mockTracking } from 'helpers/tracking_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import FormattingBubbleMenu from '~/content_editor/components/formatting_bubble_menu.vue';
 
 import {
@@ -22,13 +21,11 @@ describe('content_editor/components/top_toolbar', () => {
   };
 
   const buildWrapper = () => {
-    wrapper = extendedWrapper(
-      shallowMount(FormattingBubbleMenu, {
-        provide: {
-          tiptapEditor,
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(FormattingBubbleMenu, {
+      provide: {
+        tiptapEditor,
+      },
+    });
   };
 
   beforeEach(() => {
@@ -67,12 +64,10 @@ describe('content_editor/components/top_toolbar', () => {
       });
     });
 
-    it.each`
-      eventData
-      ${{ contentType: 'bold' }}
-      ${{ contentType: 'italic', value: 1 }}
-    `('tracks the execution of toolbar controls', ({ eventData }) => {
+    it('tracks the execution of toolbar controls', () => {
+      const eventData = { contentType: 'italic', value: 1 };
       const { contentType, value } = eventData;
+
       wrapper.findByTestId(testId).vm.$emit('execute', eventData);
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, BUBBLE_MENU_TRACKING_ACTION, {
