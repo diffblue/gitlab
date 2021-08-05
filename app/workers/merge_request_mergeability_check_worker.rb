@@ -11,7 +11,7 @@ class MergeRequestMergeabilityCheckWorker
   idempotent!
 
   def logger
-    Sidekiq.logger
+    @logger ||= Sidekiq.logger
   end
 
   def perform(merge_request_id)
