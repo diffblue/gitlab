@@ -51,7 +51,7 @@ module QA
         group.add_member(user, Resource::Members::AccessLevel::OWNER)
 
         Flow::Login.sign_in(as: user)
-        imported_project.reload! # import project and populate attributes
+        imported_project # import project
       end
 
       after do
