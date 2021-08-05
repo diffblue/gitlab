@@ -87,6 +87,19 @@ RSpec.describe GroupSamlGroupSyncWorker do
             perform([top_level_group_link.id, group_link.id])
           end
         end
+
+        context 'when the worker receives no group link ids' do
+          before do
+            group.add_user(user, Gitlab::Access::DEVELOPER)
+          end
+
+          it 'calls the sync service and removes existing users' do
+            expect_sync_service_call(group_links: [])
+            expect_metadata_logging_call({ added: 0, updated: 0, removed: 1 })
+
+            perform([])
+          end
+        end
       end
     end
 

@@ -64,8 +64,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater do
       allow(group).to receive(:saml_group_sync_available?).and_return(enabled)
     end
 
-    let(:group_link) { create(:saml_group_link, saml_group_name: 'Owners', group: group) }
-    let(:subgroup_link) { create(:saml_group_link, saml_group_name: 'Developers', group: create(:group, parent: group)) }
+    let!(:group_link) { create(:saml_group_link, saml_group_name: 'Owners', group: group) }
+    let!(:subgroup_link) { create(:saml_group_link, saml_group_name: 'Developers', group: create(:group, parent: group)) }
 
     context 'when group sync is not available' do
       before do
@@ -74,6 +74,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater do
 
       it 'does not enqueue group sync' do
         expect(GroupSamlGroupSyncWorker).not_to receive(:perform_async)
+
+        update_membership
       end
     end
 
@@ -95,6 +97,33 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater do
 
         it 'enqueues group sync without the outside group' do
           expect(GroupSamlGroupSyncWorker).to receive(:perform_async).with(user.id, group.id, match_array([group_link.id, subgroup_link.id]))
+
+          update_membership
+        end
+      end
+
+      context 'when auth hash contains no groups' do
+        let!(:auth_hash) do
+          Gitlab::Auth::GroupSaml::AuthHash.new(
+            OmniAuth::AuthHash.new(extra: { raw_info: OneLogin::RubySaml::Attributes.new })
+          )
+        end
+
+        it 'enqueues group sync' do
+          expect(GroupSamlGroupSyncWorker).to receive(:perform_async).with(user.id, group.id, [])
+
+          update_membership
+        end
+      end
+
+      context 'when auth hash groups do not match group links' do
+        before do
+          group_link.update!(saml_group_name: 'Web Developers')
+          subgroup_link.destroy!
+        end
+
+        it 'enqueues group sync' do
+          expect(GroupSamlGroupSyncWorker).to receive(:perform_async).with(user.id, group.id, [])
 
           update_membership
         end
