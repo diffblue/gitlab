@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GroupSharedRunnersSettingUpdate' do
+RSpec.describe 'GroupUpdate' do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
@@ -15,7 +15,7 @@ RSpec.describe 'GroupSharedRunnersSettingUpdate' do
     }
   end
 
-  let(:mutation) { graphql_mutation(:group_shared_runners_setting_update, variables) }
+  let(:mutation) { graphql_mutation(:group_update, variables) }
 
   context 'when unauthorized' do
     shared_examples 'unauthorized' do

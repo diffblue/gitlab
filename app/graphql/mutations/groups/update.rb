@@ -2,12 +2,16 @@
 
 module Mutations
   module Groups
-    class UpdateSharedRunnersSetting < Mutations::BaseMutation
+    class Update < Mutations::BaseMutation
       include Mutations::ResolvesGroup
 
-      graphql_name 'GroupSharedRunnersSettingUpdate'
+      graphql_name 'GroupUpdate'
 
-      authorize :update_group_shared_runners_setting
+      authorize :admin_group
+
+      field :group, Types::GroupType,
+            null: true,
+            description: 'The group after update.'
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
@@ -19,13 +23,11 @@ module Mutations
       def resolve(full_path:, **args)
         group = authorized_find!(full_path: full_path)
 
-        result = ::Groups::UpdateSharedRunnersService
-          .new(group, current_user, args)
-          .execute
+        unless ::Groups::UpdateService.new(group, current_user, args).execute
+          return { group: nil, errors: group.errors.full_messages }
+        end
 
-        {
-          errors: result[:status] == :success ? [] : Array.wrap(result[:message])
-        }
+        { group: group, errors: [] }
       end
 
       private

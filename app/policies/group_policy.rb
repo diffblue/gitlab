@@ -226,10 +226,6 @@ class GroupPolicy < BasePolicy
   rule { developer & dependency_proxy_available }
     .enable :admin_dependency_proxy
 
-  rule { can?(:admin_group) }.policy do
-    enable :update_group_shared_runners_setting
-  end
-
   rule { can?(:admin_group) & resource_access_token_feature_available }.policy do
     enable :read_resource_access_tokens
     enable :destroy_resource_access_tokens

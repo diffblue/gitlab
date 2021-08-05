@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Groups::UpdateSharedRunnersSetting do
+RSpec.describe Mutations::Groups::Update do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:group) { create(:group) }
@@ -10,7 +10,7 @@ RSpec.describe Mutations::Groups::UpdateSharedRunnersSetting do
 
   let(:params) { { full_path: group.full_path } }
 
-  specify { expect(described_class).to require_graphql_authorizations(:update_group_shared_runners_setting) }
+  specify { expect(described_class).to require_graphql_authorizations(:admin_group) }
 
   describe '#resolve' do
     subject { described_class.new(object: group, context: { current_user: user }, field: nil).resolve(**params) }
@@ -22,7 +22,7 @@ RSpec.describe Mutations::Groups::UpdateSharedRunnersSetting do
       end
 
       it 'returns no errors' do
-        expect(subject).to eq(errors: [])
+        expect(subject).to eq(errors: [], group: group)
       end
 
       context 'with invalid params' do
@@ -35,7 +35,8 @@ RSpec.describe Mutations::Groups::UpdateSharedRunnersSetting do
 
         it 'returns an error' do
           expect(subject).to eq(
-            errors: ["state must be one of: #{::Namespace::SHARED_RUNNERS_SETTINGS.join(', ')}"]
+            group: nil,
+            errors: ["Update shared runners state must be one of: #{::Namespace::SHARED_RUNNERS_SETTINGS.join(', ')}"]
           )
         end
       end
@@ -47,7 +48,7 @@ RSpec.describe Mutations::Groups::UpdateSharedRunnersSetting do
       end
     end
 
-    context 'with existing group shared runners setting' do
+    context 'changing shared runners setting' do
       let_it_be(:params) do
         { full_path: group.full_path,
           shared_runners_setting: 'disabled_and_unoverridable' }
