@@ -51,11 +51,24 @@ module EE
     override :remove_group_message
     def remove_group_message(group)
       return super unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+      return super if group.marked_for_deletion?
 
       date = permanent_deletion_date(Time.now.utc)
 
       _("The contents of this group, its subgroups and projects will be permanently removed after %{deletion_adjourned_period} days on %{date}. After this point, your data cannot be recovered.") %
         { date: date, deletion_adjourned_period: deletion_adjourned_period }
+    end
+
+    def immediately_remove_group_message(group)
+      message = _('This action will %{strongOpen}permanently remove%{strongClose} %{codeOpen}%{group}%{codeClose} %{strongOpen}immediately%{strongClose}.')
+
+      html_escape(message) % {
+        group: group.path,
+        strongOpen: '<strong>'.html_safe,
+        strongClose: '</strong>'.html_safe,
+        codeOpen: '<code>'.html_safe,
+        codeClose: '</code>'.html_safe
+      }
     end
 
     def permanent_deletion_date(date)

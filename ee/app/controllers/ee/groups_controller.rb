@@ -32,6 +32,7 @@ module EE
     override :destroy
     def destroy
       return super unless group.adjourned_deletion?
+      return super if group.marked_for_deletion? && ::Gitlab::Utils.to_boolean(params[:permanently_remove])
 
       result = ::Groups::MarkForDeletionService.new(group, current_user).execute
 

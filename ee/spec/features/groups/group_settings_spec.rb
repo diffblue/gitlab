@@ -158,16 +158,36 @@ RSpec.describe 'Edit group settings' do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
     end
 
-    let_it_be(:subgroup) { create(:group, parent: group) }
+    it_behaves_like 'a cascading setting' do
+      let_it_be(:subgroup) { create(:group, parent: group) }
 
-    let(:form_group_selector) { '[data-testid="delayed-project-removal-form-group"]' }
-    let(:setting_field_selector) { '[data-testid="delayed-project-removal-checkbox"]' }
-    let(:setting_path) { edit_group_path(group, anchor: 'js-permissions-settings') }
-    let(:group_path) { edit_group_path(group) }
-    let(:subgroup_path) { edit_group_path(subgroup) }
-    let(:click_save_button) { save_permissions_group }
+      let(:form_group_selector) { '[data-testid="delayed-project-removal-form-group"]' }
+      let(:setting_field_selector) { '[data-testid="delayed-project-removal-checkbox"]' }
+      let(:setting_path) { edit_group_path(group, anchor: 'js-permissions-settings') }
+      let(:group_path) { edit_group_path(group) }
+      let(:subgroup_path) { edit_group_path(subgroup) }
+      let(:click_save_button) { save_permissions_group }
+    end
 
-    it_behaves_like 'a cascading setting'
+    describe 'immediately deleting a project marked for deletion', :js do
+      before do
+        create(:group_deletion_schedule, group: group, marked_for_deletion_on: 2.days.from_now)
+
+        visit edit_group_path(group)
+      end
+
+      it 'deletes the project immediately', :sidekiq_inline do
+        expect { remove_with_confirm('Remove group', group.path) }.to change { Group.count }.by(-1)
+
+        expect(page).to have_content "scheduled for deletion"
+      end
+
+      def remove_with_confirm(button_text, confirm_with, confirm_button_text = 'Confirm')
+        click_button button_text
+        fill_in 'confirm_name_input', with: confirm_with
+        click_button confirm_button_text
+      end
+    end
   end
 
   context 'when custom_project_templates feature' do
