@@ -165,10 +165,20 @@ module Security
 
         vulnerability_finding
       rescue ActiveRecord::RecordNotUnique => e
-        # the uuid is the only unique constraint on the vulnerability_occurrences
-        # table - no need to use get_matched_findings(...).first here. Fetching
-        # the finding with the same uuid will be enough
         vulnerability_finding = project.vulnerability_findings.reset.find_by(uuid: finding.uuid)
+        if vulnerability_finding
+          sync_vulnerability_finding(vulnerability_finding, finding, create_params.dig(:location))
+          vulnerability_finding.save!
+          return vulnerability_finding
+        end
+
+        find_params = {
+          scanner: scanners_objects[finding.scanner.key],
+          primary_identifier: identifiers_objects[finding.primary_identifier.key],
+          location_fingerprint: finding.location.fingerprint
+        }
+
+        vulnerability_finding = project.vulnerability_findings.reset.find_by(find_params)
         if vulnerability_finding
           sync_vulnerability_finding(vulnerability_finding, finding, create_params.dig(:location))
           vulnerability_finding.save!
