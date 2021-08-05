@@ -9,6 +9,8 @@ class DastSiteValidation < ApplicationRecord
   validates :dast_site_token_id, presence: true
   validates :validation_strategy, presence: true
 
+  validate :meta_tag_validation_must_happen_on_runner, if: :meta_tag?
+
   scope :by_project_id, -> (project_id) do
     joins(:dast_site_token).where(dast_site_tokens: { project_id: project_id })
   end
@@ -23,7 +25,7 @@ class DastSiteValidation < ApplicationRecord
 
   before_create :set_normalized_url_base
 
-  enum validation_strategy: { text_file: 0, header: 1 }
+  enum validation_strategy: { text_file: 0, header: 1, meta_tag: 2 }
 
   delegate :project, :dast_site, to: :dast_site_token, allow_nil: true
 
@@ -78,5 +80,12 @@ class DastSiteValidation < ApplicationRecord
 
   def set_normalized_url_base
     self.url_base = self.class.get_normalized_url_base(dast_site_token.url)
+  end
+
+  def meta_tag_validation_must_happen_on_runner
+    return if ::Feature.enabled?(:dast_runner_site_validation, project, default_enabled: :yaml) &&
+              ::Feature.enabled?(:dast_meta_tag_validation, project, default_enabled: :yaml)
+
+    errors.add(:base, 'Meta tag validation is not enabled')
   end
 end
