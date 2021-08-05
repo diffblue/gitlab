@@ -59,6 +59,9 @@ export default {
     availableTrialAction: {
       default: null,
     },
+    trialPlanName: {
+      default: '',
+    },
   },
   computed: {
     ...mapState([
@@ -192,7 +195,7 @@ export default {
             v-if="availableTrialAction"
             :namespace-id="namespaceId"
             :action="availableTrialAction"
-            :plan-name="planName"
+            :plan-name="trialPlanName"
             class="gl-mr-3"
           />
           <gl-button

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 
 export const initExtendReactivateTrialButton = (el) => {
-  const { namespaceId, action, planName } = el.dataset;
+  const { namespaceId, action, trialPlanName } = el.dataset;
 
   return new Vue({
     el,
@@ -10,7 +10,7 @@ export const initExtendReactivateTrialButton = (el) => {
       return createElement(ExtendReactivateTrialButton, {
         props: {
           namespaceId: Number(namespaceId),
-          planName,
+          planName: trialPlanName,
           action,
         },
       });

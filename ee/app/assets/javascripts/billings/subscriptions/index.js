@@ -25,6 +25,7 @@ export default (containerId = 'js-billing-plans') => {
     freePersonalNamespace,
     refreshSeatsHref,
     action,
+    trialPlanName,
   } = containerEl.dataset;
 
   return new Vue({
@@ -42,6 +43,7 @@ export default (containerId = 'js-billing-plans') => {
       freePersonalNamespace: parseBoolean(freePersonalNamespace),
       refreshSeatsHref,
       availableTrialAction: action,
+      trialPlanName,
     },
     render(createElement) {
       return createElement(SubscriptionApp);
