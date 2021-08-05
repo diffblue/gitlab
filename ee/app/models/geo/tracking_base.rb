@@ -10,6 +10,12 @@ module Geo
     SecondaryNotConfigured = Class.new(StandardError)
 
     if ::Gitlab::Geo.geo_database_configured?
+      # Mark current model as a `connection_class`
+      # This is the behavior when executing `connects_to`
+      # which indicates that given class is holding a connection object
+      # and should be treated accordingly.
+      self.connection_class = true
+
       establish_connection Rails.configuration.geo_database
     end
 
