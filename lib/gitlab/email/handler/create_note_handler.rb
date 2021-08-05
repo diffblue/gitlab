@@ -5,6 +5,7 @@ require 'gitlab/email/handler/reply_processing'
 
 # handles note/reply creation emails with these formats:
 #   incoming+1234567890abcdef1234567890abcdef@incoming.gitlab.com
+# Quoted material is _not_ stripped but appended as a `details` section
 module Gitlab
   module Email
     module Handler
@@ -24,7 +25,7 @@ module Gitlab
           validate_permission!(:create_note)
 
           raise NoteableNotFoundError unless noteable
-          raise EmptyEmailError if message.blank?
+          raise EmptyEmailError if message_including_truncated_reply.blank?
 
           verify_record!(
             record: create_note,
@@ -47,7 +48,7 @@ module Gitlab
         end
 
         def create_note
-          sent_notification.create_reply(message)
+          sent_notification.create_reply(message_including_truncated_reply)
         end
       end
     end

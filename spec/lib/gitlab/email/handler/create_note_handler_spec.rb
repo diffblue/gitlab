@@ -66,6 +66,8 @@ RSpec.describe Gitlab::Email::Handler::CreateNoteHandler do
       expect(new_note.author).to eq(sent_notification.recipient)
       expect(new_note.position).to eq(note.position)
       expect(new_note.note).to include('I could not disagree more.')
+      expect(new_note.note).to include('<details><summary>...</summary>')
+      expect(new_note.note).to include('> hey guys everyone knows adventure time sucks!')
       expect(new_note.in_reply_to?(note)).to be_truthy
 
       expect(new_note.discussion_id).to eq(note.discussion_id)

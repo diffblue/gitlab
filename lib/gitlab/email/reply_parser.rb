@@ -6,9 +6,10 @@ module Gitlab
     class ReplyParser
       attr_accessor :message
 
-      def initialize(message, trim_reply: true)
+      def initialize(message, trim_reply: true, append_reply: false)
         @message = message
         @trim_reply = trim_reply
+        @append_reply = append_reply
       end
 
       def execute
@@ -17,7 +18,9 @@ module Gitlab
         encoding = body.encoding
 
         if @trim_reply
-          body = EmailReplyTrimmer.trim(body)
+          body = trim_reply(body)
+        elsif @append_reply
+          body = trim_reply(body, append_trimmed_reply: true)
         end
 
         return '' unless body
@@ -70,6 +73,18 @@ module Gitlab
         end
       rescue StandardError
         nil
+      end
+
+      def trim_reply(text, append_trimmed_reply: false)
+        trimmed_body = EmailReplyTrimmer.trim(text)
+        return trimmed_body unless append_trimmed_reply
+
+        partitioned_body = text.partition(trimmed_body)
+        main_body = partitioned_body[1]
+        stripped_text = partitioned_body[2].chomp
+        return main_body if stripped_text.empty?
+
+        main_body + "\n<details><summary>...</summary>\n#{stripped_text}\n</details>"
       end
     end
   end

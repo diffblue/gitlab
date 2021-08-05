@@ -35,6 +35,10 @@ module Gitlab
           @message_with_reply ||= process_message(trim_reply: false)
         end
 
+        def message_including_truncated_reply
+          @message_including_truncated_reply ||= process_message(trim_reply: false, append_reply: true)
+        end
+
         def process_message(**kwargs)
           message = ReplyParser.new(mail, **kwargs).execute.strip
           message_with_attachments = add_attachments(message)
