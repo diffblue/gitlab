@@ -15,6 +15,7 @@ module Security
     validates :security_orchestration_policy_configuration, presence: true
     validates :cron, presence: true
     validates :policy_index, presence: true
+    validates :rule_index, presence: true
 
     scope :runnable_schedules, -> { where("next_run_at < ?", Time.zone.now) }
     scope :with_owner, -> { includes(:owner) }
