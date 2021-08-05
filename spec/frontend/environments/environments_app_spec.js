@@ -1,7 +1,6 @@
 import { GlTabs, GlAlert } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
-import Cookies from 'js-cookie';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Container from '~/environments/components/container.vue';
 import DeployBoard from '~/environments/components/deploy_board.vue';
@@ -10,6 +9,7 @@ import EnableReviewAppModal from '~/environments/components/enable_review_app_mo
 import EnvironmentsApp from '~/environments/components/environments_app.vue';
 import { ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME } from '~/environments/constants';
 import axios from '~/lib/utils/axios_utils';
+import { setCookie, getCookie, removeCookie } from '~/lib/utils/common_utils';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { environment, folder } from './mock_data';
 
@@ -291,7 +291,7 @@ describe('Environment', () => {
     });
 
     afterEach(() => {
-      Cookies.remove(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
+      removeCookie(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
     });
 
     describe('when the user has not dismissed the alert', () => {
@@ -309,7 +309,7 @@ describe('Environment', () => {
         });
 
         it('persists the dismisal using a cookie', () => {
-          const cookieValue = Cookies.get(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
+          const cookieValue = getCookie(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME);
 
           expect(cookieValue).toBe('true');
         });
@@ -318,7 +318,7 @@ describe('Environment', () => {
 
     describe('when the user has previously dismissed the alert', () => {
       beforeEach(async () => {
-        Cookies.set(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME, 'true', { expires: 365 * 10 });
+        setCookie(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME, 'true');
 
         await createWrapper(true);
       });
