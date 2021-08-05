@@ -111,7 +111,7 @@ describe('DastSiteValidationModal', () => {
   describe('rendering', () => {
     describe('loading', () => {
       beforeEach(() => {
-        createFullComponent({
+        createComponent({
           handlers: {
             dastSiteTokenCreate: pendingHandler,
           },
@@ -127,7 +127,7 @@ describe('DastSiteValidationModal', () => {
 
     describe('error', () => {
       beforeEach(async () => {
-        createFullComponent({
+        createComponent({
           handlers: {
             dastSiteTokenCreate: jest.fn().mockRejectedValue(new Error('GraphQL Network Error')),
           },
@@ -160,13 +160,6 @@ describe('DastSiteValidationModal', () => {
         });
         expect(downloadButton).not.toBeNull();
       });
-
-      it.each(validationMethods)(
-        'renders a radio input for "%s" validation',
-        (validationMethod) => {
-          expect(findRadioInputForValidationMethod(validationMethod)).not.toBe(null);
-        },
-      );
 
       it('renders an input group with the target URL prepended', () => {
         const inputGroup = withinComponent().getByRole('group', {
