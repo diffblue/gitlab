@@ -28,7 +28,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           },
           when: "on_success",
           allow_failure: false,
-          yaml_variables: [],
           job_variables: [],
           root_variables_inheritance: true,
           scheduling_type: :stage
@@ -43,7 +42,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           },
           when: "on_success",
           allow_failure: false,
-          yaml_variables: [],
           job_variables: [],
           root_variables_inheritance: true,
           scheduling_type: :stage
@@ -66,7 +64,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           },
           when: "on_success",
           allow_failure: false,
-          yaml_variables: [],
           job_variables: [],
           root_variables_inheritance: true,
           scheduling_type: :stage
@@ -84,7 +81,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           ],
           when: "on_success",
           allow_failure: false,
-          yaml_variables: [],
           job_variables: [],
           root_variables_inheritance: true,
           scheduling_type: :stage
@@ -160,7 +156,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
           only: { refs: %w[branches tags] },
           when: 'on_success',
           allow_failure: false,
-          yaml_variables: [],
           job_variables: [],
           root_variables_inheritance: true,
           scheduling_type: :dag
