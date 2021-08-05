@@ -3,9 +3,9 @@
 class GitlabSchema < GraphQL::Schema
   # Currently an IntrospectionQuery has a complexity of 179.
   # These values will evolve over time.
-  DEFAULT_MAX_COMPLEXITY   = 200
-  AUTHENTICATED_COMPLEXITY = 250
-  ADMIN_COMPLEXITY         = 300
+  DEFAULT_MAX_COMPLEXITY = 200
+  AUTHENTICATED_MAX_COMPLEXITY = 250
+  ADMIN_MAX_COMPLEXITY = 300
 
   DEFAULT_MAX_DEPTH = 15
   AUTHENTICATED_MAX_DEPTH = 20
@@ -132,9 +132,9 @@ class GitlabSchema < GraphQL::Schema
       current_user = ctx&.fetch(:current_user, nil)
 
       if current_user&.admin
-        ADMIN_COMPLEXITY
+        ADMIN_MAX_COMPLEXITY
       elsif current_user
-        AUTHENTICATED_COMPLEXITY
+        AUTHENTICATED_MAX_COMPLEXITY
       else
         DEFAULT_MAX_COMPLEXITY
       end
