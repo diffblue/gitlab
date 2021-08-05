@@ -36,18 +36,11 @@ class GitlabSchema < GraphQL::Schema
       kwargs[:max_complexity] ||= max_query_complexity(kwargs[:context]) unless kwargs.key?(:max_complexity)
 
       queries.each do |query|
-        query[:max_complexity] ||= max_query_complexity(kwargs[:context]) unless query.key?(:max_complexity)
-        query[:max_depth] = max_query_depth(kwargs[:context])
+        query[:max_complexity] ||= max_query_complexity(query[:context]) unless query.key?(:max_complexity)
+        query[:max_depth] = max_query_depth(query[:context])
       end
 
       super(queries, **kwargs)
-    end
-
-    def execute(query_str = nil, **kwargs)
-      kwargs[:max_complexity] ||= max_query_complexity(kwargs[:context])
-      kwargs[:max_depth] ||= max_query_depth(kwargs[:context])
-
-      super(query_str, **kwargs)
     end
 
     def get_type(type_name)
