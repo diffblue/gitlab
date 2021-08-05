@@ -72,7 +72,8 @@ RSpec.describe SubscriptionsController do
     context 'with authenticated user' do
       before do
         group.add_owner(user)
-        stub_feature_flags(new_route_ci_minutes_purchase: true)
+        stub_feature_flags(new_route_ci_minutes_purchase: false)
+        stub_feature_flags(new_route_ci_minutes_purchase: group)
         sign_in(user)
       end
 
