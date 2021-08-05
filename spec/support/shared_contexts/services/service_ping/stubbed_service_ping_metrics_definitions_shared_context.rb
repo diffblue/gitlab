@@ -6,7 +6,7 @@ RSpec.shared_context 'stubbed service ping metrics definitions' do
   let(:metrics_definitions) { standard_metrics + subscription_metrics + operational_metrics + optional_metrics }
   let(:standard_metrics) do
     [
-      metric_attributes('uuid', "Standard")
+      metric_attributes('uuid', "standard")
     ]
   end
 
