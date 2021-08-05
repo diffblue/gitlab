@@ -20,9 +20,6 @@ class GitlabSchema < GraphQL::Schema
   query_analyzer Gitlab::Graphql::QueryAnalyzers::LoggerAnalyzer.new
   query_analyzer Gitlab::Graphql::QueryAnalyzers::RecursionAnalyzer.new
 
-  max_complexity DEFAULT_MAX_COMPLEXITY
-  max_depth DEFAULT_MAX_DEPTH
-
   query Types::QueryType
   mutation Types::MutationType
   subscription Types::SubscriptionType
