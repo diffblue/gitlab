@@ -3,8 +3,7 @@ import { GlPagination, GlAlert } from '@gitlab/ui';
 import Api from '~/api';
 import createFlash, { FLASH_TYPES } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-// eslint-disable-next-line import/no-deprecated
-import { updateHistory, setUrlParams, urlParamsToObject } from '~/lib/utils/url_utility';
+import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 
@@ -331,8 +330,7 @@ export default {
      */
     updateUrl() {
       const { href, search } = window.location;
-      // eslint-disable-next-line import/no-deprecated
-      const queryParams = urlParamsToObject(search);
+      const queryParams = queryToObject(search, { gatherArrays: true });
       const {
         filterBy,
         currentPage,
