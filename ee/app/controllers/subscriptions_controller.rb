@@ -32,11 +32,11 @@ class SubscriptionsController < ApplicationController
   end
 
   def buy_minutes
-    return render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, default_enabled: :yaml)
-
     @group = find_group
 
     return render_404 if @group.nil?
+
+    render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, @group, default_enabled: :yaml)
   end
 
   def payment_form

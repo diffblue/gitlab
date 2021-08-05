@@ -40,7 +40,7 @@ module EE
     end
 
     def link_to_buy_additional_minutes_path(namespace)
-      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if ::Feature.disabled?(:new_route_ci_minutes_purchase, default_enabled: :yaml)
+      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if ::Feature.disabled?(:new_route_ci_minutes_purchase, namespace, default_enabled: :yaml)
 
       buy_minutes_subscriptions_path(selected_group: namespace.id)
     end

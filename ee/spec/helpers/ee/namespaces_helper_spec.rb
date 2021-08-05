@@ -190,6 +190,24 @@ RSpec.describe EE::NamespacesHelper do
       context 'when is enabled' do
         it { is_expected.to eq buy_minutes_subscriptions_path(selected_group: namespace.id) }
       end
+
+      context 'when is enabled only for a specific namespace' do
+        let_it_be(:enabled_namespace) { create(:namespace_with_plan) }
+        let_it_be(:disabled_namespace) { create(:namespace_with_plan) }
+
+        before do
+          stub_feature_flags(new_route_ci_minutes_purchase: false)
+          stub_feature_flags(new_route_ci_minutes_purchase: enabled_namespace)
+        end
+
+        it 'returns the default purchase path for the disabled namespace' do
+          expect(helper.link_to_buy_additional_minutes_path(disabled_namespace)).to be EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+        end
+
+        it 'returns GitLab purchase path for the disabled namespace' do
+          expect(helper.link_to_buy_additional_minutes_path(enabled_namespace)).to eq buy_minutes_subscriptions_path(selected_group: enabled_namespace.id)
+        end
+      end
     end
   end
 end
