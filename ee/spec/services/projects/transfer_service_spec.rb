@@ -204,5 +204,26 @@ RSpec.describe Projects::TransferService do
         end
       end
     end
+
+    describe 'test cases' do
+      before do
+        create(:quality_test_case, project: project, author: user)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'when target namespace has a premium plan' do
+        it 'does not delete the test cases' do
+          subject.execute(premium_group)
+
+          expect { subject.execute(premium_group) }.not_to change { project.issues.with_issue_type(:test_case).count }
+        end
+      end
+
+      context 'when target namespace has a free plan' do
+        it 'deletes the test cases' do
+          expect { subject.execute(free_group) }.to change { project.issues.with_issue_type(:test_case).count }.from(1).to(0)
+        end
+      end
+    end
   end
 end
