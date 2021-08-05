@@ -69,7 +69,7 @@ module EE
 
       {
         namespace_id: namespace.id,
-        plan_name: ::Plan::ULTIMATE.titleize,
+        trial_plan_name: ::Plan::ULTIMATE.titleize,
         action: action
       }
     end

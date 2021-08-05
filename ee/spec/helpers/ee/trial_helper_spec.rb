@@ -234,7 +234,7 @@ RSpec.describe EE::TrialHelper do
           allow(namespace).to receive(:trial_extended_or_reactivated?).and_return(false)
         end
 
-        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: nil })}
+        it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: nil })}
       end
 
       context 'when trial can be reactivated' do
@@ -245,7 +245,7 @@ RSpec.describe EE::TrialHelper do
           allow(namespace).to receive(:free_plan?).and_return(true)
         end
 
-        it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: nil }) }
+        it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: nil }) }
       end
     end
 
@@ -254,7 +254,7 @@ RSpec.describe EE::TrialHelper do
         allow(namespace).to receive(:can_extend_trial?).and_return(true)
       end
 
-      it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'extend' }) }
+      it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: 'extend' }) }
     end
 
     context 'when trial can be reactivated' do
@@ -262,7 +262,7 @@ RSpec.describe EE::TrialHelper do
         allow(namespace).to receive(:can_reactivate_trial?).and_return(true)
       end
 
-      it { is_expected.to eq({ namespace_id: 1, plan_name: 'Ultimate', action: 'reactivate' }) }
+      it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: 'reactivate' }) }
     end
   end
 end
