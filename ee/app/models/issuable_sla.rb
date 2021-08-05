@@ -4,5 +4,5 @@ class IssuableSla < ApplicationRecord
   belongs_to :issue, optional: false
   validates :due_at, presence: true
 
-  scope :exceeded_for_issues, -> { includes(:issue).joins(:issue).merge(Issue.opened).where('due_at < ?', Time.current) }
+  scope :exceeded, -> { where(label_applied: false, issuable_closed: false).where('due_at < ?', Time.current).order(:due_at, :id) }
 end

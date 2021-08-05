@@ -14,8 +14,12 @@ module IncidentManagement
     tags :exclude_from_kubernetes
 
     def perform
-      IssuableSla.exceeded_for_issues.find_each do |incident_sla|
-        ApplyIncidentSlaExceededLabelWorker.perform_async(incident_sla.issue_id)
+      iterator = Gitlab::Pagination::Keyset::Iterator.new(scope: IssuableSla.exceeded)
+
+      iterator.each_batch(of: 1000) do |records|
+        records.each do |incident_sla|
+          ApplyIncidentSlaExceededLabelWorker.perform_async(incident_sla.issue_id)
+        end
       end
     end
   end

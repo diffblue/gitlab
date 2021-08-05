@@ -8,16 +8,13 @@ RSpec.describe IncidentManagement::IncidentSlaExceededCheckWorker do
   describe '#perform' do
     subject(:perform) { worker.perform }
 
-    let_it_be(:incident_sla) { create(:issuable_sla, :exceeded) }
-    let_it_be(:other_incident_slas) { create_list(:issuable_sla, 2, :exceeded) }
+    let_it_be(:label_applied_incident_sla) { create(:issuable_sla, :exceeded, :label_applied) }
+    let_it_be(:exceeded_incident_sla) { create(:issuable_sla, :exceeded) }
 
-    let(:label_service_stub) { instance_double(IncidentManagement::ApplyIncidentSlaExceededLabelWorker) }
-
-    it 'calls the apply incident sla label service' do
+    it 'calls the apply incident sla label service where the label is not applied already' do
       expect(IncidentManagement::ApplyIncidentSlaExceededLabelWorker)
         .to receive(:perform_async)
-        .exactly(3)
-        .times
+        .with(exceeded_incident_sla.issue_id)
 
       perform
     end
