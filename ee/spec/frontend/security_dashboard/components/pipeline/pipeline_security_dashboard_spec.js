@@ -150,7 +150,7 @@ describe('Pipeline Security Dashboard component', () => {
 
   describe('scans error alert', () => {
     describe('with errors', () => {
-      const securityReportSummary = {
+      const reportSummary = {
         scanner_1: {
           // this scan contains errors
           scans: {
@@ -174,9 +174,13 @@ describe('Pipeline Security Dashboard component', () => {
         },
       };
       const scansWithErrors = [
-        ...securityReportSummary.scanner_1.scans.nodes,
-        ...securityReportSummary.scanner_3.scans.nodes,
+        ...reportSummary.scanner_1.scans.nodes,
+        ...reportSummary.scanner_3.scans.nodes,
       ];
+
+      const securityReportSummary = {
+        reports: reportSummary,
+      };
 
       beforeEach(() => {
         factory({
@@ -192,7 +196,7 @@ describe('Pipeline Security Dashboard component', () => {
     });
 
     describe('without errors', () => {
-      const securityReportSummary = {
+      const reportSummary = {
         dast: {
           scans: [
             {
@@ -201,6 +205,10 @@ describe('Pipeline Security Dashboard component', () => {
             },
           ],
         },
+      };
+
+      const securityReportSummary = {
+        reports: reportSummary,
       };
 
       beforeEach(() => {
@@ -218,10 +226,14 @@ describe('Pipeline Security Dashboard component', () => {
   });
 
   describe('security reports summary', () => {
-    const securityReportSummary = {
+    const reportSummary = {
       dast: {
         vulnerabilitiesCount: 123,
       },
+    };
+
+    const securityReportSummary = {
+      reports: reportSummary,
     };
 
     it('shows the summary if it is non-empty', () => {
