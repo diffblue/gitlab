@@ -104,30 +104,30 @@ describe('helpers/set_window_location_helper', () => {
       );
     });
   });
-});
 
-// This set of tests relies on Jest executing tests in source order, which is
-// at the time of writing the only order they will execute, by design.
-// See https://github.com/facebook/jest/issues/4386 for more details.
-describe('window.location resetting by global beforeEach', () => {
-  const overridden = 'https://gdk.test:1234/';
-  const initial = `${TEST_HOST}/`;
+  // This set of tests relies on Jest executing tests in source order, which is
+  // at the time of writing the only order they will execute, by design.
+  // See https://github.com/facebook/jest/issues/4386 for more details.
+  describe('window.location resetting by global beforeEach', () => {
+    const overridden = 'https://gdk.test:1234/';
+    const initial = `${TEST_HOST}/`;
 
-  it('works before an override', () => {
-    expect(window.location.href).toBe(initial);
-  });
-
-  describe('overriding', () => {
-    beforeEach(() => {
-      setWindowLocation(overridden);
+    it('works before an override', () => {
+      expect(window.location.href).toBe(initial);
     });
 
-    it('works', () => {
-      expect(window.location.href).toBe(overridden);
-    });
-  });
+    describe('overriding', () => {
+      beforeEach(() => {
+        setWindowLocation(overridden);
+      });
 
-  it('works after an override', () => {
-    expect(window.location.href).toBe(initial);
+      it('works', () => {
+        expect(window.location.href).toBe(overridden);
+      });
+    });
+
+    it('works after an override', () => {
+      expect(window.location.href).toBe(initial);
+    });
   });
 });
