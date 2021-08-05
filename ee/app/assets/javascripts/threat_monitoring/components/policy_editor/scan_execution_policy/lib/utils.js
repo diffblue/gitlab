@@ -31,12 +31,12 @@ const assignSecurityPolicyProject = async (projectPath) => {
     },
   });
 
-  return { ...project, errors };
+  return { ...project, branch: project?.branch?.rootRef, errors };
 };
 
 /**
  * Creates a merge request for the changes to the policy file
- * @param {Object} payload contains the path to the project, the branch to merge on the project, and the branch to merge into
+ * @param {Object} payload contains the path to the parent project, the branch to merge on the project, and the branch to merge into
  * @returns {Object} contains the id of the merge request and any errors
  */
 const createMergeRequest = async ({ projectPath, sourceBranch, targetBranch }) => {
@@ -98,7 +98,7 @@ export const savePolicy = async ({ assignedPolicyProject, projectPath, yamlEdito
   checkForErrors(currentAssignedPolicyProject);
 
   const newPolicyCommitBranch = await updatePolicy({
-    projectPath: currentAssignedPolicyProject.fullPath,
+    projectPath,
     yamlEditorValue,
   });
 

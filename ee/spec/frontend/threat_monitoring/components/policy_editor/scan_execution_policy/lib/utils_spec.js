@@ -8,7 +8,11 @@ import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_
 jest.mock('ee/threat_monitoring/utils');
 
 const defaultAssignedPolicyProject = { fullPath: 'path/to/policy-project', branch: 'main' };
-const newAssignedPolicyProject = { fullPath: 'path/to/new-project', branch: 'main' };
+const newAssignedPolicyProject = {
+  id: '02',
+  fullPath: 'path/to/new-project',
+  branch: { rootRef: 'main' },
+};
 const projectPath = 'path/to/current-project';
 const yamlEditorValue = 'some yaml';
 const createSavePolicyInput = (assignedPolicyProject = defaultAssignedPolicyProject) => ({
@@ -56,7 +60,12 @@ describe('savePolicy', () => {
       createSavePolicyInput(DEFAULT_ASSIGNED_POLICY_PROJECT),
     );
 
-    expect(currentAssignedPolicyProject).toStrictEqual({ ...newAssignedPolicyProject, errors: [] });
+    expect(currentAssignedPolicyProject).toStrictEqual({
+      id: newAssignedPolicyProject.id,
+      fullPath: newAssignedPolicyProject.fullPath,
+      branch: newAssignedPolicyProject.branch.rootRef,
+      errors: [],
+    });
     expect(mergeRequest).toStrictEqual({ id: '01', errors: [] });
   });
 

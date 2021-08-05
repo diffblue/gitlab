@@ -3,6 +3,9 @@ mutation createPolicyProject($projectPath: ID!) {
     project {
       fullPath
       id
+      branch: repository {
+        rootRef
+      }
     }
     errors
   }
