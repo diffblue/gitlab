@@ -56,6 +56,7 @@ export default {
       'total',
       'namespaceName',
       'namespaceId',
+      'seatUsageExportPath',
       'billableMemberToRemove',
       'search',
       'sort',
@@ -146,6 +147,10 @@ export default {
         </h4>
         <gl-badge>{{ total }}</gl-badge>
       </div>
+
+      <gl-button v-if="seatUsageExportPath" data-testid="export-button" :href="seatUsageExportPath">
+        {{ s__('Billing|Export list') }}
+      </gl-button>
     </div>
 
     <div class="gl-bg-gray-10 gl-p-3">

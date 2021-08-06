@@ -87,6 +87,7 @@ module Vulnerabilities
     scope :by_severities, -> (values) { where(severity: values) }
     scope :by_confidences, -> (values) { where(confidence: values) }
     scope :by_project_fingerprints, -> (values) { where(project_fingerprint: values) }
+    scope :by_uuid, -> (uuids) { where(uuid: uuids) }
 
     scope :all_preloaded, -> do
       preload(:scanner, :identifiers, project: [:namespace, :project_feature])

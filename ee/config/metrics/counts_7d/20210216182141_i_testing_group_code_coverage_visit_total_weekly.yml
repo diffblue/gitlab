@@ -11,6 +11,10 @@ value_type: number
 status: data_available
 time_frame: 7d
 data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - i_testing_group_code_coverage_visit_total
 distribution:
 - ee
 tier:

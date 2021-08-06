@@ -656,9 +656,6 @@ class License < ApplicationRecord
   end
 
   def restricted_user_count_with_threshold
-    # overage should only be applied for new subscriptions not for renewals.
-    return restricted_user_count if previous_user_count
-
     (restricted_user_count * (1 + ALLOWED_PERCENTAGE_OF_USERS_OVERAGE)).to_i
   end
 
@@ -667,7 +664,7 @@ class License < ApplicationRecord
     return unless restricted_user_count
 
     if previous_user_count && (prior_historical_max <= previous_user_count)
-      return if restricted_user_count >= daily_billable_users_count
+      return if restricted_user_count_with_threshold >= daily_billable_users_count
     else
       return if restricted_user_count_with_threshold >= prior_historical_max
     end
@@ -688,7 +685,7 @@ class License < ApplicationRecord
                             max_historical - daily_billable_users_count
                           end
 
-    if trueup_qty >= expected_trueup_qty
+    if trueup_quantity_with_threshold >= expected_trueup_qty
       check_restricted_user_count
     else
       message = ["You have applied a True-up for #{trueup_qty} #{"user".pluralize(trueup_qty)}"]
@@ -699,8 +696,12 @@ class License < ApplicationRecord
     end
   end
 
+  def trueup_quantity_with_threshold
+    (restrictions[:trueup_quantity] * (1 + ALLOWED_PERCENTAGE_OF_USERS_OVERAGE)).to_i
+  end
+
   def check_restricted_user_count
-    return unless restricted_user_count && restricted_user_count < daily_billable_users_count
+    return unless restricted_user_count && restricted_user_count_with_threshold < daily_billable_users_count
 
     add_limit_error(user_count: daily_billable_users_count)
   end

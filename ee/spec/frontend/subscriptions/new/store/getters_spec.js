@@ -41,6 +41,20 @@ describe('Subscriptions Getters', () => {
     });
   });
 
+  describe('isUltimatePlan', () => {
+    it('returns true if plan code is ultimate', () => {
+      expect(getters.isUltimatePlan(state, { selectedPlanDetails: { code: 'ultimate' } })).toBe(
+        true,
+      );
+    });
+
+    it('returns false if plan code is not ultimate', () => {
+      expect(getters.isUltimatePlan(state, { selectedPlanDetails: { code: 'not-ultimate' } })).toBe(
+        false,
+      );
+    });
+  });
+
   describe('endDate', () => {
     it('returns a date 1 year after the startDate', () => {
       expect(getters.endDate({ startDate: new Date('2020-01-07') })).toBe(
@@ -156,13 +170,22 @@ describe('Subscriptions Getters', () => {
       ).toBe(null);
     });
 
-    it('returns the number of users of the selected group when a group is selected', () => {
+    it('returns the number of users of the selected group when a group is selected and plan is not ultimate', () => {
       expect(
         getters.selectedGroupUsers(
-          { groupData: [{ numberOfUsers: 3, value: 123 }], selectedGroup: 123 },
-          { isGroupSelected: true, isSelectedGroupPresent: true },
+          { groupData: [{ numberOfUsers: 3, numberOfGuests: 1, value: 123 }], selectedGroup: 123 },
+          { isGroupSelected: true, isSelectedGroupPresent: true, isUltimatePlan: false },
         ),
       ).toBe(3);
+    });
+
+    it('returns difference between the number of users and guests of the selected group if the selected plan is ultimate', () => {
+      expect(
+        getters.selectedGroupUsers(
+          { groupData: [{ numberOfUsers: 3, numberOfGuests: 1, value: 123 }], selectedGroup: 123 },
+          { isGroupSelected: true, isSelectedGroupPresent: true, isUltimatePlan: true },
+        ),
+      ).toBe(2);
     });
   });
 

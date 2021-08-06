@@ -16,8 +16,9 @@ options:
     - g_project_management_issue_created
 distribution:
 - ce
-- ee 
+- ee
 tier:
 - free
 - premium
 - ultimate
+performance_indicator_type: []

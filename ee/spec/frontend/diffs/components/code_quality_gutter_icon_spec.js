@@ -1,4 +1,4 @@
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -68,17 +68,17 @@ describe('EE CodeQualityGutterIcon', () => {
     });
   });
 
-  describe('code quality modal', () => {
+  describe('code quality gutter icon', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('opens a code quality modal on click', () => {
-      const modalId = 'codequality-index.js:3';
-      const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
-      wrapper.findComponent(GlIcon).trigger('click');
+    it('shows a popover on hover', () => {
+      const popoverTarget = 'codequality-index.js:3';
 
-      expect(rootEmit.mock.calls[0]).toContainEqual(modalId);
+      wrapper.findComponent(GlIcon).trigger('mouseover');
+
+      expect(wrapper.find(GlPopover).props().target).toBe(popoverTarget);
     });
 
     it('passes the issue data into the issue components correctly', () => {
@@ -89,19 +89,15 @@ describe('EE CodeQualityGutterIcon', () => {
       expect(issueProps).toEqual([
         {
           issue: {
-            path: defaultProps.filePath,
             severity: defaultProps.codequality[0].severity,
             name: defaultProps.codequality[0].description,
-            line: defaultProps.codequality[0].line,
           },
           status: 'neutral',
         },
         {
           issue: {
-            path: defaultProps.filePath,
             severity: defaultProps.codequality[1].severity,
             name: defaultProps.codequality[1].description,
-            line: defaultProps.codequality[1].line,
           },
           status: 'neutral',
         },

@@ -64,6 +64,19 @@ RSpec.describe Gitlab::UsageDataMetrics do
           :g_project_management_issue_health_status_changed_monthly, :g_project_management_issue_health_status_changed_weekly
         )
       end
+
+      it 'includes testing monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:testing]).to include(
+          :i_testing_metrics_report_widget_total_monthly, :i_testing_metrics_report_widget_total_weekly,
+          :i_testing_group_code_coverage_visit_total_monthly, :i_testing_group_code_coverage_visit_total_weekly,
+          :i_testing_full_code_quality_report_total_monthly, :i_testing_full_code_quality_report_total_weekly,
+          :i_testing_web_performance_widget_total_monthly, :i_testing_web_performance_widget_total_weekly,
+          :i_testing_group_code_coverage_project_click_total_monthly, :i_testing_group_code_coverage_project_click_total_weekly,
+          :i_testing_load_performance_widget_total_monthly, :i_testing_load_performance_widget_total_weekly,
+          :i_testing_metrics_report_artifact_uploaders_monthly, :i_testing_metrics_report_artifact_uploaders_weekly,
+          :testing_total_unique_counts_weekly
+        )
+      end
     end
   end
 end

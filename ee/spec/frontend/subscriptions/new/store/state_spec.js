@@ -10,8 +10,8 @@ describe('projectsSelector default state', () => {
   ];
 
   const groupData = [
-    { id: 132, name: 'My first group', users: 3 },
-    { id: 483, name: 'My second group', users: 12 },
+    { id: 132, name: 'My first group', users: 3, guests: 1 },
+    { id: 483, name: 'My second group', users: 12, guests: 0 },
   ];
 
   const initialData = {
@@ -34,8 +34,8 @@ describe('projectsSelector default state', () => {
   describe('availablePlans', () => {
     it('sets the availablePlans to the provided parsed availablePlans', () => {
       expect(state.availablePlans).toEqual([
-        { value: 'firstPlanId', text: 'Bronze Plan', pricePerUserPerYear: 48 },
-        { value: 'secondPlanId', text: 'Premium Plan', pricePerUserPerYear: 228 },
+        { value: 'firstPlanId', text: 'Bronze Plan', pricePerUserPerYear: 48, code: 'bronze' },
+        { value: 'secondPlanId', text: 'Premium Plan', pricePerUserPerYear: 228, code: 'premium' },
       ]);
     });
 
@@ -101,8 +101,8 @@ describe('projectsSelector default state', () => {
   describe('groupData', () => {
     it('sets the groupData to the provided parsed groupData', () => {
       expect(state.groupData).toEqual([
-        { value: 132, text: 'My first group', numberOfUsers: 3 },
-        { value: 483, text: 'My second group', numberOfUsers: 12 },
+        { value: 132, text: 'My first group', numberOfUsers: 3, numberOfGuests: 1 },
+        { value: 483, text: 'My second group', numberOfUsers: 12, numberOfGuests: 0 },
       ]);
     });
 

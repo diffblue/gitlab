@@ -464,9 +464,6 @@ msgstr[1] ""
 msgid "%{completedWeight} of %{totalWeight} weight completed"
 msgstr ""
 
-msgid "%{containerScanningLinkStart}Container Scanning%{containerScanningLinkEnd} and/or %{dependencyScanningLinkStart}Dependency Scanning%{dependencyScanningLinkEnd} must be enabled. %{securityBotLinkStart}GitLab-Security-Bot%{securityBotLinkEnd} will be the author of the auto-created merge request. %{moreInfoLinkStart}More information%{moreInfoLinkEnd}."
-msgstr ""
-
 msgid "%{cores} cores"
 msgstr ""
 
@@ -4227,6 +4224,9 @@ msgstr ""
 msgid "ApprovalSettings|There was an error updating merge request approval settings."
 msgstr ""
 
+msgid "ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator."
+msgstr ""
+
 msgid "ApprovalStatusTooltip|Adheres to separation of duties"
 msgstr ""
 
@@ -4896,9 +4896,6 @@ msgstr ""
 msgid "Automatically close associated incident when a recovery alert notification resolves an alert"
 msgstr ""
 
-msgid "Automatically create merge requests for vulnerabilities that have fixes available."
-msgstr ""
-
 msgid "Automatically resolved"
 msgstr ""
 
@@ -4912,9 +4909,6 @@ msgid "Available"
 msgstr ""
 
 msgid "Available ID"
-msgstr ""
-
-msgid "Available for dependency and container scanning"
 msgstr ""
 
 msgid "Available group runners: %{runners}"
@@ -5263,6 +5257,9 @@ msgid "Billing|Direct memberships"
 msgstr ""
 
 msgid "Billing|Enter at least three characters to search."
+msgstr ""
+
+msgid "Billing|Export list"
 msgstr ""
 
 msgid "Billing|Group"
@@ -8009,9 +8006,6 @@ msgstr ""
 msgid "CodeOwner|Pattern"
 msgstr ""
 
-msgid "CodeQuality|Code quality: %{severity} - %{description}"
-msgstr ""
-
 msgid "CodeQuality|New code quality degradations on this line"
 msgstr ""
 
@@ -9227,6 +9221,9 @@ msgid "Could not delete wiki page"
 msgstr ""
 
 msgid "Could not draw the lines for job relationships"
+msgstr ""
+
+msgid "Could not fetch policy because existing policy YAML is invalid"
 msgstr ""
 
 msgid "Could not find design."
@@ -11669,9 +11666,6 @@ msgid_plural "Dismiss %d selected vulnerabilities as"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Dismiss DevOps Report introduction"
-msgstr ""
-
 msgid "Dismiss Value Stream Analytics introduction box"
 msgstr ""
 
@@ -13622,6 +13616,9 @@ msgid "Failed to fetch the iterations for the group. Please try again."
 msgstr ""
 
 msgid "Failed to find import label for Jira import."
+msgstr ""
+
+msgid "Failed to generate export, please try again later."
 msgstr ""
 
 msgid "Failed to generate report, please try again after sometime"
@@ -16334,6 +16331,9 @@ msgstr ""
 msgid "Hi %{username}!"
 msgstr ""
 
+msgid "Hi%{salutation}, your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information about %{company} to activate your trial."
+msgstr ""
+
 msgid "Hide"
 msgstr ""
 
@@ -17984,6 +17984,9 @@ msgstr ""
 msgid "Invalid pod_name"
 msgstr ""
 
+msgid "Invalid policy type"
+msgstr ""
+
 msgid "Invalid query"
 msgstr ""
 
@@ -18063,6 +18066,12 @@ msgid "InviteEmail|Groups assemble related projects together and grant members a
 msgstr ""
 
 msgid "InviteEmail|Join now"
+msgstr ""
+
+msgid "InviteEmail|Join your team on GitLab! %{inviter} invited you to %{project_or_group_name}"
+msgstr ""
+
+msgid "InviteEmail|Join your team on GitLab! You are invited to %{project_or_group_name}"
 msgstr ""
 
 msgid "InviteEmail|Projects are used to host and collaborate on code, track issues, and continuously build, test, and deploy your app with built-in GitLab CI/CD."
@@ -24639,6 +24648,9 @@ msgstr ""
 msgid "Pipeline|Variables"
 msgstr ""
 
+msgid "Pipeline|View pipeline"
+msgstr ""
+
 msgid "Pipeline|We are currently unable to fetch pipeline data"
 msgstr ""
 
@@ -24903,6 +24915,9 @@ msgstr ""
 msgid "Policies"
 msgstr ""
 
+msgid "Policy management project does have any policies in %{policy_path}"
+msgstr ""
+
 msgid "Policy project doesn't exist"
 msgstr ""
 
@@ -25035,9 +25050,6 @@ msgstr ""
 msgid "Prevent MR approvals by author."
 msgstr ""
 
-msgid "Prevent MR approvals by the author."
-msgstr ""
-
 msgid "Prevent MR approvals from users who make commits to the MR."
 msgstr ""
 
@@ -25051,9 +25063,6 @@ msgid "Prevent project forking outside current group"
 msgstr ""
 
 msgid "Prevent users from changing their profile name"
-msgstr ""
-
-msgid "Prevent users from modifying MR approval rules in merge requests."
 msgstr ""
 
 msgid "Prevent users from modifying MR approval rules in projects and merge requests."
@@ -25666,6 +25675,9 @@ msgid "Project description (optional)"
 msgstr ""
 
 msgid "Project does not exist or you don't have permission to perform this action"
+msgstr ""
+
+msgid "Project does not have a policy configuration"
 msgstr ""
 
 msgid "Project export could not be deleted."
@@ -28119,12 +28131,6 @@ msgstr ""
 msgid "Require all users to set up two-factor authentication"
 msgstr ""
 
-msgid "Require new approvals when new commits are added to an MR."
-msgstr ""
-
-msgid "Require user password for approvals."
-msgstr ""
-
 msgid "Required approvals (%{approvals_given} given)"
 msgstr ""
 
@@ -29268,12 +29274,6 @@ msgstr ""
 msgid "SecurityConfiguration|An error occurred while creating the merge request."
 msgstr ""
 
-msgid "SecurityConfiguration|Available for on-demand DAST"
-msgstr ""
-
-msgid "SecurityConfiguration|Available with %{linkStart}upgrade or free trial%{linkEnd}"
-msgstr ""
-
 msgid "SecurityConfiguration|Available with Ultimate"
 msgstr ""
 
@@ -29287,9 +29287,6 @@ msgid "SecurityConfiguration|Configuration guide"
 msgstr ""
 
 msgid "SecurityConfiguration|Configuration history"
-msgstr ""
-
-msgid "SecurityConfiguration|Configure"
 msgstr ""
 
 msgid "SecurityConfiguration|Configure %{feature}"
@@ -29313,9 +29310,6 @@ msgstr ""
 msgid "SecurityConfiguration|Customize common SAST settings to suit your requirements. Configuration changes made here override those provided by GitLab and are excluded from updates. For details of more advanced configuration options, see the %{linkStart}GitLab SAST documentation%{linkEnd}."
 msgstr ""
 
-msgid "SecurityConfiguration|Enable"
-msgstr ""
-
 msgid "SecurityConfiguration|Enable %{feature}"
 msgstr ""
 
@@ -29325,28 +29319,16 @@ msgstr ""
 msgid "SecurityConfiguration|Enabled"
 msgstr ""
 
-msgid "SecurityConfiguration|Enabled with Auto DevOps"
-msgstr ""
-
-msgid "SecurityConfiguration|Feature documentation for %{featureName}"
-msgstr ""
-
 msgid "SecurityConfiguration|High-level vulnerability statistics across projects and groups"
 msgstr ""
 
 msgid "SecurityConfiguration|Immediately begin risk analysis and remediation with application security features. Start with SAST and Secret Detection, available to all plans. Upgrade to Ultimate to get all features, including:"
 msgstr ""
 
-msgid "SecurityConfiguration|Manage"
-msgstr ""
-
 msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
 msgstr ""
 
 msgid "SecurityConfiguration|Manage scans"
-msgstr ""
-
-msgid "SecurityConfiguration|More information"
 msgstr ""
 
 msgid "SecurityConfiguration|More scan types, including Container Scanning, DAST, Dependency Scanning, Fuzzing, and Licence Compliance"
@@ -29373,16 +29355,7 @@ msgstr ""
 msgid "SecurityConfiguration|Secure your project"
 msgstr ""
 
-msgid "SecurityConfiguration|Security Control"
-msgstr ""
-
 msgid "SecurityConfiguration|Security testing"
-msgstr ""
-
-msgid "SecurityConfiguration|Status"
-msgstr ""
-
-msgid "SecurityConfiguration|Testing & Compliance"
 msgstr ""
 
 msgid "SecurityConfiguration|The status of the tools only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}."
@@ -29394,13 +29367,7 @@ msgstr ""
 msgid "SecurityConfiguration|Using custom settings. You won't receive automatic updates on this variable. %{anchorStart}Restore to default%{anchorEnd}"
 msgstr ""
 
-msgid "SecurityConfiguration|View history"
-msgstr ""
-
 msgid "SecurityConfiguration|Vulnerability details and statistics in the merge request"
-msgstr ""
-
-msgid "SecurityConfiguration|You can quickly enable all security scanning tools by enabling %{linkStart}Auto DevOps%{linkEnd}."
 msgstr ""
 
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
@@ -29427,6 +29394,9 @@ msgstr ""
 msgid "SecurityPolicies|Description"
 msgstr ""
 
+msgid "SecurityPolicies|Edit policy"
+msgstr ""
+
 msgid "SecurityPolicies|Enforcement status"
 msgstr ""
 
@@ -29437,6 +29407,9 @@ msgid "SecurityPolicies|Latest scan"
 msgstr ""
 
 msgid "SecurityPolicies|Network"
+msgstr ""
+
+msgid "SecurityPolicies|Policies"
 msgstr ""
 
 msgid "SecurityPolicies|Policy type"
@@ -30369,10 +30342,10 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-msgid "Setup"
+msgid "Settings|Unable to load the merge request options settings. Try reloading the page."
 msgstr ""
 
-msgid "Several security scans are enabled because %{linkStart}Auto DevOps%{linkEnd} is enabled on this project"
+msgid "Setup"
 msgstr ""
 
 msgid "Severity"
@@ -30992,9 +30965,6 @@ msgid "Something went wrong while setting %{issuableType} weight."
 msgstr ""
 
 msgid "Something went wrong while stopping this environment. Please try again."
-msgstr ""
-
-msgid "Something went wrong while toggling auto-fix settings, please try again later."
 msgstr ""
 
 msgid "Something went wrong while updating a requirement."
@@ -31954,13 +31924,7 @@ msgstr ""
 msgid "Suggest code changes which can be immediately applied in one click. Try it out!"
 msgstr ""
 
-msgid "Suggested Solutions"
-msgstr ""
-
 msgid "Suggested change"
-msgstr ""
-
-msgid "Suggested solutions help link"
 msgstr ""
 
 msgid "SuggestedColors|Aztec Gold"
@@ -33238,9 +33202,6 @@ msgstr ""
 msgid "The start date must be ealier than the end date."
 msgstr ""
 
-msgid "The status of the table below only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}. Once you've enabled a scan for the default branch, any subsequent feature branch you create will include the scan."
-msgstr ""
-
 msgid "The subject will be used as the title of the new issue, and the message will be the description. %{quickActionsLinkStart}Quick actions%{quickActionsLinkEnd} and styling with %{markdownLinkStart}Markdown%{markdownLinkEnd} are supported."
 msgstr ""
 
@@ -33506,6 +33467,9 @@ msgid "There was an error fetching median data for stages"
 msgstr ""
 
 msgid "There was an error fetching projects"
+msgstr ""
+
+msgid "There was an error fetching stage total counts"
 msgstr ""
 
 msgid "There was an error fetching the %{replicableType}"
@@ -38227,7 +38191,7 @@ msgstr ""
 msgid "Your GPG keys (%{count})"
 msgstr ""
 
-msgid "Your GitLab Ultimate trial will last 30 days after which point you can keep your free GitLab account forever. We just need some additional information to activate your trial."
+msgid "Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial."
 msgstr ""
 
 msgid "Your GitLab account has been locked due to an excessive amount of unsuccessful sign in attempts. Your account will automatically unlock in %{duration} or you may click the link below to unlock now."
@@ -40061,6 +40025,9 @@ msgstr ""
 msgid "type must be Debian"
 msgstr ""
 
+msgid "type parameter is missing and is required"
+msgstr ""
+
 msgid "unicode domains should use IDNA encoding"
 msgstr ""
 
@@ -40169,6 +40136,9 @@ msgid "with expiry remaining unchanged at %{old_expiry}"
 msgstr ""
 
 msgid "yaml invalid"
+msgstr ""
+
+msgid "your company"
 msgstr ""
 
 msgid "your settings"

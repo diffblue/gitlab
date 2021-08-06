@@ -275,7 +275,6 @@ export default {
           avatar_url: gon.current_user_avatar_url,
         });
       }
-
       const tokens = [
         {
           type: TOKEN_TYPE_AUTHOR,
@@ -306,7 +305,6 @@ export default {
           icon: 'clock',
           token: MilestoneToken,
           unique: true,
-          defaultMilestones: [],
           fetchMilestones: this.fetchMilestones,
         },
         {

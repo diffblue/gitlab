@@ -18,7 +18,7 @@ RSpec.describe 'Admin interacts with merge requests approvals settings' do
     visit(admin_push_rule_path)
   end
 
-  it 'updates instance-level merge request approval settings and enforces project-level ones' do
+  it 'updates instance-level merge request approval settings and enforces project-level ones', :js do
     page.within('.merge-request-approval-settings') do
       check 'Prevent MR approvals by author.'
       check 'Prevent MR approvals from users who make commits to the MR.'
@@ -34,10 +34,10 @@ RSpec.describe 'Admin interacts with merge requests approvals settings' do
 
     visit edit_project_path(project)
 
-    page.within('#js-merge-request-approval-settings') do
-      expect(find('#project_merge_requests_author_approval')).to be_disabled.and be_checked
-      expect(find('#project_merge_requests_disable_committers_approval')).to be_disabled.and be_checked
-      expect(find('#project_disable_overriding_approvers_per_merge_request')).to be_disabled.and be_checked
+    page.within('[data-testid="merge-request-approval-settings"]') do
+      expect(find('[data-testid="prevent-author-approval"] > input')).to be_disabled.and be_checked
+      expect(find('[data-testid="prevent-committers-approval"] > input')).to be_disabled.and be_checked
+      expect(find('[data-testid="prevent-mr-approval-rule-edit"] > input')).to be_disabled.and be_checked
     end
   end
 end

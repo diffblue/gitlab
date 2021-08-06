@@ -99,10 +99,14 @@ module Security
       rule_schedules.delete_all(:delete_all)
     end
 
-    def scan_execution_policy
+    def policy_by_type(type)
       return [] if policy_hash.blank?
 
-      policy_hash.fetch(:scan_execution_policy, [])
+      policy_hash.fetch(type, [])
+    end
+
+    def scan_execution_policy
+      policy_by_type(:scan_execution_policy)
     end
 
     def default_branch_or_main

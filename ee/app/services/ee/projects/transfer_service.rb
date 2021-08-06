@@ -50,6 +50,7 @@ module EE
       def remove_paid_features
         revoke_project_access_tokens
         delete_pipeline_subscriptions
+        delete_test_cases
       end
 
       def revoke_project_access_tokens
@@ -65,6 +66,12 @@ module EE
         return if new_namespace.licensed_feature_available?(:ci_project_subscriptions)
 
         project.upstream_project_subscriptions.destroy_all # rubocop: disable Cop/DestroyAll
+      end
+
+      def delete_test_cases
+        return if new_namespace.licensed_feature_available?(:quality_management)
+
+        project.issues.with_issue_type(:test_case).delete_all
       end
     end
   end

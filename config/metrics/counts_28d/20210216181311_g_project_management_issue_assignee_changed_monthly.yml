@@ -15,10 +15,10 @@ options:
   events:
     - g_project_management_issue_assignee_changed
 distribution:
-- ce 
-- ee 
+- ce
+- ee
 tier:
-- free 
-- premium 
-- ultimate 
-
+- free
+- premium
+- ultimate
+performance_indicator_type: []

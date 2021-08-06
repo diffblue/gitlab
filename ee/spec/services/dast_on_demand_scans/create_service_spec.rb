@@ -64,9 +64,8 @@ RSpec.describe DastOnDemandScans::CreateService do
         it_behaves_like 'a service that calls Ci::RunDastScanService' do
           let(:expected_params) do
             hash_including(
+              dast_profile: nil,
               branch: project.default_branch,
-              dast_site_profile: dast_site_profile,
-              dast_scanner_profile: dast_scanner_profile,
               ci_configuration: kind_of(String)
             )
           end

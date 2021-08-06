@@ -59,6 +59,8 @@ RSpec.describe Security::FindingsFinder do
                    deduplicated: true,
                    position: index,
                    scan: scan)
+
+            create(:vulnerabilities_finding, uuid: finding.uuid, project: pipeline.project)
           end
         end
 
@@ -76,8 +78,20 @@ RSpec.describe Security::FindingsFinder do
         stub_licensed_features(sast: true, dependency_scanning: true)
       end
 
-      it 'does not cause N+1 queries' do
-        expect { finder_result }.not_to exceed_query_limit(8)
+      context 'N+1 queries' do
+        it 'does not cause N+1 queries' do
+          expect { finder_result }.not_to exceed_query_limit(10)
+        end
+
+        context 'with vulnerability_flags disabled' do
+          before do
+            stub_feature_flags(vulnerability_flags: false)
+          end
+
+          it 'does not cause N+1 queries' do
+            expect { finder_result }.not_to exceed_query_limit(8)
+          end
+        end
       end
 
       describe '#current_page' do
@@ -166,6 +180,35 @@ RSpec.describe Security::FindingsFinder do
           let(:per_page) { 2 }
 
           it { is_expected.to be(1) }
+        end
+      end
+
+      describe '#vulnerability_flags' do
+        before do
+          stub_licensed_features(sast_fp_reduction: true)
+        end
+
+        context 'with no vulnerability flags present' do
+          it 'does not have any vulnerability flag' do
+            expect(finder_result.findings).to all(have_attributes(vulnerability_flags: be_empty))
+          end
+        end
+
+        context 'with some vulnerability flags present' do
+          before do
+            create(:vulnerabilities_flag, finding: pipeline.project.vulnerability_findings.first)
+            create(:vulnerabilities_flag, finding: pipeline.project.vulnerability_findings.last)
+          end
+
+          it 'has some vulnerability_findings with vulnerability flag' do
+            expect(finder_result.findings).to include(have_attributes(vulnerability_flags: be_present))
+          end
+
+          it 'does not have any vulnerability_flag if license is not available' do
+            stub_licensed_features(sast_fp_reduction: false)
+
+            expect(finder_result.findings).to all(have_attributes(vulnerability_flags: be_empty))
+          end
         end
       end
 

@@ -171,8 +171,8 @@ RSpec.describe Registrations::GroupsController do
                 expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
                   expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: true })
                 end
-                expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields, namespace_id: group.id)
-                expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields)
+                expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: group.id)
+                expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
               end
 
               context 'with redirection to projects page' do

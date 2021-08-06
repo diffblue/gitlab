@@ -2,7 +2,7 @@
 
 import '~/pages/projects/edit';
 import mountApprovals from 'ee/approvals/mount_project_settings';
-import initMergeOptionSettings from 'ee/pages/projects/edit/merge_options';
+import { initMergeOptionSettings } from 'ee/pages/projects/edit/merge_options';
 import initProjectAdjournedDeleteButton from 'ee/projects/project_adjourned_delete_button';
 import mountStatusChecks from 'ee/status_checks/mount';
 import groupsSelect from '~/groups_select';

@@ -12,11 +12,11 @@ export default (containerId = 'js-seat-usage') => {
     return false;
   }
 
-  const { namespaceId, namespaceName } = containerEl.dataset;
+  const { namespaceId, namespaceName, seatUsageExportPath } = containerEl.dataset;
 
   return new Vue({
     el: containerEl,
-    store: new Vuex.Store(initialStore({ namespaceId, namespaceName })),
+    store: new Vuex.Store(initialStore({ namespaceId, namespaceName, seatUsageExportPath })),
     render(createElement) {
       return createElement(SubscriptionSeats);
     },

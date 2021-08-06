@@ -389,6 +389,9 @@ RSpec.describe ProjectsHelper do
       expect(subject[:data]).to eq({
         project_id: project.id,
         can_edit: 'true',
+        can_modify_author_settings: 'true',
+        can_modify_commiter_settings: 'true',
+        approvals_path: expose_path(api_v4_projects_approvals_path(id: project.id)),
         project_path: expose_path(api_v4_projects_path(id: project.id)),
         settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
         rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),

@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { mapComputed } from '~/vuex_shared/bindings';
 import { APPROVAL_SETTINGS_I18N } from '../constants';
 import ApprovalSettingsCheckbox from './approval_settings_checkbox.vue';
@@ -19,6 +19,21 @@ export default {
     approvalSettingsPath: {
       type: String,
       required: true,
+    },
+    canPreventMrApprovalRuleEdit: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    canPreventAuthorApproval: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    canPreventCommittersApproval: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   computed: {
@@ -39,6 +54,7 @@ export default {
       undefined,
       (state) => state.approvalSettings.settings,
     ),
+    ...mapGetters(['settingChanged']),
     hasSettings() {
       return !isEmpty(this.settings);
     },
@@ -61,12 +77,11 @@ export default {
     },
   },
   links: {
-    preventAuthorApprovalDocsAnchor:
-      'allowing-merge-request-authors-to-approve-their-own-merge-requests',
-    preventMrApprovalRuleEditDocsAnchor: 'editing--overriding-approval-rules-per-merge-request',
-    requireUserPasswordDocsAnchor: 'require-authentication-when-approving-a-merge-request',
-    removeApprovalsOnPushDocsAnchor: 'resetting-approvals-on-push',
-    preventCommittersApprovalAnchor: 'prevent-approval-of-merge-requests-by-their-committers',
+    preventAuthorApprovalDocsAnchor: 'prevent-authors-from-approving-their-own-work',
+    preventMrApprovalRuleEditDocsAnchor: 'prevent-overrides-of-default-approvals',
+    requireUserPasswordDocsAnchor: 'require-authentication-for-approvals',
+    removeApprovalsOnPushDocsAnchor: 'reset-approvals-on-push',
+    preventCommittersApprovalDocsAnchor: 'prevent-committers-from-approving-their-own-work',
   },
   i18n: APPROVAL_SETTINGS_I18N,
 };
@@ -103,12 +118,24 @@ export default {
           v-model="preventAuthorApproval"
           :label="$options.i18n.authorApprovalLabel"
           :anchor="$options.links.preventAuthorApprovalDocsAnchor"
+          :locked="!canPreventAuthorApproval"
+          :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-author-approval"
+        />
+        <approval-settings-checkbox
+          v-model="preventCommittersApproval"
+          :label="$options.i18n.preventCommittersApprovalLabel"
+          :anchor="$options.links.preventCommittersApprovalDocsAnchor"
+          :locked="!canPreventCommittersApproval"
+          :locked-text="$options.i18n.lockedByAdmin"
+          data-testid="prevent-committers-approval"
         />
         <approval-settings-checkbox
           v-model="preventMrApprovalRuleEdit"
           :label="$options.i18n.preventMrApprovalRuleEditLabel"
           :anchor="$options.links.preventMrApprovalRuleEditDocsAnchor"
+          :locked="!canPreventMrApprovalRuleEdit"
+          :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-mr-approval-rule-edit"
         />
         <approval-settings-checkbox
@@ -123,14 +150,14 @@ export default {
           :anchor="$options.links.removeApprovalsOnPushDocsAnchor"
           data-testid="remove-approvals-on-push"
         />
-        <approval-settings-checkbox
-          v-model="preventCommittersApproval"
-          :label="$options.i18n.preventCommittersApprovalLabel"
-          :anchor="$options.links.preventCommittersApprovalAnchor"
-          data-testid="prevent-committers-approval"
-        />
       </gl-form-group>
-      <gl-button type="submit" variant="confirm" category="primary" :loading="isLoading">
+      <gl-button
+        type="submit"
+        variant="confirm"
+        category="primary"
+        :disabled="!settingChanged"
+        :loading="isLoading"
+      >
         {{ $options.i18n.saveChanges }}
       </gl-button>
     </gl-form>

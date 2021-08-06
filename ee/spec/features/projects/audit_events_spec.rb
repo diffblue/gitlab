@@ -138,12 +138,12 @@ RSpec.describe 'Projects > Audit Events', :js do
       project.add_developer(pete)
     end
 
-    it "appears in the project's audit events" do
+    it "appears in the project's audit events", :js do
       visit edit_project_path(project)
 
-      page.within('#js-merge-request-approval-settings') do
-        uncheck 'project_merge_requests_author_approval'
-        check 'project_merge_requests_disable_committers_approval'
+      page.within('[data-testid="merge-request-approval-settings"]') do
+        find('[data-testid="prevent-author-approval"] > input').set(false)
+        find('[data-testid="prevent-committers-approval"] > input').set(true)
         click_button 'Save changes'
       end
 

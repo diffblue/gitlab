@@ -45,15 +45,6 @@ export default {
     groupGid: {
       default: null,
     },
-    devopsScoreMetrics: {
-      default: null,
-    },
-    devopsReportDocsPath: {
-      default: '',
-    },
-    noDataImagePath: {
-      default: '',
-    },
   },
   trackDevopsTabClickEvent: TRACK_ADOPTION_TAB_CLICK_EVENT,
   trackDevopsScoreTabClickEvent: TRACK_DEVOPS_SCORE_TAB_CLICK_EVENT,

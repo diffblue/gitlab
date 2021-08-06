@@ -18053,6 +18053,7 @@ CREATE TABLE security_orchestration_policy_rule_schedules (
     user_id bigint NOT NULL,
     policy_index integer NOT NULL,
     cron text NOT NULL,
+    rule_index integer DEFAULT 0 NOT NULL,
     CONSTRAINT check_915825a76e CHECK ((char_length(cron) <= 255))
 );
 
@@ -25448,6 +25449,8 @@ CREATE INDEX index_vulnerability_finding_signatures_on_finding_id ON vulnerabili
 CREATE INDEX index_vulnerability_findings_remediations_on_remediation_id ON vulnerability_findings_remediations USING btree (vulnerability_remediation_id);
 
 CREATE UNIQUE INDEX index_vulnerability_findings_remediations_on_unique_keys ON vulnerability_findings_remediations USING btree (vulnerability_occurrence_id, vulnerability_remediation_id);
+
+CREATE UNIQUE INDEX index_vulnerability_flags_on_unique_columns ON vulnerability_flags USING btree (vulnerability_occurrence_id, flag_type, origin);
 
 CREATE INDEX index_vulnerability_flags_on_vulnerability_occurrence_id ON vulnerability_flags USING btree (vulnerability_occurrence_id);
 

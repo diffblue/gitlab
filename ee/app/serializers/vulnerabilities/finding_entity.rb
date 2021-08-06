@@ -12,6 +12,9 @@ class Vulnerabilities::FindingEntity < Grape::Entity
   expose :create_jira_issue_url do |occurrence|
     create_jira_issue_url_for(occurrence)
   end
+  expose :false_positive, if: -> (_, _) { expose_false_positive? } do |occurrence|
+    occurrence.vulnerability_flags.any?(&:false_positive?)
+  end
   expose :create_vulnerability_feedback_issue_path do |occurrence|
     create_vulnerability_feedback_issue_path(occurrence.project)
   end
@@ -53,6 +56,13 @@ class Vulnerabilities::FindingEntity < Grape::Entity
 
   def current_user
     return request.current_user if request.respond_to?(:current_user)
+  end
+
+  private
+
+  def expose_false_positive?
+    project = occurrence.project
+    ::Feature.enabled?(:vulnerability_flags, project) && project.licensed_feature_available?(:sast_fp_reduction)
   end
 end
 

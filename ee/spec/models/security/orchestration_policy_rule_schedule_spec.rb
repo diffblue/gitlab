@@ -15,6 +15,7 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
     it { is_expected.to validate_presence_of(:security_orchestration_policy_configuration) }
     it { is_expected.to validate_presence_of(:cron) }
     it { is_expected.to validate_presence_of(:policy_index) }
+    it { is_expected.to validate_presence_of(:rule_index) }
   end
 
   describe '.runnable_schedules' do

@@ -157,6 +157,46 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
+  describe '#policy_by_type' do
+    subject { security_orchestration_policy_configuration.policy_by_type(:scan_execution_policy) }
+
+    before do
+      allow(security_policy_management_project).to receive(:repository).and_return(repository)
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+    end
+
+    context 'when policy is present' do
+      let(:policy_yaml) do
+        <<-EOS
+        scan_execution_policy:
+        - name: Run DAST in every pipeline
+          description: This policy enforces to run DAST for every pipeline within the project
+          enabled: true
+          rules:
+          - type: pipeline
+            branches:
+            - "production"
+          actions:
+          - scan: dast
+            site_profile: Site Profile
+            scanner_profile: Scanner Profile
+        EOS
+      end
+
+      it 'retrieves policy by type' do
+        expect(subject.first[:name]).to eq('Run DAST in every pipeline')
+      end
+    end
+
+    context 'when policy is nil' do
+      let(:policy_yaml) { nil }
+
+      it 'returns an empty array' do
+        expect(subject).to eq([])
+      end
+    end
+  end
+
   describe '#policy_configuration_valid?' do
     subject { security_orchestration_policy_configuration.policy_configuration_valid? }
 

@@ -21,6 +21,7 @@ module EE
       include DeprecatedApprovalsBeforeMerge
       include UsageStatistics
       include ProjectSecurityScannersInformation
+      include VulnerabilityFlagHelpers
 
       before_save :set_override_pull_mirror_available, unless: -> { ::Gitlab::CurrentSettings.mirror_available }
       before_save :set_next_execution_timestamp_to_now, if: ->(project) { project.mirror? && project.mirror_changed? && project.import_state }

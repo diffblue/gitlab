@@ -1,10 +1,7 @@
-import { initSecurityConfiguration } from 'ee/security_configuration';
-import { initCESecurityConfiguration } from '~/security_configuration';
+import { initSecurityConfiguration } from '~/security_configuration';
 
-const el = document.querySelector('#js-security-configuration');
+const el =
+  document.querySelector('#js-security-configuration') ||
+  document.querySelector('#js-security-configuration-static');
 
-if (el) {
-  initSecurityConfiguration(el);
-} else {
-  initCESecurityConfiguration(document.querySelector('#js-security-configuration-static'));
-}
+initSecurityConfiguration(el);

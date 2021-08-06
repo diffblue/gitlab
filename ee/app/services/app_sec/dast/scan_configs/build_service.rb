@@ -13,8 +13,6 @@ module AppSec
           ServiceResponse.success(
             payload: {
               dast_profile: dast_profile,
-              dast_site_profile: dast_site_profile,
-              dast_scanner_profile: dast_scanner_profile,
               branch: branch,
               ci_configuration: ci_configuration
             }
@@ -45,14 +43,10 @@ module AppSec
           {
             'stages' => ['dast'],
             'include' => [{ 'template' => 'DAST-On-Demand-Scan.gitlab-ci.yml' }],
-            'variables' => ci_variables.to_hash.to_hash # Collection#to_hash returns HashWithIndifferentAccess which does not serialise correctly
+            'dast' => {
+              'dast_configuration' => { 'site_profile' => dast_site_profile.name, 'scanner_profile' => dast_scanner_profile&.name }.compact
+            }
           }.to_yaml
-        end
-
-        def ci_variables
-          dast_site_profile.ci_variables.tap do |collection|
-            collection.concat(dast_scanner_profile.ci_variables) if dast_scanner_profile
-          end
         end
 
         def dast_profile

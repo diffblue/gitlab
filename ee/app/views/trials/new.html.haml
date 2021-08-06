@@ -7,29 +7,37 @@
       = _("Start your Free Ultimate Trial")
 
     %p.gl-text-center
-      = _('Your GitLab Ultimate trial will last 30 days after which point you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
+      - if remove_known_trial_form_fields_variant == :welcoming
+        - salutation = current_user.first_name.present? ? " #{current_user.first_name}" : ''
+        - company = current_user.organization.present? ? current_user.organization : _('your company')
+        = _("Hi%{salutation}, your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information about %{company} to activate your trial.") % { salutation: salutation, company: company }
+      - else
+        = _('Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
 
     = render 'errors'
 
     = form_tag create_lead_trials_path(glm_params), method: :post do |f|
-      - if experiment_enabled?(:remove_known_trial_form_fields) && current_user.first_name.present?
+      - if remove_known_trial_form_fields_variant == :welcoming && current_user.first_name.present?
         = hidden_field_tag :first_name, current_user.first_name
       - else
         .form-group
           = label_tag :first_name, _('First name'), for: :first_name, class: 'col-form-label'
-          = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }
-      - if experiment_enabled?(:remove_known_trial_form_fields) && current_user.last_name.present?
+          - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.first_name.present?
+          = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }, readonly: readonly
+      - if remove_known_trial_form_fields_variant == :welcoming && current_user.last_name.present?
         = hidden_field_tag :last_name, current_user.last_name
       - else
         .form-group
           = label_tag :last_name, _('Last name'), for: :last_name, class: 'col-form-label'
-          = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }
-      - if experiment_enabled?(:remove_known_trial_form_fields) && current_user.organization.present?
+          - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.last_name.present?
+          = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }, readonly: readonly
+      - if remove_known_trial_form_fields_variant == :welcoming && current_user.organization.present?
         = hidden_field_tag :company_name, current_user.organization
       - else
         .form-group
           = label_tag :company_name, _('Company name'), for: :company_name, class: 'col-form-label'
-          = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }
+          - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.organization.present?
+          = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }, readonly: readonly
       .form-group.gl-select2-html5-required-fix
         = label_tag :company_size, _('Number of employees'), for: :company_size, class: 'col-form-label'
         = select_tag :company_size, company_size_options_for_select(params[:company_size]), include_blank: true, class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
