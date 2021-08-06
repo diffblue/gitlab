@@ -1,4 +1,5 @@
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
+import { STATUS_NOT_FOUND } from '../../constants';
 import * as types from './mutation_types';
 import { parseCodeclimateMetrics } from './utils/codequality_parser';
 
@@ -9,7 +10,7 @@ export const fetchReports = ({ state, dispatch, commit }) => {
 
   return pollUntilComplete(state.reportsPath)
     .then(({ data }) => {
-      if (data.status === 'not_found') {
+      if (data.status === STATUS_NOT_FOUND) {
         return dispatch('receiveReportsError', data);
       }
       return dispatch('receiveReportsSuccess', {

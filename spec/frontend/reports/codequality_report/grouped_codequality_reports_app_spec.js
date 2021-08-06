@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
 import GroupedCodequalityReportsApp from '~/reports/codequality_report/grouped_codequality_reports_app.vue';
 import { getStoreConfig } from '~/reports/codequality_report/store';
+import { STATUS_NOT_FOUND } from '~/reports/constants';
 import { parsedReportIssues } from './mock_data';
 
 const localVue = createLocalVue();
@@ -140,7 +141,7 @@ describe('Grouped code quality reports app', () => {
 
     describe('when base report was not found', () => {
       beforeEach(() => {
-        mockStore.state.status = 'not_found';
+        mockStore.state.status = STATUS_NOT_FOUND;
       });
 
       it('renders a help icon with more information', () => {

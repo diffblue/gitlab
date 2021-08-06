@@ -1,5 +1,6 @@
 import createStore from '~/reports/codequality_report/store';
 import mutations from '~/reports/codequality_report/store/mutations';
+import { STATUS_NOT_FOUND } from '~/reports/constants';
 
 describe('Codequality Reports mutations', () => {
   let localState;
@@ -82,7 +83,7 @@ describe('Codequality Reports mutations', () => {
     });
 
     it('sets status based on error object', () => {
-      const error = { status: 'not_found' };
+      const error = { status: STATUS_NOT_FOUND };
       mutations.RECEIVE_REPORTS_ERROR(localState, error);
 
       expect(localState.status).toEqual(error.status);

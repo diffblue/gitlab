@@ -5,6 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import createStore from '~/reports/codequality_report/store';
 import * as actions from '~/reports/codequality_report/store/actions';
 import * as types from '~/reports/codequality_report/store/mutation_types';
+import { STATUS_NOT_FOUND } from '~/reports/constants';
 import { reportIssues, parsedReportIssues } from '../mock_data';
 
 const pollInterval = 123;
@@ -91,7 +92,7 @@ describe('Codequality Reports actions', () => {
 
     describe('when base report is not found', () => {
       it('commits REQUEST_REPORTS and dispatches receiveReportsError', (done) => {
-        const data = { status: 'not_found' };
+        const data = { status: STATUS_NOT_FOUND };
         mock.onGet(`${TEST_HOST}/codequality_reports.json`).reply(200, data);
 
         testAction(

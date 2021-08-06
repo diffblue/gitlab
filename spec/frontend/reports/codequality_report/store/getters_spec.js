@@ -1,6 +1,6 @@
 import createStore from '~/reports/codequality_report/store';
 import * as getters from '~/reports/codequality_report/store/getters';
-import { LOADING, ERROR, SUCCESS } from '~/reports/constants';
+import { LOADING, ERROR, SUCCESS, STATUS_NOT_FOUND } from '~/reports/constants';
 
 describe('Codequality reports store getters', () => {
   let localState;
@@ -78,7 +78,7 @@ describe('Codequality reports store getters', () => {
   describe('codequalityPopover', () => {
     describe('when base report is not available', () => {
       it('returns a popover with a documentation link', () => {
-        localState.status = 'not_found';
+        localState.status = STATUS_NOT_FOUND;
         localState.helpPath = 'codequality_help.html';
 
         expect(getters.codequalityPopover(localState).title).toEqual(
