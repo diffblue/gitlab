@@ -39,8 +39,6 @@ RSpec.describe Gitlab::UsageData do
 
       create(:jira_integration, project: projects[0], issues_enabled: true, project_key: 'GL')
 
-      create(:operations_feature_flag, project: projects[0])
-
       create(:issue, project: projects[1])
       create(:issue, health_status: :on_track, project: projects[1])
       create(:issue, health_status: :at_risk, project: projects[1])
@@ -97,7 +95,6 @@ RSpec.describe Gitlab::UsageData do
         epics
         epics_deepest_relationship_level
         epic_issues
-        feature_flags
         geo_nodes
         geo_event_log_max_id
         issues_with_health_status
@@ -124,7 +121,6 @@ RSpec.describe Gitlab::UsageData do
         network_policy_drops
       ))
 
-      expect(count_data[:feature_flags]).to eq(1)
       expect(count_data[:status_page_projects]).to eq(1)
       expect(count_data[:status_page_issues]).to eq(1)
       expect(count_data[:issues_with_health_status]).to eq(2)
