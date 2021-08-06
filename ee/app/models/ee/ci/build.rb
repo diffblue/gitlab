@@ -62,7 +62,6 @@ module EE
       def variables
         strong_memoize(:variables) do
           super.tap do |collection|
-            collection.concat(dast_on_demand_variables)
             collection.concat(dast_configuration_variables)
           end
         end
@@ -192,19 +191,6 @@ module EE
       def variables_hash
         @variables_hash ||= variables.to_h do |variable|
           [variable[:key], variable[:value]]
-        end
-      end
-
-      def dast_on_demand_variables
-        ::Gitlab::Ci::Variables::Collection.new.tap do |collection|
-          break collection unless pipeline.triggered_for_ondemand_dast_scan?
-
-          # Subject to change. Please see gitlab-org/gitlab#330950 for more info.
-          profile = pipeline.dast_profile || pipeline.dast_site_profile
-
-          break collection unless profile
-
-          collection.concat(profile.secret_ci_variables(pipeline.user))
         end
       end
 

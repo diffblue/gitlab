@@ -59,24 +59,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
     it 'returns prepared CI configuration with DAST On-Demand scans defined' do
       expected_configuration = {
         'dast-on-demand-0': {
-          stage: 'test',
+          stage: 'dast',
           image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
           variables: {
-            DAST_AUTH_URL: site_profile.auth_url,
-            DAST_DEBUG: 'false',
-            DAST_EXCLUDE_URLS: site_profile.excluded_urls.join(','),
-            DAST_FULL_SCAN_ENABLED: 'false',
-            DAST_PASSWORD_FIELD: site_profile.auth_password_field,
-            DAST_USERNAME: site_profile.auth_username,
-            DAST_USERNAME_FIELD: site_profile.auth_username_field,
-            DAST_USE_AJAX_SPIDER: 'false',
             DAST_VERSION: 2,
-            DAST_WEBSITE: site_profile.dast_site.url,
-            SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix
+            SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+            GIT_STRATEGY: 'none'
           },
           allow_failure: true,
           script: ['/analyze'],
-          artifacts: { reports: { dast: 'gl-dast-report.json' } }
+          artifacts: { reports: { dast: 'gl-dast-report.json' } },
+          dast_configuration: { site_profile: site_profile.name, scanner_profile: scanner_profile.name }
         },
         'dast-on-demand-1': {
           script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false',

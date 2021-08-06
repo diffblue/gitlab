@@ -20,11 +20,7 @@ RSpec.describe Ci::RunDastScanService do
       config_result = AppSec::Dast::ScanConfigs::BuildService.new(
         container: project,
         current_user: user,
-        params: {
-          branch: project.default_branch,
-          dast_profile: dast_profile,
-          dast_site_profile: dast_site_profile
-        }
+        params: { branch: project.default_branch, dast_profile: dast_profile }
       ).execute
 
       described_class.new(project, user).execute(**config_result.payload)
@@ -84,6 +80,7 @@ RSpec.describe Ci::RunDastScanService do
 
       it 'creates a build with appropriate options' do
         build = pipeline.builds.first
+
         expected_options = {
           image: {
             name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
@@ -95,8 +92,10 @@ RSpec.describe Ci::RunDastScanService do
             reports: {
               dast: ['gl-dast-report.json']
             }
-          }
+          },
+          dast_configuration: { site_profile: dast_site_profile.name, scanner_profile: dast_scanner_profile.name }
         }
+
         expect(build.options).to eq(expected_options)
       end
 
@@ -107,81 +106,77 @@ RSpec.describe Ci::RunDastScanService do
           {
             key: 'DAST_AUTH_URL',
             value: dast_site_profile.auth_url,
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_DEBUG',
             value: String(dast_scanner_profile.show_debug_messages?),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_EXCLUDE_URLS',
             value: dast_site_profile.excluded_urls.join(','),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_FULL_SCAN_ENABLED',
             value: String(dast_scanner_profile.full_scan_enabled?),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_PASSWORD_FIELD',
             value: dast_site_profile.auth_password_field,
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_SPIDER_MINS',
             value: String(dast_scanner_profile.spider_timeout),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_TARGET_AVAILABILITY_TIMEOUT',
             value: String(dast_scanner_profile.target_timeout),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_USERNAME',
             value: dast_site_profile.auth_username,
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_USERNAME_FIELD',
             value: dast_site_profile.auth_username_field,
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_USE_AJAX_SPIDER',
             value: String(dast_scanner_profile.use_ajax_spider?),
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_VERSION',
             value: '2',
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'DAST_WEBSITE',
             value: dast_site_profile.dast_site.url,
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'GIT_STRATEGY',
             value: 'none',
-            public: true
+            public: true,
+            masked: false
           }, {
             key: 'SECURE_ANALYZERS_PREFIX',
             value: secure_analyzers_prefix,
-            public: true
+            public: true,
+            masked: false
           }
         ]
 
-        expect(build.yaml_variables).to contain_exactly(*expected_variables)
-      end
-
-      context 'when the dast_profile and dast_site_profile are provided' do
-        it 'associates the dast_profile with the pipeline' do
-          expect(pipeline.dast_profile).to eq(dast_profile)
-        end
-
-        it 'does associate the dast_site_profile with the pipeline' do
-          expect(pipeline.dast_site_profile).to be_nil
-        end
-      end
-
-      context 'when the dast_site_profile is provided' do
-        let(:dast_profile) { nil }
-
-        it 'associates the dast_site_profile with the pipeline' do
-          expect(pipeline.dast_site_profile).to eq(dast_site_profile)
-        end
+        expect(build.variables.to_runner_variables).to include(*expected_variables)
       end
 
       context 'when the pipeline fails to save' do

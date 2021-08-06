@@ -29,18 +29,10 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
         - dast
         include:
         - template: DAST-On-Demand-Scan.gitlab-ci.yml
-        variables:
-          DAST_WEBSITE: #{dast_website}
-          DAST_EXCLUDE_URLS: #{dast_exclude_urls}
-          DAST_AUTH_URL: #{dast_auth_url}
-          DAST_USERNAME: #{dast_username}
-          DAST_USERNAME_FIELD: #{dast_username_field}
-          DAST_PASSWORD_FIELD: #{dast_password_field}
-          DAST_SPIDER_MINS: '#{dast_spider_mins}'
-          DAST_TARGET_AVAILABILITY_TIMEOUT: '#{dast_target_availability_timeout}'
-          DAST_FULL_SCAN_ENABLED: '#{dast_full_scan_enabled}'
-          DAST_USE_AJAX_SPIDER: '#{dast_use_ajax_spider}'
-          DAST_DEBUG: '#{dast_debug}'
+        dast:
+          dast_configuration:
+            site_profile: #{dast_site_profile.name}
+            scanner_profile: #{dast_scanner_profile.name}
     YAML
   end
 
@@ -50,11 +42,9 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
     context 'when a dast_profile is provided' do
       let(:params) { { dast_profile: dast_profile } }
 
-      it 'returns a dast_profile, dast_site_profile, dast_scanner_profile, branch and YAML configuration' do
+      it 'returns a dast_profile, branch and YAML configuration' do
         expected_payload = {
           dast_profile: dast_profile,
-          dast_site_profile: dast_site_profile,
-          dast_scanner_profile: dast_scanner_profile,
           branch: dast_profile.branch_name,
           ci_configuration: expected_yaml_configuration
         }
@@ -64,20 +54,22 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
     end
 
     context 'when a dast_site_profile is provided' do
-      context 'when a dast_scanner_profile is provided' do
-        let(:params) { { dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile } }
-
-        it 'returns a dast_site_profile, dast_scanner_profile, branch and YAML configuration' do
+      shared_examples 'a payload without a dast_profile' do
+        it 'returns a branch and YAML configuration' do
           expected_payload = {
             dast_profile: nil,
-            dast_site_profile: dast_site_profile,
-            dast_scanner_profile: dast_scanner_profile,
-            branch: project.default_branch,
+            branch: dast_profile.branch_name,
             ci_configuration: expected_yaml_configuration
           }
 
           expect(subject.payload).to eq(expected_payload)
         end
+      end
+
+      context 'when a dast_scanner_profile is provided' do
+        let(:params) { { dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile } }
+
+        it_behaves_like 'a payload without a dast_profile'
 
         context 'when the target is not validated and an active scan is requested' do
           let_it_be(:active_dast_scanner_profile) { create(:dast_scanner_profile, project: project, scan_type: 'active') }
@@ -101,27 +93,13 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
             - dast
             include:
             - template: DAST-On-Demand-Scan.gitlab-ci.yml
-            variables:
-              DAST_WEBSITE: #{dast_website}
-              DAST_EXCLUDE_URLS: #{dast_exclude_urls}
-              DAST_AUTH_URL: #{dast_auth_url}
-              DAST_USERNAME: #{dast_username}
-              DAST_USERNAME_FIELD: #{dast_username_field}
-              DAST_PASSWORD_FIELD: #{dast_password_field}
+            dast:
+              dast_configuration:
+                site_profile: #{dast_site_profile.name}
           YAML
         end
 
-        it 'returns a dast_site_profile, branch and YAML configuration' do
-          expected_payload = {
-            dast_profile: nil,
-            dast_site_profile: dast_site_profile,
-            dast_scanner_profile: nil,
-            branch: project.default_branch,
-            ci_configuration: expected_yaml_configuration
-          }
-
-          expect(subject.payload).to eq(expected_payload)
-        end
+        it_behaves_like 'a payload without a dast_profile'
       end
     end
 
