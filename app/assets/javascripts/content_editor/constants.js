@@ -41,3 +41,7 @@ export const TEXT_STYLE_DROPDOWN_ITEMS = [
     label: __('Normal text'),
   },
 ];
+
+export const LOADING_CONTENT_EVENT = 'loadingContent';
+export const LOADING_SUCCESS_EVENT = 'loadingSuccess';
+export const LOADING_ERROR_EVENT = 'loadingError';
