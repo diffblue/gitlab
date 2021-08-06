@@ -8,7 +8,8 @@ RSpec.describe TrialsController do
     {
       first_name_present: user.first_name.present?,
       last_name_present: user.last_name.present?,
-      company_name_present: user.organization.present?
+      company_name_present: user.organization.present?,
+      variant: :control
     }
   end
 
@@ -55,7 +56,7 @@ RSpec.describe TrialsController do
     end
 
     it 'calls record_experiment_user for the experiments' do
-      expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields, remove_known_trial_form_fields_context)
+      expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
 
       subject
     end
@@ -177,8 +178,8 @@ RSpec.describe TrialsController do
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
       it 'calls the record conversion method for the experiments' do
-        expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields, namespace_id: namespace.id)
-        expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields)
+        expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: namespace.id)
+        expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
         expect(experiment(:force_company_trial)).to track(:create_trial, namespace: namespace, user: user, label: 'trials_controller').with_context(user: user).on_next_instance
 
         subject
@@ -238,7 +239,7 @@ RSpec.describe TrialsController do
 
       it { is_expected.to render_template(:select) }
       it 'does not call the record conversion method for the experiments' do
-        expect(controller).not_to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields)
+        expect(controller).not_to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
 
         subject
       end

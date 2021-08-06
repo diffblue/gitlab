@@ -1,0 +1,8 @@
+---
+name: remove_known_trial_form_fields_noneditable_experiment_percentage
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65493
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/337439
+milestone: '14.2'
+type: experiment
+group: group::conversion
+default_enabled: false
