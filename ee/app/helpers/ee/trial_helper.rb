@@ -74,6 +74,16 @@ module EE
       }
     end
 
+    def remove_known_trial_form_fields_variant
+      if experiment_enabled?(:remove_known_trial_form_fields_welcoming, subject: current_user)
+        :welcoming
+      elsif experiment_enabled?(:remove_known_trial_form_fields_noneditable, subject: current_user)
+        :noneditable
+      else
+        :control
+      end
+    end
+
     private
 
     def trial_group_namespaces

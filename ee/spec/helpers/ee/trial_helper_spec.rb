@@ -265,4 +265,27 @@ RSpec.describe EE::TrialHelper do
       it { is_expected.to eq({ namespace_id: 1, trial_plan_name: 'Ultimate', action: 'reactivate' }) }
     end
   end
+
+  describe '#remove_known_trial_form_fields_variant' do
+    let_it_be(:user) { create(:user) }
+
+    subject { helper.remove_known_trial_form_fields_variant }
+
+    before do
+      helper.extend(Gitlab::Experimentation::ControllerConcern)
+      allow(helper).to receive(:current_user).and_return(user)
+      stub_experiment_for_subject(remove_known_trial_form_fields_welcoming: welcoming, remove_known_trial_form_fields_noneditable: noneditable)
+    end
+
+    where(:welcoming, :noneditable, :result) do
+      true  | true  | :welcoming
+      true  | false | :welcoming
+      false | true  | :noneditable
+      false | false | :control
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
 end

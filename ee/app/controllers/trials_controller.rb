@@ -14,7 +14,7 @@ class TrialsController < ApplicationController
   feature_category :purchase
 
   def new
-    record_experiment_user(:remove_known_trial_form_fields, remove_known_trial_form_fields_context)
+    record_experiment_user(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
   end
 
   def select
@@ -39,8 +39,8 @@ class TrialsController < ApplicationController
     @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
 
     if @result&.dig(:success)
-      record_experiment_user(:remove_known_trial_form_fields, namespace_id: @namespace.id)
-      record_experiment_conversion_event(:remove_known_trial_form_fields)
+      record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @namespace.id)
+      record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
 
       experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
 
@@ -177,7 +177,8 @@ class TrialsController < ApplicationController
     {
       first_name_present: current_user.first_name.present?,
       last_name_present: current_user.last_name.present?,
-      company_name_present: current_user.organization.present?
+      company_name_present: current_user.organization.present?,
+      variant: helpers.remove_known_trial_form_fields_variant
     }
   end
 
