@@ -33532,6 +33532,9 @@ msgstr ""
 msgid "There was an error fetching projects"
 msgstr ""
 
+msgid "There was an error fetching stage total counts"
+msgstr ""
+
 msgid "There was an error fetching the %{replicableType}"
 msgstr ""
 
