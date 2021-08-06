@@ -60,25 +60,41 @@ RSpec.describe License do
         end
       end
 
-      context 'when quantity is ok' do
+      context 'when quantity with threshold is more than the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 5, trueup_quantity: 10)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
         end
 
         it { is_expected.to be_valid }
 
-        context 'but active users exceeds restricted user count' do
+        context 'but active users with threshold exceeds restricted user count' do
           before do
-            create_list(:user, 6)
+            create_list(:user, 12)
           end
 
           it { is_expected.not_to be_valid }
         end
       end
 
-      context 'when quantity is wrong' do
+      context 'when quantity with threshold is equal to the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 5, trueup_quantity: 8)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 11)
+        end
+
+        it { is_expected.to be_valid }
+
+        context 'but active users with threshold exceeds restricted user count' do
+          before do
+            create_list(:user, 12)
+          end
+
+          it { is_expected.not_to be_valid }
+        end
+      end
+
+      context 'when quantity with threshold is less than the required quantity' do
+        before do
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8)
         end
 
         it { is_expected.not_to be_valid }
@@ -115,26 +131,32 @@ RSpec.describe License do
 
     describe '#check_restricted_user_count' do
       context 'when reconciliation_completed is true' do
-        context 'when restricted_user_count is equal or more than active_user_count' do
-          before do
-            set_restrictions(restricted_user_count: 10, reconciliation_completed: true)
-          end
+        before do
+          set_restrictions(restricted_user_count: 10, reconciliation_completed: true)
+          create_list(:user, user_count)
+          create(:historical_data, recorded_at: described_class.current.starts_at, active_user_count: 100)
+        end
+
+        context 'when restricted_user_count with threshold is more than active_user_count' do
+          let(:user_count) { 10 }
 
           it { is_expected.to be_valid }
         end
 
-        context 'when the restricted_user_count is less than active_user_count' do
-          before do
-            set_restrictions(restricted_user_count: 2, reconciliation_completed: true)
-            create_list(:user, 6)
-            create(:historical_data, recorded_at: described_class.current.starts_at, active_user_count: 100)
-          end
+        context 'when restricted_user_count with threshold is equal than active_user_count' do
+          let(:user_count) { 11 }
+
+          it { is_expected.to be_valid }
+        end
+
+        context 'when the restricted_user_count with threshold is less than active_user_count' do
+          let(:user_count) { 12 }
 
           it 'add limit error' do
             expect(license.valid?).to be_falsey
 
             expect(license.errors.full_messages.to_sentence).to include(
-              'This GitLab installation currently has 6 active users, exceeding this license\'s limit of 2 by 4 users'
+              'This GitLab installation currently has 12 active users, exceeding this license\'s limit of 10 by 2 users'
             )
             expect(license.errors.full_messages.to_sentence).not_to include(
               'During the year before this license started'
@@ -144,10 +166,10 @@ RSpec.describe License do
       end
 
       context 'when reconciliation_completed is false' do
-        context 'when the restricted_user_count is less than active_user_count' do
+        context 'when the restricted_user_count with threshold is less than active_user_count' do
           before do
-            set_restrictions(restricted_user_count: 2, reconciliation_completed: false)
-            create_list(:user, 6)
+            set_restrictions(restricted_user_count: 10, reconciliation_completed: false)
+            create_list(:user, 12)
             create(:historical_data, recorded_at: described_class.current.starts_at, active_user_count: 100)
           end
 
