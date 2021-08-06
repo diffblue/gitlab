@@ -39034,6 +39034,9 @@ msgstr ""
 msgid "does not have a supported extension. Only %{extension_list} are supported"
 msgstr ""
 
+msgid "domain is not authorized for sign-up."
+msgstr ""
+
 msgid "download it"
 msgstr ""
 
@@ -39258,6 +39261,9 @@ msgid "is not allowed. We do not currently support project-level iterations"
 msgstr ""
 
 msgid "is not an email you own"
+msgstr ""
+
+msgid "is not from an allowed domain."
 msgstr ""
 
 msgid "is not in the group enforcing Group Managed Account"
