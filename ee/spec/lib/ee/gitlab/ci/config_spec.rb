@@ -126,24 +126,20 @@ RSpec.describe Gitlab::Ci::Config do
                   script: ["echo 'test'"]
                 },
                 'dast-on-demand-0': {
-                  stage: 'test',
+                  stage: 'dast',
                   image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
                   variables: {
-                    DAST_AUTH_URL: dast_site_profile.auth_url,
                     DAST_VERSION: 2,
                     SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-                    DAST_WEBSITE: dast_site_profile.dast_site.url,
-                    DAST_FULL_SCAN_ENABLED: 'false',
-                    DAST_USE_AJAX_SPIDER: 'false',
-                    DAST_DEBUG: 'false',
-                    DAST_USERNAME:  dast_site_profile.auth_username,
-                    DAST_EXCLUDE_URLS: dast_site_profile.excluded_urls.join(','),
-                    DAST_USERNAME_FIELD: 'session[username]',
-                    DAST_PASSWORD_FIELD: 'session[password]'
-               },
+                    GIT_STRATEGY: 'none'
+                  },
                   allow_failure: true,
                   script: ['/analyze'],
-                  artifacts: { reports: { dast: 'gl-dast-report.json' } }
+                  artifacts: { reports: { dast: 'gl-dast-report.json' } },
+                  dast_configuration: {
+                    site_profile: dast_site_profile.name,
+                    scanner_profile: dast_scanner_profile.name
+                  }
                 }
               }
             end

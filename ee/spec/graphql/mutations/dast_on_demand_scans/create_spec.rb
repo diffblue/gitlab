@@ -78,10 +78,8 @@ RSpec.describe Mutations::DastOnDemandScans::Create do
 
           it 'passes additional arguments to the underlying service object' do
             args = hash_including(
-              branch: project.default_branch,
               dast_profile: nil,
-              dast_site_profile: dast_site_profile,
-              dast_scanner_profile: dast_scanner_profile,
+              branch: project.default_branch,
               ci_configuration: kind_of(String)
             )
 

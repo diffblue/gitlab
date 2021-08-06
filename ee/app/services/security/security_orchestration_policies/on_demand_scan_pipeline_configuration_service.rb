@@ -34,8 +34,9 @@ module Security
         ci_configuration = YAML.safe_load(result.payload[:ci_configuration])
 
         dast_on_demand_template[:dast].deep_merge(
-          'variables' => dast_on_demand_template[:variables].deep_merge(ci_configuration['variables']),
-          'stage' => 'test'
+          'stage' => 'dast',
+          'variables' => dast_on_demand_template[:variables].merge(dast_on_demand_template[:dast][:variables]),
+          'dast_configuration' =>  ci_configuration['dast']['dast_configuration']
         )
       end
 

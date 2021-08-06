@@ -8,12 +8,7 @@ module Ci
       service = Ci::CreatePipelineService.new(project, current_user, ref: branch)
 
       response = service.execute(:ondemand_dast_scan, content: ci_configuration) do |pipeline|
-        if dast_profile
-          pipeline.dast_profile = dast_profile
-        else
-          # Subject to change. Please see gitlab-org/gitlab#330950 for more info.
-          pipeline.dast_site_profile = dast_site_profile
-        end
+        pipeline.dast_profile = dast_profile
       end
 
       pipeline = response.payload
