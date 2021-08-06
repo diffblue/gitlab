@@ -72,8 +72,11 @@ module EE
         data: {
           'project_id': project.id,
           'can_edit': can_modify_approvers.to_s,
+          'can_modify_author_settings': can_modify_author_settings.to_s,
+          'can_modify_commiter_settings': can_modify_commiter_settings.to_s,
           'project_path': expose_path(api_v4_projects_path(id: project.id)),
           'settings_path': expose_path(api_v4_projects_approval_settings_path(id: project.id)),
+          'approvals_path': expose_path(api_v4_projects_approvals_path(id: project.id)),
           'rules_path': expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
           'allow_multi_rule': project.multiple_approval_rules_available?.to_s,
           'eligible_approvers_docs_path': help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
@@ -97,6 +100,14 @@ module EE
 
     def can_modify_approvers(project = @project)
       can?(current_user, :modify_approvers_rules, project)
+    end
+
+    def can_modify_author_settings(project = @project)
+      can?(current_user, :modify_merge_request_author_setting, project)
+    end
+
+    def can_modify_commiter_settings(project = @project)
+      can?(current_user, :modify_merge_request_committer_setting, project)
     end
 
     def permanent_delete_message(project)

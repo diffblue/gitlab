@@ -1,47 +1,6 @@
-- can_modify_merge_request_author_settings = can?(current_user, :modify_merge_request_author_setting, @project)
-- can_modify_merge_request_committer_settings = can?(current_user, :modify_merge_request_committer_setting, @project)
-
 .form-group
-  = form.label :approver_ids, class: 'label-bold' do
+  = label :approver_ids, class: 'label-bold' do
     = _("Approval rules")
   #js-mr-approvals-settings{ approvals_app_data }
     .text-center.gl-mt-3
       = sprite_icon('spinner', size: 24, css_class: 'gl-spinner')
-
-%fieldset.form-group
-  %legend.h5.gl-border-none
-    = _('Approval settings')
-  .gl-form-checkbox-group
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = form.check_box(:disable_overriding_approvers_per_merge_request, { class: 'custom-control-input', disabled: !can_modify_approvers })
-      = form.label :disable_overriding_approvers_per_merge_request, class: 'custom-control-label' do
-        %span= _('Prevent users from modifying MR approval rules in merge requests.')
-        = link_to sprite_icon('question-o'), help_page_path('user/project/merge_requests/approvals/settings', anchor: 'prevent-overrides-of-default-approvals'), target: '_blank'
-
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = form.check_box :reset_approvals_on_push, class: 'custom-control-input'
-      = form.label :reset_approvals_on_push, class: 'custom-control-label' do
-        %span= _('Require new approvals when new commits are added to an MR.')
-
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = form.check_box :merge_requests_author_approval, { class: 'custom-control-input', disabled: !can_modify_merge_request_author_settings }, false, true
-      = form.label :merge_requests_author_approval, class: 'custom-control-label' do
-
-        %span= _('Prevent MR approvals by the author.')
-        = link_to sprite_icon('question-o'), help_page_path('user/project/merge_requests/approvals/settings',
-          anchor: 'prevent-authors-from-approving-their-own-work'), target: '_blank'
-
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = form.check_box :merge_requests_disable_committers_approval, { disabled: !can_modify_merge_request_committer_settings, class: 'custom-control-input' }
-      = form.label :merge_requests_disable_committers_approval, class: 'custom-control-label' do
-        %span= _('Prevent MR approvals from users who make commits to the MR.')
-        = link_to sprite_icon('question-o'), help_page_path('user/project/merge_requests/approvals/settings',
-          anchor: 'prevent-committers-from-approving-their-own-work'), target: '_blank'
-
-    - if password_authentication_enabled_for_web?
-      .gl-form-checkbox.custom-control.custom-checkbox
-        = form.check_box :require_password_to_approve, class: 'custom-control-input'
-        = form.label :require_password_to_approve, class: 'custom-control-label' do
-          %span= _('Require user password for approvals.')
-          = link_to sprite_icon('question-o'), help_page_path('user/project/merge_requests/approvals/settings',
-            anchor: 'require-authentication-for-approvals'), target: '_blank'

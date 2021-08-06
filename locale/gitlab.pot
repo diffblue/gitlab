@@ -4227,6 +4227,9 @@ msgstr ""
 msgid "ApprovalSettings|There was an error updating merge request approval settings."
 msgstr ""
 
+msgid "ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator."
+msgstr ""
+
 msgid "ApprovalStatusTooltip|Adheres to separation of duties"
 msgstr ""
 
@@ -25047,9 +25050,6 @@ msgstr ""
 msgid "Prevent MR approvals by author."
 msgstr ""
 
-msgid "Prevent MR approvals by the author."
-msgstr ""
-
 msgid "Prevent MR approvals from users who make commits to the MR."
 msgstr ""
 
@@ -25063,9 +25063,6 @@ msgid "Prevent project forking outside current group"
 msgstr ""
 
 msgid "Prevent users from changing their profile name"
-msgstr ""
-
-msgid "Prevent users from modifying MR approval rules in merge requests."
 msgstr ""
 
 msgid "Prevent users from modifying MR approval rules in projects and merge requests."
@@ -28132,12 +28129,6 @@ msgid "Require all users in this group to setup two-factor authentication"
 msgstr ""
 
 msgid "Require all users to set up two-factor authentication"
-msgstr ""
-
-msgid "Require new approvals when new commits are added to an MR."
-msgstr ""
-
-msgid "Require user password for approvals."
 msgstr ""
 
 msgid "Required approvals (%{approvals_given} given)"
