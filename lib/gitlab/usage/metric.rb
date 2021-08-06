@@ -3,11 +3,6 @@
 module Gitlab
   module Usage
     class Metric
-      # This is a metric with an instrumentation class
-      # A metric with instrumentation class is an umplemented metric
-      # A metric definition could have no instrumentation class
-      # After all metrics are migrated, instrumentation_class field
-      # should be required
       attr_reader :definition
 
       def initialize(definition)
