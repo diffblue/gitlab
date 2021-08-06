@@ -30372,6 +30372,9 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Settings|Unable to load the merge request options settings. Try reloading the page."
+msgstr ""
+
 msgid "Setup"
 msgstr ""
 
