@@ -21,9 +21,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
 
     let(:policy_blob) { { scan_execution_policy: [policy] }.to_yaml }
     let(:type) { :scan_execution_policy }
+    let(:environment_id) { nil }
 
     subject(:service) do
-      described_class.new(policy_configuration: policy_configuration, type: type)
+      described_class.new(policy_configuration: policy_configuration, type: type, environment_id: environment_id)
     end
 
     before do
@@ -85,6 +86,22 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
         expect(response[:status]).to eq(:error)
         expect(response[:message]).to eq('Invalid policy type')
         expect(response[:invalid_component]).to eq(:parameter)
+      end
+    end
+
+    context 'when type is container_runtime' do
+      let(:type) { :container_policy }
+
+      context 'when environment_id is missing' do
+        let(:environment_id) { nil }
+
+        it 'returns an error' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:error)
+          expect(response[:message]).to eq('environment_id parameter is required when type is container_policy')
+          expect(response[:invalid_component]).to eq(:parameter)
+        end
       end
     end
 
