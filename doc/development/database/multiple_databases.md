@@ -243,3 +243,38 @@ A quick checklist for fixing a specific join query would be:
    adding a new column
 1. Can we remove the join by adding a new table in the correct database that
    replicates the minimum data needed to do the join
+
+#### How to validate you have correctly removed a cross-join
+
+We have introduced a method you can use in RSpec tests to validate all SQL
+queries within a code block to ensure that none of them are joining across the
+2 databases. This is a useful tool to confirm you have correctly fixed an
+existing cross-join.
+
+At some point in the future we will have fixed all cross-joins and this tool
+will run by default in all tests but for now it needs to be explicitly enabled
+for your test.
+
+You can use this method like so:
+
+```ruby
+it 'does not join across databases' do
+  with_cross_joins_prevented do
+    ::Ci::Build.joins(:project).to_a
+  end
+end
+```
+
+This will raise an exception if the query joins across the 2 databases. The
+above example is fixed by removing the join like so:
+
+```ruby
+it 'does not join across databases' do
+  with_cross_joins_prevented do
+    ::Ci::Build.preload(:project).to_a
+  end
+end
+```
+
+You can see a real example of using this method for fixing a cross-join in
+<https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67655>.
