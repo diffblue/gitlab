@@ -98,10 +98,30 @@ module Gitlab
             end
           end
 
-          def filter_purchase_eligible_namespaces(user, namespaces)
+          def get_plans(tags:)
             query = <<~GQL
-            query FilterEligibleNamespaces($customerUid: Int!, $namespaces: [GitlabNamespaceInput!]!) {
-              namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, eligibleForPurchase: true) {
+            query getPlans($tags: [PlanTag!]) {
+              plans(planTags: $tags) {
+                id
+              }
+            }
+            GQL
+
+            response = http_post('graphql', admin_headers, { query: query, variables: { tags: tags } })[:data]
+
+            if response['errors'].blank? && (data = response.dig('data', 'plans'))
+              { success: true, data: data }
+            else
+              track_error(query, response)
+
+              error(response['errors'])
+            end
+          end
+
+          def filter_purchase_eligible_namespaces(user, namespaces, plan_id: nil, any_self_service_plan: nil)
+            query = <<~GQL
+            query FilterEligibleNamespaces($customerUid: Int!, $namespaces: [GitlabNamespaceInput!]!, $planId: ID, $eligibleForPurchase: Boolean) {
+              namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, planId: $planId, eligibleForPurchase: $eligibleForPurchase) {
                 id
               }
             }
@@ -112,18 +132,25 @@ module Gitlab
                 id: namespace.id,
                 parentId: namespace.parent_id,
                 plan: namespace.actual_plan_name,
-                trial: !!namespace.trial?
+                trial: !!namespace.trial?,
+                kind: namespace.kind,
+                membersCountWithDescendants: namespace.group? ? namespace.users_with_descendants.count : nil
               }
             end
 
             response = http_post(
-              "graphql",
+              'graphql',
               admin_headers,
-              { query: query, variables: { customerUid: user.id, namespaces: namespace_data } }
+              { query: query, variables: {
+                customerUid: user.id,
+                namespaces: namespace_data,
+                planId: plan_id,
+                eligibleForPurchase: any_self_service_plan
+              } }
             )[:data]
 
-            if response['errors'].blank?
-              { success: true, data: response.dig('data', 'namespaceEligibility') }
+            if response['errors'].blank? && (data = response.dig('data', 'namespaceEligibility'))
+              { success: true, data: data }
             else
               track_error(query, response)
 

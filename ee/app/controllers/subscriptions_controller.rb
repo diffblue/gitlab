@@ -32,7 +32,9 @@ class SubscriptionsController < ApplicationController
   end
 
   def buy_minutes
-    @group = find_group
+    return render_404 unless ci_minutes_plan_data.present?
+
+    @group = find_group(plan_id: ci_minutes_plan_data["id"])
 
     return render_404 if @group.nil?
 
@@ -51,7 +53,7 @@ class SubscriptionsController < ApplicationController
 
   def create
     current_user.update(setup_for_company: true) if params[:setup_for_company]
-    group = params[:selected_group] ? find_group : create_group
+    group = params[:selected_group] ? find_group(plan_id: subscription_params[:plan_id]) : create_group
 
     return not_found if group.nil?
     return render json: group.errors.to_json unless group.persisted?
@@ -90,11 +92,11 @@ class SubscriptionsController < ApplicationController
     params.require(:subscription).permit(:plan_id, :payment_method_id, :quantity, :source)
   end
 
-  def find_group
+  def find_group(plan_id:)
     selected_group = current_user.manageable_groups.top_most.find(params[:selected_group])
 
     result = GitlabSubscriptions::FilterPurchaseEligibleNamespacesService
-      .new(user: current_user, namespaces: Array(selected_group))
+      .new(user: current_user, plan_id: plan_id, namespaces: Array(selected_group))
       .execute
 
     result.success? ? result.payload.first : nil
@@ -118,13 +120,21 @@ class SubscriptionsController < ApplicationController
     redirect_to new_user_registration_path(redirect_from: from)
   end
 
+  def ci_minutes_plan_data
+    strong_memoize(:ci_minutes_plan_data) do
+      plan_response = client.get_plans(tags: ['CI_1000_MINUTES_PLAN'])
+
+      plan_response[:success] ? plan_response[:data].first : nil
+    end
+  end
+
   def load_eligible_groups
-    return unless current_user
+    return @eligible_groups = [] unless current_user
 
     candidate_groups = current_user.manageable_groups.top_most.with_counts(archived: false)
 
     result = GitlabSubscriptions::FilterPurchaseEligibleNamespacesService
-      .new(user: current_user, namespaces: candidate_groups)
+      .new(user: current_user, namespaces: candidate_groups, any_self_service_plan: true)
       .execute
 
     @eligible_groups = result.success? ? result.payload : []

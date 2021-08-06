@@ -38,7 +38,12 @@ RSpec.describe SubscriptionsController do
         before do
           group.add_owner(user)
 
-          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: [group]) do |instance|
+          allow_next_instance_of(
+            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            user: user,
+            namespaces: [group],
+            any_self_service_plan: true
+          ) do |instance|
             allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
           end
         end
@@ -52,7 +57,12 @@ RSpec.describe SubscriptionsController do
 
       context 'when there are no eligible groups for the subscription' do
         it 'assigns eligible groups as an empty array' do
-          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: []) do |instance|
+          allow_next_instance_of(
+            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            user: user,
+            namespaces: [],
+            any_self_service_plan: true
+          ) do |instance|
             allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: []))
           end
 
@@ -77,13 +87,36 @@ RSpec.describe SubscriptionsController do
         sign_in(user)
       end
 
+      context 'when the add-on plan cannot be found' do
+        let_it_be(:group) { create(:group) }
+
+        before do
+          group.add_owner(user)
+
+          allow(Gitlab::SubscriptionPortal::Client)
+            .to receive(:get_plans).with(tags: ['CI_1000_MINUTES_PLAN'])
+            .and_return({ success: false, data: [] })
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
       context 'when there are groups eligible for the addon' do
         let_it_be(:group) { create(:group) }
 
         before do
           group.add_owner(user)
 
-          allow_next_instance_of(GitlabSubscriptions::FilterPurchaseEligibleNamespacesService, user: user, namespaces: [group]) do |instance|
+          allow(Gitlab::SubscriptionPortal::Client)
+            .to receive(:get_plans).with(tags: ['CI_1000_MINUTES_PLAN'])
+            .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
+
+          allow_next_instance_of(
+            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            user: user,
+            plan_id: 'ci_minutes',
+            namespaces: [group]
+          ) do |instance|
             allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
           end
         end
@@ -101,6 +134,10 @@ RSpec.describe SubscriptionsController do
 
     context 'with :new_route_ci_minutes_purchase disabled' do
       before do
+        allow(Gitlab::SubscriptionPortal::Client)
+          .to receive(:get_plans).with(tags: ['CI_1000_MINUTES_PLAN'])
+          .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
+
         stub_feature_flags(new_route_ci_minutes_purchase: false)
         sign_in(user)
       end
@@ -289,6 +326,7 @@ RSpec.describe SubscriptionsController do
             allow_next_instance_of(
               GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
               user: user,
+              plan_id: params[:subscription][:plan_id],
               namespaces: [selected_group]
             ) do |instance|
               allow(instance)
@@ -338,6 +376,7 @@ RSpec.describe SubscriptionsController do
             allow_next_instance_of(
               GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
               user: user,
+              plan_id: params[:subscription][:plan_id],
               namespaces: [selected_group]
             ) do |instance|
               allow(instance)
