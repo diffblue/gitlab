@@ -39,7 +39,8 @@
       "items": {
         "type": "string"
       }
-    }
+    },
+    "vulnerabilities_allowed": { "type": "integer" }
   },
   "additionalProperties": false
 }
