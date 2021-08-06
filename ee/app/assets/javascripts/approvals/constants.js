@@ -47,7 +47,7 @@ export const APPROVAL_RULE_CONFIGS = {
   },
 };
 
-export const APPROVALS_HELP_PATH = 'user/project/merge_requests/merge_request_approvals';
+export const APPROVALS_HELP_PATH = 'user/project/merge_requests/approvals/settings';
 
 export const APPROVAL_SETTINGS_I18N = {
   authorApprovalLabel: s__('ApprovalSettings|Prevent MR approvals by the author.'),
@@ -69,6 +69,9 @@ export const APPROVAL_SETTINGS_I18N = {
     'ApprovalSettings|There was an error updating merge request approval settings.',
   ),
   savingSuccessMessage: s__('ApprovalSettings|Merge request approval settings have been updated.'),
+  lockedByAdmin: s__(
+    'ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator.',
+  ),
 };
 
 export const APPROVAL_DIALOG_I18N = {

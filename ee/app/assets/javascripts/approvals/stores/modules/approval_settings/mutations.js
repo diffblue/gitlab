@@ -8,6 +8,7 @@ export default (mapDataToState) => ({
   },
   [types.RECEIVE_SETTINGS_SUCCESS](state, data) {
     state.settings = { ...mapDataToState(data) };
+    state.initialSettings = { ...state.settings };
     state.isLoading = false;
   },
   [types.RECEIVE_SETTINGS_ERROR](state) {
@@ -21,6 +22,7 @@ export default (mapDataToState) => ({
   },
   [types.UPDATE_SETTINGS_SUCCESS](state, data) {
     state.settings = { ...mapDataToState(data) };
+    state.initialSettings = { ...state.settings };
     state.isLoading = false;
     state.isUpdated = true;
   },

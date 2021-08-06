@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser';
 import axios from '~/lib/utils/axios_utils';
 import * as types from './mutation_types';
 
-export default (mapStateToPayload) => ({
+export default (mapStateToPayload, updateMethod = 'put') => ({
   fetchSettings({ commit }, endpoint) {
     commit(types.REQUEST_SETTINGS);
 
@@ -22,8 +22,11 @@ export default (mapStateToPayload) => ({
   updateSettings({ commit, state }, endpoint) {
     commit(types.REQUEST_UPDATE_SETTINGS);
 
-    return axios
-      .put(endpoint, { ...mapStateToPayload(state) })
+    return axios({
+      method: updateMethod,
+      url: endpoint,
+      data: { ...mapStateToPayload(state) },
+    })
       .then(({ data }) => {
         commit(types.UPDATE_SETTINGS_SUCCESS, data);
       })

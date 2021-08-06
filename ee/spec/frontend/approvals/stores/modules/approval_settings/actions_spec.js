@@ -61,11 +61,18 @@ describe('EE approvals group settings module actions', () => {
     });
   });
 
-  describe('updateSettings', () => {
+  describe.each`
+    httpMethod | onMethod
+    ${'put'}   | ${'onPut'}
+    ${'post'}  | ${'onPost'}
+  `('updateSetting with $httpMethod', ({ httpMethod, onMethod }) => {
+    let actionsWithMethod;
+
     beforeEach(() => {
       state = {
         settings: {},
       };
+      actionsWithMethod = actionsFactory((data) => data, httpMethod);
     });
 
     describe('on success', () => {
@@ -77,10 +84,10 @@ describe('EE approvals group settings module actions', () => {
           require_password_to_approve: true,
           retain_approvals_on_push: true,
         };
-        mock.onPut(approvalSettingsPath).replyOnce(httpStatus.OK, data);
+        mock[onMethod](approvalSettingsPath).replyOnce(httpStatus.OK, data);
 
         return testAction(
-          actions.updateSettings,
+          actionsWithMethod.updateSettings,
           approvalSettingsPath,
           state,
           [
@@ -95,10 +102,10 @@ describe('EE approvals group settings module actions', () => {
     describe('on error', () => {
       it('dispatches the request, updates payload and sets error message', () => {
         const data = { message: 'Internal Server Error' };
-        mock.onPut(approvalSettingsPath).replyOnce(httpStatus.INTERNAL_SERVER_ERROR, data);
+        mock[onMethod](approvalSettingsPath).replyOnce(httpStatus.INTERNAL_SERVER_ERROR, data);
 
         return testAction(
-          actions.updateSettings,
+          actionsWithMethod.updateSettings,
           approvalSettingsPath,
           state,
           [{ type: types.REQUEST_UPDATE_SETTINGS }, { type: types.UPDATE_SETTINGS_ERROR }],

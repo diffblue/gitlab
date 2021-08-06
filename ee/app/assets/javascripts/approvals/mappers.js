@@ -112,3 +112,20 @@ export const groupApprovalsMappers = {
     allow_committer_approval: !state.settings.preventCommittersApproval,
   }),
 };
+
+export const projectApprovalsMappers = {
+  mapDataToState: (data) => ({
+    preventAuthorApproval: !data.merge_requests_author_approval,
+    preventMrApprovalRuleEdit: data.disable_overriding_approvers_per_merge_request,
+    requireUserPassword: data.require_password_to_approve,
+    removeApprovalsOnPush: data.reset_approvals_on_push,
+    preventCommittersApproval: data.merge_requests_disable_committers_approval,
+  }),
+  mapStateToPayload: (state) => ({
+    merge_requests_author_approval: !state.settings.preventAuthorApproval,
+    disable_overriding_approvers_per_merge_request: state.settings.preventMrApprovalRuleEdit,
+    require_password_to_approve: state.settings.requireUserPassword,
+    reset_approvals_on_push: state.settings.removeApprovalsOnPush,
+    merge_requests_disable_committers_approval: state.settings.preventCommittersApproval,
+  }),
+};

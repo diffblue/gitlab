@@ -20,10 +20,11 @@ describe('ApprovalSettings', () => {
 
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
 
-  const setupStore = (data = {}) => {
+  const setupStore = (data = {}, initialData) => {
     const module = approvalSettingsModule(groupApprovalsMappers);
 
     module.state.settings = data;
+    module.state.initialSettings = initialData || data;
     actions = module.actions;
     jest.spyOn(actions, 'fetchSettings').mockImplementation();
     jest.spyOn(actions, 'updateSettings').mockImplementation();
@@ -33,12 +34,16 @@ describe('ApprovalSettings', () => {
     store = createStore({ approvalSettings: module });
   };
 
-  const createWrapper = () => {
+  const createWrapper = (props = {}) => {
     wrapper = extendedWrapper(
       shallowMount(ApprovalSettings, {
         localVue,
         store,
-        propsData: { approvalSettingsPath },
+        propsData: {
+          approvalSettingsPath,
+          ...props,
+        },
+        stubs: { GlButton },
       }),
     );
   };
@@ -89,14 +94,16 @@ describe('ApprovalSettings', () => {
   });
 
   describe('with settings', () => {
+    const settings = {
+      allow_author_approval: false,
+      allow_committer_approval: false,
+      allow_overrides_to_approver_list_per_merge_request: false,
+      require_password_to_approve: false,
+      retain_approvals_on_push: false,
+    };
+
     beforeEach(() => {
-      setupStore({
-        allow_author_approval: false,
-        allow_committer_approval: false,
-        allow_overrides_to_approver_list_per_merge_request: false,
-        require_password_to_approve: false,
-        retain_approvals_on_push: false,
-      });
+      setupStore(settings);
     });
 
     it('renders the form once successfully loaded', async () => {
@@ -109,14 +116,14 @@ describe('ApprovalSettings', () => {
       expect(findForm().exists()).toBe(true);
     });
 
-    it('renders enabled button when not loading', async () => {
+    it('renders the button as not loading when loaded', async () => {
       createWrapper();
       await waitForPromises();
 
       expect(findSaveButton().props('loading')).toBe(false);
     });
 
-    it('renders loading button when loading', async () => {
+    it('renders the button as loading when updating', async () => {
       createWrapper();
       await waitForPromises();
       await store.commit('REQUEST_UPDATE_SETTINGS');
@@ -124,13 +131,29 @@ describe('ApprovalSettings', () => {
       expect(findSaveButton().props('loading')).toBe(true);
     });
 
+    it('renders the button as disabled when setting are unchanged', async () => {
+      createWrapper();
+      await waitForPromises();
+
+      expect(findSaveButton().attributes('disabled')).toBe('true');
+    });
+
+    it('renders the button as enabled when a setting was changed', async () => {
+      setupStore({ ...settings, allow_author_approval: true }, settings);
+
+      createWrapper();
+      await waitForPromises();
+
+      expect(findSaveButton().attributes('disabled')).toBeUndefined();
+    });
+
     describe.each`
       testid                             | action                            | setting                        | labelKey                            | anchor
-      ${'prevent-author-approval'}       | ${'setPreventAuthorApproval'}     | ${'preventAuthorApproval'}     | ${'authorApprovalLabel'}            | ${'allowing-merge-request-authors-to-approve-their-own-merge-requests'}
-      ${'prevent-committers-approval'}   | ${'setPreventCommittersApproval'} | ${'preventCommittersApproval'} | ${'preventCommittersApprovalLabel'} | ${'prevent-approval-of-merge-requests-by-their-committers'}
-      ${'prevent-mr-approval-rule-edit'} | ${'setPreventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEditLabel'} | ${'editing--overriding-approval-rules-per-merge-request'}
-      ${'require-user-password'}         | ${'setRequireUserPassword'}       | ${'requireUserPassword'}       | ${'requireUserPasswordLabel'}       | ${'require-authentication-when-approving-a-merge-request'}
-      ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}     | ${'resetting-approvals-on-push'}
+      ${'prevent-author-approval'}       | ${'setPreventAuthorApproval'}     | ${'preventAuthorApproval'}     | ${'authorApprovalLabel'}            | ${'prevent-authors-from-approving-their-own-work'}
+      ${'prevent-committers-approval'}   | ${'setPreventCommittersApproval'} | ${'preventCommittersApproval'} | ${'preventCommittersApprovalLabel'} | ${'prevent-committers-from-approving-their-own-work'}
+      ${'prevent-mr-approval-rule-edit'} | ${'setPreventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEditLabel'} | ${'prevent-overrides-of-default-approvals'}
+      ${'require-user-password'}         | ${'setRequireUserPassword'}       | ${'requireUserPassword'}       | ${'requireUserPasswordLabel'}       | ${'require-authentication-for-approvals'}
+      ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}     | ${'reset-approvals-on-push'}
     `('with the $testid checkbox', ({ testid, action, setting, labelKey, anchor }) => {
       let checkbox = null;
 
@@ -213,6 +236,28 @@ describe('ApprovalSettings', () => {
           expect(actions.dismissSuccessMessage).toHaveBeenCalled();
         });
       });
+    });
+
+    describe('locked settings', () => {
+      it.each`
+        property                          | value    | locked   | testid
+        ${'canPreventAuthorApproval'}     | ${true}  | ${false} | ${'prevent-author-approval'}
+        ${'canPreventMrApprovalRuleEdit'} | ${true}  | ${false} | ${'prevent-mr-approval-rule-edit'}
+        ${'canPreventCommittersApproval'} | ${true}  | ${false} | ${'prevent-committers-approval'}
+        ${'canPreventAuthorApproval'}     | ${false} | ${true}  | ${'prevent-author-approval'}
+        ${'canPreventMrApprovalRuleEdit'} | ${false} | ${true}  | ${'prevent-mr-approval-rule-edit'}
+        ${'canPreventCommittersApproval'} | ${false} | ${true}  | ${'prevent-committers-approval'}
+      `(
+        `when $property is $value, then $testid has "locked" set to $locked`,
+        ({ property, value, locked, testid }) => {
+          createWrapper({ [property]: value });
+
+          expect(wrapper.findByTestId(testid).props()).toMatchObject({
+            locked,
+            lockedText: APPROVAL_SETTINGS_I18N.lockedByAdmin,
+          });
+        },
+      );
     });
   });
 });
