@@ -1,7 +1,7 @@
 <script>
 import { GlBadge, GlButton, GlModalDirective, GlTab, GlTabs, GlAlert } from '@gitlab/ui';
 import createFlash from '~/flash';
-import { setCookie, getCookie } from '~/lib/utils/common_utils';
+import { setCookie, getCookie, parseBoolean } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import { ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME } from '../constants';
 import eventHub from '../event_hub';
@@ -67,8 +67,9 @@ export default {
   },
   data() {
     return {
-      environmentsSurveyAlertDismissed:
-        getCookie(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME) === 'true',
+      environmentsSurveyAlertDismissed: parseBoolean(
+        getCookie(ENVIRONMENTS_SURVEY_DISMISSED_COOKIE_NAME),
+      ),
     };
   },
 
