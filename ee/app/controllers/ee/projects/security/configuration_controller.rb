@@ -23,10 +23,6 @@ module EE
           end
 
           feature_category :static_application_security_testing
-
-          before_action only: [:show] do
-            push_frontend_feature_flag(:security_configuration_redesign_ee, project, default_enabled: :yaml)
-          end
         end
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
