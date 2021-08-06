@@ -113,7 +113,7 @@ patterns may apply to future cases.
 
 The simplest solution we've seen several times now has been an existing scope
 that is unused. This is the easiest example to fix. So the first step is to
-investigate if the code is unused and then simply remove it. These are some
+investigate if the code is unused and then remove it. These are some
 real examples:
 
 - <https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67162>
@@ -135,12 +135,12 @@ find that nobody is using these metrics, so we can remove them.
 
 The `includes` and `preload` methods in Rails are both ways to avoid an N+1
 query. The `includes` method in Rails uses a heuristic approach to determine
-whether or not it needs to actually join to the table or whether it can load
-all the records in a separate query. It assumes it needs to join if it thinks
-you need to query the columns from the other table in some way, but sometimes
-this method gets it wrong and it executes a join even when it isn't needed. In
-this case using `preload` to explicitly load the data in a separate query will
-allow you to avoid the join while still avoiding the N+1 query.
+if it needs to join to the table, or if it can load all of the
+records in a separate query. This method assumes it needs to join if it thinks
+you need to query the columns from the other table, but sometimes
+this method gets it wrong and executes a join even when not needed. In
+this case using `preload` to explicitly load the data in a separate query
+allows you to avoid the join, while still avoiding the N+1 query.
 
 You can see a real example of this solution being used in
 <https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67655>.
@@ -260,13 +260,12 @@ A quick checklist for fixing a specific join query would be:
 
 #### How to validate you have correctly removed a cross-join
 
-We have introduced a method you can use in RSpec tests to validate all SQL
-queries within a code block to ensure that none of them are joining across the
-2 databases. This is a useful tool to confirm you have correctly fixed an
-existing cross-join.
+Using RSpec tests, you can validate all SQL queries within a code block to
+ensure that none of them are joining across the two databases. This is a useful
+tool to confirm you have correctly fixed an existing cross-join.
 
 At some point in the future we will have fixed all cross-joins and this tool
-will run by default in all tests but for now it needs to be explicitly enabled
+will run by default in all tests. For now, the tool needs to be explicitly enabled
 for your test.
 
 You can use this method like so:
@@ -279,8 +278,8 @@ it 'does not join across databases' do
 end
 ```
 
-This will raise an exception if the query joins across the 2 databases. The
-above example is fixed by removing the join like so:
+This will raise an exception if the query joins across the two databases. The
+previous example is fixed by removing the join, like so:
 
 ```ruby
 it 'does not join across databases' do
