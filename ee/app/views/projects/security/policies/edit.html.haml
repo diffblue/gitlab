@@ -1,0 +1,8 @@
+- add_to_breadcrumbs s_("SecurityPolicies|Policies"), project_security_policy_path(@project)
+- breadcrumb_title s_("SecurityPolicies|Edit policy")
+- page_title s_("SecurityPolicies|Edit policy")
+
+#js-policy-builder-app{ data: { policy: @policy.to_json,
+    policy_type: @policy_type,
+    project_path: @project.full_path,
+    project_id: @project.id } }

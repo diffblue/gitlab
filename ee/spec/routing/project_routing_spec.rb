@@ -66,8 +66,18 @@ RSpec.describe 'EE-specific project routing' do
   end
 
   describe Projects::Security::PoliciesController, 'routing' do
+    where(:id) do
+      %w[test.1.2 test-policy test:policy]
+    end
+
     it 'to #show' do
       expect(get('/gitlab/gitlabhq/-/security/policy')).to route_to('projects/security/policies#show', namespace_id: 'gitlab', project_id: 'gitlabhq')
+    end
+
+    with_them do
+      it 'to #edit' do
+        expect(get("/gitlab/gitlabhq/-/security/policies/#{id}/edit")).to route_to('projects/security/policies#edit', namespace_id: 'gitlab', project_id: 'gitlabhq', id: id)
+      end
     end
   end
 
