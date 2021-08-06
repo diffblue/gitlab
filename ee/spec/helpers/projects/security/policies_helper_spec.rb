@@ -8,11 +8,14 @@ RSpec.describe Projects::Security::PoliciesHelper do
 
     context 'when a project does have a security policy project' do
       let(:policy_management_project) { create(:project) }
-      let!(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
 
       subject { helper.assigned_policy_project(project) }
 
       it {
+        create(:security_orchestration_policy_configuration,
+          { security_policy_management_project: policy_management_project, project: project }
+        )
+
         is_expected.to include({
           id: policy_management_project.to_global_id.to_s,
           name: policy_management_project.name,
