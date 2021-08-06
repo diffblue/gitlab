@@ -23,8 +23,15 @@ RSpec.describe Vulnerabilities::FindingEntity do
       scanner: scanner,
       scan: scan,
       project: project,
-      identifiers: identifiers
+      identifiers: identifiers,
+      vulnerability_flags: flags
     )
+  end
+
+  let(:flags) do
+    [
+      build(:vulnerabilities_flag)
+    ]
   end
 
   let(:dismiss_feedback) do
@@ -47,6 +54,7 @@ RSpec.describe Vulnerabilities::FindingEntity do
     subject { entity.as_json }
 
     before do
+      stub_licensed_features(sast_fp_reduction: true)
       allow(request).to receive(:current_user).and_return(user)
     end
 
@@ -58,9 +66,28 @@ RSpec.describe Vulnerabilities::FindingEntity do
       expect(subject).to include(:description, :links, :location, :remediations, :solution, :evidence)
       expect(subject).to include(:blob_path, :request, :response)
       expect(subject).to include(:scan)
+      expect(subject).to include(:false_positive)
       expect(subject).to include(:assets, :evidence_source, :supporting_messages)
       expect(subject).to include(:uuid)
       expect(subject).to include(:details)
+    end
+
+    context 'false-positive' do
+      it 'finds the vulnerability_finding as false_positive' do
+        expect(subject[:false_positive]).to be(true)
+      end
+
+      it 'does not contain false_positive field if feature_flag is disabled' do
+        stub_feature_flags(vulnerability_flags: false)
+
+        expect(subject).not_to include(:false_positive)
+      end
+
+      it 'does not contain false_positive field if license is not available' do
+        stub_licensed_features(sast_fp_reduction: false)
+
+        expect(subject).not_to include(:false_positive)
+      end
     end
 
     context 'when not allowed to admin vulnerability feedback' do
