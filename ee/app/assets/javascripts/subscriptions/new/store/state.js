@@ -7,6 +7,7 @@ const parsePlanData = (planData) =>
     value: plan.id,
     text: capitalizeFirstCharacter(plan.name),
     pricePerUserPerYear: plan.price_per_year,
+    code: plan.code,
   }));
 
 const parseGroupData = (groupData) =>
@@ -14,6 +15,7 @@ const parseGroupData = (groupData) =>
     value: group.id,
     text: group.name,
     numberOfUsers: group.users,
+    numberOfGuests: group.guests,
   }));
 
 const determineSelectedPlan = (planId, plans) => {
