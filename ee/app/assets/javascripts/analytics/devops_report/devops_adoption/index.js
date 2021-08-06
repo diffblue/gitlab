@@ -13,7 +13,6 @@ export default () => {
     emptyStateSvgPath,
     groupId,
     devopsScoreMetrics,
-    devopsReportDocsPath,
     devopsScoreIntroImagePath,
     noDataImagePath,
   } = el.dataset;
@@ -28,7 +27,6 @@ export default () => {
       isGroup,
       groupGid: isGroup ? convertToGraphQLId(TYPE_GROUP, groupId) : null,
       devopsScoreMetrics: isGroup ? null : JSON.parse(devopsScoreMetrics),
-      devopsReportDocsPath,
       noDataImagePath,
       devopsScoreIntroImagePath,
     },
