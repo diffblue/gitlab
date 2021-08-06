@@ -64,9 +64,9 @@ RSpec.shared_examples 'store ActiveRecord info in RequestStore' do |db_role|
     end
   end
 
-  context 'when multiple_database_metrics is disabled' do
+  context 'when the GITLAB_MULTIPLE_DATABASE_METRICS env var is disabled' do
     before do
-      stub_feature_flags(multiple_database_metrics: false)
+      stub_env('GITLAB_MULTIPLE_DATABASE_METRICS', nil)
     end
 
     it 'does not include per database metrics' do

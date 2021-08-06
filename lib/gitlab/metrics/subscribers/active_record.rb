@@ -175,7 +175,7 @@ module Gitlab
             DB_LOAD_BALANCING_ROLES.each do |role|
               metrics.each do |metric|
                 counters << compose_metric_key(metric, role)
-                next unless ::Feature.enabled?(:multiple_database_metrics, default_enabled: :yaml)
+                next unless ENV['GITLAB_MULTIPLE_DATABASE_METRICS']
 
                 ::Gitlab::Database.db_config_names.each do |config_name|
                   counters << compose_metric_key(metric, role, config_name)
