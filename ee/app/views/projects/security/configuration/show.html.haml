@@ -1,7 +1,6 @@
 - breadcrumb_title _("Security Configuration")
 - page_title _("Security Configuration")
-- redesign_enabled = ::Feature.enabled?(:security_configuration_redesign_ee, @project, default_enabled: :yaml)
-- @content_class = "limit-container-width" unless fluid_layout || !redesign_enabled
+- @content_class = "limit-container-width" unless fluid_layout
 
 - if @configuration.nil?
   = render_ce 'projects/security/configuration/show'

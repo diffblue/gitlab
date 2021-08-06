@@ -464,9 +464,6 @@ msgstr[1] ""
 msgid "%{completedWeight} of %{totalWeight} weight completed"
 msgstr ""
 
-msgid "%{containerScanningLinkStart}Container Scanning%{containerScanningLinkEnd} and/or %{dependencyScanningLinkStart}Dependency Scanning%{dependencyScanningLinkEnd} must be enabled. %{securityBotLinkStart}GitLab-Security-Bot%{securityBotLinkEnd} will be the author of the auto-created merge request. %{moreInfoLinkStart}More information%{moreInfoLinkEnd}."
-msgstr ""
-
 msgid "%{cores} cores"
 msgstr ""
 
@@ -4896,9 +4893,6 @@ msgstr ""
 msgid "Automatically close associated incident when a recovery alert notification resolves an alert"
 msgstr ""
 
-msgid "Automatically create merge requests for vulnerabilities that have fixes available."
-msgstr ""
-
 msgid "Automatically resolved"
 msgstr ""
 
@@ -4912,9 +4906,6 @@ msgid "Available"
 msgstr ""
 
 msgid "Available ID"
-msgstr ""
-
-msgid "Available for dependency and container scanning"
 msgstr ""
 
 msgid "Available group runners: %{runners}"
@@ -29235,12 +29226,6 @@ msgstr ""
 msgid "SecurityConfiguration|An error occurred while creating the merge request."
 msgstr ""
 
-msgid "SecurityConfiguration|Available for on-demand DAST"
-msgstr ""
-
-msgid "SecurityConfiguration|Available with %{linkStart}upgrade or free trial%{linkEnd}"
-msgstr ""
-
 msgid "SecurityConfiguration|Available with Ultimate"
 msgstr ""
 
@@ -29254,9 +29239,6 @@ msgid "SecurityConfiguration|Configuration guide"
 msgstr ""
 
 msgid "SecurityConfiguration|Configuration history"
-msgstr ""
-
-msgid "SecurityConfiguration|Configure"
 msgstr ""
 
 msgid "SecurityConfiguration|Configure %{feature}"
@@ -29280,9 +29262,6 @@ msgstr ""
 msgid "SecurityConfiguration|Customize common SAST settings to suit your requirements. Configuration changes made here override those provided by GitLab and are excluded from updates. For details of more advanced configuration options, see the %{linkStart}GitLab SAST documentation%{linkEnd}."
 msgstr ""
 
-msgid "SecurityConfiguration|Enable"
-msgstr ""
-
 msgid "SecurityConfiguration|Enable %{feature}"
 msgstr ""
 
@@ -29292,28 +29271,16 @@ msgstr ""
 msgid "SecurityConfiguration|Enabled"
 msgstr ""
 
-msgid "SecurityConfiguration|Enabled with Auto DevOps"
-msgstr ""
-
-msgid "SecurityConfiguration|Feature documentation for %{featureName}"
-msgstr ""
-
 msgid "SecurityConfiguration|High-level vulnerability statistics across projects and groups"
 msgstr ""
 
 msgid "SecurityConfiguration|Immediately begin risk analysis and remediation with application security features. Start with SAST and Secret Detection, available to all plans. Upgrade to Ultimate to get all features, including:"
 msgstr ""
 
-msgid "SecurityConfiguration|Manage"
-msgstr ""
-
 msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
 msgstr ""
 
 msgid "SecurityConfiguration|Manage scans"
-msgstr ""
-
-msgid "SecurityConfiguration|More information"
 msgstr ""
 
 msgid "SecurityConfiguration|More scan types, including Container Scanning, DAST, Dependency Scanning, Fuzzing, and Licence Compliance"
@@ -29340,16 +29307,7 @@ msgstr ""
 msgid "SecurityConfiguration|Secure your project"
 msgstr ""
 
-msgid "SecurityConfiguration|Security Control"
-msgstr ""
-
 msgid "SecurityConfiguration|Security testing"
-msgstr ""
-
-msgid "SecurityConfiguration|Status"
-msgstr ""
-
-msgid "SecurityConfiguration|Testing & Compliance"
 msgstr ""
 
 msgid "SecurityConfiguration|The status of the tools only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}."
@@ -29361,13 +29319,7 @@ msgstr ""
 msgid "SecurityConfiguration|Using custom settings. You won't receive automatic updates on this variable. %{anchorStart}Restore to default%{anchorEnd}"
 msgstr ""
 
-msgid "SecurityConfiguration|View history"
-msgstr ""
-
 msgid "SecurityConfiguration|Vulnerability details and statistics in the merge request"
-msgstr ""
-
-msgid "SecurityConfiguration|You can quickly enable all security scanning tools by enabling %{linkStart}Auto DevOps%{linkEnd}."
 msgstr ""
 
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
@@ -30339,9 +30291,6 @@ msgstr ""
 msgid "Setup"
 msgstr ""
 
-msgid "Several security scans are enabled because %{linkStart}Auto DevOps%{linkEnd} is enabled on this project"
-msgstr ""
-
 msgid "Severity"
 msgstr ""
 
@@ -30959,9 +30908,6 @@ msgid "Something went wrong while setting %{issuableType} weight."
 msgstr ""
 
 msgid "Something went wrong while stopping this environment. Please try again."
-msgstr ""
-
-msgid "Something went wrong while toggling auto-fix settings, please try again later."
 msgstr ""
 
 msgid "Something went wrong while updating a requirement."
@@ -31921,13 +31867,7 @@ msgstr ""
 msgid "Suggest code changes which can be immediately applied in one click. Try it out!"
 msgstr ""
 
-msgid "Suggested Solutions"
-msgstr ""
-
 msgid "Suggested change"
-msgstr ""
-
-msgid "Suggested solutions help link"
 msgstr ""
 
 msgid "SuggestedColors|Aztec Gold"
@@ -33200,9 +33140,6 @@ msgid "The specified tab is invalid, please select another"
 msgstr ""
 
 msgid "The start date must be ealier than the end date."
-msgstr ""
-
-msgid "The status of the table below only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}. Once you've enabled a scan for the default branch, any subsequent feature branch you create will include the scan."
 msgstr ""
 
 msgid "The subject will be used as the title of the new issue, and the message will be the description. %{quickActionsLinkStart}Quick actions%{quickActionsLinkEnd} and styling with %{markdownLinkStart}Markdown%{markdownLinkEnd} are supported."
