@@ -2,9 +2,9 @@
 
 module EE
   module TrialHelper
-    def company_size_options_for_select(selected = 0)
+    def company_size_options_for_select(selected = '')
       options_for_select([
-        [_('Please select'), 0],
+        [_('Please select'), ''],
         ['1 - 99', '1-99'],
         ['100 - 499', '100-499'],
         ['500 - 1,999', '500-1,999'],
