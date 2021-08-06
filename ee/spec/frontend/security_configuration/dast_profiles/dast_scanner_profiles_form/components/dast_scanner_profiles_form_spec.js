@@ -2,10 +2,10 @@ import { GlForm, GlModal } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
 import merge from 'lodash/merge';
-import DastScannerProfileForm from 'ee/security_configuration/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
-import { SCAN_TYPE } from 'ee/security_configuration/dast_scanner_profiles/constants';
-import dastScannerProfileCreateMutation from 'ee/security_configuration/dast_scanner_profiles/graphql/dast_scanner_profile_create.mutation.graphql';
-import dastScannerProfileUpdateMutation from 'ee/security_configuration/dast_scanner_profiles/graphql/dast_scanner_profile_update.mutation.graphql';
+import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
+import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
+import dastScannerProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile_create.mutation.graphql';
+import dastScannerProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile_update.mutation.graphql';
 import { scannerProfiles, policyScannerProfile } from 'ee_jest/on_demand_scans/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 

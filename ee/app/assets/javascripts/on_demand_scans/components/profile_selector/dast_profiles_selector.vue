@@ -1,7 +1,7 @@
 <script>
 import { GlCard, GlSkeletonLoader, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { SCAN_TYPE } from 'ee/security_configuration/dast_scanner_profiles/constants';
+import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';

@@ -1,6 +1,6 @@
 import { GlFormCheckbox } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import DastSiteAuthSection from 'ee/security_configuration/dast_site_profiles_form/components/dast_site_auth_section.vue';
+import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_auth_section.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('DastSiteAuthSection', () => {
