@@ -35,17 +35,20 @@ module Gitlab
           @message_with_reply ||= process_message(trim_reply: false)
         end
 
-        def message_including_truncated_reply
-          @message_including_truncated_reply ||= process_message(trim_reply: false, append_reply: true)
+        def message_with_appended_reply
+          @message_with_appended_reply ||= process_message(append_reply: true)
         end
 
         def process_message(**kwargs)
           message = ReplyParser.new(mail, **kwargs).execute.strip
           message_with_attachments = add_attachments(message)
 
-          # Support bot is specifically forbidden
-          # from using slash commands.
-          strip_quick_actions(message_with_attachments)
+          # Support bot is specifically forbidden from using slash commands.
+          message = strip_quick_actions(message_with_attachments)
+          return message unless kwargs[:append_reply].present?
+
+          # Appended details section should be removed if the message only contains slash commands.
+          strip_details_section(message)
         end
 
         def add_attachments(reply)
@@ -96,10 +99,20 @@ module Gitlab
         def strip_quick_actions(content)
           return content unless author.support_bot?
 
-          command_definitions = ::QuickActions::InterpretService.command_definitions
-          extractor = ::Gitlab::QuickActions::Extractor.new(command_definitions)
+          quick_actions_extractor.redact_commands(content)
+        end
 
-          extractor.redact_commands(content)
+        def strip_details_section(content)
+          body, commands = quick_actions_extractor.extract_commands(content)
+          return content if commands.empty?
+          return content unless body =~ /\A(<details>)/
+
+          content.sub(body, '').chomp
+        end
+
+        def quick_actions_extractor
+          command_definitions = ::QuickActions::InterpretService.command_definitions
+          ::Gitlab::QuickActions::Extractor.new(command_definitions)
         end
       end
     end

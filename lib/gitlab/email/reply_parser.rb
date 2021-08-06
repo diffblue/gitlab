@@ -16,13 +16,7 @@ module Gitlab
         body = select_body(message)
 
         encoding = body.encoding
-
-        if @trim_reply
-          body = trim_reply(body)
-        elsif @append_reply
-          body = trim_reply(body, append_trimmed_reply: true)
-        end
-
+        body = trim_reply(body, append_trimmed_reply: @append_reply) if @trim_reply
         return '' unless body
 
         # not using /\s+$/ here because that deletes empty lines
@@ -77,12 +71,11 @@ module Gitlab
 
       def trim_reply(text, append_trimmed_reply: false)
         trimmed_body = EmailReplyTrimmer.trim(text)
+        return '' unless trimmed_body
         return trimmed_body unless append_trimmed_reply
 
-        partitioned_body = text.partition(trimmed_body)
-        main_body = partitioned_body[1]
-        stripped_text = partitioned_body[2].chomp
-        return main_body if stripped_text.empty?
+        _, main_body, stripped_text = text.partition(trimmed_body)
+        return main_body if stripped_text.chomp.empty?
 
         main_body + "\n<details><summary>...</summary>\n#{stripped_text}\n</details>"
       end

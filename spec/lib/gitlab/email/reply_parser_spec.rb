@@ -229,43 +229,21 @@ RSpec.describe Gitlab::Email::ReplyParser do
         )
     end
 
-    context 'when append_reply option is true' do
-      it "appends trimmed reply when body includes a quote at the end" do
-        expect(test_parse_body(fixture_file("emails/valid_new_issue_with_quote.eml"), { trim_reply: false, append_reply: true }))
-          .to eq(
-            <<-BODY.strip_heredoc.chomp
-            The reply by email functionality should be extended to allow creating a new issue by email.
-            even when the email is forwarded to the project which may include lines that begin with ">"
+    it "appends trimmed reply when when append_reply option is true" do
+      expect(test_parse_body(fixture_file("emails/valid_new_issue_with_quote.eml"), { append_reply: true }))
+        .to eq(
+          <<-BODY.strip_heredoc.chomp
+          The reply by email functionality should be extended to allow creating a new issue by email.
+          even when the email is forwarded to the project which may include lines that begin with ">"
 
-            there should be a quote below this line:
-            <details><summary>...</summary>
-
-
-            > this is a quote
-            </details>
-            BODY
-          )
-      end
-
-      it 'appends trimmed reply when body includes a quote at the beginning' do
-        expect(test_parse_body(fixture_file("emails/valid_note_with_quote.eml"), { trim_reply: false, append_reply: true }))
-          .to eq(
-            <<-BODY.strip_heredoc.chomp
-            > This is a quote
-
-            -- This is a line with 2 dashes
-
-            *This is bold text*
-
-            - This is a signature
-            <details><summary>...</summary>
+          there should be a quote below this line:
+          <details><summary>...</summary>
 
 
-            > Final quote
-            </details>
-            BODY
-          )
-      end
+          > this is a quote
+          </details>
+          BODY
+        )
     end
   end
 end
