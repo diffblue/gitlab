@@ -131,6 +131,20 @@ to evaluate, because `UsageData` is not critical to users and it may be possible
 to get a similarly useful metric with a simpler approach. Alternatively we may
 find that nobody is using these metrics, so we can remove them.
 
+#### Use `preload` instead of `includes`
+
+The `includes` and `preload` methods in Rails are both ways to avoid an N+1
+query. The `includes` method in Rails uses a heuristic approach to determine
+whether or not it needs to actually join to the table or whether it can load
+all the records in a separate query. It assumes it needs to join if it thinks
+you need to query the columns from the other table in some way, but sometimes
+this method gets it wrong and it executes a join even when it isn't needed. In
+this case using `preload` to explicitly load the data in a separate query will
+allow you to avoid the join while still avoiding the N+1 query.
+
+You can see a real example of this solution being used in
+<https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67655>.
+
 #### De-normalize some foreign key to the table
 
 De-normalization refers to adding redundant precomputed (duplicated) data to
