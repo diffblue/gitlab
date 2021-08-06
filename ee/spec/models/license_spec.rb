@@ -218,16 +218,28 @@ RSpec.describe License do
             HistoricalData.track!
           end
 
-          context 'when license is from a fresh subscription' do
-            let(:previous_user_count) { nil }
-
+          shared_examples 'current active user count within threshold' do
             context 'when current active users count is under the threshold' do
+              let(:current_active_users_count) { 10 }
+
+              it 'accepts the license' do
+                expect(new_license).to be_valid
+              end
+            end
+
+            context 'when current active users count is equal to the threshold' do
               let(:current_active_users_count) { 11 }
 
               it 'accepts the license' do
                 expect(new_license).to be_valid
               end
             end
+          end
+
+          context 'when license is from a fresh subscription' do
+            let(:previous_user_count) { nil }
+
+            include_examples 'current active user count within threshold'
 
             context 'when current active users count is above the threshold' do
               let(:current_active_users_count) { 12 }
@@ -256,8 +268,10 @@ RSpec.describe License do
           context 'when license is from a renewal' do
             let(:previous_user_count) { 1 }
 
-            context 'when current active users count is under the threshold' do
-              let(:current_active_users_count) { 11 }
+            include_examples 'current active user count within threshold'
+
+            context 'when current active users count is over the threshold' do
+              let(:current_active_users_count) { 12 }
 
               it 'does not accept the license' do
                 expect(new_license).not_to be_valid
