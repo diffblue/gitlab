@@ -2,7 +2,7 @@
 import {
   EXCLUDED_URLS_SEPARATOR,
   TARGET_TYPES,
-} from 'ee/security_configuration/dast_site_profiles_form/constants';
+} from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { s__ } from '~/locale';
 import ProfileSelectorSummaryCell from './summary_cell.vue';

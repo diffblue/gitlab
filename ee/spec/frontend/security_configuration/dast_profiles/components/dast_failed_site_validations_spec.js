@@ -8,7 +8,7 @@ import dastFailedSiteValidationsQuery from 'ee/security_configuration/dast_profi
 import dastSiteValidationRevokeMutation from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validation_revoke.mutation.graphql';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { dastSiteValidationRevoke as dastSiteValidationRevokeResponse } from '../../dast_site_validation/mock_data/apollo_mock';
+import { dastSiteValidationRevoke as dastSiteValidationRevokeResponse } from '../dast_site_validation/mock_data/apollo_mock';
 import { dastSiteValidations as dastSiteValidationsResponse } from '../mocks/apollo_mock';
 import { failedSiteValidations } from '../mocks/mock_data';
 

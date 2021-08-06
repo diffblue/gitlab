@@ -1,5 +1,5 @@
 <script>
-import { SCAN_TYPE_LABEL } from 'ee/security_configuration/dast_scanner_profiles/constants';
+import { SCAN_TYPE_LABEL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import ProfileSelectorSummaryCell from './summary_cell.vue';
 
 export default {
