@@ -19,47 +19,45 @@ RSpec.shared_examples 'store ActiveRecord info in RequestStore' do |db_role|
       Gitlab::WithRequestStore.with_request_store do
         subscriber.sql(event)
 
-        # rubocop:disable Style/ConditionalAssignment
-        if db_role == :primary
-          expected = expected_payload_defaults.merge({
-            db_count: record_query ? 1 : 0,
-            db_write_count: record_write_query ? 1 : 0,
-            db_cached_count: record_cached_query ? 1 : 0,
-            db_primary_cached_count: record_cached_query ? 1 : 0,
-            "db_primary_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
-            db_primary_count: record_query ? 1 : 0,
-            "db_primary_#{db_config_name}_count": record_query ? 1 : 0,
-            db_primary_duration_s: record_query ? 0.002 : 0,
-            "db_primary_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
-            db_primary_wal_count: record_wal_query ? 1 : 0,
-            "db_primary_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
-            db_primary_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
-            "db_primary_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
-          })
-        elsif db_role == :replica
-          expected = expected_payload_defaults.merge({
-            db_count: record_query ? 1 : 0,
-            db_write_count: record_write_query ? 1 : 0,
-            db_cached_count: record_cached_query ? 1 : 0,
-            db_replica_cached_count: record_cached_query ? 1 : 0,
-            "db_replica_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
-            db_replica_count: record_query ? 1 : 0,
-            "db_replica_#{db_config_name}_count": record_query ? 1 : 0,
-            db_replica_duration_s: record_query ? 0.002 : 0,
-            "db_replica_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
-            db_replica_wal_count: record_wal_query ? 1 : 0,
-            "db_replica_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
-            db_replica_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
-            "db_replica_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
-          })
-        else
-          expected = {
-            db_count: record_query ? 1 : 0,
-            db_write_count: record_write_query ? 1 : 0,
-            db_cached_count: record_cached_query ? 1 : 0
-          }
-        end
-        # rubocop:enable Style/ConditionalAssignment
+        expected = if db_role == :primary
+                     expected_payload_defaults.merge({
+                       db_count: record_query ? 1 : 0,
+                       db_write_count: record_write_query ? 1 : 0,
+                       db_cached_count: record_cached_query ? 1 : 0,
+                       db_primary_cached_count: record_cached_query ? 1 : 0,
+                       "db_primary_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
+                       db_primary_count: record_query ? 1 : 0,
+                       "db_primary_#{db_config_name}_count": record_query ? 1 : 0,
+                       db_primary_duration_s: record_query ? 0.002 : 0,
+                       "db_primary_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
+                       db_primary_wal_count: record_wal_query ? 1 : 0,
+                       "db_primary_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
+                       db_primary_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
+                       "db_primary_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
+                     })
+                   elsif db_role == :replica
+                     expected_payload_defaults.merge({
+                       db_count: record_query ? 1 : 0,
+                       db_write_count: record_write_query ? 1 : 0,
+                       db_cached_count: record_cached_query ? 1 : 0,
+                       db_replica_cached_count: record_cached_query ? 1 : 0,
+                       "db_replica_#{db_config_name}_cached_count": record_cached_query ? 1 : 0,
+                       db_replica_count: record_query ? 1 : 0,
+                       "db_replica_#{db_config_name}_count": record_query ? 1 : 0,
+                       db_replica_duration_s: record_query ? 0.002 : 0,
+                       "db_replica_#{db_config_name}_duration_s": record_query ? 0.002 : 0,
+                       db_replica_wal_count: record_wal_query ? 1 : 0,
+                       "db_replica_#{db_config_name}_wal_count": record_wal_query ? 1 : 0,
+                       db_replica_wal_cached_count: record_wal_query && record_cached_query ? 1 : 0,
+                       "db_replica_#{db_config_name}_wal_cached_count": record_wal_query && record_cached_query ? 1 : 0
+                     })
+                   else
+                     {
+                       db_count: record_query ? 1 : 0,
+                       db_write_count: record_write_query ? 1 : 0,
+                       db_cached_count: record_cached_query ? 1 : 0
+                     }
+                   end
 
         expect(described_class.db_counter_payload).to eq(expected)
       end
