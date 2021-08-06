@@ -9,10 +9,10 @@
     %p.gl-text-center
       - if remove_known_trial_form_fields_variant == :welcoming
         - salutation = current_user.first_name.present? ? " #{current_user.first_name}" : ''
-        - company = current_user.organization.present? ? current_user.organization : _('your company')
-        = _("Hi%{salutation}, your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information about %{company} to activate your trial.") % { salutation: salutation, company: company }
+        - company = current_user.organization.present? ? current_user.organization : s_('Trial|your company')
+        = s_("Trial|Hi%{salutation}, your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information about %{company} to activate your trial.") % { salutation: salutation, company: company }
       - else
-        = _('Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
+        = s_('Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
 
     = render 'errors'
 
@@ -21,36 +21,36 @@
         = hidden_field_tag :first_name, current_user.first_name
       - else
         .form-group
-          = label_tag :first_name, _('First name'), for: :first_name, class: 'col-form-label'
+          = label_tag :first_name, s_('Trial|First name'), for: :first_name, class: 'col-form-label'
           - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.first_name.present?
           = text_field_tag :first_name, params[:first_name] || current_user.first_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'first_name' }, readonly: readonly
       - if remove_known_trial_form_fields_variant == :welcoming && current_user.last_name.present?
         = hidden_field_tag :last_name, current_user.last_name
       - else
         .form-group
-          = label_tag :last_name, _('Last name'), for: :last_name, class: 'col-form-label'
+          = label_tag :last_name, s_('Trial|Last name'), for: :last_name, class: 'col-form-label'
           - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.last_name.present?
           = text_field_tag :last_name, params[:last_name] || current_user.last_name, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'last_name' }, readonly: readonly
       - if remove_known_trial_form_fields_variant == :welcoming && current_user.organization.present?
         = hidden_field_tag :company_name, current_user.organization
       - else
         .form-group
-          = label_tag :company_name, _('Company name'), for: :company_name, class: 'col-form-label'
+          = label_tag :company_name, s_('Trial|Company name'), for: :company_name, class: 'col-form-label'
           - readonly = remove_known_trial_form_fields_variant == :noneditable && current_user.organization.present?
           = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }, readonly: readonly
       .form-group.gl-select2-html5-required-fix
-        = label_tag :company_size, _('Number of employees'), for: :company_size, class: 'col-form-label'
+        = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
         = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
       .form-group
-        = label_tag :phone_number, _('Telephone number'), for: :phone_number, class: 'col-form-label'
-        = telephone_field_tag :phone_number, params[:phone_number], pattern:  '^(\+)*[0-9-\s]+$', class: 'form-control gl-form-input', required: true, data: { qa_selector: 'telephone_number' }
+        = label_tag :phone_number, s_('Trial|Telephone number'), for: :phone_number, class: 'col-form-label'
+        = telephone_field_tag :phone_number, params[:phone_number], pattern: '^(\+)*[0-9-\s]+$', class: 'form-control gl-form-input', required: true, data: { qa_selector: 'telephone_number' }
         %p.gl-text-gray-500= _('Allowed characters: +, 0-9, -, and spaces.')
       .form-group
-        = label_tag :number_of_users, _('How many users will be evaluating the trial?'), for: :number_of_users, class: 'col-form-label'
+        = label_tag :number_of_users, s_('Trial|How many users will be evaluating the trial?'), for: :number_of_users, class: 'col-form-label'
         = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control gl-form-input', required: true, min: 1, data: { qa_selector: 'number_of_users' }
       .form-group.gl-select2-html5-required-fix
-        = label_tag :country, _('Country'), class: 'col-form-label'
-        = select_tag :country, options_for_select([[_('Please select a country'), '']]), class: 'select2 gl-transparent-pixel', required: true, id: 'country_select', data: { countries_end_point: countries_path, selected_option: params[:country], qa_selector: 'country' }
-      = submit_tag _('Continue'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'continue' }
+        = label_tag :country, s_('Trial|Country'), class: 'col-form-label'
+        = select_tag :country, options_for_select([[s_('Trial|Please select a country'), '']]), class: 'select2 gl-transparent-pixel', required: true, id: 'country_select', data: { countries_end_point: countries_path, selected_option: params[:country], qa_selector: 'country' }
+      = submit_tag s_('Trial|Continue'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'continue' }
 
     = render 'skip_trial'
