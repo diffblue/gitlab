@@ -4,8 +4,8 @@ export const hasSelection = (tiptapEditor) => {
   return from < to;
 };
 
-export const getImageAlt = (src) => {
-  return src.replace(/^.*\/|\..*$/g, '').replace(/\W+/g, ' ');
+export const parseFilename = (src) => {
+  return src.replace(/^.*\/|\..+?$/g, '').replace(/\W+/g, ' ');
 };
 
 export const readFileAsDataURL = (file) => {
