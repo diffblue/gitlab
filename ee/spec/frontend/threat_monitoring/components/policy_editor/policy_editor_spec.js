@@ -64,9 +64,9 @@ describe('PolicyEditor component', () => {
     });
   });
 
-  describe('with "scanExecutionPolicyUi" feature flag enabled', () => {
+  describe('with "securityOrchestrationPoliciesConfiguration" feature flag enabled', () => {
     beforeEach(() => {
-      factory({ provide: { glFeatures: { scanExecutionPolicyUi: true } } });
+      factory({ provide: { glFeatures: { securityOrchestrationPoliciesConfiguration: true } } });
     });
 
     it('renders the form select', () => {

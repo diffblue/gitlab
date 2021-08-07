@@ -7,7 +7,7 @@ module Projects
     before_action :authorize_read_threat_monitoring!
 
     before_action do
-      push_frontend_feature_flag(:scan_execution_policy_ui, @project)
+      push_frontend_feature_flag(:security_orchestration_policies_configuration, @project)
     end
 
     feature_category :not_owned

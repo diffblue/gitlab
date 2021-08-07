@@ -33,7 +33,7 @@ export default {
       return POLICY_KIND_OPTIONS[this.policyType].component;
     },
     shouldAllowPolicyTypeSelection() {
-      return !this.existingPolicy && this.glFeatures.scanExecutionPolicyUi;
+      return !this.existingPolicy && this.glFeatures.securityOrchestrationPoliciesConfiguration;
     },
     shouldShowEnvironmentPicker() {
       return POLICY_KIND_OPTIONS[this.policyType].shouldShowEnvironmentPicker;
