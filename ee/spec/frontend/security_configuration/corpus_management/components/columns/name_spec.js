@@ -28,14 +28,14 @@ describe('Name', () => {
   describe('component', () => {
     it('renders name with correct file size', () => {
       createComponent();
-      expect(findFileSize().text()).toBe('400MB');
+      expect(findFileSize().text()).toBe('(400MB)');
       expect(findName().element).toMatchSnapshot();
     });
 
     it('renders the latest job', () => {
       createComponent();
       expect(wrapper.findComponent(GlLink).exists()).toBe(true);
-      expect(findFileSize().text()).toBe('400MB');
+      expect(findFileSize().text()).toBe('(400MB)');
       expect(findName().element).toMatchSnapshot();
     });
 
@@ -43,7 +43,7 @@ describe('Name', () => {
       it('renders a - string instead of a link', () => {
         createComponent({ propsData: { corpus: corpuses[2] } });
         expect(wrapper.findComponent(GlLink).exists()).toBe(false);
-        expect(findFileSize().text()).toBe('321MB');
+        expect(findFileSize().text()).toBe('(321MB)');
         expect(findName().element).toMatchSnapshot();
       });
     });
