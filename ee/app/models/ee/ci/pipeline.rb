@@ -21,7 +21,7 @@ module EE
         has_many :security_findings, class_name: 'Security::Finding', through: :security_scans, source: :findings
 
         has_one :dast_profiles_pipeline, class_name: 'Dast::ProfilesPipeline', foreign_key: :ci_pipeline_id
-        has_one :dast_profile, class_name: 'Dast::Profile', through: :dast_profiles_pipeline
+        has_one :dast_profile, class_name: 'Dast::Profile', through: :dast_profiles_pipeline, disable_joins: -> { ::Feature.enabled?(:dast_profile_disable_joins, default_enabled: :yaml) }
 
         has_one :source_project, class_name: 'Ci::Sources::Project', foreign_key: :pipeline_id
 
