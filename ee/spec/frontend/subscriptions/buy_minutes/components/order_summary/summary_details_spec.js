@@ -1,11 +1,12 @@
-import { shallowMount } from '@vue/test-utils';
+import { GlSprintf } from '@gitlab/ui';
 import SummaryDetails from 'ee/subscriptions/buy_minutes/components/order_summary/summary_details.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('SummaryDetails', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    return shallowMount(SummaryDetails, {
+    return shallowMountExtended(SummaryDetails, {
       propsData: {
         vat: 8,
         totalExVat: 10,
@@ -15,13 +16,19 @@ describe('SummaryDetails', () => {
         quantity: 1,
         ...props,
       },
+      stubs: {
+        GlSprintf,
+      },
     });
   };
 
-  const findQuantity = () => wrapper.find('[data-testid="quantity"]');
-  const findSubscriptionPeriod = () => wrapper.find('[data-testid="subscription-period"]');
-  const findTotalExVat = () => wrapper.find('[data-testid="total-ex-vat"]');
-  const findVat = () => wrapper.find('[data-testid="vat"]');
+  const findQuantity = () => wrapper.findByTestId('quantity');
+  const findSubscriptionPeriod = () => wrapper.findByTestId('subscription-period');
+  const findTotalAmount = () => wrapper.findByTestId('total-amount');
+  const findTotalExVat = () => wrapper.findByTestId('total-ex-vat');
+  const findVat = () => wrapper.findByTestId('vat');
+  const findVatHelpLink = () => wrapper.findByTestId('vat-help-link');
+  const findVatInfoLine = () => wrapper.findByTestId('vat-info-line');
 
   afterEach(() => {
     wrapper.destroy();
@@ -33,13 +40,29 @@ describe('SummaryDetails', () => {
     });
 
     it('renders the plan name', () => {
-      expect(wrapper.find('[data-testid="selected-plan"]').text()).toMatchInterpolatedText(
+      expect(wrapper.findByTestId('selected-plan').text()).toMatchInterpolatedText(
         'Test plan (x1)',
       );
     });
 
     it('renders the price per unit', () => {
-      expect(wrapper.find('[data-testid="price-per-unit"]').text()).toBe('$10 per pack per year');
+      expect(wrapper.findByTestId('price-per-unit').text()).toBe('$10 per pack per year');
+    });
+
+    it('displays the total amount', () => {
+      expect(findTotalAmount().text()).toBe('$10');
+    });
+
+    it('displays a help link', () => {
+      expect(findVatHelpLink().attributes('href')).toBe(
+        'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+      );
+    });
+
+    it('displays an info text', () => {
+      expect(findVatInfoLine().text()).toMatchInterpolatedText(
+        'Tax (may be charged upon purchase)',
+      );
     });
   });
 
@@ -60,7 +83,7 @@ describe('SummaryDetails', () => {
     });
 
     it('does not render quantity', () => {
-      expect(wrapper.find('[data-testid="quantity"]').exists()).toBe(false);
+      expect(wrapper.findByTestId('quantity').exists()).toBe(false);
     });
   });
 
@@ -97,6 +120,18 @@ describe('SummaryDetails', () => {
       expect(findVat().isVisible()).toBe(true);
       expect(findVat().text()).toBe('$8');
     });
+
+    it('displays a help link', () => {
+      expect(findVatHelpLink().attributes('href')).toBe(
+        'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+      );
+    });
+
+    it('displays an info text', () => {
+      expect(findVatInfoLine().text()).toMatchInterpolatedText(
+        'Tax (may be charged upon purchase)',
+      );
+    });
   });
 
   describe('when tax rate is not applied', () => {
@@ -104,9 +139,8 @@ describe('SummaryDetails', () => {
       wrapper = createComponent();
     });
 
-    it('does not render tax fields', () => {
-      expect(findTotalExVat().exists()).toBe(false);
-      expect(findVat().exists()).toBe(false);
+    it('displays the vat amount with a stopgap', () => {
+      expect(findVat().text()).toBe('–');
     });
   });
 });
