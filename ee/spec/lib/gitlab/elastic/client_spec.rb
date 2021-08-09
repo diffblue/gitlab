@@ -32,6 +32,25 @@ RSpec.describe Gitlab::Elastic::Client do
           expect(options).to include(open_timeout: described_class::OPEN_TIMEOUT, timeout: 30)
         end
       end
+
+      context 'with retry_on_failure' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:retry_on_failure, :client_retry) do
+          nil   | 0    # not set or nil, no retry
+          false | 0    # with false, no retry
+          true  | true # with true, retry with default times
+          10    | 10   # with a number N, retry N times
+        end
+
+        with_them do
+          let(:params) { { url: 'http://dummy-elastic:9200', retry_on_failure: retry_on_failure } }
+
+          it 'sets retry in transport' do
+            expect(client.transport.options.dig(:retry_on_failure)).to eq(client_retry)
+          end
+        end
+      end
     end
 
     context 'with AWS IAM static credentials' do
