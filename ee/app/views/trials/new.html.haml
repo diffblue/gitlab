@@ -40,7 +40,7 @@
           = text_field_tag :company_name, params[:company_name] || current_user.organization, class: 'form-control gl-form-input', required: true, data: { qa_selector: 'company_name' }, readonly: readonly
       .form-group.gl-select2-html5-required-fix
         = label_tag :company_size, _('Number of employees'), for: :company_size, class: 'col-form-label'
-        = select_tag :company_size, company_size_options_for_select(params[:company_size]), include_blank: true, class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
+        = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'select2', required: true, data: { qa_selector: 'number_of_employees' }
       .form-group
         = label_tag :phone_number, _('Telephone number'), for: :phone_number, class: 'col-form-label'
         = telephone_field_tag :phone_number, params[:phone_number], pattern:  '^(\+)*[0-9-\s]+$', class: 'form-control gl-form-input', required: true, data: { qa_selector: 'telephone_number' }

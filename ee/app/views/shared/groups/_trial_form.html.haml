@@ -15,7 +15,7 @@
   .row
     .form-group.col-sm-12.gl-select2-html5-required-fix
       = label_tag :company_size, s_('Trial|Number of employees'), for: :company_size, class: 'col-form-label'
-      = select_tag :company_size, company_size_options_for_select(params[:company_size]), include_blank: true, class: 'js-trial-field select2', required: true
+      = select_tag :company_size, company_size_options_for_select(params[:company_size]), class: 'js-trial-field select2', required: true
   .row
     .form-group.col-sm-12
       = label_tag :number_of_users, s_('Trial|How many employees will use Gitlab?'), for: :number_of_users, class: 'col-form-label'
