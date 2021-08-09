@@ -1,64 +1,67 @@
 import { GlDeprecatedSkeletonLoading as GlSkeletonLoading } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import Api from 'ee/api'; // TODO: fix this for FOSS
-import { group } from 'jest/cycle_analytics/mock_data';
+import waitForPromises from 'helpers/wait_for_promises';
 import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import createFlash from '~/flash';
-import { timeMetricsData, recentActivityData } from '../mock_data';
-
-const allMetrics = [...timeMetricsData, ...recentActivityData];
+import { group, metricsData } from './mock_data';
 
 jest.mock('~/flash');
 
 describe('ValueStreamMetrics', () => {
-  const { full_path: requestPath } = group;
   let wrapper;
+  let mockGetValueStreamSummaryMetrics;
+
+  const { full_path: requestPath } = group;
+  const fakeReqName = 'Mock metrics';
 
   const createComponent = ({ requestParams = {} } = {}) => {
     return shallowMount(ValueStreamMetrics, {
       propsData: {
         requestPath,
         requestParams,
+        requests: [{ request: mockGetValueStreamSummaryMetrics, name: fakeReqName }],
       },
     });
   };
 
-  const findMetrics = () => wrapper.findComponent(GlSingleStat).props('metrics');
+  const findMetrics = () => wrapper.findAllComponents(GlSingleStat);
 
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
   });
 
+  it('will display a loading icon if `true`', async () => {
+    mockGetValueStreamSummaryMetrics = jest.fn().mockResolvedValue({ data: metricsData });
+    wrapper = createComponent();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find(GlSkeletonLoading).exists()).toBe(true);
+  });
+
   describe('with successful requests', () => {
     beforeEach(async () => {
-      jest.spyOn(Api, 'cycleAnalyticsTimeSummaryData').mockResolvedValue({ data: timeMetricsData });
-      jest.spyOn(Api, 'cycleAnalyticsSummaryData').mockResolvedValue({ data: recentActivityData });
+      mockGetValueStreamSummaryMetrics = jest.fn().mockResolvedValue({ data: metricsData });
       wrapper = createComponent();
 
-      await nextTick;
+      await waitForPromises();
     });
 
-    it.each(['cycleAnalyticsTimeSummaryData', 'cycleAnalyticsSummaryData'])(
-      'fetches data for the %s request',
-      (request) => {
-        expect(Api[request]).toHaveBeenCalledWith(requestPath, {});
-      },
-    );
+    it('fetches data for the `getValueStreamSummaryMetrics` request', () => {
+      expect(mockGetValueStreamSummaryMetrics).toHaveBeenCalledWith(requestPath, {});
+    });
 
     it.each`
-      index | value                          | title                          | unit
-      ${0}  | ${timeMetricsData[0].value}    | ${timeMetricsData[0].title}    | ${timeMetricsData[0].unit}
-      ${1}  | ${timeMetricsData[1].value}    | ${timeMetricsData[1].title}    | ${timeMetricsData[1].unit}
-      ${2}  | ${recentActivityData[0].value} | ${recentActivityData[0].title} | ${recentActivityData[0].unit}
-      ${3}  | ${recentActivityData[1].value} | ${recentActivityData[1].title} | ${recentActivityData[1].unit}
-      ${4}  | ${recentActivityData[2].value} | ${recentActivityData[2].title} | ${recentActivityData[2].unit}
+      index | value                   | title                   | unit
+      ${0}  | ${metricsData[0].value} | ${metricsData[0].title} | ${metricsData[0].unit}
+      ${1}  | ${metricsData[1].value} | ${metricsData[1].title} | ${metricsData[1].unit}
+      ${2}  | ${metricsData[2].value} | ${metricsData[2].title} | ${metricsData[2].unit}
+      ${3}  | ${metricsData[3].value} | ${metricsData[3].title} | ${metricsData[3].unit}
     `(
       'renders a single stat component for the $title with value and unit',
       ({ index, value, title, unit }) => {
-        const metric = findAllMetrics().at(index);
+        const metric = findMetrics().at(index);
         const expectedUnit = unit ?? '';
 
         expect(metric.props('value')).toBe(value);
@@ -71,11 +74,6 @@ describe('ValueStreamMetrics', () => {
       expect(wrapper.find(GlSkeletonLoading).exists()).toBe(false);
     });
 
-    it('will display a loading icon if `true`', () => {
-      wrapper = createComponent({ isLoading: true });
-      expect(wrapper.find(GlSkeletonLoading).exists()).toBe(true);
-    });
-
     describe('with additional params', () => {
       beforeEach(async () => {
         wrapper = createComponent({
@@ -86,50 +84,30 @@ describe('ValueStreamMetrics', () => {
           },
         });
 
-        await nextTick;
+        await waitForPromises();
       });
 
-      it.each(['cycleAnalyticsTimeSummaryData', 'cycleAnalyticsSummaryData'])(
-        'sends additional parameters as query paremeters in %s request',
-        (request) => {
-          expect(Api[request]).toHaveBeenCalledWith(requestPath, {
-            'project_ids[]': [1],
-            created_after: '2020-01-01',
-            created_before: '2020-02-01',
-          });
-        },
-      );
-    });
-
-    describe('metrics', () => {
-      it('sets the metrics component props', () => {
-        const metricsProps = findMetrics();
-        allMetrics.forEach((metric, index) => {
-          const currentProp = metricsProps[index];
-          expect(currentProp.label).toEqual(metric.title);
-          expect(currentProp.value).toEqual(metric.value);
-          expect(currentProp.unit).toEqual(metric.unit);
+      it('fetches data for the `getValueStreamSummaryMetrics` request', () => {
+        expect(mockGetValueStreamSummaryMetrics).toHaveBeenCalledWith(requestPath, {
+          'project_ids[]': [1],
+          created_after: '2020-01-01',
+          created_before: '2020-02-01',
         });
       });
     });
   });
 
-  describe.each`
-    metric               | failedRequest                      | succesfulRequest
-    ${'time summary'}    | ${'cycleAnalyticsTimeSummaryData'} | ${'cycleAnalyticsSummaryData'}
-    ${'recent activity'} | ${'cycleAnalyticsSummaryData'}     | ${'cycleAnalyticsTimeSummaryData'}
-  `('with the $failedRequest request failing', ({ metric, failedRequest, succesfulRequest }) => {
+  describe('with a request failing', () => {
     beforeEach(async () => {
-      jest.spyOn(Api, failedRequest).mockRejectedValue();
-      jest.spyOn(Api, succesfulRequest).mockResolvedValue(Promise.resolve({}));
+      mockGetValueStreamSummaryMetrics = jest.fn().mockRejectedValue();
       wrapper = createComponent();
 
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
     });
 
     it('it should render a error message', () => {
       expect(createFlash).toHaveBeenCalledWith({
-        message: `There was an error while fetching value stream analytics ${metric} data.`,
+        message: `There was an error while fetching value stream analytics ${fakeReqName} data.`,
       });
     });
   });
