@@ -106,13 +106,13 @@ export default {
      * 3. In case of prepending timeframe,
      *    reset scroll-position (due to DOM prepend).
      */
-    processExtendedTimeline({ extendType = EXTEND_AS.PREPEND, roadmapTimelineEl, itemsCount = 0 }) {
+    processExtendedTimeline({ extendAs = EXTEND_AS.PREPEND, roadmapTimelineEl, itemsCount = 0 }) {
       // Re-render timeline bars with updated timeline
       eventHub.$emit('refreshTimeline', {
-        todayBarReady: extendType === EXTEND_AS.PREPEND,
+        todayBarReady: extendAs === EXTEND_AS.PREPEND,
       });
 
-      if (extendType === EXTEND_AS.PREPEND) {
+      if (extendAs === EXTEND_AS.PREPEND) {
         // When DOM is prepended with elements
         // we compensate the scrolling for added elements' width
         roadmapTimelineEl.parentElement.scrollBy(
@@ -121,8 +121,8 @@ export default {
         );
       }
     },
-    handleScrollToExtend(roadmapTimelineEl, extendType = EXTEND_AS.PREPEND) {
-      this.extendTimeframe({ extendAs: extendType });
+    handleScrollToExtend({ el: roadmapTimelineEl, extendAs = EXTEND_AS.PREPEND }) {
+      this.extendTimeframe({ extendAs });
       this.refreshEpicDates();
       this.refreshMilestoneDates();
 
@@ -135,7 +135,7 @@ export default {
               // Re-render timeline bars with updated timeline
               this.processExtendedTimeline({
                 itemsCount: this.extendedTimeframe ? this.extendedTimeframe.length : 0,
-                extendType,
+                extendAs,
                 roadmapTimelineEl,
               });
             });
@@ -164,9 +164,8 @@ export default {
       primary-button-link="https://docs.gitlab.com/ee/user/group/roadmap/"
       data-testid="epics_limit_callout"
       @dismiss="dismissTooManyEpicsWarning"
+      >{{ $options.i18n.warningBody }}</gl-alert
     >
-      {{ $options.i18n.warningBody }}
-    </gl-alert>
     <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container">
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-mt-5" size="md" />
       <epics-list-empty

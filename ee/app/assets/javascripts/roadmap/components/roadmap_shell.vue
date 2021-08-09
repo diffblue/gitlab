@@ -76,10 +76,16 @@ export default {
 
       // If timeline was scrolled to start
       if (isInViewport(timelineEdgeStartEl, { left: this.timeframeStartOffset })) {
-        this.$emit('onScrollToStart', this.$refs.roadmapTimeline.$el, EXTEND_AS.PREPEND);
+        this.$emit('onScrollToStart', {
+          el: this.$refs.roadmapTimeline.$el,
+          extendAs: EXTEND_AS.PREPEND,
+        });
       } else if (isInViewport(timelineEdgeEndEl)) {
         // If timeline was scrolled to end
-        this.$emit('onScrollToEnd', this.$refs.roadmapTimeline.$el, EXTEND_AS.APPEND);
+        this.$emit('onScrollToEnd', {
+          el: this.$refs.roadmapTimeline.$el,
+          extendAs: EXTEND_AS.APPEND,
+        });
       }
 
       eventHub.$emit('epicsListScrolled', { scrollTop, scrollLeft, clientHeight, scrollHeight });
