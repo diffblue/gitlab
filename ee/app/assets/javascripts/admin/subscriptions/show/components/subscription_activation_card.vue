@@ -57,8 +57,8 @@ export default {
             data-testid="activate-subscription-link"
             :href="$options.links.activateSubscriptionUrl"
             target="_blank"
-            >{{ content }}
-          </gl-link>
+            >{{ content }}</gl-link
+          >
         </template>
       </gl-sprintf>
     </p>
