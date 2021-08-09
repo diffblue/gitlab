@@ -33,7 +33,6 @@ describe('ApprovalSettingsCheckbox', () => {
   const findLink = () => wrapper.findComponent(GlLink);
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLockIcon = () => wrapper.findByTestId('lock-icon');
-  const findHelpIcon = () => wrapper.findByTestId('help-icon');
 
   afterEach(() => {
     wrapper.destroy();
@@ -45,15 +44,15 @@ describe('ApprovalSettingsCheckbox', () => {
     });
 
     it('shows the label', () => {
-      expect(findCheckbox().text()).toBe(label);
+      expect(findCheckbox().text()).toContain(label);
+    });
+
+    it('shows the help text', () => {
+      expect(findCheckbox().text()).toContain('Learn more.');
     });
 
     it('sets the correct help link', () => {
       expect(findLink().attributes('href')).toBe(`/help/${APPROVALS_HELP_PATH}#${anchor}`);
-    });
-
-    it('shows a help icon', () => {
-      expect(findHelpIcon().props('name')).toBe('question-o');
     });
   });
 

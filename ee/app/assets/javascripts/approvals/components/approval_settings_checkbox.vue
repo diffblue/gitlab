@@ -51,7 +51,7 @@ export default {
     },
   },
   i18n: {
-    helpLabel: __('Help'),
+    helpLinkText: __('Learn more.'),
     lockIconTitle: __('Setting enforced'),
   },
 };
@@ -72,12 +72,7 @@ export default {
       />
     </template>
     <gl-link :href="href" target="_blank">
-      <gl-icon
-        data-testid="help-icon"
-        name="question-o"
-        :aria-label="$options.i18n.helpLabel"
-        :size="16"
-      />
+      {{ $options.i18n.helpLinkText }}
     </gl-link>
   </gl-form-checkbox>
 </template>
