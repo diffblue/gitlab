@@ -1,8 +1,9 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import Component from 'ee/subscriptions/new/components/order_summary.vue';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('Order Summary', () => {
   const localVue = createLocalVue();
@@ -23,10 +24,12 @@ describe('Order Summary', () => {
     fullName: 'Full Name',
   };
 
-  const store = createStore(initialData);
+  const findTaxInfoLine = () => wrapper.findByTestId('tax-info-line');
+  const findTaxHelpLink = () => wrapper.findByTestId('tax-help-link');
 
+  const store = createStore(initialData);
   const createComponent = (opts = {}) => {
-    wrapper = mount(Component, {
+    wrapper = mountExtended(Component, {
       localVue,
       store,
       ...opts,
@@ -47,7 +50,7 @@ describe('Order Summary', () => {
         store.commit(types.UPDATE_IS_SETUP_FOR_COMPANY, false);
       });
 
-      it('should display the title with the passed name', () => {
+      it('displays the title with the passed name', () => {
         expect(wrapper.find('h4').text()).toContain("Full Name's GitLab subscription");
       });
     });
@@ -58,7 +61,7 @@ describe('Order Summary', () => {
       });
 
       describe('Without a group name provided', () => {
-        it('should display the title with the default name', () => {
+        it('displays the title with the default name', () => {
           expect(wrapper.find('h4').text()).toContain("Your organization's GitLab subscription");
         });
       });
@@ -68,7 +71,7 @@ describe('Order Summary', () => {
           store.commit(types.UPDATE_ORGANIZATION_NAME, 'My group');
         });
 
-        it('when given a group name, it should display the title with the group name', () => {
+        it('displays the title with the group name', () => {
           expect(wrapper.find('h4').text()).toContain("My group's GitLab subscription");
         });
       });
@@ -77,30 +80,30 @@ describe('Order Summary', () => {
 
   describe('Changing the plan', () => {
     describe('the selected plan', () => {
-      it('should display the chosen plan', () => {
+      it('displays the chosen plan', () => {
         expect(wrapper.find('.js-selected-plan').text()).toContain('Gold plan');
       });
 
-      it('should display the correct formatted amount price per user', () => {
+      it('displays the correct formatted amount price per user', () => {
         expect(wrapper.find('.js-per-user').text()).toContain('$1,188 per user per year');
       });
     });
 
-    describe('the default plan', () => {
+    describe('with the default plan', () => {
       beforeEach(() => {
         store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 1);
       });
 
-      it('should display the chosen plan', () => {
+      it('displays the chosen plan', () => {
         expect(wrapper.find('.js-selected-plan').text()).toContain('Bronze plan');
       });
 
-      it('should display the correct formatted amount price per user', () => {
+      it('displays the correct formatted amount price per user', () => {
         expect(wrapper.find('.js-per-user').text()).toContain('$48 per user per year');
       });
 
-      it('should display the correct formatted total amount', () => {
+      it('displays the correct formatted total amount', () => {
         expect(wrapper.find('.js-total-amount').text()).toContain('$48');
       });
     });
@@ -112,48 +115,48 @@ describe('Order Summary', () => {
       store.commit(types.UPDATE_NUMBER_OF_USERS, 1);
     });
 
-    describe('the default of 1 selected user', () => {
-      it('should display the correct number of users', () => {
+    describe('with the default of 1 selected user', () => {
+      it('displays the correct number of users', () => {
         expect(wrapper.find('.js-number-of-users').text()).toContain('(x1)');
       });
 
-      it('should display the correct formatted amount price per user', () => {
+      it('displays the correct formatted amount price per user', () => {
         expect(wrapper.find('.js-per-user').text()).toContain('$1,188 per user per year');
       });
 
-      it('should display the correct multiplied formatted amount of the chosen plan', () => {
+      it('displays the correct multiplied formatted amount of the chosen plan', () => {
         expect(wrapper.find('.js-amount').text()).toContain('$1,188');
       });
 
-      it('should display the correct formatted total amount', () => {
+      it('displays the correct formatted total amount', () => {
         expect(wrapper.find('.js-total-amount').text()).toContain('$1,188');
       });
     });
 
-    describe('3 selected users', () => {
+    describe('with 3 selected users', () => {
       beforeEach(() => {
         store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
       });
 
-      it('should display the correct number of users', () => {
+      it('displays the correct number of users', () => {
         expect(wrapper.find('.js-number-of-users').text()).toContain('(x3)');
       });
 
-      it('should display the correct formatted amount price per user', () => {
+      it('displays the correct formatted amount price per user', () => {
         expect(wrapper.find('.js-per-user').text()).toContain('$1,188 per user per year');
       });
 
-      it('should display the correct multiplied formatted amount of the chosen plan', () => {
+      it('displays the correct multiplied formatted amount of the chosen plan', () => {
         expect(wrapper.find('.js-amount').text()).toContain('$3,564');
       });
 
-      it('should display the correct formatted total amount', () => {
+      it('displays the correct formatted total amount', () => {
         expect(wrapper.find('.js-total-amount').text()).toContain('$3,564');
       });
     });
 
-    describe('no selected users', () => {
+    describe('with no selected users', () => {
       beforeEach(() => {
         store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
         store.commit(types.UPDATE_NUMBER_OF_USERS, 0);
@@ -163,7 +166,7 @@ describe('Order Summary', () => {
         expect(wrapper.find('.js-number-of-users').exists()).toBe(false);
       });
 
-      it('should display the correct formatted amount price per user', () => {
+      it('displays the correct formatted amount price per user', () => {
         expect(wrapper.find('.js-per-user').text()).toContain('$1,188 per user per year');
       });
 
@@ -171,7 +174,7 @@ describe('Order Summary', () => {
         expect(wrapper.find('.js-amount').text()).toContain('-');
       });
 
-      it('should display the correct formatted total amount', () => {
+      it('displays the correct formatted total amount', () => {
         expect(wrapper.find('.js-total-amount').text()).toContain('-');
       });
     });
@@ -187,13 +190,25 @@ describe('Order Summary', () => {
     });
 
     describe('tax rate', () => {
-      describe('a tax rate of 0', () => {
-        it('should not display the total amount excluding vat', () => {
-          expect(wrapper.find('.js-total-ex-vat').exists()).toBe(false);
+      describe('with a tax rate of 0', () => {
+        it('displays the total amount excluding vat', () => {
+          expect(wrapper.find('.js-total-ex-vat').exists()).toBe(true);
         });
 
-        it('should not display the vat amount', () => {
-          expect(wrapper.find('.js-vat').exists()).toBe(false);
+        it('displays the vat amount with a stopgap', () => {
+          expect(wrapper.find('.js-vat').text()).toBe('–');
+        });
+
+        it('displays an info line', () => {
+          expect(findTaxInfoLine().text()).toMatchInterpolatedText(
+            'Tax (may be charged upon purchase)',
+          );
+        });
+
+        it('contains a help link', () => {
+          expect(findTaxHelpLink().attributes('href')).toBe(
+            'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+          );
         });
       });
 
@@ -202,16 +217,28 @@ describe('Order Summary', () => {
           store.state.taxRate = 0.08;
         });
 
-        it('should display the total amount excluding vat', () => {
+        it('displays the total amount excluding vat', () => {
           expect(wrapper.find('.js-total-ex-vat').text()).toContain('$1,188');
         });
 
-        it('should display the vat amount', () => {
+        it('displays the vat amount', () => {
           expect(wrapper.find('.js-vat').text()).toContain('$95.04');
         });
 
-        it('should display the total amount including the vat', () => {
+        it('displays the total amount including the vat', () => {
           expect(wrapper.find('.js-total-amount').text()).toContain('$1,283.04');
+        });
+
+        it('displays an info line', () => {
+          expect(findTaxInfoLine().text()).toMatchInterpolatedText(
+            'Tax (may be charged upon purchase)',
+          );
+        });
+
+        it('contains a help link', () => {
+          expect(findTaxHelpLink().attributes('href')).toBe(
+            'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+          );
         });
       });
     });
