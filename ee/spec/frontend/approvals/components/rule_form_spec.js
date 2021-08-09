@@ -1,4 +1,4 @@
-import { GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlFormCheckboxGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -619,6 +619,11 @@ describe('EE Approvals RuleForm', () => {
             expect.anything(),
             expect.objectContaining({ scanners }),
           );
+        });
+
+        it('does not contain unsupported report type', () => {
+          const group = wrapper.find(GlFormCheckboxGroup);
+          expect(Object.keys(group.props('options'))).not.toContain('cluster_image_scanning');
         });
       });
     });

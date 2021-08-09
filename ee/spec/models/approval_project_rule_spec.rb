@@ -162,14 +162,14 @@ RSpec.describe ApprovalProjectRule do
         using RSpec::Parameterized::TableSyntax
 
         where(:is_valid, :scanners, :vulnerabilities_allowed) do
-          true  | []                       | 0
-          true  | %w(dast)                 | 1
-          true  | %w(dast sast)            | 10
-          true  | %w(dast dast)            | 100
-          false | %w(dast unknown_scanner) | 100
-          false | %w(unknown_scanner)      | 100
-          false | %w(dast sast)            | 1.1
-          false | %w(dast sast)            | 'one'
+          true  | []                                     | 0
+          true  | %w(dast)                               | 1
+          true  | %w(dast sast)                          | 10
+          true  | %w(dast dast)                          | 100
+          false | %w(dast unknown_scanner)               | 100
+          false | [described_class::UNSUPPORTED_SCANNER] | 100
+          false | %w(dast sast)                          | 1.1
+          false | %w(dast sast)                          | 'one'
         end
 
         with_them do
