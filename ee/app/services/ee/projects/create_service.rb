@@ -55,18 +55,18 @@ module EE
       override :after_create_actions
       def after_create_actions
         super do
-          create_security_policy_configuration if security_policy_target_project?
+          create_security_policy_configuration_if_exists
         end
 
         create_predefined_push_rule
       end
 
-      def security_policy_target_project?
-        security_policy_target_project_id && ::Feature.enabled?(:security_orchestration_policies_configuration, project)
-      end
+      def create_security_policy_configuration_if_exists
+        return unless security_policy_target_project_id.present?
 
-      def create_security_policy_configuration
         if (security_policy_target_project = ::Project.find(security_policy_target_project_id))
+          return unless ::Feature.enabled?(:security_orchestration_policies_configuration, security_policy_target_project)
+
           ::Security::Orchestration::AssignService
             .new(security_policy_target_project, current_user, policy_project_id: project.id)
             .execute
