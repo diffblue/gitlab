@@ -54,6 +54,17 @@ RSpec.describe Gitlab::UsageDataMetrics do
         ])
       end
 
+      it 'includes issues_edit monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:issues_edit].keys).to include(
+          :g_project_management_issue_iteration_changed_monthly, :g_project_management_issue_iteration_changed_weekly,
+          :g_project_management_issue_weight_changed_monthly, :g_project_management_issue_weight_changed_weekly,
+          :g_project_management_issue_added_to_epic_monthly, :g_project_management_issue_added_to_epic_weekly,
+          :g_project_management_issue_removed_from_epic_monthly, :g_project_management_issue_removed_from_epic_weekly,
+          :g_project_management_issue_changed_epic_monthly, :g_project_management_issue_changed_epic_weekly,
+          :g_project_management_issue_health_status_changed_monthly, :g_project_management_issue_health_status_changed_weekly
+        )
+      end
+
       it 'includes testing monthly and weekly keys' do
         expect(subject[:redis_hll_counters][:testing]).to include(
           :i_testing_metrics_report_widget_total_monthly, :i_testing_metrics_report_widget_total_weekly,
