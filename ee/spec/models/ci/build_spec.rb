@@ -256,14 +256,6 @@ RSpec.describe Ci::Build do
 
       it { is_expected.to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
 
-      context 'feature flag is disabled' do
-        before do
-          stub_feature_flags(agent_kubeconfig_ci_variable: false)
-        end
-
-        it { is_expected.not_to include(key: 'KUBECONFIG', value: 'example-kubeconfig', public: false, file: true) }
-      end
-
       context 'job is deploying to a cluster' do
         let(:deployment) { create(:deployment, deployment_cluster: create(:deployment_cluster)) }
         let(:job) { create(:ci_build, pipeline: pipeline, deployment: deployment) }
