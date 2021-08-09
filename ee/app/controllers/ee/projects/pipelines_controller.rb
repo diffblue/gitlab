@@ -9,7 +9,6 @@ module EE
       prepended do
         before_action :authorize_read_licenses!, only: [:licenses]
         before_action do
-          push_frontend_feature_flag(:usage_data_i_testing_full_code_quality_report_total, project, default_enabled: true)
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development, default_enabled: :yaml)
         end
 
