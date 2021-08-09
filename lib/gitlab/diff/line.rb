@@ -63,6 +63,10 @@ module Gitlab
         @text&.slice(1..).to_s
       end
 
+      def line_based_on_type
+        type == "old" ? old_line : new_line
+      end
+
       def old_line
         old_pos unless added? || meta?
       end
