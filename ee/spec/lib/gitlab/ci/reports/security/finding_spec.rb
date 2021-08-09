@@ -179,19 +179,19 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
   end
 
   describe '#unsafe?' do
-    where(:severity, :unsafe?) do
-      'critical' | true
-      'high'     | true
-      'medium'   | false
-      'low'      | false
-      'info'     | false
-      'unknown'  | true
+    where(:severity, :levels, :unsafe?) do
+      'critical' | %w(critical high) | true
+      'high'     | %w(critical high) | true
+      'medium'   | %w(critical high) | false
+      'low'      | %w(critical high) | false
+      'info'     | %w(critical high) | false
+      'unknown'  | []                | false
     end
 
     with_them do
       let(:finding) { create(:ci_reports_security_finding, severity: severity) }
 
-      subject { finding.unsafe? }
+      subject { finding.unsafe?(levels) }
 
       it { is_expected.to be(unsafe?) }
     end

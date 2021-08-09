@@ -31,6 +31,9 @@ class ApprovalProjectRule < ApplicationRecord
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
   default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
 
+  validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
+  default_value_for :severity_levels, allows_nil: false, value: ::Enums::Vulnerability.severity_levels.keys
+
   def applies_to_branch?(branch)
     return true if protected_branches.empty?
 
