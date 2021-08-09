@@ -16,7 +16,9 @@ module Ci
       end
 
       def enabled?
-        namespace_eligible? && total_minutes.nonzero?
+        strong_memoize(:enabled) do
+          namespace_eligible? && total_minutes.nonzero?
+        end
       end
 
       # Status of the monthly allowance being used.
@@ -25,7 +27,7 @@ module Ci
       end
 
       def monthly_percent_used
-        return 0 unless enabled? && any_project_enabled?
+        return 0 unless enabled?
         return 0 if monthly_minutes == 0
 
         100 * monthly_minutes_used.to_i / monthly_minutes
@@ -46,13 +48,6 @@ module Ci
 
       def minutes_used_up?
         enabled? && total_minutes_used >= total_minutes
-      end
-
-      # TODO: merge this with minutes_used_up? in
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933.
-      # This method is agnostic from Project#shared_runners_enabled
-      def actual_minutes_used_up?
-        limit_enabled? && total_minutes_used >= total_minutes
       end
 
       def total_minutes
@@ -79,21 +74,13 @@ module Ci
         total_minutes.to_i - total_minutes_used
       end
 
-      private
-
       def any_project_enabled?
         strong_memoize(:any_project_enabled) do
           namespace.any_project_with_shared_runners_enabled?
         end
       end
 
-      # TODO: rename to `enabled?`
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933
-      def limit_enabled?
-        strong_memoize(:limit_enabled) do
-          namespace.root? && !!total_minutes.nonzero?
-        end
-      end
+      private
 
       def minutes_limit
         return monthly_minutes if enabled? && any_project_enabled?

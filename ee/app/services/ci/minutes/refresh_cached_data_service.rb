@@ -27,7 +27,7 @@ module Ci
       def update_pending_builds!
         return unless ::Feature.enabled?(:ci_pending_builds_maintain_ci_minutes_data, @root_namespace, type: :development, default_enabled: :yaml)
 
-        minutes_exceeded = @root_namespace.ci_minutes_quota.actual_minutes_used_up?
+        minutes_exceeded = @root_namespace.ci_minutes_quota.minutes_used_up?
         all_namespaces = @root_namespace.self_and_descendant_ids
 
         ::Ci::PendingBuild.where(namespace: all_namespaces).update_all(minutes_exceeded: minutes_exceeded)

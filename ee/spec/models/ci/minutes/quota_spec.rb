@@ -329,25 +329,6 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
-  describe '#actual_minutes_used_up?' do
-    subject { quota.actual_minutes_used_up? }
-
-    where(:minutes_used, :minutes_limit, :result, :title) do
-      100 | 0   | false | 'limit not enabled'
-      99  | 100 | false | 'total minutes not used'
-      101 | 100 | true  | 'total minutes used'
-    end
-
-    with_them do
-      before do
-        allow(namespace).to receive(:shared_runners_seconds).and_return(minutes_used.minutes)
-        namespace.shared_runners_minutes_limit = minutes_limit
-      end
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#total_minutes' do
     subject { quota.total_minutes }
 
@@ -430,13 +411,49 @@ RSpec.describe Ci::Minutes::Quota do
       end
     end
 
-    it 'does not trigger N+1 queries when called multiple times' do
+    it 'does not trigger additional queries when called multiple times' do
       # memoizes the result
       quota.namespace_eligible?
 
       # count
       actual = ActiveRecord::QueryRecorder.new do
         quota.namespace_eligible?
+      end
+
+      expect(actual.count).to eq(0)
+    end
+  end
+
+  describe '#any_project_enabled?' do
+    let_it_be(:project) { create(:project, namespace: namespace) }
+
+    context 'when namespace has any project with shared runners enabled' do
+      before do
+        project.update!(shared_runners_enabled: true)
+      end
+
+      it 'returns true' do
+        expect(quota.any_project_enabled?).to be_truthy
+      end
+    end
+
+    context 'when namespace has no projects with shared runners enabled' do
+      before do
+        project.update!(shared_runners_enabled: false)
+      end
+
+      it 'returns false' do
+        expect(quota.any_project_enabled?).to be_falsey
+      end
+    end
+
+    it 'does not trigger additional queries when called multiple times' do
+      # memoizes the result
+      quota.any_project_enabled?
+
+      # count
+      actual = ActiveRecord::QueryRecorder.new do
+        quota.any_project_enabled?
       end
 
       expect(actual.count).to eq(0)
