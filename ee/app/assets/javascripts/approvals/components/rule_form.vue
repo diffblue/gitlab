@@ -6,7 +6,7 @@ import {
   GlFormCheckbox,
   GlFormCheckboxGroup,
 } from '@gitlab/ui';
-import { groupBy, isEqual, isNumber } from 'lodash';
+import { groupBy, isEqual, isNumber, omit } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
@@ -25,6 +25,8 @@ import ApproversList from './approvers_list.vue';
 import ApproversSelect from './approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
+
+const EXCLUDED_REPORT_TYPE = 'cluster_image_scanning';
 
 export const READONLY_NAMES = [LICENSE_CHECK_NAME, VULNERABILITY_CHECK_NAME, COVERAGE_CHECK_NAME];
 
@@ -362,7 +364,7 @@ export default {
     },
   },
   APPROVAL_DIALOG_I18N,
-  REPORT_TYPES,
+  REPORT_TYPES: omit(REPORT_TYPES, EXCLUDED_REPORT_TYPE),
 };
 </script>
 
@@ -417,7 +419,7 @@ export default {
         </gl-form-checkbox>
         <gl-form-checkbox-group
           v-model="scanners"
-          :options="this.$options.REPORT_TYPES"
+          :options="$options.REPORT_TYPES"
           class="gl-ml-2"
         />
       </gl-dropdown>

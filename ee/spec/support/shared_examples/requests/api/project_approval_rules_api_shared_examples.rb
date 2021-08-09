@@ -116,7 +116,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       it 'returns 200 status' do
         expect do
           put api(url, current_user), params: { scanners: scanners }
-        end.to change { approval_rule.reload.scanners.count }.from(::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES.count).to(scanners.count)
+        end.to change { approval_rule.reload.scanners.count }.from(::ApprovalProjectRule::SUPPORTED_SCANNERS.count).to(scanners.count)
         expect(response).to have_gitlab_http_status(:ok)
       end
     end
