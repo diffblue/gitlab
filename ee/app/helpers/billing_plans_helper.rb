@@ -89,9 +89,13 @@ module BillingPlansHelper
   end
 
   def show_plans?(namespace)
-    return false if namespace.free_personal?
-
-    namespace.trial_active? || !(namespace.gold_plan? || namespace.ultimate_plan?)
+    if namespace.free_personal?
+      false
+    elsif namespace.trial_active?
+      true
+    else
+      !highest_tier?(namespace)
+    end
   end
 
   def show_trial_banner?(namespace)
@@ -189,6 +193,10 @@ module BillingPlansHelper
         .new(namespace_id: namespace_id)
         .execute
     end
+  end
+
+  def highest_tier?(namespace)
+    namespace.gold_plan? || namespace.ultimate_plan?
   end
 end
 
