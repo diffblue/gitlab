@@ -105,6 +105,83 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
     end
   end
 
+  describe '#applicable_branches' do
+    let_it_be_with_reload(:project) { create(:project, :repository) }
+    let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be_with_reload(:rule_schedule) do
+      create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    let(:branches) { ['production'] }
+
+    let(:policy) do
+      {
+        name: 'Scheduled DAST 1',
+        description: 'This policy runs DAST every 20 mins',
+        enabled: true,
+        rules: [{ type: 'schedule', branches: branches, cadence: '*/20 * * * *' }],
+        actions: [
+          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
+        ]
+      }
+    end
+
+    subject { rule_schedule.applicable_branches }
+
+    before do
+      allow(rule_schedule).to receive(:policy).and_return(policy)
+    end
+
+    context 'when branches does not exist' do
+      let(:branches) { ['production'] }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when branches is empty' do
+      let(:branches) { [] }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when some of the branches exists' do
+      let(:branches) { %w[feature-a feature-b] }
+
+      before do
+        project.repository.create_branch('feature-a', project.default_branch)
+        project.repository.create_branch('x-feature', project.default_branch)
+      end
+
+      it { is_expected.to eq(%w[feature-a]) }
+    end
+
+    context 'when branches with wildcards matches' do
+      let(:branches) { ['feature-*'] }
+
+      before do
+        project.repository.create_branch('feature-a', project.default_branch)
+        project.repository.create_branch('feature-b', project.default_branch)
+        project.repository.create_branch('x-feature', project.default_branch)
+      end
+
+      it { is_expected.to eq(%w[feature-a feature-b]) }
+    end
+
+    context 'when policy is not present' do
+      let(:policy) { nil }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when policy rules are not present' do
+      before do
+        policy[:rules] = []
+      end
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '#set_next_run_at' do
     it_behaves_like 'handles set_next_run_at' do
       let(:schedule) { create(:security_orchestration_policy_rule_schedule, cron: '*/1 * * * *') }
