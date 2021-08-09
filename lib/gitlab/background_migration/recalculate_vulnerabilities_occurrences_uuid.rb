@@ -9,6 +9,8 @@ class Gitlab::BackgroundMigration::RecalculateVulnerabilitiesOccurrencesUuid
   end
 
   class VulnerabilitiesFinding < ActiveRecord::Base
+    include ShaAttribute
+
     self.table_name = "vulnerability_occurrences"
     belongs_to :primary_identifier, class_name: 'VulnerabilitiesIdentifier', inverse_of: :primary_findings, foreign_key: 'primary_identifier_id'
     REPORT_TYPES = {
@@ -21,6 +23,9 @@ class Gitlab::BackgroundMigration::RecalculateVulnerabilitiesOccurrencesUuid
       api_fuzzing: 6
     }.with_indifferent_access.freeze
     enum report_type: REPORT_TYPES
+
+    sha_attribute :fingerprint
+    sha_attribute :location_fingerprint
   end
 
   class CalculateFindingUUID
@@ -74,18 +79,14 @@ class Gitlab::BackgroundMigration::RecalculateVulnerabilitiesOccurrencesUuid
 
     uuid_v5_name_components = {
       report_type: vulnerability_finding.report_type,
-      primary_identifier_fingerprint: encode_to_hex(vulnerability_finding.fingerprint),
-      location_fingerprint: encode_to_hex(vulnerability_finding.location_fingerprint),
+      primary_identifier_fingerprint: vulnerability_finding.fingerprint,
+      location_fingerprint: vulnerability_finding.location_fingerprint,
       project_id: vulnerability_finding.project_id
     }
 
     name = uuid_v5_name_components.values.join('-')
 
     CalculateFindingUUID.call(name)
-  end
-
-  def encode_to_hex(binary_string)
-    Gitlab::Database::ShaAttribute.new.deserialize(binary_string)
   end
 
   def logger
