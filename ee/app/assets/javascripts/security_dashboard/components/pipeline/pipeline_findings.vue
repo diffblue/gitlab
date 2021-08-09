@@ -50,9 +50,16 @@ export default {
       query: findingsQuery,
       variables() {
         return {
+          ...this.filters,
           pipelineId: this.pipeline.iid,
           fullPath: this.projectFullPath,
           first: VULNERABILITIES_PER_PAGE,
+          // Two issues here:
+          // 1. Severity filter, unlike vulnerabilities, need to be lower case.
+          // 2. Empty array returns an empty result, therefore we need to pass undefined in that case.
+          severity: this.filters?.severity?.length
+            ? this.filters.severity.map((s) => s.toLowerCase())
+            : undefined,
         };
       },
       update: ({ project }) =>
