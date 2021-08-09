@@ -6497,6 +6497,9 @@ msgstr ""
 msgid "Checkout|%{totalCiMinutes} CI minutes"
 msgstr ""
 
+msgid "Checkout|(may be %{linkStart}charged upon purchase%{linkEnd})"
+msgstr ""
+
 msgid "Checkout|(x%{numberOfUsers})"
 msgstr ""
 
@@ -10469,6 +10472,39 @@ msgid "Data type"
 msgstr ""
 
 msgid "Database update failed"
+msgstr ""
+
+msgid "DatadogIntegration|%{linkOpen}API key%{linkClose} used for authentication with Datadog."
+msgstr ""
+
+msgid "DatadogIntegration|(Advanced) The full URL for your Datadog site."
+msgstr ""
+
+msgid "DatadogIntegration|API URL"
+msgstr ""
+
+msgid "DatadogIntegration|Environment"
+msgstr ""
+
+msgid "DatadogIntegration|For self-managed deployments, set the %{codeOpen}env%{codeClose} tag for all the data sent to Datadog. %{linkOpen}How do I use tags?%{linkClose}"
+msgstr ""
+
+msgid "DatadogIntegration|How do I set up this integration?"
+msgstr ""
+
+msgid "DatadogIntegration|Send CI/CD pipeline information to Datadog to monitor for job failures and troubleshoot performance issues. %{docs_link}"
+msgstr ""
+
+msgid "DatadogIntegration|Service"
+msgstr ""
+
+msgid "DatadogIntegration|Tag all data from this GitLab instance in Datadog. Useful when managing several self-managed deployments."
+msgstr ""
+
+msgid "DatadogIntegration|The Datadog site to send data to. To send data to the EU site, use %{codeOpen}datadoghq.eu%{codeClose}."
+msgstr ""
+
+msgid "DatadogIntegration|Trace your GitLab pipelines with Datadog."
 msgstr ""
 
 msgid "Datasource name not found"
@@ -21617,6 +21653,9 @@ msgid "More information."
 msgstr ""
 
 msgid "More than %{number_commits_distance} commits different with %{default_branch}"
+msgstr ""
+
+msgid "More topics"
 msgstr ""
 
 msgid "Most relevant"
@@ -38487,6 +38526,9 @@ msgstr[1] ""
 msgid "access:"
 msgstr ""
 
+msgid "added"
+msgstr ""
+
 msgid "added %{created_at_timeago}"
 msgstr ""
 
@@ -39849,6 +39891,9 @@ msgstr ""
 msgid "remove weight"
 msgstr ""
 
+msgid "removed"
+msgstr ""
+
 msgid "removed a Zoom call from this issue"
 msgstr ""
 
@@ -39867,9 +39912,6 @@ msgid "required"
 msgstr ""
 
 msgid "reset it."
-msgstr ""
-
-msgid "revised"
 msgstr ""
 
 msgid "satisfied"
@@ -40041,9 +40083,6 @@ msgid "updated %{timeAgo}"
 msgstr ""
 
 msgid "updated %{time_ago}"
-msgstr ""
-
-msgid "uploaded"
 msgstr ""
 
 msgid "uploads"

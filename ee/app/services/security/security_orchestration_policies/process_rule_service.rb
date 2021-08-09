@@ -22,13 +22,14 @@ module Security
       def create_new_schedule_rules
         return unless policy_configuration.enabled?
 
-        policy[:rules]
-          .select { |rule| rule[:type] == Security::OrchestrationPolicyConfiguration::RULE_TYPES[:schedule] }
-          .each do |rule|
+        policy[:rules].each_with_index do |rule, rule_index|
+          next if rule[:type] != Security::OrchestrationPolicyConfiguration::RULE_TYPES[:schedule]
+
           Security::OrchestrationPolicyRuleSchedule
             .create!(
               security_orchestration_policy_configuration: policy_configuration,
               policy_index: policy_index,
+              rule_index: rule_index,
               cron: rule[:cadence],
               owner: policy_configuration.policy_last_updated_by
             )

@@ -38,17 +38,29 @@ module Gitlab
         def sync_groups?
           return false unless user && group.saml_group_sync_available?
 
-          group_names_from_saml.any? && group_link_ids.any?
+          any_group_links_in_hierarchy?
         end
 
         # rubocop:disable CodeReuse/ActiveRecord
         def group_link_ids
           strong_memoize(:group_link_ids) do
+            next [] if group_names_from_saml.empty?
+
             SamlGroupLink
               .by_saml_group_name(group_names_from_saml)
-              .by_group_id(group.self_and_descendants.select(:id))
+              .by_group_id(group_ids_in_hierarchy)
               .pluck(:id)
           end
+        end
+
+        def any_group_links_in_hierarchy?
+          strong_memoize(:group_ids_with_any_links) do
+            SamlGroupLink.by_group_id(group_ids_in_hierarchy).exists?
+          end
+        end
+
+        def group_ids_in_hierarchy
+          group.self_and_descendants.select(:id)
         end
         # rubocop:enable CodeReuse/ActiveRecord
 

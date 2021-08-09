@@ -1,6 +1,7 @@
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Cookies from 'js-cookie';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
 import RoadmapApp from 'ee/roadmap/components/roadmap_app.vue';
@@ -212,27 +213,26 @@ describe('RoadmapApp', () => {
 
       const extendType = EXTEND_AS.PREPEND;
 
-      wrapper.vm.handleScrollToExtend(roadmapTimelineEl, extendType);
+      wrapper.vm.handleScrollToExtend({ el: roadmapTimelineEl, extendAs: extendType });
 
       expect(wrapper.vm.extendTimeframe).toHaveBeenCalledWith({ extendAs: extendType });
       expect(wrapper.vm.refreshEpicDates).toHaveBeenCalled();
       expect(wrapper.vm.refreshMilestoneDates).toHaveBeenCalled();
     });
 
-    it('calls `fetchEpicsForTimeframe` with extended timeframe array', () => {
+    it('calls `fetchEpicsForTimeframe` with extended timeframe array', async () => {
       jest.spyOn(wrapper.vm, 'fetchEpicsForTimeframe').mockResolvedValue();
 
       const extendType = EXTEND_AS.PREPEND;
 
-      wrapper.vm.handleScrollToExtend(roadmapTimelineEl, extendType);
+      wrapper.vm.handleScrollToExtend({ el: roadmapTimelineEl, extendAs: extendType });
 
-      return wrapper.vm.$nextTick(() => {
-        expect(wrapper.vm.fetchEpicsForTimeframe).toHaveBeenCalledWith(
-          expect.objectContaining({
-            timeframe: wrapper.vm.extendedTimeframe,
-          }),
-        );
-      });
+      await nextTick();
+      expect(wrapper.vm.fetchEpicsForTimeframe).toHaveBeenCalledWith(
+        expect.objectContaining({
+          timeframe: wrapper.vm.extendedTimeframe,
+        }),
+      );
     });
   });
 

@@ -8,6 +8,7 @@ module Gitlab
       extend Gitlab::Utils::StrongMemoize
 
       OPEN_TIMEOUT = 5
+      NO_RETRY = 0
 
       # Takes a hash as returned by `ApplicationSetting#elasticsearch_config`,
       # and configures itself based on those parameters
@@ -21,7 +22,7 @@ module Gitlab
             }
           },
           randomize_hosts: true,
-          retry_on_failure: true
+          retry_on_failure: config[:retry_on_failure] || NO_RETRY
         }.compact
 
         if config[:aws]

@@ -14,10 +14,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
 
     let(:policy) do
       {
-        name: 'Scheduled DAST',
-        description: 'This policy runs DAST for every 15 mins',
+        name: 'DAST Scan',
+        description: 'This policy runs DAST on pipeline and for every 15 mins',
         enabled: true,
-        rules: [{ type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' }],
+        rules: [
+          { type: 'pipeline', branches: %w[production] },
+          { type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' }
+        ],
         actions: [
           { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
         ]
@@ -38,6 +41,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
         expect(policy_configuration.configured_at).not_to be_nil
         expect(Security::OrchestrationPolicyRuleSchedule.count).to eq(1)
         expect(new_schedule.id).not_to eq(schedule.id)
+        expect(new_schedule.rule_index).to eq(1)
         expect(new_schedule.next_run_at).to be > schedule.next_run_at
       end
     end

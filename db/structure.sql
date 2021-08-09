@@ -10487,11 +10487,11 @@ ALTER SEQUENCE chat_teams_id_seq OWNED BY chat_teams.id;
 
 CREATE TABLE ci_build_needs (
     id integer NOT NULL,
-    build_id integer NOT NULL,
+    build_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     name text NOT NULL,
     artifacts boolean DEFAULT true NOT NULL,
     optional boolean DEFAULT false NOT NULL,
-    build_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    build_id bigint NOT NULL
 );
 
 CREATE SEQUENCE ci_build_needs_id_seq
@@ -25595,6 +25595,8 @@ CREATE UNIQUE INDEX term_agreements_unique_index ON term_agreements USING btree 
 CREATE INDEX tmp_idx_deduplicate_vulnerability_occurrences ON vulnerability_occurrences USING btree (project_id, report_type, location_fingerprint, primary_identifier_id, id);
 
 CREATE INDEX tmp_idx_on_namespaces_delayed_project_removal ON namespaces USING btree (id) WHERE (delayed_project_removal = true);
+
+CREATE INDEX tmp_index_approval_project_rules_scanners ON approval_project_rules USING gin (scanners) WHERE (scanners @> '{cluster_image_scanning}'::text[]);
 
 CREATE INDEX tmp_index_merge_requests_draft_and_status ON merge_requests USING btree (id) WHERE ((draft = false) AND (state_id = 1) AND ((title)::text ~* '^\[draft\]|\(draft\)|draft:|draft|\[WIP\]|WIP:|WIP'::text));
 

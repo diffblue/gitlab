@@ -88,8 +88,8 @@ export default {
             :href="$options.links.troubleshootingHelpLink"
             target="_blank"
             class="gl-text-decoration-none!"
-            >{{ content }}
-          </gl-link>
+            >{{ content }}</gl-link
+          >
         </template>
       </gl-sprintf>
     </gl-alert>

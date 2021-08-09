@@ -4,6 +4,9 @@ class ApprovalProjectRule < ApplicationRecord
   include ApprovalRuleLike
   include Auditable
 
+  UNSUPPORTED_SCANNER = 'cluster_image_scanning'
+  SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
+
   belongs_to :project
   has_and_belongs_to_many :protected_branches
   has_many :approval_merge_request_rule_sources
@@ -22,11 +25,14 @@ class ApprovalProjectRule < ApplicationRecord
   validates :name, uniqueness: { scope: [:project_id, :rule_type] }
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
 
-  validates :scanners, inclusion: { in: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES }
-  default_value_for :scanners, allows_nil: false, value: ::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES
+  validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
+  default_value_for :scanners, allows_nil: false, value: SUPPORTED_SCANNERS
 
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
   default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
+
+  validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
+  default_value_for :severity_levels, allows_nil: false, value: ::Enums::Vulnerability.severity_levels.keys
 
   def applies_to_branch?(branch)
     return true if protected_branches.empty?

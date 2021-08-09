@@ -1,20 +1,43 @@
 import { GlEmptyState } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 
 import AdditionalMetadata from '~/packages_and_registries/package_registry/components/details/additional_metadata.vue';
 import PackagesApp from '~/packages_and_registries/package_registry/components/details/app.vue';
 import InstallationCommands from '~/packages_and_registries/package_registry/components/details/installation_commands.vue';
+import PackageFiles from '~/packages_and_registries/package_registry/components/details/package_files.vue';
 import PackageHistory from '~/packages_and_registries/package_registry/components/details/package_history.vue';
 import PackageTitle from '~/packages_and_registries/package_registry/components/details/package_title.vue';
-import { FETCH_PACKAGE_DETAILS_ERROR_MESSAGE } from '~/packages_and_registries/package_registry/constants';
+import {
+  FETCH_PACKAGE_DETAILS_ERROR_MESSAGE,
+  DELETE_PACKAGE_ERROR_MESSAGE,
+  PACKAGE_TYPE_COMPOSER,
+  DELETE_PACKAGE_FILE_SUCCESS_MESSAGE,
+  DELETE_PACKAGE_FILE_ERROR_MESSAGE,
+} from '~/packages_and_registries/package_registry/constants';
+
+import destroyPackageMutation from '~/packages_and_registries/package_registry/graphql/mutations/destroy_package.mutation.graphql';
+import destroyPackageFileMutation from '~/packages_and_registries/package_registry/graphql/mutations/destroy_package_file.mutation.graphql';
 import getPackageDetails from '~/packages_and_registries/package_registry/graphql/queries/get_package_details.query.graphql';
-import { packageDetailsQuery, packageData, emptyPackageDetailsQuery } from '../../mock_data';
+import {
+  packageDetailsQuery,
+  packageData,
+  emptyPackageDetailsQuery,
+  packageDestroyMutation,
+  packageDestroyMutationError,
+  packageFiles,
+  packageDestroyFileMutation,
+  packageDestroyFileMutationError,
+} from '../../mock_data';
 
 jest.mock('~/flash');
+useMockLocationHelper();
 
 const localVue = createLocalVue();
 
@@ -34,16 +57,33 @@ describe('PackagesApp', () => {
     groupListUrl: 'groupListUrl',
   };
 
-  function createComponent({ resolver = jest.fn().mockResolvedValue(packageDetailsQuery()) } = {}) {
+  function createComponent({
+    resolver = jest.fn().mockResolvedValue(packageDetailsQuery()),
+    mutationResolver = jest.fn().mockResolvedValue(packageDestroyMutation()),
+    fileDeleteMutationResolver = jest.fn().mockResolvedValue(packageDestroyFileMutation()),
+  } = {}) {
     localVue.use(VueApollo);
 
-    const requestHandlers = [[getPackageDetails, resolver]];
+    const requestHandlers = [
+      [getPackageDetails, resolver],
+      [destroyPackageMutation, mutationResolver],
+      [destroyPackageFileMutation, fileDeleteMutationResolver],
+    ];
     apolloProvider = createMockApollo(requestHandlers);
 
-    wrapper = shallowMount(PackagesApp, {
+    wrapper = shallowMountExtended(PackagesApp, {
       localVue,
       apolloProvider,
       provide,
+      stubs: {
+        PackageTitle,
+        GlModal: {
+          template: '<div></div>',
+          methods: {
+            show: jest.fn(),
+          },
+        },
+      },
     });
   }
 
@@ -52,6 +92,10 @@ describe('PackagesApp', () => {
   const findPackageHistory = () => wrapper.findComponent(PackageHistory);
   const findAdditionalMetadata = () => wrapper.findComponent(AdditionalMetadata);
   const findInstallationCommands = () => wrapper.findComponent(InstallationCommands);
+  const findDeleteModal = () => wrapper.findByTestId('delete-modal');
+  const findDeleteButton = () => wrapper.findByTestId('delete-package');
+  const findPackageFiles = () => wrapper.findComponent(PackageFiles);
+  const findDeleteFileModal = () => wrapper.findByTestId('delete-file-modal');
 
   afterEach(() => {
     wrapper.destroy();
@@ -119,6 +163,203 @@ describe('PackagesApp', () => {
     expect(findInstallationCommands().exists()).toBe(true);
     expect(findInstallationCommands().props()).toMatchObject({
       packageEntity: expect.objectContaining(packageData()),
+    });
+  });
+
+  describe('delete package', () => {
+    const originalReferrer = document.referrer;
+    const setReferrer = (value = provide.projectName) => {
+      Object.defineProperty(document, 'referrer', {
+        value,
+        configurable: true,
+      });
+    };
+
+    const performDeletePackage = async () => {
+      await findDeleteButton().trigger('click');
+
+      findDeleteModal().vm.$emit('primary');
+
+      await waitForPromises();
+    };
+
+    afterEach(() => {
+      Object.defineProperty(document, 'referrer', {
+        value: originalReferrer,
+        configurable: true,
+      });
+    });
+
+    it('shows the delete confirmation modal when delete is clicked', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      await findDeleteButton().trigger('click');
+
+      expect(findDeleteModal().exists()).toBe(true);
+    });
+
+    describe('successful request', () => {
+      it('when referrer contains project name calls window.replace with project url', async () => {
+        setReferrer();
+
+        createComponent();
+
+        await waitForPromises();
+
+        await performDeletePackage();
+
+        expect(window.location.replace).toHaveBeenCalledWith(
+          'projectListUrl?showSuccessDeleteAlert=true',
+        );
+      });
+
+      it('when referrer does not contain project name calls window.replace with group url', async () => {
+        setReferrer('baz');
+
+        createComponent();
+
+        await waitForPromises();
+
+        await performDeletePackage();
+
+        expect(window.location.replace).toHaveBeenCalledWith(
+          'groupListUrl?showSuccessDeleteAlert=true',
+        );
+      });
+    });
+
+    describe('request failure', () => {
+      it('on global failure it displays an alert', async () => {
+        createComponent({ mutationResolver: jest.fn().mockRejectedValue() });
+
+        await waitForPromises();
+
+        await performDeletePackage();
+
+        expect(createFlash).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: DELETE_PACKAGE_ERROR_MESSAGE,
+          }),
+        );
+      });
+
+      it('on payload with error it displays an alert', async () => {
+        createComponent({
+          mutationResolver: jest.fn().mockResolvedValue(packageDestroyMutationError()),
+        });
+
+        await waitForPromises();
+
+        await performDeletePackage();
+
+        expect(createFlash).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: DELETE_PACKAGE_ERROR_MESSAGE,
+          }),
+        );
+      });
+    });
+  });
+
+  describe('package files', () => {
+    it('renders the package files component and has the right props', async () => {
+      const expectedFile = { ...packageFiles()[0] };
+      // eslint-disable-next-line no-underscore-dangle
+      delete expectedFile.__typename;
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findPackageFiles().exists()).toBe(true);
+
+      expect(findPackageFiles().props('packageFiles')[0]).toMatchObject(expectedFile);
+    });
+
+    it('does not render the package files table when the package is composer', async () => {
+      createComponent({
+        resolver: jest
+          .fn()
+          .mockResolvedValue(packageDetailsQuery({ packageType: PACKAGE_TYPE_COMPOSER })),
+      });
+
+      await waitForPromises();
+
+      expect(findPackageFiles().exists()).toBe(false);
+    });
+
+    describe('deleting a file', () => {
+      const [fileToDelete] = packageFiles();
+
+      const doDeleteFile = () => {
+        findPackageFiles().vm.$emit('delete-file', fileToDelete);
+
+        findDeleteFileModal().vm.$emit('primary');
+
+        return waitForPromises();
+      };
+
+      it('opens a confirmation modal', async () => {
+        createComponent();
+
+        await waitForPromises();
+
+        findPackageFiles().vm.$emit('delete-file', fileToDelete);
+
+        await nextTick();
+
+        expect(findDeleteFileModal().exists()).toBe(true);
+      });
+
+      it('confirming on the modal deletes the file and shows a success message', async () => {
+        const resolver = jest.fn().mockResolvedValue(packageDetailsQuery());
+        createComponent({ resolver });
+
+        await waitForPromises();
+
+        await doDeleteFile();
+
+        expect(createFlash).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: DELETE_PACKAGE_FILE_SUCCESS_MESSAGE,
+          }),
+        );
+        // we are re-fetching the package details, so we expect the resolver to have been called twice
+        expect(resolver).toHaveBeenCalledTimes(2);
+      });
+
+      describe('errors', () => {
+        it('shows an error when the mutation request fails', async () => {
+          createComponent({ fileDeleteMutationResolver: jest.fn().mockRejectedValue() });
+          await waitForPromises();
+
+          await doDeleteFile();
+
+          expect(createFlash).toHaveBeenCalledWith(
+            expect.objectContaining({
+              message: DELETE_PACKAGE_FILE_ERROR_MESSAGE,
+            }),
+          );
+        });
+
+        it('shows an error when the mutation request returns an error payload', async () => {
+          createComponent({
+            fileDeleteMutationResolver: jest
+              .fn()
+              .mockResolvedValue(packageDestroyFileMutationError()),
+          });
+          await waitForPromises();
+
+          await doDeleteFile();
+
+          expect(createFlash).toHaveBeenCalledWith(
+            expect.objectContaining({
+              message: DELETE_PACKAGE_FILE_ERROR_MESSAGE,
+            }),
+          );
+        });
+      });
     });
   });
 });

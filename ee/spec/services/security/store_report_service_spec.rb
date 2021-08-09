@@ -319,6 +319,23 @@ RSpec.describe Security::StoreReportService, '#execute' do
                location_fingerprint: '34661e23abcf78ff80dfcc89d0700437612e3f88')
       end
 
+      let(:identifier_of_corrupted_finding) do
+        create(:vulnerabilities_identifier,
+               project: project,
+               fingerprint: '5848739446034d982ef7beece3bb19bff4044ffb')
+      end
+
+      let!(:finding_with_wrong_uuidv5) do
+        create(:vulnerabilities_finding,
+               pipelines: [pipeline],
+               identifiers: [identifier_of_corrupted_finding],
+               primary_identifier: identifier_of_corrupted_finding,
+               scanner: scanner,
+               project: project,
+               uuid: 'd588ff5c-7f65-5ac1-9d11-4f57d65f3faf',
+               location_fingerprint: '650bd2dbdad33d2859747c6ae83dcf448ce02394')
+      end
+
       let!(:vulnerability_with_uuid5) { create(:vulnerability, findings: [finding_with_uuidv5], project: project) }
 
       before do
@@ -351,11 +368,11 @@ RSpec.describe Security::StoreReportService, '#execute' do
       end
 
       it 'inserts only new identifiers and reuse existing ones' do
-        expect { subject }.to change { Vulnerabilities::Identifier.count }.by(5)
+        expect { subject }.to change { Vulnerabilities::Identifier.count }.by(4)
       end
 
       it 'inserts only new findings and reuse existing ones' do
-        expect { subject }.to change { Vulnerabilities::Finding.count }.by(4)
+        expect { subject }.to change { Vulnerabilities::Finding.count }.by(3)
       end
 
       it 'inserts all finding pipelines (join model) for this new pipeline' do
