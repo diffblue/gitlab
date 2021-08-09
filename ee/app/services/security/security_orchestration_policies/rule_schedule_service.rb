@@ -5,8 +5,10 @@ module Security
     class RuleScheduleService < BaseContainerService
       def execute(schedule)
         schedule.schedule_next_run!
+
+        branches = schedule.applicable_branches
         actions_for(schedule)
-          .each { |action| process_action(action) }
+          .each { |action| process_action(action, branches) }
       end
 
       private
@@ -18,24 +20,27 @@ module Security
         policy[:actions]
       end
 
-      def process_action(action)
+      def process_action(action, branches)
         case action[:scan]
-        when 'dast' then schedule_dast_on_demand_scan(action)
+        when 'dast' then schedule_dast_on_demand_scan(action, branches)
         end
       end
 
-      def schedule_dast_on_demand_scan(action)
+      def schedule_dast_on_demand_scan(action, branches)
         dast_site_profile = find_dast_site_profile(container, action[:site_profile])
         dast_scanner_profile = find_dast_scanner_profile(container, action[:scanner_profile])
 
-        ::DastOnDemandScans::CreateService.new(
-          container: container,
-          current_user: current_user,
-          params: {
-            dast_site_profile: dast_site_profile,
-            dast_scanner_profile: dast_scanner_profile
-          }
-        ).execute
+        branches.each do |branch|
+          ::DastOnDemandScans::CreateService.new(
+            container: container,
+            current_user: current_user,
+            params: {
+              branch: branch,
+              dast_site_profile: dast_site_profile,
+              dast_scanner_profile: dast_scanner_profile
+            }
+          ).execute
+        end
       end
 
       def find_dast_site_profile(project, dast_site_profile)

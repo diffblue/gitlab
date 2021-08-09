@@ -3,6 +3,7 @@
 module Security
   class OrchestrationPolicyRuleSchedule < ApplicationRecord
     include CronSchedulable
+    include Gitlab::Utils::StrongMemoize
 
     self.table_name = 'security_orchestration_policy_rule_schedules'
 
@@ -26,7 +27,20 @@ module Security
     end
 
     def policy
-      security_orchestration_policy_configuration.active_policies.at(policy_index)
+      strong_memoize(:policy) do
+        security_orchestration_policy_configuration.active_policies.at(policy_index)
+      end
+    end
+
+    def applicable_branches
+      configured_branches = policy&.dig(:rules, rule_index, :branches)
+      return [] if configured_branches.blank?
+
+      branch_names = security_orchestration_policy_configuration.project.repository.branches
+
+      configured_branches
+        .flat_map { |pattern| RefMatcher.new(pattern).matching(branch_names).map(&:name) }
+        .uniq
     end
 
     private

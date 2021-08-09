@@ -15,7 +15,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
         name: 'Run DAST in every pipeline',
         description: 'This policy enforces to run DAST for every pipeline within the project',
         enabled: true,
-        rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }],
+        rules: [{ type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' }],
         actions: [
           { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
         ]
@@ -35,17 +35,33 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     before do
       stub_licensed_features(security_on_demand_scans: true)
 
+      project.repository.create_branch('production', project.default_branch)
+
       allow_next_instance_of(Security::OrchestrationPolicyConfiguration) do |instance|
         allow(instance).to receive(:active_policies).and_return([policy])
       end
     end
 
-    context 'when policy actions exists' do
-      it 'creates a DAST on demand-scan pipeline and updates next_run_at' do
-        expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(1)
+    context 'when policy actions exists and there are multiple matching branches' do
+      it 'creates multiple DAST on demand-scan pipelines and updates next_run_at' do
+        expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(2)
 
         expect(schedule.next_run_at).to be > Time.zone.now
       end
+    end
+
+    context 'when the branch in rules does not exist' do
+      let(:policy) do
+        {
+          name: 'Run DAST in every pipeline',
+          description: 'This policy enforces to run DAST for every pipeline within the project',
+          enabled: true,
+          rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }],
+          actions: []
+        }
+      end
+
+      it_behaves_like 'does not execute DAST on demand-scan'
     end
 
     context 'when policy actions does not exist' do
