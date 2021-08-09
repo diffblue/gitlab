@@ -105,6 +105,41 @@ RSpec.describe GroupMember do
     end
   end
 
+  context 'refreshing project_authorizations' do
+    let_it_be_with_refind(:group) { create(:group) }
+    let_it_be_with_refind(:user) { create(:user) }
+    let_it_be(:group_member) { create(:group_member, :guest, group: group, user: user) }
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    context 'when the source group of the group member is destroyed' do
+      it 'refreshes the authorization of user to the project in the group' do
+        expect { group.destroy! }.to change { user.can?(:guest_access, project) }.from(true).to(false)
+      end
+
+      it 'refreshes the authorization without calling UserProjectAccessChangedService' do
+        expect(UserProjectAccessChangedService).not_to receive(:new)
+
+        group.destroy!
+      end
+    end
+
+    context 'when the user of the group member is destroyed' do
+      it 'refreshes the authorization of user to the project in the group' do
+        expect(project.authorized_users).to include(user)
+
+        user.destroy!
+
+        expect(project.authorized_users).not_to include(user)
+      end
+
+      it 'refreshes the authorization without calling UserProjectAccessChangedService' do
+        expect(UserProjectAccessChangedService).not_to receive(:new)
+
+        user.destroy!
+      end
+    end
+  end
+
   context 'group member webhooks', :sidekiq_inline do
     let_it_be_with_refind(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:group_hook) { create(:group_hook, group: group, member_events: true) }

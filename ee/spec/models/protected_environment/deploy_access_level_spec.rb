@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedEnvironment::DeployAccessLevel do
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
   let_it_be(:protected_environment) { create(:protected_environment, project: project) }
   let_it_be(:user) { create(:user) }
 

@@ -81,7 +81,8 @@ RSpec.describe Gitlab::CodeOwners::Loader do
         another_group = create(:group, parent: test_group, path: 'nested-group')
         another_group.add_developer(create(:user))
 
-        project.invited_groups << [test_group, another_group]
+        create(:project_group_link, project: project, group: test_group)
+        create(:project_group_link, project: project, group: another_group)
 
         # - 1 query for users
         # - 1 for the emails to later divide them across the entries
@@ -98,7 +99,7 @@ RSpec.describe Gitlab::CodeOwners::Loader do
 
       it 'loads group members as code owners' do
         test_group = create(:group, path: 'test-group')
-        project.invited_groups << test_group
+        create(:project_group_link, project: project, group: test_group)
 
         group_user = create(:user)
 
