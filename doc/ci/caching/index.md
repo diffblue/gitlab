@@ -127,7 +127,7 @@ disable it completely, use an empty hash:
 
 ```yaml
 job:
-  cache: {}
+  cache: []
 ```
 
 ## Inherit global configuration, but override specific settings per job
