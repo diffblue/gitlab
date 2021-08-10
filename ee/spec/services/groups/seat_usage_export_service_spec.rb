@@ -10,7 +10,7 @@ RSpec.describe Groups::SeatUsageExportService do
     subject(:result) { described_class.new(group, owner).execute }
 
     context 'when user is allowed to export seat usage data' do
-      let(:developer) { create(:user, name: 'Dev', username: 'dev', email: 'dev@example.org', state: 'active', managing_group: group) }
+      let(:developer) { create(:user, name: 'Dev', username: 'dev', email: 'dev@example.org', state: 'active') }
       let(:reporter) { create(:user, name: 'Reporter', username: 'reporter', state: 'active') }
 
       before do
@@ -22,6 +22,9 @@ RSpec.describe Groups::SeatUsageExportService do
 
         context 'when group has members' do
           before do
+            public_email = create(:email, :confirmed, user: developer, email: 'public@email.org')
+            developer.update!(public_email: public_email.email)
+
             group.add_developer(developer)
             group.add_reporter(reporter)
           end
@@ -30,7 +33,7 @@ RSpec.describe Groups::SeatUsageExportService do
             expect(payload).to eq([
               "Id,Name,Username,Email,State\n",
               "#{owner.id},Owner,owner,,active\n",
-              "#{developer.id},Dev,dev,dev@example.org,active\n",
+              "#{developer.id},Dev,dev,public@email.org,active\n",
               "#{reporter.id},Reporter,reporter,,active\n"
             ])
           end
