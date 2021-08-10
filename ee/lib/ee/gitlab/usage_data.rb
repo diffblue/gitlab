@@ -401,10 +401,8 @@ module EE
 
           {}.tap do |secure_jobs|
             ::Security::Scan.scan_types.each do |name, scan_type|
-              secure_jobs["#{name}_scans".to_sym] = count(::Security::Scan.joins(:build)
-                .where(scan_type: scan_type)
-                .merge(::CommitStatus.latest.success)
-                .where(time_period), :build_id, start: start, finish: finish)
+              by_scan_type = ::Security::Scan.where(scan_type: scan_type).where(time_period)
+              secure_jobs["#{name}_scans".to_sym] = count(by_scan_type, :build_id, start: start, finish: finish)
             end
           end
         end
