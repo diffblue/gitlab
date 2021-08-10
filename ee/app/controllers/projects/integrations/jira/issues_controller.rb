@@ -18,8 +18,7 @@ module Projects
           push_frontend_feature_flag(:jira_issue_details_edit_labels, project, default_enabled: :yaml)
         end
 
-        rescue_from ::Projects::Integrations::Jira::IssuesFinder::IntegrationError, with: :render_integration_error
-        rescue_from ::Projects::Integrations::Jira::IssuesFinder::RequestError, with: :render_request_error
+        rescue_from ::Projects::Integrations::Jira::IssuesFinder::Error, with: :render_error
 
         feature_category :integrations
 
@@ -104,18 +103,10 @@ module Projects
           return render_404 unless project.jira_issues_integration_available? && project.jira_integration.issues_enabled
         end
 
-        # Return the informational message to the user
-        def render_integration_error(exception)
+        def render_error(exception)
           log_exception(exception)
 
           render json: { errors: [exception.message] }, status: :bad_request
-        end
-
-        # Log the specific request error details and return generic message
-        def render_request_error(exception)
-          log_exception(exception)
-
-          render json: { errors: [_('An error occurred while requesting data from the Jira service.')] }, status: :bad_request
         end
       end
     end
