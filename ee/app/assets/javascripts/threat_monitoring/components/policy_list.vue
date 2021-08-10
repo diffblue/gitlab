@@ -327,6 +327,7 @@ export default {
 
     <policy-drawer
       :open="hasSelectedPolicy"
+      container-class=".js-threat-monitoring-container-wrapper"
       :policy="selectedPolicy"
       :edit-policy-path="editPolicyPath"
       data-testid="policyDrawer"

@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlDrawer } from '@gitlab/ui';
 import { getContentWrapperHeight, getPolicyKind } from '../../utils';
-import { POLICY_KINDS } from '../constants';
+import { POLICIES_LIST_CONTAINER_CLASS, POLICY_KINDS } from '../constants';
 import CiliumNetworkPolicy from './cilium_network_policy.vue';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
 
@@ -20,6 +20,11 @@ export default {
     ScanExecutionPolicy,
   },
   props: {
+    containerClass: {
+      type: String,
+      required: false,
+      default: POLICIES_LIST_CONTAINER_CLASS,
+    },
     policy: {
       type: Object,
       required: false,
@@ -41,7 +46,7 @@ export default {
   },
   methods: {
     getDrawerHeaderHeight() {
-      return getContentWrapperHeight('.js-threat-monitoring-container-wrapper');
+      return getContentWrapperHeight(this.containerClass);
     },
   },
   // We set the drawer's z-index to 252 to clear flash messages that might be displayed in the page
