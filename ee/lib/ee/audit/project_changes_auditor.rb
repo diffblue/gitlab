@@ -13,6 +13,9 @@ module EE
 
         audit_changes(:merge_requests_author_approval, as: 'prevent merge request approval from authors', model: model)
         audit_changes(:merge_requests_disable_committers_approval, as: 'prevent merge request approval from reviewers', model: model)
+        audit_changes(:reset_approvals_on_push, as: 'require new approvals when new commits are added to an MR', model: model)
+        audit_changes(:disable_overriding_approvers_per_merge_request, as: 'prevent users from modifying MR approval rules in merge requests', model: model)
+        audit_changes(:require_password_to_approve, as: 'require user password for approvals', model: model)
 
         audit_project_feature_changes
         audit_compliance_framework_changes

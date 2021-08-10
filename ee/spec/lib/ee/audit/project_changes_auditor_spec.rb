@@ -14,7 +14,10 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
         repository_size_limit: 10,
         packages_enabled: true,
         merge_requests_author_approval: false,
-        merge_requests_disable_committers_approval: true
+        merge_requests_disable_committers_approval: true,
+        reset_approvals_on_push: false,
+        disable_overriding_approvers_per_merge_request: false,
+        require_password_to_approve: false
       )
     end
 
@@ -159,6 +162,45 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
             change: 'prevent merge request approval from reviewers',
             from: true,
             to: false
+          )
+        end
+      end
+
+      it 'creates an event when the reset approvals on push changes' do
+        project.update!(reset_approvals_on_push: true)
+
+        aggregate_failures do
+          expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include(
+            change: 'require new approvals when new commits are added to an MR',
+            from: false,
+            to: true
+          )
+        end
+      end
+
+      it 'creates an event when the require password to approve changes' do
+        project.update!(require_password_to_approve: true)
+
+        aggregate_failures do
+          expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include(
+            change: 'require user password for approvals',
+            from: false,
+            to: true
+          )
+        end
+      end
+
+      it 'creates an event when the disable overriding approvers per merge request changes' do
+        project.update!(disable_overriding_approvers_per_merge_request: true)
+
+        aggregate_failures do
+          expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          expect(AuditEvent.last.details).to include(
+            change: 'prevent users from modifying MR approval rules in merge requests',
+            from: false,
+            to: true
           )
         end
       end
