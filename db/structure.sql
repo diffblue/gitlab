@@ -12543,6 +12543,24 @@ CREATE SEQUENCE design_user_mentions_id_seq
 
 ALTER SEQUENCE design_user_mentions_id_seq OWNED BY design_user_mentions.id;
 
+CREATE TABLE detached_partitions (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    drop_after timestamp with time zone NOT NULL,
+    table_name text NOT NULL,
+    CONSTRAINT check_aecee24ba3 CHECK ((char_length(table_name) <= 63))
+);
+
+CREATE SEQUENCE detached_partitions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE detached_partitions_id_seq OWNED BY detached_partitions.id;
+
 CREATE TABLE diff_note_positions (
     id bigint NOT NULL,
     note_id bigint NOT NULL,
@@ -20241,6 +20259,8 @@ ALTER TABLE ONLY design_management_versions ALTER COLUMN id SET DEFAULT nextval(
 
 ALTER TABLE ONLY design_user_mentions ALTER COLUMN id SET DEFAULT nextval('design_user_mentions_id_seq'::regclass);
 
+ALTER TABLE ONLY detached_partitions ALTER COLUMN id SET DEFAULT nextval('detached_partitions_id_seq'::regclass);
+
 ALTER TABLE ONLY diff_note_positions ALTER COLUMN id SET DEFAULT nextval('diff_note_positions_id_seq'::regclass);
 
 ALTER TABLE ONLY dora_daily_metrics ALTER COLUMN id SET DEFAULT nextval('dora_daily_metrics_id_seq'::regclass);
@@ -21559,6 +21579,9 @@ ALTER TABLE ONLY design_management_versions
 
 ALTER TABLE ONLY design_user_mentions
     ADD CONSTRAINT design_user_mentions_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY detached_partitions
+    ADD CONSTRAINT detached_partitions_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY diff_note_positions
     ADD CONSTRAINT diff_note_positions_pkey PRIMARY KEY (id);
