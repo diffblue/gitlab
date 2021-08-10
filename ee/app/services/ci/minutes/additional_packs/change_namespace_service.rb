@@ -46,6 +46,7 @@ module Ci
           raise ChangeNamespaceError, 'Target namespace must be provided' unless target.present?
           raise ChangeNamespaceError, 'Namespace must be a top-level namespace' unless namespace.root?
           raise ChangeNamespaceError, 'Target namespace must be a top-level namespace' unless target.root?
+          raise ChangeNamespaceError, 'Namespace and target must be different' if namespace == target
         end
 
         def validate_owners!
