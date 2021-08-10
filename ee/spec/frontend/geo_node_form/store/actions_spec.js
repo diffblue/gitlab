@@ -8,6 +8,7 @@ import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { MOCK_SYNC_NAMESPACES, MOCK_NODE, MOCK_ERROR_MESSAGE, MOCK_NODES_PATH } from '../mock_data';
 
+jest.mock('~/helpers/help_page_helper');
 jest.mock('~/flash');
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),

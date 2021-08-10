@@ -16,6 +16,7 @@ import {
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
+jest.mock('~/helpers/help_page_helper');
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
