@@ -1,8 +1,12 @@
 - breadcrumb_title _("Policies")
 - disable_security_policy_project = !can_update_security_orchestration_policy_project?(project)
+- default_environment_id = project.default_environment&.id || -1
 
 #js-security-policies-list{ data: { assigned_policy_project: assigned_policy_project(project).to_json,
+  default_environment_id: default_environment_id,
   disable_security_policy_project: disable_security_policy_project.to_s,
   documentation_path: help_page_path('user/application_security/policies/index.md'),
+  empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
   new_policy_path: new_project_threat_monitoring_policy_path(project),
+  environments_endpoint: project_environments_path(project),
   project_path: project.full_path } }

@@ -39,10 +39,8 @@ export default () => {
   } = el.dataset;
 
   const store = createStore();
-  store.dispatch('threatMonitoring/setEndpoints', {
-    networkPolicyStatisticsEndpoint,
-    environmentsEndpoint,
-  });
+  store.dispatch('threatMonitoring/setStatisticsEndpoint', networkPolicyStatisticsEndpoint);
+  store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
 
   return new Vue({
     apolloProvider,
