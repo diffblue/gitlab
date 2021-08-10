@@ -291,53 +291,6 @@ describe('Api', () => {
       });
     });
 
-    describe('cycleAnalyticsSummaryData', () => {
-      it('fetches value stream analytics summary data', (done) => {
-        const response = [
-          { value: 0, title: 'New Issues' },
-          { value: 0, title: 'Deploys' },
-        ];
-        const params = { ...defaultParams };
-        const expectedUrl = `${dummyValueStreamAnalyticsUrlRoot}/summary`;
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
-
-        Api.cycleAnalyticsSummaryData(groupId, params)
-          .then((responseObj) =>
-            expectRequestWithCorrectParameters(responseObj, {
-              response,
-              params,
-              expectedUrl,
-            }),
-          )
-          .then(done)
-          .catch(done.fail);
-      });
-    });
-
-    describe('cycleAnalyticsTimeSummaryData', () => {
-      it('fetches value stream analytics summary data', (done) => {
-        const response = [
-          { value: '10.0', title: 'Lead time', unit: 'per day' },
-          { value: '2.0', title: 'Cycle Time', unit: 'per day' },
-        ];
-        const params = { ...defaultParams };
-
-        const expectedUrl = `${dummyValueStreamAnalyticsUrlRoot}/time_summary`;
-        mock.onGet(expectedUrl).reply(httpStatus.OK, response);
-
-        Api.cycleAnalyticsTimeSummaryData(groupId, params)
-          .then((responseObj) =>
-            expectRequestWithCorrectParameters(responseObj, {
-              response,
-              params,
-              expectedUrl,
-            }),
-          )
-          .then(done)
-          .catch(done.fail);
-      });
-    });
-
     describe('cycleAnalyticsValueStreams', () => {
       it('fetches custom value streams', (done) => {
         const response = [{ name: 'value stream 1', id: 1 }];

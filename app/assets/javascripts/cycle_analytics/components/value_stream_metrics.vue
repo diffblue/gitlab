@@ -13,8 +13,8 @@ const requestData = ({ request, path, params, name }) => {
     .catch(() => {
       createFlash({
         message: sprintf(
-          s__('There was an error while fetching value stream analytics %{name} data.'),
-          { name },
+          s__('There was an error while fetching value stream analytics %{requestTypeName} data.'),
+          { requestTypeName: name },
         ),
       });
     });

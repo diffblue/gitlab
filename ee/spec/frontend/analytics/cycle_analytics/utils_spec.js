@@ -14,7 +14,6 @@ import {
   flattenTaskByTypeSeries,
   orderByDate,
   toggleSelectedLabel,
-  prepareTimeMetricsData,
   prepareStageErrors,
   formatMedianValuesWithOverview,
 } from 'ee/analytics/cycle_analytics/utils';
@@ -23,7 +22,6 @@ import { createdAfter, createdBefore, rawStageMedians } from 'jest/cycle_analyti
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
-import { slugify } from '~/lib/utils/text_utility';
 import {
   customStageEvents as events,
   customStageLabelEvents as labelEvents,
@@ -35,7 +33,6 @@ import {
   issueStage,
   rawCustomStage,
   rawTasksByTypeData,
-  timeMetricsData,
 } from './mock_data';
 
 const labelEventIds = labelEvents.map((ev) => ev.identifier);
@@ -340,34 +337,6 @@ describe('Value Stream Analytics utils', () => {
 
     it('will add an id that does not exist', () => {
       expect(toggleSelectedLabel({ selectedLabelIds, value: 4 })).toEqual([1, 2, 3, 4]);
-    });
-  });
-
-  describe('prepareTimeMetricsData', () => {
-    let prepared;
-    const [{ title: firstTitle }, { title: secondTitle }] = timeMetricsData;
-    const firstKey = slugify(firstTitle);
-    const secondKey = slugify(secondTitle);
-
-    beforeEach(() => {
-      prepared = prepareTimeMetricsData(timeMetricsData, {
-        [firstKey]: { description: 'Is a value that is good' },
-      });
-    });
-
-    it('will add a `key` based on the title', () => {
-      expect(prepared).toMatchObject([{ key: firstKey }, { key: secondKey }]);
-    });
-
-    it('will add a `label` key', () => {
-      expect(prepared).toMatchObject([{ label: 'Lead Time' }, { label: 'Cycle Time' }]);
-    });
-
-    it('will add a popover description using the key if it is provided', () => {
-      expect(prepared).toMatchObject([
-        { description: 'Is a value that is good' },
-        { description: '' },
-      ]);
     });
   });
 
