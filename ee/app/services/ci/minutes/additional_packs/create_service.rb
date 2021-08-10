@@ -4,54 +4,53 @@ module Ci
   module Minutes
     module AdditionalPacks
       class CreateService < ::Ci::Minutes::AdditionalPacks::BaseService
-        def initialize(current_user, namespace, params = {})
+        def initialize(current_user, namespace, packs = [])
           @current_user = current_user
           @namespace = namespace
-          @purchase_xid = params[:purchase_xid]
-          @expires_at = params[:expires_at]
-          @number_of_minutes = params[:number_of_minutes]
+          @packs = packs
         end
 
         def execute
           authorize_current_user!
 
-          if additional_pack.persisted? || save_additional_pack
-            reset_ci_minutes!
+          Ci::Minutes::AdditionalPack.transaction do
+            @additional_packs = packs.collect { |pack| find_or_create_pack!(pack) }
 
+            reset_ci_minutes!
             successful_response
-          else
-            error_response
           end
+        rescue ActiveRecord::RecordInvalid
+          error_response
         end
 
         private
 
-        attr_reader :current_user, :namespace, :purchase_xid, :expires_at, :number_of_minutes
+        attr_reader :current_user, :namespace, :packs, :additional_packs
 
         # rubocop: disable CodeReuse/ActiveRecord
-        def additional_pack
-          @additional_pack ||= Ci::Minutes::AdditionalPack.find_or_initialize_by(
+        def find_or_create_pack!(pack)
+          additional_pack = Ci::Minutes::AdditionalPack.find_or_initialize_by(
             namespace: namespace,
-            purchase_xid: purchase_xid
+            purchase_xid: pack[:purchase_xid]
           )
+
+          return additional_pack if additional_pack.persisted?
+
+          additional_pack.update!(
+            expires_at: pack[:expires_at],
+            number_of_minutes: pack[:number_of_minutes]
+          )
+
+          additional_pack
         end
         # rubocop: enable CodeReuse/ActiveRecord
 
-        def save_additional_pack
-          additional_pack.assign_attributes(
-            expires_at: expires_at,
-            number_of_minutes: number_of_minutes
-          )
-
-          additional_pack.save
-        end
-
         def successful_response
-          success({ additional_pack: additional_pack })
+          success({ additional_packs: additional_packs })
         end
 
         def error_response
-          error('Unable to save additional pack')
+          error('Unable to save additional packs')
         end
 
         def reset_ci_minutes!
