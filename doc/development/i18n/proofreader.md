@@ -42,6 +42,7 @@ are very appreciative of the work done by translators and proofreaders!
   - Jan Urbanec - [GitLab](https://gitlab.com/TatranskyMedved), [CrowdIn](https://crowdin.com/profile/Tatranskymedved)
 - Danish
   - Saederup92 - [GitLab](https://gitlab.com/Saederup92), [CrowdIn](https://crowdin.com/profile/Saederup92)
+  - scootergrisen - [GitLab](https://gitlab.com/scootergrisen), [Crowdin](https://crowdin.com/profile/scootergrisen)
 - Dutch
   - Emily Hendle - [GitLab](https://gitlab.com/pundachan), [CrowdIn](https://crowdin.com/profile/pandachan)
 - Esperanto
