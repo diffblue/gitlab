@@ -9,6 +9,7 @@ query pipelineFindings(
   $severity: [String!]
   $reportType: [String!]
   $scanner: [String!]
+  $state: [VulnerabilityState!]
 ) {
   project(fullPath: $fullPath) {
     pipeline(iid: $pipelineId) {
@@ -18,6 +19,7 @@ query pipelineFindings(
         severity: $severity
         reportType: $reportType
         scanner: $scanner
+        state: $state
       ) {
         nodes {
           uuid
