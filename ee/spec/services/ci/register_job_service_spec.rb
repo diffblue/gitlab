@@ -281,6 +281,20 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       stub_feature_flags(ci_pending_builds_queue_source: true)
     end
 
-    include_examples 'namespace minutes quota'
+    context 'with ci_queueing_denormalize_shared_runners_information enabled' do
+      before do
+        stub_feature_flags(ci_queueing_denormalize_shared_runners_information: true)
+      end
+
+      include_examples 'namespace minutes quota'
+    end
+
+    context 'with ci_queueing_denormalize_shared_runners_information disabled' do
+      before do
+        stub_feature_flags(ci_queueing_denormalize_shared_runners_information: false)
+      end
+
+      include_examples 'namespace minutes quota'
+    end
   end
 end
