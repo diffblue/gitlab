@@ -66,8 +66,6 @@ RSpec.describe Gitlab::Email::Handler::CreateNoteHandler do
       expect(new_note.author).to eq(sent_notification.recipient)
       expect(new_note.position).to eq(note.position)
       expect(new_note.note).to include('I could not disagree more.')
-      expect(new_note.note).to include('<details><summary>...</summary>')
-      expect(new_note.note).to include('> hey guys everyone knows adventure time sucks!')
       expect(new_note.in_reply_to?(note)).to be_truthy
 
       expect(new_note.discussion_id).to eq(note.discussion_id)
@@ -112,33 +110,38 @@ RSpec.describe Gitlab::Email::Handler::CreateNoteHandler do
     end
 
     context 'when email contains quoted text' do
-      context 'when email contains quoted text only' do
-        let(:email_raw) { fixture_file('emails/no_content_reply.eml') }
+      context 'when noteable is an issue' do
+        let_it_be(:issue) { create(:issue, project: project )}
+        let_it_be(:note) { create(:note_on_issue, noteable: issue, project: project) }
 
-        it 'creates a discussion without appended reply' do
-          expect { receiver.execute }.to change { noteable.notes.count }.by(1)
-          new_note = noteable.notes.last
+        context 'when email contains quoted text only' do
+          let(:email_raw) { fixture_file('emails/no_content_reply.eml') }
 
-          expect(new_note.note).not_to include('<details><summary>...</summary>')
+          it 'creates a discussion without appended reply' do
+            expect { receiver.execute }.to change { noteable.notes.count }.by(1)
+            new_note = noteable.notes.last
+
+            expect(new_note.note).not_to include('<details><summary>...</summary>')
+          end
         end
-      end
 
-      context 'when email contains quoted text and quick commands only' do
-        let(:email_raw) { fixture_file('emails/commands_only_reply.eml') }
+        context 'when email contains quoted text and quick commands only' do
+          let(:email_raw) { fixture_file('emails/commands_only_reply.eml') }
 
-        it 'does not create a discussion' do
-          expect { receiver.execute }.not_to change { noteable.notes.count }
+          it 'does not create a discussion' do
+            expect { receiver.execute }.not_to change { noteable.notes.count }
+          end
         end
-      end
 
-      context 'when email contains text, quoted text and quick commands' do
-        let(:email_raw) { fixture_file('emails/commands_in_reply.eml') }
+        context 'when email contains text, quoted text and quick commands' do
+          let(:email_raw) { fixture_file('emails/commands_in_reply.eml') }
 
-        it 'creates a discussion with appended reply' do
-          expect { receiver.execute }.to change { noteable.notes.count }.by(1)
-          new_note = noteable.notes.last
+          it 'creates a discussion with appended reply' do
+            expect { receiver.execute }.to change { noteable.notes.count }.by(1)
+            new_note = noteable.notes.last
 
-          expect(new_note.note).to include('<details><summary>...</summary>')
+            expect(new_note.note).to include('<details><summary>...</summary>')
+          end
         end
       end
     end

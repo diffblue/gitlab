@@ -25,7 +25,7 @@ module Gitlab
           validate_permission!(:create_note)
 
           raise NoteableNotFoundError unless noteable
-          raise EmptyEmailError if message_with_appended_reply.blank?
+          raise EmptyEmailError if note_message.blank?
 
           verify_record!(
             record: create_note,
@@ -48,7 +48,13 @@ module Gitlab
         end
 
         def create_note
-          sent_notification.create_reply(message_with_appended_reply)
+          sent_notification.create_reply(note_message)
+        end
+
+        def note_message
+          return message unless sent_notification.noteable_type == "Issue"
+
+          message_with_appended_reply
         end
       end
     end
