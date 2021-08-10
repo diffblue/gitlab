@@ -60,7 +60,7 @@ class GroupMembersFinder < UnionFinder
     when [:descendants, :direct, :inherited]
       group.self_and_hierarchy
     when [:direct, :inherited, :shared_with_groups]
-      find_union([group.self_and_ancestors, group.shared_with_groups], Group)
+      find_union([group.self_and_ancestors, group.shared_with_groups.public_or_visible_to_user(user)], Group)
     else
       nil
     end
