@@ -10,53 +10,48 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
 
     let(:service) { described_class.new }
 
-    let_it_be(:artifact) { create(:ci_job_artifact, expire_at: 1.day.ago) }
-    let_it_be(:security_scan) { create(:security_scan, build: artifact.job) }
+    let_it_be(:locked_pipeline) { create(:ci_pipeline, :artifacts_locked) }
+    let_it_be(:pipeline) { create(:ci_pipeline, :unlocked) }
+    let_it_be(:locked_job) { create(:ci_build, :success, pipeline: locked_pipeline) }
+    let_it_be(:job) { create(:ci_build, :success, pipeline: pipeline) }
+    let_it_be(:security_scan) { create(:security_scan, build: job) }
     let_it_be(:security_finding) { create(:security_finding, scan: security_scan) }
-
-    before(:all) do
-      artifact.job.pipeline.unlocked!
-    end
 
     context 'when artifact is expired' do
       context 'when artifact is not locked' do
+        let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
+
         it 'destroys job artifact and the security finding' do
           expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
-                            .and change { Security::Finding.count }.from(1).to(0)
+                            .and change { Security::Finding.count }.by(-1)
         end
       end
 
       context 'when artifact is locked' do
-        before do
-          artifact.job.pipeline.reload.artifacts_locked!
-        end
+        let!(:artifact) { create(:ci_job_artifact, :expired, job: locked_job, locked: locked_job.pipeline.locked) }
 
         it 'does not destroy job artifact' do
           expect { subject }.to not_change { Ci::JobArtifact.count }
-                            .and not_change { Security::Finding.count }.from(1)
+                            .and not_change { Security::Finding.count }
         end
       end
     end
 
     context 'when artifact is not expired' do
-      before do
-        artifact.update_column(:expire_at, 1.day.since)
-      end
+      let!(:artifact) { create(:ci_job_artifact, job: job, locked: job.pipeline.locked) }
 
       it 'does not destroy expired job artifacts' do
         expect { subject }.to not_change { Ci::JobArtifact.count }
-                          .and not_change { Security::Finding.count }.from(1)
+                          .and not_change { Security::Finding.count }
       end
     end
 
     context 'when artifact is permanent' do
-      before do
-        artifact.update_column(:expire_at, nil)
-      end
+      let!(:artifact) { create(:ci_job_artifact, expire_at: nil, job: job, locked: job.pipeline.locked) }
 
       it 'does not destroy expired job artifacts' do
         expect { subject }.to not_change { Ci::JobArtifact.count }
-                          .and not_change { Security::Finding.count }.from(1)
+                          .and not_change { Security::Finding.count }
       end
     end
 
@@ -69,41 +64,38 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
           .and_raise(ActiveRecord::RecordNotDestroyed)
       end
 
+      let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
+
       it 'raises an exception and stop destroying' do
         expect { subject }.to raise_error(ActiveRecord::RecordNotDestroyed)
-                          .and not_change { Security::Finding.count }.from(1)
+                          .and not_change { Security::Finding.count }
       end
     end
 
     context 'when there are artifacts more than batch sizes' do
       before do
         stub_const('Ci::JobArtifacts::DestroyAllExpiredService::BATCH_SIZE', 1)
-
-        second_artifact.job.pipeline.unlocked!
       end
 
-      let!(:second_artifact) { create(:ci_job_artifact, expire_at: 1.day.ago) }
-      let!(:second_security_scan) { create(:security_scan, build: second_artifact.job) }
+      let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
+      let!(:second_job) { create(:ci_build, :success, pipeline: pipeline) }
+      let!(:second_artifact) { create(:ci_job_artifact, :expired, job: second_job, locked: second_job.pipeline.locked) }
+      let!(:second_security_scan) { create(:security_scan, build: second_job) }
       let!(:second_security_finding) { create(:security_finding, scan: second_security_scan) }
 
       it 'destroys all expired artifacts' do
         expect { subject }.to change { Ci::JobArtifact.count }.by(-2)
-                          .and change { Security::Finding.count }.from(2).to(0)
+                          .and change { Security::Finding.count }.by(-2)
       end
     end
 
     context 'when some artifacts are locked' do
-      before do
-        pipeline = create(:ci_pipeline, locked: :artifacts_locked)
-        job = create(:ci_build, pipeline: pipeline)
-        create(:ci_job_artifact, expire_at: 1.day.ago, job: job)
-        security_scan = create(:security_scan, build: job)
-        create(:security_finding, scan: security_scan)
-      end
+      let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
+      let!(:second_artifact) { create(:ci_job_artifact, :expired, job: locked_job, locked: locked_job.pipeline.locked) }
 
       it 'destroys only unlocked artifacts' do
         expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
-                          .and change { Security::Finding.count }.from(2).to(1)
+                          .and change { Security::Finding.count }.by(-1)
       end
     end
   end
