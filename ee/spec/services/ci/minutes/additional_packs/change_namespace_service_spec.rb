@@ -40,6 +40,18 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
           expect(change_namespace[:status]).to eq :success
         end
 
+        it 'kicks off refresh ci minutes service for namespace and target' do
+          expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, namespace) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, target) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          change_namespace
+        end
+
         context 'when updating packs fails' do
           before do
             allow_next_instance_of(described_class) do |instance|
