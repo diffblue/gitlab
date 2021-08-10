@@ -54,6 +54,25 @@ RSpec.describe Gitlab::UsageDataMetrics do
         ])
       end
 
+      it 'includes i_ci_secrets_management_vault_build_created monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:ci_secrets_management].keys).to contain_exactly(*[
+          :i_ci_secrets_management_vault_build_created_monthly, :i_ci_secrets_management_vault_build_created_weekly
+        ])
+      end
+
+      it 'includes epic_boards_usage monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:epic_boards_usage].keys).to contain_exactly(*[
+          :g_project_management_users_creating_epic_boards_monthly, :g_project_management_users_creating_epic_boards_weekly,
+          :g_project_management_users_viewing_epic_boards_monthly, :g_project_management_users_viewing_epic_boards_weekly,
+          :g_project_management_users_updating_epic_board_names_monthly, :g_project_management_users_updating_epic_board_names_weekly,
+          :epic_boards_usage_total_unique_counts_monthly, :epic_boards_usage_total_unique_counts_weekly
+        ])
+      end
+
+      it 'includes terraform weekly key' do
+        expect(subject[:redis_hll_counters][:terraform].keys).to include(:p_terraform_state_api_unique_users_weekly)
+      end
+
       it 'includes issues_edit monthly and weekly keys' do
         expect(subject[:redis_hll_counters][:issues_edit].keys).to include(
           :g_project_management_issue_iteration_changed_monthly, :g_project_management_issue_iteration_changed_weekly,

@@ -3,6 +3,7 @@ import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SecurityPoliciesApp from './components/policies/policies_app.vue';
+import createStore from './store';
 
 Vue.use(VueApollo);
 
@@ -15,13 +16,20 @@ export default () => {
   const {
     assignedPolicyProject,
     disableSecurityPolicyProject,
+    defaultEnvironmentId,
+    environmentsEndpoint,
+    emptyStateSvgPath,
     documentationPath,
     newPolicyPath,
     projectPath,
   } = el.dataset;
 
+  const store = createStore();
+  store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
+
   return new Vue({
     apolloProvider,
+    store,
     el,
     provide: {
       assignedPolicyProject: JSON.parse(assignedPolicyProject),
@@ -29,6 +37,8 @@ export default () => {
       documentationPath,
       newPolicyPath,
       projectPath,
+      emptyStateSvgPath,
+      defaultEnvironmentId: parseInt(defaultEnvironmentId, 10),
     },
     render(createElement) {
       return createElement(SecurityPoliciesApp);

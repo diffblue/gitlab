@@ -1,9 +1,15 @@
 # frozen_string_literal: true
 
 module QA
-  # This test was quarantined because relative URL isn't supported
-  # See https://gitlab.com/gitlab-org/gitlab/issues/13833
-  RSpec.describe 'Create', :runner, :quarantine do
+  RSpec.describe(
+    'Create',
+    :runner,
+    quarantine: {
+      only: { job: 'relative_url' },
+      issue: 'https://gitlab.com/gitlab-org/gitlab/issues/13833',
+      type: :bug
+    }
+  ) do
     describe 'Web IDE web terminal' do
       before do
         project = Resource::Project.fabricate_via_api! do |project|

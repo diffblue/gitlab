@@ -254,6 +254,7 @@ export default {
             <item-due-date
               v-if="item.dueDate"
               :date="item.dueDate"
+              :closed="Boolean(item.closedAt)"
               tooltip-placement="top"
               css-class="item-due-date gl-display-flex gl-align-items-center gl-mr-5!"
             />

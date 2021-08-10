@@ -3,13 +3,12 @@ import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import * as types from './mutation_types';
 
-export const setEndpoints = ({ commit }, endpoints) => {
-  commit(types.SET_ENDPOINT, endpoints.environmentsEndpoint);
-  commit(
-    `threatMonitoringNetworkPolicy/${types.SET_ENDPOINT}`,
-    endpoints.networkPolicyStatisticsEndpoint,
-    { root: true },
-  );
+export const setEnvironmentEndpoint = ({ commit }, endpoint) => {
+  commit(types.SET_ENDPOINT, endpoint);
+};
+
+export const setStatisticsEndpoint = ({ commit }, endpoint) => {
+  commit(`threatMonitoringNetworkPolicy/${types.SET_ENDPOINT}`, endpoint, { root: true });
 };
 
 export const requestEnvironments = ({ commit }) => commit(types.REQUEST_ENVIRONMENTS);
