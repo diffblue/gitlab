@@ -13,10 +13,7 @@ module EE
       end
 
       def show_adoption?
-        feature_already_in_use = ::Analytics::DevopsAdoption::EnabledNamespace.any?
-
-        ::License.feature_available?(:devops_adoption) &&
-          (feature_already_in_use || ::Feature.enabled?(:devops_adoption_feature, default_enabled: :yaml))
+        ::License.feature_available?(:devops_adoption)
       end
     end
   end
