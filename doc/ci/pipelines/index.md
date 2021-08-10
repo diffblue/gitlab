@@ -123,6 +123,9 @@ you can filter the pipeline list by:
 - Status ([GitLab 13.1 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/217617))
 - Tag ([GitLab 13.1 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/217617))
 
+[Starting in GitLab 14.2](https://gitlab.com/gitlab-org/gitlab/-/issues/26621), you can change the
+pipeline column to display the pipeline ID or the pipeline IID.
+
 ### Run a pipeline manually
 
 Pipelines can be manually executed, with predefined or manually-specified [variables](../variables/index.md).

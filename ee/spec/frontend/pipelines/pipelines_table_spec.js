@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PipelinesTable from '~/pipelines/components/pipelines_list/pipelines_table.vue';
+import { PipelineKeyOptions } from '~/pipelines/constants';
 
 import { triggeredBy, triggered } from './mock_data';
 
@@ -15,6 +16,7 @@ describe('Pipelines Table', () => {
   const defaultProps = {
     pipelines: [],
     viewType: 'root',
+    pipelineKeyOption: PipelineKeyOptions[0],
   };
 
   const createMockPipeline = () => {
