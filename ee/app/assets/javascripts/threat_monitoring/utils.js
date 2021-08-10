@@ -1,5 +1,5 @@
 import createGqClient from '~/lib/graphql';
-import { POLICY_KINDS } from './components/constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
 
 /**
  * Get the height of the wrapper page element
@@ -18,12 +18,12 @@ export const getContentWrapperHeight = (contentWrapperClass) => {
  * @param {String} yaml policy's YAML manifest
  * @returns {String|null} policy type if available
  */
-export const getPolicyKind = (yaml = '') => {
-  if (yaml?.includes(POLICY_KINDS.ciliumNetwork)) {
-    return POLICY_KINDS.ciliumNetwork;
+export const getPolicyType = (yaml = '') => {
+  if (yaml?.includes(POLICY_TYPE_COMPONENT_OPTIONS.container.yamlIndicator)) {
+    return POLICY_TYPE_COMPONENT_OPTIONS.container.value;
   }
-  if (yaml?.includes(POLICY_KINDS.scanExecution)) {
-    return POLICY_KINDS.scanExecution;
+  if (yaml?.includes(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.yamlIndicator)) {
+    return POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value;
   }
   return null;
 };

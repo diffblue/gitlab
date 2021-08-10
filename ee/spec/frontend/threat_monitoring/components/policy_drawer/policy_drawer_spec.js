@@ -1,3 +1,4 @@
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import CiliumNetworkPolicy from 'ee/threat_monitoring/components/policy_drawer/cilium_network_policy.vue';
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
 import ScanExecutionPolicy from 'ee/threat_monitoring/components/policy_drawer/scan_execution_policy.vue';
@@ -73,19 +74,20 @@ describe('PolicyDrawer component', () => {
   });
 
   describe.each`
-    policyKind          | mock                       | finder
-    ${'cilium'}         | ${mockCiliumPolicy}        | ${findCiliumNetworkPolicy}
-    ${'scan execution'} | ${mockScanExecutionPolicy} | ${findScanExecutionPolicy}
-  `('given a $policyKind policy', ({ policyKind, mock, finder }) => {
+    policyType                                           | mock                       | finder
+    ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}     | ${mockCiliumPolicy}        | ${findCiliumNetworkPolicy}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${mockScanExecutionPolicy} | ${findScanExecutionPolicy}
+  `('given a $policyType policy', ({ policyType, mock, finder }) => {
     beforeEach(() => {
       factory({
         propsData: {
           policy: mock,
+          policyType,
         },
       });
     });
 
-    it(`renders the ${policyKind} component`, () => {
+    it(`renders the ${policyType} component`, () => {
       expect(finder().exists()).toBe(true);
     });
 

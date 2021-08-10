@@ -169,9 +169,9 @@ describe('PolicyList component', () => {
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
-      ${2}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
-      ${3}     | ${'drop-outbound'}                           | ${'Network'}
-      ${4}     | ${'allow-inbound-http'}                      | ${'Network'}
+      ${3}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
+      ${4}     | ${'drop-outbound'}                           | ${'Network'}
+      ${5}     | ${'allow-inbound-http'}                      | ${'Network'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -217,7 +217,7 @@ describe('PolicyList component', () => {
     });
 
     it('renders a "Disabled" label for screen readers for disabled policies', () => {
-      const span = findPolicyStatusCells().at(2).find('span');
+      const span = findPolicyStatusCells().at(3).find('span');
 
       expect(span.exists()).toBe(true);
       expect(span.attributes('class')).toBe('gl-sr-only');

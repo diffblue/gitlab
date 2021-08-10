@@ -169,9 +169,9 @@ describe('PoliciesList component', () => {
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
-      ${2}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
-      ${3}     | ${'drop-outbound'}                           | ${'Network'}
-      ${4}     | ${'allow-inbound-http'}                      | ${'Network'}
+      ${3}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
+      ${4}     | ${'drop-outbound'}                           | ${'Network'}
+      ${5}     | ${'allow-inbound-http'}                      | ${'Network'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -219,7 +219,7 @@ describe('PoliciesList component', () => {
     });
 
     it('renders a "Disabled" label for screen readers for disabled policies', () => {
-      const span = findPolicyStatusCells().at(2).find('span');
+      const span = findPolicyStatusCells().at(3).find('span');
 
       expect(span.exists()).toBe(true);
       expect(span.attributes('class')).toBe('gl-sr-only');
@@ -240,10 +240,10 @@ describe('PoliciesList component', () => {
   });
 
   describe.each`
-    description         | policy
-    ${'network'}        | ${mockNetworkPoliciesResponse[0]}
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]}
-  `('given there is a $description policy selected', ({ policy }) => {
+    description         | policy                                  | policyType
+    ${'container'}      | ${mockNetworkPoliciesResponse[1]}       | ${'container'}
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'}
+  `('given there is a $description policy selected', ({ policy, policyType }) => {
     beforeEach(() => {
       mountShallowWrapper();
       findPoliciesTable().vm.$emit('row-selected', [policy]);
@@ -255,6 +255,7 @@ describe('PoliciesList component', () => {
       expect(editorDrawer.props()).toMatchObject({
         open: true,
         policy,
+        policyType,
       });
     });
   });
@@ -262,7 +263,7 @@ describe('PoliciesList component', () => {
   describe('given an autodevops policy', () => {
     beforeEach(() => {
       const autoDevOpsPolicy = {
-        ...mockNetworkPoliciesResponse[0],
+        ...mockNetworkPoliciesResponse[1],
         name: 'auto-devops',
         fromAutoDevops: true,
       };

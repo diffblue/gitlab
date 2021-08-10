@@ -21,23 +21,36 @@ export const COLORS = {
 // See https://gitlab.com/gitlab-org/gitlab-ui/issues/554.
 export { dateFormats as DATE_FORMATS } from '~/analytics/shared/constants';
 
-export const POLICY_KINDS = {
-  ciliumNetwork: 'CiliumNetworkPolicy',
-  scanExecution: 'scanner_profile',
+export const POLICY_TYPE_COMPONENT_OPTIONS = {
+  container: {
+    component: 'network-policy-editor',
+    shouldShowEnvironmentPicker: true,
+    text: s__('SecurityOrchestration|Network'),
+    urlParameter: 'container_policy',
+    value: 'container',
+    yamlIndicator: 'CiliumNetworkPolicy',
+  },
+  scanExecution: {
+    component: 'scan-execution-policy-editor',
+    text: s__('SecurityOrchestration|Scan Execution'),
+    urlParameter: 'scan_execution_policy',
+    value: 'scanExecution',
+    yamlIndicator: 'scanner_profile',
+  },
 };
 
 export const POLICY_TYPE_OPTIONS = {
   POLICY_TYPE_NETWORK: {
     value: 'POLICY_TYPE_NETWORK',
-    text: s__('SecurityPolicies|Network'),
+    text: s__('SecurityOrchestration|Network'),
   },
   POLICY_TYPE_SCAN_EXECUTION: {
     value: 'POLICY_TYPE_SCAN_EXECUTION',
-    text: s__('SecurityPolicies|Scan execution'),
+    text: s__('SecurityOrchestration|Scan execution'),
   },
   ALL: {
     value: '',
-    text: s__('SecurityPolicies|All policies'),
+    text: s__('SecurityOrchestration|All policies'),
   },
 };
 

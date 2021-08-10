@@ -22185,9 +22185,6 @@ msgstr ""
 msgid "NetworkPolicies|Save changes"
 msgstr ""
 
-msgid "NetworkPolicies|Scan Execution"
-msgstr ""
-
 msgid "NetworkPolicies|Something went wrong, failed to update policy"
 msgstr ""
 
@@ -29562,6 +29559,9 @@ msgstr ""
 msgid "SecurityConfiguration|Vulnerability details and statistics in the merge request"
 msgstr ""
 
+msgid "SecurityOrchestration|All policies"
+msgstr ""
+
 msgid "SecurityOrchestration|An error occurred assigning your security policy project"
 msgstr ""
 
@@ -29574,6 +29574,9 @@ msgstr ""
 msgid "SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}"
 msgstr ""
 
+msgid "SecurityOrchestration|Network"
+msgstr ""
+
 msgid "SecurityOrchestration|New policy"
 msgstr ""
 
@@ -29584,6 +29587,12 @@ msgid "SecurityOrchestration|Policies"
 msgstr ""
 
 msgid "SecurityOrchestration|Policy editor"
+msgstr ""
+
+msgid "SecurityOrchestration|Scan Execution"
+msgstr ""
+
+msgid "SecurityOrchestration|Scan execution"
 msgstr ""
 
 msgid "SecurityOrchestration|Security policy project was linked successfully"
@@ -29604,9 +29613,6 @@ msgstr ""
 msgid "SecurityPolicies|+%{count} more"
 msgstr ""
 
-msgid "SecurityPolicies|All policies"
-msgstr ""
-
 msgid "SecurityPolicies|Description"
 msgstr ""
 
@@ -29617,9 +29623,6 @@ msgid "SecurityPolicies|Environment(s)"
 msgstr ""
 
 msgid "SecurityPolicies|Latest scan"
-msgstr ""
-
-msgid "SecurityPolicies|Network"
 msgstr ""
 
 msgid "SecurityPolicies|Policy type"

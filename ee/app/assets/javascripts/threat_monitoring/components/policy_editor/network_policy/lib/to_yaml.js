@@ -1,5 +1,5 @@
 import { safeDump } from 'js-yaml';
-import { POLICY_KINDS } from 'ee/threat_monitoring/components/constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import { EndpointMatchModeAny, DisabledByLabel } from './constants';
 import { ruleSpec } from './rules';
 import { labelSelector } from './utils';
@@ -48,7 +48,7 @@ export default function toYaml(policy) {
 
   const policySpec = {
     apiVersion: 'cilium.io/v2',
-    kind: POLICY_KINDS.ciliumNetwork,
+    kind: POLICY_TYPE_COMPONENT_OPTIONS.container.yamlIndicator,
   };
 
   if (description?.length > 0) {

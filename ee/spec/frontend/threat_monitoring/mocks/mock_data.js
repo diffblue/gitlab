@@ -43,6 +43,31 @@ spec:
       nodes: [],
     },
   },
+  {
+    name: 'test-policy-01',
+    kind: 'CiliumNetworkPolicy',
+    yaml: `---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: test-policy-01
+  namespace: network-policy-demo-cluster-management-5000174-production
+  labels:
+    app.gitlab.com/proj: '5000174'
+  resourceVersion: '630685'
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromCIDR:
+    - 192.168.2.3/5
+description: this is the first`,
+    enabled: true,
+    fromAutoDevops: false,
+    updatedAt: '2021-06-08T04:01:11Z',
+    environments: {
+      nodes: [{ name: 'production', __typename: 'Environment' }],
+    },
+  },
 ];
 
 export const mockCiliumPolicy = {

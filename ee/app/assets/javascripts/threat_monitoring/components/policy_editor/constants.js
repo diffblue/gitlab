@@ -12,20 +12,6 @@ export const EDITOR_MODES = [
   { value: EDITOR_MODE_YAML, text: s__('NetworkPolicies|.yaml mode') },
 ];
 
-export const POLICY_KIND_OPTIONS = {
-  network: {
-    value: 'network',
-    text: s__('NetworkPolicies|Network'),
-    component: 'network-policy-editor',
-    shouldShowEnvironmentPicker: true,
-  },
-  scanExecution: {
-    value: 'scanExecution',
-    text: s__('NetworkPolicies|Scan Execution'),
-    component: 'scan-execution-policy-editor',
-  },
-};
-
 export const DELETE_MODAL_CONFIG = {
   id: 'delete-modal',
   secondary: {
