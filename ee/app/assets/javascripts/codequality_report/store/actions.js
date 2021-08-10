@@ -4,7 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 
 import { parseCodeclimateMetrics } from '~/reports/codequality_report/store/utils/codequality_parser';
-import { VIEW_EVENT_FEATURE_FLAG, VIEW_EVENT_NAME } from './constants';
+import { VIEW_EVENT_NAME } from './constants';
 import * as types from './mutation_types';
 
 export const setPage = ({ commit }, page) => commit(types.SET_PAGE, page);
@@ -12,9 +12,7 @@ export const setPage = ({ commit }, page) => commit(types.SET_PAGE, page);
 export const requestReport = ({ commit }) => {
   commit(types.REQUEST_REPORT);
 
-  if (gon.features[VIEW_EVENT_FEATURE_FLAG]) {
-    Api.trackRedisHllUserEvent(VIEW_EVENT_NAME);
-  }
+  Api.trackRedisHllUserEvent(VIEW_EVENT_NAME);
 };
 export const receiveReportSuccess = ({ state, commit }, data) => {
   const parsedIssues = parseCodeclimateMetrics(data, state.blobPath);

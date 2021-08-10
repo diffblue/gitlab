@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as actions from 'ee/codequality_report/store/actions';
-import { VIEW_EVENT_NAME, VIEW_EVENT_FEATURE_FLAG } from 'ee/codequality_report/store/constants';
+import { VIEW_EVENT_NAME } from 'ee/codequality_report/store/constants';
 import * as types from 'ee/codequality_report/store/mutation_types';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
@@ -38,25 +38,13 @@ describe('Codequality report actions', () => {
 
   describe('requestReport', () => {
     it('sets the loading flag', (done) => {
-      window.gon = { features: { [VIEW_EVENT_FEATURE_FLAG]: true } };
-
       testAction(actions.requestReport, null, state, [{ type: types.REQUEST_REPORT }], [], done);
     });
 
-    it('tracks a service ping event when the feature flag is enabled', () => {
-      window.gon = { features: { [VIEW_EVENT_FEATURE_FLAG]: true } };
-
+    it('tracks a service ping event', () => {
       actions.requestReport({ commit: jest.fn() });
 
       expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(VIEW_EVENT_NAME);
-    });
-
-    it('does not track a service ping event when the feature flag is disabled', () => {
-      window.gon = { features: { [VIEW_EVENT_FEATURE_FLAG]: false } };
-
-      actions.requestReport({ commit: jest.fn() });
-
-      expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
     });
   });
 
