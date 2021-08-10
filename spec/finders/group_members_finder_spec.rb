@@ -194,6 +194,7 @@ RSpec.describe GroupMembersFinder, '#execute' do
   context 'when :shared_with_groups is passed' do
     let(:member1) { group.add_owner(user1) }
     let(:member2) { shared_group.add_maintainer(user5) }
+    let(:member3) { shared_group.add_maintainer(user3) }
 
     subject { described_class.new(group, user1).execute(include_relations: [:direct, :inherited, :shared_with_groups]) }
 
@@ -201,8 +202,34 @@ RSpec.describe GroupMembersFinder, '#execute' do
       create(:group_group_link, shared_group: group, shared_with_group: shared_group)
     end
 
-    it 'includes all the shared_with_groups members' do
-      expect(subject).to match_array([member1, member2])
+    context "and shared_group is public" do
+      before do
+        shared_group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+      end
+
+      it 'includes all the shared_with_groups members' do
+        expect(subject).to match_array([member1, member2, member3])
+      end
+    end
+
+    context "and shared_group is private" do
+      before do
+        shared_group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+      end
+
+      it "does not return shared_with_groups members" do
+        expect(subject).to match_array([member1])
+      end
+
+      context "and current_user is on shared group" do
+        before do
+          shared_group.add_developer(user1)
+        end
+
+        it 'includes all the shared_with_groups members' do
+          expect(subject).to match_array([member1, member2, member3])
+        end
+      end
     end
   end
 end
