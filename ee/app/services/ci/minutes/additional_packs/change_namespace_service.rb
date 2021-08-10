@@ -20,6 +20,7 @@ module Ci
 
           Ci::Minutes::AdditionalPack.transaction do
             update_packs
+            reset_ci_minutes!
 
             success
           end
@@ -52,6 +53,11 @@ module Ci
           shared_ids = namespace.owner_ids & target.owner_ids
 
           raise ChangeNamespaceError, 'Both namespaces must share the same owner' unless shared_ids.any?
+        end
+
+        def reset_ci_minutes!
+          ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
+          ::Ci::Minutes::RefreshCachedDataService.new(target).execute
         end
       end
     end
