@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+# Used by Operations dashboard
 get 'operations' => 'operations#index'
-get 'operations/environments' => 'operations#environments'
-get 'operations/list' => 'operations#list'
-get 'operations/environments_list' => 'operations#environments_list'
 post 'operations' => 'operations#create', as: :add_operations_project
 delete 'operations' => 'operations#destroy', as: :remove_operations_project
+
+# Used by Environments dashboard
+get 'operations/environments' => 'operations#environments'
+post 'operations/environments' => 'operations#create', as: :add_operations_environments_project
+delete 'operations/environments' => 'operations#destroy', as: :remove_operations_environments_project

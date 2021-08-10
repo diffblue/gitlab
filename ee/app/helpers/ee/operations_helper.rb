@@ -6,8 +6,8 @@ module EE
 
     def operations_data
       {
-        'add-path' => add_operations_project_path,
-        'list-path' => operations_list_path,
+        'add-path' => add_operations_project_path(format: :json),
+        'list-path' => operations_path(format: :json),
         'empty-dashboard-svg-path' => image_path('illustrations/operations-dashboard_empty.svg'),
         'empty-dashboard-help-path' => help_page_path('user/operations_dashboard/index.md')
       }
@@ -15,8 +15,8 @@ module EE
 
     def environments_data
       {
-        'add-path' => add_operations_project_path,
-        'list-path' => operations_environments_list_path,
+        'add-path' => add_operations_environments_project_path(format: :json),
+        'list-path' => operations_environments_path(format: :json),
         'empty-dashboard-svg-path' => image_path('illustrations/operations-dashboard_empty.svg'),
         'empty-dashboard-help-path' => help_page_path('ci/environments/environments_dashboard.md'),
         'environments-dashboard-help-path' => help_page_path('ci/environments/environments_dashboard.md')
