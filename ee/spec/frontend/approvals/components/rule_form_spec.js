@@ -31,6 +31,13 @@ const TEST_RULE_WITH_PROTECTED_BRANCHES = {
   ...TEST_RULE,
   protectedBranches: TEST_PROTECTED_BRANCHES,
 };
+const TEST_RULE_VULNERABILITY_CHECK = {
+  ...TEST_RULE,
+  id: null,
+  name: VULNERABILITY_CHECK_NAME,
+  scanners: ['sast', 'dast'],
+  vulnerabilitiesAllowed: 0,
+};
 const TEST_APPROVERS = [{ id: 7, type: TYPE_USER }];
 const TEST_APPROVALS_REQUIRED = 3;
 const TEST_FALLBACK_RULE = {
@@ -87,6 +94,7 @@ describe('EE Approvals RuleForm', () => {
   const findProtectedBranchesSelector = () => wrapper.findComponent(ProtectedBranchesSelector);
   const findBranchesValidation = () => wrapper.findByTestId('branches-group');
   const findScannersGroup = () => wrapper.findByTestId('scanners-group');
+  const findVulnerabilityFormGroup = () => wrapper.findByTestId('vulnerability-amount-group');
 
   const inputsAreValid = (inputs) => inputs.every((x) => x.props('state'));
 
@@ -185,6 +193,7 @@ describe('EE Approvals RuleForm', () => {
             name: 'Lorem',
             approvalsRequired: 2,
             users,
+            vulnerabilitiesAllowed: 0,
             groups,
             userRecords,
             groupRecords,
@@ -263,6 +272,7 @@ describe('EE Approvals RuleForm', () => {
           name: 'Lorem',
           approvalsRequired: 2,
           users,
+          vulnerabilitiesAllowed: 0,
           groups,
           userRecords,
           groupRecords,
@@ -342,6 +352,7 @@ describe('EE Approvals RuleForm', () => {
         const expected = {
           ...TEST_RULE,
           users,
+          vulnerabilitiesAllowed: 0,
           groups,
           userRecords,
           groupRecords,
@@ -524,14 +535,19 @@ describe('EE Approvals RuleForm', () => {
 
     describe('with approval suggestions', () => {
       describe.each`
-        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners
-        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}
-        ${'License-Check'}          | ${true}                   | ${false}
-        ${'Coverage-Check'}         | ${true}                   | ${false}
-        ${'Foo Bar Baz'}            | ${false}                  | ${false}
+        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners | expectedDisplayVulnerabilityAllowed
+        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}                   | ${true}
+        ${'License-Check'}          | ${true}                   | ${false}                  | ${false}
+        ${'Coverage-Check'}         | ${true}                   | ${false}                  | ${false}
+        ${'Foo Bar Baz'}            | ${false}                  | ${false}                  | ${false}
       `(
         'with defaultRuleName set to $defaultRuleName',
-        ({ defaultRuleName, expectedDisabledAttribute, expectedDisplayedScanners }) => {
+        ({
+          defaultRuleName,
+          expectedDisabledAttribute,
+          expectedDisplayedScanners,
+          expectedDisplayVulnerabilityAllowed,
+        }) => {
           beforeEach(() => {
             createComponent({
               initRule: null,
@@ -546,10 +562,14 @@ describe('EE Approvals RuleForm', () => {
             expect(findNameInput().props('disabled')).toBe(expectedDisabledAttribute);
           });
 
-          it(`it ${
-            expectedDisplayedScanners ? 'shows' : 'does not show'
-          } scanners dropdown`, () => {
+          it(`${expectedDisplayedScanners ? 'shows' : 'does not show'} scanners dropdown`, () => {
             expect(findScannersGroup().exists()).toBe(expectedDisplayedScanners);
+          });
+
+          it(`it ${
+            expectedDisplayVulnerabilityAllowed ? 'shows' : 'does not show'
+          } the number of vulnerabilities form group`, () => {
+            expect(findVulnerabilityFormGroup().exists()).toBe(expectedDisplayVulnerabilityAllowed);
           });
         },
       );
@@ -586,9 +606,7 @@ describe('EE Approvals RuleForm', () => {
         beforeEach(() => {
           createComponent({
             initRule: {
-              ...TEST_RULE,
-              id: null,
-              name: VULNERABILITY_CHECK_NAME,
+              ...TEST_RULE_VULNERABILITY_CHECK,
               scanners: [],
             },
           });
@@ -601,15 +619,9 @@ describe('EE Approvals RuleForm', () => {
       });
 
       describe('and with two scanners selected', () => {
-        const scanners = ['sast', 'dast'];
         beforeEach(() => {
           createComponent({
-            initRule: {
-              ...TEST_RULE,
-              id: null,
-              name: VULNERABILITY_CHECK_NAME,
-              scanners,
-            },
+            initRule: TEST_RULE_VULNERABILITY_CHECK,
           });
           findForm().trigger('submit');
         });
@@ -617,7 +629,39 @@ describe('EE Approvals RuleForm', () => {
         it('dispatches the action on submit', () => {
           expect(actions.postRule).toHaveBeenCalledWith(
             expect.anything(),
-            expect.objectContaining({ scanners }),
+            expect.objectContaining({ scanners: ['sast', 'dast'] }),
+          );
+        });
+      });
+
+      describe('with invalid number of vulnerabilities', () => {
+        beforeEach(() => {
+          createComponent({
+            initRule: {
+              ...TEST_RULE_VULNERABILITY_CHECK,
+              vulnerabilitiesAllowed: -1,
+            },
+          });
+          findForm().trigger('submit');
+        });
+
+        it('does not dispatch the action on submit', () => {
+          expect(actions.postRule).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('with valid number of vulnerabilities', () => {
+        beforeEach(() => {
+          createComponent({
+            initRule: TEST_RULE_VULNERABILITY_CHECK,
+          });
+          findForm().trigger('submit');
+        });
+
+        it('dispatches the action on submit', () => {
+          expect(actions.postRule).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ vulnerabilitiesAllowed: 0 }),
           );
         });
 

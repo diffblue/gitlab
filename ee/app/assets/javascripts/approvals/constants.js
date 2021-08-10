@@ -93,6 +93,10 @@ export const APPROVAL_DIALOG_I18N = {
     selectAllScannersLabel: s__('ApprovalRule|Select All'),
     allScannersSelectedLabel: s__('ApprovalRule|All scanners'),
     multipleSelectedScannersLabel: s__('ApprovalRule|%{scanner} +%{additionalScanners} more'),
+    vulnerabilitiesAllowedLabel: s__('ApprovalRule|Vulnerabilities allowed'),
+    vulnerabilitiesAllowedDescription: s__(
+      'ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered.',
+    ),
   },
   validations: {
     approvalsRequiredNegativeNumber: __('Please enter a non-negative number'),
@@ -105,5 +109,8 @@ export const APPROVAL_DIALOG_I18N = {
     ruleNameTaken: __('Rule name is already taken.'),
     ruleNameMissing: __('Please provide a name'),
     scannersRequired: s__('ApprovalRule|Please select at least one security scanner'),
+    vulnerabilitiesAllowedMinimum: s__(
+      'ApprovalRule|Please enter a number equal or greater than zero',
+    ),
   },
 };

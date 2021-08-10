@@ -4188,6 +4188,12 @@ msgstr ""
 msgid "ApprovalRule|Name"
 msgstr ""
 
+msgid "ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered."
+msgstr ""
+
+msgid "ApprovalRule|Please enter a number equal or greater than zero"
+msgstr ""
+
 msgid "ApprovalRule|Please select at least one security scanner"
 msgstr ""
 
@@ -4204,6 +4210,9 @@ msgid "ApprovalRule|Select scanners"
 msgstr ""
 
 msgid "ApprovalRule|Target branch"
+msgstr ""
+
+msgid "ApprovalRule|Vulnerabilities allowed"
 msgstr ""
 
 msgid "ApprovalSettings|Merge request approval settings have been updated."
