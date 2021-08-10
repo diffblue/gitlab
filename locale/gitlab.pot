@@ -23892,9 +23892,6 @@ msgstr ""
 msgid "PackageRegistry|published by %{author}"
 msgstr ""
 
-msgid "Packages"
-msgstr ""
-
 msgid "Packages & Registries"
 msgstr ""
 
