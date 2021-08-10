@@ -361,6 +361,19 @@ describe('RelatedItemsTree', () => {
         expect(dueDate.isVisible()).toBe(true);
       });
 
+      it('does not render red icon for overdue issue that is closed', async () => {
+        wrapper.setProps({
+          item: {
+            ...mockItem,
+            closedAt: '2018-12-01T00:00:00.00Z',
+          },
+        });
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.find(ItemDueDate).props('closed')).toBe(true);
+      });
+
       it('renders item weight when it has weight', () => {
         const weight = wrapper.find(ItemWeight);
 
