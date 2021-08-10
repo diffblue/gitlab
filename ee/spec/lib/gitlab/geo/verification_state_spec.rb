@@ -179,7 +179,7 @@ RSpec.describe Gitlab::Geo::VerificationState do
       expect(subject.class.needs_verification).to include(subject)
     end
 
-    it 'includes verification_failed and retry_due' do
+    it 'includes verification_failed and verification_retry_due' do
       subject.verification_started
       subject.verification_failed_with_message!('foo')
       subject.update!(verification_retry_at: 1.minute.ago)
