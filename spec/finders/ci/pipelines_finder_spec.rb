@@ -252,6 +252,20 @@ RSpec.describe Ci::PipelinesFinder do
       end
     end
 
+    context "when source is specified" do
+      let(:params) { { source: 'web' } }
+      let!(:pipeline) { create(:ci_pipeline, project: project, source: 'web') }
+
+      before do
+        create(:ci_pipeline, project: project, source: 'push')
+        create(:ci_pipeline, project: project, source: 'chat')
+      end
+
+      it 'returns matched pipelines' do
+        is_expected.to eq([pipeline])
+      end
+    end
+
     describe 'ordering' do
       using RSpec::Parameterized::TableSyntax
 

@@ -294,6 +294,31 @@ RSpec.describe API::Ci::Pipelines do
             end
           end
         end
+
+        context 'when a source is specified' do
+          before do
+            create(:ci_pipeline, project: project, source: :push)
+            create(:ci_pipeline, project: project, source: :web)
+            create(:ci_pipeline, project: project, source: :api)
+          end
+
+          it 'returns matched pipelines' do
+            get api("/projects/#{project.id}/pipelines", user), params: { source: 'web' }
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response).to include_pagination_headers
+            expect(json_response).not_to be_empty
+            json_response.each { |r| expect(r['source']).to eq('web') }
+          end
+        end
+
+        context 'when source is invalid' do
+          it 'returns bad_request' do
+            get api("/projects/#{project.id}/pipelines", user), params: { source: 'invalid-source' }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
       end
     end
 

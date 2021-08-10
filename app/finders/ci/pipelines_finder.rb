@@ -23,6 +23,7 @@ module Ci
       items = by_iids(items)
       items = by_scope(items)
       items = by_status(items)
+      items = by_source(items)
       items = by_ref(items)
       items = by_sha(items)
       items = by_name(items)
@@ -86,6 +87,12 @@ module Ci
       items.where(status: params[:status])
     end
     # rubocop: enable CodeReuse/ActiveRecord
+
+    def by_source(items)
+      return items unless ::Ci::Pipeline.sources.key?(params[:source])
+
+      items.with_pipeline_source(params[:source])
+    end
 
     # rubocop: disable CodeReuse/ActiveRecord
     def by_ref(items)
