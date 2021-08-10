@@ -9,7 +9,7 @@ import {
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { acceptedMimes } from '../services/upload_helpers';
-import { parseFilename } from '../services/utils';
+import { extractFilename } from '../services/utils';
 
 export default {
   components: {
@@ -41,7 +41,7 @@ export default {
         .setImage({
           src: this.imgSrc,
           canonicalSrc: this.imgSrc,
-          alt: parseFilename(this.imgSrc),
+          alt: extractFilename(this.imgSrc),
         })
         .run();
 

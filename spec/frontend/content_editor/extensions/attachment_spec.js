@@ -112,7 +112,7 @@ describe('content_editor/extensions/image', () => {
               image({
                 canonicalSrc: 'test-file.png',
                 src: base64EncodedFile,
-                alt: 'test file',
+                alt: 'test-file',
                 uploading: false,
               }),
             ),
@@ -162,7 +162,7 @@ describe('content_editor/extensions/image', () => {
       describe('when uploading succeeds', () => {
         const successResponse = {
           link: {
-            markdown: '[test file](test-file.zip)',
+            markdown: '[test-file](test-file.zip)',
           },
         };
 
@@ -171,7 +171,7 @@ describe('content_editor/extensions/image', () => {
         });
 
         it('inserts a loading mark', (done) => {
-          const expectedDoc = doc(p(loading({ label: 'test file' })));
+          const expectedDoc = doc(p(loading({ label: 'test-file' })));
 
           tiptapEditor.on(
             'update',
@@ -193,7 +193,7 @@ describe('content_editor/extensions/image', () => {
                   canonicalSrc: 'test-file.zip',
                   href: `/${group}/${project}/-/wikis/test-file.zip`,
                 },
-                'test file',
+                'test-file',
               ),
             ),
           );

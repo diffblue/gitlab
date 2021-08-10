@@ -1,6 +1,6 @@
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
-import { parseFilename, readFileAsDataURL } from './utils';
+import { extractFilename, readFileAsDataURL } from './utils';
 
 export const acceptedMimes = {
   image: ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
@@ -66,7 +66,7 @@ const uploadImage = async ({ editor, file, uploadsPath, renderMarkdown }) => {
       tr.setNodeMarkup(position, undefined, {
         uploading: false,
         src: encodedSrc,
-        alt: parseFilename(src),
+        alt: extractFilename(src),
         canonicalSrc,
       }),
     );
@@ -81,7 +81,7 @@ const uploadAttachment = async ({ editor, file, uploadsPath, renderMarkdown }) =
 
   const { view } = editor;
 
-  const text = parseFilename(file.name);
+  const text = extractFilename(file.name);
 
   const { state } = view;
   const { from } = state.selection;
