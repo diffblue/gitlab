@@ -9,7 +9,7 @@ import BurnCharts from './components/burn_charts.vue';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
+  defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
 });
 
 export default () => {
