@@ -31,8 +31,15 @@ module Gitlab
     require_dependency Rails.root.join('lib/gitlab/middleware/handle_malformed_strings')
     require_dependency Rails.root.join('lib/gitlab/middleware/rack_multipart_tempfile_factory')
     require_dependency Rails.root.join('lib/gitlab/runtime')
+    require_dependency Rails.root.join('lib/gitlab/patch/legacy_database_config')
 
     config.autoloader = :zeitwerk
+
+    # To be removed in 15.0
+    # This preload is needed to convert legacy `database.yml`
+    # from `production: adapter: postgresql`
+    # into a `production: main: adapter: postgresql`
+    config.class.prepend(::Gitlab::Patch::LegacyDatabaseConfig)
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
