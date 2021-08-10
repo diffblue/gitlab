@@ -124,6 +124,7 @@ RSpec.describe User do
     it { is_expected.to have_many(:merge_request_reviewers).inverse_of(:reviewer) }
     it { is_expected.to have_many(:created_custom_emoji).inverse_of(:creator) }
     it { is_expected.to have_many(:in_product_marketing_emails) }
+    it { is_expected.to have_many(:timelogs) }
 
     describe "#user_detail" do
       it 'does not persist `user_detail` by default' do

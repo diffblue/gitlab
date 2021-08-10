@@ -211,6 +211,8 @@ class User < ApplicationRecord
 
   has_many :in_product_marketing_emails, class_name: '::Users::InProductMarketingEmail'
 
+  has_many :timelogs
+
   #
   # Validations
   #
