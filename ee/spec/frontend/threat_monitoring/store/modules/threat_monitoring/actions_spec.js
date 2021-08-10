@@ -1,5 +1,4 @@
 import MockAdapter from 'axios-mock-adapter';
-
 import * as actions from 'ee/threat_monitoring/store/modules/threat_monitoring/actions';
 import * as types from 'ee/threat_monitoring/store/modules/threat_monitoring/mutation_types';
 import getInitialState from 'ee/threat_monitoring/store/modules/threat_monitoring/state';
@@ -26,23 +25,32 @@ describe('Threat Monitoring actions', () => {
     createFlash.mockClear();
   });
 
-  describe('setEndpoints', () => {
+  describe('threatMonitoring/setStatisticsEndpoint', () => {
     it('commits the SET_ENDPOINT mutation', () =>
       testAction(
-        actions.setEndpoints,
-        {
-          environmentsEndpoint,
-          networkPolicyStatisticsEndpoint,
-        },
+        actions.setStatisticsEndpoint,
+        networkPolicyStatisticsEndpoint,
+        state,
+        [
+          {
+            type: `threatMonitoringNetworkPolicy/${types.SET_ENDPOINT}`,
+            payload: networkPolicyStatisticsEndpoint,
+          },
+        ],
+        [],
+      ));
+  });
+
+  describe('threatMonitoring/setEnvironmentEndpoint', () => {
+    it('commits the SET_ENDPOINT mutation', () =>
+      testAction(
+        actions.setEnvironmentEndpoint,
+        environmentsEndpoint,
         state,
         [
           {
             type: types.SET_ENDPOINT,
             payload: environmentsEndpoint,
-          },
-          {
-            type: `threatMonitoringNetworkPolicy/${types.SET_ENDPOINT}`,
-            payload: networkPolicyStatisticsEndpoint,
           },
         ],
         [],
