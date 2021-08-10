@@ -13,7 +13,7 @@ export default function init() {
   Vue.use(VueApollo);
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
+    defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
   });
 
   const {
