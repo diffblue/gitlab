@@ -97,7 +97,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
         get :index, params: { namespace_id: project.namespace, project_id: project }, format: :json
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['errors']).to eq ['An error occurred while requesting data from the Jira service.']
+        expect(json_response['errors']).to eq ['Request error']
       end
 
       it 'sets pagination headers' do

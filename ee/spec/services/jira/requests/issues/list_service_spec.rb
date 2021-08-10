@@ -44,16 +44,7 @@ RSpec.describe Jira::Requests::Issues::ListService do
           stub_request(:get, expected_url_pattern).to_return(status: 200, body: response_body, headers: response_headers)
         end
 
-        context 'when the request to Jira returns an error' do
-          before do
-            expect_next(JIRA::Client).to receive(:get).and_raise(Timeout::Error)
-          end
-
-          it 'returns an error response' do
-            expect(subject.error?).to be_truthy
-            expect(subject.message).to eq('Jira request error: Timeout::Error')
-          end
-        end
+        it_behaves_like 'a service that handles Jira API errors'
 
         context 'when jira runs on a subpath' do
           let(:jira_integration) { create(:jira_integration, url: 'http://jira.example.com/jira') }
