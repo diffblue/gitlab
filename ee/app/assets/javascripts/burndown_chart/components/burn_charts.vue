@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlButton, GlButtonGroup } from '@gitlab/ui';
 import dateFormat from 'dateformat';
+import { cloneDeep } from 'lodash';
 import BurnupQuery from 'shared_queries/burndown_chart/burnup.query.graphql';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -200,10 +201,12 @@ export default {
     setIssueSelected(selected) {
       this.issuesSelected = selected;
     },
-    padSparseBurnupData(sparseBurnupData) {
+    padSparseBurnupData(data) {
       // if we don't have data for the startDate, we still want to draw a point at 0
       // on the chart, so add an item to the start of the array
+      const sparseBurnupData = cloneDeep(data);
       const hasDataForStartDate = sparseBurnupData.find((d) => d.date === this.startDate);
+
       if (!hasDataForStartDate) {
         sparseBurnupData.unshift({
           date: this.startDate,
