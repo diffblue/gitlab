@@ -19,6 +19,13 @@ module EE
 
         # rubocop: disable CodeReuse/ActiveRecord
         def enforce_minutes_based_on_cost_factors(relation)
+          if strategy.use_denormalized_shared_runners_data?
+            # If shared runners information is denormalized then the query does not include the join
+            # with `projects` anymore, so we need to add it until we use denormalized ci minutes
+
+            relation = relation.joins('INNER JOIN projects ON ci_pending_builds.project_id = projects.id')
+          end
+
           visibility_relation = ::CommitStatus.where(
             projects: { visibility_level: runner.visibility_levels_without_minutes_quota })
 
