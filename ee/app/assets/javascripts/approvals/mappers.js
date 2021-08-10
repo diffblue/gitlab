@@ -32,6 +32,7 @@ export const mapApprovalRuleRequest = (req) => ({
   remove_hidden_groups: req.removeHiddenGroups,
   protected_branch_ids: req.protectedBranchIds,
   scanners: req.scanners,
+  vulnerabilities_allowed: req.vulnerabilitiesAllowed,
 });
 
 export const mapApprovalFallbackRuleRequest = (req) => ({
@@ -52,6 +53,7 @@ export const mapApprovalRuleResponse = (res) => ({
   protectedBranches: res.protected_branches,
   overridden: res.overridden,
   scanners: res.scanners,
+  vulnerabilitiesAllowed: res.vulnerabilities_allowed,
 });
 
 export const mapApprovalSettingsResponse = (res) => ({

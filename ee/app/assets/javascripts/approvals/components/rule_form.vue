@@ -66,6 +66,7 @@ export default {
     return {
       name: this.defaultRuleName,
       approvalsRequired: 1,
+      vulnerabilitiesAllowed: 0,
       minApprovalsRequired: 0,
       approvers: [],
       approversToAdd: [],
@@ -154,13 +155,23 @@ export default {
 
       return '';
     },
+    invalidVulnerabilitiesAllowedError() {
+      if (!isNumber(this.vulnerabilitiesAllowed)) {
+        return this.$options.APPROVAL_DIALOG_I18N.validations.approvalsRequiredNotNumber;
+      }
+      if (this.vulnerabilitiesAllowed < 0) {
+        return this.$options.APPROVAL_DIALOG_I18N.validations.vulnerabilitiesAllowedMinimum;
+      }
+      return '';
+    },
     isValid() {
       return (
         this.isValidName &&
         this.isValidBranches &&
         this.isValidApprovalsRequired &&
         this.isValidApprovers &&
-        this.areValidScanners
+        this.areValidScanners &&
+        this.isValidVulnerabilitiesAllowed
       );
     },
     isValidName() {
@@ -177,6 +188,13 @@ export default {
     },
     areValidScanners() {
       return !this.showValidation || !this.isVulnerabilityCheck || !this.invalidScanners;
+    },
+    isValidVulnerabilitiesAllowed() {
+      return (
+        !this.showValidation ||
+        !this.isVulnerabilityCheck ||
+        !this.invalidVulnerabilitiesAllowedError
+      );
     },
     isMultiSubmission() {
       return this.settings.allowMultiRule && !this.isFallbackSubmission;
@@ -208,6 +226,7 @@ export default {
         id: this.initRule && this.initRule.id,
         name: this.settings.lockedApprovalsRuleName || this.name || DEFAULT_NAME,
         approvalsRequired: this.approvalsRequired,
+        vulnerabilitiesAllowed: this.vulnerabilitiesAllowed,
         users: this.userIds,
         groups: this.groupIds,
         userRecords: this.users,
@@ -357,6 +376,7 @@ export default {
           ),
         branches,
         scanners: this.initRule.scanners || [],
+        vulnerabilitiesAllowed: this.initRule.vulnerabilitiesAllowed || 0,
       };
     },
     setAllSelectedScanners() {
@@ -438,6 +458,23 @@ export default {
         type="number"
         data-testid="approvals-required"
         data-qa-selector="approvals_required_field"
+      />
+    </gl-form-group>
+    <gl-form-group
+      v-if="isVulnerabilityCheck"
+      :label="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedDescription"
+      :state="isValidVulnerabilitiesAllowed"
+      :invalid-feedback="invalidVulnerabilitiesAllowedError"
+      data-testid="vulnerability-amount-group"
+    >
+      <gl-form-input
+        v-model.number="vulnerabilitiesAllowed"
+        :state="isValidVulnerabilitiesAllowed"
+        min="0"
+        class="mw-6em"
+        type="number"
+        data-testid="vulnerability-amount"
       />
     </gl-form-group>
     <gl-form-group
