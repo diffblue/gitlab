@@ -2,6 +2,7 @@
 - target_blank = local_assigns.fetch :target_blank, false
 
 - if Gitlab::CurrentSettings.should_check_namespace_plan?
+  -# EE:SaaS
   - namespace = @project&.namespace || @group
   - if can?(current_user, :admin_namespace, namespace)
     = link_to s_('Promotions|Try it for free'), new_trial_registration_path(glm_source: 'gitlab.com', glm_content: location), class: 'btn gl-button btn-confirm promotion-trial-cta', target: target_blank ? '_blank' : '_self'
@@ -12,6 +13,7 @@
     - link_start = "<a href='#{user_path(owner)}' rel='noowner noreferrer' target='_blank'>".html_safe
     %p= s_('Promotions|Contact owner %{link_start}%{owner_name}%{link_end} to upgrade the plan.').html_safe % { owner_name: owner.name, link_start: link_start, link_end: '</a>'.html_safe }
 - elsif current_user&.admin?
+  -# EE:Self Managed
   - if License.current&.expired?
     = link_to (!short_form ? s_('Promotions|Buy GitLab Enterprise Edition') : s_('Promotions|Buy EE')), ::EE::SUBSCRIPTIONS_PLANS_URL, class: 'btn gl-button btn-confirm'
   - else
