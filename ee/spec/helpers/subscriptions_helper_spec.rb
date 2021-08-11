@@ -165,6 +165,6 @@ RSpec.describe SubscriptionsHelper do
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(source: 'some_source') }
     it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":1,"guests":0}]}) }
-    it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, purchased_product: 'CI minutes')) }
+    it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, anchor: 'pipelines-quota-tab', purchased_product: 'CI minutes')) }
   end
 end
