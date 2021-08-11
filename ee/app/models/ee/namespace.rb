@@ -256,7 +256,13 @@ module EE
     end
 
     def any_project_with_shared_runners_enabled?
-      all_projects.with_shared_runners.any?
+      if ::Feature.enabled?(:cache_shared_runners_enabled, self, default_enabled: :yaml)
+        Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
+          all_projects.with_shared_runners.any?
+        end
+      else
+        all_projects.with_shared_runners.any?
+      end
     end
 
     # These helper methods are required to not break the Namespace API.
