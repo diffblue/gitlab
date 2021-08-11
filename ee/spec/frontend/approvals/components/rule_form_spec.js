@@ -1,10 +1,13 @@
-import { GlFormGroup, GlFormInput, GlFormCheckboxGroup } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlTruncate } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import ApproversList from 'ee/approvals/components/approvers_list.vue';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rule_form.vue';
+import RuleForm, {
+  READONLY_NAMES,
+  EXCLUDED_REPORT_TYPE,
+} from 'ee/approvals/components/rule_form.vue';
 import {
   TYPE_USER,
   TYPE_GROUP,
@@ -13,6 +16,7 @@ import {
 } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
+import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -665,9 +669,10 @@ describe('EE Approvals RuleForm', () => {
           );
         });
 
-        it('does not contain unsupported report type', () => {
-          const group = wrapper.find(GlFormCheckboxGroup);
-          expect(Object.keys(group.props('options'))).not.toContain('cluster_image_scanning');
+        it('contains the supported report types and select all option', () => {
+          const supportedReportsPlusAll =
+            Object.keys(REPORT_TYPES).length - [EXCLUDED_REPORT_TYPE].length + 1;
+          expect(wrapper.findAllComponents(GlTruncate)).toHaveLength(supportedReportsPlusAll);
         });
       });
     });
