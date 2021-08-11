@@ -8,7 +8,6 @@ import LoadingError from 'ee/security_dashboard/components/pipeline/loading_erro
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import { getStoreConfig } from 'ee/security_dashboard/store';
-import PipelineArtifactDownload from 'ee/vue_shared/security_reports/components/artifact_downloads/pipeline_artifact_download.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -48,9 +47,6 @@ describe('Security Dashboard component', () => {
 
     wrapper = mount(SecurityDashboard, {
       store,
-      stubs: {
-        PipelineArtifactDownload: true,
-      },
       propsData: {
         dashboardDocumentation: '',
         projectFullPath: '/path',
@@ -97,10 +93,6 @@ describe('Security Dashboard component', () => {
       expect(wrapper.find(IssueModal).exists()).toBe(true);
     });
 
-    it('does not render coverage fuzzing artifact download', () => {
-      expect(wrapper.find(PipelineArtifactDownload).exists()).toBe(false);
-    });
-
     it.each`
       emittedModalEvent                      | eventPayload | expectedDispatchedAction                        | expectedActionPayload
       ${'addDismissalComment'}               | ${'foo'}     | ${'vulnerabilities/addDismissalComment'}        | ${{ comment: 'foo', vulnerability: 'bar' }}
@@ -134,18 +126,6 @@ describe('Security Dashboard component', () => {
       const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
       wrapper.vm.hideModal();
       expect(rootEmit).toHaveBeenCalledWith(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
-    });
-  });
-
-  describe('with coverage fuzzing', () => {
-    beforeEach(() => {
-      createComponent({
-        props: { securityReportSummary: { coverageFuzzing: { scannedResourcesCount: 1 } } },
-      });
-    });
-
-    it('renders coverage fuzzing artifact download', () => {
-      expect(wrapper.find(PipelineArtifactDownload).exists()).toBe(true);
     });
   });
 

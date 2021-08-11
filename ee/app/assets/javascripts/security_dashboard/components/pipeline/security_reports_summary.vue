@@ -12,7 +12,10 @@ import { COLLAPSE_SECURITY_REPORTS_SUMMARY_LOCAL_STORAGE_KEY as LOCAL_STORAGE_KE
 import { getFormattedSummary } from 'ee/security_dashboard/helpers';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
 import AccessorUtilities from '~/lib/utils/accessor';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
+import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
+import { extractSecurityReportArtifacts } from '~/vue_shared/security_reports/utils';
 
 export default {
   name: 'SecurityReportsSummary',
@@ -23,6 +26,7 @@ export default {
     GlSprintf,
     Modal,
     GlLink,
+    SecurityReportDownloadDropdown,
   },
   directives: {
     collapseToggle: GlCollapseToggleDirective,
@@ -32,6 +36,11 @@ export default {
     summary: {
       type: Object,
       required: true,
+    },
+    jobs: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
   },
   data() {
@@ -73,6 +82,10 @@ export default {
     downloadLink(scanSummary) {
       return scanSummary.scannedResourcesCsvPath || '';
     },
+    findArtifacts(scanType) {
+      const snakeCase = convertToSnakeCase(scanType.toLowerCase());
+      return extractSecurityReportArtifacts([snakeCase], this.jobs);
+    },
   },
 };
 </script>
@@ -96,10 +109,10 @@ export default {
     </template>
     <gl-collapse id="security-reports-summary-details" v-model="isVisible" class="gl-pb-3">
       <div v-for="[scanType, scanSummary] in formattedSummary" :key="scanType" class="row gl-my-3">
-        <div class="col-6 col-md-4 col-lg-2">
+        <div class="col-4">
           {{ scanType }}
         </div>
-        <div class="col-6 col-md-8 col-lg-10">
+        <div class="col-4">
           <gl-sprintf
             :message="
               n__('%d vulnerability', '%d vulnerabilities', scanSummary.vulnerabilitiesCount)
@@ -144,6 +157,12 @@ export default {
               ({{ s__('SecurityReports|Download scanned resources') }})
             </gl-link>
           </template>
+        </div>
+        <div class="col-4">
+          <security-report-download-dropdown
+            :text="s__('SecurityReports|Download results')"
+            :artifacts="findArtifacts(scanType)"
+          />
         </div>
       </div>
     </gl-collapse>

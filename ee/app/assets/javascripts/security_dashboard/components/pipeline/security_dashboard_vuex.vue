@@ -1,8 +1,6 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
-import PipelineArtifactDownload from 'ee/vue_shared/security_reports/components/artifact_downloads/pipeline_artifact_download.vue';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
-import { securityReportTypeEnumToReportType } from 'ee/vue_shared/security_reports/constants';
 import { vulnerabilityModalMixin } from 'ee/vue_shared/security_reports/mixins/vulnerability_modal_mixin';
 import VulnerabilityReportLayout from '../shared/vulnerability_report_layout.vue';
 import Filters from './filters.vue';
@@ -16,7 +14,6 @@ export default {
     VulnerabilityReportLayout,
     SecurityDashboardTable,
     LoadingError,
-    PipelineArtifactDownload,
   },
   mixins: [vulnerabilityModalMixin('vulnerabilities')],
   props: {
@@ -24,16 +21,7 @@ export default {
       type: String,
       required: true,
     },
-    projectFullPath: {
-      type: String,
-      required: true,
-    },
     pipelineId: {
-      type: Number,
-      required: false,
-      default: null,
-    },
-    pipelineIid: {
       type: Number,
       required: false,
       default: null,
@@ -61,9 +49,6 @@ export default {
     ...mapState('pipelineJobs', ['projectId']),
     ...mapState('filters', ['filters']),
     ...mapGetters('vulnerabilities', ['loadingVulnerabilitiesFailedWithRecognizedErrorCode']),
-    shouldShowDownloadGuidance() {
-      return this.projectFullPath && this.pipelineIid && this.securityReportSummary.coverageFuzzing;
-    },
     canCreateIssue() {
       const gitLabIssuePath = this.vulnerability.create_vulnerability_feedback_issue_path;
       const jiraIssueUrl = this.vulnerability.create_jira_issue_url;
@@ -102,9 +87,6 @@ export default {
     ...mapActions('pipelineJobs', ['fetchPipelineJobs']),
     ...mapActions('filters', ['lockFilter', 'setHideDismissedToggleInitialState']),
   },
-  reportTypes: {
-    COVERAGE_FUZZING: [securityReportTypeEnumToReportType.COVERAGE_FUZZING],
-  },
 };
 </script>
 
@@ -118,20 +100,7 @@ export default {
     <template v-else>
       <vulnerability-report-layout>
         <template #header>
-          <filters>
-            <template v-if="shouldShowDownloadGuidance" #buttons>
-              <pipeline-artifact-download
-                class="gl-display-flex gl-flex-direction-column gl-align-self-center"
-                :report-types="$options.reportTypes.COVERAGE_FUZZING"
-                :target-project-full-path="projectFullPath"
-                :pipeline-iid="pipelineIid"
-              >
-                <template #label>
-                  <strong class="gl-mb-2">{{ s__('SecurityReports|Coverage fuzzing') }}</strong>
-                </template>
-              </pipeline-artifact-download>
-            </template>
-          </filters>
+          <filters />
         </template>
 
         <security-dashboard-table>

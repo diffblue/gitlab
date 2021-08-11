@@ -2,6 +2,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
+import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -42,15 +43,25 @@ export default {
         return {
           fullPath: this.projectFullPath,
           pipelineIid: this.pipeline.iid,
+          reportTypes: Object.values(reportTypeToSecurityReportTypeEnum),
         };
       },
       update(data) {
-        const summary = data?.project?.pipeline?.securityReportSummary;
-        return summary && Object.keys(summary).length ? summary : null;
+        const summary = {
+          reports: data?.project?.pipeline?.securityReportSummary,
+          jobs: data?.project?.pipeline?.jobs.nodes,
+        };
+        return summary?.reports && Object.keys(summary.reports).length ? summary : null;
       },
     },
   },
   computed: {
+    reportSummary() {
+      return this.securityReportSummary?.reports;
+    },
+    jobs() {
+      return this.securityReportSummary?.jobs;
+    },
     shouldShowGraphqlVulnerabilityReport() {
       return this.glFeatures.pipelineSecurityDashboardGraphql;
     },
@@ -69,8 +80,8 @@ export default {
       const getScans = (reportSummary) => reportSummary?.scans?.nodes || [];
       const hasErrors = (scan) => Boolean(scan.errors?.length);
 
-      return this.securityReportSummary
-        ? Object.values(this.securityReportSummary)
+      return this.reportSummary
+        ? Object.values(this.reportSummary)
             // generate flat array of all scans
             .flatMap(getScans)
             .filter(hasErrors)
@@ -94,19 +105,17 @@ export default {
 
 <template>
   <div>
-    <div v-if="securityReportSummary" class="gl-my-5">
+    <div v-if="reportSummary" class="gl-my-5">
       <scan-errors-alert v-if="hasScansWithErrors" :scans="scansWithErrors" class="gl-mb-5" />
-      <security-reports-summary :summary="securityReportSummary" />
+      <security-reports-summary :summary="reportSummary" :jobs="jobs" />
     </div>
     <security-dashboard
       v-if="!shouldShowGraphqlVulnerabilityReport"
       :vulnerabilities-endpoint="vulnerabilitiesEndpoint"
       :lock-to-project="{ id: projectId }"
       :pipeline-id="pipeline.id"
-      :pipeline-iid="pipeline.iid"
-      :project-full-path="projectFullPath"
       :loading-error-illustrations="loadingErrorIllustrations"
-      :security-report-summary="securityReportSummary"
+      :security-report-summary="reportSummary"
     >
       <template #empty-state>
         <gl-empty-state v-bind="emptyStateProps" />

@@ -1,8 +1,15 @@
 #import "../fragments/security_report_scans.fragment.graphql"
+#import "~/vue_shared/security_reports/graphql/fragments/job_artifacts.fragment.graphql"
 
-query pipelineSecuritySummary($fullPath: ID!, $pipelineIid: ID!) {
+query pipelineSecuritySummary(
+  $fullPath: ID!
+  $pipelineIid: ID!
+  $reportTypes: [SecurityReportTypeEnum!]
+) {
   project(fullPath: $fullPath) {
     pipeline(iid: $pipelineIid) {
+      id
+      ...JobArtifacts
       securityReportSummary {
         dast {
           vulnerabilitiesCount
