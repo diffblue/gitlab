@@ -10,14 +10,19 @@ export default {
     GlAlert,
     ScanNewPolicyModal,
   },
-  inject: ['documentationPath', 'assignedPolicyProject', 'newPolicyPath'],
+  inject: [
+    'assignedPolicyProject',
+    'disableSecurityPolicyProject',
+    'documentationPath',
+    'newPolicyPath',
+  ],
   i18n: {
-    title: s__('NetworkPolicies|Policies'),
+    title: s__('SecurityOrchestration|Policies'),
     subtitle: s__(
-      'NetworkPolicies|Enforce security for this project. %{linkStart}More information.%{linkEnd}',
+      'SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}',
     ),
-    newPolicyButtonText: s__('NetworkPolicies|New policy'),
-    editPolicyButtonText: s__('NetworkPolicies|Edit policy project'),
+    newPolicyButtonText: s__('SecurityOrchestration|New policy'),
+    editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
   },
   data() {
     return {
@@ -86,12 +91,13 @@ export default {
         </p>
       </div>
       <gl-button
+        v-if="!disableSecurityPolicyProject"
         data-testid="edit-project-policy-button"
         class="gl-mr-4"
         :loading="projectIsBeingLinked"
         @click="showNewPolicyModal"
       >
-        {{ $options.i18n.editPolicyButtonText }}
+        {{ $options.i18n.editPolicyProjectButtonText }}
       </gl-button>
       <gl-button data-testid="new-policy-button" variant="confirm" :href="newPolicyPath">
         {{ $options.i18n.newPolicyButtonText }}
