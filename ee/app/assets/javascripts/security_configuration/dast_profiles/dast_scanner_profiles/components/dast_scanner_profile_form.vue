@@ -1,22 +1,17 @@
 <script>
 import {
-  GlAlert,
-  GlButton,
-  GlForm,
+  GlFormCheckbox,
   GlFormGroup,
   GlFormInput,
   GlFormInputGroup,
-  GlModal,
-  GlInputGroupText,
-  GlFormCheckbox,
   GlFormRadioGroup,
+  GlInputGroupText,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
-import { isEqual } from 'lodash';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import { __, s__ } from '~/locale';
-import validation from '~/vue_shared/directives/validation';
+import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
+import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import { SCAN_TYPE, SCAN_TYPE_OPTIONS } from '../constants';
 import dastScannerProfileCreateMutation from '../graphql/dast_scanner_profile_create.mutation.graphql';
 import dastScannerProfileUpdateMutation from '../graphql/dast_scanner_profile_update.mutation.graphql';
@@ -28,39 +23,20 @@ const TARGET_TIMEOUT_MIN = 1;
 const TARGET_TIMEOUT_MAX = 3600;
 
 export default {
+  dastScannerProfileCreateMutation,
+  dastScannerProfileUpdateMutation,
   name: 'DastScannerProfileForm',
   components: {
-    GlAlert,
-    GlButton,
-    GlForm,
+    BaseDastProfileForm,
+    GlFormCheckbox,
     GlFormGroup,
     GlFormInput,
     GlFormInputGroup,
-    GlModal,
-    GlInputGroupText,
-    GlFormCheckbox,
     GlFormRadioGroup,
+    GlInputGroupText,
     tooltipIcon,
   },
-  directives: {
-    validation: validation(),
-  },
-  props: {
-    projectFullPath: {
-      type: String,
-      required: true,
-    },
-    profile: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
-    showHeader: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-  },
+  mixins: [dastProfileFormMixin()],
   data() {
     const {
       profileName = '',
@@ -95,8 +71,6 @@ export default {
     return {
       form,
       initialFormValues: serializeFormObject(form.fields),
-      loading: false,
-      showAlert: false,
     };
   },
   spiderTimeoutRange: {
@@ -109,9 +83,6 @@ export default {
   },
   SCAN_TYPE_OPTIONS,
   computed: {
-    isEdit() {
-      return Boolean(this.profile.id);
-    },
     i18n() {
       const { isEdit } = this;
       return {
@@ -145,121 +116,50 @@ export default {
         },
       };
     },
-    formTouched() {
-      return !isEqual(serializeFormObject(this.form.fields), this.initialFormValues);
-    },
-    isSubmitDisabled() {
-      return this.isPolicyProfile;
-    },
-    isPolicyProfile() {
-      return Boolean(this.profile?.referencedInSecurityPolicies?.length);
-    },
-  },
-
-  methods: {
-    onSubmit() {
-      this.form.showValidation = true;
-
-      if (!this.form.state) {
-        return;
-      }
-
-      this.loading = true;
-      this.hideErrors();
-
-      const variables = {
-        input: {
-          fullPath: this.projectFullPath,
-          ...(this.isEdit ? { id: this.profile.id } : {}),
-          ...serializeFormObject(this.form.fields),
-        },
+    mutationVariables() {
+      return {
+        fullPath: this.projectFullPath,
+        ...(this.isEdit ? { id: this.profile.id } : {}),
+        ...serializeFormObject(this.form.fields),
       };
-
-      this.$apollo
-        .mutate({
-          mutation: this.isEdit
-            ? dastScannerProfileUpdateMutation
-            : dastScannerProfileCreateMutation,
-          variables,
-        })
-        .then(
-          ({
-            data: {
-              [this.isEdit ? 'dastScannerProfileUpdate' : 'dastScannerProfileCreate']: {
-                id,
-                errors = [],
-              },
-            },
-          }) => {
-            if (errors.length > 0) {
-              this.showErrors(errors);
-              this.loading = false;
-            } else {
-              this.$emit('success', {
-                id,
-              });
-            }
-          },
-        )
-        .catch((e) => {
-          Sentry.captureException(e);
-          this.showErrors();
-          this.loading = false;
-        });
-    },
-    onCancelClicked() {
-      if (!this.formTouched) {
-        this.discard();
-      } else {
-        this.$refs[this.$options.modalId].show();
-      }
-    },
-    discard() {
-      this.$emit('cancel');
-    },
-    showErrors(errors = []) {
-      this.errors = errors;
-      this.showAlert = true;
-    },
-    hideErrors() {
-      this.errors = [];
-      this.showAlert = false;
     },
   },
-  modalId: 'deleteDastProfileModal',
 };
 </script>
 
 <template>
-  <gl-form novalidate @submit.prevent="onSubmit">
-    <h2 v-if="showHeader" class="gl-mb-6">{{ i18n.title }}</h2>
+  <base-dast-profile-form
+    v-bind="$attrs"
+    :profile="profile"
+    :mutation="
+      isEdit ? $options.dastScannerProfileUpdateMutation : $options.dastScannerProfileCreateMutation
+    "
+    :mutation-type="isEdit ? 'dastScannerProfileUpdate' : 'dastScannerProfileCreate'"
+    :mutation-variables="mutationVariables"
+    :form-touched="formTouched"
+    :is-policy-profile="isPolicyProfile"
+    :block-submit="!form.state"
+    :modal-props="{
+      title: i18n.modal.title,
+      okTitle: i18n.modal.okTitle,
+      cancelTitle: i18n.modal.cancelTitle,
+    }"
+    @submit="form.showValidation = true"
+    v-on="$listeners"
+  >
+    <template #title>
+      {{ i18n.title }}
+    </template>
 
-    <gl-alert
-      v-if="isPolicyProfile"
-      data-testid="dast-policy-scanner-profile-alert"
-      variant="info"
-      class="gl-mb-5"
-      :dismissible="false"
-    >
+    <template #policy-profile-notice>
       {{
         s__(
           'DastProfiles|This scanner profile is currently being used by a policy. To make edits you must remove it from the active policy.',
         )
       }}
-    </gl-alert>
+    </template>
 
-    <gl-alert
-      v-if="showAlert"
-      data-testid="dast-scanner-profile-alert"
-      variant="danger"
-      class="gl-mb-5"
-      @dismiss="hideErrors"
-    >
-      {{ s__('DastProfiles|Could not create the scanner profile. Please try again.') }}
-      <ul v-if="errors.length" class="gl-mt-3 gl-mb-0">
-        <li v-for="error in errors" :key="error" v-text="error"></li>
-      </ul>
-    </gl-alert>
+    <template #error-message>{{ i18n.errorMessage }}</template>
 
     <gl-form-group data-testid="dast-scanner-parent-group" :disabled="isPolicyProfile">
       <gl-form-group
@@ -379,37 +279,5 @@ export default {
         </gl-form-group>
       </div>
     </gl-form-group>
-
-    <hr class="gl-border-gray-100" />
-
-    <gl-button
-      type="submit"
-      variant="confirm"
-      class="js-no-auto-disable"
-      data-testid="dast-scanner-profile-form-submit-button"
-      :disabled="isSubmitDisabled"
-      :loading="loading"
-    >
-      {{ s__('DastProfiles|Save profile') }}
-    </gl-button>
-    <gl-button
-      class="gl-ml-2"
-      data-testid="dast-scanner-profile-form-cancel-button"
-      @click="onCancelClicked"
-    >
-      {{ __('Cancel') }}
-    </gl-button>
-
-    <gl-modal
-      :ref="$options.modalId"
-      :modal-id="$options.modalId"
-      :title="i18n.modal.title"
-      :ok-title="i18n.modal.okTitle"
-      :cancel-title="i18n.modal.cancelTitle"
-      ok-variant="danger"
-      body-class="gl-display-none"
-      data-testid="dast-scanner-profile-form-cancel-modal"
-      @ok="discard()"
-    />
-  </gl-form>
+  </base-dast-profile-form>
 </template>

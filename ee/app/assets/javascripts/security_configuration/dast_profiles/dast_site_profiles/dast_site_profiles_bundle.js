@@ -10,14 +10,17 @@ export default () => {
     return;
   }
 
-  const { fullPath, profilesLibraryPath, onDemandScansPath, dastConfigurationPath } = el.dataset;
+  const {
+    projectFullPath,
+    profilesLibraryPath,
+    onDemandScansPath,
+    dastConfigurationPath,
+  } = el.dataset;
 
-  const props = {
-    fullPath,
-  };
+  const props = {};
 
   if (el.dataset.siteProfile) {
-    props.siteProfile = convertObjectPropsToCamelCase(JSON.parse(el.dataset.siteProfile));
+    props.profile = convertObjectPropsToCamelCase(JSON.parse(el.dataset.siteProfile));
   }
 
   const factoryParams = {
@@ -30,6 +33,9 @@ export default () => {
   new Vue({
     el,
     apolloProvider,
+    provide: {
+      projectFullPath,
+    },
     render(h) {
       return h(DastSiteProfileForm, {
         props,
