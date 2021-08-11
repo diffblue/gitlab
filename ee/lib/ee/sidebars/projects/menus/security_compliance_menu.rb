@@ -150,7 +150,7 @@ module EE
 
             ::Sidebars::MenuItem.new(
               title: _('Policies'),
-              link: project_security_policy_path(context.project),
+              link: project_security_policies_path(context.project),
               active_routes: { controller: ['projects/security/policies'] },
               item_id: :scan_policies
             )

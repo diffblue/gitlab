@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe "projects/security/policies/show", type: :view do
+RSpec.describe "projects/security/policies/index", type: :view do
   let(:user) { project.owner }
   let(:project) { create(:project) }
 
   before do
     stub_feature_flags(security_orchestration_policies_configuration: true)
     sign_in(user)
-    render template: 'projects/security/policies/show', locals: { project: project }
+    render template: 'projects/security/policies/index', locals: { project: project }
   end
 
   it 'renders Vue app root' do
