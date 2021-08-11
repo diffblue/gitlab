@@ -54,6 +54,11 @@ export default {
       required: false,
       default: '',
     },
+    isUserDropdown: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     isSearchEmpty() {
@@ -68,7 +73,12 @@ export default {
       this.$emit('set-option', option || null);
     },
     isSelected(option) {
-      return this.selected && this.selected.title === option.title;
+      return (
+        this.selected &&
+        (this.isUserDropdown
+          ? this.selected.name === option.name
+          : this.selected.title === option.title)
+      );
     },
     showDropdown() {
       this.$refs.dropdown.show();
@@ -78,6 +88,12 @@ export default {
     },
     setSearchTerm(search) {
       this.$emit('set-search', search);
+    },
+    avatarUrl(option) {
+      return this.isUserDropdown ? option.avatar_url || option.avatarUrl : null;
+    },
+    secondaryText(option) {
+      return this.isUserDropdown ? option.username : null;
     },
   },
   i18n: {
@@ -121,7 +137,7 @@ export default {
             :is-check-item="true"
             @click="selectOption(option)"
           >
-            {{ option.title }}
+            {{ option.title || option.name }}
           </gl-dropdown-item>
           <gl-dropdown-divider />
         </template>
@@ -131,10 +147,12 @@ export default {
           :is-checked="isSelected(option)"
           :is-check-centered="true"
           :is-check-item="true"
+          :avatar-url="avatarUrl(option)"
+          :secondary-text="secondaryText(option)"
           data-testid="unselected-option"
           @click="selectOption(option)"
         >
-          {{ option.title }}
+          {{ option.title || option.name }}
         </gl-dropdown-item>
         <gl-dropdown-item v-if="noOptionsFound" class="gl-pl-6!">
           {{ $options.i18n.noMatchingResults }}
