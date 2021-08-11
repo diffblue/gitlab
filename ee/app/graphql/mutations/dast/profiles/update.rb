@@ -30,6 +30,10 @@ module Mutations
                  required: true,
                  description: 'Project the profile belongs to.'
 
+        argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
+              required: false,
+              description: 'Represents a DAST profile schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+
         argument :name, GraphQL::Types::String,
                  required: false,
                  description: 'Name of the profile.'
@@ -58,9 +62,9 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, id:, name:, description:, branch_name: nil, dast_site_profile_id: nil, dast_scanner_profile_id: nil, run_after_update: false)
+        def resolve(full_path:, id:, name:, description:, branch_name: nil, dast_scanner_profile_id: nil, run_after_update: false, **args)
           project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
+          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(args[:dast_profile_schedule], project)
 
           dast_profile = find_dast_profile(project.id, id)
           authorize!(dast_profile)
@@ -70,8 +74,9 @@ module Mutations
             name: name,
             description: description,
             branch_name: branch_name,
-            dast_site_profile_id: as_model_id(SiteProfileID, dast_site_profile_id),
+            dast_site_profile_id: as_model_id(SiteProfileID, args[:dast_site_profile_id]),
             dast_scanner_profile_id: as_model_id(ScannerProfileID, dast_scanner_profile_id),
+            dast_profile_schedule: args[:dast_profile_schedule],
             run_after_update: run_after_update
           }.compact
 
@@ -86,8 +91,14 @@ module Mutations
 
         private
 
-        def allowed?(project)
-          project.feature_available?(:security_on_demand_scans)
+        def allowed?(dast_profile_schedule, project)
+          scheduler_flag_enabled?(dast_profile_schedule, project)
+        end
+
+        def scheduler_flag_enabled?(dast_profile_schedule, project)
+          return true unless dast_profile_schedule
+
+          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
         end
 
         def as_model_id(klass, value)

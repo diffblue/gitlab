@@ -11,6 +11,8 @@ RSpec.describe Mutations::Dast::Profiles::Update do
   let_it_be(:new_dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:new_dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
 
+  let(:dast_profile_schedule_attrs) { nil }
+
   let(:dast_profile_gid) { dast_profile.to_global_id }
   let(:run_after_update) { false }
 
@@ -22,7 +24,8 @@ RSpec.describe Mutations::Dast::Profiles::Update do
       branch_name: project.default_branch,
       dast_site_profile_id: global_id_of(new_dast_site_profile),
       dast_scanner_profile_id: global_id_of(new_dast_scanner_profile),
-      run_after_update: run_after_update
+      run_after_update: run_after_update,
+      dast_profile_schedule: dast_profile_schedule_attrs
     }
   end
 
@@ -78,6 +81,61 @@ RSpec.describe Mutations::Dast::Profiles::Update do
             expect(updated_dast_profile.name).to eq(params[:name])
             expect(updated_dast_profile.description).to eq(params[:description])
             expect(updated_dast_profile.branch_name).to eq(params[:branch_name])
+          end
+        end
+
+        context 'when associated dast profile schedule is present' do
+          before do
+            create(:dast_profile_schedule, dast_profile: dast_profile)
+          end
+
+          context 'when dast_profile_schedule param is present' do
+            let(:new_dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
+
+            subject do
+              mutation.resolve(**params.merge(
+                full_path: project.full_path,
+                dast_profile_schedule: new_dast_profile_schedule
+              ))
+            end
+
+            context 'when dast_on_demand_scans_scheduler feature is enabled' do
+              it 'updates the profile schedule' do
+                subject
+
+                updated_schedule = dast_profile.reload.dast_profile_schedule
+
+                aggregate_failures do
+                  expect(updated_schedule.timezone).to eq(new_dast_profile_schedule[:timezone])
+                  expect(updated_schedule.starts_at.to_i).to eq(new_dast_profile_schedule[:starts_at].to_i)
+                  expect(updated_schedule.cadence).to eq(new_dast_profile_schedule[:cadence].stringify_keys)
+                end
+              end
+            end
+
+            context 'when dast_on_demand_scans_scheduler feature is disabled' do
+              let(:dast_profile_schedule_attrs) { attributes_for(:dast_profile_schedule) }
+
+              before do
+                stub_feature_flags(dast_on_demand_scans_scheduler: false)
+              end
+
+              it 'returns the dast_profile_schedule' do
+                expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+              end
+            end
+          end
+
+          context 'when dast_profile_schedule param is not passed' do
+            context 'when dast_on_demand_scans_scheduler feature is enabled' do
+              it 'does not updates the profile schedule' do
+                schedule_before_update = dast_profile.dast_profile_schedule
+
+                subject
+
+                expect(schedule_before_update).to eq(dast_profile.dast_profile_schedule.reload)
+              end
+            end
           end
         end
 

@@ -76,6 +76,52 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           end
         end
 
+        context 'with dast_profile_schedule param' do
+          let_it_be(:time_zone) { Time.zone.tzinfo.name }
+
+          let(:params) do
+            default_params.merge(
+              dast_profile_schedule: {
+                active: false,
+                starts_at: Time.zone.now + 10.days,
+                timezone: time_zone,
+                cadence: { unit: 'month', duration: 1 }
+              }
+            )
+          end
+
+          context 'when associated schedule is not present' do
+            it 'communicates failure for dast_profile_schedule' do
+              aggregate_failures do
+                expect(dast_profile.dast_profile_schedule).to be nil
+                expect(subject.status).to eq(:error)
+                expect(subject.message).to include('Dast Profile Schedule not found')
+              end
+            end
+          end
+
+          context 'when associated schedule is present' do
+            before do
+              create(:dast_profile_schedule, dast_profile: dast_profile)
+            end
+
+            it 'updates the dast profile schedule' do
+              updated_schedule = subject.payload[:dast_profile_schedule].reload
+
+              aggregate_failures do
+                expect(updated_schedule.active).to eq(params[:dast_profile_schedule][:active])
+                expect(updated_schedule.starts_at.to_i).to eq(params[:dast_profile_schedule][:starts_at].to_i)
+                expect(updated_schedule.timezone).to eq(params[:dast_profile_schedule][:timezone])
+                expect(updated_schedule.cadence).to eq(params[:dast_profile_schedule][:cadence].stringify_keys)
+              end
+            end
+
+            it 'creates the audit event' do
+              expect { subject }.to change { AuditEvent.where(target_id: dast_profile.dast_profile_schedule.id).count }
+            end
+          end
+        end
+
         it 'audits the update', :aggregate_failures do
           old_profile_attrs = {
             description: dast_profile.description,
