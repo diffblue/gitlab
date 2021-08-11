@@ -40,3 +40,5 @@ export const POLICY_TYPE_OPTIONS = {
     text: s__('SecurityPolicies|All policies'),
   },
 };
+
+export const POLICIES_LIST_CONTAINER_CLASS = '.js-security-policies-container-wrapper';
