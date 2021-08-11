@@ -14,6 +14,7 @@ module EE
     EOA_BRONZE_PLAN_BANNER         = 'eoa_bronze_plan_banner'
     EOA_BRONZE_PLAN_END_DATE       = '2022-01-26'
     CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
+    PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
 
     def render_enable_hashed_storage_warning
       return unless show_enable_hashed_storage_warning?
@@ -69,6 +70,10 @@ module EE
       !token_expiration_enforced? &&
         current_user.active? &&
         !user_dismissed?(PERSONAL_ACCESS_TOKEN_EXPIRY, 1.week.ago)
+    end
+
+    def show_profile_token_expiry_notification?
+      !token_expiration_enforced? && !user_dismissed?(PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY, 1.day.ago)
     end
 
     def show_new_user_signups_cap_reached?

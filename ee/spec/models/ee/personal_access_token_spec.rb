@@ -243,6 +243,33 @@ RSpec.describe PersonalAccessToken do
     it_behaves_like 'enforcement of personal access token expiry'
   end
 
+  describe '#expired_but_not_enforced?' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { expired_token.expired_but_not_enforced? }
+
+    where(:enforced?, :expires_at, :result) do
+      true    | 1.week.ago      | false
+      true    | Time.current    | false
+      true    | 1.week.from_now | false
+      false   | 1.week.ago      | true
+      false   | Time.current    | true
+      false   | 1.week.from_now | false
+    end
+
+    with_them do
+      let_it_be(:expired_token) { build(:personal_access_token) }
+
+      before do
+        allow(described_class).to receive(:expiration_enforced?).and_return(enforced?)
+
+        expired_token.expires_at = expires_at
+      end
+
+      it { expect(subject).to be result }
+    end
+  end
+
   describe '.enforce_pat_expiration_feature_available?' do
     using RSpec::Parameterized::TableSyntax
 
