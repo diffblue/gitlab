@@ -1,7 +1,7 @@
 ---
 data_category: Optional
 key_path: usage_activity_by_stage_monthly.plan.epics
-description: TBD
+description: 
 product_section: dev
 product_stage: plan
 product_group: group::plan
@@ -9,7 +9,7 @@ product_category: epics
 value_type: number
 status: data_available
 time_frame: 28d
-data_source: TBD
+data_source: 
 distribution:
 - ee
 tier:
