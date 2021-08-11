@@ -40,7 +40,13 @@
         "type": "string"
       }
     },
-    "vulnerabilities_allowed": { "type": "integer" }
+    "vulnerabilities_allowed": { "type": "integer" },
+    "severity_levels":{
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   },
   "additionalProperties": false
 }

@@ -84,6 +84,18 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
         expect(project.approval_rules.first.scanners).to eql(scanners)
       end
     end
+
+    context 'with valid severity_levels' do
+      let(:severity_levels) { ['critical'] }
+
+      it 'returns 201 status' do
+        expect do
+          post api(url, current_user), params: params.merge({ severity_levels: severity_levels })
+        end.to change { project.approval_rules.count }.from(0).to(1)
+        expect(response).to have_gitlab_http_status(:created)
+        expect(project.approval_rules.first.severity_levels).to eql(severity_levels)
+      end
+    end
   end
 
   context 'with vulnerabilities_allowed' do
@@ -129,6 +141,17 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
         expect do
           put api(url, current_user), params: { scanners: scanners }
         end.to change { approval_rule.reload.scanners.count }.from(::ApprovalProjectRule::SUPPORTED_SCANNERS.count).to(scanners.count)
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'with valid severity_levels' do
+      let(:severity_levels) { ['critical'] }
+
+      it 'returns 200 status' do
+        expect do
+          put api(url, current_user), params: { severity_levels: severity_levels }
+        end.to change { approval_rule.reload.severity_levels.count }.from(::Enums::Vulnerability.severity_levels.keys.count).to(severity_levels.count)
         expect(response).to have_gitlab_http_status(:ok)
       end
     end

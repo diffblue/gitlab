@@ -14,6 +14,7 @@ module API
         optional :protected_branch_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The protected branch ids for this rule'
         optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
+        optional :severity_levels, type: Array[String], desc: 'The security levels to be considered by the approval rule'
       end
 
       params :update_project_approval_rule do
@@ -26,6 +27,7 @@ module API
         optional :remove_hidden_groups, type: Boolean, desc: 'Whether hidden groups should be removed'
         optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
+        optional :severity_levels, type: Array[String], desc: 'The security levels to be considered by the approval rule'
       end
 
       params :delete_project_approval_rule do
