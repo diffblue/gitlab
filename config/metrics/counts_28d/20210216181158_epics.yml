@@ -1,19 +1,19 @@
 ---
 data_category: Optional
 key_path: usage_activity_by_stage_monthly.plan.epics
-description: 
+description: TBD
 product_section: dev
-product_stage: 
+product_stage: plan
 product_group: group::plan
-product_category: 
+product_category: epics
 value_type: number
 status: data_available
 time_frame: 28d
-data_source: 
+data_source: TBD
 distribution:
-- ce
+- ee
 tier:
-- free
+- premium
 skip_validation: true
 performance_indicator_type:
 - gmau

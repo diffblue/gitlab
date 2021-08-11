@@ -1,17 +1,17 @@
 ---
 data_category: Operational
 key_path: usage_activity_by_stage.plan.epics
-description:
+description: TBD
 product_section: dev
-product_stage:
+product_stage: plan
 product_group: group::plan
-product_category:
+product_category: epics
 value_type: number
 status: data_available
 time_frame: all
-data_source:
+data_source: TBD
 distribution:
-- ce
+- ee
 tier:
-- free
+- premium
 skip_validation: true
