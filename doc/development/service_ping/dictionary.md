@@ -666,7 +666,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners`
 
-Total configured Runners in project
+Total configured Runners of all types
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216175520_ci_runners.yml)
 
@@ -680,7 +680,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_group_type_active`
 
-Total active instance Runners
+Total active Group Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502050341_ci_runners_group_type_active.yml)
 
@@ -694,7 +694,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_group_type_active_online`
 
-Total active and online group Runners
+Total active and online Group Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502051922_ci_runners_group_type_active_online.yml)
 
@@ -708,7 +708,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_instance_type_active`
 
-Total active group Runners
+Total active Shared (Instance) Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502045402_ci_runners_instance_type_active.yml)
 
@@ -722,7 +722,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_instance_type_active_online`
 
-Total active and online instance Runners
+Total active and online Shared (Instance) Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502051651_ci_runners_instance_type_active_online.yml)
 
@@ -736,7 +736,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_online`
 
-Total online Runners
+Total online Runners of all types
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502050942_ci_runners_online.yml)
 
@@ -750,7 +750,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_project_type_active`
 
-Total active project Runners
+Total active Specific (Project) Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502050834_ci_runners_project_type_active.yml)
 
@@ -764,7 +764,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.ci_runners_project_type_active_online`
 
-Total active and online project Runners
+Total active and online Specific (Project) Runners
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210502052036_ci_runners_project_type_active_online.yml)
 
@@ -1156,7 +1156,7 @@ Tiers: `ultimate`
 
 ### `counts.deploy_keys`
 
-Missing description
+Count of deploy keys
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216181908_deploy_keys.yml)
 
@@ -1166,7 +1166,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.deployments`
 
@@ -1174,7 +1174,7 @@ Total deployments count
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210201124934_deployments.yml)
 
-Group: `group::ops release`
+Group: `group::release`
 
 Data Category: `Optional`
 
@@ -1224,6 +1224,20 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.diff_searches`
+
+Total count of merge request diff searches
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210723075525_diff_searches.yml)
+
+Group: `group::code review`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.environments`
 
 Total available and stopped environments
@@ -1236,7 +1250,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.epic_issues`
 
@@ -1292,7 +1306,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.feature_flags`
 
@@ -1300,13 +1314,13 @@ Number of feature flag toggles
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216181249_feature_flags.yml)
 
-Group: `group::progressive delivery`
+Group: `group::release`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.geo_event_log_max_id`
 
@@ -2456,6 +2470,34 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.in_product_marketing_email_admin_verify_0_cta_clicked`
+
+Total clicks on the admin_verify track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210729140021_in_product_marketing_email_admin_verify_0_cta_clicked.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.in_product_marketing_email_admin_verify_0_sent`
+
+Total sent emails of the admin_verify track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210729140423_in_product_marketing_email_admin_verify_0_sent.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.in_product_marketing_email_create_0_cta_clicked`
 
 Total clicks on the create track's first email
@@ -2638,6 +2680,34 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.in_product_marketing_email_team_short_0_cta_clicked`
+
+Total clicks on the team_short track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210727095918_in_product_marketing_email_team_short_0_cta_clicked.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.in_product_marketing_email_team_short_0_sent`
+
+Total sent emails of the team_short track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210727095923_in_product_marketing_email_team_short_0_sent.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.in_product_marketing_email_trial_0_cta_clicked`
 
 Total clicks on the verify trial's first email
@@ -2719,6 +2789,34 @@ Group: `group::activation`
 Data Category: `Optional`
 
 Status: `data_available`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.in_product_marketing_email_trial_short_0_cta_clicked`
+
+Total clicks on the trial_short track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210727170553_in_product_marketing_email_trial_short_0_cta_clicked.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.in_product_marketing_email_trial_short_0_sent`
+
+Total sent emails of the trial_short track's first email
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210727170558_in_product_marketing_email_trial_short_0_sent.yml)
+
+Group: `group::activation`
+
+Data Category: `Optional`
+
+Status: `implemented`
 
 Tiers: `free`, `premium`, `ultimate`
 
@@ -2808,7 +2906,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.in_review_folder`
 
-Missing description
+A number of environments with name review/*
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216181916_in_review_folder.yml)
 
@@ -2818,7 +2916,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.incident_issues`
 
@@ -3836,7 +3934,7 @@ Count of License Scanning jobs run
 
 Group: `group::composition analysis`
 
-Data Category: `Subscription`
+Data Category: `Operational`
 
 Status: `data_available`
 
@@ -4354,6 +4452,8 @@ The total count of Helm packages that have been published.
 
 Group: `group::package`
 
+Data Category: `Optional`
+
 Status: `implemented`
 
 Tiers: `free`, `premium`, `ultimate`
@@ -4470,6 +4570,20 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.package_events_i_package_nuget_pull_symbol_package`
+
+A count of NuGet symbol packages that have been downloaded from the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709191135_package_events_i_package_nuget_pull_symbol_package.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.package_events_i_package_nuget_push_package`
 
 A count of NuGet packages that have been published
@@ -4481,6 +4595,20 @@ Group: `group::package`
 Data Category: `Optional`
 
 Status: `data_available`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_nuget_push_symbol_package`
+
+A count of NuGet symbol packages that have been uploaded to the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709191829_package_events_i_package_nuget_push_symbol_package.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
 
 Tiers: `free`, `premium`, `ultimate`
 
@@ -4540,6 +4668,62 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `counts.package_events_i_package_pull_symbol_package`
+
+A count of symbol packages that have been pulled from the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709210941_package_events_i_package_pull_symbol_package.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_pull_symbol_package_by_deploy_token`
+
+A count of symbol packages that have been pulled with a deploy token from the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211058_package_events_i_package_pull_symbol_package_by_deploy_token.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_pull_symbol_package_by_guest`
+
+A count of symbol packages that have been pulled with by a guest from the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211248_package_events_i_package_pull_symbol_package_by_guest.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_pull_symbol_package_by_user`
+
+A count of symbol packages that have been pulled with by an authenticated user from the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211341_package_events_i_package_pull_symbol_package_by_user.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `counts.package_events_i_package_push_package`
 
 A count of packages that have been published to the package registry
@@ -4593,6 +4777,62 @@ Group: `group::package`
 Data Category: `Optional`
 
 Status: `data_available`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_push_symbol_package`
+
+A count of symbol packages that have been pushed to the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211439_package_events_i_package_push_symbol_package.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_push_symbol_package_by_deploy_token`
+
+A count of symbol packages that have been pushed with a deploy token to the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211636_package_events_i_package_push_symbol_package_by_deploy_token.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_push_symbol_package_by_guest`
+
+A count of symbol packages that have been pushed by a guest to the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211731_package_events_i_package_push_symbol_package_by_guest.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `counts.package_events_i_package_push_symbol_package_by_user`
+
+A count of symbol packages that have been pushed by an authenticated user to the package registry
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210709211831_package_events_i_package_push_symbol_package_by_user.yml)
+
+Group: `group::package`
+
+Data Category: `Optional`
+
+Status: `implemented`
 
 Tiers: `free`, `premium`, `ultimate`
 
@@ -4784,13 +5024,13 @@ Total GitLab Pages domains
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216181946_pages_domains.yml)
 
-Group: `group::release management`
+Group: `group::release`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.personal_snippets`
 
@@ -5172,7 +5412,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.projects_imported_from_github`
 
-Missing description
+Count of projects imported from GitHub
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180628_projects_imported_from_github.yml)
 
@@ -5182,7 +5422,7 @@ Data Category: `Operational`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.projects_inheriting_asana_active`
 
@@ -6530,7 +6770,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.releases`
 
-Unique release tags
+Count of releases
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216181918_releases.yml)
 
@@ -6540,7 +6780,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.remote_mirrors`
 
@@ -6848,7 +7088,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts.suggestions`
 
@@ -7814,7 +8054,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts_monthly.packages`
 
@@ -7912,7 +8152,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `counts_weekly.aggregated_metrics.code_review_category_monthly_active_users`
 
@@ -7958,7 +8198,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `counts_weekly.aggregated_metrics.compliance_features_track_unique_visits_union`
 
-Unique users that have used audit event screen, audit event API, compliance dashboard, or credential inventory
+Unique users that have used audit event screen, audit event API, compliance report, or credential inventory
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_7d/20210216183211_compliance_features_track_unique_visits_union.yml)
 
@@ -8104,7 +8344,7 @@ Edition of GitLab such as EE or CE
 
 Group: `group::distribution`
 
-Data Category: `Optional`
+Data Category: `Standard`
 
 Status: `data_available`
 
@@ -8212,29 +8452,29 @@ Tiers: `free`
 
 Whether GitLab Pages is enabled
 
-[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/settings/20210204124934_enabled.yml)
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/settings/20210204124934_pages_enabled.yml)
 
-Group: `group::product intelligence`
+Group: `group::release`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `gitlab_pages.version`
 
 The version number of GitLab Pages
 
-[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/license/20210204124936_version.yml)
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/license/20210204124936_pages_version.yml)
 
-Group: `group::product intelligence`
+Group: `group::release`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `gitlab_shared_runners_enabled`
 
@@ -11372,6 +11612,34 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `redis_hll_counters.code_review.i_code_review_user_searches_diff_monthly`
+
+Count of users who search merge request diffs
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210720144005_i_code_review_user_searches_diff_monthly.yml)
+
+Group: `group::code review`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `redis_hll_counters.code_review.i_code_review_user_searches_diff_weekly`
+
+Count of users who search merge request diffs
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_7d/20210720144005_i_code_review_user_searches_diff_weekly.yml)
+
+Group: `group::code review`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `redis_hll_counters.code_review.i_code_review_user_single_file_diffs_monthly`
 
 Count of unique users per month with diffs viewed file by file
@@ -11696,7 +11964,7 @@ Tiers: `premium`, `ultimate`
 
 ### `redis_hll_counters.compliance.g_compliance_dashboard_weekly`
 
-Unique users who have looked at the compliance dashboard in a given week
+Unique users who have looked at the compliance report in a given week
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_7d/20210216183924_g_compliance_dashboard_weekly.yml)
 
@@ -16524,6 +16792,34 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `redis_hll_counters.quickactions.i_quickactions_severity_monthly`
+
+Count of MAU using the `/severity` quick action
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210721042227_i_quickactions_severity_monthly.yml)
+
+Group: `group::monitor`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
+### `redis_hll_counters.quickactions.i_quickactions_severity_weekly`
+
+Count of WAU using the `/severity` quick action
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_7d/20210721042223_i_quickactions_severity_weekly.yml)
+
+Group: `group::monitor`
+
+Data Category: `Optional`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `redis_hll_counters.quickactions.i_quickactions_shrug_monthly`
 
 Count of MAU using the `/shrug` quick action
@@ -18316,6 +18612,22 @@ Status: `data_available`
 
 Tiers: `free`, `premium`, `ultimate`
 
+### `settings.collected_data_categories`
+
+List of collected data categories corresponding to instance settings
+
+[Object JSON schema](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/objects_schemas/collected_data_categories_schema.json)
+
+[YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/settings/20210702140138_collected_data_categories.yml)
+
+Group: `group::product intelligence`
+
+Data Category: `Standard`
+
+Status: `implemented`
+
+Tiers: `free`, `premium`, `ultimate`
+
 ### `settings.gitaly_apdex`
 
 Gitaly application performance
@@ -18838,7 +19150,7 @@ Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage.create.projects_imported_from_github`
 
-Missing description
+Count of projects imported from GitHub
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180630_projects_imported_from_github.yml)
 
@@ -18848,7 +19160,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.create.projects_with_disable_overriding_approvers_per_merge_request`
 
@@ -19072,7 +19384,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.bulk_imports.gitlab_v1`
 
@@ -19086,7 +19398,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.compliance_frameworks_with_pipeline`
 
@@ -19118,7 +19430,7 @@ Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.events`
 
-Missing description
+Number of distinct users who have generated a manage event
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180754_events.yml)
 
@@ -19128,7 +19440,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.group_imports.gitlab_migration`
 
@@ -19142,11 +19454,11 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.group_imports.group_import`
 
-Count of group imports using Group Import/Export
+Count of groups imported using Group Import/Export
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_all/20210216180702_group_import.yml)
 
@@ -19156,7 +19468,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.group_saml_enabled`
 
@@ -19198,7 +19510,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issue_imports.csv`
 
@@ -19212,7 +19524,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issue_imports.fogbugz`
 
@@ -19226,7 +19538,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issue_imports.jira`
 
@@ -19240,7 +19552,7 @@ Data Category: `Operational`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issue_imports.phabricator`
 
@@ -19254,7 +19566,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issues_imported.csv`
 
@@ -19268,7 +19580,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issues_imported.fogbugz`
 
@@ -19282,7 +19594,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issues_imported.jira`
 
@@ -19296,7 +19608,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.issues_imported.phabricator`
 
@@ -19310,7 +19622,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.ldap_admin_sync_enabled`
 
@@ -19548,7 +19860,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.bitbucket_server`
 
@@ -19562,7 +19874,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.git`
 
@@ -19576,7 +19888,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.gitea`
 
@@ -19590,7 +19902,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.github`
 
@@ -19604,7 +19916,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.gitlab`
 
@@ -19618,7 +19930,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.gitlab_project`
 
@@ -19632,7 +19944,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.manifest`
 
@@ -19646,7 +19958,7 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_imported.total`
 
@@ -19660,21 +19972,21 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.projects_with_compliance_framework`
 
-Number of projects labeled with a compliance framework label [see](https://gitlab.com/gitlab-org/gitlab/-/issues/118671)
+Number of projects labeled with a compliance framework label
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_all/20210216180805_projects_with_compliance_framework.yml)
 
-Group: `group::manage`
+Group: `group::compliance`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers:
+Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.unique_users_all_imports`
 
@@ -19688,7 +20000,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.manage.user_auth_by_provider.google_oauth2`
 
@@ -20138,7 +20450,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.release.failed_deployments`
 
@@ -20152,7 +20464,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.release.projects_mirrored_with_pipelines_enabled`
 
@@ -20180,7 +20492,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.release.successful_deployments`
 
@@ -20194,7 +20506,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage.secure.api_fuzzing_scans`
 
@@ -20344,6 +20656,8 @@ Number of users who have run a API Fuzzing scan
 
 Group: `category::fuzz testing`
 
+Data Category: `Optional`
+
 Status: `data_available`
 
 Tiers: `ultimate`
@@ -20369,6 +20683,8 @@ Number of users who have run a Container Scanning scan
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_all/20210607043902_user_container_scanning_scans.yml)
 
 Group: `group::composition analysis`
+
+Data Category: `Optional`
 
 Status: `data_available`
 
@@ -20396,6 +20712,8 @@ Number of users who have run a Coverage Fuzzing scan
 
 Group: `category::fuzz testing`
 
+Data Category: `Optional`
+
 Status: `data_available`
 
 Tiers: `ultimate`
@@ -20422,6 +20740,8 @@ Number of users who have run a DAST scan
 
 Group: `group::dynamic analysis`
 
+Data Category: `Optional`
+
 Status: `data_available`
 
 Tiers: `ultimate`
@@ -20447,6 +20767,8 @@ Number of users who have run a Dependency Scanning scan
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_all/20210607043819_user_dependency_scanning_scans.yml)
 
 Group: `group::composition analysis`
+
+Data Category: `Optional`
 
 Status: `data_available`
 
@@ -20502,6 +20824,8 @@ Number of users who have run a SAST scan
 
 Group: `group::static analysis`
 
+Data Category: `Optional`
+
 Status: `data_available`
 
 Tiers: `ultimate`
@@ -20527,6 +20851,8 @@ Number of users who have run a Secret Detection scan
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_all/20210607043957_user_secret_detection_scans.yml)
 
 Group: `group::static analysis`
+
+Data Category: `Optional`
 
 Status: `data_available`
 
@@ -21276,7 +21602,7 @@ Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.create.projects_imported_from_github`
 
-Missing description
+Count of projects imported from GitHub
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216180731_projects_imported_from_github.yml)
 
@@ -21286,7 +21612,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.create.projects_with_disable_overriding_approvers_per_merge_request`
 
@@ -21472,31 +21798,31 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.bulk_imports.gitlab`
 
-Missing description
+DEPRECATED - Count of projects imported using bulk imports
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183640_gitlab.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.bulk_imports.gitlab_v1`
 
-Missing description
+Count of bulk imports - GitLab Migration
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183642_gitlab_v1.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.compliance_frameworks_with_pipeline`
 
@@ -21542,17 +21868,17 @@ Tiers: `free`
 
 ### `usage_activity_by_stage_monthly.manage.group_imports.gitlab_migration`
 
-Missing description
+Count of groups imported using GitLab Migration
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183711_gitlab_migration.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.group_imports.group_import`
 
@@ -21598,7 +21924,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.groups_imported`
 
-Missing description
+Count of imported groups
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183737_groups_imported.yml)
 
@@ -21608,119 +21934,119 @@ Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issue_imports.csv`
 
-Missing description
+Count of (issue) imports from CSV file
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183707_csv.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issue_imports.fogbugz`
 
-Missing description
+Count of imports from Fogbugz
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183703_fogbugz.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issue_imports.jira`
 
-Missing description
+Count of imports from Jira
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183701_jira.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issue_imports.phabricator`
 
-Missing description
+Count of imports from Phabricator
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183705_phabricator.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issues_imported.csv`
 
-Missing description
+Count of projects imported from CSV file
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183735_csv.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issues_imported.fogbugz`
 
-Missing description
+Count of projects imported from Fogbugz
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183731_fogbugz.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issues_imported.jira`
 
-Missing description
+Count of projects imported from Jira
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183730_jira.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.issues_imported.phabricator`
 
-Missing description
+Count of projects imported from Phabricator
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183733_phabricator.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.ldap_admin_sync_enabled`
 
@@ -21892,7 +22218,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.project_imports.gitlab_migration`
 
-Missing description
+Count of projects imported using GitLab Migration
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183659_gitlab_migration.yml)
 
@@ -21906,7 +22232,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.project_imports.gitlab_project`
 
-Missing description
+Count of projects imported using Project Import/Export
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183644_gitlab_project.yml)
 
@@ -21920,7 +22246,7 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.project_imports.manifest`
 
-Missing description
+Count of projects imported using Manifest file
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183657_manifest.yml)
 
@@ -21976,119 +22302,119 @@ Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.git`
 
-Missing description
+Count of projects imported from Git
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183726_git.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.gitea`
 
-Missing description
+Count of projects imported from Gitea
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183724_gitea.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.github`
 
-Missing description
+Count of projects imported from GitHub
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183718_github.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.gitlab`
 
-Missing description
+Count of projects imported using Project Import/Export
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183716_gitlab.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.gitlab_project`
 
-Missing description
+Count of projects imported using Project Import/Export
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183714_gitlab_project.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.manifest`
 
-Missing description
+Count of projects imported from Git using file Manifest
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183728_manifest.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_imported.total`
 
-Missing description
+Count of all imported projects
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183712_total.yml)
 
-Group: ``
+Group: `group::import`
 
 Data Category: `Optional`
 
 Status: `deprecated`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.projects_with_compliance_framework`
 
-Missing description
+Number of projects labeled with a compliance framework label
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/config/metrics/counts_28d/20210216180825_projects_with_compliance_framework.yml)
 
-Group: `group::manage`
+Group: `group::compliance`
 
 Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers:
+Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.manage.unique_users_all_imports`
 
-Number of users from projects imported
+Number of unique users performing imports
 
 [YAML definition](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/metrics/counts_28d/20210216183638_unique_users_all_imports.yml)
 
@@ -22196,7 +22522,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers:
+Tiers: `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.monitor.clusters`
 
@@ -22264,7 +22590,7 @@ Group: `group::monitor`
 
 Data Category: `Optional`
 
-Status: `data_available`
+Status: `deprecated`
 
 Tiers: `premium`, `ultimate`
 
@@ -22532,7 +22858,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.release.failed_deployments`
 
@@ -22546,7 +22872,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.release.projects_mirrored_with_pipelines_enabled`
 
@@ -22574,7 +22900,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.release.successful_deployments`
 
@@ -22588,7 +22914,7 @@ Data Category: `Optional`
 
 Status: `data_available`
 
-Tiers: `free`
+Tiers: `free`, `premium`, `ultimate`
 
 ### `usage_activity_by_stage_monthly.secure.api_fuzzing_pipeline`
 
@@ -23228,7 +23554,7 @@ Version of GitLab instance
 
 Group: `group::distribution`
 
-Data Category: `Optional`
+Data Category: `Standard`
 
 Status: `data_available`
 
