@@ -427,7 +427,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     subject(:on_demand_scan_actions) do
-      security_orchestration_policy_configuration.on_demand_scan_actions('release/123')
+      security_orchestration_policy_configuration.on_demand_scan_actions(ref)
     end
 
     before do
@@ -435,8 +435,18 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
     end
 
-    it 'returns only actions for on-demand scans applicable for branch' do
-      expect(on_demand_scan_actions).to eq(expected_actions)
+    context 'when ref is branch' do
+      let(:ref) { 'refs/heads/release/123' }
+
+      it 'returns only actions for on-demand scans applicable for branch' do
+        expect(on_demand_scan_actions).to eq(expected_actions)
+      end
+    end
+
+    context 'when ref is a tag' do
+      let(:ref) { 'refs/tags/v1.0.0' }
+
+      it { is_expected.to be_empty }
     end
   end
 
