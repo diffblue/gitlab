@@ -68,9 +68,9 @@ module Security
       scan_execution_policy.select { |config| config[:enabled] }.first(POLICY_LIMIT)
     end
 
-    def on_demand_scan_actions(branch)
+    def on_demand_scan_actions(ref)
       active_policies
-        .select { |policy| applicable_for_branch?(policy, branch) }
+        .select { |policy| applicable_for_ref?(policy, ref) }
         .flat_map { |policy| policy[:actions] }
         .select { |action| action[:scan].in?(ON_DEMAND_SCANS) }
     end
@@ -142,9 +142,13 @@ module Security
       end
     end
 
-    def applicable_for_branch?(policy, ref)
+    def applicable_for_ref?(policy, ref)
+      return false unless Gitlab::Git.branch_ref?(ref)
+
+      branch_name = Gitlab::Git.ref_name(ref)
+
       policy[:rules].any? do |rule|
-        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches].any? { |branch| RefMatcher.new(branch).matches?(ref) }
+        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches].any? { |branch| RefMatcher.new(branch).matches?(branch_name) }
       end
     end
   end

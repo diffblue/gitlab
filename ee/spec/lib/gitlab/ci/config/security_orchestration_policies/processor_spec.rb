@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   let_it_be(:config) { { image: 'ruby:3.0.1' } }
 
-  let(:ref) { 'master' }
+  let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
 
   let_it_be_with_refind(:project) { create(:project, :repository) }
@@ -103,8 +103,16 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
         end
       end
 
+      context 'when ref is a tag' do
+        let_it_be(:ref) { 'refs/tags/v1.1.0' }
+
+        it 'does not modify the config' do
+          expect(subject).to eq(config)
+        end
+      end
+
       context 'when policy is not applicable on branch from the pipeline' do
-        let_it_be(:ref) { 'production' }
+        let_it_be(:ref) { 'refs/heads/production' }
 
         context 'when DAST profiles are not found' do
           it 'does not modify the config' do
