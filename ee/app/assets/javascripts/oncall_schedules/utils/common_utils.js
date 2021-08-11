@@ -1,6 +1,9 @@
+import * as cssVariables from '@gitlab/ui/scss_to_js/scss_variables';
+import { startCase } from 'lodash';
+import { darkModeEnabled } from '~/lib/utils/color_utils';
 import { newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import { sprintf, __ } from '~/locale';
-import { ASSIGNEE_COLORS_COMBO } from '../constants';
+import { ASSIGNEE_COLORS_COMBO, LIGHT_TO_DARK_MODE_SHADE_MAPPING } from '../constants';
 
 /**
  * Returns formatted timezone string, e.g. (UTC-09:00) AKST Alaska
@@ -35,7 +38,6 @@ export const isNameFieldValid = (nameField) => {
  * with his/her username and unique shift color values
  *
  * @param {Object[]} participants
- * @param {string} participants[].username - The username of the participant.
  *
  * @returns {Object[]} A list of values to save each participant
  * @property {string} username
@@ -43,16 +45,95 @@ export const isNameFieldValid = (nameField) => {
  * @property {string} colorPalette
  */
 export const getParticipantsForSave = (participants) =>
-  participants.map(({ username }, index) => {
-    const colorIndex = index % ASSIGNEE_COLORS_COMBO.length;
-    const { colorWeight, colorPalette } = ASSIGNEE_COLORS_COMBO[colorIndex];
+  participants.map(({ username, colorWeight, colorPalette }) => ({
+    username,
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    colorWeight: `WEIGHT_${colorWeight}`,
+    colorPalette: colorPalette.toUpperCase(),
+  }));
 
-    return {
-      username,
+/**
+ * Returns user data along with user token styles - color of the text
+ * as well as the token background color depending on light or dark mode
+ *
+ * @template User
+ * @param {User} user
+ *
+ * @returns {Object}
+ * @property {User}
+ * @property {string} class (CSS) for text color
+ * @property {string} styles for token background color
+ */
+export const getUserTokenStyles = (user) => {
+  const { colorWeight, colorPalette } = user;
+  const isDarkMode = darkModeEnabled();
+  const modeColorWeight = isDarkMode ? LIGHT_TO_DARK_MODE_SHADE_MAPPING[colorWeight] : colorWeight;
+  const bgColor = `dataViz${startCase(colorPalette)}${modeColorWeight}`;
+
+  let textClass = 'gl-text-white';
+
+  if (isDarkMode) {
+    const medianColorPaletteWeight = 500;
+    textClass = modeColorWeight < medianColorPaletteWeight ? 'gl-text-white' : 'gl-text-gray-900';
+  }
+
+  return {
+    ...user,
+    class: textClass,
+    style: { backgroundColor: cssVariables[bgColor] },
+  };
+};
+
+/**
+ * Sets colorWeight and colorPalette for all participants options taking into account saved participants colors
+ * so that there will be no color overlap
+ *
+ * @param {Object[]} allParticipants
+ * @param {Object[]} selectedParticipants
+ *
+ * @returns {Object[]} A list of all participants with colorWeight and colorPalette properties set
+ */
+export const setParticipantsColors = (allParticipants, selectedParticipants = []) => {
+  // filter out the colors that saved participants have assigned
+  // so there are no duplicate colors
+  let availableColors = ASSIGNEE_COLORS_COMBO.filter(({ colorWeight, colorPalette }) =>
+    selectedParticipants.every(
+      ({ colorWeight: weight, colorPalette: palette }) =>
+        !(colorWeight === weight && colorPalette === palette),
+    ),
+  );
+
+  // if all colors are exhausted, we allow to pick from the whole palette
+  if (!availableColors.length) {
+    availableColors = ASSIGNEE_COLORS_COMBO;
+  }
+
+  // filter out participants that were not saved previously and have no color info assigned
+  // and assign each one an available color set
+  const participants = allParticipants
+    .filter((participant) =>
+      selectedParticipants.every(({ user: { username } }) => username !== participant.username),
+    )
+    .map((participant, index) => {
+      const colorIndex = index % availableColors.length;
+      const { colorWeight, colorPalette } = availableColors[colorIndex];
+
+      return {
+        ...participant,
+        colorWeight,
+        colorPalette,
+      };
+    });
+
+  return [
+    ...participants,
+    ...selectedParticipants.map(({ user, colorWeight, colorPalette }) => ({
+      ...user,
       colorWeight,
       colorPalette,
-    };
-  });
+    })),
+  ].map(getUserTokenStyles);
+};
 
 /**
  * Parses a activePeriod string into an integer value

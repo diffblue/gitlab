@@ -1,10 +1,12 @@
-import { ASSIGNEE_COLORS_COMBO } from 'ee/oncall_schedules/constants';
 import {
   getFormattedTimezone,
   getParticipantsForSave,
   parseHour,
   parseRotationDate,
+  getUserTokenStyles,
+  setParticipantsColors,
 } from 'ee/oncall_schedules/utils/common_utils';
+import * as ColorUtils from '~/lib/utils/color_utils';
 import mockTimezones from './mocks/mock_timezones.json';
 
 describe('getFormattedTimezone', () => {
@@ -17,16 +19,106 @@ describe('getFormattedTimezone', () => {
 
 describe('getParticipantsForSave', () => {
   it('returns participant shift color data along with the username', () => {
-    const participants = [{ username: 'user1' }, { username: 'user2' }, { username: 'user3' }];
-    const result = getParticipantsForSave(participants);
+    const participants = [
+      { username: 'user1', colorWeight: 300, colorPalette: 'blue', extraProp: '1' },
+      { username: 'user2', colorWeight: 400, colorPalette: 'red', extraProp: '2' },
+      { username: 'user3', colorWeight: 500, colorPalette: 'green', extraProp: '4' },
+    ];
+    const expectedParticipantsForSave = [
+      { username: 'user1', colorWeight: 'WEIGHT_300', colorPalette: 'BLUE' },
+      { username: 'user2', colorWeight: 'WEIGHT_400', colorPalette: 'RED' },
+      { username: 'user3', colorWeight: 'WEIGHT_500', colorPalette: 'GREEN' },
+    ];
+    expect(getParticipantsForSave(participants)).toEqual(expectedParticipantsForSave);
+  });
+});
 
-    expect(result.length).toBe(participants.length);
+describe('getUserTokenStyles', () => {
+  it.each`
+    isDarkMode | colorWeight | expectedTextClass     | expectedBackgroundColor
+    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d4dcfa'}
+    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#5772ff'}
+    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#748eff'}
+    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3547de'}
+  `(
+    'sets correct styles and class',
+    ({ isDarkMode, colorWeight, expectedTextClass, expectedBackgroundColor }) => {
+      jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => isDarkMode);
 
-    result.forEach((participant, index) => {
-      const { colorWeight, colorPalette } = ASSIGNEE_COLORS_COMBO[index];
-      const { username } = participants[index];
-      expect(participant).toEqual({ username, colorWeight, colorPalette });
-    });
+      const user = { username: 'user1', colorWeight, colorPalette: 'blue' };
+
+      expect(getUserTokenStyles(user)).toMatchObject({
+        class: expectedTextClass,
+        style: { backgroundColor: expectedBackgroundColor },
+      });
+    },
+  );
+});
+
+describe('setParticipantsColors', () => {
+  it('sets token color data to each of the eparticipant', () => {
+    jest.spyOn(ColorUtils, 'darkModeEnabled').mockImplementation(() => false);
+
+    const allParticpants = [
+      { username: 'user1' },
+      { username: 'user2' },
+      { username: 'user3' },
+      { username: 'user4' },
+      { username: 'user5' },
+      { username: 'user6' },
+    ];
+    const selectedParticpants = [
+      { user: { username: 'user2' }, colorPalette: 'blue', colorWeight: '500' },
+      { user: { username: 'user4' }, colorPalette: 'magenta', colorWeight: '500' },
+      { user: { username: 'user5' }, colorPalette: 'orange', colorWeight: '500' },
+    ];
+    const expectedParticipants = [
+      {
+        username: 'user1',
+        colorWeight: '500',
+        colorPalette: 'aqua',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#0094b6' },
+      },
+      {
+        username: 'user3',
+        colorWeight: '500',
+        colorPalette: 'green',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#608b2f' },
+      },
+      {
+        username: 'user6',
+        colorWeight: '600',
+        colorPalette: 'blue',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#445cf2' },
+      },
+      {
+        username: 'user2',
+        colorWeight: '500',
+        colorPalette: 'blue',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#5772ff' },
+      },
+      {
+        username: 'user4',
+        colorWeight: '500',
+        colorPalette: 'magenta',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#d84280' },
+      },
+      {
+        username: 'user5',
+        colorWeight: '500',
+        colorPalette: 'orange',
+        class: 'gl-text-white',
+        style: { backgroundColor: '#d14e00' },
+      },
+    ];
+    expect(setParticipantsColors(allParticpants, selectedParticpants)).toEqual(
+      expectedParticipants,
+    );
   });
 });
 

@@ -11,6 +11,8 @@ export const participants = [
     avatar: '',
     avatarUrl: '',
     webUrl: '',
+    colorWeight: '500',
+    colorPalette: 'blue',
   },
   {
     id: '2',
@@ -19,6 +21,8 @@ export const participants = [
     avatar: '',
     avatarUrl: '',
     webUrl: '',
+    colorWeight: '300',
+    colorPalette: 'orange',
   },
 ];
 
