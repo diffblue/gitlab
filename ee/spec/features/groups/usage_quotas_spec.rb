@@ -104,7 +104,7 @@ RSpec.describe 'Groups > Usage Quotas' do
 
       page.within('#content-body') do
         expect(page).to have_content('Thanks for your purchase!')
-        expect(page).to have_content('You have successfully purchased CI minutes.')
+        expect(page).to have_content('You have successfully purchased CI minutes. You\'ll receive a receipt by email.')
       end
     end
   end
