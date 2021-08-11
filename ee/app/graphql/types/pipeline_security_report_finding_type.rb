@@ -27,6 +27,13 @@ module Types
           null: true,
           description: 'Type of the security report that found the vulnerability.'
 
+    field :false_positive,
+          type: GraphQL::Types::Boolean,
+          null: true,
+          description: 'Indicates whether the vulnerability is a false positive.',
+          resolver_method: :false_positive?,
+          feature_flag: :vulnerability_flags
+
     field :scanner,
           type: VulnerabilityScannerType,
           null: true,
@@ -77,6 +84,12 @@ module Types
 
     def location
       object.location&.merge(report_type: object.report_type)
+    end
+
+    def false_positive?
+      return unless object.project.licensed_feature_available?(:sast_fp_reduction)
+
+      object.vulnerability_flags.any?(&:false_positive?)
     end
   end
   # rubocop: enable Graphql/AuthorizeTypes
