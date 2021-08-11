@@ -8,7 +8,6 @@ RSpec.describe 'Pipeline', :js do
   let_it_be(:project, reload: true) { create(:project, :repository, namespace: namespace) }
 
   before do
-    stub_feature_flags(graphql_pipeline_details_users: false)
     sign_in(user)
 
     project.add_developer(user)
@@ -31,119 +30,63 @@ RSpec.describe 'Pipeline', :js do
         create_link(pipeline, downstream_pipeline)
       end
 
-      context 'when :graphql_pipeline_details flag is on' do
-        context 'expands the upstream pipeline on click' do
-          it 'renders upstream pipeline' do
-            subject
-
-            expect(page).to have_content(upstream_pipeline.id)
-            expect(page).to have_content(upstream_pipeline.project.name)
-          end
-
-          it 'expands the upstream on click' do
-            subject
-
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
-          end
-
-          it 'closes the expanded upstream on click' do
-            subject
-
-            # open
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-
-            # close
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-
-            expect(page).not_to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
-          end
-        end
-
-        it 'renders downstream pipeline' do
+      context 'expands the upstream pipeline on click' do
+        it 'renders upstream pipeline' do
           subject
 
-          expect(page).to have_content(downstream_pipeline.id)
-          expect(page).to have_content(downstream_pipeline.project.name)
+          expect(page).to have_content(upstream_pipeline.id)
+          expect(page).to have_content(upstream_pipeline.project.name)
         end
 
-        context 'expands the downstream pipeline on click' do
-          it 'expands the downstream on click' do
-            subject
+        it 'expands the upstream on click' do
+          subject
 
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
-          end
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
+          wait_for_requests
+          expect(page).to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
+        end
 
-          it 'closes the expanded downstream on click' do
-            subject
+        it 'closes the expanded upstream on click' do
+          subject
 
-            # open
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
+          # open
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
+          wait_for_requests
 
-            # close
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
+          # close
+          page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
 
-            expect(page).not_to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
-          end
+          expect(page).not_to have_selector("#pipeline-links-container-#{upstream_pipeline.id}")
         end
       end
 
-      # remove when :graphql_pipeline_details flag is removed
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/299112
-      context 'when :graphql_pipeline_details flag is off' do
-        before do
-          stub_feature_flags(graphql_pipeline_details: false)
-          stub_feature_flags(graphql_pipeline_details_users: false)
+      it 'renders downstream pipeline' do
+        subject
+
+        expect(page).to have_content(downstream_pipeline.id)
+        expect(page).to have_content(downstream_pipeline.project.name)
+      end
+
+      context 'expands the downstream pipeline on click' do
+        it 'expands the downstream on click' do
+          subject
+
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
+          wait_for_requests
+          expect(page).to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
         end
 
-        context 'expands the upstream pipeline on click' do
-          it 'expands the upstream on click' do
-            subject
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector(".js-upstream-pipeline-#{upstream_pipeline.id}")
-          end
+        it 'closes the expanded downstream on click' do
+          subject
 
-          it 'closes the expanded upstream on click' do
-            subject
+          # open
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
+          wait_for_requests
 
-            # open
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-            wait_for_requests
+          # close
+          page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
 
-            # close
-            page.find(".js-pipeline-expand-#{upstream_pipeline.id}").click
-
-            expect(page).not_to have_selector(".js-upstream-pipeline-#{upstream_pipeline.id}")
-          end
-        end
-
-        context 'expands the downstream pipeline on click' do
-          it 'expands the downstream on click' do
-            subject
-
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-            expect(page).to have_selector(".js-downstream-pipeline-#{downstream_pipeline.id}")
-          end
-
-          it 'closes the expanded downstream on click' do
-            subject
-
-            # open
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-            wait_for_requests
-
-            # close
-            page.find(".js-pipeline-expand-#{downstream_pipeline.id}").click
-
-            expect(page).not_to have_selector(".js-downstream-pipeline-#{downstream_pipeline.id}")
-          end
+          expect(page).not_to have_selector("#pipeline-links-container-#{downstream_pipeline.id}")
         end
       end
     end
