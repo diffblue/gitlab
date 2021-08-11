@@ -275,6 +275,89 @@ RSpec.describe Groups::GroupMembersController do
     end
   end
 
+  describe 'GET #export_csv' do
+    context 'when flag is disabled' do
+      before do
+        stub_licensed_features(export_user_permissions: true)
+        stub_feature_flags(ff_group_membership_export: false)
+      end
+
+      it 'responds with :not_found' do
+        get :export_csv, params: { group_id: group.id }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature is unlicensed' do
+      before do
+        stub_licensed_features(export_user_permissions: false)
+        stub_feature_flags(ff_group_membership_export: true)
+      end
+
+      it 'responds with :not_found' do
+        get :export_csv, params: { group_id: group.id }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature is licensed and enabled' do
+      before do
+        stub_licensed_features(export_user_permissions: true)
+        stub_feature_flags(ff_group_membership_export: true)
+      end
+
+      it 'enqueues a worker job' do
+        expect(::Groups::ExportMembershipsWorker).to receive(:perform_async).once
+
+        get :export_csv, params: { group_id: group }
+      end
+
+      context 'current user is a group maintainer' do
+        let_it_be(:maintainer) { create(:user) }
+
+        before do
+          group.add_user(maintainer, Gitlab::Access::MAINTAINER)
+        end
+
+        it 'returns a 404' do
+          get :export_csv, params: { group_id: group.id }
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'current user is a group developer' do
+        let_it_be(:maintainer) { create(:user) }
+
+        before do
+          group.add_user(maintainer, Gitlab::Access::DEVELOPER)
+        end
+
+        it 'returns a 404' do
+          get :export_csv, params: { group_id: group.id }
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'current user is a group guest' do
+        let_it_be(:maintainer) { create(:user) }
+
+        before do
+          group.add_user(maintainer, Gitlab::Access::GUEST)
+        end
+
+        it 'returns a 404' do
+          get :export_csv, params: { group_id: group.id }
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+  end
+
   describe 'POST #resend_invite' do
     context 'when user has minimal access' do
       let_it_be(:membership) { create(:group_member, :minimal_access, source: group, user: create(:user)) }

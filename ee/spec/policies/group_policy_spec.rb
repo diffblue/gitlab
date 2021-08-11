@@ -215,6 +215,35 @@ RSpec.describe GroupPolicy do
     it { is_expected.not_to be_allowed(:read_dora4_analytics) }
   end
 
+  context 'export group memberships' do
+    let(:current_user) { owner }
+
+    context 'when exporting user permissions is not available' do
+      before do
+        stub_licensed_features(export_user_permissions: false)
+      end
+
+      it { is_expected.not_to be_allowed(:export_group_memberships) }
+    end
+
+    context 'when exporting user permissions is available' do
+      before do
+        stub_licensed_features(export_user_permissions: true)
+        stub_feature_flags(ff_group_membership_export: true)
+      end
+
+      it { is_expected.to be_allowed(:export_group_memberships) }
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(ff_group_membership_export: false)
+      end
+
+      it { is_expected.not_to be_allowed(:export_group_memberships) }
+    end
+  end
+
   context 'when group activity analytics is available' do
     let(:current_user) { developer }
 

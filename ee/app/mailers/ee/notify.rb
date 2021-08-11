@@ -13,6 +13,7 @@ module EE
       include ::Emails::Requirements
       include ::Emails::UserCap
       include ::Emails::OncallRotation
+      include ::Emails::GroupMemberships
     end
 
     attr_reader :group

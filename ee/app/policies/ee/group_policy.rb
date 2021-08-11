@@ -49,6 +49,10 @@ module EE
         @subject.feature_available?(:dora4_analytics)
       end
 
+      condition(:group_membership_export_available) do
+        @subject.feature_available?(:export_user_permissions) && ::Feature.enabled?(:ff_group_membership_export, @subject, default_enabled: :yaml)
+      end
+
       condition(:can_owners_manage_ldap, scope: :global) do
         ::Gitlab::CurrentSettings.allow_group_owners_to_manage_ldap?
       end
@@ -366,6 +370,7 @@ module EE
         prevent :create_subgroup
       end
 
+      rule { can?(:owner_access) & group_membership_export_available }.enable :export_group_memberships
       rule { can?(:owner_access) & compliance_framework_available }.enable :admin_compliance_framework
       rule { can?(:owner_access) & group_level_compliance_pipeline_available }.enable :admin_compliance_pipeline_configuration
     end

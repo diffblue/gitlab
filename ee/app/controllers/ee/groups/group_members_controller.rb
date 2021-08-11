@@ -43,6 +43,14 @@ module EE
       # rubocop: enable CodeReuse/ActiveRecord
       # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
+      def export_csv
+        return render_404 unless current_user.can?(:export_group_memberships, group)
+
+        ::Groups::ExportMembershipsWorker.perform_async(group.id, current_user.id)
+
+        redirect_to group_group_members_path(group), notice: _('CSV is being generated and will be emailed to you upon completion.')
+      end
+
       protected
 
       def authorize_update_group_member!
