@@ -15827,7 +15827,7 @@ msgstr ""
 msgid "GroupSAML|Enable SAML authentication for this group"
 msgstr ""
 
-msgid "GroupSAML|Enforce SSO-only authentication for Git activity for this group"
+msgid "GroupSAML|Enforce SSO-only authentication for Git and Dependency Proxy activity for this group"
 msgstr ""
 
 msgid "GroupSAML|Enforce SSO-only authentication for web activity for this group"
