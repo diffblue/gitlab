@@ -1,4 +1,4 @@
 - page_title s_('SeatUsage|Seat usage')
 - add_to_breadcrumbs _('Billing'), group_billings_path(@group)
 
-#js-seat-usage{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: (group_seat_usage_path(@group, format: :csv) if Feature.enabled?(:seat_usage_export, @group, default_enabled: :yaml)) } }
+#js-seat-usage{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv) } }
