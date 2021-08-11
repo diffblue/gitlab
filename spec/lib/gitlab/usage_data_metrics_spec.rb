@@ -27,6 +27,7 @@ RSpec.describe Gitlab::UsageDataMetrics do
       end
 
       context 'when redis_hll_counters' do
+        # categories to be merged on future MR
         let(:ignored_metric_files_key_patterns) do
           %w(
             analytics
@@ -36,6 +37,8 @@ RSpec.describe Gitlab::UsageDataMetrics do
             user_packages
             epic_events
             snippets
+            epics_usage
+            network_policies
           ).freeze
         end
 
