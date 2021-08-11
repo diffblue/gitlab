@@ -5,6 +5,7 @@ import Name from 'ee/security_configuration/corpus_management/components/columns
 import Target from 'ee/security_configuration/corpus_management/components/columns/target.vue';
 import { s__ } from '~/locale';
 import UserDate from '~/vue_shared/components/user_date.vue';
+import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import deleteCorpusMutation from '../graphql/mutations/delete_corpus.mutation.graphql';
 
 const thClass = 'gl-bg-transparent! gl-border-gray-100! gl-border-b-solid! gl-border-b-1!';
@@ -59,6 +60,7 @@ export default {
       });
     },
   },
+  dateFormat: ISO_SHORT_FORMAT,
 };
 </script>
 <template>
@@ -72,11 +74,11 @@ export default {
     </template>
 
     <template #cell(lastUpdated)="{ item }">
-      <user-date :date="item.lastUpdated" />
+      <user-date :date="item.lastUpdated" :date-format="$options.dateFormat" />
     </template>
 
     <template #cell(lastUsed)="{ item }">
-      <user-date :date="item.lastUsed" />
+      <user-date :date="item.lastUsed" :date-format="$options.dateFormat" />
     </template>
 
     <template #cell(actions)="{ item }">
