@@ -30587,9 +30587,6 @@ msgstr ""
 msgid "Show latest version"
 msgstr ""
 
-msgid "Show links anyways"
-msgstr ""
-
 msgid "Show list"
 msgstr ""
 
@@ -33928,9 +33925,6 @@ msgid "This field is required"
 msgstr ""
 
 msgid "This field is required."
-msgstr ""
-
-msgid "This graph has a large number of jobs and showing the links between them may have performance implications."
 msgstr ""
 
 msgid "This group"
