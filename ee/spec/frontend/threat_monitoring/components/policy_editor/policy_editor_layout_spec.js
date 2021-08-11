@@ -67,6 +67,7 @@ describe('PolicyEditorLayout component', () => {
     it('does display custom save button text', () => {
       const saveButton = findSavePolicyButton();
       expect(saveButton.exists()).toBe(true);
+      expect(saveButton.attributes('disabled')).toBe(undefined);
       expect(saveButton.text()).toBe('Create policy');
     });
   });
@@ -120,6 +121,14 @@ describe('PolicyEditorLayout component', () => {
       const newManifest = 'new yaml!';
       findYamlModeSection().vm.$emit('input', newManifest);
       expect(wrapper.emitted('update-yaml')).toStrictEqual([[newManifest]]);
+    });
+  });
+
+  describe('disabled actions', () => {
+    it('disables the save button', async () => {
+      factory({ propsData: { disableUpdate: true } });
+      expect(findSavePolicyButton().exists()).toBe(true);
+      expect(findSavePolicyButton().attributes('disabled')).toBe('true');
     });
   });
 });

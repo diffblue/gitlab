@@ -17,6 +17,8 @@ RSpec.describe PolicyHelper do
 
   let(:base_data) do
     {
+      assigned_policy_project: "null",
+      disable_scan_execution_update: "false",
       network_policies_endpoint: kind_of(String),
       configure_agent_help_path: kind_of(String),
       create_agent_help_path: kind_of(String),
@@ -28,6 +30,13 @@ RSpec.describe PolicyHelper do
   end
 
   describe '#policy_details' do
+    let(:owner) { project.owner }
+
+    before do
+      allow(helper).to receive(:current_user) { owner }
+      allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
+    end
+
     context 'when a new policy is being created' do
       subject { helper.policy_details(project) }
 

@@ -1,0 +1,12 @@
+mutation createPolicyProject($projectPath: ID!) {
+  securityPolicyProjectCreate(input: { projectPath: $projectPath }) {
+    project {
+      fullPath
+      id
+      branch: repository {
+        rootRef
+      }
+    }
+    errors
+  }
+}

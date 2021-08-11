@@ -1,3 +1,4 @@
+import createGqClient from '~/lib/graphql';
 import { POLICY_KINDS } from './components/constants';
 
 /**
@@ -36,3 +37,8 @@ export const getPolicyKind = (yaml = '') => {
 export const removeUnnecessaryDashes = (manifest) => {
   return manifest.replace('---\n', '');
 };
+
+/**
+ * Create GraphQL Client for threat monitoring
+ */
+export const gqClient = createGqClient();
