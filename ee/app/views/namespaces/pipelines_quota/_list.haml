@@ -8,7 +8,6 @@
       - if ::Gitlab.com?
         = link_to s_('UsageQuota|Buy additional minutes'),
         link_to_buy_additional_minutes_path(namespace),
-        target: '_blank',
         class: 'gl-button btn btn-confirm float-right',
         data: { track_event: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
 
