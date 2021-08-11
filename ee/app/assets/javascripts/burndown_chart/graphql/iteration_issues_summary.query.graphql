@@ -5,6 +5,7 @@ query IterationIssuesSummary(
   $weight: Boolean = false
 ) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
     openIssues: issues(
       iterationId: [$id]
       state: opened
@@ -29,6 +30,7 @@ query IterationIssuesSummary(
     }
   }
   project(fullPath: $fullPath) @skip(if: $isGroup) {
+    id
     openIssues: issues(iterationId: [$id], state: opened, assigneeId: "none") {
       count @skip(if: $weight)
       weight @include(if: $weight)
