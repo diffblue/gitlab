@@ -71,7 +71,7 @@ module QA
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
             expect do
               billing.billing_plan_header
-            end.to eventually_include("#{group.name} is currently using the Ultimate SaaS Plan").within(duration: 120, attempts: 60, reload_page: page)
+            end.to eventually_include("#{group.name} is currently using the Ultimate SaaS Plan").within(max_duration: 120, max_attempts: 60, reload_page: page)
           end
         end
       end
