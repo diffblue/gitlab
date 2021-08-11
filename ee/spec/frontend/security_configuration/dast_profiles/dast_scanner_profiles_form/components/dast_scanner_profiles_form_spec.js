@@ -1,7 +1,8 @@
 import { GlForm, GlModal } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import merge from 'lodash/merge';
+import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
 import DastScannerProfileForm from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/components/dast_scanner_profile_form.vue';
 import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import dastScannerProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/graphql/dast_scanner_profile_create.mutation.graphql';
@@ -25,7 +26,6 @@ const {
 
 const defaultProps = {
   profilesLibraryPath,
-  projectFullPath,
   onDemandScansPath,
 };
 
@@ -35,18 +35,19 @@ describe('DAST Scanner Profile', () => {
   const withinComponent = () => within(wrapper.element);
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"`);
 
+  const findBaseDastProfileForm = () => wrapper.findComponent(BaseDastProfileForm);
   const findParentFormGroup = () => findByTestId('dast-scanner-parent-group');
   const findForm = () => wrapper.find(GlForm);
   const findProfileNameInput = () => findByTestId('profile-name-input');
   const findSpiderTimeoutInput = () => findByTestId('spider-timeout-input');
   const findTargetTimeoutInput = () => findByTestId('target-timeout-input');
-  const findSubmitButton = () => findByTestId('dast-scanner-profile-form-submit-button');
-  const findCancelButton = () => findByTestId('dast-scanner-profile-form-cancel-button');
+  const findSubmitButton = () => findByTestId('dast-profile-form-submit-button');
+  const findCancelButton = () => findByTestId('dast-profile-form-cancel-button');
   const findScanType = () => findByTestId('scan-type-option');
 
   const findCancelModal = () => wrapper.find(GlModal);
-  const findAlert = () => findByTestId('dast-scanner-profile-alert');
-  const findPolicyProfileAlert = () => findByTestId('dast-policy-scanner-profile-alert');
+  const findAlert = () => findByTestId('dast-profile-form-alert');
+  const findPolicyProfileAlert = () => findByTestId('dast-policy-profile-alert');
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: () => {} });
 
   const setFieldValue = async (field, value) => {
@@ -61,13 +62,16 @@ describe('DAST Scanner Profile', () => {
     await submitForm();
   };
 
-  const componentFactory = (mountFn = shallowMount) => (options) => {
-    wrapper = mountFn(
+  const createComponent = (options) => {
+    wrapper = mount(
       DastScannerProfileForm,
       merge(
         {},
         {
           propsData: defaultProps,
+          provide: {
+            projectFullPath,
+          },
           mocks: {
             $apollo: {
               mutate: jest.fn(),
@@ -78,8 +82,6 @@ describe('DAST Scanner Profile', () => {
       ),
     );
   };
-  const createComponent = componentFactory();
-  const createFullComponent = componentFactory(mount);
 
   afterEach(() => {
     wrapper.destroy();
@@ -139,7 +141,7 @@ describe('DAST Scanner Profile', () => {
     const errorMessage = 'Constraints not satisfied';
 
     beforeEach(() => {
-      createFullComponent();
+      createComponent();
     });
 
     it.each(invalidValues)('is marked as invalid provided an invalid value', async (value) => {
@@ -163,7 +165,7 @@ describe('DAST Scanner Profile', () => {
     ${'Edit scanner profile'} | ${defaultProfile} | ${dastScannerProfileUpdateMutation} | ${{ id: defaultProfile.id }} | ${'dastScannerProfileUpdate'}
   `('$title', ({ profile, title, mutation, mutationVars, mutationKind }) => {
     beforeEach(() => {
-      createFullComponent({
+      createComponent({
         propsData: {
           profile,
         },
@@ -218,9 +220,10 @@ describe('DAST Scanner Profile', () => {
         });
 
         it('emits success event with correct params', () => {
-          expect(wrapper.emitted('success')).toBeTruthy();
-          expect(wrapper.emitted('success')).toHaveLength(1);
-          expect(wrapper.emitted('success')[0]).toStrictEqual([{ id: 30203 }]);
+          const baseDastProfileForm = findBaseDastProfileForm();
+          expect(baseDastProfileForm.emitted('success')).toBeTruthy();
+          expect(baseDastProfileForm.emitted('success')).toHaveLength(1);
+          expect(baseDastProfileForm.emitted('success')[0]).toStrictEqual([{ id: 30203 }]);
         });
 
         it('does not show an alert', () => {
@@ -230,7 +233,7 @@ describe('DAST Scanner Profile', () => {
 
       describe('on top-level error', () => {
         beforeEach(async () => {
-          createFullComponent();
+          createComponent();
           jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue();
           await fillAndSubmitForm();
         });
@@ -274,13 +277,13 @@ describe('DAST Scanner Profile', () => {
 
     describe('cancellation', () => {
       beforeEach(() => {
-        createFullComponent();
+        createComponent();
       });
 
       describe('when form is empty', () => {
         it('emits cancel event', () => {
           findCancelButton().vm.$emit('click');
-          expect(wrapper.emitted('cancel')).toBeTruthy();
+          expect(findBaseDastProfileForm().emitted('cancel')).toBeTruthy();
         });
       });
 
@@ -297,7 +300,7 @@ describe('DAST Scanner Profile', () => {
 
         it('emits cancel event', () => {
           findCancelModal().vm.$emit('ok');
-          expect(wrapper.emitted('cancel')).toBeTruthy();
+          expect(findBaseDastProfileForm().emitted('cancel')).toBeTruthy();
         });
       });
     });
@@ -335,7 +338,7 @@ describe('DAST Scanner Profile', () => {
     });
 
     it('should disable all form groups', () => {
-      expect(findParentFormGroup().attributes('disabled')).toBe('true');
+      expect(findParentFormGroup().attributes('disabled')).toBe('disabled');
     });
 
     it('should disable the save button', () => {

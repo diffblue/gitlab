@@ -3,7 +3,7 @@
 - breadcrumb_title s_('DastProfiles|Edit site profile')
 - page_title s_('DastProfiles|Edit site profile')
 
-.js-dast-site-profile-form{ data: { full_path: @project.path_with_namespace,
+.js-dast-site-profile-form{ data: { project_full_path: @project.path_with_namespace,
 profiles_library_path: project_security_configuration_dast_scans_path(@project, anchor: 'site-profiles'),
 site_profile: @site_profile.to_json,
 on_demand_scans_path: new_project_on_demand_scan_path(@project),
