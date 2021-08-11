@@ -77,6 +77,10 @@ module EE
         sso_enforcement_prevents_access?
       end
 
+      condition(:no_active_sso_session) do
+        sso_session_prevents_access?
+      end
+
       condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
@@ -376,8 +380,12 @@ module EE
     end
 
     override :lookup_access_level!
-    def lookup_access_level!
-      return ::GroupMember::NO_ACCESS if needs_new_sso_session?
+    def lookup_access_level!(for_any_session: false)
+      if for_any_session
+        return ::GroupMember::NO_ACCESS if no_active_sso_session?
+      else
+        return ::GroupMember::NO_ACCESS if needs_new_sso_session?
+      end
 
       super
     end
@@ -395,6 +403,13 @@ module EE
       return false if user&.auditor?
 
       ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject, user: user)
+    end
+
+    def sso_session_prevents_access?
+      return false unless subject.persisted?
+      return false if user&.auditor? || user&.can_read_all_resources?
+
+      ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(user, subject).access_restricted?
     end
 
     # Available in Core for self-managed but only paid, non-trial for .com to prevent abuse

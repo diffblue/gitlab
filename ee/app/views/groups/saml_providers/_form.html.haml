@@ -20,7 +20,7 @@
       .gl-form-checkbox.custom-control.custom-checkbox
         = f.check_box :git_check_enforced, { class: 'custom-control-input js-group-saml-enforced-git-check-input' }
         = f.label :git_check_enforced, { class: 'custom-control-label' } do
-          = s_('GroupSAML|Enforce SSO-only authentication for Git activity for this group')
+          = s_('GroupSAML|Enforce SSO-only authentication for Git and Dependency Proxy activity for this group')
           %p.help-text.js-helper-text{ class: saml_provider.enabled? && 'gl-display-none' }
             = s_('GroupSAML|Before enforcing SSO-only authentication for Git activity, enable SSO-only authentication for web activity.')
     - if Feature.enabled?(:group_managed_accounts, group)
