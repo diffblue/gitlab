@@ -49,10 +49,14 @@ export const METRICS_POPOVER_CONTENT = {
       'ValueStreamAnalytics|Median time from issue first merge request created to issue closed.',
     ),
   },
+  'new-issue': { description: s__('ValueStreamAnalytics|Number of new issues created.') },
   'new-issues': { description: s__('ValueStreamAnalytics|Number of new issues created.') },
   deploys: { description: s__('ValueStreamAnalytics|Total number of deploys to production.') },
   'deployment-frequency': {
     description: s__('ValueStreamAnalytics|Average number of deployments to production per day.'),
+  },
+  commits: {
+    description: s__('ValueStreamAnalytics|Number of commits pushed to the default branch'),
   },
 };
 

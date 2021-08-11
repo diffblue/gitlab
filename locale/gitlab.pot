@@ -36549,6 +36549,9 @@ msgstr ""
 msgid "ValueStreamAnalytics|Median time from issue first merge request created to issue closed."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Number of commits pushed to the default branch"
+msgstr ""
+
 msgid "ValueStreamAnalytics|Number of new issues created."
 msgstr ""
 
