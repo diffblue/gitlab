@@ -132,8 +132,6 @@ export const convertedData = {
 export const rawIssueEvents = stageFixtures.issue;
 export const issueEvents = deepCamelCase(rawIssueEvents);
 export const reviewEvents = deepCamelCase(stageFixtures.review);
-export const testEvents = deepCamelCase(stageFixtures.test);
-export const stagingEvents = deepCamelCase(stageFixtures.staging);
 
 export const pathNavIssueMetric = 172800;
 
