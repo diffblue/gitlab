@@ -28,10 +28,10 @@ class JobFinder
 
     warn "No API token given." if api_token.empty?
 
-    Gitlab.configure do |config|
-      config.endpoint = 'https://gitlab.com/api/v4'
-      config.private_token = api_token
-    end
+    @client = Gitlab.client(
+      endpoint: 'https://gitlab.com/api/v4',
+      private_token: api_token
+    )
   end
 
   def execute
@@ -40,13 +40,13 @@ class JobFinder
 
   private
 
-  attr_reader :project, :pipeline_query, :job_query, :pipeline_id, :job_name, :artifact_path
+  attr_reader :project, :pipeline_query, :job_query, :pipeline_id, :job_name, :artifact_path, :client
 
   def find_job_with_artifact
     return if artifact_path.nil?
 
-    Gitlab.pipelines(project, pipeline_query_params).auto_paginate do |pipeline|
-      Gitlab.pipeline_jobs(project, pipeline.id, job_query_params).auto_paginate do |job|
+    client.pipelines(project, pipeline_query_params).auto_paginate do |pipeline|
+      client.pipeline_jobs(project, pipeline.id, job_query_params).auto_paginate do |job|
         return job if found_job_with_artifact?(job) # rubocop:disable Cop/AvoidReturnFromBlocks
       end
     end
@@ -57,8 +57,8 @@ class JobFinder
   def find_job_with_filtered_pipelines
     return if pipeline_query.empty?
 
-    Gitlab.pipelines(project, pipeline_query_params).auto_paginate do |pipeline|
-      Gitlab.pipeline_jobs(project, pipeline.id, job_query_params).auto_paginate do |job|
+    client.pipelines(project, pipeline_query_params).auto_paginate do |pipeline|
+      client.pipeline_jobs(project, pipeline.id, job_query_params).auto_paginate do |job|
         return job if found_job_by_name?(job) # rubocop:disable Cop/AvoidReturnFromBlocks
       end
     end
@@ -69,7 +69,7 @@ class JobFinder
   def find_job_in_pipeline
     return unless pipeline_id
 
-    Gitlab.pipeline_jobs(project, pipeline_id, job_query_params).auto_paginate do |job|
+    client.pipeline_jobs(project, pipeline_id, job_query_params).auto_paginate do |job|
       return job if found_job_by_name?(job) # rubocop:disable Cop/AvoidReturnFromBlocks
     end
 

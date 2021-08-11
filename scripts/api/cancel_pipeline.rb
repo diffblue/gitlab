@@ -18,19 +18,19 @@ class CancelPipeline
     @project = options.delete(:project)
     @pipeline_id = options.delete(:pipeline_id)
 
-    Gitlab.configure do |config|
-      config.endpoint = 'https://gitlab.com/api/v4'
-      config.private_token = options.delete(:api_token)
-    end
+    @client = Gitlab.client(
+      endpoint: ENV.fetch('CI_API_V4_URL', 'https://gitlab.com/api/v4'),
+      private_token: options.delete(:api_token)
+    )
   end
 
   def execute
-    Gitlab.cancel_pipeline(project, pipeline_id)
+    client.cancel_pipeline(project, pipeline_id)
   end
 
   private
 
-  attr_reader :project, :pipeline_id
+  attr_reader :project, :pipeline_id, :client
 end
 
 if $0 == __FILE__
