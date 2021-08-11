@@ -13,6 +13,7 @@ query getProjectIssues(
   $labelName: [String]
   $milestoneTitle: [String]
   $milestoneWildcardId: MilestoneWildcardId
+  $types: [IssueType!]
   $epicId: String
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
@@ -34,6 +35,7 @@ query getProjectIssues(
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      types: $types
       epicId: $epicId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
