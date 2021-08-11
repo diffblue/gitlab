@@ -17,7 +17,7 @@ module EE
       # The template params are filled in here, and might be overwritten by super
       override :build_issue_params
       def build_issue_params
-        issue_params_from_template.merge(super)
+        issue_params_from_template.merge(super).with_indifferent_access
       end
     end
   end
