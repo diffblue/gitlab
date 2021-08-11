@@ -13,18 +13,20 @@ module API
         end
         params do
           requires :id, type: String, desc: 'The ID of a namespace'
-          requires :number_of_minutes, type: Integer, desc: 'Number of additional minutes purchased'
-          requires :expires_at, type: Date, desc: 'The expiry date for the purchase'
-          requires :purchase_xid, type: String, desc: 'Purchase ID for the additional minutes'
+          requires :packs, type: Array, desc: 'An array of additional purchased minutes packs' do
+            requires :number_of_minutes, type: Integer, desc: 'Number of additional minutes purchased'
+            requires :expires_at, type: Date, desc: 'The expiry date for the purchase'
+            requires :purchase_xid, type: String, desc: 'Purchase ID for the additional minutes'
+          end
         end
         post ':id/minutes' do
           namespace = find_namespace(params[:id])
           not_found!('Namespace') unless namespace
 
-          result = ::Ci::Minutes::AdditionalPacks::CreateService.new(current_user, namespace, params).execute
+          result = ::Ci::Minutes::AdditionalPacks::CreateService.new(current_user, namespace, params[:packs]).execute
 
           if result[:status] == :success
-            present result[:additional_pack], with: ::EE::API::Entities::Ci::Minutes::AdditionalPack
+            present result[:additional_packs], with: ::EE::API::Entities::Ci::Minutes::AdditionalPack
           else
             bad_request!(result[:message])
           end

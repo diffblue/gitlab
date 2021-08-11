@@ -57,7 +57,7 @@ module Tooling
       end
 
       def dictionary_changed_file
-        all_changed_files.grep(%r{(doc/development/usage_ping/dictionary\.md)})
+        all_changed_files.grep(%r{(doc/development/service_ping/dictionary\.md)})
       end
 
       def metrics_changed_files

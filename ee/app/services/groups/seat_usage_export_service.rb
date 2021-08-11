@@ -44,7 +44,7 @@ module Groups
         'Id' => 'id',
         'Name' => 'name',
         'Username' => 'username',
-        'Email' => -> (user) { user.email if user.managed_by?(current_user) },
+        'Email' => -> (user) { user.public_email.presence },
         'State' => 'state'
       }
     end

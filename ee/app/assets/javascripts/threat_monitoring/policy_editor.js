@@ -25,9 +25,7 @@ export default () => {
   } = el.dataset;
 
   const store = createStore();
-  store.dispatch('threatMonitoring/setEndpoints', {
-    environmentsEndpoint,
-  });
+  store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
   store.dispatch('networkPolicies/setEndpoints', {
     networkPoliciesEndpoint,
   });

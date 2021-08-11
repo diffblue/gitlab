@@ -194,7 +194,6 @@ module EE
                 dependency_list_usages_total: redis_usage_data { ::Gitlab::UsageCounters::DependencyList.usage_totals[:total] },
                 epics: count(::Epic),
                 epic_issues: count(::EpicIssue),
-                feature_flags: count(Operations::FeatureFlag),
                 geo_nodes: count(::GeoNode),
                 geo_event_log_max_id: alt_usage_data { maximum_id(Geo::EventLog) || 0 },
                 ldap_group_links: count(::LdapGroupLink),

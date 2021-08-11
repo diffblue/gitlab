@@ -35,7 +35,6 @@ RSpec.describe Gitlab::UsageDataMetrics do
             deploy_token_packages
             user_packages
             epic_events
-            code_review
             snippets
           ).freeze
         end

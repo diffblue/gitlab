@@ -9,7 +9,7 @@ class DashboardEnvironmentsProjectEntity < Grape::Entity
   expose :web_url
 
   expose :remove_path do |project|
-    remove_operations_project_path(project_id: project.id)
+    remove_operations_environments_project_path(project_id: project.id)
   end
 
   expose :namespace, using: API::Entities::NamespaceBasic

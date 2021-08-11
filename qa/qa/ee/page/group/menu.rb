@@ -36,12 +36,6 @@ module QA
               view 'ee/app/views/layouts/nav/_group_insights_link.html.haml' do
                 element :group_insights_link
               end
-
-              view 'ee/app/views/groups/sidebar/_packages.html.haml' do
-                element :group_packages_item
-                element :group_packages_link
-                element :group_packages_submenu
-              end
             end
           end
 
@@ -119,14 +113,6 @@ module QA
             hover_security_and_compliance do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Audit Events')
-              end
-            end
-          end
-
-          def go_to_group_packages
-            hover_element(:group_packages_item) do
-              within_submenu(:group_packages_submenu) do
-                click_element(:group_packages_link)
               end
             end
           end

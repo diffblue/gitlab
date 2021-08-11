@@ -4,8 +4,9 @@ module Projects
   module Integrations
     module Jira
       class IssuesFinder
-        IntegrationError = Class.new(StandardError)
-        RequestError = Class.new(StandardError)
+        Error = Class.new(StandardError)
+        IntegrationError = Class.new(Error)
+        RequestError = Class.new(Error)
 
         attr_reader :issues, :total_count, :per_page
 
@@ -46,12 +47,10 @@ module Projects
                        .new(jira_integration, { jql: jql, page: page, per_page: per_page })
                        .execute
 
-          if response.success?
-            @total_count = response.payload[:total_count]
-            @issues = response.payload[:issues]
-          else
-            raise RequestError, response.message
-          end
+          raise RequestError, response.message if response.error?
+
+          @total_count = response.payload[:total_count]
+          @issues = response.payload[:issues]
         end
         # rubocop: enable CodeReuse/ServiceClass
 

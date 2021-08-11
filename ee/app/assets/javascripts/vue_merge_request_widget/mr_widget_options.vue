@@ -307,8 +307,6 @@ export default {
       <blocking-merge-requests-report :mr="mr" />
       <grouped-codequality-reports-app
         v-if="shouldRenderCodeQuality"
-        :base-path="mr.codeclimate.base_path"
-        :head-path="mr.codeclimate.head_path"
         :head-blob-path="mr.headBlobPath"
         :base-blob-path="mr.baseBlobPath"
         :codequality-reports-path="mr.codequalityReportsPath"

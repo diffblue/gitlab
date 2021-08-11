@@ -59,6 +59,11 @@ module EE
       false
     end
 
+    override :expired_but_not_enforced?
+    def expired_but_not_enforced?
+      expired_original? && !self.class.expiration_enforced?
+    end
+
     override :revoke!
     def revoke!
       clear_rotation_notification_cache

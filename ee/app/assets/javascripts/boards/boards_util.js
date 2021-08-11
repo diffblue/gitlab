@@ -1,7 +1,6 @@
 import { FiltersInfo as FiltersInfoCE } from '~/boards/boards_util';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-// eslint-disable-next-line import/no-deprecated
-import { objectToQuery, urlParamsToObject } from '~/lib/utils/url_utility';
+import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
 import {
   EPIC_LANE_BASE_HEIGHT,
   IterationFilterType,
@@ -94,8 +93,7 @@ export function formatEpicListsPageInfo(lists) {
 
 export function transformBoardConfig(boardConfig) {
   const updatedBoardConfig = {};
-  // eslint-disable-next-line import/no-deprecated
-  const passedFilterParams = urlParamsToObject(window.location.search);
+  const passedFilterParams = queryToObject(window.location.search, { gatherArrays: true });
   const updateScopeObject = (key, value = '') => {
     if (value === null || value === '') return;
     // Comparing with value string because weight can be a number

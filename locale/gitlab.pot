@@ -370,6 +370,11 @@ msgid_plural "%d tags per image name"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d token has expired"
+msgid_plural "%d tokens have expired"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d unassigned issue"
 msgid_plural "%d unassigned issues"
 msgstr[0] ""
@@ -2056,6 +2061,9 @@ msgstr ""
 msgid "Add system hook"
 msgstr ""
 
+msgid "Add text to the sign-in page. Markdown enabled."
+msgstr ""
+
 msgid "Add to Slack"
 msgstr ""
 
@@ -2872,9 +2880,6 @@ msgstr ""
 msgid "After a successful password update, you will be redirected to the login page where you can log in with your new password."
 msgstr ""
 
-msgid "After sign-out path"
-msgstr ""
-
 msgid "After that, you will not be able to use merge approvals or code quality as well as many other features."
 msgstr ""
 
@@ -3327,6 +3332,12 @@ msgstr ""
 msgid "Allow owners to manually add users outside of LDAP"
 msgstr ""
 
+msgid "Allow password authentication for Git over HTTP(S)"
+msgstr ""
+
+msgid "Allow password authentication for the web interface"
+msgstr ""
+
 msgid "Allow project maintainers to configure repository mirroring"
 msgstr ""
 
@@ -3750,9 +3761,6 @@ msgstr ""
 msgid "An error occurred while reordering issues."
 msgstr ""
 
-msgid "An error occurred while requesting data from the Jira service."
-msgstr ""
-
 msgid "An error occurred while retrieving calendar activity"
 msgstr ""
 
@@ -3802,6 +3810,9 @@ msgid "An error occurred while updating the configuration."
 msgstr ""
 
 msgid "An error occurred while updating the notification settings. Please try again."
+msgstr ""
+
+msgid "An error occurred while uploading the file. Please try again."
 msgstr ""
 
 msgid "An error occurred while uploading the image. Please try again."
@@ -4182,6 +4193,12 @@ msgstr ""
 msgid "ApprovalRule|Name"
 msgstr ""
 
+msgid "ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered."
+msgstr ""
+
+msgid "ApprovalRule|Please enter a number equal or greater than zero"
+msgstr ""
+
 msgid "ApprovalRule|Please select at least one security scanner"
 msgstr ""
 
@@ -4198,6 +4215,9 @@ msgid "ApprovalRule|Select scanners"
 msgstr ""
 
 msgid "ApprovalRule|Target branch"
+msgstr ""
+
+msgid "ApprovalRule|Vulnerabilities allowed"
 msgstr ""
 
 msgid "ApprovalSettings|Merge request approval settings have been updated."
@@ -4506,6 +4526,9 @@ msgid "Ascending"
 msgstr ""
 
 msgid "Ask again later"
+msgstr ""
+
+msgid "Ask someone with write access to resolve it."
 msgstr ""
 
 msgid "Ask your group maintainer to set up a group runner."
@@ -8497,6 +8520,27 @@ msgstr ""
 msgid "Confirmed:"
 msgstr ""
 
+msgid "Conflict: This file was added both in the source and target branches, but with different contents."
+msgstr ""
+
+msgid "Conflict: This file was modified in both the source and target branches."
+msgstr ""
+
+msgid "Conflict: This file was modified in the source branch, but removed in the target branch."
+msgstr ""
+
+msgid "Conflict: This file was removed in the source branch, but modified in the target branch."
+msgstr ""
+
+msgid "Conflict: This file was removed in the source branch, but renamed in the target branch."
+msgstr ""
+
+msgid "Conflict: This file was renamed differently in the source and target branches."
+msgstr ""
+
+msgid "Conflict: This file was renamed in the source branch, but removed in the target branch."
+msgstr ""
+
 msgid "Confluence"
 msgstr ""
 
@@ -9164,6 +9208,9 @@ msgid "CorpusManagement|Not Set"
 msgstr ""
 
 msgid "CorpusManagement|Target"
+msgstr ""
+
+msgid "CorpusManagement|To use this corpus, edit the corresponding YAML file"
 msgstr ""
 
 msgid "CorpusManagement|Total Size: %{totalSize}"
@@ -11583,6 +11630,12 @@ msgstr ""
 msgid "Direct member"
 msgstr ""
 
+msgid "Direct non-authenticated users to this page."
+msgstr ""
+
+msgid "Direct users to this page after they sign out."
+msgstr ""
+
 msgid "Direction"
 msgstr ""
 
@@ -12275,6 +12328,9 @@ msgstr ""
 msgid "Enable access to the performance bar for non-administrators in a given group."
 msgstr ""
 
+msgid "Enable admin mode"
+msgstr ""
+
 msgid "Enable and disable Service Desk. Some additional configuration might be required. %{link_start}Learn more%{link_end}."
 msgstr ""
 
@@ -12294,6 +12350,9 @@ msgid "Enable container expiration and retention policies for projects created e
 msgstr ""
 
 msgid "Enable delayed project deletion by default for newly-created groups."
+msgstr ""
+
+msgid "Enable email notification"
 msgstr ""
 
 msgid "Enable error tracking"
@@ -12410,7 +12469,7 @@ msgstr ""
 msgid "Enabled Git access protocols"
 msgstr ""
 
-msgid "Enabled OAuth sign-in sources"
+msgid "Enabled OAuth authentication sources"
 msgstr ""
 
 msgid "Enabled sources for code import during project creation. OmniAuth must be configured for GitHub"
@@ -12444,6 +12503,12 @@ msgid "Enforce SSH key expiration"
 msgstr ""
 
 msgid "Enforce personal access token expiration"
+msgstr ""
+
+msgid "Enforce two-factor authentication"
+msgstr ""
+
+msgid "Enforce two-factor authentication for all user sign-ins."
 msgstr ""
 
 msgid "Ensure connectivity is available from the GitLab server to the Prometheus server"
@@ -18773,6 +18838,30 @@ msgstr ""
 msgid "JiraConnect|You can now close this window and return to Jira."
 msgstr ""
 
+msgid "JiraRequest|A connection error occurred while connecting to Jira. Try your request again."
+msgstr ""
+
+msgid "JiraRequest|A timeout error occurred while connecting to Jira. Try your request again."
+msgstr ""
+
+msgid "JiraRequest|An SSL error occurred while connecting to Jira: %{message}. Try your request again."
+msgstr ""
+
+msgid "JiraRequest|An error occurred while requesting data from Jira. Check your Jira integration configuration and try again."
+msgstr ""
+
+msgid "JiraRequest|An error occurred while requesting data from Jira: %{messages}. Check your Jira integration configuration and try again."
+msgstr ""
+
+msgid "JiraRequest|The Jira API URL for connecting to Jira is not valid. Check your Jira integration API URL and try again."
+msgstr ""
+
+msgid "JiraRequest|The credentials for accessing Jira are not allowed to access the data. Check your Jira integration credentials and try again."
+msgstr ""
+
+msgid "JiraRequest|The credentials for accessing Jira are not valid. Check your Jira integration credentials and try again."
+msgstr ""
+
 msgid "JiraService| on branch %{branch_link}"
 msgstr ""
 
@@ -20542,6 +20631,9 @@ msgid "Maximum time between updates that a mirror can have when scheduled to syn
 msgstr ""
 
 msgid "Maximum time for web terminal websocket connection (in seconds). 0 for unlimited."
+msgstr ""
+
+msgid "Maximum time that users are allowed to skip the setup of two-factor authentication (in hours). Set to 0 (zero) to enforce at next sign in."
 msgstr ""
 
 msgid "May"
@@ -22864,7 +22956,7 @@ msgstr ""
 msgid "Notifications on"
 msgstr ""
 
-msgid "Notify users by email when sign-in location is not recognized"
+msgid "Notify users by email when sign-in location is not recognized."
 msgstr ""
 
 msgid "Nov"
@@ -23838,9 +23930,6 @@ msgstr ""
 msgid "PackageRegistry|published by %{author}"
 msgstr ""
 
-msgid "Packages"
-msgstr ""
-
 msgid "Packages & Registries"
 msgstr ""
 
@@ -23950,12 +24039,6 @@ msgid "Password (for password-protected Elasticsearch servers)"
 msgstr ""
 
 msgid "Password (optional)"
-msgstr ""
-
-msgid "Password authentication enabled for Git over HTTP(S)"
-msgstr ""
-
-msgid "Password authentication enabled for web interface"
 msgstr ""
 
 msgid "Password authentication is unavailable."
@@ -28152,16 +28235,13 @@ msgstr ""
 msgid "Requests to these domain(s)/address(es) on the local network will be allowed when local requests from hooks and services are not allowed. IP ranges such as 1:0:0:0:0:0:0:0/124 or 127.0.0.0/28 are supported. Domain wildcards are not supported currently. Use comma, semicolon, or newline to separate multiple entries. The allowlist can hold a maximum of 1000 entries. Domains should use IDNA encoding. Ex: example.com, 192.168.1.1, 127.0.0.0/28, xn--itlab-j1a.com."
 msgstr ""
 
-msgid "Require additional authentication for administrative tasks"
+msgid "Require additional authentication for administrative tasks."
 msgstr ""
 
 msgid "Require all users in this group to setup Two-factor authentication"
 msgstr ""
 
 msgid "Require all users in this group to setup two-factor authentication"
-msgstr ""
-
-msgid "Require all users to set up two-factor authentication"
 msgstr ""
 
 msgid "Required approvals (%{approvals_given} given)"
@@ -30219,10 +30299,10 @@ msgstr ""
 msgid "Set projects and maximum size limits, session duration, user options, and check feature availability for namespace plan."
 msgstr ""
 
-msgid "Set requirements for a user to sign-in. Enable mandatory two-factor authentication."
+msgid "Set severity"
 msgstr ""
 
-msgid "Set severity"
+msgid "Set sign-in restrictions for all users."
 msgstr ""
 
 msgid "Set size limits for displaying diffs in the browser."
@@ -30659,6 +30739,9 @@ msgid "Sign-in restrictions"
 msgstr ""
 
 msgid "Sign-in text"
+msgstr ""
+
+msgid "Sign-out page URL"
 msgstr ""
 
 msgid "Sign-up restrictions"
@@ -35191,7 +35274,7 @@ msgstr ""
 msgid "Two-factor authentication is not enabled for this user"
 msgstr ""
 
-msgid "Two-factor grace period (hours)"
+msgid "Two-factor grace period"
 msgstr ""
 
 msgid "Type"
@@ -35519,6 +35602,9 @@ msgid "Unsupported todo type passed. Supported todo types are: %{todo_types}"
 msgstr ""
 
 msgid "Until"
+msgstr ""
+
+msgid "Until revoked, expired personal access tokens pose a security risk."
 msgstr ""
 
 msgid "Unused"
@@ -37016,12 +37102,6 @@ msgstr ""
 msgid "We will notify %{inviter} that you declined their invitation to join GitLab. You will stop receiving reminders."
 msgstr ""
 
-msgid "We will redirect non-logged in users to this page"
-msgstr ""
-
-msgid "We will redirect users to this page after they sign out"
-msgstr ""
-
 msgid "We would like to inform you that your subscription GitLab Enterprise Edition %{plan_name} is nearing its user limit. You have %{active_user_count} active users, which is almost at the user limit of %{maximum_user_count}."
 msgstr ""
 
@@ -37298,7 +37378,7 @@ msgstr ""
 msgid "When an event in GitLab triggers a webhook, you can use the request details to figure out if something went wrong."
 msgstr ""
 
-msgid "When disabled, an external authentication provider must be used."
+msgid "When inactive, an external authentication provider must be used."
 msgstr ""
 
 msgid "When leaving the URL blank, classification labels can still be specified without disabling cross project features or performing external authorization checks."
@@ -37745,6 +37825,12 @@ msgid "You are trying to upload something other than an image. Please upload a .
 msgstr ""
 
 msgid "You are using PostgreSQL %{pg_version_current}, but PostgreSQL %{pg_version_minimum} is required for this version of GitLab. Please upgrade your environment to a supported PostgreSQL version, see %{pg_requirements_url} for details."
+msgstr ""
+
+msgid "You can %{gitlabLinkStart}resolve conflicts on GitLab%{gitlabLinkEnd} or %{resolveLocallyStart}resolve it locally%{resolveLocallyEnd}."
+msgstr ""
+
+msgid "You can %{resolveLocallyStart}resolve it locally%{resolveLocallyEnd}."
 msgstr ""
 
 msgid "You can also create a project from the command line."
@@ -39049,6 +39135,9 @@ msgstr ""
 msgid "does not have a supported extension. Only %{extension_list} are supported"
 msgstr ""
 
+msgid "domain is not authorized for sign-up."
+msgstr ""
+
 msgid "download it"
 msgstr ""
 
@@ -39273,6 +39362,9 @@ msgid "is not allowed. We do not currently support project-level iterations"
 msgstr ""
 
 msgid "is not an email you own"
+msgstr ""
+
+msgid "is not from an allowed domain."
 msgstr ""
 
 msgid "is not in the group enforcing Group Managed Account"

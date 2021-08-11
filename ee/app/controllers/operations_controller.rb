@@ -1,46 +1,59 @@
 # frozen_string_literal: true
 
+# Note: Both Operations dashboard (https://docs.gitlab.com/ee/user/operations_dashboard/) and Environments dashboard (https://docs.gitlab.com/ee/ci/environments/environments_dashboard.html) features are co-existing in the same controller.
 class OperationsController < ApplicationController
   before_action :authorize_read_operations_dashboard!
-
-  respond_to :json, only: [:list]
 
   feature_category :release_orchestration
 
   POLLING_INTERVAL = 120_000
 
+  # Used by Operations dashboard.
   def index
+    respond_to do |format|
+      format.html
+
+      format.json do
+        set_polling_interval_header
+        projects = load_projects
+
+        render json: { projects: serialize_as_json(projects) }
+      end
+    end
   end
 
+  # Used by Environments dashboard.
   def environments
+    respond_to do |format|
+      format.html
+
+      format.json do
+        set_polling_interval_header
+        projects = load_environments_projects
+
+        render json: { projects: serialize_as_json_for_environments(projects) }
+      end
+    end
   end
 
-  def list
-    Gitlab::PollingInterval.set_header(response, interval: POLLING_INTERVAL)
-    projects = load_projects
-
-    render json: { projects: serialize_as_json(projects) }
-  end
-
-  def environments_list
-    Gitlab::PollingInterval.set_header(response, interval: POLLING_INTERVAL)
-    projects = load_environments_projects
-
-    render json: { projects: serialize_as_json_for_environments(projects) }
-  end
-
+  # Used by Operations and Environments dashboard.
   def create
-    project_ids = params['project_ids']
+    respond_to do |format|
+      format.json do
+        project_ids = params['project_ids']
 
-    result = add_projects(project_ids)
+        result = add_projects(project_ids)
 
-    render json: {
-      added: result.added_project_ids,
-      duplicate: result.duplicate_project_ids,
-      invalid: result.invalid_project_ids
-    }
+        render json: {
+          added: result.added_project_ids,
+          duplicate: result.duplicate_project_ids,
+          invalid: result.invalid_project_ids
+        }
+      end
+    end
   end
 
+  # Used by Operations and Environments dashboard.
   def destroy
     project_id = params['project_id']
 
@@ -55,6 +68,10 @@ class OperationsController < ApplicationController
 
   def authorize_read_operations_dashboard!
     render_404 unless can?(current_user, :read_operations_dashboard)
+  end
+
+  def set_polling_interval_header
+    Gitlab::PollingInterval.set_header(response, interval: POLLING_INTERVAL)
   end
 
   def load_projects

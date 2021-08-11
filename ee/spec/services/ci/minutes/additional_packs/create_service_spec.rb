@@ -10,7 +10,7 @@ RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
     let_it_be(:admin) { build(:user, :admin) }
     let_it_be(:non_admin) { build(:user) }
 
-    let(:params) { {} }
+    let(:params) { [] }
 
     subject(:result) { described_class.new(user, namespace, params).execute }
 
@@ -28,40 +28,42 @@ RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
 
       context 'when a record exists' do
         let(:params) do
-          {
-            expires_at: Date.today + 1.year,
-            purchase_xid: existing_pack.purchase_xid,
-            number_of_minutes: 10_000
-          }
+          [
+            { purchase_xid: existing_pack.purchase_xid, expires_at: Date.today + 1.year, number_of_minutes: 10_000 },
+            { purchase_xid: SecureRandom.hex(16), expires_at: Date.today + 1.year, number_of_minutes: 1_000 }
+          ]
         end
 
         it 'returns success' do
           expect(result[:status]).to eq :success
         end
 
-        it 'returns the existing record' do
-          expect(result[:additional_pack]).to eq existing_pack
+        it 'returns the existing and newly created records' do
+          expect(result[:additional_packs].size).to eq 2
+          expect(result[:additional_packs].first).to eq existing_pack
+          expect(result[:additional_packs].last[:purchase_xid]).to eq params.last[:purchase_xid]
         end
       end
 
       context 'when no record exists' do
         let(:params) do
-          {
-            expires_at: Date.today + 1.year,
-            purchase_xid: 'new-purchase-xid',
-            number_of_minutes: 10_000
-          }
+          [
+            { purchase_xid: SecureRandom.hex(16), expires_at: Date.today + 1.year, number_of_minutes: 1_000 },
+            { purchase_xid: SecureRandom.hex(16), expires_at: Date.today + 1.year, number_of_minutes: 2_000 },
+            { purchase_xid: SecureRandom.hex(16), expires_at: Date.today + 1.year, number_of_minutes: 3_000 }
+          ]
         end
 
-        it 'creates a new record', :aggregate_failures do
-          expect { result }.to change(Ci::Minutes::AdditionalPack, :count).by(1)
+        it 'creates new records', :aggregate_failures do
+          expect { result }.to change(Ci::Minutes::AdditionalPack, :count).by(3)
 
-          pack = result[:additional_pack]
-
-          expect(pack).to be_persisted
-          expect(pack.expires_at).to eq params[:expires_at]
-          expect(pack.purchase_xid).to eq params[:purchase_xid]
-          expect(pack.number_of_minutes).to eq params[:number_of_minutes]
+          result[:additional_packs].each_with_index do |pack, index|
+            expect(pack).to be_persisted
+            expect(pack.expires_at).to eq params[index][:expires_at]
+            expect(pack.purchase_xid).to eq params[index][:purchase_xid]
+            expect(pack.number_of_minutes).to eq params[index][:number_of_minutes]
+            expect(pack.namespace).to eq namespace
+          end
         end
 
         it 'kicks off reset ci minutes service' do
@@ -74,14 +76,15 @@ RSpec.describe Ci::Minutes::AdditionalPacks::CreateService do
           expect(result[:status]).to eq :success
         end
 
-        context 'with invalid params' do
-          let(:params) { { purchase_xid: 'missing-minutes' } }
+        context 'with invalid params', :aggregate_failures do
+          let(:params) { super().push({ purchase_xid: 'missing-minutes' }) }
 
           it 'returns an error' do
             response = result
 
             expect(response[:status]).to eq :error
-            expect(response[:message]).to eq 'Unable to save additional pack'
+            expect(response[:message]).to eq 'Unable to save additional packs'
+            expect(Ci::Minutes::AdditionalPack.count).to eq 0
           end
         end
       end
