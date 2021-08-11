@@ -24,7 +24,7 @@ module Gitlab
       when 'users'
         users.page(page).per(per_page)
       else
-        super(scope, page: page, per_page: per_page, without_count: false)
+        super(scope, page: page, per_page: per_page, without_count: true)
       end
     end
 
