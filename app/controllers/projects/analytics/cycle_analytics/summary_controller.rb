@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class Projects::Analytics::CycleAnalytics::SummaryController < Projects::ApplicationController
   include CycleAnalyticsParams
 

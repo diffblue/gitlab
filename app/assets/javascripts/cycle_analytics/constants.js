@@ -40,17 +40,6 @@ export const OVERVIEW_METRICS = {
   RECENT_ACTIVITY: 'RECENT_ACTIVITY',
 };
 
-export const METRICS_REQUESTS = [
-  {
-    request: getValueStreamTimeSummaryMetrics,
-    name: __('time summary'),
-  },
-  {
-    request: getValueStreamSummaryMetrics,
-    name: __('recent activity'),
-  },
-];
-
 export const METRICS_POPOVER_CONTENT = {
   'lead-time': {
     description: s__('ValueStreamAnalytics|Median time from issue created to issue closed.'),
@@ -65,4 +54,14 @@ export const METRICS_POPOVER_CONTENT = {
   'deployment-frequency': {
     description: s__('ValueStreamAnalytics|Average number of deployments to production per day.'),
   },
+};
+
+export const projectMetricsRequests = (cycleAnalyticsForGroups = false) => {
+  const summaryMetrics = [{ request: getValueStreamSummaryMetrics, name: __('recent activity') }];
+  if (cycleAnalyticsForGroups) {
+    return [{ request: getValueStreamTimeSummaryMetrics, name: __('time summary') }].concat(
+      summaryMetrics,
+    );
+  }
+  return summaryMetrics;
 };

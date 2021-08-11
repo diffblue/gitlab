@@ -4,11 +4,12 @@ import { decorateData, formatMedianValues, calculateFormattedDayInPast } from '.
 import * as types from './mutation_types';
 
 export default {
-  [types.INITIALIZE_VSA](state, { endpoints }) {
+  [types.INITIALIZE_VSA](state, { endpoints, features }) {
     state.endpoints = endpoints;
     const { now, past } = calculateFormattedDayInPast(DEFAULT_DAYS_TO_DISPLAY);
     state.createdBefore = now;
     state.createdAfter = past;
+    state.features = features;
   },
   [types.SET_LOADING](state, loadingState) {
     state.isLoading = loadingState;

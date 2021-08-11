@@ -79,6 +79,12 @@ const findStageTable = () => wrapper.findComponent(StageTable);
 const findStageEvents = () => findStageTable().props('stageEvents');
 const findEmptyStageTitle = () => wrapper.findComponent(GlEmptyState).props('title');
 
+const hasMetricsRequests = (reqs) => {
+  const foundReqs = findOverviewMetrics().props('requests');
+  expect(foundReqs.length).toEqual(reqs.length);
+  expect(foundReqs.map(({ name }) => name)).toEqual(reqs);
+};
+
 describe('Value stream analytics component', () => {
   beforeEach(() => {
     wrapper = createComponent({ initialState: { selectedStage, selectedStageEvents } });
@@ -101,6 +107,10 @@ describe('Value stream analytics component', () => {
     expect(findOverviewMetrics().exists()).toBe(true);
   });
 
+  it('passes requests prop to the metrics component', () => {
+    hasMetricsRequests(['recent activity']);
+  });
+
   it('renders the stage table', () => {
     expect(findStageTable().exists()).toBe(true);
   });
@@ -115,6 +125,16 @@ describe('Value stream analytics component', () => {
 
   it('does not render the loading icon', () => {
     expect(findLoadingIcon().exists()).toBe(false);
+  });
+
+  describe('with `cycleAnalyticsForGroups=true` license', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ initialState: { features: { cycleAnalyticsForGroups: true } } });
+    });
+
+    it('passes requests prop to the metrics component', () => {
+      hasMetricsRequests(['time summary', 'recent activity']);
+    });
   });
 
   describe('isLoading = true', () => {
