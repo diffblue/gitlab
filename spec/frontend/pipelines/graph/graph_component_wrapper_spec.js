@@ -257,28 +257,11 @@ describe('Pipeline graph wrapper', () => {
   });
 
   describe('view dropdown', () => {
-    describe('when pipelineGraphLayersView feature flag is off', () => {
-      beforeEach(async () => {
-        createComponentWithApollo();
-        jest.runOnlyPendingTimers();
-        await wrapper.vm.$nextTick();
-      });
-
-      it('does not appear', () => {
-        expect(getViewSelector().exists()).toBe(false);
-      });
-    });
-
-    describe('when pipelineGraphLayersView feature flag is on', () => {
+    describe('default', () => {
       let layersFn;
       beforeEach(async () => {
         layersFn = jest.spyOn(parsingUtils, 'listByLayers');
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           mountFn: mount,
         });
 
@@ -316,14 +299,9 @@ describe('Pipeline graph wrapper', () => {
       });
     });
 
-    describe('when pipelineGraphLayersView feature flag is on and layers view is selected', () => {
+    describe('when layers view is selected', () => {
       beforeEach(async () => {
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           data: {
             currentViewType: LAYER_VIEW,
           },
@@ -346,14 +324,9 @@ describe('Pipeline graph wrapper', () => {
       });
     });
 
-    describe('when pipelineGraphLayersView feature flag is on, layers view is selected, and links are active', () => {
+    describe('when layers view is selected, and links are active', () => {
       beforeEach(async () => {
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           data: {
             currentViewType: LAYER_VIEW,
             showLinks: true,
@@ -374,11 +347,6 @@ describe('Pipeline graph wrapper', () => {
     describe('when hover tip would otherwise show, but it has been previously dismissed', () => {
       beforeEach(async () => {
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           data: {
             currentViewType: LAYER_VIEW,
             showLinks: true,
@@ -402,11 +370,6 @@ describe('Pipeline graph wrapper', () => {
         localStorage.setItem(VIEW_TYPE_KEY, LAYER_VIEW);
 
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           mountFn: mount,
         });
 
@@ -434,11 +397,6 @@ describe('Pipeline graph wrapper', () => {
         localStorage.setItem(VIEW_TYPE_KEY, LAYER_VIEW);
 
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           mountFn: mount,
           getPipelineDetailsHandler: jest.fn().mockResolvedValue(nonNeedsResponse),
         });
@@ -462,11 +420,6 @@ describe('Pipeline graph wrapper', () => {
         nonNeedsResponse.data.project.pipeline.usesNeeds = false;
 
         createComponentWithApollo({
-          provide: {
-            glFeatures: {
-              pipelineGraphLayersView: true,
-            },
-          },
           mountFn: mount,
           getPipelineDetailsHandler: jest.fn().mockResolvedValue(nonNeedsResponse),
         });
