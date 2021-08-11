@@ -22,7 +22,7 @@ const targetUrl = 'https://example.com/';
 const tokenId = '1';
 const token = 'validation-token-123';
 
-const validationMethods = ['text file', 'header'];
+const validationMethods = ['text file', 'header', 'meta tag'];
 
 const defaultProps = {
   fullPath,
@@ -56,6 +56,9 @@ describe('DastSiteValidationModal', () => {
           attrs: {
             static: true,
             visible: true,
+          },
+          provide: {
+            glFeatures: { dastMetaTagValidation: true },
           },
         },
         mountOptions,
@@ -283,6 +286,57 @@ describe('DastSiteValidationModal', () => {
           title: 'Copy HTTP header to clipboard',
         });
       });
+    });
+
+    describe('meta tag validation', () => {
+      beforeEach(async () => {
+        createFullComponent();
+
+        await waitForPromises();
+
+        enableValidationMethod('meta tag');
+      });
+
+      it.each([
+        /step 2 - add following meta tag to your site/i,
+        /step 3 - confirm meta tag location and validate/i,
+      ])('shows the correct descriptions', (descriptionText) => {
+        expect(withinComponent().getByText(descriptionText)).not.toBe(null);
+      });
+
+      it('shows a code block containing the meta key with the given token', () => {
+        expect(
+          withinComponent().getByText(`<meta name="gitlab-dast-validation" content="${token}">`, {
+            selector: 'code',
+          }),
+        ).not.toBe(null);
+      });
+
+      it('shows a button that copies the meta tag to the clipboard', () => {
+        const clipboardButton = wrapper.find(ModalCopyButton);
+
+        expect(clipboardButton.exists()).toBe(true);
+        expect(clipboardButton.props()).toMatchObject({
+          text: `<meta name="gitlab-dast-validation" content="${token}">`,
+          title: 'Copy Meta tag to clipboard',
+        });
+      });
+    });
+  });
+
+  describe('with the dastMetaTagValidation feature flag disabled', () => {
+    beforeEach(() => {
+      createFullComponent({
+        provide: {
+          glFeatures: {
+            dastMetaTagValidation: false,
+          },
+        },
+      });
+    });
+
+    it('does not render the meta tag validation method', () => {
+      expect(findRadioInputForValidationMethod('meta tag')).toBe(null);
     });
   });
 
