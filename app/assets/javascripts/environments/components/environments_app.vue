@@ -19,7 +19,7 @@ export default {
     reviewAppButtonLabel: s__('Environments|Enable review app'),
     surveyAlertTitle: s__('Environments|Help us improve environments'),
     surveyAlertText: s__(
-      'Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a $30 giftcard.',
+      'Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a USD 30 gift card.',
     ),
     surveyAlertButtonLabel: s__('Environments|Take the survey'),
     surveyDismissButtonLabel: s__('Environments|Dismiss'),
