@@ -22,15 +22,13 @@ RSpec.describe Groups::GroupMembersHelper do
     end
   end
 
-  describe '#group_members_app_data_json' do
+  describe '#group_members_app_data' do
     subject do
-      Gitlab::Json.parse(
-        helper.group_members_app_data_json(
-          group,
-          members: [],
-          invited: [],
-          access_requests: []
-        )
+      helper.group_members_app_data(
+        group,
+        members: [],
+        invited: [],
+        access_requests: []
       )
     end
 
@@ -38,10 +36,19 @@ RSpec.describe Groups::GroupMembersHelper do
       allow(helper).to receive(:override_group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id/override')
       allow(helper).to receive(:group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(true)
+      allow(helper).to receive(:can?).with(current_user, :export_group_memberships, group).and_return(true)
     end
 
-    it 'adds `ldap_override_path` to returned json' do
-      expect(subject['user']['ldap_override_path']).to eq('/groups/foo-bar/-/group_members/:id/override')
+    it 'adds `ldap_override_path`' do
+      expect(subject[:user][:ldap_override_path]).to eq('/groups/foo-bar/-/group_members/:id/override')
+    end
+
+    it 'adds `can_export_members`' do
+      expect(subject[:can_export_members]).to be true
+    end
+
+    it 'adds `export_csv_path`' do
+      expect(subject[:export_csv_path]).not_to be_nil
     end
   end
 end

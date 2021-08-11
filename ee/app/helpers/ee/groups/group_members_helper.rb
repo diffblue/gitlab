@@ -14,4 +14,12 @@ module EE::Groups::GroupMembersHelper
       ldap_override_path: override_group_group_member_path(group, ':id')
     })
   end
+
+  override :group_members_app_data
+  def group_members_app_data(group, members:, invited:, access_requests:)
+    super.merge!({
+       can_export_members: can?(current_user, :export_group_memberships, group),
+       export_csv_path: export_csv_group_group_members_path(group)
+     })
+  end
 end

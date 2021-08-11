@@ -1,0 +1,8 @@
+---
+name: ff_group_membership_export
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66755
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/336520
+milestone: '14.2'
+type: development
+group: group::compliance
+default_enabled: false

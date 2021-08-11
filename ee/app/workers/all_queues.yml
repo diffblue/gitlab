@@ -1042,6 +1042,15 @@
   :idempotent:
   :tags:
   - :exclude_from_kubernetes
+- :name: groups_export_memberships
+  :worker_name: Groups::ExportMembershipsWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: groups_schedule_bulk_repository_shard_moves
   :worker_name: Groups::ScheduleBulkRepositoryShardMovesWorker
   :feature_category: :gitaly
