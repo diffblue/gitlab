@@ -16,11 +16,13 @@ import download from '~/lib/utils/downloader';
 import { cleanLeadingSeparator, joinPaths, stripPathTail } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import ModalCopyButton from '~/vue_shared/components/modal_copy_button.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   DAST_SITE_VALIDATION_MODAL_ID,
   DAST_SITE_VALIDATION_HTTP_HEADER_KEY,
   DAST_SITE_VALIDATION_METHOD_HTTP_HEADER,
   DAST_SITE_VALIDATION_METHOD_TEXT_FILE,
+  DAST_SITE_VALIDATION_METHOD_META_TAG,
   DAST_SITE_VALIDATION_METHODS,
 } from '../constants';
 import dastSiteTokenCreateMutation from '../graphql/dast_site_token_create.mutation.graphql';
@@ -42,6 +44,7 @@ export default {
     GlSkeletonLoader,
     GlTruncate,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     fullPath: {
       type: String,
@@ -82,7 +85,11 @@ export default {
       };
     },
     validationMethodOptions() {
-      return Object.values(DAST_SITE_VALIDATION_METHODS);
+      const options = Object.values(DAST_SITE_VALIDATION_METHODS);
+      if (!this.glFeatures.dastMetaTagValidation) {
+        return options.filter(({ value }) => value !== DAST_SITE_VALIDATION_METHOD_META_TAG);
+      }
+      return options;
     },
     urlObject() {
       try {
@@ -103,6 +110,9 @@ export default {
     isHttpHeaderValidation() {
       return this.validationMethod === DAST_SITE_VALIDATION_METHOD_HTTP_HEADER;
     },
+    isMetaTagValidation() {
+      return this.validationMethod === DAST_SITE_VALIDATION_METHOD_META_TAG;
+    },
     textFileName() {
       return `GitLab-DAST-Site-Validation-${this.token}.txt`;
     },
@@ -111,6 +121,9 @@ export default {
     },
     httpHeader() {
       return `${DAST_SITE_VALIDATION_HTTP_HEADER_KEY}: ${this.token}`;
+    },
+    metaTag() {
+      return `<meta name="gitlab-dast-validation" content="${this.token}">`;
     },
   },
   watch: {
@@ -250,6 +263,17 @@ export default {
         <modal-copy-button
           :text="httpHeader"
           :title="s__('DastSiteValidation|Copy HTTP header to clipboard')"
+          :modal-id="modalProps.id"
+        />
+      </gl-form-group>
+      <gl-form-group
+        v-else-if="isMetaTagValidation"
+        :label="s__('DastSiteValidation|Step 2 - Add following meta tag to your site')"
+      >
+        <code class="gl-p-3 gl-bg-black gl-text-white">{{ metaTag }}</code>
+        <modal-copy-button
+          :text="metaTag"
+          :title="s__('DastSiteValidation|Copy Meta tag to clipboard')"
           :modal-id="modalProps.id"
         />
       </gl-form-group>

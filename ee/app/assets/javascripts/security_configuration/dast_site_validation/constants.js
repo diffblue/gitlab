@@ -2,6 +2,7 @@ import { s__ } from '~/locale';
 
 export const DAST_SITE_VALIDATION_METHOD_TEXT_FILE = 'TEXT_FILE';
 export const DAST_SITE_VALIDATION_METHOD_HTTP_HEADER = 'HEADER';
+export const DAST_SITE_VALIDATION_METHOD_META_TAG = 'META_TAG';
 
 export const DAST_SITE_VALIDATION_METHODS = {
   [DAST_SITE_VALIDATION_METHOD_TEXT_FILE]: {
@@ -16,6 +17,13 @@ export const DAST_SITE_VALIDATION_METHODS = {
     text: s__('DastSiteValidation|Header validation'),
     i18n: {
       locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm header location and validate'),
+    },
+  },
+  [DAST_SITE_VALIDATION_METHOD_META_TAG]: {
+    value: DAST_SITE_VALIDATION_METHOD_META_TAG,
+    text: s__('DastSiteValidation|Meta tag validation'),
+    i18n: {
+      locationStepLabel: s__('DastSiteValidation|Step 3 - Confirm meta tag location and validate'),
     },
   },
 };
