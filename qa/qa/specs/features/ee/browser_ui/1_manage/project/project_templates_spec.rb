@@ -119,7 +119,7 @@ module QA
         end
       end
 
-      context 'group level', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/211528', type: :bug } do
+      context 'group level' do
         before do
           Flow::Login.sign_in
 
