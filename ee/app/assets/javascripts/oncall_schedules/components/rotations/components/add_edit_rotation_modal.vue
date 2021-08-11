@@ -8,9 +8,11 @@ import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/qu
 import { updateStoreAfterRotationEdit } from 'ee/oncall_schedules/utils/cache_updates';
 import {
   isNameFieldValid,
-  getParticipantsForSave,
   parseHour,
   parseRotationDate,
+  setParticipantsColors,
+  getUserTokenStyles,
+  getParticipantsForSave,
 } from 'ee/oncall_schedules/utils/common_utils';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import { format24HourTimeStringFromInt, formatDate } from '~/lib/utils/datetime_utility';
@@ -151,7 +153,6 @@ export default {
         isRestrictedToTime,
         restrictedTo: { startTime: activeStartTime, endTime: activeEndTime },
       } = this.form;
-
       const variables = {
         name,
         participants: getParticipantsForSave(participants),
@@ -197,6 +198,9 @@ export default {
         return this.form.startsAt.time < this.form.endsAt.time;
       }
       return false;
+    },
+    participantsWithTokenStylesData() {
+      return setParticipantsColors(this.participants, this.rotation?.participants?.nodes);
     },
   },
   methods: {
@@ -319,7 +323,9 @@ export default {
       this.form.name = this.rotation.name;
 
       const participants =
-        this.rotation?.participants?.nodes?.map(({ user }) => ({ ...user })) ?? [];
+        this.rotation?.participants?.nodes?.map(({ user, colorWeight, colorPalette }) =>
+          getUserTokenStyles({ ...user, colorWeight, colorPalette }),
+        ) ?? [];
       this.form.participants = participants;
 
       this.form.rotationLength = {
@@ -366,7 +372,7 @@ export default {
       :validation-state="validationState"
       :form="form"
       :schedule="schedule"
-      :participants="participants"
+      :participants="participantsWithTokenStylesData"
       :is-loading="isLoading"
       @update-rotation-form="updateRotationForm"
       @filter-participants="filterParticipants"

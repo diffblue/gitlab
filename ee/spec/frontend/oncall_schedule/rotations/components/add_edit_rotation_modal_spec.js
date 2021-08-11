@@ -20,6 +20,7 @@ import {
 import mockRotation from '../../mocks/mock_rotation.json';
 
 jest.mock('~/flash');
+jest.mock('~/lib/utils/color_utils');
 
 const schedule =
   getOncallSchedulesQueryResponse.data.project.incidentManagementOncallSchedules.nodes[0];

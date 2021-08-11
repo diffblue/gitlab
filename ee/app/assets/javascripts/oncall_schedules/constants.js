@@ -17,16 +17,10 @@ export const LIGHT_TO_DARK_MODE_SHADE_MAPPING = {
   950: 50,
 };
 
-/**
- * an Array of Objects that represent the 30 possible
- * color combinations for assignees
- * @type {{colorWeight: string, colorPalette: string}[]}
- */
-export const ASSIGNEE_COLORS_COMBO = CHEVRON_SKIPPING_SHADE_ENUM.map((shade) =>
+export const ASSIGNEE_COLORS_COMBO = CHEVRON_SKIPPING_SHADE_ENUM.map((weight) =>
   CHEVRON_SKIPPING_PALETTE_ENUM.map((color) => ({
-    // eslint-disable-next-line @gitlab/require-i18n-strings
-    colorWeight: `WEIGHT_${shade.toUpperCase()}`,
-    colorPalette: color.toUpperCase(),
+    colorWeight: weight,
+    colorPalette: color,
   })),
 ).flat();
 
