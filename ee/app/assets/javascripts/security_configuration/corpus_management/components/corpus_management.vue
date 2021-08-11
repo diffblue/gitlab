@@ -56,10 +56,10 @@ export default {
       <h4 class="gl-my-5">
         {{ this.$options.i18n.header }}
       </h4>
-      <h5 class="gl-font-base gl-font-weight-100">
+      <p>
         {{ this.$options.i18n.subHeader }}
         <gl-link :href="corpusHelpPath">{{ this.$options.i18n.learnMore }}</gl-link>
-      </h5>
+      </p>
     </header>
 
     <gl-loading-icon v-if="isLoading" size="lg" />

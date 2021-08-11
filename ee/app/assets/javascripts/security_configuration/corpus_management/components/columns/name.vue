@@ -36,8 +36,8 @@ export default {
 <template>
   <div>
     <div class="gl-text-gray-900" data-testid="corpus-name">
-      {{ corpus.name }} <span data-testid="file-size">{{ fileSize }}</span
-      >)
+      {{ corpus.name }}
+      <span class="gl-text-gray-500" data-testid="file-size">({{ fileSize }})</span>
     </div>
     <div data-testid="latest-job">
       {{ this.$options.i18n.latestJob }}

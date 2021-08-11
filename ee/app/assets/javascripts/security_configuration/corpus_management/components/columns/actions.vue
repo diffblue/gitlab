@@ -21,7 +21,7 @@ export default {
   },
   modal: {
     actionPrimary: {
-      text: s__('Delete'),
+      text: s__('Delete corpus'),
       attributes: { variant: 'danger', 'data-testid': 'modal-confirm' },
     },
     actionCancel: {
@@ -41,13 +41,7 @@ export default {
 </script>
 <template>
   <span>
-    <gl-button
-      class="gl-mr-2"
-      icon="download"
-      category="secondary"
-      variant="confirm"
-      :href="downloadPath"
-    />
+    <gl-button class="gl-mr-2" icon="download" :href="downloadPath" />
     <gl-button
       v-gl-modal-directive="`confirmation-modal-${corpus.name}`"
       icon="remove"

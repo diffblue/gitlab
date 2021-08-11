@@ -10,9 +10,7 @@ exports[`EE - CorpusManagement corpus management when loaded renders the correct
     
   </h4>
    
-  <h5
-    class="gl-font-base gl-font-weight-100"
-  >
+  <p>
     
       Corpus are used in fuzz testing as mutation source to Improve future testing.
       
@@ -21,6 +19,6 @@ exports[`EE - CorpusManagement corpus management when loaded renders the correct
     >
       Learn More
     </gl-link-stub>
-  </h5>
+  </p>
 </header>
 `;

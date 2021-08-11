@@ -27,7 +27,7 @@ export default {
     corpusName: s__('CorpusManagement|Corpus name'),
     uploadButtonText: __('Choose File...'),
     uploadMessage: s__(
-      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 10Gib',
+      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 10GB',
     ),
   },
   apollo: {
@@ -142,6 +142,7 @@ export default {
         />
 
         <gl-button
+          class="gl-absolute gl-top-2 gl-right-2 gl-z-index-3"
           variant="default"
           category="tertiary"
           size="small"
