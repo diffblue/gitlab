@@ -1,11 +1,5 @@
 <script>
-import {
-  GlFormGroup,
-  GlFormInput,
-  GlDropdown,
-  GlFormCheckbox,
-  GlFormCheckboxGroup,
-} from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlDropdown, GlTruncate, GlDropdownItem } from '@gitlab/ui';
 import { groupBy, isEqual, isNumber, omit } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { REPORT_TYPES } from 'ee/security_dashboard/store/constants';
@@ -26,7 +20,7 @@ import ApproversSelect from './approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
 
-const EXCLUDED_REPORT_TYPE = 'cluster_image_scanning';
+export const EXCLUDED_REPORT_TYPE = 'cluster_image_scanning';
 
 export const READONLY_NAMES = [LICENSE_CHECK_NAME, VULNERABILITY_CHECK_NAME, COVERAGE_CHECK_NAME];
 
@@ -42,8 +36,8 @@ export default {
     GlFormInput,
     ProtectedBranchesSelector,
     GlDropdown,
-    GlFormCheckbox,
-    GlFormCheckboxGroup,
+    GlTruncate,
+    GlDropdownItem,
   },
   props: {
     initRule: {
@@ -362,6 +356,17 @@ export default {
     setAllSelectedScanners() {
       this.scanners = this.areAllScannersSelected ? [] : Object.keys(this.$options.REPORT_TYPES);
     },
+    isScannerSelected(scanner) {
+      return this.scanners.includes(scanner);
+    },
+    setScanner(scanner) {
+      const pos = this.scanners.indexOf(scanner);
+      if (pos === -1) {
+        this.scanners.push(scanner);
+      } else {
+        this.scanners.splice(pos, 1);
+      }
+    },
   },
   APPROVAL_DIALOG_I18N,
   REPORT_TYPES: omit(REPORT_TYPES, EXCLUDED_REPORT_TYPE),
@@ -410,18 +415,23 @@ export default {
       data-testid="scanners-group"
     >
       <gl-dropdown :text="scannersText">
-        <gl-form-checkbox
-          :checked="areAllScannersSelected"
-          class="gl-ml-2"
-          @change="setAllSelectedScanners"
+        <gl-dropdown-item
+          key="all"
+          is-check-item
+          :is-checked="areAllScannersSelected"
+          @click.native.capture.stop="setAllSelectedScanners"
         >
-          {{ $options.APPROVAL_DIALOG_I18N.form.selectAllScannersLabel }}
-        </gl-form-checkbox>
-        <gl-form-checkbox-group
-          v-model="scanners"
-          :options="$options.REPORT_TYPES"
-          class="gl-ml-2"
-        />
+          <gl-truncate :text="$options.APPROVAL_DIALOG_I18N.form.selectAllScannersLabel" />
+        </gl-dropdown-item>
+        <gl-dropdown-item
+          v-for="(value, key) in $options.REPORT_TYPES"
+          :key="key"
+          is-check-item
+          :is-checked="isScannerSelected(key)"
+          @click.native.capture.stop="setScanner(key)"
+        >
+          <gl-truncate :text="value" />
+        </gl-dropdown-item>
       </gl-dropdown>
     </gl-form-group>
     <gl-form-group
