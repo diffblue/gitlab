@@ -70,14 +70,12 @@ module Gitlab
       end
 
       def trim_reply(text, append_trimmed_reply: false)
-        trimmed_body = EmailReplyTrimmer.trim(text)
-        return '' unless trimmed_body
-        return trimmed_body unless append_trimmed_reply
+        trimmed_body, stripped_text = EmailReplyTrimmer.trim(text, true)
 
-        _, main_body, stripped_text = text.partition(trimmed_body)
-        return main_body if stripped_text.chomp.empty?
+        return '' unless trimmed_body.present?
+        return trimmed_body unless stripped_text.present? && append_trimmed_reply
 
-        main_body + "\n<details><summary>...</summary>\n#{stripped_text}\n</details>"
+        trimmed_body + "\n\n<details><summary>...</summary>\n\n#{stripped_text}\n\n</details>"
       end
     end
   end

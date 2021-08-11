@@ -237,10 +237,11 @@ RSpec.describe Gitlab::Email::ReplyParser do
           even when the email is forwarded to the project which may include lines that begin with ">"
 
           there should be a quote below this line:
+
           <details><summary>...</summary>
 
-
           > this is a quote
+
           </details>
           BODY
         )
