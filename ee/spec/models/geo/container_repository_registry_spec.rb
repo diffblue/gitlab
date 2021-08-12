@@ -223,4 +223,16 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo do
       expect(Geo::ContainerRepositoryRegistry.replication_enabled?).to be_falsey
     end
   end
+
+  describe '.fail_sync_timeouts' do
+    it 'marks started records as failed if they are expired' do
+      record1 = create(:container_repository_registry, :sync_started, last_synced_at: 9.hours.ago)
+      record2 = create(:container_repository_registry, :sync_started, last_synced_at: 1.hour.ago) # not yet expired
+
+      described_class.fail_sync_timeouts
+
+      expect(record1.reload.state).to eq "failed"
+      expect(record2.reload.state).to eq "started"
+    end
+  end
 end

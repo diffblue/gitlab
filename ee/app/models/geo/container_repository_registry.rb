@@ -13,6 +13,7 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
   scope :never_attempted_sync, -> { with_state(:pending).where(last_synced_at: nil) }
   scope :retry_due, -> { where(arel_table[:retry_at].eq(nil).or(arel_table[:retry_at].lt(Time.current))) }
   scope :synced, -> { with_state(:synced) }
+  scope :sync_timed_out, -> { with_state(:started).where("last_synced_at < ?", Geo::ContainerRepositorySyncService::LEASE_TIMEOUT.ago) }
 
   state_machine :state, initial: :pending do
     state :started
@@ -38,22 +39,40 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
     end
   end
 
-  def self.find_registries_needs_sync_again(batch_size:, except_ids: [])
-    super.order(Gitlab::Database.nulls_first_order(:last_synced_at))
-  end
+  class << self
+    include Delay
 
-  def self.delete_for_model_ids(container_repository_ids)
-    where(container_repository_id: container_repository_ids).delete_all
+    def find_registries_needs_sync_again(batch_size:, except_ids: [])
+      super.order(Gitlab::Database.nulls_first_order(:last_synced_at))
+    end
 
-    container_repository_ids
-  end
+    def delete_for_model_ids(container_repository_ids)
+      where(container_repository_id: container_repository_ids).delete_all
 
-  def self.pluck_container_repository_key
-    where(nil).pluck(:container_repository_id)
-  end
+      container_repository_ids
+    end
 
-  def self.replication_enabled?
-    Gitlab.config.geo.registry_replication.enabled
+    def pluck_container_repository_key
+      where(nil).pluck(:container_repository_id)
+    end
+
+    def replication_enabled?
+      Gitlab.config.geo.registry_replication.enabled
+    end
+
+    # Fail syncs for records which started syncing a long time ago
+    def fail_sync_timeouts
+      attrs = {
+        state: :failed,
+        last_sync_failure: "Sync timed out after #{Geo::ContainerRepositorySyncService::LEASE_TIMEOUT} hours",
+        retry_count: 1,
+        retry_at: next_retry_time(1)
+      }
+
+      sync_timed_out.all.each_batch do |relation|
+        relation.update_all(attrs)
+      end
+    end
   end
 
   def fail_sync!(message, error)
