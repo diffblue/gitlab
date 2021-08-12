@@ -8,6 +8,7 @@ describe('Policies Header Component', () => {
 
   const documentationPath = '/path/to/docs';
   const newPolicyPath = '/path/to/new/policy/page';
+  const projectLinkSuccessText = 'Project was linked successfully.';
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findScanNewPolicyModal = () => wrapper.findComponent(ScanNewPolicyModal);
@@ -16,6 +17,14 @@ describe('Policies Header Component', () => {
   const findEditPolicyProjectButton = () => wrapper.findByTestId('edit-project-policy-button');
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
+
+  const linkSecurityPoliciesProject = async () => {
+    findScanNewPolicyModal().vm.$emit('project-updated', {
+      text: projectLinkSuccessText,
+      variant: 'success',
+    });
+    await wrapper.vm.$nextTick();
+  };
 
   const createWrapper = ({ provide } = {}) => {
     wrapper = shallowMountExtended(PoliciesHeader, {
@@ -55,25 +64,6 @@ describe('Policies Header Component', () => {
       expect(findAlert().exists()).toBe(false);
     });
 
-    it('displays the alert component when scan new modal policy emits events', async () => {
-      const text = 'Project was linked successfully.';
-
-      findScanNewPolicyModal().vm.$emit('project-updated', {
-        text,
-        variant: 'success',
-      });
-
-      // When the project is updated it displays the output message.
-      await wrapper.vm.$nextTick();
-      expect(findAlert().text()).toBe(text);
-
-      // When the project is being updated once again, it removes the alert so that
-      // the new one will be displayed.
-      findScanNewPolicyModal().vm.$emit('updating-project');
-      await wrapper.vm.$nextTick();
-      expect(findAlert().exists()).toBe(false);
-    });
-
     it('mounts the scan new policy modal', () => {
       expect(findScanNewPolicyModal().exists()).toBe(true);
     });
@@ -89,8 +79,26 @@ describe('Policies Header Component', () => {
     });
 
     it('displays the subheader', () => {
-      expect(findSubheader().text()).toContain('Enforce security for this project.');
+      expect(findSubheader().text()).toMatchInterpolatedText(
+        'Enforce security for this project. More information.',
+      );
       expect(findMoreInformationLink().attributes('href')).toBe(documentationPath);
+    });
+
+    describe('linking security policies project', () => {
+      beforeEach(async () => {
+        await linkSecurityPoliciesProject();
+      });
+
+      it('displays the alert component when scan new modal policy emits event', async () => {
+        expect(findAlert().text()).toBe(projectLinkSuccessText);
+      });
+
+      it('hides the previous alert when scan new modal policy is processing a new link', async () => {
+        findScanNewPolicyModal().vm.$emit('updating-project');
+        await wrapper.vm.$nextTick();
+        expect(findAlert().exists()).toBe(false);
+      });
     });
   });
 
