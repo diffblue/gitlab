@@ -276,7 +276,7 @@ RSpec.describe Ci::JobArtifact do
 
       with_them do
         let(:mock_parser) { double(:parser, parse!: true) }
-        let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), validate: expected_validate_flag] }
+        let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), false, validate: expected_validate_flag] }
 
         before do
           allow(job_artifact.job).to receive(:validate_schema?).and_return(build_is_subject_to_validation?)

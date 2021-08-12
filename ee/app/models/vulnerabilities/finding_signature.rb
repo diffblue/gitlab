@@ -11,6 +11,10 @@ module Vulnerabilities
     enum algorithm_type: VulnerabilityFindingSignatureHelpers::ALGORITHM_TYPES, _prefix: :algorithm
     validates :finding, presence: true
 
+    scope :by_project, -> (project) { joins(:finding).where(vulnerability_occurrences: { project_id: project.id }) }
+    scope :by_signature_sha, -> (shas) { where(signature_sha: shas) }
+    scope :eager_load_finding, -> { includes(:finding) }
+
     def signature_hex
       signature_sha.unpack1("H*")
     end

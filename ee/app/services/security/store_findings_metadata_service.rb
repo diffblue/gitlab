@@ -46,6 +46,7 @@ module Security
         severity: report_finding.severity,
         confidence: report_finding.confidence,
         uuid: report_finding.uuid,
+        overridden_uuid: report_finding.overridden_uuid,
         project_fingerprint: report_finding.project_fingerprint,
         scanner: persisted_scanner_for(report_finding.scanner)
       }
