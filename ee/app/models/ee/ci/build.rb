@@ -212,8 +212,6 @@ module EE
       override :kubernetes_variables
       def kubernetes_variables
         ::Gitlab::Ci::Variables::Collection.new.tap do |collection|
-          break collection unless ::Feature.enabled?(:agent_kubeconfig_ci_variable, project, default_enabled: :yaml)
-
           # A cluster deployemnt may also define a KUBECONFIG variable, so to keep existing
           # configurations working we shouldn't overwrite it here.
           # This check will be removed when Cluster and Agent configurations are
