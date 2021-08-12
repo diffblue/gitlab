@@ -4166,7 +4166,7 @@ msgid_plural "ApprovalRuleSummary|%{count} approvals required from %{membersCoun
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "ApprovalRule|%{scanner} +%{additionalScanners} more"
+msgid "ApprovalRule|%{firstLabel} +%{numberOfAdditionalLabels} more"
 msgstr ""
 
 msgid "ApprovalRule|Add approvers"
@@ -4175,7 +4175,13 @@ msgstr ""
 msgid "ApprovalRule|All scanners"
 msgstr ""
 
+msgid "ApprovalRule|All severity levels"
+msgstr ""
+
 msgid "ApprovalRule|Apply this approval rule to consider only the selected security scanners."
+msgstr ""
+
+msgid "ApprovalRule|Apply this approval rule to consider only the selected severity levels."
 msgstr ""
 
 msgid "ApprovalRule|Approval rules"
@@ -4205,6 +4211,9 @@ msgstr ""
 msgid "ApprovalRule|Please select at least one security scanner"
 msgstr ""
 
+msgid "ApprovalRule|Please select at least one severity level"
+msgstr ""
+
 msgid "ApprovalRule|Rule name"
 msgstr ""
 
@@ -4215,6 +4224,12 @@ msgid "ApprovalRule|Select All"
 msgstr ""
 
 msgid "ApprovalRule|Select scanners"
+msgstr ""
+
+msgid "ApprovalRule|Select severity levels"
+msgstr ""
+
+msgid "ApprovalRule|Severity levels"
 msgstr ""
 
 msgid "ApprovalRule|Target branch"

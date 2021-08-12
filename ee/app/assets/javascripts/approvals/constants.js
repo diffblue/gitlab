@@ -90,13 +90,19 @@ export const APPROVAL_DIALOG_I18N = {
     scannersDescription: s__(
       'ApprovalRule|Apply this approval rule to consider only the selected security scanners.',
     ),
-    selectAllScannersLabel: s__('ApprovalRule|Select All'),
+    selectAllLabel: s__('ApprovalRule|Select All'),
     allScannersSelectedLabel: s__('ApprovalRule|All scanners'),
-    multipleSelectedScannersLabel: s__('ApprovalRule|%{scanner} +%{additionalScanners} more'),
+    multipleSelectedLabel: s__('ApprovalRule|%{firstLabel} +%{numberOfAdditionalLabels} more'),
     vulnerabilitiesAllowedLabel: s__('ApprovalRule|Vulnerabilities allowed'),
     vulnerabilitiesAllowedDescription: s__(
       'ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered.',
     ),
+    severityLevelsLabel: s__('ApprovalRule|Severity levels'),
+    severityLevelsDescription: s__(
+      'ApprovalRule|Apply this approval rule to consider only the selected severity levels.',
+    ),
+    severityLevelsSelectLabel: s__('ApprovalRule|Select severity levels'),
+    allSeverityLevelsSelectedLabel: s__('ApprovalRule|All severity levels'),
   },
   validations: {
     approvalsRequiredNegativeNumber: __('Please enter a non-negative number'),
@@ -112,5 +118,6 @@ export const APPROVAL_DIALOG_I18N = {
     vulnerabilitiesAllowedMinimum: s__(
       'ApprovalRule|Please enter a number equal or greater than zero',
     ),
+    severityLevelsRequired: s__('ApprovalRule|Please select at least one severity level'),
   },
 };

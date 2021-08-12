@@ -41,6 +41,7 @@ const TEST_RULE_VULNERABILITY_CHECK = {
   name: VULNERABILITY_CHECK_NAME,
   scanners: ['sast', 'dast'],
   vulnerabilitiesAllowed: 0,
+  severityLevels: ['high'],
 };
 const TEST_APPROVERS = [{ id: 7, type: TYPE_USER }];
 const TEST_APPROVALS_REQUIRED = 3;
@@ -99,6 +100,7 @@ describe('EE Approvals RuleForm', () => {
   const findBranchesValidation = () => wrapper.findByTestId('branches-group');
   const findScannersGroup = () => wrapper.findByTestId('scanners-group');
   const findVulnerabilityFormGroup = () => wrapper.findByTestId('vulnerability-amount-group');
+  const findSeverityLevelsGroup = () => wrapper.findByTestId('severity-levels-group');
 
   const inputsAreValid = (inputs) => inputs.every((x) => x.props('state'));
 
@@ -203,6 +205,7 @@ describe('EE Approvals RuleForm', () => {
             groupRecords,
             removeHiddenGroups: false,
             scanners: [],
+            severityLevels: [],
             protectedBranchIds: branches.map((x) => x.id),
           };
 
@@ -282,6 +285,7 @@ describe('EE Approvals RuleForm', () => {
           groupRecords,
           removeHiddenGroups: false,
           scanners: [],
+          severityLevels: [],
           protectedBranchIds: branches.map((x) => x.id),
         };
 
@@ -362,6 +366,7 @@ describe('EE Approvals RuleForm', () => {
           groupRecords,
           removeHiddenGroups: false,
           scanners: [],
+          severityLevels: [],
           protectedBranchIds: [],
         };
 
@@ -539,11 +544,11 @@ describe('EE Approvals RuleForm', () => {
 
     describe('with approval suggestions', () => {
       describe.each`
-        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners | expectedDisplayVulnerabilityAllowed
-        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}                   | ${true}
-        ${'License-Check'}          | ${true}                   | ${false}                  | ${false}
-        ${'Coverage-Check'}         | ${true}                   | ${false}                  | ${false}
-        ${'Foo Bar Baz'}            | ${false}                  | ${false}                  | ${false}
+        defaultRuleName             | expectedDisabledAttribute | expectedDisplayedScanners | expectedDisplayVulnerabilityAllowed | expectedDisplayedSeverityLevels
+        ${VULNERABILITY_CHECK_NAME} | ${true}                   | ${true}                   | ${true}                             | ${true}
+        ${'License-Check'}          | ${true}                   | ${false}                  | ${false}                            | ${false}
+        ${'Coverage-Check'}         | ${true}                   | ${false}                  | ${false}                            | ${false}
+        ${'Foo Bar Baz'}            | ${false}                  | ${false}                  | ${false}                            | ${false}
       `(
         'with defaultRuleName set to $defaultRuleName',
         ({
@@ -551,6 +556,7 @@ describe('EE Approvals RuleForm', () => {
           expectedDisabledAttribute,
           expectedDisplayedScanners,
           expectedDisplayVulnerabilityAllowed,
+          expectedDisplayedSeverityLevels,
         }) => {
           beforeEach(() => {
             createComponent({
@@ -574,6 +580,11 @@ describe('EE Approvals RuleForm', () => {
             expectedDisplayVulnerabilityAllowed ? 'shows' : 'does not show'
           } the number of vulnerabilities form group`, () => {
             expect(findVulnerabilityFormGroup().exists()).toBe(expectedDisplayVulnerabilityAllowed);
+          });
+          it(`it ${
+            expectedDisplayedSeverityLevels ? 'shows' : 'does not show'
+          } severity levels dropdown`, () => {
+            expect(findSeverityLevelsGroup().exists()).toBe(expectedDisplayedSeverityLevels);
           });
         },
       );
@@ -672,7 +683,41 @@ describe('EE Approvals RuleForm', () => {
         it('contains the supported report types and select all option', () => {
           const supportedReportsPlusAll =
             Object.keys(REPORT_TYPES).length - [EXCLUDED_REPORT_TYPE].length + 1;
-          expect(wrapper.findAllComponents(GlTruncate)).toHaveLength(supportedReportsPlusAll);
+          expect(findScannersGroup().findAllComponents(GlTruncate)).toHaveLength(
+            supportedReportsPlusAll,
+          );
+        });
+      });
+
+      describe('and without any severity levels selected', () => {
+        beforeEach(() => {
+          createComponent({
+            initRule: {
+              ...TEST_RULE_VULNERABILITY_CHECK,
+              severityLevels: [],
+            },
+          });
+          findForm().trigger('submit');
+        });
+
+        it('does not dispatch the action on submit', () => {
+          expect(actions.postRule).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('with one severity level selected', () => {
+        beforeEach(() => {
+          createComponent({
+            initRule: TEST_RULE_VULNERABILITY_CHECK,
+          });
+          findForm().trigger('submit');
+        });
+
+        it('dispatches the action on submit', () => {
+          expect(actions.postRule).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ severityLevels: ['high'] }),
+          );
         });
       });
     });
