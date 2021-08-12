@@ -119,6 +119,7 @@ module EE
         deletion_adjourned_period
         updating_name_disabled_for_users
         npm_package_requests_forwarding
+        pypi_package_requests_forwarding
         maintenance_mode
         maintenance_mode_message
       ]

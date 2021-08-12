@@ -14551,6 +14551,9 @@ msgstr ""
 msgid "Format: %{dateFormat}"
 msgstr ""
 
+msgid "Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry"
+msgstr ""
+
 msgid "Found errors in your %{gitlab_ci_yml}:"
 msgstr ""
 
