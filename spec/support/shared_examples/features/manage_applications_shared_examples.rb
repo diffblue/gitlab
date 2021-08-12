@@ -15,10 +15,7 @@ RSpec.shared_examples 'manage applications' do
     check :doorkeeper_application_scopes_read_user
     click_on 'Save application'
 
-    expect(page).to have_content application_name
-    expect(page).to have_content 'Application ID'
-    expect(page).to have_content 'Secret'
-    expect(page).to have_content 'Confidential Yes'
+    validate_application(application_name, 'Yes')
 
     application = Doorkeeper::Application.find_by(name: application_name)
     expect(page).to have_css("button[title=\"Copy secret\"][data-clipboard-text=\"#{application.secret}\"]", text: 'Copy')
@@ -31,10 +28,7 @@ RSpec.shared_examples 'manage applications' do
     uncheck :doorkeeper_application_confidential
     click_on 'Save application'
 
-    expect(page).to have_content application_name_changed
-    expect(page).to have_content 'Application ID'
-    expect(page).to have_content 'Secret'
-    expect(page).to have_content 'Confidential No'
+    validate_application(application_name_changed, 'No')
 
     visit_applications_path
 
@@ -60,5 +54,14 @@ RSpec.shared_examples 'manage applications' do
 
   def visit_applications_path
     visit defined?(applications_path) ? applications_path : new_application_path
+  end
+
+  def validate_application(name, confidential)
+    aggregate_failures do
+      expect(page).to have_content name
+      expect(page).to have_content 'Application ID'
+      expect(page).to have_content 'Secret'
+      expect(page).to have_content "Confidential #{confidential}"
+    end
   end
 end
