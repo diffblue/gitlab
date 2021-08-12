@@ -182,23 +182,8 @@ RSpec.describe Gitlab::Checks::ChangesAccess do
           create_commit('b1', %w[b2 a2]),
           create_commit('a2', %w[a3 b3]),
           create_commit('b2', %w[b3 a3]),
-          create_commit('b2', %w[b3 a3]),
-          create_commit('a2', %w[a3 b3]),
           create_commit('a3', %w[c]),
           create_commit('b3', %w[c]),
-          create_commit('b3', %w[c]),
-          create_commit('a3', %w[c]),
-          create_commit('b3', %w[c]),
-          create_commit('a3', %w[c]),
-          create_commit('a3', %w[c]),
-          create_commit('b3', %w[c]),
-          create_commit('c', []),
-          create_commit('c', []),
-          create_commit('c', []),
-          create_commit('c', []),
-          create_commit('c', []),
-          create_commit('c', []),
-          create_commit('c', []),
           create_commit('c', [])
         ]
       end
