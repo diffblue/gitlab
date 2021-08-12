@@ -78,7 +78,7 @@ export default {
   <div>
     <div class="gl-display-flex gl-my-3">
       <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
-      <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth">
+      <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth" data-testid="project-month-dropdown">
         <gl-dropdown-item
           v-for="(month, index) in months"
           :key="index"
