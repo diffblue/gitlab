@@ -30,11 +30,13 @@ query pipelineFindings(
             externalType
             name
           }
+          reportType
           scanner {
             vendor
           }
           state
           severity
+          solution
           location {
             ...VulnerabilityLocation
           }
