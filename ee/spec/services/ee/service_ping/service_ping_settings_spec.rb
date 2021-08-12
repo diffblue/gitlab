@@ -38,4 +38,24 @@ RSpec.describe ServicePing::ServicePingSettings do
       end
     end
   end
+
+  describe '#enabled?' do
+    where(:usage_ping_enabled, :customer_service_enabled, :expected_enabled) do
+      true  | true  | true
+      false | true  | true
+      true  | false | true
+      false | false | false
+    end
+
+    with_them do
+      before do
+        stub_config_setting(usage_ping_enabled: usage_ping_enabled)
+        create_current_license(operational_metrics_enabled: customer_service_enabled)
+      end
+
+      it 'has the correct enabled?' do
+        expect(described_class.enabled?).to eq(expected_enabled)
+      end
+    end
+  end
 end
