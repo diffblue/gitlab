@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ReleaseHighlight, :clean_gitlab_redis_cache do
-  let(:fixture_dir_glob) { Dir.glob(File.join('spec', 'fixtures', 'whats_new', '*.yml')).grep(/\d*\_(\d*\_\d*)\.yml$/) }
+  let(:fixture_dir_glob) { Dir.glob(File.join(Rails.root, 'spec', 'fixtures', 'whats_new', '*.yml')).grep(/\d*\_(\d*\_\d*)\.yml$/) }
   let(:starter_plan) { create(:license, plan: License::STARTER_PLAN) }
   let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
   let(:ultimate_plan) { create(:license, plan: License::ULTIMATE_PLAN) }
