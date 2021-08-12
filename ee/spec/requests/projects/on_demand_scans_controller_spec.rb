@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Projects::OnDemandScansController, type: :request do
   include GraphqlHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, :repository) }
 
   let(:user) { create(:user) }
 
@@ -82,7 +82,7 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
   end
 
   describe 'GET #edit' do
-    let_it_be(:dast_profile) { create(:dast_profile, project: project) }
+    let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: project.default_branch_or_main) }
 
     let(:dast_profile_id) { dast_profile.id }
     let(:edit_path) { edit_project_on_demand_scan_path(project, id: dast_profile_id) }
@@ -108,9 +108,9 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
             id: global_id_of(dast_profile),
             name: dast_profile.name,
             description: dast_profile.description,
-            branch: { name: dast_profile.branch_name },
-            site_profile_id: global_id_of(DastSiteProfile.new(id: dast_profile.dast_site_profile_id)),
-            scanner_profile_id: global_id_of(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id))
+            branch: { name: project.default_branch_or_main },
+            dastSiteProfile: { id: global_id_of(DastSiteProfile.new(id: dast_profile.dast_site_profile_id)) },
+            dastScannerProfile: { id: global_id_of(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id)) }
           }.to_json
 
           on_demand_div = Nokogiri::HTML.parse(response.body).at_css('div#js-on-demand-scans-app')

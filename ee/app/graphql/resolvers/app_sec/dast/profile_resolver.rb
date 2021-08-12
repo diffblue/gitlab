@@ -10,6 +10,12 @@ module Resolvers
 
         type ::Types::Dast::ProfileType.connection_type, null: true
 
+        when_single do
+          argument :id, ::Types::GlobalIDType[::Dast::Profile],
+                   required: true,
+                   description: 'ID of the DAST Profile.'
+        end
+
         def resolve_with_lookahead(**args)
           apply_lookahead(find_dast_profiles(args))
         end
@@ -24,7 +30,15 @@ module Resolvers
         end
 
         def find_dast_profiles(args)
-          ::Dast::ProfilesFinder.new(project_id: project.id).execute
+          params = { project_id: project.id }
+
+          if args[:id]
+            # TODO: remove this coercion when the compatibility layer is removed
+            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
+            params[:id] = ::Types::GlobalIDType[::Dast::Profile].coerce_isolated_input(args[:id]).model_id
+          end
+
+          ::Dast::ProfilesFinder.new(params).execute
         end
       end
     end

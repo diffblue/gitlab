@@ -12025,6 +12025,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectcontainerrepositoriesname"></a>`name` | [`String`](#string) | Filter the container repositories by their name. |
 | <a id="projectcontainerrepositoriessort"></a>`sort` | [`ContainerRepositorySort`](#containerrepositorysort) | Sort container repositories by this criteria. |
 
+##### `Project.dastProfile`
+
+DAST Profile associated with the project.
+
+Returns [`DastProfile`](#dastprofile).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectdastprofileid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the DAST Profile. |
+
 ##### `Project.dastSiteProfile`
 
 DAST Site Profile associated with the project.

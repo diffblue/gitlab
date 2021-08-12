@@ -23,6 +23,7 @@ import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
 const helpPagePath = '/application_security/dast/index#on-demand-scans';
 const projectPath = 'group/project';
 const defaultBranch = 'main';
+const selectedBranch = 'some-other-branch';
 const profilesLibraryPath = '/security/configuration/dast_scans';
 const scannerProfilesLibraryPath = '/security/configuration/dast_scans#scanner-profiles';
 const siteProfilesLibraryPath = '/security/configuration/dast_scans#site-profiles';
@@ -44,8 +45,8 @@ const dastScan = {
   branch: { name: 'dev' },
   name: 'My daily scan',
   description: 'Tests for SQL injections',
-  scannerProfileId: passiveScannerProfile.id,
-  siteProfileId: validatedSiteProfile.id,
+  dastScannerProfile: { id: passiveScannerProfile.id },
+  dastSiteProfile: { id: validatedSiteProfile.id },
 };
 
 useLocalStorageSpy();
@@ -83,9 +84,14 @@ describe('OnDemandScansForm', () => {
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
   const findProfileSummary = () => findByTestId('selected-profile-summary');
 
+  const hasSiteProfileAttributes = () => {
+    expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);
+    expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.dastSiteProfile.id);
+  };
+
   const setValidFormData = () => {
     findNameInput().vm.$emit('input', 'My daily scan');
-    findBranchInput().vm.$emit('input', 'some-other-branch');
+    findBranchInput().vm.$emit('input', selectedBranch);
     findScannerProfilesSelector().vm.$emit('input', passiveScannerProfile.id);
     findSiteProfilesSelector().vm.$emit('input', nonValidatedSiteProfile.id);
     return wrapper.vm.$nextTick();
@@ -230,24 +236,44 @@ describe('OnDemandScansForm', () => {
   });
 
   describe('when editing an existing scan', () => {
-    beforeEach(() => {
-      createShallowComponent({
-        propsData: {
-          dastScan,
-        },
+    describe('when the branch is not present', () => {
+      /**
+       * It is possible for pre-fetched data not to have a branch, so we must
+       * handle this path.
+       */
+      beforeEach(() => {
+        createShallowComponent({
+          propsData: {
+            ...dastScan,
+            branch: null,
+          },
+        });
+      });
+
+      it('sets the branch to the default', () => {
+        expect(findBranchInput().props('value')).toBe(defaultBranch);
       });
     });
 
-    it('sets the title properly', () => {
-      expect(wrapper.text()).toContain('Edit on-demand DAST scan');
-    });
+    describe('when the branch is present', () => {
+      beforeEach(() => {
+        createShallowComponent({
+          propsData: {
+            dastScan,
+          },
+        });
+      });
 
-    it('populates the fields with passed values', () => {
-      expect(findNameInput().attributes('value')).toBe(dastScan.name);
-      expect(findBranchInput().props('value')).toBe(dastScan.branch.name);
-      expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
-      expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.scannerProfileId);
-      expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.siteProfileId);
+      it('sets the title properly', () => {
+        expect(wrapper.text()).toContain('Edit on-demand DAST scan');
+      });
+
+      it('populates the fields with passed values', () => {
+        expect(findNameInput().attributes('value')).toBe(dastScan.name);
+        expect(findBranchInput().props('value')).toBe(dastScan.branch.name);
+        expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
+        hasSiteProfileAttributes();
+      });
     });
   });
 
@@ -264,7 +290,7 @@ describe('OnDemandScansForm', () => {
             name: 'My daily scan',
             selectedScannerProfileId: 'gid://gitlab/DastScannerProfile/1',
             selectedSiteProfileId: 'gid://gitlab/DastSiteProfile/1',
-            selectedBranch: 'some-other-branch',
+            selectedBranch,
           }),
         ],
       ]);
@@ -276,8 +302,8 @@ describe('OnDemandScansForm', () => {
         JSON.stringify({
           name: dastScan.name,
           description: dastScan.description,
-          selectedScannerProfileId: dastScan.scannerProfileId,
-          selectedSiteProfileId: dastScan.siteProfileId,
+          selectedScannerProfileId: dastScan.dastScannerProfile.id,
+          selectedSiteProfileId: dastScan.dastSiteProfile.id,
         }),
       );
 
@@ -286,8 +312,7 @@ describe('OnDemandScansForm', () => {
 
       expect(findNameInput().attributes('value')).toBe(dastScan.name);
       expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
-      expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.scannerProfileId);
-      expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.siteProfileId);
+      hasSiteProfileAttributes();
     });
   });
 
@@ -345,7 +370,7 @@ describe('OnDemandScansForm', () => {
               variables: {
                 input: {
                   name: 'My daily scan',
-                  branchName: 'some-other-branch',
+                  branchName: selectedBranch,
                   dastScannerProfileId: passiveScannerProfile.id,
                   dastSiteProfileId: nonValidatedSiteProfile.id,
                   fullPath: projectPath,
@@ -384,7 +409,7 @@ describe('OnDemandScansForm', () => {
                 input: {
                   id: 1,
                   name: 'My daily scan',
-                  branchName: 'some-other-branch',
+                  branchName: selectedBranch,
                   description: 'Tests for SQL injections',
                   dastScannerProfileId: passiveScannerProfile.id,
                   dastSiteProfileId: nonValidatedSiteProfile.id,
@@ -602,16 +627,15 @@ describe('OnDemandScansForm', () => {
       localStorage.setItem(
         LOCAL_STORAGE_KEY,
         JSON.stringify({
-          selectedScannerProfileId: dastScan.scannerProfileId,
-          selectedSiteProfileId: dastScan.siteProfileId,
+          selectedScannerProfileId: dastScan.dastScannerProfile.id,
+          selectedSiteProfileId: dastScan.dastSiteProfile.id,
         }),
       );
 
       createShallowComponent();
       await wrapper.vm.$nextTick();
 
-      expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.scannerProfileId);
-      expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.siteProfileId);
+      hasSiteProfileAttributes();
     });
   });
 
