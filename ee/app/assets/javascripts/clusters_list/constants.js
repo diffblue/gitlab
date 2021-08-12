@@ -30,7 +30,7 @@ export const I18N_INSTALL_AGENT_MODAL = {
 
   basicInstallTitle: s__('ClusterAgents|Recommended installation method'),
   basicInstallBody: s__(
-    `Open a CLI and connect to the cluster you want to install the Agent in. Use this installation method to minimise any manual steps.The token is already included in the command.`,
+    `Open a CLI and connect to the cluster you want to install the Agent in. Use this installation method to minimize any manual steps. The token is already included in the command.`,
   ),
 
   advancedInstallTitle: s__('ClusterAgents|Alternative installation methods'),
