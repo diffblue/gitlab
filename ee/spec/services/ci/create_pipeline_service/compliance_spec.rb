@@ -31,7 +31,6 @@ RSpec.describe Ci::CreatePipelineService do
   let(:service) { described_class.new(project, user, { ref: 'master' }) }
 
   before do
-    stub_feature_flags(ff_evaluate_group_level_compliance_pipeline: true)
     stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
     allow_next(Repository).to receive(:blob_data_at).with(ref_sha, '.compliance-gitlab-ci.yml').and_return(compliance_config)
   end

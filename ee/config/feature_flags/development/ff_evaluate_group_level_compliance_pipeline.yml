@@ -1,8 +1,0 @@
----
-name: ff_evaluate_group_level_compliance_pipeline
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/52629
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/300324
-milestone: '13.9'
-type: development
-group: group::compliance
-default_enabled: true

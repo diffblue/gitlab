@@ -36,7 +36,6 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
 
     context 'when feature is available' do
       before do
-        stub_feature_flags(ff_evaluate_group_level_compliance_pipeline: true)
         stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
       end
 
@@ -82,23 +81,12 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
       end
     end
 
-    context 'when feature is not available' do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:licensed, :feature_flag) do
-        true  | false
-        false | true
-        false | false
+    context 'when feature is not licensed' do
+      before do
+        stub_licensed_features(evaluate_group_level_compliance_pipeline: false)
       end
 
-      with_them do
-        before do
-          stub_feature_flags(ff_evaluate_group_level_compliance_pipeline: licensed)
-          stub_licensed_features(evaluate_group_level_compliance_pipeline: feature_flag)
-        end
-
-        it_behaves_like 'does not include compliance pipeline configuration content'
-      end
+      it_behaves_like 'does not include compliance pipeline configuration content'
     end
   end
 
@@ -107,7 +95,6 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content do
 
     context 'when feature is available' do
       before do
-        stub_feature_flags(ff_evaluate_group_level_compliance_pipeline: true)
         stub_licensed_features(evaluate_group_level_compliance_pipeline: true)
       end
 

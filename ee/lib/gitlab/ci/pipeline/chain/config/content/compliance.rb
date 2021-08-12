@@ -32,8 +32,7 @@ module Gitlab
               end
 
               def available?
-                project.feature_available?(:evaluate_group_level_compliance_pipeline) &&
-                  ::Feature.enabled?(:ff_evaluate_group_level_compliance_pipeline, project, default_enabled: :yaml)
+                project.feature_available?(:evaluate_group_level_compliance_pipeline)
               end
             end
           end
