@@ -42,8 +42,17 @@ module Security
 
     delegate :project, :name, to: :build
 
+    before_save :ensure_project_id_pipeline_id
+
     def has_errors?
       info&.fetch('errors', []).present?
+    end
+
+    private
+
+    def ensure_project_id_pipeline_id
+      self.project_id ||= build.project_id
+      self.pipeline_id ||= build.commit_id
     end
   end
 end
