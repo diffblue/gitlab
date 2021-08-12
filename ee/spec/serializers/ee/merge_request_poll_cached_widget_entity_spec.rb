@@ -29,7 +29,6 @@ RSpec.describe MergeRequestPollCachedWidgetEntity do
 
       before do
         stub_licensed_features(jira_issues_integration: true, jira_issue_association_enforcement: true)
-        stub_feature_flags(jira_issue_association_on_merge_request: true)
       end
 
       it { is_expected.to include(:jira_associations) }
@@ -90,16 +89,11 @@ RSpec.describe MergeRequestPollCachedWidgetEntity do
     context 'when feature is NOT available' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:licensed, :feature_flag) do
-        false | true
-        true  | false
-        false | false
-      end
+      where(licensed: [true, false])
 
       with_them do
         before do
           stub_licensed_features(jira_issue_association_enforcement: licensed)
-          stub_feature_flags(jira_issue_association_on_merge_request: feature_flag)
         end
 
         it { is_expected.not_to include(:jira_associations) }
