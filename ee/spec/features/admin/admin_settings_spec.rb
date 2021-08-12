@@ -266,13 +266,22 @@ RSpec.describe 'Admin updates EE-only settings' do
       visit ci_cd_admin_application_settings_path
     end
 
-    it 'allows you to change the npm_forwaring setting' do
+    it 'allows you to change the npm_forwarding setting' do
       page.within('#js-package-settings') do
         check 'Forward npm package requests to the npm Registry if the packages are not found in the GitLab Package Registry'
         click_button 'Save'
       end
 
       expect(current_settings.npm_package_requests_forwarding).to be true
+    end
+
+    it 'allows you to change the pypi_forwarding setting' do
+      page.within('#js-package-settings') do
+        check 'Forward PyPI package requests to the PyPI Registry if the packages are not found in the GitLab Package Registry'
+        click_button 'Save'
+      end
+
+      expect(current_settings.pypi_package_requests_forwarding).to be true
     end
   end
 

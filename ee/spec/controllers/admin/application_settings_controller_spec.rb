@@ -111,6 +111,13 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
+    context 'updating pypi packages request forwarding setting' do
+      let(:settings) { { pypi_package_requests_forwarding: true } }
+      let(:feature) { :package_forwarding }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
     context 'updating `git_two_factor_session_expiry` setting' do
       before do
         stub_feature_flags(two_factor_for_cli: true)
