@@ -259,6 +259,10 @@ describe('Bulk import resolvers', () => {
                   target_namespace: 'root',
                   new_name: 'group1',
                 },
+                last_import_target: {
+                  target_namespace: 'root',
+                  new_name: 'group1',
+                },
                 validation_errors: [],
               },
             ],
@@ -414,17 +418,29 @@ describe('Bulk import resolvers', () => {
       });
     });
 
-    it('setImportProgress updates group progress', async () => {
+    it('setImportProgress updates group progress and sets import target', async () => {
       const NEW_STATUS = 'dummy';
       const FAKE_JOB_ID = 5;
+      const IMPORT_TARGET = {
+        __typename: 'ClientBulkImportTarget',
+        new_name: 'fake_name',
+        target_namespace: 'fake_target',
+      };
       const {
         data: {
-          setImportProgress: { progress },
+          setImportProgress: { progress, last_import_target: lastImportTarget },
         },
       } = await client.mutate({
         mutation: setImportProgressMutation,
-        variables: { sourceGroupId: GROUP_ID, status: NEW_STATUS, jobId: FAKE_JOB_ID },
+        variables: {
+          sourceGroupId: GROUP_ID,
+          status: NEW_STATUS,
+          jobId: FAKE_JOB_ID,
+          importTarget: IMPORT_TARGET,
+        },
       });
+
+      expect(lastImportTarget).toMatchObject(IMPORT_TARGET);
 
       expect(progress).toMatchObject({
         id: FAKE_JOB_ID,
