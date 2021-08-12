@@ -10785,7 +10785,7 @@ CREATE SEQUENCE ci_instance_variables_id_seq
 ALTER SEQUENCE ci_instance_variables_id_seq OWNED BY ci_instance_variables.id;
 
 CREATE TABLE ci_job_artifacts (
-    id integer NOT NULL,
+    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     project_id integer NOT NULL,
     job_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     file_type integer NOT NULL,
@@ -10798,7 +10798,7 @@ CREATE TABLE ci_job_artifacts (
     file_sha256 bytea,
     file_format smallint,
     file_location smallint,
-    id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
+    id bigint NOT NULL,
     job_id bigint NOT NULL,
     CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL))
 );
