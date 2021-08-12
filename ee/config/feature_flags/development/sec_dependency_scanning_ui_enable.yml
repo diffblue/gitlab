@@ -1,8 +1,0 @@
----
-name: sec_dependency_scanning_ui_enable
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/57496
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/326005
-milestone: '13.11'
-type: development
-group: group::composition analysis
-default_enabled: true
