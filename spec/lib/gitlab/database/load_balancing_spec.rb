@@ -300,7 +300,7 @@ RSpec.describe Gitlab::Database::LoadBalancing do
       let(:connection) { ActiveRecord::Base.connection }
 
       it 'returns primary' do
-        expect(described_class.db_role_for_connection(connection)).to be(:primary)
+        expect(described_class.db_role_for_connection(connection)).to eq(:primary)
       end
     end
 
@@ -310,14 +310,14 @@ RSpec.describe Gitlab::Database::LoadBalancing do
 
       context 'when a proxy connection is used' do
         it 'returns :unknown' do
-          expect(described_class.db_role_for_connection(proxy)).to be(:unknown)
+          expect(described_class.db_role_for_connection(proxy)).to eq(:unknown)
         end
       end
 
       context 'when a read connection is used' do
         it 'returns :replica' do
           proxy.load_balancer.read do |connection|
-            expect(described_class.db_role_for_connection(connection)).to be(:replica)
+            expect(described_class.db_role_for_connection(connection)).to eq(:replica)
           end
         end
       end
@@ -325,7 +325,7 @@ RSpec.describe Gitlab::Database::LoadBalancing do
       context 'when a read_write connection is used' do
         it 'returns :primary' do
           proxy.load_balancer.read_write do |connection|
-            expect(described_class.db_role_for_connection(connection)).to be(:primary)
+            expect(described_class.db_role_for_connection(connection)).to eq(:primary)
           end
         end
       end
