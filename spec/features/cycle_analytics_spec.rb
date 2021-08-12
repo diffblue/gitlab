@@ -27,11 +27,13 @@ RSpec.describe 'Value Stream Analytics', :js do
         wait_for_requests
       end
 
-      it 'shows pipeline summary' do
-        expect(new_issues_counter).to have_content('-')
-        expect(commits_counter).to have_content('-')
-        expect(deploys_counter).to have_content('-')
-        expect(deployment_frequency_counter).to have_content('-')
+      it 'displays metrics' do
+        aggregate_failures 'with relevant values' do
+          expect(new_issues_counter).to have_content('-')
+          expect(commits_counter).to have_content('-')
+          expect(deploys_counter).to have_content('-')
+          expect(deployment_frequency_counter).to have_content('-')
+        end
       end
 
       it 'shows active stage with empty message' do
@@ -61,11 +63,15 @@ RSpec.describe 'Value Stream Analytics', :js do
         visit project_cycle_analytics_path(project)
       end
 
-      it 'shows pipeline summary' do
-        expect(new_issue_counter).to have_content('1')
-        expect(commits_counter).to have_content('-')
-        expect(deploys_counter).to have_content('-')
-        expect(deployment_frequency_counter).to have_content('-')
+      it 'displays metrics' do
+        metrics_tiles = page.find(metrics_selector)
+
+        aggregate_failures 'with relevant values' do
+          expect(metrics_tiles).to have_content('Commit')
+          expect(metrics_tiles).to have_content('Deploy')
+          expect(metrics_tiles).to have_content('Deployment Frequency')
+          expect(metrics_tiles).to have_content('New Issue')
+        end
       end
 
       it 'shows data on each stage', :sidekiq_might_not_need_inline do
