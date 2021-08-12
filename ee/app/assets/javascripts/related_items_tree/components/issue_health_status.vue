@@ -1,20 +1,22 @@
 <script>
+import { GlTooltipDirective } from '@gitlab/ui';
 import { issueHealthStatus, issueHealthStatusCSSMapping } from '../constants';
 
 export default {
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     healthStatus: {
       type: String,
       required: true,
-      default: '',
     },
   },
   computed: {
-    getFormattedStatus() {
+    statusText() {
       return issueHealthStatus[this.healthStatus];
     },
-
-    cssMapping() {
+    statusClass() {
       return issueHealthStatusCSSMapping[this.healthStatus];
     },
   },
@@ -23,9 +25,9 @@ export default {
 
 <template>
   <div class="health-status">
-    <span class="gl-label gl-label-sm" :class="cssMapping">
-      <span class="gl-label-text">
-        {{ getFormattedStatus }}
+    <span class="gl-label gl-label-sm" :class="statusClass">
+      <span v-gl-tooltip class="gl-label-text" :title="__('Health status')">
+        {{ statusText }}
       </span>
     </span>
   </div>
