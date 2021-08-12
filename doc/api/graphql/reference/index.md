@@ -1437,6 +1437,7 @@ Input type: `DastProfileCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofilecreatebranchname"></a>`branchName` | [`String`](#string) | Associated branch. |
 | <a id="mutationdastprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdastprofilecreatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled. |
 | <a id="mutationdastprofilecreatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be associated. |
 | <a id="mutationdastprofilecreatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be associated. |
 | <a id="mutationdastprofilecreatedescription"></a>`description` | [`String`](#string) | Description of the profile. Defaults to an empty string. |
@@ -15179,6 +15180,17 @@ Status of a container repository.
 | <a id="containerrepositorystatusdelete_failed"></a>`DELETE_FAILED` | Delete Failed status. |
 | <a id="containerrepositorystatusdelete_scheduled"></a>`DELETE_SCHEDULED` | Delete Scheduled status. |
 
+### `DastProfileCadenceUnit`
+
+Unit for the duration of Dast Profile Cadence.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="dastprofilecadenceunitday"></a>`DAY` | DAST Profile Cadence duration in days. |
+| <a id="dastprofilecadenceunitmonth"></a>`MONTH` | DAST Profile Cadence duration in months. |
+| <a id="dastprofilecadenceunitweek"></a>`WEEK` | DAST Profile Cadence duration in weeks. |
+| <a id="dastprofilecadenceunityear"></a>`YEAR` | DAST Profile Cadence duration in years. |
+
 ### `DastScanTypeEnum`
 
 | Value | Description |
@@ -17395,6 +17407,30 @@ Field that are available while modifying the custom mapping attributes for an HT
 | <a id="complianceframeworkinputdescription"></a>`description` | [`String`](#string) | New description for the compliance framework. |
 | <a id="complianceframeworkinputname"></a>`name` | [`String`](#string) | New name for the compliance framework. |
 | <a id="complianceframeworkinputpipelineconfigurationfullpath"></a>`pipelineConfigurationFullPath` | [`String`](#string) | Full path of the compliance pipeline configuration stored in a project repository, such as `.gitlab/.compliance-gitlab-ci.yml@compliance/hipaa` **(ULTIMATE)**. |
+
+### `DastProfileCadenceInput`
+
+Represents DAST Profile Cadence.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilecadenceinputduration"></a>`duration` | [`Int`](#int) | Duration of the DAST Profile Cadence. |
+| <a id="dastprofilecadenceinputunit"></a>`unit` | [`DastProfileCadenceUnit`](#dastprofilecadenceunit) | Unit for the duration of DAST Profile Cadence. |
+
+### `DastProfileScheduleInput`
+
+Input type for DAST Profile Schedules.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilescheduleinputactive"></a>`active` | [`Boolean`](#boolean) | Status of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputcadence"></a>`cadence` | [`DastProfileCadenceInput`](#dastprofilecadenceinput) | Cadence of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputstartsat"></a>`startsAt` | [`Time`](#time) | Start time of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputtimezone"></a>`timezone` | [`String`](#string) | Time Zone for the Start time of a Dast Profile Schedule. |
 
 ### `DastSiteProfileAuthInput`
 
