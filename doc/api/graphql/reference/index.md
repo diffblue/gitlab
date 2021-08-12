@@ -14876,6 +14876,7 @@ Status of a container repository.
 | Value | Description |
 | ----- | ----------- |
 | <a id="dastsitevalidationstrategyenumheader"></a>`HEADER` | Header validation. |
+| <a id="dastsitevalidationstrategyenummeta_tag"></a>`META_TAG` | Meta tag validation. |
 | <a id="dastsitevalidationstrategyenumtext_file"></a>`TEXT_FILE` | Text file validation. |
 
 ### `DastTargetTypeEnum`

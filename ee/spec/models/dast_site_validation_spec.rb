@@ -15,6 +15,33 @@ RSpec.describe DastSiteValidation, type: :model do
   describe 'validations' do
     it { is_expected.to be_valid }
     it { is_expected.to validate_presence_of(:dast_site_token_id) }
+
+    context 'when strategy is meta_tag' do
+      shared_examples 'meta tag validation is disabled' do
+        subject { build(:dast_site_validation, validation_strategy: :meta_tag) }
+
+        it 'is not valid', :aggregate_failures do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to include('Meta tag validation is not enabled')
+        end
+      end
+
+      context 'when dast_meta_tag_validation is disabled' do
+        before do
+          stub_feature_flags(dast_meta_tag_validation: false)
+        end
+
+        it_behaves_like 'meta tag validation is disabled'
+      end
+
+      context 'when dast_runner_site_validation is disabled' do
+        before do
+          stub_feature_flags(dast_runner_site_validation: false)
+        end
+
+        it_behaves_like 'meta tag validation is disabled'
+      end
+    end
   end
 
   describe 'before_create' do
@@ -75,7 +102,7 @@ RSpec.describe DastSiteValidation, type: :model do
 
   describe 'enums' do
     let(:validation_strategies) do
-      { text_file: 0, header: 1 }
+      { text_file: 0, header: 1, meta_tag: 2 }
     end
 
     it { is_expected.to define_enum_for(:validation_strategy).with_values(validation_strategies) }
