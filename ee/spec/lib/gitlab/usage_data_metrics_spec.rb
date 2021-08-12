@@ -96,6 +96,25 @@ RSpec.describe Gitlab::UsageDataMetrics do
           :testing_total_unique_counts_weekly
         )
       end
+
+      it 'includes quickactions monthly and weekly keys' do
+        expect(subject[:redis_hll_counters][:quickactions].keys).to include(
+          :i_quickactions_assign_multiple_monthly, :i_quickactions_assign_multiple_weekly,
+          :i_quickactions_child_epic_monthly, :i_quickactions_child_epic_weekly,
+          :i_quickactions_clear_weight_monthly, :i_quickactions_clear_weight_weekly,
+          :i_quickactions_epic_monthly, :i_quickactions_epic_weekly,
+          :i_quickactions_iteration_monthly, :i_quickactions_iteration_weekly,
+          :i_quickactions_parent_epic_monthly, :i_quickactions_parent_epic_weekly,
+          :i_quickactions_promote_monthly, :i_quickactions_promote_weekly,
+          :i_quickactions_publish_monthly, :i_quickactions_publish_weekly,
+          :i_quickactions_remove_child_epic_monthly, :i_quickactions_remove_child_epic_weekly,
+          :i_quickactions_remove_epic_monthly, :i_quickactions_remove_epic_weekly,
+          :i_quickactions_remove_iteration_monthly, :i_quickactions_remove_iteration_weekly,
+          :i_quickactions_remove_parent_epic_monthly, :i_quickactions_remove_parent_epic_weekly,
+          :i_quickactions_weight_monthly, :i_quickactions_weight_weekly,
+          :quickactions_total_unique_counts_weekly
+        )
+      end
     end
   end
 end
