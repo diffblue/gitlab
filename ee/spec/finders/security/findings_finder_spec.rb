@@ -80,17 +80,7 @@ RSpec.describe Security::FindingsFinder do
 
       context 'N+1 queries' do
         it 'does not cause N+1 queries' do
-          expect { finder_result }.not_to exceed_query_limit(10)
-        end
-
-        context 'with vulnerability_flags disabled' do
-          before do
-            stub_feature_flags(vulnerability_flags: false)
-          end
-
-          it 'does not cause N+1 queries' do
-            expect { finder_result }.not_to exceed_query_limit(8)
-          end
+          expect { finder_result }.not_to exceed_query_limit(11)
         end
       end
 

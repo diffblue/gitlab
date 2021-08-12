@@ -30,7 +30,17 @@ module Security
     private
 
     attr_reader :artifact, :known_keys, :deduplicate
-    delegate :security_report, :project, to: :artifact, private: true
+    delegate :project, to: :artifact, private: true
+
+    def security_report
+      @security_report ||= artifact.security_report.tap do |report|
+        OverrideUuidsService.execute(report) if override_uuids?
+      end
+    end
+
+    def override_uuids?
+      ::Feature.enabled?(:vulnerability_finding_tracking_signatures, project) && project.licensed_feature_available?(:vulnerability_finding_signatures)
+    end
 
     def security_scan
       @security_scan ||= Security::Scan.safe_find_or_create_by!(build: artifact.job, scan_type: artifact.file_type) do |scan|
