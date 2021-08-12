@@ -105,5 +105,16 @@ describe('Solution Card', () => {
         });
       });
     });
+
+    describe('without solution and remediation', () => {
+      beforeEach(() => {
+        const propsData = { remediation: {}, solution: '' };
+        wrapper = shallowMount(Component, { propsData });
+      });
+
+      it('does not render the card', () => {
+        expect(wrapper.findComponent(GlCard).exists()).toBe(false);
+      });
+    });
   });
 });

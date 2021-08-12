@@ -265,6 +265,8 @@ export const mockPipelineFindingsResponse = ({ hasNextPage } = {}) => ({
               scanner: null,
               severity: 'HIGH',
               state: 'DETECTED',
+              solution: 'Upgrade to versions 5.2.2.1, 6.0.0 or above.',
+              reportType: 'DEPENDENCY_SCANNING',
               location: {
                 __typename: 'VulnerabilityLocationDependencyScanning',
                 blobPath: null,
@@ -291,6 +293,8 @@ export const mockPipelineFindingsResponse = ({ hasNextPage } = {}) => ({
               ],
               scanner: null,
               severity: 'HIGH',
+              reportType: 'DEPENDENCY_SCANNING',
+              solution: 'Upgrade to versions 5.2.2.1, 6.0.0 or above.',
               location: {
                 __typename: 'VulnerabilityLocationDependencyScanning',
                 blobPath: null,

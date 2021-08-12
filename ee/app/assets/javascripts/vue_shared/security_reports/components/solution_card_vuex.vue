@@ -43,6 +43,7 @@ export default {
 </script>
 <template>
   <gl-card
+    v-if="solutionText || showCreateMergeRequestMsg"
     class="gl-my-6"
     :body-class="{ 'gl-p-0': !solutionText }"
     :footer-class="{ 'gl-border-0': !solutionText }"
