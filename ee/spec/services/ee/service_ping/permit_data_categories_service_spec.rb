@@ -13,7 +13,7 @@ RSpec.describe ServicePing::PermitDataCategoriesService do
         end
 
         it 'returns all categories' do
-          expect(permitted_categories).to match_array(%w[Standard Subscription Operational Optional])
+          expect(permitted_categories).to match_array(%w[standard subscription operational optional])
         end
       end
 
@@ -41,7 +41,7 @@ RSpec.describe ServicePing::PermitDataCategoriesService do
           end
 
           it 'returns all categories' do
-            expect(permitted_categories).to match_array(%w[Standard Subscription Operational Optional])
+            expect(permitted_categories).to match_array(%w[standard subscription operational optional])
           end
 
           context 'when User.single_user&.requires_usage_stats_consent? is required' do
@@ -62,7 +62,7 @@ RSpec.describe ServicePing::PermitDataCategoriesService do
           end
 
           it 'returns all categories' do
-            expect(permitted_categories).to match_array(%w[Standard Subscription Operational Optional])
+            expect(permitted_categories).to match_array(%w[standard subscription operational optional])
           end
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe ServicePing::PermitDataCategoriesService do
           end
 
           it 'returns all categories' do
-            expect(permitted_categories).to match_array(%w[Standard Subscription Operational])
+            expect(permitted_categories).to match_array(%w[standard subscription operational])
           end
         end
 
