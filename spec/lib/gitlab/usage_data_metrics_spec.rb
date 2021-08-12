@@ -26,7 +26,7 @@ RSpec.describe Gitlab::UsageDataMetrics do
         expect(subject[:counts]).to include(:boards)
       end
 
-      context 'when redis_hll_counters' do
+      describe 'Redis_HLL_counters' do
         # categories to be merged on future MR
         let(:ignored_metric_files_key_patterns) do
           %w(
@@ -53,10 +53,10 @@ RSpec.describe Gitlab::UsageDataMetrics do
 
         # Recursively traverse nested Hash of a generated Usage Ping to return an Array of key paths
         # in the dotted format used in metric definition YAML files, e.g.: 'count.category.metric_name'
-        def parse_usage_ping_keys(object, key_path = [])
+        def parse_service_ping_keys(object, key_path = [])
           if object.is_a?(Hash)
             object.each_with_object([]) do |(key, value), result|
-              result.append parse_usage_ping_keys(value, key_path + [key])
+              result.append parse_service_ping_keys(value, key_path + [key])
             end
           else
             key_path.join('.')
@@ -64,7 +64,7 @@ RSpec.describe Gitlab::UsageDataMetrics do
         end
 
         let(:usage_ping_key_paths) do
-          parse_usage_ping_keys(subject)
+          parse_service_ping_keys(subject)
             .flatten
             .select { |k| k.starts_with?('redis_hll_counters') }
             .reject {|k| k =~ Regexp.union(ignored_metric_files_key_patterns) }

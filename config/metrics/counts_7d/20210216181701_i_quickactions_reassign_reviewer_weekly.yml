@@ -14,15 +14,11 @@ instrumentation_class: RedisHLLMetric
 options:
   events:
     - i_quickactions_reassign_reviewer
-instrumentation_class: RedisHLLMetric
-options:
-  events:
-    - i_quickactions_reassign
 distribution:
 - ce
 - ee
 tier:
 - free
-- premium 
+- premium
 - ultimate
 
