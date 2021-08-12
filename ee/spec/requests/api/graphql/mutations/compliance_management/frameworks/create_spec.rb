@@ -65,14 +65,6 @@ RSpec.describe 'Create a Compliance Framework' do
       stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: true)
     end
 
-    context 'pipeline configuration feature is disabled' do
-      before do
-        stub_feature_flags(ff_evaluate_group_level_compliance_pipeline: false)
-      end
-
-      it_behaves_like 'a mutation that returns errors in the response', errors: ['Pipeline configuration full path feature is not available']
-    end
-
     context 'current_user is namespace owner' do
       it_behaves_like 'a mutation that creates a compliance framework'
     end
