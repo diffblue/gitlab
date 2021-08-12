@@ -252,17 +252,26 @@ RSpec.describe Ci::PipelinesFinder do
       end
     end
 
-    context "when source is specified" do
+    context 'when source is specified' do
       let(:params) { { source: 'web' } }
-      let!(:pipeline) { create(:ci_pipeline, project: project, source: 'web') }
+      let!(:web_pipeline) { create(:ci_pipeline, project: project, source: 'web') }
+      let!(:push_pipeline) { create(:ci_pipeline, project: project, source: 'push') }
+      let!(:api_pipeline) { create(:ci_pipeline, project: project, source: 'api') }
 
-      before do
-        create(:ci_pipeline, project: project, source: 'push')
-        create(:ci_pipeline, project: project, source: 'chat')
+      context 'when `pipeline_source_filter` feature flag is disabled' do
+        before do
+          stub_feature_flags(pipeline_source_filter: false)
+        end
+
+        it 'returns all the pipelines' do
+          is_expected.to contain_exactly(web_pipeline, push_pipeline, api_pipeline)
+        end
       end
 
-      it 'returns matched pipelines' do
-        is_expected.to eq([pipeline])
+      context 'when `pipeline_source_filter` feature flag is enabled' do
+        it 'returns only the matched pipeline' do
+          is_expected.to eq([web_pipeline])
+        end
       end
     end
 

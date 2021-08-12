@@ -23,13 +23,15 @@ module Ci
       items = by_iids(items)
       items = by_scope(items)
       items = by_status(items)
-      items = by_source(items)
       items = by_ref(items)
       items = by_sha(items)
       items = by_name(items)
       items = by_username(items)
       items = by_yaml_errors(items)
       items = by_updated_at(items)
+
+      items = by_source(items) if Feature.enabled?(:pipeline_source_filter, project, default_enabled: :yaml)
+
       sort_items(items)
     end
 

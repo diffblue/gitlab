@@ -59,7 +59,7 @@ module API
           authorize! :read_build, user_project
 
           pipelines = ::Ci::PipelinesFinder.new(user_project, current_user, params).execute
-          present paginate(pipelines), with: Entities::Ci::PipelineBasic
+          present paginate(pipelines), with: Entities::Ci::PipelineBasic, project: user_project
         end
 
         desc 'Create a new pipeline' do
