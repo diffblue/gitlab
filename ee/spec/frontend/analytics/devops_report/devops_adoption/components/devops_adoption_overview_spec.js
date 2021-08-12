@@ -32,7 +32,7 @@ describe('DevopsAdoptionOverview', () => {
 
         expect(text.exists()).toBe(true);
         expect(text.text()).toBe(
-          'Feature adoption is based on usage in the previous calendar month. Last updated: 2020-10-31 23:59.',
+          'Feature adoption is based on usage in the previous calendar month. Data is updated at the beginning of each month. Last updated: 2020-10-31 23:59.',
         );
       });
 

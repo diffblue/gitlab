@@ -62,7 +62,7 @@ export const I18N_DELETE_MODAL_ERROR = s__(
 );
 
 export const I18N_TABLE_HEADER_TEXT = s__(
-  'DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Last updated: %{timestamp}.',
+  'DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Data is updated at the beginning of each month. Last updated: %{timestamp}.',
 );
 
 export const I18N_CELL_FLAG_TRUE_TEXT = s__('DevopsAdoption|Adopted');
