@@ -100,11 +100,11 @@ export const mapMRApprovalSettingsResponse = (res) => {
 
 export const groupApprovalsMappers = {
   mapDataToState: (data) => ({
-    preventAuthorApproval: !data.allow_author_approval,
-    preventMrApprovalRuleEdit: !data.allow_overrides_to_approver_list_per_merge_request,
-    requireUserPassword: data.require_password_to_approve,
-    removeApprovalsOnPush: !data.retain_approvals_on_push,
-    preventCommittersApproval: !data.allow_committer_approval,
+    preventAuthorApproval: !data.allow_author_approval.value,
+    preventMrApprovalRuleEdit: !data.allow_overrides_to_approver_list_per_merge_request.value,
+    requireUserPassword: data.require_password_to_approve.value,
+    removeApprovalsOnPush: !data.retain_approvals_on_push.value,
+    preventCommittersApproval: !data.allow_committer_approval.value,
   }),
   mapStateToPayload: (state) => ({
     allow_author_approval: !state.settings.preventAuthorApproval,
