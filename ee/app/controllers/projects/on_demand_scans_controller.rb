@@ -3,6 +3,7 @@
 module Projects
   class OnDemandScansController < Projects::ApplicationController
     include SecurityAndCompliancePermissions
+    include API::Helpers::GraphqlHelpers
 
     before_action :authorize_read_on_demand_scans!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new, :edit]
@@ -16,16 +17,30 @@ module Projects
     end
 
     def edit
-      dast_profile = Dast::ProfilesFinder.new(project_id: @project.id, id: params[:id]).execute.first! # rubocop: disable CodeReuse/ActiveRecord
+      global_id = Gitlab::GlobalId.as_global_id(params[:id], model_name: 'Dast::Profile')
 
-      @dast_profile = {
-        id: dast_profile.to_global_id.to_s,
-        name: dast_profile.name,
-        description: dast_profile.description,
-        branch: { name: dast_profile.branch_name },
-        site_profile_id: DastSiteProfile.new(id: dast_profile.dast_site_profile_id).to_global_id.to_s,
-        scanner_profile_id: DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id).to_global_id.to_s
-      }
+      query = %(
+          {
+            project(fullPath: "#{project.full_path}") {
+              dastProfile(id: "#{global_id}") {
+                id
+                name
+                description
+                branch { name }
+                dastSiteProfile { id }
+                dastScannerProfile { id }
+              }
+            }
+          }
+        )
+
+      @dast_profile = run_graphql!(
+        query: query,
+        context: { current_user: current_user },
+        transform: -> (result) { result.dig('data', 'project', 'dastProfile') }
+      )
+
+      return render_404 unless @dast_profile
     end
   end
 end

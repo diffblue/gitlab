@@ -60,6 +60,12 @@ module EE
               description: 'Find iteration cadences.',
               resolver: ::Resolvers::Iterations::CadencesResolver
 
+        field :dast_profile,
+              ::Types::Dast::ProfileType,
+              null: true,
+              resolver: ::Resolvers::AppSec::Dast::ProfileResolver.single,
+              description: 'DAST Profile associated with the project.'
+
         field :dast_profiles,
               ::Types::Dast::ProfileType.connection_type,
               null: true,
