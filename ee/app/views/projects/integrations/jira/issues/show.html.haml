@@ -1,5 +1,5 @@
 - add_to_breadcrumbs _('Jira Issues'), project_integrations_jira_issues_path(@project)
 - breadcrumb_title jira_issue_breadcrumb_link(@issue_json[:references][:relative])
-- page_title @issue_json[:title]
+- page_title html_escape(@issue_json[:title])
 
 .js-jira-issues-show-app{ data: jira_issues_show_data }

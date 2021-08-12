@@ -203,12 +203,12 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
       before do
         stub_licensed_features(jira_issues_integration: true)
 
-        expect_next_found_instance_of(Integrations::Jira) do |service|
-          expect(service).to receive(:find_issue).with('1', rendered_fields: true).and_return(jira_issue)
+        allow_next_found_instance_of(Integrations::Jira) do |service|
+          allow(service).to receive(:find_issue).with('1', rendered_fields: true).and_return(jira_issue)
         end
 
-        expect_next_instance_of(Integrations::JiraSerializers::IssueDetailSerializer) do |serializer|
-          expect(serializer).to receive(:represent).with(jira_issue, project: project).and_return(issue_json)
+        allow_next_instance_of(Integrations::JiraSerializers::IssueDetailSerializer) do |serializer|
+          allow(serializer).to receive(:represent).with(jira_issue, project: project).and_return(issue_json)
         end
       end
 
@@ -224,6 +224,21 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
         get :show, params: { namespace_id: project.namespace, project_id: project, id: 1, format: :json }
 
         expect(json_response).to eq(issue_json)
+      end
+
+      context 'when the JSON fetched from Jira contains HTML' do
+        let(:payload) { "<script>alert('XSS')</script>" }
+        let(:issue_json) { { title: payload, references: { relative: payload } } }
+
+        render_views
+
+        it 'escapes the HTML in issue titles and references' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: 1 }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response.body).not_to include(payload)
+          expect(response.body).to include(html_escape(payload))
+        end
       end
     end
   end
