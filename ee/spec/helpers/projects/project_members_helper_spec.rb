@@ -33,7 +33,7 @@ RSpec.describe Projects::ProjectMembersHelper do
 
       expect(project.members.count).to eq(3)
 
-      expect { call_project_members_app_data_json }.not_to exceed_query_limit(control_count).with_threshold(7) # existing n+1
+      expect { call_project_members_app_data_json }.not_to exceed_query_limit(control_count).with_threshold(6) # existing n+1
     end
   end
 
