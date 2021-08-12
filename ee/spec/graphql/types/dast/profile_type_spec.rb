@@ -8,7 +8,7 @@ RSpec.describe GitlabSchema.types['DastProfile'] do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:object) { create(:dast_profile, project: project) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
-  let_it_be(:fields) { %i[id name description dastSiteProfile dastScannerProfile branch editPath] }
+  let_it_be(:fields) { %i[id name description dastSiteProfile dastScannerProfile dastProfileSchedule branch editPath] }
 
   specify { expect(described_class.graphql_name).to eq('DastProfile') }
   specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_scans) }
@@ -33,6 +33,24 @@ RSpec.describe GitlabSchema.types['DastProfile'] do
       expected_result = Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(project, object)
 
       expect(resolve_field(:edit_path, object, current_user: user)).to eq(expected_result)
+    end
+  end
+
+  describe 'dastProfileSchedule field' do
+    context 'when the feature flag is enabled' do
+      it 'correctly resolves the field' do
+        expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to eq(object.dast_profile_schedule)
+      end
+    end
+
+    context 'when the feature flag is not enabled' do
+      before do
+        stub_feature_flags(dast_on_demand_scans_scheduler: false)
+      end
+
+      it 'is nil' do
+        expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to be_nil
+      end
     end
   end
 end

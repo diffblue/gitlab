@@ -8565,6 +8565,7 @@ Represents a DAST Profile.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dastprofilebranch"></a>`branch` | [`DastProfileBranch`](#dastprofilebranch) | The associated branch. |
+| <a id="dastprofiledastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileSchedule`](#dastprofileschedule) | Associated profile schedule. Will always return `null` if `dast_on_demand_scans_scheduler` feature flag is disabled. |
 | <a id="dastprofiledastscannerprofile"></a>`dastScannerProfile` | [`DastScannerProfile`](#dastscannerprofile) | The associated scanner profile. |
 | <a id="dastprofiledastsiteprofile"></a>`dastSiteProfile` | [`DastSiteProfile`](#dastsiteprofile) | The associated site profile. |
 | <a id="dastprofiledescription"></a>`description` | [`String`](#string) | The description of the scan. |
@@ -8582,6 +8583,32 @@ Represents a DAST Profile Branch.
 | ---- | ---- | ----------- |
 | <a id="dastprofilebranchexists"></a>`exists` | [`Boolean`](#boolean) | Indicates whether or not the branch exists. |
 | <a id="dastprofilebranchname"></a>`name` | [`String`](#string) | The name of the branch. |
+
+### `DastProfileCadence`
+
+Represents DAST Profile Cadence.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilecadenceduration"></a>`duration` | [`Int`](#int) | Duration of the DAST profile cadence. |
+| <a id="dastprofilecadenceunit"></a>`unit` | [`DastProfileCadenceUnit`](#dastprofilecadenceunit) | Unit for the duration of DAST profile cadence. |
+
+### `DastProfileSchedule`
+
+Represents a DAST profile schedule.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilescheduleactive"></a>`active` | [`Boolean`](#boolean) | Status of the DAST profile schedule. |
+| <a id="dastprofileschedulecadence"></a>`cadence` | [`DastProfileCadence`](#dastprofilecadence) | Cadence of the DAST profile schedule. |
+| <a id="dastprofilescheduleid"></a>`id` | [`DastProfileScheduleID!`](#dastprofilescheduleid) | ID of the DAST profile schedule. |
+| <a id="dastprofileschedulenextrunat"></a>`nextRunAt` | [`Time`](#time) | Next run time of the DAST profile schedule in the given timezone. |
+| <a id="dastprofileschedulestartsat"></a>`startsAt` | [`Time`](#time) | Start time of the DAST profile schedule in the given timezone. |
+| <a id="dastprofilescheduletimezone"></a>`timezone` | [`String`](#string) | Time zone of the start time of the DAST profile schedule. |
 
 ### `DastScannerProfile`
 
@@ -16442,6 +16469,12 @@ An example `CustomEmojiID` is: `"gid://gitlab/CustomEmoji/1"`.
 A `DastProfileID` is a global ID. It is encoded as a string.
 
 An example `DastProfileID` is: `"gid://gitlab/Dast::Profile/1"`.
+
+### `DastProfileScheduleID`
+
+A `DastProfileScheduleID` is a global ID. It is encoded as a string.
+
+An example `DastProfileScheduleID` is: `"gid://gitlab/Dast::ProfileSchedule/1"`.
 
 ### `DastScannerProfileID`
 
