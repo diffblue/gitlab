@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.search.i_search_paid_weekly
 description: Calculated unique users to perform a search with a paid license enabled by week
 product_section: enablement

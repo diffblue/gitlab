@@ -9,7 +9,7 @@ value_type: string
 status: data_available
 time_frame: none
 data_source: license
-data_category: Subscription
+data_category: subscription
 distribution:
 - ee
 tier:

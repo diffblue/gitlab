@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: compliance_unique_visits.g_compliance_audit_events
 description: 'Unique users who have viewed audit events'
 product_section: 'dev'

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.manage.custom_compliance_frameworks
 name: "count_compliance_management_frameworks"
 description: Total count of all custom compliance framework labels

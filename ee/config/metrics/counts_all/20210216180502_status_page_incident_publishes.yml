@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.status_page_incident_publishes
 description: Cumulative count of usages of publish operation
 product_section: ops

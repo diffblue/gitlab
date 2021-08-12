@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.enablement.counts.geo_node_usage.git_fetch_event_count_weekly
 description: Number of Git fetch events from Prometheus on the Geo secondary
 product_section: enablement

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.compliance.compliance_total_unique_counts_weekly
 description: 'Unique count of compliance actions in a given week'
 product_section: 'dev'

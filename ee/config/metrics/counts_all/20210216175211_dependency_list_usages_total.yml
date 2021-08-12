@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.dependency_list_usages_total
 description: Count to Dependency List page views
 product_section: sec

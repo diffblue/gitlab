@@ -10,7 +10,7 @@ status: data_available
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444
 time_frame: 28d
 data_source: database
-data_category: Operational
+data_category: operational
 distribution:
   - ee
 tier:

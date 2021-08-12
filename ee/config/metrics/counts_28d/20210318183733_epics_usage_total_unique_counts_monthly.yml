@@ -1,5 +1,5 @@
 ---
-data_category: Operational
+data_category: operational
 key_path: redis_hll_counters.epics_usage.epics_usage_total_unique_counts_monthly
 description: Total monthly users count for epics_usage
 product_section: dev

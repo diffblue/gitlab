@@ -10,7 +10,7 @@ status: data_available
 time_frame: none
 data_source: license
 instrumentation_class: 'ZuoraSubscriptionIdMetric'
-data_category: Standard
+data_category: standard
 distribution:
 - ee
 tier:

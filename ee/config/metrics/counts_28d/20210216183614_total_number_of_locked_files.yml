@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.create.total_number_of_locked_files
 description: The total number of files which have been locked via the GitLab UI
 product_section: dev

@@ -1,5 +1,5 @@
 ---
-data_category: Operational
+data_category: operational
 key_path: counts.kubernetes_agent_gitops_sync
 description: Count of events when an Agent is asked to synchronize the manifests or its configuration
 product_section: ops

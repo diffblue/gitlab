@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.create.projects_with_sectional_code_owner_rules
 description: Count of projects using code owners with code owners section feature
 product_section: dev

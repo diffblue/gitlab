@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.create.approval_project_rules_with_target_branch
 description: Number of project approval rules scoped to a specific repo branch.
 product_section: dev

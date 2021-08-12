@@ -7,7 +7,7 @@ product_group: group::license
 product_category: license
 value_type: string
 status: data_available
-data_category: Subscription
+data_category: subscription
 time_frame: none
 data_source: license
 distribution:

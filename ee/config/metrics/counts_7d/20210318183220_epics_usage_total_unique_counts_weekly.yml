@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.epics_usage.epics_usage_total_unique_counts_weekly
 description: Total weekly users count for epics_usage
 product_section: dev

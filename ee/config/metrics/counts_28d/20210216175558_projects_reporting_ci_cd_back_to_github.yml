@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.verify.projects_reporting_ci_cd_back_to_github
 description: Projects with a GitHub repository mirror pipeline enabled
 product_section: ops

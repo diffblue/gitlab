@@ -1,5 +1,5 @@
 ---
-data_category: Operational
+data_category: operational
 key_path: usage_activity_by_stage.secure.user_container_scanning_jobs
 description: Distinct count per user of Container Scanning jobs run
 product_section: sec

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.epics_deepest_relationship_level
 description: Count of the deepest relationship level for epics
 product_section: dev

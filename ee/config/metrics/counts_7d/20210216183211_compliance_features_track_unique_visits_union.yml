@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts_weekly.aggregated_metrics.compliance_features_track_unique_visits_union
 description: 'Unique users that have used audit event screen, audit event API, compliance report, or credential inventory'
 product_section: 'dev'

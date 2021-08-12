@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.milestone_lists
 description: Count of milestone lists created on Boards 
 product_section: dev

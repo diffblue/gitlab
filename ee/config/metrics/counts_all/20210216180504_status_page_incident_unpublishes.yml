@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.status_page_incident_unpublishes
 description: Cumulative count of usages of unpublish operation
 product_section: ops

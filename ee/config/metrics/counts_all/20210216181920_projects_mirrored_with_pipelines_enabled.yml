@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.projects_mirrored_with_pipelines_enabled
 description: Projects with repository mirroring enabled
 product_section: ops

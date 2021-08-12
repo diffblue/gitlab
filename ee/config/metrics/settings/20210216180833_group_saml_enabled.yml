@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.manage.group_saml_enabled
 description: Whether group SAML is enabled
 product_section: dev

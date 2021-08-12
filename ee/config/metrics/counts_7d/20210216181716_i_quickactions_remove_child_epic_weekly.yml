@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.quickactions.i_quickactions_remove_child_epic_weekly
 description: Count of WAU using the `/remove_child_epic` quick action 
 product_section: dev

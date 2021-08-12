@@ -11,7 +11,7 @@ milestone: "14.1"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64731
 time_frame: 28d
 data_source: redis_hll
-data_category: Operational
+data_category: operational
 distribution:
 - ee
 tier:

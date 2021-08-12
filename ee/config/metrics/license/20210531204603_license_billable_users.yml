@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: license_billable_users
 name: billable_users
 description: Number of all billable users (active users excluding bots and guests).
