@@ -21,6 +21,7 @@ import importGroupsMutation from '../graphql/mutations/import_groups.mutation.gr
 import setImportTargetMutation from '../graphql/mutations/set_import_target.mutation.graphql';
 import availableNamespacesQuery from '../graphql/queries/available_namespaces.query.graphql';
 import bulkImportSourceGroupsQuery from '../graphql/queries/bulk_import_source_groups.query.graphql';
+import { isInvalid } from '../utils';
 import ImportTargetCell from './import_target_cell.vue';
 
 const PAGE_SIZES = [20, 50, 100];
@@ -83,7 +84,7 @@ export default {
     availableNamespaces: availableNamespacesQuery,
   },
 
-  tableFields: [
+  fields: [
     {
       key: 'web_url',
       label: s__('BulkImport|From source group'),
@@ -179,20 +180,12 @@ export default {
       return {};
     },
 
-    invalidNameValidationMessage(group) {
-      return group.validation_errors.find(({ field }) => field === 'new_name')?.message;
-    },
-
-    isNameValid(group) {
-      return this.groupPathRegex.test(group.import_target.new_name);
-    },
-
     isAlreadyImported(group) {
       return group.progress.status !== STATUSES.NONE;
     },
 
     isInvalid(group) {
-      return Boolean(!this.isNameValid(group) || this.invalidNameValidationMessage(group));
+      return isInvalid(group, this.groupPathRegex);
     },
 
     groupsCount(count) {
@@ -311,7 +304,7 @@ export default {
           tbody-tr-class="gl-border-gray-200 gl-border-0 gl-border-b-1 gl-border-solid"
           :tbody-tr-attr="qaRowAttributes"
           :items="bulkImportSourceGroups.nodes"
-          :fields="$options.tableFields"
+          :fields="$options.fields"
         >
           <template #cell(web_url)="{ value: web_url, item: { full_path } }">
             <gl-link

@@ -10,6 +10,7 @@ import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import ImportGroupDropdown from '../../components/group_dropdown.vue';
 import { STATUSES } from '../../constants';
+import { isInvalid, getInvalidNameValidationMessage, isNameValid } from '../utils';
 
 export default {
   components: {
@@ -49,15 +50,15 @@ export default {
     },
 
     invalidNameValidationMessage() {
-      return this.group.validation_errors.find(({ field }) => field === 'new_name')?.message;
+      return getInvalidNameValidationMessage(this.group);
     },
 
     isInvalid() {
-      return Boolean(!this.isNameValid || this.invalidNameValidationMessage);
+      return isInvalid(this.group, this.groupPathRegex);
     },
 
     isNameValid() {
-      return this.groupPathRegex.test(this.importTarget.new_name);
+      return isNameValid(this.group, this.groupPathRegex);
     },
 
     isAlreadyImported() {
@@ -94,7 +95,7 @@ export default {
 
   <div
     v-else
-    class="import-entities-target-select gl-display-flex gl-align-items-stretch"
+    class="gl-display-flex gl-align-items-stretch"
     :class="{
       disabled: isAlreadyImported,
     }"
@@ -105,7 +106,7 @@ export default {
       :disabled="isAlreadyImported"
       :namespaces="availableNamespaceNames"
       toggle-class="gl-rounded-top-right-none! gl-rounded-bottom-right-none!"
-      class="import-entities-namespace-dropdown gl-h-7 gl-flex-grow-1"
+      class="gl-h-7 gl-flex-grow-1"
       data-qa-selector="target_namespace_selector_dropdown"
     >
       <gl-dropdown-item @click="$emit('update-target-namespace', '')">{{
@@ -128,14 +129,22 @@ export default {
       </template>
     </import-group-dropdown>
     <div
-      class="import-entities-target-select-separator gl-h-7 gl-px-3 gl-display-flex gl-align-items-center gl-border-solid gl-border-0 gl-border-t-1 gl-border-b-1"
+      class="gl-h-7 gl-px-3 gl-display-flex gl-align-items-center gl-border-solid gl-border-0 gl-border-t-1 gl-border-b-1 gl-bg-gray-10"
+      :class="{
+        'gl-text-gray-400 gl-border-gray-100': isAlreadyImported,
+        'gl-border-gray-200': !isAlreadyImported,
+      }"
     >
       /
     </div>
     <div class="gl-flex-grow-1">
       <gl-form-input
         class="gl-rounded-top-left-none gl-rounded-bottom-left-none"
-        :class="{ 'is-invalid': isInvalid && !isAlreadyImported }"
+        :class="{
+          'gl-inset-border-1-gray-200!': !isAlreadyImported,
+          'gl-inset-border-1-gray-100!': isAlreadyImported,
+          'is-invalid': isInvalid && !isAlreadyImported,
+        }"
         :disabled="isAlreadyImported"
         :value="importTarget.new_name"
         @input="$emit('update-new-name', $event)"
