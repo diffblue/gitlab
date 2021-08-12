@@ -34,7 +34,10 @@ module Boards
       end
 
       def board
-        @board ||= parent.epic_boards.find(params.delete(:board_id))
+        @board ||= Boards::EpicBoardsFinder
+          .new(group, include_ancestor_groups: true, id: params.delete(:board_id))
+          .execute
+          .first
       end
 
       def list
@@ -50,10 +53,8 @@ module Boards
       end
 
       def check_arguments
-        begin
-          board
-        rescue ActiveRecord::RecordNotFound
-          return 'Board not found' if @board.blank?
+        unless board && Ability.allowed?(current_user, :read_epic_board, board)
+          return 'Board not found'
         end
 
         begin
