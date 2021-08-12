@@ -4,6 +4,7 @@ import {
   DEFAULT_SCAN_EXECUTION_POLICY,
   modifyPolicy,
 } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib';
+import { SECURITY_POLICY_ACTIONS } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib/constants';
 import ScanExecutionPolicyEditor from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/scan_execution_policy_editor.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -62,10 +63,10 @@ describe('ScanExecutionPolicyEditor', () => {
   });
 
   it.each`
-    status                            | action       | event              | factoryFn
-    ${'to save a new policy'}         | ${'APPEND'}  | ${'save-policy'}   | ${factory}
-    ${'to update an existing policy'} | ${'REPLACE'} | ${'save-policy'}   | ${() => factory({ propsData: { existingPolicy: { manifest: DEFAULT_SCAN_EXECUTION_POLICY } } })}
-    ${'to delete an existing policy'} | ${'REMOVE'}  | ${'remove-policy'} | ${() => factory({ propsData: { existingPolicy: { manifest: DEFAULT_SCAN_EXECUTION_POLICY } } })}
+    status                            | action                             | event              | factoryFn
+    ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}
+    ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${() => factory({ propsData: { existingPolicy: { manifest: DEFAULT_SCAN_EXECUTION_POLICY } } })}
+    ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${() => factory({ propsData: { existingPolicy: { manifest: DEFAULT_SCAN_EXECUTION_POLICY } } })}
   `(
     'navigates to the new merge request when "modifyPolicy" is emitted $status',
     async ({ action, event, factoryFn }) => {

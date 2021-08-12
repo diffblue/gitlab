@@ -10,13 +10,10 @@ import {
   GRAPHQL_ERROR_MESSAGE,
   modifyPolicy,
 } from './lib';
+import { SECURITY_POLICY_ACTIONS } from './lib/constants';
 
 export default {
-  ACTION_FLAGS: {
-    APPEND: 'isCreatingMR',
-    REMOVE: 'isRemovingPolicy',
-    REPLACE: 'isCreatingMR',
-  },
+  SECURITY_POLICY_ACTIONS,
   DEFAULT_EDITOR_MODE: EDITOR_MODE_YAML,
   EDITOR_MODES: [EDITOR_MODES[1]],
   i18n: {
@@ -64,10 +61,14 @@ export default {
       }
     },
     async handleModifyPolicy(act) {
-      const action = act || (this.isEditing ? 'REPLACE' : 'APPEND');
+      const action =
+        act ||
+        (this.isEditing
+          ? this.$options.SECURITY_POLICY_ACTIONS.REPLACE
+          : this.$options.SECURITY_POLICY_ACTIONS.APPEND);
 
       this.$emit('error', '');
-      this[this.$options.ACTION_FLAGS[action]] = true;
+      this.setLoadingFlag(action, true);
 
       try {
         const { mergeRequest, policyProject } = await modifyPolicy({
@@ -80,7 +81,14 @@ export default {
         this.redirectToMergeRequest({ mergeRequest, policyProject });
       } catch (e) {
         this.handleError(e);
-        this[this.$options.ACTION_FLAGS[action]] = false;
+        this.setLoadingFlag(action, false);
+      }
+    },
+    setLoadingFlag(action, val) {
+      if (action === SECURITY_POLICY_ACTIONS.REMOVE) {
+        this.isRemovingPolicy = val;
+      } else {
+        this.isCreatingMR = val;
       }
     },
     redirectToMergeRequest({ mergeRequest, policyProject }) {
@@ -110,7 +118,7 @@ export default {
     :is-updating-policy="isCreatingMR"
     :policy-name="policy.name"
     :yaml-editor-value="yamlEditorValue"
-    @remove-policy="handleModifyPolicy('REMOVE')"
+    @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
     @update-yaml="updateYaml"
   >
