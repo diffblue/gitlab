@@ -16,7 +16,7 @@ module Gitlab
         body = select_body(message)
 
         encoding = body.encoding
-        body = trim_reply(body, append_trimmed_reply: @append_reply) if @trim_reply
+        body, stripped_text = EmailReplyTrimmer.trim(body, @append_reply) if @trim_reply
         return '' unless body
 
         # not using /\s+$/ here because that deletes empty lines
@@ -27,7 +27,9 @@ module Gitlab
         # so we detect it manually here.
         return "" if body.lines.all? { |l| l.strip.empty? || l.start_with?('>') }
 
-        body.force_encoding(encoding).encode("UTF-8")
+        encoded_body = body.force_encoding(encoding).encode("UTF-8")
+
+        @append_reply ? [encoded_body, stripped_text] : encoded_body
       end
 
       private
@@ -69,14 +71,12 @@ module Gitlab
         nil
       end
 
-      def trim_reply(text, append_trimmed_reply: false)
-        trimmed_body, stripped_text = EmailReplyTrimmer.trim(text, true)
+      # def trim_reply(text, append_trimmed_reply: false)
+      #   trimmed_body, stripped_text = EmailReplyTrimmer.trim(text, append_trimmed_reply)
+      #   return trimmed_body if trimmed_body.blank? || stripped_text.blank?
 
-        return '' unless trimmed_body.present?
-        return trimmed_body unless stripped_text.present? && append_trimmed_reply
-
-        trimmed_body + "\n\n<details><summary>...</summary>\n\n#{stripped_text}\n\n</details>"
-      end
+      #   trimmed_body + "\n\n<details><summary>...</summary>\n\n#{stripped_text}\n\n</details>"
+      # end
     end
   end
 end

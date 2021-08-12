@@ -230,21 +230,19 @@ RSpec.describe Gitlab::Email::ReplyParser do
     end
 
     it "appends trimmed reply when when append_reply option is true" do
+      body = <<-BODY.strip_heredoc.chomp
+      The reply by email functionality should be extended to allow creating a new issue by email.
+      even when the email is forwarded to the project which may include lines that begin with ">"
+
+      there should be a quote below this line:
+      BODY
+
+      reply = <<-BODY.strip_heredoc.chomp
+      > this is a quote
+      BODY
+
       expect(test_parse_body(fixture_file("emails/valid_new_issue_with_quote.eml"), { append_reply: true }))
-        .to eq(
-          <<-BODY.strip_heredoc.chomp
-          The reply by email functionality should be extended to allow creating a new issue by email.
-          even when the email is forwarded to the project which may include lines that begin with ">"
-
-          there should be a quote below this line:
-
-          <details><summary>...</summary>
-
-          > this is a quote
-
-          </details>
-          BODY
-        )
+        .to contain_exactly(body, reply)
     end
   end
 end

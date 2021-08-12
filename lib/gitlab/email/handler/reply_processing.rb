@@ -40,15 +40,14 @@ module Gitlab
         end
 
         def process_message(**kwargs)
-          message = ReplyParser.new(mail, **kwargs).execute.strip
-          message_with_attachments = add_attachments(message)
+          message, stripped_text = ReplyParser.new(mail, **kwargs).execute
+          message = message.strip
 
           # Support bot is specifically forbidden from using slash commands.
-          message = strip_quick_actions(message_with_attachments)
-          return message unless kwargs[:append_reply].present?
+          message = strip_quick_actions(message)
+          message = append_reply(message, stripped_text) if kwargs[:append_reply]
 
-          # Appended details section should be removed if the message only contains slash commands.
-          strip_details_section(message)
+          add_attachments(message)
         end
 
         def add_attachments(reply)
@@ -102,17 +101,19 @@ module Gitlab
           quick_actions_extractor.redact_commands(content)
         end
 
-        def strip_details_section(content)
-          body, commands = quick_actions_extractor.extract_commands(content)
-          return content if commands.empty?
-          return content unless body =~ /\A(<details>)/
-
-          content.sub(body, '').chomp
-        end
-
         def quick_actions_extractor
           command_definitions = ::QuickActions::InterpretService.command_definitions
           ::Gitlab::QuickActions::Extractor.new(command_definitions)
+        end
+
+        def append_reply(message, reply)
+          return message if message.blank? || reply.blank?
+
+          # Do not append if message only contains slash commands
+          body, _commands = quick_actions_extractor.extract_commands(message)
+          return message if body.empty?
+
+          message + "\n\n<details><summary>...</summary>\n\n#{reply}\n\n</details>"
         end
       end
     end
