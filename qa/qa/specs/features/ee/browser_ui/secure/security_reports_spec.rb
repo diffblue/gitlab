@@ -63,7 +63,7 @@ module QA
           @runner&.remove_via_api! if @runner
         end
 
-        it 'displays security reports in the pipeline', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1777', quarantine: { only: { pipeline: [:main, :nightly] }, issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/325612', type: :bug } do
+        it 'displays security reports in the pipeline', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1777' do
           Flow::Pipeline.visit_latest_pipeline
           Page::Project::Pipeline::Show.perform do |pipeline|
             pipeline.click_on_security
@@ -109,7 +109,7 @@ module QA
           end
         end
 
-        it 'displays security reports in the group security dashboard', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1280', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/238848', type: :flaky } do
+        it 'displays security reports in the group security dashboard', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1280' do
           Page::Main::Menu.perform(&:go_to_groups)
           Page::Dashboard::Groups.perform do |groups|
             groups.click_group @project.group.path
@@ -143,7 +143,7 @@ module QA
           end
         end
 
-        it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/564', quarantine: { only: { pipeline: [:main, :nightly] }, issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/328059', type: :bug } do
+        it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/564' do
           Page::Project::Menu.perform(&:click_on_dependency_list)
 
           EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
