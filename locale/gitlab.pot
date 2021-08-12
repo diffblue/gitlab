@@ -12701,7 +12701,7 @@ msgstr ""
 msgid "Environments|You don't have any environments right now"
 msgstr ""
 
-msgid "Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a $30 giftcard."
+msgid "Environments|Your feedback helps GitLab make environments better for you and other users. Participate and enter a sweepstake to win a USD 30 gift card."
 msgstr ""
 
 msgid "Environments|protected"
