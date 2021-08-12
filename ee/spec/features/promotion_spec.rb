@@ -271,7 +271,7 @@ RSpec.describe 'Promotions', :js do
     it 'appears on the page' do
       visit project_audit_events_path(project)
 
-      expect(find('.user-callout-copy')).to have_content 'Track your project with Audit Events'
+      expect(find('.user-callout-copy')).to have_content 'Keep track of events in your project'
     end
   end
 

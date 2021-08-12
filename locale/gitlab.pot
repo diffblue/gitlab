@@ -4937,6 +4937,9 @@ msgstr ""
 msgid "Automatic deployment rollbacks"
 msgstr ""
 
+msgid "Automatic event tracking provides a traceable history for audits."
+msgstr ""
+
 msgid "Automatically close associated incident when a recovery alert notification resolves an alert"
 msgstr ""
 
@@ -26792,9 +26795,6 @@ msgstr ""
 msgid "Promotions|Add Group Webhooks and GitLab Enterprise Edition."
 msgstr ""
 
-msgid "Promotions|Audit Events is a way to keep track of important events that happened in GitLab."
-msgstr ""
-
 msgid "Promotions|Better Protected Branches"
 msgstr ""
 
@@ -26846,6 +26846,9 @@ msgstr ""
 msgid "Promotions|Improve search with Advanced Search and GitLab Enterprise Edition."
 msgstr ""
 
+msgid "Promotions|Keep track of events in your project"
+msgstr ""
+
 msgid "Promotions|Learn more"
 msgstr ""
 
@@ -26883,9 +26886,6 @@ msgid "Promotions|This feature is locked."
 msgstr ""
 
 msgid "Promotions|Track activity with Contribution Analytics."
-msgstr ""
-
-msgid "Promotions|Track your project with Audit Events."
 msgstr ""
 
 msgid "Promotions|Try it for free"
