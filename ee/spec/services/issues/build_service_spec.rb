@@ -56,7 +56,7 @@ RSpec.describe Issues::BuildService do
     end
 
     context 'as developer' do
-      Issue.issue_types.each_key do |issue_type|
+      WorkItem::Type.base_types.each_key do |issue_type|
         it "sets the issue type to #{issue_type}" do
           issue = build_issue(issue_type: issue_type)
 
