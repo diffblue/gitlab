@@ -7,7 +7,7 @@ module Gitlab::UsageDataCounters
 
     class << self
       def add(forwards, drops)
-        return unless Gitlab::CurrentSettings.usage_ping_enabled?
+        return unless ::ServicePing::ServicePingSettings.enabled?
 
         Gitlab::Redis::SharedState.with do |redis|
           redis.multi do

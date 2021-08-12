@@ -5,10 +5,8 @@ module EE
     module ServicePingSettings
       extend ::Gitlab::Utils::Override
 
-      private
-
-      override :pings_enabled?
-      def pings_enabled?
+      override :enabled?
+      def enabled?
         ::License.current&.customer_service_enabled? || super
       end
     end
