@@ -39,7 +39,7 @@ module AppSec
           response = Gitlab::HTTP.try_get(PROFILES_DEFINITION_FILE)
 
           if response&.success?
-            content = Gitlab::Config::Loader::Yaml.new(response.to_s).load!
+            content = Gitlab::Config::Loader::Yaml.new(response.body).load!
 
             content.fetch(:Profiles, [])
           else
