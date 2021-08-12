@@ -36,6 +36,11 @@ describe('Markdown Extension for Source Editor', () => {
   const selectionToString = () => instance.getSelection().toString();
   const positionToString = () => instance.getPosition().toString();
 
+  const togglePreview = async () => {
+    instance.togglePreview();
+    await waitForPromises();
+  };
+
   beforeEach(() => {
     setFixtures('<div id="editor" data-editor-loading></div>');
     editorEl = document.getElementById('editor');
@@ -159,38 +164,32 @@ describe('Markdown Extension for Source Editor', () => {
       });
 
       it('toggles visibility of the preview DOM element', async () => {
-        instance.togglePreview();
-        await waitForPromises();
+        await togglePreview();
         expect(instance.previewEl.style.display).toBe('block');
-        instance.togglePreview();
-        await waitForPromises();
+        await togglePreview();
         expect(instance.previewEl.style.display).toBe('none');
       });
 
       describe('hidden preview DOM element', () => {
         it('shows error notification if fetching content fails', async () => {
           axios.post.mockImplementation(() => Promise.reject());
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           expect(createFlash).toHaveBeenCalled();
         });
 
         it('fetches preview content and puts into the preview DOM element', async () => {
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           expect(instance.previewEl.innerHTML).toEqual(responseData);
         });
 
         it('applies syntax highlighting to the preview content', async () => {
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           expect(syntaxHighlight).toHaveBeenCalled();
         });
 
         it('listens to model changes and re-fetches preview', async () => {
           expect(axios.post).not.toHaveBeenCalled();
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           expect(axios.post).toHaveBeenCalledTimes(1);
 
           instance.setValue('New Value');
@@ -200,16 +199,14 @@ describe('Markdown Extension for Source Editor', () => {
 
         it('stores disposable listener for model changes', async () => {
           expect(instance.modelChangeListener).toBeUndefined();
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           expect(instance.modelChangeListener).toBeDefined();
         });
       });
 
       describe('already visible preview', () => {
         beforeEach(async () => {
-          instance.togglePreview();
-          await waitForPromises();
+          await togglePreview();
           jest.clearAllMocks();
         });
 
