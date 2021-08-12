@@ -11513,7 +11513,7 @@ msgstr ""
 msgid "DevopsAdoption|Edit subgroups"
 msgstr ""
 
-msgid "DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Last updated: %{timestamp}."
+msgid "DevopsAdoption|Feature adoption is based on usage in the previous calendar month. Data is updated at the beginning of each month. Last updated: %{timestamp}."
 msgstr ""
 
 msgid "DevopsAdoption|Fuzz Testing"
