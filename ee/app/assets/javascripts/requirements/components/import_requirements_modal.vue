@@ -62,7 +62,7 @@ export default {
     <p>
       {{
         __(
-          "Your requirements will be imported in the background. Once it's finished, you'll get a confirmation email. ",
+          "Your requirements will be imported in the background. After it's finished, you'll get a confirmation email.",
         )
       }}
     </p>

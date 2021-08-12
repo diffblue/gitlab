@@ -24,7 +24,7 @@ export const i18n = {
     tooltip: s__('OnCallSchedules|Add an additional schedule to your project'),
   },
   emptyState: {
-    title: s__('OnCallSchedules|Create on-call schedules  in GitLab'),
+    title: s__('OnCallSchedules|Create on-call schedules in GitLab'),
     description: s__('OnCallSchedules|Route alerts directly to specific members of your team'),
   },
   successNotification: {

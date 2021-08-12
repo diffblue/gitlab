@@ -2343,7 +2343,7 @@ msgstr ""
 msgid "AdminArea|View latest users"
 msgstr ""
 
-msgid "AdminArea|You’re about to stop all jobs.This will halt all current jobs that are running."
+msgid "AdminArea|You’re about to stop all jobs. This will halt all current jobs that are running."
 msgstr ""
 
 msgid "AdminDashboard|Error loading the statistics. Please try again"
@@ -7846,7 +7846,7 @@ msgstr ""
 msgid "ClusterIntegration|Subnets"
 msgstr ""
 
-msgid "ClusterIntegration|The Amazon Resource Name (ARN) associated with your role. If you do not have a provision role, first create one on  %{startAwsLink}Amazon Web Services %{externalLinkIcon}%{endLink} using the above account and external IDs. %{startMoreInfoLink}More information%{endLink}"
+msgid "ClusterIntegration|The Amazon Resource Name (ARN) associated with your role. If you do not have a provisioned role, first create one on %{startAwsLink}Amazon Web Services %{externalLinkIcon}%{endLink} using the above account and external IDs. %{startMoreInfoLink}More information%{endLink}"
 msgstr ""
 
 msgid "ClusterIntegration|The Kubernetes certificate used to authenticate to the cluster."
@@ -20585,7 +20585,7 @@ msgstr ""
 msgid "Maximum file size indexed (KiB)"
 msgstr ""
 
-msgid "Maximum file size is 1MB. Image size must be 32x32px. Allowed image formats are  %{favicon_extension_whitelist}."
+msgid "Maximum file size is 1 MB. Image size must be 32 x 32 pixels. Allowed image formats are %{favicon_extension_whitelist}."
 msgstr ""
 
 msgid "Maximum file size is 1MB. Pages are optimized for a 28px tall header logo"
@@ -23130,7 +23130,7 @@ msgstr ""
 msgid "OnCallSchedules|Collapse schedule"
 msgstr ""
 
-msgid "OnCallSchedules|Create on-call schedules  in GitLab"
+msgid "OnCallSchedules|Create on-call schedules in GitLab"
 msgstr ""
 
 msgid "OnCallSchedules|Currently no rotation."
@@ -23426,7 +23426,7 @@ msgstr ""
 msgid "Open Selection"
 msgstr ""
 
-msgid "Open a CLI and connect to the cluster you want to install the Agent in. Use this installation method to minimise any manual steps.The token is already included in the command."
+msgid "Open a CLI and connect to the cluster you want to install the Agent in. Use this installation method to minimize any manual steps. The token is already included in the command."
 msgstr ""
 
 msgid "Open comment type dropdown"
@@ -32734,7 +32734,7 @@ msgstr ""
 msgid "Terraform|Unlocking state"
 msgstr ""
 
-msgid "Terraform|You are about to remove the State file %{name}. This will permanently delete all the State versions and history. The infrastructure provisioned previously\twill remain intact, only the state file with all its versions are to be removed. This action is non-revertible."
+msgid "Terraform|You are about to remove the state file %{name}. This will permanently delete all the State versions and history. The infrastructure provisioned previously will remain intact, and only the state file with all its versions will be removed. This action cannot be undone."
 msgstr ""
 
 msgid "Terraform|You cannot remove the State file because it's locked. Unlock the State file first before removing it."
@@ -38610,7 +38610,7 @@ msgstr ""
 msgid "Your requirements are being imported. Once finished, you'll receive a confirmation email."
 msgstr ""
 
-msgid "Your requirements will be imported in the background. Once it's finished, you'll get a confirmation email. "
+msgid "Your requirements will be imported in the background. After it's finished, you'll get a confirmation email."
 msgstr ""
 
 msgid "Your response has been recorded."
