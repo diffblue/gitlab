@@ -25,6 +25,14 @@
   height: 500px;
 }
 
+.source-editor-preview {
+  @include gl-display-flex;
+
+  .preview-panel {
+    @include gl-overflow-scroll;
+  }
+}
+
 .monaco-editor.gl-source-editor {
   .margin-view-overlays {
     .line-numbers {

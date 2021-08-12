@@ -18,7 +18,7 @@ export default class EditBlob {
     if (this.options.isMarkdown) {
       import('~/editor/extensions/source_editor_markdown_ext')
         .then(({ EditorMarkdownExtension: MarkdownExtension } = {}) => {
-          this.editor.use(new MarkdownExtension());
+          this.editor.use(new MarkdownExtension({ instance: this.editor }));
           addEditorMarkdownListeners(this.editor);
         })
         .catch((e) =>

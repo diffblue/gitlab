@@ -1,6 +1,110 @@
+import { debounce } from 'lodash';
+import { BLOB_PREVIEW_ERROR } from '~/blob_edit/constants';
+import createFlash from '~/flash';
+import axios from '~/lib/utils/axios_utils';
+import { __ } from '~/locale';
+import syntaxHighlight from '~/syntax_highlight';
+import {
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS,
+  EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH,
+} from '../constants';
 import { SourceEditorExtension } from './source_editor_extension_base';
 
+const getPreview = (content) => {
+  const url = window.location.href.replace('edit', 'preview');
+  return axios
+    .post(url, {
+      content,
+    })
+    .then(({ data }) => {
+      return data;
+    });
+};
+
 export class EditorMarkdownExtension extends SourceEditorExtension {
+  constructor({ instance, ...args } = {}) {
+    super({ instance, ...args });
+    EditorMarkdownExtension.setupLivePreview(instance);
+  }
+
+  static setupPanelElement(injectToEl = null) {
+    const previewEl = document.createElement('div');
+    previewEl.classList.add(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS);
+    previewEl.style.display = 'none';
+    if (injectToEl) {
+      injectToEl.appendChild(previewEl);
+    }
+    return previewEl;
+  }
+
+  static togglePreviewLayout(editor) {
+    const currentLayout = editor.getLayoutInfo();
+    const width = editor.preview
+      ? currentLayout.width / EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH
+      : currentLayout.width * EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH;
+    editor.layout({ width, height: currentLayout.height });
+  }
+
+  static togglePreviewPanel(editor) {
+    const parentEl = editor.getDomNode().parentElement;
+    const { previewEl } = editor;
+    parentEl.classList.toggle('source-editor-preview');
+
+    if (previewEl.style.display === 'none') {
+      // Show the preview panel
+      const fetchPreview = () => {
+        getPreview(editor.getValue())
+          .then((data) => {
+            previewEl.innerHTML = data;
+            syntaxHighlight(previewEl.querySelectorAll('.js-syntax-highlight'));
+            previewEl.style.display = 'block';
+          })
+          .catch(() => createFlash(BLOB_PREVIEW_ERROR));
+      };
+      fetchPreview();
+      Object.assign(editor, {
+        modelChangeListener: editor.onDidChangeModelContent(
+          debounce(fetchPreview.bind(editor), 250),
+        ),
+      });
+    } else {
+      // Hide the preview panel
+      previewEl.style.display = 'none';
+      editor.modelChangeListener.dispose();
+    }
+  }
+
+  static setupLivePreview(instance) {
+    if (!instance || instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)) return;
+
+    instance.addAction({
+      id: EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
+      label: __('Preview Markdown'),
+      keybindings: [
+        // eslint-disable-next-line no-bitwise,no-undef
+        monaco.KeyMod.chord(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_P),
+      ],
+      contextMenuGroupId: 'navigation',
+      contextMenuOrder: 1.5,
+
+      // Method that will be executed when the action is triggered.
+      // @param ed The editor instance is passed in as a convenience
+      run(e) {
+        e.togglePreview();
+      },
+    });
+  }
+
+  togglePreview() {
+    if (!this.previewEl) {
+      this.previewEl = EditorMarkdownExtension.setupPanelElement(this.getDomNode().parentElement);
+    }
+    EditorMarkdownExtension.togglePreviewLayout(this);
+    EditorMarkdownExtension.togglePreviewPanel(this);
+    this.preview = !this.preview;
+  }
+
   getSelectedText(selection = this.getSelection()) {
     const { startLineNumber, endLineNumber, startColumn, endColumn } = selection;
     const valArray = this.getValue().split('\n');

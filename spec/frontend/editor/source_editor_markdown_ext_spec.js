@@ -1,6 +1,20 @@
 import { Range, Position } from 'monaco-editor';
+import setWindowLocation from 'helpers/set_window_location_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import {
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS,
+  EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH,
+} from '~/editor/constants';
 import { EditorMarkdownExtension } from '~/editor/extensions/source_editor_markdown_ext';
 import SourceEditor from '~/editor/source_editor';
+import createFlash from '~/flash';
+import axios from '~/lib/utils/axios_utils';
+import syntaxHighlight from '~/syntax_highlight';
+
+jest.mock('~/syntax_highlight');
+jest.mock('axios');
+jest.mock('~/flash');
 
 describe('Markdown Extension for Source Editor', () => {
   let editor;
@@ -31,12 +45,189 @@ describe('Markdown Extension for Source Editor', () => {
       blobPath: filePath,
       blobContent: text,
     });
-    editor.use(new EditorMarkdownExtension());
+    editor.use(new EditorMarkdownExtension({ instance }));
   });
 
   afterEach(() => {
     instance.dispose();
     editorEl.remove();
+  });
+
+  describe('contextual menu action', () => {
+    it('adds the contextual menu action', () => {
+      expect(instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)).toBeDefined();
+    });
+
+    it('toggles preview when the action is triggered', () => {
+      jest.spyOn(instance, 'togglePreview').mockImplementation();
+
+      expect(instance.togglePreview).not.toHaveBeenCalled();
+
+      const action = instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID);
+      action.run();
+
+      expect(instance.togglePreview).toHaveBeenCalled();
+    });
+  });
+
+  describe('togglePreview', () => {
+    const originalLocation = window.location.href;
+    const location = (action = 'edit') => {
+      return `https://dev.null/fooGroup/barProj/-/${action}/master/foo.md`;
+    };
+    const responseData = '<div>FooBar</div>';
+    let panelSpy;
+
+    beforeEach(() => {
+      setWindowLocation(location());
+      panelSpy = jest.spyOn(EditorMarkdownExtension, 'togglePreviewPanel');
+      jest.spyOn(EditorMarkdownExtension, 'togglePreviewLayout');
+      axios.post.mockImplementation(() => Promise.resolve({ data: responseData }));
+    });
+
+    afterEach(() => {
+      setWindowLocation(originalLocation);
+    });
+
+    it('toggles preview flag on instance', () => {
+      expect(instance.preview).toBeUndefined();
+
+      instance.togglePreview();
+      expect(instance.preview).toBe(true);
+
+      instance.togglePreview();
+      expect(instance.preview).toBe(false);
+    });
+
+    describe('panel DOM element set up', () => {
+      beforeEach(() => {
+        jest.spyOn(EditorMarkdownExtension, 'setupPanelElement');
+      });
+
+      it('sets up an element to contain the preview and stores it on instance', () => {
+        expect(instance.previewEl).toBeUndefined();
+
+        instance.togglePreview();
+
+        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledWith(editorEl);
+        expect(instance.previewEl).toBeDefined();
+        expect(instance.previewEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS)).toBe(
+          true,
+        );
+      });
+
+      it('uses already set up preview DOM element on repeated calls', () => {
+        instance.togglePreview();
+
+        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledTimes(1);
+
+        const origPreviewEl = instance.previewEl;
+        instance.togglePreview();
+
+        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledTimes(1);
+        expect(instance.previewEl).toBe(origPreviewEl);
+      });
+
+      it('hides the preview DOM element by default', () => {
+        panelSpy.mockImplementation();
+        instance.togglePreview();
+        expect(instance.previewEl.style.display).toBe('none');
+      });
+    });
+
+    describe('preview layout setup', () => {
+      it('sets correct preview layout', () => {
+        jest.spyOn(instance, 'layout');
+        const { width, height } = instance.getLayoutInfo();
+
+        instance.togglePreview();
+
+        expect(instance.layout).toHaveBeenCalledWith({
+          width: width * EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH,
+          height,
+        });
+      });
+    });
+
+    describe('preview panel', () => {
+      it('toggles preview CSS class on the editor', () => {
+        expect(editorEl.classList.contains('source-editor-preview')).toBe(false);
+        instance.togglePreview();
+        expect(editorEl.classList.contains('source-editor-preview')).toBe(true);
+        instance.togglePreview();
+        expect(editorEl.classList.contains('source-editor-preview')).toBe(false);
+      });
+
+      it('toggles visibility of the preview DOM element', async () => {
+        instance.togglePreview();
+        await waitForPromises();
+        expect(instance.previewEl.style.display).toBe('block');
+        instance.togglePreview();
+        await waitForPromises();
+        expect(instance.previewEl.style.display).toBe('none');
+      });
+
+      describe('hidden preview DOM element', () => {
+        it('shows error notification if fetching content fails', async () => {
+          axios.post.mockImplementation(() => Promise.reject());
+          instance.togglePreview();
+          await waitForPromises();
+          expect(createFlash).toHaveBeenCalled();
+        });
+
+        it('fetches preview content and puts into the preview DOM element', async () => {
+          instance.togglePreview();
+          await waitForPromises();
+          expect(instance.previewEl.innerHTML).toEqual(responseData);
+        });
+
+        it('applies syntax highlighting to the preview content', async () => {
+          instance.togglePreview();
+          await waitForPromises();
+          expect(syntaxHighlight).toHaveBeenCalled();
+        });
+
+        it('listens to model changes and re-fetches preview', async () => {
+          expect(axios.post).not.toHaveBeenCalled();
+          instance.togglePreview();
+          await waitForPromises();
+          expect(axios.post).toHaveBeenCalledTimes(1);
+
+          instance.setValue('New Value');
+          await waitForPromises();
+          expect(axios.post).toHaveBeenCalledTimes(2);
+        });
+
+        it('stores disposable listener for model changes', async () => {
+          expect(instance.modelChangeListener).toBeUndefined();
+          instance.togglePreview();
+          await waitForPromises();
+          expect(instance.modelChangeListener).toBeDefined();
+        });
+      });
+
+      describe('already visible preview', () => {
+        beforeEach(async () => {
+          instance.togglePreview();
+          await waitForPromises();
+          jest.clearAllMocks();
+        });
+
+        it('does not re-fetch the preview', () => {
+          instance.togglePreview();
+          expect(axios.post).not.toHaveBeenCalled();
+        });
+
+        it('disposes the model change event listener', () => {
+          const disposeSpy = jest.fn();
+          instance.modelChangeListener = {
+            dispose: disposeSpy,
+          };
+          instance.togglePreview();
+          expect(disposeSpy).toHaveBeenCalled();
+        });
+      });
+    });
   });
 
   describe('getSelectedText', () => {
