@@ -123,6 +123,15 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
           expect(change_namespace[:message]).to eq 'Both namespaces must share the same owner'
         end
       end
+
+      context 'when the namespace is the same as the target' do
+        let(:target) { namespace }
+
+        it 'returns an error' do
+          expect(change_namespace[:status]).to eq :error
+          expect(change_namespace[:message]).to eq 'Namespace and target must be different'
+        end
+      end
     end
   end
 end
