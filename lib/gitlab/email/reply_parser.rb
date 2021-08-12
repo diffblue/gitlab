@@ -28,8 +28,9 @@ module Gitlab
         return "" if body.lines.all? { |l| l.strip.empty? || l.start_with?('>') }
 
         encoded_body = body.force_encoding(encoding).encode("UTF-8")
+        return encoded_body unless @append_reply
 
-        @append_reply ? [encoded_body, stripped_text] : encoded_body
+        [encoded_body, stripped_text.force_encoding(encoding).encode("UTF-8")]
       end
 
       private
@@ -70,13 +71,6 @@ module Gitlab
       rescue StandardError
         nil
       end
-
-      # def trim_reply(text, append_trimmed_reply: false)
-      #   trimmed_body, stripped_text = EmailReplyTrimmer.trim(text, append_trimmed_reply)
-      #   return trimmed_body if trimmed_body.blank? || stripped_text.blank?
-
-      #   trimmed_body + "\n\n<details><summary>...</summary>\n\n#{stripped_text}\n\n</details>"
-      # end
     end
   end
 end

@@ -43,11 +43,12 @@ module Gitlab
           message, stripped_text = ReplyParser.new(mail, **kwargs).execute
           message = message.strip
 
+          message_with_attachments = add_attachments(message)
           # Support bot is specifically forbidden from using slash commands.
-          message = strip_quick_actions(message)
-          message = append_reply(message, stripped_text) if kwargs[:append_reply]
+          message = strip_quick_actions(message_with_attachments)
+          return message unless kwargs[:append_reply]
 
-          add_attachments(message)
+          append_reply(message, stripped_text)
         end
 
         def add_attachments(reply)
