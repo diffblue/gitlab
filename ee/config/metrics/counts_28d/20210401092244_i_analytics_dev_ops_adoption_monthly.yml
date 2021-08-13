@@ -9,12 +9,13 @@ product_group: group::optimize
 product_category: devops_reports
 value_type: number
 status: data_available
-milestone: "13.11"
+milestone: '13.11'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/57104
 time_frame: 28d
 data_source: redis_hll
 distribution:
-  - ee
+- ee
 tier:
-  - premium
-  - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

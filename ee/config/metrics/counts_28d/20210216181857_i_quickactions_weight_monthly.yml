@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.quickactions.i_quickactions_weight_monthly
-description: Count of MAU using the `/weight` quick action 
+description: Count of MAU using the `/weight` quick action
 product_section: dev
 product_stage: plan
 product_group: group::project management
-product_category: issue_tracking 
+product_category: issue_tracking
 value_type: number
 status: data_available
 time_frame: 28d
@@ -13,9 +13,10 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_quickactions_weight
+  - i_quickactions_weight
 distribution:
 - ee
-tier: 
-- premium 
-- ultimate 
+tier:
+- premium
+- ultimate
+performance_indicator_type: []

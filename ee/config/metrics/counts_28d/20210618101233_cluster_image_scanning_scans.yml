@@ -1,6 +1,6 @@
 ---
 key_path: usage_activity_by_stage_monthly.secure.cluster_image_scanning_scans
-description: 'Counts cluster image scanning jobs'
+description: Counts cluster image scanning jobs
 product_section: sec
 product_stage: protect
 product_group: group::container security
@@ -14,3 +14,4 @@ distribution:
 - ee
 tier:
 - ultimate
+performance_indicator_type: []

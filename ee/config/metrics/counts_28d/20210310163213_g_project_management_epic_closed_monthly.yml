@@ -1,8 +1,5 @@
 ---
 data_category: optional
-# Name of this metric contains g_project_management prefix
-# because we are using the same slot from issue_tracking to
-# allow data aggregation.
 key_path: redis_hll_counters.epics_usage.g_project_management_epic_closed_monthly
 description: Counts of MAU closing epics
 product_section: dev
@@ -11,7 +8,7 @@ product_group: group::product planning
 product_category: epics
 value_type: number
 status: data_available
-milestone: "13.11"
+milestone: '13.11'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56246
 time_frame: 28d
 data_source: redis_hll
@@ -20,3 +17,4 @@ distribution:
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

@@ -1,8 +1,7 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.testing.i_testing_group_code_coverage_visit_total_monthly
-description: Count of unique users per month who visited the group code coverage
-  page
+description: Count of unique users per month who visited the group code coverage page
 product_section: ops
 product_stage: verify
 product_group: group::testing
@@ -14,9 +13,10 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_testing_group_code_coverage_visit_total
+  - i_testing_group_code_coverage_visit_total
 distribution:
 - ee
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

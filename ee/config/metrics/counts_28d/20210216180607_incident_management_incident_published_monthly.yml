@@ -5,7 +5,7 @@ description: Count of unique users that published incidents per month
 product_section: ops
 product_stage: monitor
 product_group: group::monitor
-product_category:
+product_category: 
 value_type: number
 status: data_available
 time_frame: 28d
@@ -13,10 +13,11 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - incident_management_incident_published
+  - incident_management_incident_published
 distribution:
 - ee
 tier:
 - free
 - premium
 - ultimate
+performance_indicator_type: []

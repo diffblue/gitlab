@@ -12,6 +12,7 @@ time_frame: 28d
 data_source: database
 data_category: operational
 distribution:
-  - ee
+- ee
 tier:
-  - ultimate
+- ultimate
+performance_indicator_type: []

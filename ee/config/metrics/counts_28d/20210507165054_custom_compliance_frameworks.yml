@@ -1,15 +1,15 @@
 ---
 data_category: optional
 key_path: usage_activity_by_stage_monthly.manage.custom_compliance_frameworks
-name: "count_compliance_management_frameworks"
+name: count_compliance_management_frameworks
 description: Monthly count of all custom compliance framework labels
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: "Compliance management"
+product_category: Compliance management
 value_type: number
 status: data_available
-milestone: "13.12"
+milestone: '13.12'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/59314
 time_frame: 28d
 data_source: database
@@ -18,3 +18,4 @@ distribution:
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

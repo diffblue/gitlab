@@ -1,14 +1,14 @@
 ---
 key_path: usage_activity_by_stage_monthly.manage.compliance_frameworks_with_pipeline
-name: "count_distinct_montlpipeline_containing_compliance_management_frameworks"
-description: "Count of compliance frameworks that have a pipeline configuration"
+name: count_distinct_montlpipeline_containing_compliance_management_frameworks
+description: Count of compliance frameworks that have a pipeline configuration
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: "Compliance management"
+product_category: Compliance management
 value_type: number
 status: implemented
-milestone: "14.1"
+milestone: '14.1'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/329897
 time_frame: 28d
 data_source: database
@@ -17,3 +17,4 @@ distribution:
 - ee
 tier:
 - ultimate
+performance_indicator_type: []
