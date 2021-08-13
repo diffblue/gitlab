@@ -35,6 +35,23 @@ RSpec.describe Todos::Destroy::EntityLeaveService do
       end
     end
 
+    context 'when user was a member of public group with private subgroup' do
+      let_it_be(:epic3) { create(:epic, group: group) }
+
+      let!(:todo1) { create(:todo, target: epic3, user: user, group: group) }
+
+      before do
+        group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        subgroup.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+      end
+
+      it 'removes epic todos from private subgroup' do
+        described_class.new(user.id, group.id, 'Group').execute
+
+        expect(user.reload.todos.ids).to match_array(todo1.id)
+      end
+    end
+
     context 'when user role is downgraded to guest' do
       before do
         subgroup.add_guest(user)
