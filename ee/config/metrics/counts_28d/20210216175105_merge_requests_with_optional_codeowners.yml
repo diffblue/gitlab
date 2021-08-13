@@ -13,5 +13,6 @@ data_source: database
 distribution:
 - ee
 tier:
- - premium
- - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

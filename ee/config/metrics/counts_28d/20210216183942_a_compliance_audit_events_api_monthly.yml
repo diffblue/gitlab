@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.compliance.a_compliance_audit_events_api_monthly
-description: 'Unique users that have used the Audit Events API in a given month.'
-product_section: 'dev'
-product_stage: 'manage'
-product_group: 'group::compliance'
-product_category: 'audit_events'
+description: Unique users that have used the Audit Events API in a given month.
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category: audit_events
 value_type: number
 status: data_available
 time_frame: 28d
@@ -13,9 +13,10 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - a_compliance_audit_events_api
+  - a_compliance_audit_events_api
 distribution:
 - ee
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

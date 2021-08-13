@@ -4,7 +4,7 @@ key_path: redis_hll_counters.quickactions.i_quickactions_parent_epic_monthly
 description: Count of MAU using the `/parent_epic` quick action
 product_section: dev
 product_stage: plan
-product_group: group::product planning 
+product_group: group::product planning
 product_category: epics
 value_type: number
 status: data_available
@@ -13,8 +13,9 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_quickactions_parent_epic
+  - i_quickactions_parent_epic
 distribution:
 - ee
 tier:
 - ultimate
+performance_indicator_type: []

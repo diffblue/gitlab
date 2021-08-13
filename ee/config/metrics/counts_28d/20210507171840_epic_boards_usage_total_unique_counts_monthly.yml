@@ -1,27 +1,27 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.epic_boards_usage.epic_boards_usage_total_unique_counts_monthly
-name: "0"
-description:
-product_section:
-product_stage:
-product_group:
-product_category:
+name: '0'
+description: 
+product_section: 
+product_stage: 
+product_group: 
+product_category: 
 value_type: number
 status: data_available
-milestone: "13.12"
-introduced_by_url:
+milestone: '13.12'
+introduced_by_url: 
 time_frame: 28d
 data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - g_project_management_users_creating_epic_boards
-    - g_project_management_users_viewing_epic_boards
-    - g_project_management_users_updating_epic_board_names
+  - g_project_management_users_creating_epic_boards
+  - g_project_management_users_viewing_epic_boards
+  - g_project_management_users_updating_epic_board_names
 distribution:
 - ee
 tier:
-#- premium
 - ultimate
 skip_validation: true
+performance_indicator_type: []

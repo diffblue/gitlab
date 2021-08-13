@@ -1,17 +1,18 @@
 ---
 data_category: optional
 key_path: usage_activity_by_stage_monthly.plan.assignee_lists
-description: Count of MAU creating assignee lists on Boards 
+description: Count of MAU creating assignee lists on Boards
 product_section: dev
 product_stage: plan
-product_group: group::project management 
-product_category: boards 
+product_group: group::project management
+product_category: boards
 value_type: number
 status: data_available
 time_frame: 28d
-data_source: database 
+data_source: database
 distribution:
 - ee
 tier:
-- premium 
-- ultimate 
+- premium
+- ultimate
+performance_indicator_type: []

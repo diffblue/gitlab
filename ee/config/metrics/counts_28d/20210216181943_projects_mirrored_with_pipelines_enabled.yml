@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: usage_activity_by_stage_monthly.release.projects_mirrored_with_pipelines_enabled
-description:  Count creator_id from projects with repository mirroring enabled.
+description: Count creator_id from projects with repository mirroring enabled.
 product_section: ops
 product_stage: verify
 product_group: group::pipeline execution
-product_category:
+product_category: 
 value_type: number
 status: data_available
 time_frame: 28d
@@ -15,3 +15,4 @@ distribution:
 tier:
 - premium
 - ultimate
+performance_indicator_type: []
