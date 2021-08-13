@@ -4,7 +4,6 @@ class Groups::SeatUsageController < Groups::ApplicationController
   before_action :verify_top_level_group
   before_action :authorize_admin_group_member!
   before_action :verify_namespace_plan_check_enabled
-  before_action :verify_seat_usage_export_enabled, if: -> { request.format.csv? }
 
   layout "group_settings"
 
@@ -39,9 +38,5 @@ class Groups::SeatUsageController < Groups::ApplicationController
 
   def verify_top_level_group
     not_found unless group.root?
-  end
-
-  def verify_seat_usage_export_enabled
-    not_found unless Feature.enabled?(:seat_usage_export, group, default_enabled: :yaml)
   end
 end

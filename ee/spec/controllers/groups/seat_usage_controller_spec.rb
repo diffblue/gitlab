@@ -24,10 +24,6 @@ RSpec.describe Groups::SeatUsageController do
       end
 
       context 'when html format' do
-        before do
-          stub_feature_flags(seat_usage_export: false)
-        end
-
         it 'renders show with 200 status code' do
           get_show
 
@@ -54,21 +50,8 @@ RSpec.describe Groups::SeatUsageController do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'when seat_usage_export feature flag is disabled' do
+        context 'when the group is a top-level group' do
           before do
-            stub_feature_flags(seat_usage_export: false)
-          end
-
-          it 'responds with 404 status code' do
-            get_show(format: :csv)
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
-        end
-
-        context 'when seat_usage_export feature flag is enabled' do
-          before do
-            stub_feature_flags(seat_usage_export: true)
             expect(Groups::SeatUsageExportService).to receive(:execute).with(group, user).and_return(result)
           end
 
