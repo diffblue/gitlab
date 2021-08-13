@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# EE:SaaS
+# TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 class TrialsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
 

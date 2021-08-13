@@ -20,6 +20,7 @@ module LicenseHelper
     License.current.present?
   end
 
+  # EE:Self Managed
   def new_trial_url
     return_to_url = CGI.escape(Gitlab.config.gitlab.url)
     uri = URI.parse(::EE::SUBSCRIPTIONS_URL)
@@ -52,6 +53,7 @@ module LicenseHelper
     end
   end
 
+  # EE:Self Managed
   def cloud_license_view_data
     {
       buy_subscription_path: ::EE::SUBSCRIPTIONS_PLANS_URL,
