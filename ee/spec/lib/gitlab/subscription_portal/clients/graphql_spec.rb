@@ -204,12 +204,91 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
     end
   end
 
+  describe '#get_plans' do
+    subject { client.get_plans(tags: ['test-plan-id']) }
+
+    let(:headers) do
+      {
+        "Accept" => "application/json",
+        "Content-Type" => "application/json",
+        "X-Admin-Email" => "gl_com_api@gitlab.com",
+        "X-Admin-Token" => "customer_admin_token"
+      }
+    end
+
+    let(:params) do
+      {
+        variables: { tags: ['test-plan-id'] },
+        query: <<~GQL
+          query getPlans($tags: [PlanTag!]) {
+            plans(planTags: $tags) {
+              id
+            }
+          }
+        GQL
+      }
+    end
+
+    context 'when the request is successful' do
+      it 'returns the data' do
+        response = { data: { 'data' => { 'plans' => [{ 'id' => 1 }, { 'id' => 3 }] } } }
+
+        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
+
+        expect(subject).to eq(success: true, data: [{ 'id' => 1 }, { 'id' => 3 }])
+      end
+    end
+
+    context 'when the request is unsuccessful' do
+      it 'returns a failure response and logs the error' do
+        response = {
+          data: {
+            "data" => { "plans" => nil },
+            "errors" => [
+              {
+                "message" => "You must be logged in to access this resource",
+                "locations" => [{ "line" => 2, "column" => 3 }],
+                "path" => ["getPlans"]
+              }
+            ]
+          }
+        }
+
+        expect(Gitlab::ErrorTracking)
+          .to receive(:track_and_raise_for_dev_exception)
+          .with(
+            a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+            query: params[:query],
+            response: response[:data]
+          )
+
+        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
+
+        expect(subject).to eq(
+          success: false,
+          errors: [{
+            "locations" => [{ "column" => 3, "line" => 2 }],
+            "message" => "You must be logged in to access this resource",
+            "path" => ["getPlans"]
+          }]
+        )
+      end
+    end
+  end
+
   describe '#filter_purchase_eligible_namespaces' do
-    subject do
-      client.filter_purchase_eligible_namespaces(user, [user_namespace, group_namespace, subgroup])
+    subject(:filter_purchase_eligible_namespaces) do
+      client.filter_purchase_eligible_namespaces(
+        user,
+        [user_namespace, group_namespace, subgroup],
+        plan_id: plan_id,
+        any_self_service_plan: any_self_service_plan
+      )
     end
 
     let_it_be(:user) { create(:user) }
+    let_it_be(:plan_id) { 'test-plan' }
+    let_it_be(:any_self_service_plan) { true }
     let_it_be(:user_namespace) { user.namespace }
     let_it_be(:group_namespace) { create(:group) }
     let_it_be(:subgroup) { create(:group, parent: group_namespace) }
@@ -226,10 +305,12 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
     let(:variables) do
       {
         customerUid: user.id,
+        planId: plan_id,
+        eligibleForPurchase: true,
         namespaces: [
-          { id: user_namespace.id, parentId: nil, plan: "default", trial: false },
-          { id: group_namespace.id, parentId: nil, plan: "default", trial: false },
-          { id: subgroup.id, parentId: group_namespace.id, plan: "default", trial: false }
+          { id: user_namespace.id, parentId: nil, plan: "default", trial: false, kind: 'user', membersCountWithDescendants: nil },
+          { id: group_namespace.id, parentId: nil, plan: "default", trial: false, kind: 'group', membersCountWithDescendants: 0 },
+          { id: subgroup.id, parentId: group_namespace.id, plan: "default", trial: false, kind: 'group', membersCountWithDescendants: 0 }
         ]
       }
     end
@@ -238,8 +319,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       {
         variables: variables,
         query: <<~GQL
-          query FilterEligibleNamespaces($customerUid: Int!, $namespaces: [GitlabNamespaceInput!]!) {
-            namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, eligibleForPurchase: true) {
+          query FilterEligibleNamespaces($customerUid: Int!, $namespaces: [GitlabNamespaceInput!]!, $planId: ID, $eligibleForPurchase: Boolean) {
+            namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, planId: $planId, eligibleForPurchase: $eligibleForPurchase) {
               id
             }
           }
