@@ -32,8 +32,8 @@ module Mutations
       def resolve(full_path:, target_url:)
         project = authorized_find!(full_path)
 
-        response = ::DastSiteTokens::CreateService.new(
-          container: project,
+        response = ::AppSec::Dast::SiteTokens::FindOrCreateService.new(
+          project: project,
           params: { target_url: target_url }
         ).execute
 
