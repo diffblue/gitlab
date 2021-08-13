@@ -39748,6 +39748,9 @@ msgstr ""
 msgid "mrWidget|More information"
 msgstr ""
 
+msgid "mrWidget|Open in Gitpod"
+msgstr ""
+
 msgid "mrWidget|Open in Web IDE"
 msgstr ""
 
@@ -39851,9 +39854,6 @@ msgid "mrWidget|To merge, a Jira issue key must be mentioned in the title or des
 msgstr ""
 
 msgid "mrWidget|Use %{linkStart}CI pipelines to test your code%{linkEnd} by simply adding a GitLab CI configuration file to your project. It only takes a minute to make your code more secure and robust."
-msgstr ""
-
-msgid "mrWidget|You are not allowed to edit this project directly. Please fork to make changes."
 msgstr ""
 
 msgid "mrWidget|You can merge after removing denied licenses"
