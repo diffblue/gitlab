@@ -1,6 +1,7 @@
 import { debounce } from 'lodash';
 import { BLOB_PREVIEW_ERROR } from '~/blob_edit/constants';
 import createFlash from '~/flash';
+import { sanitize } from '~/lib/dompurify';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import syntaxHighlight from '~/syntax_highlight';
@@ -11,14 +12,21 @@ import {
 } from '../constants';
 import { SourceEditorExtension } from './source_editor_extension_base';
 
-const getPreview = (content) => {
-  const url = window.location.href.replace('edit', 'preview');
+const getPreview = (text, projectPath = '') => {
+  let url;
+
+  if (projectPath) {
+    url = `/${projectPath}/preview_markdown`;
+  } else {
+    const { group, project } = document.body.dataset;
+    url = `/${group}/${project}/preview_markdown`;
+  }
   return axios
     .post(url, {
-      content,
+      text,
     })
     .then(({ data }) => {
-      return data;
+      return data.body;
     });
 };
 
@@ -54,9 +62,9 @@ export class EditorMarkdownExtension extends SourceEditorExtension {
     if (previewEl.style.display === 'none') {
       // Show the preview panel
       const fetchPreview = () => {
-        getPreview(editor.getValue())
+        getPreview(editor.getValue(), editor.projectPath)
           .then((data) => {
-            previewEl.innerHTML = data;
+            previewEl.innerHTML = sanitize(data);
             syntaxHighlight(previewEl.querySelectorAll('.js-syntax-highlight'));
             previewEl.style.display = 'block';
           })
