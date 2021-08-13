@@ -22465,6 +22465,9 @@ msgstr ""
 msgid "No approvers"
 msgstr ""
 
+msgid "No artifacts found"
+msgstr ""
+
 msgid "No assignee"
 msgstr ""
 
