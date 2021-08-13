@@ -83,7 +83,7 @@ export default {
         {{ s__('Reports|Identifier') }}
       </div>
       <div class="table-section section-15" role="rowheader">
-        {{ s__('Reports|Scanner') }}
+        {{ s__('Reports|Tool') }}
       </div>
       <div class="table-section section-20" role="rowheader"></div>
     </div>
