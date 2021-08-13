@@ -64,9 +64,8 @@ export default {
     },
   },
   i18n: {
-    selectedPlanText: s__('Checkout|%{selectedPlanText} plan'),
     quantity: s__('Checkout|(x%{quantity})'),
-    pricePerUnitPerYear: s__('Checkout|$%{selectedPlanPrice} per pack per year'),
+    pricePerUnitPerYear: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes'),
     dates: s__('Checkout|%{startDate} - %{endDate}'),
     subtotal: s__('Checkout|Subtotal'),
     tax: s__('Checkout|Tax'),
@@ -81,7 +80,7 @@ export default {
       class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mt-3 gl-mb-3"
     >
       <div data-testid="selected-plan">
-        {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
+        {{ selectedPlanText }}
         <span v-if="quantity" data-testid="quantity">{{
           sprintf($options.i18n.quantity, { quantity })
         }}</span>

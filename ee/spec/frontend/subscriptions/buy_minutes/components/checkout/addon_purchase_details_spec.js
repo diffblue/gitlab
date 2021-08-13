@@ -1,15 +1,16 @@
 import { GlAlert } from '@gitlab/ui';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
-import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_minutes/components/checkout/addon_purchase_details.vue';
 import subscriptionsResolvers from 'ee/subscriptions/buy_minutes/graphql/resolvers';
+import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -20,21 +21,17 @@ describe('AddonPurchaseDetails', () => {
 
   const createMockApolloProvider = (stateData = {}) => {
     const mockApollo = createMockApollo([], resolvers);
-
     const data = merge({}, initialStateData, stateData);
-
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data,
     });
-
     return mockApollo;
   };
 
   const createComponent = (stateData = {}) => {
     const apolloProvider = createMockApolloProvider(stateData);
-
-    return mount(AddonPurchaseDetails, {
+    wrapper = mountExtended(AddonPurchaseDetails, {
       localVue,
       apolloProvider,
       stubs: {
@@ -45,11 +42,13 @@ describe('AddonPurchaseDetails', () => {
 
   const findQuantity = () => wrapper.findComponent({ ref: 'quantity' });
   const findGlAlert = () => wrapper.findComponent(GlAlert);
-  const findCiMinutesQuantityText = () => wrapper.find('[data-testid="ci-minutes-quantity-text"]');
+  const findCiMinutesQuantityText = () => wrapper.findByTestId('ci-minutes-quantity-text');
+  const findProductLabel = () => wrapper.findByTestId('product-label');
+  const findSummaryLabel = () => wrapper.findComponent({ ref: 'summary-line-1' });
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 
   beforeEach(() => {
-    wrapper = createComponent();
+    createComponent();
   });
 
   afterEach(() => {
@@ -78,12 +77,40 @@ describe('AddonPurchaseDetails', () => {
   });
 
   it('is invalid when quantity is less than 1', async () => {
-    wrapper = createComponent({
+    createComponent({
       subscription: { namespaceId: 483, quantity: 0 },
     });
 
-    await nextTick();
-
     expect(isStepValid()).toBe(false);
+  });
+
+  describe('labels', () => {
+    describe('when quantity is 1', () => {
+      it('shows the correct product label', () => {
+        expect(findProductLabel().text()).toBe('CI minute pack');
+      });
+
+      it('shows the correct summary label', () => {
+        createComponent({ activeStep: STEPS[1] });
+
+        expect(findSummaryLabel().text()).toBe('1 CI minute pack');
+      });
+    });
+
+    describe('when quantity is more than 1', () => {
+      const stateData = { subscription: { namespaceId: 483, quantity: 2 } };
+
+      it('shows the correct product label', () => {
+        createComponent(stateData);
+
+        expect(findProductLabel().text()).toBe('CI minute pack');
+      });
+
+      it('shows the correct summary label', () => {
+        createComponent({ ...stateData, activeStep: STEPS[1] });
+
+        expect(findSummaryLabel().text()).toBe('2 CI minute packs');
+      });
+    });
   });
 });
