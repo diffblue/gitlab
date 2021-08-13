@@ -40,7 +40,7 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
   describe '.default_directives' do
     let(:directives) { described_class.default_directives }
 
-    it 'returns defaults directives' do
+    it 'returns default directives' do
       directive_names = (described_class::DIRECTIVES - ['report_uri'])
       directive_names.each do |directive|
         expect(directives.has_key?(directive)).to be_truthy
