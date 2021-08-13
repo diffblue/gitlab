@@ -6,6 +6,7 @@ RSpec.describe 'Two merge requests on a merge train' do
   include RepoHelpers
 
   let(:project) { create(:project, :repository) }
+  let(:key) { create(:key, user: project.owner) }
   let_it_be(:maintainer_1) { create(:user) }
   let_it_be(:maintainer_2) { create(:user) }
 
@@ -270,10 +271,15 @@ RSpec.describe 'Two merge requests on a merge train' do
     end
 
     def push_commit_to_master
-      create_file_in_repo(project, 'master', 'master', 'test.txt', 'This is test')
-      changes = Base64.encode64("123456 789012 refs/heads/master")
-      key_id = create(:key, user: project.owner).shell_id
-      PostReceive.new.perform("project-#{project.id}", key_id, changes)
+      branch = project.default_branch_or_main
+      oldrev = project.repository.commit(branch).sha
+
+      create_file_in_repo(project, branch, branch, 'test.txt', 'This is a test')
+
+      newrev = project.repository.commit(branch).sha
+      changes = Base64.encode64("#{oldrev} #{newrev} refs/heads/#{branch}")
+
+      PostReceive.new.perform("project-#{project.id}", key.shell_id, changes)
     end
   end
 end
