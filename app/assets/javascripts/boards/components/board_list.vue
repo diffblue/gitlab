@@ -27,11 +27,6 @@ export default {
     GlIntersectionObserver,
   },
   mixins: [Tracking.mixin()],
-  inject: {
-    canAdminList: {
-      default: false,
-    },
-  },
   props: {
     disabled: {
       type: Boolean,
@@ -89,8 +84,8 @@ export default {
       return !this.isEpicBoard && this.list.listType !== 'closed' && this.showIssueForm;
     },
     listRef() {
-      // When  list is draggable, the reference to the list needs to be accessed differently
-      return this.canAdminList ? this.$refs.list.$el : this.$refs.list;
+      // When list is draggable, the reference to the list needs to be accessed differently
+      return this.canMoveIssue ? this.$refs.list.$el : this.$refs.list;
     },
     showingAllItems() {
       return this.boardItems.length === this.listItemsCount;
@@ -100,8 +95,11 @@ export default {
         ? this.$options.i18n.showingAllEpics
         : this.$options.i18n.showingAllIssues;
     },
+    canMoveIssue() {
+      return !this.disabled;
+    },
     treeRootWrapper() {
-      return this.canAdminList && !this.listsFlags[this.list.id]?.addItemToListInProgress
+      return this.canMoveIssue && !this.listsFlags[this.list.id]?.addItemToListInProgress
         ? Draggable
         : 'ul';
     },
@@ -116,7 +114,7 @@ export default {
         value: this.boardItems,
       };
 
-      return this.canAdminList ? options : {};
+      return this.canMoveIssue ? options : {};
     },
   },
   watch: {
