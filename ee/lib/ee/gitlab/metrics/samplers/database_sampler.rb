@@ -15,9 +15,9 @@ module EE
           end
 
           def geo_connection_stats
-            return [] unless Geo::TrackingBase.connected?
+            return [] unless ::Geo::TrackingBase.connected?
 
-            [{ labels: labels_for_class(Geo::TrackingBase), stats: Geo::TrackingBase.connection_pool.stat }]
+            [{ labels: labels_for_class(::Geo::TrackingBase), stats: ::Geo::TrackingBase.connection_pool.stat }]
           end
         end
       end
