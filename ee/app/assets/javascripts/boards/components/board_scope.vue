@@ -141,15 +141,13 @@ export default {
         @set-assignee="$emit('set-assignee', $event)"
       />
 
-      <!-- eslint-disable vue/no-mutating-props -->
       <board-weight-select
         v-if="isIssueBoard"
-        v-model="board.weight"
         :board="board"
         :weights="weights"
         :can-edit="canAdminBoard"
+        @set-weight="$emit('set-weight', $event)"
       />
-      <!-- eslint-enable vue/no-mutating-props -->
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@ describe('WeightSelect', () => {
   let wrapper;
 
   const editButton = () => wrapper.find(GlButton);
-  const valueContainer = () => wrapper.find('.value');
+  const valueContainer = () => wrapper.find('[data-testid="selected-weight"]');
   const weightDropdown = () => wrapper.find(GlDropdown);
   const getWeightItemAtIndex = (index) => weightDropdown().findAll(GlDropdownItem).at(index);
   const defaultProps = {
@@ -40,7 +40,7 @@ describe('WeightSelect', () => {
     });
 
     it('hides the weight dropdown', () => {
-      expect(weightDropdown().isVisible()).toBeFalsy();
+      expect(weightDropdown().isVisible()).toBe(false);
     });
   });
 
@@ -50,7 +50,7 @@ describe('WeightSelect', () => {
     });
 
     it('does not render the edit button', () => {
-      expect(editButton().exists()).toBeFalsy();
+      expect(editButton().exists()).toBe(false);
     });
   });
 
@@ -60,7 +60,7 @@ describe('WeightSelect', () => {
     });
 
     it('shows the edit button', () => {
-      expect(editButton().isVisible()).toBeTruthy();
+      expect(editButton().isVisible()).toBe(true);
     });
 
     describe('and the edit button is clicked', () => {
@@ -70,11 +70,11 @@ describe('WeightSelect', () => {
 
       describe('and no weight has been selected yet', () => {
         it('hides the value text', () => {
-          expect(valueContainer().isVisible()).toBeFalsy();
+          expect(valueContainer().exists()).toBe(false);
         });
 
         it('shows the weight dropdown', () => {
-          expect(weightDropdown().isVisible()).toBeTruthy();
+          expect(weightDropdown().isVisible()).toBe(true);
         });
       });
 
