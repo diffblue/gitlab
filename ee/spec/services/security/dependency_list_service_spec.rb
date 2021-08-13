@@ -38,11 +38,35 @@ RSpec.describe Security::DependencyListService do
 
     context 'with params' do
       context 'filtered by package_managers' do
-        let(:params) { { package_manager: 'bundler' } }
+        using RSpec::Parameterized::TableSyntax
 
-        it 'returns filtered items' do
-          expect(subject.size).to eq(2)
-          expect(subject.first[:packager]).to eq('Ruby (Bundler)')
+        before do
+          dependencies = described_class::FILTER_PACKAGE_MANAGERS_VALUES.map do |package_manager|
+            build(:dependency, package_manager: package_manager)
+          end
+
+          allow(pipeline).to receive_message_chain(:dependency_list_report, :dependencies).and_return(dependencies)
+        end
+
+        context 'with matching package manager' do
+          where(package_manager: described_class::FILTER_PACKAGE_MANAGERS_VALUES)
+
+          with_them do
+            let(:params) { { package_manager: package_manager } }
+
+            it 'returns filtered items' do
+              expect(subject.size).to eq(1)
+              expect(subject.first[:package_manager]).to eq(package_manager)
+            end
+          end
+        end
+
+        context 'with invalid package manager' do
+          let(:params) { { package_manager: 'package_manager' } }
+
+          it 'returns nothing' do
+            expect(subject.size).to eq(0)
+          end
         end
       end
 
