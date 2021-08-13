@@ -11011,10 +11011,10 @@ msgstr ""
 msgid "Dependency proxy"
 msgstr ""
 
-msgid "Dependency proxy URL"
+msgid "Dependency proxy feature is limited to public groups for now."
 msgstr ""
 
-msgid "Dependency proxy feature is limited to public groups for now."
+msgid "Dependency proxy image prefix"
 msgstr ""
 
 msgid "DependencyProxy|Toggle Dependency Proxy"
