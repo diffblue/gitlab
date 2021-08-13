@@ -13,9 +13,10 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_quickactions_assign_multiple
+  - i_quickactions_assign_multiple
 distribution:
 - ee
 tier:
-- premium 
-- ultimate 
+- premium
+- ultimate
+performance_indicator_type: []

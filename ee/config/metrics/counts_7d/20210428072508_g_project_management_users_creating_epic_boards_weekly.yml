@@ -11,16 +11,17 @@ product_group: group::product planning
 product_category: epics_boards_usage
 value_type: number
 status: data_available
-milestone: "13.12"
+milestone: '13.12'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60357
 time_frame: 7d
 data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - g_project_management_users_creating_epic_boards
+  - g_project_management_users_creating_epic_boards
 distribution:
 - ee
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

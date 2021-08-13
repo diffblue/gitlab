@@ -13,7 +13,8 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/63427/
 time_frame: 7d
 data_source: prometheus
 distribution:
-  - ee
+- ee
 tier:
- - premium
- - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

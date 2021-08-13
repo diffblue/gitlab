@@ -11,7 +11,7 @@ product_group: group::product planning
 product_category: epics_usage
 value_type: number
 status: data_available
-milestone: "13.11"
+milestone: '13.11'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/58590
 time_frame: 7d
 data_source: redis_hll
@@ -20,3 +20,4 @@ distribution:
 tier:
 - premium
 - ultimate
+performance_indicator_type: []
