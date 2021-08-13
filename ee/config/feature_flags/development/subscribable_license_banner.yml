@@ -4,5 +4,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/30304
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/215950
 milestone: '13.0'
 type: development
-group: group::retention
+group: group::utilization
 default_enabled: true
