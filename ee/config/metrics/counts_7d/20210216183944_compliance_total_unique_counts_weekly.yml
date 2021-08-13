@@ -13,13 +13,14 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - g_compliance_dashboard
-    - g_compliance_audit_events
-    - i_compliance_audit_events
-    - i_compliance_credential_inventory
-    - a_compliance_audit_events_api
+  - g_compliance_dashboard
+  - g_compliance_audit_events
+  - i_compliance_audit_events
+  - i_compliance_credential_inventory
+  - a_compliance_audit_events_api
 distribution:
 - ee
 tier:
 - premium
 - ultimate
+performance_indicator_type: []

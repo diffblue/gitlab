@@ -8,12 +8,13 @@ product_group: group::geo
 product_category: geo_replication
 value_type: number
 status: data_available
-milestone: "13.10"
+milestone: '13.10'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/53888
 time_frame: 7d
 data_source: prometheus
 distribution:
-  - ee
+- ee
 tier:
- - premium
- - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

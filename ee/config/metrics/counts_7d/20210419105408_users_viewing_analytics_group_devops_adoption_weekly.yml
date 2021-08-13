@@ -13,7 +13,8 @@ introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/59738"
 time_frame: 7d
 data_source: redis_hll
 distribution:
-  - ee
+- ee
 tier:
-  - premium
-  - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

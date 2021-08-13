@@ -1,10 +1,10 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.quickactions.i_quickactions_remove_child_epic_weekly
-description: Count of WAU using the `/remove_child_epic` quick action 
+description: Count of WAU using the `/remove_child_epic` quick action
 product_section: dev
 product_stage: plan
-product_group: group::product planning 
+product_group: group::product planning
 product_category: epics
 value_type: number
 status: data_available
@@ -13,8 +13,9 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_quickactions_remove_child_epic
+  - i_quickactions_remove_child_epic
 distribution:
 - ee
 tier:
-- ultimate 
+- ultimate
+performance_indicator_type: []
