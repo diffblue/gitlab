@@ -16,6 +16,8 @@ RSpec.describe DastSiteToken, type: :model do
     it { is_expected.to validate_length_of(:url).is_at_most(255) }
     it { is_expected.to validate_presence_of(:token) }
     it { is_expected.to validate_presence_of(:url) }
+    it { is_expected.to validate_uniqueness_of(:token) }
+    it { is_expected.to validate_uniqueness_of(:url).scoped_to(:project_id) }
 
     context 'when the url is not public' do
       subject { build(:dast_site_token, url: 'http://127.0.0.1') }
