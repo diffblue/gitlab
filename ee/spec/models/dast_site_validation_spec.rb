@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe DastSiteValidation, type: :model do
-  subject { create(:dast_site_validation) }
+  let_it_be(:dast_site_token) { create(:dast_site_token) }
+
+  subject { create(:dast_site_validation, dast_site_token: dast_site_token) }
 
   let_it_be(:another_dast_site_validation) { create(:dast_site_validation) }
 
@@ -17,13 +19,17 @@ RSpec.describe DastSiteValidation, type: :model do
     it { is_expected.to validate_presence_of(:dast_site_token_id) }
 
     context 'when strategy is meta_tag' do
-      shared_examples 'meta tag validation is disabled' do
-        subject { build(:dast_site_validation, validation_strategy: :meta_tag) }
+      subject { build(:dast_site_validation, dast_site_token: dast_site_token, validation_strategy: :meta_tag) }
 
+      shared_examples 'meta tag validation is disabled' do
         it 'is not valid', :aggregate_failures do
           expect(subject).not_to be_valid
           expect(subject.errors.full_messages).to include('Meta tag validation is not enabled')
         end
+      end
+
+      context 'when dast_meta_tag_validation and dast_runner_site_validation are enabled' do
+        it { is_expected.to be_valid }
       end
 
       context 'when dast_meta_tag_validation is disabled' do
@@ -46,13 +52,11 @@ RSpec.describe DastSiteValidation, type: :model do
 
   describe 'before_create' do
     describe '#set_normalized_url_base' do
-      subject do
-        dast_site_token = create(
+      let_it_be(:dast_site_token) do
+        create(
           :dast_site_token,
           url: generate(:url) + '/' + SecureRandom.hex + '?' + { param: SecureRandom.hex }.to_query
         )
-
-        create(:dast_site_validation, dast_site_token: dast_site_token)
       end
 
       it 'normalizes the dast_site_token url' do
@@ -152,7 +156,7 @@ RSpec.describe DastSiteValidation, type: :model do
 
   describe '#retry' do
     context 'when state=failed' do
-      subject { create(:dast_site_validation, state: :failed) }
+      subject { create(:dast_site_validation, state: :failed, dast_site_token: dast_site_token) }
 
       it 'returns true' do
         expect(subject.retry).to eq(true)
@@ -182,7 +186,7 @@ RSpec.describe DastSiteValidation, type: :model do
 
   describe '#fail_op' do
     context 'when state=failed' do
-      subject { create(:dast_site_validation, state: :failed) }
+      subject { create(:dast_site_validation, state: :failed, dast_site_token: dast_site_token) }
 
       it 'returns false' do
         expect(subject.fail_op).to eq(false)
@@ -212,7 +216,7 @@ RSpec.describe DastSiteValidation, type: :model do
 
   describe '#pass' do
     context 'when state=inprogress' do
-      subject { create(:dast_site_validation, state: :inprogress) }
+      subject { create(:dast_site_validation, state: :inprogress, dast_site_token: dast_site_token) }
 
       it 'returns true' do
         expect(subject.pass).to eq(true)
