@@ -60,7 +60,7 @@ class GeoNode < ApplicationRecord
                  mode: :per_attribute_iv,
                  encode: true
 
-  strip_attributes :name
+  strip_attributes! :name
 
   class << self
     # Set in gitlab.rb as external_url
