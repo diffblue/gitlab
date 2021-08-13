@@ -19,6 +19,7 @@ export default {
     [IssuableAttributeType.Iteration]: __('Iteration'),
     [IssuableAttributeType.Epic]: __('Epic'),
     none: __('None'),
+    expired: __('(expired)'),
   },
   props: {
     issuableAttribute: {
