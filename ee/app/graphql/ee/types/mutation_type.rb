@@ -33,7 +33,6 @@ module EE
         mount_mutation ::Mutations::RequirementsManagement::CreateRequirement
         mount_mutation ::Mutations::RequirementsManagement::ExportRequirements
         mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement
-        mount_mutation ::Mutations::Vulnerabilities::Create
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
         mount_mutation ::Mutations::Vulnerabilities::Resolve
         mount_mutation ::Mutations::Vulnerabilities::Confirm
