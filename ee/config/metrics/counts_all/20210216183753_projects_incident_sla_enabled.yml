@@ -3,7 +3,7 @@ data_category: optional
 key_path: usage_activity_by_stage_monthly.monitor.projects_incident_sla_enabled
 description: Count of projects with Incident SLA enabled
 product_section: ops
-product_stage:
+product_stage: 
 product_group: group::monitor
 product_category: metrics
 value_type: number
@@ -11,7 +11,8 @@ status: deprecated
 time_frame: all
 data_source: database
 distribution:
-  - ee
+- ee
 tier:
-  - premium
-  - ultimate
+- premium
+- ultimate
+performance_indicator_type: []

@@ -1,7 +1,8 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage.secure.user_preferences_group_overview_security_dashboard
-description: Users who set personal preference to see Details on Group information page
+description: Users who set personal preference to see Details on Group information
+  page
 product_section: sec
 product_stage: secure
 product_group: group::threat insights
@@ -14,3 +15,4 @@ distribution:
 - ee
 tier:
 - ultimate
+performance_indicator_type: []

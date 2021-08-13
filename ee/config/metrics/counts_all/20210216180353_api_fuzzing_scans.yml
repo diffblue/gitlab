@@ -5,12 +5,13 @@ description: 'Counts API fuzzing jobs'
 product_section: sec
 product_stage: secure
 product_group: group::fuzz testing
-product_category:
+product_category: 
 value_type: number
 status: data_available
 time_frame: all
-data_source:
+data_source: 
 distribution:
 - ee
 tier: []
 skip_validation: true
+performance_indicator_type: []

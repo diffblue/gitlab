@@ -5,7 +5,7 @@ description: Projects with repository mirroring enabled
 product_section: ops
 product_stage: verify
 product_group: group::pipeline execution
-product_category:
+product_category: 
 value_type: number
 status: data_available
 time_frame: all
@@ -15,4 +15,4 @@ distribution:
 tier:
 - premium
 - ultimate
-
+performance_indicator_type: []

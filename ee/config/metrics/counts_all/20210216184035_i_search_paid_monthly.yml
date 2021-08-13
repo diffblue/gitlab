@@ -1,7 +1,8 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.search.i_search_paid_monthly
-description: Calculated unique users to perform a search with a paid license enabled by month
+description: Calculated unique users to perform a search with a paid license enabled
+  by month
 product_section: enablement
 product_stage: enablement
 product_group: group::global search
@@ -13,9 +14,11 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_search_paid
+  - i_search_paid
 distribution:
 - ee
 tier:
 - premium
 - ultimate
+performance_indicator_type:
+- paid_gmau
