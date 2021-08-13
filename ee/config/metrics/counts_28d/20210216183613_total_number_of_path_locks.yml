@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.create.total_number_of_path_locks
 description: Number of paths/directories manually locked through the UI
 product_section: dev

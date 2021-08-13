@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage_monthly.create.approval_project_rules_with_more_approvers_than_required
 description: Number of approval rules with more approvers than required.
 product_section: dev

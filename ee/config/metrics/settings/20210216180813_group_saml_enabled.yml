@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.manage.group_saml_enabled
 description: Has the instance enabled Group SAML SSO `https://docs.gitlab.com/ee/user/group/saml_sso/` on at least 1 group?
 product_section: dev

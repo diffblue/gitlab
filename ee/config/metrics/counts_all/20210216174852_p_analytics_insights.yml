@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: analytics_unique_visits.p_analytics_insights
 description: Unique visitors to /:group/:project/insights
 product_section: dev

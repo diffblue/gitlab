@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.testing.i_testing_group_code_coverage_project_click_total_weekly
 description: Aggregated count of unique users who have clicked from group code coverage page to an individual project page each week.
 product_section: ops

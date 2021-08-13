@@ -1,5 +1,5 @@
 ---
-data_category: Operational
+data_category: operational
 # Name of this metric contains g_project_management prefix
 # because we are using the same slot from issue_tracking to
 # allow data aggregation.

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: compliance_unique_visits.g_compliance_dashboard
 description: 'Number of unique visitors to the compliance dashboard.'
 product_section: 'dev'

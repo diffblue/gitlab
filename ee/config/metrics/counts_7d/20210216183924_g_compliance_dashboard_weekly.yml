@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.compliance.g_compliance_dashboard_weekly
 description: 'Unique users who have looked at the compliance report in a given week'
 product_section: 'dev'

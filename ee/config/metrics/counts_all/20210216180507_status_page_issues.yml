@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.status_page_issues
 description: Issues published to a Status Page
 product_section: ops

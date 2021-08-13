@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.issues_edit.g_project_management_issue_health_status_changed_monthly
 description: Count of MAU changing the health status on an issue
 product_section: dev

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.kubernetes_agents
 description: Count of Kubernetes registered agents
 product_section: ops

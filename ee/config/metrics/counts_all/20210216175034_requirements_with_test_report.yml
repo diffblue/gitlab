@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.requirements_with_test_report
 description: Count of requirements having a test report
 product_section: dev

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: counts.user_preferences_group_overview_details
 description: Count of users who set personal preference to see Details on Group information
   page

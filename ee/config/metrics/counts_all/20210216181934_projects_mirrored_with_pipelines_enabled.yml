@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.release.projects_mirrored_with_pipelines_enabled
 description: Count creator_id from projects with repository mirroring enabled.
 product_section: ops

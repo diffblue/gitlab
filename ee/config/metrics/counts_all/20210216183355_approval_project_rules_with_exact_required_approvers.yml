@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: usage_activity_by_stage.create.approval_project_rules_with_exact_required_approvers
 description: Number of approval rules with the exact number of required approvers.
 product_section: dev

@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: search_unique_visits.i_search_paid
 description: Calculated unique users to perform a search with a paid license enabled by week
 product_section: enablement

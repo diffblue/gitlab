@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.testing.i_testing_metrics_report_artifact_uploaders_monthly
 description: Tracks number of metrics reports uploaded monthly.
 product_section: ops

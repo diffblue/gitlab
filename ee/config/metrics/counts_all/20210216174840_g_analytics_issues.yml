@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: analytics_unique_visits.g_analytics_issues
 description: Unique visitors to /groups/:group/-/issues_analytics
 product_section: dev

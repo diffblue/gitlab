@@ -1,5 +1,5 @@
 ---
-data_category: Optional
+data_category: optional
 key_path: redis_hll_counters.incident_management_oncall.i_incident_management_oncall_notification_sent_monthly
 description: Count of unique users to receive a notification while on-call
 product_section: ops
