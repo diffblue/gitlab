@@ -20,6 +20,8 @@ module Geo
       Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
         replicator_class.fail_sync_timeouts
       end
+
+      ::Geo::ContainerRepositoryRegistry.fail_sync_timeouts
     end
   end
 end
