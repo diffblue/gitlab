@@ -77,7 +77,7 @@ describe('DropdownWidget component', () => {
     });
   });
 
-  describe('when user dropdown', () => {
+  describe('when options are users', () => {
     const mockUser = {
       id: 1,
       name: 'User name',
@@ -86,7 +86,7 @@ describe('DropdownWidget component', () => {
     };
 
     beforeEach(() => {
-      createComponent({ props: { isUserDropdown: true, options: [mockUser] } });
+      createComponent({ props: { options: [mockUser] } });
     });
 
     it('passes user related props to dropdown item', () => {

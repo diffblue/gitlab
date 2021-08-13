@@ -88,9 +88,11 @@ describe('Assignee select component', () => {
     });
 
     it('renders selected assignee', async () => {
-      wrapper.vm.selected = mockUser2;
-
+      findEditButton().vm.$emit('click');
       await waitForPromises();
+      findDropdown().vm.$emit('set-option', mockUser2);
+
+      await nextTick();
       expect(selectedText()).toContain(mockUser2.username);
     });
   });

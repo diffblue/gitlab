@@ -98,7 +98,9 @@ describe('Milestone select component', () => {
     });
 
     it('renders selected milestone', async () => {
-      wrapper.vm.selected = mockMilestone1;
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      findDropdown().vm.$emit('set-option', mockMilestone1);
 
       await waitForPromises();
       expect(selectedText()).toContain(mockMilestone1.title);

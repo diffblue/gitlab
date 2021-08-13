@@ -81,7 +81,7 @@ export const MilestonesPreset = [
 
 export const ANY_ASSIGNEE = {
   id: 'gid://gitlab/User/-1',
-  title: s__('BoardScope|Any assignee'),
+  name: s__('BoardScope|Any assignee'),
 };
 export const AssigneesPreset = [ANY_ASSIGNEE];
 

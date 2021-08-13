@@ -176,10 +176,16 @@ export default {
       :is-loading="isLoading"
       :selected="selected"
       :search-term="search"
-      :is-user-dropdown="true"
       @hide="hideDropdown"
       @set-option="selectAssignee"
       @set-search="setSearch"
-    />
+    >
+      <template #preset-item="{ item }">
+        {{ item.name }}
+      </template>
+      <template #item="{ item }">
+        {{ item.name }}
+      </template>
+    </dropdown-widget>
   </div>
 </template>
