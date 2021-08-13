@@ -25,7 +25,7 @@ module EE
         field :vulnerabilities_count_by_day,
               ::Types::VulnerabilitiesCountByDayType.connection_type,
               null: true,
-              description: 'Number of vulnerabilities per day for the project.',
+              description: 'The historical number of vulnerabilities per day for the project.',
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver
 
         field :vulnerability_severities_count, ::Types::VulnerabilitySeveritiesCountType, null: true,

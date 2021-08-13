@@ -62,7 +62,7 @@ module EE
         field :vulnerabilities_count_by_day,
               ::Types::VulnerabilitiesCountByDayType.connection_type,
               null: true,
-              description: 'Number of vulnerabilities per day for the projects in the group and its subgroups.',
+              description: 'The historical number of vulnerabilities per day for the projects in the group and its subgroups.',
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver
 
         field :vulnerability_grades,
