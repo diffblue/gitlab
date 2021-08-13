@@ -48,7 +48,7 @@ export const createScannerOption = (vendor, reportType) => {
 // used by the scanner filter that shows a flat list of scan types (DAST, SAST, etc) with no vendor
 // grouping.
 export const simpleScannerFilter = {
-  name: s__('SecurityReports|Scanner'),
+  name: s__('SecurityReports|Tool'),
   id: 'reportType',
   options: parseOptions(REPORT_TYPES),
   allOption: BASE_FILTERS.report_type,
@@ -58,7 +58,7 @@ export const simpleScannerFilter = {
 // This is used on the project-level report. It's used by the scanner filter that shows a list of
 // scan types (DAST, SAST, etc) that's grouped by vendor.
 export const vendorScannerFilter = {
-  name: s__('SecurityReports|Scanner'),
+  name: s__('SecurityReports|Tool'),
   id: 'scanner',
   options: Object.keys(REPORT_TYPES).map((x) => createScannerOption(DEFAULT_SCANNER, x)),
   allOption: BASE_FILTERS.report_type,

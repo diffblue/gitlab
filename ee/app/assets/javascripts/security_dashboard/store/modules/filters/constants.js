@@ -20,7 +20,7 @@ export const BASE_FILTERS = {
     id: ALL,
   },
   report_type: {
-    name: s__('ciReport|All scanners'),
+    name: s__('ciReport|All tools'),
     id: ALL,
   },
   activity: {
