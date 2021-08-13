@@ -23,6 +23,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   let_it_be(:type) { 'scan_execution_policy' }
   let_it_be(:show) { project_security_policy_url(project) }
   let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
+  let_it_be(:new) { new_project_security_policy_url(project) }
 
   let_it_be(:feature_enabled) { true }
 
@@ -151,6 +152,32 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
 
         expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe 'GET #new' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:feature_flag, :license, :status) do
+      true | true | :ok
+      false | false | :not_found
+      false | true | :not_found
+      true | false | :not_found
+    end
+
+    subject(:request) { get new, params: { namespace_id: project.namespace, project_id: project } }
+
+    with_them do
+      before do
+        stub_feature_flags(security_orchestration_policies_configuration: feature_flag)
+        stub_licensed_features(security_orchestration_policies: license)
+      end
+
+      specify do
+        subject
+
+        expect(response).to have_gitlab_http_status(status)
       end
     end
   end

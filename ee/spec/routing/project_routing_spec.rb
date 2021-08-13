@@ -70,6 +70,10 @@ RSpec.describe 'EE-specific project routing' do
       %w[test.1.2 test-policy test:policy]
     end
 
+    it "to #new" do
+      expect(get("/gitlab/gitlabhq/-/security/policies/new")).to route_to('projects/security/policies#new', namespace_id: 'gitlab', project_id: 'gitlabhq')
+    end
+
     it 'to #show' do
       expect(get('/gitlab/gitlabhq/-/security/policy')).to route_to('projects/security/policies#show', namespace_id: 'gitlab', project_id: 'gitlabhq')
     end
