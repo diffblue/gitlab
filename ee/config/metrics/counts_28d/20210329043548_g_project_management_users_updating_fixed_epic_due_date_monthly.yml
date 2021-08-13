@@ -15,6 +15,10 @@ milestone: "13.11"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/57672
 time_frame: 28d
 data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - g_project_management_users_updating_fixed_epic_due_date
 distribution:
 - ee
 tier:

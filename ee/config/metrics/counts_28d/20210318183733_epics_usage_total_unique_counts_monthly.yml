@@ -12,6 +12,38 @@ milestone: "13.11"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56891
 time_frame: 28d
 data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - g_project_management_epic_created
+    - project_management_users_unchecking_epic_task
+    - project_management_users_checking_epic_task
+    - g_project_management_users_updating_epic_titles
+    - g_project_management_users_updating_epic_descriptions
+    - g_project_management_users_creating_epic_notes
+    - g_project_management_users_updating_epic_notes
+    - g_project_management_users_destroying_epic_notes
+    - g_project_management_users_awarding_epic_emoji
+    - g_project_management_users_removing_epic_emoji
+    - g_project_management_users_setting_epic_start_date_as_fixed
+    - g_project_management_users_updating_fixed_epic_start_date
+    - g_project_management_users_setting_epic_start_date_as_inherited
+    - g_project_management_users_setting_epic_due_date_as_fixed
+    - g_project_management_users_updating_fixed_epic_due_date
+    - g_project_management_users_setting_epic_due_date_as_inherited
+    - g_project_management_epic_issue_added
+    - g_project_management_epic_issue_removed
+    - g_project_management_epic_issue_moved_from_project
+    - g_project_management_users_updating_epic_parent
+    - g_project_management_epic_closed
+    - g_project_management_epic_reopened
+    - 'g_project_management_issue_promoted_to_epic'
+    - g_project_management_users_setting_epic_confidential
+    - g_project_management_users_setting_epic_visible
+    - g_project_management_epic_users_changing_labels
+    - g_project_management_epic_destroyed
+    - g_project_management_epic_cross_referenced
+    - g_project_management_users_epic_issue_added_from_epic
 distribution:
 - ee
 tier:

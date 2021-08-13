@@ -22,98 +22,37 @@ RSpec.describe Gitlab::UsageDataMetrics do
         expect(subject).to include(:license_subscription_id)
       end
 
-      it 'includes incident_management_incident_published monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:incident_management]).to include(
-          :incident_management_incident_published_monthly, :incident_management_incident_published_weekly
-        )
-      end
+      describe 'Redis_HLL_counters' do
+        let(:metric_files_key_paths) do
+          Gitlab::Usage::MetricDefinition
+            .definitions
+            .select { |k, v| v.attributes[:data_source] == 'redis_hll' && v.key_path.starts_with?('redis_hll_counters') }
+            .keys
+            .sort
+        end
 
-      it 'includes incident_management_oncall monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:incident_management_oncall].keys).to contain_exactly(*[
-          :i_incident_management_oncall_notification_sent_monthly, :i_incident_management_oncall_notification_sent_weekly
-        ])
-      end
+        # Recursively traverse nested Hash of a generated Service Ping to return an Array of key paths
+        # in the dotted format used in metric definition YAML files, e.g.: 'count.category.metric_name'
+        def parse_service_ping_keys(object, key_path = [])
+          if object.is_a?(Hash)
+            object.each_with_object([]) do |(key, value), result|
+              result.append parse_service_ping_keys(value, key_path + [key])
+            end
+          else
+            key_path.join('.')
+          end
+        end
 
-      it 'includes compliance monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:compliance].keys).to contain_exactly(*[
-          :g_compliance_dashboard_monthly, :g_compliance_dashboard_weekly,
-          :g_compliance_audit_events_monthly, :g_compliance_audit_events_weekly,
-          :i_compliance_audit_events_monthly, :i_compliance_audit_events_weekly,
-          :i_compliance_credential_inventory_monthly, :i_compliance_credential_inventory_weekly,
-          :a_compliance_audit_events_api_monthly, :a_compliance_audit_events_api_weekly,
-          :compliance_total_unique_counts_monthly, :compliance_total_unique_counts_weekly
-        ])
-      end
+        let(:service_ping_key_paths) do
+          parse_service_ping_keys(subject)
+            .flatten
+            .select { |k| k.starts_with?('redis_hll_counters') }
+            .sort
+        end
 
-      it 'includes search monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:search].keys).to contain_exactly(*[
-          :i_search_total_monthly, :i_search_total_weekly,
-          :i_search_advanced_monthly, :i_search_advanced_weekly,
-          :i_search_paid_monthly, :i_search_paid_weekly,
-          :search_total_unique_counts_monthly, :search_total_unique_counts_weekly
-        ])
-      end
-
-      it 'includes i_ci_secrets_management_vault_build_created monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:ci_secrets_management].keys).to contain_exactly(*[
-          :i_ci_secrets_management_vault_build_created_monthly, :i_ci_secrets_management_vault_build_created_weekly
-        ])
-      end
-
-      it 'includes epic_boards_usage monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:epic_boards_usage].keys).to contain_exactly(*[
-          :g_project_management_users_creating_epic_boards_monthly, :g_project_management_users_creating_epic_boards_weekly,
-          :g_project_management_users_viewing_epic_boards_monthly, :g_project_management_users_viewing_epic_boards_weekly,
-          :g_project_management_users_updating_epic_board_names_monthly, :g_project_management_users_updating_epic_board_names_weekly,
-          :epic_boards_usage_total_unique_counts_monthly, :epic_boards_usage_total_unique_counts_weekly
-        ])
-      end
-
-      it 'includes terraform weekly key' do
-        expect(subject[:redis_hll_counters][:terraform].keys).to include(:p_terraform_state_api_unique_users_weekly)
-      end
-
-      it 'includes issues_edit monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:issues_edit].keys).to include(
-          :g_project_management_issue_iteration_changed_monthly, :g_project_management_issue_iteration_changed_weekly,
-          :g_project_management_issue_weight_changed_monthly, :g_project_management_issue_weight_changed_weekly,
-          :g_project_management_issue_added_to_epic_monthly, :g_project_management_issue_added_to_epic_weekly,
-          :g_project_management_issue_removed_from_epic_monthly, :g_project_management_issue_removed_from_epic_weekly,
-          :g_project_management_issue_changed_epic_monthly, :g_project_management_issue_changed_epic_weekly,
-          :g_project_management_issue_health_status_changed_monthly, :g_project_management_issue_health_status_changed_weekly
-        )
-      end
-
-      it 'includes testing monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:testing]).to include(
-          :i_testing_metrics_report_widget_total_monthly, :i_testing_metrics_report_widget_total_weekly,
-          :i_testing_group_code_coverage_visit_total_monthly, :i_testing_group_code_coverage_visit_total_weekly,
-          :i_testing_full_code_quality_report_total_monthly, :i_testing_full_code_quality_report_total_weekly,
-          :i_testing_web_performance_widget_total_monthly, :i_testing_web_performance_widget_total_weekly,
-          :i_testing_group_code_coverage_project_click_total_monthly, :i_testing_group_code_coverage_project_click_total_weekly,
-          :i_testing_load_performance_widget_total_monthly, :i_testing_load_performance_widget_total_weekly,
-          :i_testing_metrics_report_artifact_uploaders_monthly, :i_testing_metrics_report_artifact_uploaders_weekly,
-          :testing_total_unique_counts_weekly
-        )
-      end
-
-      it 'includes quickactions monthly and weekly keys' do
-        expect(subject[:redis_hll_counters][:quickactions].keys).to include(
-          :i_quickactions_assign_multiple_monthly, :i_quickactions_assign_multiple_weekly,
-          :i_quickactions_child_epic_monthly, :i_quickactions_child_epic_weekly,
-          :i_quickactions_clear_weight_monthly, :i_quickactions_clear_weight_weekly,
-          :i_quickactions_epic_monthly, :i_quickactions_epic_weekly,
-          :i_quickactions_iteration_monthly, :i_quickactions_iteration_weekly,
-          :i_quickactions_parent_epic_monthly, :i_quickactions_parent_epic_weekly,
-          :i_quickactions_promote_monthly, :i_quickactions_promote_weekly,
-          :i_quickactions_publish_monthly, :i_quickactions_publish_weekly,
-          :i_quickactions_remove_child_epic_monthly, :i_quickactions_remove_child_epic_weekly,
-          :i_quickactions_remove_epic_monthly, :i_quickactions_remove_epic_weekly,
-          :i_quickactions_remove_iteration_monthly, :i_quickactions_remove_iteration_weekly,
-          :i_quickactions_remove_parent_epic_monthly, :i_quickactions_remove_parent_epic_weekly,
-          :i_quickactions_weight_monthly, :i_quickactions_weight_weekly,
-          :quickactions_total_unique_counts_weekly
-        )
+        it 'is included in the Usage Ping hash structure' do
+          expect(metric_files_key_paths).to match_array(service_ping_key_paths)
+        end
       end
     end
   end

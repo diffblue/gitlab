@@ -12,6 +12,10 @@ milestone: "13.12"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/61822
 time_frame: 28d
 data_source: redis_hll
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+    - g_project_management_users_epic_issue_added_from_epic
 distribution:
 - ee
 tier:
