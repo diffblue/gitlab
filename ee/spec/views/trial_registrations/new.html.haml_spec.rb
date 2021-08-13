@@ -23,6 +23,7 @@ RSpec.describe 'trial_registrations/new.html.haml' do
       it { is_expected.to have_content('Start a Free Ultimate Trial') }
       it { is_expected.not_to have_content('Free 30-day trial') }
       it { is_expected.not_to have_content('No credit card required.') }
+      it { is_expected.not_to have_selector('img[alt$=" logo"]') }
     end
 
     context 'when in the candidate' do
@@ -31,6 +32,7 @@ RSpec.describe 'trial_registrations/new.html.haml' do
       it { is_expected.not_to have_content('Start a Free Ultimate Trial') }
       it { is_expected.to have_content('Free 30-day trial') }
       it { is_expected.to have_content('No credit card required.') }
+      it { is_expected.to have_selector('img[alt$=" logo"]') }
     end
   end
 end

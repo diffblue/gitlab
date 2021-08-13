@@ -12,7 +12,7 @@
 
 %p.gl-mb-3.gl-text-gray-400.gl-font-sm.gl-line-height-24= s_('InProductMarketing|Used by more than 100,000 organizations from around the globe:')
 
-%ul.gl-display-flex.gl-flex-wrap.gl-pl-0.gl-font-sm.gl-font-weight-bold.gl-opacity-5
-  - ['Siemens', 'Chorus', 'KnowBe4', 'Wish', 'Hotjar'].each do |company|
-    %li.gl-display-flex.gl-align-items-center.gl-min-w-8.gl-h-8.gl-mr-6
-      = company
+%ul.gl-display-flex.gl-flex-wrap.gl-pl-0.gl-font-sm.gl-font-weight-bold
+  - reassurance_orgs.each do |org|
+    %li.gl-display-flex.gl-align-items-center.gl-min-w-8.gl-h-8.gl-mr-7{ class: org.opacity_css_class }
+      = image_tag org.logo_image_path, alt: org.image_alt_text, title: org.name

@@ -17046,6 +17046,9 @@ msgstr ""
 msgid "In this page you will find information about the settings that are used in your current instance."
 msgstr ""
 
+msgid "InProductMarketing|%{organization_name} logo"
+msgstr ""
+
 msgid "InProductMarketing|%{strong_start}Advanced application security%{strong_end} — including SAST, DAST scanning, FUZZ testing, dependency scanning, license compliance, secrete detection"
 msgstr ""
 
