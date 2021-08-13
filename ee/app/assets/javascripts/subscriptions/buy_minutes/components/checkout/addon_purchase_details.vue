@@ -7,7 +7,7 @@ import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import createFlash from '~/flash';
-import { sprintf, s__, formatNumber } from '~/locale';
+import { n__, s__, sprintf, formatNumber } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 
 export default {
@@ -45,14 +45,17 @@ export default {
       return this.quantity * CI_MINUTES_PER_PACK;
     },
     summaryCiMinutesQuantityText() {
-      return sprintf(this.$options.i18n.summaryCiMinutesQuantity, {
-        quantity: this.quantity,
-      });
+      return n__('Checkout|%d CI minute pack', 'Checkout|%d CI minute packs', this.quantity);
     },
     ciMinutesQuantityText() {
-      return sprintf(this.$options.i18n.ciMinutesQuantityText, {
-        totalCiMinutes: formatNumber(this.totalCiMinutes),
-      });
+      return sprintf(
+        n__(
+          'Checkout|%{totalCiMinutes} CI minute',
+          'Checkout|%{totalCiMinutes} CI minutes',
+          this.totalCiMinutes,
+        ),
+        { totalCiMinutes: formatNumber(this.totalCiMinutes) },
+      );
     },
     summaryCiMinutesTotal() {
       return sprintf(this.$options.i18n.summaryCiMinutesTotal, {
@@ -77,13 +80,12 @@ export default {
   i18n: {
     stepTitle: s__('Checkout|Purchase details'),
     nextStepButtonText: s__('Checkout|Continue to billing'),
-    ciMinutesPacksLabel: s__('Checkout|CI minute packs'),
+    ciMinutesLabel: s__('Checkout|CI minute pack'),
     ciMinutesAlertText: s__(
       "Checkout|CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year.",
     ),
     ciMinutesPacksQuantityFormula: s__('Checkout|x 1,000 minutes per pack = %{strong}'),
     ciMinutesQuantityText: s__('Checkout|%{totalCiMinutes} CI minutes'),
-    summaryCiMinutesQuantity: s__('Checkout|%{quantity} CI minute packs'),
     summaryCiMinutesTotal: s__('Checkout|Total minutes: %{quantity}'),
   },
   stepId: STEPS[0].id,
@@ -101,8 +103,10 @@ export default {
       <gl-alert variant="info" class="gl-mb-3" :dismissible="false">
         {{ $options.i18n.ciMinutesAlertText }}
       </gl-alert>
-      <label for="quantity">{{ $options.i18n.ciMinutesPacksLabel }}</label>
-      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center">
+      <label class="gl-mt-3" for="quantity" data-testid="product-label">
+        {{ $options.i18n.ciMinutesLabel }}
+      </label>
+      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mb-6">
         <gl-form-input
           ref="quantity"
           v-model.number="quantityModel"

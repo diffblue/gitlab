@@ -40,13 +40,11 @@ describe('SummaryDetails', () => {
     });
 
     it('renders the plan name', () => {
-      expect(wrapper.findByTestId('selected-plan').text()).toMatchInterpolatedText(
-        'Test plan (x1)',
-      );
+      expect(wrapper.findByTestId('selected-plan').text()).toMatchInterpolatedText('Test (x1)');
     });
 
     it('renders the price per unit', () => {
-      expect(wrapper.findByTestId('price-per-unit').text()).toBe('$10 per pack per year');
+      expect(wrapper.findByTestId('price-per-unit').text()).toBe('$10 per pack of 1,000 minutes');
     });
 
     it('displays the total amount', () => {
