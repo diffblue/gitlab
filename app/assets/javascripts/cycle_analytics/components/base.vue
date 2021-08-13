@@ -6,7 +6,7 @@ import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { __ } from '~/locale';
-import { projectMetricsRequests } from '../constants';
+import { SUMMARY_METRICS_REQUEST, METRICS_REQUESTS } from '../constants';
 
 const OVERVIEW_DIALOG_COOKIE = 'cycle_analytics_help_dismissed';
 
@@ -94,7 +94,7 @@ export default {
       return 0;
     },
     metricsRequests() {
-      return projectMetricsRequests(this.features.cycleAnalyticsForGroups);
+      return this.features?.cycleAnalyticsForGroups ? METRICS_REQUESTS : SUMMARY_METRICS_REQUEST;
     },
   },
   methods: {

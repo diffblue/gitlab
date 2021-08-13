@@ -11,12 +11,13 @@ const requestData = ({ request, path, params, name }) => {
   return request(path, params)
     .then(({ data }) => data)
     .catch(() => {
-      createFlash({
-        message: sprintf(
-          s__('There was an error while fetching value stream analytics %{requestTypeName} data.'),
-          { requestTypeName: name },
+      const message = sprintf(
+        s__(
+          'ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data.',
         ),
-      });
+        { requestTypeName: name },
+      );
+      createFlash({ message });
     });
 };
 

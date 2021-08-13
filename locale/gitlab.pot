@@ -33714,9 +33714,6 @@ msgstr ""
 msgid "There was an error while fetching the table data. Please refresh the page to try again."
 msgstr ""
 
-msgid "There was an error while fetching value stream analytics %{requestTypeName} data."
-msgstr ""
-
 msgid "There was an error while fetching value stream analytics data."
 msgstr ""
 
@@ -36553,6 +36550,9 @@ msgid "ValueStreamAnalytics|Number of commits pushed to the default branch"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of new issues created."
+msgstr ""
+
+msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Total number of deploys to production."

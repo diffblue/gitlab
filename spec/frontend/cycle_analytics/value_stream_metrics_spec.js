@@ -32,7 +32,7 @@ describe('ValueStreamMetrics', () => {
     wrapper = null;
   });
 
-  it('will display a loading icon if `true`', async () => {
+  it('will display a loader with pending requests', async () => {
     mockGetValueStreamSummaryMetrics = jest.fn().mockResolvedValue({ data: metricsData });
     wrapper = createComponent();
     await wrapper.vm.$nextTick();
@@ -105,7 +105,7 @@ describe('ValueStreamMetrics', () => {
       await waitForPromises();
     });
 
-    it('it should render a error message', () => {
+    it('it should render an error message', () => {
       expect(createFlash).toHaveBeenCalledWith({
         message: `There was an error while fetching value stream analytics ${fakeReqName} data.`,
       });

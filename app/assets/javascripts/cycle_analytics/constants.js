@@ -60,12 +60,11 @@ export const METRICS_POPOVER_CONTENT = {
   },
 };
 
-export const projectMetricsRequests = (cycleAnalyticsForGroups = false) => {
-  const summaryMetrics = [{ request: getValueStreamSummaryMetrics, name: __('recent activity') }];
-  if (cycleAnalyticsForGroups) {
-    return [{ request: getValueStreamTimeSummaryMetrics, name: __('time summary') }].concat(
-      summaryMetrics,
-    );
-  }
-  return summaryMetrics;
-};
+export const SUMMARY_METRICS_REQUEST = [
+  { request: getValueStreamSummaryMetrics, name: __('recent activity') },
+];
+
+export const METRICS_REQUESTS = [
+  { request: getValueStreamTimeSummaryMetrics, name: __('time summary') },
+  ...SUMMARY_METRICS_REQUEST,
+];
