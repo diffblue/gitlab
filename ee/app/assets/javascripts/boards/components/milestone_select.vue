@@ -136,8 +136,9 @@ export default {
       {{ $options.i18n.label }}
       <gl-button
         v-if="canEdit"
-        variant="link"
-        class="edit-link float-right gl-text-gray-900!"
+        category="tertiary"
+        size="small"
+        class="edit-link float-right"
         @click="toggleEdit"
       >
         {{ $options.i18n.edit }}

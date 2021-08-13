@@ -230,7 +230,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
         expect(find('[data-testid="selected-milestone"]')).to have_content(milestone.title)
         expect(find('[data-testid="selected-assignee"]')).to have_content(user.name)
-        expect(find('.weight .value')).to have_content(2)
+        expect(find('[data-testid="selected-weight"]')).to have_content(2)
       end
 
       context 'milestone' do

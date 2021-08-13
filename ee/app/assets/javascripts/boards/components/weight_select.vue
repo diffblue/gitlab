@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { s__ } from '~/locale';
 
 const ANY_WEIGHT = 'Any weight';
 const NO_WEIGHT = 'None';
@@ -28,6 +29,7 @@ export default {
   data() {
     return {
       dropdownHidden: true,
+      selected: this.board.weight,
     };
   },
   computed: {
@@ -38,7 +40,7 @@ export default {
       return 'bold';
     },
     valueText() {
-      const { weight } = this.board;
+      const weight = this.selected;
       if (weight > 0 || weight === 0) return weight.toString();
       if (weight === -2) return NO_WEIGHT;
       return ANY_WEIGHT;
@@ -49,10 +51,11 @@ export default {
       this.dropdownHidden = false;
       this.$refs.dropdown.$children[0].show();
     },
-    selectWeight(weight) {
-      // eslint-disable-next-line vue/no-mutating-props
-      this.board.weight = this.weightInt(weight);
+    selectWeight(rawWeight) {
+      const weight = this.weightInt(rawWeight);
+      this.selected = weight;
       this.dropdownHidden = true;
+      this.$emit('set-weight', weight);
     },
     weightInt(weight) {
       if (weight >= 0) {
@@ -62,6 +65,18 @@ export default {
       }
       return -1;
     },
+    toggleEdit() {
+      if (this.dropdownHidden) {
+        this.showDropdown();
+      } else {
+        this.dropdownHidden = true;
+      }
+    },
+  },
+  i18n: {
+    label: s__('BoardScope|Weight'),
+    selectWeight: s__('BoardScope|Select weight'),
+    edit: s__('BoardScope|Edit'),
   },
 };
 </script>
@@ -69,24 +84,27 @@ export default {
 <template>
   <div class="block weight">
     <div class="title gl-mb-3">
-      {{ __('Weight') }}
+      {{ $options.i18n.label }}
       <gl-button
         v-if="canEdit"
-        variant="link"
-        class="float-right gl-text-gray-800!"
-        @click="showDropdown"
+        category="tertiary"
+        size="small"
+        class="edit-link float-right"
+        @click="toggleEdit"
       >
-        {{ __('Edit') }}
+        {{ $options.i18n.edit }}
       </gl-button>
     </div>
-    <div :class="valueClass" :hidden="!dropdownHidden" class="value">{{ valueText }}</div>
+    <div v-if="dropdownHidden" :class="valueClass" data-testid="selected-weight">
+      {{ valueText }}
+    </div>
 
     <gl-dropdown
       ref="dropdown"
       :hidden="dropdownHidden"
       :text="valueText"
-      block
-      toggle-class="d-flex justify-content-between"
+      menu-class="gl-w-full!"
+      class="gl-w-full"
     >
       <gl-dropdown-item
         v-for="weight in weights"
