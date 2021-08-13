@@ -11,18 +11,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
 
     context 'when security_orchestration_policies_configuration does not exist for project' do
       let_it_be(:maintainer) { create(:user) }
+      let_it_be(:developer) { create(:user) }
 
       before do
         project.add_maintainer(maintainer)
+        project.add_developer(developer)
       end
 
-      it 'creates new project' do
+      it 'creates policy project with maintainers and developers from target project as developers' do
         response = service.execute
 
         policy_project = response[:policy_project]
         expect(project.reload.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
         expect(policy_project.namespace).to eq(project.namespace)
-        expect(policy_project.team.developers).to contain_exactly(maintainer)
+        expect(policy_project.team.developers).to contain_exactly(maintainer, developer)
         expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
       end
     end

@@ -3,6 +3,8 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProjectCreateService < ::BaseProjectService
+      ACCESS_LEVELS_TO_ADD = [Gitlab::Access::MAINTAINER, Gitlab::Access::DEVELOPER].freeze
+
       def execute
         return error('Security Policy project already exists.') if project.security_orchestration_policy_configuration.present?
 
@@ -21,7 +23,8 @@ module Security
       private
 
       def add_members(policy_project)
-        members_to_add = project.team.maintainers - policy_project.team.members
+        developers_and_maintainers = project.team.members_with_access_levels(ACCESS_LEVELS_TO_ADD)
+        members_to_add = developers_and_maintainers - policy_project.team.members
         policy_project.add_users(members_to_add, :developer)
       end
 
