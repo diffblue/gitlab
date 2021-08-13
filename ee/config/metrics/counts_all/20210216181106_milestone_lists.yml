@@ -1,17 +1,18 @@
 ---
 data_category: optional
 key_path: counts.milestone_lists
-description: Count of milestone lists created on Boards 
+description: Count of milestone lists created on Boards
 product_section: dev
-product_stage: plan 
-product_group: group::project management 
-product_category: boards 
+product_stage: plan
+product_group: group::project management
+product_category: boards
 value_type: number
 status: data_available
 time_frame: all
 data_source: database
 distribution:
-- ee 
+- ee
 tier:
-- premium 
+- premium
 - ultimate
+performance_indicator_type: []

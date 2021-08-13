@@ -3,14 +3,15 @@ data_category: optional
 key_path: usage_activity_by_stage.configure.projects_slack_slash_active
 description: Unique projects with Slack ‘/’ commands enabled
 product_section: ops
-product_stage:
+product_stage: 
 product_group: group::configure
 product_category: chatops
 value_type: number
 status: data_available
 time_frame: all
-data_source:
+data_source: 
 distribution:
 - ee
 tier: []
 skip_validation: true
+performance_indicator_type: []

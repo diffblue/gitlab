@@ -8,12 +8,13 @@ product_group: compliance
 product_category: "Compliance management"
 value_type: number
 status: implemented
-milestone: "14.1"
+milestone: '14.1'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64601
 time_frame: all
 data_source: database
 data_category: optional
 distribution:
-  - ee
+- ee
 tier:
-  - ultimate
+- ultimate
+performance_indicator_type: []

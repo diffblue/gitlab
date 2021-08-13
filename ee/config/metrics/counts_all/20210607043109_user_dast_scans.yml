@@ -12,6 +12,7 @@ time_frame: all
 data_source: database
 data_category: optional
 distribution:
-  - ee
+- ee
 tier:
-  - ultimate
+- ultimate
+performance_indicator_type: []
