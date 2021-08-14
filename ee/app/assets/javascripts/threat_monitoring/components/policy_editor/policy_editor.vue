@@ -79,7 +79,7 @@ export default {
           @change="updatePolicyType"
         />
       </gl-form-group>
-      <environment-picker v-if="shouldShowEnvironmentPicker" />
+      <environment-picker v-if="shouldShowEnvironmentPicker" class="gl-ml-5" />
     </div>
     <component
       :is="policyComponent"
