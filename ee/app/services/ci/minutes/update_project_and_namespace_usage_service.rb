@@ -58,7 +58,9 @@ module Ci
       end
 
       def namespace_usage
-        ::Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: @namespace_id)
+        strong_memoize(:namespace_usage) do
+          ::Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: @namespace_id)
+        end
       end
 
       def project_usage
