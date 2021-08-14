@@ -224,7 +224,7 @@ class User < ApplicationRecord
   validates :email, confirmation: true
   validates :notification_email, presence: true
   validates :notification_email, devise_email: true, if: ->(user) { user.notification_email != user.email }
-  validates :public_email, presence: true, uniqueness: true, devise_email: true, allow_blank: true
+  validates :public_email, uniqueness: true, devise_email: true, allow_blank: true
   validates :commit_email, devise_email: true, allow_nil: true, if: ->(user) { user.commit_email != user.email }
   validates :projects_limit,
     presence: true,
