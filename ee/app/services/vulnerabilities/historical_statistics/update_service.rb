@@ -15,7 +15,7 @@ module Vulnerabilities
 
       # rubocop: disable CodeReuse/ActiveRecord
       def execute
-        return if vulnerability_statistic.blank?
+        return unless update_statistic?
 
         ::Vulnerabilities::HistoricalStatistic.safe_ensure_unique(retries: 1) do
           historical_statistic = vulnerability_historical_statistics.find_or_initialize_by(date: vulnerability_statistic.updated_at)
@@ -29,6 +29,14 @@ module Vulnerabilities
       attr_reader :project
 
       delegate :vulnerability_statistic, :vulnerability_historical_statistics, to: :project
+
+      def update_statistic?
+        keep_statistics_always_consistent? && vulnerability_statistic.present?
+      end
+
+      def keep_statistics_always_consistent?
+        Feature.enabled?(:keep_historical_vulnerability_statistics_always_consistent, project)
+      end
     end
   end
 end

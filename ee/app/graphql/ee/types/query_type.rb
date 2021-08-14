@@ -34,7 +34,7 @@ module EE
               null: true,
               resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver,
               description: <<~DESC
-                Number of vulnerabilities per day for the projects on the current user's instance security dashboard.
+                The historical number of vulnerabilities per day for the projects on the current user's instance security dashboard.
               DESC
 
         field :geo_node, ::Types::Geo::GeoNodeType,
