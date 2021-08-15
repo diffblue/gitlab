@@ -125,7 +125,7 @@ export default {
 
 <template>
   <gl-form novalidate @submit.prevent="onSubmit">
-    <h2 v-if="showHeader" class="gl-mb-6">
+    <h2 v-if="showHeader" class="gl-mb-6" data-testid="header">
       <slot name="title"></slot>
     </h2>
 
