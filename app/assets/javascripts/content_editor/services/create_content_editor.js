@@ -22,6 +22,7 @@ import ListItem from '../extensions/list_item';
 import Loading from '../extensions/loading';
 import OrderedList from '../extensions/ordered_list';
 import Paragraph from '../extensions/paragraph';
+import Reference from '../extensions/reference';
 import Strike from '../extensions/strike';
 import Subscript from '../extensions/subscript';
 import Superscript from '../extensions/superscript';
@@ -78,6 +79,7 @@ export const createContentEditor = ({
     Loading,
     OrderedList,
     Paragraph,
+    Reference,
     Strike,
     Subscript,
     Superscript,
