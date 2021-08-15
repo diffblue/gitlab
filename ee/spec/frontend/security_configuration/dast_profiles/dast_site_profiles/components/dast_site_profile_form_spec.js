@@ -1,22 +1,14 @@
-import { GlForm, GlModal } from '@gitlab/ui';
+import { GlForm } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
-import { createLocalVue, mount } from '@vue/test-utils';
 import merge from 'lodash/merge';
-import { createMockClient } from 'mock-apollo-client';
-import VueApollo from 'vue-apollo';
 import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
 import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_auth_section.vue';
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_update.mutation.graphql';
 import { siteProfiles, policySiteProfile } from 'ee_jest/on_demand_scans/mocks/mock_data';
-import * as responses from 'ee_jest/security_configuration/dast_profiles/dast_site_profiles/mock_data/apollo_mock';
 import { TEST_HOST } from 'helpers/test_constants';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
-
-const localVue = createLocalVue();
-localVue.use(VueApollo);
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const [siteProfileOne] = siteProfiles;
 const projectFullPath = 'group/project';
@@ -32,15 +24,8 @@ const defaultProps = {
   onDemandScansPath,
 };
 
-const defaultRequestHandlers = {
-  dastSiteProfileCreate: jest.fn().mockResolvedValue(responses.dastSiteProfileCreate()),
-  dastSiteProfileUpdate: jest.fn().mockResolvedValue(responses.dastSiteProfileUpdate()),
-};
-
 describe('DastSiteProfileForm', () => {
   let wrapper;
-  let apolloProvider;
-  let requestHandlers;
 
   const withinComponent = () => within(wrapper.element);
 
@@ -48,7 +33,6 @@ describe('DastSiteProfileForm', () => {
   const findBaseDastProfileForm = () => wrapper.findComponent(BaseDastProfileForm);
   const findParentFormGroup = () => wrapper.findByTestId('dast-site-parent-group');
   const findAuthSection = () => wrapper.findComponent(DastSiteAuthSection);
-  const findCancelModal = () => wrapper.findComponent(GlModal);
   const findByNameAttribute = (name) => wrapper.find(`[name="${name}"]`);
   const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
   const findTargetUrlInput = () => wrapper.findByTestId('target-url-input');
@@ -56,11 +40,6 @@ describe('DastSiteProfileForm', () => {
   const findRequestHeadersInput = () => wrapper.findByTestId('request-headers-input');
   const findAuthCheckbox = () => wrapper.findByTestId('auth-enable-checkbox');
   const findTargetTypeOption = () => wrapper.findByTestId('site-type-option');
-  const findSubmitButton = () => wrapper.findByTestId('dast-profile-form-submit-button');
-  const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
-  const findAlert = () => wrapper.findByTestId('dast-profile-form-alert');
-  const findPolicyAlert = () => wrapper.findByTestId('dast-policy-profile-alert');
-  const submitForm = () => findForm().vm.$emit('submit', { preventDefault: () => {} });
 
   const setFieldValue = async (field, value) => {
     await field.setValue(value);
@@ -83,11 +62,6 @@ describe('DastSiteProfileForm', () => {
     await setAuthFieldsValues(siteProfileOne.auth);
   };
 
-  const fillAndSubmitForm = async () => {
-    await fillForm();
-    submitForm();
-  };
-
   const setTargetType = async (type) => {
     const radio = wrapper
       .findAll('input[type="radio"]')
@@ -96,37 +70,7 @@ describe('DastSiteProfileForm', () => {
     radio.element.selected = true;
     radio.trigger('change');
   };
-
-  const mockClientFactory = (handlers) => {
-    const mockClient = createMockClient();
-
-    requestHandlers = {
-      ...defaultRequestHandlers,
-      ...handlers,
-    };
-
-    mockClient.setRequestHandler(
-      dastSiteProfileCreateMutation,
-      requestHandlers.dastSiteProfileCreate,
-    );
-
-    mockClient.setRequestHandler(
-      dastSiteProfileUpdateMutation,
-      requestHandlers.dastSiteProfileUpdate,
-    );
-
-    return mockClient;
-  };
-
-  const respondWith = (handlers) => {
-    apolloProvider.defaultClient = mockClientFactory(handlers);
-  };
-
-  const createComponent = (options, handlers) => {
-    apolloProvider = new VueApollo({
-      defaultClient: mockClientFactory(handlers),
-    });
-
+  const createComponentFactory = (mountFn = mountExtended) => (options) => {
     const mountOpts = merge(
       {},
       {
@@ -134,19 +78,15 @@ describe('DastSiteProfileForm', () => {
         provide: { projectFullPath },
       },
       options,
-      {
-        localVue,
-        apolloProvider,
-      },
     );
 
-    wrapper = extendedWrapper(mount(DastSiteProfileForm, mountOpts));
+    wrapper = mountFn(DastSiteProfileForm, mountOpts);
   };
+  const createShallowComponent = createComponentFactory(shallowMountExtended);
+  const createComponent = createComponentFactory();
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
-    apolloProvider = null;
   });
 
   it('renders properly', () => {
@@ -155,14 +95,14 @@ describe('DastSiteProfileForm', () => {
     expect(findForm().text()).toContain('New site profile');
   });
 
-  it('when showHeader prop is disabled', () => {
-    createComponent({
+  it('when show header is disabled', () => {
+    createShallowComponent({
       propsData: {
         ...defaultProps,
         showHeader: false,
       },
     });
-    expect(findForm().text()).not.toContain('New site profile');
+    expect(findBaseDastProfileForm().props('showHeader')).toBe(false);
   });
 
   describe('target URL input', () => {
@@ -246,10 +186,10 @@ describe('DastSiteProfileForm', () => {
       });
 
       describe.each`
-        title                  | profile           | mutationVars                 | mutationKind
-        ${'New site profile'}  | ${{}}             | ${{}}                        | ${'dastSiteProfileCreate'}
-        ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }} | ${'dastSiteProfileUpdate'}
-      `('$title', ({ profile, mutationVars, mutationKind }) => {
+        title                  | profile           | mutationVars                 | mutation                         | mutationKind
+        ${'New site profile'}  | ${{}}             | ${{}}                        | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
+        ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }} | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
+      `('$title', ({ profile, mutationVars, mutation, mutationKind }) => {
         beforeEach(() => {
           createComponent({
             propsData: {
@@ -258,21 +198,21 @@ describe('DastSiteProfileForm', () => {
           });
         });
 
-        it('form submission triggers correct GraphQL mutation', async () => {
+        it('passes correct props to base component', async () => {
           await fillForm();
           await setTargetType('API');
-          await submitForm();
 
-          expect(requestHandlers[mutationKind]).toHaveBeenCalledWith({
-            input: {
-              profileName,
-              targetUrl,
-              fullPath: projectFullPath,
-              excludedUrls: siteProfileOne.excludedUrls,
-              requestHeaders,
-              targetType: 'API',
-              ...mutationVars,
-            },
+          const baseDastProfileForm = findBaseDastProfileForm();
+          expect(baseDastProfileForm.props('mutation')).toBe(mutation);
+          expect(baseDastProfileForm.props('mutationType')).toBe(mutationKind);
+          expect(baseDastProfileForm.props('mutationVariables')).toEqual({
+            profileName,
+            targetUrl,
+            fullPath: projectFullPath,
+            excludedUrls: siteProfileOne.excludedUrls,
+            requestHeaders,
+            targetType: 'API',
+            ...mutationVars,
           });
         });
       });
@@ -300,122 +240,18 @@ describe('DastSiteProfileForm', () => {
       expect(findProfileNameInput().element.value).toBe(profile?.name ?? '');
     });
 
-    describe('submission', () => {
-      describe('on success', () => {
-        beforeEach(async () => {
-          await fillAndSubmitForm();
-        });
-
-        it('sets loading state', () => {
-          expect(findSubmitButton().props('loading')).toBe(true);
-        });
-
-        it('triggers GraphQL mutation', () => {
-          expect(requestHandlers[mutationKind]).toHaveBeenCalledWith({
-            input: {
-              profileName,
-              targetUrl,
-              requestHeaders,
-              fullPath: projectFullPath,
-              auth: siteProfileOne.auth,
-              excludedUrls: siteProfileOne.excludedUrls,
-              targetType: siteProfileOne.targetType,
-              ...mutationVars,
-            },
-          });
-        });
-
-        it('emits success event with correct params', () => {
-          const baseDastProfileForm = findBaseDastProfileForm();
-          expect(baseDastProfileForm.emitted('success')).toBeTruthy();
-          expect(baseDastProfileForm.emitted('success')).toHaveLength(1);
-          expect(baseDastProfileForm.emitted('success')[0]).toStrictEqual([{ id: '3083' }]);
-        });
-
-        it('does not show an alert', () => {
-          expect(findAlert().exists()).toBe(false);
-        });
-      });
-
-      describe('on top-level error', () => {
-        beforeEach(async () => {
-          respondWith({
-            [mutationKind]: jest.fn().mockRejectedValue(new Error('GraphQL Network Error')),
-          });
-
-          await fillAndSubmitForm();
-          await waitForPromises();
-        });
-
-        it('resets loading state', () => {
-          expect(findSubmitButton().props('loading')).toBe(false);
-        });
-
-        it('shows an error alert', async () => {
-          await wrapper.vm.$nextTick();
-
-          expect(findAlert().exists()).toBe(true);
-        });
-      });
-
-      describe('on errors as data', () => {
-        const errors = ['error#1', 'error#2', 'error#3'];
-
-        beforeEach(async () => {
-          respondWith({
-            [mutationKind]: jest.fn().mockResolvedValue(responses[mutationKind](errors)),
-          });
-
-          await fillAndSubmitForm();
-          await waitForPromises();
-        });
-
-        it('resets loading state', () => {
-          expect(findSubmitButton().props('loading')).toBe(false);
-        });
-
-        it('shows an alert with the returned errors', () => {
-          const alert = findAlert();
-
-          expect(alert.exists()).toBe(true);
-          errors.forEach((error) => {
-            expect(alert.text()).toContain(error);
-          });
-        });
-      });
-    });
-
-    describe('cancellation', () => {
-      describe('form unchanged', () => {
-        it('emits cancel event', () => {
-          findCancelButton().vm.$emit('click');
-          expect(findBaseDastProfileForm().emitted('cancel')).toBeTruthy();
-        });
-      });
-
-      describe('form changed', () => {
-        beforeEach(() => {
-          findTargetUrlInput().setValue(targetUrl);
-          findProfileNameInput().setValue(profileName);
-        });
-
-        it('asks the user to confirm the action', () => {
-          jest.spyOn(findCancelModal().vm, 'show').mockReturnValue();
-          findCancelButton().trigger('click');
-          expect(findCancelModal().vm.show).toHaveBeenCalled();
-        });
-
-        it('emits cancel event', () => {
-          findCancelModal().vm.$emit('ok');
-          expect(findBaseDastProfileForm().emitted('cancel')).toBeTruthy();
-        });
-      });
+    it('passes props vars to base component', () => {
+      const baseDastProfileForm = findBaseDastProfileForm();
+      expect(baseDastProfileForm.props('mutationType')).toBe(mutationKind);
+      expect(baseDastProfileForm.props('mutationVariables')).toEqual(
+        expect.objectContaining(mutationVars),
+      );
     });
   });
 
   describe('when profile does not come from a policy', () => {
     beforeEach(() => {
-      createComponent({
+      createShallowComponent({
         propsData: {
           profile: siteProfileOne,
         },
@@ -425,31 +261,19 @@ describe('DastSiteProfileForm', () => {
     it('should enable all form groups', () => {
       expect(findParentFormGroup().attributes('disabled')).toBe(undefined);
     });
-
-    it('should show the policy profile alert', () => {
-      expect(findPolicyAlert().exists()).toBe(false);
-    });
   });
 
   describe('when profile does comes from a policy', () => {
     beforeEach(() => {
-      createComponent({
+      createShallowComponent({
         propsData: {
           profile: policySiteProfile,
         },
       });
     });
 
-    it('should show the policy profile alert', () => {
-      expect(findPolicyAlert().exists()).toBe(true);
-    });
-
     it('should disable all form groups', () => {
-      expect(findParentFormGroup().attributes('disabled')).toBe('disabled');
-    });
-
-    it('should disable the save button', () => {
-      expect(findSubmitButton().props('disabled')).toBe(true);
+      expect(findParentFormGroup().attributes('disabled')).toBe('true');
     });
   });
 });
