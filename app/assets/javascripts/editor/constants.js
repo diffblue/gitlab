@@ -30,5 +30,6 @@ export const EDITOR_DIFF_INSTANCE_FN = 'createDiffInstance';
 export const EXTENSION_CI_SCHEMA_FILE_NAME_MATCH = '.gitlab-ci.yml';
 
 export const EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS = 'md';
+export const EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS = 'source-editor-preview';
 export const EXTENSION_MARKDOWN_PREVIEW_ACTION_ID = 'markdown-preview';
 export const EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH = 0.5; // 50% of the width

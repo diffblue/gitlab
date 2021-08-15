@@ -9,6 +9,7 @@ import {
   EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS,
   EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
   EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH,
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS,
 } from '../constants';
 import { SourceEditorExtension } from './source_editor_extension_base';
 
@@ -30,63 +31,76 @@ const getPreview = (text, projectPath = '') => {
     });
 };
 
+const setupDomElement = ({ injectToEl = null } = {}) => {
+  const previewEl = document.createElement('div');
+  previewEl.classList.add(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS);
+  previewEl.style.display = 'none';
+  if (injectToEl) {
+    injectToEl.appendChild(previewEl);
+  }
+  return previewEl;
+};
+
 export class EditorMarkdownExtension extends SourceEditorExtension {
-  constructor({ instance, ...args } = {}) {
+  constructor({ instance, projectPath, ...args } = {}) {
     super({ instance, ...args });
-    EditorMarkdownExtension.setupLivePreview(instance);
+    Object.assign(instance, {
+      projectPath,
+      preview: {
+        el: undefined,
+        action: undefined,
+        shown: false,
+      },
+    });
+    this.setupPreviewAction.call(instance);
   }
 
-  static setupPanelElement(injectToEl = null) {
-    const previewEl = document.createElement('div');
-    previewEl.classList.add(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS);
-    previewEl.style.display = 'none';
-    if (injectToEl) {
-      injectToEl.appendChild(previewEl);
-    }
-    return previewEl;
+  static togglePreviewLayout() {
+    const { width, height } = this.getLayoutInfo();
+    const newWidth = this.preview.shown
+      ? width / EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH
+      : width * EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH;
+    this.layout({ width: newWidth, height });
   }
 
-  static togglePreviewLayout(editor) {
-    const currentLayout = editor.getLayoutInfo();
-    const width = editor.preview
-      ? currentLayout.width / EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH
-      : currentLayout.width * EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH;
-    editor.layout({ width, height: currentLayout.height });
-  }
-
-  static togglePreviewPanel(editor) {
-    const parentEl = editor.getDomNode().parentElement;
-    const { previewEl } = editor;
-    parentEl.classList.toggle('source-editor-preview');
+  static togglePreviewPanel() {
+    const parentEl = this.getDomNode().parentElement;
+    const { el: previewEl } = this.preview;
+    parentEl.classList.toggle(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS);
 
     if (previewEl.style.display === 'none') {
       // Show the preview panel
-      const fetchPreview = () => {
-        getPreview(editor.getValue(), editor.projectPath)
-          .then((data) => {
-            previewEl.innerHTML = sanitize(data);
-            syntaxHighlight(previewEl.querySelectorAll('.js-syntax-highlight'));
-            previewEl.style.display = 'block';
-          })
-          .catch(() => createFlash(BLOB_PREVIEW_ERROR));
-      };
-      fetchPreview();
-      Object.assign(editor, {
-        modelChangeListener: editor.onDidChangeModelContent(
-          debounce(fetchPreview.bind(editor), 250),
-        ),
-      });
+      this.fetchPreview();
     } else {
       // Hide the preview panel
       previewEl.style.display = 'none';
-      editor.modelChangeListener.dispose();
     }
   }
 
-  static setupLivePreview(instance) {
-    if (!instance || instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)) return;
+  cleanup() {
+    this.preview.action.dispose();
+    if (this.preview.shown) {
+      EditorMarkdownExtension.togglePreviewPanel.call(this);
+      EditorMarkdownExtension.togglePreviewLayout.call(this);
+    }
+    this.preview.shown = false;
+  }
 
-    instance.addAction({
+  fetchPreview() {
+    const { el: previewEl } = this.preview;
+    getPreview(this.getValue(), this.projectPath)
+      .then((data) => {
+        previewEl.innerHTML = sanitize(data);
+        syntaxHighlight(previewEl.querySelectorAll('.js-syntax-highlight'));
+        previewEl.style.display = 'block';
+      })
+      .catch(() => createFlash(BLOB_PREVIEW_ERROR));
+  }
+
+  setupPreviewAction() {
+    if (this.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)) return;
+
+    this.preview.action = this.addAction({
       id: EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
       label: __('Preview Markdown'),
       keybindings: [
@@ -98,19 +112,36 @@ export class EditorMarkdownExtension extends SourceEditorExtension {
 
       // Method that will be executed when the action is triggered.
       // @param ed The editor instance is passed in as a convenience
-      run(e) {
-        e.togglePreview();
+      run(instance) {
+        instance.togglePreview();
       },
     });
   }
 
   togglePreview() {
-    if (!this.previewEl) {
-      this.previewEl = EditorMarkdownExtension.setupPanelElement(this.getDomNode().parentElement);
+    if (!this.preview?.el) {
+      this.preview.el = setupDomElement({ injectToEl: this.getDomNode().parentElement });
     }
-    EditorMarkdownExtension.togglePreviewLayout(this);
-    EditorMarkdownExtension.togglePreviewPanel(this);
-    this.preview = !this.preview;
+    EditorMarkdownExtension.togglePreviewLayout.call(this);
+    EditorMarkdownExtension.togglePreviewPanel.call(this);
+
+    if (!this.preview?.shown) {
+      this.modelChangeListener = this.onDidChangeModelContent(
+        debounce(this.fetchPreview.bind(this), 250),
+      );
+    } else {
+      this.modelChangeListener.dispose();
+    }
+
+    this.preview.shown = !this.preview?.shown;
+
+    this.getModel().onDidChangeLanguage(({ newLanguage, oldLanguage } = {}) => {
+      if (newLanguage === 'markdown' && oldLanguage !== newLanguage) {
+        this.setupPreviewAction();
+      } else {
+        this.cleanup();
+      }
+    });
   }
 
   getSelectedText(selection = this.getSelection()) {

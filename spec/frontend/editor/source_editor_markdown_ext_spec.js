@@ -1,10 +1,10 @@
 import { Range, Position } from 'monaco-editor';
-import setWindowLocation from 'helpers/set_window_location_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS,
   EXTENSION_MARKDOWN_PREVIEW_ACTION_ID,
   EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH,
+  EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS,
 } from '~/editor/constants';
 import { EditorMarkdownExtension } from '~/editor/extensions/source_editor_markdown_ext';
 import SourceEditor from '~/editor/source_editor';
@@ -20,11 +20,14 @@ describe('Markdown Extension for Source Editor', () => {
   let editor;
   let instance;
   let editorEl;
+  let panelSpy;
+  const projectPath = 'fooGroup/barProj';
   const firstLine = 'This is a';
   const secondLine = 'multiline';
   const thirdLine = 'string with some **markup**';
   const text = `${firstLine}\n${secondLine}\n${thirdLine}`;
   const filePath = 'foo.md';
+  const responseData = '<div>FooBar</div>';
 
   const setSelection = (startLineNumber = 1, startColumn = 1, endLineNumber = 1, endColumn = 1) => {
     const selection = new Range(startLineNumber, startColumn, endLineNumber, endColumn);
@@ -50,7 +53,8 @@ describe('Markdown Extension for Source Editor', () => {
       blobPath: filePath,
       blobContent: text,
     });
-    editor.use(new EditorMarkdownExtension({ instance }));
+    editor.use(new EditorMarkdownExtension({ instance, projectPath }));
+    panelSpy = jest.spyOn(EditorMarkdownExtension, 'togglePreviewPanel');
   });
 
   afterEach(() => {
@@ -58,9 +62,129 @@ describe('Markdown Extension for Source Editor', () => {
     editorEl.remove();
   });
 
-  describe('contextual menu action', () => {
+  it('sets up the instance', () => {
+    expect(instance.preview).toEqual({
+      el: undefined,
+      action: expect.any(Object),
+      shown: false,
+    });
+    expect(instance.projectPath).toBe(projectPath);
+  });
+
+  describe('cleanup', () => {
+    beforeEach(async () => {
+      axios.post.mockImplementation(() => Promise.resolve({ data: '<div>FooBar</div>' }));
+      await togglePreview();
+    });
+
+    it('removes the contextual menu action', () => {
+      expect(instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)).toBeDefined();
+
+      instance.cleanup();
+
+      expect(instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)).toBe(null);
+    });
+
+    it('toggles the `shown` flag', () => {
+      expect(instance.preview.shown).toBe(true);
+      instance.cleanup();
+      expect(instance.preview.shown).toBe(false);
+    });
+
+    it('toggles the panel only if the preview is visible', () => {
+      const { el: previewEl } = instance.preview;
+      const parentEl = previewEl.parentElement;
+
+      expect(previewEl).toBeVisible();
+      expect(parentEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(true);
+
+      instance.cleanup();
+      expect(previewEl).toBeHidden();
+      expect(parentEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(
+        false,
+      );
+
+      instance.cleanup();
+      expect(previewEl).toBeHidden();
+      expect(parentEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(
+        false,
+      );
+    });
+
+    it('toggles the layout only if the preview is visible', () => {
+      const { width } = instance.getLayoutInfo();
+
+      expect(instance.preview.shown).toBe(true);
+
+      instance.cleanup();
+
+      const { width: newWidth } = instance.getLayoutInfo();
+      expect(newWidth === width / EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH).toBe(true);
+
+      instance.cleanup();
+      expect(newWidth === width / EXTENSION_MARKDOWN_PREVIEW_PANEL_WIDTH).toBe(true);
+    });
+  });
+
+  describe('fetchPreview', () => {
+    const group = 'foo';
+    const project = 'bar';
+    const setData = (path, g, p) => {
+      instance.projectPath = path;
+      document.body.setAttribute('data-group', g);
+      document.body.setAttribute('data-project', p);
+    };
+    const fetchPreview = async () => {
+      instance.fetchPreview();
+      await waitForPromises();
+    };
+
+    beforeEach(() => {
+      axios.post.mockImplementation(() => Promise.resolve({ data: { body: responseData } }));
+    });
+
+    it('correctly fetches preview based on projectPath', async () => {
+      setData(projectPath, group, project);
+      await fetchPreview();
+      expect(axios.post).toHaveBeenCalledWith(`/${projectPath}/preview_markdown`, { text });
+    });
+
+    it('correctly fetches preview based on group and project data attributes', async () => {
+      setData(undefined, group, project);
+      await fetchPreview();
+      expect(axios.post).toHaveBeenCalledWith(`/${group}/${project}/preview_markdown`, { text });
+    });
+
+    it('puts the fetched content into the preview DOM element', async () => {
+      instance.preview.el = editorEl.parentElement;
+      await fetchPreview();
+      expect(instance.preview.el.innerHTML).toEqual(responseData);
+    });
+
+    it('applies syntax highlighting to the preview content', async () => {
+      instance.preview.el = editorEl.parentElement;
+      await fetchPreview();
+      expect(syntaxHighlight).toHaveBeenCalled();
+    });
+
+    it('catches the errors when fetching the preview', async () => {
+      axios.post.mockImplementation(() => Promise.reject());
+
+      await fetchPreview();
+      expect(createFlash).toHaveBeenCalled();
+    });
+  });
+
+  describe('setupPreviewAction', () => {
     it('adds the contextual menu action', () => {
       expect(instance.getAction(EXTENSION_MARKDOWN_PREVIEW_ACTION_ID)).toBeDefined();
+    });
+
+    it('does not set up action if one already exists', () => {
+      jest.spyOn(instance, 'addAction').mockImplementation();
+
+      instance.setupPreviewAction();
+      expect(instance.addAction).not.toHaveBeenCalled();
     });
 
     it('toggles preview when the action is triggered', () => {
@@ -76,67 +200,85 @@ describe('Markdown Extension for Source Editor', () => {
   });
 
   describe('togglePreview', () => {
-    const originalLocation = window.location.href;
-    const location = (action = 'edit') => {
-      return `https://dev.null/fooGroup/barProj/-/${action}/master/foo.md`;
-    };
-    const responseData = '<div>FooBar</div>';
-    let panelSpy;
-
     beforeEach(() => {
-      setWindowLocation(location());
-      panelSpy = jest.spyOn(EditorMarkdownExtension, 'togglePreviewPanel');
-      jest.spyOn(EditorMarkdownExtension, 'togglePreviewLayout');
       axios.post.mockImplementation(() => Promise.resolve({ data: responseData }));
     });
 
-    afterEach(() => {
-      setWindowLocation(originalLocation);
+    it('toggles preview flag on instance', () => {
+      expect(instance.preview.shown).toBe(false);
+
+      instance.togglePreview();
+      expect(instance.preview.shown).toBe(true);
+
+      instance.togglePreview();
+      expect(instance.preview.shown).toBe(false);
     });
 
-    it('toggles preview flag on instance', () => {
-      expect(instance.preview).toBeUndefined();
+    describe('model language changes', () => {
+      const plaintextPath = 'foo.txt';
+      const markdownPath = 'foo.md';
+      let cleanupSpy;
+      let actionSpy;
 
-      instance.togglePreview();
-      expect(instance.preview).toBe(true);
+      beforeEach(() => {
+        cleanupSpy = jest.spyOn(instance, 'cleanup');
+        actionSpy = jest.spyOn(instance, 'setupPreviewAction');
+        instance.togglePreview();
+      });
 
-      instance.togglePreview();
-      expect(instance.preview).toBe(false);
+      it('cleans up when switching away from markdown', async () => {
+        expect(instance.cleanup).not.toHaveBeenCalled();
+        expect(instance.setupPreviewAction).not.toHaveBeenCalled();
+
+        instance.updateModelLanguage(plaintextPath);
+
+        expect(cleanupSpy).toHaveBeenCalled();
+        expect(actionSpy).not.toHaveBeenCalled();
+      });
+
+      it('re-enables the action when switching back to markdown', () => {
+        instance.updateModelLanguage(plaintextPath);
+
+        jest.clearAllMocks();
+
+        instance.updateModelLanguage(markdownPath);
+
+        expect(cleanupSpy).not.toHaveBeenCalled();
+        expect(actionSpy).toHaveBeenCalled();
+      });
+
+      it('does not re-enable the action if we do not change the language', () => {
+        instance.updateModelLanguage(markdownPath);
+
+        expect(cleanupSpy).not.toHaveBeenCalled();
+        expect(actionSpy).not.toHaveBeenCalled();
+      });
     });
 
     describe('panel DOM element set up', () => {
-      beforeEach(() => {
-        jest.spyOn(EditorMarkdownExtension, 'setupPanelElement');
-      });
-
       it('sets up an element to contain the preview and stores it on instance', () => {
-        expect(instance.previewEl).toBeUndefined();
+        expect(instance.preview.el).toBeUndefined();
 
         instance.togglePreview();
 
-        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledWith(editorEl);
-        expect(instance.previewEl).toBeDefined();
-        expect(instance.previewEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS)).toBe(
+        expect(instance.preview.el).toBeDefined();
+        expect(instance.preview.el.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_CLASS)).toBe(
           true,
         );
       });
 
-      it('uses already set up preview DOM element on repeated calls', () => {
+      it('re-uses existing preview DOM element on repeated calls', () => {
+        instance.togglePreview();
+        const origPreviewEl = instance.preview.el;
         instance.togglePreview();
 
-        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledTimes(1);
-
-        const origPreviewEl = instance.previewEl;
-        instance.togglePreview();
-
-        expect(EditorMarkdownExtension.setupPanelElement).toHaveBeenCalledTimes(1);
-        expect(instance.previewEl).toBe(origPreviewEl);
+        expect(instance.preview.el).toBe(origPreviewEl);
       });
 
       it('hides the preview DOM element by default', () => {
         panelSpy.mockImplementation();
         instance.togglePreview();
-        expect(instance.previewEl.style.display).toBe('none');
+        expect(instance.preview.el.style.display).toBe('none');
       });
     });
 
@@ -156,37 +298,27 @@ describe('Markdown Extension for Source Editor', () => {
 
     describe('preview panel', () => {
       it('toggles preview CSS class on the editor', () => {
-        expect(editorEl.classList.contains('source-editor-preview')).toBe(false);
+        expect(editorEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(
+          false,
+        );
         instance.togglePreview();
-        expect(editorEl.classList.contains('source-editor-preview')).toBe(true);
+        expect(editorEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(
+          true,
+        );
         instance.togglePreview();
-        expect(editorEl.classList.contains('source-editor-preview')).toBe(false);
+        expect(editorEl.classList.contains(EXTENSION_MARKDOWN_PREVIEW_PANEL_PARENT_CLASS)).toBe(
+          false,
+        );
       });
 
       it('toggles visibility of the preview DOM element', async () => {
         await togglePreview();
-        expect(instance.previewEl.style.display).toBe('block');
+        expect(instance.preview.el.style.display).toBe('block');
         await togglePreview();
-        expect(instance.previewEl.style.display).toBe('none');
+        expect(instance.preview.el.style.display).toBe('none');
       });
 
       describe('hidden preview DOM element', () => {
-        it('shows error notification if fetching content fails', async () => {
-          axios.post.mockImplementation(() => Promise.reject());
-          await togglePreview();
-          expect(createFlash).toHaveBeenCalled();
-        });
-
-        it('fetches preview content and puts into the preview DOM element', async () => {
-          await togglePreview();
-          expect(instance.previewEl.innerHTML).toEqual(responseData);
-        });
-
-        it('applies syntax highlighting to the preview content', async () => {
-          await togglePreview();
-          expect(syntaxHighlight).toHaveBeenCalled();
-        });
-
         it('listens to model changes and re-fetches preview', async () => {
           expect(axios.post).not.toHaveBeenCalled();
           await togglePreview();
