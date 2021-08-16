@@ -23,12 +23,12 @@ module QA
           end
 
           def filter_report_type(report)
-            click_element(:filter_scanner_dropdown)
+            click_element(:filter_tool_dropdown)
 
             click_element "filter_#{report.downcase.tr(" ", "_")}_dropdown"
 
             # Click the dropdown to close the modal and ensure it isn't open if this function is called again
-            click_element(:filter_scanner_dropdown)
+            click_element(:filter_tool_dropdown)
           end
 
           def has_vulnerability?(name)
