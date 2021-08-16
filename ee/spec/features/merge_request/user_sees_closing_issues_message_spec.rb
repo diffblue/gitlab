@@ -29,7 +29,7 @@ RSpec.describe 'Merge request > User sees closing issues message', :js do
     let(:merge_request_description) { "Description\n\nclosing #{issue_1.to_reference}, #{issue_2.to_reference}" }
 
     it 'displays closing issue message exactly one time' do
-      expect(page).to have_content("Closes #{issue_1.to_reference} and #{issue_2.to_reference}", count: 1)
+      expect(page).to have_content("Closes issues #{issue_1.to_reference} and #{issue_2.to_reference}", count: 1)
     end
   end
 end
