@@ -15,20 +15,24 @@ module Projects::Security::PoliciesHelper
     }
   end
 
-  def orchestration_policy_data(project, policy_type, policy, environment = nil)
-    return unless project && policy
+  def orchestration_policy_data(project, policy_type = nil, policy = nil, environment = nil)
+    return unless project
+
+    disable_scan_execution_update = !can_update_security_orchestration_policy_project?(project)
 
     {
+      assigned_policy_project: assigned_policy_project(project).to_json,
+      disable_scan_execution_update: disable_scan_execution_update.to_s,
       network_policies_endpoint: project_security_network_policies_path(project),
       configure_agent_help_path: help_page_url('user/clusters/agent/repository.html'),
       create_agent_help_path: help_page_url('user/clusters/agent/index.md', anchor: 'create-an-agent-record-in-gitlab'),
       environments_endpoint: project_environments_path(project),
       environment_id: environment&.id,
+      policy: policy&.to_json,
+      policy_type: policy_type,
       project_path: project.full_path,
       project_id: project.id,
-      policy: policy.to_json,
-      policy_type: policy_type,
-      threat_monitoring_path: project_threat_monitoring_path(project)
+      threat_monitoring_path: project_security_policies_path(project)
     }
   end
 end

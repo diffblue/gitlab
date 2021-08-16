@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Security::PoliciesHelper do
-  describe '#assigned_policy_project' do
-    let(:project) { create(:project) }
+  let(:project) { create(:project, :repository, :public) }
 
+  describe '#assigned_policy_project' do
     context 'when a project does have a security policy project' do
       let(:policy_management_project) { create(:project) }
 
@@ -31,6 +31,68 @@ RSpec.describe Projects::Security::PoliciesHelper do
       it {
         is_expected.to be_nil
       }
+    end
+  end
+
+  describe '#orchestration_policy_data' do
+    let(:owner) { project.owner }
+    let(:base_data) do
+      {
+        assigned_policy_project: "null",
+        disable_scan_execution_update: "false",
+        network_policies_endpoint: kind_of(String),
+        configure_agent_help_path: kind_of(String),
+        create_agent_help_path: kind_of(String),
+        environments_endpoint: kind_of(String),
+        project_path: project.full_path,
+        project_id: project.id,
+        threat_monitoring_path: kind_of(String)
+      }
+    end
+
+    before do
+      allow(helper).to receive(:current_user) { owner }
+      allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
+    end
+
+    context 'when a new policy is being created' do
+      subject { helper.orchestration_policy_data(project) }
+
+      it 'returns expected policy data' do
+        expect(subject).to match(
+          base_data.merge(
+            environment_id: nil,
+            policy: nil,
+            policy_type: nil
+          )
+        )
+      end
+    end
+
+    context 'when an existing policy is being edited' do
+      let(:environment) { create(:environment, project: project) }
+      let(:policy_type) { 'container_policy' }
+
+      let(:policy) do
+        Gitlab::Kubernetes::CiliumNetworkPolicy.new(
+          name: 'policy',
+          namespace: 'another',
+          selector: { matchLabels: { role: 'db' } },
+          ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
+        )
+      end
+
+      subject { helper.orchestration_policy_data(project, policy_type, policy, environment) }
+
+      it 'returns expected policy data' do
+        expect(subject).to match(
+          base_data.merge(
+            environment_id: environment.id,
+            policy: policy.to_json,
+            policy_type: policy_type
+          )
+        )
+      end
     end
   end
 end
