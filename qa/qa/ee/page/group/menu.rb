@@ -18,10 +18,6 @@ module QA
                 element :group_settings
               end
 
-              view 'app/views/layouts/nav/sidebar/_wiki_link.html.haml' do
-                element :wiki_link
-              end
-
               view 'ee/app/views/groups/ee/_administration_nav.html.haml' do
                 element :group_administration_link
                 element :group_sidebar_submenu_content
@@ -123,7 +119,8 @@ module QA
 
           def click_group_wiki_link
             within_sidebar do
-              click_element(:wiki_link)
+              scroll_to_element(:sidebar_menu_link, menu_item: 'Wiki')
+              click_element(:sidebar_menu_link, menu_item: 'Wiki')
             end
           end
 
