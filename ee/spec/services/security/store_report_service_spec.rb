@@ -15,19 +15,18 @@ RSpec.describe Security::StoreReportService, '#execute' do
 
   subject { described_class.new(pipeline, report).execute }
 
-  where(:vulnerability_finding_signatures_enabled) do
+  where(:vulnerability_finding_signatures) do
     [true, false]
   end
 
   with_them do
     before do
-      stub_feature_flags(vulnerability_finding_tracking_signatures: vulnerability_finding_signatures_enabled)
       stub_licensed_features(
         sast: true,
         dependency_scanning: true,
         container_scanning: true,
         security_dashboard: true,
-        vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
+        vulnerability_finding_signatures: vulnerability_finding_signatures
       )
       allow(Security::AutoFixWorker).to receive(:perform_async)
     end
@@ -85,7 +84,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
           end
 
           it 'inserts all signatures' do
-            signatures_count = vulnerability_finding_signatures_enabled ? signatures : 0
+            signatures_count = vulnerability_finding_signatures ? signatures : 0
             expect { subject }.to change { Vulnerabilities::FindingSignature.count }.by(signatures_count)
           end
         end
@@ -408,7 +407,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
         end
 
         it 'handles the error correctly' do
-          next unless vulnerability_finding_signatures_enabled
+          next unless vulnerability_finding_signatures
 
           report_finding = report.findings.find { |f| f.location.fingerprint == finding.location_fingerprint}
 
@@ -418,7 +417,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
         end
 
         it 'raises the error if there exists no vulnerability finding' do
-          next unless vulnerability_finding_signatures_enabled
+          next unless vulnerability_finding_signatures
 
           allow(store_report_service).to receive(:sync_vulnerability_finding).and_raise(ActiveRecord::RecordNotUnique)
 
@@ -429,7 +428,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
       end
 
       it 'updates signatures to match new values' do
-        next unless vulnerability_finding_signatures_enabled
+        next unless vulnerability_finding_signatures
 
         expect(finding.signatures.count).to eq(1)
         expect(finding.signatures.first.algorithm_type).to eq('hash')
@@ -685,9 +684,6 @@ RSpec.describe Security::StoreReportService, '#execute' do
         security_dashboard: true,
         vulnerability_finding_signatures: false
       )
-      stub_feature_flags(
-        vulnerability_finding_tracking_signatures: false
-      )
 
       expect do
         expect do
@@ -703,7 +699,6 @@ RSpec.describe Security::StoreReportService, '#execute' do
         security_dashboard: true,
         vulnerability_finding_signatures: true
       )
-      stub_feature_flags(vulnerability_finding_tracking_signatures: true)
 
       pipeline, report = generate_new_pipeline
 

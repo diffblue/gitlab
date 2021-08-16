@@ -59,59 +59,29 @@ RSpec.describe Security::StoreScanService do
 
     context 'when the `vulnerability_finding_signatures` licensed feature is available' do
       before do
-        stub_feature_flags(vulnerability_finding_tracking_signatures: feature_enabled?)
         stub_licensed_features(vulnerability_finding_signatures: true)
 
         allow(Security::OverrideUuidsService).to receive(:execute)
       end
 
-      context 'when the `vulnerability_finding_tracking_signatures` feature is enabled' do
-        let(:feature_enabled?) { true }
+      it 'calls `Security::OverrideUuidsService` with security report to re-calculate the finding UUIDs' do
+        store_scan
 
-        it 'calls `Security::OverrideUuidsService` with security report to re-calculate the finding UUIDs' do
-          store_scan
-
-          expect(Security::OverrideUuidsService).to have_received(:execute).with(artifact.security_report)
-        end
-      end
-
-      context 'when the `vulnerability_finding_tracking_signatures` feature is disabled' do
-        let(:feature_enabled?) { false }
-
-        it 'does not call `Security::OverrideUuidsService`' do
-          store_scan
-
-          expect(Security::OverrideUuidsService).not_to have_received(:execute)
-        end
+        expect(Security::OverrideUuidsService).to have_received(:execute).with(artifact.security_report)
       end
     end
 
     context 'when the `vulnerability_finding_signatures` licensed feature is not available' do
       before do
-        stub_feature_flags(vulnerability_finding_tracking_signatures: feature_enabled?)
         stub_licensed_features(vulnerability_finding_signatures: false)
 
         allow(Security::OverrideUuidsService).to receive(:execute)
       end
 
-      context 'when the `vulnerability_finding_tracking_signatures` feature is enabled' do
-        let(:feature_enabled?) { true }
+      it 'does not call `Security::OverrideUuidsService`' do
+        store_scan
 
-        it 'does not call `Security::OverrideUuidsService`' do
-          store_scan
-
-          expect(Security::OverrideUuidsService).not_to have_received(:execute)
-        end
-      end
-
-      context 'when the `vulnerability_finding_tracking_signatures` feature is disabled' do
-        let(:feature_enabled?) { false }
-
-        it 'does not call `Security::OverrideUuidsService`' do
-          store_scan
-
-          expect(Security::OverrideUuidsService).not_to have_received(:execute)
-        end
+        expect(Security::OverrideUuidsService).not_to have_received(:execute)
       end
     end
 

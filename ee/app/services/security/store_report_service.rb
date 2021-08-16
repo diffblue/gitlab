@@ -80,7 +80,7 @@ module Security
       update_vulnerability_finding(vulnerability_finding, vulnerability_params)
       reset_remediations_for(vulnerability_finding, finding)
 
-      if ::Feature.enabled?(:vulnerability_finding_tracking_signatures, project) && project.licensed_feature_available?(:vulnerability_finding_signatures)
+      if project.licensed_feature_available?(:vulnerability_finding_signatures)
         update_feedbacks(vulnerability_finding, vulnerability_params[:uuid])
         update_finding_signatures(finding, vulnerability_finding)
       end
@@ -89,7 +89,7 @@ module Security
     end
 
     def find_or_create_vulnerability_finding(finding, create_params)
-      if ::Feature.enabled?(:vulnerability_finding_tracking_signatures, project) && project.licensed_feature_available?(:vulnerability_finding_signatures)
+      if project.licensed_feature_available?(:vulnerability_finding_signatures)
         find_or_create_vulnerability_finding_with_signatures(finding, create_params)
       else
         find_or_create_vulnerability_finding_with_location(finding, create_params)

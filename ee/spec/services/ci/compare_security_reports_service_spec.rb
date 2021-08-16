@@ -11,10 +11,10 @@ RSpec.describe Ci::CompareSecurityReportsService do
     collection.map { |t| t['identifiers'].first['external_id'] }
   end
 
-  where(vulnerability_finding_tracking_signatures_enabled: [true, false])
+  where(vulnerability_finding_signatures: [true, false])
   with_them do
     before do
-      stub_feature_flags(vulnerability_finding_tracking_signatures: vulnerability_finding_tracking_signatures_enabled)
+      stub_licensed_features(vulnerability_finding_signatures: vulnerability_finding_signatures)
     end
 
     describe '#execute DS' do
