@@ -78,8 +78,7 @@ Any other items are **not** migrated.
 
 ## Enable or disable GitLab Group Migration
 
-Support for GitLab Group Migration is under development and not ready for production use. It is
-deployed behind a feature flag that is **disabled by default**.
+GitLab Migration is deployed behind a feature flag that is **disabled by default**.
 [GitLab administrators with access to the GitLab Rails console](../../../administration/feature_flags.md) can enable it.
 
 To enable it:
