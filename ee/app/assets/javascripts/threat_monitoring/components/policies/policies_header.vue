@@ -47,6 +47,7 @@ export default {
         this.alertVariant = variant;
         this.alertText = text;
       }
+      this.$emit('update-policy-list', true);
     },
     isUpdatingProject() {
       this.projectIsBeingLinked = true;

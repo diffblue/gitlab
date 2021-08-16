@@ -60,6 +60,20 @@ describe('Policies App', () => {
       expect(setCurrentEnvironmentIdSpy).toHaveBeenCalled();
       expect(fetchEnvironmentsSpy).toHaveBeenCalled();
     });
+
+    it.each`
+      component         | findFn
+      ${'PolicyHeader'} | ${findPoliciesHeader}
+      ${'PolicyList'}   | ${findPoliciesList}
+    `(
+      'sets the `shouldUpdatePolicyList` variable from the $component component',
+      async ({ findFn }) => {
+        expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(false);
+        findFn().vm.$emit('update-policy-list', true);
+        await wrapper.vm.$nextTick();
+        expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(true);
+      },
+    );
   });
 
   describe('when does not have an environment enabled', () => {
