@@ -26,7 +26,7 @@ RSpec.describe 'CI minutes', :js do
     page.find('[data-testid="project-month-dropdown"]').click
 
     page.within '[data-testid="project-month-dropdown"]' do
-      expect(page.all('.gl-new-dropdown-item').size).to eq 2
+      expect(page.all('[data-testid="month-dropdown-item"]').size).to eq 2
     end
   end
 end

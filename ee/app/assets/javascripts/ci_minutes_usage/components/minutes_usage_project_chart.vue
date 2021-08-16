@@ -84,6 +84,7 @@ export default {
           :key="index"
           :is-checked="selectedMonth === month"
           is-check-item
+          data-testid="month-dropdown-item"
           @click="changeSelectedMonth(month)"
         >
           {{ month }}
