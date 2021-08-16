@@ -218,6 +218,7 @@ module QA
       autoload :GroupIteration, 'qa/ee/resource/group_iteration'
       autoload :ImportRepoWithCiCd, 'qa/ee/resource/import_repo_with_ci_cd'
       autoload :PipelineSubscriptions, 'qa/ee/resource/pipeline_subscriptions'
+      autoload :GroupBase, 'qa/ee/resource/group_base'
 
       module Board
         autoload :BaseBoard, 'qa/ee/resource/board/base_board'
