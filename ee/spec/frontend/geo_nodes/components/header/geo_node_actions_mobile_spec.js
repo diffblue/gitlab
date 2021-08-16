@@ -1,8 +1,12 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import Vuex from 'vuex';
 import GeoNodeActionsMobile from 'ee/geo_nodes/components/header/geo_node_actions_mobile.vue';
 import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+
+Vue.use(Vuex);
 
 describe('GeoNodeActionsMobile', () => {
   let wrapper;
@@ -11,9 +15,17 @@ describe('GeoNodeActionsMobile', () => {
     node: MOCK_NODES[0],
   };
 
-  const createComponent = (props) => {
+  const createComponent = (props, getters) => {
+    const store = new Vuex.Store({
+      getters: {
+        canRemoveNode: () => () => true,
+        ...getters,
+      },
+    });
+
     wrapper = extendedWrapper(
       shallowMount(GeoNodeActionsMobile, {
+        store,
         propsData: {
           ...defaultProps,
           ...props,
@@ -62,17 +74,17 @@ describe('GeoNodeActionsMobile', () => {
     });
 
     describe.each`
-      primary  | disabled     | dropdownClass
-      ${true}  | ${'true'}    | ${'gl-text-gray-400'}
-      ${false} | ${undefined} | ${'gl-text-red-500'}
-    `(`conditionally`, ({ primary, disabled, dropdownClass }) => {
+      canRemoveNode | disabled     | dropdownClass
+      ${false}      | ${'true'}    | ${'gl-text-gray-400'}
+      ${true}       | ${undefined} | ${'gl-text-red-500'}
+    `(`conditionally`, ({ canRemoveNode, disabled, dropdownClass }) => {
       beforeEach(() => {
-        createComponent({ node: { primary } });
+        createComponent({}, { canRemoveNode: () => () => canRemoveNode });
       });
 
-      describe(`when primary is ${primary}`, () => {
+      describe(`when canRemoveNode is ${canRemoveNode}`, () => {
         it(`does ${
-          primary ? '' : 'not '
+          canRemoveNode ? 'not ' : ''
         }disable the Mobile Remove dropdown item and adds proper class`, () => {
           expect(findGeoMobileActionsRemoveDropdownItem().attributes('disabled')).toBe(disabled);
           expect(findGeoMobileActionsRemoveDropdownItem().find('span').classes(dropdownClass)).toBe(

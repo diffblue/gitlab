@@ -1,8 +1,12 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import Vuex from 'vuex';
 import GeoNodeActionsDesktop from 'ee/geo_nodes/components/header/geo_node_actions_desktop.vue';
 import { MOCK_NODES } from 'ee_jest/geo_nodes/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+
+Vue.use(Vuex);
 
 describe('GeoNodeActionsDesktop', () => {
   let wrapper;
@@ -11,9 +15,17 @@ describe('GeoNodeActionsDesktop', () => {
     node: MOCK_NODES[0],
   };
 
-  const createComponent = (props) => {
+  const createComponent = (props, getters) => {
+    const store = new Vuex.Store({
+      getters: {
+        canRemoveNode: () => () => true,
+        ...getters,
+      },
+    });
+
     wrapper = extendedWrapper(
       shallowMount(GeoNodeActionsDesktop, {
+        store,
         propsData: {
           ...defaultProps,
           ...props,
@@ -56,16 +68,16 @@ describe('GeoNodeActionsDesktop', () => {
     });
 
     describe.each`
-      primary  | disabled
-      ${true}  | ${'true'}
-      ${false} | ${undefined}
-    `(`conditionally`, ({ primary, disabled }) => {
+      canRemoveNode | disabled
+      ${false}      | ${'true'}
+      ${true}       | ${undefined}
+    `(`conditionally`, ({ canRemoveNode, disabled }) => {
       beforeEach(() => {
-        createComponent({ node: { primary } });
+        createComponent({}, { canRemoveNode: () => () => canRemoveNode });
       });
 
-      describe(`when primary is ${primary}`, () => {
-        it(`does ${primary ? '' : 'not '}disable the Desktop Remove button`, () => {
+      describe(`when canRemoveNode is ${canRemoveNode}`, () => {
+        it(`does ${canRemoveNode ? 'not ' : ''}disable the Desktop Remove button`, () => {
           expect(findGeoDesktopActionsRemoveButton().attributes('disabled')).toBe(disabled);
         });
       });

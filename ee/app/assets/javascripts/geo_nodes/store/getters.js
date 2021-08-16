@@ -53,3 +53,9 @@ export const syncInfo = (state) => (id) => {
     };
   });
 };
+
+export const canRemoveNode = (state) => (id) => {
+  const node = state.nodes.find((n) => n.id === id);
+
+  return !node.primary || state.nodes.length === 1;
+};

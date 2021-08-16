@@ -1,5 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
 
 export default {
@@ -17,6 +18,9 @@ export default {
       required: true,
     },
   },
+  computed: {
+    ...mapGetters(['canRemoveNode']),
+  },
 };
 </script>
 
@@ -28,7 +32,7 @@ export default {
     <gl-button
       variant="danger"
       category="secondary"
-      :disabled="node.primary"
+      :disabled="!canRemoveNode(node.id)"
       data-testid="geo-desktop-remove-action"
       @click="$emit('remove')"
       >{{ $options.i18n.removeButtonLabel }}</gl-button

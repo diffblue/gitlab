@@ -1,5 +1,6 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
+import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
 
 export default {
@@ -20,8 +21,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['canRemoveNode']),
     dropdownRemoveClass() {
-      return this.node.primary ? 'gl-text-gray-400' : 'gl-text-red-500';
+      return this.canRemoveNode(this.node.id) ? 'gl-text-red-500' : 'gl-text-gray-400';
     },
   },
 };
@@ -34,7 +36,7 @@ export default {
     </template>
     <gl-dropdown-item :href="node.webEditUrl">{{ $options.i18n.editButtonLabel }}</gl-dropdown-item>
     <gl-dropdown-item
-      :disabled="node.primary"
+      :disabled="!canRemoveNode(node.id)"
       data-testid="geo-mobile-remove-action"
       @click="$emit('remove')"
     >

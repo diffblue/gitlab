@@ -51,4 +51,22 @@ describe('GeoNodes Store Getters', () => {
       expect(getters.syncInfo(state)(MOCK_NODES[1].id)).toStrictEqual(MOCK_SECONDARY_SYNC_INFO);
     });
   });
+
+  describe.each`
+    nodeToRemove     | nodes              | canRemove
+    ${MOCK_NODES[0]} | ${[MOCK_NODES[0]]} | ${true}
+    ${MOCK_NODES[0]} | ${MOCK_NODES}      | ${false}
+    ${MOCK_NODES[1]} | ${[MOCK_NODES[1]]} | ${true}
+    ${MOCK_NODES[1]} | ${MOCK_NODES}      | ${true}
+  `(`canRemoveNode`, ({ nodeToRemove, nodes, canRemove }) => {
+    describe(`when node.primary ${nodeToRemove.primary} and total nodes is ${nodes.length}`, () => {
+      beforeEach(() => {
+        state.nodes = nodes;
+      });
+
+      it(`should return ${canRemove}`, () => {
+        expect(getters.canRemoveNode(state)(nodeToRemove.id)).toBe(canRemove);
+      });
+    });
+  });
 });
