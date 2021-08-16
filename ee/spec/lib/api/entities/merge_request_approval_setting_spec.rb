@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Entities::GroupMergeRequestApprovalSetting do
+RSpec.describe API::Entities::MergeRequestApprovalSetting do
   let(:group_merge_request_approval_setting) { build(:group_merge_request_approval_setting) }
 
   subject { described_class.new(group_merge_request_approval_setting).as_json }
