@@ -1,6 +1,7 @@
 import {
-  getValueStreamTimeSummaryMetrics,
-  getValueStreamSummaryMetrics,
+  getValueStreamMetrics,
+  METRIC_TYPE_SUMMARY,
+  METRIC_TYPE_TIME_SUMMARY,
 } from '~/api/analytics_api';
 import { __, s__ } from '~/locale';
 
@@ -61,10 +62,10 @@ export const METRICS_POPOVER_CONTENT = {
 };
 
 export const SUMMARY_METRICS_REQUEST = [
-  { request: getValueStreamSummaryMetrics, name: __('recent activity') },
+  { endpoint: METRIC_TYPE_SUMMARY, name: __('recent activity'), request: getValueStreamMetrics },
 ];
 
 export const METRICS_REQUESTS = [
-  { request: getValueStreamTimeSummaryMetrics, name: __('time summary') },
+  { endpoint: METRIC_TYPE_TIME_SUMMARY, name: __('time summary'), request: getValueStreamMetrics },
   ...SUMMARY_METRICS_REQUEST,
 ];

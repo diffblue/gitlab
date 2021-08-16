@@ -1,6 +1,5 @@
 import { useFakeDate } from 'helpers/fake_date';
 import {
-  decorateData,
   transformStagesForPathNavigation,
   timeSummaryForPathNavigation,
   medianTimeToParsedSeconds,
@@ -12,8 +11,6 @@ import {
 import { slugify } from '~/lib/utils/text_utility';
 import {
   selectedStage,
-  rawData,
-  convertedData,
   allowedStages,
   stageMedians,
   pathNavIssueMetric,
@@ -22,22 +19,6 @@ import {
 } from './mock_data';
 
 describe('Value stream analytics utils', () => {
-  describe('decorateData', () => {
-    const result = decorateData(rawData);
-    it('returns the summary data', () => {
-      expect(result.summary).toEqual(convertedData.summary);
-    });
-
-    it('returns `-` for summary data that has no value', () => {
-      const singleSummaryResult = decorateData({
-        stats: [],
-        permissions: { issue: true },
-        summary: [{ value: null, title: 'Commits' }],
-      });
-      expect(singleSummaryResult.summary).toEqual([{ value: '-', title: 'Commits' }]);
-    });
-  });
-
   describe('transformStagesForPathNavigation', () => {
     const stages = allowedStages;
     const response = transformStagesForPathNavigation({

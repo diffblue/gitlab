@@ -1,6 +1,6 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { DEFAULT_DAYS_TO_DISPLAY } from '../constants';
-import { decorateData, formatMedianValues, calculateFormattedDayInPast } from '../utils';
+import { formatMedianValues, calculateFormattedDayInPast } from '../utils';
 import * as types from './mutation_types';
 
 export default {
@@ -49,9 +49,7 @@ export default {
     state.hasError = false;
   },
   [types.RECEIVE_CYCLE_ANALYTICS_DATA_SUCCESS](state, data) {
-    const { summary } = decorateData(data);
     state.permissions = data?.permissions || {};
-    state.summary = summary;
     state.hasError = false;
   },
   [types.RECEIVE_CYCLE_ANALYTICS_DATA_ERROR](state) {

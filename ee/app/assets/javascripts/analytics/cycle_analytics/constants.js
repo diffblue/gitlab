@@ -1,7 +1,5 @@
-import {
-  getGroupValueStreamSummaryData,
-  getGroupValueStreamTimeSummaryData,
-} from 'ee/api/analytics_api';
+import { getGroupValueStreamMetrics } from 'ee/api/analytics_api';
+import { METRIC_TYPE_SUMMARY, METRIC_TYPE_TIME_SUMMARY } from '~/api/analytics_api';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { __ } from '~/locale';
 
@@ -34,11 +32,13 @@ export const OVERVIEW_STAGE_CONFIG = {
 
 export const METRICS_REQUESTS = [
   {
-    request: getGroupValueStreamTimeSummaryData,
+    endpoint: METRIC_TYPE_TIME_SUMMARY,
+    request: getGroupValueStreamMetrics,
     name: __('time summary'),
   },
   {
-    request: getGroupValueStreamSummaryData,
+    endpoint: METRIC_TYPE_SUMMARY,
+    request: getGroupValueStreamMetrics,
     name: __('recent activity'),
   },
 ];

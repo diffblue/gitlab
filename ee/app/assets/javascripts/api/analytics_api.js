@@ -1,3 +1,4 @@
+import { METRIC_TYPE_SUMMARY } from '~/api/analytics_api';
 import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
 import { joinPaths } from '~/lib/utils/url_utility';
@@ -22,8 +23,8 @@ export const getGroupValueStreamStageMedian = (
   return axios.get(`${stageBase}/median`, { params });
 };
 
-export const getGroupValueStreamSummaryData = (groupId, params = {}) =>
-  axios.get(joinPaths(buildGroupValueStreamPath({ groupId }), 'summary'), { params });
-
-export const getGroupValueStreamTimeSummaryData = (groupId, params = {}) =>
-  axios.get(joinPaths(buildGroupValueStreamPath({ groupId }), 'time_summary'), { params });
+export const getGroupValueStreamMetrics = ({
+  endpoint = METRIC_TYPE_SUMMARY,
+  requestPath: groupId,
+  params = {},
+}) => axios.get(joinPaths(buildGroupValueStreamPath({ groupId }), endpoint), { params });

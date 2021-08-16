@@ -7,6 +7,9 @@ const PROJECT_VSA_PATH_BASE = '/:request_path/-/analytics/value_stream_analytics
 const PROJECT_VSA_STAGES_PATH = `${PROJECT_VSA_PATH_BASE}/:value_stream_id/stages`;
 const PROJECT_VSA_STAGE_DATA_PATH = `${PROJECT_VSA_STAGES_PATH}/:stage_id`;
 
+export const METRIC_TYPE_SUMMARY = 'summary';
+export const METRIC_TYPE_TIME_SUMMARY = 'time_summary';
+
 const buildProjectMetricsPath = (requestPath) =>
   buildApiUrl(PROJECT_VSA_METRICS_BASE).replace(':request_path', requestPath);
 
@@ -65,9 +68,13 @@ export const getValueStreamStageCounts = ({ requestPath, valueStreamId, stageId 
   return axios.get(joinPaths(stageBase, 'count'), { params });
 };
 
-export const getValueStreamTimeSummaryMetrics = (requestPath, params = {}) => {
+export const getValueStreamMetrics = ({
+  endpoint = METRIC_TYPE_SUMMARY,
+  requestPath,
+  params = {},
+}) => {
   const metricBase = buildProjectMetricsPath(requestPath);
-  return axios.get(joinPaths(metricBase, 'time_summary'), { params });
+  return axios.get(joinPaths(metricBase, endpoint), { params });
 };
 
 export const getValueStreamSummaryMetrics = (requestPath, params = {}) => {

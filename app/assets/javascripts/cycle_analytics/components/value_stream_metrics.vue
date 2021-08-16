@@ -7,8 +7,8 @@ import { sprintf, s__ } from '~/locale';
 import { METRICS_POPOVER_CONTENT } from '../constants';
 import { removeFlash, prepareTimeMetricsData } from '../utils';
 
-const requestData = ({ request, path, params, name }) => {
-  return request(path, params)
+const requestData = ({ request, endpoint, path, params, name }) => {
+  return request({ endpoint, params, requestPath: path })
     .then(({ data }) => data)
     .catch(() => {
       const message = sprintf(

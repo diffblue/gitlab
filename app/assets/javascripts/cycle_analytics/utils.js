@@ -16,15 +16,6 @@ export const removeFlash = (type = 'alert') => {
   }
 };
 
-const mapToSummary = ({ value, ...rest }) => ({ ...rest, value: value || '-' });
-
-export const decorateData = (data = {}) => {
-  const { summary } = data;
-  return {
-    summary: summary?.map((item) => mapToSummary(item)) || [],
-  };
-};
-
 /**
  * Takes the stages and median data, combined with the selected stage, to build an
  * array which is formatted to proivde the data required for the path navigation.
