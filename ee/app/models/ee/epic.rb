@@ -156,6 +156,8 @@ module EE
         public_only.or(where(confidential: true, group_id: groups))
       end
 
+      scope :with_group_route, -> { preload([group: :route]) }
+
       MAX_HIERARCHY_DEPTH = 7
 
       def etag_caching_enabled?

@@ -29,15 +29,19 @@ RSpec.describe Projects::AutocompleteSourcesController do
       end
 
       describe '#epics' do
-        it 'returns the correct response' do
+        it 'returns the correct response', :aggregate_failures do
+          epic_json_response = {
+            'iid' => epic.iid,
+            'title' => epic.title,
+            'reference' => epic.to_reference(epic)
+          }
+
           get :epics, params: { namespace_id: project.namespace, project_id: project }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to be_an(Array)
           expect(json_response.count).to eq(1)
-          expect(json_response.first).to include(
-            'iid' => epic.iid, 'title' => epic.title
-          )
+          expect(json_response.first).to include(epic_json_response)
         end
       end
     end
