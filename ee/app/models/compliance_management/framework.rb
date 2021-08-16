@@ -6,7 +6,7 @@ module ComplianceManagement
 
     self.table_name = 'compliance_management_frameworks'
 
-    strip_attributes :name, :color
+    strip_attributes! :name, :color
 
     belongs_to :namespace
     has_many :project_settings, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings'

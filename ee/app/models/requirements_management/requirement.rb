@@ -16,7 +16,7 @@ module RequirementsManagement
     cache_markdown_field :title, pipeline: :single_line
     cache_markdown_field :description, issuable_state_filter_enabled: true
 
-    strip_attributes :title
+    strip_attributes! :title
 
     belongs_to :author, inverse_of: :requirements, class_name: 'User'
     belongs_to :project, inverse_of: :requirements
