@@ -1,7 +1,7 @@
 - return unless merge_pipelines_available?
 
 .form-check.builds-feature
-  = form.check_box :merge_pipelines_enabled, class: 'form-check-input js-merge-options-merge-pipelines', data: { qa_selector: 'merged_results_pipeline_checkbox' }, disabled: 'disabled'
+  = form.check_box :merge_pipelines_enabled, class: 'form-check-input js-merge-options-merge-pipelines', data: { qa_selector: 'merged_results_pipeline_checkbox' }
   = form.label :merge_pipelines_enabled, class: 'form-check-label' do
     = s_('ProjectSettings|Enable merged results pipelines')
     .text-secondary.mb-2
