@@ -5,6 +5,10 @@ module EE
     module PendingBuild
       extend ActiveSupport::Concern
 
+      prepended do
+        scope :with_ci_minutes_available, -> { where(minutes_exceeded: false) }
+      end
+
       class_methods do
         extend ::Gitlab::Utils::Override
 

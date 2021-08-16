@@ -8,6 +8,28 @@ RSpec.describe Ci::PendingBuild do
 
   let(:build) { create(:ci_build, :created, pipeline: pipeline, project: project) }
 
+  describe 'scopes' do
+    describe '.with_ci_minutes_available' do
+      subject(:pending_builds) { described_class.with_ci_minutes_available }
+
+      context 'when pending builds does not have ci minutes available' do
+        let!(:pending_build) { create(:ci_pending_build, minutes_exceeded: true) }
+
+        it 'returns an empty collection of pending builds' do
+          expect(pending_builds).to be_empty
+        end
+      end
+
+      context 'when pending builds have ci minutes available' do
+        let!(:pending_build) { create(:ci_pending_build, minutes_exceeded: false) }
+
+        it 'returns matching pending builds' do
+          expect(pending_builds).to contain_exactly(pending_build)
+        end
+      end
+    end
+  end
+
   describe '.upsert_from_build!' do
     shared_examples 'ci minutes not available' do
       it 'sets minutes_exceeded to true' do
