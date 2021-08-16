@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Projects::Security::PoliciesController, type: :request do
   let_it_be(:owner) { create(:user) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: owner.namespace) }
+  let_it_be(:project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:policy_management_project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
   let_it_be(:policy) do
@@ -50,6 +50,53 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
 
           expect(app.attributes['data-policy'].value).to eq(policy.to_json)
           expect(app.attributes['data-policy-type'].value).to eq(type)
+        end
+
+        context 'when type is container_runtime' do
+          let_it_be(:type) { 'container_policy' }
+          let_it_be(:environment) { create(:environment, :with_review_app, project: project) }
+
+          let(:environment_id) { environment.id }
+          let(:kind) { 'CiliumNetworkPolicy' }
+          let(:policy_name) { 'policy' }
+          let(:network_policy) do
+            Gitlab::Kubernetes::CiliumNetworkPolicy.new(
+              name: policy_name,
+              namespace: 'another',
+              selector: { matchLabels: { role: 'db' } },
+              ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
+            )
+          end
+
+          let(:service) { instance_double('NetworkPolicies::FindResourceService', execute: ServiceResponse.success(payload: network_policy)) }
+
+          let(:edit) do
+            edit_project_security_policy_url(
+              project,
+              id: policy_name,
+              type: type,
+              environment_id: environment_id,
+              kind: kind
+            )
+          end
+
+          before do
+            allow(NetworkPolicies::FindResourceService).to(
+              receive(:new)
+                .with(resource_name: policy_name, environment: environment, kind: Gitlab::Kubernetes::CiliumNetworkPolicy::KIND)
+                .and_return(service)
+            )
+          end
+
+          it 'renders edit page with network policy' do
+            get edit
+
+            app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
+
+            expect(app.attributes['data-policy'].value).to eq(network_policy.to_json)
+            expect(app.attributes['data-policy-type'].value).to eq(type)
+            expect(app.attributes['data-environment-id'].value).to eq(environment_id.to_s)
+          end
         end
 
         context 'when type is missing' do
