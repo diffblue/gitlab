@@ -1,5 +1,7 @@
+import { getGroupValueStreamMetrics } from 'ee/api/analytics_api';
+import { METRIC_TYPE_SUMMARY, METRIC_TYPE_TIME_SUMMARY } from '~/api/analytics_api';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
 
 export const EVENTS_LIST_ITEM_LIMIT = 50;
 
@@ -19,11 +21,6 @@ export const TASKS_BY_TYPE_FILTERS = {
 
 export const DEFAULT_VALUE_STREAM_ID = 'default';
 
-export const OVERVIEW_METRICS = {
-  TIME_SUMMARY: 'TIME_SUMMARY',
-  RECENT_ACTIVITY: 'RECENT_ACTIVITY',
-};
-
 export const FETCH_VALUE_STREAM_DATA = 'fetchValueStreamData';
 
 export const OVERVIEW_STAGE_CONFIG = {
@@ -33,18 +30,15 @@ export const OVERVIEW_STAGE_CONFIG = {
   icon: 'home',
 };
 
-export const METRICS_POPOVER_CONTENT = {
-  'lead-time': {
-    description: s__('ValueStreamAnalytics|Median time from issue created to issue closed.'),
+export const METRICS_REQUESTS = [
+  {
+    endpoint: METRIC_TYPE_TIME_SUMMARY,
+    request: getGroupValueStreamMetrics,
+    name: __('time summary'),
   },
-  'cycle-time': {
-    description: s__(
-      'ValueStreamAnalytics|Median time from issue first merge request created to issue closed.',
-    ),
+  {
+    endpoint: METRIC_TYPE_SUMMARY,
+    request: getGroupValueStreamMetrics,
+    name: __('recent activity'),
   },
-  'new-issues': { description: s__('ValueStreamAnalytics|Number of new issues created.') },
-  deploys: { description: s__('ValueStreamAnalytics|Total number of deploys to production.') },
-  'deployment-frequency': {
-    description: s__('ValueStreamAnalytics|Average number of deployments to production per day.'),
-  },
-};
+];

@@ -3,21 +3,14 @@ import { isNumber } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
-import createFlash, { hideFlash } from '~/flash';
+import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import httpStatus from '~/lib/utils/http_status';
-import { convertToSnakeCase, slugify } from '~/lib/utils/text_utility';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { toYmd } from '../shared/utils';
 
 const EVENT_TYPE_LABEL = 'label';
-
-export const removeFlash = (type = 'alert') => {
-  const flashEl = document.querySelector(`.flash-${type}`);
-  if (flashEl) {
-    hideFlash(flashEl);
-  }
-};
 
 export const toggleSelectedLabel = ({ selectedLabelIds = [], value = null }) => {
   if (!value) return selectedLabelIds;
@@ -378,36 +371,3 @@ export const formatMedianValuesWithOverview = (medians = []) => {
     [OVERVIEW_STAGE_ID]: overviewMedian ? medianTimeToParsedSeconds(overviewMedian) : '-',
   };
 };
-
-/**
- * @typedef {Object} MetricData
- * @property {String} title - Title of the metric measured
- * @property {String} value - String representing the decimal point value, e.g '1.5'
- * @property {String} [unit] - String representing the decimal point value, e.g '1.5'
- *
- * @typedef {Object} TransformedMetricData
- * @property {String} label - Title of the metric measured
- * @property {String} value - String representing the decimal point value, e.g '1.5'
- * @property {String} key - Slugified string based on the 'title'
- * @property {String} description - String to display for a description
- * @property {String} unit - String representing the decimal point value, e.g '1.5'
- */
-
-/**
- * Prepares metric data to be rendered in the metric_card component
- *
- * @param {MetricData[]} data - The metric data to be rendered
- * @param {Object} popoverContent - Key value pair of data to display in the popover
- * @returns {TransformedMetricData[]} An array of metrics ready to render in the metric_card
- */
-
-export const prepareTimeMetricsData = (data = [], popoverContent = {}) =>
-  data.map(({ title: label, ...rest }) => {
-    const key = slugify(label);
-    return {
-      ...rest,
-      label,
-      key,
-      description: popoverContent[key]?.description || '',
-    };
-  });

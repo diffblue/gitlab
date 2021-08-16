@@ -1,7 +1,7 @@
+import { removeFlash } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import httpStatus from '~/lib/utils/http_status';
 import { __ } from '~/locale';
-import { removeFlash } from '../utils';
 import * as types from './mutation_types';
 
 export * from './actions/filters';
