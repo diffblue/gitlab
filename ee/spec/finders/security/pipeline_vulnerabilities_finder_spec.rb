@@ -201,7 +201,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
       let(:ds_finding) { pipeline.security_reports.reports["dependency_scanning"].findings.first }
       let(:sast_finding) { pipeline.security_reports.reports["sast"].findings.first }
 
-      context 'when vulnerability_finding_tracking_signatures feature flag is disabled' do
+      context 'when vulnerability_finding_signatures feature is disabled' do
         let!(:feedback) do
           [
             create(
@@ -228,7 +228,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         end
 
         before do
-          stub_feature_flags(vulnerability_finding_tracking_signatures: false)
+          stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, vulnerability_finding_signatures: false)
         end
 
         context 'when unscoped' do
@@ -258,7 +258,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         end
       end
 
-      context 'when vulnerability_finding_tracking_signatures feature flag is enabled' do
+      context 'when vulnerability_finding_signatures feature is enabled' do
         let!(:feedback) do
           [
             create(
@@ -275,7 +275,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         end
 
         before do
-          stub_feature_flags(vulnerability_finding_tracking_signatures: true)
+          stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, vulnerability_finding_signatures: true)
         end
 
         context 'when unscoped' do

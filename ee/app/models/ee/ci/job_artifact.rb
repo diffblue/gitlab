@@ -93,7 +93,7 @@ module EE
       strong_memoize(:security_report) do
         next unless file_type.in?(SECURITY_REPORT_FILE_TYPES)
 
-        signatures_enabled = ::Feature.enabled?(:vulnerability_finding_tracking_signatures, project) && project.licensed_feature_available?(:vulnerability_finding_signatures)
+        signatures_enabled = project.licensed_feature_available?(:vulnerability_finding_signatures)
 
         report = ::Gitlab::Ci::Reports::Security::Report.new(file_type, job.pipeline, nil).tap do |report|
           each_blob do |blob|

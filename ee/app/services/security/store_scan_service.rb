@@ -39,7 +39,7 @@ module Security
     end
 
     def override_uuids?
-      ::Feature.enabled?(:vulnerability_finding_tracking_signatures, project) && project.licensed_feature_available?(:vulnerability_finding_signatures)
+      project.licensed_feature_available?(:vulnerability_finding_signatures)
     end
 
     def security_scan

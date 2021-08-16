@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 require 'spec_helper'
 
 RSpec.describe Vulnerabilities::Finding do
@@ -8,12 +7,10 @@ RSpec.describe Vulnerabilities::Finding do
   it { is_expected.to define_enum_for(:severity) }
   it { is_expected.to define_enum_for(:detection_method) }
 
-  where(vulnerability_finding_signatures_enabled: [true, false])
+  where(vulnerability_finding_signatures: [true, false])
   with_them do
     before do
-      stub_feature_flags(vulnerability_finding_tracking_signatures: vulnerability_finding_signatures_enabled)
-      stub_feature_flags(vulnerability_finding_replace_metadata: false)
-      stub_licensed_features(vulnerability_finding_signatures: vulnerability_finding_signatures_enabled)
+      stub_licensed_features(vulnerability_finding_signatures: vulnerability_finding_signatures)
     end
 
     describe 'associations' do
@@ -388,6 +385,10 @@ RSpec.describe Vulnerabilities::Finding do
         end
 
         context 'when the feature flag is disabled' do
+          before do
+            stub_feature_flags(vulnerability_finding_replace_metadata: false)
+          end
+
           it 'returns links from raw_metadata' do
             expect(links).to eq([{ 'url' => 'https://raw.example.com', 'name' => 'raw_metadata_link' }])
           end
@@ -966,7 +967,7 @@ RSpec.describe Vulnerabilities::Finding do
         expect(signature1.eql?(signature2)).to be(true)
 
         # now verify that the correct matching method was used for eql?
-        expect(finding1.eql?(finding2)).to be(vulnerability_finding_signatures_enabled)
+        expect(finding1.eql?(finding2)).to be(vulnerability_finding_signatures)
       end
 
       it 'wont match other record types' do
@@ -1035,7 +1036,7 @@ RSpec.describe Vulnerabilities::Finding do
         end
         with_them do
           it 'matches correctly' do
-            next unless vulnerability_finding_signatures_enabled
+            next unless vulnerability_finding_signatures
 
             create_signatures
             expect(finding1.eql?(finding2)).to be(should_match)

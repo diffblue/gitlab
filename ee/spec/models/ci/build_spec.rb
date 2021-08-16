@@ -371,24 +371,21 @@ RSpec.describe Ci::Build do
         end
       end
 
-      context 'vulnerability_finding_tracking_signatures' do
+      context 'vulnerability_finding_signatures' do
         let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
 
-        where(vulnerability_finding_signatures_enabled: [true, false])
+        where(vulnerability_finding_signatures: [true, false])
         with_them do
           it 'parses the report' do
             stub_licensed_features(
               sast: true,
-              vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
-            )
-            stub_feature_flags(
-              vulnerability_finding_tracking_signatures: vulnerability_finding_signatures_enabled
+              vulnerability_finding_signatures: vulnerability_finding_signatures
             )
 
             expect(::Gitlab::Ci::Parsers::Security::Sast).to receive(:new).with(
               artifact.file.read,
               kind_of(::Gitlab::Ci::Reports::Security::Report),
-              vulnerability_finding_signatures_enabled
+              vulnerability_finding_signatures
             )
 
             subject

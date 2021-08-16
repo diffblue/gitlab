@@ -155,7 +155,7 @@ module Security
     end
 
     def dismissal_feedback?(finding)
-      if ::Feature.enabled?(:vulnerability_finding_tracking_signatures, pipeline.project) && pipeline.project.licensed_feature_available?(:vulnerability_finding_signatures) && !finding.signatures.empty?
+      if pipeline.project.licensed_feature_available?(:vulnerability_finding_signatures) && !finding.signatures.empty?
         dismissal_feedback_by_finding_signatures(finding)
       else
         dismissal_feedback_by_project_fingerprint(finding)
