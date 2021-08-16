@@ -11,6 +11,27 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   let(:default_branch) { security_policy_management_project.default_branch }
   let(:repository) { instance_double(Repository, root_ref: 'master') }
+  let(:policy_yaml) do
+    <<-EOS
+        scan_execution_policy:
+        - name: Run DAST in every pipeline
+          description: This policy enforces to run DAST for every pipeline within the project
+          enabled: true
+          rules:
+          - type: pipeline
+            branches:
+            - "production"
+          actions:
+          - scan: dast
+            site_profile: Site Profile
+            scanner_profile: Scanner Profile
+    EOS
+  end
+
+  before do
+    allow(security_policy_management_project).to receive(:repository).and_return(repository)
+    allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+  end
 
   describe 'associations' do
     it { is_expected.to belong_to(:project).inverse_of(:security_orchestration_policy_configuration) }
@@ -65,6 +86,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
+  describe '.valid_scan_type?' do
+    it 'returns true when scan type is valid' do
+      expect(described_class.valid_scan_type?('secret_detection')).to be_truthy
+    end
+
+    it 'returns false when scan type is invalid' do
+      expect(described_class.valid_scan_type?('invalid')).to be_falsey
+    end
+  end
+
   describe '#enabled?' do
     subject { security_orchestration_policy_configuration.enabled? }
 
@@ -88,11 +119,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   describe '#policy_configuration_exists?' do
     subject { security_orchestration_policy_configuration.policy_configuration_exists? }
 
-    before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
-    end
-
     context 'when file is missing' do
       let(:policy_yaml) { nil }
 
@@ -100,23 +126,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'when policy is present' do
-      let(:policy_yaml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        EOS
-      end
-
       it { is_expected.to eq(true) }
     end
   end
@@ -124,29 +133,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   describe '#policy_hash' do
     subject { security_orchestration_policy_configuration.policy_hash }
 
-    before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
-    end
-
     context 'when policy is present' do
-      let(:policy_yaml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        EOS
-      end
-
       it { expect(subject.dig(:scan_execution_policy, 0, :name)).to eq('Run DAST in every pipeline') }
     end
 
@@ -200,11 +187,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   describe '#policy_configuration_valid?' do
     subject { security_orchestration_policy_configuration.policy_configuration_valid? }
 
-    before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
-    end
-
     context 'when file is invalid' do
       let(:policy_yaml) do
         <<-EOS
@@ -226,23 +208,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'when file is valid' do
-      let(:policy_yaml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        EOS
-      end
-
       it { is_expected.to eq(true) }
     end
 
@@ -430,11 +395,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       security_orchestration_policy_configuration.on_demand_scan_actions(ref)
     end
 
-    before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
-    end
-
     context 'when ref is branch' do
       let(:ref) { 'refs/heads/release/123' }
 
@@ -447,6 +407,64 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       let(:ref) { 'refs/tags/v1.0.0' }
 
       it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#pipeline_scan_actions' do
+    let(:policy_yaml) do
+      <<-EOS
+      scan_execution_policy:
+        - name: Run DAST and Secret Detection in every pipeline
+          enabled: true
+          rules:
+          - type: pipeline
+            branches:
+            - "production"
+          actions:
+          - scan: dast
+            site_profile: Site Profile 2
+            scanner_profile: Scanner Profile 2
+          - scan: secret_detection
+        - name: Run DAST in every pipeline
+          enabled: true
+          rules:
+          - type: pipeline
+            branches:
+            - "production"
+          actions:
+          - scan: dast
+            site_profile: Site Profile
+            scanner_profile: Scanner Profile
+        - name: Run Secret Detection for all branches
+          enabled: true
+          rules:
+          - type: pipeline
+            branches:
+            - "*"
+          actions:
+          - scan: secret_detection
+        - name: Scheduled scan
+          enabled: true
+          rules:
+          - type: schedule
+            cadence: '*/15 * * * *'
+            branches:
+            - "*"
+          actions:
+          - scan: secret_detection
+      EOS
+    end
+
+    let(:expected_actions) do
+      [{ scan: 'secret_detection' }, { scan: 'secret_detection' }]
+    end
+
+    subject(:pipeline_scan_actions) do
+      security_orchestration_policy_configuration.pipeline_scan_actions('refs/heads/production')
+    end
+
+    it 'returns only actions for pipeline scans applicable for branch' do
+      expect(pipeline_scan_actions).to eq(expected_actions)
     end
   end
 
@@ -469,11 +487,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
           site_profile: Site Profile
           scanner_profile: Scanner Profile 2
       EOS
-    end
-
-    before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
     end
 
     it 'returns list of policy names where site profile is referenced' do

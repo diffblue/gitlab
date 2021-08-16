@@ -31,6 +31,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
          - scan: dast
            site_profile: Site Profile
            scanner_profile: Scanner Profile
+         - scan: secret_detection
     EOS
   end
 
@@ -45,6 +46,12 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
     it 'does not modify the config' do
       expect(subject).to eq(config)
+    end
+  end
+
+  shared_examples 'with different scan type' do
+    it 'extends config with additional jobs' do
+      expect(subject).to include(expected_configuration)
     end
   end
 
@@ -116,10 +123,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
         context 'when DAST profiles are not found' do
           it 'does not modify the config' do
-            expect(subject).to eq(
-              image: 'ruby:3.0.1',
-              'dast-on-demand-0': { allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' }
-            )
+            expect(subject[:'dast-on-demand-0']).to eq({ allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' })
           end
         end
 
@@ -130,40 +134,73 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
           let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, name: 'Scanner Profile') }
           let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, name: 'Site Profile') }
 
-          let(:expected_configuration) do
-            {
-              image: 'ruby:3.0.1',
-              'dast-on-demand-0': {
-                stage: 'dast',
-                image: {
-                  name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
-                },
-                variables: {
-                  DAST_VERSION: 2,
-                  SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-                  GIT_STRATEGY: 'none'
-                },
-                allow_failure: true,
-                script: ['/analyze'],
-                artifacts: {
-                  reports: {
-                    dast: 'gl-dast-report.json'
+          it_behaves_like 'with different scan type' do
+            let(:expected_configuration) do
+              {
+                image: 'ruby:3.0.1',
+                'dast-on-demand-0': {
+                  stage: 'dast',
+                  image: {
+                    name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
+                  },
+                  variables: {
+                    DAST_VERSION: 2,
+                    SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                    GIT_STRATEGY: 'none'
+                  },
+                  allow_failure: true,
+                  script: ['/analyze'],
+                  artifacts: {
+                    reports: {
+                      dast: 'gl-dast-report.json'
+                    }
+                  },
+                  dast_configuration: {
+                    site_profile: dast_site_profile.name,
+                    scanner_profile: dast_scanner_profile.name
                   }
-                },
-                dast_configuration: {
-                  site_profile: dast_site_profile.name,
-                  scanner_profile: dast_scanner_profile.name
                 }
               }
-            }
-          end
-
-          it 'extends config with additional jobs' do
-            expect(subject).to include(expected_configuration)
+            end
           end
 
           it_behaves_like 'with pipeline source applicable for CI'
           it_behaves_like 'when policy is invalid'
+        end
+
+        context 'when scan type is secret_detection' do
+          it_behaves_like 'with different scan type' do
+            let(:expected_configuration) do
+              {
+                'secret-detection-0': {
+                  rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
+                  script:
+                    ['if [ -n "$CI_COMMIT_TAG" ]; then echo "Skipping Secret Detection for tags. No code changes have occurred."; exit 0; fi',
+                     'if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then echo "Running Secret Detection on default branch."; /analyzer run; exit 0; fi',
+                     'git fetch origin $CI_DEFAULT_BRANCH $CI_COMMIT_REF_NAME',
+                     'git log --left-right --cherry-pick --pretty=format:"%H" refs/remotes/origin/$CI_DEFAULT_BRANCH...refs/remotes/origin/$CI_COMMIT_REF_NAME > "$CI_COMMIT_SHA"_commit_list.txt',
+                     'export SECRET_DETECTION_COMMITS_FILE="$CI_COMMIT_SHA"_commit_list.txt',
+                     '/analyzer run',
+                     'rm "$CI_COMMIT_SHA"_commit_list.txt'],
+                  stage: 'test',
+                  image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION',
+                  services: [],
+                  allow_failure: true,
+                  artifacts: {
+                    reports: {
+                      secret_detection: 'gl-secret-detection-report.json'
+                    }
+                  },
+                  variables: {
+                    SECURE_ANALYZERS_PREFIX: 'registry.gitlab.com/gitlab-org/security-products/analyzers',
+                    SECRETS_ANALYZER_VERSION: '3',
+                    SECRET_DETECTION_EXCLUDED_PATHS: '',
+                    SECRET_DETECTION_HISTORIC_SCAN: 'false'
+                  }
+                }
+              }
+            end
+          end
         end
       end
     end

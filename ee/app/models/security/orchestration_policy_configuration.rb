@@ -16,6 +16,7 @@ module Security
       schedule: 'schedule'
     }.freeze
 
+    SCAN_TYPES = %w[dast secret_detection].freeze
     ON_DEMAND_SCANS = %w[dast].freeze
     AVAILABLE_POLICY_TYPES = %i{scan_execution_policy}.freeze
 
@@ -38,6 +39,10 @@ module Security
 
     def self.policy_management_project?(project_id)
       self.exists?(security_policy_management_project_id: project_id)
+    end
+
+    def self.valid_scan_type?(scan_type)
+      SCAN_TYPES.include?(scan_type)
     end
 
     def enabled?
@@ -69,10 +74,11 @@ module Security
     end
 
     def on_demand_scan_actions(ref)
-      active_policies
-        .select { |policy| applicable_for_ref?(policy, ref) }
-        .flat_map { |policy| policy[:actions] }
-        .select { |action| action[:scan].in?(ON_DEMAND_SCANS) }
+      active_policies_scan_actions(ref).select { |action| action[:scan].in?(ON_DEMAND_SCANS) }
+    end
+
+    def pipeline_scan_actions(ref)
+      active_policies_scan_actions(ref).reject { |action| action[:scan].in?(ON_DEMAND_SCANS) }
     end
 
     def active_policy_names_with_dast_site_profile(profile_name)
@@ -134,6 +140,12 @@ module Security
 
         profiles
       end
+    end
+
+    def active_policies_scan_actions(ref)
+      active_policies
+        .select { |policy| applicable_for_ref?(policy, ref) }
+        .flat_map { |policy| policy[:actions] }
     end
 
     def policy_blob
