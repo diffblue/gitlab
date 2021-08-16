@@ -2,7 +2,7 @@ import createPolicyProject from 'ee/threat_monitoring/graphql/mutations/create_p
 import createScanExecutionPolicy from 'ee/threat_monitoring/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/threat_monitoring/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
-import { DEFAULT_MR_TITLE } from './constants';
+import { DEFAULT_MR_TITLE, SECURITY_POLICY_ACTIONS } from './constants';
 
 /**
  * Checks if an error exists and throws it if it does
@@ -67,7 +67,11 @@ const createMergeRequest = async ({ projectPath, sourceBranch, targetBranch }) =
  * @param {Object} payload contains the path to the project and the policy yaml value
  * @returns {Object} contains the branch containing the updated policy file and any errors
  */
-const updatePolicy = async ({ projectPath, yamlEditorValue }) => {
+const updatePolicy = async ({
+  action = SECURITY_POLICY_ACTIONS.APPEND,
+  projectPath,
+  yamlEditorValue,
+}) => {
   const {
     data: {
       scanExecutionPolicyCommit: { branch, errors },
@@ -75,6 +79,7 @@ const updatePolicy = async ({ projectPath, yamlEditorValue }) => {
   } = await gqClient.mutate({
     mutation: createScanExecutionPolicy,
     variables: {
+      mode: action,
       projectPath,
       policyYaml: yamlEditorValue,
     },
@@ -88,7 +93,12 @@ const updatePolicy = async ({ projectPath, yamlEditorValue }) => {
  * @param {Object} payload contains the currently assigned security policy project (if one exists), the path to the project, and the policy yaml value
  * @returns {Object} contains the currently assigned security policy project and the created merge request
  */
-export const savePolicy = async ({ assignedPolicyProject, projectPath, yamlEditorValue }) => {
+export const modifyPolicy = async ({
+  action,
+  assignedPolicyProject,
+  projectPath,
+  yamlEditorValue,
+}) => {
   let currentAssignedPolicyProject = assignedPolicyProject;
 
   if (!currentAssignedPolicyProject.fullPath) {
@@ -98,6 +108,7 @@ export const savePolicy = async ({ assignedPolicyProject, projectPath, yamlEdito
   checkForErrors(currentAssignedPolicyProject);
 
   const newPolicyCommitBranch = await updatePolicy({
+    action,
     projectPath,
     yamlEditorValue,
   });
@@ -112,5 +123,5 @@ export const savePolicy = async ({ assignedPolicyProject, projectPath, yamlEdito
 
   checkForErrors(mergeRequest);
 
-  return { currentAssignedPolicyProject, mergeRequest };
+  return { mergeRequest, policyProject: currentAssignedPolicyProject };
 };
