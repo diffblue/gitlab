@@ -391,7 +391,7 @@ describe('AddEditRotationModal', () => {
       expect(findForm().props('form')).toMatchObject({
         startsAt: {
           date: new Date('2021-01-13T00:00:00.000Z'),
-          time: 1,
+          time: 3,
         },
       });
     });
@@ -400,7 +400,7 @@ describe('AddEditRotationModal', () => {
       expect(findForm().props('form')).toMatchObject({
         endsAt: {
           date: new Date('2021-03-13T00:00:00.000Z'),
-          time: 5,
+          time: 7,
         },
       });
     });
