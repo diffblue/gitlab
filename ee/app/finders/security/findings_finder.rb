@@ -132,6 +132,7 @@ module Security
               .with_scanner
               .deduplicated
               .ordered
+              .latest
               .page(page)
               .per(per_page)
               .then(&method(:by_confidence_levels))
