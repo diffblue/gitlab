@@ -73,9 +73,7 @@ module EE
     end
 
     def display_subscription_banner?
-      @display_subscription_banner &&
-        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-        ::Feature.enabled?(:subscribable_subscription_banner, default_enabled: false)
+      @display_subscription_banner && ::Gitlab::CurrentSettings.should_check_namespace_plan?
     end
   end
 end
