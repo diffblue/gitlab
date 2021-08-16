@@ -59,10 +59,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
           resources :dashboard, only: [:index], controller: :dashboard
           resources :vulnerability_report, only: [:index], controller: :vulnerability_report
-
-          resource :policy, only: [:show]
-
-          resources :policies, only: [:new, :edit], controller: :policies, constraints: { id: %r{[^/]+} }
+          resources :policies, only: [:index, :new, :edit], constraints: { id: %r{[^/]+} }
 
           resource :configuration, only: [], controller: :configuration do
             post :auto_fix, on: :collection

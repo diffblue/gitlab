@@ -21,7 +21,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   end
 
   let_it_be(:type) { 'scan_execution_policy' }
-  let_it_be(:show) { project_security_policy_url(project) }
+  let_it_be(:index) { project_security_policies_url(project) }
   let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
   let_it_be(:new) { new_project_security_policy_url(project) }
 
@@ -102,10 +102,20 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
         context 'when type is missing' do
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name]) }
 
-          it 'returns 404' do
+          it 'redirects to #index' do
             get edit
 
-            expect(response).to have_gitlab_http_status(:not_found)
+            expect(response).to redirect_to(project_security_policies_path(project))
+          end
+        end
+
+        context 'when type is invalid' do
+          let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: 'invalid') }
+
+          it 'redirects to #index' do
+            get edit
+
+            expect(response).to redirect_to(project_security_policies_path(project))
           end
         end
 
@@ -124,10 +134,10 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
           let_it_be(:policy_configuration) { nil }
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
 
-          it 'redirects to policy configuration page' do
+          it 'redirects to #index' do
             get edit
 
-            expect(response).to redirect_to(project_security_policy_path(project))
+            expect(response).to redirect_to(project_security_policies_path(project))
           end
         end
 
@@ -229,7 +239,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
     end
   end
 
-  describe 'GET #show' do
+  describe 'GET #index' do
     using RSpec::Parameterized::TableSyntax
 
     where(:feature_flag, :license, :status) do
@@ -239,7 +249,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
       true | false | :not_found
     end
 
-    subject(:request) { get show, params: { namespace_id: project.namespace, project_id: project } }
+    subject(:request) { get index, params: { namespace_id: project.namespace, project_id: project } }
 
     with_them do
       before do

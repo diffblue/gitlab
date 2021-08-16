@@ -15,8 +15,8 @@ module Projects
 
       feature_category :security_orchestration
 
-      def show
-        render :show, locals: { project: project }
+      def index
+        render :index, locals: { project: project }
       end
 
       def edit
@@ -38,8 +38,8 @@ module Projects
 
         if result[:status] == :error
           case result[:invalid_component]
-          when :policy_configuration
-            redirect_to project_security_policy_path(project), alert: result[:message]
+          when :policy_configuration, :parameter
+            redirect_to project_security_policies_path(project), alert: result[:message]
           when :policy_project
             redirect_to project_path(policy_configuration.security_policy_management_project)
           when :policy_yaml
@@ -48,12 +48,7 @@ module Projects
 
             redirect_to project_blob_path(policy_management_project, policy_path), alert: result[:message]
           else
-            # We should redirect to security policies list view once it is implemented.
-            # For now, we will render_404
-
-            # This case also covers `when :parameter`
-            # redirect_to project_security_policies_path(project), alert: result[:message]
-            render_404
+            redirect_to project_security_policies_path(project), alert: result[:message]
           end
         end
       end

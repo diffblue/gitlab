@@ -204,7 +204,7 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
       end
 
       it 'policies link is visible' do
-        expect(rendered).to have_link('Policies', href: project_security_policy_path(project))
+        expect(rendered).to have_link('Policies', href: project_security_policies_path(project))
       end
 
       it 'security configuration link is visible' do
