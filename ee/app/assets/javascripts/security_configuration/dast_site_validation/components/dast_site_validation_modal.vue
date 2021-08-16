@@ -10,8 +10,10 @@ import {
   GlModal,
   GlSkeletonLoader,
   GlTruncate,
+  GlLink,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import download from '~/lib/utils/downloader';
 import { cleanLeadingSeparator, joinPaths, stripPathTail } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -43,6 +45,7 @@ export default {
     GlModal,
     GlSkeletonLoader,
     GlTruncate,
+    GlLink,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -63,6 +66,9 @@ export default {
       tokenId: null,
       validationMethod: DAST_SITE_VALIDATION_METHOD_TEXT_FILE,
       validationPath: '',
+      helpUrl: helpPagePath('user/application_security/dast/index', {
+        anchor: 'site-profile-validation',
+      }),
     };
   },
   computed: {
@@ -235,6 +241,14 @@ export default {
       {{ s__('DastSiteValidation|Could not create validation token. Please try again.') }}
     </gl-alert>
     <template v-else>
+      <p>
+        {{
+          s__(
+            'DastSiteValidation|To run an active scan, validate your target site. All site profiles that share the same base URL share the same validation status.',
+          )
+        }}
+        <gl-link :href="helpUrl" target="_blank">{{ __('Learn more.') }}</gl-link>
+      </p>
       <gl-form-group :label="s__('DastSiteValidation|Step 1 - Choose site validation method')">
         <gl-form-radio-group v-model="validationMethod" :options="validationMethodOptions" />
       </gl-form-group>
