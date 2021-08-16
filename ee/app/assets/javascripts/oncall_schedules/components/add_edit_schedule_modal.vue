@@ -45,11 +45,7 @@ export default {
   data() {
     return {
       loading: false,
-      form: {
-        name: this.schedule?.name,
-        description: this.schedule?.description,
-        timezone: this.timezones.find(({ identifier }) => this.schedule?.timezone === identifier),
-      },
+      form: this.getInitialFormState(),
       error: '',
       validationState: {
         name: true,
@@ -139,7 +135,7 @@ export default {
 
             this.$refs.addUpdateScheduleModal.hide();
             this.$emit('scheduleCreated');
-            this.clearScheduleForm();
+            this.resetForm();
           },
         )
         .catch((error) => {
@@ -154,8 +150,12 @@ export default {
 
       const {
         projectPath,
-        form: { timezone },
+        form: {
+          timezone: { identifier },
+        },
       } = this;
+
+      const isTimezoneUpdated = identifier !== this.schedule.timezone;
 
       this.$apollo
         .mutate({
@@ -179,6 +179,10 @@ export default {
               throw error;
             }
             this.$refs.addUpdateScheduleModal.hide();
+
+            if (isTimezoneUpdated) {
+              window.location.reload();
+            }
           },
         )
         .catch((error) => {
@@ -186,9 +190,6 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-          if (timezone !== this.schedule.timezone) {
-            window.location.reload();
-          }
         });
     },
     hideErrorAlert() {
@@ -205,10 +206,19 @@ export default {
         this.validationState.timezone = !isEmpty(this.form.timezone);
       }
     },
-    clearScheduleForm() {
-      this.form.name = '';
-      this.form.description = '';
-      this.form.timezone = {};
+    getInitialFormState() {
+      return {
+        name: this.schedule?.name,
+        description: this.schedule?.description,
+        timezone: this.timezones.find(({ identifier }) => this.schedule?.timezone === identifier),
+      };
+    },
+    resetForm() {
+      this.validationState = {
+        name: true,
+        timezone: true,
+      };
+      this.form = this.getInitialFormState();
     },
   },
 };
@@ -223,6 +233,8 @@ export default {
     :action-primary="actionsProps.primary"
     :action-cancel="actionsProps.cancel"
     @primary.prevent="isEditMode ? editSchedule() : createSchedule()"
+    @canceled="resetForm"
+    @close="resetForm"
   >
     <gl-alert v-if="error" variant="danger" class="gl-mt-n3 gl-mb-3" @dismiss="hideErrorAlert">
       {{ errorMsg }}

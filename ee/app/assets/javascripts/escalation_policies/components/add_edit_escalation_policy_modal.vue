@@ -201,20 +201,7 @@ export default {
       this.error = null;
     },
     resetForm() {
-      if (this.isEditMode) {
-        const { name, description, rules } = this.escalationPolicy;
-        this.form = {
-          name,
-          description,
-          rules,
-        };
-      } else {
-        this.form = {
-          name: '',
-          description: '',
-          rules: [],
-        };
-      }
+      this.form = this.getInitialState();
 
       this.validationState = {
         name: null,

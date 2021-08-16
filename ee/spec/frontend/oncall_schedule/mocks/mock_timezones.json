@@ -18,7 +18,7 @@
     "formatted_offset": "-11:00"
   },
   {
-    "identifier": "Pacific/US/Canada",
+    "identifier": "America/Los_Angeles",
     "name": "Pacific Time (US & Canada)",
     "abbr": "PT",
     "formatted_offset": "-7:00"
