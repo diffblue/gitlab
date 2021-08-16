@@ -41,12 +41,30 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
 
           is_expected.to be_kind_of(Ci::Build)
         end
+
+        context 'with ci_queueing_denormalize_ci_minutes_information enabled' do
+          before do
+            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: true)
+          end
+
+          it { is_expected.to be_kind_of(Ci::Build) }
+        end
+
+        context 'with ci_queueing_denormalize_ci_minutes_information disabled' do
+          before do
+            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
+          end
+
+          it { is_expected.to be_kind_of(Ci::Build) }
+        end
       end
 
       shared_examples 'does not return a build' do |runners_minutes_used|
         before do
           project.namespace.create_namespace_statistics(
             shared_runners_seconds: runners_minutes_used * 60)
+          pending_build.reload
+          pending_build.create_queuing_entry!
         end
 
         context 'with traversal_ids enabled' do
@@ -70,6 +88,22 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
           stub_feature_flags(ci_queueing_disaster_recovery_disable_quota: true)
 
           is_expected.to be_kind_of(Ci::Build)
+        end
+
+        context 'with ci_queueing_denormalize_ci_minutes_information enabled' do
+          before do
+            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: true)
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'with ci_queueing_denormalize_ci_minutes_information disabled' do
+          before do
+            stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
+          end
+
+          it { is_expected.to be_nil }
         end
       end
 
