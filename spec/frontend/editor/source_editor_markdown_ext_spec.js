@@ -1,3 +1,4 @@
+import MockAdapter from 'axios-mock-adapter';
 import { Range, Position } from 'monaco-editor';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -13,7 +14,6 @@ import axios from '~/lib/utils/axios_utils';
 import syntaxHighlight from '~/syntax_highlight';
 
 jest.mock('~/syntax_highlight');
-jest.mock('axios');
 jest.mock('~/flash');
 
 describe('Markdown Extension for Source Editor', () => {
@@ -21,6 +21,7 @@ describe('Markdown Extension for Source Editor', () => {
   let instance;
   let editorEl;
   let panelSpy;
+  let mockAxios;
   const projectPath = 'fooGroup/barProj';
   const firstLine = 'This is a';
   const secondLine = 'multiline';
@@ -45,6 +46,7 @@ describe('Markdown Extension for Source Editor', () => {
   };
 
   beforeEach(() => {
+    mockAxios = new MockAdapter(axios);
     setFixtures('<div id="editor" data-editor-loading></div>');
     editorEl = document.getElementById('editor');
     editor = new SourceEditor();
@@ -60,6 +62,7 @@ describe('Markdown Extension for Source Editor', () => {
   afterEach(() => {
     instance.dispose();
     editorEl.remove();
+    mockAxios.restore();
   });
 
   it('sets up the instance', () => {
@@ -73,7 +76,7 @@ describe('Markdown Extension for Source Editor', () => {
 
   describe('cleanup', () => {
     beforeEach(async () => {
-      axios.post.mockImplementation(() => Promise.resolve({ data: '<div>FooBar</div>' }));
+      mockAxios.onPost().reply(200, { body: responseData });
       await togglePreview();
     });
 
@@ -140,19 +143,21 @@ describe('Markdown Extension for Source Editor', () => {
     };
 
     beforeEach(() => {
-      axios.post.mockImplementation(() => Promise.resolve({ data: { body: responseData } }));
+      mockAxios.onPost().reply(200, { body: responseData });
     });
 
     it('correctly fetches preview based on projectPath', async () => {
       setData(projectPath, group, project);
       await fetchPreview();
-      expect(axios.post).toHaveBeenCalledWith(`/${projectPath}/preview_markdown`, { text });
+      expect(mockAxios.history.post[0].url).toBe(`/${projectPath}/preview_markdown`);
+      expect(mockAxios.history.post[0].data).toEqual(JSON.stringify({ text }));
     });
 
     it('correctly fetches preview based on group and project data attributes', async () => {
       setData(undefined, group, project);
       await fetchPreview();
-      expect(axios.post).toHaveBeenCalledWith(`/${group}/${project}/preview_markdown`, { text });
+      expect(mockAxios.history.post[0].url).toBe(`/${group}/${project}/preview_markdown`);
+      expect(mockAxios.history.post[0].data).toEqual(JSON.stringify({ text }));
     });
 
     it('puts the fetched content into the preview DOM element', async () => {
@@ -168,7 +173,7 @@ describe('Markdown Extension for Source Editor', () => {
     });
 
     it('catches the errors when fetching the preview', async () => {
-      axios.post.mockImplementation(() => Promise.reject());
+      mockAxios.onPost().reply(500);
 
       await fetchPreview();
       expect(createFlash).toHaveBeenCalled();
@@ -201,7 +206,7 @@ describe('Markdown Extension for Source Editor', () => {
 
   describe('togglePreview', () => {
     beforeEach(() => {
-      axios.post.mockImplementation(() => Promise.resolve({ data: responseData }));
+      mockAxios.onPost().reply(200, { body: responseData });
     });
 
     it('toggles preview flag on instance', () => {
@@ -320,13 +325,13 @@ describe('Markdown Extension for Source Editor', () => {
 
       describe('hidden preview DOM element', () => {
         it('listens to model changes and re-fetches preview', async () => {
-          expect(axios.post).not.toHaveBeenCalled();
+          expect(mockAxios.history.post).toHaveLength(0);
           await togglePreview();
-          expect(axios.post).toHaveBeenCalledTimes(1);
+          expect(mockAxios.history.post).toHaveLength(1);
 
           instance.setValue('New Value');
           await waitForPromises();
-          expect(axios.post).toHaveBeenCalledTimes(2);
+          expect(mockAxios.history.post).toHaveLength(2);
         });
 
         it('stores disposable listener for model changes', async () => {
@@ -339,12 +344,12 @@ describe('Markdown Extension for Source Editor', () => {
       describe('already visible preview', () => {
         beforeEach(async () => {
           await togglePreview();
-          jest.clearAllMocks();
+          mockAxios.resetHistory();
         });
 
         it('does not re-fetch the preview', () => {
           instance.togglePreview();
-          expect(axios.post).not.toHaveBeenCalled();
+          expect(mockAxios.history.post).toHaveLength(0);
         });
 
         it('disposes the model change event listener', () => {
