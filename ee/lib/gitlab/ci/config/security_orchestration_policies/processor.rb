@@ -19,7 +19,9 @@ module Gitlab
             return @config unless security_orchestration_policy_configuration.policy_configuration_valid?
             return @config unless extend_configuration?
 
-            merged_config = @config.deep_merge(on_demand_scans_template)
+            merged_config = @config
+                              .deep_merge(on_demand_scans_template)
+                              .deep_merge(pipeline_scan_template)
             observe_processing_duration(Time.current - @start)
 
             merged_config
@@ -35,6 +37,11 @@ module Gitlab
             ::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService
               .new(project)
               .execute(security_orchestration_policy_configuration.on_demand_scan_actions(@ref))
+          end
+
+          def pipeline_scan_template
+            ::Security::SecurityOrchestrationPolicies::ScanPipelineService
+              .new.execute(security_orchestration_policy_configuration.pipeline_scan_actions(@ref))
           end
 
           def observe_processing_duration(duration)
