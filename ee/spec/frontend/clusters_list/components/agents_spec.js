@@ -18,6 +18,7 @@ describe('Agents', () => {
   };
   const provideData = {
     projectPath: 'path/to/project',
+    kasAddress: 'kas.example.com',
   };
 
   const createWrapper = ({ agents = [], pageInfo = null, trees = [] }) => {

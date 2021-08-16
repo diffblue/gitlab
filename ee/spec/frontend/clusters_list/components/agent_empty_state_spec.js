@@ -73,9 +73,5 @@ describe('AgentEmptyStateComponent', () => {
       expect(findConfigurationsAlert().exists()).toBe(false);
       expect(findIntegrationButton().attributes('disabled')).toBeUndefined();
     });
-
-    it('should render correct href for the integration button', () => {
-      expect(findIntegrationButton().attributes('href')).toBe(integrationDocsUrl);
-    });
   });
 });
