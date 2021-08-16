@@ -14,9 +14,9 @@ export default {
       'Geo|With GitLab Geo, you can install a special read-only and replicated instance anywhere. %{linkStart}Learn more%{linkEnd}',
     ),
     addSite: s__('Geo|Add site'),
-    modalTitle: s__('Geo|Remove secondary node'),
+    modalTitle: s__('Geo|Remove node'),
     modalBody: s__(
-      'Geo|Removing a Geo secondary node stops the synchronization to that node. Are you sure?',
+      'Geo|Removing a Geo node stops the synchronization to and from that node. Are you sure?',
     ),
     primarySite: s__('Geo|Primary site'),
     secondarySite: s__('Geo|Secondary site'),
