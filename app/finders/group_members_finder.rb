@@ -9,7 +9,7 @@ class GroupMembersFinder < UnionFinder
     direct: 'Members in the group itself',
     inherited: "Members in the group's ancestor groups",
     descendants: "Members in the group's subgroups",
-    shared_with_groups: "Invited Groups members"
+    shared_with_groups: "Invited group's members"
   }.freeze
 
   include CreatedAtFilter
