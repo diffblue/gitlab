@@ -149,14 +149,14 @@ export default {
         ? mergeUrlParams(
             {
               environment_id: this.currentEnvironmentId,
-              type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType].urlParameter,
+              type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType]?.urlParameter,
             },
             this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
           )
         : '';
     },
     policyType() {
-      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : '';
+      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : 'container';
     },
     fields() {
       const environments = {
