@@ -17909,6 +17909,9 @@ msgstr ""
 msgid "Integrations|All projects inheriting these settings will also be reset."
 msgstr ""
 
+msgid "Integrations|An error occurred while loading projects using custom settings."
+msgstr ""
+
 msgid "Integrations|Browser limitations"
 msgstr ""
 
@@ -18027,6 +18030,9 @@ msgid "Integrations|Sign in to add namespaces"
 msgstr ""
 
 msgid "Integrations|Standard"
+msgstr ""
+
+msgid "Integrations|There are no projects using custom settings"
 msgstr ""
 
 msgid "Integrations|This integration, and inheriting projects were reset."
