@@ -31228,6 +31228,15 @@ msgstr ""
 msgid "SortOptions|Blocking"
 msgstr ""
 
+msgid "SortOptions|Closed date"
+msgstr ""
+
+msgid "SortOptions|Closed earlier"
+msgstr ""
+
+msgid "SortOptions|Closed recently"
+msgstr ""
+
 msgid "SortOptions|Created date"
 msgstr ""
 
