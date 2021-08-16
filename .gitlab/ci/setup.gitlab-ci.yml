@@ -70,9 +70,12 @@ verify-tests-yml:
     - install_gitlab_gem
     - install_tff_gem
     - retrieve_tests_mapping
-    - 'if [ -n "$CI_MERGE_REQUEST_IID" ]; then tooling/bin/find_changes ${CHANGES_FILE}; fi'
-    - 'if [ -n "$CI_MERGE_REQUEST_IID" ]; then tooling/bin/find_tests ${CHANGES_FILE} ${MATCHED_TESTS_FILE}; fi'
-    - 'if [ -n "$CI_MERGE_REQUEST_IID" ]; then echo "related rspec tests: $(cat $MATCHED_TESTS_FILE)"; fi'
+    - |
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        tooling/bin/find_changes ${CHANGES_FILE};
+        tooling/bin/find_tests ${CHANGES_FILE} ${MATCHED_TESTS_FILE};
+        echo "related rspec tests: $(cat $MATCHED_TESTS_FILE)";
+      fi
   artifacts:
     expire_in: 7d
     paths:

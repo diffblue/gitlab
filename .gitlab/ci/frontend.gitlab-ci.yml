@@ -188,13 +188,14 @@ eslint-as-if-foss:
 .jest-base:
   extends: .frontend-test-base
   script:
-    - run_timed_command "yarn jest --ci --coverage --testSequencer ./scripts/frontend/parallel_ci_sequencer.js"
+    - run_timed_command "yarn jest:ci"
 
 jest:
   extends:
     - .jest-base
-    - .frontend:rules:default-frontend-jobs
+    - .frontend:rules:jest
   needs:
+    - job: "detect-tests"
     - job: "rspec frontend_fixture"
     - job: "rspec-ee frontend_fixture"
       optional: true
@@ -209,6 +210,13 @@ jest:
     reports:
       junit: junit_jest.xml
   parallel: 5
+
+jest minimal:
+  extends:
+    - jest
+    - .frontend:rules:jest:minimal
+  script:
+    - run_timed_command "yarn jest:ci:minimal"
 
 jest-integration:
   extends:
@@ -235,7 +243,11 @@ coverage-frontend:
     - .default-retry
     - .yarn-cache
     - .frontend:rules:ee-mr-and-default-branch-only
-  needs: ["jest"]
+  needs:
+    - job: "jest"
+      optional: true
+    - job: "jest minimal"
+      optional: true
   stage: post-test
   before_script:
     - *yarn-install
