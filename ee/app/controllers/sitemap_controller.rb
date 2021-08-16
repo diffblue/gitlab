@@ -3,7 +3,7 @@
 class SitemapController < ApplicationController
   skip_before_action :authenticate_user!
 
-  feature_category :metrics
+  feature_category :not_owned
 
   def show
     return render_404 unless Gitlab.com?
