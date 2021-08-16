@@ -224,7 +224,7 @@ export default {
       });
     },
 
-    async importGroups(sourceGroupIds) {
+    importGroups(sourceGroupIds) {
       this.$apollo.mutate({
         mutation: importGroupsMutation,
         variables: { sourceGroupIds },
