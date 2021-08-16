@@ -33,24 +33,4 @@ RSpec.describe EE::SamlProvidersHelper do
       it { is_expected.to eq(false) }
     end
   end
-
-  describe '#show_saml_group_links_in_sidebar?' do
-    subject { helper.show_saml_group_links_in_sidebar?(group) }
-
-    context 'when the user can admin saml group links' do
-      before do
-        stub_can(:admin_saml_group_links, true)
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when the user cannot admin saml group links' do
-      before do
-        stub_can(:admin_saml_group_links, false)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-  end
 end
