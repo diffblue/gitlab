@@ -11,14 +11,12 @@ describe('CommentTypeToggle', () => {
       testContext.dropdownList = {};
       testContext.noteTypeInput = {};
       testContext.submitButton = {};
-      testContext.closeButton = {};
 
       testContext.commentTypeToggle = new CommentTypeToggle({
         dropdownTrigger: testContext.dropdownTrigger,
         dropdownList: testContext.dropdownList,
         noteTypeInput: testContext.noteTypeInput,
         submitButton: testContext.submitButton,
-        closeButton: testContext.closeButton,
       });
     });
 
@@ -36,14 +34,6 @@ describe('CommentTypeToggle', () => {
 
     it('should set .submitButton', () => {
       expect(testContext.commentTypeToggle.submitButton).toBe(testContext.submitButton);
-    });
-
-    it('should set .closeButton', () => {
-      expect(testContext.commentTypeToggle.closeButton).toBe(testContext.closeButton);
-    });
-
-    it('should set .reopenButton', () => {
-      expect(testContext.commentTypeToggle.reopenButton).toBe(testContext.reopenButton);
     });
   });
 
@@ -82,88 +72,6 @@ describe('CommentTypeToggle', () => {
         [InputSetter],
         testContext.config,
       );
-    });
-  });
-
-  describe('setConfig', () => {
-    describe('if no .closeButton is provided', () => {
-      beforeEach(() => {
-        testContext.commentTypeToggle = {
-          dropdownTrigger: {},
-          dropdownList: {},
-          noteTypeInput: {},
-          submitButton: {},
-          reopenButton: {},
-        };
-
-        testContext.setConfig = CommentTypeToggle.prototype.setConfig.call(
-          testContext.commentTypeToggle,
-        );
-      });
-
-      it('should not add .closeButton related InputSetter config', () => {
-        expect(testContext.setConfig).toEqual({
-          InputSetter: [
-            {
-              input: testContext.commentTypeToggle.noteTypeInput,
-              valueAttribute: 'data-value',
-            },
-            {
-              input: testContext.commentTypeToggle.submitButton,
-              valueAttribute: 'data-submit-text',
-            },
-            {
-              input: testContext.commentTypeToggle.reopenButton,
-              valueAttribute: 'data-reopen-text',
-            },
-            {
-              input: testContext.commentTypeToggle.reopenButton,
-              valueAttribute: 'data-reopen-text',
-              inputAttribute: 'data-alternative-text',
-            },
-          ],
-        });
-      });
-    });
-
-    describe('if no .reopenButton is provided', () => {
-      beforeEach(() => {
-        testContext.commentTypeToggle = {
-          dropdownTrigger: {},
-          dropdownList: {},
-          noteTypeInput: {},
-          submitButton: {},
-          closeButton: {},
-        };
-
-        testContext.setConfig = CommentTypeToggle.prototype.setConfig.call(
-          testContext.commentTypeToggle,
-        );
-      });
-
-      it('should not add .reopenButton related InputSetter config', () => {
-        expect(testContext.setConfig).toEqual({
-          InputSetter: [
-            {
-              input: testContext.commentTypeToggle.noteTypeInput,
-              valueAttribute: 'data-value',
-            },
-            {
-              input: testContext.commentTypeToggle.submitButton,
-              valueAttribute: 'data-submit-text',
-            },
-            {
-              input: testContext.commentTypeToggle.closeButton,
-              valueAttribute: 'data-close-text',
-            },
-            {
-              input: testContext.commentTypeToggle.closeButton,
-              valueAttribute: 'data-close-text',
-              inputAttribute: 'data-alternative-text',
-            },
-          ],
-        });
-      });
     });
   });
 });

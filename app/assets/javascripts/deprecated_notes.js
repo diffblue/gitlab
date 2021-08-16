@@ -205,16 +205,12 @@ export default class Notes {
     const dropdownList = form.querySelector('.js-comment-type-dropdown .dropdown-menu');
     const noteTypeInput = form.querySelector('#note_type');
     const submitButton = form.querySelector('.js-comment-type-dropdown .js-comment-submit-button');
-    const closeButton = form.querySelector('.js-note-target-close');
-    const reopenButton = form.querySelector('.js-note-target-reopen');
 
     const commentTypeToggle = new CommentTypeToggle({
       dropdownTrigger,
       dropdownList,
       noteTypeInput,
       submitButton,
-      closeButton,
-      reopenButton,
     });
 
     commentTypeToggle.initDroplab();

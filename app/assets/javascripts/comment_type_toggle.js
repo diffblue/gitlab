@@ -10,8 +10,6 @@ class CommentTypeToggle {
     this.dropdownList = opts.dropdownList;
     this.noteTypeInput = opts.noteTypeInput;
     this.submitButton = opts.submitButton;
-    this.closeButton = opts.closeButton;
-    this.reopenButton = opts.reopenButton;
   }
 
   initDroplab() {
@@ -26,43 +24,22 @@ class CommentTypeToggle {
     const config = {
       InputSetter: [
         {
+          // when option is clicked, sets the `value` attribute on
+          // `#note_type` to whatever the `data-value` attribute was
+          // on the clicked option
           input: this.noteTypeInput,
           valueAttribute: 'data-value',
         },
         {
+          // when option is clicked, sets the `value` attribute on
+          // `.js-comment-type-dropdown .js-comment-submit-button` to
+          // whatever the `data-value` attribute was on the clicked
+          // option
           input: this.submitButton,
           valueAttribute: 'data-submit-text',
         },
       ],
     };
-
-    if (this.closeButton) {
-      config.InputSetter.push(
-        {
-          input: this.closeButton,
-          valueAttribute: 'data-close-text',
-        },
-        {
-          input: this.closeButton,
-          valueAttribute: 'data-close-text',
-          inputAttribute: 'data-alternative-text',
-        },
-      );
-    }
-
-    if (this.reopenButton) {
-      config.InputSetter.push(
-        {
-          input: this.reopenButton,
-          valueAttribute: 'data-reopen-text',
-        },
-        {
-          input: this.reopenButton,
-          valueAttribute: 'data-reopen-text',
-          inputAttribute: 'data-alternative-text',
-        },
-      );
-    }
 
     return config;
   }
