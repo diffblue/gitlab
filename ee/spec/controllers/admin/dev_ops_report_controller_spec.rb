@@ -13,20 +13,8 @@ RSpec.describe Admin::DevOpsReportController do
         stub_licensed_features(devops_adoption: true)
       end
 
-      it 'is true if there are any enabled_namespaces' do
-        create(:devops_adoption_enabled_namespace)
-
+      it 'is true' do
         expect(controller.show_adoption?).to be true
-      end
-
-      it "is true if the 'devops_adoption_feature' feature is enabled" do
-        expect(controller.show_adoption?).to be true
-      end
-
-      it "is false if the 'devops_adoption_feature' feature is disabled" do
-        stub_feature_flags(devops_adoption_feature: false)
-
-        expect(controller.show_adoption?).to be false
       end
     end
   end

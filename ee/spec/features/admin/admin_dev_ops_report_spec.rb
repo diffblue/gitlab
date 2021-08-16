@@ -27,19 +27,7 @@ RSpec.describe 'DevOps Report page', :js do
     gitlab_enable_admin_mode_sign_in(admin)
   end
 
-  context 'with devops_adoption_feature feature flag disabled' do
-    before do
-      stub_feature_flags(devops_adoption_feature: false)
-    end
-
-    it 'does not show the tabbed layout' do
-      visit admin_dev_ops_report_path
-
-      expect(page).not_to have_selector tabs_selector
-    end
-  end
-
-  context 'with ultimate license and devops_adoption_feature feature flag enabled' do
+  context 'with ultimate license' do
     before do
       stub_licensed_features(devops_adoption: true)
     end
@@ -169,7 +157,7 @@ RSpec.describe 'DevOps Report page', :js do
     end
   end
 
-  context 'without ultimate license and devops_adoption_feature feature flag enabled' do
+  context 'without ultimate license' do
     before do
       stub_licensed_features(devops_adoption: false)
     end
