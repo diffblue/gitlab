@@ -172,6 +172,8 @@ graphql-schema-dump:
     # Disable warnings in browserslist which can break on backports
     # https://github.com/browserslist/browserslist/blob/a287ec6/node.js#L367-L384
     BROWSERSLIST_IGNORE_OLD_DATA: "true"
+  before_script:
+    - *yarn-install
   stage: test
 
 eslint-as-if-foss:
@@ -181,13 +183,11 @@ eslint-as-if-foss:
     - .as-if-foss
   needs: []
   script:
-    - *yarn-install
     - run_timed_command "yarn run lint:eslint:all"
 
 .jest-base:
   extends: .frontend-test-base
   script:
-    - *yarn-install
     - run_timed_command "yarn jest --ci --coverage --testSequencer ./scripts/frontend/parallel_ci_sequencer.js"
 
 jest:
@@ -215,7 +215,6 @@ jest-integration:
     - .frontend-test-base
     - .frontend:rules:default-frontend-jobs
   script:
-    - *yarn-install
     - run_timed_command "yarn jest:integration --ci"
   needs:
     - job: "rspec frontend_fixture"
@@ -321,7 +320,6 @@ bundle-size-review:
   extends:
     - .frontend-test-base
   script:
-    - *yarn-install
     - run_timed_command "yarn generate:startup_css"
     - yarn check:startup_css
 
@@ -349,7 +347,6 @@ startup-css-check as-if-foss:
     - .frontend-test-base
     - .storybook-yarn-cache
   script:
-    - *yarn-install  # storybook depends on the global webpack config, so we must install global deps.
     - *storybook-yarn-install
     - yarn run storybook:build
 
