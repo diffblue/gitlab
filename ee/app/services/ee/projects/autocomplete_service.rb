@@ -5,7 +5,9 @@ module EE
       def epics
         EpicsFinder
           .new(current_user, group_id: project.group&.id, state: 'opened')
-          .execute.select([:iid, :title])
+          .execute
+          .with_group_route
+          .select(:iid, :title, :group_id)
       end
 
       def vulnerabilities

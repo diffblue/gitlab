@@ -12,6 +12,12 @@ describe('ee gfm_autocomplete/utils', () => {
       title: "Epic title <script>alert('hi')</script>",
     };
 
+    const subgroupEpic = {
+      iid: 987654,
+      reference: 'gitlab&987654',
+      title: "Subgroup context epic title <script>alert('hi')</script>",
+    };
+
     it('uses & as the trigger', () => {
       expect(epicsConfig.trigger).toBe('&');
     });
@@ -30,6 +36,14 @@ describe('ee gfm_autocomplete/utils', () => {
 
     it('shows the iid and title in the menu item', () => {
       expect(epicsConfig.menuItemTemplate({ original: epic })).toMatchSnapshot();
+    });
+
+    it('inserts the iid on autocomplete selection within a top level group context', () => {
+      expect(epicsConfig.selectTemplate({ original: epic })).toBe(`&${epic.iid}`);
+    });
+
+    it('inserts the reference on autocomplete selection within a group context', () => {
+      expect(epicsConfig.selectTemplate({ original: subgroupEpic })).toBe(subgroupEpic.reference);
     });
   });
 });

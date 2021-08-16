@@ -21,6 +21,7 @@ export const tributeConfig = {
       menuItemLimit,
       menuItemTemplate: ({ original }) =>
         `<small>${original.iid}</small> ${escape(original.title)}`,
+      selectTemplate: ({ original }) => original.reference || `&${original.iid}`,
     },
   },
 };
