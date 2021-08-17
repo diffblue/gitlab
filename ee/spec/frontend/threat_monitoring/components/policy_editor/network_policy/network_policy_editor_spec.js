@@ -265,7 +265,7 @@ describe('NetworkPolicyEditor component', () => {
     });
   });
 
-  describe('given existingPolicy property was provided', () => {
+  describe('editing a policy', () => {
     const manifest = toYaml({
       name: 'policy',
       endpointLabels: '',
@@ -276,6 +276,7 @@ describe('NetworkPolicyEditor component', () => {
       factory({
         propsData: {
           existingPolicy: { name: 'policy', manifest },
+          isEditing: true,
         },
       });
     });

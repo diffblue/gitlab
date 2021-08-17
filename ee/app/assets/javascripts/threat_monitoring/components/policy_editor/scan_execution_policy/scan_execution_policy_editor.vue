@@ -1,5 +1,4 @@
 <script>
-import { removeUnnecessaryDashes } from 'ee/threat_monitoring/utils';
 import { joinPaths, visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import { EDITOR_MODES, EDITOR_MODE_YAML } from '../constants';
@@ -9,8 +8,9 @@ import {
   fromYaml,
   GRAPHQL_ERROR_MESSAGE,
   modifyPolicy,
+  SECURITY_POLICY_ACTIONS,
+  toYaml,
 } from './lib';
-import { SECURITY_POLICY_ACTIONS } from './lib/constants';
 
 export default {
   SECURITY_POLICY_ACTIONS,
@@ -33,10 +33,15 @@ export default {
       required: false,
       default: null,
     },
+    isEditing: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const yamlEditorValue = this.existingPolicy
-      ? removeUnnecessaryDashes(this.existingPolicy.manifest)
+      ? toYaml(this.existingPolicy)
       : DEFAULT_SCAN_EXECUTION_POLICY;
 
     return {
@@ -46,11 +51,6 @@ export default {
       policy: fromYaml(yamlEditorValue),
       yamlEditorValue,
     };
-  },
-  computed: {
-    isEditing() {
-      return Boolean(this.existingPolicy);
-    },
   },
   methods: {
     handleError(error) {

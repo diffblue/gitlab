@@ -17,6 +17,7 @@ export default {
     ScanExecutionPolicyEditor,
   },
   mixins: [glFeatureFlagMixin()],
+  inject: ['policyType'],
   props: {
     assignedPolicyProject: {
       type: Object,
@@ -31,18 +32,30 @@ export default {
   data() {
     return {
       error: '',
-      policyType: POLICY_TYPE_COMPONENT_OPTIONS.container.value,
+      newPolicyType: POLICY_TYPE_COMPONENT_OPTIONS.container.value,
     };
   },
   computed: {
-    policyComponent() {
-      return POLICY_TYPE_COMPONENT_OPTIONS[this.policyType].component;
+    currentPolicyType() {
+      return this.isEditing ? this.policyType : this.newPolicyType;
+    },
+    isEditing() {
+      return Boolean(this.existingPolicy);
+    },
+    policyTypes() {
+      return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
+    },
+    policyOptions() {
+      return (
+        this.policyTypes.find((option) => {
+          return this.isEditing
+            ? option.urlParameter === this.currentPolicyType
+            : option.value === this.currentPolicyType;
+        }) || POLICY_TYPE_COMPONENT_OPTIONS.container
+      );
     },
     shouldAllowPolicyTypeSelection() {
       return !this.existingPolicy && this.glFeatures.securityOrchestrationPoliciesConfiguration;
-    },
-    shouldShowEnvironmentPicker() {
-      return POLICY_TYPE_COMPONENT_OPTIONS[this.policyType].shouldShowEnvironmentPicker;
     },
   },
   created() {
@@ -53,11 +66,10 @@ export default {
     setError(error) {
       this.error = error;
     },
-    updatePolicyType(type) {
-      this.policyType = type;
+    handleNewPolicyType(type) {
+      this.newPolicyType = type;
     },
   },
-  policyTypes: Object.values(POLICY_TYPE_COMPONENT_OPTIONS),
 };
 </script>
 
@@ -73,18 +85,19 @@ export default {
       <gl-form-group :label="s__('NetworkPolicies|Policy type')" label-for="policyType">
         <gl-form-select
           id="policyType"
-          :value="policyType"
-          :options="$options.policyTypes"
+          :value="policyOptions.value"
+          :options="policyTypes"
           :disabled="!shouldAllowPolicyTypeSelection"
-          @change="updatePolicyType"
+          @change="handleNewPolicyType"
         />
       </gl-form-group>
-      <environment-picker v-if="shouldShowEnvironmentPicker" class="gl-ml-5" />
+      <environment-picker v-if="policyOptions.shouldShowEnvironmentPicker" class="gl-ml-5" />
     </div>
     <component
-      :is="policyComponent"
+      :is="policyOptions.component"
       :existing-policy="existingPolicy"
       :assigned-policy-project="assignedPolicyProject"
+      :is-editing="isEditing"
       @error="setError($event)"
     />
   </section>
