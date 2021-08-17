@@ -20916,6 +20916,9 @@ msgstr ""
 msgid "Merge automatically (%{strategy})"
 msgstr ""
 
+msgid "Merge blocked: new changes were just added."
+msgstr ""
+
 msgid "Merge blocked: the source branch must be rebased onto the target branch."
 msgstr ""
 
@@ -22332,9 +22335,6 @@ msgid "New branch"
 msgstr ""
 
 msgid "New branch unavailable"
-msgstr ""
-
-msgid "New changes were added. %{linkStart}Reload the page to review them%{linkEnd}"
 msgstr ""
 
 msgid "New confidential epic title "
@@ -28558,6 +28558,9 @@ msgid "Review App|View app"
 msgstr ""
 
 msgid "Review App|View latest app"
+msgstr ""
+
+msgid "Review changes"
 msgstr ""
 
 msgid "Review requested from %{name}"
@@ -39852,9 +39855,6 @@ msgid "mrWidget|The changes will be merged into"
 msgstr ""
 
 msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure, or check the %{linkStart}troubleshooting documentation%{linkEnd} to see other possible actions."
-msgstr ""
-
-msgid "mrWidget|The source branch HEAD has recently changed. Please reload the page and review the changes before merging"
 msgstr ""
 
 msgid "mrWidget|The source branch has been deleted"
