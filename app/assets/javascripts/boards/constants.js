@@ -113,6 +113,11 @@ export const FilterFields = {
   ],
 };
 
+export const DraggableItemTypes = {
+  card: 'card',
+  list: 'list',
+};
+
 export default {
   BoardType,
   ListType,

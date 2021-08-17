@@ -6,12 +6,13 @@ import { sortableStart, sortableEnd } from '~/boards/mixins/sortable_default_opt
 import { sprintf, __ } from '~/locale';
 import defaultSortableConfig from '~/sortable/sortable_config';
 import Tracking from '~/tracking';
-import { toggleFormEventPrefix } from '../constants';
+import { toggleFormEventPrefix, DraggableItemTypes } from '../constants';
 import eventHub from '../eventhub';
 import BoardCard from './board_card.vue';
 import BoardNewIssue from './board_new_issue.vue';
 
 export default {
+  draggableItemTypes: DraggableItemTypes,
   name: 'BoardList',
   i18n: {
     loading: __('Loading'),
@@ -170,15 +171,33 @@ export default {
         this.loadNextPage();
       }
     },
-    handleDragOnStart() {
+    handleDragOnStart({
+      item: {
+        dataset: { draggableItemType },
+      },
+    }) {
+      if (draggableItemType !== DraggableItemTypes.card) {
+        return;
+      }
+
       sortableStart();
       this.track('drag_card', { label: 'board' });
     },
-    handleDragOnEnd(params) {
+    handleDragOnEnd({
+      newIndex: originalNewIndex,
+      oldIndex,
+      from,
+      to,
+      item: {
+        dataset: { draggableItemType, itemId, itemIid, itemPath },
+      },
+    }) {
+      if (draggableItemType !== DraggableItemTypes.card) {
+        return;
+      }
+
       sortableEnd();
-      const { oldIndex, from, to, item } = params;
-      let { newIndex } = params;
-      const { itemId, itemIid, itemPath } = item.dataset;
+      let newIndex = originalNewIndex;
       let { children } = to;
       let moveBeforeId;
       let moveAfterId;
@@ -265,6 +284,7 @@ export default {
         :index="index"
         :list="list"
         :item="item"
+        :data-draggable-item-type="$options.draggableItemTypes.card"
         :disabled="disabled"
       />
       <gl-intersection-observer @appear="onReachingListBottom">

@@ -1,4 +1,5 @@
 import Draggable from 'vuedraggable';
+import { DraggableItemTypes } from 'ee_else_ce/boards/constants';
 import { useFakeRequestAnimationFrame } from 'helpers/fake_request_animation_frame';
 import createComponent from 'jest/boards/board_list_helper';
 import BoardCard from '~/boards/components/board_card.vue';
@@ -12,6 +13,22 @@ describe('Board list component', () => {
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findIssueCountLoadingIcon = () => wrapper.find('[data-testid="count-loading-icon"]');
   const findDraggable = () => wrapper.findComponent(Draggable);
+
+  const startDrag = (
+    params = {
+      item: {
+        dataset: {
+          draggableItemType: DraggableItemTypes.card,
+        },
+      },
+    },
+  ) => {
+    findByTestId('tree-root-wrapper').vm.$emit('start', params);
+  };
+
+  const endDrag = (params) => {
+    findByTestId('tree-root-wrapper').vm.$emit('end', params);
+  };
 
   useFakeRequestAnimationFrame();
 
@@ -174,22 +191,28 @@ describe('Board list component', () => {
         it('adds a class `is-dragging` to document body', () => {
           expect(document.body.classList.contains('is-dragging')).toBe(false);
 
-          findByTestId('tree-root-wrapper').vm.$emit('start');
+          startDrag();
 
           expect(document.body.classList.contains('is-dragging')).toBe(true);
         });
       });
 
       describe('handleDragOnEnd', () => {
-        it('removes class `is-dragging` from document body', () => {
+        beforeEach(() => {
           jest.spyOn(wrapper.vm, 'moveItem').mockImplementation(() => {});
+
+          startDrag();
+        });
+
+        it('removes class `is-dragging` from document body', () => {
           document.body.classList.add('is-dragging');
 
-          findByTestId('tree-root-wrapper').vm.$emit('end', {
+          endDrag({
             oldIndex: 1,
             newIndex: 0,
             item: {
               dataset: {
+                draggableItemType: DraggableItemTypes.card,
                 itemId: mockIssues[0].id,
                 itemIid: mockIssues[0].iid,
                 itemPath: mockIssues[0].referencePath,
@@ -200,6 +223,25 @@ describe('Board list component', () => {
           });
 
           expect(document.body.classList.contains('is-dragging')).toBe(false);
+        });
+
+        it(`should not handle the event if the dragged item is not a "${DraggableItemTypes.card}"`, () => {
+          endDrag({
+            oldIndex: 1,
+            newIndex: 0,
+            item: {
+              dataset: {
+                draggableItemType: DraggableItemTypes.list,
+                itemId: mockIssues[0].id,
+                itemIid: mockIssues[0].iid,
+                itemPath: mockIssues[0].referencePath,
+              },
+            },
+            to: { children: [], dataset: { listId: 'gid://gitlab/List/1' } },
+            from: { dataset: { listId: 'gid://gitlab/List/2' } },
+          });
+
+          expect(document.body.classList.contains('is-dragging')).toBe(true);
         });
       });
     });
