@@ -25,7 +25,7 @@ describe('import actions cell', () => {
     createComponent({ group });
 
     const button = wrapper.findComponent(GlButton);
-    console.log(wrapper.html());
+
     expect(button.exists()).toBe(true);
     expect(button.text()).toBe('Import');
   });
