@@ -35,7 +35,6 @@ The following resources are migrated to the target instance:
   - The user already exists in the target GitLab instance and
   - The user has a public email in the source GitLab instance that matches a
     confirmed email in the target GitLab instance
-    confirmed email in the target GitLab instance
 - Epics ([Introduced in 13.7](https://gitlab.com/gitlab-org/gitlab/-/issues/250281))
   - title
   - description
