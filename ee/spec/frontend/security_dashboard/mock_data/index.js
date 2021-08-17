@@ -196,7 +196,7 @@ export const mockProjectSecurityChartsWithData = () => ({
 
 export const mockVulnerableProjectsInstance = () => ({
   data: {
-    instanceSecurityDashboard: {
+    instance: {
       projects: {
         nodes: [
           {

@@ -77,8 +77,8 @@ export default {
               const newProject = results.addProjectToSecurityDashboard.project;
 
               const data = produce(sourceData, (draftData) => {
-                draftData.instanceSecurityDashboard.projects.nodes = [
-                  ...draftData.instanceSecurityDashboard.projects.nodes,
+                draftData.instance.projects.nodes = [
+                  ...draftData.instance.projects.nodes,
                   {
                     ...newProject,
                     vulnerabilitySeveritiesCount: newProject.vulnerabilitySeveritiesCount || null,
@@ -153,7 +153,7 @@ export default {
             const sourceData = store.readQuery({ query: instanceProjectsQuery });
 
             const data = produce(sourceData, (draftData) => {
-              draftData.instanceSecurityDashboard.projects.nodes = draftData.instanceSecurityDashboard.projects.nodes.filter(
+              draftData.instance.projects.nodes = draftData.instance.projects.nodes.filter(
                 (curr) => curr.id !== id,
               );
             });
