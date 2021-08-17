@@ -24792,6 +24792,51 @@ msgstr ""
 msgid "Pipeline|Skipped"
 msgstr ""
 
+msgid "Pipeline|Source"
+msgstr ""
+
+msgid "Pipeline|Source|API"
+msgstr ""
+
+msgid "Pipeline|Source|Chat"
+msgstr ""
+
+msgid "Pipeline|Source|External"
+msgstr ""
+
+msgid "Pipeline|Source|External Pull Request"
+msgstr ""
+
+msgid "Pipeline|Source|Merge Request"
+msgstr ""
+
+msgid "Pipeline|Source|On-Demand DAST Scan"
+msgstr ""
+
+msgid "Pipeline|Source|On-Demand DAST Validation"
+msgstr ""
+
+msgid "Pipeline|Source|Parent Pipeline"
+msgstr ""
+
+msgid "Pipeline|Source|Pipeline"
+msgstr ""
+
+msgid "Pipeline|Source|Push"
+msgstr ""
+
+msgid "Pipeline|Source|Schedule"
+msgstr ""
+
+msgid "Pipeline|Source|Trigger"
+msgstr ""
+
+msgid "Pipeline|Source|Web"
+msgstr ""
+
+msgid "Pipeline|Source|Web IDE"
+msgstr ""
+
 msgid "Pipeline|Specify variable values to be used in this run. The values specified in %{linkStart}CI/CD settings%{linkEnd} will be used by default."
 msgstr ""
 
