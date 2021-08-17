@@ -4,54 +4,110 @@ require 'spec_helper'
 
 RSpec.describe 'Account recovery regular check callout' do
   context 'when signed in' do
-    let(:user) { create(:user, created_at: 4.months.ago ) }
-    let(:message) { "We recommend you ensure two-factor authentication is enabled and the settings are up to date." }
+    let(:user_two_factor_disabled) { create(:user ) }
+    let(:user_two_factor_enabled) { create(:user, :two_factor) }
+    let(:message) { 'Ensure you have two-factor authentication recovery codes stored in a safe place.' }
     let(:action_button) { 'Manage two-factor authentication' }
 
     before do
       allow(Gitlab).to receive(:com?) { true }
-      sign_in(user)
     end
 
-    it 'shows callout if not dismissed' do
-      visit root_dashboard_path
+    context 'when user has two-factor authentication disabled' do
+      before do
+        sign_in(user_two_factor_disabled)
+      end
 
-      expect(page).to have_content(message)
-      expect(page).to have_link(action_button, href: profile_two_factor_auth_path)
+      it 'does not show the callout' do
+        visit root_dashboard_path
+
+        expect(page).not_to have_content(message)
+      end
+
+      context 'when user sets up two-factor authentication' do
+        it 'does not show the callout', :js do
+          visit profile_two_factor_auth_path
+
+          fill_in 'pin_code', with: user_two_factor_disabled.reload.current_otp
+
+          click_button 'Register with two-factor app'
+
+          expect(page).not_to have_content(message)
+
+          click_button 'Copy codes'
+          click_link 'Proceed'
+
+          expect(page).not_to have_content(message)
+        end
+      end
     end
 
-    it 'hides callout when user clicks action button', :js do
-      visit root_dashboard_path
+    context 'when user has two-factor authentication enabled' do
+      before do
+        sign_in(user_two_factor_enabled)
+      end
 
-      expect(page).to have_content(message)
+      it 'shows callout if not dismissed' do
+        visit root_dashboard_path
 
-      click_link action_button
-      wait_for_requests
+        expect(page).to have_content(message)
+        expect(page).to have_link(action_button, href: profile_two_factor_auth_path)
+      end
 
-      expect(page).not_to have_content(message)
+      it 'hides callout when user clicks action button', :js do
+        visit root_dashboard_path
+
+        expect(page).to have_content(message)
+
+        click_link action_button
+        wait_for_requests
+
+        expect(page).not_to have_content(message)
+      end
+
+      it 'hides callout when user clicks close', :js do
+        visit root_dashboard_path
+
+        expect(page).to have_content(message)
+
+        close_callout
+
+        expect(page).not_to have_content(message)
+      end
+
+      it 'shows callout on next session if user did not dismissed it' do
+        visit root_dashboard_path
+
+        expect(page).to have_content(message)
+
+        start_new_session(user_two_factor_enabled)
+        visit root_dashboard_path
+
+        expect(page).to have_content(message)
+      end
+
+      it 'hides callout on next session if user dismissed it', :js do
+        visit root_dashboard_path
+
+        expect(page).to have_content(message)
+
+        close_callout
+
+        start_new_session(user_two_factor_enabled)
+        visit root_dashboard_path
+
+        expect(page).not_to have_content(message)
+      end
     end
+  end
 
-    it 'hides callout when user clicks close', :js do
-      visit root_dashboard_path
+  def close_callout
+    find('[data-testid="close-account-recovery-regular-check-callout"]').click
+    wait_for_requests
+  end
 
-      expect(page).to have_content(message)
-
-      find('.js-recovery-settings-callout .js-close').click
-      wait_for_requests
-
-      expect(page).not_to have_content(message)
-    end
-
-    it 'shows callout on next session if user did not dismissed it' do
-      visit root_dashboard_path
-
-      expect(page).to have_content(message)
-
-      gitlab_sign_out
-      gitlab_sign_in(user)
-      visit root_dashboard_path
-
-      expect(page).to have_content(message)
-    end
+  def start_new_session(user)
+    gitlab_sign_out
+    gitlab_sign_in(user, two_factor_auth: true)
   end
 end

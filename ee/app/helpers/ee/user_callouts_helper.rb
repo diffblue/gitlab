@@ -58,7 +58,7 @@ module EE
     def render_account_recovery_regular_check
       return unless current_user &&
           ::Gitlab.com? &&
-          3.months.ago > current_user.created_at &&
+          current_user.two_factor_otp_enabled? &&
           !user_dismissed?(ACCOUNT_RECOVERY_REGULAR_CHECK, 3.months.ago)
 
       render 'shared/check_recovery_settings'
@@ -93,6 +93,13 @@ module EE
       return false if user_dismissed?(EOA_BRONZE_PLAN_BANNER)
 
       (namespace.group? && namespace.has_owner?(current_user.id)) || !namespace.group?
+    end
+
+    override :dismiss_account_recovery_regular_check
+    def dismiss_account_recovery_regular_check
+      ::Users::DismissUserCalloutService.new(
+        container: nil, current_user: current_user, params: { feature_name: ACCOUNT_RECOVERY_REGULAR_CHECK }
+      ).execute
     end
 
     private
