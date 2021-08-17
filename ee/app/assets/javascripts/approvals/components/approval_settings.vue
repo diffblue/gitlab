@@ -20,6 +20,10 @@ export default {
       type: String,
       required: true,
     },
+    settingsLabels: {
+      type: Object,
+      required: true,
+    },
     canPreventMrApprovalRuleEdit: {
       type: Boolean,
       required: false,
@@ -77,11 +81,12 @@ export default {
     },
   },
   links: {
-    preventAuthorApprovalDocsAnchor: 'prevent-authors-from-approving-their-own-work',
-    preventMrApprovalRuleEditDocsAnchor: 'prevent-overrides-of-default-approvals',
-    requireUserPasswordDocsAnchor: 'require-authentication-for-approvals',
-    removeApprovalsOnPushDocsAnchor: 'reset-approvals-on-push',
-    preventCommittersApprovalDocsAnchor: 'prevent-committers-from-approving-their-own-work',
+    preventAuthorApprovalDocsAnchor: 'prevent-approval-by-author',
+    preventCommittersApprovalDocsAnchor: 'prevent-approvals-by-users-who-add-commits',
+    preventMrApprovalRuleEditDocsAnchor: 'prevent-editing-approval-rules-in-merge-requests',
+    requireUserPasswordDocsAnchor: 'require-user-password-to-approve',
+    removeApprovalsOnPushDocsAnchor:
+      'remove-all-approvals-when-commits-are-added-to-the-source-branch',
   },
   i18n: APPROVAL_SETTINGS_I18N,
 };
@@ -116,7 +121,7 @@ export default {
       <gl-form-group>
         <approval-settings-checkbox
           v-model="preventAuthorApproval"
-          :label="$options.i18n.authorApprovalLabel"
+          :label="settingsLabels.authorApprovalLabel"
           :anchor="$options.links.preventAuthorApprovalDocsAnchor"
           :locked="!canPreventAuthorApproval"
           :locked-text="$options.i18n.lockedByAdmin"
@@ -124,7 +129,7 @@ export default {
         />
         <approval-settings-checkbox
           v-model="preventCommittersApproval"
-          :label="$options.i18n.preventCommittersApprovalLabel"
+          :label="settingsLabels.preventCommittersApprovalLabel"
           :anchor="$options.links.preventCommittersApprovalDocsAnchor"
           :locked="!canPreventCommittersApproval"
           :locked-text="$options.i18n.lockedByAdmin"
@@ -132,7 +137,7 @@ export default {
         />
         <approval-settings-checkbox
           v-model="preventMrApprovalRuleEdit"
-          :label="$options.i18n.preventMrApprovalRuleEditLabel"
+          :label="settingsLabels.preventMrApprovalRuleEditLabel"
           :anchor="$options.links.preventMrApprovalRuleEditDocsAnchor"
           :locked="!canPreventMrApprovalRuleEdit"
           :locked-text="$options.i18n.lockedByAdmin"
@@ -140,13 +145,13 @@ export default {
         />
         <approval-settings-checkbox
           v-model="requireUserPassword"
-          :label="$options.i18n.requireUserPasswordLabel"
+          :label="settingsLabels.requireUserPasswordLabel"
           :anchor="$options.links.requireUserPasswordDocsAnchor"
           data-testid="require-user-password"
         />
         <approval-settings-checkbox
           v-model="removeApprovalsOnPush"
-          :label="$options.i18n.removeApprovalsOnPushLabel"
+          :label="settingsLabels.removeApprovalsOnPushLabel"
           :anchor="$options.links.removeApprovalsOnPushDocsAnchor"
           data-testid="remove-approvals-on-push"
         />

@@ -50,17 +50,6 @@ export const APPROVAL_RULE_CONFIGS = {
 export const APPROVALS_HELP_PATH = 'user/project/merge_requests/approvals/settings';
 
 export const APPROVAL_SETTINGS_I18N = {
-  authorApprovalLabel: s__('ApprovalSettings|Prevent MR approvals by the author.'),
-  preventMrApprovalRuleEditLabel: s__(
-    'ApprovalSettings|Prevent users from modifying MR approval rules.',
-  ),
-  preventCommittersApprovalLabel: s__(
-    'ApprovalSettings|Prevent approval of merge requests by merge request committers.',
-  ),
-  requireUserPasswordLabel: s__('ApprovalSettings|Require user password for approvals.'),
-  removeApprovalsOnPushLabel: s__(
-    'ApprovalSettings|Remove all approvals in a merge request when new commits are pushed to its source branch.',
-  ),
   saveChanges: __('Save changes'),
   loadingErrorMessage: s__(
     'ApprovalSettings|There was an error loading merge request approval settings.',
@@ -71,6 +60,27 @@ export const APPROVAL_SETTINGS_I18N = {
   savingSuccessMessage: s__('ApprovalSettings|Merge request approval settings have been updated.'),
   lockedByAdmin: s__(
     'ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator.',
+  ),
+};
+
+export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {
+  authorApprovalLabel: s__('ApprovalSettings|Prevent approval by author.'),
+  preventMrApprovalRuleEditLabel: s__(
+    'ApprovalSettings|Prevent editing approval rules in merge requests.',
+  ),
+  preventCommittersApprovalLabel: s__(
+    'ApprovalSettings|Prevent approvals by users who add commits.',
+  ),
+  requireUserPasswordLabel: s__('ApprovalSettings|Require user password to approve.'),
+  removeApprovalsOnPushLabel: s__(
+    'ApprovalSettings|Remove all approvals when commits are added to the source branch.',
+  ),
+};
+
+export const GROUP_APPROVAL_SETTINGS_LABELS_I18N = {
+  ...PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
+  preventMrApprovalRuleEditLabel: s__(
+    'ApprovalSettings|Prevent editing approval rules in projects and merge requests. ',
   ),
 };
 

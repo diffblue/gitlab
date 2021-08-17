@@ -5,12 +5,12 @@
     .gl-form-checkbox.custom-control.custom-checkbox
       = f.check_box :prevent_merge_requests_author_approval, class: 'custom-control-input'
       = f.label :prevent_merge_requests_author_approval, class: 'custom-control-label' do
-        = _('Prevent MR approvals by author.')
+        = s_('ApprovalSettings|Prevent approval by author.')
     .gl-form-checkbox.custom-control.custom-checkbox
       = f.check_box :prevent_merge_requests_committers_approval, class: 'custom-control-input'
       = f.label :prevent_merge_requests_committers_approval, class: 'custom-control-label' do
-        = _('Prevent MR approvals from users who make commits to the MR.')
+        = s_('ApprovalSettings|Prevent approvals by users who add commits.')
     .gl-form-checkbox.custom-control.custom-checkbox
       = f.check_box :disable_overriding_approvers_per_merge_request , class: 'custom-control-input'
       = f.label :disable_overriding_approvers_per_merge_request , class: 'custom-control-label' do
-        = _('Prevent users from modifying MR approval rules in projects and merge requests.')
+        = s_('ApprovalSettings|Prevent editing approval rules in projects and merge requests.')

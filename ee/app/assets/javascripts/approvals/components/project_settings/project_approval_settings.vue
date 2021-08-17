@@ -1,6 +1,7 @@
 <script>
 import { mapState } from 'vuex';
 import { __ } from '~/locale';
+import { PROJECT_APPROVAL_SETTINGS_LABELS_I18N } from '../../constants';
 import ApprovalSettings from '../approval_settings.vue';
 
 export default {
@@ -18,6 +19,7 @@ export default {
   i18n: {
     projectSettingsHeader: __('Approval settings'),
   },
+  labels: PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
 };
 </script>
 
@@ -31,6 +33,7 @@ export default {
       :can-prevent-author-approval="canModifyAuthorSettings"
       :can-prevent-committers-approval="canModifyCommiterSettings"
       :can-prevent-mr-approval-rule-edit="canPreventMrApprovalRuleEdit"
+      :settings-labels="$options.labels"
     />
   </div>
 </template>
