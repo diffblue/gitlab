@@ -24,7 +24,7 @@ class PostReceiveService
     # The PostReceive worker will normally invalidate the cache. However, it
     # runs asynchronously. If push options require us to create a new merge
     # request synchronously, we can't rely on that, so invalidate the cache here
-    repository&.expire_branches_cache if mr_options&.key?(:create)
+    repository&.expire_branches_cache if mr_options&.fetch(:create, false)
 
     PostReceive.perform_async(params[:gl_repository], params[:identifier],
                               params[:changes], push_options.as_json)
