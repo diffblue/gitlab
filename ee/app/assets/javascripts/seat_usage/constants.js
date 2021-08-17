@@ -2,6 +2,11 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { thWidthClass } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 
+// Billable Seats HTTP headers
+export const HEADER_TOTAL_ENTRIES = 'x-total';
+export const HEADER_PAGE_NUMBER = 'x-page';
+export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
+
 export const FIELDS = [
   {
     key: 'user',

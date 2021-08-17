@@ -5,17 +5,18 @@ import initialStore from './store';
 
 Vue.use(Vuex);
 
-export default (containerId = 'js-seat-usage') => {
-  const containerEl = document.getElementById(containerId);
+export default (containerId = 'js-seat-usage-app') => {
+  const el = document.getElementById(containerId);
 
-  if (!containerEl) {
+  if (!el) {
     return false;
   }
 
-  const { namespaceId, namespaceName, seatUsageExportPath } = containerEl.dataset;
+  const { namespaceId, namespaceName, seatUsageExportPath } = el.dataset;
 
   return new Vue({
-    el: containerEl,
+    el,
+    apolloProvider: {},
     store: new Vuex.Store(initialStore({ namespaceId, namespaceName, seatUsageExportPath })),
     render(createElement) {
       return createElement(SubscriptionSeats);

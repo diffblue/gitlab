@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Billing > Seat Usage', :js do
+RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }

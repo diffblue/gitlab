@@ -1,9 +1,9 @@
-import * as types from 'ee/billings/seat_usage/store/mutation_types';
-import mutations from 'ee/billings/seat_usage/store/mutations';
-import createState from 'ee/billings/seat_usage/store/state';
-import { mockDataSeats, mockMemberDetails } from 'ee_jest/billings/mock_data';
+import * as types from 'ee/seat_usage/store/mutation_types';
+import mutations from 'ee/seat_usage/store/mutations';
+import createState from 'ee/seat_usage/store/state';
+import { mockDataSeats, mockMemberDetails } from 'ee_jest/seat_usage/mock_data';
 
-describe('EE billings seats module mutations', () => {
+describe('EE seats module mutations', () => {
   let state;
 
   beforeEach(() => {

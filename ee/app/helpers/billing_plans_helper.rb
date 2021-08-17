@@ -165,7 +165,7 @@ module BillingPlansHelper
   def billable_seats_href(namespace)
     return unless namespace.group?
 
-    group_seat_usage_path(namespace)
+    group_usage_quotas_path(namespace, anchor: 'seats-quota-tab')
   end
 
   def offer_from_previous_tier?(namespace_id, plan_id)

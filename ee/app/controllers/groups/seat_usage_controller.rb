@@ -12,6 +12,7 @@ class Groups::SeatUsageController < Groups::ApplicationController
   def show
     respond_to do |format|
       format.html do
+        redirect_to_seat_usage_tab
       end
 
       format.csv do
@@ -24,13 +25,17 @@ class Groups::SeatUsageController < Groups::ApplicationController
         else
           flash[:alert] = _('Failed to generate export, please try again later.')
 
-          redirect_to group_seat_usage_path(group)
+          redirect_to_seat_usage_tab
         end
       end
     end
   end
 
   private
+
+  def redirect_to_seat_usage_tab
+    redirect_to group_usage_quotas_path(group, anchor: 'seats-quota-tab')
+  end
 
   def csv_filename
     "seat-usage-export-#{Time.current.to_s(:number)}.csv"

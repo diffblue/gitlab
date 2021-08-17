@@ -22,7 +22,7 @@ import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
-} from 'ee/billings/seat_usage/constants';
+} from 'ee/seat_usage/constants';
 import { s__, __ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
@@ -99,9 +99,6 @@ export default {
       }, '');
       this.setSearchQuery(searchQuery.trim() || null);
     },
-    handleSortOptionChange(sortOption) {
-      this.setSortOption(sortOption);
-    },
     displayRemoveMemberModal(user) {
       if (user.removable) {
         this.setBillableMemberToRemove(user);
@@ -161,7 +158,7 @@ export default {
         :sort-options="$options.sortOptions"
         initial-sort-by="last_activity_on_desc"
         @onFilter="applyFilter"
-        @onSort="handleSortOptionChange"
+        @onSort="setSortOption"
       />
     </div>
 
