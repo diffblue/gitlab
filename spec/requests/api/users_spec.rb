@@ -2964,6 +2964,101 @@ RSpec.describe API::Users do
     end
   end
 
+  describe 'POST /users/:id/ban', :aggregate_failures do
+    let(:banned_user) { create(:user, :banned) }
+
+    it 'bans existing user' do
+      post api("/users/#{user.id}/block", admin)
+
+      expect(response).to have_gitlab_http_status(:created)
+      expect(response.body).to eq('true')
+      expect(user.reload.state).to eq('banned')
+    end
+
+    it 'does not re-block ldap blocked users' do
+      post api("/users/#{ldap_blocked_user.id}/ban", admin)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
+    end
+
+    it 'is not available for non admin users' do
+      post api("/users/#{user.id}/ban", user)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(user.reload.state).to eq('active')
+    end
+
+    it 'returns a 404 error if user id not found' do
+      post api('/users/0/ban', admin)
+      expect(response).to have_gitlab_http_status(:not_found)
+      expect(json_response['message']).to eq('404 User Not Found')
+    end
+
+    it 'returns a 403 error if user is internal' do
+      internal_user = create(:user, :bot)
+
+      post api("/users/#{internal_user.id}/ban", admin)
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(json_response['message']).to eq('An internal user cannot be banned')
+    end
+
+    it 'returns a 201 if user is already banned' do
+      post api("/users/#{blocked_user.id}/ban", admin)
+
+      aggregate_failures do
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response.body).to eq('null')
+      end
+    end
+  end
+
+  describe 'POST /users/:id/unban' do
+    let(:banned_user) { create(:user, :banned) }
+    let(:deactivated_user) { create(:user, state: 'deactivated') }
+
+    it 'unbans existing user' do
+      post api("/users/#{user.id}/unban", admin)
+      expect(response).to have_gitlab_http_status(:created)
+      expect(user.reload.state).to eq('active')
+    end
+
+    it 'unbans a banned user' do
+      post api("/users/#{banned_user.id}/unban", admin)
+      expect(response).to have_gitlab_http_status(:created)
+      expect(banned_user.reload.state).to eq('active')
+    end
+
+    it 'does not unban ldap blocked users' do
+      post api("/users/#{ldap_blocked_user.id}/unban", admin)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
+    end
+
+    it 'does not unban deactivated users' do
+      post api("/users/#{deactivated_user.id}/unblock", admin)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(deactivated_user.reload.state).to eq('deactivated')
+    end
+
+    it 'is not available for non admin users' do
+      post api("/users/#{banned_user.id}/unban", user)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(user.reload.state).to eq('active')
+    end
+
+    it 'returns a 404 error if user id not found' do
+      post api('/users/0/unban', admin)
+      expect(response).to have_gitlab_http_status(:not_found)
+      expect(json_response['message']).to eq('404 User Not Found')
+    end
+
+    it "returns a 404 for invalid ID" do
+      post api("/users/ASDF/unban", admin)
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
+
   describe "GET /users/:id/memberships" do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project) }

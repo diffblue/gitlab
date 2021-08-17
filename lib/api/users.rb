@@ -687,6 +687,50 @@ module API
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
+      desc 'Ban a user. Available only for admins.'
+      params do
+        requires :id, type: Integer, desc: 'The ID of the user'
+      end
+      post ':id/ban', feature_category: :authentication_and_authorization do
+        authenticated_as_admin!
+        user = find_user_by_id(params)
+
+        if user.ldap_blocked?
+          forbidden!('LDAP blocked users cannot be modified by the API')
+        end
+
+        break if user.banned?
+
+        result = ::Users::BanService.new(current_user).execute(user)
+        if result[:status] == :success
+          "User banned"
+        else
+          render_api_error!(result[:message], result[:http_status])
+        end
+      end
+
+      desc 'Unban a user. Available only for admins.'
+      params do
+        requires :id, type: Integer, desc: 'The ID of the user'
+      end
+      post ':id/unban', feature_category: :authentication_and_authorization do
+        authenticated_as_admin!
+        user = find_user_by_id(params)
+
+        if user.ldap_blocked?
+          forbidden!('LDAP blocked users cannot be modified by the API')
+        end
+
+        break if user.active?
+
+        result = ::Users::UnbanService.new(current_user).execute(user)
+        if result[:status] == :success
+          "User unbanned"
+        else
+          render_api_error!(result[:message], result[:http_status])
+        end
+      end
+
       desc 'Get memberships' do
         success Entities::Membership
       end
