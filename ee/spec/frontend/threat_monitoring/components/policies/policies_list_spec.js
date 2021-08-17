@@ -28,9 +28,10 @@ const environments = [
     global_id: 'gid://gitlab/Environment/2',
   },
 ];
+const scanExecutionPoliciesSpy = scanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const defaultRequestHandlers = {
   networkPolicies: networkPolicies(mockNetworkPoliciesResponse),
-  scanExecutionPolicies: scanExecutionPolicies(mockScanExecutionPoliciesResponse),
+  scanExecutionPolicies: scanExecutionPoliciesSpy,
 };
 const pendingHandler = jest.fn(() => new Promise(() => {}));
 
@@ -200,6 +201,24 @@ describe('PoliciesList component', () => {
       hiddenTypes.forEach((hiddenType) => {
         expect(findPoliciesTable().text()).not.toContain(hiddenType.text);
       });
+    });
+
+    it('does emit `update-policy-list` and refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
+      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted('update-policy-list')).toBeUndefined();
+      wrapper.setProps({ shouldUpdatePolicyList: true });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
+      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not emit `update-policy-list` or refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
+      wrapper.setProps({ shouldUpdatePolicyList: true });
+      await wrapper.vm.$nextTick();
+      wrapper.setProps({ shouldUpdatePolicyList: false });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
+      expect(scanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });
   });
 

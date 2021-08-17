@@ -56,6 +56,13 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   inject: ['projectPath', 'documentationPath', 'newPolicyPath'],
+  props: {
+    shouldUpdatePolicyList: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   apollo: {
     networkPolicies: {
       query: networkPoliciesQuery,
@@ -192,6 +199,14 @@ export default {
       if (this.allEnvironments) fields.splice(2, 0, environments);
 
       return fields;
+    },
+  },
+  watch: {
+    shouldUpdatePolicyList(newShouldUpdatePolicyList) {
+      if (newShouldUpdatePolicyList) {
+        this.$apollo.queries.scanExecutionPolicies.refetch();
+        this.$emit('update-policy-list', false);
+      }
     },
   },
   methods: {

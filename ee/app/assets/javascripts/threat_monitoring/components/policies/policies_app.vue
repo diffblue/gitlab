@@ -18,6 +18,7 @@ export default {
       // environments, therefore infrastructure cannot be set up. A valid default
       // environment id only means that infrastructure *might* be set up.
       shouldFetchEnvironment: this.isValidEnvironmentId(this.defaultEnvironmentId),
+      shouldUpdatePolicyList: false,
     };
   },
   created() {
@@ -32,13 +33,20 @@ export default {
     isValidEnvironmentId(id) {
       return Number.isInteger(id) && id >= 0;
     },
+    handleUpdatePolicyList(val) {
+      this.shouldUpdatePolicyList = val;
+    },
   },
 };
 </script>
 <template>
   <div>
-    <policies-header />
+    <policies-header @update-policy-list="handleUpdatePolicyList" />
     <no-environment-empty-state v-if="!shouldFetchEnvironment" />
-    <policies-list v-else />
+    <policies-list
+      v-else
+      :should-update-policy-list="shouldUpdatePolicyList"
+      @update-policy-list="handleUpdatePolicyList"
+    />
   </div>
 </template>
