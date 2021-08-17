@@ -4,6 +4,7 @@ module Resolvers
   class EpicsResolver < BaseResolver
     include TimeFrameArguments
     include LooksAhead
+    include SetsMaxPageSize
 
     argument :iid, GraphQL::Types::ID,
              required: false,
@@ -102,6 +103,8 @@ module Resolvers
     end
 
     def find_epics(args)
+      set_temp_limit_for(group) # Can be removed with :performance_roadmap feature flag: https://gitlab.com/gitlab-org/gitlab/-/issues/337198
+
       apply_lookahead(EpicsFinder.new(context[:current_user], args).execute)
     end
 
