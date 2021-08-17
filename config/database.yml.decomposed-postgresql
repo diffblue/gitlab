@@ -11,6 +11,15 @@ development:
     host: localhost
     variables:
       statement_timeout: 15s
+  ci:
+    adapter: postgresql
+    encoding: unicode
+    database: gitlabhq_development_ci
+    username: postgres
+    password: "secure password"
+    host: localhost
+    variables:
+      statement_timeout: 15s
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -20,6 +29,16 @@ test: &test
     adapter: postgresql
     encoding: unicode
     database: gitlabhq_test
+    username: postgres
+    password:
+    host: localhost
+    prepared_statements: false
+    variables:
+      statement_timeout: 15s
+  ci:
+    adapter: postgresql
+    encoding: unicode
+    database: gitlabhq_test_ci
     username: postgres
     password:
     host: localhost
