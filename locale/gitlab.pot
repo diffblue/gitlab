@@ -8356,9 +8356,6 @@ msgstr ""
 msgid "Compliance framework"
 msgstr ""
 
-msgid "Compliance framework (optional)"
-msgstr ""
-
 msgid "ComplianceDashboard|created by:"
 msgstr ""
 
