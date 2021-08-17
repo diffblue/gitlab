@@ -8,7 +8,9 @@ module Resolvers
       type [::Types::UserType], null: true
 
       def resolve
-        ::IncidentManagement::OncallUsersFinder.new(schedule.project, schedule: schedule).execute
+        oncall_at = context[:execution_time] || Time.current
+
+        ::IncidentManagement::OncallUsersFinder.new(schedule.project, schedule: schedule, oncall_at: oncall_at).execute
       end
     end
   end

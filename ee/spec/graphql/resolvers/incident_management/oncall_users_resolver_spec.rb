@@ -24,6 +24,17 @@ RSpec.describe Resolvers::IncidentManagement::OncallUsersResolver do
     expect(schedule.participants.pluck(:user_id)).to include(users.first.id)
   end
 
+  it 'calls the finder with the execution_time context' do
+    execution_time = Time.current
+    context = { current_user: current_user, execution_time: execution_time }
+
+    expect(::IncidentManagement::OncallUsersFinder).to receive(:new)
+      .with(project, hash_including(oncall_at: execution_time))
+      .and_call_original
+
+    resolve_oncall_users({}, context)
+  end
+
   context 'when an error occurs while finding shifts' do
     before do
       stub_licensed_features(oncall_schedules: false)

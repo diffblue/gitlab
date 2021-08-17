@@ -41,7 +41,7 @@ module Types
 
       field :oncall_users,
             [::Types::UserType],
-            null: false,
+            null: true,
             resolver: ::Resolvers::IncidentManagement::OncallUsersResolver
     end
   end

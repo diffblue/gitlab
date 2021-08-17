@@ -18,6 +18,8 @@ module Resolvers
       end
 
       def resolve_with_lookahead(**args)
+        context[:execution_time] = Time.current
+
         apply_lookahead(::IncidentManagement::EscalationPoliciesFinder.new(current_user, project, args).execute)
       end
 
