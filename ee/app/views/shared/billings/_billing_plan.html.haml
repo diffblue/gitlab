@@ -63,13 +63,9 @@
               = link_to s_("BillingPlans|See all %{plan_name} features") % { plan_name: plan.name }, EE::SUBSCRIPTIONS_COMPARISON_URL
 
     .card-footer
-      - cta_class = '-new' if use_new_purchase_flow?(namespace)
-      - upgrade_button_classes = upgrade_button_css_classes(namespace, plan, is_current)
-      - upgrade_button_text = plan_offer_type === :upgrade_for_free ? s_('BillingPlan|Upgrade for free') : s_('BillingPlan|Upgrade')
       - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
-      - show_contact_sales_button = show_contact_sales_button?(purchase_link.action, plan_offer_type)
       .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
-        - if show_contact_sales_button
-          = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-success-secondary" : "btn-success"], data: { **experiment_tracking_data_for_button_click('contact_sales') }
+        - if show_contact_sales_button?(purchase_link.action, plan_offer_type)
+          = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-success-secondary" : "btn-success"], data: { 'track-action': 'click_button', 'track-label': 'contact_sales', 'track-property': plan.code }
         - if show_upgrade_button
-          = link_to upgrade_button_text, plan_purchase_or_upgrade_url(namespace, plan), class: "#{upgrade_button_classes} billing-cta-purchase#{cta_class} gl-ml-3", data: { **experiment_tracking_data_for_button_click('upgrade'), qa_selector: "upgrade_to_#{plan.code}" }
+          = link_to upgrade_button_text(plan_offer_type), plan_purchase_or_upgrade_url(namespace, plan), class: ["btn btn-success gl-button", upgrade_button_css_classes(namespace, plan, is_current), "gl-ml-3"], data: { 'track-action': 'click_button', 'track-label': 'upgrade', 'track-property': plan.code, qa_selector: "upgrade_to_#{plan.code}" }

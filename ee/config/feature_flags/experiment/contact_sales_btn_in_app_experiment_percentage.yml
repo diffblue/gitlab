@@ -1,8 +1,0 @@
----
-name: contact_sales_btn_in_app_experiment_percentage
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/38508
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/238207
-milestone: '13.3'
-type: experiment
-group: group::conversion
-default_enabled: true
