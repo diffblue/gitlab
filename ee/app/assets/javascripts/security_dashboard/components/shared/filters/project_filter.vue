@@ -92,7 +92,6 @@ export default {
       manual: true,
       variables() {
         return {
-          pageSize: 20,
           fullPath: this.groupFullPath,
           // The IDs have to be in the format "gid://gitlab/Project/${projectId}"
           ids: convertToGraphQLIds(PROJECT_ENTITY_NAME, this.uncachedIds),
@@ -125,6 +124,7 @@ export default {
       },
       variables() {
         return {
+          pageSize: 20,
           fullPath: this.groupFullPath,
           search: this.searchTerm,
         };
