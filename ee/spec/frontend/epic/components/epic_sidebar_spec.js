@@ -12,6 +12,7 @@ import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
 import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
+import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 
 import { mockEpicMeta, mockEpicData, mockAncestors } from '../mock_data';
 
@@ -212,6 +213,10 @@ describe('EpicSidebarComponent', () => {
 
     it('renders SidebarSubscriptionsWidget', () => {
       expect(wrapper.find(SidebarSubscriptionsWidget).exists()).toBe(true);
+    });
+
+    it('renders SidebarTodoWidget', () => {
+      expect(wrapper.find(SidebarTodoWidget).exists()).toBe(true);
     });
 
     it('renders SidebarReferenceWidget', () => {

@@ -45,6 +45,7 @@ export default () => {
       canUpdate: epicData.canUpdate,
       fullPath: epicData.fullPath,
       iid: epicMeta.epicIid,
+      isClassicSidebar: true,
     },
     created() {
       this.setEpicMeta({
