@@ -18,6 +18,7 @@ import { setUrlFragment, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import networkPoliciesQuery from '../graphql/queries/network_policies.query.graphql';
 import scanExecutionPoliciesQuery from '../graphql/queries/scan_execution_policies.query.graphql';
+import { getPolicyType } from '../utils';
 import { POLICY_TYPE_OPTIONS } from './constants';
 import EnvironmentPicker from './environment_picker.vue';
 import PolicyDrawer from './policy_drawer/policy_drawer.vue';
@@ -165,6 +166,9 @@ export default {
             this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
           )
         : '';
+    },
+    policyType() {
+      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : '';
     },
     fields() {
       const environments = {
@@ -329,6 +333,7 @@ export default {
       :open="hasSelectedPolicy"
       container-class=".js-threat-monitoring-container-wrapper"
       :policy="selectedPolicy"
+      :policy-type="policyType"
       :edit-policy-path="editPolicyPath"
       data-testid="policyDrawer"
       @close="deselectPolicy"

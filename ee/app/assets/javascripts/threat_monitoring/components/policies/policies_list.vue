@@ -16,7 +16,8 @@ import { setUrlFragment, mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import networkPoliciesQuery from '../../graphql/queries/network_policies.query.graphql';
 import scanExecutionPoliciesQuery from '../../graphql/queries/scan_execution_policies.query.graphql';
-import { POLICY_TYPE_OPTIONS } from '../constants';
+import { getPolicyType } from '../../utils';
+import { POLICY_TYPE_COMPONENT_OPTIONS, POLICY_TYPE_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
 import PolicyEnvironments from '../policy_environments.vue';
@@ -146,12 +147,16 @@ export default {
     editPolicyPath() {
       return this.hasSelectedPolicy
         ? mergeUrlParams(
-            !this.selectedPolicy.kind
-              ? { environment_id: this.currentEnvironmentId }
-              : { environment_id: this.currentEnvironmentId, kind: this.selectedPolicy.kind },
+            {
+              environment_id: this.currentEnvironmentId,
+              type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType]?.urlParameter,
+            },
             this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
           )
         : '';
+    },
+    policyType() {
+      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : 'container';
     },
     fields() {
       const environments = {
@@ -308,6 +313,7 @@ export default {
     <policy-drawer
       :open="hasSelectedPolicy"
       :policy="selectedPolicy"
+      :policy-type="policyType"
       :edit-policy-path="editPolicyPath"
       data-testid="policyDrawer"
       @close="deselectPolicy"

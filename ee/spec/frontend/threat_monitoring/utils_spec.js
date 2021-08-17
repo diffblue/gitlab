@@ -1,7 +1,7 @@
-import { POLICY_KINDS } from 'ee/threat_monitoring/components/constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import {
   getContentWrapperHeight,
-  getPolicyKind,
+  getPolicyType,
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
 import { setHTMLFixture } from 'helpers/fixtures';
@@ -30,15 +30,15 @@ describe('Threat Monitoring Utils', () => {
     });
   });
 
-  describe('getPolicyKind', () => {
+  describe('getPolicyType', () => {
     it.each`
       input                            | output
       ${''}                            | ${null}
       ${'ciliumNetworkPolicy'}         | ${null}
-      ${mockL3Manifest}                | ${POLICY_KINDS.ciliumNetwork}
-      ${mockDastScanExecutionManifest} | ${POLICY_KINDS.scanExecution}
+      ${mockL3Manifest}                | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
+      ${mockDastScanExecutionManifest} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
     `('returns $output when used on $input', ({ input, output }) => {
-      expect(getPolicyKind(input)).toBe(output);
+      expect(getPolicyType(input)).toBe(output);
     });
   });
 
