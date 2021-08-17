@@ -6,6 +6,7 @@ import Vuex from 'vuex';
 
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import GroupSettingsApp from 'ee/approvals/components/group_settings/app.vue';
+import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
 import { groupApprovalsMappers } from 'ee/approvals/mappers';
 import { createStoreOptions } from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings';
@@ -76,6 +77,9 @@ describe('EE Approvals Group Settings App', () => {
     createWrapper();
 
     expect(findApprovalSettings().exists()).toBe(true);
-    expect(findApprovalSettings().props('approvalSettingsPath')).toBe(approvalSettingsPath);
+    expect(findApprovalSettings().props()).toMatchObject({
+      approvalSettingsPath,
+      settingsLabels: GROUP_APPROVAL_SETTINGS_LABELS_I18N,
+    });
   });
 });

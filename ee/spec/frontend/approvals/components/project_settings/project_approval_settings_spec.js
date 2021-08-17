@@ -3,6 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import ProjectApprovalSettings from 'ee/approvals/components/project_settings/project_approval_settings.vue';
+import { PROJECT_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
 import { projectApprovalsMappers } from 'ee/approvals/mappers';
 import createStore from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings';
@@ -46,6 +47,7 @@ describe('ProjectApprovalSettings', () => {
       canPreventMrApprovalRuleEdit: true,
       canPreventAuthorApproval: false,
       canPreventCommittersApproval: true,
+      settingsLabels: PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
     });
   });
 });

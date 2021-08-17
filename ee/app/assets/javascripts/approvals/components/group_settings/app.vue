@@ -3,6 +3,7 @@ import { GlSprintf, GlLink } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __ } from '~/locale';
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
+import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from '../../constants';
 import ApprovalSettings from '../approval_settings.vue';
 
 export default {
@@ -30,6 +31,7 @@ export default {
     groupSettingsHeader: __('Merge request approvals'),
     groupSettingsDescription: __('Define approval settings. %{linkStart}Learn more.%{linkEnd}'),
   },
+  labels: GROUP_APPROVAL_SETTINGS_LABELS_I18N,
 };
 </script>
 
@@ -46,7 +48,10 @@ export default {
       </gl-sprintf>
     </template>
     <template #default>
-      <approval-settings :approval-settings-path="approvalSettingsPath" />
+      <approval-settings
+        :approval-settings-path="approvalSettingsPath"
+        :settings-labels="$options.labels"
+      />
     </template>
   </settings-block>
 </template>
