@@ -3644,9 +3644,6 @@ msgstr ""
 msgid "An error occurred while fetching the latest pipeline."
 msgstr ""
 
-msgid "An error occurred while fetching the pipeline."
-msgstr ""
-
 msgid "An error occurred while fetching the releases. Please try again."
 msgstr ""
 
