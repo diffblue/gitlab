@@ -2,8 +2,7 @@ import Vue from 'vue';
 import { mapActions } from 'vuex';
 
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-// eslint-disable-next-line import/no-deprecated
-import { visitUrl, mergeUrlParams, urlParamsToObject } from '~/lib/utils/url_utility';
+import { visitUrl, mergeUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
 import EpicItem from './components/epic_item.vue';
@@ -64,8 +63,9 @@ export default () => {
         supportedPresetTypes.indexOf(dataset.presetType) > -1
           ? dataset.presetType
           : PRESET_TYPES.MONTHS;
-      // eslint-disable-next-line import/no-deprecated
-      const rawFilterParams = urlParamsToObject(window.location.search.substring(1));
+      const rawFilterParams = queryToObject(window.location.search, {
+        gatherArrays: true,
+      });
       const filterParams = {
         ...convertObjectPropsToCamelCase(rawFilterParams, {
           dropKeys: ['scope', 'utf8', 'state', 'sort', 'layout'], // These keys are unsupported/unnecessary
