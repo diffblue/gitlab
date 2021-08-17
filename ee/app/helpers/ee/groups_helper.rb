@@ -8,14 +8,6 @@ module EE
       %w[saml_providers#show usage_quotas#index billings#index]
     end
 
-    def group_settings_nav_link_paths
-      if ::Feature.disabled?(:group_administration_nav_item, @group)
-        super + group_nav_link_paths
-      else
-        super
-      end
-    end
-
     def group_administration_nav_link_paths
       group_nav_link_paths
     end

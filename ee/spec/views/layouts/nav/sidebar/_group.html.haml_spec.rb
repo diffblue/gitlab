@@ -611,4 +611,48 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       end
     end
   end
+
+  describe 'Settings' do
+    let(:administration_nav_enabled) { true }
+
+    before do
+      group.add_owner(user)
+
+      stub_licensed_features(usage_quotas: true)
+      stub_feature_flags(group_administration_nav_item: false)
+
+      allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+      allow(::Gitlab::Auth::Ldap::Config).to receive(:group_sync_enabled?).and_return(true)
+      allow(group).to receive(:saml_group_sync_available?).and_return(true)
+      allow(group).to receive(:feature_available?).and_call_original
+      allow(group).to receive(:feature_available?).with(:group_saml).and_return(true)
+      allow(view).to receive(:current_user).and_return(user)
+
+      render
+    end
+
+    it 'has a link to the LDAP sync settings page' do
+      expect(rendered).to have_link('LDAP Synchronization', href: group_ldap_group_links_path(group))
+    end
+
+    it 'has a link to the SAML SSO settings page' do
+      expect(rendered).to have_link('SAML SSO', href: group_saml_providers_path(group))
+    end
+
+    it 'has a link to the SAML group links settings page' do
+      expect(rendered).to have_link('SAML Group Links', href: group_saml_group_links_path(group))
+    end
+
+    it 'has a link to the Webhooks settings page' do
+      expect(rendered).to have_link('Webhooks', href: group_hooks_path(group))
+    end
+
+    it 'has a link to the Usage Quotas settings page' do
+      expect(rendered).to have_link('Usage Quotas', href: group_usage_quotas_path(group))
+    end
+
+    it 'has a link to the Billing settings page' do
+      expect(rendered).to have_link('Billing', href: group_billings_path(group))
+    end
+  end
 end

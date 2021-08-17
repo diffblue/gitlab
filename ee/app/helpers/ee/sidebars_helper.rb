@@ -15,6 +15,7 @@ module EE
     override :group_sidebar_context_data
     def group_sidebar_context_data(group, user)
       super.merge(
+        show_promotions: show_promotions?(user),
         show_discover_group_security: show_discover_group_security?(group)
       )
     end
