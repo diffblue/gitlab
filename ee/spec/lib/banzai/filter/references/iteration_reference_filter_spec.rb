@@ -92,6 +92,11 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
       expect(doc.to_html).to match(%r(\(<a.+>#{iteration.reference_link_text}</a>\.\)))
     end
 
+    it 'links with adjacent html tags' do
+      doc = reference_filter("Iteration <p>#{reference}</p>.")
+      expect(doc.to_html).to match(%r(<p><a.+>#{iteration.reference_link_text}</a></p>))
+    end
+
     it 'ignores invalid iteration names' do
       exp = act = "Iteration #{Iteration.reference_prefix}#{iteration.name.reverse}"
 

@@ -120,8 +120,8 @@ module EE
             \d+(?!\S\w)\b # Integer-based iteration id, or
           ) |
           (?<iteration_name>
-            [^"\s]+\b |  # String-based single-word iteration title, or
-            "[^"]+"      # String-based multi-word iteration surrounded in quotes
+            [^"\s\<]+\b |  # String-based single-word iteration title, or
+            "[^"]+"        # String-based multi-word iteration surrounded in quotes
           )
         )
       }x.freeze

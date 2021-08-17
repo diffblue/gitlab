@@ -91,6 +91,51 @@ RSpec.describe Iteration do
     end
   end
 
+  describe '.reference_pattern' do
+    subject { described_class.reference_pattern }
+
+    let(:captures) { subject.match(reference).named_captures }
+
+    context 'when iteration id is provided' do
+      let(:reference) { 'gitlab-org/gitlab-ce*iteration:123' }
+
+      it 'correctly detects the iteration' do
+        expect(captures).to eq(
+          'namespace' => 'gitlab-org',
+          'project' => 'gitlab-ce',
+          'iteration_id' => '123',
+          'iteration_name' => nil
+        )
+      end
+    end
+
+    context 'when iteration name is provided' do
+      let(:reference) { 'gitlab-org/gitlab-ce*iteration:my-iteration' }
+
+      it 'correctly detects the iteration' do
+        expect(captures).to eq(
+          'namespace' => 'gitlab-org',
+          'project' => 'gitlab-ce',
+          'iteration_id' => nil,
+          'iteration_name' => 'my-iteration'
+        )
+      end
+    end
+
+    context 'when reference includes tags' do
+      let(:reference) { '<p>gitlab-org/gitlab-ce*iteration:my-iteration</p>' }
+
+      it 'correctly detects the iteration' do
+        expect(captures).to eq(
+          'namespace' => 'gitlab-org',
+          'project' => 'gitlab-ce',
+          'iteration_id' => nil,
+          'iteration_name' => 'my-iteration'
+        )
+      end
+    end
+  end
+
   describe '.filter_by_state' do
     let_it_be(:closed_iteration) { create(:iteration, :closed, :skip_future_date_validation, group: group, start_date: 8.days.ago, due_date: 2.days.ago) }
     let_it_be(:current_iteration) { create(:iteration, :current, :skip_future_date_validation, group: group, start_date: 1.day.ago, due_date: 6.days.from_now) }
