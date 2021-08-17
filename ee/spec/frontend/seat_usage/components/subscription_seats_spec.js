@@ -9,9 +9,9 @@ import {
 } from '@gitlab/ui';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-import SubscriptionSeats from 'ee/billings/seat_usage/components/subscription_seats.vue';
-import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/billings/seat_usage/constants';
-import { mockDataSeats, mockTableItems } from 'ee_jest/billings/mock_data';
+import SubscriptionSeats from 'ee/seat_usage/components/subscription_seats.vue';
+import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/seat_usage/constants';
+import { mockDataSeats, mockTableItems } from 'ee_jest/seat_usage/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 

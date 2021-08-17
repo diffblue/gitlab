@@ -1,28 +1,35 @@
 import otherStorageCounter from 'ee/other_storage_counter';
+import SeatUsageApp from 'ee/seat_usage';
 import storageCounter from 'ee/storage_counter';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
 import initSearchSettings from '~/search_settings';
 
-if (document.querySelector('#js-storage-counter-app')) {
-  storageCounter();
+const initLinkedTabs = () => {
+  if (!document.querySelector('.js-storage-tabs')) {
+    return false;
+  }
 
-  // eslint-disable-next-line no-new
-  new LinkedTabs({
-    defaultAction: '#pipelines-quota-tab',
+  return new LinkedTabs({
+    defaultAction: '#seats-quota-tab',
     parentEl: '.js-storage-tabs',
     hashedTabs: true,
   });
-}
+};
 
-if (document.querySelector('#js-other-storage-counter-app')) {
-  otherStorageCounter();
+const initVueApps = () => {
+  if (document.querySelector('#js-seat-usage-app')) {
+    SeatUsageApp();
+  }
 
-  // eslint-disable-next-line no-new
-  new LinkedTabs({
-    defaultAction: '#pipelines-quota-tab',
-    parentEl: '.js-other-storage-tabs',
-    hashedTabs: true,
-  });
-}
+  if (document.querySelector('#js-storage-counter-app')) {
+    storageCounter();
+  }
 
+  if (document.querySelector('#js-other-storage-counter-app')) {
+    otherStorageCounter();
+  }
+};
+
+initVueApps();
+initLinkedTabs();
 initSearchSettings();

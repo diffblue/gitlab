@@ -10,7 +10,7 @@ RSpec.describe BillingPlansHelper do
     let(:customer_portal_url) { "#{EE::SUBSCRIPTIONS_URL}/subscriptions" }
     let(:add_seats_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats" }
     let(:plan_renew_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew" }
-    let(:billable_seats_href) { helper.group_seat_usage_path(group) }
+    let(:billable_seats_href) { helper.group_usage_quotas_path(group, anchor: 'seats-quota-tab') }
     let(:refresh_seats_href) { helper.refresh_seats_group_billings_url(group) }
 
     let(:plan) do
@@ -132,7 +132,7 @@ RSpec.describe BillingPlansHelper do
         let(:namespace) { build(:namespace) }
 
         it 'does not return billable_seats_href' do
-          expect(subject).not_to include(billable_seats_href: helper.group_seat_usage_path(namespace))
+          expect(subject).not_to include(billable_seats_href: helper.group_usage_quotas_path(namespace, anchor: 'seats-quota-tab'))
         end
       end
 
@@ -140,7 +140,7 @@ RSpec.describe BillingPlansHelper do
         let(:namespace) { build(:group) }
 
         it 'returns billable_seats_href for group' do
-          expect(subject).to include(billable_seats_href: helper.group_seat_usage_path(namespace))
+          expect(subject).to include(billable_seats_href: helper.group_usage_quotas_path(namespace, anchor: 'seats-quota-tab'))
         end
       end
     end

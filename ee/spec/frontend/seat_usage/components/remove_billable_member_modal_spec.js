@@ -2,7 +2,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
-import RemoveBillableMemberModal from 'ee/billings/seat_usage/components/remove_billable_member_modal.vue';
+import RemoveBillableMemberModal from 'ee/seat_usage/components/remove_billable_member_modal.vue';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);

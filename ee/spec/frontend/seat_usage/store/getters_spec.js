@@ -1,6 +1,6 @@
-import * as getters from 'ee/billings/seat_usage/store/getters';
-import State from 'ee/billings/seat_usage/store/state';
-import { mockDataSeats, mockTableItems, mockMemberDetails } from 'ee_jest/billings/mock_data';
+import * as getters from 'ee/seat_usage/store/getters';
+import State from 'ee/seat_usage/store/state';
+import { mockDataSeats, mockTableItems, mockMemberDetails } from 'ee_jest/seat_usage/mock_data';
 
 describe('Seat usage table getters', () => {
   let state;

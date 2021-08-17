@@ -88,7 +88,7 @@ RSpec.describe 'Groups > Billing', :js do
           expect(page).to have_link("Manage", href: "#{EE::SUBSCRIPTIONS_URL}/subscriptions")
           expect(page).to have_link("Add seats", href: extra_seats_url)
           expect(page).to have_link("Renew", href: renew_url)
-          expect(page).to have_link("See usage", href: group_seat_usage_path(group))
+          expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
         end
       end
 

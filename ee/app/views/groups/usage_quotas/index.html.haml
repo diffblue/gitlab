@@ -15,7 +15,10 @@
 .top-area.scrolling-tabs-container.inner-page-scroll-tabs
   %ul.nav.nav-tabs.nav-links.scrolling-tabs.separator.js-storage-tabs{ role: 'tablist' }
     %li.nav-item
-      %a.nav-link#pipelines-quota{ data: { toggle: "tab", action: '#pipelines-quota-tab' }, href: '#pipelines-quota-tab', 'aria-controls': '#pipelines-quota-tab', 'aria-selected': true }
+      %a.nav-link#seats-quota{ data: { toggle: "tab", action: '#seats-quota-tab' }, href: '#seats-quota-tab', 'aria-controls': '#seats-quota-tab', 'aria-selected': true }
+        = s_('UsageQuota|Seats')
+    %li.nav-item
+      %a.nav-link#pipelines-quota{ data: { toggle: "tab", action: '#pipelines-quota-tab' }, href: '#pipelines-quota-tab', 'aria-controls': '#pipelines-quota-tab', 'aria-selected': false }
         = s_('UsageQuota|Pipelines')
     %li.nav-item
       %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#storage-quota-tab' }, href: '#storage-quota-tab', 'aria-controls': '#storage-quota-tab', 'aria-selected': false }
@@ -25,6 +28,8 @@
         %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#other-storage-quota-tab' }, href: '#other-storage-quota-tab', 'aria-controls': '#other-storage-quota-tab', 'aria-selected': false }
           = s_('UsageQuota|Other Storage')
 .tab-content
+  .tab-pane#seats-quota-tab
+    #js-seat-usage-app{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv) } }
   .tab-pane#pipelines-quota-tab
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @group, projects: @projects }
