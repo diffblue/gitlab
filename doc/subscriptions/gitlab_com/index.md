@@ -351,6 +351,55 @@ Be aware that:
   be deducted from your Additional Minutes quota immediately after your purchase of additional
   minutes.
 
+### Purchase additional CI minutes on GitLab SaaS
+
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/54934)
+
+FLAG:
+On self-managed GitLab, this feature is unavailable.
+On GitLab.com, this feature is available.
+
+If you're using GitLab SaaS, you can purchase additional CI minutes so your
+pipelines aren't blocked after you have used all your CI minutes from your
+main quota. You can find pricing for additional CI/CD minutes in the
+[GitLab Customers Portal](https://customers.gitlab.com/plans). Additional minutes:
+
+- Are only used after the shared quota included in your subscription runs out.
+- Roll over month to month.
+
+To purchase additional minutes for your group on GitLab SaaS:
+
+1. From your group, go to **Settings > Usage Quotas**.
+1. Select **Buy additional minutes**.
+1. Complete the details about the transaction.
+1. Once we have processed your payment, the extra CI minutes are synced to your group namespace.
+1. To confirm the available CI minutes, go to your group, then **Settings > Usage Quotas**.
+
+   The **Additional minutes** displayed now includes the purchased additional CI minutes, plus any minutes rolled over from last month.
+
+To purchase additional minutes for your personal namespace:
+
+1. In the top-right corner, select your avatar.
+1. Select **Edit profile**.
+1. In the left sidebar, select **Usage Quotas**.
+1. Select **Buy additional minutes** and GitLab redirects you to the Customers Portal.
+1. Locate the subscription card that's linked to your personal namespace on GitLab SaaS, click **Buy more CI minutes**, and complete the details about the transaction. Once we have processed your payment, the extra CI minutes are synced to your personal namespace.
+1. To confirm the available CI minutes for your personal projects, go to the **Usage Quotas** settings again.
+
+   The **Additional minutes** displayed now includes the purchased additional CI minutes, plus any minutes rolled over from last month.
+
+Be aware that:
+
+- If you have purchased extra CI minutes before the purchase of a paid plan,
+  we calculate a pro-rated charge for your paid plan. That means you may
+  be charged for less than one year because your subscription was previously
+  created with the extra CI minutes.
+- After the extra CI minutes have been assigned to a Group, they can't be transferred
+  to a different Group.
+- If you have used more minutes than your default quota, these minutes will
+  be deducted from your Additional Minutes quota immediately after your purchase of additional
+  minutes.
+
 ## Storage subscription
 
 Projects have a free storage quota of 10 GB. To exceed this quota you must first [purchase one or
