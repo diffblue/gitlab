@@ -39479,9 +39479,6 @@ msgstr ""
 msgid "is not allowed. We do not currently support project-level iterations"
 msgstr ""
 
-msgid "is not an email you own"
-msgstr ""
-
 msgid "is not from an allowed domain."
 msgstr ""
 
@@ -39918,6 +39915,9 @@ msgid "must be a valid IPv4 or IPv6 address"
 msgstr ""
 
 msgid "must be after start"
+msgstr ""
+
+msgid "must be an email you have verified"
 msgstr ""
 
 msgid "must be greater than start date"
