@@ -79,6 +79,12 @@ export const MilestonesPreset = [
   STARTED_MILESTONE,
 ];
 
+export const ANY_ASSIGNEE = {
+  id: 'gid://gitlab/User/-1',
+  name: s__('BoardScope|Any assignee'),
+};
+export const AssigneesPreset = [ANY_ASSIGNEE];
+
 export const WeightFilterType = {
   none: 'None',
 };

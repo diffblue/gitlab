@@ -1,4 +1,4 @@
-import { GlButton, GlDropdown } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -15,6 +15,7 @@ import defaultStore from '~/boards/stores';
 import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
 import { ASSIGNEES_DEBOUNCE_DELAY } from '~/sidebar/constants';
+import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -26,7 +27,7 @@ describe('Assignee select component', () => {
 
   const selectedText = () => wrapper.find('[data-testid="selected-assignee"]').text();
   const findEditButton = () => wrapper.findComponent(GlButton);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(DropdownWidget);
 
   const usersQueryHandlerSuccess = jest.fn().mockResolvedValue(projectMembersResponse);
   const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(groupMembersResponse);
@@ -85,6 +86,15 @@ describe('Assignee select component', () => {
       expect(usersQueryHandlerSuccess).not.toHaveBeenCalled();
       expect(findDropdown().isVisible()).toBe(false);
     });
+
+    it('renders selected assignee', async () => {
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      findDropdown().vm.$emit('set-option', mockUser2);
+
+      await nextTick();
+      expect(selectedText()).toContain(mockUser2.username);
+    });
   });
 
   describe('when editing', () => {
@@ -96,22 +106,8 @@ describe('Assignee select component', () => {
       expect(usersQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findDropdown().isVisible()).toBe(true);
-      expect(wrapper.findAll('[data-testid="unselected-user"]')).toHaveLength(3); // 2 users + Any assignee item
-    });
-
-    it('renders selected assignee', async () => {
-      findEditButton().vm.$emit('click');
-      await waitForPromises();
-      jest.advanceTimersByTime(ASSIGNEES_DEBOUNCE_DELAY);
-      await nextTick();
-
-      wrapper
-        .findAll('[data-testid="unselected-user"]')
-        .at(1)
-        .vm.$emit('click', new Event('click'));
-
-      await waitForPromises();
-      expect(selectedText()).toContain(mockUser2.username);
+      expect(findDropdown().props('options')).toHaveLength(3);
+      expect(findDropdown().props('presetOptions')).toHaveLength(1);
     });
   });
 

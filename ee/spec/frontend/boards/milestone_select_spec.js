@@ -9,7 +9,11 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { boardObj } from 'jest/boards/mock_data';
-import { mockProjectMilestonesResponse, mockGroupMilestonesResponse } from 'jest/sidebar/mock_data';
+import {
+  mockProjectMilestonesResponse,
+  mockGroupMilestonesResponse,
+  mockMilestone1,
+} from 'jest/sidebar/mock_data';
 
 import defaultStore from '~/boards/stores';
 import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
@@ -91,6 +95,15 @@ describe('Milestone select component', () => {
     it('skips the queries and does not render dropdown', () => {
       expect(milestonesQueryHandlerSuccess).not.toHaveBeenCalled();
       expect(findDropdown().isVisible()).toBe(false);
+    });
+
+    it('renders selected milestone', async () => {
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      findDropdown().vm.$emit('set-option', mockMilestone1);
+
+      await waitForPromises();
+      expect(selectedText()).toContain(mockMilestone1.title);
     });
   });
 
