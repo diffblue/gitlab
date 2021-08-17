@@ -11729,6 +11729,16 @@ msgstr ""
 msgid "DiffsCompareBaseBranch|(base)"
 msgstr ""
 
+msgid "Diffs|%d addition"
+msgid_plural "Diffs|%d additions"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Diffs|%d deletion"
+msgid_plural "Diffs|%d deletions"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Diffs|No file name available"
 msgstr ""
 
@@ -11738,7 +11748,15 @@ msgstr ""
 msgid "Diffs|Show all unchanged lines"
 msgstr ""
 
+msgid "Diffs|Showing %{dropdownStart}%{count} changed file%{dropdownEnd}"
+msgid_plural "Diffs|Showing %{dropdownStart}%{count} changed files%{dropdownEnd}"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Diffs|Something went wrong while fetching diff lines."
+msgstr ""
+
+msgid "Diffs|with %{additions} and %{deletions}"
 msgstr ""
 
 msgid "Direct member"
