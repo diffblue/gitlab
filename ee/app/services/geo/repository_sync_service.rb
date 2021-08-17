@@ -9,7 +9,6 @@ module Geo
     def sync_repository
       start_registry_sync!
       fetch_repository
-      update_root_ref
       mark_sync_as_successful
     rescue Gitlab::Git::Repository::NoRepository => e
       log_info('Setting force_to_redownload flag')
@@ -47,14 +46,6 @@ module Geo
 
     def ensure_repository
       project.ensure_repository
-    end
-
-    def update_root_ref
-      authorization = ::Gitlab::Geo::RepoSyncRequest.new(
-        scope: repository.full_path
-      ).authorization
-
-      repository.update_root_ref(remote_url, authorization)
     end
 
     def execute_housekeeping

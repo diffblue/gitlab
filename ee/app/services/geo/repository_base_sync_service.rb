@@ -63,6 +63,8 @@ module Geo
         fetch_geo_mirror(repository)
         @new_repository = true
       end
+
+      update_root_ref
     end
 
     def redownload?
@@ -269,6 +271,14 @@ module Geo
 
       checksum = project.repository_state.public_send("#{type}_verification_checksum") # rubocop:disable GitlabSecurity/PublicSend
       checksum && checksum != Gitlab::Git::Repository::EMPTY_REPOSITORY_CHECKSUM
+    end
+
+    def update_root_ref
+      authorization = ::Gitlab::Geo::RepoSyncRequest.new(
+        scope: repository.full_path
+      ).authorization
+
+      repository.update_root_ref(remote_url, authorization)
     end
   end
 end
