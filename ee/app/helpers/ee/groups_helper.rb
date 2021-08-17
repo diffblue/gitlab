@@ -10,10 +10,6 @@ module EE
       "Max size for repositories within this group #{show_lfs}. Can be overridden inside each project. For no limit, enter 0. To inherit the global value, leave blank."
     end
 
-    def group_path_params(group)
-      { group_id: group }
-    end
-
     override :remove_group_message
     def remove_group_message(group)
       return super unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
@@ -62,56 +58,6 @@ module EE
 
     def show_product_purchase_success_alert?
       !params[:purchased_product].blank?
-    end
-
-    private
-
-    def get_group_sidebar_links
-      links = super
-
-      resources = [:cycle_analytics, :merge_request_analytics, :repository_analytics]
-
-      links += resources.select do |resource|
-        can?(current_user, "read_group_#{resource}".to_sym, @group)
-      end
-
-      if can?(current_user, :read_group_contribution_analytics, @group) || show_promotions?
-        links << :contribution_analytics
-      end
-
-      if can?(current_user, :read_epic, @group)
-        links << :epics
-      end
-
-      if @group.licensed_feature_available?(:issues_analytics)
-        links << :analytics
-      end
-
-      if @group.insights_available?
-        links << :group_insights
-      end
-
-      if @group.licensed_feature_available?(:productivity_analytics) && can?(current_user, :view_productivity_analytics, @group)
-        links << :productivity_analytics
-      end
-
-      if ::Feature.enabled?(:group_iterations, @group, default_enabled: true) && @group.licensed_feature_available?(:iterations)
-        if ::Feature.enabled?(:iteration_cadences, @group, default_enabled: :yaml) && can?(current_user, :read_iteration_cadence, @group)
-          links << :iteration_cadences
-        elsif can?(current_user, :read_iteration, @group)
-          links << :iterations
-        end
-      end
-
-      if ::Feature.enabled?(:group_ci_cd_analytics_page, @group, default_enabled: true) && @group.licensed_feature_available?(:group_ci_cd_analytics) && can?(current_user, :view_group_ci_cd_analytics, @group)
-        links << :group_ci_cd_analytics
-      end
-
-      if can?(current_user, :view_group_devops_adoption, @group)
-        links << :group_devops_adoption
-      end
-
-      links
     end
   end
 end
