@@ -67,6 +67,16 @@ RSpec.describe Security::StoreReportService, '#execute' do
             expect { subject }.to change { Vulnerabilities::FindingLink.count }.by(finding_links)
           end
 
+          context 'when finding links creation is disabled' do
+            before do
+              stub_feature_flags(vulnerability_finding_replace_metadata: false)
+            end
+
+            it 'does not insert finding links' do
+              expect { subject }.not_to change { Vulnerabilities::FindingLink.count }
+            end
+          end
+
           it 'inserts all finding identifiers (join model)' do
             expect { subject }.to change { Vulnerabilities::FindingIdentifier.count }.by(finding_identifiers)
           end
@@ -550,7 +560,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
           let!(:issue_link) { create(:vulnerabilities_issue_link, issue: issue, vulnerability_id: vulnerability.id) }
 
           it 'will not raise an error' do
-            expect { subject }.not_to raise_error(ActiveRecord::RecordInvalid)
+            expect { subject }.not_to raise_error
           end
 
           it 'does not insert issue link from the new pipeline' do

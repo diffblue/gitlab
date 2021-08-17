@@ -48,7 +48,7 @@ module Security
         create_vulnerability_finding(vulnerability_findings_by_uuid, finding)&.id
       end.compact.uniq
 
-      update_vulnerability_links_info
+      update_vulnerability_links_info if Feature.enabled?(:vulnerability_finding_replace_metadata)
       create_vulnerability_pipeline_objects
       update_vulnerabilities_identifiers
       update_vulnerabilities_finding_identifiers
