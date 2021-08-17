@@ -12,6 +12,7 @@ RSpec.describe API::Users do
   let(:omniauth_user) { create(:omniauth_user) }
   let(:ldap_blocked_user) { create(:omniauth_user, provider: 'ldapmain', state: 'ldap_blocked') }
   let(:private_user) { create(:user, private_profile: true) }
+  let(:deactivated_user) { create(:user, state: 'deactivated') }
 
   context 'admin notes' do
     let_it_be(:admin) { create(:admin, note: '2019-10-06 | 2FA added | user requested | www.gitlab.com') }
@@ -2967,60 +2968,55 @@ RSpec.describe API::Users do
   describe 'POST /users/:id/ban', :aggregate_failures do
     let(:banned_user) { create(:user, :banned) }
 
-    it 'bans existing user' do
-      post api("/users/#{user.id}/block", admin)
+    it 'bans an active user' do
+      post api("/users/#{user.id}/ban", admin)
 
       expect(response).to have_gitlab_http_status(:created)
       expect(response.body).to eq('true')
       expect(user.reload.state).to eq('banned')
     end
 
-    it 'does not re-block ldap blocked users' do
+    it 'does not ban ldap blocked users' do
       post api("/users/#{ldap_blocked_user.id}/ban", admin)
       expect(response).to have_gitlab_http_status(:forbidden)
       expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
     end
 
-    it 'is not available for non admin users' do
+    it 'does not ban deactivated users' do
+      post api("/users/#{deactivated_user.id}/ban", admin)
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(deactivated_user.reload.state).to eq('deactivated')
+    end
+
+    it 'returns a 500 if user is already banned' do
+      post api("/users/#{banned_user.id}/ban", admin)
+
+      expect(response).to have_gitlab_http_status(:internal_server_error)
+      expect(json_response['message']).to eq("State cannot transition via \"ban\"")
+    end
+
+    it 'is not available for non-admin users' do
       post api("/users/#{user.id}/ban", user)
       expect(response).to have_gitlab_http_status(:forbidden)
       expect(user.reload.state).to eq('active')
     end
 
     it 'returns a 404 error if user id not found' do
-      post api('/users/0/ban', admin)
+      post api("/users/#{non_existing_record_id}/ban", admin)
+
       expect(response).to have_gitlab_http_status(:not_found)
       expect(json_response['message']).to eq('404 User Not Found')
     end
 
-    it 'returns a 403 error if user is internal' do
-      internal_user = create(:user, :bot)
+    it "returns a 404 for invalid ID" do
+      post api("/users/ASDF/unban", admin)
 
-      post api("/users/#{internal_user.id}/ban", admin)
-
-      expect(response).to have_gitlab_http_status(:forbidden)
-      expect(json_response['message']).to eq('An internal user cannot be banned')
-    end
-
-    it 'returns a 201 if user is already banned' do
-      post api("/users/#{blocked_user.id}/ban", admin)
-
-      aggregate_failures do
-        expect(response).to have_gitlab_http_status(:created)
-        expect(response.body).to eq('null')
-      end
+      expect(response).to have_gitlab_http_status(:not_found)
     end
   end
 
-  describe 'POST /users/:id/unban' do
+  describe 'POST /users/:id/unban', :aggregate_failures do
     let(:banned_user) { create(:user, :banned) }
-    let(:deactivated_user) { create(:user, state: 'deactivated') }
-
-    it 'unbans existing user' do
-      post api("/users/#{user.id}/unban", admin)
-      expect(response).to have_gitlab_http_status(:created)
-      expect(user.reload.state).to eq('active')
-    end
 
     it 'unbans a banned user' do
       post api("/users/#{banned_user.id}/unban", admin)
@@ -3035,9 +3031,15 @@ RSpec.describe API::Users do
     end
 
     it 'does not unban deactivated users' do
-      post api("/users/#{deactivated_user.id}/unblock", admin)
+      post api("/users/#{deactivated_user.id}/unban", admin)
       expect(response).to have_gitlab_http_status(:forbidden)
       expect(deactivated_user.reload.state).to eq('deactivated')
+    end
+
+    it 'with an active user' do
+      post api("/users/#{user.id}/unban", admin)
+      expect(response).to have_gitlab_http_status(:internal_server_error)
+      expect(json_response['message']).to eq("State cannot transition via \"activate\"")
     end
 
     it 'is not available for non admin users' do
@@ -3047,7 +3049,7 @@ RSpec.describe API::Users do
     end
 
     it 'returns a 404 error if user id not found' do
-      post api('/users/0/unban', admin)
+      post api("/users/#{non_existing_record_id}/unban", admin)
       expect(response).to have_gitlab_http_status(:not_found)
       expect(json_response['message']).to eq('404 User Not Found')
     end
