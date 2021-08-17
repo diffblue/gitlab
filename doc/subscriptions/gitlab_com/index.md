@@ -382,8 +382,8 @@ To purchase additional minutes for your personal namespace:
 1. In the top-right corner, select your avatar.
 1. Select **Edit profile**.
 1. In the left sidebar, select **Usage Quotas**.
-1. Select **Buy additional minutes** and GitLab redirects you to the Customers Portal.
-1. Locate the subscription card that's linked to your personal namespace on GitLab SaaS, click **Buy more CI minutes**, and complete the details about the transaction. Once we have processed your payment, the extra CI minutes are synced to your personal namespace.
+1. Select **Buy additional minutes**.
+1. Complete the details about the transaction. Once we have processed your payment, the extra CI minutes are synced to your personal namespace.
 1. To confirm the available CI minutes for your personal projects, go to the **Usage Quotas** settings again.
 
    The **Additional minutes** displayed now includes the purchased additional CI minutes, plus any minutes rolled over from last month.
