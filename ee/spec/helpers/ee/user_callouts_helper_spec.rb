@@ -181,19 +181,19 @@ RSpec.describe EE::UserCalloutsHelper do
   end
 
   describe '#render_account_recovery_regular_check' do
-    let(:new_user) { create(:user) }
-    let(:old_user) { create(:user, created_at: 4.months.ago )}
+    let(:user_two_factor_disabled) { create(:user) }
+    let(:user_two_factor_enabled) { create(:user, :two_factor) }
     let(:anonymous) { nil }
 
     where(:kind_of_user, :is_gitlab_com?, :dismissed_callout?, :should_render?) do
-      :anonymous | false | false | false
-      :anonymous | true  | false | false
-      :new_user  | false | false | false
-      :new_user  | true  | false | false
-      :old_user  | false | false | false
-      :old_user  | true  | false | true
-      :old_user  | false | true  | false
-      :old_user  | true  | true  | false
+      :anonymous                | false | false | false
+      :anonymous                | true  | false | false
+      :user_two_factor_disabled | false | false | false
+      :user_two_factor_disabled | true  | false | false
+      :user_two_factor_disabled | true  | true  | false
+      :user_two_factor_enabled  | false | false | false
+      :user_two_factor_enabled  | true  | false | true
+      :user_two_factor_enabled  | true  | true  | false
     end
 
     with_them do
@@ -389,6 +389,27 @@ RSpec.describe EE::UserCalloutsHelper do
   describe '#eoa_bronze_plan_end_date' do
     it 'returns a date type value' do
       expect(helper.send(:eoa_bronze_plan_end_date).is_a?(Date)).to eq(true)
+    end
+  end
+
+  describe '#dismiss_account_recovery_regular_check' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    it 'dismisses `ACCOUNT_RECOVERY_REGULAR_CHECK` callout' do
+      expect(::Users::DismissUserCalloutService)
+        .to receive(:new)
+        .with(
+          container: nil,
+          current_user: user,
+          params: { feature_name: UserCalloutsHelper::ACCOUNT_RECOVERY_REGULAR_CHECK }
+        )
+        .and_call_original
+
+      helper.dismiss_account_recovery_regular_check
     end
   end
 end
