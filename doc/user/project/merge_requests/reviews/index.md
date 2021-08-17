@@ -208,8 +208,6 @@ Multiline comments display the comment's line numbers above the body of the comm
 
 These features are associated with merge requests:
 
-- [Bulk editing merge requests](../../../project/bulk_editing.md):
-  Update the attributes of multiple merge requests simultaneously.
 - [Cherry-pick changes](../cherry_pick_changes.md):
   Cherry-pick any commit in the UI by selecting the **Cherry-pick** button in a merged merge requests or a commit.
 - [Fast-forward merge requests](../fast_forward_merge.md):
