@@ -9,7 +9,6 @@ import { mapActions, mapState } from 'vuex';
 
 import initFilteredSearch from 'ee/boards/epic_filtered_search';
 import { fullEpicBoardId, transformBoardConfig } from 'ee_component/boards/boards_util';
-import BoardSidebar from 'ee_component/boards/components/board_sidebar';
 import toggleLabels from 'ee_component/boards/toggle_labels';
 
 import BoardAddNewColumnTrigger from '~/boards/components/board_add_new_column_trigger.vue';
@@ -63,7 +62,6 @@ export default () => {
     el: $boardApp,
     components: {
       BoardContent,
-      BoardSidebar,
       BoardSettingsSidebar: () => import('~/boards/components/board_settings_sidebar.vue'),
     },
     provide: {
