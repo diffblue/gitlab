@@ -13,6 +13,7 @@ query pipelineFindings(
 ) {
   project(fullPath: $fullPath) {
     pipeline(iid: $pipelineId) {
+      id
       securityReportFindings(
         after: $after
         first: $first
