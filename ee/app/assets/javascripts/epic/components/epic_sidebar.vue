@@ -8,7 +8,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { IssuableType } from '~/issue_show/constants';
 import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
-import SidebarParticipants from '~/sidebar/components/participants/participants.vue';
+import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
 import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
@@ -29,7 +29,7 @@ export default {
     SidebarDatePickerCollapsed,
     SidebarLabels,
     SidebarAncestorsWidget,
-    SidebarParticipants,
+    SidebarParticipantsWidget,
     SidebarConfidentialityWidget,
     SidebarSubscriptionsWidget,
     SidebarReferenceWidget,
@@ -46,7 +46,6 @@ export default {
       'canUpdate',
       'allowSubEpics',
       'sidebarCollapsed',
-      'participants',
       'startDateSourcingMilestoneTitle',
       'startDateSourcingMilestoneDates',
       'startDateIsFixed',
@@ -251,12 +250,12 @@ export default {
         :full-path="fullPath"
         :issuable-type="issuableType"
       />
-      <div class="block participants">
-        <sidebar-participants
-          :participants="participants"
-          @toggleSidebar="toggleSidebar({ sidebarCollapsed })"
-        />
-      </div>
+      <sidebar-participants-widget
+        :iid="String(iid)"
+        :full-path="fullPath"
+        :issuable-type="issuableType"
+        @expandSidebar="handleSidebarToggle"
+      />
       <sidebar-subscriptions-widget
         :iid="String(iid)"
         :full-path="fullPath"

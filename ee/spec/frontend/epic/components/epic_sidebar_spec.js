@@ -12,6 +12,7 @@ import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tr
 
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
+import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
 import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
@@ -242,8 +243,8 @@ describe('EpicSidebarComponent', () => {
       });
     });
 
-    it('renders participants list element', () => {
-      expect(wrapper.find('.block.participants').exists()).toBe(true);
+    it('renders participants widget', () => {
+      expect(wrapper.findComponent(SidebarParticipantsWidget).exists()).toBe(true);
     });
 
     it('renders subscription toggle element', () => {
