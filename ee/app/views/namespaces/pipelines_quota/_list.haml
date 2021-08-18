@@ -26,7 +26,7 @@
         = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank', 'aria-label': _('Shared runners help link')
 
     .col-sm-6.right
-      - if minutes_quota.enabled? && minutes_quota.any_project_enabled?
+      - if minutes_quota.display_minutes_available_data?
         #{minutes_quota.monthly_percent_used}% used
       - elsif !minutes_quota.any_project_enabled?
         0% used

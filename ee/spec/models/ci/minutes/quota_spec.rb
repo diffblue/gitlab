@@ -5,7 +5,7 @@ RSpec.describe Ci::Minutes::Quota do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:namespace) do
-    create(:namespace, namespace_statistics: create(:namespace_statistics))
+    create(:group, namespace_statistics: create(:namespace_statistics))
   end
 
   let(:quota) { described_class.new(namespace) }
@@ -67,7 +67,7 @@ RSpec.describe Ci::Minutes::Quota do
     context 'when the quota is not enabled' do
       before do
         allow(quota).to receive(:enabled?).and_return(false)
-        allow(quota).to receive(:namespace_eligible?).and_return(namespace_eligible)
+        allow(namespace).to receive(:root?).and_return(namespace_eligible)
         allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
       end
 
@@ -394,36 +394,6 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
-  describe '#namespace_eligible?' do
-    subject { quota.namespace_eligible? }
-
-    context 'when namespace is a subgroup' do
-      it 'is false' do
-        allow(namespace).to receive(:root?).and_return(false)
-
-        expect(subject).to be_falsey
-      end
-    end
-
-    context 'when namespace is root' do
-      it 'is true' do
-        expect(subject).to be_truthy
-      end
-    end
-
-    it 'does not trigger additional queries when called multiple times' do
-      # memoizes the result
-      quota.namespace_eligible?
-
-      # count
-      actual = ActiveRecord::QueryRecorder.new do
-        quota.namespace_eligible?
-      end
-
-      expect(actual.count).to eq(0)
-    end
-  end
-
   describe '#any_project_enabled?' do
     let_it_be(:project) { create(:project, namespace: namespace) }
 
@@ -457,6 +427,68 @@ RSpec.describe Ci::Minutes::Quota do
       end
 
       expect(actual.count).to eq(0)
+    end
+  end
+
+  describe '#display_shared_runners_data?' do
+    let_it_be(:project) { create(:project, namespace: namespace, shared_runners_enabled: true) }
+
+    subject { quota.display_shared_runners_data? }
+
+    context 'when the namespace is root and it has a project with shared runners enabled' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the namespace is not root' do
+      let(:namespace) { create(:group, :nested) }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the namespaces has no project with shared runners enabled' do
+      before do
+        project.update!(shared_runners_enabled: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#display_minutes_available_data?' do
+    let_it_be(:project) { create(:project, namespace: namespace, shared_runners_enabled: true) }
+
+    subject { quota.display_minutes_available_data? }
+
+    context 'when the namespace is root and it has a project with shared runners enabled' do
+      context 'when there is a minutes limit' do
+        before do
+          namespace.update!(shared_runners_minutes_limit: 200)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when there is no minutes limit' do
+        before do
+          namespace.update!(shared_runners_minutes_limit: 0)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when the namespace is not root' do
+      let(:namespace) { create(:group, :nested) }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the namespaces has no project with shared runners enabled' do
+      before do
+        project.update!(shared_runners_enabled: false)
+      end
+
+      it { is_expected.to be_falsey }
     end
   end
 end
