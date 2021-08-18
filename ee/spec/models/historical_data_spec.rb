@@ -15,12 +15,6 @@ RSpec.describe HistoricalData do
     end
   end
 
-  describe ".up_until" do
-    it "returns the historical data up until the specified date" do
-      expect(described_class.up_until(Date.new(2014, 6, 1)).average(:active_user_count)).to eq(350)
-    end
-  end
-
   describe ".track!" do
     before do
       allow(User).to receive(:billable).and_return([1, 2, 3, 4, 5])
