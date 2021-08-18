@@ -3,12 +3,15 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 
 import AncestorsTree from 'ee/sidebar/components/ancestors_tree/ancestors_tree.vue';
 
+import { TYPE_EPIC } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { IssuableType } from '~/issue_show/constants';
 import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarParticipants from '~/sidebar/components/participants/participants.vue';
 import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
+import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';
 import SidebarDatePickerCollapsed from '~/vue_shared/components/sidebar/collapsed_grouped_date_picker.vue';
 
@@ -17,13 +20,11 @@ import epicUtils from '../utils/epic_utils';
 import SidebarDatePicker from './sidebar_items/sidebar_date_picker.vue';
 import SidebarHeader from './sidebar_items/sidebar_header.vue';
 import SidebarLabels from './sidebar_items/sidebar_labels.vue';
-import SidebarTodo from './sidebar_items/sidebar_todo.vue';
 
 export default {
   dateTypes,
   components: {
     SidebarHeader,
-    SidebarTodo,
     SidebarDatePicker,
     SidebarDatePickerCollapsed,
     SidebarLabels,
@@ -32,6 +33,7 @@ export default {
     SidebarConfidentialityWidget,
     SidebarSubscriptionsWidget,
     SidebarReferenceWidget,
+    SidebarTodoWidget,
   },
   inject: ['iid'],
   data() {
@@ -58,6 +60,7 @@ export default {
       'epicStartDateSaveInProgress',
       'epicDueDateSaveInProgress',
       'fullPath',
+      'epicId',
     ]),
     ...mapGetters([
       'isUserSignedIn',
@@ -74,6 +77,9 @@ export default {
     ]),
     issuableType() {
       return IssuableType.Epic;
+    },
+    fullEpicId() {
+      return convertToGraphQLId(TYPE_EPIC, this.epicId);
     },
   },
   mounted() {
@@ -166,12 +172,16 @@ export default {
     :aria-label="__('Epic')"
   >
     <div class="issuable-sidebar js-issuable-update">
-      <sidebar-header :sidebar-collapsed="sidebarCollapsed" />
-      <sidebar-todo
-        v-show="sidebarCollapsed && isUserSignedIn"
-        :sidebar-collapsed="sidebarCollapsed"
-        data-testid="todo"
-      />
+      <sidebar-header :sidebar-collapsed="sidebarCollapsed">
+        <sidebar-todo-widget
+          v-if="isUserSignedIn"
+          :issuable-id="fullEpicId"
+          :issuable-iid="String(iid)"
+          :full-path="fullPath"
+          :issuable-type="issuableType"
+          data-testid="todo"
+        />
+      </sidebar-header>
       <sidebar-date-picker
         v-show="!sidebarCollapsed"
         :can-update="canUpdate"
