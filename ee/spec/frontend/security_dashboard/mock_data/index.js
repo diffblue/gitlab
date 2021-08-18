@@ -248,6 +248,7 @@ export const mockPipelineFindingsResponse = ({ hasNextPage } = {}) => ({
   data: {
     project: {
       pipeline: {
+        id: 'gid://gitlab/Ci::Pipeline/59',
         securityReportFindings: {
           nodes: [
             {
