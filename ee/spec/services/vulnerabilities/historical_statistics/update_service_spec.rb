@@ -48,6 +48,12 @@ RSpec.describe Vulnerabilities::HistoricalStatistics::UpdateService do
             expect { update_stats }.to change { Vulnerabilities::HistoricalStatistic.count }.by(1)
           end
         end
+
+        it 'changes the updated_at timestamp of the existing historical statistic entity' do
+          historical_statistic = create(:vulnerability_historical_statistic, project: project, letter_grade: 'c')
+
+          expect { update_stats }.to change { historical_statistic.reload.updated_at }
+        end
       end
 
       context 'when the statistic is empty' do
