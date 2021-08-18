@@ -158,6 +158,10 @@ describe('Pipeline editor app component', () => {
     describe('when file exists', () => {
       beforeEach(async () => {
         await createComponentWithApollo();
+
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.commitSha, 'startPolling')
+          .mockImplementation(jest.fn());
       });
 
       it('shows pipeline editor home component', () => {
@@ -175,16 +179,30 @@ describe('Pipeline editor app component', () => {
           sha: mockCommitSha,
         });
       });
+
+      it('does not poll for the commit sha', () => {
+        expect(wrapper.vm.$apollo.queries.commitSha.startPolling).toHaveBeenCalledTimes(0);
+      });
     });
 
     describe('when no CI config file exists', () => {
-      it('shows an empty state and does not show editor home component', async () => {
+      beforeEach(async () => {
         mockBlobContentData.mockResolvedValue(mockBlobContentQueryResponseNoCiFile);
         await createComponentWithApollo();
 
+        jest
+          .spyOn(wrapper.vm.$apollo.queries.commitSha, 'startPolling')
+          .mockImplementation(jest.fn());
+      });
+
+      it('shows an empty state and does not show editor home component', async () => {
         expect(findEmptyState().exists()).toBe(true);
         expect(findAlert().exists()).toBe(false);
         expect(findEditorHome().exists()).toBe(false);
+      });
+
+      it('does not poll for the commit sha', () => {
+        expect(wrapper.vm.$apollo.queries.commitSha.startPolling).toHaveBeenCalledTimes(0);
       });
 
       describe('because of a fetching error', () => {
@@ -249,9 +267,9 @@ describe('Pipeline editor app component', () => {
       const updateSuccessMessage = 'Your changes have been successfully committed.';
 
       describe('and the commit mutation succeeds', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           window.scrollTo = jest.fn();
-          createComponent();
+          await createComponentWithApollo();
 
           findEditorHome().vm.$emit('commit', { type: COMMIT_SUCCESS });
         });
@@ -262,6 +280,30 @@ describe('Pipeline editor app component', () => {
 
         it('scrolls to the top of the page to bring attention to the confirmation message', () => {
           expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+        });
+
+        it('polls for commit sha while pipeline data is not yet available', async () => {
+          jest
+            .spyOn(wrapper.vm.$apollo.queries.commitSha, 'startPolling')
+            .mockImplementation(jest.fn());
+
+          // simulate updating current branch (which triggers commitSha refetch)
+          // while pipeline data is not yet available
+          mockLatestCommitShaQuery.mockResolvedValue(mockEmptyCommitShaResults);
+          await wrapper.vm.$apollo.queries.commitSha.refetch();
+
+          expect(wrapper.vm.$apollo.queries.commitSha.startPolling).toHaveBeenCalledTimes(1);
+        });
+
+        it('stops polling for commit sha when pipeline data is available', async () => {
+          jest
+            .spyOn(wrapper.vm.$apollo.queries.commitSha, 'stopPolling')
+            .mockImplementation(jest.fn());
+
+          mockLatestCommitShaQuery.mockResolvedValue(mockCommitShaResults);
+          await wrapper.vm.$apollo.queries.commitSha.refetch();
+
+          expect(wrapper.vm.$apollo.queries.commitSha.stopPolling).toHaveBeenCalledTimes(1);
         });
       });
 

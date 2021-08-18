@@ -1,6 +1,6 @@
+import waitForPromises from 'helpers/wait_for_promises';
 import { GlFormTextarea, GlFormInput, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 import { objectToQuery, redirectTo } from '~/lib/utils/url_utility';
 import CommitForm from '~/pipeline_editor/components/commit/commit_form.vue';
 import CommitSection from '~/pipeline_editor/components/commit/commit_section.vue';
@@ -100,6 +100,7 @@ describe('Pipeline Editor | Commit section', () => {
       await findCommitForm().find('[data-testid="new-mr-checkbox"]').setChecked(openMergeRequest);
     }
     await findCommitForm().find('[type="submit"]').trigger('click');
+    await waitForPromises();
   };
 
   const cancelCommitForm = async () => {
@@ -157,7 +158,6 @@ describe('Pipeline Editor | Commit section', () => {
     beforeEach(async () => {
       createComponent();
       await submitCommit();
-      await nextTick();
     });
 
     it('calls the mutation with the current branch', () => {
@@ -183,7 +183,6 @@ describe('Pipeline Editor | Commit section', () => {
 
     it('a second commit submits the latest sha, keeping the form updated', async () => {
       await submitCommit();
-      await nextTick();
 
       expect(mockMutate).toHaveBeenCalledTimes(6);
       expect(mockMutate).toHaveBeenCalledWith({
