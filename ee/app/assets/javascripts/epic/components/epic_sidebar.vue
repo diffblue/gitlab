@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 
-import AncestorsTree from 'ee/sidebar/components/ancestors_tree/ancestors_tree.vue';
+import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 
 import { IssuableType } from '~/issue_show/constants';
 import notesEventHub from '~/notes/event_hub';
@@ -27,7 +27,7 @@ export default {
     SidebarDatePicker,
     SidebarDatePickerCollapsed,
     SidebarLabels,
-    AncestorsTree,
+    SidebarAncestorsWidget,
     SidebarParticipants,
     SidebarConfidentialityWidget,
     SidebarSubscriptionsWidget,
@@ -70,7 +70,6 @@ export default {
       'dueDateTimeFromMilestones',
       'dueDateTime',
       'dueDateForCollapsedSidebar',
-      'ancestors',
     ]),
     issuableType() {
       return IssuableType.Epic;
@@ -236,9 +235,12 @@ export default {
         @expandSidebar="handleSidebarToggle"
         @confidentialityUpdated="updateConfidentialityOnIssuable($event)"
       />
-      <div v-if="allowSubEpics" class="block ancestors">
-        <ancestors-tree :ancestors="ancestors" :is-fetching="false" data-testid="ancestors" />
-      </div>
+      <sidebar-ancestors-widget
+        v-if="allowSubEpics"
+        :iid="String(iid)"
+        :full-path="fullPath"
+        :issuable-type="issuableType"
+      />
       <div class="block participants">
         <sidebar-participants
           :participants="participants"
