@@ -46,7 +46,10 @@ RSpec.describe Projects::Security::PoliciesHelper do
         environments_endpoint: kind_of(String),
         project_path: project.full_path,
         project_id: project.id,
-        threat_monitoring_path: kind_of(String)
+        threat_monitoring_path: kind_of(String),
+        environment_id: environment&.id,
+        policy: policy&.to_json,
+        policy_type: policy_type
       }
     end
 
@@ -55,18 +58,14 @@ RSpec.describe Projects::Security::PoliciesHelper do
       allow(helper).to receive(:can?).with(owner, :update_security_orchestration_policy_project, project) { true }
     end
 
-    context 'when a new policy is being created' do
-      subject { helper.orchestration_policy_data(project) }
+    subject { helper.orchestration_policy_data(project, policy_type, policy, environment) }
 
-      it 'returns expected policy data' do
-        expect(subject).to match(
-          base_data.merge(
-            environment_id: nil,
-            policy: nil,
-            policy_type: nil
-          )
-        )
-      end
+    context 'when a new policy is being created' do
+      let(:environment) { nil }
+      let(:policy) { nil }
+      let(:policy_type) { nil }
+
+      it { is_expected.to match(base_data) }
     end
 
     context 'when an existing policy is being edited' do
@@ -82,17 +81,7 @@ RSpec.describe Projects::Security::PoliciesHelper do
         )
       end
 
-      subject { helper.orchestration_policy_data(project, policy_type, policy, environment) }
-
-      it 'returns expected policy data' do
-        expect(subject).to match(
-          base_data.merge(
-            environment_id: environment.id,
-            policy: policy.to_json,
-            policy_type: policy_type
-          )
-        )
-      end
+      it { is_expected.to match(base_data) }
     end
   end
 end
