@@ -38,21 +38,34 @@ RSpec.describe ProjectsHelper do
     end
   end
 
-  describe '#can_import_members?' do
-    let(:owner) { project.owner }
+  describe '#can_admin_project_member?' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
 
     before do
-      allow(helper).to receive(:current_user) { owner }
+      allow(helper).to receive(:current_user) { user }
+      project.add_maintainer(user)
     end
 
-    it 'returns false if membership is locked' do
-      allow(helper).to receive(:membership_locked?) { true }
-      expect(helper.can_import_members?).to eq false
+    context 'when membership is not locked' do
+      before do
+        group.membership_lock = false
+      end
+
+      it 'returns true when membership is not locked' do
+        expect(helper.can_admin_project_member?(project)).to be(true)
+      end
     end
 
-    it 'returns true if membership is not locked' do
-      allow(helper).to receive(:membership_locked?) { false }
-      expect(helper.can_import_members?).to eq true
+    context 'when membership is locked' do
+      before do
+        group.membership_lock = true
+      end
+
+      it 'returns false when membership is locked' do
+        expect(helper.can_admin_project_member?(project)).to be(false)
+      end
     end
   end
 

@@ -88,7 +88,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
       context 'when the group has "Share with group lock" enabled' do
         before do
-          project.namespace.update_column(:share_with_group_lock, true)
+          project.namespace.update!(share_with_group_lock: true)
         end
 
         it_behaves_like 'the project cannot be shared with groups'
@@ -96,7 +96,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
       context 'when the group has membership lock enabled' do
         before do
-          project.namespace.update_column(:membership_lock, true)
+          project.namespace.update!(membership_lock: true)
         end
 
         it_behaves_like 'the project cannot be shared with members'
@@ -128,7 +128,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
         context 'when the subgroup has "Share with group lock" enabled' do
           before do
-            subgroup.update_column(:share_with_group_lock, true)
+            subgroup.update!(share_with_group_lock: true)
           end
 
           it_behaves_like 'the project cannot be shared with groups'
@@ -136,7 +136,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
         context 'when the subgroup has membership lock enabled' do
           before do
-            subgroup.update_column(:membership_lock, true)
+            subgroup.update!(membership_lock: true)
           end
 
           it_behaves_like 'the project cannot be shared with members'
@@ -173,7 +173,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
         # See: https://gitlab.com/gitlab-org/gitlab-foss/issues/42093
         context 'when the subgroup has membership lock enabled (parent overridden)' do
           before do
-            subgroup.update_column(:membership_lock, true)
+            subgroup.update!(membership_lock: true)
           end
 
           it_behaves_like 'the project cannot be shared with groups and members'
@@ -181,7 +181,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
         context 'when the subgroup has "Share with group lock" enabled (parent overridden)' do
           before do
-            subgroup.update_column(:share_with_group_lock, true)
+            subgroup.update!(share_with_group_lock: true)
           end
 
           it_behaves_like 'the project cannot be shared with groups'

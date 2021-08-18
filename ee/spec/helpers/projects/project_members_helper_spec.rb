@@ -18,6 +18,7 @@ RSpec.describe Projects::ProjectMembersHelper do
     before do
       project.add_developer(user)
       create_schedule_with_user(project, user)
+      allow(helper).to receive(:can_admin_project_member?).and_return(true)
     end
 
     it 'does not execute N+1' do
