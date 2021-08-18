@@ -60,7 +60,7 @@ module QA
         runner.remove_via_api! if runner
       end
 
-      it 'creates a pipeline with merged results', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/562' do
+      it 'creates a pipeline with merged results', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1517' do
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |show|
@@ -74,7 +74,7 @@ module QA
         end
       end
 
-      it 'merges via a merge train', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/561' do
+      it 'merges via a merge train', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1518' do
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |show|

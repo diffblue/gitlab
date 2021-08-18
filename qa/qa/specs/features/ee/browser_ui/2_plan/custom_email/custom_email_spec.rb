@@ -9,7 +9,7 @@ module QA
         Page::Admin::Menu.perform(&:go_to_preferences_settings)
       end
 
-      it 'customizes email with additional text', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/554' do
+      it 'customizes email with additional text', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1525' do
         random_custom_text = "Testing custom email - #{SecureRandom.hex(8)}"
 
         EE::Page::Admin::Settings::Preferences.perform do |preferences|

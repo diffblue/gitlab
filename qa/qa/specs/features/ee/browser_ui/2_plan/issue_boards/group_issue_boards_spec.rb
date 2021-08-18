@@ -25,7 +25,7 @@ module QA
         Page::Group::Menu.perform(&:go_to_issue_boards)
       end
 
-      it 'shows multiple group boards in the boards dropdown menu', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1675' do
+      it 'shows multiple group boards in the boards dropdown menu', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1534' do
         Page::Component::IssueBoard::Show.perform do |show|
           show.click_boards_dropdown_button
 

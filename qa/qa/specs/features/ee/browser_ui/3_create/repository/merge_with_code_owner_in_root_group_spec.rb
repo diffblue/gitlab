@@ -36,14 +36,14 @@ module QA
           project.remove_via_api!
         end
 
-        context 'and the code owner is the root group' do
+        context 'and the code owner is the root group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1352' do
           let(:codeowner) { root_group.path }
           let(:group_or_project) { root_group }
 
           it_behaves_like 'code owner merge request'
         end
 
-        context 'and the code owner is a user' do
+        context 'and the code owner is a user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1351' do
           let(:codeowner) { approver.username }
           let(:group_or_project) { project }
 

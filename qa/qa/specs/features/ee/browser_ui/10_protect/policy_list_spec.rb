@@ -23,7 +23,7 @@ module QA
           project.visit!
         end
 
-        it 'can load Threat Monitoring page and view the policy alert list', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1786' do
+        it 'can load Threat Monitoring page and view the policy alert list', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
           Page::Project::Menu.perform(&:click_on_threat_monitoring)
 
           EE::Page::Project::ThreatMonitoring::AlertsList.perform do |alerts_list|
@@ -64,7 +64,7 @@ module QA
           cluster.remove!
         end
 
-        it 'loads a sample network policy under policies tab on the Threat Monitoring page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1855' do
+        it 'loads a sample network policy under policies tab on the Threat Monitoring page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1925' do
           Resource::KubernetesCluster::ProjectCluster.fabricate_via_browser_ui! do |k8s_cluster|
             k8s_cluster.project = project
             k8s_cluster.cluster = cluster

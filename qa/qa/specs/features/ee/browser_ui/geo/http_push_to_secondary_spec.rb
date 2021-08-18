@@ -9,7 +9,7 @@ module QA
       let(:file_content_secondary) { 'This is a Geo project! Commit from secondary.' }
 
       context 'regular git commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/700' do
+        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1424' do
           file_name = 'README.md'
           project = nil
 
@@ -89,7 +89,7 @@ module QA
       end
 
       context 'git-lfs commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/699' do
+        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1425' do
           file_name_primary = 'README.md'
           file_name_secondary = 'README_MORE.md'
           project = nil

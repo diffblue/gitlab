@@ -54,7 +54,7 @@ module QA
         group.remove_via_api!
       end
 
-      it 'confirms that a merge train consistently completes and updates the UI', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1608' do
+      it 'confirms that a merge train consistently completes and updates the UI', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1611' do
         Runtime::Env.transient_trials.times do |i|
           QA::Runtime::Logger.info("Transient bug test action - Trial #{i}")
 

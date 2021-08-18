@@ -7,7 +7,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'creates an epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1155' do
+      it 'creates an epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1196' do
         epic_title = 'Epic created via GUI'
         EE::Resource::Epic.fabricate_via_browser_ui! do |epic|
           epic.title = epic_title
@@ -16,7 +16,7 @@ module QA
         expect(page).to have_content(epic_title)
       end
 
-      it 'creates a confidential epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1154' do
+      it 'creates a confidential epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1197' do
         epic_title = 'Confidential epic created via GUI'
         EE::Resource::Epic.fabricate_via_browser_ui! do |epic|
           epic.title = epic_title
@@ -36,7 +36,7 @@ module QA
             epic.visit!
           end
 
-          it 'adds/removes issue to/from epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1158' do
+          it 'adds/removes issue to/from epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1193' do
             EE::Page::Group::Epic::Show.perform do |show|
               show.add_issue_to_epic(issue.web_url)
 
@@ -48,7 +48,7 @@ module QA
             end
           end
 
-          it 'comments on epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1157' do
+          it 'comments on epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1194' do
             comment = 'My Epic Comment'
             EE::Page::Group::Epic::Show.perform do |show|
               show.comment(comment)
@@ -57,7 +57,7 @@ module QA
             end
           end
 
-          it 'closes and reopens an epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1159' do
+          it 'closes and reopens an epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1192' do
             EE::Page::Group::Epic::Show.perform do |show|
               show.close_reopen_epic
 
@@ -70,7 +70,7 @@ module QA
           end
         end
 
-        it 'adds/removes issue to/from epic using quick actions', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1156' do
+        it 'adds/removes issue to/from epic using quick actions', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1195' do
           issue.visit!
 
           Page::Project::Issue::Show.perform do |show|

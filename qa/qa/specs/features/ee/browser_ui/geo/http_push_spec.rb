@@ -6,7 +6,7 @@ module QA
       let(:file_name) { 'README.md' }
 
       context 'regular git commit' do
-        it 'is replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/690' do
+        it 'is replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1434' do
           file_content = 'This is a Geo project! Commit from primary.'
           project = nil
 
@@ -60,7 +60,7 @@ module QA
       end
 
       context 'git-lfs commit' do
-        it 'is replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/689' do
+        it 'is replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1435' do
           file_content = 'This is a Geo project!'
           lfs_file_display_message = 'The rendered file could not be displayed because it is stored in LFS.'
           project = nil

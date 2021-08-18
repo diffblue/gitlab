@@ -27,7 +27,7 @@ module QA
         Page::Project::Menu.perform(&:go_to_boards)
       end
 
-      it 'shows board configuration to user without edit permission', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1687' do
+      it 'shows board configuration to user without edit permission', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1479' do
         Page::Component::IssueBoard::Show.perform do |show|
           show.click_boards_config_button
 

@@ -67,7 +67,7 @@ module QA
         @runner.remove_via_api!
       end
 
-      it 'shows vulnerability details', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/949' do
+      it 'shows vulnerability details', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1292' do
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
@@ -88,7 +88,7 @@ module QA
 
       it(
         'creates an issue from vulnerability details',
-        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1228'
+        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1837'
       ) do
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 

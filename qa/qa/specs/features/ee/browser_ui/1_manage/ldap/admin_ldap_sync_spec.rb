@@ -10,7 +10,7 @@ module QA
         login_with_ldap_admin_user
       end
 
-      it 'sets and removes user\'s admin status', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/672' do
+      it 'sets and removes user\'s admin status', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1452' do
         Page::Main::Menu.perform do |menu|
           admin_synchronised = menu.wait_until(max_duration: 80, sleep_interval: 1, reload: true) do
             menu.has_admin_area_link?

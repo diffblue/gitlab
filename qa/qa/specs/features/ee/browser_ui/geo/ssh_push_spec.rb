@@ -12,7 +12,7 @@ module QA
       end
 
       context 'regular git commit' do
-        it "is replicated to the secondary", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/686' do
+        it "is replicated to the secondary", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1438' do
           key_title = "Geo SSH #{Time.now.to_f}"
           file_content = 'This is a Geo project! Commit from primary.'
           project = nil
@@ -74,7 +74,7 @@ module QA
       end
 
       context 'git-lfs commit' do
-        it "is replicated to the secondary", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/687' do
+        it "is replicated to the secondary", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1437' do
           key_title = "Geo SSH LFS #{Time.now.to_f}"
           file_content = 'The rendered file could not be displayed because it is stored in LFS.'
           project = nil

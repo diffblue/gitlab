@@ -35,7 +35,7 @@ module QA
 
       it(
         'correctly applies simple and multiple colon scoped pairs labels',
-        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1171'
+        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1181'
       ) do
         Page::Project::Issue::Show.perform do |show|
           show.select_labels_and_refresh(

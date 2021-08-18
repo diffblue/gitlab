@@ -43,7 +43,7 @@ module QA
 
       let(:user) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
 
-      context 'Add group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/733' do
+      context 'Add group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1398' do
         before do
           @event_count = 0
           sign_in
@@ -57,7 +57,7 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'Change repository size limit', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/731' do
+      context 'Change repository size limit', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1400' do
         before do
           sign_in(as_admin: true)
           group.visit!
@@ -70,7 +70,7 @@ module QA
         it_behaves_like 'audit event', ['Changed repository size limit']
       end
 
-      context 'Update group name', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/732' do
+      context 'Update group name', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1399' do
         before do
           sign_in
           group.visit!
@@ -85,7 +85,7 @@ module QA
         it_behaves_like 'audit event', ['Changed name']
       end
 
-      context 'Add user, change access level, remove user', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/734' do
+      context 'Add user, change access level, remove user', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1397' do
         before do
           sign_in
           group.visit!
@@ -100,7 +100,7 @@ module QA
         it_behaves_like 'audit event', ['Added user access as Guest', 'Changed access level', 'Removed user access']
       end
 
-      context 'Add and remove project access', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/735' do
+      context 'Add and remove project access', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1396' do
         before do
           Runtime::Feature.enable(:invite_members_group_modal)
           sign_in

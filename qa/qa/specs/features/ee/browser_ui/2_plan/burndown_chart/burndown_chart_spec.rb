@@ -21,7 +21,7 @@ module QA
         create_issue(milestone.project, milestone, weight_of_two)
       end
 
-      it 'shows burndown chart on milestone page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1145' do
+      it 'shows burndown chart on milestone page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1206' do
         milestone.visit!
 
         Page::Milestone::Show.perform do |show|

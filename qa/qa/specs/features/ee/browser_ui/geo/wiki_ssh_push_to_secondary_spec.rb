@@ -38,7 +38,7 @@ module QA
         key.remove_via_api!
       end
 
-      it 'proxies wiki commit to primary node and ultmately replicates to secondary node', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/694' do
+      it 'proxies wiki commit to primary node and ultmately replicates to secondary node', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1430' do
         QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
