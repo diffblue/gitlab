@@ -5,6 +5,8 @@
 # A note of this type is never resolvable.
 class Note < ApplicationRecord
   extend ActiveModel::Naming
+  extend Gitlab::Utils::Override
+
   include Gitlab::Utils::StrongMemoize
   include Participable
   include Mentionable
@@ -583,15 +585,23 @@ class Note < ApplicationRecord
     cache_key_items.join(':')
   end
 
-  private
+  override :user_mention_class
+  def user_mention_class
+    return if noteable.blank?
 
-  # Using this method followed by a call to *save* may result in *ActiveRecord::RecordNotUnique* exception
-  # in a multi-threaded environment. Make sure to use it within a *safe_ensure_unique* block.
-  def model_user_mention
-    return if user_mentions.is_a?(ActiveRecord::NullRelation)
-
-    user_mentions.first_or_initialize
+    noteable.user_mention_class
   end
+
+  override :user_mention_identifier
+  def user_mention_identifier
+    return if noteable.blank?
+
+    noteable.user_mention_identifier.merge({
+      note_id: id
+    })
+  end
+
+  private
 
   def system_note_viewable_by?(user)
     return true unless system_note_metadata

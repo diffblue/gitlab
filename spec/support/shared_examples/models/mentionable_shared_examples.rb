@@ -278,7 +278,7 @@ RSpec.shared_examples 'load mentions from DB' do |mentionable_type|
 
     context 'when stored user mention contains ids of inexistent records' do
       before do
-        user_mention = note.send(:model_user_mention)
+        user_mention = note.user_mentions.first
         mention_ids = {
           mentioned_users_ids: user_mention.mentioned_users_ids.to_a << non_existing_record_id,
           mentioned_projects_ids: user_mention.mentioned_projects_ids.to_a << non_existing_record_id,
@@ -302,7 +302,7 @@ RSpec.shared_examples 'load mentions from DB' do |mentionable_type|
       let(:group_member) { create(:group_member, user: create(:user), group: private_group) }
 
       before do
-        user_mention = note.send(:model_user_mention)
+        user_mention = note.user_mentions.first
         mention_ids = {
           mentioned_projects_ids: user_mention.mentioned_projects_ids.to_a << private_project.id,
           mentioned_groups_ids: user_mention.mentioned_groups_ids.to_a << private_group.id
