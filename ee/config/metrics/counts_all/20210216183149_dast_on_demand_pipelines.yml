@@ -1,18 +1,16 @@
 ---
-key_path: usage_activity_by_stage.secure.user_dast_scans
-description: Number of users who have run a DAST scan
+key_path: counts.dast_on_demand_pipelines
+description: Count of all on-demand DAST pipelines
 product_section: sec
 product_stage: secure
 product_group: group::dynamic analysis
 product_category: dynamic_application_security_testing
 value_type: number
 status: data_available
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444
 time_frame: all
 data_source: database
-data_category: operational
+data_category: optional
 distribution:
 - ee
 tier:
 - ultimate
-performance_indicator_type: []
