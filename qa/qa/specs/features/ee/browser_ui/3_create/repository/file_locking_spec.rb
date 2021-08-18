@@ -63,7 +63,7 @@ module QA
         end
       end
 
-      it 'creates a merge request and fails to merge', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/issues/40125', type: :bug }, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1852' do
+      it 'creates a merge request and fails to merge', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1852' do
         push branch: 'test', as_user: user_one
 
         merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
