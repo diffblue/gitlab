@@ -31,7 +31,7 @@ module Subscriptions
     private
 
     def find_group
-      @group ||= find_routable!(Group, params[:id], request.path_info)
+      @group ||= find_routable!(Group, params[:id], request.fullpath)
     end
 
     def group_params

@@ -122,7 +122,7 @@ RSpec.describe 'SAML access enforcement' do
 
     context 'with a merge request' do
       let!(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
-      let(:resource_path) { project_merge_request_path(project, merge_request) }
+      let(:resource_path) { project_merge_request_path(project, merge_request, { test: "value" }) }
 
       it 'redirects to the SSO page and then merge request page after login' do
         visit resource_path
@@ -131,7 +131,8 @@ RSpec.describe 'SAML access enforcement' do
 
         click_link 'Sign in with Single Sign-On'
 
-        expect(current_path).to eq(resource_path)
+        # Capybara's have_current_path matcher checks the path and query string
+        expect(page).to have_current_path(resource_path)
       end
     end
   end

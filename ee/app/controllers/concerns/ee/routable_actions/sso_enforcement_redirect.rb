@@ -6,11 +6,11 @@ module EE
       include ::Gitlab::Routing
       include ::Gitlab::Utils::StrongMemoize
 
-      attr_reader :routable, :path_info
+      attr_reader :routable, :full_path
 
-      def initialize(routable, path_info)
+      def initialize(routable, full_path)
         @routable = routable
-        @path_info = path_info
+        @full_path = full_path
       end
 
       def should_redirect_to_group_saml_sso?(current_user, request)
@@ -26,8 +26,8 @@ module EE
 
       module ControllerActions
         def self.on_routable_not_found
-          lambda do |routable, path_info|
-            redirector = SsoEnforcementRedirect.new(routable, path_info)
+          lambda do |routable, full_path|
+            redirector = SsoEnforcementRedirect.new(routable, full_path)
 
             if redirector.should_redirect_to_group_saml_sso?(current_user, request)
               redirect_to redirector.sso_redirect_url
@@ -64,7 +64,7 @@ module EE
       def url_params
         {
           token: root_group.saml_discovery_token,
-          redirect: path_info
+          redirect: full_path
         }
       end
     end
