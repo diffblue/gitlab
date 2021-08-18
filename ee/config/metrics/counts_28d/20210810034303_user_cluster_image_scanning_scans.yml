@@ -1,0 +1,16 @@
+---
+key_path: usage_activity_by_stage_monthly.secure.user_cluster_image_scanning_scans
+description: Number of users who have run a Cluster image scan
+product_section: sec
+product_stage: protect
+product_group: group::container security
+value_type: number
+status: deprecated
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444
+time_frame: 28d
+data_source: database
+data_category: Operational
+distribution:
+  - ee
+tier:
+  - ultimate

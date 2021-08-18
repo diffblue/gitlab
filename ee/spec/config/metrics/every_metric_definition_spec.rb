@@ -29,13 +29,6 @@ RSpec.describe 'Every metric definition' do
       mock_ci
       mock_monitoring
       user_auth_by_provider
-      user_dast_scans
-      user_sast_scans
-      user_dependency_scanning_scans
-      user_container_scanning_scans
-      user_secret_detection_scans
-      user_coverage_fuzzing_scans
-      user_api_fuzzing_scans
     ).freeze
   end
 

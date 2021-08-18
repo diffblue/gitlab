@@ -370,7 +370,7 @@ module EE
                                                                           finish: maximum_id(::User))
           end
 
-          results.merge!(count_secure_user_scans(time_period))
+          results.merge!(count_secure_user_scans)
           results.merge!(count_secure_pipelines(time_period))
           results.merge!(count_secure_scans(time_period))
 
@@ -388,28 +388,10 @@ module EE
         private
 
         # rubocop:disable UsageData/LargeTable
-        # rubocop:disable CodeReuse/ActiveRecord
-        def count_secure_user_scans(time_period)
-          return {} if time_period.blank?
-
-          user_scans = {}
-          start_id, finish_id = min_max_security_scan_id(time_period)
-
-          ::Security::Scan.scan_types.each do |name, scan_type|
-            relation = ::Security::Scan
-                         .latest_successful_by_build
-                         .by_scan_types(scan_type)
-                         .where(security_scans: time_period)
-
-            if start_id && finish_id
-              user_scans["user_#{name}_scans".to_sym] = estimate_batch_distinct_count(relation, :user_id, batch_size: 1000, start: start_id, finish: finish_id)
-            end
-          end
-
-          user_scans
+        def count_secure_user_scans
+          ::Security::Scan.scan_types.to_h { |name, _| ["user_#{name}_scans".to_sym, ::Gitlab::UsageData::DEPRECATED_VALUE] }
         end
         # rubocop:enable UsageData/LargeTable
-        # rubocop:enable CodeReuse/ActiveRecord
 
         # rubocop:disable CodeReuse/ActiveRecord
         # rubocop: disable UsageData/LargeTable

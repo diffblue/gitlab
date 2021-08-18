@@ -6,7 +6,7 @@ product_stage: secure
 product_group: group::dynamic analysis
 product_category: dynamic_application_security_testing
 value_type: number
-status: data_available
+status: deprecated
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444
 time_frame: 28d
 data_source: database
