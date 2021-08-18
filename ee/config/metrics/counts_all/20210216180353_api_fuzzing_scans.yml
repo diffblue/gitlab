@@ -1,17 +1,17 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage.secure.api_fuzzing_scans
-description: 'Counts API fuzzing jobs'
+description: Count of API fuzz testing jobs
 product_section: sec
 product_stage: secure
-product_group: group::fuzz testing
-product_category: 
+product_group: group::dynamic analysis
+product_category: fuzz-testing
 value_type: number
 status: data_available
 time_frame: all
-data_source: 
+data_source: database
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- ultimate
 performance_indicator_type: []
