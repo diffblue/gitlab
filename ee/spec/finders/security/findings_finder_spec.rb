@@ -304,6 +304,41 @@ RSpec.describe Security::FindingsFinder do
           it { is_expected.to match_array(expected_fingerprints) }
         end
 
+        context 'when there is a retried build' do
+          let(:retried_build) { create(:ci_build, :success, :retried, name: 'dependency_scanning', pipeline: pipeline) }
+          let(:artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: retried_build) }
+          let(:report) { create(:ci_reports_security_report, pipeline: pipeline, type: :dependency_scanning) }
+          let(:report_types) { :dependency_scanning }
+          let(:expected_fingerprints) do
+            %w[
+              3204893d5894c74aaee86ce5bc28427f9f14e512
+              157f362acf654c60e224400f59a088e1c01b369f
+              4ae096451135db224b9e16818baaca8096896522
+            ]
+          end
+
+          before do
+            retried_content = File.read(artifact.file.path)
+            Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(retried_content, report)
+            report.merge!(report)
+
+            scan = create(:security_scan, scan_type: retried_build.name, build: retried_build)
+
+            report.findings.each_with_index do |finding, index|
+              create(:security_finding,
+                     severity: finding.severity,
+                     confidence: finding.confidence,
+                     project_fingerprint: finding.project_fingerprint,
+                     uuid: finding.uuid,
+                     deduplicated: true,
+                     position: index,
+                     scan: scan)
+            end
+          end
+
+          it { is_expected.to match_array(expected_fingerprints) }
+        end
+
         context 'when a build has more than one security report artifacts' do
           let(:report_types) { :secret_detection }
           let(:secret_detection_report) { create(:ci_reports_security_report, pipeline: pipeline, type: :secret_detection) }

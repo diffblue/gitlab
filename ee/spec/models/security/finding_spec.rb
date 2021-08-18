@@ -143,4 +143,16 @@ RSpec.describe Security::Finding do
       })
     }
   end
+
+  describe '.latest' do
+    subject { described_class.latest }
+
+    let(:expected_findings) { [finding_2] }
+
+    before do
+      finding_1.build.update!(retried: true)
+    end
+
+    it { is_expected.to eq(expected_findings) }
+  end
 end
