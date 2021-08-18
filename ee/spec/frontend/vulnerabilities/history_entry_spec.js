@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import HistoryEntry from 'ee/vulnerabilities/components/history_entry.vue';
+import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 
 describe('History Entry', () => {
   let wrapper;
@@ -81,23 +82,27 @@ describe('History Entry', () => {
     expect(commentAt(1).props('comment')).toEqual(commentNoteClone);
   });
 
-  it('adds a new comment correctly', () => {
+  it('adds a new comment correctly', async () => {
     createWrapper(systemNote);
-    newComment().vm.$emit('onCommentAdded', commentNote);
-
-    return wrapper.vm.$nextTick().then(() => {
-      expect(newComment().exists()).toBe(false);
-      expect(existingComments()).toHaveLength(1);
-      expect(commentAt(0).props('comment')).toEqual(commentNote);
+    newComment().vm.$emit('onCommentAdded', {
+      response: convertObjectPropsToSnakeCase(commentNote),
     });
+
+    await wrapper.vm.$nextTick();
+
+    expect(newComment().exists()).toBe(false);
+    expect(existingComments()).toHaveLength(1);
+    expect(commentAt(0).props('comment')).toEqual(commentNote);
   });
 
   it('updates an existing comment correctly', async () => {
     const response = { note: 'new note' };
     createWrapper(systemNote, commentNote);
-    await commentAt(0).vm.$emit('onCommentUpdated', { response, comment: commentNote });
+    commentAt(0).vm.$emit('onCommentUpdated', { response, comment: commentNote });
 
-    expect(commentAt(0).props('comment').note).toBe(response.note);
+    await wrapper.vm.$nextTick();
+
+    expect(commentAt(0).props('comment')).toEqual({ ...commentNote, note: response.note });
   });
 
   it('deletes an existing comment correctly', async () => {

@@ -1,5 +1,6 @@
 <script>
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import HistoryComment from './history_comment.vue';
 
 export default {
@@ -33,14 +34,14 @@ export default {
     },
   },
   methods: {
-    addComment(comment) {
-      this.notes.push(comment);
+    addComment({ response }) {
+      this.notes.push(convertObjectPropsToCamelCase(response));
     },
     updateComment({ response, comment }) {
       const index = this.notes.indexOf(comment);
 
       if (index > -1) {
-        this.notes.splice(index, 1, { ...comment, ...response });
+        this.notes.splice(index, 1, { ...comment, ...convertObjectPropsToCamelCase(response) });
       }
     },
     removeComment(comment) {
