@@ -8,7 +8,7 @@ module IncidentManagement
     belongs_to :oncall_schedule, class_name: 'OncallSchedule', foreign_key: 'oncall_schedule_id', optional: true
     belongs_to :user, optional: true
 
-    enum status: AlertManagement::Alert::STATUSES.slice(:acknowledged, :resolved)
+    enum status: ::IncidentManagement::Escalatable::STATUSES.slice(:acknowledged, :resolved)
 
     validates :status, presence: true
     validates :elapsed_time_seconds,
