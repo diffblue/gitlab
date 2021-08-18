@@ -74,4 +74,30 @@ RSpec.describe "User creates issue", :js do
       expect(page).to have_content(issue_title)
     end
   end
+
+  context 'when new issue url has parameter' do
+    context 'for inherited issue template' do
+      let_it_be(:template_project) { create(:project, :public, :repository) }
+
+      before do
+        template_project.repository.create_file(
+          user,
+          '.gitlab/issue_templates/bug.md',
+          'this is a test "bug" template',
+          message: 'added issue template',
+          branch_name: 'master')
+
+        group.add_owner(user)
+        stub_licensed_features(custom_file_templates_for_namespace: true)
+        create(:project_group_link, project: template_project, group: group)
+        group.update!(file_template_project_id: template_project.id)
+
+        visit new_project_issue_path(project, issuable_template: 'bug')
+      end
+
+      it 'fills in with inherited template' do
+        expect(find('.js-issuable-selector .dropdown-toggle-text')).to have_content('bug')
+      end
+    end
+  end
 end
