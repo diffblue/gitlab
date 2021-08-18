@@ -61,6 +61,23 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Sequence do
       expect(histogram).to have_received(:observe)
     end
 
+    it 'adds step sequence duration to duration histogram' do
+      expect(command.metrics)
+        .to receive(:pipeline_creation_step_duration_histogram)
+        .with(first_step)
+        .ordered
+        .and_return(histogram)
+      expect(command.metrics)
+        .to receive(:pipeline_creation_step_duration_histogram)
+        .with(second_step)
+        .ordered
+        .and_return(histogram)
+
+      subject.build!
+
+      expect(histogram).to have_received(:observe).twice
+    end
+
     it 'records pipeline size by pipeline source in a histogram' do
       allow(command.metrics)
         .to receive(:pipeline_size_histogram)

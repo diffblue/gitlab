@@ -14,9 +14,13 @@ module Gitlab
 
           def build!
             @sequence.each do |step_class|
+              step_start = Time.now
               step = step_class.new(@pipeline, @command)
 
               step.perform!
+
+              @command.observe_step_duration(step_class, Time.now - step_start)
+
               break if step.break?
             end
 
