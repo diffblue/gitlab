@@ -174,7 +174,7 @@ export default {
     <div class="issuable-sidebar js-issuable-update">
       <sidebar-header :sidebar-collapsed="sidebarCollapsed">
         <sidebar-todo-widget
-          v-show="isUserSignedIn"
+          v-if="isUserSignedIn"
           :issuable-id="fullEpicId"
           :issuable-iid="String(iid)"
           :full-path="fullPath"
