@@ -11,7 +11,7 @@ RSpec.describe IncidentManagement::PendingEscalations::ProcessService do
   let!(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rules: [escalation_rule]) }
 
   let(:alert) { create(:alert_management_alert, project: project, **alert_params) }
-  let(:alert_params) { { status: AlertManagement::Alert::STATUSES[:triggered] } }
+  let(:alert_params) { { status: ::IncidentManagement::Escalatable::STATUSES[:triggered] } }
 
   let(:target) { alert }
   let(:process_at) { 5.minutes.ago }
