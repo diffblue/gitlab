@@ -241,11 +241,6 @@ module EE
         can?(current_user, :admin_namespace, project.root_ancestor)
     end
 
-    override :can_import_members?
-    def can_import_members?
-      super && !membership_locked?
-    end
-
     def show_compliance_framework_badge?(project)
       project&.compliance_framework_setting&.compliance_management_framework.present?
     end
