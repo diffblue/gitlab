@@ -3,6 +3,7 @@
  * Renders Perfomance issue body text
  *  [name] :[score] [symbol] [delta] in [link]
  */
+import { formattedChangeInPercent } from '~/lib/utils/number_utils';
 import ReportLink from '~/reports/components/report_link.vue';
 
 function formatScore(value) {
@@ -34,10 +35,16 @@ export default {
       if (!this.issue.delta) {
         return false;
       }
-      if (this.issue.delta >= 0) {
-        return `+${formatScore(this.issue.delta)}`;
+      return this.issue.delta >= 0
+        ? `+${formatScore(this.issue.delta)}`
+        : formatScore(this.issue.delta);
+    },
+    issueDeltaPercentage() {
+      if (!this.issue.delta || !this.issue.score || !Number(this.issue.score)) {
+        return false;
       }
-      return formatScore(this.issue.delta);
+      const oldScore = parseFloat(this.issue.score) - this.issue.delta;
+      return formattedChangeInPercent(oldScore, this.issue.score);
     },
   },
 };
@@ -52,6 +59,7 @@ export default {
         {{ issue.name }}
       </template>
       <template v-if="issueDelta"> ({{ issueDelta }}) </template>
+      <template v-if="issueDeltaPercentage"> ({{ issueDeltaPercentage }}) </template>
     </div>
 
     <report-link v-if="issue.path" :issue="issue" />
