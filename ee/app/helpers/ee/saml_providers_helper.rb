@@ -2,10 +2,6 @@
 
 module EE
   module SamlProvidersHelper
-    def show_saml_in_sidebar?(group)
-      can?(current_user, :admin_group_saml, group)
-    end
-
     def saml_link_for_provider(text, provider, **args)
       saml_link(text, provider.group.full_path, **args)
     end

@@ -655,4 +655,31 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       expect(rendered).to have_link('Billing', href: group_billings_path(group))
     end
   end
+
+  describe 'Administration' do
+    before do
+      group.add_owner(user)
+
+      stub_licensed_features(usage_quotas: true)
+
+      allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+      allow(group).to receive(:feature_available?).and_call_original
+      allow(group).to receive(:feature_available?).with(:group_saml).and_return(true)
+      allow(view).to receive(:current_user).and_return(user)
+
+      render
+    end
+
+    it 'has a link to the SAML SSO settings page' do
+      expect(rendered).to have_link('SAML SSO', href: group_saml_providers_path(group))
+    end
+
+    it 'has a link to the Usage Quotas settings page' do
+      expect(rendered).to have_link('Usage Quotas', href: group_usage_quotas_path(group))
+    end
+
+    it 'has a link to the Billing settings page' do
+      expect(rendered).to have_link('Billing', href: group_billings_path(group))
+    end
+  end
 end

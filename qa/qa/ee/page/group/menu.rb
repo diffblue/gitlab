@@ -12,12 +12,6 @@ module QA
 
             base.class_eval do
               prepend QA::Page::Group::SubMenus::Common
-
-              view 'ee/app/views/groups/ee/_administration_nav.html.haml' do
-                element :group_administration_link
-                element :group_sidebar_submenu_content
-                element :group_saml_sso_link
-              end
             end
           end
 
@@ -38,9 +32,9 @@ module QA
           end
 
           def go_to_saml_sso_group_settings
-            hover_element(:group_administration_link) do
-              within_submenu(:group_sidebar_submenu_content) do
-                click_element(:group_saml_sso_link)
+            hover_group_administration do
+              within_submenu do
+                click_element(:sidebar_menu_item_link, menu_item: 'SAML SSO')
               end
             end
           end
@@ -129,6 +123,15 @@ module QA
             within_sidebar do
               scroll_to_element(:sidebar_menu_link, menu_item: 'Analytics')
               find_element(:sidebar_menu_link, menu_item: 'Analytics').hover
+
+              yield
+            end
+          end
+
+          def hover_group_administration
+            within_sidebar do
+              scroll_to_element(:sidebar_menu_link, menu_item: 'Administration')
+              find_element(:sidebar_menu_link, menu_item: 'Administration').hover
 
               yield
             end
