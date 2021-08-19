@@ -29,32 +29,6 @@
   }
 }
 
-// This can be refactored once the offical design implementation is complete
-// https://gitlab.com/gitlab-org/gitlab/-/issues/211796
-.sortable-drag {
-  border-radius: 0.25rem;
-  background-color: var(--white, $white);
-  box-shadow: 0 0 0.25rem $gl-btn-active-background,
-    0 0.25rem 0.75rem $gl-btn-active-background;
-}
-
-// Since backend wraps event description in a paragraph
-// we need to remove common styles, i.e., spacing
-.stage-item-popover {
-  .stage-event-description p {
-    margin: 0 !important;
-  }
-
-  .popover-body {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  .metric-label {
-    flex: 0 0 20%;
-  }
-}
-
 .stage-list-move {
   transition: transform 0.15s;
 }
