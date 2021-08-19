@@ -36,7 +36,6 @@ module EE
         super
 
         handle_iteration_change(issue)
-        handle_issue_type_change(issue)
       end
 
       private
@@ -55,8 +54,9 @@ module EE
         end
       end
 
-      def handle_issue_type_change(issue)
-        return unless issue.previous_changes.include?('issue_type')
+      override :do_handle_issue_type_change
+      def do_handle_issue_type_change(issue)
+        super
 
         ::IncidentManagement::Incidents::CreateSlaService.new(issue, current_user).execute
       end

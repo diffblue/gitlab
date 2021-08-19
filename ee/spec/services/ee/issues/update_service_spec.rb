@@ -179,10 +179,24 @@ RSpec.describe Issues::UpdateService do
       end
 
       context 'from issue to incident' do
-        it 'creates an SLA' do
-          expect { update_issue(issue_type: 'incident') }.to change(IssuableSla, :count).by(1)
-          expect(issue.reload).to be_incident
-          expect(issue.reload.issuable_sla).to be_present
+        shared_examples 'creates an SLA' do
+          it do
+            expect { update_issue(issue_type: 'incident') }.to change(IssuableSla, :count).by(1)
+            expect(issue.reload).to be_incident
+            expect(issue.reload.issuable_sla).to be_present
+          end
+        end
+
+        it_behaves_like 'creates an SLA'
+
+        context 'system note fails to be created' do
+          before do
+            expect_next_instance_of(Note) do |note|
+              expect(note).to receive(:valid?).and_return(false)
+            end
+          end
+
+          it_behaves_like 'creates an SLA'
         end
       end
 
