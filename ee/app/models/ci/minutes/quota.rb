@@ -16,7 +16,7 @@ module Ci
       end
 
       def enabled?
-        namespace_eligible? && total_minutes.nonzero?
+        namespace_root? && total_minutes.nonzero?
       end
 
       # Status of the monthly allowance being used.
@@ -48,54 +48,53 @@ module Ci
         enabled? && total_minutes_used >= total_minutes
       end
 
-      # TODO: merge this with minutes_used_up? in
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933.
-      # This method is agnostic from Project#shared_runners_enabled
-      def actual_minutes_used_up?
-        limit_enabled? && total_minutes_used >= total_minutes
-      end
-
-      def total_minutes
-        @total_minutes ||= monthly_minutes + purchased_minutes
-      end
-
-      def total_minutes_used
-        @total_minutes_used ||= namespace.shared_runners_seconds.to_i / 60
-      end
-
       def percent_total_minutes_remaining
         return 0 if total_minutes == 0
 
         100 * total_minutes_remaining.to_i / total_minutes
       end
 
-      def namespace_eligible?
-        strong_memoize(:namespace_eligible) do
-          namespace.root? && namespace.any_project_with_shared_runners_enabled?
-        end
-      end
-
       def current_balance
         total_minutes.to_i - total_minutes_used
       end
 
-      private
+      def display_shared_runners_data?
+        namespace_root? && any_project_enabled?
+      end
 
-      # TODO: rename to `enabled?`
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/332933
-      def limit_enabled?
-        strong_memoize(:limit_enabled) do
-          namespace.root? && !!total_minutes.nonzero?
+      def display_minutes_available_data?
+        display_shared_runners_data? && total_minutes.nonzero?
+      end
+
+      def total_minutes
+        strong_memoize(:total_minutes) do
+          monthly_minutes + purchased_minutes
         end
       end
 
-      def minutes_limit
-        return monthly_minutes if enabled?
+      def total_minutes_used
+        strong_memoize(:total_minutes_used) do
+          namespace.shared_runners_seconds.to_i / 60
+        end
+      end
 
-        if namespace_eligible?
-          _('Unlimited')
+      def any_project_enabled?
+        strong_memoize(:any_project_enabled) do
+          namespace.any_project_with_shared_runners_enabled?
+        end
+      end
+
+      private
+
+      attr_reader :namespace
+
+      def minutes_limit
+        return _('Not supported') unless display_shared_runners_data?
+
+        if display_minutes_available_data?
+          monthly_minutes
         else
-          _('Not supported')
+          _('Unlimited')
         end
       end
 
@@ -144,14 +143,22 @@ module Ci
       end
 
       def monthly_minutes
-        @monthly_minutes ||= (namespace.shared_runners_minutes_limit || ::Gitlab::CurrentSettings.shared_runners_minutes).to_i
+        strong_memoize(:monthly_minutes) do
+          (namespace.shared_runners_minutes_limit || ::Gitlab::CurrentSettings.shared_runners_minutes).to_i
+        end
       end
 
       def purchased_minutes
-        @purchased_minutes ||= namespace.extra_shared_runners_minutes_limit.to_i
+        strong_memoize(:purchased_minutes) do
+          namespace.extra_shared_runners_minutes_limit.to_i
+        end
       end
 
-      attr_reader :namespace
+      def namespace_root?
+        strong_memoize(:namespace_root) do
+          namespace.root?
+        end
+      end
     end
   end
 end

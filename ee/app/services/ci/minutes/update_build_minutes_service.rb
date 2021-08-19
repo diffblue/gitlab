@@ -6,7 +6,7 @@ module Ci
       # Calculates consumption and updates the project and namespace statistics(legacy)
       # or ProjectMonthlyUsage and NamespaceMonthlyUsage(not legacy) based on the passed build.
       def execute(build)
-        return unless build.shared_runners_minutes_limit_enabled?
+        return unless build.cost_factor_enabled?
         return unless build.complete?
         return unless build.duration&.positive?
 

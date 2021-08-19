@@ -30,7 +30,7 @@ RSpec.describe Ci::Minutes::RefreshCachedDataService do
     context 'when user purchases more ci minutes for a given namespace' do
       before do
         allow_next_instance_of(::Ci::Minutes::Quota) do |instance|
-          allow(instance).to receive(:actual_minutes_used_up?).and_return(false)
+          allow(instance).to receive(:minutes_used_up?).and_return(false)
         end
       end
 

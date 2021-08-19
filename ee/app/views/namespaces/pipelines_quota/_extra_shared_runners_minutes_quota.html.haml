@@ -1,7 +1,7 @@
 - return unless Gitlab.com?
 
 - minutes_quota = namespace.ci_minutes_quota
-- return unless minutes_quota.enabled? && minutes_quota.purchased_minutes_report.limit > 0
+- return unless minutes_quota.display_minutes_available_data? && minutes_quota.purchased_minutes_report.limit > 0
 
 .row
   .col-sm-6

@@ -48,48 +48,28 @@ RSpec.describe Ci::Build do
     it { is_expected.to have_one(:dast_scanner_profile).class_name('DastScannerProfile').through(:dast_scanner_profiles_build) }
   end
 
-  describe '#shared_runners_minutes_limit_enabled?' do
-    subject { job.shared_runners_minutes_limit_enabled? }
+  describe '#cost_factor_enabled?' do
+    subject { job.cost_factor_enabled? }
 
-    shared_examples 'depends on runner presence and type' do
-      context 'for shared runner' do
-        before do
-          job.runner = create(:ci_runner, :instance)
-        end
-
-        context 'when project#shared_runners_minutes_limit_enabled? is true' do
-          specify do
-            expect(job.project).to receive(:shared_runners_minutes_limit_enabled?)
-              .and_return(true)
-
-            is_expected.to be_truthy
-          end
-        end
-
-        context 'when project#shared_runners_minutes_limit_enabled? is false' do
-          specify do
-            expect(job.project).to receive(:shared_runners_minutes_limit_enabled?)
-              .and_return(false)
-
-            is_expected.to be_falsey
-          end
-        end
+    context 'for shared runner' do
+      before do
+        job.runner = create(:ci_runner, :instance)
       end
 
-      context 'with specific runner' do
-        before do
-          job.runner = create(:ci_runner, :project)
-        end
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'without runner' do
-        it { is_expected.to be_falsey }
-      end
+      it { is_expected.to be_truthy }
     end
 
-    it_behaves_like 'depends on runner presence and type'
+    context 'with specific runner' do
+      before do
+        job.runner = create(:ci_runner, :project)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'without runner' do
+      it { is_expected.to be_falsey }
+    end
   end
 
   context 'updates pipeline minutes' do

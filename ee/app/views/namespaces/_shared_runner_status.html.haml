@@ -1,7 +1,7 @@
 - namespace = local_assigns.fetch(:namespace)
 - minutes_quota = namespace.ci_minutes_quota
 
-- if minutes_quota.namespace_eligible?
+- if minutes_quota.display_shared_runners_data?
   %li
     %span.light= _('Pipeline minutes quota:')
     %strong

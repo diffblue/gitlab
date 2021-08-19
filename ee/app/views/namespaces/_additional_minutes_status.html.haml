@@ -5,7 +5,7 @@
 - return unless minutes_quota.enabled?
 
 
-- if minutes_quota.namespace_eligible?
+- if minutes_quota.display_shared_runners_data?
   %li
     %span.light= _('Additional minutes:')
     %strong
