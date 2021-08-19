@@ -149,3 +149,6 @@ export const prepareTimeMetricsData = (data = [], popoverContent = {}) =>
       description: popoverContent[key]?.description || '',
     };
   });
+
+// TODO: maybe use paths.join
+export const appendExtension = (path) => (path.indexOf('.') > -1 ? path : `${path}.json`);

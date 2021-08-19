@@ -4,12 +4,22 @@ import testAction from 'helpers/vuex_action_helper';
 import * as actions from '~/cycle_analytics/store/actions';
 import * as getters from '~/cycle_analytics/store/getters';
 import httpStatusCodes from '~/lib/utils/http_status';
-import { allowedStages, selectedStage, selectedValueStream } from '../mock_data';
+import { allowedStages, selectedStage, selectedValueStream, currentGroup } from '../mock_data';
 
+const { id: groupId, path: groupPath } = currentGroup;
+const mockMilestonesPath = 'mock-milestones';
+const mockLabelsPath = 'mock-labels';
 const mockRequestPath = 'some/cool/path';
 const mockFullPath = '/namespace/-/analytics/value_stream_analytics/value_streams';
 const mockStartDate = 30;
-const mockEndpoints = { fullPath: mockFullPath, requestPath: mockRequestPath };
+const mockEndpoints = {
+  fullPath: mockFullPath,
+  requestPath: mockRequestPath,
+  labelsPath: mockLabelsPath,
+  milestonesPath: mockMilestonesPath,
+  groupId,
+  groupPath,
+};
 const mockSetDateActionCommit = { payload: { startDate: mockStartDate }, type: 'SET_DATE_RANGE' };
 
 const defaultState = { ...getters, selectedValueStream };
@@ -60,6 +70,12 @@ describe('Project Value Stream Analytics actions', () => {
     let mockDispatch;
     let mockCommit;
     const payload = { endpoints: mockEndpoints };
+    const mockFilterEndpoints = {
+      groupEndpoint: 'foo',
+      labelsEndpoint: 'mock-labels.json',
+      milestonesEndpoint: 'mock-milestones.json',
+      projectEndpoint: '/namespace/-/analytics/value_stream_analytics/value_streams',
+    };
 
     beforeEach(() => {
       mockDispatch = jest.fn(() => Promise.resolve());
@@ -76,6 +92,7 @@ describe('Project Value Stream Analytics actions', () => {
         payload,
       );
       expect(mockCommit).toHaveBeenCalledWith('INITIALIZE_VSA', { endpoints: mockEndpoints });
+      expect(mockDispatch).toHaveBeenCalledWith('filters/setEndpoints', mockFilterEndpoints);
       expect(mockDispatch).toHaveBeenCalledWith('setLoading', true);
       expect(mockDispatch).toHaveBeenCalledWith('fetchValueStreams');
       expect(mockDispatch).toHaveBeenCalledWith('setLoading', false);

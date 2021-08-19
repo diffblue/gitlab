@@ -9,6 +9,7 @@ import {
 import createFlash from '~/flash';
 import { __ } from '~/locale';
 import { DEFAULT_VALUE_STREAM, I18N_VSA_ERROR_STAGE_MEDIAN } from '../constants';
+import { appendExtension } from '../utils';
 import * as types from './mutation_types';
 
 export const setSelectedValueStream = ({ commit, dispatch }, valueStream) => {
@@ -177,6 +178,16 @@ export const setDateRange = ({ dispatch, commit }, daysInPast) => {
 
 export const initializeVsa = ({ commit, dispatch }, initialData = {}) => {
   commit(types.INITIALIZE_VSA, initialData);
+
+  const {
+    endpoints: { fullPath, groupPath, milestonesPath = '', labelsPath = '' },
+  } = initialData;
+  dispatch('filters/setEndpoints', {
+    labelsEndpoint: appendExtension(labelsPath),
+    milestonesEndpoint: appendExtension(milestonesPath),
+    groupEndpoint: groupPath,
+    projectEndpoint: fullPath,
+  });
 
   return dispatch('setLoading', true)
     .then(() => dispatch('fetchValueStreams'))

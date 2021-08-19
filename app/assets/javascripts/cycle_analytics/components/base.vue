@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
+import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
 import ValueStreamMetrics from '~/cycle_analytics/components/value_stream_metrics.vue';
 import { __ } from '~/locale';
 import { SUMMARY_METRICS_REQUEST, METRICS_REQUESTS } from '../constants';
@@ -18,6 +19,7 @@ export default {
     GlSprintf,
     PathNavigation,
     StageTable,
+    ValueStreamFilters,
     ValueStreamMetrics,
   },
   props: {
@@ -50,6 +52,8 @@ export default {
       'stageCounts',
       'endpoints',
       'features',
+      'createdBefore',
+      'createdAfter',
     ]),
     ...mapGetters(['pathNavigationData', 'filterParams']),
     displayStageEvents() {
@@ -157,6 +161,13 @@ export default {
         </div>
       </div>
     </div>
+    <value-stream-filters
+      class="gl-w-full"
+      :group-id="endpoints.groupId"
+      :group-path="endpoints.groupPath"
+      :has-project-filter="false"
+      :has-date-range-filter="false"
+    />
     <value-stream-metrics
       :request-path="endpoints.fullPath"
       :request-params="filterParams"
