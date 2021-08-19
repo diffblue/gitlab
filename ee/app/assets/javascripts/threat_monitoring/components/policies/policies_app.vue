@@ -1,6 +1,5 @@
 <script>
 import { mapActions } from 'vuex';
-import NoEnvironmentEmptyState from '../no_environment_empty_state.vue';
 import PoliciesHeader from './policies_header.vue';
 import PoliciesList from './policies_list.vue';
 
@@ -8,7 +7,6 @@ export default {
   components: {
     PoliciesHeader,
     PoliciesList,
-    NoEnvironmentEmptyState,
   },
   inject: ['defaultEnvironmentId'],
   data() {
@@ -42,9 +40,8 @@ export default {
 <template>
   <div>
     <policies-header @update-policy-list="handleUpdatePolicyList" />
-    <no-environment-empty-state v-if="!shouldFetchEnvironment" />
     <policies-list
-      v-else
+      :has-environment="shouldFetchEnvironment"
       :should-update-policy-list="shouldUpdatePolicyList"
       @update-policy-list="handleUpdatePolicyList"
     />

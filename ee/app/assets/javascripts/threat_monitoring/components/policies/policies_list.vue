@@ -1,13 +1,5 @@
 <script>
-import {
-  GlTable,
-  GlEmptyState,
-  GlAlert,
-  GlSprintf,
-  GlLink,
-  GlIcon,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlTable, GlAlert, GlSprintf, GlLink, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import createFlash from '~/flash';
@@ -22,6 +14,7 @@ import EnvironmentPicker from '../environment_picker.vue';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
 import PolicyEnvironments from '../policy_environments.vue';
 import PolicyTypeFilter from '../policy_type_filter.vue';
+import NoPoliciesEmptyState from './no_policies_empty_state.vue';
 
 const createPolicyFetchError = ({ gqlError, networkError }) => {
   const error =
@@ -42,12 +35,12 @@ const getPoliciesWithType = (policies, policyType) =>
 export default {
   components: {
     GlTable,
-    GlEmptyState,
     GlAlert,
     GlSprintf,
     GlLink,
     GlIcon,
     EnvironmentPicker,
+    NoPoliciesEmptyState,
     PolicyTypeFilter,
     PolicyDrawer,
     PolicyEnvironments,
@@ -55,8 +48,13 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['projectPath', 'documentationPath', 'newPolicyPath'],
+  inject: ['documentationPath', 'projectPath', 'newPolicyPath'],
   props: {
+    hasEnvironment: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     shouldUpdatePolicyList: {
       type: Boolean,
       required: false,
@@ -74,9 +72,11 @@ export default {
       },
       update(data) {
         const policies = data?.project?.networkPolicies?.nodes ?? [];
-        const predefined = PREDEFINED_NETWORK_POLICIES.filter(
-          ({ name }) => !policies.some((policy) => name === policy.name),
-        );
+        const predefined = this.hasEnvironment
+          ? PREDEFINED_NETWORK_POLICIES.filter(
+              ({ name }) => !policies.some((policy) => name === policy.name),
+            )
+          : [];
         return [...policies, ...predefined];
       },
       error: createPolicyFetchError,
@@ -165,6 +165,9 @@ export default {
     policyType() {
       return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : 'container';
     },
+    hasExistingPolicies() {
+      return !(this.selectedPolicyType === POLICY_TYPE_OPTIONS.ALL.value && !this.policies.length);
+    },
     fields() {
       const environments = {
         key: 'environments',
@@ -228,14 +231,9 @@ export default {
     },
   },
   i18n: {
-    emptyStateDescription: s__(
-      `NetworkPolicies|Policies are a specification of how groups of pods are allowed to communicate with each other's network endpoints.`,
-    ),
     autodevopsNoticeDescription: s__(
-      `NetworkPolicies|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}.`,
+      `SecurityOrchestration|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}.`,
     ),
-    emptyStateButton: __('Learn more'),
-    emptyStateTitle: s__('NetworkPolicies|No policies detected'),
     statusEnabled: __('Enabled'),
     statusDisabled: __('Disabled'),
   },
@@ -314,13 +312,7 @@ export default {
 
       <template #empty>
         <slot name="empty-state">
-          <gl-empty-state
-            ref="tableEmptyState"
-            :title="$options.i18n.emptyStateTitle"
-            :description="$options.i18n.emptyStateDescription"
-            :primary-button-link="documentationFullPath"
-            :primary-button-text="$options.i18n.emptyStateButton"
-          />
+          <no-policies-empty-state :has-existing-policies="hasExistingPolicies" />
         </slot>
       </template>
     </gl-table>

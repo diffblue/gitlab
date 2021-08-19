@@ -60,6 +60,7 @@ describe('PoliciesList component', () => {
         {
           propsData: {
             documentationPath: 'documentation_path',
+            hasEnvironment: true,
             newPolicyPath: '/policies/new',
           },
           store,
@@ -79,6 +80,7 @@ describe('PoliciesList component', () => {
                 ...GlDrawer.props,
               },
             }),
+            NoPoliciesEmptyState: true,
           },
           localVue,
         },
@@ -144,6 +146,10 @@ describe('PoliciesList component', () => {
       mountWrapper();
       await waitForPromises();
       rows = wrapper.findAll('tr');
+    });
+
+    it('does render default network policies', () => {
+      expect(findPolicyStatusCells().length).toBe(5);
     });
 
     it('fetches network policies on environment change', async () => {
@@ -295,6 +301,20 @@ describe('PoliciesList component', () => {
 
     it('renders autodevops alert', () => {
       expect(findAutodevopsAlert().exists()).toBe(true);
+    });
+  });
+
+  describe('given no environement', () => {
+    beforeEach(() => {
+      mountWrapper({
+        propsData: {
+          hasEnvironment: false,
+        },
+      });
+    });
+
+    it('does not render default network policies', () => {
+      expect(findPolicyStatusCells().length).toBe(3);
     });
   });
 });

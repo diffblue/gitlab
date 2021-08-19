@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlSprintf, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { NEW_POLICY_BUTTON_TEXT } from '../constants';
 import ScanNewPolicyModal from './scan_new_policy_modal.vue';
 
 export default {
@@ -21,7 +22,7 @@ export default {
     subtitle: s__(
       'SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}',
     ),
-    newPolicyButtonText: s__('SecurityOrchestration|New policy'),
+    newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
     editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
   },
   data() {

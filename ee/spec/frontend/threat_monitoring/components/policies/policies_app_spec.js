@@ -1,4 +1,3 @@
-import NoEnvironmentEmptyState from 'ee/threat_monitoring/components/no_environment_empty_state.vue';
 import PoliciesApp from 'ee/threat_monitoring/components/policies/policies_app.vue';
 import PoliciesHeader from 'ee/threat_monitoring/components/policies/policies_header.vue';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
@@ -13,7 +12,6 @@ describe('Policies App', () => {
 
   const findPoliciesHeader = () => wrapper.findComponent(PoliciesHeader);
   const findPoliciesList = () => wrapper.findComponent(PoliciesList);
-  const findEmptyState = () => wrapper.findComponent(NoEnvironmentEmptyState);
 
   const createWrapper = ({ provide } = {}) => {
     store = createStore();
@@ -49,11 +47,11 @@ describe('Policies App', () => {
     });
 
     it('mounts the policies list component', () => {
-      expect(findPoliciesList().exists()).toBe(true);
-    });
-
-    it('does not mount the empty state', () => {
-      expect(findEmptyState().exists()).toBe(false);
+      const policiesList = findPoliciesList();
+      expect(policiesList.exists()).toBe(true);
+      expect(policiesList.props()).toMatchObject({
+        hasEnvironment: true,
+      });
     });
 
     it('fetches the environments when created', async () => {
@@ -81,16 +79,12 @@ describe('Policies App', () => {
       createWrapper();
     });
 
-    it('mounts the policies header component', () => {
-      expect(findPoliciesHeader().exists()).toBe(true);
-    });
-
-    it('does not mount the policies list component', () => {
-      expect(findPoliciesList().exists()).toBe(false);
-    });
-
-    it('mounts the empty state', () => {
-      expect(findEmptyState().exists()).toBe(true);
+    it('mounts the policies list component', () => {
+      const policiesList = findPoliciesList();
+      expect(policiesList.exists()).toBe(true);
+      expect(policiesList.props()).toMatchObject({
+        hasEnvironment: false,
+      });
     });
 
     it('does not fetch the environments when created', () => {

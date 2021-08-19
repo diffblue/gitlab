@@ -10,6 +10,7 @@ export const EMPTY_STATE_DESCRIPTION = s__(
   `ThreatMonitoring|To view this data, ensure you have configured an environment
     for this project and that at least one threat monitoring feature is enabled. %{linkStart}More information%{linkEnd}`,
 );
+export const NEW_POLICY_BUTTON_TEXT = s__('SecurityOrchestration|New policy');
 
 export const COLORS = {
   nominal: gray700,
