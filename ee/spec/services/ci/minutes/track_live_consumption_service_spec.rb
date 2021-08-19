@@ -80,6 +80,14 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService do
       it_behaves_like 'returns early', 'Cost factor not enabled for build'
     end
 
+    context 'when namespace has unlimited minutes' do
+      before do
+        namespace.update!(shared_runners_minutes_limit: 0)
+      end
+
+      it_behaves_like 'returns early', 'Namespace has unlimited minutes'
+    end
+
     context 'when build has not been tracked recently' do
       it 'considers the current consumption as zero' do
         response = subject
