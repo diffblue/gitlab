@@ -29,6 +29,8 @@ export default () => {
     pipelineJobsPath,
     canAdminVulnerability,
     securityReportHelpPageLink,
+    falsePositiveDocUrl,
+    canViewFalsePositive,
   } = el.dataset;
 
   const loadingErrorIllustrations = {
@@ -60,6 +62,8 @@ export default () => {
       securityReportHelpPageLink,
       vulnerabilitiesEndpoint,
       loadingErrorIllustrations,
+      falsePositiveDocUrl,
+      canViewFalsePositive: parseBoolean(canViewFalsePositive),
     },
     render(createElement) {
       return createElement(PipelineSecurityDashboard);

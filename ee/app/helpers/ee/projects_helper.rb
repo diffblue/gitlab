@@ -202,9 +202,15 @@ module EE
           auto_fix_documentation: help_page_path('user/application_security/index', anchor: 'auto-fix-merge-requests'),
           auto_fix_mrs_path: project_merge_requests_path(@project, label_name: 'GitLab-auto-fix'),
           scanners: VulnerabilityScanners::ListService.new(project).execute.to_json,
-          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s
+          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
+          false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
+          can_view_false_positive: can_view_false_positive?
         }.merge!(security_dashboard_pipeline_data(project))
       end
+    end
+
+    def can_view_false_positive?
+      (::Feature.enabled?(:vulnerability_flags, project, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)).to_s
     end
 
     def can_update_security_orchestration_policy_project?(project)

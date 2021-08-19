@@ -13,7 +13,12 @@ export default {
     GlIntersectionObserver,
     VulnerabilityList,
   },
-  inject: ['groupFullPath'],
+  inject: {
+    groupFullPath: {},
+    canViewFalsePositive: {
+      default: false,
+    },
+  },
   props: {
     filters: {
       type: Object,
@@ -38,6 +43,7 @@ export default {
           fullPath: this.groupFullPath,
           first: VULNERABILITIES_PER_PAGE,
           sort: this.sort,
+          vetEnabled: this.canViewFalsePositive,
           ...this.filters,
         };
       },

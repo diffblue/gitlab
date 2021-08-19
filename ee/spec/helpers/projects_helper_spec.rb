@@ -190,13 +190,15 @@ RSpec.describe ProjectsHelper do
           empty_state_svg_path: start_with('/assets/illustrations/security-dashboard-empty-state'),
           survey_request_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
           dashboard_documentation: '/help/user/application_security/security_dashboard/index',
+          false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
           security_dashboard_help_path: '/help/user/application_security/security_dashboard/index',
           not_enabled_scanners_help_path: help_page_path('user/application_security/index', anchor: 'quick-start'),
           no_pipeline_run_scanners_help_path: "/#{project.full_path}/-/pipelines/new",
           auto_fix_documentation: help_page_path('user/application_security/index', anchor: 'auto-fix-merge-requests'),
           auto_fix_mrs_path: end_with('/merge_requests?label_name=GitLab-auto-fix'),
           scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
-          can_admin_vulnerability: 'true'
+          can_admin_vulnerability: 'true',
+          can_view_false_positive: 'false'
         }
       end
 

@@ -1,12 +1,14 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/security_dashboard/graphql/provider';
 import App from 'ee/vulnerabilities/components/vulnerability.vue';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 
 export default (el) => {
   if (!el) {
     return null;
   }
+
+  const { falsePositiveDocUrl, canViewFalsePositive } = el.dataset;
 
   const vulnerability = convertObjectPropsToCamelCase(JSON.parse(el.dataset.vulnerability), {
     deep: true,
@@ -28,6 +30,8 @@ export default (el) => {
       relatedJiraIssuesPath: vulnerability.relatedJiraIssuesPath,
       relatedJiraIssuesHelpPath: vulnerability.relatedJiraIssuesHelpPath,
       jiraIntegrationSettingsPath: vulnerability.jiraIntegrationSettingsPath,
+      falsePositiveDocUrl,
+      canViewFalsePositive: parseBoolean(canViewFalsePositive),
     },
     render: (h) =>
       h(App, {

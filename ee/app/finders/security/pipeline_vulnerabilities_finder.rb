@@ -114,7 +114,7 @@ module Security
 
     def calculate_false_positive?
       project = pipeline.project
-      ::Feature.enabled?(:vulnerability_flags, project) && project.licensed_feature_available?(:sast_fp_reduction)
+      ::Feature.enabled?(:vulnerability_flags, project, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
     end
 
     def filter(findings)

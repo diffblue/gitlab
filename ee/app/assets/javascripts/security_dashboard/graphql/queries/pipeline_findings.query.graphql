@@ -10,6 +10,7 @@ query pipelineFindings(
   $reportType: [String!]
   $scanner: [String!]
   $state: [VulnerabilityState!]
+  $vetEnabled: Boolean = false
 ) {
   project(fullPath: $fullPath) {
     pipeline(iid: $pipelineId) {
@@ -26,6 +27,7 @@ query pipelineFindings(
           uuid
           name
           description
+          falsePositive @include(if: $vetEnabled)
           confidence
           identifiers {
             externalType

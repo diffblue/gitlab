@@ -14,6 +14,7 @@ query projectVulnerabilities(
   $hasIssues: Boolean
   $hasResolution: Boolean
   $includeExternalIssueLinks: Boolean = false
+  $vetEnabled: Boolean = false
 ) {
   project(fullPath: $fullPath) {
     vulnerabilities(
@@ -29,7 +30,7 @@ query projectVulnerabilities(
       hasResolution: $hasResolution
     ) {
       nodes {
-        ...Vulnerability
+        ...VulnerabilityFragment
         externalIssueLinks @include(if: $includeExternalIssueLinks) {
           nodes {
             issue: externalIssue {
