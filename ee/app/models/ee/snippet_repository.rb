@@ -9,7 +9,7 @@ module EE
       include ::Gitlab::Geo::VerificationState
       include FromUnion
 
-      with_replicator Geo::SnippetRepositoryReplicator
+      with_replicator ::Geo::SnippetRepositoryReplicator
     end
 
     class_methods do

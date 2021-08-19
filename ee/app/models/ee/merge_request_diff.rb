@@ -11,7 +11,7 @@ module EE
 
       STORE_COLUMN = :external_diff_store
 
-      with_replicator Geo::MergeRequestDiffReplicator
+      with_replicator ::Geo::MergeRequestDiffReplicator
 
       has_one :merge_request_diff_detail, autosave: true, inverse_of: :merge_request_diff
 
