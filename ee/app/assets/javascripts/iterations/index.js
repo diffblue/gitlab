@@ -17,13 +17,13 @@ const apolloProvider = new VueApollo({
     {},
     {
       batchMax: 1,
+      assumeImmutableResults: true,
     },
   ),
 });
 
 export function initIterationsList(namespaceType) {
   const el = document.querySelector('.js-iterations-list');
-
   return new Vue({
     el,
     apolloProvider,
