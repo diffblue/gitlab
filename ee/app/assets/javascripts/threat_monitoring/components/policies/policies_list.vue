@@ -311,9 +311,7 @@ export default {
       </template>
 
       <template #empty>
-        <slot name="empty-state">
-          <no-policies-empty-state :has-existing-policies="hasExistingPolicies" />
-        </slot>
+        <no-policies-empty-state :has-existing-policies="hasExistingPolicies" />
       </template>
     </gl-table>
 

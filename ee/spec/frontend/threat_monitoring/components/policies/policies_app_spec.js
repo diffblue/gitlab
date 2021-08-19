@@ -48,10 +48,7 @@ describe('Policies App', () => {
 
     it('mounts the policies list component', () => {
       const policiesList = findPoliciesList();
-      expect(policiesList.exists()).toBe(true);
-      expect(policiesList.props()).toMatchObject({
-        hasEnvironment: true,
-      });
+      expect(policiesList.props('hasEnvironment')).toBe(true);
     });
 
     it('fetches the environments when created', async () => {
@@ -81,10 +78,7 @@ describe('Policies App', () => {
 
     it('mounts the policies list component', () => {
       const policiesList = findPoliciesList();
-      expect(policiesList.exists()).toBe(true);
-      expect(policiesList.props()).toMatchObject({
-        hasEnvironment: false,
-      });
+      expect(policiesList.props('hasEnvironment')).toBe(false);
     });
 
     it('does not fetch the environments when created', () => {

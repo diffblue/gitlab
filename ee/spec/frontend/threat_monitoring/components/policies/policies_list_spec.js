@@ -149,7 +149,7 @@ describe('PoliciesList component', () => {
     });
 
     it('does render default network policies', () => {
-      expect(findPolicyStatusCells().length).toBe(5);
+      expect(findPolicyStatusCells()).toHaveLength(5);
     });
 
     it('fetches network policies on environment change', async () => {
@@ -314,7 +314,7 @@ describe('PoliciesList component', () => {
     });
 
     it('does not render default network policies', () => {
-      expect(findPolicyStatusCells().length).toBe(3);
+      expect(findPolicyStatusCells()).toHaveLength(3);
     });
   });
 });
