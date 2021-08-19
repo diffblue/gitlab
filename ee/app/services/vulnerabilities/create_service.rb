@@ -16,7 +16,7 @@ module Vulnerabilities
 
       vulnerability = Vulnerability.new
 
-      Vulnerabilities::Finding.transaction(requires_new: true) do
+      Vulnerabilities::Finding.transaction(requires_new: true) do # rubocop:disable Performance/ActiveRecordSubtransactions
         save_vulnerability(vulnerability, finding)
         Statistics::UpdateService.update_for(vulnerability)
         HistoricalStatistics::UpdateService.update_for(@project)
