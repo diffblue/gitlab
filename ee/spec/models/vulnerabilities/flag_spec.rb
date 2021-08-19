@@ -16,4 +16,11 @@ RSpec.describe Vulnerabilities::Flag do
     it { is_expected.to validate_uniqueness_of(:flag_type).scoped_to(:vulnerability_occurrence_id, :origin).ignoring_case_sensitivity }
     it { is_expected.to define_enum_for(:flag_type).with_values(false_positive: 0) }
   end
+
+  describe '#initialize' do
+    it 'creates a valid flag with flag_type attribute' do
+      flag = described_class.new(flag_type: Vulnerabilities::Flag.flag_types[:false_positive], origin: 'post analyzer X', description: 'static string to sink', finding: build(:vulnerabilities_finding))
+      expect(flag).to be_valid
+    end
+  end
 end

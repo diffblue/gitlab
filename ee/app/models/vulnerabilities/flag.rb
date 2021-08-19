@@ -13,5 +13,10 @@ module Vulnerabilities
     enum flag_type: {
       false_positive: 0
     }
+
+    def initialize(attributes)
+      attributes = attributes.to_hash if attributes.instance_of?(Gitlab::Ci::Reports::Security::Flag)
+      super(attributes)
+    end
   end
 end

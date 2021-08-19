@@ -47,7 +47,7 @@ module Security
       report_finding = report_finding_for(security_finding)
       return Vulnerabilities::Finding.new unless report_finding
 
-      finding_data = report_finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :links, :signatures)
+      finding_data = report_finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags)
       identifiers = report_finding.identifiers.map do |identifier|
         Vulnerabilities::Identifier.new(identifier.to_hash)
       end
@@ -63,7 +63,9 @@ module Security
         finding.scanner = security_finding.scanner
 
         if calculate_false_positive?
-          finding.vulnerability_flags = existing_vulnerability_flags.fetch(security_finding.uuid, [])
+          finding.vulnerability_flags = report_finding.flags.map do |flag|
+            Vulnerabilities::Flag.new(flag)
+          end
         end
 
         finding.identifiers = identifiers
@@ -77,10 +79,6 @@ module Security
 
     def vulnerability_for(security_finding)
       existing_vulnerabilities.dig(security_finding.scan.scan_type, security_finding.project_fingerprint)&.first
-    end
-
-    def existing_vulnerability_flags
-      @existing_vulnerability_flags ||= project.vulnerability_flags_for(security_findings.map(&:uuid))
     end
 
     def calculate_false_positive?

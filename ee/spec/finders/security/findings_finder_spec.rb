@@ -59,8 +59,6 @@ RSpec.describe Security::FindingsFinder do
                    deduplicated: true,
                    position: index,
                    scan: scan)
-
-            create(:vulnerabilities_finding, uuid: finding.uuid, project: pipeline.project)
           end
         end
 
@@ -186,8 +184,9 @@ RSpec.describe Security::FindingsFinder do
 
         context 'with some vulnerability flags present' do
           before do
-            create(:vulnerabilities_flag, finding: pipeline.project.vulnerability_findings.first)
-            create(:vulnerabilities_flag, finding: pipeline.project.vulnerability_findings.last)
+            allow_next_instance_of(Gitlab::Ci::Reports::Security::Finding) do |finding|
+              allow(finding).to receive(:flags).and_return([create(:ci_reports_security_flag)]) if finding.report_type == 'sast'
+            end
           end
 
           it 'has some vulnerability_findings with vulnerability flag' do

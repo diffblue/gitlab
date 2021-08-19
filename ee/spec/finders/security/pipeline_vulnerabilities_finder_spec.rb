@@ -140,8 +140,9 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
         context "false-positive" do
           before do
-            vulnerability_finding = create(:vulnerabilities_finding, uuid: sast_report_uuids.first, project: pipeline.project)
-            create(:vulnerabilities_flag, finding: vulnerability_finding)
+            allow_next_instance_of(Gitlab::Ci::Reports::Security::Finding) do |finding|
+              allow(finding).to receive(:flags).and_return([create(:ci_reports_security_flag)]) if finding.report_type == 'sast'
+            end
           end
 
           it 'includes findings with false-positive' do
