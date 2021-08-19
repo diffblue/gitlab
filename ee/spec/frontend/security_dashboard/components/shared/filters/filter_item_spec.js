@@ -7,6 +7,7 @@ describe('Filter Item component', () => {
 
   const defaultProps = {
     isChecked: false,
+    text: 'filter',
   };
 
   const createWrapper = (props, slotContent = '') => {

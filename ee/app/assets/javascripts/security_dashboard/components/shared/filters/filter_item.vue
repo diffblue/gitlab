@@ -10,7 +10,7 @@ export default {
     },
     text: {
       type: String,
-      required: false,
+      required: true,
       default: '',
     },
   },
