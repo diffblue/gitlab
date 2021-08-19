@@ -56,7 +56,7 @@ describe('content/components/wrappers/table_cell', () => {
 
   it('renders a td node-view-wrapper with relative position', () => {
     createWrapper();
-    expect(wrapper.findComponent(NodeViewWrapper).classes()).toEqual(['gl-relative']);
+    expect(wrapper.findComponent(NodeViewWrapper).classes()).toContain('gl-relative');
     expect(wrapper.findComponent(NodeViewWrapper).props().as).toBe('td');
   });
 
