@@ -4,14 +4,18 @@ module QA
   module EE
     module Resource
       class Epic < QA::Resource::Base
-        attributes :iid,
+        attributes :id,
+                   :iid,
                    :title,
                    :description,
+                   :labels,
+                   :parent_id,
                    :start_date_is_fixed,
                    :start_date_fixed,
                    :due_date_is_fixed,
                    :due_date_fixed,
-                   :confidential
+                   :confidential,
+                   :author
 
         attribute :group do
           QA::Resource::Group.fabricate!
@@ -45,9 +49,14 @@ module QA
           "/groups/#{CGI.escape(group.full_path)}/epics"
         end
 
+        def api_award_emoji_path
+          "#{api_get_path}/award_emoji"
+        end
+
         def api_post_body
           {
-            title: @title,
+            title: title,
+            labels: @labels,
             start_date_is_fixed: @start_date_is_fixed,
             start_date_fixed: @start_date_fixed,
             due_date_is_fixed: @due_date_is_fixed,
@@ -55,6 +64,16 @@ module QA
             confidential: @confidential,
             parent_id: @parent_id
           }
+        end
+
+        # Create new award emoji
+        #
+        # @param [String] name
+        # @return [Hash]
+        def award_emoji(name)
+          response = post(::QA::Runtime::API::Request.new(api_client, api_award_emoji_path).url, { name: name })
+
+          parse_body(response)
         end
 
         # Object comparison
