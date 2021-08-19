@@ -179,4 +179,18 @@ RSpec.describe 'Test Cases', :js do
       end
     end
   end
+
+  describe 'for a nonexistent test case' do
+    let(:test_case) { non_existing_record_id }
+
+    it 'renders 404 page' do
+      requests = inspect_requests do
+        visit project_quality_test_case_path(project, test_case)
+
+        wait_for_all_requests
+      end
+
+      expect(requests.first.status_code).to eq(404)
+    end
+  end
 end
