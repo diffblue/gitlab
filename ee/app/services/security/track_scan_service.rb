@@ -13,7 +13,7 @@ module Security
 
     def execute
       build.unmerged_security_reports.reports.each { |report_type, report| track_scan_event(report_type, report) }
-    rescue SecurityReportParserError
+    rescue Gitlab::Ci::Parsers::Security::Common::SecurityReportParserError
       nil
     end
 
