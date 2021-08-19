@@ -126,6 +126,39 @@ RSpec.describe BulkImports::PipelineWorker do
       expect(pipeline_tracker.status_name).to eq(:failed)
       expect(pipeline_tracker.jid).to eq('jid')
     end
+
+    context 'when it is a network error' do
+      it 'reenqueue on retriable network errors' do
+        pipeline_tracker = create(
+          :bulk_import_tracker,
+          entity: entity,
+          pipeline_name: 'FakePipeline'
+        )
+
+        exception = BulkImports::NetworkError.new(
+          response: double(code: 429, headers: {})
+        )
+
+        expect_next_instance_of(pipeline_class) do |pipeline|
+          expect(pipeline)
+            .to receive(:run)
+            .and_raise(exception)
+        end
+
+        expect(subject).to receive(:jid).and_return('jid')
+
+        expect(described_class)
+          .to receive(:perform_in)
+          .with(
+            60.seconds,
+            pipeline_tracker.id,
+            pipeline_tracker.stage,
+            pipeline_tracker.entity.id
+          )
+
+        subject.perform(pipeline_tracker.id, pipeline_tracker.stage, entity.id)
+      end
+    end
   end
 
   context 'when ndjson pipeline' do
