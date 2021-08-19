@@ -128,4 +128,16 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js do
       expect(page).to have_selector('.select2-result-label .group-result', text: group.name)
     end
   end
+
+  context 'feature is disabled' do
+    before do
+      stub_licensed_features(merge_request_approvers: false)
+
+      visit(edit_project_merge_request_path(project, merge_request))
+    end
+
+    it 'cannot see the approval rules input' do
+      expect(page).not_to have_content('Approval rules')
+    end
+  end
 end
