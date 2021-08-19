@@ -4,6 +4,7 @@ import Clipboard from 'clipboard';
 import { getBaseURL, setUrlParams, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__, __ } from '~/locale';
 import { CODE_SNIPPET_SOURCE_URL_PARAM } from '~/pipeline_editor/components/code_snippet_alert/constants';
+import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from './constants';
 
 export default {
@@ -12,6 +13,7 @@ export default {
     GlModal,
     GlSprintf,
     GlLink,
+    SourceEditor,
   },
   i18n: {
     helpText: s__(
@@ -46,10 +48,26 @@ export default {
         scanType: this.scanType,
       });
     },
+    editorOptions() {
+      return {
+        readOnly: true,
+        lineNumbers: 'off',
+        folding: false,
+        renderIndentGuides: false,
+        renderLineHighlight: 'none',
+        lineDecorationsWidth: 0,
+        occurrencesHighlight: false,
+        hideCursorInOverviewRuler: true,
+        overviewRulerBorder: false,
+      };
+    },
   },
   methods: {
     show() {
       this.$refs.modal.show();
+    },
+    resetEditor() {
+      this.$refs.editor.getEditor().layout();
     },
     onHide() {
       this.clipboard?.destroy();
@@ -94,6 +112,7 @@ export default {
     :modal-id="$options.CONFIGURATION_SNIPPET_MODAL_ID"
     :title="modalTitle"
     @hide="onHide"
+    @shown="resetEditor"
     @primary="copySnippet"
     @secondary="copySnippet(false)"
   >
@@ -110,6 +129,11 @@ export default {
       </gl-sprintf>
     </p>
 
-    <pre><code data-testid="configuration-modal-yaml-snippet" v-text="yaml"></code></pre>
+    <div
+      class="gl-w-full gl-h-full gl-border-1 gl-border-solid gl-border-gray-100"
+      data-testid="configuration-modal-yaml-snippet"
+    >
+      <source-editor ref="editor" :value="yaml" file-name="*.yml" :editor-options="editorOptions" />
+    </div>
   </gl-modal>
 </template>

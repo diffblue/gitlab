@@ -5,6 +5,7 @@ import { merge } from 'lodash';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { redirectTo } from '~/lib/utils/url_utility';
+import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { createApiFuzzingConfigurationMutationResponse } from '../api_fuzzing/mock_data';
 
 jest.mock('clipboard', () =>
@@ -12,13 +13,16 @@ jest.mock('clipboard', () =>
     on: jest.fn().mockImplementation((_event, cb) => cb()),
   })),
 );
-jest.mock('~/lib/utils/url_utility', () => ({
-  redirectTo: jest.fn(),
-  joinPaths: jest.fn(),
-  setUrlFragment: jest.fn(),
-  getBaseURL: jest.fn().mockReturnValue('http://gitlab.local/'),
-  setUrlParams: jest.requireActual('~/lib/utils/url_utility').setUrlParams,
-}));
+
+jest.mock('~/lib/utils/url_utility', () => {
+  const urlUtility = jest.requireActual('~/lib/utils/url_utility');
+
+  return {
+    ...urlUtility,
+    getBaseURL: jest.fn().mockReturnValue('http://gitlab.local/'),
+    redirectTo: jest.fn(),
+  };
+});
 
 const {
   gitlabCiYamlEditPath,
@@ -30,8 +34,8 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
   let wrapper;
 
   const findModal = () => wrapper.find(GlModal);
-  const findYamlSnippet = () => wrapper.findByTestId('configuration-modal-yaml-snippet');
   const helpText = () => wrapper.findByTestId('configuration-modal-help-text');
+  const findEditor = () => wrapper.findComponent(SourceEditor);
 
   const createWrapper = (options) => {
     wrapper = extendedWrapper(
@@ -51,6 +55,7 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
             },
             stubs: {
               GlSprintf,
+              SourceEditor,
             },
           },
           options,
@@ -68,7 +73,12 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
   });
 
   it('renders the YAML snippet', () => {
-    expect(findYamlSnippet().text()).toBe(configurationYaml);
+    expect(findEditor().exists()).toBe(true);
+  });
+
+  it('initializes editor with the provided configuration', () => {
+    const editorComponent = findEditor();
+    expect(editorComponent.vm.getEditor().getValue()).toBe(configurationYaml);
   });
 
   it('renders help text correctly', () => {
