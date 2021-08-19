@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :requires_admin do
+  # Do not run on staging since another top level group has to be created which doesn't have premium license
+  RSpec.describe 'Manage', :requires_admin, except: { subdomain: :staging } do
     describe 'Bulk group import' do
       let!(:staging?) { Runtime::Scenario.gitlab_address.include?('staging.gitlab.com') }
 
       let(:admin_api_client) { Runtime::API::Client.as_admin }
+      let(:api_client) { Runtime::API::Client.new(user: user) }
+      let(:author_api_client) { Runtime::API::Client.new(user: author) }
+
       let(:user) do
         Resource::User.fabricate_via_api! do |usr|
           usr.api_client = admin_api_client
@@ -13,8 +17,12 @@ module QA
         end
       end
 
-      let(:api_client) { Runtime::API::Client.new(user: user) }
-      let(:personal_access_token) { api_client.personal_access_token }
+      let(:author) do
+        Resource::User.fabricate_via_api! do |usr|
+          usr.api_client = admin_api_client
+          usr.hard_delete_on_api_removal = true
+        end
+      end
 
       let(:sandbox) do
         Resource::Sandbox.fabricate_via_api! do |group|
@@ -37,8 +45,16 @@ module QA
         end
       end
 
-      let(:imported_epics) do
-        imported_group.epics
+      let(:source_epics) { source_group.epics }
+      let(:imported_epics) { imported_group.epics }
+
+      # Find epic by title
+      #
+      # @param [Array] epics
+      # @param [String] title
+      # @return [EE::Resource::Epic]
+      def find_epic(epics, title)
+        epics.find { |epic| epic.title == title }
       end
 
       before do
@@ -46,13 +62,33 @@ module QA
         Runtime::Feature.enable(:top_level_group_creation_enabled) if staging?
 
         sandbox.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
+        source_group.add_member(author, Resource::Members::AccessLevel::MAINTAINER)
+        author.set_public_email
 
-        EE::Resource::Epic.fabricate_via_api! do |epic|
-          epic.api_client = api_client
+        parent_epic = EE::Resource::Epic.fabricate_via_api! do |epic|
+          epic.api_client = author_api_client
           epic.group = source_group
-          epic.title = "Bulk group import test"
-          epic.confidential = true
+          epic.title = 'Parent epic'
         end
+        child_epic = EE::Resource::Epic.fabricate_via_api! do |child_epic|
+          child_epic.api_client = api_client
+          child_epic.group = source_group
+          child_epic.title = 'Child epic'
+          child_epic.confidential = true
+          child_epic.labels = 'label1,label2'
+          child_epic.parent_id = parent_epic.id
+        end
+
+        child_epic.award_emoji('thumbsup')
+        child_epic.award_emoji('thumbsdown')
+      end
+
+      after do
+        user.remove_via_api!
+        author.remove_via_api!
+      ensure
+        Runtime::Feature.disable(:bulk_import) unless staging?
+        Runtime::Feature.disable(:top_level_group_creation_enabled) if staging?
       end
 
       it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1874' do
@@ -60,14 +96,15 @@ module QA
           eventually_eq('finished').within(max_duration: 300, sleep_interval: 2)
         )
 
-        expect(imported_epics).to eq(source_group.epics)
-      end
+        source_parent_epic = find_epic(source_epics, 'Parent epic')
+        imported_parent_epic = find_epic(imported_epics, 'Parent epic')
+        imported_child_epic = find_epic(imported_epics, 'Child epic')
 
-      after do
-        user.remove_via_api!
-      ensure
-        Runtime::Feature.disable(:bulk_import) unless staging?
-        Runtime::Feature.disable(:top_level_group_creation_enabled) if staging?
+        aggregate_failures 'epics imported incorrectly' do
+          expect(imported_epics).to eq(source_epics)
+          expect(imported_child_epic.parent_id).to eq(imported_parent_epic.id)
+          expect(imported_parent_epic.author).to eq(source_parent_epic.author)
+        end
       end
     end
   end

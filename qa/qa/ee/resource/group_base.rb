@@ -12,6 +12,7 @@ module QA
             Epic.init do |resource|
               resource.group = self
               resource.api_client = api_client
+              resource.id = epic[:id]
               resource.iid = epic[:iid]
               resource.title = epic[:title]
               resource.description = epic[:description]
