@@ -28,17 +28,63 @@ RSpec.describe Search::ProjectService do
     end
   end
 
-  context 'code search' do
+  context 'default branch support' do
     let(:user) { scope.owner }
     let(:scope) { create(:project) }
     let(:service) { described_class.new(scope, user, params) }
-    let(:params) { { search: '*' } }
+
+    describe '#use_default_branch?' do
+      subject { service.use_default_branch? }
+
+      context 'when repository_ref param is blank' do
+        let(:params) { { search: '*' } }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when repository_ref param provided' do
+        let(:params) { { search: '*', scope: search_scope, repository_ref: 'test' } }
+
+        where(:search_scope, :default_branch_given, :use_default_branch) do
+          'issues'          | true   | true
+          'issues'          | false  | true
+          'merge_requests'  | true   | true
+          'merge_requests'  | false  | true
+          'notes'           | true   | true
+          'notes'           | false  | true
+          'milestones'      | true   | true
+          'milestones'      | false  | true
+          'blobs'           | true   | true
+          'blobs'           | false  | false
+          'wiki_blobs'      | true   | true
+          'wiki_blobs'      | false  | false
+          'commits'         | true   | true
+          'commits'         | false  | false
+        end
+
+        with_them do
+          before do
+            allow(scope).to receive(:root_ref?).and_return(default_branch_given)
+          end
+
+          it { is_expected.to eq(use_default_branch) }
+        end
+      end
+    end
 
     describe '#execute' do
+      let(:params) { { search: '*' } }
+
       subject { service.execute }
 
+      it 'returns Elastic results when searching non-default branch' do
+        expect(service).to receive(:use_default_branch?).and_return(true)
+
+        is_expected.to be_a(::Gitlab::Elastic::ProjectSearchResults)
+      end
+
       it 'returns ordinary results when searching non-default branch' do
-        expect(service).to receive(:default_branch?).and_return(false)
+        expect(service).to receive(:use_default_branch?).and_return(false)
 
         is_expected.to be_a(::Gitlab::ProjectSearchResults)
       end

@@ -6,9 +6,11 @@ module EE
       extend ::Gitlab::Utils::Override
       include ::Search::Elasticsearchable
 
+      SCOPES_THAT_SUPPORT_BRANCHES = %w(wiki_blobs commits blobs).freeze
+
       override :execute
       def execute
-        return super unless use_elasticsearch? && default_branch?
+        return super unless use_elasticsearch? && use_default_branch?
 
         if project.is_a?(Array)
           project_ids = Array(project).map(&:id)
@@ -38,8 +40,9 @@ module EE
         params[:repository_ref]
       end
 
-      def default_branch?
+      def use_default_branch?
         return true if repository_ref.blank?
+        return true unless SCOPES_THAT_SUPPORT_BRANCHES.include?(scope)
 
         project.root_ref?(repository_ref)
       end

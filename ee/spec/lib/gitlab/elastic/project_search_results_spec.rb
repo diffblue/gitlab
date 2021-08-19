@@ -103,65 +103,6 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, :clean_gitlab_re
     end
   end
 
-  describe "search for commits in non-default branch" do
-    let(:project) { create(:project, :public, :repository, visibility) }
-    let(:visibility) { :repository_enabled }
-    let(:query) { 'initial' }
-    let(:repository_ref) { 'test' }
-
-    subject(:commits) { results.objects('commits') }
-
-    it 'finds needed commit' do
-      expect(results.commits_count).to eq(1)
-    end
-
-    it 'responds to total_pages method' do
-      expect(commits.total_pages).to eq(1)
-    end
-
-    context 'disabled repository' do
-      let(:visibility) { :repository_disabled }
-
-      it 'hides commits from members' do
-        project.add_reporter(user)
-
-        is_expected.to be_empty
-      end
-
-      it 'hides commits from non-members' do
-        is_expected.to be_empty
-      end
-    end
-
-    context 'private repository' do
-      let(:visibility) { :repository_private }
-
-      it 'shows commits to members' do
-        project.add_reporter(user)
-
-        is_expected.not_to be_empty
-      end
-
-      it 'hides commits from non-members' do
-        is_expected.to be_empty
-      end
-    end
-  end
-
-  describe 'search for blobs in non-default branch' do
-    let(:project) { create(:project, :public, :repository, :repository_private) }
-    let(:query) { 'initial' }
-    let(:repository_ref) { 'test' }
-
-    subject(:blobs) { results.objects('blobs') }
-
-    it 'always returns zero results' do
-      expect_any_instance_of(Gitlab::FileFinder).to receive(:find).never
-
-      expect(blobs).to be_empty
-    end
-  end
-
   describe 'confidential issues', :sidekiq_might_not_need_inline do
     include_examples 'access restricted confidential issues' do
       before do
