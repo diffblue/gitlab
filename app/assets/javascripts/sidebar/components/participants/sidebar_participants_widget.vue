@@ -57,8 +57,8 @@ export default {
     },
   },
   methods: {
-    expandSidebar() {
-      this.$emit('expandSidebar');
+    toggleSidebar() {
+      this.$emit('toggleSidebar');
     },
   },
 };
@@ -71,6 +71,6 @@ export default {
     :number-of-less-participants="7"
     :lazy="false"
     class="block participants"
-    @toggleSidebar="expandSidebar"
+    @toggleSidebar="toggleSidebar"
   />
 </template>

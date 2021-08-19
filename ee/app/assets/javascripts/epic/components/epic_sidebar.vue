@@ -254,7 +254,7 @@ export default {
         :iid="String(iid)"
         :full-path="fullPath"
         :issuable-type="issuableType"
-        @expandSidebar="handleSidebarToggle"
+        @toggleSidebar="handleSidebarToggle"
       />
       <sidebar-subscriptions-widget
         :iid="String(iid)"
