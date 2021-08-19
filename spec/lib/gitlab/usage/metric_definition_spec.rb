@@ -129,7 +129,6 @@ RSpec.describe Gitlab::Usage::MetricDefinition do
       'removed'        | true
       'data_available' | false
       'implemented'    | false
-      'not_used'       | false
     end
 
     with_them do
