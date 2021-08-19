@@ -8,13 +8,15 @@ import { getStoreConfig } from 'ee/epic/store';
 
 import epicUtils from 'ee/epic/utils/epic_utils';
 
+import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
+
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
 import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 
-import { mockEpicMeta, mockEpicData, mockAncestors } from '../mock_data';
+import { mockEpicMeta, mockEpicData } from '../mock_data';
 
 describe('EpicSidebarComponent', () => {
   const originalUserId = gon.current_user_id;
@@ -29,7 +31,6 @@ describe('EpicSidebarComponent', () => {
         ...state,
         ...mockEpicMeta,
         ...mockEpicData,
-        ancestors: mockAncestors,
       },
 
       actions: { ...actions, ...actionMocks },
@@ -222,9 +223,8 @@ describe('EpicSidebarComponent', () => {
       expect(wrapper.find(SidebarReferenceWidget).exists()).toBe(true);
     });
 
-    describe('when sub-epics feature is available', () => {
-      it('renders ancestors list', async () => {
-        store.dispatch('toggleSidebarFlag', false);
+    describe('when sub-epics feature is not available', () => {
+      it('does not renders ancestors list', async () => {
         store.dispatch('setEpicMeta', {
           ...mockEpicMeta,
           allowSubEpics: false,
@@ -232,20 +232,13 @@ describe('EpicSidebarComponent', () => {
 
         await nextTick();
 
-        expect(wrapper.find('.block.ancestors').exists()).toBe(false);
+        expect(wrapper.find(SidebarAncestorsWidget).exists()).toBe(false);
       });
     });
 
-    describe('when sub-epics feature is not available', () => {
-      it('does not render ancestors list', async () => {
-        wrapper.vm.$store.dispatch('toggleSidebarFlag', false);
-
-        await nextTick();
-
-        const ancestorsEl = wrapper.find('[data-testid="ancestors"]');
-
-        expect(ancestorsEl.exists()).toBe(true);
-        expect(ancestorsEl.props('ancestors')).toEqual([...mockAncestors].reverse());
+    describe('when sub-epics feature is available', () => {
+      it('renders ancestors list', () => {
+        expect(wrapper.find(SidebarAncestorsWidget).exists()).toBe(true);
       });
     });
 

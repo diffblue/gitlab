@@ -54,5 +54,3 @@ export const isDateInvalid = (state, getters) => {
     getters.dueDateTimeFromMilestones,
   );
 };
-
-export const ancestors = (state) => (state.ancestors ? [...state.ancestors].reverse() : []);

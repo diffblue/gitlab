@@ -259,21 +259,4 @@ describe('Epic Store Getters', () => {
       ).toBe(false);
     });
   });
-
-  describe('ancestors', () => {
-    it('returns `ancestors` from state when ancestors is not null', () => {
-      const ancestors = getters.ancestors({
-        ancestors: [{ id: 1, title: 'Parent' }],
-      });
-
-      expect(ancestors).toHaveLength(1);
-    });
-
-    it('returns empty array when `ancestors` within state is null', () => {
-      const ancestors = getters.ancestors({});
-
-      expect(ancestors).not.toBeNull();
-      expect(ancestors).toHaveLength(0);
-    });
-  });
 });
