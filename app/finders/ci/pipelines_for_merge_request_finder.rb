@@ -35,7 +35,7 @@ module Ci
 
           pipelines =
             if merge_request.persisted?
-              pipelines_using_cte
+              all_pipelines_for_merge_request
             else
               triggered_for_branch.for_sha(commit_shas)
             end
@@ -47,36 +47,12 @@ module Ci
 
     private
 
-    # rubocop: disable CodeReuse/ActiveRecord
-    def pipelines_using_cte
-      sha_relation = merge_request.all_commits.select(:sha).distinct
+    def all_pipelines_for_merge_request
+      shas = merge_request.all_commit_shas
+      pipelines_for_merge_request = triggered_by_merge_request
+      pipelines_for_branch = triggered_for_branch.for_sha(shas)
 
-      cte = Gitlab::SQL::CTE.new(:shas, sha_relation)
-
-      pipelines_for_merge_requests = triggered_by_merge_request
-      pipelines_for_branch = filter_by_sha(triggered_for_branch, cte)
-
-      Ci::Pipeline.with(cte.to_arel) # rubocop: disable CodeReuse/ActiveRecord
-        .from_union([pipelines_for_merge_requests, pipelines_for_branch])
-    end
-    # rubocop: enable CodeReuse/ActiveRecord
-
-    def filter_by_sha(pipelines, cte)
-      hex = Arel::Nodes::SqlLiteral.new("'hex'")
-      string_sha = Arel::Nodes::NamedFunction.new('encode', [cte.table[:sha], hex])
-      join_condition = string_sha.eq(Ci::Pipeline.arel_table[:sha])
-
-      filter_by(pipelines, cte, join_condition)
-    end
-
-    def filter_by(pipelines, cte, join_condition)
-      shas_table =
-        Ci::Pipeline.arel_table
-          .join(cte.table, Arel::Nodes::InnerJoin)
-          .on(join_condition)
-          .join_sources
-
-      pipelines.joins(shas_table) # rubocop: disable CodeReuse/ActiveRecord
+      Ci::Pipeline.from_union([pipelines_for_merge_request, pipelines_for_branch])
     end
 
     # NOTE: this method returns only parent merge request pipelines.

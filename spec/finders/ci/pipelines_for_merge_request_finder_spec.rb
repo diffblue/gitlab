@@ -196,6 +196,10 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
             ref: source_ref, sha: shas.first)
         end
 
+        let!(:branch_pipeline_with_sha_not_belonging_to_merge_request) do
+          create(:ci_pipeline, source: :push, project: project, ref: source_ref)
+        end
+
         let!(:detached_merge_request_pipeline_2) do
           create(:ci_pipeline, source: :merge_request_event, project: project,
             ref: source_ref, sha: shas.first, merge_request: merge_request_2)
