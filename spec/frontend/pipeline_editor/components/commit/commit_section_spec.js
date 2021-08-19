@@ -1,6 +1,6 @@
-import waitForPromises from 'helpers/wait_for_promises';
 import { GlFormTextarea, GlFormInput, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import waitForPromises from 'helpers/wait_for_promises';
 import { objectToQuery, redirectTo } from '~/lib/utils/url_utility';
 import CommitForm from '~/pipeline_editor/components/commit/commit_form.vue';
 import CommitSection from '~/pipeline_editor/components/commit/commit_section.vue';
