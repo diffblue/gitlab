@@ -59,7 +59,7 @@ export default {
           defaultText: __('Not Implemented'),
         },
         {
-          label: __('Last repository check run'),
+          label: __('Last time checked'),
           dateString: this.lastChecked,
           defaultText: __('Not Implemented'),
         },
