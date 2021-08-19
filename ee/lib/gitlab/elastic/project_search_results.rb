@@ -20,7 +20,6 @@ module Gitlab
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
         return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
         return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
-        return Kaminari.paginate_array([]) unless root_ref?
 
         strong_memoize(memoize_key(:blobs, count_only: count_only)) do
           project.repository.__elasticsearch__.elastic_search_as_found_blob(
@@ -35,18 +34,15 @@ module Gitlab
 
       def wiki_blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false)
         return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :read_wiki, project)
+        return Kaminari.paginate_array([]) unless project.wiki_enabled? && !project.wiki.empty? && query.present?
 
-        if project.wiki_enabled? && !project.wiki.empty? && query.present?
-          strong_memoize(memoize_key(:wiki_blobs, count_only: count_only)) do
-            project.wiki.__elasticsearch__.elastic_search_as_wiki_page(
-              query,
-              page: (page || 1).to_i,
-              per: per_page,
-              options: { count_only: count_only }
-            )
-          end
-        else
-          Kaminari.paginate_array([])
+        strong_memoize(memoize_key(:wiki_blobs, count_only: count_only)) do
+          project.wiki.__elasticsearch__.elastic_search_as_wiki_page(
+            query,
+            page: (page || 1).to_i,
+            per: per_page,
+            options: { count_only: count_only }
+          )
         end
       end
 
@@ -65,35 +61,17 @@ module Gitlab
 
       def commits(page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil, count_only: false)
         return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
+        return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
 
-        if project.empty_repo? || query.blank?
-          Kaminari.paginate_array([])
-        else
-          # We use elastic for default branch only
-          if root_ref?
-            strong_memoize(memoize_key(:commits, count_only: count_only)) do
-              project.repository.find_commits_by_message_with_elastic(
-                query,
-                page: (page || 1).to_i,
-                per_page: per_page,
-                preload_method: preload_method,
-                options: { count_only: count_only }
-              )
-            end
-          else
-            offset = per_page * ((page || 1) - 1)
-
-            Kaminari.paginate_array(
-              project.repository.find_commits_by_message(query),
-              offset: offset,
-              limit: per_page
-            )
-          end
+        strong_memoize(memoize_key(:commits, count_only: count_only)) do
+          project.repository.find_commits_by_message_with_elastic(
+            query,
+            page: (page || 1).to_i,
+            per_page: per_page,
+            preload_method: preload_method,
+            options: { count_only: count_only }
+          )
         end
-      end
-
-      def root_ref?
-        project.root_ref?(repository_ref)
       end
     end
   end
