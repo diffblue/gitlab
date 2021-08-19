@@ -24,8 +24,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
 
     subject(:service) { described_class.new(container: project, current_user: current_user) }
 
-    shared_examples 'does not execute DAST on demand-scan' do
-      it 'does not create a DAST on demand-scan pipeline but updates next_run_at' do
+    shared_examples 'does not execute scan' do
+      it 'does not create scan pipeline but updates next_run_at' do
         expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(0)
 
         expect(schedule.next_run_at).to be > Time.zone.now
@@ -42,8 +42,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
       end
     end
 
+    context 'when scan type is dast' do
+      it 'invokes DastOnDemandScans::CreateService' do
+        expect(::DastOnDemandScans::CreateService).to receive(:new).twice.and_call_original
+
+        service.execute(schedule)
+      end
+    end
+
+    context 'when scan type is secret_detection' do
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+        policy[:actions] = [{ scan: 'secret_detection' }]
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+
+        service.execute(schedule)
+      end
+    end
+
     context 'when policy actions exists and there are multiple matching branches' do
-      it 'creates multiple DAST on demand-scan pipelines and updates next_run_at' do
+      it 'creates multiple scan pipelines and updates next_run_at' do
         expect { service.execute(schedule) }.to change(Ci::Pipeline, :count).by(2)
 
         expect(schedule.next_run_at).to be > Time.zone.now
@@ -61,7 +78,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
         }
       end
 
-      it_behaves_like 'does not execute DAST on demand-scan'
+      it_behaves_like 'does not execute scan'
     end
 
     context 'when policy actions does not exist' do
@@ -75,7 +92,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
         }
       end
 
-      it_behaves_like 'does not execute DAST on demand-scan'
+      it_behaves_like 'does not execute scan'
     end
 
     context 'when policy scan type is invalid' do
@@ -91,13 +108,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
         }
       end
 
-      it_behaves_like 'does not execute DAST on demand-scan'
+      it_behaves_like 'does not execute scan'
     end
 
     context 'when policy does not exist' do
       let(:policy) { nil }
 
-      it_behaves_like 'does not execute DAST on demand-scan'
+      it_behaves_like 'does not execute scan'
     end
   end
 end
