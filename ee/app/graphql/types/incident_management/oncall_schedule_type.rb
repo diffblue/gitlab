@@ -38,6 +38,11 @@ module Types
             null: true,
             description: 'On-call rotation for the on-call schedule.',
             resolver: ::Resolvers::IncidentManagement::OncallRotationsResolver.single
+
+      field :oncall_users,
+            [::Types::UserType],
+            null: true,
+            resolver: ::Resolvers::IncidentManagement::OncallUsersResolver
     end
   end
 end
