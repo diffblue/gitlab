@@ -79,10 +79,10 @@ export default {
       {{ error }}
     </gl-alert>
     <header class="gl-pb-5">
-      <h3>{{ s__('NetworkPolicies|Policy description') }}</h3>
+      <h3>{{ s__('SecurityOrchestration|Policy description') }}</h3>
     </header>
     <div class="gl-display-flex">
-      <gl-form-group :label="s__('NetworkPolicies|Policy type')" label-for="policyType">
+      <gl-form-group :label="s__('SecurityOrchestration|Policy type')" label-for="policyType">
         <gl-form-select
           id="policyType"
           :value="policyOptions.value"

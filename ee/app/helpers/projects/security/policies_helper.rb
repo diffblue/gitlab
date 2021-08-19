@@ -28,6 +28,8 @@ module Projects::Security::PoliciesHelper
       create_agent_help_path: help_page_url('user/clusters/agent/index.md', anchor: 'create-an-agent-record-in-gitlab'),
       environments_endpoint: project_environments_path(project),
       environment_id: environment&.id,
+      network_documentation_path: help_page_path('user/application_security/threat_monitoring/index.md'),
+      no_environment_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
       policy: policy&.to_json,
       policy_type: policy_type,
       project_path: project.full_path,

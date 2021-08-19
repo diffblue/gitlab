@@ -46,12 +46,15 @@ describe('PolicyEditor component', () => {
     beforeEach(factory);
 
     it.each`
-      component                          | status                | findComponent             | state
-      ${'environment picker'}            | ${'does display'}     | ${findEnvironmentPicker}  | ${true}
-      ${'NetworkPolicyEditor component'} | ${'does display'}     | ${findNeworkPolicyEditor} | ${true}
-      ${'alert'}                         | ${'does not display'} | ${findAlert}              | ${false}
+      component               | status                | findComponent            | state
+      ${'environment picker'} | ${'does display'}     | ${findEnvironmentPicker} | ${true}
+      ${'alert'}              | ${'does not display'} | ${findAlert}             | ${false}
     `('$status the $component', ({ findComponent, state }) => {
       expect(findComponent().exists()).toBe(state);
+    });
+
+    it('renders the network policy editor component', () => {
+      expect(findNeworkPolicyEditor().props('existingPolicy')).toBe(null);
     });
 
     it('renders the disabled form select', () => {
