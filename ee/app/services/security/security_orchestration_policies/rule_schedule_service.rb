@@ -7,8 +7,7 @@ module Security
         schedule.schedule_next_run!
 
         branches = schedule.applicable_branches
-        actions_for(schedule)
-          .each { |action| process_action(action, branches) }
+        actions_for(schedule).each { |action| process_action(action, branches) }
       end
 
       private
@@ -22,7 +21,16 @@ module Security
 
       def process_action(action, branches)
         case action[:scan]
+        when 'secret_detection' then schedule_scan(action, branches)
         when 'dast' then schedule_dast_on_demand_scan(action, branches)
+        end
+      end
+
+      def schedule_scan(action, branches)
+        branches.each do |branch|
+          ::Security::SecurityOrchestrationPolicies::CreatePipelineService
+            .new(project: container, current_user: current_user, params: { action: action, branch: branch })
+            .execute
         end
       end
 
