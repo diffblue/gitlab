@@ -64,10 +64,9 @@ export default {
       });
 
       const existingProjects = [...newImportedProjects, ...state.repositories];
+      const existingProjectNames = new Set(existingProjects.map((p) => p.importSource.fullName));
       const newProjects = repositories.providerRepos
-        .filter(
-          (project) => !existingProjects.find((p) => p.importSource.fullName === project.fullName),
-        )
+        .filter((project) => !existingProjectNames.has(project.fullName))
         .map((project) => ({
           importSource: project,
           importedProject: null,
