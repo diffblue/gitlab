@@ -53,8 +53,6 @@ localVue.use(Vuex);
 jest.mock('~/flash');
 
 const defaultStubs = {
-  'stage-event-list': true,
-  'stage-nav-item': true,
   'tasks-by-type-chart': true,
   'labels-selector': true,
   DurationChart: true,
