@@ -39962,6 +39962,9 @@ msgstr ""
 msgid "must be inside the fork network"
 msgstr ""
 
+msgid "must be less than the limit of %{tag_limit} tags"
+msgstr ""
+
 msgid "must be unique by status and elapsed time within a policy"
 msgstr ""
 
