@@ -62,7 +62,7 @@ class RepositoryUpdateMirrorWorker # rubocop:disable Scalability/IdempotentWorke
     import_state = project.import_state
     import_state.finish
 
-    Gitlab::AppLogger.info("Mirror update for #{project.full_path} successfully finished. Update duration: #{import_state.mirror_update_duration}}.")
+    Gitlab::AppLogger.info("Mirror update for #{project.full_path} successfully finished. Update duration: #{import_state.mirror_update_duration}.")
     metric_mirror_update_duration_seconds.observe({}, import_state.mirror_update_duration)
   end
 
