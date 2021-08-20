@@ -90,9 +90,9 @@ export default {
           field: 'username',
           label: s__('APIFuzzing|Username for basic authentication'),
           description: s__(
-            'APIFuzzing|Enter the name of the variable containing the username. For example, $VariableWithUsername.',
+            'APIFuzzing|Enter the name of the CI variable containing the username. For example, $VARIABLE_WITH_USERNAME.',
           ),
-          placeholder: s__('APIFuzzing|$VariableWithUsername'),
+          placeholder: s__('APIFuzzing|$VARIABLE_WITH_USERNAME'),
           value: '',
         },
         {
@@ -100,9 +100,9 @@ export default {
           field: 'password',
           label: s__('APIFuzzing|Password for basic authentication'),
           description: s__(
-            'APIFuzzing|Enter the name of the variable containing the password. For example, $VariableWithPassword.',
+            'APIFuzzing|Enter the name of the CI variable containing the password. For example, $VARIABLE_WITH_PASSWORD.',
           ),
-          placeholder: s__('APIFuzzing|$VariableWithPassword'),
+          placeholder: s__('APIFuzzing|$VARIABLE_WITH_PASSWORD'),
           value: '',
         },
       ],
@@ -266,9 +266,7 @@ export default {
             "
           >
             <template #link="{ content }">
-              <a :href="apiFuzzingAuthenticationDocumentationPath">
-                {{ content }}
-              </a>
+              <a :href="apiFuzzingAuthenticationDocumentationPath">{{ content }}</a>
             </template>
           </gl-sprintf>
         </gl-form-text>
@@ -291,14 +289,10 @@ export default {
       >
         <gl-sprintf :message="authAlertI18n.text">
           <template #ciVariablesLink="{ content }">
-            <gl-link :href="ciVariablesDocumentationPath" target="_blank">
-              {{ content }}
-            </gl-link>
+            <gl-link :href="ciVariablesDocumentationPath" target="_blank">{{ content }}</gl-link>
           </template>
           <template #ciSettingsLink="{ content }">
-            <gl-link :href="projectCiSettingsPath" target="_blank">
-              {{ content }}
-            </gl-link>
+            <gl-link :href="projectCiSettingsPath" target="_blank">{{ content }}</gl-link>
           </template>
         </gl-sprintf>
       </gl-alert>
