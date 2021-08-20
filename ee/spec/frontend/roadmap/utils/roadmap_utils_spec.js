@@ -1,4 +1,4 @@
-import { PRESET_TYPES } from 'ee/roadmap/constants';
+import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import {
   getTimeframeForQuartersView,
   extendTimeframeForQuartersView,
@@ -8,7 +8,10 @@ import {
   extendTimeframeForWeeksView,
   extendTimeframeForAvailableWidth,
   getEpicsTimeframeRange,
+  getWeeksForDates,
+  getTimeframeForRangeType,
   sortEpics,
+  getPresetTypeForTimeframeRangeType,
 } from 'ee/roadmap/utils/roadmap_utils';
 
 import {
@@ -25,6 +28,7 @@ import {
 const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
 const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
 const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
+const getDateString = (date) => date.toISOString().split('T')[0];
 
 describe('getTimeframeForQuartersView', () => {
   let timeframe;
@@ -295,6 +299,113 @@ describe('extendTimeframeForAvailableWidth', () => {
   });
 });
 
+describe('getWeeksForDates', () => {
+  it('returns weeks for given dates', () => {
+    const weeks = getWeeksForDates(mockTimeframeInitialDate, mockTimeframeMonths[4]);
+
+    expect(weeks).toHaveLength(9);
+    expect(getDateString(weeks[0])).toBe('2017-12-31');
+    expect(getDateString(weeks[4])).toBe('2018-01-28');
+    expect(getDateString(weeks[8])).toBe('2018-02-25');
+  });
+});
+
+describe('getTimeframeForRangeType', () => {
+  beforeEach(() => {
+    jest.useFakeTimers('modern');
+    jest.setSystemTime(new Date('2021-01-01'));
+  });
+
+  afterEach(() => {
+    jest.useFakeTimers('legacy');
+    jest.runOnlyPendingTimers();
+  });
+
+  it('returns timeframe with weeks when timeframeRangeType is current quarter', () => {
+    const timeframe = getTimeframeForRangeType({ timeframeRangeType: DATE_RANGES.CURRENT_QUARTER });
+
+    expect(timeframe).toHaveLength(14);
+    expect(getDateString(timeframe[0])).toBe('2020-12-27');
+    expect(getDateString(timeframe[6])).toBe('2021-02-07');
+    expect(getDateString(timeframe[13])).toBe('2021-03-28');
+  });
+
+  it('returns timeframe with months when timeframeRangeType is current year and preset type is months', () => {
+    const timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+      presetType: PRESET_TYPES.MONTHS,
+    });
+
+    expect(timeframe).toHaveLength(12);
+    expect(getDateString(timeframe[0])).toBe('2021-01-01');
+    expect(getDateString(timeframe[5])).toBe('2021-06-01');
+    expect(getDateString(timeframe[11])).toBe('2021-12-31');
+  });
+
+  it('returns timeframe with weeks when timeframeRangeType is current year', () => {
+    const timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+      presetType: PRESET_TYPES.WEEKS,
+    });
+
+    expect(timeframe).toHaveLength(53);
+    expect(getDateString(timeframe[0])).toBe('2020-12-27');
+    expect(getDateString(timeframe[25])).toBe('2021-06-20');
+    expect(getDateString(timeframe[52])).toBe('2021-12-26');
+  });
+
+  it('returns timeframe with quarters when timeframeRangeType is within 3 years', () => {
+    const timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.THREE_YEARS,
+      presetType: PRESET_TYPES.QUARTERS,
+    });
+
+    expect(timeframe).toHaveLength(12);
+
+    expect(timeframe[0]).toMatchObject({
+      quarterSequence: 3,
+      year: 2019,
+      range: expect.any(Array),
+    });
+    expect(getDateString(timeframe[0].range[0])).toBe('2019-07-01');
+    expect(getDateString(timeframe[0].range[1])).toBe('2019-08-01');
+    expect(getDateString(timeframe[0].range[2])).toBe('2019-09-30');
+
+    expect(timeframe[11]).toMatchObject({
+      quarterSequence: 2,
+      year: 2022,
+      range: expect.any(Array),
+    });
+    expect(getDateString(timeframe[11].range[0])).toBe('2022-04-01');
+    expect(getDateString(timeframe[11].range[1])).toBe('2022-05-01');
+    expect(getDateString(timeframe[11].range[2])).toBe('2022-06-30');
+  });
+
+  it('returns timeframe with months when timeframeRangeType is within 3 years', () => {
+    const timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.THREE_YEARS,
+      presetType: PRESET_TYPES.MONTHS,
+    });
+
+    expect(timeframe).toHaveLength(36);
+
+    expect(getDateString(timeframe[0])).toBe('2019-07-01');
+    expect(getDateString(timeframe[35])).toBe('2022-06-30');
+  });
+
+  it('returns timeframe with weeks when timeframeRangeType is within 3 years', () => {
+    const timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.THREE_YEARS,
+      presetType: PRESET_TYPES.WEEKS,
+    });
+
+    expect(timeframe).toHaveLength(161);
+
+    expect(getDateString(timeframe[0])).toBe('2019-06-30');
+    expect(getDateString(timeframe[160])).toBe('2022-07-24');
+  });
+});
+
 describe('getEpicsTimeframeRange', () => {
   it('returns object containing startDate and dueDate based on provided timeframe for Quarters', () => {
     const timeframeQuarters = getTimeframeForQuartersView(new Date(2018, 0, 1));
@@ -436,4 +547,18 @@ describe('sortEpics', () => {
       expect(epic.title).toEqual(sortedOrder[index]);
     });
   });
+});
+
+describe('getPresetTypeForTimeframeRangeType', () => {
+  it.each`
+    timeframeRangeType             | presetType
+    ${DATE_RANGES.CURRENT_QUARTER} | ${PRESET_TYPES.WEEKS}
+    ${DATE_RANGES.CURRENT_YEAR}    | ${PRESET_TYPES.MONTHS}
+    ${DATE_RANGES.THREE_YEARS}     | ${PRESET_TYPES.QUARTERS}
+  `(
+    'returns presetType as $presetType when $timeframeRangeType',
+    ({ timeframeRangeType, presetType }) => {
+      expect(getPresetTypeForTimeframeRangeType(timeframeRangeType)).toEqual(presetType);
+    },
+  );
 });

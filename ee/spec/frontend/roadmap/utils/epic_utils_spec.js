@@ -44,3 +44,20 @@ describe('generateKey', () => {
     expect(epicUtils.generateKey(obj)).toBe('child-epic-3');
   });
 });
+
+describe('scrollToCurrentDay', () => {
+  it('scrolls current day indicator into view', () => {
+    const currentDayIndicator = document.createElement('div');
+    currentDayIndicator.classList.add('js-current-day-indicator');
+    document.body.appendChild(currentDayIndicator);
+
+    jest.spyOn(currentDayIndicator, 'scrollIntoView').mockImplementation();
+
+    epicUtils.scrollToCurrentDay(document.body);
+
+    expect(currentDayIndicator.scrollIntoView).toHaveBeenCalledWith({
+      block: 'nearest',
+      inline: 'center',
+    });
+  });
+});

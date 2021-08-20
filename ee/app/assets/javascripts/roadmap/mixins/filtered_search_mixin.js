@@ -40,6 +40,8 @@ export default {
         sort: this.sortedBy,
         prev: this.prevPageCursor || undefined,
         next: this.nextPageCursor || undefined,
+        layout: this.presetType || undefined,
+        timeframe_range_type: this.timeframeRangeType || undefined,
         author_username: authorUsername,
         'label_name[]': labelName,
         milestone_title: milestoneTitle,

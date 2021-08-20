@@ -9,18 +9,26 @@ import {
 import { mapState, mapActions } from 'vuex';
 
 import { visitUrl, mergeUrlParams, updateHistory, setUrlParams } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { EPICS_STATES, PRESET_TYPES } from '../constants';
+import { EPICS_STATES, PRESET_TYPES, DATE_RANGES } from '../constants';
 import EpicsFilteredSearchMixin from '../mixins/filtered_search_mixin';
+import { getPresetTypeForTimeframeRangeType } from '../utils/roadmap_utils';
+
+const pickerType = {
+  Start: 'start',
+  End: 'end',
+};
 
 export default {
+  pickerType,
   epicStates: EPICS_STATES,
-  availablePresets: [
-    { text: __('Quarters'), value: PRESET_TYPES.QUARTERS },
-    { text: __('Months'), value: PRESET_TYPES.MONTHS },
-    { text: __('Weeks'), value: PRESET_TYPES.WEEKS },
+  availableDateRanges: [
+    { text: s__('GroupRoadmap|This quarter'), value: DATE_RANGES.CURRENT_QUARTER },
+    { text: s__('GroupRoadmap|This year'), value: DATE_RANGES.CURRENT_YEAR },
+    { text: s__('GroupRoadmap|Within 3 years'), value: DATE_RANGES.THREE_YEARS },
   ],
   availableSortOptions: [
     {
@@ -48,7 +56,18 @@ export default {
     GlDropdownDivider,
     FilteredSearchBar,
   },
-  mixins: [EpicsFilteredSearchMixin],
+  mixins: [EpicsFilteredSearchMixin, glFeatureFlagsMixin()],
+  props: {
+    timeframeRangeType: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      selectedDaterange: this.timeframeRangeType,
+    };
+  },
   computed: {
     ...mapState(['presetType', 'epicsState', 'sortedBy', 'filterParams']),
     selectedEpicStateTitle() {
@@ -58,6 +77,34 @@ export default {
         return __('Open epics');
       }
       return __('Closed epics');
+    },
+    daterangeDropdownText() {
+      switch (this.selectedDaterange) {
+        case DATE_RANGES.CURRENT_QUARTER:
+          return s__('GroupRoadmap|This quarter');
+        case DATE_RANGES.CURRENT_YEAR:
+          return s__('GroupRoadmap|This year');
+        case DATE_RANGES.THREE_YEARS:
+          return s__('GroupRoadmap|Within 3 years');
+        default:
+          return '';
+      }
+    },
+    availablePresets() {
+      const quarters = { text: __('Quarters'), value: PRESET_TYPES.QUARTERS };
+      const months = { text: __('Months'), value: PRESET_TYPES.MONTHS };
+      const weeks = { text: __('Weeks'), value: PRESET_TYPES.WEEKS };
+
+      if (!this.glFeatures.roadmapDaterangeFilter) {
+        return [quarters, months, weeks];
+      }
+
+      if (this.selectedDaterange === DATE_RANGES.CURRENT_YEAR) {
+        return [months, weeks];
+      } else if (this.selectedDaterange === DATE_RANGES.THREE_YEARS) {
+        return [quarters, months, weeks];
+      }
+      return [];
     },
   },
   watch: {
@@ -77,8 +124,34 @@ export default {
   },
   methods: {
     ...mapActions(['setEpicsState', 'setFilterParams', 'setSortedBy', 'fetchEpics']),
+    handleDaterangeSelect(value) {
+      this.selectedDaterange = value;
+    },
+    handleDaterangeDropdownOpen() {
+      this.initialSelectedDaterange = this.selectedDaterange;
+    },
+    handleDaterangeDropdownClose() {
+      if (this.initialSelectedDaterange !== this.selectedDaterange) {
+        visitUrl(
+          mergeUrlParams(
+            {
+              timeframe_range_type: this.selectedDaterange,
+              layout: getPresetTypeForTimeframeRangeType(this.selectedDaterange),
+            },
+            window.location.href,
+          ),
+        );
+      }
+    },
     handleRoadmapLayoutChange(presetType) {
-      visitUrl(mergeUrlParams({ layout: presetType }, window.location.href));
+      visitUrl(
+        mergeUrlParams(
+          this.glFeatures.roadmapDaterangeFilter
+            ? { timeframe_range_type: this.selectedDaterange, layout: presetType }
+            : { layout: presetType },
+          window.location.href,
+        ),
+      );
     },
     handleEpicStateChange(epicsState) {
       this.setEpicsState(epicsState);
@@ -99,12 +172,30 @@ export default {
 <template>
   <div class="epics-filters epics-roadmap-filters epics-roadmap-filters-gl-ui">
     <div
-      class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row row-content-block second-block"
+      class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-pb-3 row-content-block second-block"
     >
-      <gl-form-group class="mb-0">
+      <gl-dropdown
+        v-if="glFeatures.roadmapDaterangeFilter"
+        icon="calendar"
+        class="gl-mr-0 gl-lg-mr-3 mb-sm-2 roadmap-daterange-dropdown"
+        toggle-class="gl-rounded-base!"
+        :text="daterangeDropdownText"
+        data-testid="daterange-dropdown"
+        @show="handleDaterangeDropdownOpen"
+        @hide="handleDaterangeDropdownClose"
+      >
+        <gl-dropdown-item
+          v-for="dateRange in $options.availableDateRanges"
+          :key="dateRange.value"
+          :value="dateRange.value"
+          @click="handleDaterangeSelect(dateRange.value)"
+          >{{ dateRange.text }}</gl-dropdown-item
+        >
+      </gl-dropdown>
+      <gl-form-group v-if="availablePresets.length" class="gl-mr-0 gl-lg-mr-3 mb-sm-2">
         <gl-segmented-control
           :checked="presetType"
-          :options="$options.availablePresets"
+          :options="availablePresets"
           class="gl-display-flex d-xl-block"
           buttons
           @input="handleRoadmapLayoutChange"
@@ -112,8 +203,8 @@ export default {
       </gl-form-group>
       <gl-dropdown
         :text="selectedEpicStateTitle"
-        class="gl-my-2 my-xl-0 mx-xl-2"
-        toggle-class="gl-rounded-small"
+        class="gl-mr-0 gl-lg-mr-3 mb-sm-2"
+        toggle-class="gl-rounded-base!"
       >
         <gl-dropdown-item
           :is-check-item="true"

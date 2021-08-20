@@ -4,6 +4,7 @@ import { mapState, mapActions } from 'vuex';
 import { __, n__ } from '~/locale';
 import { EPIC_DETAILS_CELL_WIDTH, EPIC_ITEM_HEIGHT, TIMELINE_CELL_MIN_WIDTH } from '../constants';
 import eventHub from '../event_hub';
+import { scrollToCurrentDay } from '../utils/epic_utils';
 import MilestoneTimeline from './milestone_timeline.vue';
 
 const EXPAND_BUTTON_EXPANDED = {
@@ -97,12 +98,9 @@ export default {
         this.offsetLeft = (this.$el.parentElement && this.$el.parentElement.offsetLeft) || 0;
 
         this.$nextTick(() => {
-          this.scrollToTodayIndicator();
+          scrollToCurrentDay(this.$el);
         });
       });
-    },
-    scrollToTodayIndicator() {
-      if (this.$el.parentElement) this.$el.parentElement.scrollBy(TIMELINE_CELL_MIN_WIDTH / 2, 0);
     },
     handleEpicsListScroll({ scrollTop, clientHeight, scrollHeight }) {
       this.showBottomShadow = Math.ceil(scrollTop) + clientHeight < scrollHeight;

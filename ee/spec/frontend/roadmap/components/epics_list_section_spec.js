@@ -10,6 +10,7 @@ import {
 } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { REQUEST_EPICS_FOR_NEXT_PAGE } from 'ee/roadmap/store/mutation_types';
+import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
 import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockFormattedChildEpic1,
@@ -23,6 +24,11 @@ import {
   basePath,
 } from 'ee_jest/roadmap/mock_data';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+
+jest.mock('ee/roadmap/utils/epic_utils', () => ({
+  ...jest.requireActual('ee/roadmap/utils/epic_utils'),
+  scrollToCurrentDay: jest.fn(),
+}));
 
 const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
 const store = createStore();
@@ -166,8 +172,6 @@ describe('EpicsListSectionComponent', () => {
         // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27992#note_319213990
         wrapper.destroy();
         wrapper = createComponent();
-
-        jest.spyOn(wrapper.vm, 'scrollToTodayIndicator').mockImplementation(() => {});
       });
 
       it('calls action `setBufferSize` with value based on window.innerHeight and component element position', () => {
@@ -182,15 +186,12 @@ describe('EpicsListSectionComponent', () => {
         });
       });
 
-      it('calls `scrollToTodayIndicator` following the component render', () => {
+      it('calls `scrollToCurrentDay` following the component render', async () => {
         // Original method implementation waits for render cycle
         // to complete at 2 levels before scrolling.
-        return wrapper.vm
-          .$nextTick()
-          .then(() => wrapper.vm.$nextTick())
-          .then(() => {
-            expect(wrapper.vm.scrollToTodayIndicator).toHaveBeenCalled();
-          });
+        await wrapper.vm.$nextTick(); // set offsetLeft value
+        await wrapper.vm.$nextTick(); // Wait for nextTick before scroll
+        expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
 
       it('sets style object to `emptyRowContainerStyles`', () => {
