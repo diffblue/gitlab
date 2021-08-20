@@ -239,13 +239,17 @@ RSpec.describe InternalId do
   end
 
   context 'when the feature flag is disabled' do
-    stub_feature_flags(generate_iids_without_explicit_locking: false)
+    before do
+      stub_feature_flags(generate_iids_without_explicit_locking: false)
+    end
 
     it_behaves_like 'a monotonically increasing id generator'
   end
 
   context 'when the feature flag is enabled' do
-    stub_feature_flags(generate_iids_without_explicit_locking: true)
+    before do
+      stub_feature_flags(generate_iids_without_explicit_locking: true)
+    end
 
     it_behaves_like 'a monotonically increasing id generator'
   end
