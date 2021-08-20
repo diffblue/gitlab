@@ -15,10 +15,10 @@ class AddVerificationToMergeRequestDiffRegistry < ActiveRecord::Migration[6.0]
     add_column_unless_exists :verification_failure, :string, limit: 255 # rubocop:disable Migration/PreventStrings because https://gitlab.com/gitlab-org/gitlab/-/issues/323806
   end
 
-  def add_column_unless_exists(column, *args)
-    return if column_exists?(:merge_request_diff_registry, column)
+  def add_column_unless_exists(column_name, type, **options)
+    return if column_exists?(:merge_request_diff_registry, column_name)
 
-    add_column REGISTRY, column, *args
+    add_column REGISTRY, column_name, type, **options
   end
 
   def down
