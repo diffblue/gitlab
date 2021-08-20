@@ -398,45 +398,6 @@ RSpec.describe Security::StoreReportService, '#execute' do
         expect(finding.reload).to have_attributes(severity: 'medium', name: 'Cipher with no integrity')
       end
 
-      context 'when RecordNotUnique error has been raised' do
-        let(:report_finding) { report.findings.find { |f| f.location.fingerprint == finding.location_fingerprint} }
-
-        subject(:store_report_service) { described_class.new(new_pipeline, new_report) }
-
-        before do
-          allow(store_report_service).to receive(:get_matched_findings).and_wrap_original do |orig_method, other_finding, *args|
-            if other_finding.uuid != report_finding.uuid
-              orig_method.call(other_finding, *args)
-            else
-              finding.update!(name: 'SHOULD BE UPDATED', uuid: report_finding.uuid)
-              []
-            end
-          end
-
-          allow(Gitlab::ErrorTracking).to receive(:track_and_raise_exception).and_call_original
-        end
-
-        it 'handles the error correctly' do
-          next unless vulnerability_finding_signatures
-
-          report_finding = report.findings.find { |f| f.location.fingerprint == finding.location_fingerprint}
-
-          store_report_service.execute
-
-          expect(finding.reload.name).to eq(report_finding.name)
-        end
-
-        it 'raises the error if there exists no vulnerability finding' do
-          next unless vulnerability_finding_signatures
-
-          allow(store_report_service).to receive(:sync_vulnerability_finding).and_raise(ActiveRecord::RecordNotUnique)
-
-          expect { store_report_service.execute }.to raise_error { |error|
-            expect(Gitlab::ErrorTracking).to have_received(:track_and_raise_exception).with(error, any_args)
-          }
-        end
-      end
-
       it 'updates signatures to match new values' do
         next unless vulnerability_finding_signatures
 
@@ -686,7 +647,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
 
     # This spec runs three pipelines, ensuring findings are tracked as expected:
     #  1. pipeline creates initial findings without tracking signatures
-    #  2. pipeline creates identical findings with tracking signatures
+    #  2. pipeline updates previous findings with tracking signatures
     #  3. pipeline updates previous findings using tracking signatures
     it 'remaps findings across pipeline executions', :aggregate_failures do
       stub_licensed_features(
@@ -719,8 +680,8 @@ RSpec.describe Security::StoreReportService, '#execute' do
           described_class.new(pipeline, report).execute
         end.not_to(raise_error)
       end.to change { Vulnerabilities::FindingPipeline.count }.by(1)
-        .and change { Vulnerability.count }.by(1)
-        .and change { Vulnerabilities::Finding.count }.by(1)
+        .and change { Vulnerability.count }.by(0)
+        .and change { Vulnerabilities::Finding.count }.by(0)
         .and change { Vulnerabilities::FindingSignature.count }.by(2)
 
       pipeline, report = generate_new_pipeline
