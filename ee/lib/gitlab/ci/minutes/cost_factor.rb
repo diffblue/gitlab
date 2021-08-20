@@ -22,6 +22,7 @@ module Gitlab
 
         def for_project(project)
           return 0.0 unless @runner_matcher.instance_type?
+          return 0.0 unless project.ci_minutes_quota.enabled?
 
           cost_factor = for_visibility(project.visibility_level)
 

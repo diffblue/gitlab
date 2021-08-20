@@ -3,6 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe EE::Ci::Runner do
+  let(:shared_runners_minutes) { 400 }
+
+  before do
+    allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { shared_runners_minutes }
+  end
+
   describe '#cost_factor_for_project' do
     subject { runner.cost_factor_for_project(project) }
 
@@ -42,6 +48,12 @@ RSpec.describe EE::Ci::Runner do
         let(:project) { create(:project, visibility_level: ::Gitlab::VisibilityLevel::PRIVATE) }
 
         it { is_expected.to eq(1.1) }
+
+        context 'with unlimited minutes' do
+          let(:shared_runners_minutes) { 400 }
+
+          it { is_expected.to eq(1.1) }
+        end
       end
 
       context 'with public visibility level' do
@@ -85,18 +97,26 @@ RSpec.describe EE::Ci::Runner do
   end
 
   describe '#cost_factor_enabled?' do
-    let_it_be(:project) do
+    let_it_be_with_reload(:project) do
       namespace = create(:group, created_at: Date.new(2021, 7, 16))
       create(:project, namespace: namespace)
     end
 
     context 'when the project has any cost factor' do
-      it 'returns true' do
-        runner = create(:ci_runner, :instance,
-                        private_projects_minutes_cost_factor: 1,
-                        public_projects_minutes_cost_factor: 0)
+      let(:runner) do
+        create(:ci_runner, :instance,
+          private_projects_minutes_cost_factor: 1,
+          public_projects_minutes_cost_factor: 0)
+      end
 
-        expect(runner.cost_factor_enabled?(project)).to be_truthy
+      subject { runner.cost_factor_enabled?(project) }
+
+      it { is_expected.to be_truthy }
+
+      context 'with unlimited minutes' do
+        let(:shared_runners_minutes) { 0 }
+
+        it { is_expected.to be_falsy }
       end
     end
 
