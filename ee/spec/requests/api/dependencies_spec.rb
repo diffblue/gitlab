@@ -28,11 +28,12 @@ RSpec.describe API::Dependencies do
         request
       end
 
-      it 'returns all dependencies' do
+      it 'returns paginated dependencies' do
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/dependencies', dir: 'ee')
+        expect(response).to include_pagination_headers
 
-        expect(json_response.length).to eq(21)
+        expect(json_response.length).to eq(20)
       end
 
       it 'returns vulnerabilities info' do
@@ -69,6 +70,17 @@ RSpec.describe API::Dependencies do
           it 'returns error message' do
             expect(json_response['error']).to eq('package_manager does not have a valid value')
           end
+        end
+      end
+
+      context 'with pagination params' do
+        let(:params) { { per_page: 5, page: 5 } }
+
+        it 'returns paginated dependencies' do
+          expect(response).to match_response_schema('public_api/v4/dependencies', dir: 'ee')
+          expect(response).to include_pagination_headers
+
+          expect(json_response.length).to eq(1)
         end
       end
     end
