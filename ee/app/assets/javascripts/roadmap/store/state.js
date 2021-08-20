@@ -17,6 +17,7 @@ export default () => ({
   timeframe: [],
   extendedTimeframe: [],
   presetType: '',
+  timeframeRangeType: '',
   sortedBy: '',
   milestoneIds: [],
   milestones: [],

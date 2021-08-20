@@ -536,3 +536,16 @@ html.group-epics-roadmap-html {
   color: var(--gray-500, $gray-500);
   padding-top: $gl-spacing-scale-1;
 }
+
+.epics-roadmap-filters {
+  .sort-dropdown-container {
+    // This override is needed to make sort-dropdown have same height
+    // as filtered search bar.
+    @include media-breakpoint-up(sm) {
+      .dropdown,
+      > button {
+        margin-bottom: $gl-padding-8;
+      }
+    }
+  }
+}

@@ -9,10 +9,14 @@ import EpicItem from './components/epic_item.vue';
 import EpicItemContainer from './components/epic_item_container.vue';
 
 import roadmapApp from './components/roadmap_app.vue';
-import { PRESET_TYPES, EPIC_DETAILS_CELL_WIDTH } from './constants';
+import { PRESET_TYPES, EPIC_DETAILS_CELL_WIDTH, DATE_RANGES } from './constants';
 
 import createStore from './store';
-import { getTimeframeForPreset } from './utils/roadmap_utils';
+import {
+  getTimeframeForPreset,
+  getPresetTypeForTimeframeRangeType,
+  getTimeframeForRangeType,
+} from './utils/roadmap_utils';
 
 Vue.use(Translate);
 
@@ -57,18 +61,38 @@ export default () => {
       };
     },
     data() {
-      const supportedPresetTypes = Object.keys(PRESET_TYPES);
       const { dataset } = this.$options.el;
-      const presetType =
-        supportedPresetTypes.indexOf(dataset.presetType) > -1
-          ? dataset.presetType
-          : PRESET_TYPES.MONTHS;
+      let timeframe;
+      let timeframeRangeType;
+      let presetType;
+
+      if (gon.features.roadmapDaterangeFilter) {
+        timeframeRangeType =
+          Object.keys(DATE_RANGES).indexOf(dataset.timeframeRangeType) > -1
+            ? dataset.timeframeRangeType
+            : DATE_RANGES.CURRENT_QUARTER;
+        presetType = getPresetTypeForTimeframeRangeType(timeframeRangeType, dataset.presetType);
+        timeframe = getTimeframeForRangeType({
+          timeframeRangeType,
+          presetType,
+        });
+      } else {
+        presetType =
+          Object.keys(PRESET_TYPES).indexOf(dataset.presetType) > -1
+            ? dataset.presetType
+            : PRESET_TYPES.MONTHS;
+        timeframe = getTimeframeForPreset(
+          presetType,
+          window.innerWidth - el.offsetLeft - EPIC_DETAILS_CELL_WIDTH,
+        );
+      }
+
       const rawFilterParams = queryToObject(window.location.search, {
         gatherArrays: true,
       });
       const filterParams = {
         ...convertObjectPropsToCamelCase(rawFilterParams, {
-          dropKeys: ['scope', 'utf8', 'state', 'sort', 'layout'], // These keys are unsupported/unnecessary
+          dropKeys: ['scope', 'utf8', 'state', 'sort', 'timeframe_range_type', 'layout'], // These keys are unsupported/unnecessary
         }),
         // We shall put parsed value of `confidential` only
         // when it is defined.
@@ -80,10 +104,6 @@ export default () => {
           epicIid: rawFilterParams.epicIid,
         }),
       };
-      const timeframe = getTimeframeForPreset(
-        presetType,
-        window.innerWidth - el.offsetLeft - EPIC_DETAILS_CELL_WIDTH,
-      );
 
       return {
         emptyStateIllustrationPath: dataset.emptyStateIllustration,
@@ -98,6 +118,7 @@ export default () => {
         epicsState: dataset.epicsState,
         sortedBy: dataset.sortedBy,
         filterParams,
+        timeframeRangeType,
         presetType,
         timeframe,
       };
@@ -108,6 +129,7 @@ export default () => {
         fullPath: this.fullPath,
         epicIid: this.epicIid,
         sortedBy: this.sortedBy,
+        timeframeRangeType: this.timeframeRangeType,
         presetType: this.presetType,
         epicsState: this.epicsState,
         timeframe: this.timeframe,
@@ -125,6 +147,7 @@ export default () => {
     render(createElement) {
       return createElement('roadmap-app', {
         props: {
+          timeframeRangeType: this.timeframeRangeType,
           presetType: this.presetType,
           emptyStateIllustrationPath: this.emptyStateIllustrationPath,
         },

@@ -4,6 +4,7 @@ import {
   DAYS_IN_WEEK,
   EXTEND_AS,
   PRESET_DEFAULTS,
+  DATE_RANGES,
   PRESET_TYPES,
   TIMELINE_CELL_MIN_WIDTH,
 } from '../constants';
@@ -364,6 +365,117 @@ export const getTimeframeForPreset = (
   return timeframe;
 };
 
+export const getWeeksForDates = (startDate, endDate) => {
+  const timeframe = [];
+  const start = newDate(startDate);
+  const end = newDate(endDate);
+
+  // Move to Sunday that comes just before startDate
+  start.setDate(start.getDate() - start.getDay());
+
+  while (start.getTime() < end.getTime()) {
+    // Push date to timeframe only when day is
+    // first day (Sunday) of the week
+    timeframe.push(newDate(start));
+
+    // Move date next Sunday
+    start.setDate(start.getDate() + DAYS_IN_WEEK);
+  }
+
+  return timeframe;
+};
+
+export const getTimeframeForRangeType = ({
+  timeframeRangeType = DATE_RANGES.CURRENT_QUARTER,
+  presetType = PRESET_TYPES.WEEKS,
+}) => {
+  let timeframe = [];
+  const startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
+
+  // We need to prepare timeframe containing all the weeks of
+  // current quarter.
+  if (timeframeRangeType === DATE_RANGES.CURRENT_QUARTER) {
+    // Get current quarter for current month
+    const currentQuarter = Math.floor((startDate.getMonth() + 3) / 3);
+    // Get index of current month in current quarter
+    // It could be 0, 1, 2 (i.e. first, second or third)
+    const currentMonthInCurrentQuarter = monthsForQuarters[currentQuarter].indexOf(
+      startDate.getMonth(),
+    );
+
+    // Get last day of the last month of current quarter
+    const endDate = newDate(startDate);
+    if (currentMonthInCurrentQuarter === 0) {
+      endDate.setMonth(endDate.getMonth() + 2);
+    } else if (currentMonthInCurrentQuarter === 1) {
+      endDate.setMonth(endDate.getMonth() + 1);
+    }
+    endDate.setDate(totalDaysInMonth(endDate));
+
+    // Move startDate to first day of the first month of current quarter
+    startDate.setMonth(startDate.getMonth() - currentMonthInCurrentQuarter);
+    startDate.setDate(1);
+
+    timeframe = getWeeksForDates(startDate, endDate);
+  } else if (timeframeRangeType === DATE_RANGES.CURRENT_YEAR) {
+    // Move start date to first day of current year
+    startDate.setMonth(0);
+    startDate.setDate(1);
+
+    if (presetType === PRESET_TYPES.MONTHS) {
+      timeframe = getTimeframeWindowFrom(startDate, 12);
+    } else {
+      // Get last day of current year
+      const endDate = newDate(startDate);
+      endDate.setMonth(11);
+      endDate.setDate(totalDaysInMonth(endDate));
+
+      timeframe = getWeeksForDates(startDate, endDate);
+    }
+  } else {
+    // Get last day of the month, 18 months from startDate.
+    const endDate = newDate(startDate);
+    endDate.setMonth(endDate.getMonth() + 18);
+    endDate.setDate(totalDaysInMonth(endDate));
+
+    // Move start date to the 18 months behind
+    startDate.setMonth(startDate.getMonth() - 18);
+    startDate.setDate(1);
+
+    if (presetType === PRESET_TYPES.QUARTERS) {
+      timeframe = getTimeframeWindowFrom(startDate, 18 * 2);
+      const quartersTimeframe = [];
+
+      // Iterate over the timeframe and break it down
+      // in chunks of quarters
+      for (let i = 0; i < timeframe.length; i += 3) {
+        const range = timeframe.slice(i, i + 3);
+        const lastMonthOfQuarter = range[range.length - 1];
+        const quarterSequence = Math.floor((range[0].getMonth() + 3) / 3);
+        const year = range[0].getFullYear();
+
+        // Ensure that `range` spans across duration of
+        // entire quarter
+        lastMonthOfQuarter.setDate(totalDaysInMonth(lastMonthOfQuarter));
+
+        quartersTimeframe.push({
+          quarterSequence,
+          range,
+          year,
+        });
+      }
+      timeframe = quartersTimeframe;
+    } else if (presetType === PRESET_TYPES.MONTHS) {
+      timeframe = getTimeframeWindowFrom(startDate, 18 * 2);
+    } else {
+      timeframe = getWeeksForDates(startDate, endDate);
+    }
+  }
+
+  return timeframe;
+};
+
 /**
  * Returns timeframe range in string based on provided config.
  *
@@ -439,4 +551,28 @@ export const sortEpics = (epics, sortedBy) => {
     }
     return 0;
   });
+};
+
+export const getPresetTypeForTimeframeRangeType = (timeframeRangeType, initialPresetType) => {
+  let presetType;
+  switch (timeframeRangeType) {
+    case DATE_RANGES.CURRENT_QUARTER:
+      presetType = PRESET_TYPES.WEEKS;
+      break;
+    case DATE_RANGES.CURRENT_YEAR:
+      presetType = [PRESET_TYPES.MONTHS, PRESET_TYPES.WEEKS].includes(initialPresetType)
+        ? initialPresetType
+        : PRESET_TYPES.MONTHS;
+      break;
+    case DATE_RANGES.THREE_YEARS:
+      presetType = [PRESET_TYPES.QUARTERS, PRESET_TYPES.MONTHS, PRESET_TYPES.WEEKS].includes(
+        initialPresetType,
+      )
+        ? initialPresetType
+        : PRESET_TYPES.QUARTERS;
+      break;
+    default:
+      break;
+  }
+  return presetType;
 };

@@ -1,9 +1,9 @@
 import { GlSegmentedControl, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
-import { PRESET_TYPES, EPICS_STATES } from 'ee/roadmap/constants';
+import { PRESET_TYPES, EPICS_STATES, DATE_RANGES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
 import {
@@ -18,6 +18,7 @@ import {
 } from 'ee_jest/roadmap/mock_data';
 
 import { TEST_HOST } from 'helpers/test_constants';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { visitUrl, mergeUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
@@ -37,6 +38,8 @@ const createComponent = ({
   groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
   timeframe = getTimeframeForMonthsView(mockTimeframeInitialDate),
   filterParams = {},
+  roadmapDaterangeFilter = false,
+  timeframeRangeType = DATE_RANGES.CURRENT_QUARTER,
 } = {}) => {
   const localVue = createLocalVue();
   const store = createStore();
@@ -51,13 +54,19 @@ const createComponent = ({
     timeframe,
   });
 
-  return shallowMount(RoadmapFilters, {
+  return shallowMountExtended(RoadmapFilters, {
     localVue,
     store,
     provide: {
       groupFullPath,
       groupMilestonesPath,
       listEpicsPath,
+      glFeatures: {
+        roadmapDaterangeFilter,
+      },
+    },
+    props: {
+      timeframeRangeType,
     },
   });
 };
@@ -106,13 +115,17 @@ describe('RoadmapFilters', () => {
         await wrapper.vm.$nextTick();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true`,
+          `${TEST_HOST}/?state=${EPICS_STATES.CLOSED}&sort=end_date_asc&layout=MONTHS&author_username=root&label_name%5B%5D=Bug&milestone_title=4.0&confidential=true`,
         );
       });
     });
   });
 
   describe('template', () => {
+    const quarters = { text: 'Quarters', value: PRESET_TYPES.QUARTERS };
+    const months = { text: 'Months', value: PRESET_TYPES.MONTHS };
+    const weeks = { text: 'Weeks', value: PRESET_TYPES.WEEKS };
+
     beforeEach(() => {
       updateHistory({ url: TEST_HOST, title: document.title, replace: true });
     });
@@ -122,11 +135,7 @@ describe('RoadmapFilters', () => {
 
       expect(layoutSwitches.exists()).toBe(true);
       expect(layoutSwitches.props('checked')).toBe(PRESET_TYPES.MONTHS);
-      expect(layoutSwitches.props('options')).toEqual([
-        { text: 'Quarters', value: PRESET_TYPES.QUARTERS },
-        { text: 'Months', value: PRESET_TYPES.MONTHS },
-        { text: 'Weeks', value: PRESET_TYPES.WEEKS },
-      ]);
+      expect(layoutSwitches.props('options')).toEqual([quarters, months, weeks]);
     });
 
     it('switching layout using roadmap layout switching buttons causes page to reload with selected layout', () => {
@@ -301,6 +310,64 @@ describe('RoadmapFilters', () => {
           ]);
         });
       });
+    });
+
+    describe('when roadmapDaterangeFilter feature flag is enabled', () => {
+      let wrapperWithDaterangeFilter;
+      const availableRanges = [
+        { text: 'This quarter', value: DATE_RANGES.CURRENT_QUARTER },
+        { text: 'This year', value: DATE_RANGES.CURRENT_YEAR },
+        { text: 'Within 3 years', value: DATE_RANGES.THREE_YEARS },
+      ];
+
+      beforeEach(async () => {
+        wrapperWithDaterangeFilter = createComponent({
+          roadmapDaterangeFilter: true,
+          timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+        });
+
+        await wrapperWithDaterangeFilter.vm.$nextTick();
+      });
+
+      afterEach(() => {
+        wrapperWithDaterangeFilter.destroy();
+      });
+
+      it('renders daterange dropdown', async () => {
+        wrapperWithDaterangeFilter.setData({ selectedDaterange: DATE_RANGES.CURRENT_QUARTER });
+        await wrapperWithDaterangeFilter.vm.$nextTick();
+
+        const daterangeDropdown = wrapperWithDaterangeFilter.findByTestId('daterange-dropdown');
+
+        expect(daterangeDropdown.exists()).toBe(true);
+        expect(daterangeDropdown.props('text')).toBe('This quarter');
+        daterangeDropdown.findAllComponents(GlDropdownItem).wrappers.forEach((item, index) => {
+          expect(item.text()).toBe(availableRanges[index].text);
+          expect(item.attributes('value')).toBe(availableRanges[index].value);
+        });
+      });
+
+      it.each`
+        selectedDaterange              | availablePresets
+        ${DATE_RANGES.CURRENT_QUARTER} | ${[]}
+        ${DATE_RANGES.CURRENT_YEAR}    | ${[months, weeks]}
+        ${DATE_RANGES.THREE_YEARS}     | ${[quarters, months, weeks]}
+      `(
+        'renders $availablePresets.length items when selected daterange is "$selectedDaterange"',
+        async ({ selectedDaterange, availablePresets }) => {
+          wrapperWithDaterangeFilter.setData({ selectedDaterange });
+          await wrapperWithDaterangeFilter.vm.$nextTick();
+
+          const layoutSwitches = wrapperWithDaterangeFilter.findComponent(GlSegmentedControl);
+
+          if (selectedDaterange === DATE_RANGES.CURRENT_QUARTER) {
+            expect(layoutSwitches.exists()).toBe(false);
+          } else {
+            expect(layoutSwitches.exists()).toBe(true);
+            expect(layoutSwitches.props('options')).toEqual(availablePresets);
+          }
+        },
+      );
     });
   });
 });

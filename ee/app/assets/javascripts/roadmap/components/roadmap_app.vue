@@ -9,6 +9,7 @@ import {
   EXTEND_AS,
   EPICS_LIMIT_DISMISSED_COOKIE_NAME,
   EPICS_LIMIT_DISMISSED_COOKIE_TIMEOUT,
+  DATE_RANGES,
 } from '../constants';
 import eventHub from '../event_hub';
 import EpicsListEmpty from './epics_list_empty.vue';
@@ -32,6 +33,11 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
+    timeframeRangeType: {
+      type: String,
+      required: false,
+      default: DATE_RANGES.CURRENT_QUARTER,
+    },
     presetType: {
       type: String,
       required: true,
@@ -155,7 +161,7 @@ export default {
 
 <template>
   <div class="roadmap-app-container gl-h-full">
-    <roadmap-filters v-if="showFilteredSearchbar" />
+    <roadmap-filters v-if="showFilteredSearchbar" :timeframe-range-type="timeframeRangeType" />
     <gl-alert
       v-if="isWarningVisible"
       variant="warning"

@@ -5,7 +5,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPIC_DETAILS_CELL_WIDTH, TIMELINE_CELL_MIN_WIDTH, EPIC_ITEM_HEIGHT } from '../constants';
 import eventHub from '../event_hub';
-import { generateKey } from '../utils/epic_utils';
+import { generateKey, scrollToCurrentDay } from '../utils/epic_utils';
 
 import CurrentDayIndicator from './current_day_indicator.vue';
 import EpicItem from './epic_item.vue';
@@ -115,7 +115,7 @@ export default {
         // to timeline expand, so we wait for another render
         // cycle to complete.
         this.$nextTick(() => {
-          this.scrollToTodayIndicator();
+          scrollToCurrentDay(this.$el);
         });
 
         if (!Object.keys(this.emptyRowContainerStyles).length) {
@@ -138,13 +138,6 @@ export default {
         };
       }
       return {};
-    },
-    /**
-     * Scroll timeframe to the right of the timeline
-     * by half the column size
-     */
-    scrollToTodayIndicator() {
-      if (this.$el.parentElement) this.$el.parentElement.scrollBy(TIMELINE_CELL_MIN_WIDTH / 2, 0);
     },
     handleEpicsListScroll({ scrollTop, clientHeight, scrollHeight }) {
       this.showBottomShadow = Math.ceil(scrollTop) + clientHeight < scrollHeight;

@@ -34,6 +34,6 @@ export default {
   <span
     v-if="hasToday"
     :style="indicatorStyles"
-    class="current-day-indicator position-absolute"
+    class="current-day-indicator js-current-day-indicator gl-absolute"
   ></span>
 </template>

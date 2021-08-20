@@ -25,6 +25,7 @@
   epics_docs_path: help_page_path('user/group/epics/index'),
   group_labels_endpoint: group_labels_path(@group, format: :json),
   group_milestones_endpoint: group_milestones_path(@group, format: :json),
+  timeframe_range_type: params[:timeframe_range_type],
   preset_type: roadmap_layout,
   epics_state: @epics_state,
   sorted_by: @sort,

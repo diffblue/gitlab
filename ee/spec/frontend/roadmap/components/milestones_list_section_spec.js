@@ -8,6 +8,7 @@ import {
   TIMELINE_CELL_MIN_WIDTH,
 } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
+import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
 import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockTimeframeInitialDate,
@@ -15,6 +16,11 @@ import {
   mockGroupMilestones,
 } from 'ee_jest/roadmap/mock_data';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+
+jest.mock('ee/roadmap/utils/epic_utils', () => ({
+  ...jest.requireActual('ee/roadmap/utils/epic_utils'),
+  scrollToCurrentDay: jest.fn(),
+}));
 
 const initializeStore = (mockTimeframeMonths) => {
   const store = createStore();
@@ -103,6 +109,14 @@ describe('MilestonesListSectionComponent', () => {
     describe('initMounted', () => {
       it('sets value of `roadmapShellEl` with root component element', () => {
         expect(wrapper.vm.roadmapShellEl instanceof HTMLElement).toBe(true);
+      });
+
+      it('calls `scrollToCurrentDay` following the component render', async () => {
+        // Original method implementation waits for render cycle
+        // to complete at 2 levels before scrolling.
+        await wrapper.vm.$nextTick(); // set offsetLeft value
+        await wrapper.vm.$nextTick(); // Wait for nextTick before scroll
+        expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
     });
 

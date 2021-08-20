@@ -10,3 +10,10 @@ export const gqClient = createGqClient(
 export const addIsChildEpicTrueProperty = (obj) => ({ ...obj, isChildEpic: true });
 
 export const generateKey = (epic) => `${epic.isChildEpic ? 'child-epic-' : 'epic-'}${epic.id}`;
+
+export const scrollToCurrentDay = (parentEl) => {
+  const todayIndicatorEl = parentEl.querySelector('.js-current-day-indicator');
+  if (todayIndicatorEl) {
+    todayIndicatorEl.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }
+};

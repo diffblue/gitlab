@@ -2,6 +2,7 @@
 import { mapState } from 'vuex';
 
 import { isInViewport } from '~/lib/utils/common_utils';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { EXTEND_AS } from '../constants';
 import eventHub from '../event_hub';
 
@@ -15,6 +16,7 @@ export default {
     milestonesListSection,
     roadmapTimelineSection,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     presetType: {
       type: String,
@@ -67,25 +69,28 @@ export default {
   methods: {
     handleScroll() {
       const { scrollTop, scrollLeft, clientHeight, scrollHeight } = this.$el;
-      const timelineEdgeStartEl = this.$refs.roadmapTimeline.$el
-        .querySelector('.timeline-header-item')
-        .querySelector('.item-sublabel .sublabel-value:first-child');
-      const timelineEdgeEndEl = this.$refs.roadmapTimeline.$el
-        .querySelector('.timeline-header-item:last-child')
-        .querySelector('.item-sublabel .sublabel-value:last-child');
 
-      // If timeline was scrolled to start
-      if (isInViewport(timelineEdgeStartEl, { left: this.timeframeStartOffset })) {
-        this.$emit('onScrollToStart', {
-          el: this.$refs.roadmapTimeline.$el,
-          extendAs: EXTEND_AS.PREPEND,
-        });
-      } else if (isInViewport(timelineEdgeEndEl)) {
-        // If timeline was scrolled to end
-        this.$emit('onScrollToEnd', {
-          el: this.$refs.roadmapTimeline.$el,
-          extendAs: EXTEND_AS.APPEND,
-        });
+      if (!this.glFeatures.roadmapDaterangeFilter) {
+        const timelineEdgeStartEl = this.$refs.roadmapTimeline.$el
+          .querySelector('.timeline-header-item')
+          .querySelector('.item-sublabel .sublabel-value:first-child');
+        const timelineEdgeEndEl = this.$refs.roadmapTimeline.$el
+          .querySelector('.timeline-header-item:last-child')
+          .querySelector('.item-sublabel .sublabel-value:last-child');
+
+        // If timeline was scrolled to start
+        if (isInViewport(timelineEdgeStartEl, { left: this.timeframeStartOffset })) {
+          this.$emit('onScrollToStart', {
+            el: this.$refs.roadmapTimeline.$el,
+            extendAs: EXTEND_AS.PREPEND,
+          });
+        } else if (isInViewport(timelineEdgeEndEl)) {
+          // If timeline was scrolled to end
+          this.$emit('onScrollToEnd', {
+            el: this.$refs.roadmapTimeline.$el,
+            extendAs: EXTEND_AS.APPEND,
+          });
+        }
       }
 
       eventHub.$emit('epicsListScrolled', { scrollTop, scrollLeft, clientHeight, scrollHeight });
