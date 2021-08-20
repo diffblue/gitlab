@@ -61,7 +61,13 @@ RSpec.describe 'MergeRequestReviewer' do
         the_rule = eq(
           'id' => global_id_of(rule),
           'name' => rule.name,
-          'type' => 'CODE_OWNER'
+          'type' => 'CODE_OWNER',
+          'approvalsRequired' => 0,
+          'approved' => true,
+          'containsHiddenGroups' => false,
+          'overridden' => false,
+          'section' => 'codeowners',
+          'sourceRule' => nil
         )
 
         post_graphql(query)

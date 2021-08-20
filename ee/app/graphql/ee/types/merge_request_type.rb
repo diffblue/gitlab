@@ -23,6 +23,8 @@ module EE
               null: false, calls_gitaly: true,
               method: :security_reports_up_to_date?,
               description: 'Indicates if the target branch security reports are out of date.'
+        field :approval_state, ::Types::MergeRequests::ApprovalStateType, null: false,
+              description: 'Information relating to rules that must be satisfied to merge this merge request.'
       end
 
       def merge_trains_count
