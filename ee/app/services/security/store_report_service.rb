@@ -21,6 +21,8 @@ module Security
       # Ensure we're not trying to insert data twice for this report
       return error("#{@report.type} report already stored for this pipeline, skipping...") if executed?
 
+      OverrideUuidsService.execute(@report) if override_uuids?
+
       vulnerability_ids = create_all_vulnerabilities!
       mark_as_resolved_except(vulnerability_ids)
 
@@ -33,6 +35,10 @@ module Security
 
     def executed?
       pipeline.vulnerability_findings.report_type(@report.type).any?
+    end
+
+    def override_uuids?
+      project.licensed_feature_available?(:vulnerability_finding_signatures)
     end
 
     def create_all_vulnerabilities!
@@ -81,23 +87,14 @@ module Security
       reset_remediations_for(vulnerability_finding, finding)
 
       if project.licensed_feature_available?(:vulnerability_finding_signatures)
-        update_feedbacks(vulnerability_finding, vulnerability_params[:uuid])
         update_finding_signatures(finding, vulnerability_finding)
       end
 
       create_vulnerability(vulnerability_finding, pipeline)
     end
 
-    def find_or_create_vulnerability_finding(finding, create_params)
-      if project.licensed_feature_available?(:vulnerability_finding_signatures)
-        find_or_create_vulnerability_finding_with_signatures(finding, create_params)
-      else
-        find_or_create_vulnerability_finding_with_location(finding, create_params)
-      end
-    end
-
     # rubocop: disable CodeReuse/ActiveRecord
-    def find_or_create_vulnerability_finding_with_location(finding, create_params)
+    def find_or_create_vulnerability_finding(finding, create_params)
       find_params = {
         scanner: scanners_objects[finding.scanner.key],
         primary_identifier: identifiers_objects[finding.primary_identifier.key],
@@ -111,9 +108,10 @@ module Security
         project.vulnerability_findings
           .create_with(create_params)
           .find_or_initialize_by(find_params).tap do |f|
-          f.uuid = finding.uuid
-          f.save!
-        end
+            f.location = create_params[:location]
+            f.uuid = finding.uuid
+            f.save!
+          end
       rescue ActiveRecord::RecordNotUnique => e
         # This might happen if we're processing another report in parallel and it finds the same Finding
         # faster. In that case we need to perform the lookup again
@@ -128,80 +126,6 @@ module Security
       rescue ActiveRecord::ActiveRecordError => e
         Gitlab::ErrorTracking.track_and_raise_exception(e, create_params: create_params&.dig(:raw_metadata))
       end
-    end
-
-    def get_matched_findings(finding, normalized_signatures, find_params)
-      project.vulnerability_findings.where(**find_params).filter do |vf|
-        vf.matches_signatures(normalized_signatures, finding.uuid)
-      end
-    end
-
-    def find_or_create_vulnerability_finding_with_signatures(finding, create_params)
-      find_params = {
-        # this isn't taking prioritization into account (happens in the filter
-        # block below), but it *does* limit the number of findings we have to sift through
-        location_fingerprint: [finding.location.fingerprint, *finding.signatures.map(&:signature_hex)],
-        scanner: scanners_objects[finding.scanner.key],
-        primary_identifier: identifiers_objects[finding.primary_identifier.key]
-      }
-
-      normalized_signatures = finding.signatures.map do |signature|
-        ::Vulnerabilities::FindingSignature.new(signature.to_hash)
-      end
-
-      matched_findings = get_matched_findings(finding, normalized_signatures, find_params)
-
-      begin
-        vulnerability_finding = matched_findings.first
-        if vulnerability_finding.nil?
-          vulnerability_finding = project
-            .vulnerability_findings
-            .create_with(create_params.merge(find_params))
-            .new
-        end
-
-        sync_vulnerability_finding(vulnerability_finding, finding, create_params.dig(:location))
-        vulnerability_finding.save!
-
-        vulnerability_finding
-      rescue ActiveRecord::RecordNotUnique => e
-        vulnerability_finding = project.vulnerability_findings.reset.find_by(uuid: finding.uuid)
-        if vulnerability_finding
-          sync_vulnerability_finding(vulnerability_finding, finding, create_params.dig(:location))
-          vulnerability_finding.save!
-          return vulnerability_finding
-        end
-
-        find_params = {
-          scanner: scanners_objects[finding.scanner.key],
-          primary_identifier: identifiers_objects[finding.primary_identifier.key],
-          location_fingerprint: finding.location.fingerprint
-        }
-
-        vulnerability_finding = project.vulnerability_findings.reset.find_by(find_params)
-        if vulnerability_finding
-          sync_vulnerability_finding(vulnerability_finding, finding, create_params.dig(:location))
-          vulnerability_finding.save!
-          return vulnerability_finding
-        end
-
-        Gitlab::ErrorTracking.track_and_raise_exception(e, find_params: find_params, uuid: finding.uuid)
-      rescue ActiveRecord::RecordInvalid => e
-        Gitlab::ErrorTracking.track_and_raise_exception(e, create_params: create_params&.dig(:raw_metadata))
-      end
-    end
-
-    def sync_vulnerability_finding(vulnerability_finding, finding, location_data)
-      vulnerability_finding.uuid = finding.uuid
-      vulnerability_finding.location_fingerprint = fingerprint_for(finding)
-
-      vulnerability_finding.location = location_data
-    end
-
-    def fingerprint_for(finding)
-      return finding.location.fingerprint if finding.signatures.empty?
-
-      finding.signatures.max_by(&:priority).signature_hex
     end
 
     def update_vulnerability_scanner(finding)
@@ -404,14 +328,6 @@ module Security
     rescue ActiveRecord::RecordNotUnique
     end
     # rubocop: enable CodeReuse/ActiveRecord
-
-    def update_feedbacks(vulnerability_finding, new_uuid)
-      vulnerability_finding.load_feedback.each do |feedback|
-        feedback.finding_uuid = new_uuid
-        feedback.vulnerability_data = vulnerability_finding.raw_metadata
-        feedback.save!
-      end
-    end
 
     def update_finding_signatures(finding, vulnerability_finding)
       to_update = {}
