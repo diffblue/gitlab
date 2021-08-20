@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlSprintf } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
 import {
@@ -18,6 +18,7 @@ export default {
     GlColumnChart,
     GlDropdown,
     GlDropdownItem,
+    GlSprintf,
   },
   props: {
     minutesUsageData: {
@@ -80,14 +81,14 @@ export default {
       <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
       <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth" data-testid="project-month-dropdown">
         <gl-dropdown-item
-          v-for="(month, index) in months"
+          v-for="(monthName, index) in months"
           :key="index"
-          :is-checked="selectedMonth === month"
+          :is-checked="selectedMonth === monthName"
           is-check-item
           data-testid="month-dropdown-item"
-          @click="changeSelectedMonth(month)"
+          @click="changeSelectedMonth(monthName)"
         >
-          {{ month }}
+          <gl-sprintf :message="__(monthName)" />
         </gl-dropdown-item>
       </gl-dropdown>
     </div>
