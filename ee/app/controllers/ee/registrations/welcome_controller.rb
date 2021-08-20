@@ -15,6 +15,11 @@ module EE
                         :trial_getting_started,
                         :trial_onboarding_board
                       ]
+
+        before_action only: :show do
+          experiment(:trial_registration_with_reassurance, actor: current_user)
+            .track(:render, label: 'registrations:welcome:show', user: current_user)
+        end
       end
 
       def trial_getting_started

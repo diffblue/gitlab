@@ -16,10 +16,14 @@ class TrialsController < ApplicationController
   feature_category :purchase
 
   def new
+    experiment(:trial_registration_with_reassurance, actor: current_user)
+      .track(:render, label: 'trials:new', user: current_user)
     record_experiment_user(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
   end
 
   def select
+    experiment(:trial_registration_with_reassurance, actor: current_user)
+      .track(:render, label: 'trials:select', user: current_user)
   end
 
   def create_lead
@@ -44,6 +48,8 @@ class TrialsController < ApplicationController
       record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @namespace.id)
       record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
 
+      experiment(:trial_registration_with_reassurance, actor: current_user)
+        .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
       experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
 
       if discover_group_security_flow?

@@ -66,20 +66,40 @@ RSpec.describe TrialRegistrationsController do
 
     before do
       stub_application_setting(send_user_confirmation_email: true)
-      post :create, params: { user: user_params }
     end
+
+    subject(:post_create) { post :create, params: { user: user_params } }
 
     it_behaves_like 'a dot-com only feature' do
       let(:success_status) { :found }
-      subject { response }
     end
 
     it 'marks the account as unconfirmed' do
+      post_create
+
       expect(User.last).not_to be_confirmed
+    end
+
+    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
+      before do
+        stub_experiments(trial_registration_with_reassurance: :control)
+      end
+
+      it 'tracks a "create_user" event & records the actor to the database', :aggregate_failures do
+        expect(experiment(:trial_registration_with_reassurance)).to track(
+          :create_user,
+          user: an_instance_of(User),
+          label: 'trial_registrations:create'
+        ).with_context(actor: an_instance_of(User)).on_next_instance
+
+        expect { post_create }.to change { ExperimentSubject.count }
+      end
     end
 
     context 'derivation of name' do
       it 'sets name from first and last name' do
+        post_create
+
         expect(User.last.name).to eq("#{user_params[:first_name]} #{user_params[:last_name]}")
       end
     end
