@@ -4,8 +4,6 @@ module QA
   # Do not run on staging since another top level group has to be created which doesn't have premium license
   RSpec.describe 'Manage', :requires_admin, except: { subdomain: :staging } do
     describe 'Bulk group import' do
-      let!(:staging?) { Runtime::Scenario.gitlab_address.include?('staging.gitlab.com') }
-
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
       let(:author_api_client) { Runtime::API::Client.new(user: author) }
@@ -58,8 +56,7 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:bulk_import) unless staging?
-        Runtime::Feature.enable(:top_level_group_creation_enabled) if staging?
+        Runtime::Feature.enable(:bulk_import)
 
         sandbox.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
         source_group.add_member(author, Resource::Members::AccessLevel::MAINTAINER)
@@ -87,8 +84,7 @@ module QA
         user.remove_via_api!
         author.remove_via_api!
       ensure
-        Runtime::Feature.disable(:bulk_import) unless staging?
-        Runtime::Feature.disable(:top_level_group_creation_enabled) if staging?
+        Runtime::Feature.disable(:bulk_import)
       end
 
       it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1874' do
