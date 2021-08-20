@@ -24,10 +24,10 @@ describe('Filter Item component', () => {
   });
 
   describe('name', () => {
-    it('shows the name when the name prop is passed in', () => {
+    it('shows the given text when the "text" prop is passed in', () => {
       const text = 'some name';
       createWrapper({ text });
-      expect(name().props('text')).toBe(text);
+      expect(wrapper.text()).toContain(text);
     });
 
     it('shows slot content when slot content is passed in', () => {

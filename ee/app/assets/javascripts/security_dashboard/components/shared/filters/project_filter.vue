@@ -229,7 +229,7 @@ export default {
         :is-checked="isSelected(project.id)"
         @click="toggleOption(project)"
       >
-        <div v-safe-html="highlightSearchTerm(project.name)" class="gl-text-truncate"></div>
+        <div v-safe-html="highlightSearchTerm(project.name)"></div>
       </filter-item>
     </template>
   </filter-body>
