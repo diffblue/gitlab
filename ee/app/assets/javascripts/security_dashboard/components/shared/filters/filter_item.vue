@@ -1,8 +1,8 @@
 <script>
-import { GlDropdownItem, GlTruncate } from '@gitlab/ui';
+import { GlDropdownItem } from '@gitlab/ui';
 
 export default {
-  components: { GlDropdownItem, GlTruncate },
+  components: { GlDropdownItem },
   props: {
     isChecked: {
       type: Boolean,
@@ -29,8 +29,6 @@ export default {
     :data-qa-selector="qaSelector"
     @click.native.capture.stop="$emit('click')"
   >
-    <slot>
-      <gl-truncate :text="text" />
-    </slot>
+    <slot>{{ text }}</slot>
   </gl-dropdown-item>
 </template>
