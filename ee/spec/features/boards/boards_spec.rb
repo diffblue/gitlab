@@ -35,46 +35,6 @@ RSpec.describe 'Project issue boards', :js do
     end
   end
 
-  context 'add list dropdown' do
-    let(:group) { create(:group) }
-    let(:project) { create(:project, :public, namespace: group) }
-
-    before do
-      stub_feature_flags(board_new_list: false)
-      project.add_maintainer(user)
-      group.add_reporter(user)
-      login_as(user)
-    end
-
-    it 'shows tabbed dropdown with labels list and assignees list' do
-      stub_licensed_features(board_assignee_lists: true)
-
-      visit_board_page
-
-      page.within('#js-add-list') do
-        page.find('.js-new-board-list').click
-        wait_for_requests
-        expect(page).to have_css('.dropdown-menu.dropdown-menu-tabs')
-        expect(page).to have_css('.js-tab-button-labels')
-        expect(page).to have_css('.js-tab-button-assignees')
-      end
-    end
-
-    it 'shows simple dropdown with only labels list' do
-      stub_licensed_features(board_assignee_lists: false)
-
-      visit_board_page
-
-      page.within('#js-add-list') do
-        page.find('.js-new-board-list').click
-        wait_for_requests
-        expect(page).to have_css('.dropdown-menu.js-tab-container-labels')
-        expect(page).to have_content('Create lists from labels. Issues with that label appear in that list.')
-        expect(page).not_to have_css('.js-tab-button-assignees')
-      end
-    end
-  end
-
   context 'swimlanes dropdown' do
     context 'license feature on' do
       before do

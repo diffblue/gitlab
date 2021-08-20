@@ -1,42 +1,5 @@
 @import '../../../../../app/assets/stylesheets/page_bundles/boards';
 
-.boards-add-list {
-  &.show {
-    .dropdown-menu-tabs {
-      max-height: 400px;
-      min-width: 240px;
-      overflow-y: hidden;
-    }
-  }
-
-  .dropdown-tabs-list {
-    box-shadow: 0 0 0 1px var(--border-color, $border-color);
-  }
-
-  .dropdown-tab-item {
-    border-left: 1px solid var(--border-color, $border-color);
-
-    a {
-      border-bottom: 2px solid transparent;
-      background-color: var(--gray-50, $gray-50);
-
-      &:focus,
-      &.active {
-        background-color: var(--white, $white);
-      }
-
-      &.active {
-        font-weight: bold;
-        border-bottom-color: var(--indigo-500, $indigo-500);
-      }
-    }
-  }
-
-  .issue-board-dropdown-content {
-    padding: $gl-padding;
-  }
-}
-
 .board-add-new-list .gl-new-dropdown-inner {
   max-height: 12rem !important;
 
