@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe Gitlab::Ci::Minutes::CostFactor do
   using RSpec::Parameterized::TableSyntax
 
+  let(:runner_type) {}
+  let(:public_cost_factor) {}
+  let(:private_cost_factor) {}
+
   let(:runner) do
     build_stubbed(:ci_runner,
       runner_type,
@@ -22,104 +26,153 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
   end
 
   describe '#enabled?' do
-    let(:project) { build_stubbed(:project, visibility_level: visibility_level) }
+    let(:project) { build_stubbed(:project) }
+    let(:cost_factor) { described_class.new(runner.runner_matcher) }
 
-    subject { described_class.new(runner.runner_matcher).enabled?(project) }
+    subject { cost_factor.enabled?(project) }
 
-    where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
-      :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | false
-      :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | false
-      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | false
-      :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | false
-      :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | false
-      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | false
-      :instance | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | true
-      :instance | Gitlab::VisibilityLevel::PRIVATE  | 1 | 0 | false
-      :instance | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | true
-      :instance | Gitlab::VisibilityLevel::INTERNAL | 1 | 0 | false
-      :instance | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | true
-      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 1 | false
+    context 'when the cost factor is zero' do
+      before do
+        expect(cost_factor).to receive(:for_project).with(project) { 0 }
+      end
+
+      it { is_expected.to be_falsey }
     end
 
-    with_them do
-      it { is_expected.to eq(result) }
+    context 'when the cost factor is positive' do
+      before do
+        expect(cost_factor).to receive(:for_project).with(project) { 0.5 }
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 
   describe '#disabled?' do
-    let(:project) { build_stubbed(:project, visibility_level: visibility_level) }
+    let(:project) { build_stubbed(:project) }
+    let(:cost_factor) { described_class.new(runner.runner_matcher) }
 
-    subject { described_class.new(runner.runner_matcher).disabled?(project) }
+    subject { cost_factor.disabled?(project) }
 
-    where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
-      :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | true
-      :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | true
-      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | true
-      :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | true
-      :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | true
-      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | true
-      :instance | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | false
-      :instance | Gitlab::VisibilityLevel::PRIVATE  | 1 | 0 | true
-      :instance | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | false
-      :instance | Gitlab::VisibilityLevel::INTERNAL | 1 | 0 | true
-      :instance | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | false
-      :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 1 | true
+    context 'when the cost factor is zero' do
+      before do
+        expect(cost_factor).to receive(:for_project).with(project) { 0 }
+      end
+
+      it { is_expected.to be_truthy }
     end
 
-    with_them do
-      it { is_expected.to eq(result) }
+    context 'when the cost factor is positive' do
+      before do
+        expect(cost_factor).to receive(:for_project).with(project) { 0.5 }
+      end
+
+      it { is_expected.to be_falsey }
     end
   end
 
   describe '#for_project' do
-    let(:project) { build_stubbed(:project, namespace: namespace, visibility_level: visibility_level) }
-
-    subject { described_class.new(runner.runner_matcher).for_project(project) }
-
     context 'before the public project cost factor release date' do
-      let_it_be(:namespace) do
-        create(:group, created_at: Date.new(2021, 7, 16))
-      end
+      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
+        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
 
-      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
-        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 5
+        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
+
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 400 | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0
+
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
+
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
       end
 
       with_them do
+        let(:namespace) do
+          create(:group, created_at: Date.new(2021, 7, 16), shared_runners_minutes_limit: namespace_limit)
+        end
+
+        let(:project) do
+          create(:project, namespace: namespace, visibility_level: visibility_level)
+        end
+
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
+        end
+
+        subject { described_class.new(runner.runner_matcher).for_project(project) }
+
         it { is_expected.to eq(result) }
       end
     end
 
     context 'after the public project cost factor release date' do
-      let_it_be(:namespace) do
-        create(:group, created_at: Date.new(2021, 7, 17))
-      end
+      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :namespace_limit, :instance_limit, :result) do
+        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
 
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-      end
+        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | 400 | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0   | 0   | 0
+        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | nil | nil | 0
 
-      where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
-        :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-        :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-        :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-        :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0.008
-        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 5
-        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 5
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 400 | 0.008
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0.008
+
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
+
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
       end
 
       with_them do
+        let(:namespace) do
+          create(:group, created_at: Date.new(2021, 7, 17), shared_runners_minutes_limit: namespace_limit)
+        end
+
+        let(:project) do
+          create(:project, namespace: namespace, visibility_level: visibility_level)
+        end
+
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { instance_limit }
+          allow(Gitlab).to receive(:com?).and_return(true)
+        end
+
+        subject { described_class.new(runner.runner_matcher).for_project(project) }
+
         it { is_expected.to eq(result) }
       end
     end

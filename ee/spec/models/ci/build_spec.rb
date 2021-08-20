@@ -51,6 +51,10 @@ RSpec.describe Ci::Build do
   describe '#cost_factor_enabled?' do
     subject { job.cost_factor_enabled? }
 
+    before do
+      allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 400 }
+    end
+
     context 'for shared runner' do
       before do
         job.runner = create(:ci_runner, :instance)

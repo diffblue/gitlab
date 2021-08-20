@@ -77,8 +77,6 @@ module Ci
           ServiceResponse.error(message: 'Feature not enabled')
         elsif !build.running?
           ServiceResponse.error(message: 'Build is not running')
-        elsif root_namespace.unlimited_minutes?
-          ServiceResponse.error(message: 'Namespace has unlimited minutes')
         elsif !build.cost_factor_enabled?
           ServiceResponse.error(message: 'Cost factor not enabled for build')
         else

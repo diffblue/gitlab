@@ -82,10 +82,11 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService do
 
     context 'when namespace has unlimited minutes' do
       before do
-        namespace.update!(shared_runners_minutes_limit: 0)
+        quota = double('quota', enabled?: false)
+        allow(project).to receive(:ci_minutes_quota).and_return(quota)
       end
 
-      it_behaves_like 'returns early', 'Namespace has unlimited minutes'
+      it_behaves_like 'returns early', 'Cost factor not enabled for build'
     end
 
     context 'when build has not been tracked recently' do

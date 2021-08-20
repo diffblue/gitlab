@@ -33,6 +33,7 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption do
         project.update!(visibility_level: visibility_level)
 
         allow(build).to receive(:duration).and_return(duration)
+        allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 400 }
       end
 
       it 'returns the expected consumption' do
