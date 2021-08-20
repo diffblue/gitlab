@@ -3,11 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Security::PoliciesHelper do
-  let(:project) { create(:project, :repository, :public) }
+  let_it_be_with_reload(:project) { create(:project, :repository, :public) }
 
   describe '#assigned_policy_project' do
     context 'when a project does have a security policy project' do
-      let(:policy_management_project) { create(:project) }
+      let_it_be(:policy_management_project) { create(:project) }
 
       subject { helper.assigned_policy_project(project) }
 
@@ -69,7 +69,8 @@ RSpec.describe Projects::Security::PoliciesHelper do
     end
 
     context 'when an existing policy is being edited' do
-      let(:environment) { create(:environment, project: project) }
+      let_it_be(:environment) { create(:environment, project: project) }
+
       let(:policy_type) { 'container_policy' }
 
       let(:policy) do
