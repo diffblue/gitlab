@@ -41,8 +41,9 @@ describe('Pipeline findings', () => {
     });
   };
 
-  const createWrapperWithApollo = (resolver) => {
+  const createWrapperWithApollo = (resolver, data) => {
     return createWrapper({
+      ...data,
       apolloProvider: createMockApollo([[pipelineFindingsQuery, resolver]]),
     });
   };
@@ -135,5 +136,22 @@ describe('Pipeline findings', () => {
     it('shows the error', () => {
       expect(findAlert().exists()).toBe(true);
     });
+  });
+
+  describe('filtering', () => {
+    it.each(['reportType', 'severity'])(
+      `normalizes the GraphQL's query variable for the "%s" filter`,
+      (filterName) => {
+        const filterValues = ['FOO', 'BAR', 'FOO_BAR'];
+        const normalizedFilterValues = ['foo', 'bar', 'foo_bar'];
+        const queryMock = jest.fn().mockResolvedValue();
+
+        createWrapperWithApollo(queryMock, { props: { filters: { [filterName]: filterValues } } });
+
+        expect(queryMock.mock.calls[0][0]).toMatchObject({
+          [filterName]: normalizedFilterValues,
+        });
+      },
+    );
   });
 });
