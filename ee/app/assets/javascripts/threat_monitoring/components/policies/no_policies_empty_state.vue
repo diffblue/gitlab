@@ -8,12 +8,12 @@ export default {
     GlEmptyState,
   },
   i18n: {
-    emptyFilterTitle: s__('SecurityOrchestration|Sorry, your filter produced no results'),
+    emptyFilterTitle: s__('SecurityOrchestration|Sorry, your filter produced no results.'),
     emptyFilterDescription: s__(
       'SecurityOrchestration|To widen your search, change filters above or select a different security policy project.',
     ),
     emptyStateDescription: s__(
-      'SecurityOrchestration|This project does not contain any security policies',
+      'SecurityOrchestration|This project does not contain any security policies.',
     ),
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
   },

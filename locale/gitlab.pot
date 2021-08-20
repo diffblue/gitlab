@@ -29661,13 +29661,13 @@ msgstr ""
 msgid "SecurityOrchestration|Select security project"
 msgstr ""
 
-msgid "SecurityOrchestration|Sorry, your filter produced no results"
+msgid "SecurityOrchestration|Sorry, your filter produced no results."
 msgstr ""
 
 msgid "SecurityOrchestration|There was a problem creating the new security policy"
 msgstr ""
 
-msgid "SecurityOrchestration|This project does not contain any security policies"
+msgid "SecurityOrchestration|This project does not contain any security policies."
 msgstr ""
 
 msgid "SecurityOrchestration|To widen your search, change filters above or select a different security policy project."

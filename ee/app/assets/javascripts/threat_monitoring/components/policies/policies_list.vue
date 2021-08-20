@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlAlert, GlSprintf, GlLink, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlAlert, GlIcon, GlLink, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import createFlash from '~/flash';
@@ -34,11 +34,11 @@ const getPoliciesWithType = (policies, policyType) =>
 
 export default {
   components: {
-    GlTable,
     GlAlert,
-    GlSprintf,
-    GlLink,
     GlIcon,
+    GlLink,
+    GlSprintf,
+    GlTable,
     EnvironmentPicker,
     NoPoliciesEmptyState,
     PolicyTypeFilter,
