@@ -63,8 +63,8 @@ export default {
           detailedStatus,
         };
       },
-      result(data) {
-        if (data.project?.pipeline) {
+      result(res) {
+        if (res.data?.project?.pipeline) {
           this.hasError = false;
         }
       },
