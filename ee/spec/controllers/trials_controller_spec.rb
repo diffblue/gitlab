@@ -50,15 +50,31 @@ RSpec.describe TrialsController do
   end
 
   describe '#new' do
-    subject do
+    subject(:get_new) do
       get :new
       response
+    end
+
+    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
+      before do
+        stub_experiments(trial_registration_with_reassurance: :control)
+      end
+
+      it 'tracks a "render" event' do
+        expect(experiment(:trial_registration_with_reassurance)).to track(
+          :render,
+          user: user,
+          label: 'trials:new'
+        ).with_context(actor: user).on_next_instance
+
+        get_new
+      end
     end
 
     it 'calls record_experiment_user for the experiments' do
       expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, remove_known_trial_form_fields_context)
 
-      subject
+      get_new
     end
 
     it_behaves_like 'an authenticated endpoint'
@@ -142,13 +158,29 @@ RSpec.describe TrialsController do
   end
 
   describe '#select' do
-    subject do
+    subject(:get_select) do
       get :select
       response
     end
 
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
+
+    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
+      before do
+        stub_experiments(trial_registration_with_reassurance: :control)
+      end
+
+      it 'tracks a "render" event' do
+        expect(experiment(:trial_registration_with_reassurance)).to track(
+          :render,
+          user: user,
+          label: 'trials:select'
+        ).with_context(actor: user).on_next_instance
+
+        get_select
+      end
+    end
   end
 
   describe '#apply' do
@@ -163,9 +195,10 @@ RSpec.describe TrialsController do
       allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
         allow(service).to receive(:execute).and_return({ success: apply_trial_result })
       end
+      allow(controller).to receive(:experiment).and_call_original
     end
 
-    subject do
+    subject(:post_apply) do
       post :apply, params: post_params
       response
     end
@@ -177,12 +210,30 @@ RSpec.describe TrialsController do
       let(:apply_trial_result) { true }
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
+
       it 'calls the record conversion method for the experiments' do
         expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: namespace.id)
         expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
         expect(experiment(:force_company_trial)).to track(:create_trial, namespace: namespace, user: user, label: 'trials_controller').with_context(user: user).on_next_instance
 
-        subject
+        post_apply
+      end
+
+      context 'when the trial_registration_with_reassurance experiment is active', :experiment do
+        before do
+          stub_experiments(trial_registration_with_reassurance: :control)
+        end
+
+        it 'tracks an "apply_trial" event' do
+          expect(experiment(:trial_registration_with_reassurance)).to track(
+            :apply_trial,
+            user: user,
+            namespace: namespace,
+            label: 'trials:apply'
+          ).with_context(actor: user).on_next_instance
+
+          post_apply
+        end
       end
 
       context 'redirect trial user to feature' do
@@ -210,7 +261,7 @@ RSpec.describe TrialsController do
           it 'records the subject' do
             expect(Experiment).to receive(:add_subject).with('redirect_trial_user_to_feature', variant: variant, subject: namespace)
 
-            subject
+            post_apply
           end
         end
       end
@@ -219,7 +270,7 @@ RSpec.describe TrialsController do
         let(:post_params) { { new_group_name: 'GitLab' } }
 
         it 'creates the Group' do
-          expect { subject }.to change { Group.count }.by(1)
+          expect { post_apply }.to change { Group.count }.by(1)
         end
       end
 
@@ -229,7 +280,7 @@ RSpec.describe TrialsController do
 
           expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
 
-          subject
+          post_apply
         end
       end
     end
@@ -241,7 +292,7 @@ RSpec.describe TrialsController do
       it 'does not call the record conversion method for the experiments' do
         expect(controller).not_to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
 
-        subject
+        post_apply
       end
 
       context 'with a new Group' do
@@ -250,7 +301,7 @@ RSpec.describe TrialsController do
         it { is_expected.to render_template(:select) }
 
         it 'does not create the Group' do
-          expect { subject }.not_to change { Group.count }
+          expect { post_apply }.not_to change { Group.count }
         end
       end
     end

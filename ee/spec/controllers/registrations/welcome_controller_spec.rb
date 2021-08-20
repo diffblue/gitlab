@@ -7,6 +7,25 @@ RSpec.describe Registrations::WelcomeController do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
+  describe '#show' do
+    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
+      before do
+        sign_in(user)
+        stub_experiments(trial_registration_with_reassurance: :control)
+      end
+
+      it 'tracks a "render" event' do
+        expect(experiment(:trial_registration_with_reassurance)).to track(
+          :render,
+          user: user,
+          label: 'registrations:welcome:show'
+        ).with_context(actor: user).on_next_instance
+
+        get :show
+      end
+    end
+  end
+
   describe '#continuous_onboarding_getting_started' do
     let_it_be(:project) { create(:project, group: group) }
 

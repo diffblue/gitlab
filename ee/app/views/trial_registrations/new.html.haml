@@ -15,7 +15,10 @@
     = render 'devise/shared/sign_in_link'
 
 .row
-  - experiment(:trial_registration_with_reassurance) do |e|
+  - experiment(:trial_registration_with_reassurance, actor: current_user) do |e|
+    - if e.should_track?
+      %span{ data: { track_action: :render, track_experiment: :trial_registration_with_reassurance } }
+
     - e.use do
       .col-md-6.offset-md-3
         %h2.gl-text-center.gl-pb-5.gl-my-0
