@@ -12140,6 +12140,9 @@ msgstr ""
 msgid "Edit sidebar"
 msgstr ""
 
+msgid "Edit table"
+msgstr ""
+
 msgid "Edit this file only."
 msgstr ""
 

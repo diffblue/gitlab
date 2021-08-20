@@ -2,6 +2,7 @@
 import { GlDropdown, GlDropdownItem, GlDropdownDivider } from '@gitlab/ui';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/vue-2';
 import { selectedRect as getSelectedRect } from 'prosemirror-tables';
+import { __ } from '~/locale';
 
 export default {
   name: 'TableCellWrapper',
@@ -69,10 +70,20 @@ export default {
       this.$refs.dropdown?.hide();
     },
   },
+  i18n: {
+    insertColumnBefore: __('Insert column before'),
+    insertColumnAfter: __('Insert column after'),
+    insertRowBefore: __('Insert row before'),
+    insertRowAfter: __('Insert row after'),
+    deleteRow: __('Delete row'),
+    deleteColumn: __('Delete column'),
+    deleteTable: __('Delete table'),
+    editTableActions: __('Edit table'),
+  },
 };
 </script>
 <template>
-  <node-view-wrapper class="gl-relative gl-padding-5" as="td" @click="hideDropdown">
+  <node-view-wrapper class="gl-relative gl-padding-5 gl-min-w-10" as="td" @click="hideDropdown">
     <span v-if="displayActionsDropdown" class="gl-absolute gl-right-0 gl-top-0">
       <gl-dropdown
         ref="dropdown"
@@ -82,30 +93,32 @@ export default {
         category="tertiary"
         boundary="viewport"
         no-caret
+        text-sr-only
+        :text="$options.i18n.editTableActions"
         :popper-opts="{ positionFixed: true }"
         @hide="handleHide($event)"
       >
         <gl-dropdown-item @click="runCommand('addColumnBefore')">
-          {{ __('Insert column before') }}
+          {{ $options.i18n.insertColumnBefore }}
         </gl-dropdown-item>
         <gl-dropdown-item @click="runCommand('addColumnAfter')">
-          {{ __('Insert column after') }}
+          {{ $options.i18n.insertColumnAfter }}
         </gl-dropdown-item>
         <gl-dropdown-item @click="runCommand('addRowBefore')">
-          {{ __('Insert row before') }}
+          {{ $options.i18n.insertRowBefore }}
         </gl-dropdown-item>
         <gl-dropdown-item @click="runCommand('addRowAfter')">
-          {{ __('Insert row after') }}
+          {{ $options.i18n.insertRowAfter }}
         </gl-dropdown-item>
         <gl-dropdown-divider />
         <gl-dropdown-item v-if="totalRows > 2" @click="runCommand('deleteRow')">
-          {{ __('Delete row') }}
+          {{ $options.i18n.deleteRow }}
         </gl-dropdown-item>
         <gl-dropdown-item v-if="totalCols > 1" @click="runCommand('deleteColumn')">
-          {{ __('Delete column') }}
+          {{ $options.i18n.deleteColumn }}
         </gl-dropdown-item>
         <gl-dropdown-item @click="runCommand('deleteTable')">
-          {{ __('Delete table') }}
+          {{ $options.i18n.deleteTable }}
         </gl-dropdown-item>
       </gl-dropdown>
     </span>
