@@ -48,6 +48,11 @@ export default {
       required: false,
       default: null,
     },
+    isEditing: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const policy = this.existingPolicy
@@ -84,9 +89,6 @@ export default {
     ]),
     hasParsingError() {
       return Boolean(this.yamlEditorError);
-    },
-    isEditing() {
-      return Boolean(this.existingPolicy);
     },
   },
   methods: {

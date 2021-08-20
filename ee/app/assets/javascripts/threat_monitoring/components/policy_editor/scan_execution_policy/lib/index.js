@@ -1,4 +1,5 @@
 export { fromYaml } from './from_yaml';
+export { toYaml } from './to_yaml';
 
 export * from './constants';
 export * from './utils';

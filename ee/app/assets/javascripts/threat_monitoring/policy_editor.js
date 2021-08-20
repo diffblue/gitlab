@@ -23,6 +23,7 @@ export default () => {
     networkPoliciesEndpoint,
     threatMonitoringPath,
     policy,
+    policyType,
     projectPath,
     projectId,
     environmentId,
@@ -46,7 +47,7 @@ export default () => {
   };
 
   if (policy) {
-    props.existingPolicy = JSON.parse(policy);
+    props.existingPolicy = { type: policyType, ...JSON.parse(policy) };
   }
 
   return new Vue({
@@ -56,6 +57,7 @@ export default () => {
       configureAgentHelpPath,
       createAgentHelpPath,
       disableScanExecutionUpdate: parseBoolean(disableScanExecutionUpdate),
+      policyType,
       projectId,
       projectPath,
       threatMonitoringPath,
