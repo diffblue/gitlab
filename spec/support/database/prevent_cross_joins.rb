@@ -33,7 +33,8 @@ module Database
       tables = PgQuery.parse(sql).tables
       schemas = Database::GitlabSchema.table_schemas(tables)
 
-      if schemas.many?
+      if schemas.include?(:gitlab_ci) && schemas.include?(:gitlab_main)
+        Thread.current[:has_cross_join_exception] = true
         raise CrossJoinAcrossUnsupportedTablesError,
           "Unsupported cross-join across '#{tables.join(", ")}' modifying '#{schemas.to_a.join(", ")}' discovered " \
           "when executing query '#{sql}'"
@@ -66,11 +67,18 @@ end
 Gitlab::Database.singleton_class.prepend(
   Database::PreventCrossJoins::GitlabDatabaseMixin)
 
+ALLOW_LIST = Set.new(YAML.load_file(Rails.root.join('.cross-join-allowlist.yml'))).freeze
+
 RSpec.configure do |config|
   config.include(::Database::PreventCrossJoins::SpecHelpers)
 
-  # TODO: remove `:prevent_cross_joins` to enable the check by default
-  config.around(:each, :prevent_cross_joins) do |example|
-    with_cross_joins_prevented { example.run }
+  config.around do |example|
+    Thread.current[:has_cross_join_exception] = false
+
+    if ALLOW_LIST.include?(example.file_path)
+      example.run
+    else
+      with_cross_joins_prevented { example.run }
+    end
   end
 end
