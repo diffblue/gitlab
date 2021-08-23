@@ -25,6 +25,8 @@ module QA
         end
 
         Resource::Issue.fabricate_via_api! do |issue|
+          # Clears default description so as not to overwrite default template
+          issue.description = nil
           issue.project = default_template_project
         end.visit!
 
