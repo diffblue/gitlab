@@ -36,7 +36,7 @@ module EE
       private
 
       def log_geo_event(key)
-        Geo::CacheInvalidationEventStore.new(key_for(key)).create!
+        ::Geo::CacheInvalidationEventStore.new(key_for(key)).create!
       end
     end
   end

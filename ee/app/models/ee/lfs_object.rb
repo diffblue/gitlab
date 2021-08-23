@@ -13,7 +13,7 @@ module EE
     prepended do
       include ::Gitlab::Geo::ReplicableModel
 
-      with_replicator Geo::LfsObjectReplicator
+      with_replicator ::Geo::LfsObjectReplicator
 
       scope :project_id_in, ->(ids) { joins(:projects).merge(::Project.id_in(ids)) }
     end

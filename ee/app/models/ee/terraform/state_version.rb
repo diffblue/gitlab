@@ -9,7 +9,7 @@ module EE
         include ::Gitlab::Geo::ReplicableModel
         include ::Gitlab::Geo::VerificationState
 
-        with_replicator Geo::TerraformStateVersionReplicator
+        with_replicator ::Geo::TerraformStateVersionReplicator
 
         scope :project_id_in, ->(ids) { joins(:terraform_state).where('terraform_states.project_id': ids) }
       end
