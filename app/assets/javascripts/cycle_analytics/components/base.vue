@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { GlLoadingIcon } from '@gitlab/ui';
 import Cookies from 'js-cookie';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
@@ -14,9 +14,7 @@ const OVERVIEW_DIALOG_COOKIE = 'cycle_analytics_help_dismissed';
 export default {
   name: 'CycleAnalytics',
   components: {
-    GlIcon,
     GlLoadingIcon,
-    GlSprintf,
     PathNavigation,
     StageTable,
     ValueStreamFilters,
@@ -47,7 +45,6 @@ export default {
       'selectedStageError',
       'stages',
       'summary',
-      'daysInPast',
       'permissions',
       'stageCounts',
       'endpoints',
@@ -103,8 +100,11 @@ export default {
   },
   methods: {
     ...mapActions(['fetchStageData', 'setSelectedStage', 'setDateRange']),
-    handleDateSelect(daysInPast) {
-      this.setDateRange(daysInPast);
+    onSetDateRange({ startDate, endDate }) {
+      this.setDateRange({
+        createdAfter: new Date(startDate),
+        createdBefore: new Date(endDate),
+      });
     },
     onSelectStage(stage) {
       this.setSelectedStage(stage);
@@ -138,35 +138,14 @@ export default {
         :selected-stage="selectedStage"
         @selected="onSelectStage"
       />
-      <div class="gl-flex-grow gl-align-self-end">
-        <div class="js-ca-dropdown dropdown inline">
-          <!-- eslint-disable-next-line @gitlab/vue-no-data-toggle -->
-          <button class="dropdown-menu-toggle" data-toggle="dropdown" type="button">
-            <span class="dropdown-label">
-              <gl-sprintf :message="$options.i18n.dropdownText">
-                <template #days>{{ daysInPast }}</template>
-              </gl-sprintf>
-              <gl-icon name="chevron-down" class="dropdown-menu-toggle-icon gl-top-3" />
-            </span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right">
-            <li v-for="days in $options.dayRangeOptions" :key="`day-range-${days}`">
-              <a href="#" @click.prevent="handleDateSelect(days)">
-                <gl-sprintf :message="$options.i18n.dropdownText">
-                  <template #days>{{ days }}</template>
-                </gl-sprintf>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
     <value-stream-filters
-      class="gl-w-full"
       :group-id="endpoints.groupId"
       :group-path="endpoints.groupPath"
       :has-project-filter="false"
-      :has-date-range-filter="false"
+      :start-date="createdAfter"
+      :end-date="createdBefore"
+      @setDateRange="onSetDateRange"
     />
     <value-stream-metrics
       :request-path="endpoints.fullPath"

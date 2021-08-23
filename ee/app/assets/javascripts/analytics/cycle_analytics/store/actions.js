@@ -1,3 +1,4 @@
+import Api from 'ee/api';
 import { removeFlash, appendExtension } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import httpStatus from '~/lib/utils/http_status';

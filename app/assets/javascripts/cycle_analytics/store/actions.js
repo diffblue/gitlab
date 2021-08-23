@@ -171,8 +171,8 @@ const refetchStageData = (dispatch) => {
 
 export const setFilters = ({ dispatch }) => refetchStageData(dispatch);
 
-export const setDateRange = ({ dispatch, commit }, daysInPast) => {
-  commit(types.SET_DATE_RANGE, daysInPast);
+export const setDateRange = ({ dispatch, commit }, { createdAfter, createdBefore }) => {
+  commit(types.SET_DATE_RANGE, { createdAfter, createdBefore });
   return refetchStageData(dispatch);
 };
 

@@ -9,7 +9,6 @@ import {
   getTasksByTypeData,
   transformRawTasksByTypeData,
 } from 'ee/analytics/cycle_analytics/utils';
-import { toYmd } from 'ee/analytics/shared/utils';
 import { getJSONFixture } from 'helpers/fixtures';
 import {
   getStageByTitle,
@@ -19,6 +18,7 @@ import {
   createdAfter,
   deepCamelCase,
 } from 'jest/cycle_analytics/mock_data';
+import { toYmd } from '~/analytics/shared/utils';
 import {
   PAGINATION_TYPE,
   PAGINATION_SORT_DIRECTION_DESC,

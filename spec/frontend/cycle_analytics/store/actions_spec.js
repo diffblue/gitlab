@@ -4,14 +4,20 @@ import testAction from 'helpers/vuex_action_helper';
 import * as actions from '~/cycle_analytics/store/actions';
 import * as getters from '~/cycle_analytics/store/getters';
 import httpStatusCodes from '~/lib/utils/http_status';
-import { allowedStages, selectedStage, selectedValueStream, currentGroup } from '../mock_data';
+import {
+  allowedStages,
+  selectedStage,
+  selectedValueStream,
+  currentGroup,
+  createdAfter,
+  createdBefore,
+} from '../mock_data';
 
 const { id: groupId, path: groupPath } = currentGroup;
 const mockMilestonesPath = 'mock-milestones';
 const mockLabelsPath = 'mock-labels';
 const mockRequestPath = 'some/cool/path';
 const mockFullPath = '/namespace/-/analytics/value_stream_analytics/value_streams';
-const mockStartDate = 30;
 const mockEndpoints = {
   fullPath: mockFullPath,
   requestPath: mockRequestPath,
@@ -20,15 +26,19 @@ const mockEndpoints = {
   groupId,
   groupPath,
 };
-const mockSetDateActionCommit = { payload: { startDate: mockStartDate }, type: 'SET_DATE_RANGE' };
+const mockSetDateActionCommit = {
+  payload: { createdAfter, createdBefore },
+  type: 'SET_DATE_RANGE',
+};
 
-const defaultState = { ...getters, selectedValueStream };
+const defaultState = { ...getters, selectedValueStream, createdAfter, createdBefore };
 
 describe('Project Value Stream Analytics actions', () => {
   let state;
   let mock;
 
   beforeEach(() => {
+    state = { ...defaultState };
     mock = new MockAdapter(axios);
   });
 
@@ -48,12 +58,12 @@ describe('Project Value Stream Analytics actions', () => {
   ];
 
   describe.each`
-    action                      | payload                         | expectedActions                                                              | expectedMutations
-    ${'setLoading'}             | ${true}                         | ${[]}                                                                        | ${[{ type: 'SET_LOADING', payload: true }]}
-    ${'setDateRange'}           | ${{ startDate: mockStartDate }} | ${mockFetchStageDataActions}                                                 | ${[mockSetDateActionCommit]}
-    ${'setFilters'}             | ${[]}                           | ${mockFetchStageDataActions}                                                 | ${[]}
-    ${'setSelectedStage'}       | ${{ selectedStage }}            | ${[{ type: 'fetchStageData' }]}                                              | ${[{ type: 'SET_SELECTED_STAGE', payload: { selectedStage } }]}
-    ${'setSelectedValueStream'} | ${{ selectedValueStream }}      | ${[{ type: 'fetchValueStreamStages' }, { type: 'fetchCycleAnalyticsData' }]} | ${[{ type: 'SET_SELECTED_VALUE_STREAM', payload: { selectedValueStream } }]}
+    action                      | payload                            | expectedActions                                                              | expectedMutations
+    ${'setLoading'}             | ${true}                            | ${[]}                                                                        | ${[{ type: 'SET_LOADING', payload: true }]}
+    ${'setDateRange'}           | ${{ createdAfter, createdBefore }} | ${mockFetchStageDataActions}                                                 | ${[mockSetDateActionCommit]}
+    ${'setFilters'}             | ${[]}                              | ${mockFetchStageDataActions}                                                 | ${[]}
+    ${'setSelectedStage'}       | ${{ selectedStage }}               | ${[{ type: 'fetchStageData' }]}                                              | ${[{ type: 'SET_SELECTED_STAGE', payload: { selectedStage } }]}
+    ${'setSelectedValueStream'} | ${{ selectedValueStream }}         | ${[{ type: 'fetchValueStreamStages' }, { type: 'fetchCycleAnalyticsData' }]} | ${[{ type: 'SET_SELECTED_VALUE_STREAM', payload: { selectedValueStream } }]}
   `('$action', ({ action, payload, expectedActions, expectedMutations }) => {
     const types = mutationTypes(expectedMutations);
     it(`will dispatch ${expectedActions} and commit ${types}`, () =>
@@ -101,7 +111,7 @@ describe('Project Value Stream Analytics actions', () => {
 
   describe('fetchCycleAnalyticsData', () => {
     beforeEach(() => {
-      state = { endpoints: mockEndpoints };
+      state = { ...defaultState, endpoints: mockEndpoints };
       mock = new MockAdapter(axios);
       mock.onGet(mockRequestPath).reply(httpStatusCodes.OK);
     });
@@ -146,7 +156,6 @@ describe('Project Value Stream Analytics actions', () => {
       state = {
         ...defaultState,
         endpoints: mockEndpoints,
-        startDate: mockStartDate,
         selectedStage,
       };
       mock = new MockAdapter(axios);
@@ -169,7 +178,6 @@ describe('Project Value Stream Analytics actions', () => {
         state = {
           ...defaultState,
           endpoints: mockEndpoints,
-          startDate: mockStartDate,
           selectedStage,
         };
         mock = new MockAdapter(axios);
@@ -194,7 +202,6 @@ describe('Project Value Stream Analytics actions', () => {
         state = {
           ...defaultState,
           endpoints: mockEndpoints,
-          startDate: mockStartDate,
           selectedStage,
         };
         mock = new MockAdapter(axios);

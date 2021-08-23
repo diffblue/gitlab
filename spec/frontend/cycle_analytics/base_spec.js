@@ -130,10 +130,10 @@ describe('Value stream analytics component', () => {
     expect(findFilterBar().exists()).toBe(true);
   });
 
-  it('hides the project selector and range selector', () => {
+  it('displays the date range selector and hides the project selector', () => {
     expect(findFilterBar().props()).toMatchObject({
       hasProjectFilter: false,
-      hasDateRangeFilter: false,
+      hasDateRangeFilter: true,
     });
   });
 
