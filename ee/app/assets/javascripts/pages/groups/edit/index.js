@@ -4,18 +4,21 @@ import validateRestrictedIpAddress from 'ee/groups/settings/access_restriction_f
 import createFlash from '~/flash';
 import { __ } from '~/locale';
 
-initAccessRestrictionField('.js-allowed-email-domains', {
-  placeholder: __('Enter domain'),
-  regexErrorMessage: __('The domain you entered is misformatted.'),
-  disallowedValueErrorMessage: __('The domain you entered is not allowed.'),
+initAccessRestrictionField({
+  selector: '.js-allowed-email-domains',
+  props: {
+    placeholder: __('Enter domain'),
+    regexErrorMessage: __('The domain you entered is misformatted.'),
+    disallowedValueErrorMessage: __('The domain you entered is not allowed.'),
+  },
 });
 
-initAccessRestrictionField(
-  '.js-ip-restriction',
-  { placeholder: __('Enter IP address range') },
-  'ip_restriction_field',
-  validateRestrictedIpAddress,
-);
+initAccessRestrictionField({
+  selector: '.js-ip-restriction',
+  props: { placeholder: __('Enter IP address range') },
+  qaSelector: 'ip_restriction_field',
+  customValidator: validateRestrictedIpAddress,
+});
 
 const complianceFrameworksList = document.querySelector('#js-compliance-frameworks-list');
 

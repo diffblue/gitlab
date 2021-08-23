@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { __, sprintf } from '~/locale';
 import CommaSeparatedListTokenSelector from '../components/comma_separated_list_token_selector.vue';
 
-export default (selector, props = {}, qaSelector, customValidator) => {
+export default ({ selector, props = {}, qaSelector, customValidator = null }) => {
   const el = document.querySelector(selector);
 
   if (!el) return;
