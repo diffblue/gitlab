@@ -7,7 +7,7 @@
     = _('Restrict membership by email domain')
   .js-allowed-email-domains{ data: { hidden_input_id: hidden_input_id,
     label_id: label_id,
-    regex_validator: AllowedEmailDomain::VALID_DOMAIN_REGEX.source,
+    regex_validator: AllowedEmailDomain::JS_VALID_DOMAIN_REGEX.source,
     disallowed_values: AllowedEmailDomain::RESERVED_DOMAINS.to_json } }
   = f.hidden_field :allowed_email_domains_list, id: hidden_input_id
   .form-text.text-muted

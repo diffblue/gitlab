@@ -366,6 +366,48 @@ RSpec.describe 'Edit group settings' do
     end
   end
 
+  describe 'email domain validation', :js do
+    let(:domain_field_selector) { '[placeholder="Enter domain"]' }
+
+    before do
+      stub_licensed_features(group_allowed_email_domains: true)
+    end
+
+    def update_email_domains(new_domain)
+      visit edit_group_path(group)
+
+      find(domain_field_selector).set(new_domain)
+      find(domain_field_selector).send_keys(:enter)
+    end
+
+    it 'is visible' do
+      visit edit_group_path(group)
+
+      expect(page).to have_content("Restrict membership by email domain")
+    end
+
+    it 'displays an error for invalid emails' do
+      new_invalid_domain = "gitlab./com!"
+
+      update_email_domains(new_invalid_domain)
+
+      expect(page).to have_content("The domain you entered is misformatted")
+    end
+
+    it 'will save valid domains' do
+      new_domain = "gitlab.com"
+
+      update_email_domains(new_domain)
+
+      expect(page).not_to have_content("The domain you entered is misformatted")
+
+      click_button 'Save changes'
+      wait_for_requests
+
+      expect(page).to have_content("Group 'Foo bar' was successfully updated.")
+    end
+  end
+
   def save_permissions_group
     page.within('.gs-permissions') do
       click_button 'Save changes'
