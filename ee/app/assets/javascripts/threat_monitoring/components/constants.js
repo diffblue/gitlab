@@ -28,7 +28,10 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     text: s__('SecurityOrchestration|Network'),
     urlParameter: 'container_policy',
     value: 'container',
-    yamlIndicator: 'CiliumNetworkPolicy',
+    yamlIndicator: {
+      cilium: 'CiliumNetworkPolicy',
+      network: 'NetworkPolicy',
+    },
   },
   scanExecution: {
     component: 'scan-execution-policy-editor',

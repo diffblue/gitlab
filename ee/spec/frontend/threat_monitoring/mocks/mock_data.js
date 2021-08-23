@@ -15,27 +15,115 @@ export const mockEnvironmentsResponse = {
   stopped_count: 5,
 };
 
+export const mockDastScanExecutionManifest = `type: scan_execution_policy
+name: Test Dast
+description: This policy enforces pipeline configuration to have a job with DAST scan
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions:
+  - scan: dast
+    site_profile: required_site_profile
+    scanner_profile: required_scanner_profile
+`;
+
+export const mockDastScanExecutionObject = {
+  type: 'scan_execution_policy',
+  name: 'Test Dast',
+  description: 'This policy enforces pipeline configuration to have a job with DAST scan',
+  enabled: false,
+  rules: [{ type: 'pipeline', branches: ['main'] }],
+  actions: [
+    {
+      scan: 'dast',
+      site_profile: 'required_site_profile',
+      scanner_profile: 'required_scanner_profile',
+    },
+  ],
+};
+
+export const mockNetworkManifest = `kind: CiliumNetworkPolicy
+metadata:
+  name: test-policy-01
+  namespace: network-policy-demo-cluster-management-5000174-production
+  labels:
+    app.gitlab.com/proj: '5000174'
+spec:
+  endpointSelector:
+    matchLabels:
+      network-policy.gitlab.com/disabled_by: gitlab
+  ingress:
+  - fromCIDR:
+    - 192.168.2.3/5
+description: this is the
+`;
+
+export const mockCiliumManifest = `apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: test-policy-03
+  namespace: network-policy-demo-cluster-management-5000174-production
+  labels:
+    app.gitlab.com/proj: '5000174'
+  resourceVersion: '655210'
+spec:
+  endpointSelector:
+    matchLabels:
+      network-policy.gitlab.com/disabled_by: gitlab
+  ingress:
+  - fromCIDR:
+    - 10.101.12.14/5
+description: 03-desc`;
+
+export const mockL3Manifest = `apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+description: test description
+metadata:
+  name: test-policy-02
+  labels:
+    app.gitlab.com/proj: '21'
+spec:
+  endpointSelector:
+    matchLabels:
+      foo: bar
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        foo: bar`;
+
+export const mockL7Manifest = `apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: limit-inbound-ip
+spec:
+  endpointSelector: {}
+  ingress:
+  - toPorts:
+    - ports:
+      - port: '80'
+        protocol: TCP
+      - port: '443'
+        protocol: TCP
+      rules:
+        http:
+        - headers:
+          - 'X-Forwarded-For: 192.168.1.1'
+    fromEntities:
+    - cluster`;
+
+export const mockCiliumPolicy = {
+  name: 'test-policy-03',
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockCiliumManifest,
+};
+
 export const mockNetworkPoliciesResponse = [
   {
     name: 'policy',
     kind: 'NetworkPolicy',
-    yaml: `---
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: example-name
-  namespace: example-namespace
-spec:
-  podSelector:
-    matchLabels:
-      role: db
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          project: myproject`,
+    yaml: mockNetworkManifest,
     updatedAt: '2020-04-14T00:08:30Z',
     enabled: true,
     fromAutoDevops: false,
@@ -44,23 +132,9 @@ spec:
     },
   },
   {
-    name: 'test-policy-01',
+    name: 'test-policy-02',
     kind: 'CiliumNetworkPolicy',
-    yaml: `---
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: test-policy-01
-  namespace: network-policy-demo-cluster-management-5000174-production
-  labels:
-    app.gitlab.com/proj: '5000174'
-  resourceVersion: '630685'
-spec:
-  endpointSelector: {}
-  ingress:
-  - fromCIDR:
-    - 192.168.2.3/5
-description: this is the first`,
+    yaml: mockL3Manifest,
     enabled: true,
     fromAutoDevops: false,
     updatedAt: '2021-06-08T04:01:11Z',
@@ -70,33 +144,10 @@ description: this is the first`,
   },
 ];
 
-export const mockCiliumPolicy = {
-  name: 'policy',
-  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
-  yaml: `apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: policy
-spec:
-  endpointSelector: {}`,
-};
-
 export const mockScanExecutionPolicy = {
   name: 'Scheduled DAST scan',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
-  yaml: `---
-name: Enforce DAST in every pipeline
-description: This policy enforces pipeline configuration to have a job with DAST scan
-enabled: true
-rules:
-- type: pipeline
-  branches:
-  - master
-actions:
-- scan: dast
-  scanner_profile: Scanner Profile
-  site_profile: Site Profile
-`,
+  yaml: mockDastScanExecutionManifest,
   enabled: true,
 };
 
@@ -219,69 +270,3 @@ export const mockAlertDetails = {
   todos: { nodes: [{ id: 'gid://gitlab/Todo/5984130' }] },
   notes: { nodes: [] },
 };
-
-export const mockDastScanExecutionManifest = `type: scan_execution_policy
-name: Test Dast
-description: This is a good test
-enabled: false
-rules:
-  - type: pipeline
-    branches:
-      - main
-actions:
-  - scan: dast
-    site_profile: required_site_profile
-    scanner_profile: required_scanner_profile
-`;
-
-export const mockDastScanExecutionObject = {
-  type: 'scan_execution_policy',
-  name: 'Test Dast',
-  description: 'This is a good test',
-  enabled: false,
-  rules: [{ type: 'pipeline', branches: ['main'] }],
-  actions: [
-    {
-      scan: 'dast',
-      site_profile: 'required_site_profile',
-      scanner_profile: 'required_scanner_profile',
-    },
-  ],
-};
-
-export const mockL7Manifest = `apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: limit-inbound-ip
-spec:
-  endpointSelector: {}
-  ingress:
-  - toPorts:
-    - ports:
-      - port: '80'
-        protocol: TCP
-      - port: '443'
-        protocol: TCP
-      rules:
-        http:
-        - headers:
-          - 'X-Forwarded-For: 192.168.1.1'
-    fromEntities:
-    - cluster`;
-
-export const mockL3Manifest = `apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-description: test description
-metadata:
-  name: test-policy
-  labels:
-    app.gitlab.com/proj: '21'
-spec:
-  endpointSelector:
-    matchLabels:
-      network-policy.gitlab.com/disabled_by: gitlab
-      foo: bar
-  ingress:
-  - fromEndpoints:
-    - matchLabels:
-        foo: bar`;

@@ -27,6 +27,10 @@ const environments = [
     id: 2,
     global_id: 'gid://gitlab/Environment/2',
   },
+  {
+    id: 3,
+    global_id: 'gid://gitlab/Environment/3',
+  },
 ];
 const scanExecutionPoliciesSpy = scanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const defaultRequestHandlers = {
@@ -47,6 +51,7 @@ describe('PoliciesList component', () => {
       ...state,
     });
     store.state.threatMonitoring.environments = environments;
+    store.state.threatMonitoring.currentEnvironmentId = environments[0].id;
     requestHandlers = {
       ...defaultRequestHandlers,
       ...handlers,
@@ -125,6 +130,7 @@ describe('PoliciesList component', () => {
 
     it('fetches policies', () => {
       expect(requestHandlers.networkPolicies).toHaveBeenCalledWith({
+        environmentId: environments[0].global_id,
         fullPath,
       });
       expect(requestHandlers.scanExecutionPolicies).toHaveBeenCalledWith({
@@ -148,11 +154,11 @@ describe('PoliciesList component', () => {
 
     it('fetches network policies on environment change', async () => {
       store.dispatch.mockReset();
-      await store.commit('threatMonitoring/SET_CURRENT_ENVIRONMENT_ID', 2);
+      await store.commit('threatMonitoring/SET_CURRENT_ENVIRONMENT_ID', 3);
       expect(requestHandlers.networkPolicies).toHaveBeenCalledTimes(2);
       expect(requestHandlers.networkPolicies.mock.calls[1][0]).toEqual({
         fullPath: 'project/path',
-        environmentId: environments[0].global_id,
+        environmentId: environments[1].global_id,
       });
     });
 
@@ -259,10 +265,11 @@ describe('PoliciesList component', () => {
   });
 
   describe.each`
-    description         | policy                                  | policyType
-    ${'container'}      | ${mockNetworkPoliciesResponse[1]}       | ${'container'}
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'}
-  `('given there is a $description policy selected', ({ policy, policyType }) => {
+    description         | policy                                  | policyType         | editPolicyPath
+    ${'network'}        | ${mockNetworkPoliciesResponse[0]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=NetworkPolicy'}
+    ${'container'}      | ${mockNetworkPoliciesResponse[1]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${'path/to/policy?environment_id=2&type=scan_execution_policy'}
+  `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
     beforeEach(() => {
       mountShallowWrapper();
       findPoliciesTable().vm.$emit('row-selected', [policy]);
@@ -272,6 +279,7 @@ describe('PoliciesList component', () => {
       const editorDrawer = findPolicyDrawer();
       expect(editorDrawer.exists()).toBe(true);
       expect(editorDrawer.props()).toMatchObject({
+        editPolicyPath,
         open: true,
         policy,
         policyType,
