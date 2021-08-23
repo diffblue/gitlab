@@ -5,11 +5,11 @@ module Gitlab
     extend self
 
     def emojis
-      Gemojione.index.instance_variable_get(:@emoji_by_name)
+      TanukiEmoji.index.instance_variable_get(:@name_index)
     end
 
     def emojis_by_moji
-      Gemojione.index.instance_variable_get(:@emoji_by_moji)
+      TanukiEmoji.index.instance_variable_get(:@codepoints_index)
     end
 
     def emojis_unicodes
@@ -25,11 +25,11 @@ module Gitlab
     end
 
     def emoji_filename(name)
-      emojis[name]["unicode"]
+      TanukiEmoji.find_by_alpha_code(name).image_name
     end
 
     def emoji_unicode_filename(moji)
-      emojis_by_moji[moji]["unicode"]
+      TanukiEmoji.find_by_codepoints(moji).image_name
     end
 
     def emoji_unicode_version(name)
@@ -55,22 +55,22 @@ module Gitlab
     end
 
     def emoji_exists?(name)
-      emojis.has_key?(name)
+      TanukiEmoji.find_by_alpha_code(name)
     end
 
     # CSS sprite fallback takes precedence over image fallback
-    def gl_emoji_tag(name, options = {})
-      emoji_name = emojis_aliases[name] || name
-      emoji_info = emojis[emoji_name]
-      return unless emoji_info
+    # @param [TanukiEmoji::Character] emoji
+    # @param [Hash] options
+    def gl_emoji_tag(emoji, options = {})
+      return unless emoji
 
       data = {
-        name: emoji_name,
-        unicode_version: emoji_unicode_version(emoji_name)
+        name: emoji.name,
+        unicode_version: emoji_unicode_version(emoji.name)
       }
-      options = { title: emoji_info['description'], data: data }.merge(options)
+      options = { title: emoji.description, data: data }.merge(options)
 
-      ActionController::Base.helpers.content_tag('gl-emoji', emoji_info['moji'], options)
+      ActionController::Base.helpers.content_tag('gl-emoji', emoji.codepoints, options)
     end
 
     def custom_emoji_tag(name, image_source)

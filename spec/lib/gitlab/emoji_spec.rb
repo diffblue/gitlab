@@ -3,16 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Emoji do
-  let_it_be(:emojis) { Gemojione.index.instance_variable_get(:@emoji_by_name) }
-  let_it_be(:emojis_by_moji) { Gemojione.index.instance_variable_get(:@emoji_by_moji) }
+  let_it_be(:emojis) { TanukiEmoji.index.all.index_by(&:name) }
+  let_it_be(:emojis_by_moji) { TanukiEmoji.index.all.index_by(&:codepoints) }
   let_it_be(:emoji_unicode_versions_by_name) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'emoji-unicode-version-map.json'))) }
   let_it_be(:emojis_aliases) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'aliases.json'))) }
 
   describe '.emojis' do
     it 'returns emojis' do
-      current_emojis = described_class.emojis
+      current_emojis = described_class.emojis.values
 
-      expect(current_emojis).to eq(emojis)
+      expect(current_emojis).to match_array(emojis)
     end
   end
 
@@ -53,7 +53,7 @@ RSpec.describe Gitlab::Emoji do
       # "100" => {"unicode"=>"1F4AF"...}
       emoji_filename = described_class.emoji_filename('100')
 
-      expect(emoji_filename).to eq(emojis['100']['unicode'])
+      expect(emoji_filename).to eq("emoji_u#{TanukiEmoji.find_by_alpha_code('100').hex}.png")
     end
   end
 
@@ -61,7 +61,7 @@ RSpec.describe Gitlab::Emoji do
     it 'returns emoji unicode filename' do
       emoji_unicode_filename = described_class.emoji_unicode_filename('💯')
 
-      expect(emoji_unicode_filename).to eq(emojis_by_moji['💯']['unicode'])
+      expect(emoji_unicode_filename).to eq("emoji_u#{TanukiEmoji.find_by_codepoints('💯').hex}.png")
     end
   end
 
@@ -120,13 +120,15 @@ RSpec.describe Gitlab::Emoji do
 
   describe '.gl_emoji_tag' do
     it 'returns gl emoji tag if emoji is found' do
-      gl_tag = described_class.gl_emoji_tag('small_airplane')
+      emoji = TanukiEmoji.find_by_alpha_code('small_airplane')
+      gl_tag = described_class.gl_emoji_tag(emoji)
 
       expect(gl_tag).to eq('<gl-emoji title="small airplane" data-name="airplane_small" data-unicode-version="7.0">🛩</gl-emoji>')
     end
 
-    it 'returns nil if emoji name is not found' do
-      gl_tag = described_class.gl_emoji_tag('random')
+    it 'returns nil if emoji is not found' do
+      emoji = TanukiEmoji.find_by_alpha_code('random')
+      gl_tag = described_class.gl_emoji_tag(emoji)
 
       expect(gl_tag).to be_nil
     end
