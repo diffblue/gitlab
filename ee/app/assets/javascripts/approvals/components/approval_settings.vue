@@ -1,7 +1,8 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon, GlLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { mapComputed } from '~/vuex_shared/bindings';
 import { APPROVAL_SETTINGS_I18N } from '../constants';
 import ApprovalSettingsCheckbox from './approval_settings_checkbox.vue';
@@ -14,6 +15,7 @@ export default {
     GlForm,
     GlFormGroup,
     GlLoadingIcon,
+    GlLink,
   },
   props: {
     approvalSettingsPath: {
@@ -80,15 +82,10 @@ export default {
       await this.updateSettings(this.approvalSettingsPath);
     },
   },
-  links: {
-    preventAuthorApprovalDocsAnchor: 'prevent-approval-by-author',
-    preventCommittersApprovalDocsAnchor: 'prevent-approvals-by-users-who-add-commits',
-    preventMrApprovalRuleEditDocsAnchor: 'prevent-editing-approval-rules-in-merge-requests',
-    requireUserPasswordDocsAnchor: 'require-user-password-to-approve',
-    removeApprovalsOnPushDocsAnchor:
-      'remove-all-approvals-when-commits-are-added-to-the-source-branch',
-  },
   i18n: APPROVAL_SETTINGS_I18N,
+  links: {
+    approvalSettingsDocsPath: helpPagePath('user/project/merge_requests/approvals/settings'),
+  },
 };
 </script>
 
@@ -118,11 +115,17 @@ export default {
       {{ $options.i18n.savingSuccessMessage }}
     </gl-alert>
     <gl-form v-if="hasSettings" @submit.prevent="onSubmit">
+      <label class="label-bold"> {{ $options.i18n.approvalSettingsHeader }} </label>
+      <p>
+        {{ $options.i18n.approvalSettingsDescription }}
+        <gl-link :href="$options.links.approvalSettingsDocsPath" target="_blank">
+          {{ $options.i18n.learnMore }}
+        </gl-link>
+      </p>
       <gl-form-group>
         <approval-settings-checkbox
           v-model="preventAuthorApproval"
           :label="settingsLabels.authorApprovalLabel"
-          :anchor="$options.links.preventAuthorApprovalDocsAnchor"
           :locked="!canPreventAuthorApproval"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-author-approval"
@@ -130,7 +133,6 @@ export default {
         <approval-settings-checkbox
           v-model="preventCommittersApproval"
           :label="settingsLabels.preventCommittersApprovalLabel"
-          :anchor="$options.links.preventCommittersApprovalDocsAnchor"
           :locked="!canPreventCommittersApproval"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-committers-approval"
@@ -138,7 +140,6 @@ export default {
         <approval-settings-checkbox
           v-model="preventMrApprovalRuleEdit"
           :label="settingsLabels.preventMrApprovalRuleEditLabel"
-          :anchor="$options.links.preventMrApprovalRuleEditDocsAnchor"
           :locked="!canPreventMrApprovalRuleEdit"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-mr-approval-rule-edit"
@@ -146,13 +147,11 @@ export default {
         <approval-settings-checkbox
           v-model="requireUserPassword"
           :label="settingsLabels.requireUserPasswordLabel"
-          :anchor="$options.links.requireUserPasswordDocsAnchor"
           data-testid="require-user-password"
         />
         <approval-settings-checkbox
           v-model="removeApprovalsOnPush"
           :label="settingsLabels.removeApprovalsOnPushLabel"
-          :anchor="$options.links.removeApprovalsOnPushDocsAnchor"
           data-testid="remove-approvals-on-push"
         />
       </gl-form-group>

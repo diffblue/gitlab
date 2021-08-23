@@ -1,11 +1,14 @@
 <script>
-import { GlIcon } from '@gitlab/ui';
+import { GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import Visibility from 'visibilityjs';
 import Api from 'ee/api';
+import vulnerabilityDiscussionsQuery from 'ee/security_dashboard/graphql/queries/vulnerability_discussions.query.graphql';
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import createFlash from '~/flash';
+import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import Poll from '~/lib/utils/poll';
@@ -27,6 +30,7 @@ export default {
     HistoryEntry,
     RelatedIssues,
     RelatedJiraIssues,
+    GlLoadingIcon,
     GlIcon,
     StatusDescription,
   },
@@ -44,14 +48,53 @@ export default {
   },
   data() {
     return {
-      discussionsDictionary: {},
+      notesLoading: true,
+      discussions: [],
       lastFetchedAt: null,
     };
   },
-  computed: {
-    discussions() {
-      return Object.values(this.discussionsDictionary);
+  apollo: {
+    discussions: {
+      query: vulnerabilityDiscussionsQuery,
+      variables() {
+        return { id: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerability.id) };
+      },
+      update: ({ vulnerability }) => {
+        if (!vulnerability) {
+          return [];
+        }
+
+        return vulnerability.discussions.nodes.map((d) => ({ ...d, notes: [] }));
+      },
+      result({ error }) {
+        if (!this.poll && !error) {
+          this.createNotesPoll();
+
+          if (!Visibility.hidden()) {
+            this.poll.makeRequest();
+          }
+
+          Visibility.change(() => {
+            if (Visibility.hidden()) {
+              this.poll.stop();
+            } else {
+              this.poll.restart();
+            }
+          });
+        }
+      },
+      error() {
+        this.notesLoading = false;
+
+        createFlash({
+          message: s__(
+            'VulnerabilityManagement|Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
+          ),
+        });
+      },
     },
+  },
+  computed: {
     noteDictionary() {
       return this.discussions
         .flatMap((x) => x.notes)
@@ -94,56 +137,19 @@ export default {
       };
     },
   },
-  created() {
-    this.fetchDiscussions();
-  },
   updated() {
     this.$nextTick(() => {
       initUserPopovers(this.$el.querySelectorAll('.js-user-link'));
     });
   },
   beforeDestroy() {
-    if (this.poll) this.poll.stop();
+    if (this.poll) {
+      this.poll.stop();
+    }
   },
   methods: {
-    dateToSeconds(date) {
-      return Date.parse(date) / 1000;
-    },
-    fetchDiscussions() {
-      // note: this direct API call will be replaced when migrating the vulnerability details page to GraphQL
-      // related epic: https://gitlab.com/groups/gitlab-org/-/epics/3657
-      axios
-        .get(this.vulnerability.discussionsUrl)
-        .then(({ data, headers: { date } }) => {
-          this.discussionsDictionary = data.reduce((acc, discussion) => {
-            acc[discussion.id] = convertObjectPropsToCamelCase(discussion, { deep: true });
-            return acc;
-          }, {});
-
-          this.lastFetchedAt = this.dateToSeconds(date);
-
-          if (!this.poll) this.createNotesPoll();
-
-          if (!Visibility.hidden()) {
-            // delays the initial request by 6 seconds
-            this.poll.makeDelayedRequest(6 * 1000);
-          }
-
-          Visibility.change(() => {
-            if (Visibility.hidden()) {
-              this.poll.stop();
-            } else {
-              this.poll.restart();
-            }
-          });
-        })
-        .catch(() => {
-          createFlash({
-            message: s__(
-              'VulnerabilityManagement|Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
-            ),
-          });
-        });
+    findDiscussion(id) {
+      return this.discussions.find((d) => d.id === id);
     },
     createNotesPoll() {
       // note: this polling call will be replaced when migrating the vulnerability details page to GraphQL
@@ -159,48 +165,46 @@ export default {
         successCallback: ({ data: { notes, last_fetched_at: lastFetchedAt } }) => {
           this.updateNotes(convertObjectPropsToCamelCase(notes, { deep: true }));
           this.lastFetchedAt = lastFetchedAt;
+          this.notesLoading = false;
         },
-        errorCallback: () =>
+        errorCallback: () => {
+          this.notesLoading = false;
           createFlash({
             message: __('Something went wrong while fetching latest comments.'),
-          }),
+          });
+        },
       });
     },
     updateNotes(notes) {
-      let isVulnerabilityStateChanged = false;
+      let shallEmitVulnerabilityChangedEvent;
 
       notes.forEach((note) => {
+        const discussion = this.findDiscussion(note.discussionId);
         // If the note exists, update it.
         if (this.noteDictionary[note.id]) {
-          const updatedDiscussion = { ...this.discussionsDictionary[note.discussionId] };
-          updatedDiscussion.notes = updatedDiscussion.notes.map((curr) =>
-            curr.id === note.id ? note : curr,
-          );
-          this.discussionsDictionary[note.discussionId] = updatedDiscussion;
+          discussion.notes = discussion.notes.map((curr) => (curr.id === note.id ? note : curr));
         }
         // If the note doesn't exist, but the discussion does, add the note to the discussion.
-        else if (this.discussionsDictionary[note.discussionId]) {
-          const updatedDiscussion = { ...this.discussionsDictionary[note.discussionId] };
-          updatedDiscussion.notes.push(note);
-          this.discussionsDictionary[note.discussionId] = updatedDiscussion;
+        else if (discussion) {
+          discussion.notes.push(note);
         }
         // If the discussion doesn't exist, create it.
         else {
-          const newDiscussion = {
+          this.discussions.push({
             id: note.discussionId,
             replyId: note.discussionId,
             notes: [note],
-          };
-          this.$set(this.discussionsDictionary, newDiscussion.id, newDiscussion);
+          });
 
           // If the vulnerability status has changed, the note will be a system note.
+          // Emit an event that tells the header to refresh the vulnerability.
           if (note.system === true) {
-            isVulnerabilityStateChanged = true;
+            shallEmitVulnerabilityChangedEvent = true;
           }
         }
       });
-      // Emit an event that tells the header to refresh the vulnerability.
-      if (isVulnerabilityStateChanged) {
+
+      if (shallEmitVulnerabilityChangedEvent) {
         this.$emit('vulnerability-state-change');
       }
     },
@@ -243,7 +247,8 @@ export default {
       </div>
     </div>
     <hr />
-    <ul v-if="discussions.length" ref="historyList" class="notes discussion-body">
+    <gl-loading-icon v-if="notesLoading" />
+    <ul v-else-if="discussions.length" class="notes discussion-body">
       <history-entry
         v-for="discussion in discussions"
         :key="discussion.id"

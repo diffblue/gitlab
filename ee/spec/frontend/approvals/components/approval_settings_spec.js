@@ -1,4 +1,4 @@
-import { GlButton, GlForm, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlForm, GlLoadingIcon, GlLink } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 
@@ -59,6 +59,7 @@ describe('ApprovalSettings', () => {
   const findSuccessAlert = () => wrapper.findByTestId('success-alert');
   const findForm = () => wrapper.findComponent(GlForm);
   const findSaveButton = () => wrapper.findComponent(GlButton);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   afterEach(() => {
     wrapper.destroy();
@@ -153,14 +154,34 @@ describe('ApprovalSettings', () => {
       expect(findSaveButton().attributes('disabled')).toBeUndefined();
     });
 
+    it('renders the approval settings heading', async () => {
+      createWrapper();
+      await waitForPromises();
+
+      expect(findForm().text()).toContain('Approval settings');
+      expect(findForm().text()).toContain(
+        'Define how approval rules are applied as a merge request moves toward completion.',
+      );
+    });
+
+    it('renders the help link', async () => {
+      createWrapper();
+      await waitForPromises();
+
+      expect(findLink().text()).toBe('Learn more.');
+      expect(findLink().attributes('href')).toBe(
+        '/help/user/project/merge_requests/approvals/settings',
+      );
+    });
+
     describe.each`
-      testid                             | action                            | setting                        | labelKey                            | anchor
-      ${'prevent-author-approval'}       | ${'setPreventAuthorApproval'}     | ${'preventAuthorApproval'}     | ${'authorApprovalLabel'}            | ${'prevent-approval-by-author'}
-      ${'prevent-committers-approval'}   | ${'setPreventCommittersApproval'} | ${'preventCommittersApproval'} | ${'preventCommittersApprovalLabel'} | ${'prevent-approvals-by-users-who-add-commits'}
-      ${'prevent-mr-approval-rule-edit'} | ${'setPreventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEditLabel'} | ${'prevent-editing-approval-rules-in-merge-requests'}
-      ${'require-user-password'}         | ${'setRequireUserPassword'}       | ${'requireUserPassword'}       | ${'requireUserPasswordLabel'}       | ${'require-user-password-to-approve'}
-      ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}     | ${'remove-all-approvals-when-commits-are-added-to-the-source-branch'}
-    `('with the $testid checkbox', ({ testid, action, setting, labelKey, anchor }) => {
+      testid                             | action                            | setting                        | labelKey
+      ${'prevent-author-approval'}       | ${'setPreventAuthorApproval'}     | ${'preventAuthorApproval'}     | ${'authorApprovalLabel'}
+      ${'prevent-committers-approval'}   | ${'setPreventCommittersApproval'} | ${'preventCommittersApproval'} | ${'preventCommittersApprovalLabel'}
+      ${'prevent-mr-approval-rule-edit'} | ${'setPreventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEdit'} | ${'preventMrApprovalRuleEditLabel'}
+      ${'require-user-password'}         | ${'setRequireUserPassword'}       | ${'requireUserPassword'}       | ${'requireUserPasswordLabel'}
+      ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}
+    `('with the $testid checkbox', ({ testid, action, setting, labelKey }) => {
       let checkbox = null;
 
       beforeEach(async () => {
@@ -178,11 +199,8 @@ describe('ApprovalSettings', () => {
         expect(checkbox.exists()).toBe(true);
       });
 
-      it('has the anchor and label props', () => {
-        expect(checkbox.props()).toMatchObject({
-          anchor,
-          label: PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey],
-        });
+      it('has the label prop', () => {
+        expect(checkbox.props('label')).toBe(PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey]);
       });
 
       it(`triggers the action ${action} when the value is changed`, async () => {

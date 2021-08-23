@@ -134,7 +134,7 @@ module EE
     end
 
     def next_unprocessed_event
-      @next_unprocessed_event ||= Geo::EventLog.next_unprocessed_event
+      @next_unprocessed_event ||= ::Geo::EventLog.next_unprocessed_event
     end
 
     def unprocessed_too_old?

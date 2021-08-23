@@ -87,79 +87,22 @@ RSpec.describe DastSiteValidations::CreateService do
   end
 
   describe 'execute', :clean_gitlab_redis_shared_state do
-    context 'worker validation' do
-      before do
-        stub_feature_flags(dast_runner_site_validation: false)
+    it_behaves_like 'the licensed feature is not available'
+
+    it_behaves_like 'the licensed feature is available' do
+      it 'attempts to validate' do
+        expected_args = { project: project, current_user: developer, params: { dast_site_validation: instance_of(DastSiteValidation) } }
+
+        expect(AppSec::Dast::SiteValidations::RunnerService).to receive(:new).with(expected_args).and_call_original
+
+        subject
       end
 
-      it_behaves_like 'the licensed feature is not available'
-
-      it_behaves_like 'the licensed feature is available' do
-        it 'attempts to validate' do
-          expect(DastSiteValidationWorker).to receive(:perform_async)
+      it_behaves_like 'a dast_site_validation already exists' do
+        it 'does not attempt to re-validate' do
+          expect(AppSec::Dast::SiteValidations::RunnerService).not_to receive(:new)
 
           subject
-        end
-
-        context 'when worker does not return a job id' do
-          before do
-            allow(DastSiteValidationWorker).to receive(:perform_async).and_return(nil)
-          end
-
-          let(:dast_site_validation) do
-            DastSiteValidation.find_by!(dast_site_token: dast_site_token, url_path: params[:url_path])
-          end
-
-          it 'communicates failure' do
-            aggregate_failures do
-              expect(subject.status).to eq(:error)
-              expect(subject.message).to eq('Validation failed')
-            end
-          end
-
-          it 'sets dast_site_validation.state to failed' do
-            subject
-
-            expect(dast_site_validation.state).to eq('failed')
-          end
-
-          it 'logs an error' do
-            allow(Gitlab::AppLogger).to receive(:error)
-
-            subject
-
-            expect(Gitlab::AppLogger).to have_received(:error).with(message: 'Unable to validate dast_site_validation', dast_site_validation_id: dast_site_validation.id)
-          end
-        end
-
-        it_behaves_like 'a dast_site_validation already exists' do
-          it 'does not attempt to re-validate' do
-            expect(DastSiteValidationWorker).not_to receive(:perform_async)
-
-            subject
-          end
-        end
-      end
-    end
-
-    context 'runner validation' do
-      it_behaves_like 'the licensed feature is not available'
-
-      it_behaves_like 'the licensed feature is available' do
-        it 'attempts to validate' do
-          expected_args = { project: project, current_user: developer, params: { dast_site_validation: instance_of(DastSiteValidation) } }
-
-          expect(AppSec::Dast::SiteValidations::RunnerService).to receive(:new).with(expected_args).and_call_original
-
-          subject
-        end
-
-        it_behaves_like 'a dast_site_validation already exists' do
-          it 'does not attempt to re-validate' do
-            expect(AppSec::Dast::SiteValidations::RunnerService).not_to receive(:new)
-
-            subject
-          end
         end
       end
     end

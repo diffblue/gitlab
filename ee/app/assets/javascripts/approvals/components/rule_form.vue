@@ -462,21 +462,6 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      v-if="showProtectedBranch"
-      :label="$options.APPROVAL_DIALOG_I18N.form.protectedBranchLabel"
-      :description="$options.APPROVAL_DIALOG_I18N.form.protectedBranchDescription"
-      :state="isValidBranches"
-      :invalid-feedback="invalidBranches"
-      data-testid="branches-group"
-    >
-      <protected-branches-selector
-        v-model="branchesToAdd"
-        :project-id="settings.projectId"
-        :is-invalid="!isValidBranches"
-        :selected-branches="branches"
-      />
-    </gl-form-group>
-    <gl-form-group
       v-if="isVulnerabilityCheck"
       :label="$options.APPROVAL_DIALOG_I18N.form.scannersLabel"
       :description="$options.APPROVAL_DIALOG_I18N.form.scannersDescription"
@@ -503,6 +488,38 @@ export default {
           <gl-truncate :text="value" />
         </gl-dropdown-item>
       </gl-dropdown>
+    </gl-form-group>
+    <gl-form-group
+      v-if="showProtectedBranch"
+      :label="$options.APPROVAL_DIALOG_I18N.form.protectedBranchLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.protectedBranchDescription"
+      :state="isValidBranches"
+      :invalid-feedback="invalidBranches"
+      data-testid="branches-group"
+    >
+      <protected-branches-selector
+        v-model="branchesToAdd"
+        :project-id="settings.projectId"
+        :is-invalid="!isValidBranches"
+        :selected-branches="branches"
+      />
+    </gl-form-group>
+    <gl-form-group
+      v-if="isVulnerabilityCheck"
+      :label="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedLabel"
+      :description="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedDescription"
+      :state="isValidVulnerabilitiesAllowed"
+      :invalid-feedback="invalidVulnerabilitiesAllowedError"
+      data-testid="vulnerability-amount-group"
+    >
+      <gl-form-input
+        v-model.number="vulnerabilitiesAllowed"
+        :state="isValidVulnerabilitiesAllowed"
+        min="0"
+        class="mw-6em"
+        type="number"
+        data-testid="vulnerability-amount"
+      />
     </gl-form-group>
     <gl-form-group
       v-if="isVulnerabilityCheck"
@@ -546,23 +563,6 @@ export default {
         type="number"
         data-testid="approvals-required"
         data-qa-selector="approvals_required_field"
-      />
-    </gl-form-group>
-    <gl-form-group
-      v-if="isVulnerabilityCheck"
-      :label="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedLabel"
-      :description="$options.APPROVAL_DIALOG_I18N.form.vulnerabilitiesAllowedDescription"
-      :state="isValidVulnerabilitiesAllowed"
-      :invalid-feedback="invalidVulnerabilitiesAllowedError"
-      data-testid="vulnerability-amount-group"
-    >
-      <gl-form-input
-        v-model.number="vulnerabilitiesAllowed"
-        :state="isValidVulnerabilitiesAllowed"
-        min="0"
-        class="mw-6em"
-        type="number"
-        data-testid="vulnerability-amount"
       />
     </gl-form-group>
     <gl-form-group

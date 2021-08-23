@@ -9,7 +9,7 @@ module EE
         include ::Gitlab::Geo::ReplicableModel
         include ::Gitlab::Geo::VerificationState
 
-        with_replicator Geo::PackageFileReplicator
+        with_replicator ::Geo::PackageFileReplicator
       end
 
       class_methods do

@@ -57,7 +57,7 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
             name: 'Run DAST in every pipeline',
             description: 'This policy enforces to run DAST for every pipeline within the project',
             enabled: true,
-            yaml: policy.to_yaml,
+            yaml: YAML.dump(policy.deep_stringify_keys),
             updated_at: policy_last_updated_at
           }
         ]

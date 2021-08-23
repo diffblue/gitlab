@@ -30,20 +30,30 @@ RSpec.describe AllowedEmailDomain do
     describe '#valid domain' do
       subject { described_class.new(group: create(:group), domain: domain) }
 
+      let_it_be(:group) { create(:group) }
+
       context 'valid domain' do
-        let(:domain) { 'gitlab.com' }
+        let(:valid_domains) { ['gitlab.com', 'gitlab.co.uk', 'GITLAB.COM'] }
 
         it 'succeeds' do
-          expect(subject.valid?).to be_truthy
+          valid_domains.each do |domain|
+            overridden_subject = described_class.new(group: group, domain: domain)
+            expect(overridden_subject.valid?).to be_truthy
+          end
         end
       end
 
       context 'invalid domain' do
-        let(:domain) { 'gitlab' }
+        let(:invalid_domains) do
+          ['gitlab', 'git?lab.com', 'gitlab.com!', 'gitlab.@com', 'gitla>b.com', 'gitl<a>b@.c?om!']
+        end
 
         it 'fails' do
-          expect(subject.valid?).to be_falsey
-          expect(subject.errors[:domain]).to include('The domain you entered is misformatted.')
+          invalid_domains.each do |domain|
+            overridden_subject = described_class.new(group: group, domain: domain)
+            expect(overridden_subject.valid?).to be_falsey
+            expect(overridden_subject.errors[:domain]).to include('The domain you entered is misformatted.')
+          end
         end
       end
 

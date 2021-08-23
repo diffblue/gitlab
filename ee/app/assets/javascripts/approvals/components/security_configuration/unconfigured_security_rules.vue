@@ -44,7 +44,7 @@ export default {
             'SecurityApprovals|Configurable if security scanners are enabled. %{linkStart}Learn more.%{linkEnd}',
           ),
           enableDescription: s__(
-            'SecurityApprovals|Requires approval for vulnerabilities of Critical, High, or Unknown severity. %{linkStart}Learn more.%{linkEnd}',
+            'SecurityApprovals|Requires approval for vulnerabilities. %{linkStart}Learn more.%{linkEnd}',
           ),
           docsPath: this.vulnerabilityCheckHelpPagePath,
         },

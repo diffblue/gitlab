@@ -17,9 +17,9 @@ module Sidebars
 
         override :link
         def link
-          return renderable_items.first.link if renderable_items.any?
+          return group_security_discover_path(context.group) if renderable_items.empty?
 
-          group_security_discover_path(context.group)
+          super
         end
 
         override :title

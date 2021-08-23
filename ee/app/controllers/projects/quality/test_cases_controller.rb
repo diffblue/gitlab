@@ -26,7 +26,7 @@ class Projects::Quality::TestCasesController < Projects::ApplicationController
                   .execute
                   .iid_in(params[:id])
                   .without_order
-                  .first
+                  .take! # rubocop: disable CodeReuse/ActiveRecord
 
     serializer = IssueSerializer.new(current_user: current_user, project: project)
 

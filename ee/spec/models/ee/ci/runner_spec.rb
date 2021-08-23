@@ -50,9 +50,9 @@ RSpec.describe EE::Ci::Runner do
         it { is_expected.to eq(1.1) }
 
         context 'with unlimited minutes' do
-          let(:shared_runners_minutes) { 400 }
+          let(:shared_runners_minutes) { 0 }
 
-          it { is_expected.to eq(1.1) }
+          it { is_expected.to eq(0) }
         end
       end
 

@@ -14,18 +14,8 @@ class DastSiteValidationWorker
   feature_category :dynamic_application_security_testing
   tags :exclude_from_kubernetes
 
-  sidekiq_retries_exhausted do |job|
-    dast_site_validation = DastSiteValidation.find(job['args'][0])
-    dast_site_validation.fail_op
-  end
-
-  def perform(dast_site_validation_id)
-    dast_site_validation = DastSiteValidation.find(dast_site_validation_id)
-    project = dast_site_validation.project
-
-    DastSiteValidations::ValidateService.new(
-      container: project,
-      params: { dast_site_validation: dast_site_validation }
-    ).execute!
+  def perform(_dast_site_validation_id)
+    # Scheduled for removal in %15.0
+    # Please see https://gitlab.com/gitlab-org/gitlab/-/issues/339088
   end
 end

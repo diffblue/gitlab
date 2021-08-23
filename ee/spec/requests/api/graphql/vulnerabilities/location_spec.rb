@@ -56,6 +56,9 @@ RSpec.describe 'Query.vulnerabilities.location' do
           vulnerableMethod
           blobPath
         }
+        ... on VulnerabilityLocationGeneric {
+          description
+        }
       }
     QUERY
   end
@@ -107,6 +110,32 @@ RSpec.describe 'Query.vulnerabilities.location' do
       expect(location['operatingSystem']).to eq('vulnerable_os')
       expect(location['dependency']['version']).to eq('6.6.6')
       expect(location['dependency']['package']['name']).to eq('vulnerable_container')
+    end
+  end
+
+  context 'when the vulnerability was found by a generic scanner' do
+    let_it_be(:vulnerability) do
+      create(:vulnerability, project: project, report_type: :generic)
+    end
+
+    let_it_be(:finding) do
+      create(
+        :vulnerabilities_finding,
+        vulnerability: vulnerability,
+        raw_metadata: metadata.to_json
+      )
+    end
+
+    let_it_be(:metadata) do
+      {
+        description: "Something really bad"
+      }
+    end
+
+    it 'returns a generic location' do
+      location = subject.first['location']
+
+      expect(location['__typename']).to eq('VulnerabilityLocationGeneric')
     end
   end
 
