@@ -10004,6 +10004,27 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupprojectssearch"></a>`search` | [`String`](#string) | Search project with most similar names or paths. |
 | <a id="groupprojectssort"></a>`sort` | [`NamespaceProjectSort`](#namespaceprojectsort) | Sort projects by this criteria. |
 
+##### `Group.runners`
+
+Find runners visible to the current user. Available only when feature flag `runner_graphql_query` is enabled. This flag is enabled by default.
+
+Returns [`CiRunnerConnection`](#cirunnerconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="grouprunnersmembership"></a>`membership` | [`RunnerMembershipFilter`](#runnermembershipfilter) | Control which runners to include in the results. |
+| <a id="grouprunnerssearch"></a>`search` | [`String`](#string) | Filter by full token or partial text in description field. |
+| <a id="grouprunnerssort"></a>`sort` | [`CiRunnerSort`](#cirunnersort) | Sort order of results. |
+| <a id="grouprunnersstatus"></a>`status` | [`CiRunnerStatus`](#cirunnerstatus) | Filter runners by status. |
+| <a id="grouprunnerstaglist"></a>`tagList` | [`[String!]`](#string) | Filter by tags associated with the runner (comma-separated or array). |
+| <a id="grouprunnerstype"></a>`type` | [`CiRunnerType`](#cirunnertype) | Filter runners by type. |
+
 ##### `Group.timelogs`
 
 Time logged on issues and merge requests in the group and its subgroups.
@@ -15625,6 +15646,15 @@ Status of a requirement based on last test report.
 | <a id="requirementstatusfilterfailed"></a>`FAILED` |  |
 | <a id="requirementstatusfiltermissing"></a>`MISSING` | Requirements without any test report. |
 | <a id="requirementstatusfilterpassed"></a>`PASSED` |  |
+
+### `RunnerMembershipFilter`
+
+Values for filtering runners in namespaces.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="runnermembershipfilterdescendants"></a>`DESCENDANTS` | Include runners that have either a direct relationship or a relationship with descendants. These can be project runners or group runners (in the case where group is queried). |
+| <a id="runnermembershipfilterdirect"></a>`DIRECT` | Include runners that have a direct relationship. |
 
 ### `SastUiComponentSize`
 
