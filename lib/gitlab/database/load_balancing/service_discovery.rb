@@ -13,10 +13,16 @@ module Gitlab
       # balancer with said hosts. Requests may continue to use the old hosts
       # until they complete.
       class ServiceDiscovery
+        EmptyDnsResponse = Class.new(StandardError)
+
         attr_reader :interval, :record, :record_type, :disconnect_timeout,
                     :load_balancer
 
         MAX_SLEEP_ADJUSTMENT = 10
+
+        MAX_DISCOVERY_RETRIES = 3
+
+        RETRY_DELAY_RANGE = (0.1..0.2).freeze
 
         RECORD_TYPES = {
           'A' => Net::DNS::A,
@@ -76,15 +82,21 @@ module Gitlab
         end
 
         def perform_service_discovery
-          refresh_if_necessary
-        rescue StandardError => error
-          # Any exceptions that might occur should be reported to
-          # Sentry, instead of silently terminating this thread.
-          Gitlab::ErrorTracking.track_exception(error)
+          MAX_DISCOVERY_RETRIES.times do
+            return refresh_if_necessary
+          rescue StandardError => error
+            # Any exceptions that might occur should be reported to
+            # Sentry, instead of silently terminating this thread.
+            Gitlab::ErrorTracking.track_exception(error)
 
-          Gitlab::AppLogger.error(
-            "Service discovery encountered an error: #{error.message}"
-          )
+            Gitlab::AppLogger.error(
+              "Service discovery encountered an error: #{error.message}"
+            )
+
+            # Slightly randomize the retry delay so that, in the case of a total
+            # dns outage, all starting services do not pressure the dns server at the same time.
+            sleep(rand(RETRY_DELAY_RANGE))
+          end
 
           interval
         end
@@ -155,6 +167,8 @@ module Gitlab
             when Net::DNS::SRV
               addresses_from_srv_record(response)
             end
+
+          raise EmptyDnsResponse if addresses.empty?
 
           # Addresses are sorted so we can directly compare the old and new
           # addresses, without having to use any additional data structures.
