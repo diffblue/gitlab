@@ -5,7 +5,11 @@ import {
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
 import { setHTMLFixture } from 'helpers/fixtures';
-import { mockL3Manifest, mockDastScanExecutionManifest } from './mocks/mock_data';
+import {
+  mockDastScanExecutionManifest,
+  mockCiliumManifest,
+  mockNetworkManifest,
+} from './mocks/mock_data';
 
 describe('Threat Monitoring Utils', () => {
   describe('getContentWrapperHeight', () => {
@@ -34,8 +38,9 @@ describe('Threat Monitoring Utils', () => {
     it.each`
       input                            | output
       ${''}                            | ${null}
-      ${'ciliumNetworkPolicy'}         | ${null}
-      ${mockL3Manifest}                | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
+      ${'random string'}               | ${null}
+      ${mockNetworkManifest}           | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
+      ${mockCiliumManifest}            | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
       ${mockDastScanExecutionManifest} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
     `('returns $output when used on $input', ({ input, output }) => {
       expect(getPolicyType(input)).toBe(output);

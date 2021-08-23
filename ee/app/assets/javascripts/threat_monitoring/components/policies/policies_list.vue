@@ -152,15 +152,19 @@ export default {
       return Boolean(this.networkPolicies?.some((policy) => policy.fromAutoDevops));
     },
     editPolicyPath() {
-      return this.hasSelectedPolicy
-        ? mergeUrlParams(
-            {
-              environment_id: this.currentEnvironmentId,
-              type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType]?.urlParameter,
-            },
-            this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
-          )
-        : '';
+      if (this.hasSelectedPolicy) {
+        const parameters = {
+          environment_id: this.currentEnvironmentId,
+          type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType]?.urlParameter,
+          ...(this.selectedPolicy.kind && { kind: this.selectedPolicy.kind }),
+        };
+        return mergeUrlParams(
+          parameters,
+          this.newPolicyPath.replace('new', `${this.selectedPolicy.name}/edit`),
+        );
+      }
+
+      return '';
     },
     policyType() {
       return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : 'container';

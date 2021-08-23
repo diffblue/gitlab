@@ -48,7 +48,7 @@ export default function toYaml(policy) {
 
   const policySpec = {
     apiVersion: 'cilium.io/v2',
-    kind: POLICY_TYPE_COMPONENT_OPTIONS.container.yamlIndicator,
+    kind: POLICY_TYPE_COMPONENT_OPTIONS.container.yamlIndicator.cilium,
   };
 
   if (description?.length > 0) {

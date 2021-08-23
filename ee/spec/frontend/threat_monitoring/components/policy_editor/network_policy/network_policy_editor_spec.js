@@ -115,9 +115,9 @@ describe('NetworkPolicyEditor component', () => {
       findPolicyEditorLayout().vm.$emit('update-yaml', mockL3Manifest);
 
       expect(wrapper.vm.policy).toMatchObject({
-        name: 'test-policy',
+        name: 'test-policy-02',
         description: 'test description',
-        isEnabled: false,
+        isEnabled: true,
         endpointMatchMode: EndpointMatchModeLabel,
         endpointLabels: 'foo:bar',
         rules: [
