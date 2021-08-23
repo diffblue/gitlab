@@ -2,14 +2,12 @@ import { GlFormCheckbox, GlIcon, GlLink, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import ApprovalSettingsCheckbox from 'ee/approvals/components/approval_settings_checkbox.vue';
-import { APPROVALS_HELP_PATH } from 'ee/approvals/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { slugify } from '~/lib/utils/text_utility';
 
 describe('ApprovalSettingsCheckbox', () => {
   const label = 'Foo';
-  const anchor = 'bar-baz';
   const lockIconId = `approval-settings-checkbox-lock-icon-${slugify(label)}`;
 
   let wrapper;
@@ -17,7 +15,7 @@ describe('ApprovalSettingsCheckbox', () => {
   const createWrapper = (props = {}) => {
     wrapper = extendedWrapper(
       shallowMount(ApprovalSettingsCheckbox, {
-        propsData: { label, anchor, ...props },
+        propsData: { label, ...props },
         stubs: {
           GlFormCheckbox: stubComponent(GlFormCheckbox, {
             props: ['checked'],
@@ -30,7 +28,6 @@ describe('ApprovalSettingsCheckbox', () => {
   };
 
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
-  const findLink = () => wrapper.findComponent(GlLink);
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLockIcon = () => wrapper.findByTestId('lock-icon');
 
@@ -45,14 +42,6 @@ describe('ApprovalSettingsCheckbox', () => {
 
     it('shows the label', () => {
       expect(findCheckbox().text()).toContain(label);
-    });
-
-    it('shows the help text', () => {
-      expect(findCheckbox().text()).toContain('Learn more.');
-    });
-
-    it('sets the correct help link', () => {
-      expect(findLink().attributes('href')).toBe(`/help/${APPROVALS_HELP_PATH}#${anchor}`);
     });
   });
 

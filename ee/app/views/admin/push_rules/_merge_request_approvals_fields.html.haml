@@ -1,6 +1,9 @@
 %fieldset
   %legend.h5.gl-border-none
     = _('Approval settings')
+  %p
+    = _("Define how approval rules are applied as a merge request moves toward completion.")
+    = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/settings.md"), target: '_blank'
   .gl-form-checkbox-group
     .gl-form-checkbox.custom-control.custom-checkbox
       = f.check_box :prevent_merge_requests_author_approval, class: 'custom-control-input'
