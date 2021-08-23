@@ -22,8 +22,7 @@ module AppSec
         private
 
         def allowed?
-          can?(current_user, :create_on_demand_dast_scan, project) &&
-            ::Feature.enabled?(:dast_runner_site_validation, project, default_enabled: :yaml)
+          can?(current_user, :create_on_demand_dast_scan, project)
         end
 
         def dast_site_validation

@@ -29,42 +29,28 @@ RSpec.describe Mutations::DastSiteValidations::Create do
       )
     end
 
-    shared_examples 'a validation mutation' do
-      context 'when on demand scan feature is enabled' do
-        context 'when the project does not exist' do
-          let(:full_path) { SecureRandom.hex }
+    context 'when on demand scan feature is enabled' do
+      context 'when the project does not exist' do
+        let(:full_path) { SecureRandom.hex }
 
-          it 'raises an exception' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-          end
-        end
-
-        context 'when the user can run a dast scan' do
-          before do
-            project.add_developer(user)
-          end
-
-          it 'returns the dast_site_validation id' do
-            expect(subject[:id]).to eq(dast_site_validation.to_global_id)
-          end
-
-          it 'returns the dast_site_validation status' do
-            expect(subject[:status]).to eq(dast_site_validation.state)
-          end
+        it 'raises an exception' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
         end
       end
-    end
 
-    context 'worker validation' do
-      before do
-        stub_feature_flags(dast_runner_site_validation: false)
+      context 'when the user can run a dast scan' do
+        before do
+          project.add_developer(user)
+        end
+
+        it 'returns the dast_site_validation id' do
+          expect(subject[:id]).to eq(dast_site_validation.to_global_id)
+        end
+
+        it 'returns the dast_site_validation status' do
+          expect(subject[:status]).to eq(dast_site_validation.state)
+        end
       end
-
-      it_behaves_like 'a validation mutation'
-    end
-
-    context 'runner validation' do
-      it_behaves_like 'a validation mutation'
     end
   end
 end

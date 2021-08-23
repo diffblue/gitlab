@@ -15,19 +15,13 @@ module API
           namespace :internal do
             namespace :dast do
               resource :site_validations do
-                desc 'Transitions a DAST site validation to a new state.' do
-                  detail 'This feature is gated by the :dast_runner_site_validation feature flag.'
-                end
+                desc 'Transitions a DAST site validation to a new state.'
                 route_setting :authentication, job_token_allowed: true
                 params do
                   requires :event, type: Symbol, values: %i[start fail_op retry pass], desc: 'The transition event.'
                 end
                 post ':id/transition' do
                   validation = DastSiteValidation.find(params[:id])
-
-                  unless Feature.enabled?(:dast_runner_site_validation, validation.project, default_enabled: :yaml)
-                    render_api_error!('404 Feature flag disabled: :dast_runner_site_validation', 404)
-                  end
 
                   authorize!(:create_on_demand_dast_scan, validation)
                   bad_request!('Project mismatch') unless current_authenticated_job.project == validation.project
