@@ -9,3 +9,6 @@ export const runnerData = runnerFixture('get_runner.query.graphql.json');
 
 // Group queries
 export const groupRunnersData = runnerFixture('get_group_runners.query.graphql.json');
+export const groupRunnersDataPaginated = runnerFixture(
+  'get_group_runners.query.graphql.paginated.json',
+);

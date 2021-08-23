@@ -94,5 +94,14 @@ RSpec.describe 'Runner (JavaScript fixtures)' do
 
       expect_graphql_errors_to_be_empty
     end
+
+    it "#{fixtures_path}#{get_group_runners_query_name}.paginated.json" do
+      post_graphql(query, current_user: group_owner, variables: {
+        groupFullPath: group.full_path,
+        first: 1
+      })
+
+      expect_graphql_errors_to_be_empty
+    end
   end
 end
