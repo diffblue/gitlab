@@ -91,18 +91,23 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | nil | 0
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | 400 | 0   | 2
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 400 | 2
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 0   | 0
 
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 0 | 400 | 0   | 0
 
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 0 | 400 | 0   | 0
       end
 
       with_them do
@@ -143,18 +148,23 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | nil | 0   | 0
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::PUBLIC   | 0 | 5 | 400 | 0   | 0.008
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | 400 | 0   | 2
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 400 | 2
+        :instance | Gitlab::VisibilityLevel::PUBLIC   | 2 | 5 | nil | 0   | 0
 
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 400 | 5
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | nil | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | nil | 0   | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 5 | 400 | 0   | 5
+        :instance | Gitlab::VisibilityLevel::INTERNAL | 0 | 0 | 400 | 0   | 0
 
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 400 | 5
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | nil | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | nil | 0   | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 0   | 400 | 0
         :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 5 | 400 | 0   | 5
+        :instance | Gitlab::VisibilityLevel::PRIVATE  | 0 | 0 | 400 | 0   | 0
       end
 
       with_them do
