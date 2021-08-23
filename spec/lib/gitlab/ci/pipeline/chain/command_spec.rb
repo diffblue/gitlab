@@ -345,7 +345,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Command do
   describe '#observe_step_duration' do
     it 'adds the duration to the step duration histogram' do
       histogram = double(:histogram)
-      duration = 2.hours.ago - 1.hour.ago
+      duration = 1.hour
 
       expect(histogram).to receive(:observe).with({}, duration.seconds)
       expect(::Gitlab::Ci::Pipeline::Metrics).to receive(:pipeline_creation_step_duration_histogram)
