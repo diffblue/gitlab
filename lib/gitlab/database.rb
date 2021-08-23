@@ -210,9 +210,18 @@ module Gitlab
         # A monkeypatch over ActiveRecord::Base.transaction.
         # It provides observability into transactional methods.
         def transaction(**options, &block)
+          if options[:requires_new] && gitlab_track_subtransactions?
+            ::Gitlab::Database::Metrics.subtransactions_increment(self.name)
+          end
+
           ActiveSupport::Notifications.instrument('transaction.active_record', { connection: connection }) do
             super(**options, &block)
           end
+        end
+
+        def gitlab_track_subtransactions?
+          ::Feature.enabled?(:active_record_subtransactions_counter, type: :ops, default_enabled: :yaml) &&
+            connection.transaction_open?
         end
       end
     end
