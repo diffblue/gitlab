@@ -78,7 +78,7 @@ describe('AdminRunnersApp', () => {
   });
 
   it('shows the runners list', () => {
-    expect(runnersData.data.runners.nodes).toMatchObject(findRunnerList().props('runners'));
+    expect(findRunnerList().props('runners')).toEqual(runnersData.data.runners.nodes);
   });
 
   it('requests the runners with no filters', () => {
