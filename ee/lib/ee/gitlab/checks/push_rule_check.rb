@@ -3,7 +3,7 @@
 module EE
   module Gitlab
     module Checks
-      class PushRuleCheck < ::Gitlab::Checks::BaseSingleChecker
+      class PushRuleCheck < ::Gitlab::Checks::BaseBulkChecker
         def validate!
           return unless push_rule
 
@@ -19,17 +19,25 @@ module EE
         # @return [Nil] returns nil unless an error is raised
         # @raise [Gitlab::GitAccess::ForbiddenError] if check fails
         def check_tag_or_branch!
-          if tag_name
-            PushRules::TagCheck.new(change_access).validate!
-          else
-            PushRules::BranchCheck.new(change_access).validate!
+          changes_access.single_change_accesses.each do |single_change_access|
+            if single_change_access.tag_name
+              PushRules::TagCheck.new(single_change_access).validate!
+            else
+              PushRules::BranchCheck.new(single_change_access).validate!
+            end
           end
+
+          nil
         end
 
         # @return [Nil] returns nil unless an error is raised
         # @raise [Gitlab::GitAccess::ForbiddenError] if check fails
         def check_file_size!
-          PushRules::FileSizeCheck.new(change_access).validate!
+          changes_access.single_change_accesses.each do |single_change_access|
+            PushRules::FileSizeCheck.new(single_change_access).validate!
+          end
+
+          nil
         end
 
         # Run the checks one after the other.

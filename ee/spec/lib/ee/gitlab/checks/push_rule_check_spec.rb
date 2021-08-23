@@ -3,9 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
-  include_context 'push rules checks context'
+  include_context 'changes access checks context'
 
   let(:push_rule) { create(:push_rule, :commit_message) }
+  let(:project) { create(:project, :public, :repository, push_rule: push_rule) }
+
+  before do
+    allow(project.repository).to receive(:new_commits).and_return(
+      project.repository.commits_between('be93687618e4b132087f430a4d8fc3a609c9b77c', '54fcc214b94e78d7a41a9a8fe6d87a5e59500e51')
+    )
+  end
 
   shared_examples "push checks" do
     before do
@@ -28,8 +35,11 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
     end
 
     context 'when tag name exists' do
-      before do
-        allow(change_access).to receive(:tag_name).and_return(true)
+      let(:changes) do
+        [
+          # Update of a tag.
+          { oldrev: oldrev, newrev: newrev, ref: 'refs/tags/name' }
+        ]
       end
 
       it 'validates tags push rules' do
@@ -43,13 +53,34 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
     end
 
     context 'when tag name does not exists' do
-      before do
-        allow(change_access).to receive(:tag_name).and_return(false)
+      let(:changes) do
+        [
+          # Update of a branch.
+          { oldrev: oldrev, newrev: newrev, ref: 'refs/heads/name' }
+        ]
       end
 
       it 'validates branches push rules' do
         expect_any_instance_of(EE::Gitlab::Checks::PushRules::TagCheck)
           .not_to receive(:validate!)
+        expect_any_instance_of(EE::Gitlab::Checks::PushRules::BranchCheck)
+          .to receive(:validate!)
+
+        subject.validate!
+      end
+    end
+
+    context 'when tag and branch exist' do
+      let(:changes) do
+        [
+          { oldrev: oldrev, newrev: newrev, ref: 'refs/heads/name' },
+          { oldrev: oldrev, newrev: newrev, ref: 'refs/tags/name' }
+        ]
+      end
+
+      it 'validates tag and branch push rules' do
+        expect_any_instance_of(EE::Gitlab::Checks::PushRules::TagCheck)
+          .to receive(:validate!)
         expect_any_instance_of(EE::Gitlab::Checks::PushRules::BranchCheck)
           .to receive(:validate!)
 
