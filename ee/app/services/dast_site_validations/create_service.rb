@@ -12,7 +12,7 @@ module DastSiteValidations
 
       associate_dast_site!(dast_site_validation)
 
-      perform_async_validation(dast_site_validation)
+      perform_runner_validation(dast_site_validation)
     rescue ActiveRecord::RecordInvalid => err
       ServiceResponse.error(message: err.record.errors.full_messages)
     rescue KeyError => err
@@ -66,29 +66,7 @@ module DastSiteValidations
       )
     end
 
-    def perform_async_validation(dast_site_validation)
-      if Feature.enabled?(:dast_runner_site_validation, dast_site_validation.project, default_enabled: :yaml)
-        runner_validation(dast_site_validation)
-      else
-        worker_validation(dast_site_validation)
-      end
-    end
-
-    def worker_validation(dast_site_validation)
-      jid = DastSiteValidationWorker.perform_async(dast_site_validation.id)
-
-      unless jid.present?
-        log_error(message: 'Unable to validate dast_site_validation', dast_site_validation_id: dast_site_validation.id)
-
-        dast_site_validation.fail_op
-
-        return ServiceResponse.error(message: 'Validation failed')
-      end
-
-      ServiceResponse.success(payload: dast_site_validation)
-    end
-
-    def runner_validation(dast_site_validation)
+    def perform_runner_validation(dast_site_validation)
       AppSec::Dast::SiteValidations::RunnerService.new(
         project: dast_site_validation.project,
         current_user: current_user,

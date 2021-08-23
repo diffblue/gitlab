@@ -18,7 +18,6 @@ import download from '~/lib/utils/downloader';
 import { cleanLeadingSeparator, joinPaths, stripPathTail } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import ModalCopyButton from '~/vue_shared/components/modal_copy_button.vue';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   DAST_SITE_VALIDATION_MODAL_ID,
   DAST_SITE_VALIDATION_HTTP_HEADER_KEY,
@@ -47,7 +46,6 @@ export default {
     GlTruncate,
     GlLink,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     fullPath: {
       type: String,
@@ -91,11 +89,7 @@ export default {
       };
     },
     validationMethodOptions() {
-      const options = Object.values(DAST_SITE_VALIDATION_METHODS);
-      if (!this.glFeatures.dastMetaTagValidation) {
-        return options.filter(({ value }) => value !== DAST_SITE_VALIDATION_METHOD_META_TAG);
-      }
-      return options;
+      return Object.values(DAST_SITE_VALIDATION_METHODS);
     },
     urlObject() {
       try {

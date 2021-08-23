@@ -38,22 +38,9 @@ RSpec.describe DastSite, type: :model do
 
       subject { build(:dast_site, project: project, url: 'http://127.0.0.1') }
 
-      context 'worker validation' do
-        before do
-          stub_feature_flags(dast_runner_site_validation: false)
-        end
-
-        it 'is not valid', :aggregate_failures do
-          expect(subject).not_to be_valid
-          expect(subject.errors.full_messages).to include(message)
-        end
-      end
-
-      context 'runner validation' do
-        it 'is is valid', :aggregate_failures do
-          expect(subject).to be_valid
-          expect(subject.errors.full_messages).not_to include(message)
-        end
+      it 'is is valid', :aggregate_failures do
+        expect(subject).to be_valid
+        expect(subject.errors.full_messages).not_to include(message)
       end
     end
   end

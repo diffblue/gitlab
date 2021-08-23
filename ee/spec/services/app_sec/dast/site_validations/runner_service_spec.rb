@@ -75,14 +75,6 @@ RSpec.describe AppSec::Dast::SiteValidations::RunnerService do
           expect { subject }.to change { dast_site_validation.state }.from('pending').to('failed')
         end
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(dast_runner_site_validation: false)
-        end
-
-        it_behaves_like 'a failure'
-      end
     end
   end
 end

@@ -101,19 +101,6 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
           end
         end
 
-        context 'when the feature flag is disabled' do
-          before do
-            stub_feature_flags(dast_runner_site_validation: false)
-          end
-
-          it 'returns 404 and a contextual error message', :aggregate_failures do
-            subject
-
-            expect(response).to have_gitlab_http_status(:not_found)
-            expect(json_response).to eq('message' => '404 Feature flag disabled: :dast_runner_site_validation')
-          end
-        end
-
         context 'when user has access to the site validation' do
           context 'when the state transition is unknown' do
             let(:event_param) { :unknown_transition }

@@ -57,9 +57,6 @@ describe('DastSiteValidationModal', () => {
             static: true,
             visible: true,
           },
-          provide: {
-            glFeatures: { dastMetaTagValidation: true },
-          },
         },
         mountOptions,
         {
@@ -321,22 +318,6 @@ describe('DastSiteValidationModal', () => {
           title: 'Copy Meta tag to clipboard',
         });
       });
-    });
-  });
-
-  describe('with the dastMetaTagValidation feature flag disabled', () => {
-    beforeEach(() => {
-      createFullComponent({
-        provide: {
-          glFeatures: {
-            dastMetaTagValidation: false,
-          },
-        },
-      });
-    });
-
-    it('does not render the meta tag validation method', () => {
-      expect(findRadioInputForValidationMethod('meta tag')).toBe(null);
     });
   });
 
