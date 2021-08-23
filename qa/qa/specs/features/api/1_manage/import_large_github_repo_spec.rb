@@ -133,7 +133,7 @@ module QA
       it 'imports large Github repo via api' do
         start = Time.now
 
-        imported_project # import the project
+        Runtime::Logger.info("Importing project '#{imported_project.full_path}'") # import the project and log path
         fetch_github_objects # fetch all objects right after import has started
 
         import_status = lambda do
