@@ -8,8 +8,8 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Sequence do
 
   let(:pipeline) { build_stubbed(:ci_pipeline) }
   let(:command) { Gitlab::Ci::Pipeline::Chain::Command.new(project: project) }
-  let(:first_step) { spy('first step') }
-  let(:second_step) { spy('second step') }
+  let(:first_step) { spy('first step', name: 'FirstStep') }
+  let(:second_step) { spy('second step', name: 'SecondStep') }
   let(:sequence) { [first_step, second_step] }
   let(:histogram) { spy('prometheus metric') }
 
@@ -64,12 +64,12 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Sequence do
     it 'adds step sequence duration to duration histogram' do
       expect(command.metrics)
         .to receive(:pipeline_creation_step_duration_histogram)
-        .with(first_step)
+        .with('first_step')
         .ordered
         .and_return(histogram)
       expect(command.metrics)
         .to receive(:pipeline_creation_step_duration_histogram)
-        .with(second_step)
+        .with('second_step')
         .ordered
         .and_return(histogram)
 

@@ -9,9 +9,9 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Metrics do
 
       expect(::Gitlab::Metrics).to receive(:histogram)
         .with(
-          :gitlab_ci_pipeline_chain_build_duration_seconds,
-          'Duration of the pipeline chain build',
-          {},
+          :gitlab_ci_pipeline_creation_step_duration_seconds,
+          'Duration of each pipeline creation step',
+          { step: 'pipeline_chain_build' },
           [0.01, 0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 240.0]
         )
 
