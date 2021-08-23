@@ -27,7 +27,7 @@ export const APPROVAL_RULE_CONFIGS = {
   [VULNERABILITY_CHECK_NAME]: {
     title: s__('SecurityApprovals|Vulnerability-Check'),
     popoverText: s__(
-      'SecurityApprovals|A merge request approval is required when a security report contains a new vulnerability of high, critical, or unknown severity.',
+      'SecurityApprovals|A merge request approval is required when a security report contains a new vulnerability.',
     ),
     documentationText: s__('SecurityApprovals|Learn more about Vulnerability-Check'),
   },
