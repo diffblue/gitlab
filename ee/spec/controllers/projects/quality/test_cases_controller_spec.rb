@@ -108,6 +108,16 @@ RSpec.describe Projects::Quality::TestCasesController do
           expect(assigns(:test_case)).to eq(test_case)
           expect(assigns(:issuable_sidebar)).to be_present
         end
+
+        context 'when test case is not found' do
+          let(:test_case) { non_existing_record_id }
+
+          it 'returns 404' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
       end
     end
   end
