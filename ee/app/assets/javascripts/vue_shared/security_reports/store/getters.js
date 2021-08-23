@@ -62,7 +62,10 @@ export const coverageFuzzingStatusIcon = ({ coverageFuzzing }) =>
 export const isBaseSecurityReportOutOfDate = (state) =>
   state.reportTypes.some((reportType) => state[reportType].baseReportOutofDate);
 
-export const canCreateIssue = (state) => Boolean(state.createVulnerabilityFeedbackIssuePath);
+export const canCreateIssue = (state) =>
+  Boolean(
+    state.createVulnerabilityFeedbackIssuePath || state.modal?.vulnerability?.create_jira_issue_url,
+  );
 
 export const canCreateMergeRequest = (state) =>
   Boolean(state.createVulnerabilityFeedbackMergeRequestPath);
