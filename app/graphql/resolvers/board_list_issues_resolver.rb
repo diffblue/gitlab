@@ -15,8 +15,17 @@ module Resolvers
     def resolve(**args)
       filter_params = item_filters(args[:filters]).merge(board_id: list.board.id, id: list.id)
       service = ::Boards::Issues::ListService.new(list.board.resource_parent, context[:current_user], filter_params)
+      pagination_connections = Gitlab::Graphql::Pagination::Keyset::Connection.new(service.execute)
 
-      service.execute
+      initialize_relative_positions(pagination_connections.items, list.board)
+
+      pagination_connections
+    end
+
+    def initialize_relative_positions(issues, board)
+      if Gitlab::Database.read_write? && !board.disabled_for?(current_user)
+        Issue.move_nulls_to_end(issues)
+      end
     end
 
     # https://gitlab.com/gitlab-org/gitlab/-/issues/235681
