@@ -3698,6 +3698,12 @@ msgstr ""
 msgid "An error occurred while loading merge requests."
 msgstr ""
 
+msgid "An error occurred while loading the Needs tab."
+msgstr ""
+
+msgid "An error occurred while loading the Test Reports tab."
+msgstr ""
+
 msgid "An error occurred while loading the access tokens form, please try again."
 msgstr ""
 
