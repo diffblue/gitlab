@@ -36013,9 +36013,6 @@ msgstr ""
 msgid "UsageQuota|Learn more about usage quotas"
 msgstr ""
 
-msgid "UsageQuota|Other Storage"
-msgstr ""
-
 msgid "UsageQuota|Packages"
 msgstr ""
 

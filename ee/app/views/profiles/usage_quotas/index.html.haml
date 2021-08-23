@@ -1,7 +1,6 @@
 - page_title s_("UsageQuota|Usage")
 - @content_class = "limit-container-width" unless fluid_layout
 - url_to_purchase_storage = purchase_storage_url if purchase_storage_link_enabled?(@namespace)
-- other_storage_enabled = Feature.enabled?(:other_storage_tab, @namespace)
 
 %h3.page-title
   = s_('UsageQuota|Usage Quotas')
@@ -18,16 +17,9 @@
     %li.nav-item
       %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#storage-quota-tab' }, href: '#storage-quota-tab', 'aria-controls': '#storage-quota-tab', 'aria-selected': false }
         = s_('UsageQuota|Storage')
-    - if other_storage_enabled
-      %li.nav-item
-        %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#other-storage-quota-tab' }, href: '#other-storage-quota-tab', 'aria-controls': '#other-storage-quota-tab', 'aria-selected': false }
-          = s_('UsageQuota|Other Storage')
 .tab-content
   .tab-pane#pipelines-quota-tab
     = render "namespaces/pipelines_quota/list",
       locals: { namespace: @namespace, projects: @projects }
   .tab-pane#storage-quota-tab
     #js-storage-counter-app{ data: { namespace_path: @namespace.full_path, help_page_path: help_page_path('user/usage_quotas.md'), purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }
-  - if other_storage_enabled
-    .tab-pane#other-storage-quota-tab
-      #js-other-storage-counter-app{ data: { namespace_path: @namespace.full_path, help_page_path: help_page_path('user/usage_quotas.md'), purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@namespace).to_s } }
