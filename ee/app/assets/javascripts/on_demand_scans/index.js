@@ -26,6 +26,8 @@ export default () => {
     el,
     apolloProvider,
     provide: {
+      projectPath,
+      helpPagePath,
       profilesLibraryPath,
       scannerProfilesLibraryPath,
       siteProfilesLibraryPath,
@@ -36,8 +38,6 @@ export default () => {
     render(h) {
       return h(OnDemandScansForm, {
         props: {
-          helpPagePath,
-          projectPath,
           defaultBranch,
           dastScan: dastScan ? convertObjectPropsToCamelCase(JSON.parse(dastScan)) : null,
         },

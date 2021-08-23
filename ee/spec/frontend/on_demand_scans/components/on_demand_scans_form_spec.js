@@ -21,6 +21,7 @@ import * as responses from '../mocks/apollo_mocks';
 import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
 
 const helpPagePath = '/application_security/dast/index#on-demand-scans';
+const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
 const defaultBranch = 'main';
 const selectedBranch = 'some-other-branch';
@@ -29,13 +30,6 @@ const scannerProfilesLibraryPath = '/security/configuration/dast_scans#scanner-p
 const siteProfilesLibraryPath = '/security/configuration/dast_scans#site-profiles';
 const newScannerProfilePath = '/security/configuration/dast_scans/dast_scanner_profile/new';
 const newSiteProfilePath = `/${projectPath}/-/security/configuration/dast_scans`;
-
-const defaultProps = {
-  helpPagePath,
-  projectPath,
-  defaultBranch,
-};
-
 const pipelineUrl = `/${projectPath}/pipelines/123`;
 const editPath = `/${projectPath}/on_demand_scans/1/edit`;
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
@@ -154,14 +148,19 @@ describe('OnDemandScansForm', () => {
       merge(
         {},
         {
-          propsData: defaultProps,
+          propsData: {
+            defaultBranch,
+          },
           mocks: defaultMocks,
           provide: {
+            projectPath,
+            helpPagePath,
             profilesLibraryPath,
             scannerProfilesLibraryPath,
             siteProfilesLibraryPath,
             newScannerProfilePath,
             newSiteProfilePath,
+            dastSiteValidationDocsPath,
           },
           stubs: {
             GlFormInput: GlFormInputStub,
