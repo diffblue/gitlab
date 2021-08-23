@@ -907,12 +907,6 @@ module Gitlab
         gitaly_repository_client.set_full_path(full_path)
       end
 
-      def set_config(entries)
-        wrapped_gitaly_errors do
-          gitaly_repository_client.set_config(entries)
-        end
-      end
-
       def disconnect_alternates
         wrapped_gitaly_errors do
           gitaly_repository_client.disconnect_alternates

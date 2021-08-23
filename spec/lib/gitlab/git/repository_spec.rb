@@ -1749,29 +1749,6 @@ RSpec.describe Gitlab::Git::Repository, :seed_helper do
     end
   end
 
-  describe '#set_config' do
-    let(:repository) { mutable_repository }
-    let(:entries) do
-      {
-        'test.foo1' => 'bla bla',
-        'test.foo2' => 1234,
-        'test.foo3' => true
-      }
-    end
-
-    it 'can set config settings' do
-      expect(repository.set_config(entries)).to be_nil
-
-      expect(repository_rugged.config['test.foo1']).to eq('bla bla')
-      expect(repository_rugged.config['test.foo2']).to eq('1234')
-      expect(repository_rugged.config['test.foo3']).to eq('true')
-    end
-
-    after do
-      entries.keys.each { |k| repository_rugged.config.delete(k) }
-    end
-  end
-
   describe '#merge_to_ref' do
     let(:repository) { mutable_repository }
     let(:branch_head) { '6d394385cf567f80a8fd85055db1ab4c5295806f' }
