@@ -10729,6 +10729,9 @@ msgstr ""
 msgid "Define environments in the deploy stage(s) in %{code_open}.gitlab-ci.yml%{code_close} to track deployments here."
 msgstr ""
 
+msgid "Define how approval rules are applied as a merge request moves toward completion."
+msgstr ""
+
 msgid "Definition"
 msgstr ""
 

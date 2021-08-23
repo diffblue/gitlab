@@ -50,6 +50,11 @@ export const APPROVAL_RULE_CONFIGS = {
 export const APPROVALS_HELP_PATH = 'user/project/merge_requests/approvals/settings';
 
 export const APPROVAL_SETTINGS_I18N = {
+  learnMore: __('Learn more.'),
+  approvalSettingsHeader: __('Approval settings'),
+  approvalSettingsDescription: __(
+    'Define how approval rules are applied as a merge request moves toward completion.',
+  ),
   saveChanges: __('Save changes'),
   loadingErrorMessage: s__(
     'ApprovalSettings|There was an error loading merge request approval settings.',
