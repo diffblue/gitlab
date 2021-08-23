@@ -99,7 +99,22 @@ module Gitlab
 
           current = addresses_from_load_balancer
 
-          replace_hosts(from_dns) if from_dns != current
+          if from_dns != current
+            ::Gitlab::Database::LoadBalancing::Logger.info(
+              event: :host_list_update,
+              message: "Updating the host list for service discovery",
+              host_list_length: from_dns.length,
+              old_host_list_length: current.length
+            )
+            replace_hosts(from_dns)
+          else
+            ::Gitlab::Database::LoadBalancing::Logger.info(
+              event: :host_list_unchanged,
+              message: "Unchanged host list for service discovery",
+              host_list_length: from_dns.length,
+              old_host_list_length: current.length
+            )
+          end
 
           interval
         end
