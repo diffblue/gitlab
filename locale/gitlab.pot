@@ -19597,9 +19597,6 @@ msgstr ""
 msgid "Last repository check (%{last_check_timestamp}) failed. See the 'repocheck.log' file for error messages."
 msgstr ""
 
-msgid "Last repository check run"
-msgstr ""
-
 msgid "Last seen"
 msgstr ""
 
@@ -19616,6 +19613,9 @@ msgid "Last successful sync"
 msgstr ""
 
 msgid "Last successful update"
+msgstr ""
+
+msgid "Last time checked"
 msgstr ""
 
 msgid "Last time verified"
