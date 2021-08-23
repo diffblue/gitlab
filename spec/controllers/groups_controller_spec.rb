@@ -387,27 +387,29 @@ RSpec.describe GroupsController, factory_default: :keep do
       end
 
       subject do
-        post :create, params: { group: { name: 'new_group', path: 'new_group', setup_for_company: 'true' } }
+        post :create, params: { group: { name: 'new_group', path: 'new_group', setup_for_company: 'false' } }
       end
 
       it 'sets the groups `setup_for_company` value' do
         subject
-        expect(Group.last.setup_for_company).to be(true)
+        expect(Group.last.setup_for_company).to be(false)
       end
 
       context 'when the user already has a value for `setup_for_company`' do
         before do
-          user.update_attribute(:setup_for_company, false)
+          user.update_attribute(:setup_for_company, true)
         end
 
         it 'does not change the users `setup_for_company` value' do
-          expect { subject }.not_to change { user.reload.setup_for_company }.from(false)
+          expect(Users::UpdateService).not_to receive(:new)
+          expect { subject }.not_to change { user.reload.setup_for_company }.from(true)
         end
       end
 
       context 'when the user has no value for `setup_for_company`' do
         it 'changes the users `setup_for_company` value' do
-          expect { subject }.to change { user.reload.setup_for_company }.to(true)
+          expect(Users::UpdateService).to receive(:new).and_call_original
+          expect { subject }.to change { user.reload.setup_for_company }.to(false)
         end
       end
     end

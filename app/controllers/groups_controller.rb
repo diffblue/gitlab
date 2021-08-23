@@ -350,7 +350,7 @@ class GroupsController < Groups::ApplicationController
   end
 
   def update_user_role_and_setup_for_company
-    user_params = params.key?(:user) ? params.require(:user).permit(:role) : {}
+    user_params = params.fetch(:user, {}).permit(:role)
     user_params[:setup_for_company] = @group.setup_for_company if !@group.setup_for_company.nil? && current_user.setup_for_company.nil?
     Users::UpdateService.new(current_user, user_params.merge(user: current_user)).execute if user_params.present?
   end
