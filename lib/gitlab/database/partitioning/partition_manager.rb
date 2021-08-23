@@ -6,23 +6,11 @@ module Gitlab
       class PartitionManager
         UnsafeToDetachPartitionError = Class.new(StandardError)
 
-        def self.register(model)
-          raise ArgumentError, "Only models with a #partitioning_strategy can be registered." unless model.respond_to?(:partitioning_strategy)
-
-          models << model
-        end
-
-        def self.models
-          @models ||= Set.new
-        end
-
         LEASE_TIMEOUT = 1.minute
         MANAGEMENT_LEASE_KEY = 'database_partition_management_%s'
         RETAIN_DETACHED_PARTITIONS_FOR = 1.week
 
-        attr_reader :models
-
-        def initialize(models = self.class.models)
+        def initialize(models)
           @models = models
         end
 
@@ -52,6 +40,8 @@ module Gitlab
         end
 
         private
+
+        attr_reader :models
 
         def missing_partitions(model)
           return [] unless connection.table_exists?(model.table_name)
