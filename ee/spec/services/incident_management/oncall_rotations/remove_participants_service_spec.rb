@@ -20,12 +20,12 @@ RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantsService do
 
     expect(IncidentManagement::OncallRotations::RemoveParticipantService)
       .to receive(:new)
-      .with(rotation, user)
+      .with(rotation, user, true)
       .and_return(remove_service)
 
     expect(IncidentManagement::OncallRotations::RemoveParticipantService)
       .to receive(:new)
-      .with(rotation_2, user)
+      .with(rotation_2, user, true)
       .and_return(remove_service)
 
     expect(remove_service).to receive(:execute).twice

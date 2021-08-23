@@ -6,9 +6,11 @@ module IncidentManagement
       include IncidentManagement::OncallRotations::SharedRotationLogic
       # @param oncall_rotations [IncidentManagement::OncallRotation]
       # @param user_to_remove [User]
-      def initialize(oncall_rotation, user_to_remove)
+      # @param async_email [Boolean]
+      def initialize(oncall_rotation, user_to_remove, async_email = true)
         @oncall_rotation = oncall_rotation
         @user_to_remove = user_to_remove
+        @async_email = async_email
       end
 
       def execute
@@ -24,7 +26,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :oncall_rotation, :user_to_remove
+      attr_reader :oncall_rotation, :user_to_remove, :async_email
 
       def remove_user_from_rotation
         participant = oncall_rotation.participants.for_user(user_to_remove).first
@@ -37,7 +39,7 @@ module IncidentManagement
       end
 
       def send_notification
-        NotificationService.new.oncall_user_removed(oncall_rotation, user_to_remove)
+        NotificationService.new.oncall_user_removed(oncall_rotation, user_to_remove, async_email)
       end
     end
   end
