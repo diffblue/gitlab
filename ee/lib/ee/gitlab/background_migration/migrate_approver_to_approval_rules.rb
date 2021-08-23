@@ -65,7 +65,7 @@ module EE
           end
 
           def self.safe_ensure_unique(retries: 0)
-            transaction(requires_new: true) do
+            transaction(requires_new: true) do # rubocop:disable Performance/ActiveRecordSubtransactions
               yield
             end
           rescue ActiveRecord::RecordNotUnique
