@@ -98,23 +98,8 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: {
-    dastSiteValidationDocsPath: {
-      default: '',
-    },
-    profilesLibraryPath: {
-      default: '',
-    },
-  },
+  inject: ['projectPath', 'helpPagePath', 'dastSiteValidationDocsPath', 'profilesLibraryPath'],
   props: {
-    helpPagePath: {
-      type: String,
-      required: true,
-    },
-    projectPath: {
-      type: String,
-      required: true,
-    },
     defaultBranch: {
       type: String,
       required: false,
