@@ -66,7 +66,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.safe_find_or_create_by(*args, &block)
     return optimized_safe_find_or_create_by(*args, &block) if Feature.enabled?(:optimize_safe_find_or_create_by, default_enabled: :yaml)
 
-    safe_ensure_unique(retries: 1) do
+    safe_ensure_unique(retries: 1) do # rubocop:disable Performance/ActiveRecordSubtransactionMethods
       find_or_create_by(*args, &block)
     end
   end
