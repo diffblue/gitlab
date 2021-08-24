@@ -1,4 +1,5 @@
 import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
+import { NEW_POLICY_BUTTON_TEXT } from 'ee/threat_monitoring/components/constants';
 import PoliciesHeader from 'ee/threat_monitoring/components/policies/policies_header.vue';
 import ScanNewPolicyModal from 'ee/threat_monitoring/components/policies/scan_new_policy_modal.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -52,7 +53,7 @@ describe('Policies Header Component', () => {
     });
 
     it('displays New policy button with correct text and link', () => {
-      expect(findNewPolicyButton().text()).toBe('New policy');
+      expect(findNewPolicyButton().text()).toBe(NEW_POLICY_BUTTON_TEXT);
       expect(findNewPolicyButton().attributes('href')).toBe(newPolicyPath);
     });
 
