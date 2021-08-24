@@ -104,19 +104,6 @@ class ApplicationRecord < ActiveRecord::Base
     enum(enum_mod.key => values)
   end
 
-  def self.transaction(**options, &block)
-    if options[:requires_new] && track_subtransactions?
-      ::Gitlab::Database::Metrics.subtransactions_increment(self.name)
-    end
-
-    super(**options, &block)
-  end
-
-  def self.track_subtransactions?
-    ::Feature.enabled?(:active_record_subtransactions_counter, type: :ops, default_enabled: :yaml) &&
-      connection.transaction_open?
-  end
-
   def self.cached_column_list
     self.column_names.map { |column_name| self.arel_table[column_name] }
   end
