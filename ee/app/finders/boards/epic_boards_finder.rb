@@ -10,13 +10,19 @@ module Boards
     end
 
     def execute
-      relation = group.epic_boards
+      relation = init_relation
       relation = by_id(relation)
 
       relation.order_by_name_asc
     end
 
     private
+
+    def init_relation
+      return group.epic_boards unless params[:include_ancestor_groups]
+
+      ::Boards::EpicBoard.for_groups(group.self_and_ancestors)
+    end
 
     def by_id(relation)
       return relation unless params[:id].present?

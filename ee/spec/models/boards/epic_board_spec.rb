@@ -15,13 +15,21 @@ RSpec.describe Boards::EpicBoard do
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
   end
 
-  describe '.order_by_name_asc' do
+  describe 'scopes' do
     let_it_be(:board1) { create(:epic_board, name: 'B') }
     let_it_be(:board2) { create(:epic_board, name: 'a') }
     let_it_be(:board3) { create(:epic_board, name: 'A') }
 
-    it 'returns in case-insensitive alphabetical order and then by ascending ID' do
-      expect(described_class.order_by_name_asc).to eq [board2, board3, board1]
+    describe '.order_by_name_asc' do
+      it 'returns in case-insensitive alphabetical order and then by ascending ID' do
+        expect(described_class.order_by_name_asc).to eq [board2, board3, board1]
+      end
+    end
+
+    describe '.for_groups' do
+      it 'returns boards only in selected groups' do
+        expect(described_class.for_groups([board1.group_id, board2.group_id])).to match_array([board1, board2])
+      end
     end
   end
 end
