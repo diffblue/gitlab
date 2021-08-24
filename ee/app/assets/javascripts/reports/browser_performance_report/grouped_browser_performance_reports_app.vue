@@ -3,14 +3,12 @@ import { once } from 'lodash';
 import { componentNames } from 'ee/reports/components/issue_body';
 import api from '~/api';
 import ReportSection from '~/reports/components/report_section.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
   name: 'GroupedBrowserPerformanceReportsApp',
   components: {
     ReportSection,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     status: {
       type: String,
@@ -49,9 +47,7 @@ export default {
   computed: {
     handleBrowserPerformanceToggleEvent() {
       return once(() => {
-        if (this.glFeatures.usageDataITestingWebPerformanceWidgetTotal) {
-          api.trackRedisHllUserEvent(this.$options.expandEvent);
-        }
+        api.trackRedisHllUserEvent(this.$options.expandEvent);
       });
     },
   },
