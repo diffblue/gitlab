@@ -1,7 +1,10 @@
 import { GlModal, GlFormInput } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
-import { PRESET_OPTIONS_BLANK } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/constants';
+import {
+  PRESET_OPTIONS_BLANK,
+  PRESET_OPTIONS_DEFAULT,
+} from 'ee/analytics/cycle_analytics/components/create_value_stream_form/constants';
 import CustomStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/custom_stage_fields.vue';
 import DefaultStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/default_stage_fields.vue';
 import ValueStreamForm from 'ee/analytics/cycle_analytics/components/value_stream_form.vue';
@@ -44,7 +47,7 @@ describe('ValueStreamForm', () => {
     name: 'Editable value stream',
   };
 
-  const initialPreset = PRESET_OPTIONS_BLANK;
+  const initialPreset = PRESET_OPTIONS_DEFAULT;
 
   const fakeStore = () =>
     new Vuex.Store({
@@ -86,13 +89,14 @@ describe('ValueStreamForm', () => {
   const findModal = () => wrapper.findComponent(GlModal);
   const findExtendedFormFields = () => wrapper.findByTestId('extended-form-fields');
   const findPresetSelector = () => wrapper.findByTestId('vsa-preset-selector');
-  const findRestoreButton = (index) => wrapper.findByTestId(`stage-action-restore-${index}`);
+  const findRestoreButton = () => wrapper.findByTestId('vsa-reset-button');
+  const findRestoreStageButton = (index) => wrapper.findByTestId(`stage-action-restore-${index}`);
   const findHiddenStages = () => wrapper.findAllByTestId('vsa-hidden-stage').wrappers;
   const findBtn = (btn) => findModal().props(btn);
 
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
-  const clickRestoreStageAtIndex = (index) => findRestoreButton(index).vm.$emit('click');
+  const clickRestoreStageAtIndex = (index) => findRestoreStageButton(index).vm.$emit('click');
   const expectFieldError = (testId, error = '') =>
     expect(wrapper.findByTestId(testId).attributes('invalid-feedback')).toBe(error);
 
@@ -117,6 +121,18 @@ describe('ValueStreamForm', () => {
     describe('Preset selector', () => {
       it('has the preset button', () => {
         expect(findPresetSelector().exists()).toBe(true);
+      });
+
+      it('will toggle between the blank and default templates', () => {
+        expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
+
+        findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
+
+        expect(wrapper.vm.stages).toHaveLength(1);
+
+        findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
+
+        expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
       });
     });
 
@@ -213,6 +229,20 @@ describe('ValueStreamForm', () => {
 
       it('does not display any hidden stages', () => {
         expect(findHiddenStages().length).toBe(0);
+      });
+
+      describe('restore defaults button', () => {
+        it('will clear the form fields', async () => {
+          expect(wrapper.vm.stages).toHaveLength(stageCount);
+
+          await clickAddStage();
+
+          expect(wrapper.vm.stages).toHaveLength(stageCount + 1);
+
+          findRestoreButton().vm.$emit('click');
+
+          expect(wrapper.vm.stages).toHaveLength(stageCount);
+        });
       });
 
       describe('with hidden stages', () => {

@@ -54,7 +54,7 @@ RSpec.describe 'Promotions', :js do
     it 'appears in repository settings page' do
       visit project_settings_repository_path(project)
 
-      expect(find('#promote_repository_features')).to have_content 'Improve repositories with GitLab Enterprise Edition'
+      expect(find('#promote_repository_features')).to have_content(s_('Promotions|Improve repositories with GitLab Enterprise Edition.'))
     end
 
     it 'does not show when cookie is set' do
