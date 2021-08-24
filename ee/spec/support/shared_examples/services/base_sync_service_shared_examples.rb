@@ -65,6 +65,7 @@ RSpec.shared_examples 'geo base sync fetch' do
 
     before do
       allow(subject).to receive(:fetch_geo_mirror).and_return(true)
+      allow(repository).to receive(:update_root_ref)
     end
 
     it 'cleans up temporary repository' do
@@ -75,6 +76,12 @@ RSpec.shared_examples 'geo base sync fetch' do
 
     it 'fetches repository from geo node' do
       is_expected.to receive(:fetch_geo_mirror).with(subject.send(:repository))
+
+      fetch_repository
+    end
+
+    it 'syncs the HEAD ref' do
+      expect(repository).to receive(:update_root_ref)
 
       fetch_repository
     end

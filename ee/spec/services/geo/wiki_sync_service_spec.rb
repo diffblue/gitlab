@@ -45,6 +45,8 @@ RSpec.describe Geo::WikiSyncService, :geo do
     end
 
     it 'voids the failure message when it succeeds after an error' do
+      allow(repository).to receive(:update_root_ref)
+
       registry = create(:geo_project_registry, project: project, last_wiki_sync_failure: 'error')
 
       expect { subject.execute }.to change { registry.reload.last_wiki_sync_failure }.to(nil)
@@ -126,6 +128,8 @@ RSpec.describe Geo::WikiSyncService, :geo do
     end
 
     it 'marks primary_wiki_checksummed as true when wiki has been verified on primary' do
+      allow(repository).to receive(:update_root_ref)
+
       create(:repository_state, :wiki_verified, project: project)
       registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: false)
 
@@ -133,6 +137,8 @@ RSpec.describe Geo::WikiSyncService, :geo do
     end
 
     it 'marks primary_wiki_checksummed as false when wiki has not been verified on primary' do
+      allow(repository).to receive(:update_root_ref)
+
       create(:repository_state, :wiki_failed, project: project)
       registry = create(:geo_project_registry, project: project, primary_wiki_checksummed: true)
 
@@ -166,6 +172,8 @@ RSpec.describe Geo::WikiSyncService, :geo do
         end
 
         it 'sets last_wiki_successful_sync_at' do
+          allow(repository).to receive(:update_root_ref)
+
           subject.execute
 
           expect(registry.last_wiki_successful_sync_at).not_to be_nil
@@ -190,7 +198,9 @@ RSpec.describe Geo::WikiSyncService, :geo do
         end
 
         it 'logs success with timings' do
+          allow(repository).to receive(:update_root_ref)
           allow(Gitlab::Geo::Logger).to receive(:info).and_call_original
+
           expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(:message, :update_delay_s, :download_time_s)).and_call_original
 
           subject.execute
@@ -232,6 +242,7 @@ RSpec.describe Geo::WikiSyncService, :geo do
             force_to_redownload_wiki: true
           )
 
+          allow(project.wiki.repository).to receive(:update_root_ref)
           expect(project.wiki.repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
           expect(subject).not_to receive(:fail_registry_sync!)
 
