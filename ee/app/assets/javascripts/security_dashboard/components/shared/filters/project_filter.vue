@@ -227,6 +227,7 @@ export default {
         v-for="project in selectableProjects"
         :key="project.id"
         :is-checked="isSelected(project.id)"
+        :text="project.name"
         @click="toggleOption(project)"
       >
         <div v-safe-html="highlightSearchTerm(project.name)"></div>
