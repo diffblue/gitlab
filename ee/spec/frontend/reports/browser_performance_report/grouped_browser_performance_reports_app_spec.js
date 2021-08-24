@@ -9,7 +9,7 @@ const localVue = createLocalVue();
 describe('Grouped test reports app', () => {
   let wrapper;
 
-  const mountComponent = ({ usageDataITestingWebPerformanceWidgetTotal = false } = {}) => {
+  const mountComponent = () => {
     wrapper = mount(GroupedBrowserPerformanceReportsApp, {
       localVue,
       propsData: {
@@ -22,13 +22,12 @@ describe('Grouped test reports app', () => {
         neutralIssues: [],
         hasIssues: true,
       },
-      provide: {
-        glFeatures: {
-          usageDataITestingWebPerformanceWidgetTotal,
-        },
-      },
     });
   };
+
+  beforeEach(() => {
+    mountComponent();
+  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -36,28 +35,10 @@ describe('Grouped test reports app', () => {
   });
 
   describe('service ping events', () => {
-    describe('when feature flag is enabled', () => {
-      beforeEach(() => {
-        mountComponent({ usageDataITestingWebPerformanceWidgetTotal: true });
-      });
+    it('tracks an event when the widget is expanded', () => {
+      wrapper.find('[data-testid="report-section-expand-button"]').trigger('click');
 
-      it('tracks an event when the widget is expanded', () => {
-        wrapper.find('[data-testid="report-section-expand-button"]').trigger('click');
-
-        expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(wrapper.vm.$options.expandEvent);
-      });
-    });
-
-    describe('when feature flag is disabled', () => {
-      beforeEach(() => {
-        mountComponent({ usageDataITestingWebPerformanceWidgetTotal: false });
-      });
-
-      it('tracks an event when the widget is expanded', () => {
-        wrapper.find('[data-testid="report-section-expand-button"]').trigger('click');
-
-        expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
-      });
+      expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(wrapper.vm.$options.expandEvent);
     });
   });
 });

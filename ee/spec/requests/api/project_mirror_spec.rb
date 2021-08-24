@@ -48,6 +48,7 @@ RSpec.describe API::ProjectMirror do
           let(:source_branch) { branch.name }
           let(:source_sha) { branch.target }
           let(:action) { 'opened' }
+          let(:user) { project_mirrored.mirror_user }
 
           let(:params) do
             {
@@ -80,26 +81,55 @@ RSpec.describe API::ProjectMirror do
             stub_licensed_features(ci_cd_projects: true, github_project_service_integration: true)
           end
 
-          it 'triggers a pipeline for pull request' do
-            expect(Ci::CreatePipelineService)
-              .to receive(:new)
-              .with(project_mirrored, project_mirrored.mirror_user, pipeline_params)
-              .and_return(create_pipeline_service)
+          subject(:send_request) { do_post(params: params) }
 
-            expect(create_pipeline_service)
-              .to receive(:execute)
-              .with(:external_pull_request_event, any_args)
+          shared_examples_for 'triggering pipeline creation' do
+            context 'when the FF ci_create_external_pr_pipeline_async is disabled' do
+              before do
+                stub_feature_flags(ci_create_external_pr_pipeline_async: false)
+              end
 
-            do_post(params: params)
+              let(:create_pipeline_service) { instance_double(Ci::CreatePipelineService) }
 
-            expect(response).to have_gitlab_http_status(:ok)
+              it 'triggers a pipeline for pull request' do
+                expect(Ci::CreatePipelineService)
+                  .to receive(:new)
+                  .with(project_mirrored, user, pipeline_params)
+                  .and_return(create_pipeline_service)
+
+                expect(create_pipeline_service)
+                  .to receive(:execute)
+                  .with(:external_pull_request_event, any_args)
+
+                send_request
+
+                expect(response).to have_gitlab_http_status(:ok)
+              end
+            end
+
+            it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
+              expect { send_request }
+                .to change { ExternalPullRequest.count }.by(1)
+                .and change { ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.count }.by(1)
+
+              expect(response).to have_gitlab_http_status(:ok)
+
+              args = ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.last['args']
+              pull_request = ExternalPullRequest.last
+
+              expect(args[0]).to eq(project_mirrored.id)
+              expect(args[1]).to eq(user.id)
+              expect(args[2]).to eq(pull_request.id)
+            end
           end
+
+          it_behaves_like 'triggering pipeline creation'
 
           context 'when any param is missing' do
             let(:source_sha) { nil }
 
             it 'returns the error message' do
-              do_post(params: params)
+              send_request
 
               expect(response).to have_gitlab_http_status(:bad_request)
             end
@@ -111,31 +141,22 @@ RSpec.describe API::ProjectMirror do
             it 'ignores it and return success status' do
               expect(Ci::CreatePipelineService).not_to receive(:new)
 
-              do_post(params: params)
+              send_request
 
               expect(response).to have_gitlab_http_status(:unprocessable_entity)
             end
           end
 
           context 'when authenticated as user' do
-            let(:user) { create(:user) }
+            let_it_be(:user) { create(:user) }
 
-            it 'triggers a pipeline for pull request' do
+            before do
               project_member(:maintainer, user)
-
-              expect(Ci::CreatePipelineService)
-                .to receive(:new)
-                .with(project_mirrored, user, pipeline_params)
-                .and_return(create_pipeline_service)
-
-              expect(create_pipeline_service)
-                .to receive(:execute)
-                .with(:external_pull_request_event, any_args)
-
-              do_post(params: params, user: user, headers: {})
-
-              expect(response).to have_gitlab_http_status(:ok)
             end
+
+            subject(:send_request) { do_post(params: params, user: user, headers: {}) }
+
+            it_behaves_like 'triggering pipeline creation'
           end
 
           context 'when ci_cd_projects is not available' do
@@ -144,7 +165,7 @@ RSpec.describe API::ProjectMirror do
             end
 
             it 'returns the error message' do
-              do_post(params: params)
+              send_request
 
               expect(response).to have_gitlab_http_status(:unprocessable_entity)
             end
@@ -156,7 +177,7 @@ RSpec.describe API::ProjectMirror do
             end
 
             it 'returns the error message' do
-              do_post(params: params)
+              send_request
 
               expect(response).to have_gitlab_http_status(:unprocessable_entity)
             end
