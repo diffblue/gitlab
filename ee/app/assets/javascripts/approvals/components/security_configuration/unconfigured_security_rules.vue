@@ -64,7 +64,7 @@ export default {
             'SecurityApprovals|Test coverage must be enabled. %{linkStart}Learn more%{linkEnd}.',
           ),
           enableDescription: s__(
-            'SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}More information%{linkEnd}',
+            'SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}Learn more.%{linkEnd}',
           ),
           docsPath: this.coverageCheckHelpPagePath,
         },

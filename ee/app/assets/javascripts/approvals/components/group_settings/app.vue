@@ -29,7 +29,7 @@ export default {
   },
   i18n: {
     groupSettingsHeader: __('Merge request approvals'),
-    groupSettingsDescription: __('Define approval settings. %{linkStart}Learn more.%{linkEnd}'),
+    groupSettingsDescription: __('Define approval rules. %{linkStart}Learn more.%{linkEnd}'),
   },
   labels: GROUP_APPROVAL_SETTINGS_LABELS_I18N,
 };
