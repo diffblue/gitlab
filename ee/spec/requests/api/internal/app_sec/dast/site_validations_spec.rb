@@ -68,10 +68,17 @@ RSpec.describe API::Internal::AppSec::Dast::SiteValidations do
       context 'when site validation and job are associated with different projects' do
         let_it_be(:job) { create(:ci_build, :running, user: developer) }
 
+        before do
+          create(:ci_job_token_project_scope_link,
+                 source_project: job.project,
+                 target_project: project,
+                 added_by: developer)
+        end
+
         it 'returns 400', :aggregate_failures do
           subject
 
-          expect(response).to have_gitlab_http_status(:bad_request) # Temporarily forcing job_token_scope_enabled false
+          expect(response).to have_gitlab_http_status(:bad_request)
         end
 
         context 'when the job project belongs to the same job token scope' do
