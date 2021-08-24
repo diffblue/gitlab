@@ -1,6 +1,5 @@
 - page_title s_("UsageQuota|Usage")
 - url_to_purchase_storage = purchase_storage_url if purchase_storage_link_enabled?(@group)
-- other_storage_enabled = Feature.enabled?(:other_storage_tab, @group)
 
 - if show_product_purchase_success_alert?
   = render 'product_purchase_success_alert', product_name: params[:purchased_product]
@@ -23,10 +22,6 @@
     %li.nav-item
       %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#storage-quota-tab' }, href: '#storage-quota-tab', 'aria-controls': '#storage-quota-tab', 'aria-selected': false }
         = s_('UsageQuota|Storage')
-    - if other_storage_enabled
-      %li.nav-item
-        %a.nav-link#storage-quota{ data: { toggle: "tab", action: '#other-storage-quota-tab' }, href: '#other-storage-quota-tab', 'aria-controls': '#other-storage-quota-tab', 'aria-selected': false }
-          = s_('UsageQuota|Other Storage')
 .tab-content
   .tab-pane#seats-quota-tab
     #js-seat-usage-app{ data: { namespace_id: @group.id, namespace_name: @group.name, seat_usage_export_path: group_seat_usage_path(@group, format: :csv) } }
@@ -35,6 +30,3 @@
       locals: { namespace: @group, projects: @projects }
   .tab-pane#storage-quota-tab
     #js-storage-counter-app{ data: { namespace_path: @group.full_path, help_page_path: help_page_path('user/usage_quotas.md'), purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }
-  - if other_storage_enabled
-    .tab-pane#other-storage-quota-tab
-      #js-other-storage-counter-app{ data: { namespace_path: @group.full_path, help_page_path: help_page_path('user/usage_quotas.md'), purchase_storage_url: url_to_purchase_storage, is_temporary_storage_increase_visible: temporary_storage_increase_visible?(@group).to_s } }

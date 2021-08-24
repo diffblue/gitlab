@@ -1,4 +1,3 @@
-import otherStorageCounter from 'ee/other_storage_counter';
 import SeatUsageApp from 'ee/seat_usage';
 import storageCounter from 'ee/storage_counter';
 import LinkedTabs from '~/lib/utils/bootstrap_linked_tabs';
@@ -23,10 +22,6 @@ const initVueApps = () => {
 
   if (document.querySelector('#js-storage-counter-app')) {
     storageCounter();
-  }
-
-  if (document.querySelector('#js-other-storage-counter-app')) {
-    otherStorageCounter();
   }
 };
 
