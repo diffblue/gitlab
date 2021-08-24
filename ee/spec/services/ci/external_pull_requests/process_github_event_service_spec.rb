@@ -53,21 +53,40 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService do
           let(:source_branch) { branch.name }
           let(:source_sha) { branch.target }
 
-          let(:create_pipeline_service) { instance_double(Ci::CreatePipelineService) }
+          context 'when the FF ci_create_external_pr_pipeline_async is disabled' do
+            before do
+              stub_feature_flags(ci_create_external_pr_pipeline_async: false)
+            end
 
-          it 'creates a pipeline and the external pull request' do
-            pipeline_params = {
-              ref: Gitlab::Git::BRANCH_REF_PREFIX + branch.name,
-              source_sha: branch.target,
-              target_sha: 'a09386439ca39abe575675ffd4b89ae824fec22f'
-            }
-            expect(Ci::CreatePipelineService).to receive(:new)
-              .with(project, user, pipeline_params)
-              .and_return(create_pipeline_service)
-            expect(create_pipeline_service).to receive(:execute)
-              .with(:external_pull_request_event, any_args)
+            let(:create_pipeline_service) { instance_double(Ci::CreatePipelineService) }
 
-            expect { subject.execute(params) }.to change { ExternalPullRequest.count }.by(1)
+            it 'creates a pipeline and the external pull request' do
+              pipeline_params = {
+                ref: Gitlab::Git::BRANCH_REF_PREFIX + branch.name,
+                source_sha: branch.target,
+                target_sha: 'a09386439ca39abe575675ffd4b89ae824fec22f'
+              }
+              expect(Ci::CreatePipelineService).to receive(:new)
+                .with(project, user, pipeline_params)
+                .and_return(create_pipeline_service)
+              expect(create_pipeline_service).to receive(:execute)
+                .with(:external_pull_request_event, any_args)
+
+              expect { subject.execute(params) }.to change { ExternalPullRequest.count }.by(1)
+            end
+          end
+
+          it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
+            expect { subject.execute(params) }
+             .to change { ExternalPullRequest.count }.by(1)
+             .and change { ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.count }.by(1)
+
+            args = ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.last['args']
+            pull_request = ExternalPullRequest.last
+
+            expect(args[0]).to eq(project.id)
+            expect(args[1]).to eq(user.id)
+            expect(args[2]).to eq(pull_request.id)
           end
         end
 
