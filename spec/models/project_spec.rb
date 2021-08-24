@@ -138,7 +138,6 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to have_many(:timelogs) }
     it { is_expected.to have_many(:error_tracking_errors).class_name('ErrorTracking::Error') }
     it { is_expected.to have_many(:error_tracking_client_keys).class_name('ErrorTracking::ClientKey') }
-    it { is_expected.to have_many(:pending_builds).class_name('Ci::PendingBuild') }
 
     # GitLab Pages
     it { is_expected.to have_many(:pages_domains) }
@@ -618,12 +617,6 @@ RSpec.describe Project, factory_default: :keep do
     end
   end
 
-  describe '#membership_locked?' do
-    it 'returns false' do
-      expect(build(:project)).not_to be_membership_locked
-    end
-  end
-
   describe '#autoclose_referenced_issues' do
     context 'when DB entry is nil' do
       let(:project) { build(:project, autoclose_referenced_issues: nil) }
@@ -1073,12 +1066,12 @@ RSpec.describe Project, factory_default: :keep do
       project.open_issues_count(user)
     end
 
-    it 'invokes the batch count service with no current_user' do
-      count_service = instance_double(Projects::BatchOpenIssuesCountService)
-      expect(Projects::BatchOpenIssuesCountService).to receive(:new).with([project]).and_return(count_service)
-      expect(count_service).to receive(:refresh_cache_and_retrieve_data).and_return({})
+    it 'invokes the count service with no current_user' do
+      count_service = instance_double(Projects::OpenIssuesCountService)
+      expect(Projects::OpenIssuesCountService).to receive(:new).with(project, nil).and_return(count_service)
+      expect(count_service).to receive(:count)
 
-      project.open_issues_count.to_s
+      project.open_issues_count
     end
   end
 
@@ -2562,7 +2555,7 @@ RSpec.describe Project, factory_default: :keep do
   end
 
   describe '#uses_default_ci_config?' do
-    let(:project) { build(:project) }
+    let(:project) { build(:project)}
 
     it 'has a custom ci config path' do
       project.ci_config_path = 'something_custom'
@@ -2580,44 +2573,6 @@ RSpec.describe Project, factory_default: :keep do
       project.ci_config_path = nil
 
       expect(project.uses_default_ci_config?).to be_truthy
-    end
-  end
-
-  describe '#uses_external_project_ci_config?' do
-    subject(:uses_external_project_ci_config) { project.uses_external_project_ci_config? }
-
-    let(:project) { build(:project) }
-
-    context 'when ci_config_path is configured with external project' do
-      before do
-        project.ci_config_path = '.gitlab-ci.yml@hello/world'
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when ci_config_path is nil' do
-      before do
-        project.ci_config_path = nil
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when ci_config_path is configured with a file in the project' do
-      before do
-        project.ci_config_path = 'hello/world/gitlab-ci.yml'
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when ci_config_path is configured with remote file' do
-      before do
-        project.ci_config_path = 'https://example.org/file.yml'
-      end
-
-      it { is_expected.to eq(false) }
     end
   end
 
@@ -7071,15 +7026,6 @@ RSpec.describe Project, factory_default: :keep do
     it 'creates setting if it does not exist' do
       expect(project.metrics_setting).to be_an_instance_of(ProjectMetricsSetting)
     end
-  end
-
-  describe '#ci_config_external_project' do
-    subject(:ci_config_external_project) { project.ci_config_external_project }
-
-    let(:other_project) { create(:project) }
-    let(:project) { build(:project, ci_config_path: ".gitlab-ci.yml@#{other_project.full_path}") }
-
-    it { is_expected.to eq(other_project) }
   end
 
   describe '#enabled_group_deploy_keys' do
