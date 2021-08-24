@@ -86,6 +86,15 @@ describe('TrialStatusPopover component', () => {
     expectTracking(trackingEvents.compareBtnClick);
   });
 
+  it('does not include the word "Trial" if the plan name includes it', () => {
+    wrapper = createComponent({ planName: 'Ultimate Trial' }, mount);
+
+    const popoverText = wrapper.text();
+
+    expect(popoverText).toContain('We hope you’re enjoying the features of GitLab Ultimate.');
+    expect(popoverText).toMatch(/Upgrade Some Test Group to Ultimate(?! Trial)/);
+  });
+
   describe('startInitiallyShown', () => {
     const userCalloutProviders = {
       userCalloutsPath: 'user_callouts/path',

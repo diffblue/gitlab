@@ -64,6 +64,12 @@ describe('TrialStatusWidget component', () => {
 
       unmockTracking();
     });
+
+    it('does not render Trial twice if the plan name includes "Trial"', () => {
+      wrapper = createComponent({ planName: 'Ultimate Trial' });
+
+      expect(wrapper.text()).toEqual('Ultimate Trial – 20 days left');
+    });
   });
 
   describe('with the optional containerId prop', () => {
