@@ -76,10 +76,10 @@ module EE
       end
     end
 
-    def oncall_user_removed(rotation, user, async = true)
+    def oncall_user_removed(rotation, user, async_notification = true)
       project_owners_and_participants(rotation, user).each do |recipient|
         email = mailer.user_removed_from_rotation_email(user, rotation, [recipient])
-        async ? email.deliver_later : email.deliver_now
+        async_notification ? email.deliver_later : email.deliver_now
       end
     end
 
