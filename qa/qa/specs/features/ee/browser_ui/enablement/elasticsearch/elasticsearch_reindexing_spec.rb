@@ -68,7 +68,7 @@ module QA
           menu.search_for content[0..33]
         end
 
-        QA::Support::Retrier.retry_on_exception(max_attempts: 10, sleep_interval: 12) do
+        QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           Page::Search::Results.perform do |search|
             search.switch_to_code
             aggregate_failures "testing expectations" do
