@@ -411,7 +411,8 @@ module Gitlab
         raise_on_exhaustion = !!kwargs.delete(:raise_on_exhaustion)
         merged_args = {
           klass: self.class,
-          logger: Gitlab::BackgroundMigration::Logger
+          logger: Gitlab::BackgroundMigration::Logger,
+          allow_subtrans: true
         }.merge(kwargs)
 
         Gitlab::Database::WithLockRetries.new(**merged_args)
