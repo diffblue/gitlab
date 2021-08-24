@@ -88,10 +88,8 @@ module Gitlab
           end
 
           def observe_step_duration(step_class, duration)
-            step = step_class.name.underscore.tr('/', '_')
-
-            metrics.pipeline_creation_step_duration_histogram(step)
-              .observe({}, duration.seconds)
+            metrics.pipeline_creation_step_duration_histogram
+              .observe({ step: step_class.name }, duration.seconds)
           end
 
           def observe_creation_duration(duration)

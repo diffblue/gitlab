@@ -347,10 +347,10 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Command do
       histogram = double(:histogram)
       duration = 1.hour
 
-      expect(histogram).to receive(:observe).with({}, duration.seconds)
       expect(::Gitlab::Ci::Pipeline::Metrics).to receive(:pipeline_creation_step_duration_histogram)
-        .with('gitlab_ci_pipeline_chain_build')
         .and_return(histogram)
+      expect(histogram).to receive(:observe)
+        .with({ step: 'Gitlab::Ci::Pipeline::Chain::Build' }, duration.seconds)
 
       described_class.new.observe_step_duration(
         Gitlab::Ci::Pipeline::Chain::Build,

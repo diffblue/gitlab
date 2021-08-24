@@ -5,17 +5,17 @@ require 'spec_helper'
 RSpec.describe ::Gitlab::Ci::Pipeline::Metrics do
   describe '.pipeline_creation_step_duration_histogram' do
     it 'adds the step to the step duration histogram' do
-      step = 'gitlab_ci_pipeline_chain_build'
+      described_class.clear_memoization(:pipeline_creation_step_histogram)
 
       expect(::Gitlab::Metrics).to receive(:histogram)
         .with(
           :gitlab_ci_pipeline_creation_step_duration_seconds,
           'Duration of each pipeline creation step',
-          { step: 'pipeline_chain_build' },
+          { step: nil },
           [0.01, 0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 240.0]
         )
 
-      described_class.pipeline_creation_step_duration_histogram(step)
+      described_class.pipeline_creation_step_duration_histogram
     end
   end
 end
