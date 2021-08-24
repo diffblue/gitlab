@@ -181,6 +181,18 @@ describe('Value Stream Analytics actions', () => {
     });
   });
 
+  describe('receiveCycleAnalyticsDataSuccess', () => {
+    it(`commits the ${types.RECEIVE_VALUE_STREAM_DATA_SUCCESS} and dispatches the 'typeOfWork/fetchTopRankedGroupLabels' action`, () => {
+      return testAction(
+        actions.receiveCycleAnalyticsDataSuccess,
+        null,
+        state,
+        [{ type: types.RECEIVE_VALUE_STREAM_DATA_SUCCESS }],
+        [{ type: 'typeOfWork/fetchTopRankedGroupLabels' }],
+      );
+    });
+  });
+
   describe('receiveCycleAnalyticsDataError', () => {
     it(`commits the ${types.RECEIVE_VALUE_STREAM_DATA_ERROR} mutation on a 403 response`, () => {
       const response = { status: 403 };

@@ -336,6 +336,7 @@ export default {
           <transition name="fade">
             <gl-button
               v-if="canRestore"
+              data-testid="vsa-reset-button"
               class="gl-ml-3"
               variant="link"
               @click="handleResetDefaults"
