@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlProgressBar } from '@gitlab/ui';
+import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import { EXPERIMENT_KEY, WIDGET } from './constants';
@@ -26,7 +27,7 @@ export default {
       const i18nWidgetTitle = i18n.widgetTitle.countableTranslator(this.daysRemaining);
 
       return sprintf(i18nWidgetTitle, {
-        planName: this.planName,
+        planName: removeTrialSuffix(this.planName),
         enDash: '–',
         num: this.daysRemaining,
       });

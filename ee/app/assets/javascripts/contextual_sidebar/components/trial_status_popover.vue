@@ -2,6 +2,7 @@
 import { GlButton, GlPopover, GlSprintf } from '@gitlab/ui';
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
+import { removeTrialSuffix } from 'ee/billings/billings_util';
 import axios from '~/lib/utils/axios_utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { sprintf } from '~/locale';
@@ -56,10 +57,13 @@ export default {
     formattedTrialEndDate() {
       return formatDate(this.trialEndDate, trialEndDateFormatString);
     },
+    planNameWithoutTrial() {
+      return removeTrialSuffix(this.planName);
+    },
     upgradeButtonTitle() {
       return sprintf(this.$options.i18n.upgradeButtonTitle, {
         groupName: this.groupName,
-        planName: this.planName,
+        planName: removeTrialSuffix(this.planName),
       });
     },
   },
@@ -162,7 +166,7 @@ export default {
       <template #bold="{ content }">
         <b>{{ sprintf(content, { trialEndDate: formattedTrialEndDate }) }}</b>
       </template>
-      <template #planName>{{ planName }}</template>
+      <template #planName>{{ planNameWithoutTrial }}</template>
     </gl-sprintf>
 
     <div class="gl-mt-5">

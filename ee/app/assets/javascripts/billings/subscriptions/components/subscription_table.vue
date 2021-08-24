@@ -2,12 +2,12 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { removeTrialSuffix } from 'ee/billings/billings_util';
 import {
   TABLE_TYPE_DEFAULT,
   TABLE_TYPE_FREE,
   TABLE_TYPE_TRIAL,
   DAYS_FOR_RENEWAL,
-  PLAN_TITLE_TRIAL_TEXT,
 } from 'ee/billings/constants';
 import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 import createFlash from '~/flash';
@@ -79,7 +79,7 @@ export default {
     subscriptionHeader() {
       const planName = this.isFreePlan
         ? s__('SubscriptionTable|Free')
-        : escape(this.planName.replace(PLAN_TITLE_TRIAL_TEXT, ''));
+        : escape(removeTrialSuffix(this.planName));
       const suffix = this.isSubscription && this.plan.trial ? s__('SubscriptionTable|Trial') : '';
 
       return `${this.namespaceName}: ${planName} ${suffix}`;
