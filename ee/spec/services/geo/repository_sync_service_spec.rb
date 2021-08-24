@@ -34,7 +34,7 @@ RSpec.describe Geo::RepositorySyncService, :geo do
       allow_any_instance_of(Repository).to receive(:fetch_as_mirror)
         .and_return(true)
 
-      allow_any_instance_of(Repository)
+      allow(repository)
         .to receive(:find_remote_root_ref)
         .with(url_to_repo, anything)
         .and_return('master')

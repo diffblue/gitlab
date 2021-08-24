@@ -35,12 +35,11 @@ RSpec.describe Geo::DesignRepositorySyncService do
       stub_exclusive_lease(lease_key, lease_uuid)
       stub_exclusive_lease("geo_project_housekeeping:#{project.id}")
 
-      allow_any_instance_of(Repository).to receive(:fetch_as_mirror)
-        .and_return(true)
+      allow(repository).to receive(:fetch_as_mirror).and_return(true)
 
-      allow_any_instance_of(Repository)
+      allow(repository)
         .to receive(:find_remote_root_ref)
-        .with(url_to_repo)
+        .with(url_to_repo, anything)
         .and_return('master')
 
       allow_any_instance_of(Geo::ProjectHousekeepingService).to receive(:execute)

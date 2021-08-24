@@ -37,7 +37,6 @@ module Geo
     def sync_repository
       start_registry_sync!
       fetch_repository
-      update_root_ref
       mark_sync_as_successful
     rescue Gitlab::Git::Repository::NoRepository => e
       log_info('Marking the repository for a forced re-download')
@@ -83,6 +82,8 @@ module Geo
         fetch_geo_mirror(repository)
         @new_repository = true
       end
+
+      update_root_ref
     end
 
     def redownload_repository
