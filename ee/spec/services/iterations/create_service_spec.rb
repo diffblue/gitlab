@@ -95,8 +95,55 @@ RSpec.describe Iterations::CreateService do
   end
 
   context 'for groups' do
-    let_it_be(:parent, refind: true) { create(:group) }
+    let_it_be(:group) { create(:group) }
 
-    it_behaves_like 'iterations create service'
+    context 'group without cadences' do
+      let_it_be(:parent, refind: true) { group }
+
+      it_behaves_like 'iterations create service'
+    end
+
+    context 'group with a cadence' do
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+      let_it_be(:parent, refind: true) { group }
+
+      it_behaves_like 'iterations create service'
+    end
+
+    context 'group with multiple cadences' do
+      let_it_be(:cadence) { create_list(:iterations_cadence, 2, group: group) }
+      let_it_be(:parent, refind: true) { group }
+
+      it_behaves_like 'iterations create service'
+
+      context 'with specific cadence being passed as param' do
+        let_it_be(:user) { create(:user) }
+
+        let(:params) do
+          {
+            title: 'v2.1.9',
+            description: 'Patch release to fix security issue',
+            start_date: Time.current.to_s,
+            due_date: 1.day.from_now.to_s,
+            iterations_cadence_id: group.iterations_cadences.last.id
+          }
+        end
+
+        let(:response) { described_class.new(parent, user, params).execute }
+        let(:iteration) { response.payload[:iteration] }
+
+        before do
+          parent.add_developer(user)
+        end
+
+        context 'valid params' do
+          it 'creates an iteration' do
+            expect(response.success?).to be_truthy
+            expect(iteration).to be_persisted
+            expect(iteration.iterations_cadence_id).to eq(group.iterations_cadences.last.id)
+          end
+        end
+      end
+    end
   end
 end

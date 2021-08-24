@@ -9,7 +9,7 @@ RSpec.describe Iterations::Cadences::DestroyService do
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:iteration_cadence, refind: true) { create(:iterations_cadence, group: group, start_date: Date.today, duration_in_weeks: 1, iterations_in_advance: 2) }
-  let_it_be(:iteration) { create(:current_iteration, group: group, start_date: 2.days.ago, due_date: 5.days.from_now) }
+  let_it_be(:iteration) { create(:current_iteration, group: group, iterations_cadence: iteration_cadence, start_date: 2.days.ago, due_date: 5.days.from_now) }
   let_it_be(:iteration_list, refind: true) { create(:iteration_list, iteration: iteration) }
   let_it_be(:iteration_event, refind: true) { create(:resource_iteration_event, iteration: iteration) }
   let_it_be(:board) { create(:board, iteration: iteration, group: group) }

@@ -11,6 +11,7 @@ FactoryBot.define do
     due_date { generate(:sequential_date) }
 
     transient do
+      iterations_cadence { nil }
       project { nil }
       group { nil }
       project_id { nil }
@@ -56,6 +57,13 @@ FactoryBot.define do
         evaluator.resource_parent.is_a?(Group) ? evaluator.group_id = id : evaluator.project_id = id
       else
         iteration.group = create(:group)
+      end
+
+      if evaluator.iterations_cadence.present?
+        iteration.iterations_cadence = evaluator.iterations_cadence
+      else
+        iteration.iterations_cadence = iteration.group.iterations_cadences.first || create(:iterations_cadence, group: iteration.group) if iteration.group
+        iteration.iterations_cadence = create(:iterations_cadence, group_id: iteration.group_id) if iteration.group_id
       end
     end
 

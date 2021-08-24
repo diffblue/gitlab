@@ -7,7 +7,8 @@ RSpec.describe 'Updating an Iteration' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+  let_it_be(:iteration) { create(:iteration, group: group, iterations_cadence: cadence) }
 
   let(:start_date) { 1.day.from_now.strftime('%F') }
   let(:end_date) { 5.days.from_now.strftime('%F') }
@@ -106,7 +107,7 @@ RSpec.describe 'Updating an Iteration' do
         end
 
         context 'when another iteration with given dates overlap' do
-          let_it_be(:another_iteration) { create(:iteration, group: group, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
+          let_it_be(:another_iteration) { create(:iteration, group: group, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
 
           it_behaves_like 'a mutation that returns errors in the response',
                           errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]
