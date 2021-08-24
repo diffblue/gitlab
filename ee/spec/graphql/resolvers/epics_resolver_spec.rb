@@ -11,12 +11,15 @@ RSpec.describe Resolvers::EpicsResolver do
   context "with a group" do
     let_it_be_with_refind(:group) { create(:group) }
 
-    let(:project) { create(:project, :public, group: group) }
-    let(:epic1)   { create(:epic, group: group, state: :closed, created_at: 3.days.ago, updated_at: 2.days.ago) }
-    let(:epic2)   { create(:epic, group: group, author: user2, title: 'foo', description: 'bar', created_at: 2.days.ago, updated_at: 3.days.ago) }
+    let_it_be(:project) { create(:project, :public, group: group) }
+    let_it_be(:epic1)   { create(:epic, group: group, state: :closed, title: 'first created', created_at: 3.days.ago, updated_at: 2.days.ago, start_date: 10.days.ago, end_date: 10.days.from_now) }
+    let_it_be(:epic2)   { create(:epic, group: group, author: user2, title: 'second created', description: 'text 1', created_at: 2.days.ago, updated_at: 3.days.ago, start_date: 20.days.ago, end_date: 20.days.from_now) }
+
+    before_all do
+      group.add_developer(current_user)
+    end
 
     before do
-      group.add_developer(current_user)
       stub_licensed_features(epics: true)
     end
 
@@ -83,25 +86,20 @@ RSpec.describe Resolvers::EpicsResolver do
       end
 
       context 'with state' do
-        let!(:epic1) { create(:epic, group: group, state: :opened, start_date: "2019-08-13", end_date: "2019-08-20") }
-        let!(:epic2) { create(:epic, group: group, state: :closed, start_date: "2019-08-13", end_date: "2019-08-21") }
-
         it 'lists epics with opened state' do
           epics = resolve_epics(state: 'opened')
 
-          expect(epics).to match_array([epic1])
+          expect(epics).to match_array([epic2])
         end
 
         it 'lists epics with closed state' do
           epics = resolve_epics(state: 'closed')
 
-          expect(epics).to match_array([epic2])
+          expect(epics).to match_array([epic1])
         end
       end
 
       context 'with search' do
-        let!(:epic1) { create(:epic, group: group, title: 'first created', description: 'description') }
-        let!(:epic2) { create(:epic, group: group, title: 'second created', description: 'text 1') }
         let!(:epic3) { create(:epic, group: group, title: 'third', description: 'text 2') }
 
         it 'filters epics by title' do
@@ -208,8 +206,6 @@ RSpec.describe Resolvers::EpicsResolver do
       end
 
       context 'with sort' do
-        let!(:epic1) { create(:epic, group: group, title: 'first created', description: 'description', start_date: 10.days.ago, end_date: 10.days.from_now) }
-        let!(:epic2) { create(:epic, group: group, title: 'second created', description: 'text 1', start_date: 20.days.ago, end_date: 20.days.from_now) }
         let!(:epic3) { create(:epic, group: group, title: 'third', description: 'text 2', start_date: 30.days.ago, end_date: 30.days.from_now) }
         let!(:epic4) { create(:epic, group: group, title: 'forth created', description: 'four', start_date: 40.days.ago, end_date: 40.days.from_now) }
 
@@ -303,7 +299,7 @@ RSpec.describe Resolvers::EpicsResolver do
         it 'returns the expected epics if just the first number of iid is requested' do
           epics = resolve_epics(iid_starts_with: '1')
 
-          expect(epics).to contain_exactly(epic3, epic4)
+          expect(epics).to contain_exactly(epic1, epic3, epic4)
         end
 
         it 'returns the expected epics if first two numbers of iid are requested' do
