@@ -167,7 +167,8 @@ export default {
       return '';
     },
     policyType() {
-      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.yaml) : 'container';
+      // eslint-disable-next-line no-underscore-dangle
+      return this.selectedPolicy ? getPolicyType(this.selectedPolicy.__typename) : 'container';
     },
     fields() {
       const environments = {
