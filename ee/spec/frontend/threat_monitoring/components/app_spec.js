@@ -134,4 +134,14 @@ describe('ThreatMonitoringApp component', () => {
       expect(findAlertsView().exists()).toBe(true);
     });
   });
+
+  describe('with "securityOrchestrationPoliciesConfiguration" feature flag enabled', () => {
+    beforeEach(() => {
+      factory({ provide: { glFeatures: { securityOrchestrationPoliciesConfiguration: true } } });
+    });
+
+    it('does not render the Policies tab', () => {
+      expect(findPolicyTab().exists()).toBe(false);
+    });
+  });
 });
