@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Boards::Epics::CreateService do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:parent_group) { create(:group) }
+  let_it_be(:group) { create(:group, parent: parent_group) }
   let_it_be(:board) { create(:epic_board, group: group) }
 
   describe '#execute' do
@@ -19,17 +20,24 @@ RSpec.describe Boards::Epics::CreateService do
 
     let(:params) { valid_params }
 
-    subject do
+    subject(:response) do
       described_class.new(group, user, params).execute
     end
 
     shared_examples 'epic creation error' do |error_pattern|
       it 'does not create epic' do
-        response = subject
-
         expect(response).to be_error
         expect(response.message).to match(error_pattern)
       end
+    end
+
+    shared_examples 'success epic creation' do
+      it 'creates an epic' do
+        expect(response).to be_success
+        expect(response.payload).to be_a(Epic)
+      end
+
+      specify { expect { subject }.to change { Epic.count }.by(1) }
     end
 
     context 'when epics feature is available' do
@@ -38,15 +46,15 @@ RSpec.describe Boards::Epics::CreateService do
         group.add_developer(user)
       end
 
-      context 'when arguments are valid' do
-        it 'creates an epic' do
-          response = subject
+      it_behaves_like 'success epic creation'
 
-          expect(response).to be_success
-          expect(response.payload).to be_a(Epic)
-        end
+      context 'when board is in an ancestor group' do
+        let_it_be(:parent_board) { create(:epic_board, group: parent_group) }
+        let_it_be(:parent_list) { create(:epic_list, epic_board: parent_board) }
 
-        specify { expect { subject }.to change { Epic.count }.by(1) }
+        let(:params) { valid_params.merge(board_id: parent_board.id, list_id: parent_list.id) }
+
+        it_behaves_like 'success epic creation'
       end
 
       context 'when arguments are not valid' do

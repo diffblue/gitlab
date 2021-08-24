@@ -12,6 +12,7 @@ module Boards
     validates :name, length: { maximum: 255 }, presence: true
 
     scope :order_by_name_asc, -> { order(arel_table[:name].lower.asc).order(id: :asc) }
+    scope :for_groups, ->(ids) { where(group_id: ids) }
 
     def lists
       epic_lists
