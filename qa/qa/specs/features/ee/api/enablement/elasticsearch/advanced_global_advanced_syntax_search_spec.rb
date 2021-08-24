@@ -50,7 +50,7 @@ module QA
       private
 
       def expect_search_to_find_project(search_term)
-        QA::Support::Retrier.retry_on_exception(max_attempts: 10, sleep_interval: 12) do
+        QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get Runtime::Search.create_search_request(api_client, 'projects', search_term).url
           expect_status(QA::Support::Api::HTTP_STATUS_OK)
 
