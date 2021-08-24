@@ -8,7 +8,7 @@ module Analytics
 
     sidekiq_options retry: 3
 
-    feature_category :code_analytics
+    feature_category :value_stream_management
     idempotent!
     loggable_arguments 0
 

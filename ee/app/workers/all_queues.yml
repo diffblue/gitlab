@@ -894,7 +894,7 @@
   :tags: []
 - :name: analytics_code_review_metrics
   :worker_name: Analytics::CodeReviewMetricsWorker
-  :feature_category: :code_analytics
+  :feature_category: :value_stream_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
