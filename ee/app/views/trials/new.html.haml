@@ -49,8 +49,7 @@
         = label_tag :number_of_users, s_('Trial|How many users will be evaluating the trial?'), for: :number_of_users, class: 'col-form-label'
         = number_field_tag :number_of_users, params[:number_of_users], class: 'form-control gl-form-input', required: true, min: 1, data: { qa_selector: 'number_of_users' }
       .form-group.gl-select2-html5-required-fix
-        = label_tag :country, s_('Trial|Country'), class: 'col-form-label'
-        = select_tag :country, options_for_select([[s_('Trial|Please select a country'), '']]), class: 'select2 gl-transparent-pixel', required: true, id: 'country_select', data: { countries_end_point: countries_path, selected_option: params[:country], qa_selector: 'country' }
+        = render 'select_country'
       = submit_tag s_('Trial|Continue'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'continue' }
 
     = render 'skip_trial'
