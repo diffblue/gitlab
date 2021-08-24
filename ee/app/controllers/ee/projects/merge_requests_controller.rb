@@ -12,7 +12,6 @@ module EE
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:missing_mr_security_scan_types, @project)
           push_frontend_feature_flag(:usage_data_i_testing_metrics_report_widget_total, @project, default_enabled: true)
-          push_frontend_feature_flag(:usage_data_i_testing_web_performance_widget_total, @project, default_enabled: true)
           push_frontend_feature_flag(:usage_data_i_testing_load_performance_widget_total, @project, default_enabled: true)
         end
 
