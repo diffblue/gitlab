@@ -33,9 +33,7 @@ module EE
         # @return [Nil] returns nil unless an error is raised
         # @raise [Gitlab::GitAccess::ForbiddenError] if check fails
         def check_file_size!
-          changes_access.single_change_accesses.each do |single_change_access|
-            PushRules::FileSizeCheck.new(single_change_access).validate!
-          end
+          PushRules::FileSizeCheck.new(changes_access).validate!
 
           nil
         end
