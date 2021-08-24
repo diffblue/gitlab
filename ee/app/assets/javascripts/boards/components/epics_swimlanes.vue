@@ -11,7 +11,7 @@ import { s__, n__, __ } from '~/locale';
 import defaultSortableConfig from '~/sortable/sortable_config';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { calculateSwimlanesBufferSize } from '../boards_util';
-import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT } from '../constants';
+import { DRAGGABLE_TAG, EPIC_LANE_BASE_HEIGHT, DraggableItemTypes } from '../constants';
 import EpicLane from './epic_lane.vue';
 import IssuesLaneList from './issues_lane_list.vue';
 import SwimlanesLoadingSkeleton from './swimlanes_loading_skeleton.vue';
@@ -19,6 +19,7 @@ import SwimlanesLoadingSkeleton from './swimlanes_loading_skeleton.vue';
 export default {
   EpicLane,
   epicLaneBaseHeight: EPIC_LANE_BASE_HEIGHT,
+  draggableItemTypes: DraggableItemTypes,
   components: {
     BoardAddNewColumn,
     BoardListHeader,
@@ -215,6 +216,7 @@ export default {
           class="board gl-display-inline-block gl-px-3 gl-vertical-align-top gl-white-space-normal"
           :data-list-id="list.id"
           data-testid="board-header-container"
+          :data-draggable-item-type="$options.draggableItemTypes.list"
         >
           <board-list-header
             :can-admin-list="canAdminList"
