@@ -70,27 +70,22 @@ describe('projectsSelector default state', () => {
     });
   });
 
-  describe('isSetupForCompany', () => {
-    it('sets the isSetupForCompany to true if provided setupForCompany is "true" and the provided newUser is "true"', () => {
-      expect(state.isSetupForCompany).toEqual(true);
-    });
-
-    it('sets the isSetupForCompany to true if provided newUser is "false"', () => {
+  describe.each`
+    setupForCompanyValue | newUserValue | expectedValue
+    ${''}                | ${'true'}    | ${false}
+    ${''}                | ${'false'}   | ${true}
+    ${'false'}           | ${'true'}    | ${false}
+    ${'false'}           | ${'false'}   | ${false}
+    ${'true'}            | ${'true'}    | ${true}
+    ${'true'}            | ${'false'}   | ${true}
+  `('isSetupForCompany', ({ setupForCompanyValue, newUserValue, expectedValue }) => {
+    it(`sets the isSetupForCompany to ${expectedValue} if provided setupForCompany is "${setupForCompanyValue}" and newUser is "${newUserValue}"`, () => {
       const modifiedState = createState({
         ...initialData,
-        ...{ newUser: 'false' },
+        ...{ setupForCompany: setupForCompanyValue, newUser: newUserValue },
       });
 
-      expect(modifiedState.isSetupForCompany).toEqual(true);
-    });
-
-    it('sets the isSetupForCompany to false if provided setupForCompany is "false"', () => {
-      const modifiedState = createState({
-        ...initialData,
-        ...{ setupForCompany: 'false' },
-      });
-
-      expect(modifiedState.isSetupForCompany).toEqual(false);
+      expect(modifiedState.isSetupForCompany).toEqual(expectedValue);
     });
   });
 
