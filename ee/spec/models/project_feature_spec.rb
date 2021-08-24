@@ -54,4 +54,8 @@ RSpec.describe ProjectFeature do
       end
     end
   end
+
+  it_behaves_like 'access level validation', ProjectFeature::EE_FEATURES do
+    let(:container_features) { project.project_feature }
+  end
 end

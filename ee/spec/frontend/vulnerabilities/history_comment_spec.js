@@ -1,19 +1,30 @@
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import deleteNoteMutation from 'ee/security_dashboard/graphql/mutations/note_delete.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import HistoryComment from 'ee/vulnerabilities/components/history_comment.vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
 const mockAxios = new MockAdapter(axios);
 jest.mock('~/flash');
 
+Vue.use(VueApollo);
+
 describe('History Comment', () => {
   let wrapper;
 
-  const createWrapper = (comment) => {
+  const createApolloProvider = (...queries) => {
+    return createMockApollo([...queries]);
+  };
+
+  const createWrapper = ({ comment, apolloProvider } = {}) => {
     wrapper = mount(HistoryComment, {
+      apolloProvider,
       propsData: {
         comment,
         notesUrl: '/notes',
@@ -138,7 +149,7 @@ describe('History Comment', () => {
   });
 
   describe(`when there's an existing comment`, () => {
-    beforeEach(() => createWrapper(comment));
+    beforeEach(() => createWrapper({ comment }));
 
     it('shows the comment with the correct user author and timestamp and the edit/delete buttons', () => {
       expectExistingCommentView();
@@ -187,44 +198,6 @@ describe('History Comment', () => {
         });
     });
 
-    it('deletes the comment when the confirm delete button is clicked', () => {
-      mockAxios.onDelete().replyOnce(200);
-      deleteButton().trigger('click');
-
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          confirmDeleteButton().trigger('click');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expect(confirmDeleteButton().props('loading')).toBe(true);
-          expect(cancelDeleteButton().props('disabled')).toBe(true);
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.delete).toHaveLength(1);
-          expect(wrapper.emitted().onCommentDeleted).toBeTruthy();
-          expect(wrapper.emitted().onCommentDeleted[0][0]).toEqual(comment);
-        });
-    });
-
-    it('shows an error message when the comment cannot be deleted', () => {
-      mockAxios.onDelete().replyOnce(500);
-      deleteButton().trigger('click');
-
-      return wrapper.vm
-        .$nextTick()
-        .then(() => {
-          confirmDeleteButton().trigger('click');
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.delete).toHaveLength(1);
-          expect(createFlash).toHaveBeenCalledTimes(1);
-        });
-    });
-
     it('saves the comment when the save button is clicked on the comment editor', () => {
       const responseData = { ...comment, note: 'new comment' };
       mockAxios.onPut().replyOnce(200, responseData);
@@ -261,9 +234,66 @@ describe('History Comment', () => {
     });
   });
 
+  describe('deleting a note', () => {
+    it('deletes the comment when the confirm delete button is clicked', async () => {
+      createWrapper({
+        comment,
+        apolloProvider: createApolloProvider([
+          deleteNoteMutation,
+          jest.fn().mockResolvedValue({
+            data: {
+              destroyNote: {
+                errors: [],
+                note: null,
+              },
+            },
+          }),
+        ]),
+      });
+
+      deleteButton().trigger('click');
+
+      await wrapper.vm.$nextTick();
+      confirmDeleteButton().trigger('click');
+
+      await wrapper.vm.$nextTick();
+      expect(confirmDeleteButton().props('loading')).toBe(true);
+      expect(cancelDeleteButton().props('disabled')).toBe(true);
+
+      await axios.waitForAll();
+      expect(wrapper.emitted().onCommentDeleted).toBeTruthy();
+      expect(wrapper.emitted().onCommentDeleted[0][0]).toEqual(comment);
+    });
+
+    it('shows an error message when the comment cannot be deleted', async () => {
+      createWrapper({
+        comment,
+        apolloProvider: createApolloProvider([
+          deleteNoteMutation,
+          jest.fn().mockRejectedValue({
+            data: {
+              destroyNote: {
+                errors: [{ message: 'Something went wrong' }],
+                note: null,
+              },
+            },
+          }),
+        ]),
+      });
+
+      deleteButton().trigger('click');
+
+      await wrapper.vm.$nextTick();
+      confirmDeleteButton().trigger('click');
+
+      await axios.waitForAll();
+      expect(createFlash).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('no permission to edit existing comment', () => {
     it('does not show the edit/delete buttons if the current user has no edit permissions', () => {
-      createWrapper({ ...comment, currentUser: { canEdit: false } });
+      createWrapper({ comment: { ...comment, currentUser: { canEdit: false } } });
 
       expect(editButton().exists()).toBe(false);
       expect(deleteButton().exists()).toBe(false);

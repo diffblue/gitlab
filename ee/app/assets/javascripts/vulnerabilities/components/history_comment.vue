@@ -1,7 +1,10 @@
 <script>
 import { GlButton, GlSafeHtmlDirective as SafeHtml, GlLoadingIcon } from '@gitlab/ui';
+import deleteNoteMutation from 'ee/security_dashboard/graphql/mutations/note_delete.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import createFlash from '~/flash';
+import { TYPE_NOTE } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 import HistoryCommentEditor from './history_comment_editor.vue';
@@ -115,25 +118,26 @@ export default {
           });
         });
     },
-    deleteComment() {
+    async deleteComment() {
       this.isDeletingComment = true;
-      const deleteUrl = this.comment.path;
 
-      axios
-        .delete(deleteUrl)
-        .then(() => {
-          this.$emit('onCommentDeleted', this.comment);
-        })
-        .catch(() =>
-          createFlash({
-            message: s__(
-              'VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later.',
-            ),
-          }),
-        )
-        .finally(() => {
-          this.isDeletingComment = false;
+      try {
+        await this.$apollo.mutate({
+          mutation: deleteNoteMutation,
+          variables: {
+            id: convertToGraphQLId(TYPE_NOTE, this.comment.id),
+          },
         });
+        this.$emit('onCommentDeleted', this.comment);
+      } catch (e) {
+        createFlash({
+          message: s__(
+            'VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later.',
+          ),
+        });
+      }
+
+      this.isDeletingComment = false;
     },
     cancelEditingComment() {
       this.isEditingComment = false;
