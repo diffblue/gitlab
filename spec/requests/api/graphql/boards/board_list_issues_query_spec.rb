@@ -69,12 +69,12 @@ RSpec.describe 'get board lists' do
       end
     end
 
-    context 'when user can read the board', :aggregate_failures do
+    context 'when user can read the board' do
       before do
         board_parent.add_reporter(user)
       end
 
-      it 'can access the issues' do
+      it 'can access the issues', :aggregate_failures do
         post_graphql(query("id: \"#{global_id_of(label_list)}\""), current_user: user)
 
         expect(issue_titles).to eq([issue2.title, issue1.title, issue3.title])
