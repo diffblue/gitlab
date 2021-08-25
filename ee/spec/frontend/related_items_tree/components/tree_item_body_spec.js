@@ -1,5 +1,6 @@
 import { GlButton, GlLink, GlIcon } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
@@ -28,8 +29,7 @@ import {
   mockEpicMeta3,
 } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 let mockItem;
 
@@ -68,7 +68,6 @@ const createComponent = (parentItem = mockParentItem, item = mockItem) => {
   });
 
   return shallowMount(TreeItemBody, {
-    localVue,
     store,
     propsData: {
       parentItem,
@@ -337,7 +336,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item link', () => {
-        const link = wrapper.find(GlLink);
+        const link = wrapper.findComponent(GlLink);
 
         expect(link.attributes('href')).toBe(mockItem.webPath);
         expect(link.text()).toBe(mockItem.title);
@@ -350,13 +349,13 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item milestone when it has milestone', () => {
-        const milestone = wrapper.find(ItemMilestone);
+        const milestone = wrapper.findComponent(ItemMilestone);
 
         expect(milestone.isVisible()).toBe(true);
       });
 
       it('renders item due date when it has due date', () => {
-        const dueDate = wrapper.find(ItemDueDate);
+        const dueDate = wrapper.findComponent(ItemDueDate);
 
         expect(dueDate.isVisible()).toBe(true);
       });
@@ -371,23 +370,39 @@ describe('RelatedItemsTree', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.find(ItemDueDate).props('closed')).toBe(true);
+        expect(wrapper.findComponent(ItemDueDate).props('closed')).toBe(true);
       });
 
       it('renders item weight when it has weight', () => {
-        const weight = wrapper.find(ItemWeight);
+        const weight = wrapper.findComponent(ItemWeight);
 
         expect(weight.isVisible()).toBe(true);
       });
 
+      it('renders item weight when it has weight of 0', async () => {
+        wrapper.setProps({
+          item: {
+            ...mockItem,
+            weight: 0,
+          },
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const weight = wrapper.findComponent(ItemWeight);
+
+        expect(weight.isVisible()).toBe(true);
+        expect(weight.props('weight')).toBe(0);
+      });
+
       it('renders item assignees when it has assignees', () => {
-        const assignees = wrapper.find(ItemAssignees);
+        const assignees = wrapper.findComponent(ItemAssignees);
 
         expect(assignees.isVisible()).toBe(true);
       });
 
       it('renders item remove button when `item.userPermissions.adminEpic` is true', () => {
-        const removeButton = wrapper.find(GlButton);
+        const removeButton = wrapper.findComponent(GlButton);
 
         expect(removeButton.isVisible()).toBe(true);
         expect(removeButton.attributes('title')).toBe('Remove');
