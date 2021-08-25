@@ -3,7 +3,7 @@
 - f = local_assigns.fetch(:form)
 
 .form-group
-  = f.label s_('Default delayed project deletion'), class: 'label-bold'
+  = f.label _('Default delayed project deletion'), class: 'label-bold'
   .form-check
     = f.check_box :delayed_project_deletion, class: 'form-check-input'
     = f.label :delayed_project_deletion, class: 'form-check-label' do
