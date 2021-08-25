@@ -5,7 +5,7 @@ module QA
     module Page
       module Project
         module Settings
-          module CICD
+          module CiCd
             extend QA::Page::PageConcern
 
             def self.prepended(base)

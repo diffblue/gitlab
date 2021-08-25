@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'securerandom'
 
 module QA
   # Issue to enable this test in live environments: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/614

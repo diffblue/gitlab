@@ -4,7 +4,7 @@ module QA
   # TODO: Remove :requires_admin meta when the `Runtime::Feature.enable` method call is removed
   RSpec.describe 'Manage', :group_saml, :orchestrated, :requires_admin do
     describe 'Group SAML SSO - Enforced SSO' do
-      include Support::Api
+      include Support::API
 
       let!(:group) do
         Resource::Sandbox.fabricate_via_api! do |sandbox_group|

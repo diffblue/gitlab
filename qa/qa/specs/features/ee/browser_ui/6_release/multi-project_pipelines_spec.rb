@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 module QA
   RSpec.describe 'Release' do
     describe 'Multi-project pipelines' do

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'airborne'
-require 'securerandom'
 
 module QA
   RSpec.describe 'Enablement:Search' do
@@ -54,7 +53,7 @@ module QA
         it 'does not find a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/746' do
           QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
             get Runtime::Search.create_search_request(non_member_api_client, 'blobs', project_file_content).url
-            expect_status(QA::Support::Api::HTTP_STATUS_OK)
+            expect_status(QA::Support::API::HTTP_STATUS_OK)
             expect(json_body).to be_empty
           end
         end
@@ -65,7 +64,7 @@ module QA
       def successful_search(api_client)
         QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get Runtime::Search.create_search_request(api_client, 'blobs', project_file_content).url
-          expect_status(QA::Support::Api::HTTP_STATUS_OK)
+          expect_status(QA::Support::API::HTTP_STATUS_OK)
 
           raise 'Empty search result returned' if json_body.empty?
 

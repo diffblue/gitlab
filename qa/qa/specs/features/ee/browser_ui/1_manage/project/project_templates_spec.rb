@@ -1,10 +1,9 @@
 # frozen_string_literal: true
-require 'securerandom'
 
 module QA
   RSpec.describe 'Manage' do
     describe 'Project templates' do
-      include Support::Api
+      include Support::API
 
       before(:all) do
         @files = [

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 module QA
   RSpec.describe 'Verify', :runner, :transient do
     describe 'Merge trains transient bugs' do

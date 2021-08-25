@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 module QA
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
     describe 'Purchase' do

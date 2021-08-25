@@ -9,7 +9,7 @@ module QA
         def fabricate!
           QA::Page::Project::Menu.perform(&:go_to_ci_cd_settings)
 
-          QA::Page::Project::Settings::CICD.perform do |setting|
+          QA::Page::Project::Settings::CiCd.perform do |setting|
             setting.expand_pipeline_subscriptions do |page|
               page.subscribe(project_path)
             end

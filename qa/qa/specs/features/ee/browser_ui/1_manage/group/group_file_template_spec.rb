@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 module QA
   RSpec.describe 'Manage' do
     describe 'Group file templates', :requires_admin do
-      include Support::Api
+      include Support::API
 
       templates = [
         {

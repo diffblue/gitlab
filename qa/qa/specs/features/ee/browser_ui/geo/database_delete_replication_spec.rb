@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Geo', :orchestrated, :geo do
     describe 'GitLab Geo project deletion replication' do
-      include Support::Api
+      include Support::API
 
       deleted_project_name = nil
       deleted_project_id = nil
