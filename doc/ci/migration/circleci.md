@@ -216,12 +216,12 @@ jobs:
 Example of the same workflow using `rules` in GitLab CI/CD:
 
 ```yaml
-deploy_prod:
+deploy:
   stage: deploy
   script:
-    - echo "Deploy to production server"
+    - echo "Deploy job"
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /^rc-/'
 ```
 
 ### Caching
