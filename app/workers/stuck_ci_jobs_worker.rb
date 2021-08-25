@@ -43,6 +43,9 @@ class StuckCiJobsWorker # rubocop:disable Scalability/IdempotentWorker
   private
 
   # rubocop: disable CodeReuse/ActiveRecord
+  # We're adding the ordering clause by `created_at` and `project_id`
+  # because we want to force the query planner to use the
+  # `ci_builds_gitlab_monitor_metrics` index all the time.
   def pending_builds(timeout)
     if Feature.enabled?(:ci_new_query_for_pending_stuck_jobs)
       Ci::Build.pending.created_at_before(timeout).updated_at_before(timeout).order(created_at: :asc, project_id: :asc)
