@@ -103,7 +103,7 @@ RSpec.describe 'Query.project.mergeRequest.approvalState' do
             'eligibleApprovers' => [{ 'id' => global_id_of(user) }],
             'groups' => { 'nodes' => [] },
             'id' => global_id_of(code_owner_rule),
-            'name' => '*-1.js',
+            'name' => code_owner_rule.name,
             'overridden' => false,
             'section' => 'codeowners',
             'sourceRule' => nil,
