@@ -380,6 +380,8 @@ module Gitlab
       # The timings can be controlled via the +timing_configuration+ parameter.
       # If the lock was not acquired within the retry period, a last attempt is made without using +lock_timeout+.
       #
+      # Note this helper uses subtransactions when run inside an already open transaction.
+      #
       # ==== Examples
       #   # Invoking without parameters
       #   with_lock_retries do
