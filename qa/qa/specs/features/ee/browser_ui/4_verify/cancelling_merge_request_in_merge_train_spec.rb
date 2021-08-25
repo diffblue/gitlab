@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'faker'
-
 module QA
   RSpec.describe 'Verify' do
     describe 'Cancelling merge request in merge train', :runner, :requires_admin do

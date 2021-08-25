@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Manage', :group_saml, :orchestrated, :requires_admin do
     describe 'Group SAML SSO - Non enforced SSO' do
-      include Support::Api
+      include Support::API
 
       let(:user) { Resource::User.fabricate_via_api! }
 

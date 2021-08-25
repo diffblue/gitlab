@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pathname'
-
 module QA
   RSpec.describe 'Secure', :runner do
     let(:number_of_dependencies_in_fixture) { 9 }

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pathname'
-
 module QA
   RSpec.describe 'Secure', :runner do
     describe 'Enable SAST from UI' do

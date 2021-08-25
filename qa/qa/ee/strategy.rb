@@ -5,11 +5,6 @@ module QA
     module Strategy
       extend self
 
-      def extend_autoloads!
-        require 'qa/ce/strategy'
-        require 'qa/ee'
-      end
-
       def perform_before_hooks
         # Without a license, perform the CE before hooks only.
         unless ENV['EE_LICENSE']

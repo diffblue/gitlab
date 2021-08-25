@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'faker'
-
 module QA
   RSpec.describe 'Verify', :runner, :reliable do
     describe 'Pipelines for merged results and merge trains' do
