@@ -152,7 +152,7 @@ describe('EpicHeaderComponent', () => {
       expect(toggleButton.exists()).toBeTruthy();
       expect(toggleButton.attributes('aria-label')).toBe('Toggle sidebar');
       expect(toggleButton.classes()).toEqual(
-        expect.arrayContaining([('d-block', 'd-sm-none', 'gutter-toggle')]),
+        expect.arrayContaining(['gl-display-block', 'd-sm-none', 'gutter-toggle']),
       );
     });
 

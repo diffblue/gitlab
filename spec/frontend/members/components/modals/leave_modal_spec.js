@@ -101,7 +101,7 @@ describe('LeaveModal', () => {
 
     it("does NOT display oncall schedules list when member's user is NOT a part of on-call schedules ", () => {
       const memberWithoutOncallSchedules = cloneDeep(member);
-      delete (memberWithoutOncallSchedules, 'user.oncallSchedules');
+      delete memberWithoutOncallSchedules.user.oncallSchedules;
       createComponent({ member: memberWithoutOncallSchedules });
       expect(findOncallSchedulesList().exists()).toBe(false);
     });
