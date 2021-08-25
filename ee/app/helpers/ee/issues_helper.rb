@@ -58,5 +58,23 @@ module EE
 
       data
     end
+
+    override :group_issues_list_data
+    def group_issues_list_data(group, current_user, issues)
+      data = super.merge!(
+        can_bulk_update: (can?(current_user, :admin_issue, group) && group.feature_available?(:group_bulk_edit)).to_s,
+        has_blocked_issues_feature: group.feature_available?(:blocked_issues).to_s,
+        has_issuable_health_status_feature: group.feature_available?(:issuable_health_status).to_s,
+        has_issue_weights_feature: group.feature_available?(:issue_weights).to_s,
+        has_iterations_feature: group.feature_available?(:iterations).to_s,
+        has_multiple_issue_assignees_feature: group.feature_available?(:multiple_issue_assignees).to_s
+      )
+
+      if group.feature_available?(:epics)
+        data[:group_epics_path] = group_epics_path(group, format: :json)
+      end
+
+      data
+    end
   end
 end

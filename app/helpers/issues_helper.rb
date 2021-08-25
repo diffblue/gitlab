@@ -218,8 +218,8 @@ module IssuesHelper
       has_any_issues: project_issues(project).exists?.to_s,
       import_csv_issues_path: import_csv_namespace_project_issues_path,
       initial_email: project.new_issuable_address(current_user, 'issue'),
+      is_project: true.to_s,
       is_signed_in: current_user.present?.to_s,
-      issues_path: project_issues_path(project),
       jira_integration_path: help_page_url('integration/jira/issues', anchor: 'view-jira-issues'),
       markdown_help_path: help_page_path('user/markdown'),
       max_attachment_size: number_to_human_size(Gitlab::CurrentSettings.max_attachment_size.megabytes),
@@ -229,6 +229,20 @@ module IssuesHelper
       reset_path: new_issuable_address_project_path(project, issuable_type: 'issue'),
       rss_path: url_for(safe_params.merge(rss_url_options)),
       show_new_issue_link: show_new_issue_link?(project).to_s,
+      sign_in_path: new_user_session_path
+    }
+  end
+
+  def group_issues_list_data(group, current_user, issues)
+    {
+      autocomplete_award_emojis_path: autocomplete_award_emojis_path,
+      calendar_path: url_for(safe_params.merge(calendar_url_options)),
+      empty_state_svg_path: image_path('illustrations/issues.svg'),
+      full_path: group.full_path,
+      has_any_issues: issues.to_a.any?.to_s,
+      is_signed_in: current_user.present?.to_s,
+      jira_integration_path: help_page_url('integration/jira/issues', anchor: 'view-jira-issues'),
+      rss_path: url_for(safe_params.merge(rss_url_options)),
       sign_in_path: new_user_session_path
     }
   end

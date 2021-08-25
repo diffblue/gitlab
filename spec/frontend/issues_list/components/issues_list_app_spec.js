@@ -68,8 +68,8 @@ describe('IssuesListApp component', () => {
     hasBlockedIssuesFeature: true,
     hasIssueWeightsFeature: true,
     hasIterationsFeature: true,
+    isProject: true,
     isSignedIn: true,
-    issuesPath: 'path/to/issues',
     jiraIntegrationPath: 'jira/integration/path',
     newIssuePath: 'new/issue/path',
     rssPath: 'rss/path',
@@ -625,25 +625,25 @@ describe('IssuesListApp component', () => {
         ...defaultQueryResponse.data.project.issues.nodes[0],
         id: 'gid://gitlab/Issue/1',
         iid: '101',
-        title: 'Issue one',
+        webPath: '/group/project/-/issues/1',
       };
       const issueTwo = {
         ...defaultQueryResponse.data.project.issues.nodes[0],
         id: 'gid://gitlab/Issue/2',
         iid: '102',
-        title: 'Issue two',
+        webPath: '/group/project/-/issues/2',
       };
       const issueThree = {
         ...defaultQueryResponse.data.project.issues.nodes[0],
         id: 'gid://gitlab/Issue/3',
         iid: '103',
-        title: 'Issue three',
+        webPath: '/group/project/-/issues/3',
       };
       const issueFour = {
         ...defaultQueryResponse.data.project.issues.nodes[0],
         id: 'gid://gitlab/Issue/4',
         iid: '104',
-        title: 'Issue four',
+        webPath: '/group/project/-/issues/4',
       };
       const response = {
         data: {
@@ -677,7 +677,7 @@ describe('IssuesListApp component', () => {
               await waitForPromises();
 
               expect(axiosMock.history.put[0]).toMatchObject({
-                url: joinPaths(defaultProvide.issuesPath, issueToMove.iid, 'reorder'),
+                url: joinPaths(issueToMove.webPath, 'reorder'),
                 data: JSON.stringify({
                   move_before_id: getIdFromGraphQLId(moveBeforeId),
                   move_after_id: getIdFromGraphQLId(moveAfterId),
@@ -690,7 +690,7 @@ describe('IssuesListApp component', () => {
 
       describe('when unsuccessful', () => {
         it('displays an error message', async () => {
-          axiosMock.onPut(joinPaths(defaultProvide.issuesPath, issueOne.iid, 'reorder')).reply(500);
+          axiosMock.onPut(joinPaths(issueOne.webPath, 'reorder')).reply(500);
 
           findIssuableList().vm.$emit('reorder', { oldIndex: 0, newIndex: 1 });
 

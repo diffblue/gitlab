@@ -140,11 +140,11 @@ export default {
     initialEmail: {
       default: '',
     },
-    isSignedIn: {
+    isProject: {
       default: false,
     },
-    issuesPath: {
-      default: '',
+    isSignedIn: {
+      default: false,
     },
     jiraIntegrationPath: {
       default: '',
@@ -186,9 +186,11 @@ export default {
       variables() {
         return this.queryVariables;
       },
-      update: ({ project }) => project?.issues.nodes ?? [],
+      update(data) {
+        return data[this.namespace]?.issues.nodes ?? [];
+      },
       result({ data }) {
-        this.pageInfo = data.project?.issues.pageInfo ?? {};
+        this.pageInfo = data[this.namespace]?.issues.pageInfo ?? {};
         this.exportCsvPathWithQuery = this.getExportCsvPathWithQuery();
       },
       error(error) {
@@ -204,7 +206,9 @@ export default {
       variables() {
         return this.queryVariables;
       },
-      update: ({ project }) => project ?? {},
+      update(data) {
+        return data[this.namespace] ?? {};
+      },
       error(error) {
         createFlash({ message: this.$options.i18n.errorFetchingCounts, captureError: true, error });
       },
@@ -220,14 +224,18 @@ export default {
   computed: {
     queryVariables() {
       return {
-        isSignedIn: this.isSignedIn,
         fullPath: this.fullPath,
+        isProject: this.isProject,
+        isSignedIn: this.isSignedIn,
         search: this.searchQuery,
         sort: this.sortKey,
         state: this.state,
         ...this.pageParams,
         ...this.apiFilterParams,
       };
+    },
+    namespace() {
+      return this.isProject ? 'project' : 'group';
     },
     hasSearch() {
       return this.searchQuery || Object.keys(this.urlFilterParams).length;
@@ -242,7 +250,7 @@ export default {
       return this.state === IssuableStates.Opened;
     },
     showCsvButtons() {
-      return this.isSignedIn;
+      return this.isProject && this.isSignedIn;
     },
     apiFilterParams() {
       return convertToApiParams(this.filterTokens);
@@ -447,39 +455,41 @@ export default {
       return this.$apollo
         .query({
           query: searchLabelsQuery,
-          variables: { fullPath: this.fullPath, search },
+          variables: { fullPath: this.fullPath, search, isProject: this.isProject },
         })
-        .then(({ data }) => data.project.labels.nodes);
+        .then(({ data }) => data[this.namespace]?.labels.nodes);
     },
     fetchMilestones(search) {
       return this.$apollo
         .query({
           query: searchMilestonesQuery,
-          variables: { fullPath: this.fullPath, search },
+          variables: { fullPath: this.fullPath, search, isProject: this.isProject },
         })
-        .then(({ data }) => data.project.milestones.nodes);
+        .then(({ data }) => data[this.namespace]?.milestones.nodes);
     },
     fetchIterations(search) {
       const id = Number(search);
       const variables =
         !search || Number.isNaN(id)
-          ? { fullPath: this.fullPath, search }
-          : { fullPath: this.fullPath, id };
+          ? { fullPath: this.fullPath, search, isProject: this.isProject }
+          : { fullPath: this.fullPath, id, isProject: this.isProject };
 
       return this.$apollo
         .query({
           query: searchIterationsQuery,
           variables,
         })
-        .then(({ data }) => data.project.iterations.nodes);
+        .then(({ data }) => data[this.namespace]?.iterations.nodes);
     },
     fetchUsers(search) {
       return this.$apollo
         .query({
           query: searchUsersQuery,
-          variables: { fullPath: this.fullPath, search },
+          variables: { fullPath: this.fullPath, search, isProject: this.isProject },
         })
-        .then(({ data }) => data.project.projectMembers.nodes.map((member) => member.user));
+        .then(({ data }) =>
+          data[this.namespace]?.[`${this.namespace}Members`].nodes.map((member) => member.user),
+        );
     },
     getExportCsvPathWithQuery() {
       return `${this.exportCsvPath}${window.location.search}`;
@@ -560,15 +570,16 @@ export default {
       }
 
       return axios
-        .put(joinPaths(this.issuesPath, issueToMove.iid, 'reorder'), {
+        .put(joinPaths(issueToMove.webPath, 'reorder'), {
           move_before_id: isMovingToBeginning ? null : getIdFromGraphQLId(moveBeforeId),
           move_after_id: isMovingToEnd ? null : getIdFromGraphQLId(moveAfterId),
+          group_full_path: this.isProject ? undefined : this.fullPath,
         })
         .then(() => {
           const serializedVariables = JSON.stringify(this.queryVariables);
           return this.$apollo.mutate({
             mutation: reorderIssuesMutation,
-            variables: { oldIndex, newIndex, serializedVariables },
+            variables: { oldIndex, newIndex, namespace: this.namespace, serializedVariables },
           });
         })
         .catch((error) => {

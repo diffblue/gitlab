@@ -1,5 +1,17 @@
-query searchUsers($fullPath: ID!, $search: String) {
-  project(fullPath: $fullPath) {
+query searchUsers($fullPath: ID!, $search: String, $isProject: Boolean = false) {
+  group(fullPath: $fullPath) @skip(if: $isProject) {
+    groupMembers(search: $search) {
+      nodes {
+        user {
+          id
+          avatarUrl
+          name
+          username
+        }
+      }
+    }
+  }
+  project(fullPath: $fullPath) @include(if: $isProject) {
     projectMembers(search: $search) {
       nodes {
         user {

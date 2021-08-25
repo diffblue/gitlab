@@ -183,4 +183,57 @@ RSpec.describe EE::IssuesHelper do
       end
     end
   end
+
+  describe '#group_issues_list_data' do
+    let(:current_user) { double.as_null_object }
+    let(:issues) { [] }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+      allow(helper).to receive(:can?).and_return(true)
+      allow(helper).to receive(:url_for).and_return('#')
+    end
+
+    context 'when features are enabled' do
+      before do
+        stub_licensed_features(blocked_issues: true, epics: true, group_bulk_edit: true, issuable_health_status: true, issue_weights: true, iterations: true, multiple_issue_assignees: true)
+      end
+
+      it 'returns data with licensed features enabled' do
+        expected = {
+          can_bulk_update: 'true',
+          has_blocked_issues_feature: 'true',
+          has_issuable_health_status_feature: 'true',
+          has_issue_weights_feature: 'true',
+          has_iterations_feature: 'true',
+          has_multiple_issue_assignees_feature: 'true',
+          group_epics_path: group_epics_path(project.group, format: :json)
+        }
+
+        expect(helper.group_issues_list_data(group, current_user, issues)).to include(expected)
+      end
+    end
+
+    context 'when features are disabled' do
+      before do
+        stub_licensed_features(blocked_issues: false, epics: false, group_bulk_edit: false, issuable_health_status: false, issue_weights: false, iterations: false, multiple_issue_assignees: false)
+      end
+
+      it 'returns data with licensed features disabled' do
+        expected = {
+          can_bulk_update: 'false',
+          has_blocked_issues_feature: 'false',
+          has_issuable_health_status_feature: 'false',
+          has_issue_weights_feature: 'false',
+          has_iterations_feature: 'false',
+          has_multiple_issue_assignees_feature: 'false'
+        }
+
+        result = helper.group_issues_list_data(group, current_user, issues)
+
+        expect(result).to include(expected)
+        expect(result).not_to include(:group_epics_path)
+      end
+    end
+  end
 end

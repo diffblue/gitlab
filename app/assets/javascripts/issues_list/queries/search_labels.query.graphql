@@ -1,5 +1,15 @@
-query searchLabels($fullPath: ID!, $search: String) {
-  project(fullPath: $fullPath) {
+query searchLabels($fullPath: ID!, $search: String, $isProject: Boolean = false) {
+  group(fullPath: $fullPath) @skip(if: $isProject) {
+    labels(searchTerm: $search, includeAncestorGroups: true, includeDescendantGroups: true) {
+      nodes {
+        id
+        color
+        textColor
+        title
+      }
+    }
+  }
+  project(fullPath: $fullPath) @include(if: $isProject) {
     labels(searchTerm: $search, includeAncestorGroups: true) {
       nodes {
         id
