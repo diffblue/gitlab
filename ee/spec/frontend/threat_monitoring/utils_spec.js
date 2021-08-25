@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import {
   getContentWrapperHeight,
@@ -5,11 +6,7 @@ import {
   removeUnnecessaryDashes,
 } from 'ee/threat_monitoring/utils';
 import { setHTMLFixture } from 'helpers/fixtures';
-import {
-  mockDastScanExecutionManifest,
-  mockCiliumManifest,
-  mockNetworkManifest,
-} from './mocks/mock_data';
+import { mockScanExecutionPolicy, mockNetworkPoliciesResponse } from './mocks/mock_data';
 
 describe('Threat Monitoring Utils', () => {
   describe('getContentWrapperHeight', () => {
@@ -36,12 +33,12 @@ describe('Threat Monitoring Utils', () => {
 
   describe('getPolicyType', () => {
     it.each`
-      input                            | output
-      ${''}                            | ${null}
-      ${'random string'}               | ${null}
-      ${mockNetworkManifest}           | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
-      ${mockCiliumManifest}            | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
-      ${mockDastScanExecutionManifest} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
+      input                                        | output
+      ${''}                                        | ${null}
+      ${'UnknownPolicyType'}                       | ${null}
+      ${mockNetworkPoliciesResponse[0].__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
+      ${mockNetworkPoliciesResponse[1].__typename} | ${POLICY_TYPE_COMPONENT_OPTIONS.container.value}
+      ${mockScanExecutionPolicy.__typename}        | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
     `('returns $output when used on $input', ({ input, output }) => {
       expect(getPolicyType(input)).toBe(output);
     });

@@ -2,18 +2,6 @@ import createGqClient from '~/lib/graphql';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
 
 /**
- * Determines if the yaml passed in is of the type `container`
- * @param {String} yaml the policy in yaml form
- * @returns {Boolean}
- */
-const isContainerPolicyYaml = (yaml) => {
-  const containerYamlIndicator = Object.values(
-    POLICY_TYPE_COMPONENT_OPTIONS.container.yamlIndicator,
-  );
-  return containerYamlIndicator.some((str) => yaml?.includes(str));
-};
-
-/**
  * Get the height of the wrapper page element
  * This height can be used to determine where the highest element goes in a page
  * Useful for gl-drawer's header-height prop
@@ -30,11 +18,11 @@ export const getContentWrapperHeight = (contentWrapperClass) => {
  * @param {String} yaml policy's YAML manifest
  * @returns {String|null} policy type if available
  */
-export const getPolicyType = (yaml = '') => {
-  if (isContainerPolicyYaml(yaml)) {
+export const getPolicyType = (typeName = '') => {
+  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.container.typeName) {
     return POLICY_TYPE_COMPONENT_OPTIONS.container.value;
   }
-  if (yaml?.includes(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.yamlIndicator)) {
+  if (typeName === POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.typeName) {
     return POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value;
   }
   return null;
