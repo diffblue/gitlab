@@ -18,6 +18,7 @@ module Iterations
           parent.feature_available?(:iterations) && can?(current_user, :create_iteration, parent)
 
       iteration = parent.iterations.new(params)
+      iteration.set_iterations_cadence
 
       if iteration.save
         ::ServiceResponse.success(message: _('New iteration created'), payload: { iteration: iteration })

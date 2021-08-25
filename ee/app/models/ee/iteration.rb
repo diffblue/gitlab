@@ -48,7 +48,6 @@ module EE
       validate :validate_group
       validate :uniqueness_of_title, if: :title_changed?
 
-      before_validation :set_iterations_cadence, unless: -> { project_id.present? }
       before_save :set_iteration_state
       before_destroy :check_if_can_be_destroyed
 
@@ -174,6 +173,22 @@ module EE
       (due_date - start_date + 1).to_i
     end
 
+    # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099
+    def set_iterations_cadence
+      return if iterations_cadence
+      # For now we support only group iterations
+      # issue to clarify project iterations: https://gitlab.com/gitlab-org/gitlab/-/issues/299864
+      return unless group
+
+      # we need this as we use the cadence to validate the dates overlap for this iteration,
+      # so in the case this runs before background migration we need to first set all iterations
+      # in this group to a cadence before we can validate the dates overlap.
+      default_cadence = find_or_create_default_cadence
+      group.iterations.where(iterations_cadence_id: nil).update_all(iterations_cadence_id: default_cadence.id)
+
+      self.iterations_cadence = default_cadence
+    end
+
     private
 
     def last_iteration_in_cadence?
@@ -234,22 +249,6 @@ module EE
 
     def set_iteration_state
       self.state = self.class.compute_state(start_date, due_date)
-    end
-
-    # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099
-    def set_iterations_cadence
-      return if iterations_cadence
-      # For now we support only group iterations
-      # issue to clarify project iterations: https://gitlab.com/gitlab-org/gitlab/-/issues/299864
-      return unless group
-
-      # we need this as we use the cadence to validate the dates overlap for this iteration,
-      # so in the case this runs before background migration we need to first set all iterations
-      # in this group to a cadence before we can validate the dates overlap.
-      default_cadence = find_or_create_default_cadence
-      group.iterations.where(iterations_cadence_id: nil).update_all(iterations_cadence_id: default_cadence.id)
-
-      self.iterations_cadence = default_cadence
     end
 
     # TODO: this method should be removed as part of https://gitlab.com/gitlab-org/gitlab/-/issues/296099

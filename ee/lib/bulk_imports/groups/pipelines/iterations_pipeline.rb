@@ -16,7 +16,7 @@ module BulkImports
 
           raise ::BulkImports::Pipeline::NotAllowedError unless authorized?
 
-          context.group.iterations.create!(data)
+          ::Iterations::CreateService.new(context.group, context.current_user, data).execute
         end
 
         private
