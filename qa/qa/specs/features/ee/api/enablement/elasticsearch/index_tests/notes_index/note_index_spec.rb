@@ -41,7 +41,7 @@ module QA
       it 'finds note that matches note body', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1868' do
         QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get Runtime::Search.create_search_request(api_client, 'notes', note.body).url
-          expect_status(QA::Support::Api::HTTP_STATUS_OK)
+          expect_status(QA::Support::API::HTTP_STATUS_OK)
 
           raise 'Empty search result returned' if json_body.empty?
 
