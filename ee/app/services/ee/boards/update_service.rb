@@ -12,7 +12,7 @@ module EE
         filter_assignee
         filter_labels
         filter_milestone
-        filter_iteration
+        filter_iteration_and_iteration_cadence
       end
 
       override :permitted_params
@@ -20,7 +20,7 @@ module EE
         permitted = super
 
         if parent.feature_available?(:scoped_issue_board)
-          permitted += %i(milestone_id iteration_id assignee_id weight labels label_ids)
+          permitted += %i(milestone_id iteration_id iteration_cadence_id assignee_id weight labels label_ids)
         end
 
         permitted

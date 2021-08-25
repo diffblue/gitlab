@@ -275,25 +275,48 @@ RSpec.describe 'Scoped issue boards', :js do
       end
 
       context 'iteration' do
-        context 'board not scoped to iteration' do
-          it 'sets board to current iteration' do
-            expect(page).to have_selector('.board-card', count: 3)
+        context 'group with iterations' do
+          let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+          let_it_be(:iteration) { create(:iteration, group: group, iterations_cadence: cadence) }
 
-            update_board_scope('current_iteration', true)
+          context 'board not scoped to iteration' do
+            it 'sets board to current iteration' do
+              expect(page).to have_selector('.board-card', count: 3)
 
-            expect(page).to have_selector('.board-card', count: 0)
+              update_board_scope('current_iteration', true)
+
+              expect(page).to have_selector('.board-card', count: 0)
+              expect(page).not_to have_selector('.gl-alert-body')
+            end
+          end
+
+          context 'board scoped to current iteration' do
+            it 'removes current iteration from board' do
+              create_board_scope('current_iteration', true)
+
+              expect(page).to have_selector('.board-card', count: 0)
+
+              update_board_scope('current_iteration', false)
+
+              expect(page).to have_selector('.board-card', count: 3)
+              expect(page).not_to have_selector('.gl-alert-body')
+            end
           end
         end
 
-        context 'board scoped to current iteration' do
-          it 'removes current iteration from board' do
-            create_board_scope('current_iteration', true)
-
-            expect(page).to have_selector('.board-card', count: 0)
-
-            update_board_scope('current_iteration', false)
-
+        context 'group without iterations' do
+          it 'sets board to current iteration' do
             expect(page).to have_selector('.board-card', count: 3)
+
+            edit_board.click
+
+            click_value('current_iteration', true)
+
+            click_on_board_modal
+
+            click_button 'Save changes'
+
+            expect(page).to have_selector('.gl-alert-body')
           end
         end
       end

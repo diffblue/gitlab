@@ -11,6 +11,7 @@ module EE
     prepended do
       belongs_to :milestone
       belongs_to :iteration
+      belongs_to :iteration_cadence, class_name: 'Iterations::Cadence'
 
       has_many :board_labels
       has_many :user_preferences, class_name: 'BoardUserPreference', inverse_of: :board
@@ -26,6 +27,7 @@ module EE
 
       scope :with_associations, -> { preload(:destroyable_lists, :labels, :assignee) }
       scope :in_iterations, ->(iterations) { where(iteration: iterations) }
+      scope :in_iteration_cadences, ->(cadences) { where(iteration_cadence: cadences) }
     end
 
     override :scoped?

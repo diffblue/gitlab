@@ -23,6 +23,9 @@ module EE
         field :iteration, type: ::Types::IterationType, null: true,
               description: 'Board iteration.'
 
+        field :iteration_cadence, type: ::Types::Iterations::CadenceType, null: true,
+              description: 'Board iteration cadence.'
+
         field :weight, type: GraphQL::Types::Int, null: true,
               description: 'Weight of the board.'
       end

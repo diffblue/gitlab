@@ -51,26 +51,23 @@ RSpec.describe Boards::UpdateService, services: true do
     end
 
     context 'when setting a timebox' do
-      let(:user) { create(:user) }
+      let_it_be(:user) { create(:user) }
 
       before do
         parent.add_reporter(user)
       end
 
-      it_behaves_like 'setting a milestone scope' do
-        subject { board.reload }
+      subject do
+        described_class.new(parent, user, args).execute(board)
+        board.reload
+      end
 
-        before do
-          described_class.new(parent, user, milestone_id: milestone.id).execute(board)
-        end
+      it_behaves_like 'setting a milestone scope' do
+        let(:args) { { milestone_id: milestone.id } }
       end
 
       it_behaves_like 'setting an iteration scope' do
-        subject { board.reload }
-
-        before do
-          described_class.new(parent, user, iteration_id: iteration.id).execute(board)
-        end
+        let(:args) { { iteration_id: iteration.id } }
       end
     end
   end

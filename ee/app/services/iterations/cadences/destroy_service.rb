@@ -34,7 +34,11 @@ module Iterations
 
       def destroy_and_remove_references
         ApplicationRecord.transaction do
-          Board.in_iterations(iteration_cadence.iterations).update_all(iteration_id: nil) && iteration_cadence.destroy
+          Board.in_iteration_cadences(iteration_cadence).update_all(iteration_id: nil, iteration_cadence_id: nil)
+          # it may be that a board is scoped to a specific iteration but missing the cadence_id, so we cleanup that one as well
+          Board.in_iterations(iteration_cadence.iterations).update_all(iteration_id: nil)
+
+          iteration_cadence.destroy
         end
       end
     end

@@ -55,7 +55,8 @@ module Resolvers
           raise raise_resource_not_available_error!('The project does not have a parent group. Iteration cadences are only supported only at group level.') if @parent.group.blank?
 
           @parent.group
-        else raise "Unexpected parent type: #{@parent.class}"
+        else
+          raise "Unexpected parent type: #{@parent.class}"
         end
       end
 

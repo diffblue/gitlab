@@ -10,7 +10,7 @@ module EE
         filter_assignee
         filter_labels
         filter_milestone
-        filter_iteration
+        filter_iteration_and_iteration_cadence
 
         super
       end

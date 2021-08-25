@@ -27,11 +27,12 @@ RSpec.shared_examples 'setting a timebox scope' do |timebox_type|
     end
   end
 
-  let(:ancestor_group) { create(:group) }
-  let(:group) { create(:group, parent: ancestor_group) }
+  let_it_be(:ancestor_group) { create(:group) }
+  let_it_be(:group) { create(:group, parent: ancestor_group) }
+  let_it_be(:project) { create(:project, :private, group: group) }
 
   context 'for a group board' do
-    let(:parent) { group }
+    let(:parent) { group.reload }
 
     it_behaves_like "an invalid #{timebox_type}"
     it_behaves_like "a predefined #{timebox_type}"
@@ -39,8 +40,7 @@ RSpec.shared_examples 'setting a timebox scope' do |timebox_type|
   end
 
   context 'for a project board' do
-    let(:project) { create(:project, :private, group: group) }
-    let(:parent) { project }
+    let(:parent) { project.reload }
 
     it_behaves_like "an invalid #{timebox_type}"
     it_behaves_like "a predefined #{timebox_type}"
@@ -88,22 +88,49 @@ end
 
 RSpec.shared_examples 'setting an iteration scope' do
   shared_examples 'a predefined iteration' do
-    context 'None' do
-      let(:iteration) { ::Iteration::Predefined::None }
+    context 'without iteration cadence' do
+      let(:args) { { iteration_id: iteration.id }}
 
-      it { expect(subject.iteration).to eq(iteration) }
+      context 'None' do
+        let(:iteration) { ::Iteration::Predefined::None }
+
+        it { expect { subject }.to raise_error ArgumentError, "No cadence could be found to scope board to NONE iteration." }
+      end
+
+      context 'Any' do
+        let(:iteration) { ::Iteration::Predefined::Any }
+
+        it { expect { subject }.to raise_error ArgumentError, "No cadence could be found to scope board to ANY iteration." }
+      end
+
+      context 'Current' do
+        let(:iteration) { ::Iteration::Predefined::Current }
+
+        it { expect { subject }.to raise_error ArgumentError, "No cadence could be found to scope board to CURRENT iteration." }
+      end
     end
 
-    context 'Any' do
-      let(:iteration) { ::Iteration::Predefined::Any }
+    context 'with iteration cadence' do
+      let(:iteration_cadence) { create(:iterations_cadence, group: group) }
+      let(:args) { { iteration_id: iteration.id, iteration_cadence_id: iteration_cadence.id } }
 
-      it { expect(subject.iteration).to eq(iteration) }
-    end
+      context 'None' do
+        let(:iteration) { ::Iteration::Predefined::None }
 
-    context 'Current' do
-      let(:iteration) { ::Iteration::Predefined::Current }
+        it { expect(subject.iteration).to eq(iteration) }
+      end
 
-      it { expect(subject.iteration).to eq(iteration) }
+      context 'Any' do
+        let(:iteration) { ::Iteration::Predefined::Any }
+
+        it { expect(subject.iteration).to eq(iteration) }
+      end
+
+      context 'Current' do
+        let(:iteration) { ::Iteration::Predefined::Current }
+
+        it { expect(subject.iteration).to eq(iteration) }
+      end
     end
   end
 
