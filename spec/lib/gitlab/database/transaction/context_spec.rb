@@ -100,7 +100,7 @@ RSpec.describe Gitlab::Database::Transaction::Context do
 
   context 'when savepoints count exceeds threshold' do
     before do
-      data[:savepoints] = described_class::LOG_SAVEPOINTS_THRESHOLD + 1
+      data[:savepoints] = 1
     end
 
     it_behaves_like 'logs transaction data'
