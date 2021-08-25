@@ -374,13 +374,14 @@ module Gitlab
       # pseudo-revisions `--not` and `--all`. Uses the minimum of
       # GitalyClient.medium_timeout and dynamic timeout if the dynamic
       # timeout is set, otherwise it'll always use the medium timeout.
-      def blobs(revisions, dynamic_timeout: nil)
+      def blobs(revisions, with_paths: false, dynamic_timeout: nil)
         revisions = revisions.reject { |rev| rev.blank? || rev == ::Gitlab::Git::BLANK_SHA }
 
         return [] if revisions.blank?
 
         wrapped_gitaly_errors do
-          gitaly_blob_client.list_blobs(revisions, limit: REV_LIST_COMMIT_LIMIT, dynamic_timeout: dynamic_timeout)
+          gitaly_blob_client.list_blobs(revisions, limit: REV_LIST_COMMIT_LIMIT,
+                                        with_paths: with_paths, dynamic_timeout: dynamic_timeout)
         end
       end
 
