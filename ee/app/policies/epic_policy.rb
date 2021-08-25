@@ -38,5 +38,6 @@ class EpicPolicy < BasePolicy
 
   rule { can?(:admin_epic) }.policy do
     enable :set_epic_metadata
+    enable :set_confidentiality
   end
 end

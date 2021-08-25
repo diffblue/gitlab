@@ -1,5 +1,5 @@
 import {
-  modelToUpdateMutationVariables as cemodelToUpdateMutationVariables,
+  modelToUpdateMutationVariables as ceModelToUpdateMutationVariables,
   runnerToModel as ceRunnerToModel,
 } from '~/runner/runner_details/runner_update_form_utils';
 
@@ -16,7 +16,7 @@ export const modelToUpdateMutationVariables = (model) => {
 
   return {
     input: {
-      ...cemodelToUpdateMutationVariables(model).input,
+      ...ceModelToUpdateMutationVariables(model).input,
       privateProjectsMinutesCostFactor:
         privateProjectsMinutesCostFactor !== '' ? privateProjectsMinutesCostFactor : null,
       publicProjectsMinutesCostFactor:

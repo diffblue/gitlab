@@ -7,7 +7,7 @@ import {
   GlButton,
   GlTooltip,
 } from '@gitlab/ui';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNumber } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
@@ -74,6 +74,9 @@ export default {
     },
     hasAssignees() {
       return this.item.assignees && this.item.assignees.length > 0;
+    },
+    hasWeight() {
+      return isNumber(this.item.weight);
     },
     stateText() {
       return this.isOpen ? __('Opened') : __('Closed');
@@ -260,7 +263,7 @@ export default {
             />
 
             <item-weight
-              v-if="item.weight"
+              v-if="hasWeight"
               :weight="item.weight"
               class="item-weight gl-display-flex gl-align-items-center gl-mr-5!"
               tag-name="span"
