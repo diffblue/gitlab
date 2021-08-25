@@ -19,10 +19,6 @@ module Mutations
         required: true,
         description: 'Description of the vulnerability.'
 
-      argument :scanner_type, Types::SecurityScannerTypeEnum,
-        required: true,
-        description: 'Type of the security scanner used to discover the vulnerability.'
-
       argument :scanner_name, GraphQL::Types::String,
         required: true,
         description: 'Name of the security scanner used to discover the vulnerability.'
@@ -118,8 +114,7 @@ module Mutations
         ])
 
         scanner_params = {
-          name: params.fetch(:scanner_name),
-          type: params.fetch(:scanner_type)
+          name: params.fetch(:scanner_name)
         }
 
         {
