@@ -114,6 +114,7 @@ spec:
     - cluster`;
 
 export const mockCiliumPolicy = {
+  __typename: 'NetworkPolicy',
   name: 'test-policy-03',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockCiliumManifest,
@@ -121,6 +122,7 @@ export const mockCiliumPolicy = {
 
 export const mockNetworkPoliciesResponse = [
   {
+    __typename: 'NetworkPolicy',
     name: 'policy',
     kind: 'NetworkPolicy',
     yaml: mockNetworkManifest,
@@ -132,6 +134,7 @@ export const mockNetworkPoliciesResponse = [
     },
   },
   {
+    __typename: 'NetworkPolicy',
     name: 'test-policy-02',
     kind: 'CiliumNetworkPolicy',
     yaml: mockL3Manifest,
@@ -145,6 +148,7 @@ export const mockNetworkPoliciesResponse = [
 ];
 
 export const mockScanExecutionPolicy = {
+  __typename: 'ScanExecutionPolicy',
   name: 'Scheduled DAST scan',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
