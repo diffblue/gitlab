@@ -8,7 +8,7 @@ export default (Vue, VueApollo) => {
     return null;
   }
 
-  const defaultClient = createDefaultClient();
+  const defaultClient = createDefaultClient({}, { assumeImmutableResults: true });
 
   const {
     emptyStateImage,
