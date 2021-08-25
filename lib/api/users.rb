@@ -695,17 +695,11 @@ module API
         authenticated_as_admin!
         user = find_user_by_id(params)
 
-        if user.ldap_blocked?
-          forbidden!('LDAP blocked users cannot be banned by the API')
-        elsif user.deactivated?
-          forbidden!('Deactivated users cannot be banned by the API')
+        result = ::Users::BanService.new(current_user).execute(user)
+        if result[:status] == :success
+          true
         else
-          result = ::Users::BanService.new(current_user).execute(user)
-          if result[:status] == :success
-            true
-          else
-            render_api_error!(result[:message], result[:http_status])
-          end
+          render_api_error!(result[:message], result[:http_status])
         end
       end
 
@@ -717,17 +711,11 @@ module API
         authenticated_as_admin!
         user = find_user_by_id(params)
 
-        if user.ldap_blocked?
-          forbidden!('LDAP blocked users cannot be unbanned by the API')
-        elsif user.deactivated?
-          forbidden!('Deactivated users cannot be unbanned by the API')
+        result = ::Users::UnbanService.new(current_user).execute(user)
+        if result[:status] == :success
+          true
         else
-          result = ::Users::UnbanService.new(current_user).execute(user)
-          if result[:status] == :success
-            true
-          else
-            render_api_error!(result[:message], result[:http_status])
-          end
+          render_api_error!(result[:message], result[:http_status])
         end
       end
 

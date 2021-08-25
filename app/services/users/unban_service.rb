@@ -5,7 +5,7 @@ module Users
     private
 
     def update_user(user)
-      user.activate
+      user.unban
     end
 
     def action
