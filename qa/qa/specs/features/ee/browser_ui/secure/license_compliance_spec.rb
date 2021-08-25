@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pathname'
-
 module QA
   RSpec.describe 'Secure', :runner do
     let(:approved_license_name) { "MIT License" }

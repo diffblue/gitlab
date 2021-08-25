@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'pathname'
+
 require_relative '../../../browser_ui/8_monitor/cluster_with_prometheus'
 
 module QA

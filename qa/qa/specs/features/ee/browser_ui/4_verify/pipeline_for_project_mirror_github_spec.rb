@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'octokit'
-require 'faker'
 require 'base64'
 
 module QA

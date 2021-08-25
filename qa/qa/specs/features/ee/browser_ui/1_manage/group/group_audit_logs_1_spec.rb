@@ -1,9 +1,8 @@
 # frozen_string_literal: true
-require 'securerandom'
 
 module QA
   RSpec.describe 'Manage' do
-    include Support::Api
+    include Support::API
 
     let(:api_client) { Runtime::API::Client.new(:gitlab) }
 

@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Manage', :orchestrated, :ldap_tls, :ldap_no_tls, :requires_admin do
     describe 'LDAP Group sync' do
-      include Support::Api
+      include Support::API
 
       let(:group) do
         Resource::Group.fabricate_via_api! do |resource|
