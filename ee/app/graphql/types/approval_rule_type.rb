@@ -58,7 +58,7 @@ module Types
           description: 'Source rule used to create the rule.'
 
     field :eligible_approvers,
-          type: ::Types::UserType.connection_type,
+          type: [::Types::UserType],
           method: :approvers,
           null: true,
           description: 'List of all users eligible to approve the merge request (defined explicitly and from associated groups).'

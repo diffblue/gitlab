@@ -26,6 +26,27 @@ RSpec.describe 'Query.project.mergeRequest.approvalState' do
             containsHiddenGroups
             overridden
             section
+            eligibleApprovers {
+              id
+            }
+            users {
+              nodes {
+                id
+              }
+            }
+            sourceRule {
+              id
+            }
+            approvedBy {
+              nodes {
+                id
+              }
+            }
+            groups {
+              nodes {
+                id
+              }
+            }
           }
         }
       QUERY
@@ -77,12 +98,17 @@ RSpec.describe 'Query.project.mergeRequest.approvalState' do
           'rules' => [{
             'approvalsRequired' => 0,
             'approved' => true,
+            'approvedBy' => { 'nodes' => [] },
             'containsHiddenGroups' => false,
+            'eligibleApprovers' => [{ 'id' => global_id_of(user) }],
+            'groups' => { 'nodes' => [] },
             'id' => global_id_of(code_owner_rule),
-            'name' => code_owner_rule.name,
+            'name' => '*-1.js',
             'overridden' => false,
             'section' => 'codeowners',
-            'type' => 'CODE_OWNER'
+            'sourceRule' => nil,
+            'type' => 'CODE_OWNER',
+            'users' => { 'nodes' => [{ 'id' => global_id_of(user) }] }
           }]
         })
       end

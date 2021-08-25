@@ -58,7 +58,7 @@ RSpec.describe 'MergeRequestReviewer' do
       end
 
       it 'returns appropriate data' do
-        the_rule = eq(
+        the_rule = {
           'id' => global_id_of(rule),
           'name' => rule.name,
           'type' => 'CODE_OWNER',
@@ -68,11 +68,11 @@ RSpec.describe 'MergeRequestReviewer' do
           'overridden' => false,
           'section' => 'codeowners',
           'sourceRule' => nil
-        )
+        }
 
         post_graphql(query)
 
-        expect(interaction['applicableApprovalRules']).to contain_exactly(the_rule)
+        expect(interaction['applicableApprovalRules'].first).to include(the_rule)
       end
     end
   end
