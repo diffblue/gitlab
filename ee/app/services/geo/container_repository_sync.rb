@@ -25,21 +25,36 @@ module Geo
     private
 
     def sync_tag(tag)
-      file = nil
       manifest = client.repository_raw_manifest(repository_path, tag[:name])
       manifest_parsed = Gitlab::Json.parse(manifest)
 
-      list_blobs(manifest_parsed).each do |digest|
+      case manifest_parsed['mediaType']
+      when ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE
+        push_manifest_blobs(manifest_parsed)
+      when ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_LIST_V2_TYPE
+        manifest_parsed['manifests'].each do |submanifest|
+          image_info_raw = client.repository_raw_manifest(repository_path, submanifest['digest'])
+          image_info = Gitlab::Json.parse(image_info_raw)
+          push_manifest_blobs(image_info)
+          container_repository.push_manifest(submanifest['digest'], image_info_raw, image_info['mediaType'])
+        end
+      else
+        raise "Unexpected mediaType: #{manifest_parsed['mediaType']}"
+      end
+      container_repository.push_manifest(tag[:name], manifest, manifest_parsed['mediaType'])
+    end
+
+    def push_manifest_blobs(manifest)
+      list_blobs(manifest).each do |digest|
         next if container_repository.blob_exists?(digest)
 
         file = client.pull_blob(repository_path, digest)
-        container_repository.push_blob(digest, file.path)
-        file.unlink
+        begin
+          container_repository.push_blob(digest, file.path)
+        ensure
+          file.unlink
+        end
       end
-
-      container_repository.push_manifest(tag[:name], manifest, manifest_parsed['mediaType'])
-    ensure
-      file.try(:unlink)
     end
 
     def remove_tag(tag)
