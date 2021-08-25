@@ -15,12 +15,16 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
     let_it_be(:location) { build(:ci_reports_security_locations_sast) }
     let_it_be(:remediation) { build(:ci_reports_security_remediation) }
 
+    let(:flag_1) { build(:ci_reports_security_flag) }
+    let(:flag_2) { build(:ci_reports_security_flag) }
+
     let(:params) do
       {
         compare_key: 'this_is_supposed_to_be_a_unique_value',
         confidence: :medium,
         identifiers: [primary_identifier, other_identifier],
         links: [link],
+        flags: [flag_1, flag_2],
         remediations: [remediation],
         location: location,
         metadata_version: 'sast:1.0',
@@ -62,6 +66,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
           project_fingerprint: '9a73f32d58d87d94e3dc61c4c1a94803f6014258',
           identifiers: [primary_identifier, other_identifier],
           links: [link],
+          flags: [flag_1, flag_2],
           remediations: [remediation],
           location: location,
           metadata_version: 'sast:1.0',
@@ -127,6 +132,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
         confidence: occurrence.confidence,
         identifiers: occurrence.identifiers,
         links: occurrence.links,
+        flags: occurrence.flags,
         location: occurrence.location,
         metadata_version: occurrence.metadata_version,
         name: occurrence.name,

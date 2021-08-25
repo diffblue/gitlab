@@ -33,8 +33,7 @@ module Security
 
         normalized_findings = normalize_report_findings(
           report.findings,
-          vulnerabilities_by_finding_fingerprint(report),
-          existing_vulnerability_flags_for(report))
+          vulnerabilities_by_finding_fingerprint(report))
 
         filtered_findings = filter(normalized_findings)
 
@@ -76,19 +75,15 @@ module Security
                               .select(:vulnerability_id, :project_fingerprint)
     end
 
-    def existing_vulnerability_flags_for(report)
-      pipeline.project.vulnerability_flags_for(report.findings.map(&:uuid))
-    end
-
     # This finder is used for fetching vulnerabilities for any pipeline, if we used it to fetch
     # vulnerabilities for a non-default-branch, the findings will be unpersisted, so we
     # coerce the POROs into unpersisted AR records to give them a common object.
     # See https://gitlab.com/gitlab-org/gitlab/issues/33588#note_291849433 for more context
     # on why this happens.
-    def normalize_report_findings(report_findings, vulnerabilities, vulnerability_flags)
+    def normalize_report_findings(report_findings, vulnerabilities)
       report_findings.map do |report_finding|
         finding_hash = report_finding.to_hash
-          .except(:compare_key, :identifiers, :location, :scanner, :links, :signatures)
+          .except(:compare_key, :identifiers, :location, :scanner, :links, :signatures, :flags)
 
         finding = Vulnerabilities::Finding.new(finding_hash)
         # assigning Vulnerabilities to Findings to enable the computed state
@@ -108,7 +103,9 @@ module Security
         end
 
         if calculate_false_positive?
-          finding.vulnerability_flags = vulnerability_flags.fetch(finding.uuid, [])
+          finding.vulnerability_flags = report_finding.flags.map do |flag|
+            Vulnerabilities::Flag.new(flag)
+          end
         end
 
         finding

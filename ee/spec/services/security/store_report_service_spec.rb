@@ -26,6 +26,7 @@ RSpec.describe Security::StoreReportService, '#execute' do
         dependency_scanning: true,
         container_scanning: true,
         security_dashboard: true,
+        sast_fp_reduction: true,
         vulnerability_finding_signatures: vulnerability_finding_signatures
       )
       allow(Security::AutoFixWorker).to receive(:perform_async)
@@ -43,11 +44,12 @@ RSpec.describe Security::StoreReportService, '#execute' do
       end
 
       context 'for different security reports' do
-        where(:case_name, :trait, :scanners, :identifiers, :findings, :finding_identifiers, :finding_pipelines, :remediations, :signatures, :finding_links) do
-          'with SAST report'                | :sast                            | 1 | 6  | 5  | 7  | 5  | 0 | 2 | 0
-          'with exceeding identifiers'      | :with_exceeding_identifiers      | 1 | 20 | 1  | 20 | 1  | 0 | 0 | 0
-          'with Dependency Scanning report' | :dependency_scanning_remediation | 1 | 3  | 2  | 3  | 2  | 1 | 0 | 6
-          'with Container Scanning report'  | :container_scanning              | 1 | 8  | 8  | 8  | 8  | 0 | 0 | 8
+        where(:case_name, :trait, :scanners, :identifiers, :findings, :finding_identifiers, :finding_pipelines, :remediations, :signatures, :finding_links, :finding_flags) do
+          'with SAST report'                | :sast                            | 1 | 6  | 5 | 7  | 5  | 0 | 2 | 0 | 0
+          'with exceeding identifiers'      | :with_exceeding_identifiers      | 1 | 20 | 1 | 20 | 1  | 0 | 0 | 0 | 0
+          'with Dependency Scanning report' | :dependency_scanning_remediation | 1 | 3  | 2 | 3  | 2  | 1 | 0 | 6 | 0
+          'with Container Scanning report'  | :container_scanning              | 1 | 8  | 8 | 8  | 8  | 0 | 0 | 8 | 0
+          'with vulnerability flags'        | :sast_with_vulnerability_flags   | 1 | 6  | 5 | 7  | 5  | 0 | 2 | 0 | 2
         end
 
         with_them do
@@ -61,6 +63,22 @@ RSpec.describe Security::StoreReportService, '#execute' do
 
           it 'inserts all findings' do
             expect { subject }.to change { Vulnerabilities::Finding.count }.by(findings)
+          end
+
+          context 'vulnerability flags' do
+            it 'inserts all finding flags' do
+              expect { subject }.to change(Vulnerabilities::Flag, :count).by(finding_flags)
+            end
+
+            context 'with vulnerability_flags disabled' do
+              before do
+                stub_feature_flags(vulnerability_flags: false)
+              end
+
+              it 'does not insert any vulnerability flag' do
+                expect { subject }.not_to change(Vulnerabilities::Flag, :count)
+              end
+            end
           end
 
           it 'inserts all finding links' do
