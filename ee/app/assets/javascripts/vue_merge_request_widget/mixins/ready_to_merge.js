@@ -1,7 +1,11 @@
 import { isNumber, isString } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
-import { MTWPS_MERGE_STRATEGY, MT_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
+import {
+  MTWPS_MERGE_STRATEGY,
+  MT_MERGE_STRATEGY,
+  PIPELINE_FAILED_STATE,
+} from '~/vue_merge_request_widget/constants';
 import base from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
 export const MERGE_DISABLED_TEXT_UNAPPROVED = __(
@@ -75,6 +79,17 @@ export default {
     },
     isMergeImmediatelyDangerous() {
       return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);
+    },
+    showFailedPipelineModal() {
+      const pipelineFailed = this.status === PIPELINE_FAILED_STATE || this.isPipelineFailed;
+      const mergeStrateyMergeTrain = this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY;
+
+      return pipelineFailed && mergeStrateyMergeTrain;
+    },
+  },
+  methods: {
+    onStartMergeTrainConfirmation() {
+      this.handleMergeButtonClick(this.isAutoMergeAvailable, false, true);
     },
   },
 };

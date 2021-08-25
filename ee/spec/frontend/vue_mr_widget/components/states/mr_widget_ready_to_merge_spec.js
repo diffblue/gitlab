@@ -1,6 +1,7 @@
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
+import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import MergeTrainHelperText from 'ee/vue_merge_request_widget/components/merge_train_helper_text.vue';
 import { MERGE_DISABLED_TEXT_UNAPPROVED } from 'ee/vue_merge_request_widget/mixins/ready_to_merge';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
@@ -69,6 +70,7 @@ describe('ReadyToMerge', () => {
         MergeTrainHelperText,
         GlSprintf,
         GlLink,
+        MergeTrainFailedPipelineConfirmationDialog,
       },
     });
 
@@ -88,6 +90,8 @@ describe('ReadyToMerge', () => {
     findMergeTrainHelperText().find('[data-testid="documentation-link"]');
   const findFailedPipelineMergeTrainText = () =>
     wrapper.find('[data-testid="failed-pipeline-merge-train-text"]');
+  const findMergeTrainFailedPipelineConfirmationDialog = () =>
+    wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
 
   afterEach(() => {
     if (wrapper?.destroy) {
@@ -321,6 +325,32 @@ describe('ReadyToMerge', () => {
 
       expect(vm.shouldShowMergeImmediatelyDropdown).toBe(true);
     });
+  });
+
+  describe('merge train failed confirmation dialog', () => {
+    it.each`
+      mergeStrategy           | isPipelineFailed | isVisible
+      ${MT_MERGE_STRATEGY}    | ${true}          | ${true}
+      ${MT_MERGE_STRATEGY}    | ${false}         | ${false}
+      ${MTWPS_MERGE_STRATEGY} | ${true}          | ${false}
+      ${MWPS_MERGE_STRATEGY}  | ${true}          | ${false}
+    `(
+      'with merge stragtegy $mergeStrategy and pipeline failed status of $isPipelineFailed we should show the modal: $isVisible',
+      async ({ mergeStrategy, isPipelineFailed, isVisible }) => {
+        factory({ preferredAutoMergeStrategy: mergeStrategy, isPipelineFailed });
+        const modalConfirmation = findMergeTrainFailedPipelineConfirmationDialog();
+
+        if (!isVisible) {
+          // need to mock if we don't show modal
+          // to prevent internals from being invoked
+          vm.handleMergeButtonClick = jest.fn();
+        }
+
+        await findMergeButton().vm.$emit('click');
+
+        expect(modalConfirmation.props('visible')).toBe(isVisible);
+      },
+    );
   });
 
   describe('merge immediately warning dialog', () => {
