@@ -2989,7 +2989,7 @@ RSpec.describe API::Users do
           ban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot ban a ldap_blocked user.')
+          expect(json_response['message']).to eq('You cannot ban ldap_blocked users.')
           expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
         end
       end
@@ -3001,7 +3001,7 @@ RSpec.describe API::Users do
           ban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot ban a deactivated user.')
+          expect(json_response['message']).to eq('You cannot ban deactivated users.')
           expect(deactivated_user.reload.state).to eq('deactivated')
         end
       end
@@ -3013,7 +3013,7 @@ RSpec.describe API::Users do
           ban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot ban a banned user.')
+          expect(json_response['message']).to eq('You cannot ban banned users.')
           expect(banned_user.reload.state).to eq('banned')
         end
       end
@@ -3070,7 +3070,7 @@ RSpec.describe API::Users do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot unban a ldap_blocked user.')
+          expect(json_response['message']).to eq('You cannot unban ldap_blocked users.')
           expect(ldap_blocked_user.reload.state).to eq('ldap_blocked')
         end
       end
@@ -3082,7 +3082,7 @@ RSpec.describe API::Users do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot unban a deactivated user.')
+          expect(json_response['message']).to eq('You cannot unban deactivated users.')
           expect(deactivated_user.reload.state).to eq('deactivated')
         end
       end
@@ -3094,7 +3094,7 @@ RSpec.describe API::Users do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('You cannot unban a active user.')
+          expect(json_response['message']).to eq('You cannot unban active users.')
           expect(user.reload.state).to eq('active')
         end
       end

@@ -1485,7 +1485,7 @@ Returns:
 
 - `201 OK` on success.
 - `404 User Not Found` if user cannot be found.
-- `403 Forbidden` when trying to ban a user that is blocked by LDAP synchronization or is deactivated.
+- `403 Forbidden` when trying to ban a user that is not active.
 
 ## Unban user
 
@@ -1505,7 +1505,7 @@ Returns:
 
 - `201 OK` on success.
 - `404 User Not Found` if the user cannot be found.
-- `403 Forbidden` when trying to unban a user that is blocked by LDAP synchronization or is deactivated.
+- `403 Forbidden` when trying to unban a user that is not banned.
 
 ### Get user contribution events
 

@@ -38218,7 +38218,7 @@ msgstr ""
 msgid "You can view the source or %{linkStart}%{cloneIcon} clone the repository%{linkEnd}"
 msgstr ""
 
-msgid "You cannot %{action} a %{state} user."
+msgid "You cannot %{action} %{state} users."
 msgstr ""
 
 msgid "You cannot access the raw file. Please wait a minute."

@@ -33,7 +33,7 @@ module Users
     end
 
     def state_error(user)
-      error(_("You cannot %{action} a %{state} user." % { action: action.to_s, state: user.state }), :forbidden)
+      error(_("You cannot %{action} %{state} users." % { action: action.to_s, state: user.state }), :forbidden)
     end
 
     def allowed?
