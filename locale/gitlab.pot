@@ -16754,6 +16754,9 @@ msgstr ""
 msgid "How many seconds an IP will be counted towards the limit"
 msgstr ""
 
+msgid "How the job limiter handles jobs exceeding the thresholds specified below. The 'track' mode only logs the jobs. The 'compress' mode compresses the jobs and raises an exception if the compressed size exceeds the limit."
+msgstr ""
+
 msgid "I accept the %{terms_link}"
 msgstr ""
 
@@ -20181,10 +20184,16 @@ msgstr ""
 msgid "Limit the number of issues and epics per minute a user can create through web and API requests."
 msgstr ""
 
+msgid "Limit the size of Sidekiq jobs stored in Redis."
+msgstr ""
+
 msgid "Limited to showing %d event at most"
 msgid_plural "Limited to showing %d events at most"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Limiting mode"
+msgstr ""
 
 msgid "Line changes"
 msgstr ""
@@ -31049,6 +31058,15 @@ msgstr ""
 msgid "Sidebar|Weight"
 msgstr ""
 
+msgid "Sidekiq job compression threshold (bytes)"
+msgstr ""
+
+msgid "Sidekiq job size limit (bytes)"
+msgstr ""
+
+msgid "Sidekiq job size limits"
+msgstr ""
+
 msgid "Sign in"
 msgstr ""
 
@@ -34770,6 +34788,12 @@ msgid "ThreatMonitoring|Unreviewed"
 msgstr ""
 
 msgid "ThreatMonitoring|View documentation"
+msgstr ""
+
+msgid "Threshold in bytes at which to compress Sidekiq job arguments."
+msgstr ""
+
+msgid "Threshold in bytes at which to reject Sidekiq jobs. Set this to 0 to if you don't want to limit Sidekiq jobs."
 msgstr ""
 
 msgid "Throughput"
