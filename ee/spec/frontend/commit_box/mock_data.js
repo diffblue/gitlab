@@ -2,6 +2,7 @@ export const mockDownstreamQueryResponse = {
   data: {
     project: {
       pipeline: {
+        path: '/root/ci-project/-/pipelines/790',
         downstream: {
           nodes: [
             {
@@ -30,6 +31,7 @@ export const mockUpstreamQueryResponse = {
   data: {
     project: {
       pipeline: {
+        path: '/root/ci-project/-/pipelines/790',
         downstream: {
           nodes: [],
           __typename: 'PipelineConnection',
@@ -56,6 +58,7 @@ export const mockUpstreamDownstreamQueryResponse = {
   data: {
     project: {
       pipeline: {
+        path: '/root/ci-project/-/pipelines/790',
         downstream: {
           nodes: [
             {
