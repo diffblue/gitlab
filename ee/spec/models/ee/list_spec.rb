@@ -64,7 +64,7 @@ RSpec.describe List do
   end
 
   context 'when it is an iteration type' do
-    let(:iteration) { build(:iteration, title: 'awesome-iteration') }
+    let(:iteration) { build(:iteration, title: 'awesome-iteration', group: create(:group)) }
 
     subject { described_class.new(list_type: :iteration, iteration: iteration, board: board) }
 

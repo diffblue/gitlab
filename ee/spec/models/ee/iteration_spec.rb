@@ -8,6 +8,7 @@ RSpec.describe Iteration do
   let(:set_cadence) { nil }
 
   let_it_be(:group) { create(:group) }
+  let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
   let_it_be(:project) { create(:project, group: group) }
 
   describe "#iid" do
@@ -33,61 +34,6 @@ RSpec.describe Iteration do
         iteration5: iteration5.iid
       }
       expect(got).to eq(want)
-    end
-  end
-
-  describe 'setting iteration cadence' do
-    let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group, start_date: 10.days.ago) }
-
-    let(:iteration) { create(:iteration, group: group, iterations_cadence: set_cadence, start_date: 2.days.from_now) }
-
-    context 'when iterations_cadence is set correctly' do
-      let(:set_cadence) { iterations_cadence}
-
-      it 'does not change the iterations_cadence' do
-        expect(iteration.iterations_cadence).to eq(iterations_cadence)
-      end
-    end
-
-    context 'when iterations_cadence exists for the group' do
-      let(:set_cadence) { nil }
-
-      it 'sets the iterations_cadence to the existing record' do
-        expect(iteration.iterations_cadence).to eq(iterations_cadence)
-      end
-    end
-
-    context 'when iterations_cadence does not exists for the group' do
-      let_it_be(:group) { create(:group, name: 'Test group')}
-
-      let(:iteration) { build(:iteration, group: group, iterations_cadence: set_cadence) }
-
-      it 'creates a default iterations_cadence and uses it for the iteration' do
-        expect { iteration.save! }.to change { Iterations::Cadence.count }.by(1)
-      end
-
-      it 'sets the newly created iterations_cadence to the record' do
-        iteration.save!
-
-        expect(iteration.iterations_cadence).to eq(Iterations::Cadence.last)
-      end
-
-      it 'creates the iterations_cadence with the correct attributes' do
-        iteration.save!
-
-        cadence = Iterations::Cadence.last
-
-        expect(cadence.reload.start_date).to eq(iteration.start_date)
-        expect(cadence.title).to eq('Test group Iterations')
-      end
-    end
-
-    context 'when iteration is a project iteration' do
-      it 'does not set the iterations_cadence' do
-        iteration = create(:iteration, iterations_cadence: nil, project: project, skip_project_validation: true)
-
-        expect(iteration.reload.iterations_cadence).to be_nil
-      end
     end
   end
 
@@ -190,7 +136,7 @@ RSpec.describe Iteration do
   end
 
   context 'Validations' do
-    subject { build(:iteration, group: group, start_date: start_date, due_date: due_date) }
+    subject { build(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: start_date, due_date: due_date) }
 
     describe 'when iteration belongs to project' do
       subject { build(:iteration, project: project, start_date: Time.current, due_date: 1.day.from_now) }
@@ -202,7 +148,7 @@ RSpec.describe Iteration do
     end
 
     describe '#dates_do_not_overlap' do
-      let_it_be(:existing_iteration) { create(:iteration, group: group, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+      let_it_be(:existing_iteration) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
       context 'when no Iteration dates overlap' do
         let(:start_date) { 2.weeks.from_now }
@@ -273,6 +219,7 @@ RSpec.describe Iteration do
 
           context 'different group' do
             let(:group) { create(:group) }
+            let(:iteration_cadence) { create(:iterations_cadence, group: group) }
 
             it { is_expected.to be_valid }
 
@@ -283,8 +230,9 @@ RSpec.describe Iteration do
 
           context 'sub-group' do
             let(:subgroup) { create(:group, parent: group) }
+            let(:subgroup_ic) { create(:iterations_cadence, group: subgroup) }
 
-            subject { build(:iteration, group: subgroup, start_date: start_date, due_date: due_date) }
+            subject { build(:iteration, group: subgroup, iterations_cadence: subgroup_ic, start_date: start_date, due_date: due_date) }
 
             it { is_expected.to be_valid }
           end
