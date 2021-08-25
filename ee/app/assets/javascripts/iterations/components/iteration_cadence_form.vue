@@ -11,7 +11,7 @@ import {
   GlFormTextarea,
 } from '@gitlab/ui';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { s__, __ } from '~/locale';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
@@ -164,12 +164,15 @@ export default {
           id: this.cadenceId,
         };
       },
-      result({ data: { group, errors } }) {
+      result({ data: { group, errors }, error }) {
+        if (error) {
+          return;
+        }
+
         if (errors?.length) {
           [this.errorMessage] = errors;
           return;
         }
-
         const cadence = group?.iterationCadences?.nodes?.[0];
 
         if (!cadence) {
@@ -244,14 +247,17 @@ export default {
             return;
           }
 
-          const { errors } = data?.result || {};
+          const { iterationCadence, errors } = data?.result || {};
 
           if (errors?.length > 0) {
             [this.errorMessage] = errors;
             return;
           }
 
-          this.$router.push({ name: 'index' });
+          this.$router.push({
+            name: 'index',
+            query: { createdCadenceId: getIdFromGraphQLId(iterationCadence.id) },
+          });
         })
         .catch((e) => {
           this.errorMessage = __('Unable to save cadence. Please try again');
