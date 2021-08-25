@@ -51,7 +51,9 @@ export default {
   computed: {
     ...mapState(['activeId', 'filterParams', 'canAdminEpic', 'listsFlags', 'highlightedLists']),
     treeRootWrapper() {
-      return this.canAdminList && this.canAdminEpic ? Draggable : 'ul';
+      return this.canAdminList && (this.canAdminEpic || this.isUnassignedIssuesLane)
+        ? Draggable
+        : 'ul';
     },
     treeRootOptions() {
       const options = {

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import Draggable from 'vuedraggable';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
 import { mockList } from 'jest/boards/mock_data';
 import BoardCard from '~/boards/components/board_card.vue';
@@ -11,7 +12,11 @@ describe('IssuesLaneList', () => {
   let wrapper;
   let store;
 
-  const createComponent = ({ listType = ListType.backlog, collapsed = false } = {}) => {
+  const createComponent = ({
+    listType = ListType.backlog,
+    collapsed = false,
+    isUnassignedIssuesLane = false,
+  } = {}) => {
     const listMock = {
       ...mockList,
       listType,
@@ -30,6 +35,7 @@ describe('IssuesLaneList', () => {
         issues: mockIssues,
         disabled: false,
         canAdminList: true,
+        isUnassignedIssuesLane,
       },
     });
   };
@@ -68,6 +74,24 @@ describe('IssuesLaneList', () => {
 
     it('does not renders BoardCard components', () => {
       expect(wrapper.findAll(BoardCard)).toHaveLength(0);
+    });
+  });
+
+  describe('drag & drop permissions', () => {
+    beforeEach(() => {
+      store = createStore();
+
+      createComponent();
+    });
+
+    it('user cannot drag on epic lane if canAdminEpic is false', () => {
+      expect(wrapper.vm.treeRootWrapper).toBe('ul');
+    });
+
+    it('user can drag on unassigned lane if canAdminEpic is false', () => {
+      createComponent({ isUnassignedIssuesLane: true });
+
+      expect(wrapper.vm.treeRootWrapper).toBe(Draggable);
     });
   });
 

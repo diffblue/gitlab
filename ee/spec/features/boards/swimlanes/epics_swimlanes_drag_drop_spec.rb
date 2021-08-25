@@ -16,16 +16,9 @@ RSpec.describe 'epics swimlanes', :js do
   let_it_be(:list) { create(:list, board: board, label: label, position: 0) }
 
   let_it_be(:issue1) { create(:issue, project: project, labels: [label]) }
-  let_it_be(:issue2) { create(:issue, project: project) }
-  let_it_be(:issue3) { create(:issue, project: project, state: :closed) }
-  let_it_be(:issue4) { create(:issue, project: project) }
 
   let_it_be(:epic1) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group) }
-
-  let_it_be(:epic_issue1) { create(:epic_issue, epic: epic1, issue: issue1) }
-  let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2) }
-  let_it_be(:epic_issue3) { create(:epic_issue, epic: epic2, issue: issue3) }
 
   before do
     project.add_maintainer(user)
@@ -38,7 +31,27 @@ RSpec.describe 'epics swimlanes', :js do
     load_unassigned_issues
   end
 
+  context 'when no epic is displayed' do
+    it('user can drag and drop between columns') do
+      wait_for_board_cards_in_unassigned_lane(1, 1)
+
+      epic_lanes = page.all(:css, '.board-epic-lane')
+      expect(epic_lanes.length).to eq(0)
+
+      drag(list_from_index: 1, list_to_index: 0)
+      wait_for_board_cards_in_unassigned_lane(0, 1)
+    end
+  end
+
   context 'drag and drop issue' do
+    let_it_be(:issue2) { create(:issue, project: project) }
+    let_it_be(:issue3) { create(:issue, project: project, state: :closed) }
+    let_it_be(:issue4) { create(:issue, project: project) }
+
+    let_it_be(:epic_issue1) { create(:epic_issue, epic: epic1, issue: issue1) }
+    let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2) }
+    let_it_be(:epic_issue3) { create(:epic_issue, epic: epic2, issue: issue3) }
+
     it 'between epics' do
       wait_for_board_cards(1, 2)
       wait_for_board_cards_in_first_epic(0, 1)
