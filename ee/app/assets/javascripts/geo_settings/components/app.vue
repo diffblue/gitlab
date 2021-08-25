@@ -27,7 +27,7 @@ export default {
     <p>
       {{
         __(
-          'Set the timeout in seconds to send a secondary node status to the primary and IPs allowed for the secondary nodes.',
+          'Set the timeout in seconds to send a secondary node status to the primary and IPs allowed for the secondary sites.',
         )
       }}
     </p>

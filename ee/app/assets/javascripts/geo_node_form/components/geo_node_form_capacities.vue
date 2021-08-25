@@ -70,7 +70,7 @@ export default {
       return this.nodeData.primary
         ? __('Set verification limit and frequency.')
         : __(
-            'Limit the number of concurrent operations this secondary node can run in the background.',
+            'Limit the number of concurrent operations this secondary site can run in the background.',
           );
     },
     sectionLink() {
