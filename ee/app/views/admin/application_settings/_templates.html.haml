@@ -20,4 +20,4 @@
               placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', all_projects: 'true', simple_filter: true, allow_clear: true }, value: @application_setting.file_template_project_id)
             - link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/admin_area/settings/instance_template_repository') }
             = s_('TemplateRepository|Select a repository to make its templates available to all projects. %{link_start}What should the repository contain?%{link_end} ').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
-        = f.submit 'Save changes', class: "gl-button btn btn-confirm"
+        = f.submit _('Save changes'), class: "gl-button btn btn-confirm"
