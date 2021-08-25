@@ -269,9 +269,19 @@ module Security
         records.uniq!
 
         Vulnerabilities::Flag.insert_all(records) if records.present?
+
+        track_events(records) if records.present?
       end
     rescue StandardError => e
       Gitlab::ErrorTracking.track_exception(e, project_id: project.id, pipeline_id: pipeline.id)
+    end
+
+    def track_events(records)
+      records.each do |record|
+        Gitlab::Tracking.event(
+          self.class.to_s, 'flag_vulnerability', label: record[:flag_type].to_s
+        )
+      end
     end
 
     def update_vulnerability_links_info
