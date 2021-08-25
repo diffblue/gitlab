@@ -94,7 +94,7 @@ module EE
       # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
       def accept_raw_manifest(conn)
-        conn.headers['Accept'] = ::ContainerRegistry::Client::ACCEPTED_TYPES
+        conn.headers['Accept'] = ::ContainerRegistry::Client::ACCEPTED_TYPES_RAW
       end
     end
   end
