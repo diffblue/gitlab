@@ -20784,6 +20784,9 @@ msgstr ""
 msgid "MemberInviteEmail|%{member_name} invited you to join GitLab"
 msgstr ""
 
+msgid "MemberInviteEmail|I've invited you to join me in GitLab"
+msgstr ""
+
 msgid "MemberInviteEmail|Invitation to join the %{project_or_group} %{project_or_group_name}"
 msgstr ""
 
