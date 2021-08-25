@@ -121,11 +121,11 @@ stages:
   - test
   - deploy
 
-job 1:
+job1:
   stage: build
   script: make build dependencies
 
-job 2:
+job2:
   stage: build
   script: make build artifacts
 
