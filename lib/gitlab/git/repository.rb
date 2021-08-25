@@ -364,8 +364,12 @@ module Gitlab
         return [] if newrev.blank? || newrev == ::Gitlab::Git::BLANK_SHA
 
         strong_memoize("new_blobs_#{newrev}") do
-          wrapped_gitaly_errors do
-            gitaly_ref_client.list_new_blobs(newrev, REV_LIST_COMMIT_LIMIT, dynamic_timeout: dynamic_timeout)
+          if Feature.enabled?(:new_blobs_via_list_blobs)
+            blobs(['--not', '--all', '--not', newrev], with_paths: true, dynamic_timeout: dynamic_timeout)
+          else
+            wrapped_gitaly_errors do
+              gitaly_ref_client.list_new_blobs(newrev, REV_LIST_COMMIT_LIMIT, dynamic_timeout: dynamic_timeout)
+            end
           end
         end
       end
