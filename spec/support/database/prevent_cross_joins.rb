@@ -24,6 +24,10 @@ module Database
     def self.validate_cross_joins!(sql)
       return if Thread.current[:allow_cross_joins_across_databases]
 
+      # Allow spec/support/database_cleaner.rb queries to disable/enable triggers for many tables
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/339396
+      return if sql.include?("DISABLE TRIGGER") || sql.include?("ENABLE TRIGGER")
+
       # PgQuery might fail in some cases due to limited nesting:
       # https://github.com/pganalyze/pg_query/issues/209
       tables = PgQuery.parse(sql).tables
