@@ -24,6 +24,14 @@ RSpec.describe ContainerRegistry::Client do
     }
   end
 
+  let(:headers_with_accept_types_with_list) do
+    {
+      'Accept' => 'application/vnd.docker.distribution.manifest.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.list.v2+json',
+      'Authorization' => 'bearer 12345',
+      'User-Agent' => "GitLab/#{Gitlab::VERSION}"
+    }
+  end
+
   describe '#push_blob' do
     let(:file) do
       file = Tempfile.new('test1')
@@ -119,7 +127,7 @@ RSpec.describe ContainerRegistry::Client do
 
     it 'GET "/v2/:name/manifests/:reference' do
       stub_request(:get, 'http://registry/v2/group/test/manifests/my-tag')
-        .with(headers: headers_with_accept_types)
+        .with(headers: headers_with_accept_types_with_list)
         .to_return(status: 200, body: manifest, headers: {})
 
       expect(client.repository_raw_manifest('group/test', 'my-tag')).to eq(manifest)
