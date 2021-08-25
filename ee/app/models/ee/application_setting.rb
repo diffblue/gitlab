@@ -231,7 +231,11 @@ module EE
 
       return namespaces if ignore_descendants
 
-      ::Gitlab::ObjectHierarchy.new(namespaces).base_and_descendants
+      if ::Feature.enabled?(:linear_application_settings_elasticsearch_limited_namespaces, default_enabled: :yaml)
+        namespaces.self_and_descendants
+      else
+        ::Gitlab::ObjectHierarchy.new(namespaces).base_and_descendants
+      end
     end
 
     def pseudonymizer_available?
