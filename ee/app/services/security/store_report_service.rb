@@ -59,6 +59,10 @@ module Security
       update_vulnerabilities_identifiers
       update_vulnerabilities_finding_identifiers
 
+      if ::Feature.enabled?(:vulnerability_flags, project) && project.licensed_feature_available?(:sast_fp_reduction)
+        create_vulnerability_flags_info
+      end
+
       vulnerability_ids
     end
 
@@ -75,7 +79,7 @@ module Security
         return
       end
 
-      vulnerability_params = finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :scan, :links, :signatures)
+      vulnerability_params = finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :scan, :links, :signatures, :flags)
       entity_params = Gitlab::Json.parse(vulnerability_params&.dig(:raw_metadata)).slice('description', 'message', 'solution', 'cve', 'location')
       # Vulnerabilities::Finding (`vulnerability_occurrences`)
       vulnerability_finding = vulnerability_findings_by_uuid[finding.uuid] ||
@@ -252,6 +256,22 @@ module Security
       vulnerability_finding.finding_identifiers.find_or_create_by!(identifier: identifier_object)
       identifier_object.update!(identifier.to_hash)
     rescue ActiveRecord::RecordNotUnique
+    end
+
+    def create_vulnerability_flags_info
+      timestamps = { created_at: Time.current, updated_at: Time.current }
+
+      vulnerability_finding_to_finding_map.each_slice(BATCH_SIZE) do |vf_to_findings|
+        records = vf_to_findings.flat_map do |vulnerability_finding, finding|
+          finding.flags.map { |flag| timestamps.merge(**flag.to_hash, vulnerability_occurrence_id: vulnerability_finding.id) }
+        end
+
+        records.uniq!
+
+        Vulnerabilities::Flag.insert_all(records) if records.present?
+      end
+    rescue StandardError => e
+      Gitlab::ErrorTracking.track_exception(e, project_id: project.id, pipeline_id: pipeline.id)
     end
 
     def update_vulnerability_links_info

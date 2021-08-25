@@ -55,16 +55,15 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
 
     context 'when the vulnerability has a false-positive flag' do
       before do
-        security_finding = pipeline.security_reports.reports['sast'].findings.first
-        vulnerability_finding = create(:vulnerabilities_finding, uuid: security_finding.uuid, pipelines: [pipeline], project: pipeline.project)
-        create(:vulnerabilities_flag, finding: vulnerability_finding)
+        allow_next_instance_of(Gitlab::Ci::Reports::Security::Finding) do |finding|
+          allow(finding).to receive(:flags).and_return([create(:ci_reports_security_flag)]) if finding.report_type == 'sast'
+        end
       end
 
       it 'returns false-positive value' do
         vulnerabilities = subject.dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
 
         expect(vulnerabilities.first['falsePositive']).to be(true)
-        expect(vulnerabilities.last['falsePositive']).to be(false)
       end
     end
 

@@ -12,6 +12,16 @@ FactoryBot.define do
       end
     end
 
+    trait :sast_with_vulnerability_flags do
+      file_type { :sast }
+      file_format { :raw }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-sast-report-with-vulnerability-flags.json'), 'application/json')
+      end
+    end
+
     trait :dast do
       file_format { :raw }
       file_type { :dast }
