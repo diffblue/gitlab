@@ -3018,10 +3018,10 @@ RSpec.describe API::Users do
         end
       end
 
-      context 'with a non existant user' do
+      context 'with a non existent user' do
         let(:user_id) { non_existing_record_id }
 
-        it 'does not ban non existant users' do
+        it 'does not ban non existent users' do
           ban_user
 
           expect(response).to have_gitlab_http_status(:not_found)
@@ -3055,7 +3055,7 @@ RSpec.describe API::Users do
       context 'with a banned user' do
         let(:user_id) { banned_user.id }
 
-        it 'bans an active user' do
+        it 'activates a banned user' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:created)
@@ -3066,7 +3066,7 @@ RSpec.describe API::Users do
       context 'with an ldap_blocked user' do
         let(:user_id) { ldap_blocked_user.id }
 
-        it 'does not ban ldap_blocked users' do
+        it 'does not unban ldap_blocked users' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -3078,7 +3078,7 @@ RSpec.describe API::Users do
       context 'with a deactivated user' do
         let(:user_id) { deactivated_user.id }
 
-        it 'does not ban deactivated users' do
+        it 'does not unban deactivated users' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -3090,7 +3090,7 @@ RSpec.describe API::Users do
       context 'with an active user' do
         let(:user_id) { user.id }
 
-        it 'does not ban active users' do
+        it 'does not unban active users' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -3099,10 +3099,10 @@ RSpec.describe API::Users do
         end
       end
 
-      context 'with a non existant user' do
+      context 'with a non existent user' do
         let(:user_id) { non_existing_record_id }
 
-        it 'does not ban non existant users' do
+        it 'does not unban non existent users' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:not_found)
@@ -3113,7 +3113,7 @@ RSpec.describe API::Users do
       context 'with an invalid id user' do
         let(:user_id) { 'ASDF' }
 
-        it 'does not ban invalid id users' do
+        it 'does not unban invalid id users' do
           unban_user
 
           expect(response).to have_gitlab_http_status(:not_found)
