@@ -934,6 +934,10 @@ RSpec.describe EE::NotificationService, :mailer do
 
         subject.oncall_user_removed(rotation, user)
       end
+
+      it 'sends the email inline when async = false' do
+        expect { subject.oncall_user_removed(rotation, user, false) }.to change(ActionMailer::Base.deliveries, :size).by(2)
+      end
     end
   end
 end
