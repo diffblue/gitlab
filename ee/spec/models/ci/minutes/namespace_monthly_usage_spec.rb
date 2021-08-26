@@ -101,4 +101,41 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
       expect(usages).to contain_exactly(matching_usage)
     end
   end
+
+  describe '#usage_notified?' do
+    let(:usage) { build(:ci_namespace_monthly_usage, notification_level: notification_level) }
+    let(:notification_level) { 100 }
+
+    subject { usage.usage_notified?(remaining_percentage) }
+
+    context 'when parameter is different than notification level' do
+      let(:remaining_percentage) { 30 }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when parameter is same as the notification level' do
+      let(:remaining_percentage) { notification_level }
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe '#total_usage_notified?' do
+    let(:usage) { build(:ci_namespace_monthly_usage, notification_level: notification_level) }
+
+    subject { usage.total_usage_notified? }
+
+    context 'notification level is higher than zero' do
+      let(:notification_level) { 30 }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when notification level is zero' do
+      let(:notification_level) { 0 }
+
+      it { is_expected.to be_truthy }
+    end
+  end
 end
