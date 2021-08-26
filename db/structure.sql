@@ -14,53 +14,8 @@ CREATE FUNCTION integrations_set_type_new() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
-WITH mapping(old_type, new_type) AS (VALUES
-  ('AsanaService',                   'Integrations::Asana'),
-  ('AssemblaService',                'Integrations::Assembla'),
-  ('BambooService',                  'Integrations::Bamboo'),
-  ('BugzillaService',                'Integrations::Bugzilla'),
-  ('BuildkiteService',               'Integrations::Buildkite'),
-  ('CampfireService',                'Integrations::Campfire'),
-  ('ConfluenceService',              'Integrations::Confluence'),
-  ('CustomIssueTrackerService',      'Integrations::CustomIssueTracker'),
-  ('DatadogService',                 'Integrations::Datadog'),
-  ('DiscordService',                 'Integrations::Discord'),
-  ('DroneCiService',                 'Integrations::DroneCi'),
-  ('EmailsOnPushService',            'Integrations::EmailsOnPush'),
-  ('EwmService',                     'Integrations::Ewm'),
-  ('ExternalWikiService',            'Integrations::ExternalWiki'),
-  ('FlowdockService',                'Integrations::Flowdock'),
-  ('HangoutsChatService',            'Integrations::HangoutsChat'),
-  ('IrkerService',                   'Integrations::Irker'),
-  ('JenkinsService',                 'Integrations::Jenkins'),
-  ('JiraService',                    'Integrations::Jira'),
-  ('MattermostService',              'Integrations::Mattermost'),
-  ('MattermostSlashCommandsService', 'Integrations::MattermostSlashCommands'),
-  ('MicrosoftTeamsService',          'Integrations::MicrosoftTeams'),
-  ('MockCiService',                  'Integrations::MockCi'),
-  ('MockMonitoringService',          'Integrations::MockMonitoring'),
-  ('PackagistService',               'Integrations::Packagist'),
-  ('PipelinesEmailService',          'Integrations::PipelinesEmail'),
-  ('PivotaltrackerService',          'Integrations::Pivotaltracker'),
-  ('PrometheusService',              'Integrations::Prometheus'),
-  ('PushoverService',                'Integrations::Pushover'),
-  ('RedmineService',                 'Integrations::Redmine'),
-  ('SlackService',                   'Integrations::Slack'),
-  ('SlackSlashCommandsService',      'Integrations::SlackSlashCommands'),
-  ('TeamcityService',                'Integrations::Teamcity'),
-  ('UnifyCircuitService',            'Integrations::UnifyCircuit'),
-  ('YoutrackService',                'Integrations::Youtrack'),
-  ('WebexTeamsService',              'Integrations::WebexTeams'),
-
-  -- EE-only integrations
-  ('GithubService',                  'Integrations::Github'),
-  ('GitlabSlackApplicationService',  'Integrations::GitlabSlackApplication')
-)
-
-UPDATE integrations SET type_new = mapping.new_type
-FROM mapping
-WHERE integrations.id = NEW.id
-  AND mapping.old_type = NEW.type;
+UPDATE integrations SET type_new = regexp_replace(NEW.type, '\A(.+)Service\Z', 'Integrations::\1')
+WHERE integrations.id = NEW.id;
 RETURN NULL;
 
 END
