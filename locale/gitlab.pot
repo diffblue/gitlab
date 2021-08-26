@@ -15488,6 +15488,9 @@ msgstr ""
 msgid "Given epic is already related to this epic."
 msgstr ""
 
+msgid "Global Search is disabled for this scope"
+msgstr ""
+
 msgid "Global Shortcuts"
 msgstr ""
 

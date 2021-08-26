@@ -5,7 +5,7 @@ module SubscriptionsHelper
 
   def subscription_data(eligible_groups)
     {
-      setup_for_company: (current_user.setup_for_company == true).to_s,
+      setup_for_company: current_user.setup_for_company.to_s,
       full_name: current_user.name,
       available_plans: subscription_available_plans.to_json,
       plan_id: params[:plan_id],

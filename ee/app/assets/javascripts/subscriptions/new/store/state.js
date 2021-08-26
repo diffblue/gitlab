@@ -55,7 +55,7 @@ export default ({
   const groups = parseGroupData(groupData);
 
   return {
-    isSetupForCompany: parseBoolean(setupForCompany) || !isNewUser,
+    isSetupForCompany: setupForCompany === '' ? !isNewUser : parseBoolean(setupForCompany),
     availablePlans,
     selectedPlan: determineSelectedPlan(planId, availablePlans),
     isNewUser,
