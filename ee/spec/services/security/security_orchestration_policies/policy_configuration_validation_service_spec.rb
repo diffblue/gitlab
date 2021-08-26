@@ -7,19 +7,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
     let(:project) { create(:project) }
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
-    let(:policy) do
-      {
-        name: 'Run DAST in every pipeline',
-        description: 'This policy enforces to run DAST for every pipeline within the project',
-        enabled: true,
-        rules: [{ type: 'pipeline', branches: %w[production] }],
-        actions: [
-          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-        ]
-      }
-    end
-
-    let(:policy_blob) { { scan_execution_policy: [policy] }.to_yaml }
+    let(:policy) { build(:scan_execution_policy) }
+    let(:policy_blob) { build(:scan_execution_policy_yaml, policies: [policy]) }
     let(:type) { :scan_execution_policy }
     let(:environment_id) { nil }
 
