@@ -6,7 +6,7 @@ import { __, s__ } from '~/locale';
 export default {
   name: 'GeoNodeReplicationStatus',
   i18n: {
-    pauseHelpText: s__('Geo|Geo nodes are paused using a command run on the node'),
+    pauseHelpText: s__('Geo|Geo sites are paused using a command run on the site'),
     learnMore: __('Learn more'),
   },
   components: {

@@ -12,9 +12,9 @@ export default {
   name: 'GeoNodeLastUpdated',
   i18n: {
     troubleshootText: s__('Geo|Consult Geo troubleshooting information'),
-    learnMoreText: s__('Geo|Learn more about Geo node statuses'),
+    learnMoreText: s__('Geo|Learn more about Geo site statuses'),
     timeAgoMainText: s__('Geo|Updated %{timeAgo}'),
-    timeAgoPopoverText: s__(`Geo|Node's status was updated %{timeAgo}.`),
+    timeAgoPopoverText: s__(`Geo|Site's status was updated %{timeAgo}.`),
   },
   components: {
     GlPopover,
