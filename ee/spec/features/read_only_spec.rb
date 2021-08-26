@@ -18,7 +18,7 @@ RSpec.describe 'Geo read-only message', :geo do
       stub_current_geo_node(secondary)
     end
 
-    it_behaves_like 'Read-only instance', /You are on a secondary, read\-only Geo node\. If you want to make changes, you must visit the primary site.*Go to the primary site/
+    it_behaves_like 'Read-only instance', /You are on a secondary, read\-only Geo site\. If you want to make changes, you must visit the primary site.*Go to the primary site/
   end
 
   context 'when in maintenance mode' do
