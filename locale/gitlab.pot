@@ -1719,6 +1719,9 @@ msgstr ""
 msgid "Access granted"
 msgstr ""
 
+msgid "Access key ID"
+msgstr ""
+
 msgid "Access requests"
 msgstr ""
 
@@ -12336,6 +12339,9 @@ msgid "Empty file"
 msgstr ""
 
 msgid "Enable"
+msgstr ""
+
+msgid "Enable Amazon EKS integration"
 msgstr ""
 
 msgid "Enable Auto DevOps"
@@ -29473,6 +29479,9 @@ msgid "Secret"
 msgstr ""
 
 msgid "Secret Detection"
+msgstr ""
+
+msgid "Secret access key"
 msgstr ""
 
 msgid "Secret token"
