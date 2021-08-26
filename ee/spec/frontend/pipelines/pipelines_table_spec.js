@@ -77,6 +77,10 @@ describe('Pipelines Table', () => {
         createComponent({ pipelines: [pipeline] });
       });
 
+      it('should pass the pipeline path prop for the counter badge', () => {
+        expect(findDownstream().props('pipelinePath')).toBe(pipeline.path);
+      });
+
       it('should render only a downstream pipeline', () => {
         expect(findDownstream().exists()).toBe(true);
         expect(findUpstream().exists()).toBe(false);

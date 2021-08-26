@@ -81,6 +81,16 @@ describe('Commit box pipeline mini graph', () => {
       expect(findMiniGraph().exists()).toBe(true);
     });
 
+    it('should pass the pipeline path prop for the counter badge', async () => {
+      createComponent(downstreamHandler);
+
+      await waitForPromises();
+
+      const expectedPath = mockDownstreamQueryResponse.data.project.pipeline.path;
+
+      expect(findDownstream().props('pipelinePath')).toBe(expectedPath);
+    });
+
     describe.each`
       handler                      | downstreamRenders | upstreamRenders
       ${downstreamHandler}         | ${true}           | ${false}
