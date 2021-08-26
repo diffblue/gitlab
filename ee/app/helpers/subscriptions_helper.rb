@@ -22,6 +22,12 @@ module SubscriptionsHelper
     }.merge(addon_data(group))
   end
 
+  def buy_storage_addon_data(group)
+    {
+      redirect_after_success: group_usage_quotas_path(group, anchor: 'pipelines-quota-tab', purchased_product: _('Storage'))
+    }.merge(addon_data(group))
+  end
+
   def addon_data(group)
     {
       group_data: [present_group(group)].to_json,

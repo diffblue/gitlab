@@ -39,3 +39,23 @@ RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
   it { is_expected.to have_selector("#{js_selector}[data-source='some_source']") }
   it { is_expected.to have_selector("#{js_selector}[data-redirect-after-success='/groups/my-ci-minutes-group/-/usage_quotas']") }
 end
+
+RSpec.shared_examples_for 'buy storage addon form data' do |js_selector|
+  before do
+    allow(view).to receive(:buy_storage_addon_data).and_return(
+      group_data: '[{"id":"storage_plan_id","code":"storage","price_per_year":10.0}]',
+      namespace_id: '2',
+      plan_id: 'storage_plan_id',
+      source: 'some_source',
+      redirect_after_success: '/groups/my-group/-/usage_quotas'
+    )
+  end
+
+  subject { render }
+
+  it { is_expected.to have_selector("#{js_selector}[data-group-data='[{\"id\":\"storage_plan_id\",\"code\":\"storage\",\"price_per_year\":10.0}]']") }
+  it { is_expected.to have_selector("#{js_selector}[data-plan-id='storage_plan_id']") }
+  it { is_expected.to have_selector("#{js_selector}[data-namespace-id='2']") }
+  it { is_expected.to have_selector("#{js_selector}[data-source='some_source']") }
+  it { is_expected.to have_selector("#{js_selector}[data-redirect-after-success='/groups/my-group/-/usage_quotas']") }
+end

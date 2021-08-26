@@ -2,6 +2,7 @@
 
 resource :subscriptions, only: [:new, :create] do
   get :buy_minutes
+  get :buy_storage
   get :payment_form
   get :payment_method
 

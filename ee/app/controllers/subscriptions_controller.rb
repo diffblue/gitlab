@@ -41,6 +41,16 @@ class SubscriptionsController < ApplicationController
     render_404 unless Feature.enabled?(:new_route_ci_minutes_purchase, @group, default_enabled: :yaml)
   end
 
+  def buy_storage
+    return render_404 unless storage_plan_data.present?
+
+    @group = find_group(plan_id: storage_plan_data["id"])
+
+    return render_404 if @group.nil?
+
+    render_404 unless Feature.enabled?(:new_route_storage_purchase, @group, default_enabled: :yaml)
+  end
+
   def payment_form
     response = client.payment_form_params(params[:id])
     render json: response[:data]
@@ -123,6 +133,14 @@ class SubscriptionsController < ApplicationController
   def ci_minutes_plan_data
     strong_memoize(:ci_minutes_plan_data) do
       plan_response = client.get_plans(tags: ['CI_1000_MINUTES_PLAN'])
+
+      plan_response[:success] ? plan_response[:data].first : nil
+    end
+  end
+
+  def storage_plan_data
+    strong_memoize(:storage_plan_data) do
+      plan_response = client.get_plans(tags: ['STORAGE_PLAN'])
 
       plan_response[:success] ? plan_response[:data].first : nil
     end
