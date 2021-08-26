@@ -46,7 +46,8 @@ const initMergeOptions = (mergePipelinesEnabled, mergeTrainsEnabled) => {
 const fetchMergeOptions = () => {
   const containerEl = document.querySelector('#project-merge-options');
   const { projectFullPath } = containerEl.dataset;
-  const defaultClient = createDefaultClient();
+
+  const defaultClient = createDefaultClient({}, { assumeImmutableResults: true });
 
   return defaultClient
     .query({
