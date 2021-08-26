@@ -19,7 +19,7 @@ module Groups
     rescue Module::DelegationError => exception
       # TEMPORARY: Rescue when a User record is not available,
       # see https://gitlab.com/gitlab-org/gitlab/-/issues/338707
-      Raven.capture_exception(exception, group_id: @group.id, user_id: @current_user.id)
+      Raven.capture_exception(exception, tags: { group_id: @group.id, user_id: @current_user.id })
     end
 
     private
