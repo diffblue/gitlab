@@ -1,13 +1,11 @@
-import { isToday } from '~/lib/utils/datetime_utility';
-
 /**
  * A helper function which accepts the enabledNamespaces,
  *
- * @param {Object} params the enabledNamespaces data, timestamp and check for open modals
+ * @param {Object} params the enabledNamespaces data, and the check for open modals
  *
  * @return {Boolean} a boolean to determine if table data should be polled
  */
-export const shouldPollTableData = ({ enabledNamespaces, timestamp, openModal }) => {
+export const shouldPollTableData = ({ enabledNamespaces, openModal }) => {
   if (openModal) {
     return false;
   } else if (!enabledNamespaces.length) {
@@ -17,7 +15,6 @@ export const shouldPollTableData = ({ enabledNamespaces, timestamp, openModal })
   const anyPendingEnabledNamespaces = enabledNamespaces.some(
     (node) => node.latestSnapshot === null,
   );
-  const dataNotRefreshedToday = !isToday(new Date(timestamp));
 
-  return anyPendingEnabledNamespaces || dataNotRefreshedToday;
+  return anyPendingEnabledNamespaces;
 };

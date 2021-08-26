@@ -185,7 +185,6 @@ export default {
     pollTableData() {
       const shouldPoll = shouldPollTableData({
         enabledNamespaces: this.devopsAdoptionEnabledNamespaces.nodes,
-        timestamp: this.devopsAdoptionEnabledNamespaces?.nodes[0]?.latestSnapshot?.recordedAt,
         openModal: this.openModal,
       });
 
