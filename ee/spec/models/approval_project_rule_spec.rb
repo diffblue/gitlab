@@ -9,6 +9,12 @@ RSpec.describe ApprovalProjectRule do
     it 'is invalid when name not unique within rule type and project' do
       is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type])
     end
+
+    context 'DEFAULT_SEVERITIES' do
+      it 'contains a valid subset of severity levels' do
+        expect(::Enums::Vulnerability.severity_levels.keys).to include(*described_class::DEFAULT_SEVERITIES)
+      end
+    end
   end
 
   describe 'associations' do
