@@ -28,9 +28,7 @@ export default () => {
     sort,
     direction,
     page,
-  } = urlQueryToFilter(window.location.search, {
-    legacySpacesDecode: true,
-  });
+  } = urlQueryToFilter(window.location.search);
 
   store.dispatch('initializeCycleAnalytics', {
     ...initialData,
