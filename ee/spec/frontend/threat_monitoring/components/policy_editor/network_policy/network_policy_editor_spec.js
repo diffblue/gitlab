@@ -1,4 +1,4 @@
-import { GlToggle } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlToggle } from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
 import {
   RuleDirectionInbound,
@@ -25,22 +25,33 @@ describe('NetworkPolicyEditor component', () => {
   let store;
   let wrapper;
 
-  const factory = ({ propsData, provide = {}, state, data } = {}) => {
+  const defaultStore = { threatMonitoring: { environments: [{ id: 1 }], currentEnvironmentId: 1 } };
+
+  const factory = ({ propsData, provide = {}, updatedStore = defaultStore, data } = {}) => {
     store = createStore();
-    Object.assign(store.state.threatMonitoring, {
-      ...state,
-    });
-    Object.assign(store.state.networkPolicies, {
-      ...state,
+
+    store.replaceState({
+      ...store.state,
+      networkPolicies: {
+        ...store.state.networkPolicies,
+        ...updatedStore.networkPolicies,
+      },
+      threatMonitoring: {
+        ...store.state.threatMonitoring,
+        ...updatedStore.threatMonitoring,
+      },
     });
 
     jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
 
     wrapper = shallowMountExtended(NetworkPolicyEditor, {
       propsData: {
+        hasEnvironment: true,
         ...propsData,
       },
       provide: {
+        networkDocumentationPath: 'path/to/docs',
+        noEnvironmentSvgPath: 'path/to/svg',
         threatMonitoringPath: '/threat-monitoring',
         projectId: '21',
         ...provide,
@@ -51,6 +62,8 @@ describe('NetworkPolicyEditor component', () => {
     });
   };
 
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPreview = () => wrapper.findComponent(PolicyPreview);
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findYAMLParsingAlert = () => wrapper.findByTestId('parsing-alert');
@@ -92,12 +105,14 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   it.each`
-    component                | status                | findComponent            | state
-    ${'policy alert picker'} | ${'does display'}     | ${findPolicyAlertPicker} | ${true}
-    ${'policy name input'}   | ${'does display'}     | ${findPolicyName}        | ${true}
-    ${'add rule button'}     | ${'does display'}     | ${findAddRuleButton}     | ${true}
-    ${'policy preview'}      | ${'does display'}     | ${findPreview}           | ${true}
-    ${'parsing error alert'} | ${'does not display'} | ${findYAMLParsingAlert}  | ${false}
+    component                       | status                | findComponent            | state
+    ${'policy alert picker'}        | ${'does display'}     | ${findPolicyAlertPicker} | ${true}
+    ${'policy name input'}          | ${'does display'}     | ${findPolicyName}        | ${true}
+    ${'add rule button'}            | ${'does display'}     | ${findAddRuleButton}     | ${true}
+    ${'policy preview'}             | ${'does display'}     | ${findPreview}           | ${true}
+    ${'parsing error alert'}        | ${'does not display'} | ${findYAMLParsingAlert}  | ${false}
+    ${'loading icon'}               | ${'does not display'} | ${findLoadingIcon}       | ${false}
+    ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}        | ${false}
   `('$status the $component', async ({ findComponent, state }) => {
     expect(findComponent().exists()).toBe(state);
   });
@@ -140,7 +155,7 @@ describe('NetworkPolicyEditor component', () => {
 
       await findPolicyEditorLayout().vm.$emit('save-policy', EDITOR_MODE_YAML);
       expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/createPolicy', {
-        environmentId: -1,
+        environmentId: 1,
         policy: { manifest: mockL7Manifest },
       });
       expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
@@ -244,7 +259,7 @@ describe('NetworkPolicyEditor component', () => {
   it('creates policy and redirects to a threat monitoring path', async () => {
     await findPolicyEditorLayout().vm.$emit('save-policy');
     expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/createPolicy', {
-      environmentId: -1,
+      environmentId: 1,
       policy: { manifest: toYaml(wrapper.vm.policy) },
     });
     expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
@@ -253,9 +268,7 @@ describe('NetworkPolicyEditor component', () => {
   describe('given there is a createPolicy error', () => {
     beforeEach(() => {
       factory({
-        state: {
-          errorUpdatingPolicy: true,
-        },
+        updatedStore: { networkPolicies: { errorUpdatingPolicy: true }, ...defaultStore },
       });
     });
 
@@ -289,7 +302,7 @@ describe('NetworkPolicyEditor component', () => {
     it('updates existing policy and redirects to a threat monitoring path', async () => {
       await findPolicyEditorLayout().vm.$emit('save-policy');
       expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/updatePolicy', {
-        environmentId: -1,
+        environmentId: 1,
         policy: { name: 'policy', manifest: toYaml(wrapper.vm.policy) },
       });
       expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
@@ -298,12 +311,8 @@ describe('NetworkPolicyEditor component', () => {
     describe('given there is a updatePolicy error', () => {
       beforeEach(() => {
         factory({
-          propsData: {
-            existingPolicy: { name: 'policy', manifest },
-          },
-          state: {
-            errorUpdatingPolicy: true,
-          },
+          propsData: { existingPolicy: { name: 'policy', manifest } },
+          updatedStore: { networkPolicies: { errorUpdatingPolicy: true }, ...defaultStore },
         });
       });
 
@@ -318,7 +327,7 @@ describe('NetworkPolicyEditor component', () => {
       await findPolicyEditorLayout().vm.$emit('remove-policy');
 
       expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/deletePolicy', {
-        environmentId: -1,
+        environmentId: 1,
         policy: { name: 'policy', manifest: toYaml(wrapper.vm.policy) },
       });
       expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
@@ -329,7 +338,7 @@ describe('NetworkPolicyEditor component', () => {
     it('adds a policy annotation on alert addition', async () => {
       await modifyPolicyAlert({ isAlertEnabled: true });
       expect(store.dispatch).toHaveBeenLastCalledWith('networkPolicies/createPolicy', {
-        environmentId: -1,
+        environmentId: 1,
         policy: {
           manifest: expect.stringContaining("app.gitlab.com/alert: 'true'"),
         },
@@ -339,11 +348,42 @@ describe('NetworkPolicyEditor component', () => {
     it('removes a policy annotation on alert removal', async () => {
       await modifyPolicyAlert({ isAlertEnabled: false });
       expect(store.dispatch).toHaveBeenLastCalledWith('networkPolicies/createPolicy', {
-        environmentId: -1,
+        environmentId: 1,
         policy: {
           manifest: expect.not.stringContaining("app.gitlab.com/alert: 'true'"),
         },
       });
+    });
+  });
+
+  describe('when loading environments', () => {
+    beforeEach(() => {
+      factory({
+        updatedStore: { threatMonitoring: { environments: [], isLoadingEnvironments: true } },
+      });
+    });
+    it.each`
+      component                       | status                | findComponent             | state
+      ${'loading icon'}               | ${'does display'}     | ${findLoadingIcon}        | ${true}
+      ${'policy editor layout'}       | ${'does not display'} | ${findPolicyEditorLayout} | ${false}
+      ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}         | ${false}
+    `('$status the $component', ({ findComponent, state }) => {
+      expect(findComponent().exists()).toBe(state);
+    });
+  });
+
+  describe('when no environments are configured', () => {
+    beforeEach(() => {
+      factory({ updatedStore: { threatMonitoring: { environments: [] } } });
+    });
+
+    it.each`
+      component                       | status                | findComponent             | state
+      ${'loading icon'}               | ${'does display'}     | ${findLoadingIcon}        | ${false}
+      ${'policy editor layout'}       | ${'does not display'} | ${findPolicyEditorLayout} | ${false}
+      ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}         | ${true}
+    `('$status the $component', ({ findComponent, state }) => {
+      expect(findComponent().exists()).toBe(state);
     });
   });
 });
