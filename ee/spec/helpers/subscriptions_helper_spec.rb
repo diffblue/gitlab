@@ -45,7 +45,7 @@ RSpec.describe SubscriptionsHelper do
 
     subject { helper.subscription_data([group]) }
 
-    it { is_expected.to include(setup_for_company: 'false') }
+    it { is_expected.to include(setup_for_company: '') }
     it { is_expected.to include(full_name: 'First Last') }
     it { is_expected.to include(available_plans: '[{"id":"bronze_id","code":"bronze","price_per_year":48.0,"name":"Bronze Plan"}]') }
     it { is_expected.to include(plan_id: 'bronze_id') }
