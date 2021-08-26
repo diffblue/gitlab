@@ -81,7 +81,9 @@ export default {
       },
       error: createPolicyFetchError,
       skip() {
-        return this.isLoadingEnvironments || !this.shouldShowNetworkPolicies;
+        return (
+          !this.hasEnvironment || this.isLoadingEnvironments || !this.shouldShowNetworkPolicies
+        );
       },
     },
     scanExecutionPolicies: {
