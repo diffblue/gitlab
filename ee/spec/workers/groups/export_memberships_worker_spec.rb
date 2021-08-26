@@ -29,7 +29,7 @@ RSpec.describe Groups::ExportMembershipsWorker do
 
     it 'rescues the exception' do
       expect(Notify).not_to receive(:memberships_export_email)
-      expect(Raven).to receive(:capture_exception)
+      expect(Raven).to receive(:capture_exception).and_call_original
       worker.perform(group.id, user.id)
     end
   end
