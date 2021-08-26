@@ -14,6 +14,7 @@ RSpec.describe SubscriptionsController do
 
       expected_subscription_path = new_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'checkout'
       expected_subscription_path = buy_minutes_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'buy_minutes'
+      expected_subscription_path = buy_storage_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'buy_storage'
 
       expect(controller.stored_location_for(:user)).to eq(expected_subscription_path)
     end
@@ -82,7 +83,6 @@ RSpec.describe SubscriptionsController do
     context 'with authenticated user' do
       before do
         group.add_owner(user)
-        stub_feature_flags(new_route_ci_minutes_purchase: false)
         stub_feature_flags(new_route_ci_minutes_purchase: group)
         sign_in(user)
       end
@@ -136,6 +136,71 @@ RSpec.describe SubscriptionsController do
       before do
         allow(Gitlab::SubscriptionPortal::Client)
           .to receive(:get_plans).with(tags: ['CI_1000_MINUTES_PLAN'])
+          .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
+
+        stub_feature_flags(new_route_ci_minutes_purchase: false)
+        sign_in(user)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:not_found) }
+    end
+  end
+
+  describe 'GET #buy_storage' do
+    let_it_be(:group) { create(:group) }
+
+    subject { get :buy_storage, params: { selected_group: group.id } }
+
+    context 'with authenticated user' do
+      before do
+        group.add_owner(user)
+        stub_feature_flags(new_route_storage_purchase: group)
+        sign_in(user)
+      end
+
+      context 'when the add-on plan cannot be found' do
+        let_it_be(:group) { create(:group) }
+
+        before do
+          group.add_owner(user)
+
+          allow(Gitlab::SubscriptionPortal::Client)
+            .to receive(:get_plans).with(tags: ['STORAGE_PLAN'])
+            .and_return({ success: false, data: [] })
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
+      context 'with :new_route_storage_purchase enabled' do
+        let_it_be(:group) { create(:group) }
+
+        before do
+          group.add_owner(user)
+
+          allow(Gitlab::SubscriptionPortal::Client)
+            .to receive(:get_plans).with(tags: ['STORAGE_PLAN'])
+            .and_return({ success: true, data: [{ 'id' => 'storage' }] })
+
+          allow_next_instance_of(
+            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            user: user,
+            plan_id: 'storage',
+            namespaces: [group]
+          ) do |instance|
+            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
+          end
+        end
+
+        it { is_expected.to render_template 'layouts/checkout' }
+        it { is_expected.to render_template :buy_storage }
+      end
+    end
+
+    context 'with :new_route_storage_purchase disabled' do
+      before do
+        allow(Gitlab::SubscriptionPortal::Client)
+          .to receive(:get_plans).with(tags: ['STORAGE_PLAN'])
           .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
 
         stub_feature_flags(new_route_ci_minutes_purchase: false)
