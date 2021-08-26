@@ -11,7 +11,7 @@
 #
 # class User
 #   def ci_owned_runners
-#     ::Gitlab::Database.allow_cross_joins_across_databases!(url: link-to-issue-url)
+#     ::Gitlab::Database.allow_cross_joins_across_databases(url: link-to-issue-url)
 #
 #     ...
 #   end
@@ -66,7 +66,10 @@ module Database
     module GitlabDatabaseMixin
       def allow_cross_joins_across_databases(url:)
         Thread.current[:allow_cross_joins_across_databases] = true
-        super
+
+        yield
+      ensure
+        Thread.current[:allow_cross_joins_across_databases] = false
       end
     end
   end
