@@ -36,7 +36,7 @@ module EE
       html = tag.div do
         tag.p(class: 'gl-mb-3') do
           concat(sprite_icon('information-o', css_class: 'gl-icon gl-mr-3'))
-          concat(s_('Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo node.').html_safe % { b_open: '<b>'.html_safe, b_close: '</b>'.html_safe })
+          concat(s_('Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo site.').html_safe % { b_open: '<b>'.html_safe, b_close: '</b>'.html_safe })
           concat(" #{message}")
         end
       end
@@ -48,13 +48,13 @@ module EE
 
     def lag_message
       if db_lag > DB_LAG_SHOW_THRESHOLD
-        return (s_('Geo|The database is currently %{db_lag} behind the primary node.') %
+        return (s_('Geo|The database is currently %{db_lag} behind the primary site.') %
           { db_lag: time_ago_in_words(db_lag.seconds.ago) }).html_safe
       end
 
       if unprocessed_too_old?
         minutes_behind = time_ago_in_words(next_unprocessed_event.created_at)
-        (s_('Geo|The node is currently %{minutes_behind} behind the primary node.') %
+        (s_('Geo|The site is currently %{minutes_behind} behind the primary site.') %
           { minutes_behind: minutes_behind }).html_safe
       end
     end

@@ -96,7 +96,7 @@ RSpec.describe ApplicationHelper do
         allow_any_instance_of(::Gitlab::Geo::HealthCheck).to receive(:db_replication_lag_seconds).and_return(120)
 
         expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-        expect(helper.read_only_message).to match(/The database is currently 2 minutes behind the primary node/)
+        expect(helper.read_only_message).to match(/The database is currently 2 minutes behind the primary site/)
         expect(helper.read_only_message).to include(geo_primary.url)
       end
 
@@ -107,7 +107,7 @@ RSpec.describe ApplicationHelper do
           create(:geo_event_log_state, event_id: event_log.id)
 
           expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).to match(/The node is currently 3 minutes behind the primary/)
+          expect(helper.read_only_message).to match(/The site is currently 3 minutes behind the primary/)
           expect(helper.read_only_message).to include(geo_primary.url)
         end
 
@@ -117,7 +117,7 @@ RSpec.describe ApplicationHelper do
           create(:geo_event_log_state, event_id: event_log.id)
 
           expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).not_to match(/The node is currently 3 minutes behind the primary/)
+          expect(helper.read_only_message).not_to match(/The site is currently 3 minutes behind the primary/)
           expect(helper.read_only_message).to include(geo_primary.url)
         end
 
@@ -126,7 +126,7 @@ RSpec.describe ApplicationHelper do
           create(:geo_event_log_state, event_id: event_log.id)
 
           expect(helper.read_only_message).to match(/If you want to make changes, you must visit the primary site./)
-          expect(helper.read_only_message).not_to match(/The node is currently 3 minutes behind the primary/)
+          expect(helper.read_only_message).not_to match(/The site is currently 3 minutes behind the primary/)
           expect(helper.read_only_message).to include(geo_primary.url)
         end
 
