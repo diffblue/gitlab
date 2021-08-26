@@ -17,15 +17,9 @@ module Resolvers
       service = ::Boards::Issues::ListService.new(list.board.resource_parent, context[:current_user], filter_params)
       pagination_connections = Gitlab::Graphql::Pagination::Keyset::Connection.new(service.execute)
 
-      initialize_relative_positions(pagination_connections.items, list.board)
+      ::Boards::Issues::ListService.initialize_relative_positions(list.board, current_user, pagination_connections.items)
 
       pagination_connections
-    end
-
-    def initialize_relative_positions(issues, board)
-      if Gitlab::Database.read_write? && !board.disabled_for?(current_user)
-        Issue.move_nulls_to_end(issues)
-      end
     end
 
     # https://gitlab.com/gitlab-org/gitlab/-/issues/235681
