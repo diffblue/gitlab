@@ -203,6 +203,19 @@ RSpec.describe Issuable::BulkUpdateService do
         let(:new_value) { [label2, label3] }
 
         it_behaves_like 'updates issuables attribute', :labels
+
+        context 'when epics have different labels' do
+          let(:label4) { create(:group_label, group: group, title: 'feature') }
+          let(:epic1) { create(:epic, group: group, labels: [label1, label4]) }
+
+          it 'keeps existing labels' do
+            expect(subject.success?).to be_truthy
+            expect(subject.payload[:count]).to eq(issuables.count)
+
+            expect(epic1.reload.labels).to contain_exactly(label4, label2, label3)
+            expect(epic2.reload.labels).to contain_exactly(label2, label3)
+          end
+        end
       end
 
       context 'when epics are disabled' do
