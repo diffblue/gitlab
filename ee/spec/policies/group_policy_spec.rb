@@ -322,6 +322,34 @@ RSpec.describe GroupPolicy do
     it { is_expected.not_to be_allowed(:read_group_repository_analytics) }
   end
 
+  context 'when group coverage reports is available' do
+    before do
+      stub_licensed_features(group_coverage_reports: true)
+    end
+
+    context 'for guests' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:read_group_coverage_reports) }
+    end
+
+    context 'for reporter+' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_allowed(:read_group_coverage_reports) }
+    end
+  end
+
+  context 'when group coverage reports is not available' do
+    let(:current_user) { maintainer }
+
+    before do
+      stub_licensed_features(group_coverage_reports: false)
+    end
+
+    it { is_expected.not_to be_allowed(:read_group_coverage_reports) }
+  end
+
   describe 'per group SAML' do
     def stub_group_saml_config(enabled)
       allow(::Gitlab::Auth::GroupSaml::Config).to receive_messages(enabled?: enabled)
