@@ -151,7 +151,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       it 'returns 200 status' do
         expect do
           put api(url, current_user), params: { severity_levels: severity_levels }
-        end.to change { approval_rule.reload.severity_levels.count }.from(::Enums::Vulnerability.severity_levels.keys.count).to(severity_levels.count)
+        end.to change { approval_rule.reload.severity_levels.count }.from(::ApprovalProjectRule::DEFAULT_SEVERITIES.count).to(severity_levels.count)
         expect(response).to have_gitlab_http_status(:ok)
       end
     end

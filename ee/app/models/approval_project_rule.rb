@@ -6,6 +6,7 @@ class ApprovalProjectRule < ApplicationRecord
 
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
+  DEFAULT_SEVERITIES = %w[unknown high critical].freeze
 
   belongs_to :project
   has_and_belongs_to_many :protected_branches
@@ -32,7 +33,7 @@ class ApprovalProjectRule < ApplicationRecord
   default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
 
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
-  default_value_for :severity_levels, allows_nil: false, value: ::Enums::Vulnerability.severity_levels.keys
+  default_value_for :severity_levels, allows_nil: false, value: DEFAULT_SEVERITIES
 
   def applies_to_branch?(branch)
     return true if protected_branches.empty?
