@@ -1,0 +1,6 @@
+- return unless ::Feature.enabled?(:saas_user_caps)
+
+%h5= _('Membership')
+
+.form-group{ data: { testid: 'membership-form-group' } }
+  = render 'shared/allow_request_access', form: f

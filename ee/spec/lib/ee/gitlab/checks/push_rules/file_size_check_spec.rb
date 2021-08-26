@@ -5,6 +5,29 @@ require 'spec_helper'
 RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck do
   include_context 'push rules checks context'
 
+  let(:changes) do
+    [
+      # Update of existing branch
+      { oldrev: oldrev, newrev: newrev, ref: ref },
+      # Creation of new branch
+      { newrev: newrev, ref: 'refs/heads/something' },
+      # Deletion of branch
+      { oldrev: oldrev, ref: 'refs/heads/deleteme' }
+    ]
+  end
+
+  let(:changes_access) do
+    Gitlab::Checks::ChangesAccess.new(
+      changes,
+      project: project,
+      user_access: user_access,
+      protocol: protocol,
+      logger: logger
+    )
+  end
+
+  subject { described_class.new(changes_access) }
+
   describe '#validate!' do
     let(:push_rule) { create(:push_rule, max_file_size: 1) }
     # SHA of the 2-mb-file branch

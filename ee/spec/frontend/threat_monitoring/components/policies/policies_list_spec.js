@@ -32,9 +32,10 @@ const environments = [
     global_id: 'gid://gitlab/Environment/3',
   },
 ];
+const networkPoliciesSpy = networkPolicies(mockNetworkPoliciesResponse);
 const scanExecutionPoliciesSpy = scanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const defaultRequestHandlers = {
-  networkPolicies: networkPolicies(mockNetworkPoliciesResponse),
+  networkPolicies: networkPoliciesSpy,
   scanExecutionPolicies: scanExecutionPoliciesSpy,
 };
 const pendingHandler = jest.fn(() => new Promise(() => {}));
@@ -45,13 +46,19 @@ describe('PoliciesList component', () => {
   let requestHandlers;
 
   const factory = (mountFn = mountExtended) => (options = {}) => {
+    const { state = {}, handlers, ...wrapperOptions } = options;
+
     store = createStore();
-    const { state, handlers, ...wrapperOptions } = options;
-    Object.assign(store.state.networkPolicies, {
-      ...state,
+    store.replaceState({
+      ...store.state,
+      threatMonitoring: {
+        ...store.state.threatMonitoring,
+        environments,
+        currentEnvironmentId: environments[0].id,
+        ...state.threatMonitoring,
+      },
     });
-    store.state.threatMonitoring.environments = environments;
-    store.state.threatMonitoring.currentEnvironmentId = environments[0].id;
+
     requestHandlers = {
       ...defaultRequestHandlers,
       ...handlers,
@@ -260,8 +267,7 @@ describe('PoliciesList component', () => {
 
   describe('with allEnvironments enabled', () => {
     beforeEach(() => {
-      mountWrapper();
-      wrapper.vm.$store.state.threatMonitoring.allEnvironments = true;
+      mountWrapper({ state: { threatMonitoring: { allEnvironments: true } } });
     });
 
     it('renders environments column', () => {
@@ -312,7 +318,26 @@ describe('PoliciesList component', () => {
     });
   });
 
-  describe('given no environement', () => {
+  describe('given loading environment', () => {
+    beforeEach(() => {
+      mountWrapper({
+        propsData: {
+          hasEnvironment: true,
+        },
+        state: {
+          threatMonitoring: {
+            isLoadingEnvironments: true,
+          },
+        },
+      });
+    });
+
+    it('does not make a request for network policies', () => {
+      expect(networkPoliciesSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('given no environments', () => {
     beforeEach(() => {
       mountWrapper({
         propsData: {
@@ -321,8 +346,12 @@ describe('PoliciesList component', () => {
       });
     });
 
+    it('does not make a request for network policies', () => {
+      expect(networkPoliciesSpy).not.toHaveBeenCalled();
+    });
+
     it('does not render default network policies', () => {
-      expect(findPolicyStatusCells()).toHaveLength(3);
+      expect(findPolicyStatusCells()).toHaveLength(1);
     });
   });
 });
