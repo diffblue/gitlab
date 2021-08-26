@@ -26,6 +26,10 @@ RSpec.describe Groups::Analytics::CoverageReportsController do
   end
 
   context 'without permissions' do
+    before do
+      group.add_guest(user)
+    end
+
     describe 'GET index' do
       it 'responds 403' do
         get :index, params: valid_request_params
@@ -37,7 +41,7 @@ RSpec.describe Groups::Analytics::CoverageReportsController do
 
   context 'with permissions' do
     before do
-      group.add_owner(user)
+      group.add_reporter(user)
     end
 
     context 'without a license' do

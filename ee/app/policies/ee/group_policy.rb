@@ -33,6 +33,10 @@ module EE
         @subject.feature_available?(:group_repository_analytics)
       end
 
+      condition(:group_coverage_reports_available) do
+        @subject.feature_available?(:group_coverage_reports)
+      end
+
       condition(:group_activity_analytics_available) do
         @subject.feature_available?(:group_activity_analytics)
       end
@@ -179,6 +183,9 @@ module EE
 
       rule { reporter & group_repository_analytics_available }
         .enable :read_group_repository_analytics
+
+      rule { reporter & group_coverage_reports_available }
+        .enable :read_group_coverage_reports
 
       rule { reporter & group_merge_request_analytics_available }
         .enable :read_group_merge_request_analytics
