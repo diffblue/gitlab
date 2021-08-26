@@ -67,7 +67,7 @@ describe('GeoNodeFormCapacities', () => {
     describe.each`
       primaryNode | description                                                                                   | link
       ${true}     | ${'Set verification limit and frequency.'}                                                    | ${REVERIFICATION_MORE_INFO}
-      ${false}    | ${'Limit the number of concurrent operations this secondary node can run in the background.'} | ${BACKFILL_MORE_INFO}
+      ${false}    | ${'Limit the number of concurrent operations this secondary site can run in the background.'} | ${BACKFILL_MORE_INFO}
     `(`section description`, ({ primaryNode, description, link }) => {
       describe(`when node is ${primaryNode ? 'primary' : 'secondary'}`, () => {
         beforeEach(() => {
