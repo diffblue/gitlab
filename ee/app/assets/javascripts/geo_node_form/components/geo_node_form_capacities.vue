@@ -94,7 +94,7 @@ export default {
     <h2 class="gl-font-size-h2 gl-my-5">{{ __('Tuning settings') }}</h2>
     <p class="gl-mb-5">
       {{ sectionDescription }}
-      <gl-link :href="sectionLink" target="_blank">{{ __('More information') }}</gl-link>
+      <gl-link :href="sectionLink" target="_blank">{{ __('Learn more') }}</gl-link>
     </p>
     <gl-form-group
       v-for="formGroup in visibleFormGroups"

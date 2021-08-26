@@ -59,7 +59,7 @@ export default {
         :href="$options.SELECTIVE_SYNC_MORE_INFO"
         target="_blank"
         data-testid="selectiveSyncMoreInfo"
-        >{{ __('More information') }}</gl-link
+        >{{ __('Learn more') }}</gl-link
       >
     </p>
     <gl-form-group
