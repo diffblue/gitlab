@@ -29,12 +29,6 @@ RSpec.describe Registrations::GroupsController do
 
   describe 'GET #new', :aggregate_failures do
     let(:dev_env_or_com) { true }
-    let(:learn_gitlab_context) do
-      {
-        in_experiment_group_a: false,
-        in_experiment_group_b: false
-      }
-    end
 
     subject { get :new }
 
@@ -58,28 +52,6 @@ RSpec.describe Registrations::GroupsController do
           expect(assigns(:group)).to be_a_new(Group)
 
           expect(assigns(:group).visibility_level).to eq(Gitlab::CurrentSettings.default_group_visibility)
-        end
-
-        context 'with different experiment rollouts' do
-          before do
-            stub_experiment_for_subject(learn_gitlab_a: experiment_a, learn_gitlab_b: experiment_b)
-          end
-
-          where(:experiment_a, :experiment_b, :context) do
-            false       | false         | { in_experiment_group_a: false, in_experiment_group_b: false }
-            false       | true          | { in_experiment_group_a: false, in_experiment_group_b: true }
-            true        | false         | { in_experiment_group_a: true, in_experiment_group_b: false }
-            true        | true          | { in_experiment_group_a: true, in_experiment_group_b: false }
-          end
-
-          with_them do
-            it 'sets the correct context', :aggregate_failures do
-              expect(controller).to receive(:record_experiment_user).with(:learn_gitlab_a, context)
-              expect(controller).to receive(:record_experiment_user).with(:learn_gitlab_b, context)
-
-              subject
-            end
-          end
         end
 
         context 'user without the ability to create a group' do
@@ -193,16 +165,6 @@ RSpec.describe Registrations::GroupsController do
 
           context 'when not in the trial onboarding - registration_onboarding_flow' do
             let_it_be(:group) { create(:group) }
-
-            it 'calls the record user for learn gitlab experiment' do
-              expect_next_instance_of(Groups::CreateService) do |service|
-                expect(service).to receive(:execute).and_return(group)
-              end
-              expect(controller).to receive(:record_experiment_conversion_event).with(:learn_gitlab_a, namespace_id: group.id)
-              expect(controller).to receive(:record_experiment_conversion_event).with(:learn_gitlab_b, namespace_id: group.id)
-
-              subject
-            end
 
             context 'when trial_during_signup - trial_during_signup_flow' do
               let_it_be(:glm_params) { { glm_source: 'gitlab.com', glm_content: 'content' } }
