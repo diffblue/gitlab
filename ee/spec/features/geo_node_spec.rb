@@ -22,13 +22,13 @@ RSpec.describe 'GEO Nodes', :geo do
     describe "showing Flash Info Message" do
       it 'on dashboard' do
         visit root_dashboard_path
-        expect(page).to have_content 'You are on a secondary, read-only Geo node. If you want to make changes, you must visit the primary site.'
+        expect(page).to have_content 'You are on a secondary, read-only Geo site. If you want to make changes, you must visit the primary site.'
         expect(page).to have_content 'Go to the primary site'
       end
 
       it 'on project overview' do
         visit project_path(project)
-        expect(page).to have_content 'You are on a secondary, read-only Geo node. If you want to make changes, you must visit the primary site.'
+        expect(page).to have_content 'You are on a secondary, read-only Geo site. If you want to make changes, you must visit the primary site.'
         expect(page).to have_content 'Go to the primary site'
       end
     end
