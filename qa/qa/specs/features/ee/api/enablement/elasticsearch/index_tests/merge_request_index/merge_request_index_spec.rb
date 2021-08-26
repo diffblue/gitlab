@@ -34,7 +34,7 @@ module QA
       it 'finds merge request that matches description', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1867' do
         QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get Runtime::Search.create_search_request(api_client, 'merge_requests', merge_request.description).url
-          expect_status(QA::Support::Api::HTTP_STATUS_OK)
+          expect_status(QA::Support::API::HTTP_STATUS_OK)
 
           raise 'Empty search result returned' if json_body.empty?
 
