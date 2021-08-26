@@ -42,9 +42,9 @@ RSpec.describe Ci::Bridge do
       end
 
       it 'does not schedule downstream pipeline creation' do
-        expect(bridge).not_to receive(:schedule_downstream_pipeline!)
-
         bridge.enqueue!
+
+        expect(::Ci::CreateCrossProjectPipelineWorker.jobs).to be_empty
       end
     end
   end
