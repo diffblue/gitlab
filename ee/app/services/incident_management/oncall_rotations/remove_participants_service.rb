@@ -5,16 +5,18 @@ module IncidentManagement
     class RemoveParticipantsService
       # @param oncall_rotations [Array<IncidentManagement::OncallRotation>]
       # @param user_to_remove [User]
-      def initialize(oncall_rotations, user_to_remove)
+      # @param async_email [Boolean]
+      def initialize(oncall_rotations, user_to_remove, async_email = true)
         @oncall_rotations = oncall_rotations
         @user_to_remove = user_to_remove
+        @async_email = async_email
       end
 
-      attr_reader :oncall_rotations, :user_to_remove
+      attr_reader :oncall_rotations, :user_to_remove, :async_email
 
       def execute
         oncall_rotations.each do |oncall_rotation|
-          RemoveParticipantService.new(oncall_rotation, user_to_remove).execute
+          RemoveParticipantService.new(oncall_rotation, user_to_remove, async_email).execute
         end
       end
     end

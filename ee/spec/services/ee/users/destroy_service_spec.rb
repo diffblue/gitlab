@@ -46,6 +46,7 @@ RSpec.describe Users::DestroyService do
         let(:schedule) { create(:incident_management_oncall_schedule, project: project) }
         let(:rotation) { create(:incident_management_oncall_rotation, schedule: schedule) }
         let!(:participant) { create(:incident_management_oncall_participant, rotation: rotation, user: user) }
+        let!(:other_participant) { create(:incident_management_oncall_participant, rotation: rotation) }
 
         context 'in their own project' do
           let(:project) { create(:project, namespace: user.namespace) }
@@ -72,6 +73,10 @@ RSpec.describe Users::DestroyService do
             operation
 
             expect(rotation.participants.reload).not_to include(participant)
+          end
+
+          it 'sends an email about the user being removed from the rotation' do
+            expect { operation }.to change(ActionMailer::Base.deliveries, :size).by(1)
           end
         end
       end

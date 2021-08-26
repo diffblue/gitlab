@@ -35,7 +35,8 @@ module EE
       def oncall_rotations_cleanup(user)
         ::IncidentManagement::OncallRotations::RemoveParticipantsService.new(
           user.oncall_rotations,
-          user
+          user,
+          false
         ).execute
       end
 
