@@ -16,6 +16,10 @@ module Groups
       @response = Groups::Memberships::ExportService.new(container: @group, current_user: @current_user).execute
 
       send_email if @response.success?
+    rescue Module::DelegationError => exception
+      # TEMPORARY: Rescue when a User record is not available,
+      # see https://gitlab.com/gitlab-org/gitlab/-/issues/338707
+      Raven.capture_exception(exception, group_id: @group.id, user_id: @current_user.id)
     end
 
     private
