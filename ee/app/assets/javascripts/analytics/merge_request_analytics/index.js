@@ -35,7 +35,9 @@ export default () => {
     author_username = null,
     milestone_title = null,
     label_name = [],
-  } = urlQueryToFilter(window.location.search);
+  } = urlQueryToFilter(window.location.search, {
+    legacySpacesDecode: true,
+  });
   store.dispatch('filters/initialize', {
     selectedSourceBranch: source_branch_name,
     selectedTargetBranch: target_branch_name,
