@@ -10,6 +10,8 @@ module Registrations
     feature_category :onboarding
 
     def new
+      experiment(:trial_registration_with_reassurance, actor: current_user)
+        .track(:render, label: 'registrations:groups:new', user: current_user)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
     end
 
@@ -61,6 +63,13 @@ module Registrations
       if apply_trial
         record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
         record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
+
+        experiment(:trial_registration_with_reassurance, actor: current_user).track(
+          :apply_trial,
+          label: 'registrations:groups:create',
+          namespace: @group,
+          user: current_user
+        )
 
         redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
       else
