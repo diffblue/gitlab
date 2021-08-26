@@ -89,6 +89,10 @@ RSpec.describe Groups::Memberships::ExportService do
         before do
           create_list(:group_member, 4, group: group)
           create(:group_member, group: group, created_at: '2021-02-01', expires_at: '2022-01-01', user: create(:user, username: 'mwoolf', name: 'Max Woolf'))
+          create(:group_member, :invited, group: group)
+          create(:group_member, :ldap, group: group)
+          create(:group_member, :blocked, group: group)
+          create(:group_member, :minimal_access, group: group)
         end
         let(:csv) { CSV.parse(service.execute.payload, headers: true) }
 
@@ -97,7 +101,7 @@ RSpec.describe Groups::Memberships::ExportService do
         end
 
         it 'has the correct number of rows' do
-          expect(csv.size).to eq(6)
+          expect(csv.size).to eq(9)
         end
 
         context 'a direct user', :aggregate_failures do
