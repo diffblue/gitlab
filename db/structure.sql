@@ -18336,7 +18336,8 @@ CREATE TABLE service_desk_settings (
     project_id bigint NOT NULL,
     issue_template_key character varying(255),
     outgoing_name character varying(255),
-    project_key character varying(255)
+    project_key character varying(255),
+    file_template_project_id bigint
 );
 
 CREATE TABLE shards (
@@ -25404,6 +25405,8 @@ CREATE INDEX index_serverless_domain_cluster_on_pages_domain_id ON serverless_do
 
 CREATE INDEX index_service_desk_enabled_projects_on_id_creator_id_created_at ON projects USING btree (id, creator_id, created_at) WHERE (service_desk_enabled = true);
 
+CREATE INDEX index_service_desk_settings_on_file_template_project_id ON service_desk_settings USING btree (file_template_project_id);
+
 CREATE UNIQUE INDEX index_shards_on_name ON shards USING btree (name);
 
 CREATE UNIQUE INDEX index_site_profile_secret_variables_on_site_profile_id_and_key ON dast_site_profile_secret_variables USING btree (dast_site_profile_id, key);
@@ -26264,6 +26267,9 @@ ALTER TABLE ONLY clusters_applications_runners
 
 ALTER TABLE ONLY incident_management_escalation_rules
     ADD CONSTRAINT fk_0314ee86eb FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY service_desk_settings
+    ADD CONSTRAINT fk_03afb71f06 FOREIGN KEY (file_template_project_id) REFERENCES projects(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_03c671965c FOREIGN KEY (design_id) REFERENCES design_management_designs(id) ON DELETE CASCADE;
