@@ -14,6 +14,7 @@ RSpec.describe Issue do
     it { is_expected.to have_many(:resource_iteration_events) }
     it { is_expected.to have_one(:issuable_sla) }
     it { is_expected.to have_many(:metric_images) }
+    it { is_expected.to have_many(:pending_escalations) }
 
     it { is_expected.to have_one(:requirement) }
     it { is_expected.to have_many(:test_reports) }
