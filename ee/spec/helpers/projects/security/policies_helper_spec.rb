@@ -44,6 +44,8 @@ RSpec.describe Projects::Security::PoliciesHelper do
         configure_agent_help_path: kind_of(String),
         create_agent_help_path: kind_of(String),
         environments_endpoint: kind_of(String),
+        network_documentation_path: kind_of(String),
+        no_environment_svg_path: kind_of(String),
         project_path: project.full_path,
         project_id: project.id,
         threat_monitoring_path: kind_of(String),

@@ -1,9 +1,18 @@
 <script>
-import { GlFormGroup, GlFormInput, GlFormTextarea, GlToggle, GlButton, GlAlert } from '@gitlab/ui';
+import {
+  GlEmptyState,
+  GlFormGroup,
+  GlFormInput,
+  GlFormTextarea,
+  GlLoadingIcon,
+  GlToggle,
+  GlButton,
+  GlAlert,
+} from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { removeUnnecessaryDashes } from 'ee/threat_monitoring/utils';
 import { redirectTo } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { EDITOR_MODES, EDITOR_MODE_YAML, PARSING_ERROR_MESSAGE } from '../constants';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionPicker from '../policy_action_picker.vue';
@@ -24,13 +33,19 @@ import PolicyRuleBuilder from './policy_rule_builder.vue';
 export default {
   EDITOR_MODES,
   i18n: {
-    toggleLabel: s__('NetworkPolicies|Policy status'),
+    toggleLabel: s__('SecurityOrchestration|Policy status'),
     PARSING_ERROR_MESSAGE,
+    noEnvironmentDescription: s__(
+      'SecurityOrchestration|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster.',
+    ),
+    noEnvironmentButton: __('Learn more'),
   },
   components: {
+    GlEmptyState,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
+    GlLoadingIcon,
     GlToggle,
     GlButton,
     GlAlert,
@@ -41,7 +56,7 @@ export default {
     PolicyEditorLayout,
     DimDisableContainer,
   },
-  inject: ['threatMonitoringPath', 'projectId'],
+  inject: ['networkDocumentationPath', 'noEnvironmentSvgPath', 'projectId', 'threatMonitoringPath'],
   props: {
     existingPolicy: {
       type: Object,
@@ -71,6 +86,9 @@ export default {
     };
   },
   computed: {
+    hasEnvironment() {
+      return Boolean(this.environments.length);
+    },
     humanizedPolicy() {
       return this.policy.error ? null : humanizeNetworkPolicy(this.policy);
     },
@@ -80,7 +98,11 @@ export default {
     policyYaml() {
       return this.hasParsingError ? '' : toYaml(this.policy);
     },
-    ...mapState('threatMonitoring', ['currentEnvironmentId']),
+    ...mapState('threatMonitoring', [
+      'currentEnvironmentId',
+      'environments',
+      'isLoadingEnvironments',
+    ]),
     ...mapState('networkPolicies', [
       'isUpdatingPolicy',
       'isRemovingPolicy',
@@ -159,7 +181,9 @@ export default {
 </script>
 
 <template>
+  <gl-loading-icon v-if="isLoadingEnvironments" size="lg" />
   <policy-editor-layout
+    v-else-if="hasEnvironment"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isUpdatingPolicy"
@@ -255,4 +279,12 @@ export default {
       </dim-disable-container>
     </template>
   </policy-editor-layout>
+  <gl-empty-state
+    v-else
+    :description="$options.i18n.noEnvironmentDescription"
+    :primary-button-link="networkDocumentationPath"
+    :primary-button-text="$options.i18n.noEnvironmentButton"
+    :svg-path="noEnvironmentSvgPath"
+    title=""
+  />
 </template>
