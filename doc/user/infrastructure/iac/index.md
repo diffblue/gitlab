@@ -65,7 +65,7 @@ Amazon S3 or Google Cloud Storage. Its features include:
 - Locking and unlocking state.
 - Remote Terraform plan and apply execution.
 
-Read more on setting up and [using GitLab Managed Terraform states](../terraform_state.md)
+Read more on setting up and [using GitLab Managed Terraform states](terraform_state.md).
 
 ## Terraform module registry
 
