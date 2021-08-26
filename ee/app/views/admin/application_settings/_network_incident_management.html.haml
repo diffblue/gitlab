@@ -6,14 +6,16 @@
       .form-check
         = f.check_box :throttle_incident_management_notification_enabled, class: 'form-check-input', data: { qa_selector: 'throttle_unauthenticated_checkbox' }
         = f.label :throttle_incident_management_notification_enabled, class: 'form-check-label' do
-          = _('Enable Incident Management inbound alert limit')
-        %span.form-text.text-muted
-          = _('Helps reduce alert volume (e.g. if creating too many issues)')
+          = _('Enable incident management inbound alert limit')
+        %span.form-text.gl-text-gray-600
+          = _('Reduce incident management alert volume (for example, if too many issues are being created).')
     .form-group
-      = f.label :throttle_incident_management_notification_period_in_seconds, 'Max requests per period per project', class: 'label-bold'
+      = f.label :throttle_incident_management_notification_period_in_seconds, 'Maximum requests per project per rate limit period', class: 'gl-font-weight-bold'
       = f.number_field :throttle_incident_management_notification_period_in_seconds, class: 'form-control gl-form-input'
     .form-group
-      = f.label :throttle_incident_management_notification_per_period, 'Rate limit period in seconds', class: 'label-bold'
+      = f.label :throttle_incident_management_notification_per_period, 'Rate limit period', class: 'gl-font-weight-bold'
       = f.number_field :throttle_incident_management_notification_per_period, class: 'form-control gl-form-input'
+      .form-text.gl-text-gray-600
+        = _("The time period in seconds that the maximum requests per project limit applies to.")
 
   = f.submit 'Save changes', class: "gl-button btn btn-confirm"

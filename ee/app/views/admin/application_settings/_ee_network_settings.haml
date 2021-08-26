@@ -6,6 +6,7 @@
       %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
         = expanded_by_default? ? _('Collapse') : _('Expand')
       %p
-        = _('Configure limits on the number of inbound alerts able to be sent to a project.')
+        = _('Limit the number of inbound incident management alerts that can be sent to a project.')
+        = link_to _('Learn more.'), help_page_path('administration/instance_limits.md', anchor: 'limit-inbound-incident-management-alerts'), target: '_blank', rel: 'noopener noreferrer'
     .settings-content
       = render 'network_incident_management'
