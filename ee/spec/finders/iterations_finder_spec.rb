@@ -37,6 +37,14 @@ RSpec.describe IterationsFinder do
         expect(subject).to be_empty
       end
     end
+
+    context 'when skipping authorization' do
+      let(:params) { { parent: parent } }
+
+      it 'returns iterations' do
+        expect(described_class.new(user, params).execute(skip_authorization: true)).not_to be_empty
+      end
+    end
   end
 
   context 'with permissions' do

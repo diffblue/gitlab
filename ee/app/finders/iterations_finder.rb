@@ -20,7 +20,9 @@ class IterationsFinder
     @current_user = current_user
   end
 
-  def execute
+  def execute(skip_authorization: false)
+    @skip_authorization = skip_authorization
+
     items = Iteration.all
     items = by_id(items)
     items = by_iid(items)
@@ -36,8 +38,10 @@ class IterationsFinder
 
   private
 
+  attr_reader :skip_authorization
+
   def by_groups(items)
-    return Iteration.none unless Ability.allowed?(current_user, :read_iteration, params[:parent])
+    return Iteration.none unless skip_authorization || Ability.allowed?(current_user, :read_iteration, params[:parent])
 
     items.of_groups(groups)
   end
