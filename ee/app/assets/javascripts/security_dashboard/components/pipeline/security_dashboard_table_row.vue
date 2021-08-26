@@ -66,8 +66,12 @@ export default {
       return Boolean(path);
     },
     canCreateIssue() {
-      const path = this.vulnerability.create_vulnerability_feedback_issue_path;
-      return Boolean(path) && !this.hasIssue;
+      const {
+        create_vulnerability_feedback_issue_path: createGitLabIssuePath,
+        create_jira_issue_url: createJiraIssueUrl,
+      } = this.vulnerability;
+
+      return Boolean(createGitLabIssuePath || createJiraIssueUrl) && !this.hasIssue;
     },
     extraIdentifierCount() {
       const { identifiers } = this.vulnerability;

@@ -2,6 +2,7 @@ import { GlFormCheckbox } from '@gitlab/ui';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import SecurityDashboardTableRow from 'ee/security_dashboard/components/pipeline/security_dashboard_table_row.vue';
+import VulnerabilityActionButtons from 'ee/security_dashboard/components/pipeline/vulnerability_action_buttons.vue';
 import createStore from 'ee/security_dashboard/store';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
@@ -254,4 +255,29 @@ describe('Security Dashboard Table Row', () => {
       expect(findContent(2).text()).toBe(identifiers[0].name);
     });
   });
+
+  describe.each`
+    createGitLabIssuePath | createJiraIssueUrl  | canCreateIssue
+    ${''}                 | ${''}               | ${false}
+    ${''}                 | ${'http://foo.bar'} | ${true}
+    ${'/foo/bar'}         | ${''}               | ${true}
+    ${'/foo/bar'}         | ${'http://foo.bar'} | ${true}
+  `(
+    'with createGitLabIssuePath set to "$createGitLabIssuePath" and createJiraIssueUrl to "$createJiraIssueUrl"',
+    ({ createGitLabIssuePath, createJiraIssueUrl, canCreateIssue }) => {
+      beforeEach(() => {
+        const vulnerability = mockDataVulnerabilities[1];
+        vulnerability.create_vulnerability_feedback_issue_path = createGitLabIssuePath;
+        vulnerability.create_jira_issue_url = createJiraIssueUrl;
+
+        createComponent(shallowMount, { props: { vulnerability } });
+      });
+
+      it(`should pass "canCreateIssue" as "${canCreateIssue}" to the action-buttons component`, () => {
+        expect(wrapper.findComponent(VulnerabilityActionButtons).props('canCreateIssue')).toBe(
+          canCreateIssue,
+        );
+      });
+    },
+  );
 });

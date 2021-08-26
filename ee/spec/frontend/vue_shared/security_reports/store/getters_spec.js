@@ -304,15 +304,25 @@ describe('Security reports getters', () => {
   });
 
   describe('canCreateIssue', () => {
-    it('returns false if no feedback path is defined', () => {
-      expect(canCreateIssue(state)).toEqual(false);
-    });
+    it.each`
+      createVulnerabilityFeedbackIssuePath | createJiraIssueUrl  | expectedReturnValue
+      ${''}                                | ${''}               | ${false}
+      ${'/foo/bar'}                        | ${''}               | ${true}
+      ${''}                                | ${'http://foo.bar'} | ${true}
+      ${'/foo/bar'}                        | ${'http://foo.bar'} | ${true}
+    `(
+      'returns "$expectedReturnValue" with createVulnerabilityFeedbackIssuePath set to "createVulnerabilityFeedbackIssuePath" and modal.vulnerability.create_jira_issue_url to "$createJiraIssueUrl"',
+      ({ createVulnerabilityFeedbackIssuePath, createJiraIssueUrl, expectedReturnValue }) => {
+        state.createVulnerabilityFeedbackIssuePath = createVulnerabilityFeedbackIssuePath;
+        state.modal = {
+          vulnerability: {
+            create_jira_issue_url: createJiraIssueUrl,
+          },
+        };
 
-    it('returns true if a feedback path is defined', () => {
-      state.createVulnerabilityFeedbackIssuePath = MOCK_PATH;
-
-      expect(canCreateIssue(state)).toEqual(true);
-    });
+        expect(canCreateIssue(state)).toEqual(expectedReturnValue);
+      },
+    );
   });
 
   describe('canCreateMergeRequest', () => {
