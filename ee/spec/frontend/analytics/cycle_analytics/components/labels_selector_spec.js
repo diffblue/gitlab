@@ -1,7 +1,8 @@
 import { GlDropdownSectionHeader } from '@gitlab/ui';
-import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selector.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
@@ -11,6 +12,7 @@ import createFlash from '~/flash';
 import { groupLabels } from '../mock_data';
 
 jest.mock('~/flash');
+Vue.use(Vuex);
 
 const selectedLabel = groupLabels[groupLabels.length - 1];
 const findActiveItem = (wrapper) =>
@@ -24,14 +26,11 @@ const mockGroupLabelsRequest = (status = 200) =>
 
 describe('Value Stream Analytics LabelsSelector', () => {
   let store = null;
-  const localVue = createLocalVue();
-  localVue.use(Vuex);
 
-  function createComponent({ props = { selectedLabelId: [] }, shallow = true } = {}) {
+  function createComponent({ props = { selectedLabelIds: [] }, shallow = true } = {}) {
     store = createStore();
     const func = shallow ? shallowMount : mount;
     return func(LabelsSelector, {
-      localVue,
       store: {
         ...store,
         getters: {
@@ -69,6 +68,10 @@ describe('Value Stream Analytics LabelsSelector', () => {
 
     it.each(labelNames)('generate a label item for the label %s', (name) => {
       expect(wrapper.text()).toContain(name);
+    });
+
+    it('will fetch the labels', () => {
+      expect(mock.history.get.length).toBe(1);
     });
 
     it('will render with the default option selected', () => {
@@ -114,10 +117,10 @@ describe('Value Stream Analytics LabelsSelector', () => {
     });
   });
 
-  describe('with selectedLabelId set', () => {
+  describe('with selectedLabelIds set', () => {
     beforeEach(() => {
       mock = mockGroupLabelsRequest();
-      wrapper = createComponent({ props: { selectedLabelId: [selectedLabel.id] } });
+      wrapper = createComponent({ props: { selectedLabelIds: [selectedLabel.id] } });
       return waitForPromises();
     });
 
@@ -134,6 +137,21 @@ describe('Value Stream Analytics LabelsSelector', () => {
 
       expect(activeItem.exists()).toBe(true);
       expect(activeItem.text()).toEqual(selectedLabel.name);
+    });
+  });
+
+  describe('with labels provided', () => {
+    beforeEach(() => {
+      mock = mockGroupLabelsRequest();
+      wrapper = createComponent({ props: { initialData: groupLabels } });
+    });
+
+    afterEach(() => {
+      wrapper.destroy();
+    });
+
+    it('will not fetch the labels', () => {
+      expect(mock.history.get.length).toBe(0);
     });
   });
 });

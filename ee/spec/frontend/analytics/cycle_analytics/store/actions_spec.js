@@ -7,7 +7,8 @@ import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, currentGroup } from 'jest/cycle_analytics/mock_data';
 import { I18N_VSA_ERROR_STAGES, I18N_VSA_ERROR_STAGE_MEDIAN } from '~/cycle_analytics/constants';
 import createFlash from '~/flash';
-import { allowedStages as stages, valueStreams } from '../mock_data';
+import httpStatusCodes from '~/lib/utils/http_status';
+import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
 const group = { fullPath: 'fake_group_full_path' };
 const milestonesPath = 'fake_milestones_path';
@@ -291,6 +292,7 @@ describe('Value Stream Analytics actions', () => {
         ${'typeOfWork/setLoading'}    | ${true}
       `('dispatches $action', async ({ action, args }) => {
         await actions.initializeCycleAnalytics(store, initialData);
+
         expect(mockDispatch).toHaveBeenCalledWith(action, args);
       });
 
@@ -350,5 +352,39 @@ describe('Value Stream Analytics actions', () => {
         [{ type: types.INITIALIZE_VALUE_STREAM_SUCCESS }],
         [],
       ));
+  });
+
+  describe('fetchGroupLabels', () => {
+    beforeEach(() => {
+      mock.onGet(endpoints.groupLabels).reply(httpStatusCodes.OK, groupLabels);
+    });
+
+    it(`will commit the "REQUEST_GROUP_LABELS" and "RECEIVE_GROUP_LABELS_SUCCESS" mutations`, () => {
+      return testAction({
+        action: actions.fetchGroupLabels,
+        state,
+        expectedMutations: [
+          { type: types.REQUEST_GROUP_LABELS },
+          { type: types.RECEIVE_GROUP_LABELS_SUCCESS, payload: groupLabels },
+        ],
+      });
+    });
+
+    describe('with a failed request', () => {
+      beforeEach(() => {
+        mock.onGet(endpoints.groupLabels).reply(httpStatusCodes.BAD_REQUEST);
+      });
+
+      it(`will commit the "RECEIVE_GROUP_LABELS_ERROR" mutation`, () => {
+        return testAction({
+          action: actions.fetchGroupLabels,
+          state,
+          expectedMutations: [
+            { type: types.REQUEST_GROUP_LABELS },
+            { type: types.RECEIVE_GROUP_LABELS_ERROR },
+          ],
+        });
+      });
+    });
   });
 });

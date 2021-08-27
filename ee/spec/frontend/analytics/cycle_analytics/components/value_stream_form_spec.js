@@ -28,6 +28,7 @@ describe('ValueStreamForm', () => {
 
   const createValueStreamMock = jest.fn(() => Promise.resolve());
   const updateValueStreamMock = jest.fn(() => Promise.resolve());
+  const fetchGroupLabelsMock = jest.fn(() => Promise.resolve());
   const mockEvent = { preventDefault: jest.fn() };
   const mockToastShow = jest.fn();
   const streamName = 'Cool stream';
@@ -49,23 +50,26 @@ describe('ValueStreamForm', () => {
 
   const initialPreset = PRESET_OPTIONS_DEFAULT;
 
-  const fakeStore = () =>
+  const fakeStore = ({ state }) =>
     new Vuex.Store({
       state: {
         isCreatingValueStream: false,
         formEvents,
+        defaultGroupLabels: null,
+        ...state,
       },
       actions: {
         createValueStream: createValueStreamMock,
         updateValueStream: updateValueStreamMock,
+        fetchGroupLabels: fetchGroupLabelsMock,
       },
     });
 
-  const createComponent = ({ props = {}, data = {}, stubs = {} } = {}) =>
+  const createComponent = ({ props = {}, data = {}, stubs = {}, state = {} } = {}) =>
     extendedWrapper(
       shallowMount(ValueStreamForm, {
         localVue,
-        store: fakeStore(),
+        store: fakeStore({ state }),
         data() {
           return {
             ...data,
@@ -138,6 +142,10 @@ describe('ValueStreamForm', () => {
 
     it('does not display any hidden stages', () => {
       expect(findHiddenStages().length).toBe(0);
+    });
+
+    it('will fetch group labels', () => {
+      expect(fetchGroupLabelsMock).toHaveBeenCalled();
     });
 
     describe('Add stage button', () => {
@@ -380,6 +388,18 @@ describe('ValueStreamForm', () => {
           });
         });
       });
+    });
+  });
+
+  describe('defaultGroupLabels set', () => {
+    beforeEach(() => {
+      wrapper = createComponent({
+        state: { defaultGroupLabels: [] },
+      });
+    });
+
+    it('does not fetch group labels', () => {
+      expect(fetchGroupLabelsMock).not.toHaveBeenCalled();
     });
   });
 

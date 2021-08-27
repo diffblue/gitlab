@@ -1,6 +1,6 @@
 <script>
 import { GlFormGroup, GlFormInput, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { isLabelEvent, getLabelEventsIdentifiers } from '../../utils';
+import { isLabelEvent, getLabelEventsIdentifiers, uniqById } from '../../utils';
 import LabelsSelector from '../labels_selector.vue';
 import { i18n } from './constants';
 import StageFieldActions from './stage_field_actions.vue';
@@ -38,6 +38,11 @@ export default {
       type: Array,
       required: true,
     },
+    defaultGroupLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -68,6 +73,15 @@ export default {
     },
     selectedEndEventName() {
       return this.eventName(this.stage.endEventIdentifier, 'SELECT_END_EVENT');
+    },
+    initialGroupLabels() {
+      return uniqById(
+        [
+          this.stage.startEventLabelId ? this.stage.startEventLabel : null,
+          this.stage.endEventLabelId ? this.stage.endEventLabel : null,
+          ...this.defaultGroupLabels,
+        ].filter((l) => Boolean(l)),
+      );
     },
   },
   methods: {
@@ -150,7 +164,8 @@ export default {
             :invalid-feedback="fieldErrorMessage('startEventLabelId')"
           >
             <labels-selector
-              :selected-label-id="[stage.startEventLabelId]"
+              :initial-data="initialGroupLabels"
+              :selected-label-ids="[stage.startEventLabelId]"
               :name="`custom-stage-start-label-${index}`"
               @select-label="$emit('input', { field: 'startEventLabelId', value: $event })"
             />
@@ -193,7 +208,8 @@ export default {
             :invalid-feedback="fieldErrorMessage('endEventLabelId')"
           >
             <labels-selector
-              :selected-label-id="[stage.endEventLabelId]"
+              :initial-data="initialGroupLabels"
+              :selected-label-ids="[stage.endEventLabelId]"
               :name="`custom-stage-end-label-${index}`"
               @select-label="$emit('input', { field: 'endEventLabelId', value: $event })"
             />

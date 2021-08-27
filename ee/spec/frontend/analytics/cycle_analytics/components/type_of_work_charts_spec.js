@@ -1,4 +1,5 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_chart.vue';
 import TasksByTypeFilters from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_filters.vue';
@@ -8,10 +9,18 @@ import {
   TASKS_BY_TYPE_FILTERS,
 } from 'ee/analytics/cycle_analytics/constants';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { tasksByTypeData, taskByTypeFilters } from '../mock_data';
+import { tasksByTypeData, taskByTypeFilters, groupLabels } from '../mock_data';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+const fakeTopRankedLabels = [
+  ...groupLabels,
+  {
+    ...groupLabels[0],
+    id: 1337,
+    name: 'fake label',
+  },
+];
+
+Vue.use(Vuex);
 
 const actionSpies = {
   setTasksByTypeFilters: jest.fn(),
@@ -19,6 +28,9 @@ const actionSpies = {
 
 const fakeStore = ({ initialGetters, initialState }) =>
   new Vuex.Store({
+    state: {
+      defaultGroupLabels: groupLabels,
+    },
     modules: {
       typeOfWork: {
         namespaced: true,
@@ -29,6 +41,7 @@ const fakeStore = ({ initialGetters, initialState }) =>
           ...initialGetters,
         },
         state: {
+          topRankedLabels: [],
           ...initialState,
         },
         actions: actionSpies,
@@ -39,7 +52,6 @@ const fakeStore = ({ initialGetters, initialState }) =>
 describe('TypeOfWorkCharts', () => {
   function createComponent({ stubs = {}, initialGetters, initialState } = {}) {
     return shallowMount(TypeOfWorkCharts, {
-      localVue,
       store: fakeStore({ initialGetters, initialState }),
       stubs: {
         TasksByTypeChart: true,
@@ -51,6 +63,7 @@ describe('TypeOfWorkCharts', () => {
 
   let wrapper = null;
 
+  const labelIds = (labels) => labels.map(({ id }) => id);
   const findSubjectFilters = (_wrapper) => _wrapper.findComponent(TasksByTypeFilters);
   const findTasksByTypeChart = (_wrapper) => _wrapper.findComponent(TasksByTypeChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
@@ -76,6 +89,18 @@ describe('TypeOfWorkCharts', () => {
 
     it('does not render the loading icon', () => {
       expect(findLoader(wrapper).exists()).toBe(false);
+    });
+
+    describe('with topRankedLabels', () => {
+      beforeEach(() => {
+        wrapper = createComponent({ initialState: { topRankedLabels: fakeTopRankedLabels } });
+      });
+
+      it('provides all the labels to the labels selector deduplicated', () => {
+        const wrapperLabelIds = labelIds(fakeTopRankedLabels);
+        const result = [...labelIds(groupLabels), 1337];
+        expect(wrapperLabelIds).toEqual(result);
+      });
     });
   });
 

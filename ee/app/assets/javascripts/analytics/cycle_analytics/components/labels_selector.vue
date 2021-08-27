@@ -26,7 +26,7 @@ export default {
     GlSearchBoxByType,
   },
   props: {
-    defaultSelectedLabelIds: {
+    initialData: {
       type: Array,
       required: false,
       default: () => [],
@@ -46,7 +46,7 @@ export default {
       required: false,
       default: false,
     },
-    selectedLabelId: {
+    selectedLabelIds: {
       type: Array,
       required: false,
       default: () => [],
@@ -67,14 +67,13 @@ export default {
       loading: false,
       searchTerm: '',
       labels: [],
-      selectedLabelIds: this.defaultSelectedLabelIds || [],
     };
   },
   computed: {
     selectedLabel() {
-      const { selectedLabelId, labels = [] } = this;
-      if (!selectedLabelId.length || !labels.length) return null;
-      return labels.find(({ id }) => selectedLabelId.includes(id));
+      const { selectedLabelIds, labels = [] } = this;
+      if (!selectedLabelIds.length || !labels.length) return null;
+      return labels.find(({ id }) => selectedLabelIds.includes(id));
     },
     maxLabelsSelected() {
       return this.selectedLabelIds.length >= this.maxLabels;
@@ -89,7 +88,11 @@ export default {
     },
   },
   mounted() {
-    this.fetchData();
+    if (!this.initialData.length) {
+      this.fetchData();
+    } else {
+      this.labels = this.initialData;
+    }
   },
   methods: {
     ...mapGetters(['currentGroupPath']),
@@ -121,7 +124,7 @@ export default {
       return label?.name || label.title;
     },
     isSelectedLabel(id) {
-      return Boolean(this.selectedLabelId?.includes(id));
+      return Boolean(this.selectedLabelIds?.includes(id));
     },
     isDisabledLabel(id) {
       return Boolean(this.maxLabelsSelected && !this.isSelectedLabel(id));
