@@ -1,3 +1,4 @@
+import Api from 'ee/api';
 import { removeFlash } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import httpStatus from '~/lib/utils/http_status';
@@ -22,6 +23,13 @@ export const setPaths = ({ dispatch }, options) => {
 
 export const setFeatureFlags = ({ commit }, featureFlags) =>
   commit(types.SET_FEATURE_FLAGS, featureFlags);
+
+export const fetchGroupLabels = ({ commit, getters: { currentGroupPath } }) => {
+  commit(types.REQUEST_GROUP_LABELS);
+  return Api.cycleAnalyticsGroupLabels(currentGroupPath, { only_group_labels: true })
+    .then(({ data = [] }) => commit(types.RECEIVE_GROUP_LABELS_SUCCESS, data))
+    .catch(() => commit(types.RECEIVE_GROUP_LABELS_ERROR));
+};
 
 export const requestCycleAnalyticsData = ({ commit }) => commit(types.REQUEST_VALUE_STREAM_DATA);
 

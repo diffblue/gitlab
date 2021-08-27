@@ -1,5 +1,13 @@
 <script>
-import { GlButton, GlForm, GlFormInput, GlFormGroup, GlFormRadioGroup, GlModal } from '@gitlab/ui';
+import {
+  GlButton,
+  GlForm,
+  GlFormInput,
+  GlFormGroup,
+  GlFormRadioGroup,
+  GlLoadingIcon,
+  GlModal,
+} from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
 import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
@@ -43,6 +51,7 @@ export default {
     GlFormInput,
     GlFormGroup,
     GlFormRadioGroup,
+    GlLoadingIcon,
     GlModal,
     DefaultStageFields,
     CustomStageFields,
@@ -101,7 +110,12 @@ export default {
     };
   },
   computed: {
-    ...mapState({ isCreating: 'isCreatingValueStream', formEvents: 'formEvents' }),
+    ...mapState({
+      isCreating: 'isCreatingValueStream',
+      isFetchingGroupLabels: 'isFetchingGroupLabels',
+      formEvents: 'formEvents',
+      defaultGroupLabels: 'defaultGroupLabels',
+    }),
     isValueStreamNameValid() {
       return !this.nameError?.length;
     },
@@ -149,8 +163,13 @@ export default {
       return this.defaultStageConfig.map(({ name }) => name);
     },
   },
+  created() {
+    if (!this.defaultGroupLabels) {
+      this.fetchGroupLabels();
+    }
+  },
   methods: {
-    ...mapActions(['createValueStream', 'updateValueStream']),
+    ...mapActions(['createValueStream', 'updateValueStream', 'fetchGroupLabels']),
     onSubmit() {
       this.validate();
       if (this.hasFormErrors) return false;
@@ -316,7 +335,8 @@ export default {
     @secondary.prevent="onAddStage"
     @primary.prevent="onSubmit"
   >
-    <gl-form>
+    <gl-loading-icon v-if="isFetchingGroupLabels" size="lg" color="dark" class="gl-my-12" />
+    <gl-form v-else>
       <gl-form-group
         data-testid="create-value-stream-name"
         label-for="create-value-stream-name"
@@ -373,6 +393,7 @@ export default {
               :index="activeStageIndex"
               :total-stages="stages.length"
               :errors="fieldErrors(activeStageIndex)"
+              :default-group-labels="defaultGroupLabels"
               @move="handleMove"
               @remove="onRemove"
               @input="onFieldInput(activeStageIndex, $event)"

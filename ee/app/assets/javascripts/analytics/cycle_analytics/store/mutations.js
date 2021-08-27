@@ -87,6 +87,18 @@ export default {
   [types.RECEIVE_GROUP_STAGES_SUCCESS](state, stages) {
     state.stages = transformRawStages(stages);
   },
+  [types.REQUEST_GROUP_LABELS](state) {
+    state.isFetchingGroupLabels = true;
+    state.defaultGroupLabels = [];
+  },
+  [types.RECEIVE_GROUP_LABELS_ERROR](state) {
+    state.isFetchingGroupLabels = false;
+    state.defaultGroupLabels = [];
+  },
+  [types.RECEIVE_GROUP_LABELS_SUCCESS](state, groupLabels = []) {
+    state.isFetchingGroupLabels = false;
+    state.defaultGroupLabels = groupLabels.map(convertObjectPropsToCamelCase);
+  },
   [types.INITIALIZE_VSA](
     state,
     {
