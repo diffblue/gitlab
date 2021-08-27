@@ -40,7 +40,7 @@ export default {
       return this.isEditing ? this.policyType : this.newPolicyType;
     },
     isEditing() {
-      return Boolean(this.existingPolicy);
+      return Boolean(this.existingPolicy?.creation_timestamp || this.existingPolicy?.updatedAt);
     },
     policyTypes() {
       return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
