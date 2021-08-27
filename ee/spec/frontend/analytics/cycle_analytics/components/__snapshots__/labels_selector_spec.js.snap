@@ -29,7 +29,7 @@ exports[`Value Stream Analytics LabelsSelector with no item selected will render
 </gl-dropdown-stub>"
 `;
 
-exports[`Value Stream Analytics LabelsSelector with selectedLabelId set will render the label selector 1`] = `
+exports[`Value Stream Analytics LabelsSelector with selectedLabelIds set will render the label selector 1`] = `
 "<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" text=\\"\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" class=\\"gl-w-full\\">
   <gl-dropdown-section-header-stub>Select a label </gl-dropdown-section-header-stub>
   <div class=\\"mb-3 px-3\\">

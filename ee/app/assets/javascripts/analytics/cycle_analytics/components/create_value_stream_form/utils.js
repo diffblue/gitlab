@@ -191,6 +191,8 @@ const findStageByName = (stages, targetName = '') =>
  */
 const prepareCustomStage = ({ startEventLabel = {}, endEventLabel = {}, ...rest }) => ({
   ...rest,
+  startEventLabel,
+  endEventLabel,
   startEventLabelId: startEventLabel?.id || null,
   endEventLabelId: endEventLabel?.id || null,
   isDefault: false,

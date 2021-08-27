@@ -1,5 +1,5 @@
 import dateFormat from 'dateformat';
-import { isNumber } from 'lodash';
+import { isNumber, uniqBy } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
@@ -371,3 +371,11 @@ export const formatMedianValuesWithOverview = (medians = []) => {
     [OVERVIEW_STAGE_ID]: overviewMedian ? medianTimeToParsedSeconds(overviewMedian) : '-',
   };
 };
+
+/**
+ * Takes an array of objects with potential duplicates and returns the deduplicated array
+ *
+ * @param {Array} arr - The array of objects with potential duplicates
+ * @returns {Array} The unique objects from the original array
+ */
+export const uniqById = (arr = []) => uniqBy(arr, ({ id }) => id);
