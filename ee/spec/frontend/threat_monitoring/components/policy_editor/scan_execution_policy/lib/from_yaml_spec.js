@@ -6,6 +6,6 @@ import {
 
 describe('fromYaml', () => {
   it('returns policy object', () => {
-    expect(fromYaml(mockDastScanExecutionManifest)).toStrictEqual(mockDastScanExecutionObject);
+    expect(fromYaml(mockDastScanExecutionManifest)).toMatchObject(mockDastScanExecutionObject);
   });
 });

@@ -93,9 +93,9 @@ describe('PolicyEditor component', () => {
 
   describe('when an existing policy is present', () => {
     it.each`
-      policyType                 | option                                         | existingPolicy                  | findComponent
-      ${'container_policy'}      | ${POLICY_TYPE_COMPONENT_OPTIONS.container}     | ${{ manifest: mockL3Manifest }} | ${findNeworkPolicyEditor}
-      ${'scan_execution_policy'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution} | ${mockDastScanExecutionObject}  | ${findScanExecutionPolicyEditor}
+      policyType                 | option                                         | existingPolicy                                                     | findComponent
+      ${'container_policy'}      | ${POLICY_TYPE_COMPONENT_OPTIONS.container}     | ${{ manifest: mockL3Manifest, updatedAt: '2020-04-14T00:08:30Z' }} | ${findNeworkPolicyEditor}
+      ${'scan_execution_policy'} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution} | ${mockDastScanExecutionObject}                                     | ${findScanExecutionPolicyEditor}
     `(
       'renders the disabled form select for existing policy of type $policyType',
       async ({ existingPolicy, findComponent, option, policyType }) => {
