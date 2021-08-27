@@ -27,12 +27,21 @@ module NetworkPolicies
     def get_policy
       client = @platform.kubeclient
       if @kind == Gitlab::Kubernetes::CiliumNetworkPolicy::KIND
-        resource = client.get_cilium_network_policy(@resource_name, @kubernetes_namespace)
+        resource = find_cilium_policy_or_predefined(client)
         Gitlab::Kubernetes::CiliumNetworkPolicy.from_resource(resource)
       elsif @kind == Gitlab::Kubernetes::NetworkPolicy::KIND
         resource = client.get_network_policy(@resource_name, @kubernetes_namespace)
         Gitlab::Kubernetes::NetworkPolicy.from_resource(resource)
       end
+    end
+
+    def find_cilium_policy_or_predefined(client)
+      client.get_cilium_network_policy(@resource_name, @kubernetes_namespace)
+    rescue Kubeclient::ResourceNotFoundError
+      policy_yaml = Gitlab::Kubernetes::CiliumNetworkPolicy::PREDEFINED_POLICIES[@resource_name]
+      raise if policy_yaml.nil?
+
+      Gitlab::Kubernetes::CiliumNetworkPolicy.from_yaml(policy_yaml).resource
     end
   end
 end
