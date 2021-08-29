@@ -40,6 +40,8 @@ module RequirementsManagement
 
     validate :only_requirement_type_issue
 
+    after_validation :invalidate_if_sync_error, on: [:update]
+
     enum state: { opened: 1, archived: 2 }
 
     scope :for_iid, -> (iid) { where(iid: iid) }
@@ -82,6 +84,10 @@ module RequirementsManagement
       def simple_sorts
         super.except('name_asc', 'name_desc')
       end
+
+      def sync_params
+        [:title, :description]
+      end
     end
 
     # In the next iteration we will support also group-level requirements
@@ -104,6 +110,24 @@ module RequirementsManagement
 
     def only_requirement_type_issue
       errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
+    end
+
+    def requirement_issue_sync_error!
+      self.requirement_issue_sync_error = true
+    end
+
+    private
+
+    attr_accessor :requirement_issue_sync_error
+
+    def invalidate_if_sync_error
+      return unless requirement_issue_sync_error
+      return unless requirement_issue
+
+      # Mirror errors from requirement issue so that users can adjust accordingly
+      errors = requirement_issue.errors.full_messages.to_sentence
+      errors = errors.presence || "Associated issue was invalid and changes could not be applied."
+      self.errors.add(:base, errors)
     end
   end
 end

@@ -3,13 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe RequirementsManagement::UpdateRequirementService do
+  let_it_be(:title) { 'title' }
+  let_it_be(:description) { 'description' }
+
+  let(:new_title) { 'new title' }
+  let(:new_description) { 'new description' }
+
   let_it_be(:project) { create(:project)}
   let_it_be(:user) { create(:user) }
-  let_it_be(:requirement) { create(:requirement, project: project) }
+  let_it_be_with_reload(:requirement) { create(:requirement, project: project, title: title, description: description) }
 
   let(:params) do
     {
-      title: 'foo',
+      title: new_title,
+      description: new_description,
       state: 'archived',
       created_at: 2.days.ago,
       author_id: create(:user).id
@@ -38,6 +45,123 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
           created_at: params[:created_at],
           author_id: params[:author_id]
         )
+      end
+
+      context 'when updating title or description' do
+        shared_examples 'keeps requirement and its requirement_issue in sync' do
+          it 'keeps title and description in sync' do
+            subject
+
+            requirement.reload
+            requirement.requirement_issue.reload
+
+            expect(requirement).to have_attributes(
+              title: requirement.requirement_issue.title,
+              description: requirement.requirement_issue.description)
+          end
+        end
+
+        shared_examples 'does not persist any changes' do
+          it 'does not update the requirement' do
+            expect { subject }.not_to change { requirement.reload.attributes }
+          end
+
+          it 'does not update the requirement issue' do
+            expect { subject }.not_to change { requirement_issue.reload.attributes }
+          end
+        end
+
+        context 'if there is an associated requirement_issue' do
+          let_it_be_with_reload(:requirement_issue) { create(:requirement_issue, requirement: requirement, title: title, description: description) }
+
+          let(:params) do
+            { title: new_title, description: new_description }
+          end
+
+          it 'updates the synced requirement_issue with title and description' do
+            expect { subject }
+              .to change { requirement.requirement_issue.description }.from(description).to(new_description)
+              .and change { requirement.requirement_issue.title }.from(title).to(new_title)
+          end
+
+          context 'when updating only title' do
+            let(:params) do
+              { title: new_title }
+            end
+
+            it "updates requirement's title" do
+              expect { subject }.to change { requirement.requirement_issue.reload.title }.from(title).to(new_title)
+            end
+
+            it_behaves_like 'keeps requirement and its requirement_issue in sync'
+          end
+
+          context "updates requirement's description" do
+            let(:params) do
+              { description: new_description }
+            end
+
+            it 'updates description' do
+              expect { subject }.to change { requirement.requirement_issue.reload.description }.from(description).to(new_description)
+            end
+
+            it_behaves_like 'keeps requirement and its requirement_issue in sync'
+          end
+
+          context 'if update fails' do
+            let(:params) do
+              { title: nil }
+            end
+
+            it_behaves_like 'does not persist any changes'
+            it_behaves_like 'keeps requirement and its requirement_issue in sync'
+
+            context 'if update of requirement succeeds but update of issue fails' do
+              let(:params) do
+                { title: 'some magically valid title for requirement but not issue' }
+              end
+
+              before do
+                allow_next_instance_of(::Issues::UpdateService) do |service|
+                  allow(service).to receive(:execute).and_return(requirement_issue)
+                end
+
+                allow(requirement_issue).to receive(:invalid?).and_return(true).at_least(:once)
+              end
+
+              it_behaves_like 'keeps requirement and its requirement_issue in sync'
+              it_behaves_like 'does not persist any changes'
+
+              it 'adds an informative sync error to issue' do
+                expect(::Gitlab::AppLogger).to receive(:info).with(a_hash_including(message: /Associated issue/))
+
+                subject
+
+                expect(requirement.errors[:base]).to include(/Associated issue/)
+              end
+            end
+          end
+
+          context 'when updating some unrelated field' do
+            let(:params) do
+              { state: :archived }
+            end
+
+            it 'does not update the associated requirement issue' do
+              expect { subject }.not_to change { requirement.requirement_issue.state }
+            end
+
+            it_behaves_like 'keeps requirement and its requirement_issue in sync'
+          end
+        end
+
+        context 'if there is no requirement_issue' do
+          it 'does not call the Issues::UpdateService' do
+            expect(Issues::UpdateService).not_to receive(:new)
+
+            subject
+          end
+        end
       end
 
       context 'when updating last test report state' do
