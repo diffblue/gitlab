@@ -21,8 +21,10 @@ module Database
   module PreventCrossJoins
     CrossJoinAcrossUnsupportedTablesError = Class.new(StandardError)
 
+    ALLOW_THREAD_KEY = :allow_cross_joins_across_databases
+
     def self.validate_cross_joins!(sql)
-      return if Thread.current[:allow_cross_joins_across_databases]
+      return if Thread.current[ALLOW_THREAD_KEY]
 
       # Allow spec/support/database_cleaner.rb queries to disable/enable triggers for many tables
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/339396
@@ -55,7 +57,7 @@ module Database
           ::Database::PreventCrossJoins.validate_cross_joins!(event.payload[:sql])
         end
 
-        Thread.current[:allow_cross_joins_across_databases] = false
+        Thread.current[ALLOW_THREAD_KEY] = false
 
         yield
       ensure
@@ -65,11 +67,12 @@ module Database
 
     module GitlabDatabaseMixin
       def allow_cross_joins_across_databases(url:)
-        Thread.current[:allow_cross_joins_across_databases] = true
+        old_value = Thread.current[ALLOW_THREAD_KEY]
+        Thread.current[ALLOW_THREAD_KEY] = true
 
         yield
       ensure
-        Thread.current[:allow_cross_joins_across_databases] = false
+        Thread.current[ALLOW_THREAD_KEY] = old_value
       end
     end
   end

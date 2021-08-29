@@ -27,6 +27,12 @@ RSpec.describe Database::PreventCrossJoins do
           expect { main_and_ci_query_allowlisted }.not_to raise_error
         end
       end
+
+      context 'when allow_cross_joins_across_databases is used' do
+        it 'does not raise exception' do
+          expect { main_and_ci_query_allowlist_nested }.not_to raise_error
+        end
+      end
     end
   end
 
@@ -34,6 +40,14 @@ RSpec.describe Database::PreventCrossJoins do
 
   def main_and_ci_query_allowlisted
     Gitlab::Database.allow_cross_joins_across_databases(url: 'http://issue-url') do
+      main_and_ci_query
+    end
+  end
+
+  def main_and_ci_query_allowlist_nested
+    Gitlab::Database.allow_cross_joins_across_databases(url: 'http://issue-url') do
+      main_and_ci_query_allowlisted
+
       main_and_ci_query
     end
   end
