@@ -1,6 +1,7 @@
 import {
   humanizeActions,
   humanizeRules,
+  NO_RULE_MESSAGE,
 } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib';
 
 const mockActions = [
@@ -13,6 +14,7 @@ const mockRules = [
   { type: 'schedule', cadence: '*/10 * * * *', branches: ['main'] },
   { type: 'pipeline', branches: ['release/*', 'staging'] },
   { type: 'pipeline', branches: ['release/1.*', 'canary', 'staging'] },
+  { type: 'pipeline' },
 ];
 
 describe('humanizeActions', () => {
@@ -32,8 +34,12 @@ describe('humanizeActions', () => {
 });
 
 describe('humanizeRules', () => {
-  it('returns an empty Array of rules as an empty Array', () => {
-    expect(humanizeRules([])).toStrictEqual([]);
+  it('returns the empty rules message in an Array if no rules are specified', () => {
+    expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
+  });
+
+  it('returns the empty rules message in an Array if a single rule is passed in without a branch', () => {
+    expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
   });
 
   it('returns a single rule as a human-readable string', () => {

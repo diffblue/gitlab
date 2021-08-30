@@ -1,5 +1,6 @@
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import { sprintf, s__, n__ } from '~/locale';
+import { NO_RULE_MESSAGE } from './constants';
 
 const getActionText = (scanType) =>
   sprintf(s__('SecurityOrchestration|Executes a %{scanType} scan'), {
@@ -16,7 +17,7 @@ const humanizeBranches = (originalBranches) => {
 
   const plural = n__('branch', 'branches', branches.length);
 
-  if (branches.length <= 1) {
+  if (branches.length === 1) {
     return sprintf(s__('SecurityOrchestration|%{branches} %{plural}'), {
       branches: branches.join(','),
       plural,
@@ -69,5 +70,9 @@ export const humanizeActions = (actions) => {
  * @returns {Array}
  */
 export const humanizeRules = (rules) => {
-  return rules.map((r) => HUMANIZE_RULES_METHODS[r.type](r) || '');
+  const humanizedRules = rules.reduce((acc, curr) => {
+    return curr.branches ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
+  }, []);
+
+  return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
 };

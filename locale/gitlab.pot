@@ -29760,6 +29760,9 @@ msgstr ""
 msgid "SecurityOrchestration|view results"
 msgstr ""
 
+msgid "SecurityOrhestration|No rules defined - policy will not run."
+msgstr ""
+
 msgid "SecurityPolicies|+%{count} more"
 msgstr ""
 

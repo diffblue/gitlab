@@ -33,13 +33,13 @@ describe('ScanExecutionPolicy component', () => {
     });
 
     it.each`
-      component        | findComponent      | text
+      component        | finder             | text
       ${'actions'}     | ${findActions}     | ${''}
       ${'rules'}       | ${findRules}       | ${''}
       ${'description'} | ${findDescription} | ${'This policy enforces pipeline configuration to have a job with DAST scan'}
       ${'latest scan'} | ${findLatestScan}  | ${''}
-    `('does render the policy $component', ({ findComponent, text }) => {
-      const component = findComponent();
+    `('does render the policy $component', ({ finder, text }) => {
+      const component = finder();
       expect(component.exists()).toBe(true);
       if (text) {
         expect(component.text()).toBe(text);
@@ -61,11 +61,11 @@ describe('ScanExecutionPolicy component', () => {
     });
 
     it.each`
-      component        | findComponent
+      component        | finder
       ${'description'} | ${findDescription}
       ${'latest scan'} | ${findLatestScan}
-    `('does render the policy $component', ({ findComponent }) => {
-      expect(findComponent().exists()).toBe(false);
+    `('does render the policy $component', ({ finder }) => {
+      expect(finder().exists()).toBe(false);
     });
   });
 });
