@@ -6,6 +6,7 @@ RSpec.describe 'New project', :js do
   let(:user) { create(:admin) }
 
   before do
+    stub_feature_flags(paginatable_namespace_drop_down_for_project_creation: false)
     sign_in(user)
   end
 
