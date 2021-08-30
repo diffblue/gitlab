@@ -59,7 +59,6 @@ describe('Fly out sidebar navigation', () => {
     document.body.appendChild(el);
 
     jest.spyOn(GlBreakpointInstance, 'getBreakpointSize').mockImplementation(() => breakpointSize);
-    // setOpenMenu(null);
   });
 
   afterEach(() => {
