@@ -70,17 +70,6 @@ RSpec.describe Projects::TransferService do
       stub_ee_application_setting(elasticsearch_indexing: true)
     end
 
-    context 'when visibility level changes' do
-      let_it_be(:group) { create(:group, :private) }
-
-      it 'reindexes the project and associated issues and notes' do
-        expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(project)
-        expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project.id, %w[issues merge_requests notes])
-
-        subject.execute(group)
-      end
-    end
-
     context 'when elasticsearch_limit_indexing is on' do
       before do
         stub_ee_application_setting(elasticsearch_limit_indexing: true)
@@ -93,7 +82,6 @@ RSpec.describe Projects::TransferService do
 
         it 'invalidates the cache and indexes the project and all associated data' do
           expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
-          expect(project).not_to receive(:maintain_elasticsearch_destroy)
           expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_project!).with(project.id).and_call_original
 
           subject.execute(group)
@@ -106,9 +94,8 @@ RSpec.describe Projects::TransferService do
           create(:elasticsearch_indexed_namespace, namespace: project.namespace)
         end
 
-        it 'does not invalidate the cache does not index or delete anything' do
-          expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!).with(project)
-          expect(project).not_to receive(:maintain_elasticsearch_destroy)
+        it 'does not invalidate the cache and indexes the project and associated data' do
+          expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
           expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
 
           subject.execute(group)
@@ -117,10 +104,9 @@ RSpec.describe Projects::TransferService do
     end
 
     context 'when elasticsearch_limit_indexing is off' do
-      it 'does not invalidate the cache and reindexes the project only' do
-        expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(project)
-        expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
-        expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!).with(project.id).and_call_original
+      it 'does not invalidate the cache and indexes the project and all associated data' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
+        expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
 
         subject.execute(group)
       end

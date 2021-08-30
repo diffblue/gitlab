@@ -36,6 +36,7 @@ module Elastic
         indexes :visibility_level, type: :integer
         indexes :issues_access_level, type: :integer
         indexes :upvotes, type: :integer
+        indexes :namespace_ancestry, type: :text, index_prefixes: { min_chars: 1, max_chars: 19 }
       end
     end
   end

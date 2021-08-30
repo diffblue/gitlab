@@ -102,5 +102,9 @@ module Elastic
         }
       }
     end
+
+    def update_mapping!(index_name, mappings)
+      helper.update_mapping(index_name: index_name, mappings: mappings)
+    end
   end
 end

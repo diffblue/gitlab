@@ -105,33 +105,48 @@ RSpec.describe Issue, :elastic do
     expect(results.first.title).to eq('bla-bla issue')
   end
 
-  it "returns json with all needed elements" do
-    assignee = create(:user)
-    project = create(:project, :internal)
-    issue = create :issue, project: project, assignees: [assignee]
-    create(:award_emoji, :upvote, awardable: issue)
+  context 'json' do
+    let_it_be(:assignee) { create(:user) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project) { create(:project, :internal, namespace: subgroup) }
+    let_it_be(:issue) { create(:issue, project: project, assignees: [assignee]) }
+    let_it_be(:award_emoji) { create(:award_emoji, :upvote, awardable: issue) }
 
-    expected_hash = issue.attributes.extract!(
-      'id',
-      'iid',
-      'title',
-      'description',
-      'created_at',
-      'updated_at',
-      'project_id',
-      'author_id',
-      'confidential'
-    ).merge({
-      'type' => issue.es_type,
-      'state' => issue.state,
-      'upvotes' => 1
-    })
+    context 'when add_namespace_ancestry_to_issues_mapping migration is not done' do
+      before do
+        set_elasticsearch_migration_to :add_namespace_ancestry_to_issues_mapping, including: false
+      end
 
-    expected_hash['assignee_id'] = [assignee.id]
-    expected_hash['issues_access_level'] = ProjectFeature::ENABLED
-    expected_hash['visibility_level'] = Gitlab::VisibilityLevel::INTERNAL
+      it "returns json without namespace_ancestry" do
+        expect(issue.__elasticsearch__.as_indexed_json.keys).not_to include('namespace_ancestry')
+      end
+    end
 
-    expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    it "returns json with all needed elements" do
+      expected_hash = issue.attributes.extract!(
+        'id',
+        'iid',
+        'title',
+        'description',
+        'created_at',
+        'updated_at',
+        'project_id',
+        'author_id',
+        'confidential'
+      ).merge({
+                'type' => issue.es_type,
+                'state' => issue.state,
+                'upvotes' => 1,
+                'namespace_ancestry' => "#{group.id}-#{subgroup.id}"
+              })
+
+      expected_hash['assignee_id'] = [assignee.id]
+      expected_hash['issues_access_level'] = ProjectFeature::ENABLED
+      expected_hash['visibility_level'] = Gitlab::VisibilityLevel::INTERNAL
+
+      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
   end
 
   it 'handles a project missing project_feature', :aggregate_failures do

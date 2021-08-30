@@ -45,7 +45,7 @@ RSpec.describe Groups::TransferService, '#execute' do
           create(:elasticsearch_indexed_namespace, namespace: new_group)
         end
 
-        it 'invalidates the cache and indexes the project and associated issues only' do
+        it 'invalidates the cache and indexes the project and all associated data' do
           expect(project).not_to receive(:maintain_elasticsearch_update)
           expect(project).not_to receive(:maintain_elasticsearch_destroy)
           expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
@@ -57,27 +57,22 @@ RSpec.describe Groups::TransferService, '#execute' do
     end
 
     context 'when elasticsearch_limit_indexing is off' do
-      context 'when visibility changes' do
-        let(:new_group) { create(:group, :private) }
+      let(:new_group) { create(:group, :private) }
 
-        it 'does not invalidate the cache and reindexes projects and associated issues, merge_requests and notes' do
-          project1 = create(:project, :repository, :public, namespace: group)
-          project2 = create(:project, :repository, :public, namespace: group)
-          project3 = create(:project, :repository, :private, namespace: group)
+      it 'does not invalidate the cache and reindexes projects and associated data' do
+        project1 = create(:project, :repository, :public, namespace: group)
+        project2 = create(:project, :repository, :public, namespace: group)
+        project3 = create(:project, :repository, :private, namespace: group)
 
-          expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
-          expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(project1)
-          expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project1.id, %w[issues merge_requests notes])
-          expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(project2)
-          expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project2.id, %w[issues merge_requests notes])
-          expect(Elastic::ProcessBookkeepingService).not_to receive(:track!).with(project3)
-          expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async).with('Project', project3.id, %w[issues merge_requests notes])
+        expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1)
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project2)
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project3)
 
-          transfer_service.execute(new_group)
+        transfer_service.execute(new_group)
 
-          expect(transfer_service.error).not_to be
-          expect(group.parent).to eq(new_group)
-        end
+        expect(transfer_service.error).not_to be
+        expect(group.parent).to eq(new_group)
       end
     end
   end

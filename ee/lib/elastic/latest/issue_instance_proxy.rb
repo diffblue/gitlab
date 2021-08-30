@@ -21,6 +21,7 @@ module Elastic
         data['issues_access_level'] = safely_read_project_feature_for_elasticsearch(:issues)
 
         data['upvotes'] = target.upvotes_count
+        data['namespace_ancestry'] = target.namespace_ancestry if Elastic::DataMigrationService.migration_has_finished?(:add_namespace_ancestry_to_issues_mapping)
 
         data.merge(generic_attributes)
       end
