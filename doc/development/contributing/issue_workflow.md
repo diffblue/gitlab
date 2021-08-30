@@ -15,9 +15,7 @@ feature proposal. Show your support with an award emoji and/or join the
 discussion.
 
 Please submit bugs using the ['Bug' issue template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/issue_templates/Bug.md) provided on the issue tracker.
-The text in the parenthesis is there to help you with what to include. Omit it
-when submitting the actual issue. You can copy-paste it and then edit as you
-see fit.
+The text in the comments (`<!-- ... -->`) is there to help you with what to include.
 
 ## Issue triaging
 
@@ -30,12 +28,12 @@ The most important thing is making sure valid issues receive feedback from the
 development team. Therefore the priority is mentioning developers that can help
 on those issues. Please select someone with relevant experience from the
 [GitLab team](https://about.gitlab.com/company/team/).
-If there is nobody mentioned with that expertise look in the commit history for
+If there is nobody mentioned with that expertise, look in the commit history for
 the affected files to find someone.
 
 We also use [GitLab Triage](https://gitlab.com/gitlab-org/gitlab-triage) to automate
 some triaging policies. This is currently set up as a scheduled pipeline
-(`https://gitlab.com/gitlab-org/quality/triage-ops/pipeline_schedules/10512/editpipeline_schedules/10512/edit`,
+(`https://gitlab.com/gitlab-org/quality/triage-ops/-/pipeline_schedules/10512/edit`,
 must have at least the Developer role in the project) running on [quality/triage-ops](https://gitlab.com/gitlab-org/quality/triage-ops)
 project.
 
