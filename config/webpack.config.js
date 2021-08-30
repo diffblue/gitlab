@@ -48,6 +48,8 @@ const INCREMENTAL_COMPILER_ENABLED =
   IS_DEV_SERVER &&
   process.env.DEV_SERVER_INCREMENTAL &&
   process.env.DEV_SERVER_INCREMENTAL !== 'false';
+const INCREMENTAL_COMPILER_TTL = Number(process.env.DEV_SERVER_INCREMENTAL_TTL) || Infinity;
+const INCREMENTAL_COMPILER_RECORD_HISTORY = IS_DEV_SERVER && !process.env.CI;
 const WEBPACK_REPORT = process.env.WEBPACK_REPORT && process.env.WEBPACK_REPORT !== 'false';
 const WEBPACK_MEMORY_TEST =
   process.env.WEBPACK_MEMORY_TEST && process.env.WEBPACK_MEMORY_TEST !== 'false';
@@ -69,8 +71,10 @@ let watchAutoEntries = [];
 const defaultEntries = ['./main'];
 
 const incrementalCompiler = createIncrementalWebpackCompiler(
+  INCREMENTAL_COMPILER_RECORD_HISTORY,
   INCREMENTAL_COMPILER_ENABLED,
   path.join(CACHE_PATH, 'incremental-webpack-compiler-history.json'),
+  INCREMENTAL_COMPILER_TTL,
 );
 
 function generateEntries() {
