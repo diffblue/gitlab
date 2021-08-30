@@ -13,7 +13,10 @@ Issue Analytics is a bar graph which illustrates the number of issues created ea
 The default time span is 13 months, which includes the current month, and the 12 months
 prior.
 
-To access the chart, navigate to your project sidebar and select **Analytics > Issue**.
+To access the chart:
+
+1. On the top bar, select **Menu > Projects** and find your project.
+1. On the left sidebar, select **Analytics > Issue**.
 
 Hover over each bar to see the total number of issues.
 
