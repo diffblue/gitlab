@@ -15062,10 +15062,10 @@ msgstr ""
 msgid "Geo|Synchronization status"
 msgstr ""
 
-msgid "Geo|The database is currently %{db_lag} behind the primary node."
+msgid "Geo|The database is currently %{db_lag} behind the primary site."
 msgstr ""
 
-msgid "Geo|The node is currently %{minutes_behind} behind the primary node."
+msgid "Geo|The site is currently %{minutes_behind} behind the primary site."
 msgstr ""
 
 msgid "Geo|There are no %{replicable_type} to show"
@@ -15137,7 +15137,7 @@ msgstr ""
 msgid "Geo|With GitLab Geo, you can install a special read-only and replicated instance anywhere. %{linkStart}Learn more%{linkEnd}"
 msgstr ""
 
-msgid "Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo node."
+msgid "Geo|You are on a secondary, %{b_open}read-only%{b_close} Geo site."
 msgstr ""
 
 msgid "Geo|You may be able to make a limited amount of changes or perform a limited amount of actions on this page."
