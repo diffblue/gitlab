@@ -6,18 +6,14 @@ const qrtlyReconciliationHelpPageUrl = helpPagePath('subscriptions/quarterly_rec
 export const i18n = {
   title: s__('Admin|Quarterly reconciliation will occur on %{qrtlyDate}'),
   description: {
-    ee: s__(`Admin|The number of maximum users for your instance
-is currently exceeding the number of users in license.
-On %{qrtlyDate}, GitLab will process a quarterly reconciliation
-and automatically bill you a prorated amount for the overage.
-There is no action needed from you. If you have a credit card on file,
-it will be charged. Otherwise, you will receive an invoice.`),
-    usesNamespacePlan: s__(`Admin|The number of max seats used for your namespace is currently
-exceeding the number of seats in your subscription.
-On %{qrtlyDate}, GitLab will process a quarterly reconciliation and
-automatically bill you a prorated amount for the overage.
-There is no action needed from you. If you have a credit card on file, it will be charged.
-Otherwise, you will receive an invoice.`),
+    ee: s__(`Admin|The number of max users in your instance exceeds the number of users in your license.
+On %{qrtlyDate}, quarterly reconciliation occurs and you are automatically billed a prorated amount
+for the overage. No action is needed from you. If you have a credit card on file, it will be charged.
+Otherwise, you will receive an invoice. For more information about the timing of the invoicing process, view the documentation.`),
+    usesNamespacePlan: s__(`Admin|The number of max seats in your namespace exceeds the number of seats in your subscription.
+On %{qrtlyDate}, quarterly reconciliation occurs and you are automatically billed a prorated amount
+for the overage. No action is needed from you. If you have a credit card on file, it will be charged.
+Otherwise, you will receive an invoice. For more information about the timing of the invoicing process, view the documentation.`),
   },
   buttons: {
     primary: {
