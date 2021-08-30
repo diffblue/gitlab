@@ -17,6 +17,12 @@ module Elastic
         "#{es_type}_#{target.id}"
       end
 
+      def namespace_ancestry
+        project = target.is_a?(Project) ? target : target.project
+        namespace = project.namespace
+        namespace.self_and_ancestor_ids(hierarchy_order: :desc).join('-')
+      end
+
       private
 
       def generic_attributes

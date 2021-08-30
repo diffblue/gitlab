@@ -3,7 +3,7 @@ module Elastic
   module ApplicationVersionedSearch
     extend ActiveSupport::Concern
 
-    FORWARDABLE_INSTANCE_METHODS = [:es_id, :es_parent].freeze
+    FORWARDABLE_INSTANCE_METHODS = [:es_id, :es_parent, :namespace_ancestry].freeze
     FORWARDABLE_CLASS_METHODS = [:elastic_search, :es_import, :es_type, :index_name, :document_type, :mapping, :mappings, :settings, :import].freeze
 
     # rubocop:disable Gitlab/ModuleWithInstanceVariables

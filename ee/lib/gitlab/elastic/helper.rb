@@ -229,8 +229,18 @@ module Gitlab
         settings.dig(index, 'settings', 'index')
       end
 
+      def get_mapping(index_name: nil)
+        index = target_index_name(target: index_name)
+        mappings = client.indices.get_mapping(index: index)
+        mappings.dig(index, 'mappings', 'properties')
+      end
+
       def update_settings(index_name: nil, settings:)
         client.indices.put_settings(index: index_name || target_index_name, body: settings)
+      end
+
+      def update_mapping(index_name: nil, mappings:)
+        client.indices.put_mapping(index: index_name || target_index_name, body: mappings)
       end
 
       def switch_alias(from: target_index_name, alias_name: target_name, to:)

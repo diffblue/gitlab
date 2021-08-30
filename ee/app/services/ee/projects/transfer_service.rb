@@ -35,15 +35,14 @@ module EE
       end
 
       def update_elasticsearch_hooks
-        return unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
-
-        # handle when project is moved to a new namespace with different elasticsearch settings
-        # than the old namespace
-        if old_namespace.use_elasticsearch? != new_namespace.use_elasticsearch?
+        # When a project is moved to a new namespace, invalidate the ES cache if Elasticsearch limit indexing is enabled
+        # and the Elasticsearch settings are different between the two namespaces. The project and all associated data
+        # is indexed to make sure the namespace_ancestry field gets updated in each document.
+        if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing? && old_namespace.use_elasticsearch? != new_namespace.use_elasticsearch?
           project.invalidate_elasticsearch_indexes_cache!
-
-          ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
         end
+
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
       end
 
       override :remove_paid_features
