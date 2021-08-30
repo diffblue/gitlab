@@ -1,8 +1,8 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import OrderSummary from 'ee/subscriptions/buy_minutes/components/order_summary.vue';
-import subscriptionsResolvers from 'ee/subscriptions/buy_minutes/graphql/resolvers';
+import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
+import subscriptionsResolvers from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
 import {
