@@ -28,11 +28,23 @@ module Gitlab::UsageDataCounters
       private
 
       def unique_project_event(template, config_source)
-        if name = TEMPLATE_TO_EVENT[template]
-          prefix = 'implicit_' if config_source.to_s == 'auto_devops_source'
-
-          "p_#{REDIS_SLOT}_#{prefix}#{name}"
+        if TEMPLATE_TO_EVENT[template]
+          template_inclusion_name(config_source, TEMPLATE_TO_EVENT[template])
         end
+
+        if Feature.enabled?(:track_all_ci_template_inclusions)
+          template_inclusion_name(config_source, template_to_event(template))
+        end
+      end
+
+      def template_inclusion_name(config_source, name)
+        prefix = 'implicit_' if config_source.to_s == 'auto_devops_source'
+
+        "p_#{REDIS_SLOT}_#{prefix}#{name}"
+      end
+
+      def template_to_event(template)
+        File.basename(template, '.gitlab-ci.yml').underscore
       end
     end
   end
