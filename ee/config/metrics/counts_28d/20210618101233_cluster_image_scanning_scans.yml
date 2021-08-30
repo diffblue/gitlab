@@ -1,13 +1,13 @@
 ---
 key_path: usage_activity_by_stage_monthly.secure.cluster_image_scanning_scans
-description: Counts cluster image scanning jobs
+description: Number of Cluster Image Scanning security scans run
 product_section: sec
 product_stage: protect
 product_group: group::container security
 product_category: container_scanning
 value_type: number
 status: implemented
-time_frame: all
+time_frame: 28d
 data_source: database
 data_category: optional
 distribution:
