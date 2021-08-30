@@ -23,7 +23,6 @@ rules:
   - type: pipeline
     branches:
       - main
-updatedAt: '2020-04-14T00:08:30Z'
 actions:
   - scan: dast
     site_profile: required_site_profile
@@ -36,7 +35,6 @@ export const mockDastScanExecutionObject = {
   description: 'This policy enforces pipeline configuration to have a job with DAST scan',
   enabled: false,
   rules: [{ type: 'pipeline', branches: ['main'] }],
-  updatedAt: '2020-04-14T00:08:30Z',
   actions: [
     {
       scan: 'dast',
