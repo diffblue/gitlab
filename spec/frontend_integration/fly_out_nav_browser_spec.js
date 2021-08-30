@@ -21,6 +21,7 @@ describe('Fly out sidebar navigation', () => {
   let el;
   let breakpointSize = 'lg';
 
+  const OLD_SIDEBAR_WIDTH = 200;
   const CONTAINER_INITIAL_BOUNDING_RECT = {
     x: 8,
     y: 8,
@@ -51,7 +52,8 @@ describe('Fly out sidebar navigation', () => {
     mockBoundingClientRect(el, CONTAINER_INITIAL_BOUNDING_RECT);
     mockBoundingClientRect(subItems, SUB_ITEMS_INITIAL_BOUNDING_RECT);
   };
-  const mockSidebarFragment = (styleProps = '') => `<div class="sidebar-sub-level-items" style="${styleProps}"></div>`
+  const mockSidebarFragment = (styleProps = '') =>
+    `<div class="sidebar-sub-level-items" style="${styleProps}"></div>`;
 
   beforeEach(() => {
     el = document.createElement('div');
@@ -82,7 +84,6 @@ describe('Fly out sidebar navigation', () => {
 
   describe('getHideSubItemsInterval', () => {
     beforeEach(() => {
-
       el.innerHTML = mockSidebarFragment('position: fixed; top: 0; left: 100px; height: 150px;');
       mockBoundingRects();
     });
@@ -177,7 +178,9 @@ describe('Fly out sidebar navigation', () => {
 
   describe('mouseEnterTopItems', () => {
     beforeEach(() => {
-      el.innerHTML = mockSidebarFragment('position: absolute; top: 0; left: 100px; height: 200px;');
+      el.innerHTML = mockSidebarFragment(
+        `position: absolute; top: 0; left: 100px; height: ${OLD_SIDEBAR_WIDTH}px;`,
+      );
       mockBoundingRects();
     });
 
@@ -271,7 +274,7 @@ describe('Fly out sidebar navigation', () => {
       const sidebar = document.createElement('div');
       const subItems = findSubItems();
 
-      sidebar.style.width = '200px';
+      sidebar.style.width = `${OLD_SIDEBAR_WIDTH}px`;
 
       document.body.appendChild(sidebar);
 
@@ -279,7 +282,7 @@ describe('Fly out sidebar navigation', () => {
       showSubLevelItems(el);
 
       expect(subItems.style.transform).toBe(
-        `translate3d(200px, ${
+        `translate3d(${OLD_SIDEBAR_WIDTH}px, ${
           Math.floor(el.getBoundingClientRect().top) - getHeaderHeight()
         }px, 0)`,
       );
