@@ -51,6 +51,7 @@ describe('Fly out sidebar navigation', () => {
     mockBoundingClientRect(el, CONTAINER_INITIAL_BOUNDING_RECT);
     mockBoundingClientRect(subItems, SUB_ITEMS_INITIAL_BOUNDING_RECT);
   };
+  const mockSidebarFragment = (styleProps = '') => `<div class="sidebar-sub-level-items" style="${styleProps}"></div>`
 
   beforeEach(() => {
     el = document.createElement('div');
@@ -82,8 +83,8 @@ describe('Fly out sidebar navigation', () => {
 
   describe('getHideSubItemsInterval', () => {
     beforeEach(() => {
-      el.innerHTML =
-        '<div class="sidebar-sub-level-items" style="position: fixed; top: 0; left: 100px; height: 150px;"></div>';
+
+      el.innerHTML = mockSidebarFragment('position: fixed; top: 0; left: 100px; height: 150px;');
       mockBoundingRects();
     });
 
@@ -157,7 +158,7 @@ describe('Fly out sidebar navigation', () => {
 
     it('removes is-over class if currentOpenMenu is null & there are sub-items', () => {
       setOpenMenu(null);
-      el.innerHTML = '<div class="sidebar-sub-level-items" style="position: absolute;"></div>';
+      el.innerHTML = mockSidebarFragment('position: absolute');
 
       mouseLeaveTopItem(el);
 
@@ -166,7 +167,7 @@ describe('Fly out sidebar navigation', () => {
 
     it('does not remove is-over class if currentOpenMenu is the passed in sub-items', () => {
       setOpenMenu(null);
-      el.innerHTML = '<div class="sidebar-sub-level-items" style="position: absolute;"></div>';
+      el.innerHTML = mockSidebarFragment('position: absolute');
 
       setOpenMenu(findSubItems());
       mouseLeaveTopItem(el);
@@ -177,8 +178,7 @@ describe('Fly out sidebar navigation', () => {
 
   describe('mouseEnterTopItems', () => {
     beforeEach(() => {
-      el.innerHTML =
-        '<div class="sidebar-sub-level-items" style="position: absolute; top: 0; left: 100px; height: 200px;"></div>';
+      el.innerHTML = mockSidebarFragment('position: absolute; top: 0; left: 100px; height: 200px;');
       mockBoundingRects();
     });
 
@@ -221,7 +221,7 @@ describe('Fly out sidebar navigation', () => {
 
   describe('showSubLevelItems', () => {
     beforeEach(() => {
-      el.innerHTML = '<div class="sidebar-sub-level-items" style="position: absolute;"></div>';
+      el.innerHTML = mockSidebarFragment('position: absolute');
     });
 
     it('adds is-over class to el', () => {
@@ -340,7 +340,7 @@ describe('Fly out sidebar navigation', () => {
 
   describe('subItemsMouseLeave', () => {
     beforeEach(() => {
-      el.innerHTML = '<div class="sidebar-sub-level-items" style="position: absolute;"></div>';
+      el.innerHTML = mockSidebarFragment('position: absolute');
 
       setOpenMenu(findSubItems());
     });
