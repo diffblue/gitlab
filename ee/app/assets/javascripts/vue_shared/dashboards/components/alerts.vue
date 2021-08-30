@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable @gitlab/require-string-literal-i18n-helpers */
 import { GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { __, n__, sprintf } from '~/locale';
