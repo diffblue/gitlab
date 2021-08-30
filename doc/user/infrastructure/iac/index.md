@@ -81,7 +81,7 @@ solution to help collaboration around Terraform code changes and their expected
 effects using the Merge Request pages. This way users don't have to build custom
 tools or rely on 3rd party solutions to streamline their IaC workflows.
 
-Read more on setting up and [using the merge request integrations](../mr_integration.md).
+Read more on setting up and [using the merge request integrations](mr_integration.md).
 
 ## The GitLab Terraform provider
 
