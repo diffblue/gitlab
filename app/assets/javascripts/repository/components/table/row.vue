@@ -9,6 +9,7 @@ import {
   GlHoverLoadDirective,
 } from '@gitlab/ui';
 import { escapeRegExp } from 'lodash';
+import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import filesQuery from 'shared_queries/repository/files.query.graphql';
 import { escapeFileUrl } from '~/lib/utils/url_utility';
 import { TREE_PAGE_SIZE } from '~/repository/constants';
@@ -153,7 +154,8 @@ export default {
       return this.isFolder ? this.loadFolder() : this.loadBlob();
     },
     loadFolder() {
-      this.apolloQuery(filesQuery, {
+      const query = this.glFeatures.paginatedTreeGraphqlQuery ? paginatedTreeQuery : filesQuery;
+      this.apolloQuery(query, {
         projectPath: this.projectPath,
         ref: this.ref,
         path: this.path,
