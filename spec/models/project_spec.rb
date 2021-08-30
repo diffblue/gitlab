@@ -185,6 +185,17 @@ RSpec.describe Project, factory_default: :keep do
       end
     end
 
+    context 'when destroying project' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:project_namespace) { create(:project_namespace, project: project) }
+
+      it 'also destroys the associated ProjectNamespace' do
+        project.destroy!
+
+        expect { project_namespace.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
     context 'when creating a new project' do
       let_it_be(:project) { create(:project) }
 

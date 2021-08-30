@@ -57,7 +57,7 @@ class Namespace < ApplicationRecord
   has_one :admin_note, inverse_of: :namespace
   accepts_nested_attributes_for :admin_note, update_only: true
 
-  validates :owner, presence: true, unless: ->(n) { n.type == "Group" }
+  validates :owner, presence: true, unless: ->(n) { n.type == "Group" || n.type == 'Namespaces::ProjectNamespace' }
   validates :name,
     presence: true,
     length: { maximum: 255 }
