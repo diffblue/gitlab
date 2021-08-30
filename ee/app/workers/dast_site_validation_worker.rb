@@ -12,7 +12,6 @@ class DastSiteValidationWorker
   sidekiq_retry_in { 25 }
 
   feature_category :dynamic_application_security_testing
-  tags :exclude_from_kubernetes
 
   def perform(_dast_site_validation_id)
     # Scheduled for removal in %15.0

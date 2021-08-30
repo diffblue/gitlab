@@ -15,7 +15,6 @@ module Geo
       include ::EachShardWorker
 
       feature_category :geo_replication
-      tags :exclude_from_gitlab_com
 
       # These workers are enqueued every minute by sidekiq-cron. If one of them
       # is already enqueued or running, then there isn't a strong case for

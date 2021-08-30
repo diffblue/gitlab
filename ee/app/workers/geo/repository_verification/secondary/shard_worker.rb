@@ -12,7 +12,6 @@ module Geo
         attr_accessor :shard_name
 
         loggable_arguments 0
-        tags :exclude_from_gitlab_com
 
         def perform(shard_name)
           @shard_name = shard_name

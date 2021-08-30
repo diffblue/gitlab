@@ -12,7 +12,6 @@ module Groups
     worker_resource_boundary :cpu
 
     feature_category :source_code_management
-    tags :exclude_from_kubernetes
     idempotent!
     loggable_arguments 0, 1
 

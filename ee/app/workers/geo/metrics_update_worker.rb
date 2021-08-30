@@ -13,7 +13,6 @@ module Geo
     # rubocop:enable Scalability/CronWorkerContext
 
     feature_category :geo_replication
-    tags :exclude_from_gitlab_com
 
     LEASE_TIMEOUT = 5.minutes
 

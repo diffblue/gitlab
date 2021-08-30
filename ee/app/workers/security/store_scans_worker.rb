@@ -10,8 +10,6 @@ module Security
     sidekiq_options retry: 3
     include SecurityScansQueue
 
-    tags :exclude_from_kubernetes
-
     # rubocop: disable CodeReuse/ActiveRecord
     def perform(pipeline_id)
       ::Ci::Pipeline.find_by(id: pipeline_id).try do |pipeline|

@@ -12,7 +12,6 @@ module Analytics
 
       feature_category :devops_reports
       idempotent!
-      tags :exclude_from_kubernetes
 
       def perform(enabled_namespace_id)
         enabled_namespace = EnabledNamespace.find(enabled_namespace_id)

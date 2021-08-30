@@ -4,8 +4,6 @@ module Geo
   module RepositoryVerification
     module Secondary
       class SchedulerWorker < Geo::Scheduler::Secondary::PerShardSchedulerWorker # rubocop:disable Scalability/IdempotentWorker
-        tags :exclude_from_gitlab_com
-
         def perform
           return unless Gitlab::Geo.repository_verification_enabled?
 

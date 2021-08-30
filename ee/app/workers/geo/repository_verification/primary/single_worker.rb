@@ -11,7 +11,6 @@ module Geo
         include ExclusiveLeaseGuard
 
         sidekiq_options retry: false
-        tags :exclude_from_gitlab_com
 
         LEASE_TIMEOUT = 1.hour.to_i
 

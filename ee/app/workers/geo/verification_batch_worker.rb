@@ -12,7 +12,6 @@ module Geo
     include ::Gitlab::Geo::LogHelpers
 
     idempotent!
-    tags :exclude_from_kubernetes, :exclude_from_gitlab_com
     loggable_arguments 0
 
     def perform_work(replicable_name)

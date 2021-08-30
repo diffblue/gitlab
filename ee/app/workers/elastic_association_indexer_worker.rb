@@ -9,7 +9,6 @@ class ElasticAssociationIndexerWorker # rubocop:disable Scalability/IdempotentWo
 
   feature_category :global_search
   worker_resource_boundary :cpu
-  tags :exclude_from_kubernetes
   loggable_arguments 0, 2
 
   def perform(class_name, id, indexed_associations)
