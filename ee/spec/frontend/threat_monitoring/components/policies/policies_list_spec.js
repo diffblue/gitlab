@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import { POLICY_TYPE_OPTIONS } from 'ee/threat_monitoring/components/constants';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
 import PolicyDrawer from 'ee/threat_monitoring/components/policy_drawer/policy_drawer.vue';
+import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import networkPoliciesQuery from 'ee/threat_monitoring/graphql/queries/network_policies.query.graphql';
 import scanExecutionPoliciesQuery from 'ee/threat_monitoring/graphql/queries/scan_execution_policies.query.graphql';
 import createStore from 'ee/threat_monitoring/store';
@@ -190,8 +191,8 @@ describe('PoliciesList component', () => {
       rowIndex | expectedPolicyName                           | expectedPolicyType
       ${1}     | ${mockScanExecutionPoliciesResponse[0].name} | ${'Scan execution'}
       ${3}     | ${mockNetworkPoliciesResponse[0].name}       | ${'Network'}
-      ${4}     | ${'drop-outbound'}                           | ${'Network'}
-      ${5}     | ${'allow-inbound-http'}                      | ${'Network'}
+      ${4}     | ${PREDEFINED_NETWORK_POLICIES[0].name}       | ${'Network'}
+      ${5}     | ${PREDEFINED_NETWORK_POLICIES[1].name}       | ${'Network'}
     `('policy in row #$rowIndex', ({ rowIndex, expectedPolicyName, expectedPolicyType }) => {
       let row;
 
@@ -277,10 +278,12 @@ describe('PoliciesList component', () => {
   });
 
   describe.each`
-    description         | policy                                  | policyType         | editPolicyPath
-    ${'network'}        | ${mockNetworkPoliciesResponse[0]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=NetworkPolicy'}
-    ${'container'}      | ${mockNetworkPoliciesResponse[1]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${'path/to/policy?environment_id=2&type=scan_execution_policy'}
+    description                            | policy                                  | policyType         | editPolicyPath
+    ${'network'}                           | ${mockNetworkPoliciesResponse[0]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=NetworkPolicy'}
+    ${'container'}                         | ${mockNetworkPoliciesResponse[1]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
+    ${PREDEFINED_NETWORK_POLICIES[0].name} | ${PREDEFINED_NETWORK_POLICIES[0]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
+    ${PREDEFINED_NETWORK_POLICIES[1].name} | ${PREDEFINED_NETWORK_POLICIES[1]}       | ${'container'}     | ${'path/to/policy?environment_id=2&type=container_policy&kind=CiliumNetworkPolicy'}
+    ${'scan execution'}                    | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${'path/to/policy?environment_id=2&type=scan_execution_policy'}
   `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
     beforeEach(() => {
       mountShallowWrapper();
