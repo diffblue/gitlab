@@ -33,7 +33,7 @@ RSpec.describe 'epics swimlanes', :js do
     stub_licensed_features(epics: true, swimlanes: true)
 
     sign_in(user)
-    visit_board_page
+    load_board project_boards_path(project)
     load_epic_swimlanes
     load_unassigned_issues
   end
@@ -117,9 +117,24 @@ RSpec.describe 'epics swimlanes', :js do
     end
   end
 
-  def visit_board_page
-    visit project_boards_path(project)
-    wait_for_requests
+  context 'drag and drop list' do
+    let_it_be(:label2) { create(:label, project: project, name: 'Label 2') }
+    let_it_be(:list2) { create(:list, board: board, label: label2, position: 1) }
+
+    it 're-orders lists' do
+      drag(list_from_index: 1, list_to_index: 2, selector: '.board-header')
+
+      wait_for_requests
+
+      expect(find_board_list_header(2)).to have_content(label2.title)
+      expect(find_board_list_header(3)).to have_content(label.title)
+      expect(list.reload.position).to eq(1)
+      expect(list2.reload.position).to eq(0)
+    end
+  end
+
+  def find_board_list_header(list_idx)
+    find(".board:nth-child(#{list_idx}) [data-testid=\"board-list-header\"]")
   end
 
   def select_epics
