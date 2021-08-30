@@ -58,4 +58,10 @@ describe('CreditCardValidationRequiredAlert', () => {
     expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
     expect(wrapper.emitted('verifiedCreditCard')).toBeDefined();
   });
+
+  it('danger alert emits dismiss event on dismiss', () => {
+    findGlAlert().vm.$emit('dismiss');
+
+    expect(wrapper.emitted('dismiss')).toBeDefined();
+  });
 });
