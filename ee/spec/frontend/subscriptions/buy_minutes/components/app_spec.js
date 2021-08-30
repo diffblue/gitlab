@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import App from 'ee/subscriptions/buy_minutes/components/app.vue';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import waitForPromises from 'helpers/wait_for_promises';
+import { planTags } from '../../../../../app/assets/javascripts/subscriptions/buy_addons_shared/constants';
 import { createMockApolloProvider } from '../spec_helper';
 
 const localVue = createLocalVue();
@@ -12,11 +13,10 @@ localVue.use(VueApollo);
 describe('App', () => {
   let wrapper;
 
-  function createComponent(options = {}) {
-    const { apolloProvider, propsData } = options;
+  function createComponent(apolloProvider) {
     return shallowMount(App, {
       localVue,
-      propsData,
+      propsData: { plan: planTags.CI_1000_MINUTES_PLAN },
       apolloProvider,
     });
   }
@@ -28,7 +28,7 @@ describe('App', () => {
   describe('when data is received', () => {
     it('should display the StepOrderApp', async () => {
       const mockApollo = createMockApolloProvider();
-      wrapper = createComponent({ apolloProvider: mockApollo });
+      wrapper = createComponent(mockApollo);
       await waitForPromises();
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(true);
@@ -41,7 +41,7 @@ describe('App', () => {
       const mockApollo = createMockApolloProvider({
         plansQueryMock: jest.fn().mockResolvedValue({ data: null }),
       });
-      wrapper = createComponent({ apolloProvider: mockApollo });
+      wrapper = createComponent(mockApollo);
       await waitForPromises();
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(false);
@@ -52,7 +52,7 @@ describe('App', () => {
       const mockApollo = createMockApolloProvider({
         plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: null } }),
       });
-      wrapper = createComponent({ apolloProvider: mockApollo });
+      wrapper = createComponent(mockApollo);
       await waitForPromises();
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(false);
@@ -63,7 +63,7 @@ describe('App', () => {
       const mockApollo = createMockApolloProvider({
         plansQueryMock: jest.fn().mockResolvedValue({ data: { plans: {} } }),
       });
-      wrapper = createComponent({ apolloProvider: mockApollo });
+      wrapper = createComponent(mockApollo);
       await waitForPromises();
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(false);
@@ -76,7 +76,7 @@ describe('App', () => {
       const mockApollo = createMockApolloProvider({
         plansQueryMock: jest.fn().mockRejectedValue(new Error('An error happened!')),
       });
-      wrapper = createComponent({ apolloProvider: mockApollo });
+      wrapper = createComponent(mockApollo);
       await waitForPromises();
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(false);

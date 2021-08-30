@@ -4,10 +4,10 @@ import { GlEmptyState } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
+import Checkout from '../../buy_addons_shared/components/checkout.vue';
+import OrderSummary from '../../buy_addons_shared/components/order_summary.vue';
+import { planTags, CUSTOMER_CLIENT } from '../../buy_addons_shared/constants';
 import plansQuery from '../../graphql/queries/plans.customer.query.graphql';
-import { planTags, CUSTOMER_CLIENT } from '../constants';
-import Checkout from './checkout.vue';
-import OrderSummary from './order_summary.vue';
 
 export default {
   name: 'BuyCIMinutesApp',

@@ -1,5 +1,5 @@
 import { GlSprintf } from '@gitlab/ui';
-import SummaryDetails from 'ee/subscriptions/buy_minutes/components/order_summary/summary_details.vue';
+import SummaryDetails from 'ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('SummaryDetails', () => {
