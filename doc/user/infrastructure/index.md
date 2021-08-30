@@ -27,7 +27,7 @@ The various GitLab integrations help you:
 
 Read more about the [Infrastructure as Code features](iac/index.md), including:
 
-- [The GitLab Managed Terraform State](terraform_state.md).
+- [The GitLab Managed Terraform State](iac/terraform_state.md).
 - [The Terraform MR widget](mr_integration.md).
 - [The Terraform module registry](../packages/terraform_module_registry/index.md).
 
