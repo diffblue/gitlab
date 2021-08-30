@@ -217,6 +217,33 @@ In case you need to insert, update, or delete a significant amount of data, you:
 - Must disable the single transaction with `disable_ddl_transaction!`.
 - Should consider doing it in a [Background Migration](background_migrations.md).
 
+## Migration helpers and versioning
+
+Various helper methods are available for many common patterns in database migrations. Those
+helpers can be found in `Gitlab::Database::MigrationHelpers` and related modules.
+
+In order to allow changing a helper's behavior over time, we implement a versioning scheme
+for migration helpers. This allows us to maintain the behavior of a helper for already
+existing migrations but change the behavior for any new migrations.
+
+For that purpose, all database migrations should inherit from `Gitlab::Database::Migration`,
+which is a "versioned" class. For new migrations, the latest version should be used (which
+can be looked up in `Gitlab::Database::Migration::MIGRATION_CLASSES`) to use the latest version
+of migration helpers.
+
+In this example, we use version 1.0 of the migration class:
+
+```ruby
+class TestMigration < Gitlab::Database::Migration[1.0]
+  def change
+  end
+end
+```
+
+Note that it is discouraged to include `Gitlab::Database::MigrationHelpers` directly into a
+migration. Instead, the latest version of `Gitlab::Database::Migration` will expose the latest
+version of migration helpers automatically.
+
 ## Retry mechanism when acquiring database locks
 
 When changing the database schema, we use helper methods to invoke DDL (Data Definition
