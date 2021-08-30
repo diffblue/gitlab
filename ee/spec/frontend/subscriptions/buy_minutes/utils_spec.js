@@ -1,5 +1,5 @@
-import apolloProvider from 'ee/subscriptions/buy_minutes/graphql';
-import { writeInitialDataToApolloCache } from 'ee/subscriptions/buy_minutes/utils';
+import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
+import { writeInitialDataToApolloCache } from 'ee/subscriptions/buy_addons_shared/utils';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import { mockNamespaces, mockParsedNamespaces } from './mock_data';
 

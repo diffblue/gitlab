@@ -1,12 +1,12 @@
 <script>
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
+import BillingAddress from 'ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
+import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
+import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
 import AddonPurchaseDetails from './checkout/addon_purchase_details.vue';
-import BillingAddress from './checkout/billing_address.vue';
-import ConfirmOrder from './checkout/confirm_order.vue';
-import PaymentMethod from './checkout/payment_method.vue';
 
 export default {
   components: { AddonPurchaseDetails, BillingAddress, PaymentMethod, ConfirmOrder },

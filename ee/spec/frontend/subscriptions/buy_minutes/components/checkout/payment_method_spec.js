@@ -1,10 +1,10 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import PaymentMethod from 'ee/subscriptions/buy_minutes/components/checkout/payment_method.vue';
-import { resolvers } from 'ee/subscriptions/buy_minutes/graphql/resolvers';
+import { resolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
+import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';

@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import ensureData from '~/ensure_data';
+import apolloProvider from '../buy_addons_shared/graphql';
+import { writeInitialDataToApolloCache } from '../buy_addons_shared/utils';
 import App from './components/app.vue';
-import apolloProvider from './graphql';
-import { writeInitialDataToApolloCache } from './utils';
 
 export default (el) => {
   if (!el) {

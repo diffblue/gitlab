@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlFormInput, GlSprintf } from '@gitlab/ui';
-import { CI_MINUTES_PER_PACK } from 'ee/subscriptions/buy_minutes/constants';
+import { CI_MINUTES_PER_PACK } from 'ee/subscriptions/buy_addons_shared/constants';
 import { STEPS } from 'ee/subscriptions/constants';
 import updateState from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
