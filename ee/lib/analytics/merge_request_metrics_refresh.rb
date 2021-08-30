@@ -8,7 +8,9 @@ module Analytics
 
     def execute(force: false)
       merge_requests.each do |mr|
-        metrics = mr.ensure_metrics
+        mr.ensure_metrics
+        mr.reset # clear already loaded (nil) metrics association
+        metrics = mr.metrics
 
         next if !force && metric_already_present?(metrics)
 
