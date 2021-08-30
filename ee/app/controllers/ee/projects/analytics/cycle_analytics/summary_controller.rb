@@ -11,13 +11,4 @@ module EE::Projects::Analytics::CycleAnalytics::SummaryController
       render_404
     end
   end
-
-  private
-
-  override :allowed_params
-  def allowed_params
-    return super unless project.licensed_feature_available?(:cycle_analytics_for_projects)
-
-    request_params.to_data_collector_params
-  end
 end
