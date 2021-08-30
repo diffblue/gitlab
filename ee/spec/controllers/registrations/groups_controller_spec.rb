@@ -312,11 +312,11 @@ RSpec.describe Registrations::GroupsController do
                   subject
                 end
 
-                it 'selectivly tracks for the force_company_trial experiment', :experiment do
+                it 'selectively tracks for the force_company_trial experiment', :experiment do
                   wrapped_experiment(experiment(:force_company_trial)) do |e|
                     expect(e.context.value).to include(user: user)
-                    expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
-                    expect(e).not_to receive(:track).with(:create_trial, namespace: an_instance_of(Group))
+                    expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group), user: user)
+                    expect(e).not_to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user)
                   end
 
                   subject
