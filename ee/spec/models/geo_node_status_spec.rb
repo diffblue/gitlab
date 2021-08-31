@@ -1129,6 +1129,7 @@ RSpec.describe GeoNodeStatus, :geo do
       Geo::TerraformStateVersionReplicator | :terraform_state_version     | :geo_terraform_state_version_registry
       Geo::SnippetRepositoryReplicator     | :snippet_repository          | :geo_snippet_repository_registry
       Geo::GroupWikiRepositoryReplicator   | :group_wiki_repository       | :geo_group_wiki_repository_registry
+      Geo::PagesDeploymentReplicator       | :pages_deployment            | :geo_pages_deployment_registry
     end
 
     with_them do
