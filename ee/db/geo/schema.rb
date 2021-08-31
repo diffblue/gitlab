@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_24_160455) do
+ActiveRecord::Schema.define(version: 2021_08_20_152707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -158,6 +158,19 @@ ActiveRecord::Schema.define(version: 2021_06_24_160455) do
     t.index ["verification_retry_at"], name: "package_file_registry_failed_verification", order: "NULLS FIRST", where: "((state = 2) AND (verification_state = 3))"
     t.index ["verification_state"], name: "package_file_registry_needs_verification", where: "((state = 2) AND (verification_state = ANY (ARRAY[0, 3])))"
     t.index ["verified_at"], name: "package_file_registry_pending_verification", order: "NULLS FIRST", where: "((state = 2) AND (verification_state = 0))"
+  end
+
+  create_table "pages_deployment_registry", force: :cascade do |t|
+    t.bigint "pages_deployment_id", null: false
+    t.datetime_with_timezone "created_at", null: false
+    t.datetime_with_timezone "last_synced_at"
+    t.datetime_with_timezone "retry_at"
+    t.integer "state", limit: 2, default: 0, null: false
+    t.integer "retry_count", limit: 2, default: 0, null: false
+    t.string "last_sync_failure", limit: 255
+    t.index ["pages_deployment_id"], name: "index_pages_deployment_registry_on_pages_deployment_id", unique: true
+    t.index ["retry_at"], name: "index_pages_deployment_registry_on_retry_at"
+    t.index ["state"], name: "index_pages_deployment_registry_on_state"
   end
 
   create_table "pipeline_artifact_registry", force: :cascade do |t|
