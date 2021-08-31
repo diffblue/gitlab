@@ -30,16 +30,21 @@ module Gitlab
           helper_context = self
 
           super do |t|
-            t.define_singleton_method(:text_limit) do |column_name, limit, name: nil|
-              # rubocop:disable GitlabSecurity/PublicSend
-              name = helper_context.send(:text_limit_name, table_name, column_name, name: name)
-              helper_context.send(:validate_check_constraint_name!, name)
-              # rubocop:enable GitlabSecurity/PublicSend
+            t.define_singleton_method(:text) do |column_name, **kwargs|
+              limit = kwargs.delete(:limit)
 
-              column_name = helper_context.quote_column_name(column_name)
-              definition = "char_length(#{column_name}) <= #{limit}"
+              super(column_name, **kwargs)
 
-              t.check_constraint(definition, name: name)
+              if limit
+                # rubocop:disable GitlabSecurity/PublicSend
+                name = helper_context.send(:text_limit_name, table_name, column_name)
+                # rubocop:enable GitlabSecurity/PublicSend
+
+                column_name = helper_context.quote_column_name(column_name)
+                definition = "char_length(#{column_name}) <= #{limit}"
+
+                t.check_constraint(definition, name: name)
+              end
             end
 
             t.instance_eval(&block) unless block.nil?

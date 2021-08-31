@@ -12,7 +12,7 @@ When adding new columns that will be used to store strings or other textual info
 
 1. We always use the `text` data type instead of the `string` data type.
 1. `text` columns should always have a limit set, either by using the `create_table` with
-the `#text_limit` helper (see below) when creating a table, or by using the `add_text_limit`
+the `#text ... limit: 100` helper (see below) when creating a table, or by using the `add_text_limit`
 when altering an existing table.
 
 The standard Rails `text` column type can not be defined with a limit, but we extend `create_table` to
@@ -43,8 +43,8 @@ Don't use text columns for `attr_encrypted` attributes. Use a
 ## Create a new table with text columns
 
 When adding a new table, the limits for all text columns should be added in the same migration as
-the table creation. We add a `#text_limit` method to Rails' `create_table`, which allows adding limits
-for text columns.
+the table creation. We add a `limit:` attribute to Rails' `#text` method, which allows adding a limit
+for this column.
 
 For example, consider a migration that creates a table with two text columns,
 `db/migrate/20200401000001_create_db_guides.rb`:
@@ -54,11 +54,8 @@ class CreateDbGuides < Gitlab::Database::Migration[1.0]
   def change
     create_table :db_guides do |t|
       t.bigint :stars, default: 0, null: false
-      t.text :title
-      t.text :notes
-
-      t.text_limit :title, 128
-      t.text_limit :notes, 1024
+      t.text :title, limit: 128
+      t.text :notes, limit: 1024
     end
   end
 end
