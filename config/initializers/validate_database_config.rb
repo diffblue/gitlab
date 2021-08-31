@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+if Gitlab::Utils.to_boolean(ENV['SKIP_DATABASE_CONFIG_VALIDATION'], default: false)
+  return
+end
+
 if Rails.application.config.uses_legacy_database_config
   warn "WARNING: This installation of GitLab uses a deprecated syntax for 'config/database.yml'. " \
     "The support for this syntax will be removed in 15.0. " \

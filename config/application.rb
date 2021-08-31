@@ -39,7 +39,9 @@ module Gitlab
     # This preload is needed to convert legacy `database.yml`
     # from `production: adapter: postgresql`
     # into a `production: main: adapter: postgresql`
-    config.class.prepend(::Gitlab::Patch::LegacyDatabaseConfig)
+    unless Gitlab::Utils.to_boolean(ENV['SKIP_DATABASE_CONFIG_VALIDATION'], default: false)
+      config.class.prepend(::Gitlab::Patch::LegacyDatabaseConfig)
+    end
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
