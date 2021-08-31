@@ -77,12 +77,16 @@ RSpec.describe Gitlab::UsageDataCounters::CiTemplateUniqueCounter do
       let(:project_id) { 1 }
       let(:config_source) { :repository_source }
 
-      Dir.glob('**/*.gitlab-ci.yml', base: Rails.root.join('lib/gitlab/ci/templates')) do |template|
+      described_class.ci_templates.each do |template|
         next if described_class::TEMPLATE_TO_EVENT.key?(template)
 
-        it 'has an event defined' do
+        it "has an event defined for #{template}" do
           expect do
-            described_class.track_unique_project_event(project_id: project_id, template: described_class.send(:template_to_event, template), config_source: config_source)
+            described_class.track_unique_project_event(
+              project_id: project_id,
+              template: template,
+              config_source: config_source
+            )
           end.not_to raise_error
         end
 
@@ -104,7 +108,8 @@ RSpec.describe Gitlab::UsageDataCounters::CiTemplateUniqueCounter do
           end
 
           it "tracks #{template}" do
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter).to(receive(:track_event)).with("p_ci_templates_#{File.basename(template, '.gitlab-ci.yml').underscore}", values: project_id)
+            expected_template_event_name = described_class.ci_template_event_name(template, :repository_source)
+            expect(Gitlab::UsageDataCounters::HLLRedisCounter).to(receive(:track_event)).with(expected_template_event_name, values: project_id)
 
             described_class.track_unique_project_event(project_id: project_id, template: template, config_source: config_source)
           end
