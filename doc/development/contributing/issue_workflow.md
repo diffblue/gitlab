@@ -132,9 +132,9 @@ their color is `#A8D695`.
 <https://gitlab.com/gitlab-com/www-gitlab-com/blob/master/data/stages.yml>,
 with `_` replaced with a space.
 
-For instance, the "Continuous Integration" group is represented by the
-~"group::continuous integration" label in the `gitlab-org` group since its key
-under `stages.manage.groups` is `continuous_integration`.
+For instance, the "Pipeline Execution" group is represented by the
+~"group::pipeline execution" label in the `gitlab-org` group since its key
+under `stages.manage.groups` is `pipeline_execution`.
 
 The current group labels can be found by [searching the labels list for `group::`](https://gitlab.com/groups/gitlab-org/-/labels?search=group::).
 
@@ -145,17 +145,6 @@ You can find the groups listed in the [Product Stages, Groups, and Categories](h
 
 We use the term group to map down product requirements from our product stages.
 As a team needs some way to collect the work their members are planning to be assigned to, we use the `~group::` labels to do so.
-
-Normally there is a 1:1 relationship between Stage labels and Group labels. In
-the spirit of "Everyone can contribute", any issue can be picked up by any group,
-depending on current priorities. When picking up an issue belonging to a different
-group, it should be relabeled. For example, if an issue labeled `~"devops::create"`
-and `~"group::knowledge"` is picked up by someone in the Access group of the Plan stage,
-the issue should be relabeled as `~"group::access"` while keeping the original
-`~"devops::create"` unchanged.
-
-We also use stage and group labels to help measure our [merge request rates](https://about.gitlab.com/handbook/engineering/metrics/#merge-request-rate).
-Please read [Stage and Group labels](https://about.gitlab.com/handbook/engineering/metrics/#stage-and-group-labels) for more information on how the labels are used in this context.
 
 ### Category labels
 
