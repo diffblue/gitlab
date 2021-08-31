@@ -84,7 +84,6 @@ module Types
 
     field :children, ::Types::EpicType.connection_type, null: true,
           description: 'Children (sub-epics) of the epic.',
-          max_page_size: 1000,
           resolver: ::Resolvers::EpicsResolver
     field :labels, Types::LabelType.connection_type, null: true,
           description: 'Labels assigned to the epic.'
@@ -132,7 +131,6 @@ module Types
           null: true,
           complexity: 5,
           description: 'A list of issues associated with the epic.',
-          max_page_size: 1000,
           resolver: Resolvers::EpicIssuesResolver
 
     field :descendant_counts, Types::EpicDescendantCountType, null: true,
