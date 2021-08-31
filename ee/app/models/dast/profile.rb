@@ -2,6 +2,8 @@
 
 module Dast
   class Profile < ApplicationRecord
+    include Sanitizable
+
     self.table_name = 'dast_profiles'
 
     belongs_to :project
@@ -26,6 +28,8 @@ module Dast
     end
 
     delegate :secret_ci_variables, to: :dast_site_profile
+
+    sanitizes! :name, :description
 
     def branch
       return unless project.repository.exists?

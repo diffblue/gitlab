@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe DastScannerProfile, type: :model do
   subject { create(:dast_scanner_profile) }
 
+  it_behaves_like 'sanitizable', :dast_scanner_profile, %i[name]
+
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
   end
