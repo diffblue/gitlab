@@ -113,7 +113,7 @@ module QA
           end
         end
 
-        it 'rejects non-member users', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1778' do
+        it 'rejects non-member users', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1331' do
           non_member_user = Resource::User.init do |user|
             user.username = ''
             user.password = ''
