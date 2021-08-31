@@ -1,3 +1,37 @@
+export const mockSecretDetectionScanExecutionManifest = `---
+name: Enforce DAST in every pipeline
+enabled: false,
+rules:
+- type: pipeline
+  branches:
+  - main
+  - release/*
+  - staging
+actions:
+- scan: secret_detection
+`;
+
+export const mockDastAndSecretDetectionScanExecutionManifest = `---
+name: Enforce DAST in every pipeline
+description: This policy enforces pipeline configuration to have a job with DAST scan
+enabled: true
+rules:
+- type: schedule
+  cadence: "*/10 * * * *"
+  branches:
+  - main
+- type: pipeline
+  branches:
+  - main
+  - release/*
+  - staging
+actions:
+- scan: dast
+  scanner_profile: Scanner Profile
+  site_profile: Site Profile
+- scan: secret_detection
+`;
+
 export const mockEnvironmentsResponse = {
   environments: [
     {
@@ -155,6 +189,7 @@ export const mockScanExecutionPolicy = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
   enabled: true,
+  latestScan: { date: new Date('2021-06-07T00:00:00.000Z'), pipelineUrl: 'path/to/pipeline' },
 };
 
 export const mockScanExecutionPoliciesResponse = [mockScanExecutionPolicy];
