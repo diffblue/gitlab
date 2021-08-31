@@ -26,7 +26,7 @@ module EE
               description: "Find a vulnerability." do
           argument :id, ::Types::GlobalIDType[::Vulnerability],
                    required: true,
-                   description: 'The Global ID of the Vulnerability.'
+                   description: 'Global ID of the Vulnerability.'
         end
 
         field :vulnerabilities_count_by_day,
@@ -64,7 +64,7 @@ module EE
 
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
               null: true,
-              description: 'The monthly CI minutes usage data for the current user.'
+              description: 'Monthly CI minutes usage data for the current user.'
       end
 
       def vulnerability(id:)

@@ -85,13 +85,13 @@ module EE
 
         field :billable_members_count, ::GraphQL::Types::Int,
               null: true,
-              description: 'The number of billable users in the group.'
+              description: 'Number of billable users in the group.'
 
         field :dora,
               ::Types::DoraType,
               null: true,
               method: :itself,
-              description: "The group's DORA metrics."
+              description: "Group's DORA metrics."
       end
     end
   end
