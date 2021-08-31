@@ -24481,6 +24481,18 @@ msgstr ""
 msgid "Password was successfully updated. Please sign in again."
 msgstr ""
 
+msgid "PasswordPrompt|Confirm password"
+msgstr ""
+
+msgid "PasswordPrompt|Confirm password to continue"
+msgstr ""
+
+msgid "PasswordPrompt|Password is required"
+msgstr ""
+
+msgid "PasswordPrompt|Please enter your password to confirm"
+msgstr ""
+
 msgid "Passwords should be unique and not used for any other sites or services."
 msgstr ""
 
@@ -25925,6 +25937,9 @@ msgid "Profiles|Enter how your name is pronounced to help people address you cor
 msgstr ""
 
 msgid "Profiles|Enter your name, so people you know can recognize you"
+msgstr ""
+
+msgid "Profiles|Enter your password to confirm the email change"
 msgstr ""
 
 msgid "Profiles|Enter your pronouns to let people know how to refer to you"
