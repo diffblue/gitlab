@@ -12,7 +12,7 @@ RSpec.describe Dast::Profile, type: :model do
     it { is_expected.to belong_to(:dast_site_profile) }
     it { is_expected.to belong_to(:dast_scanner_profile) }
     it { is_expected.to have_many(:secret_variables).through(:dast_site_profile).class_name('Dast::SiteProfileSecretVariable') }
-    it { is_expected.to have_many(:dast_profile_schedules).class_name('Dast::ProfileSchedule').with_foreign_key(:dast_profile_id).inverse_of(:dast_profile) }
+    it { is_expected.to have_one(:dast_profile_schedule).class_name('Dast::ProfileSchedule').with_foreign_key(:dast_profile_id).inverse_of(:dast_profile) }
   end
 
   describe 'validations' do

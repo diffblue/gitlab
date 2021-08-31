@@ -36,7 +36,6 @@ describe('Environment table', () => {
       {
         propsData: {
           environments: [mockItem],
-          canReadEnvironment: true,
           userCalloutsPath: '/callouts',
           lockPromotionSvgPath: '/assets/illustrations/lock-promotion.svg',
           helpCanaryDeploymentsPath: 'help/canary-deployments',

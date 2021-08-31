@@ -11,7 +11,6 @@ describe('Environment', () => {
 
   const mockData = {
     canCreateEnvironment: true,
-    canReadEnvironment: true,
     endpoint: 'environments.json',
     helpCanaryDeploymentsPath: 'help/canary-deployments',
     helpPagePath: 'help',
