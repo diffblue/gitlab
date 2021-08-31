@@ -284,6 +284,7 @@ export default {
           :loading="isLoadingAdoptionData"
           :data="devopsAdoptionEnabledNamespaces"
           :timestamp="timestamp"
+          @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
         />
       </gl-tab>
 
