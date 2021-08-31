@@ -107,15 +107,6 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_8485e97c00e3() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."source_job_id_convert_to_bigint" := NEW."source_job_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_8487d4de3e7b() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -27326,8 +27317,6 @@ CREATE TRIGGER trigger_51ab7cef8934 BEFORE INSERT OR UPDATE ON ci_builds_runner_
 CREATE TRIGGER trigger_542d6c2ad72e BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_542d6c2ad72e();
 
 CREATE TRIGGER trigger_77f5e1d20482 BEFORE INSERT OR UPDATE ON deployments FOR EACH ROW EXECUTE FUNCTION trigger_77f5e1d20482();
-
-CREATE TRIGGER trigger_8485e97c00e3 BEFORE INSERT OR UPDATE ON ci_sources_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_8485e97c00e3();
 
 CREATE TRIGGER trigger_8487d4de3e7b BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_8487d4de3e7b();
 
