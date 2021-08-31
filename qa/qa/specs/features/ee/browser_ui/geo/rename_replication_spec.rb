@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Geo', :orchestrated, :geo do
     describe 'GitLab Geo project rename replication' do
-      it 'user renames project', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/695' do
+      it 'user renames project', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1429' do
         original_project_name = 'geo-before-rename'
         original_readme_content = "The original project name was #{original_project_name}"
         readme_file_name = 'README.md'

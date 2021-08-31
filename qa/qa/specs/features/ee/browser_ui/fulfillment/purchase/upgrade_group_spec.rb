@@ -38,7 +38,7 @@ module QA
           Runtime::Feature.disable(:top_level_group_creation_enabled)
         end
 
-        it 'upgrades from free to ultimate', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1863' do
+        it 'upgrades from free to ultimate', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1882' do
           Page::Group::Menu.perform(&:go_to_billing)
           Gitlab::Page::Group::Settings::Billing.perform(&:upgrade_to_ultimate)
 

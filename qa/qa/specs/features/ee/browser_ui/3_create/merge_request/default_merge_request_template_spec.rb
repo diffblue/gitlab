@@ -15,7 +15,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'uses default template when creating a merge request', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1232' do
+      it 'uses default template when creating a merge request', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1713' do
         default_template_project.visit!
 
         Page::Project::Menu.perform(&:go_to_general_settings)

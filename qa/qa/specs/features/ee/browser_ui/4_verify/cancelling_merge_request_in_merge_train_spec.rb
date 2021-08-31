@@ -88,7 +88,7 @@ module QA
       end
 
       context 'when system cancels the merge request', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324122', type: :bug } do
-        it 'creates a TODO task', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1741' do
+        it 'creates a TODO task', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1883' do
           # Create a merge conflict
           Resource::Repository::Commit.fabricate_via_api! do |commit|
             commit.api_client = @user_api_client
@@ -121,7 +121,7 @@ module QA
       end
 
       context 'when user cancels the merge request' do
-        it 'does not create a TODO task', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1044' do
+        it 'does not create a TODO task', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1884' do
           # Manually removes merge request from the train
           Page::MergeRequest::Show.perform do |show|
             show.cancel_auto_merge!

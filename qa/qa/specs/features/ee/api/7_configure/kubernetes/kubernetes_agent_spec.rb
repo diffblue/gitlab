@@ -28,7 +28,7 @@ module QA
         project.group.remove_via_api!
       end
 
-      it 'deploys a K8s manifest file', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1106' do
+      it 'deploys a K8s manifest file', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1924' do
         deploy_manifest(project)
 
         expect(manifest_deployed?).to be_truthy

@@ -43,7 +43,7 @@ module QA
           @group = Resource::Group.fabricate_via_api!
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/905' do
+        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1316' do
           built_in = 'Ruby on Rails'
 
           @group.visit!
@@ -94,7 +94,7 @@ module QA
           QA::Flow::Project.go_to_create_project_from_template
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1233' do
+        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1621' do
           Page::Project::New.perform do |new_page|
             # TODO: Remove `reload true` once this bug is fixed: https://gitlab.com/gitlab-org/gitlab/-/issues/247874
             new_page.retry_until(reload: true) do
@@ -147,7 +147,7 @@ module QA
           Page::Project::New.perform(&:go_to_create_from_template_group_tab)
         end
 
-        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1768' do
+        it 'successfully imports the project using template', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1312' do
           Page::Project::New.perform do |new_page|
             expect(new_page.group_template_tab_badge_text).to eq "1"
             expect(new_page).to have_text(@template_container_group_name)

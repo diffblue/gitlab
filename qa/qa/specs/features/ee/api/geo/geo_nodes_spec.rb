@@ -39,7 +39,7 @@ module QA
         end
 
         describe 'editing a Geo node' do
-          it 'PUT /geo_nodes/:id for secondary node', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/683' do
+          it 'PUT /geo_nodes/:id for secondary node', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1441' do
             endpoint = api_endpoint("/geo_nodes/#{@secondary_node[:id]}")
             new_attributes = { enabled: false, files_max_capacity: 1000, repos_max_capacity: 2000 }
 

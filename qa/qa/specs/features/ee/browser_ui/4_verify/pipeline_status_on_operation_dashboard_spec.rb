@@ -54,7 +54,7 @@ module QA
         remove_projects
       end
 
-      it 'has many pipelines with appropriate statuses', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/900' do
+      it 'has many pipelines with appropriate statuses', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1319' do
         add_projects_to_board
 
         EE::Page::OperationsDashboard.perform do |operation|

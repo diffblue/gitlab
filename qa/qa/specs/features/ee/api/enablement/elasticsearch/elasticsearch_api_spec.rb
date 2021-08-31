@@ -37,7 +37,7 @@ module QA
         end
       end
 
-      it 'searches public project and finds a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/744' do
+      it 'searches public project and finds a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1388' do
         successful_search(non_member_api_client)
       end
 
@@ -46,11 +46,11 @@ module QA
           project.set_visibility(:private)
         end
 
-        it 'finds a blob as an authorized user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/745' do
+        it 'finds a blob as an authorized user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1387' do
           successful_search(api_client)
         end
 
-        it 'does not find a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/746' do
+        it 'does not find a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1386' do
           QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
             get Runtime::Search.create_search_request(non_member_api_client, 'blobs', project_file_content).url
             expect_status(QA::Support::API::HTTP_STATUS_OK)

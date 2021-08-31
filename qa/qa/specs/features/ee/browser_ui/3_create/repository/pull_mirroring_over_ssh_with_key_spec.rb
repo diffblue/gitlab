@@ -25,7 +25,7 @@ module QA
         target_project.visit!
       end
 
-      it 'configures and syncs a (pull) mirrored repository', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/401' do
+      it 'configures and syncs a (pull) mirrored repository', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1595' do
         # Configure the target project to pull from the source project
         # And get the public key to be used as a deploy key
         Page::Project::Menu.perform(&:go_to_repository_settings)

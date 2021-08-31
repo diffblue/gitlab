@@ -7,6 +7,7 @@ import {
   GlIcon,
   GlBadge,
 } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import {
   TABLE_TEST_IDS_HEADERS,
@@ -14,7 +15,6 @@ import {
   TABLE_TEST_IDS_ACTIONS,
   TABLE_TEST_IDS_LOCAL_STORAGE_SORT_BY,
   TABLE_TEST_IDS_LOCAL_STORAGE_SORT_DESC,
-  DELETE_MODAL_ID,
   TABLE_SORT_BY_STORAGE_KEY,
   TABLE_SORT_DESC_STORAGE_KEY,
   I18N_TABLE_REMOVE_BUTTON,
@@ -74,7 +74,6 @@ export default {
     removeButtonDisabled: I18N_TABLE_REMOVE_BUTTON_DISABLED,
     removeButton: I18N_TABLE_REMOVE_BUTTON,
   },
-  deleteModalId: DELETE_MODAL_ID,
   testids: {
     NAMESPACE: TABLE_TEST_IDS_NAMESPACE,
     ACTIONS: TABLE_TEST_IDS_ACTIONS,
@@ -98,6 +97,7 @@ export default {
       sortBy: NAME_HEADER,
       sortDesc: false,
       selectedNamespace: null,
+      deleteModalId: uniqueId('delete-modal-'),
     };
   },
   computed: {
@@ -206,7 +206,7 @@ export default {
           :data-testid="$options.testids.ACTIONS"
         >
           <gl-button
-            v-gl-modal="$options.deleteModalId"
+            v-gl-modal="deleteModalId"
             :disabled="isCurrentGroup(item)"
             category="tertiary"
             icon="remove"
@@ -218,6 +218,7 @@ export default {
     </gl-table>
     <devops-adoption-delete-modal
       v-if="selectedNamespace"
+      :modal-id="deleteModalId"
       :namespace="selectedNamespace"
       @enabledNamespacesRemoved="$emit('enabledNamespacesRemoved', $event)"
       @trackModalOpenState="$emit('trackModalOpenState', $event)"

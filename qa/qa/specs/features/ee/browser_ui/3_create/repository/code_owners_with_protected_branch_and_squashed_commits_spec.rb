@@ -45,7 +45,7 @@ module QA
         Runtime::Feature.disable(:gitaly_go_user_merge_branch)
       end
 
-      it 'creates a merge request with codeowners file and squashing commits enabled', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1090' do
+      it 'creates a merge request with codeowners file and squashing commits enabled', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1876' do
         # The default branch is already protected, and we can't update a protected branch via the API (yet)
         # so we unprotect it first and then protect it again with the desired parameters
         Resource::ProtectedBranch.unprotect_via_api! do |branch|

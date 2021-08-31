@@ -5,7 +5,6 @@ export const PER_PAGE = 20;
 export const DEBOUNCE_DELAY = 500;
 export const PROGRESS_BAR_HEIGHT = '8px';
 export const DATE_TIME_FORMAT = 'yyyy-mm-dd HH:MM';
-export const DELETE_MODAL_ID = 'devopsDeleteModal';
 
 export const TABLE_TEST_IDS_HEADERS = 'header';
 export const TABLE_TEST_IDS_NAMESPACE = 'namespaceCol';
@@ -33,6 +32,9 @@ export const I18N_TABLE_REMOVE_BUTTON = s__('DevopsAdoption|Remove Group from th
 export const I18N_TABLE_REMOVE_BUTTON_DISABLED = s__(
   'DevopsAdoption|You cannot remove the group you are currently in.',
 );
+
+export const I18N_OVERVIEW_TABLE_HEADER_GROUP = s__('DevopsAdoption|Adoption by group');
+export const I18N_OVERVIEW_TABLE_HEADER_SUBGROUP = s__('DevopsAdoption|Adoption by subgroup');
 
 export const I18N_GROUP_DROPDOWN_TEXT = s__('DevopsAdoption|Add or remove subgroups');
 export const I18N_GROUP_DROPDOWN_HEADER = s__('DevopsAdoption|Edit subgroups');
@@ -80,9 +82,11 @@ export const DEVOPS_ADOPTION_OVERALL_CONFIGURATION = {
 export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
   {
     title: s__('DevopsAdoption|Dev'),
+    key: 'dev',
     tab: 'dev',
     icon: 'code',
     variant: 'warning',
+    testId: 'devCol',
     cols: [
       {
         key: 'mergeRequestApproved',
@@ -113,8 +117,10 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
   {
     title: s__('DevopsAdoption|Sec'),
     tab: 'sec',
+    key: 'sec',
     icon: 'shield',
     variant: 'info',
+    testId: 'secCol',
     cols: [
       {
         key: 'dastEnabledCount',
@@ -141,8 +147,10 @@ export const DEVOPS_ADOPTION_TABLE_CONFIGURATION = [
   {
     title: s__('DevopsAdoption|Ops'),
     tab: 'ops',
+    key: 'ops',
     icon: 'rocket',
     variant: 'success',
+    testId: 'opsCol',
     cols: [
       {
         key: 'deploySucceeded',

@@ -39,7 +39,7 @@ module QA
         end
       end
 
-      it 'searches public project and finds a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1105' do
+      it 'searches public project and finds a blob as an non-member user', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1220' do
         start_time = Time.now
         while (Time.now - start_time) / 60 < p1_threshold
           get Runtime::Search.create_search_request(api_client, 'blobs', project_file_content).url

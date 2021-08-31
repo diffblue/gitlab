@@ -39,13 +39,13 @@
   }
 }
 
-@include media-breakpoint-up(sm) {
+@include media-breakpoint-up(md) {
   .actions-cell {
     width: $gl-spacing-scale-6;
   }
 }
 
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .actions-cell {
     div {
       width: 100% !important;
@@ -53,8 +53,21 @@
     }
   }
 
-  .actions-cell::before {
+  .header-cell {
+    div {
+      width: 100% !important;
+      text-align: left !important;
+      padding: 0 !important;
+    }
+  }
+
+  .actions-cell::before,
+  .header-cell::before {
     @include gl-display-none;
+  }
+
+  .da-table-mobile-header::before {
+    @include gl-text-gray-400;
   }
 }
 

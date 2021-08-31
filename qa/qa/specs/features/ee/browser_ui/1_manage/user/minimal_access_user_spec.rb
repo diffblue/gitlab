@@ -25,7 +25,7 @@ module QA
         end
       end
 
-      it 'is not allowed to edit files via the UI', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1071' do
+      it 'is not allowed to edit files via the UI', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1643' do
         Flow::Login.sign_in(as: user_with_minimal_access)
         project.visit!
 

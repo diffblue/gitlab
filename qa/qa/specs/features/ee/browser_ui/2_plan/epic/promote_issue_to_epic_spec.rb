@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Plan', :reliable do
     describe 'promote issue to epic' do
-      it 'promotes issue to epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1143' do
+      it 'promotes issue to epic', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1208' do
         Flow::Login.sign_in
 
         project = Resource::Project.fabricate_via_api! do |project|
