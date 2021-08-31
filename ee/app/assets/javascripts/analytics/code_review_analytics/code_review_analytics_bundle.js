@@ -20,7 +20,9 @@ export default () => {
     labelsEndpoint: labelsPath,
     projectEndpoint: projectPath,
   });
-  const { milestone_title = null, label_name = [] } = urlQueryToFilter(window.location.search);
+  const { milestone_title = null, label_name = [] } = urlQueryToFilter(window.location.search, {
+    legacySpacesDecode: true,
+  });
   store.dispatch('filters/initialize', {
     selectedMilestone: milestone_title,
     selectedLabelList: label_name,
