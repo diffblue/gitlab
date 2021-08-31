@@ -1,0 +1,17 @@
+fragment SecurityDashboardNote on Note {
+  id
+  system
+  body
+  bodyHtml
+  updatedAt
+  systemNoteIconName
+  userPermissions {
+    adminNote
+  }
+  author {
+    id
+    name
+    webPath
+    username
+  }
+}

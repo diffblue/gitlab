@@ -1,12 +1,14 @@
 <script>
 import { GlButton, GlSafeHtmlDirective as SafeHtml, GlLoadingIcon } from '@gitlab/ui';
-import deleteNoteMutation from 'ee/security_dashboard/graphql/mutations/note_delete.mutation.graphql';
+import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_create.mutation.graphql';
+import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
+import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import createFlash from '~/flash';
-import { TYPE_NOTE } from '~/graphql_shared/constants';
+import { TYPE_NOTE, TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
+import { normalizeGraphQLNote } from '../helpers';
 import HistoryCommentEditor from './history_comment_editor.vue';
 
 export default {
@@ -21,6 +23,8 @@ export default {
     SafeHtml,
   },
 
+  inject: ['vulnerabilityId'],
+
   props: {
     comment: {
       type: Object,
@@ -31,10 +35,6 @@ export default {
       type: String,
       required: false,
       default: undefined,
-    },
-    notesUrl: {
-      type: String,
-      required: true,
     },
   },
 
@@ -63,7 +63,7 @@ export default {
       ];
     },
     initialComment() {
-      return this.comment && this.comment.note;
+      return this.comment?.note;
     },
     canEditComment() {
       return this.comment.currentUser?.canEdit;
@@ -85,51 +85,79 @@ export default {
     showCommentInput() {
       this.isEditingComment = true;
     },
-    getSaveConfig(note) {
-      const isUpdatingComment = Boolean(this.comment);
-      const method = isUpdatingComment ? 'put' : 'post';
-      const url = isUpdatingComment ? this.comment.path : this.notesUrl;
-      const data = { note: { note } };
-      const emitName = isUpdatingComment ? 'onCommentUpdated' : 'onCommentAdded';
+    async insertComment(body) {
+      const { data } = await this.$apollo.mutate({
+        mutation: createNoteMutation,
+        variables: {
+          noteableId: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerabilityId),
+          discussionId: convertToGraphQLId(TYPE_DISCUSSION, this.discussionId),
+          body,
+        },
+      });
 
-      // If we're saving a new comment, use the discussion ID in the request data.
-      if (!isUpdatingComment) {
-        data.in_reply_to_discussion_id = this.discussionId;
+      const { note, errors } = data.createNote;
+
+      if (errors?.length > 0) {
+        throw errors;
       }
 
-      return { method, url, data, emitName };
+      this.$emit('onCommentAdded', normalizeGraphQLNote(note));
     },
-    saveComment(note) {
-      this.isSavingComment = true;
-      const { method, url, data, emitName } = this.getSaveConfig(note);
+    async updateComment(body) {
+      const { data } = await this.$apollo.mutate({
+        mutation: updateNoteMutation,
+        variables: {
+          id: convertToGraphQLId(TYPE_NOTE, this.comment.id),
+          body,
+        },
+      });
 
-      // note: this direct API call will be replaced when migrating the vulnerability details page to GraphQL
-      // related epic: https://gitlab.com/groups/gitlab-org/-/epics/3657
-      axios({ method, url, data })
-        .then(({ data: responseData }) => {
-          this.isEditingComment = false;
-          this.$emit(emitName, { response: responseData, comment: this.comment });
-        })
-        .catch(() => {
-          createFlash({
-            message: s__(
-              'VulnerabilityManagement|Something went wrong while trying to save the comment. Please try again later.',
-            ),
-          });
+      const { note, errors } = data.updateNote;
+
+      if (errors?.length > 0) {
+        throw errors;
+      }
+
+      this.cancelEditingComment();
+      this.$emit('onCommentUpdated', normalizeGraphQLNote(note));
+    },
+    async saveComment(body) {
+      this.isSavingComment = true;
+      const isUpdatingComment = Boolean(this.comment);
+
+      try {
+        if (isUpdatingComment) {
+          await this.updateComment(body);
+        } else {
+          await this.insertComment(body);
+        }
+      } catch {
+        createFlash({
+          message: s__(
+            'VulnerabilityManagement|Something went wrong while trying to save the comment. Please try again later.',
+          ),
         });
+      }
+
+      this.isSavingComment = false;
     },
     async deleteComment() {
       this.isDeletingComment = true;
 
       try {
-        await this.$apollo.mutate({
-          mutation: deleteNoteMutation,
+        const { data } = await this.$apollo.mutate({
+          mutation: destroyNoteMutation,
           variables: {
             id: convertToGraphQLId(TYPE_NOTE, this.comment.id),
           },
         });
+
+        if (data.errors?.length > 0) {
+          throw data.errors;
+        }
+
         this.$emit('onCommentDeleted', this.comment);
-      } catch (e) {
+      } catch {
         createFlash({
           message: s__(
             'VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later.',
