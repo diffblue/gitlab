@@ -3,8 +3,6 @@
 class BackfillProjectsWithCoverage < ActiveRecord::Migration[6.1]
   include Gitlab::Database::MigrationHelpers
 
-  DOWNTIME = false
-
   MIGRATION = 'BackfillProjectsWithCoverage'
   DELAY_INTERVAL = 2.minutes
   BATCH_SIZE = 10_000

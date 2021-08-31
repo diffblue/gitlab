@@ -68,7 +68,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectsWithCoverage, schema
       )
     end
 
-    it 'creates entries per project and default_branch combination in the given range' do
+    it 'creates entries per project and default_branch combination in the given range', :aggregate_failures do
       subject.perform(1, 4)
 
       entries = project_ci_feature_usages.order('project_id ASC, default_branch DESC')
@@ -86,7 +86,6 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectsWithCoverage, schema
 
       it 'does not create a new entry' do
         expect { subject.perform(1, 4) }.not_to change { project_ci_feature_usages.count }
-        expect(project_ci_feature_usages.count).to eq(3)
       end
     end
   end
