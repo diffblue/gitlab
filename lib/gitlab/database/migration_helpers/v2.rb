@@ -6,6 +6,46 @@ module Gitlab
       module V2
         include Gitlab::Database::MigrationHelpers
 
+        # Superseded by `create_table` override below
+        undef_method :create_table_with_constraints
+
+        # Creates a new table, optionally allowing the caller to add text limit constraints to the table.
+        # This method only extends Rails' `create_table` method
+        #
+        # Example:
+        #
+        #     create_table :some_table do |t|
+        #       t.integer :thing, null: false
+        #       t.text :other_thing
+        #
+        #       t.check_constraint 'thing IS NOT NULL', name: 'thing_is_not_null'
+        #       t.text_limit :other_thing, 255
+        #     end
+        #
+        # See Rails' `create_table` for more info on the available arguments.
+        #
+        # When adding foreign keys to other tables, consider wrapping the call into a with_lock_retries block
+        # to avoid traffic stalls.
+        def create_table(table_name, *args, **kwargs, &block)
+          helper_context = self
+
+          super do |t|
+            t.define_singleton_method(:text_limit) do |column_name, limit, name: nil|
+              # rubocop:disable GitlabSecurity/PublicSend
+              name = helper_context.send(:text_limit_name, table_name, column_name, name: name)
+              helper_context.send(:validate_check_constraint_name!, name)
+              # rubocop:enable GitlabSecurity/PublicSend
+
+              column_name = helper_context.quote_column_name(column_name)
+              definition = "char_length(#{column_name}) <= #{limit}"
+
+              t.check_constraint(definition, name: name)
+            end
+
+            t.instance_eval(&block) unless block.nil?
+          end
+        end
+
         # Executes the block with a retry mechanism that alters the +lock_timeout+ and +sleep_time+ between attempts.
         # The timings can be controlled via the +timing_configuration+ parameter.
         # If the lock was not acquired within the retry period, a last attempt is made without using +lock_timeout+.

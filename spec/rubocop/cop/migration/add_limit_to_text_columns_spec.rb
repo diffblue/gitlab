@@ -26,7 +26,7 @@ RSpec.describe RuboCop::Cop::Migration::AddLimitToTextColumns do
                   ^^^^ #{msg}
               end
 
-              create_table_with_constraints :test_text_limits_create do |t|
+              create_table :test_text_limits_create do |t|
                 t.integer :test_id, null: false
                 t.text :title
                 t.text :description
@@ -61,7 +61,7 @@ RSpec.describe RuboCop::Cop::Migration::AddLimitToTextColumns do
                 t.text :name
               end
 
-              create_table_with_constraints :test_text_limits_create do |t|
+              create_table :test_text_limits_create do |t|
                 t.integer :test_id, null: false
                 t.text :title
                 t.text :description

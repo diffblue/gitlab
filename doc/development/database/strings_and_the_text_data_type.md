@@ -11,11 +11,13 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 When adding new columns that will be used to store strings or other textual information:
 
 1. We always use the `text` data type instead of the `string` data type.
-1. `text` columns should always have a limit set, either by using the `create_table_with_constraints` helper
-when creating a table, or by using the `add_text_limit` when altering an existing table.
+1. `text` columns should always have a limit set, either by using the `create_table` with
+the `#text_limit` helper (see below) when creating a table, or by using the `add_text_limit`
+when altering an existing table.
 
-The `text` data type can not be defined with a limit, so `create_table_with_constraints` and `add_text_limit` enforce
-that by adding a [check constraint](https://www.postgresql.org/docs/11/ddl-constraints.html) on the column.
+The standard Rails `text` column type can not be defined with a limit, but we extend `create_table` to
+add a `limit: 255` option. Outside of `create_table`, `add_text_limit` can be used to add a [check constraint](https://www.postgresql.org/docs/11/ddl-constraints.html)
+to an already existing column.
 
 ## Background information
 
@@ -41,15 +43,16 @@ Don't use text columns for `attr_encrypted` attributes. Use a
 ## Create a new table with text columns
 
 When adding a new table, the limits for all text columns should be added in the same migration as
-the table creation.
+the table creation. We add a `#text_limit` method to Rails' `create_table`, which allows adding limits
+for text columns.
 
 For example, consider a migration that creates a table with two text columns,
 `db/migrate/20200401000001_create_db_guides.rb`:
 
 ```ruby
 class CreateDbGuides < Gitlab::Database::Migration[1.0]
-  def up
-    create_table_with_constraints :db_guides do |t|
+  def change
+    create_table :db_guides do |t|
       t.bigint :stars, default: 0, null: false
       t.text :title
       t.text :notes
@@ -58,16 +61,8 @@ class CreateDbGuides < Gitlab::Database::Migration[1.0]
       t.text_limit :notes, 1024
     end
   end
-
-  def down
-    # No need to drop the constraints, drop_table takes care of everything
-    drop_table :db_guides
-  end
 end
 ```
-
-Note that the `create_table_with_constraints` helper uses the `with_lock_retries` helper
-internally, so we don't need to manually wrap the method call in the migration.
 
 ## Add a text column to an existing table
 
