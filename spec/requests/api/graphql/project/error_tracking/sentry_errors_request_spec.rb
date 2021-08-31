@@ -48,7 +48,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'reactive cache returns data' do
+    context 'when reactive cache returns data' do
       before do
         allow_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:issue_details)
@@ -72,7 +72,7 @@ RSpec.describe 'sentry errors requests' do
         end
       end
 
-      context 'user does not have permission' do
+      context 'when user does not have permission' do
         let(:current_user) { create(:user) }
 
         it 'is expected to return an empty error' do
@@ -81,7 +81,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'sentry api returns an error' do
+    context 'when sentry api returns an error' do
       before do
         expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:issue_details)
@@ -140,7 +140,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'reactive cache returns data' do
+    context 'when reactive cache returns data' do
       before do
         expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:list_sentry_issues)
@@ -177,7 +177,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'sentry api itself errors out' do
+    context 'when sentry api itself errors out' do
       before do
         expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:list_sentry_issues)
@@ -223,7 +223,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'reactive cache returns data' do
+    context 'when reactive cache returns data' do
       before do
         allow_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:issue_latest_event)
@@ -234,7 +234,7 @@ RSpec.describe 'sentry errors requests' do
 
       it_behaves_like 'setting stack trace error'
 
-      context 'user does not have permission' do
+      context 'when user does not have permission' do
         let(:current_user) { create(:user) }
 
         it 'is expected to return an empty error' do
@@ -243,7 +243,7 @@ RSpec.describe 'sentry errors requests' do
       end
     end
 
-    context 'sentry api returns an error' do
+    context 'when sentry api returns an error' do
       before do
         expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
           .to receive(:issue_latest_event)
