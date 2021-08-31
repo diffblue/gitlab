@@ -11,10 +11,20 @@ module Ci
 
     # rubocop: disable CodeReuse/ActiveRecord
     def perform(job_id)
-      Ci::Build.with_live_trace.find_by(id: job_id).try do |job|
+      ci_build_scope.find_by(id: job_id).try do |job|
         Ci::ArchiveTraceService.new.execute(job, worker_name: self.class.name)
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
+
+    private
+
+    def ci_build_scope
+      if Feature.enabled?(:ci_enable_live_trace)
+        Ci::Build.with_live_trace
+      else
+        Ci::Build.without_archived_trace
+      end
+    end
   end
 end
