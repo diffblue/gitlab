@@ -112,12 +112,7 @@ describe('setFilters', () => {
 });
 
 describe('performSearch', () => {
-  it('should dispatch setFilters action', (done) => {
-    testAction(actions.performSearch, {}, {}, [], [{ type: 'setFilters', payload: {} }], done);
-  });
-
-  it('should dispatch setFilters, fetchLists and resetIssues action when graphqlBoardLists FF is on', async () => {
-    window.gon = { features: { graphqlBoardLists: true } };
+  it('should dispatch setFilters, fetchLists and resetIssues action', async () => {
     const getters = { isSwimlanesOn: false };
 
     await testAction({
@@ -139,9 +134,9 @@ describe('performSearch', () => {
       expectedActions: [
         { type: 'setFilters', payload: {} },
         { type: 'resetEpics' },
-        { type: 'resetIssues' },
         { type: 'fetchEpicsSwimlanes' },
         { type: 'fetchLists' },
+        { type: 'resetIssues' },
       ],
     });
   });
@@ -464,7 +459,6 @@ describe('setShowLabels', () => {
 
 describe('updateListWipLimit', () => {
   let storeMock;
-  const getters = { shouldUseGraphQL: false };
 
   beforeEach(() => {
     storeMock = {
@@ -483,26 +477,9 @@ describe('updateListWipLimit', () => {
     jest.restoreAllMocks();
   });
 
-  it('axios - should call the correct url', () => {
+  it('commit UPDATE_LIST_SUCCESS mutation on success', () => {
     const maxIssueCount = 0;
     const activeId = 1;
-
-    return actions
-      .updateListWipLimit({ state: { activeId }, getters }, { maxIssueCount, listId: activeId })
-      .then(() => {
-        expect(axios.put).toHaveBeenCalledWith(
-          `${boardsStoreEE.store.state.endpoints.listsEndpoint}/${activeId}`,
-          {
-            list: { max_issue_count: maxIssueCount },
-          },
-        );
-      });
-  });
-
-  it('graphql - commit UPDATE_LIST_SUCCESS mutation on success', () => {
-    const maxIssueCount = 0;
-    const activeId = 1;
-    getters.shouldUseGraphQL = true;
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
         boardListUpdateLimitMetrics: {
@@ -517,7 +494,7 @@ describe('updateListWipLimit', () => {
     return testAction(
       actions.updateListWipLimit,
       { maxIssueCount, listId: activeId },
-      { isShowingEpicsSwimlanes: true, ...getters },
+      { isShowingEpicsSwimlanes: true },
       [
         {
           type: types.UPDATE_LIST_SUCCESS,
@@ -533,16 +510,15 @@ describe('updateListWipLimit', () => {
     );
   });
 
-  it('graphql - dispatch handleUpdateListFailure on failure', () => {
+  it('dispatch handleUpdateListFailure on failure', () => {
     const maxIssueCount = 0;
     const activeId = 1;
-    getters.shouldUseGraphQL = true;
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue(Promise.reject());
 
     return testAction(
       actions.updateListWipLimit,
       { maxIssueCount, listId: activeId },
-      { isShowingEpicsSwimlanes: true, ...getters },
+      { isShowingEpicsSwimlanes: true },
       [],
       [{ type: 'handleUpdateListFailure' }],
     );
