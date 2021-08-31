@@ -11,8 +11,6 @@ import {
 import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import { ListType } from '~/boards/constants';
-import boardsStore from '~/boards/stores/boards_store';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 
@@ -87,7 +85,7 @@ export default {
       'assignees',
       'assigneesLoading',
     ]),
-    ...mapGetters(['getListByTypeId', 'shouldUseGraphQL', 'isEpicBoard']),
+    ...mapGetters(['getListByTypeId', 'isEpicBoard']),
 
     info() {
       return listTypeInfo[this.columnType] || {};
@@ -132,16 +130,10 @@ export default {
         return false;
       }
 
-      if (this.shouldUseGraphQL || this.isEpicBoard) {
-        const key = `${this.columnType}Id`;
-        return this.getListByTypeId({
-          [key]: this.selectedId,
-        });
-      }
-
-      return boardsStore.state.lists.find(
-        (list) => list[this.columnType]?.id === getIdFromGraphQLId(this.selectedId),
-      );
+      const key = `${this.columnType}Id`;
+      return this.getListByTypeId({
+        [key]: this.selectedId,
+      });
     },
 
     loading() {
@@ -187,17 +179,6 @@ export default {
       'fetchIterations',
       'fetchMilestones',
     ]),
-    highlight(listId) {
-      if (this.shouldUseGraphQL || this.isEpicBoard) {
-        this.highlightList(listId);
-      } else {
-        const list = boardsStore.state.lists.find(({ id }) => id === listId);
-        list.highlighted = true;
-        setTimeout(() => {
-          list.highlighted = false;
-        }, 2000);
-      }
-    },
     addList() {
       if (!this.selectedItem) {
         return;
@@ -207,45 +188,12 @@ export default {
 
       if (this.columnForSelected) {
         const listId = this.columnForSelected.id;
-        this.highlight(listId);
+        this.highlightList(listId);
         return;
       }
 
-      if (this.shouldUseGraphQL || this.isEpicBoard) {
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        this.createList({ [`${this.columnType}Id`]: this.selectedId });
-      } else {
-        const { length } = boardsStore.state.lists;
-        const position = this.hideClosed ? length - 1 : length - 2;
-        const listObj = {
-          // eslint-disable-next-line @gitlab/require-i18n-strings
-          [`${this.columnType}Id`]: getIdFromGraphQLId(this.selectedId),
-          title: this.selectedItem.title,
-          position,
-          list_type: this.columnType,
-        };
-
-        if (this.labelTypeSelected) {
-          listObj.label = this.selectedItem;
-        } else if (this.milestoneTypeSelected) {
-          listObj.milestone = {
-            ...this.selectedItem,
-            id: getIdFromGraphQLId(this.selectedItem.id),
-          };
-        } else if (this.iterationTypeSelected) {
-          listObj.iteration = {
-            ...this.selectedItem,
-            id: getIdFromGraphQLId(this.selectedItem.id),
-          };
-        } else if (this.assigneeTypeSelected) {
-          listObj.assignee = {
-            ...this.selectedItem,
-            id: getIdFromGraphQLId(this.selectedItem.id),
-          };
-        }
-
-        boardsStore.new(listObj);
-      }
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      this.createList({ [`${this.columnType}Id`]: this.selectedId });
     },
 
     filterItems(searchTerm) {

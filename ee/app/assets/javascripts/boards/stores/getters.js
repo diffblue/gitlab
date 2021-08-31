@@ -54,8 +54,4 @@ export default {
   isEpicBoard: (state) => {
     return state.issuableType === issuableTypes.epic;
   },
-
-  shouldUseGraphQL: (state) => {
-    return state.isShowingEpicsSwimlanes || gon?.features?.graphqlBoardLists;
-  },
 };

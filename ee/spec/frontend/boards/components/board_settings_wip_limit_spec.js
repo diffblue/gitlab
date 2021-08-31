@@ -1,35 +1,20 @@
-import '~/boards/models/list';
 import { GlFormInput } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { shallowMount } from '@vue/test-utils';
 import { noop } from 'lodash';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import boardsStore from '~/boards/stores/boards_store';
+import { mockLabelList } from 'jest/boards/mock_data';
 
-const localVue = createLocalVue();
-
-localVue.use(Vuex);
+Vue.use(Vuex);
 
 describe('BoardSettingsWipLimit', () => {
   let wrapper;
   let storeActions;
-  const labelTitle = 'test';
-  const labelColor = '#FFFF';
-  const listId = 1;
+  const listId = mockLabelList.id;
   const currentWipLimit = 1; // Needs to be other than null to trigger requests
-  let mock;
 
-  const addList = (maxIssueCount = 0) => {
-    boardsStore.addList({
-      id: listId,
-      label: { title: labelTitle, color: labelColor },
-      max_issue_count: maxIssueCount,
-      list_type: 'label',
-    });
-  };
   const clickEdit = () => wrapper.find('.js-edit-button').vm.$emit('click');
   const findRemoveWipLimit = () => wrapper.find('.js-remove-limit');
   const findWipLimit = () => wrapper.find('.js-wip-limit');
@@ -46,13 +31,11 @@ describe('BoardSettingsWipLimit', () => {
     const store = new Vuex.Store({
       state: vuexState,
       actions: storeActions,
-      getters: { shouldUseGraphQL: () => false },
     });
 
     wrapper = shallowMount(BoardSettingsWipLimit, {
       propsData: props,
       store,
-      localVue,
       data() {
         return localState;
       },
@@ -69,13 +52,7 @@ describe('BoardSettingsWipLimit', () => {
     }
   };
 
-  beforeEach(() => {
-    boardsStore.create();
-    mock = new MockAdapter(axios);
-  });
-
   afterEach(() => {
-    mock.restore();
     jest.restoreAllMocks();
     wrapper.destroy();
   });
@@ -83,25 +60,28 @@ describe('BoardSettingsWipLimit', () => {
   describe('when activeList is present', () => {
     describe('when activeListWipLimit is 0', () => {
       it('renders "None" in the block', () => {
-        createComponent({ vuexState: { activeId: listId } });
+        createComponent({
+          vuexState: {
+            activeId: listId,
+          },
+        });
 
         expect(findWipLimit().text()).toBe('None');
       });
     });
 
-    describe('when activeId is greater than 0', () => {
-      afterEach(() => {
-        boardsStore.removeList(listId);
-      });
-
+    describe('when activeListWipLimit is greater than 0', () => {
       it.each`
         num   | expected
         ${1}  | ${'1 issue'}
         ${11} | ${'11 issues'}
       `('it renders $num', ({ num, expected }) => {
-        addList(4);
-
-        createComponent({ vuexState: { activeId: num }, props: { maxIssueCount: num } });
+        createComponent({
+          vuexState: {
+            activeId: listId,
+          },
+          props: { maxIssueCount: num },
+        });
 
         expect(findWipLimit().text()).toBe(expected);
       });
@@ -112,7 +92,9 @@ describe('BoardSettingsWipLimit', () => {
     const maxIssueCount = 4;
     beforeEach(async () => {
       createComponent({
-        vuexState: { activeId: listId },
+        vuexState: {
+          activeId: listId,
+        },
         actions: { updateListWipLimit: noop },
         props: { maxIssueCount },
       });
@@ -137,15 +119,14 @@ describe('BoardSettingsWipLimit', () => {
 
   describe('remove limit', () => {
     describe('when wipLimit is set', () => {
+      const spy = jest.fn().mockResolvedValue({
+        data: { boardListUpdateLimitMetrics: { list: { maxIssueCount: 0 } } },
+      });
       beforeEach(() => {
-        addList(4);
-
-        const spy = jest.fn().mockResolvedValue({
-          config: { data: JSON.stringify({ list: { max_issue_count: 0 } }) },
-        });
-
         createComponent({
-          vuexState: { activeId: listId },
+          vuexState: {
+            activeId: listId,
+          },
           actions: { updateListWipLimit: spy },
           props: { maxIssueCount: 4 },
         });
@@ -156,18 +137,22 @@ describe('BoardSettingsWipLimit', () => {
 
         findRemoveWipLimit().vm.$emit('click');
 
+        await waitForPromises();
         await wrapper.vm.$nextTick();
 
-        // WARNING: https://gitlab.com/gitlab-org/gitlab/-/issues/232573
-        expect(boardsStore.findList('id', listId).maxIssueCount).toBe(0);
+        expect(spy).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({ listId, maxIssueCount: 0 }),
+        );
       });
     });
 
     describe('when wipLimit is not set', () => {
       beforeEach(() => {
-        addList();
-
-        createComponent({ vuexState: { activeId: listId }, actions: { updateListWipLimit: noop } });
+        createComponent({
+          vuexState: { activeId: listId },
+          actions: { updateListWipLimit: noop },
+        });
       });
 
       it('does not render the remove limit button', () => {
@@ -177,14 +162,6 @@ describe('BoardSettingsWipLimit', () => {
   });
 
   describe('when edit is true', () => {
-    beforeEach(() => {
-      addList(2);
-    });
-
-    afterEach(() => {
-      boardsStore.removeList(listId);
-    });
-
     describe.each`
       blurMethod
       ${'enter'}
@@ -193,10 +170,12 @@ describe('BoardSettingsWipLimit', () => {
       describe(`when blur is triggered by ${blurMethod}`, () => {
         it('calls updateListWipLimit', async () => {
           const spy = jest.fn().mockResolvedValue({
-            config: { data: JSON.stringify({ list: { max_issue_count: '4' } }) },
+            data: { boardListUpdateLimitMetrics: { list: { maxIssueCount: 4 } } },
           });
           createComponent({
-            vuexState: { activeId: listId },
+            vuexState: {
+              activeId: listId,
+            },
             actions: { updateListWipLimit: spy },
             localState: { edit: true, currentWipLimit },
           });
@@ -209,10 +188,12 @@ describe('BoardSettingsWipLimit', () => {
         });
 
         describe('when component wipLimit and List.maxIssueCount are equal', () => {
-          it('doesnt call updateListWipLimit', async () => {
+          it('does not call updateListWipLimit', async () => {
             const spy = jest.fn().mockResolvedValue({});
             createComponent({
-              vuexState: { activeId: listId },
+              vuexState: {
+                activeId: listId,
+              },
               actions: { updateListWipLimit: spy },
               localState: { edit: true, currentWipLimit: 2 },
               props: { maxIssueCount: 2 },
@@ -227,7 +208,7 @@ describe('BoardSettingsWipLimit', () => {
         });
 
         describe('when currentWipLimit is null', () => {
-          it('doesnt call updateListWipLimit', async () => {
+          it('does not call updateListWipLimit', async () => {
             const spy = jest.fn().mockResolvedValue({});
             createComponent({
               vuexState: { activeId: listId },
@@ -249,9 +230,12 @@ describe('BoardSettingsWipLimit', () => {
           beforeEach(() => {
             const spy = jest.fn().mockResolvedValue({});
             createComponent({
-              vuexState: { activeId: listId },
+              vuexState: {
+                activeId: listId,
+              },
               actions: { updateListWipLimit: spy },
               localState: { edit: true, currentWipLimit: maxIssueCount },
+              props: { maxIssueCount },
             });
 
             triggerBlur(blurMethod);
@@ -260,14 +244,7 @@ describe('BoardSettingsWipLimit', () => {
           });
 
           it('sets activeWipLimit to new maxIssueCount value', () => {
-            /*
-             * DANGER: bad coupling to the computed prop of the component because the
-             * computed prop relys on the list from boardStore, for now this is the way around
-             * stale values from boardsStore being updated, when we move List and BoardsStore to Vuex
-             * or Graphql we will be able to query the DOM for the new value.
-             */
-
-            expect(boardsStore.findList('id', 1).maxIssueCount).toBe(maxIssueCount);
+            expect(findWipLimit().text()).toContain(maxIssueCount);
           });
 
           it('toggles GlFormInput on blur', () => {

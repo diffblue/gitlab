@@ -1,8 +1,6 @@
 <script>
 import { GlButton, GlFormInput } from '@gitlab/ui';
-import { mapActions, mapGetters, mapState } from 'vuex';
-import boardsStoreEE from 'ee/boards/stores/boards_store_ee';
-import { inactiveId } from '~/boards/constants';
+import { mapActions, mapState } from 'vuex';
 import { __, n__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 
@@ -36,7 +34,6 @@ export default {
   },
   computed: {
     ...mapState(['activeId']),
-    ...mapGetters(['shouldUseGraphQL']),
     wipLimitTypeText() {
       return n__('%d issue', '%d issues', this.maxIssueCount);
     },
@@ -76,11 +73,6 @@ export default {
         const id = this.activeId;
 
         this.updateListWipLimit({ maxIssueCount: wipLimit, listId: id })
-          .then(() => {
-            if (!this.shouldUseGraphQL) {
-              boardsStoreEE.setMaxIssueCountOnList(id, wipLimit);
-            }
-          })
           .catch(() => {
             this.unsetActiveId();
             this.setError({
@@ -96,11 +88,6 @@ export default {
     },
     clearWipLimit() {
       this.updateListWipLimit({ maxIssueCount: 0, listId: this.activeId })
-        .then(() => {
-          if (!this.shouldUseGraphQL) {
-            boardsStoreEE.setMaxIssueCountOnList(this.activeId, inactiveId);
-          }
-        })
         .catch(() => {
           this.unsetActiveId();
           this.setError({

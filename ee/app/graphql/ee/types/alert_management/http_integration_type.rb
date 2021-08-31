@@ -9,7 +9,7 @@ module EE
         prepended do
           field :payload_example, ::Types::JsonStringType,
                 null: true,
-                description: 'The example of an alert payload.'
+                description: 'Example of an alert payload.'
 
           field :payload_attribute_mappings, [::Types::AlertManagement::PayloadAlertMappingFieldType],
                 null: true,
