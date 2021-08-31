@@ -137,6 +137,7 @@ class License < ApplicationRecord
     oncall_schedules
     escalation_policies
     export_user_permissions
+    zentao_issues_integration
   ]
   EEP_FEATURES.freeze
 
