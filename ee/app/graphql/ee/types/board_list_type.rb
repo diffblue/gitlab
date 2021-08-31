@@ -17,7 +17,7 @@ module EE
         field :assignee, ::Types::UserType, null: true,
               description: 'Assignee in the list.'
         field :limit_metric, ::EE::Types::ListLimitMetricEnum, null: true,
-              description: 'The current limit metric for the list.'
+              description: 'Current limit metric for the list.'
         field :total_weight, GraphQL::Types::Int, null: true,
           description: 'Total weight of all issues in the list.'
 

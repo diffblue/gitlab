@@ -7,7 +7,7 @@ module EE
 
       prepended do
         field :assignee, type: ::Types::UserType, null: true,
-              description: 'The board assignee.'
+              description: 'Board assignee.'
 
         field :epics, ::Types::Boards::BoardEpicType.connection_type, null: true,
               description: 'Epics associated with board issues.',
@@ -18,10 +18,10 @@ module EE
               description: 'Labels of the board.'
 
         field :milestone, type: ::Types::MilestoneType, null: true,
-              description: 'The board milestone.'
+              description: 'Board milestone.'
 
         field :iteration, type: ::Types::IterationType, null: true,
-              description: 'The board iteration.'
+              description: 'Board iteration.'
 
         field :weight, type: GraphQL::Types::Int, null: true,
               description: 'Weight of the board.'

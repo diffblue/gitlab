@@ -12,7 +12,7 @@ module EE
           argument :epic_id, ::Types::GlobalIDType[::Epic],
                    required: false,
                    loads: ::Types::EpicType,
-                   description: 'The ID of the parent epic. NULL when removing the association.'
+                   description: 'ID of the parent epic. NULL when removing the association.'
         end
 
         def resolve(**args)

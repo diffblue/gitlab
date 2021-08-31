@@ -87,7 +87,7 @@ module EE
         field :dast_scanner_profiles,
               ::Types::DastScannerProfileType.connection_type,
               null: true,
-              description: 'The DAST scanner profiles associated with the project.'
+              description: 'DAST scanner profiles associated with the project.'
 
         field :dast_site_validations,
               ::Types::DastSiteValidationType.connection_type,
@@ -165,7 +165,7 @@ module EE
         field :push_rules,
               ::Types::PushRulesType,
               null: true,
-              description: "The project's push rules settings.",
+              description: "Project's push rules settings.",
               method: :push_rule
 
         field :path_locks,
@@ -192,7 +192,7 @@ module EE
               ::Types::DoraType,
               null: true,
               method: :itself,
-              description: "The project's DORA metrics."
+              description: "Project's DORA metrics."
       end
 
       def api_fuzzing_ci_configuration
