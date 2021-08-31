@@ -1,6 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import DevopsAdoptionOverview from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview.vue';
 import DevopsAdoptionOverviewCard from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_card.vue';
+import DevopsAdoptionOverviewTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { devopsAdoptionNamespaceData, overallAdoptionData } from '../mock_data';
 
@@ -44,6 +45,10 @@ describe('DevopsAdoptionOverview', () => {
         expect(wrapper.findComponent(DevopsAdoptionOverviewCard).props()).toStrictEqual(
           overallAdoptionData,
         );
+      });
+
+      it('displays the overview table', () => {
+        expect(wrapper.findComponent(DevopsAdoptionOverviewTable).exists()).toBe(true);
       });
     });
   });

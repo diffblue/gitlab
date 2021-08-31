@@ -7,7 +7,6 @@ import {
   I18N_DELETE_MODAL_CANCEL,
   I18N_DELETE_MODAL_CONFIRM,
   I18N_DELETE_MODAL_ERROR,
-  DELETE_MODAL_ID,
 } from '../constants';
 import disableDevopsAdoptionNamespaceMutation from '../graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 
@@ -21,8 +20,11 @@ export default {
     confirm: I18N_DELETE_MODAL_CONFIRM,
     error: I18N_DELETE_MODAL_ERROR,
   },
-  deleteModalId: DELETE_MODAL_ID,
   props: {
+    modalId: {
+      required: true,
+      type: String,
+    },
     namespace: {
       type: Object,
       required: true,
@@ -103,7 +105,7 @@ export default {
 <template>
   <gl-modal
     ref="modal"
-    :modal-id="$options.deleteModalId"
+    :modal-id="modalId"
     size="sm"
     :action-primary="primaryOptions"
     :action-cancel="cancelOptions"

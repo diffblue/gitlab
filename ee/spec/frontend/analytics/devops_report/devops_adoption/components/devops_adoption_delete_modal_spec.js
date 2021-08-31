@@ -4,7 +4,6 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
-import { DELETE_MODAL_ID } from 'ee/analytics/devops_report/devops_adoption/constants';
 import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -35,6 +34,8 @@ const mutateWithDataErrors = jest.fn().mockResolvedValue({
 const mutateLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
 const mutateWithErrors = jest.fn().mockRejectedValue(genericDeleteErrorMessage);
 
+const modalId = 'some-generated-id';
+
 describe('DevopsAdoptionDeleteModal', () => {
   let wrapper;
 
@@ -47,6 +48,7 @@ describe('DevopsAdoptionDeleteModal', () => {
       localVue,
       apolloProvider: mockApollo,
       propsData: {
+        modalId,
         namespace: devopsAdoptionNamespaceData.nodes[0],
         ...props,
       },
@@ -72,7 +74,7 @@ describe('DevopsAdoptionDeleteModal', () => {
       const modal = findModal();
 
       expect(modal.exists()).toBe(true);
-      expect(modal.props('modalId')).toBe(DELETE_MODAL_ID);
+      expect(modal.props('modalId')).toBe(modalId);
     });
 
     it('displays the confirmation message', () => {
