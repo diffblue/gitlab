@@ -22,7 +22,6 @@ export default () => {
     milestonesPath,
   } = el.dataset;
 
-  // TODO: should we pass these as params from the ~backend, like group level
   const { now, past } = calculateFormattedDayInPast(DEFAULT_DAYS_TO_DISPLAY);
 
   store.dispatch('initializeVsa', {

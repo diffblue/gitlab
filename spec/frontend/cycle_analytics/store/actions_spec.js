@@ -54,6 +54,7 @@ describe('Project Value Stream Analytics actions', () => {
     { type: 'fetchCycleAnalyticsData' },
     { type: 'fetchStageData' },
     { type: 'fetchStageMedians' },
+    { type: 'fetchStageCountValues' },
     { type: 'setLoading', payload: false },
   ];
 

@@ -76,7 +76,7 @@ function createComponent({ initialState, initialGetters } = {}) {
 
 const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 const findPathNavigation = () => wrapper.findComponent(PathNavigation);
-const findFilterBar = () => wrapper.findComponent(ValueStreamFilters);
+const findFilters = () => wrapper.findComponent(ValueStreamFilters);
 const findOverviewMetrics = () => wrapper.findComponent(ValueStreamMetrics);
 const findStageTable = () => wrapper.findComponent(StageTable);
 const findStageEvents = () => findStageTable().props('stageEvents');
@@ -126,14 +126,26 @@ describe('Value stream analytics component', () => {
     expect(findStageEvents()).toEqual(selectedStageEvents);
   });
 
-  it('renders the filter bar', () => {
-    expect(findFilterBar().exists()).toBe(true);
+  it('renders the filters', () => {
+    expect(findFilters().exists()).toBe(true);
   });
 
   it('displays the date range selector and hides the project selector', () => {
-    expect(findFilterBar().props()).toMatchObject({
+    expect(findFilters().props()).toMatchObject({
       hasProjectFilter: false,
       hasDateRangeFilter: true,
+    });
+  });
+
+  it('passes the paths to the filter bar', () => {
+    expect(findFilters().props()).toEqual({
+      groupId,
+      groupPath,
+      endDate: createdBefore,
+      hasDateRangeFilter: true,
+      hasProjectFilter: false,
+      selectedProjects: [],
+      startDate: createdAfter,
     });
   });
 

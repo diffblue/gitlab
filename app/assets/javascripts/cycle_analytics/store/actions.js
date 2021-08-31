@@ -164,6 +164,7 @@ const refetchStageData = (dispatch) => {
         dispatch('fetchCycleAnalyticsData'),
         dispatch('fetchStageData'),
         dispatch('fetchStageMedians'),
+        dispatch('fetchStageCountValues'),
       ]),
     )
     .finally(() => dispatch('setLoading', false));
