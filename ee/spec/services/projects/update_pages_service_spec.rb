@@ -24,7 +24,6 @@ RSpec.describe Projects::UpdatePagesService do
                         .and_return(metadata)
 
       stub_licensed_features(pages_size_limit: true)
-      stub_feature_flags(skip_pages_deploy_to_legacy_storage: false)
     end
 
     it_behaves_like 'pages size limit is', 250.megabytes
