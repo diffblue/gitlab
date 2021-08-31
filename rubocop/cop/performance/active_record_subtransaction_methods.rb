@@ -16,7 +16,7 @@ module RuboCop
           with_fast_read_statement_timeout
           create_or_find_by
           create_or_find_by!
-        ].freeze
+        ].to_set.freeze
 
         def on_send(node)
           return unless DISALLOWED_METHODS.include?(node.method_name)
