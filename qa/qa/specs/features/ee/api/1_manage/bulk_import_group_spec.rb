@@ -56,8 +56,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:bulk_import)
-
         sandbox.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
         source_group.add_member(author, Resource::Members::AccessLevel::MAINTAINER)
         author.set_public_email
@@ -83,8 +81,6 @@ module QA
       after do
         user.remove_via_api!
         author.remove_via_api!
-      ensure
-        Runtime::Feature.disable(:bulk_import)
       end
 
       it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1921' do
