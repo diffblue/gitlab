@@ -58,7 +58,7 @@ separate example projects:
 Get started with GitLab CI/CD and your favorite programming language or framework by using a
 `.gitlab-ci.yml` [template](https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates).
 
-When you create a `gitlab-ci.yml` file in the UI, you can
+When you create a `.gitlab-ci.yml` file in the UI, you can
 choose one of these templates:
 
 - [Android (`Android.gitlab-ci.yml`)](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Android.gitlab-ci.yml)
