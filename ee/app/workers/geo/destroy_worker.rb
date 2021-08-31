@@ -12,7 +12,6 @@ module Geo
 
     idempotent!
 
-    tags :exclude_from_kubernetes, :exclude_from_gitlab_com
     loggable_arguments 0
 
     def perform(replicable_name, replicable_id)

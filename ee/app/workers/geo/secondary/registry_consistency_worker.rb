@@ -17,7 +17,6 @@ module Geo
       include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
       feature_category :geo_replication
-      tags :exclude_from_gitlab_com
 
       REGISTRY_CLASSES = [
         Geo::ContainerRepositoryRegistry,

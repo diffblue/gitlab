@@ -11,7 +11,6 @@ module IncidentManagement
 
     idempotent!
     feature_category :incident_management
-    tags :exclude_from_kubernetes
 
     def perform
       iterator = Gitlab::Pagination::Keyset::Iterator.new(scope: IssuableSla.exceeded)

@@ -20,8 +20,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:adjourned_group_deletion
   :worker_name: AdjournedGroupDeletionWorker
   :feature_category: :authentication_and_authorization
@@ -48,8 +47,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:app_sec_dast_profile_schedule
   :worker_name: AppSec::Dast::ProfileScheduleWorker
   :feature_category: :dynamic_application_security_testing
@@ -112,8 +110,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:geo_container_repository_sync_dispatch
   :worker_name: Geo::ContainerRepositorySyncDispatchWorker
   :feature_category: :geo_replication
@@ -122,8 +119,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_file_download_dispatch
   :worker_name: Geo::FileDownloadDispatchWorker
   :feature_category: :geo_replication
@@ -132,8 +128,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_metrics_update
   :worker_name: Geo::MetricsUpdateWorker
   :feature_category: :geo_replication
@@ -142,8 +137,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_prune_event_log
   :worker_name: Geo::PruneEventLogWorker
   :feature_category: :geo_replication
@@ -152,8 +146,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_registry_sync
   :worker_name: Geo::RegistrySyncWorker
   :feature_category: :geo_replication
@@ -171,8 +164,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_repository_verification_primary_batch
   :worker_name: Geo::RepositoryVerification::Primary::BatchWorker
   :feature_category: :geo_replication
@@ -181,8 +173,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_repository_verification_secondary_scheduler
   :worker_name: Geo::RepositoryVerification::Secondary::SchedulerWorker
   :feature_category: :geo_replication
@@ -191,8 +182,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_repository_verification_secondary_shard
   :worker_name: Geo::RepositoryVerification::Secondary::ShardWorker
   :feature_category: :geo_replication
@@ -201,8 +191,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_scheduler_per_shard_scheduler
   :worker_name: Geo::Scheduler::PerShardSchedulerWorker
   :feature_category: :geo_replication
@@ -211,8 +200,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_scheduler_primary_per_shard_scheduler
   :worker_name: Geo::Scheduler::Primary::PerShardSchedulerWorker
   :feature_category: :geo_replication
@@ -221,8 +209,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_scheduler_secondary_per_shard_scheduler
   :worker_name: Geo::Scheduler::Secondary::PerShardSchedulerWorker
   :feature_category: :geo_replication
@@ -231,8 +218,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_secondary_registry_consistency
   :worker_name: Geo::Secondary::RegistryConsistencyWorker
   :feature_category: :geo_replication
@@ -241,8 +227,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_secondary_usage_data_cron
   :worker_name: Geo::SecondaryUsageDataCronWorker
   :feature_category: :geo_replication
@@ -251,9 +236,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_sidekiq_cron_config
   :worker_name: Geo::SidekiqCronConfigWorker
   :feature_category: :geo_replication
@@ -271,9 +254,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:geo_verification_cron
   :worker_name: Geo::VerificationCronWorker
   :feature_category: :geo_replication
@@ -282,9 +263,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
   :feature_category: :utilization
@@ -311,8 +290,7 @@
   :resource_boundary: :cpu
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:incident_management_oncall_rotations_persist_all_rotations_shifts_job
   :worker_name: IncidentManagement::OncallRotations::PersistAllRotationsShiftsJob
   :feature_category: :incident_management
@@ -321,8 +299,7 @@
   :resource_boundary: :cpu
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:incident_management_pending_escalations_schedule_check_cron
   :worker_name: IncidentManagement::PendingEscalations::ScheduleCheckCronWorker
   :feature_category: :incident_management
@@ -448,8 +425,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: cronjob:vulnerabilities_statistics_schedule
   :worker_name: Vulnerabilities::Statistics::ScheduleWorker
   :feature_category: :vulnerability_management
@@ -467,8 +443,7 @@
   :resource_boundary: :unknown
   :weight: 3
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: dora_metrics:dora_daily_metrics_refresh
   :worker_name: Dora::DailyMetrics::RefreshWorker
   :feature_category: :continuous_delivery
@@ -477,8 +452,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: epics:epics_update_epics_dates
   :worker_name: Epics::UpdateEpicsDatesWorker
   :feature_category: :epics
@@ -496,8 +470,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_batch_project_registry_scheduler
   :worker_name: Geo::Batch::ProjectRegistrySchedulerWorker
   :feature_category: :geo_replication
@@ -506,8 +479,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_container_repository_sync
   :worker_name: Geo::ContainerRepositorySyncWorker
   :feature_category: :geo_replication
@@ -516,8 +488,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_design_repository_shard_sync
   :worker_name: Geo::DesignRepositoryShardSyncWorker
   :feature_category: :geo_replication
@@ -526,8 +497,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_design_repository_sync
   :worker_name: Geo::DesignRepositorySyncWorker
   :feature_category: :geo_replication
@@ -536,8 +506,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_destroy
   :worker_name: Geo::DestroyWorker
   :feature_category: :geo_replication
@@ -546,9 +515,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_event
   :worker_name: Geo::EventWorker
   :feature_category: :geo_replication
@@ -557,8 +524,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_file_download
   :worker_name: Geo::FileDownloadWorker
   :feature_category: :geo_replication
@@ -567,8 +533,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_file_registry_removal
   :worker_name: Geo::FileRegistryRemovalWorker
   :feature_category: :geo_replication
@@ -577,8 +542,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_file_removal
   :worker_name: Geo::FileRemovalWorker
   :feature_category: :geo_replication
@@ -587,8 +551,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_hashed_storage_attachments_migration
   :worker_name: Geo::HashedStorageAttachmentsMigrationWorker
   :feature_category: :geo_replication
@@ -597,8 +560,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_hashed_storage_migration
   :worker_name: Geo::HashedStorageMigrationWorker
   :feature_category: :geo_replication
@@ -607,8 +569,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_project_sync
   :worker_name: Geo::ProjectSyncWorker
   :feature_category: :geo_replication
@@ -617,8 +578,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_rename_repository
   :worker_name: Geo::RenameRepositoryWorker
   :feature_category: :geo_replication
@@ -627,8 +587,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repositories_clean_up
   :worker_name: Geo::RepositoriesCleanUpWorker
   :feature_category: :geo_replication
@@ -637,8 +596,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_cleanup
   :worker_name: Geo::RepositoryCleanupWorker
   :feature_category: :geo_replication
@@ -647,8 +605,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_destroy
   :worker_name: GeoRepositoryDestroyWorker
   :feature_category: :geo_replication
@@ -657,8 +614,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_shard_sync
   :worker_name: Geo::RepositoryShardSyncWorker
   :feature_category: :geo_replication
@@ -667,8 +623,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_verification_primary_shard
   :worker_name: Geo::RepositoryVerification::Primary::ShardWorker
   :feature_category: :geo_replication
@@ -677,8 +632,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_verification_primary_single
   :worker_name: Geo::RepositoryVerification::Primary::SingleWorker
   :feature_category: :geo_replication
@@ -687,8 +641,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_repository_verification_secondary_single
   :worker_name: Geo::RepositoryVerification::Secondary::SingleWorker
   :feature_category: :geo_replication
@@ -697,8 +650,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_reverification_batch
   :worker_name: Geo::ReverificationBatchWorker
   :feature_category: :geo_replication
@@ -707,9 +659,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_scheduler_primary_scheduler
   :worker_name: Geo::Scheduler::Primary::SchedulerWorker
   :feature_category: :geo_replication
@@ -718,8 +668,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_scheduler_scheduler
   :worker_name: Geo::Scheduler::SchedulerWorker
   :feature_category: :geo_replication
@@ -728,8 +677,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_scheduler_secondary_scheduler
   :worker_name: Geo::Scheduler::Secondary::SchedulerWorker
   :feature_category: :geo_replication
@@ -738,8 +686,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_verification
   :worker_name: Geo::VerificationWorker
   :feature_category: :geo_replication
@@ -748,9 +695,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_verification_batch
   :worker_name: Geo::VerificationBatchWorker
   :feature_category: :geo_replication
@@ -759,9 +704,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: geo:geo_verification_timeout
   :worker_name: Geo::VerificationTimeoutWorker
   :feature_category: :geo_replication
@@ -770,9 +713,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: iterations:iterations_roll_over_issues
   :worker_name: Iterations::RollOverIssuesWorker
   :feature_category: :issue_tracking
@@ -844,8 +785,7 @@
   :resource_boundary: :cpu
   :weight: 2
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: security_scans:security_track_secure_scans
   :worker_name: Security::TrackSecureScansWorker
   :feature_category: :vulnerability_management
@@ -872,8 +812,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: adjourned_project_deletion
   :worker_name: AdjournedProjectDeletionWorker
   :feature_category: :authentication_and_authorization
@@ -909,8 +848,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: approval_rules_external_approval_rule_payload
   :worker_name: ApprovalRules::ExternalApprovalRulePayloadWorker
   :feature_category: :source_code_management
@@ -919,8 +857,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: ci_batch_reset_minutes
   :worker_name: Ci::BatchResetMinutesWorker
   :feature_category: :continuous_integration
@@ -947,8 +884,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: elastic_association_indexer
   :worker_name: ElasticAssociationIndexerWorker
   :feature_category: :global_search
@@ -957,8 +893,7 @@
   :resource_boundary: :cpu
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: elastic_commit_indexer
   :worker_name: ElasticCommitIndexerWorker
   :feature_category: :global_search
@@ -1030,8 +965,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: group_wikis_git_garbage_collect
   :worker_name: GroupWikis::GitGarbageCollectWorker
   :feature_category: :gitaly
@@ -1040,8 +974,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: groups_export_memberships
   :worker_name: Groups::ExportMembershipsWorker
   :feature_category: :compliance_management
@@ -1077,8 +1010,7 @@
   :resource_boundary: :cpu
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: incident_management_apply_incident_sla_exceeded_label
   :worker_name: IncidentManagement::ApplyIncidentSlaExceededLabelWorker
   :feature_category: :incident_management
@@ -1087,8 +1019,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: incident_management_oncall_rotations_persist_shifts_job
   :worker_name: IncidentManagement::OncallRotations::PersistShiftsJob
   :feature_category: :incident_management
@@ -1097,8 +1028,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: incident_management_pending_escalations_alert_check
   :worker_name: IncidentManagement::PendingEscalations::AlertCheckWorker
   :feature_category: :incident_management
@@ -1125,8 +1055,7 @@
   :resource_boundary: :unknown
   :weight: 2
   :idempotent:
-  :tags:
-  - :exclude_from_gitlab_com
+  :tags: []
 - :name: merge_request_reset_approvals
   :worker_name: MergeRequestResetApprovalsWorker
   :feature_category: :source_code_management
@@ -1172,8 +1101,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: refresh_license_compliance_checks
   :worker_name: RefreshLicenseComplianceChecksWorker
   :feature_category: :license_compliance
@@ -1209,8 +1137,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: requirements_management_process_requirements_reports
   :worker_name: RequirementsManagement::ProcessRequirementsReportsWorker
   :feature_category: :requirements_management
@@ -1228,8 +1155,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :users
@@ -1238,8 +1164,7 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags:
-  - :exclude_from_kubernetes
+  :tags: []
 - :name: status_page_publish
   :worker_name: StatusPage::PublishWorker
   :feature_category: :incident_management

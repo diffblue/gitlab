@@ -10,7 +10,6 @@ module TodosDestroyer
 
     queue_namespace :todos_destroyer
     feature_category :epics
-    tags :exclude_from_kubernetes
 
     def perform(epic_id)
       return unless epic_id

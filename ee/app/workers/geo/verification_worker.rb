@@ -11,7 +11,6 @@ module Geo
     sidekiq_options retry: 3, dead: false
 
     idempotent!
-    tags :exclude_from_kubernetes, :exclude_from_gitlab_com
     loggable_arguments 0
 
     def perform(replicable_name, replicable_id)
