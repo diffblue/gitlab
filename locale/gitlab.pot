@@ -18815,6 +18815,9 @@ msgstr ""
 msgid "Iterations|Create cadence"
 msgstr ""
 
+msgid "Iterations|Create your first iteration"
+msgstr ""
+
 msgid "Iterations|Delete cadence"
 msgstr ""
 

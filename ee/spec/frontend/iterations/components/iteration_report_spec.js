@@ -3,6 +3,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import IterationReport from 'ee/iterations/components/iteration_report.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
+import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
 import { Namespace } from 'ee/iterations/constants';
 import query from 'ee/iterations/queries/iteration.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -168,7 +169,9 @@ describe('Iterations report', () => {
       it('shows status and date in header', () => {
         const startDate = IterationReport.methods.formatDate(mockIterationNode.startDate);
         const dueDate = IterationReport.methods.formatDate(mockIterationNode.startDate);
-        expect(findTopbar().text().toLowerCase()).toContain(mockIterationNode.state);
+        expect(wrapper.findComponent(TimeboxStatusBadge).props('state')).toContain(
+          mockIterationNode.state,
+        );
         expect(findTopbar().text()).toContain(startDate);
         expect(findTopbar().text()).toContain(dueDate);
       });
