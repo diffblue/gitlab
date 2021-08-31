@@ -11,6 +11,9 @@ module RuboCop
 
         DISALLOWED_METHODS = %i[
           safe_ensure_unique
+          safe_find_or_create_by
+          safe_find_or_create_by!
+          with_fast_read_statement_timeout
           create_or_find_by
           create_or_find_by!
         ].freeze
