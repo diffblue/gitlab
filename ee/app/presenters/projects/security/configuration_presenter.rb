@@ -61,7 +61,8 @@ module Projects
           scan(scan_type, configured: scanner_enabled?(scan_type))
         end
 
-        # DAST On-demand scans is a static (non job) entry.  Add it manually.
+        # These scans are "fake" (non job) entries. Add them manually.
+        scans << scan(:corpus_management, configured: true)
         scans << scan(:dast_profiles, configured: true)
       end
 
@@ -93,7 +94,8 @@ module Projects
           sast: project_security_configuration_sast_path(project),
           dast: project_security_configuration_dast_path(project),
           dast_profiles: project_security_configuration_dast_scans_path(project),
-          api_fuzzing: project_security_configuration_api_fuzzing_path(project)
+          api_fuzzing: project_security_configuration_api_fuzzing_path(project),
+          corpus_management: (project_security_configuration_corpus_management_path(project) if ::Feature.enabled?(:corpus_management, project, default_enabled: :yaml) && scanner_enabled?(:coverage_fuzzing))
         }[type]
       end
 
