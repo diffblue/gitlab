@@ -71,7 +71,7 @@ export default {
           this.createNotesPoll();
 
           if (!Visibility.hidden()) {
-            this.poll.makeRequest();
+            this.fetchDiscussions();
           }
 
           Visibility.change(() => {
@@ -148,6 +148,9 @@ export default {
     }
   },
   methods: {
+    fetchDiscussions() {
+      return this.poll.makeRequest();
+    },
     findDiscussion(id) {
       return this.discussions.find((d) => d.id === id);
     },
@@ -253,7 +256,6 @@ export default {
         v-for="discussion in discussions"
         :key="discussion.id"
         :discussion="discussion"
-        :notes-url="vulnerability.notesUrl"
       />
     </ul>
   </div>

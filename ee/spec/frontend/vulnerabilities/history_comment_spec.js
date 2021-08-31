@@ -1,47 +1,98 @@
 import { mount } from '@vue/test-utils';
-import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import deleteNoteMutation from 'ee/security_dashboard/graphql/mutations/note_delete.mutation.graphql';
+import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_create.mutation.graphql';
+import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
+import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import HistoryComment from 'ee/vulnerabilities/components/history_comment.vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
-import axios from '~/lib/utils/axios_utils';
+import { TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 
-const mockAxios = new MockAdapter(axios);
 jest.mock('~/flash');
-
 Vue.use(VueApollo);
+
+const CREATE_NOTE = 'createNote';
+const UPDATE_NOTE = 'updateNote';
+const DESTROY_NOTE = 'destroyNote';
+
+const TEST_VULNERABILITY_ID = '15';
+const TEST_DISCUSSION_ID = '24';
+const TEST_VULNERABILITY_GID = convertToGraphQLId(TYPE_VULNERABILITY, TEST_VULNERABILITY_ID);
+const TEST_DISCUSSION_GID = convertToGraphQLId(TYPE_DISCUSSION, TEST_DISCUSSION_ID);
 
 describe('History Comment', () => {
   let wrapper;
+  let createNoteMutationSpy;
+  let updateNoteMutationSpy;
+  let destroyNoteMutationSpy;
 
-  const createApolloProvider = (...queries) => {
-    return createMockApollo([...queries]);
-  };
+  const createMutationResponse = ({ note = {}, queryName, errors = [] }) => ({
+    data: {
+      [queryName]: {
+        errors,
+        note,
+      },
+    },
+  });
 
-  const createWrapper = ({ comment, apolloProvider } = {}) => {
+  const createWrapper = ({ propsData } = {}) => {
+    const apolloProvider = createMockApollo([
+      [createNoteMutation, createNoteMutationSpy],
+      [updateNoteMutation, updateNoteMutationSpy],
+      [destroyNoteMutation, destroyNoteMutationSpy],
+    ]);
+
     wrapper = mount(HistoryComment, {
       apolloProvider,
+      provide: {
+        vulnerabilityId: TEST_VULNERABILITY_ID,
+      },
       propsData: {
-        comment,
-        notesUrl: '/notes',
+        discussionId: TEST_DISCUSSION_ID,
+        ...propsData,
       },
     });
   };
 
-  const comment = {
-    id: 'id',
-    note: 'note',
-    noteHtml: '<p>note</p>',
-    author: {},
-    updatedAt: new Date().toISOString(),
-    currentUser: {
-      canEdit: true,
+  const note = {
+    id: 'gid://gitlab/DiscussionNote/1295',
+    body: 'Created a note.',
+    bodyHtml: '\u003cp\u003eCreated a note\u003c/p\u003e',
+    updatedAt: '2021-08-25T16:21:18Z',
+    system: false,
+    systemNoteIconName: null,
+    userPermissions: {
+      adminNote: true,
+    },
+    author: {
+      id: 'gid://gitlab/User/1',
+      name: 'Administrator',
+      username: 'root',
+      webPath: '/root',
     },
   };
+
+  // Needed for now. Will be removed when fetching notes will be done through GraphQL.
+  note.note = note.body;
+  note.noteHtml = note.bodyHtml;
+  note.currentUser = { canEdit: note.userPermissions.adminNote };
+
+  beforeEach(() => {
+    createNoteMutationSpy = jest
+      .fn()
+      .mockResolvedValue(createMutationResponse({ queryName: CREATE_NOTE, note }));
+    destroyNoteMutationSpy = jest
+      .fn()
+      .mockResolvedValue(createMutationResponse({ queryName: DESTROY_NOTE, note: null }));
+    updateNoteMutationSpy = jest
+      .fn()
+      .mockResolvedValue(createMutationResponse({ queryName: UPDATE_NOTE, note }));
+  });
 
   const addCommentButton = () => wrapper.find({ ref: 'addCommentButton' });
   const commentEditor = () => wrapper.find(HistoryCommentEditor);
@@ -83,9 +134,13 @@ describe('History Comment', () => {
     return wrapper.vm.$nextTick();
   };
 
+  const editAndSaveNewContent = async (content) => {
+    await showEditView();
+    commentEditor().vm.$emit('onSave', content);
+  };
+
   afterEach(() => {
     wrapper.destroy();
-    mockAxios.reset();
     createFlash.mockReset();
   });
 
@@ -111,57 +166,22 @@ describe('History Comment', () => {
         })
         .then(expectAddCommentView);
     });
-
-    it('saves the comment when the save button is clicked on the comment editor', () => {
-      mockAxios.onPost().replyOnce(200, comment);
-
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onSave', 'new comment');
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expect(commentEditor().props('isSaving')).toBe(true);
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.post).toHaveLength(1);
-          expect(wrapper.emitted().onCommentAdded[0]).toEqual([
-            { response: comment, comment: undefined },
-          ]);
-        });
-    });
-
-    it('shows an error message and continues showing the comment editor when the comment cannot be saved', () => {
-      mockAxios.onPost().replyOnce(500);
-
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onSave', 'new comment');
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.post).toHaveLength(1);
-          expect(createFlash).toHaveBeenCalledTimes(1);
-          expect(commentEditor().exists()).toBe(true);
-        });
-    });
   });
 
   describe(`when there's an existing comment`, () => {
-    beforeEach(() => createWrapper({ comment }));
+    beforeEach(() => createWrapper({ propsData: { comment: note, discussionId: '24' } }));
 
     it('shows the comment with the correct user author and timestamp and the edit/delete buttons', () => {
       expectExistingCommentView();
-      expect(eventItem().props('author')).toBe(comment.author);
-      expect(eventItem().props('createdAt')).toBe(comment.updatedAt);
-      expect(eventItem().element.innerHTML).toContain(comment.noteHtml);
+      expect(eventItem().props('author')).toBe(note.author);
+      expect(eventItem().props('createdAt')).toBe(note.updatedAt);
+      expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
     });
 
     it('shows the comment editor when the edit button is clicked', () => {
       return showEditView().then(() => {
         expectEditCommentView();
-        expect(commentEditor().props('initialComment')).toBe(comment.note);
+        expect(commentEditor().props('initialComment')).toBe(note.body);
       });
     });
 
@@ -173,7 +193,7 @@ describe('History Comment', () => {
         })
         .then(() => {
           expectExistingCommentView();
-          expect(eventItem().element.innerHTML).toContain(comment.noteHtml);
+          expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
         });
     });
 
@@ -194,61 +214,111 @@ describe('History Comment', () => {
         })
         .then(() => {
           expectExistingCommentView();
-          expect(eventItem().element.innerHTML).toContain(comment.noteHtml);
+          expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
         });
     });
+  });
 
-    it('saves the comment when the save button is clicked on the comment editor', () => {
-      const responseData = { ...comment, note: 'new comment' };
-      mockAxios.onPut().replyOnce(200, responseData);
+  const EXPECTED_CREATE_VARS = {
+    discussionId: TEST_DISCUSSION_GID,
+    noteableId: TEST_VULNERABILITY_GID,
+  };
+  const EXPECTED_UPDATE_VARS = {
+    id: note.id,
+  };
 
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onSave', responseData.note);
-          return wrapper.vm.$nextTick();
-        })
-        .then(() => {
-          expect(commentEditor().props('isSaving')).toBe(true);
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.put).toHaveLength(1);
-          expect(wrapper.emitted().onCommentUpdated[0]).toEqual([
-            { response: responseData, comment },
-          ]);
-        });
+  describe.each`
+    desc                           | propsData            | expectedEvent         | expectedVars            | mutationSpyFn                  | queryName
+    ${'inserting a new note'}      | ${{}}                | ${'onCommentAdded'}   | ${EXPECTED_CREATE_VARS} | ${() => createNoteMutationSpy} | ${CREATE_NOTE}
+    ${'updating an existing note'} | ${{ comment: note }} | ${'onCommentUpdated'} | ${EXPECTED_UPDATE_VARS} | ${() => updateNoteMutationSpy} | ${UPDATE_NOTE}
+  `('$desc', ({ propsData, expectedEvent, expectedVars, mutationSpyFn, queryName }) => {
+    let mutationSpy;
+
+    beforeEach(() => {
+      mutationSpy = mutationSpyFn();
     });
 
-    it('shows an error message when the comment cannot be saved', () => {
-      mockAxios.onPut().replyOnce(500);
+    it('sends graphql mutation', async () => {
+      createWrapper({ propsData });
 
-      return showEditView()
-        .then(() => {
-          commentEditor().vm.$emit('onSave', 'some comment');
-          return axios.waitForAll();
-        })
-        .then(() => {
-          expect(mockAxios.history.put).toHaveLength(1);
-          expect(createFlash).toHaveBeenCalledTimes(1);
+      await editAndSaveNewContent('new comment');
+
+      expect(mutationSpy).toHaveBeenCalledWith({
+        ...expectedVars,
+        body: 'new comment',
+      });
+    });
+
+    it('shows loading', async () => {
+      createWrapper({ propsData });
+
+      await editAndSaveNewContent('new comment');
+      await wrapper.vm.$nextTick();
+
+      expect(commentEditor().props('isSaving')).toBe(true);
+    });
+
+    it('emits event when mutation is successful', async () => {
+      createWrapper({ propsData });
+
+      await editAndSaveNewContent('new comment');
+      await waitForPromises();
+
+      expect(wrapper.emitted(expectedEvent)).toEqual([
+        [
+          {
+            ...note,
+            id: 1295,
+            author: {
+              ...note.author,
+              id: 1,
+              path: note.author.webPath,
+            },
+          },
+        ],
+      ]);
+    });
+
+    describe('when mutation has data error', () => {
+      beforeEach(() => {
+        mutationSpy.mockResolvedValue({ queryName, errors: ['Some domain specific error'] });
+        createWrapper({ propsData });
+      });
+
+      it('shows flash', async () => {
+        await editAndSaveNewContent('new comment');
+        await waitForPromises();
+
+        expect(createFlash).toHaveBeenCalledWith({
+          message: 'Something went wrong while trying to save the comment. Please try again later.',
         });
+      });
+    });
+
+    describe('when mutation has top-level error', () => {
+      beforeEach(() => {
+        mutationSpy.mockRejectedValue(new Error('Something top-level happened'));
+
+        createWrapper({ propsData });
+      });
+
+      it('shows flash', async () => {
+        await editAndSaveNewContent('new comment');
+        await waitForPromises();
+
+        expect(createFlash).toHaveBeenCalledWith({
+          message: 'Something went wrong while trying to save the comment. Please try again later.',
+        });
+
+        expect(commentEditor().exists()).toBe(true);
+      });
     });
   });
 
   describe('deleting a note', () => {
     it('deletes the comment when the confirm delete button is clicked', async () => {
       createWrapper({
-        comment,
-        apolloProvider: createApolloProvider([
-          deleteNoteMutation,
-          jest.fn().mockResolvedValue({
-            data: {
-              destroyNote: {
-                errors: [],
-                note: null,
-              },
-            },
-          }),
-        ]),
+        propsData: { comment: note },
       });
 
       deleteButton().trigger('click');
@@ -260,40 +330,62 @@ describe('History Comment', () => {
       expect(confirmDeleteButton().props('loading')).toBe(true);
       expect(cancelDeleteButton().props('disabled')).toBe(true);
 
-      await axios.waitForAll();
+      await waitForPromises();
       expect(wrapper.emitted().onCommentDeleted).toBeTruthy();
-      expect(wrapper.emitted().onCommentDeleted[0][0]).toEqual(comment);
+      expect(wrapper.emitted().onCommentDeleted[0][0]).toEqual(note);
     });
 
-    it('shows an error message when the comment cannot be deleted', async () => {
-      createWrapper({
-        comment,
-        apolloProvider: createApolloProvider([
-          deleteNoteMutation,
-          jest.fn().mockRejectedValue({
-            data: {
-              destroyNote: {
-                errors: [{ message: 'Something went wrong' }],
-                note: null,
-              },
-            },
-          }),
-        ]),
+    it('sends mutation to delete note', async () => {
+      createWrapper({ propsData: { comment: note } });
+
+      deleteButton().trigger('click');
+      await wrapper.vm.$nextTick();
+
+      confirmDeleteButton().trigger('click');
+      expect(destroyNoteMutationSpy).toHaveBeenCalledWith({
+        id: note.id,
       });
+    });
+
+    it('with data error, shows an error message', async () => {
+      destroyNoteMutationSpy.mockResolvedValue({ errors: ['Some domain specific error'] });
+      createWrapper({ propsData: { comment: note } });
 
       deleteButton().trigger('click');
 
       await wrapper.vm.$nextTick();
       confirmDeleteButton().trigger('click');
 
-      await axios.waitForAll();
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      await waitForPromises();
+
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'Something went wrong while trying to delete the comment. Please try again later.',
+      });
+    });
+
+    it('with top-level error, shows an error message', async () => {
+      destroyNoteMutationSpy.mockRejectedValue(new Error('Some top-level error'));
+      createWrapper({ propsData: { comment: note } });
+
+      deleteButton().trigger('click');
+
+      await wrapper.vm.$nextTick();
+      confirmDeleteButton().trigger('click');
+
+      await waitForPromises();
+      expect(createFlash).toHaveBeenCalledWith({
+        message: 'Something went wrong while trying to delete the comment. Please try again later.',
+      });
     });
   });
 
   describe('no permission to edit existing comment', () => {
     it('does not show the edit/delete buttons if the current user has no edit permissions', () => {
-      createWrapper({ comment: { ...comment, currentUser: { canEdit: false } } });
+      createWrapper({
+        propsData: {
+          comment: { ...note, userPermissions: undefined, currentUser: { canEdit: false } },
+        },
+      });
 
       expect(editButton().exists()).toBe(false);
       expect(deleteButton().exists()).toBe(false);

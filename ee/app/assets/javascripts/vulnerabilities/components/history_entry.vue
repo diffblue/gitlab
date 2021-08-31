@@ -1,6 +1,5 @@
 <script>
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import HistoryComment from './history_comment.vue';
 
 export default {
@@ -8,10 +7,6 @@ export default {
   props: {
     discussion: {
       type: Object,
-      required: true,
-    },
-    notesUrl: {
-      type: String,
       required: true,
     },
   },
@@ -34,14 +29,14 @@ export default {
     },
   },
   methods: {
-    addComment({ response }) {
-      this.notes.push(convertObjectPropsToCamelCase(response));
+    addComment(note) {
+      this.notes.push(note);
     },
-    updateComment({ response, comment }) {
-      const index = this.notes.indexOf(comment);
+    updateComment(note) {
+      const index = this.notes.findIndex((n) => Number(n.id) === note.id);
 
       if (index > -1) {
-        this.notes.splice(index, 1, { ...comment, ...convertObjectPropsToCamelCase(response) });
+        this.notes.splice(index, 1, note);
       }
     },
     removeComment(comment) {
@@ -76,7 +71,6 @@ export default {
         ref="existingComment"
         :comment="comment"
         :discussion-id="discussion.replyId"
-        :notes-url="notesUrl"
         @onCommentUpdated="updateComment"
         @onCommentDeleted="removeComment"
       />
@@ -86,7 +80,6 @@ export default {
       v-else
       ref="newComment"
       :discussion-id="discussion.replyId"
-      :notes-url="notesUrl"
       @onCommentAdded="addComment"
     />
   </li>

@@ -1,0 +1,10 @@
+#import "../fragments/note.fragment.graphql"
+
+mutation securityDashboardUpdateNote($id: NoteID!, $confidential: Boolean, $body: String!) {
+  updateNote(input: { id: $id, body: $body, confidential: $confidential }) {
+    errors
+    note {
+      ...SecurityDashboardNote
+    }
+  }
+}
