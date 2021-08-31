@@ -1,7 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import HistoryEntry from 'ee/vulnerabilities/components/history_entry.vue';
-import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 
 describe('History Entry', () => {
   let wrapper;
@@ -84,9 +83,7 @@ describe('History Entry', () => {
 
   it('adds a new comment correctly', async () => {
     createWrapper(systemNote);
-    newComment().vm.$emit('onCommentAdded', {
-      response: convertObjectPropsToSnakeCase(commentNote),
-    });
+    newComment().vm.$emit('onCommentAdded', commentNote);
 
     await wrapper.vm.$nextTick();
 
@@ -96,13 +93,13 @@ describe('History Entry', () => {
   });
 
   it('updates an existing comment correctly', async () => {
-    const response = { note: 'new note' };
+    const updatedNote = { ...commentNote, note: 'new note' };
     createWrapper(systemNote, commentNote);
-    commentAt(0).vm.$emit('onCommentUpdated', { response, comment: commentNote });
+    commentAt(0).vm.$emit('onCommentUpdated', updatedNote);
 
     await wrapper.vm.$nextTick();
 
-    expect(commentAt(0).props('comment')).toEqual({ ...commentNote, note: response.note });
+    expect(commentAt(0).props('comment')).toBe(updatedNote);
   });
 
   it('deletes an existing comment correctly', async () => {

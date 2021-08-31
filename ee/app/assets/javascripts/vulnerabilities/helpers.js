@@ -1,3 +1,4 @@
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isAbsolute, isSafeURL } from '~/lib/utils/url_utility';
 import { REGEXES, gidPrefix, uidPrefix } from './constants';
 
@@ -26,6 +27,27 @@ export const getAddRelatedIssueRequestParams = (reference, defaultProjectId) => 
   }
 
   return { target_issue_iid: issueId, target_project_id: projectId };
+};
+
+export const normalizeGraphQLNote = (note) => {
+  if (!note) {
+    return null;
+  }
+
+  return {
+    ...note,
+    id: getIdFromGraphQLId(note.id),
+    note: note.body,
+    noteHtml: note.bodyHtml,
+    currentUser: {
+      canEdit: note.userPermissions?.adminNote,
+    },
+    author: {
+      ...note.author,
+      id: getIdFromGraphQLId(note.author.id),
+      path: note.author.webPath,
+    },
+  };
 };
 
 export const normalizeGraphQLVulnerability = (vulnerability) => {

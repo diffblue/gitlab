@@ -141,12 +141,10 @@ describe('Vulnerability Footer', () => {
 
       expect(findDiscussions().at(0).props()).toEqual({
         discussion: { ...discussion1, notes: [convertObjectPropsToCamelCase(notes[0])] },
-        notesUrl: vulnerability.notesUrl,
       });
 
       expect(findDiscussions().at(1).props()).toEqual({
         discussion: { ...discussion2, notes: [convertObjectPropsToCamelCase(notes[1])] },
-        notesUrl: vulnerability.notesUrl,
       });
     });
 
