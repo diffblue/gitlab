@@ -26,7 +26,8 @@ module Gitlab
       ::Geo::TerraformStateVersionReplicator,
       ::Geo::SnippetRepositoryReplicator,
       ::Geo::GroupWikiRepositoryReplicator,
-      ::Geo::PipelineArtifactReplicator
+      ::Geo::PipelineArtifactReplicator,
+      ::Geo::PagesDeploymentReplicator
     ].freeze
 
     def self.current_node

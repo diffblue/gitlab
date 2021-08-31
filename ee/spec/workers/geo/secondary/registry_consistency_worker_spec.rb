@@ -87,6 +87,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       terraform_state_version = create(:terraform_state_version)
       pipeline_artifact = create(:ci_pipeline_artifact)
       upload = create(:upload)
+      pages_deployment = create(:pages_deployment)
 
       expect(Geo::ContainerRepositoryRegistry.where(container_repository_id: container_repository.id).count).to eq(0)
       expect(Geo::DesignRegistry.where(project_id: project.id).count).to eq(0)
@@ -98,6 +99,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::ProjectRegistry.where(project_id: project.id).count).to eq(0)
       expect(Geo::TerraformStateVersionRegistry.where(terraform_state_version_id: terraform_state_version.id).count).to eq(0)
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(0)
+      expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(0)
 
       subject.perform
 
@@ -111,6 +113,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::ProjectRegistry.where(project_id: project.id).count).to eq(1)
       expect(Geo::TerraformStateVersionRegistry.where(terraform_state_version_id: terraform_state_version.id).count).to eq(1)
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(1)
+      expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(1)
     end
 
     context 'when the current Geo node is disabled or primary' do
