@@ -5,7 +5,8 @@ FactoryBot.define do
     project
     dast_profile
     owner { association(:user) }
-    cron { '*/10 * * * *' }
-    next_run_at { Time.now }
+    timezone { FFaker::Address.time_zone }
+    starts_at { Time.now }
+    cadence { { unit: %w(day month year week).sample, duration: 1 } }
   end
 end

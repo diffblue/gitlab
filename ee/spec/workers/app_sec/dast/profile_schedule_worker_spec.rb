@@ -101,5 +101,19 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
         subject
       end
     end
+
+    context 'when single run schedule exists' do
+      before do
+        schedule.update_columns(next_run_at: 1.minute.ago, cadence: {})
+      end
+
+      it 'executes the rule schedule service and deactivate the schedule', :aggregate_failures do
+        expect(schedule.repeat?).to be(false)
+
+        subject
+
+        expect(schedule.reload.active).to be(false)
+      end
+    end
   end
 end

@@ -10,7 +10,7 @@ module Dast
 
     has_many :secret_variables, through: :dast_site_profile, class_name: 'Dast::SiteProfileSecretVariable'
 
-    has_many :dast_profile_schedules, class_name: 'Dast::ProfileSchedule', foreign_key: :dast_profile_id, inverse_of: :dast_profile
+    has_one :dast_profile_schedule, class_name: 'Dast::ProfileSchedule', foreign_key: :dast_profile_id, inverse_of: :dast_profile
 
     validates :description, length: { maximum: 255 }
     validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
