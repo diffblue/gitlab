@@ -29,11 +29,11 @@ module EE
               ::Ci::Runner.instance_type.each(&:tick_runner_queue)
             end
 
-            if params[:extra_shared_runners_minutes_limit].present? || params[:shared_runners_minutes_limit].present?
-              ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
+            namespace.update(update_attrs).tap do
+              if update_attrs[:extra_shared_runners_minutes_limit].present? || update_attrs[:shared_runners_minutes_limit].present?
+                ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
+              end
             end
-
-            namespace.update(update_attrs)
           end
         end
 
