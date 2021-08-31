@@ -134,6 +134,6 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   end
 
   def resolve_board_list_issues(args)
-    resolve(described_class, obj: list, args: args, ctx: { current_user: user })
+    resolve(described_class, obj: list, args: args, ctx: { current_user: user }).items
   end
 end
