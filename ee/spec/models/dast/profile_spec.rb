@@ -7,6 +7,8 @@ RSpec.describe Dast::Profile, type: :model do
 
   subject { create(:dast_profile, project: project) }
 
+  it_behaves_like 'sanitizable', :dast_profile, %i[name description]
+
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:dast_site_profile) }
