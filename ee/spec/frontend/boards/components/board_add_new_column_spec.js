@@ -15,7 +15,6 @@ Vue.use(Vuex);
 
 describe('BoardAddNewColumn', () => {
   let wrapper;
-  let shouldUseGraphQL;
 
   const selectItem = (id) => {
     wrapper.findByTestId('selectItem').vm.$emit('change', id);
@@ -59,7 +58,6 @@ describe('BoardAddNewColumn', () => {
             ...actions,
           },
           getters: {
-            shouldUseGraphQL: () => shouldUseGraphQL,
             getListByTypeId: () => getListByTypeId,
             isEpicBoard: () => false,
           },
@@ -102,10 +100,6 @@ describe('BoardAddNewColumn', () => {
     radio.element.value = type;
     radio.vm.$emit('change', type);
   };
-
-  beforeEach(() => {
-    shouldUseGraphQL = true;
-  });
 
   it('clicking cancel hides the form', () => {
     const setAddColumnFormVisibility = jest.fn();

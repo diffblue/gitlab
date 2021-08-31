@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import EpicBoardContentSidebar from 'ee/boards/components/epic_board_content_sidebar.vue';
 import BoardContent from '~/boards/components/board_content.vue';
 import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
 import { createStore } from '~/boards/stores';
@@ -35,20 +36,22 @@ describe('ee/BoardContent', () => {
   });
 
   describe.each`
-    licenseEnabled | state                                 | result
-    ${true}        | ${{ isShowingEpicsSwimlanes: true }}  | ${true}
-    ${true}        | ${{ isShowingEpicsSwimlanes: false }} | ${false}
-    ${false}       | ${{ isShowingEpicsSwimlanes: true }}  | ${false}
-    ${false}       | ${{ isShowingEpicsSwimlanes: false }} | ${false}
-  `('with licenseEnabled=$licenseEnabled and state=$state', ({ licenseEnabled, state, result }) => {
+    state                                                        | resultIssue | resultEpic
+    ${{ isShowingEpicsSwimlanes: true, issuableType: 'issue' }}  | ${true}     | ${false}
+    ${{ isShowingEpicsSwimlanes: false, issuableType: 'issue' }} | ${true}     | ${false}
+    ${{ isShowingEpicsSwimlanes: false, issuableType: 'epic' }}  | ${false}    | ${true}
+  `('with state=$state', ({ state, resultIssue, resultEpic }) => {
     beforeEach(() => {
-      gon.licensed_features.swimlanes = licenseEnabled;
       Object.assign(store.state, state);
       createComponent();
     });
 
-    it(`renders BoardContentSidebar = ${result}`, () => {
-      expect(wrapper.find(BoardContentSidebar).exists()).toBe(result);
+    it(`renders BoardContentSidebar = ${resultIssue}`, () => {
+      expect(wrapper.find(BoardContentSidebar).exists()).toBe(resultIssue);
+    });
+
+    it(`renders EpicBoardContentSidebar = ${resultEpic}`, () => {
+      expect(wrapper.find(EpicBoardContentSidebar).exists()).toBe(resultEpic);
     });
   });
 });

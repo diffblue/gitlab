@@ -6,15 +6,12 @@ import {
   filterVariables,
 } from '~/boards/boards_util';
 import { BoardType } from '~/boards/constants';
-import eventHub from '~/boards/eventhub';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE, { gqlClient } from '~/boards/stores/actions';
-import boardsStore from '~/boards/stores/boards_store';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import axios from '~/lib/utils/axios_utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -39,7 +36,6 @@ import projectBoardIterationsQuery from '../graphql/project_board_iterations.que
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
-import boardsStoreEE from './boards_store_ee';
 import * as types from './mutation_types';
 
 const fetchAndFormatListIssues = (state, extraVariables) => {
@@ -121,13 +117,11 @@ export default {
 
     if (getters.isSwimlanesOn) {
       dispatch('resetEpics');
-      dispatch('resetIssues');
       dispatch('fetchEpicsSwimlanes');
-      dispatch('fetchLists');
-    } else if (gon.features.graphqlBoardLists || getters.isEpicBoard) {
-      dispatch('fetchLists');
-      dispatch('resetIssues');
     }
+
+    dispatch('fetchLists');
+    dispatch('resetIssues');
   },
 
   fetchEpicsSwimlanes({ state, commit }, { fetchNext = false } = {}) {
@@ -221,38 +215,30 @@ export default {
     commit(types.SET_SHOW_LABELS, val);
   },
 
-  updateListWipLimit({ commit, getters, dispatch }, { maxIssueCount, listId }) {
-    if (getters.shouldUseGraphQL) {
-      return gqlClient
-        .mutate({
-          mutation: listUpdateLimitMetricsMutation,
-          variables: {
-            input: {
-              listId,
-              maxIssueCount,
-            },
-          },
-        })
-        .then(({ data }) => {
-          if (data?.boardListUpdateLimitMetrics?.errors.length) {
-            throw new Error();
-          }
-
-          commit(types.UPDATE_LIST_SUCCESS, {
+  updateListWipLimit({ commit, dispatch }, { maxIssueCount, listId }) {
+    return gqlClient
+      .mutate({
+        mutation: listUpdateLimitMetricsMutation,
+        variables: {
+          input: {
             listId,
-            list: data.boardListUpdateLimitMetrics?.list,
-          });
-        })
-        .catch(() => {
-          dispatch('handleUpdateListFailure');
-        });
-    }
+            maxIssueCount,
+          },
+        },
+      })
+      .then(({ data }) => {
+        if (data?.boardListUpdateLimitMetrics?.errors.length) {
+          throw new Error();
+        }
 
-    return axios.put(`${boardsStoreEE.store.state.endpoints.listsEndpoint}/${listId}`, {
-      list: {
-        max_issue_count: maxIssueCount,
-      },
-    });
+        commit(types.UPDATE_LIST_SUCCESS, {
+          listId,
+          list: data.boardListUpdateLimitMetrics?.list,
+        });
+      })
+      .catch(() => {
+        dispatch('handleUpdateListFailure');
+      });
   },
 
   fetchItemsForList: (
@@ -316,10 +302,6 @@ export default {
       );
       dispatch('fetchEpicsSwimlanes');
       dispatch('fetchLists');
-    } else if (!gon.features.graphqlBoardLists) {
-      historyPushState(removeParams(['group_by']), window.location.href, true);
-      boardsStore.create();
-      eventHub.$emit('initialBoardLoad');
     } else {
       historyPushState(removeParams(['group_by']), window.location.href, true);
     }

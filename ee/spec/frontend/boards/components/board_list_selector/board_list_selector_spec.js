@@ -11,11 +11,6 @@ import axios from '~/lib/utils/axios_utils';
 jest.mock('~/flash');
 
 describe('BoardListSelector', () => {
-  global.gon.features = {
-    ...(global.gon.features || {}),
-    graphqlBoardLists: false,
-  };
-
   const dummyEndpoint = `${TEST_HOST}/users.json`;
 
   const createComponent = () =>
@@ -93,19 +88,7 @@ describe('BoardListSelector', () => {
     });
 
     describe('handleItemClick', () => {
-      it('graphqlBoardLists FF off - creates new list in a store instance', () => {
-        jest.spyOn(vm.store, 'new').mockReturnValue({});
-        const assignee = mockAssigneesList[0];
-
-        expect(vm.store.findList('title', assignee.name)).not.toBeDefined();
-        vm.handleItemClick(assignee);
-
-        expect(vm.store.new).toHaveBeenCalledWith(expect.any(Object));
-      });
-
-      it('graphqlBoardLists FF on - creates new list in a store instance', () => {
-        global.gon.features.graphqlBoardLists = true;
-
+      it('creates new list in a store instance', () => {
         jest.spyOn(vm.vuexStore, 'dispatch').mockReturnValue({});
         const assignee = mockAssigneesList[0];
 

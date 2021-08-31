@@ -61,13 +61,4 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
     it_behaves_like 'multiple issue boards'
   end
-
-  context 'when graphql_board_lists FF disabled' do
-    before do
-      stub_feature_flags(graphql_board_lists: false)
-      stub_licensed_features(multiple_group_issue_boards: true)
-    end
-
-    it_behaves_like 'multiple issue boards'
-  end
 end

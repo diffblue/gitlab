@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'User adds milestone lists', :js do
-  using RSpec::Parameterized::TableSyntax
-
   let_it_be(:group) { create(:group, :nested) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:group_board) { create(:board, group: group) }
@@ -25,11 +23,8 @@ RSpec.describe 'User adds milestone lists', :js do
     group.add_owner(user)
   end
 
-  where(:board_type, :graphql_board_lists_enabled) do
-    :project | true
-    :project | false
-    :group   | true
-    :group   | false
+  where(:board_type) do
+    [[:project], [:group]]
   end
 
   with_them do
@@ -42,10 +37,6 @@ RSpec.describe 'User adds milestone lists', :js do
       sign_in(user)
 
       set_cookie('sidebar_collapsed', 'true')
-
-      stub_feature_flags(
-        graphql_board_lists: graphql_board_lists_enabled
-      )
 
       if board_type == :project
         visit project_board_path(project, project_board)

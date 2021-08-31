@@ -65,19 +65,12 @@ export default Vue.extend({
       return list;
     },
     handleItemClick(item) {
-      if (
-        this.vuexStore.getters.shouldUseGraphQL &&
-        !this.vuexStore.getters.getListByTitle(item.title)
-      ) {
+      if (!this.vuexStore.getters.getListByTitle(item.title)) {
         if (this.listType === 'milestones') {
           this.vuexStore.dispatch('createList', { milestoneId: fullMilestoneId(item.id) });
         } else if (this.listType === 'assignees') {
           this.vuexStore.dispatch('createList', { assigneeId: fullUserId(item.id) });
         }
-      } else if (!this.store.findList('title', item.title)) {
-        const list = this.prepareListObject(item);
-
-        this.store.new(list);
       }
     },
   },
