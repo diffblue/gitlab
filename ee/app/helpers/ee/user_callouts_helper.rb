@@ -4,7 +4,7 @@ module EE
   module UserCalloutsHelper
     extend ::Gitlab::Utils::Override
 
-    ACCOUNT_RECOVERY_REGULAR_CHECK = 'account_recovery_regular_check'
+    TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK = 'two_factor_auth_recovery_settings_check'
     ACTIVE_USER_COUNT_THRESHOLD    = 'active_user_count_threshold'
     GEO_ENABLE_HASHED_STORAGE      = 'geo_enable_hashed_storage'
     GEO_MIGRATE_HASHED_STORAGE     = 'geo_migrate_hashed_storage'
@@ -55,13 +55,13 @@ module EE
       render 'shared/ultimate_trial_callout_content'
     end
 
-    def render_account_recovery_regular_check
+    def render_two_factor_auth_recovery_settings_check
       return unless current_user &&
           ::Gitlab.com? &&
           current_user.two_factor_otp_enabled? &&
-          !user_dismissed?(ACCOUNT_RECOVERY_REGULAR_CHECK, 3.months.ago)
+          !user_dismissed?(TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK, 3.months.ago)
 
-      render 'shared/check_recovery_settings'
+      render 'shared/two_factor_auth_recovery_settings_check'
     end
 
     def show_token_expiry_notification?
@@ -95,10 +95,10 @@ module EE
       (namespace.group? && namespace.has_owner?(current_user.id)) || !namespace.group?
     end
 
-    override :dismiss_account_recovery_regular_check
-    def dismiss_account_recovery_regular_check
+    override :dismiss_two_factor_auth_recovery_settings_check
+    def dismiss_two_factor_auth_recovery_settings_check
       ::Users::DismissUserCalloutService.new(
-        container: nil, current_user: current_user, params: { feature_name: ACCOUNT_RECOVERY_REGULAR_CHECK }
+        container: nil, current_user: current_user, params: { feature_name: TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK }
       ).execute
     end
 
