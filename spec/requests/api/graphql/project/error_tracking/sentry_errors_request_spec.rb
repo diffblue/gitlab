@@ -30,7 +30,7 @@ RSpec.describe 'sentry errors requests' do
 
     let(:error_data) { graphql_data.dig('project', 'sentryErrors', 'detailedError') }
 
-    it 'returns a successful response', :aggregate_failures, :quarantine do
+    it 'returns a successful response', :aggregate_failures do
       post_graphql(query, current_user: current_user)
 
       expect(response).to have_gitlab_http_status(:success)
