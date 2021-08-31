@@ -87,7 +87,7 @@ module QA
         Runtime::Feature.disable(:bulk_import)
       end
 
-      it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1874' do
+      it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1921' do
         expect { imported_group.import_status }.to(
           eventually_eq('finished').within(max_duration: 300, sleep_interval: 2)
         )

@@ -49,7 +49,7 @@ module QA
       end
 
       context 'when upstream project new tag pipeline finishes' do
-        it 'triggers pipeline in downstream project', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1729' do
+        it 'triggers pipeline in downstream project', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1826' do
           # Downstream project should have one pipeline at this time
           unless downstream_project.pipelines.size == 1
             raise "[ERROR] Downstream project should have 1 pipeline - pipelines count #{downstream_project.pipelines.size}"

@@ -38,7 +38,7 @@ module QA
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
 
-      it 'user clones and pushes to project within a group using Git HTTP', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/675' do
+      it 'user clones and pushes to project within a group using Git HTTP', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1449' do
         expect do
           Resource::Repository::ProjectPush.fabricate! do |project_push|
             project_push.project = project

@@ -68,7 +68,7 @@ module QA
         project.visit!
       end
 
-      it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1667' do
+      it 'runs sast job when enabled from configuration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1835' do
         Flow::Pipeline.visit_latest_pipeline
 
         # Baseline that we do not initially have a sast job

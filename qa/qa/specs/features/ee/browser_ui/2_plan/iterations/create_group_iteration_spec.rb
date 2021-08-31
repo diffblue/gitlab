@@ -14,7 +14,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1174', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/334252', type: :stale } do
+      it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1623', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/334252', type: :stale } do
         EE::Resource::GroupIteration.fabricate_via_browser_ui! do |iteration|
           iteration.title = title
           iteration.description = description

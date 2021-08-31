@@ -27,7 +27,7 @@ module QA
         project.visit!
       end
 
-      it 'merge request assigns code owners as approvers', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/605' do
+      it 'merge request assigns code owners as approvers', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1486' do
         # Commit CODEOWNERS to default branch
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project

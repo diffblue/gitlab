@@ -14,7 +14,7 @@ module QA
         context 'when Wiki is empty' do
           let(:group) { Resource::Group.fabricate_via_api! }
 
-          it 'creates a home page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1708' do
+          it 'creates a home page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1831' do
             group.visit!
 
             Page::Group::Menu.perform(&:click_group_wiki_link)
@@ -40,7 +40,7 @@ module QA
             end
           end
 
-          it 'adds a second page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1728' do
+          it 'adds a second page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1827' do
             wiki.visit!
 
             EE::Page::Group::Wiki::Show.perform(&:click_new_page)

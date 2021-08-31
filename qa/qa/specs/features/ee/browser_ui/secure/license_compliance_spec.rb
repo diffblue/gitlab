@@ -30,7 +30,7 @@ module QA
         Page::Project::Menu.perform(&:click_on_license_compliance)
       end
 
-      it 'has empty state', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1128' do
+      it 'has empty state', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1839' do
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           expect(license_compliance).to have_empty_state_description('The license list details information about the licenses used within your project.')
           expect(license_compliance).to have_link('More Information', href: %r{\/help\/user\/compliance\/license_compliance\/index})
@@ -53,7 +53,7 @@ module QA
           Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
         end
 
-        it 'can approve a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/964' do
+        it 'can approve a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1286' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             license_compliance.approve_license approved_license_name
@@ -62,7 +62,7 @@ module QA
           end
         end
 
-        it 'can deny a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/963' do
+        it 'can deny a license in the settings page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1287' do
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
             license_compliance.open_tab
             license_compliance.deny_license denied_license_name
@@ -110,7 +110,7 @@ module QA
         project&.remove_via_api! if project
       end
 
-      it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1767' do
+      it 'can approve and deny licenses in the pipeline', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1285' do
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           license_compliance.open_tab
           license_compliance.approve_license approved_license_name

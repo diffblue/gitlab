@@ -33,7 +33,7 @@ module QA
         Flow::Saml.logout_from_idp(saml_idp_service)
       end
 
-      it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1756' do
+      it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1845' do
         # When the user signs in via IDP for the first time
 
         visit_group_sso_url

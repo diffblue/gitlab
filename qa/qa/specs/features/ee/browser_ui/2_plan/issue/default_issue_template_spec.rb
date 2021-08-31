@@ -15,7 +15,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'uses default template when creating an issue', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1231' do
+      it 'uses default template when creating an issue', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1622' do
         default_template_project.visit!
 
         Page::Project::Menu.perform(&:go_to_general_settings)

@@ -23,7 +23,7 @@ module QA
           set_prevent_forking_outside_group('disabled')
         end
 
-        it 'allows forking outside of group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1774' do
+        it 'allows forking outside of group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1642' do
           project.visit!
 
           Page::Project::Show.perform(&:fork_project)
@@ -39,7 +39,7 @@ module QA
           set_prevent_forking_outside_group('enabled')
         end
 
-        it 'does not allow forking outside of group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1775' do
+        it 'does not allow forking outside of group', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1629' do
           project.visit!
 
           Page::Project::Show.perform(&:fork_project)

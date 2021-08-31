@@ -26,7 +26,7 @@ module QA
         login
       end
 
-      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1673' do
+      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1505' do
         # Create a merge request with 2 rules
         merge_request = Resource::MergeRequest.fabricate_via_browser_ui! do |resource|
           resource.title = 'Add a new feature'

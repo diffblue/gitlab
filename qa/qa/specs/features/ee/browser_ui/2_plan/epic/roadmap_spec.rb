@@ -19,7 +19,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      it 'presents epic on roadmap', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1170g' do
+      it 'presents epic on roadmap', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1182' do
         page.visit("#{epic.group.web_url}/-/roadmap")
 
         EE::Page::Group::Roadmap.perform do |roadmap|

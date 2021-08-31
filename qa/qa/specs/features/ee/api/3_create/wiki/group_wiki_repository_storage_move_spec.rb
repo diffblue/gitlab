@@ -30,7 +30,7 @@ module QA
         praefect_manager.gitlab = 'gitlab'
       end
 
-      it 'moves group Wiki repository from one Gitaly storage to another', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/1733' do
+      it 'moves group Wiki repository from one Gitaly storage to another', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1913' do
         expect(wiki).to have_page_content(original_page_title, original_page_content)
 
         expect { group.change_repository_storage(destination_storage[:name]) }.not_to raise_error

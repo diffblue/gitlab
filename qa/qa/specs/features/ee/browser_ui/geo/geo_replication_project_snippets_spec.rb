@@ -8,7 +8,7 @@ module QA
       let(:file_name) { 'geo_snippet_file.md' }
       let(:file_content) { "### Geo snippet heading\n\n[GitLab link](https://gitlab.com/)" }
 
-      it 'replicates to the Geo secondary site', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/911' do
+      it 'replicates to the Geo secondary site', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1314' do
         snippet = nil
 
         QA::Flow::Login.while_signed_in(address: :geo_primary) do

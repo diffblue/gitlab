@@ -95,7 +95,7 @@ module QA
         Flow::Pipeline.wait_for_latest_pipeline(pipeline_condition: 'succeeded')
       end
 
-      it 'manage licenses from the merge request', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/issues/575' do
+      it 'manage licenses from the merge request', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1507' do
         @merge_request.visit!
 
         Page::MergeRequest::Show.perform do |show|
