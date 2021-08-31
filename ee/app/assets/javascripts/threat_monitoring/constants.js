@@ -6,8 +6,10 @@ export const INVALID_CURRENT_ENVIRONMENT_NAME = '–';
 
 export const PREDEFINED_NETWORK_POLICIES = [
   {
+    __typename: 'NetworkPolicy',
     name: 'drop-outbound',
     enabled: false,
+    kind: 'CiliumNetworkPolicy',
     yaml: `---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -19,8 +21,10 @@ spec:
   - {}`,
   },
   {
+    __typename: 'NetworkPolicy',
     name: 'allow-inbound-http',
     enabled: false,
+    kind: 'CiliumNetworkPolicy',
     yaml: `---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
