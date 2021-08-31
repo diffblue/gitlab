@@ -3,12 +3,14 @@ import { createLocalVue, RouterLinkStub } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
+import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
 import { Namespace } from 'ee/iterations/constants';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 const push = jest.fn();
 const $router = {
@@ -82,11 +84,11 @@ describe('Iteration cadence list item', () => {
       },
     },
   };
-
   function createComponent({
     props = {},
     canCreateCadence,
     canEditCadence,
+    currentRoute,
     namespaceType = Namespace.Group,
     query = groupIterationsInCadenceQuery,
     resolverMock = jest.fn().mockResolvedValue(querySuccessResponse),
@@ -97,7 +99,10 @@ describe('Iteration cadence list item', () => {
       localVue,
       apolloProvider,
       mocks: {
-        $router,
+        $router: {
+          ...$router,
+          currentRoute,
+        },
       },
       stubs: {
         RouterLink: RouterLinkStub,
@@ -137,7 +142,7 @@ describe('Iteration cadence list item', () => {
     expect(resolverMock).not.toHaveBeenCalled();
   });
 
-  it('shows empty text when no results', async () => {
+  it('shows empty text and CTA when no results', async () => {
     await createComponent({
       resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
     });
@@ -148,12 +153,25 @@ describe('Iteration cadence list item', () => {
 
     expect(findLoader().exists()).toBe(false);
     expect(wrapper.text()).toContain(IterationCadenceListItem.i18n.noResults);
+    expect(wrapper.text()).toContain(IterationCadenceListItem.i18n.createFirstIteration);
   });
 
   it('shows iterations after loading', async () => {
     await createComponent();
 
     expand();
+
+    await waitForPromises();
+
+    iterations.forEach(({ title }) => {
+      expect(wrapper.text()).toContain(title);
+    });
+  });
+
+  it('automatically expands for newly created cadence', async () => {
+    await createComponent({
+      currentRoute: { query: { createdCadenceId: getIdFromGraphQLId(cadence.id) } },
+    });
 
     await waitForPromises();
 
@@ -260,5 +278,18 @@ describe('Iteration cadence list item', () => {
     await createComponent({ canEditCadence: true });
 
     expect(wrapper.find(GlDropdown).exists()).toBe(true);
+  });
+
+  it.each([
+    ['hides', false],
+    ['shows', true],
+  ])('%s status badge when showStateBadge is %s', async (_, showStateBadge) => {
+    await createComponent({ props: { showStateBadge } });
+
+    expand();
+
+    await waitForPromises();
+
+    expect(wrapper.findComponent(TimeboxStatusBadge).exists()).toBe(showStateBadge);
   });
 });

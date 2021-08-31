@@ -7,8 +7,6 @@ module Geo
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
 
-    tags :exclude_from_gitlab_com
-
     def perform
       unless ::Geo::ContainerRepositoryRegistry.replication_enabled?
         log_info('Container Registry replication is not enabled')

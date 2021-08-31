@@ -13,7 +13,6 @@ module Vulnerabilities
       # rubocop:enable Scalability/CronWorkerContext
 
       feature_category :vulnerability_management
-      tags :exclude_from_kubernetes
 
       def perform
         DeletionService.execute

@@ -9,7 +9,6 @@ module Security
     sidekiq_options retry: 3
 
     feature_category :vulnerability_management
-    tags :exclude_from_kubernetes
 
     idempotent!
 

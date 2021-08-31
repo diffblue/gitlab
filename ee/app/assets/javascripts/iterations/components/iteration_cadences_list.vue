@@ -97,6 +97,11 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.$router.currentRoute.query.createdCadenceId) {
+      this.$apollo.queries.workspace.refetch();
+    }
+  },
   methods: {
     nextPage() {
       this.pagination = {
@@ -172,6 +177,7 @@ export default {
             :automatic="cadence.automatic"
             :title="cadence.title"
             :iteration-state="state"
+            :show-state-badge="tabIndex === 2"
             @delete-cadence="deleteCadence"
           />
         </ul>

@@ -15,11 +15,13 @@ import { __, s__ } from '~/locale';
 import { Namespace } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
 import projectQuery from '../queries/project_iterations_in_cadence.query.graphql';
+import TimeboxStatusBadge from './timebox_status_badge.vue';
 
 const pageSize = 20;
 
 const i18n = Object.freeze({
   noResults: s__('Iterations|No iterations in cadence.'),
+  createFirstIteration: s__('Iterations|Create your first iteration'),
   error: __('Error loading iterations'),
 
   deleteCadence: s__('Iterations|Delete cadence'),
@@ -43,6 +45,7 @@ export default {
     GlInfiniteScroll,
     GlModal,
     GlSkeletonLoader,
+    TimeboxStatusBadge,
   },
   apollo: {
     workspace: {
@@ -83,6 +86,11 @@ export default {
     iterationState: {
       type: String,
       required: true,
+    },
+    showStateBadge: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -150,6 +158,14 @@ export default {
       };
     },
   },
+  created() {
+    if (
+      `${this.$router.currentRoute?.query.createdCadenceId}` ===
+      `${getIdFromGraphQLId(this.cadenceId)}`
+    ) {
+      this.expanded = true;
+    }
+  },
   methods: {
     fetchMore() {
       if (this.iterations.length === 0 || !this.hasNextPage || this.loading) {
@@ -213,8 +229,7 @@ export default {
           name="chevron-right"
           class="gl-transition-medium"
           :class="{ 'gl-rotate-90': expanded }"
-        />
-        {{ title }}
+        /><span class="gl-ml-2">{{ title }}</span>
       </gl-button>
 
       <span v-if="durationInWeeks" class="gl-mr-5 gl-display-none gl-sm-display-inline-block">
@@ -279,6 +294,7 @@ export default {
               <router-link :to="path(iteration.id)">
                 {{ iteration.title }}
               </router-link>
+              <timebox-status-badge v-if="showStateBadge" :state="iteration.state" />
             </li>
           </ol>
           <div v-if="loading" class="gl-p-5">
@@ -286,9 +302,19 @@ export default {
           </div>
         </template>
       </gl-infinite-scroll>
-      <p v-else-if="!loading" class="gl-px-5">
-        {{ i18n.noResults }}
-      </p>
+      <template v-else-if="!loading">
+        <p class="gl-px-7">{{ i18n.noResults }}</p>
+        <gl-button
+          v-if="!automatic"
+          variant="confirm"
+          category="secondary"
+          class="gl-mb-5 gl-ml-7"
+          data-qa-selector="create_cadence_cta"
+          :to="newIteration"
+        >
+          {{ i18n.createFirstIteration }}
+        </gl-button>
+      </template>
     </gl-collapse>
   </li>
 </template>

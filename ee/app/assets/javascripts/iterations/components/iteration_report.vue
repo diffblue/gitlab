@@ -2,7 +2,6 @@
 /* eslint-disable vue/no-v-html */
 import {
   GlAlert,
-  GlBadge,
   GlDropdown,
   GlDropdownItem,
   GlEmptyState,
@@ -13,29 +12,24 @@ import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Namespace } from '../constants';
 import query from '../queries/iteration.query.graphql';
 import IterationReportTabs from './iteration_report_tabs.vue';
-
-const iterationStates = {
-  closed: 'closed',
-  upcoming: 'upcoming',
-  expired: 'expired',
-};
+import TimeboxStatusBadge from './timebox_status_badge.vue';
 
 export default {
   components: {
     BurnCharts,
     GlAlert,
-    GlBadge,
     GlIcon,
     GlDropdown,
     GlDropdownItem,
     GlEmptyState,
     GlLoadingIcon,
     IterationReportTabs,
+    TimeboxStatusBadge,
   },
   apollo: {
     iteration: {
@@ -85,21 +79,6 @@ export default {
     showEmptyState() {
       return !this.loading && this.iteration && !this.iteration.title;
     },
-    status() {
-      switch (this.iteration.state) {
-        case iterationStates.closed:
-          return {
-            text: __('Closed'),
-            variant: 'danger',
-          };
-        case iterationStates.expired:
-          return { text: __('Past due'), variant: 'warning' };
-        case iterationStates.upcoming:
-          return { text: __('Upcoming'), variant: 'neutral' };
-        default:
-          return { text: __('Open'), variant: 'success' };
-      }
-    },
     editPage() {
       return {
         name: 'editIteration',
@@ -130,9 +109,7 @@ export default {
         ref="topbar"
         class="gl-display-flex gl-justify-items-center gl-align-items-center gl-py-3 gl-border-1 gl-border-b-solid gl-border-gray-100"
       >
-        <gl-badge :variant="status.variant">
-          {{ status.text }}
-        </gl-badge>
+        <timebox-status-badge :state="iteration.state" />
         <span class="gl-ml-4"
           >{{ formatDate(iteration.startDate) }} – {{ formatDate(iteration.dueDate) }}</span
         >

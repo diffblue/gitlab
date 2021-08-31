@@ -168,7 +168,12 @@ describe('Iteration cadence form', () => {
 
         await waitForPromises();
 
-        expect(push).toHaveBeenCalledWith({ name: 'index' });
+        expect(push).toHaveBeenCalledWith({
+          name: 'index',
+          query: {
+            createdCadenceId: id,
+          },
+        });
       });
 
       it('does not submit if required fields missing', () => {

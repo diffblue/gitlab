@@ -15,7 +15,6 @@ module IncidentManagement
 
       idempotent!
       feature_category :incident_management
-      tags :exclude_from_kubernetes
 
       def perform(rotation_id)
         @rotation = ::IncidentManagement::OncallRotation.find_by_id(rotation_id)

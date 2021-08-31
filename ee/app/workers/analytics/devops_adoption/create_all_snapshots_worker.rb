@@ -12,7 +12,6 @@ module Analytics
       include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
       feature_category :devops_reports
-      tags :exclude_from_kubernetes
       idempotent!
 
       WORKERS_GAP = 5.seconds

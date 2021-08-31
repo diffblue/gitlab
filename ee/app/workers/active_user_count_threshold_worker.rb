@@ -11,7 +11,6 @@ class ActiveUserCountThresholdWorker # rubocop:disable Scalability/IdempotentWor
   # rubocop:enable Scalability/CronWorkerContext
 
   feature_category :license
-  tags :exclude_from_kubernetes
 
   def perform
     License.with_valid_license do |license|

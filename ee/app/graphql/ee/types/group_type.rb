@@ -22,7 +22,6 @@ module EE
         field :epics, ::Types::EpicType.connection_type, null: true,
               description: 'Find epics.',
               extras: [:lookahead],
-              max_page_size: 2000,
               resolver: ::Resolvers::EpicsResolver
 
         field :epic_board,

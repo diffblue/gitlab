@@ -9,7 +9,6 @@ class GroupSamlGroupSyncWorker
   include Gitlab::Utils::StrongMemoize
 
   feature_category :authentication_and_authorization
-  tags :exclude_from_kubernetes
   idempotent!
 
   loggable_arguments 2

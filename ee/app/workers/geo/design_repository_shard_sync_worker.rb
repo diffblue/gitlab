@@ -2,8 +2,6 @@
 
 module Geo
   class DesignRepositoryShardSyncWorker < RepositoryShardSyncWorker # rubocop:disable Scalability/IdempotentWorker
-    tags :exclude_from_gitlab_com
-
     private
 
     def schedule_job(project_id)

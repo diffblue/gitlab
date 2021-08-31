@@ -11,7 +11,6 @@ module RequirementsManagement
 
     idempotent!
     feature_category :requirements_management
-    tags :exclude_from_kubernetes
     # TODO: Set worker_resource_boundary.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/281173
 
