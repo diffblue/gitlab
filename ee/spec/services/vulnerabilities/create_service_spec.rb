@@ -93,6 +93,13 @@ RSpec.describe Vulnerabilities::CreateService do
       it 'rejects creation of a new vulnerability from this finding' do
         expect(subject.errors.messages).to eq(expected_error_messages)
       end
+
+      it 'does not update vulnerability statistics' do
+        subject
+
+        expect(Vulnerabilities::HistoricalStatistics::UpdateService).not_to receive(:update_for)
+        expect(Vulnerabilities::Statistics::UpdateService).not_to receive(:update_for)
+      end
     end
 
     context 'when security dashboard feature is disabled' do
