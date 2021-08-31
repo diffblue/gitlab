@@ -119,7 +119,9 @@ class ApprovalMergeRequestRule < ApplicationRecord
   end
 
   def sync_approved_approvers
-    # Before being merged, approved_approvers are dynamically calculated in ApprovalWrappedRule instead of being persisted.
+    # Before being merged, approved_approvers are dynamically calculated in
+    #   ApprovalWrappedRule instead of being persisted.
+    #
     return unless merge_request.merged?
 
     approvers = ApprovalWrappedRule.wrap(merge_request, self).approved_approvers
