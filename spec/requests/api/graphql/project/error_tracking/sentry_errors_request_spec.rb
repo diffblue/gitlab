@@ -3,6 +3,7 @@ require 'spec_helper'
 
 RSpec.describe 'sentry errors requests' do
   include GraphqlHelpers
+
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:project_setting) { create(:project_error_tracking_setting, project: project) }
   let_it_be(:current_user) { project.owner }
@@ -50,9 +51,7 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when reactive cache returns data' do
       before do
-        allow_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:issue_details)
-          .and_return(issue: sentry_detailed_error)
+        stub_setting_for(:issue_details, issue: sentry_detailed_error)
 
         post_graphql(query, current_user: current_user)
       end
@@ -83,9 +82,7 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when sentry api returns an error' do
       before do
-        expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:issue_details)
-          .and_return(error: 'error message')
+        stub_setting_for(:issue_details, error: 'error message')
 
         post_graphql(query, current_user: current_user)
       end
@@ -142,9 +139,9 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when reactive cache returns data' do
       before do
-        expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:list_sentry_issues)
-          .and_return(issues: [sentry_error], pagination: pagination)
+        stub_setting_for(:list_sentry_issues,
+                         issues: [sentry_error],
+                         pagination: pagination)
 
         post_graphql(query, current_user: current_user)
       end
@@ -179,9 +176,7 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when sentry api itself errors out' do
       before do
-        expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:list_sentry_issues)
-          .and_return(error: 'error message')
+        stub_setting_for(:list_sentry_issues, error: 'error message')
 
         post_graphql(query, current_user: current_user)
       end
@@ -225,9 +220,7 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when reactive cache returns data' do
       before do
-        allow_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:issue_latest_event)
-          .and_return(latest_event: sentry_stack_trace)
+        stub_setting_for(:issue_latest_event, latest_event: sentry_stack_trace)
 
         post_graphql(query, current_user: current_user)
       end
@@ -245,9 +238,7 @@ RSpec.describe 'sentry errors requests' do
 
     context 'when sentry api returns an error' do
       before do
-        expect_any_instance_of(ErrorTracking::ProjectErrorTrackingSetting)
-          .to receive(:issue_latest_event)
-          .and_return(error: 'error message')
+        stub_setting_for(:issue_latest_event, error: 'error message')
 
         post_graphql(query, current_user: current_user)
       end
@@ -255,6 +246,14 @@ RSpec.describe 'sentry errors requests' do
       it 'is expected to handle the error and return nil' do
         expect(stack_trace_data).to be_nil
       end
+    end
+  end
+
+  private
+
+  def stub_setting_for(method, **return_value)
+    allow_next_found_instance_of(ErrorTracking::ProjectErrorTrackingSetting) do |setting|
+      allow(setting).to receive(method).and_return(**return_value)
     end
   end
 end
