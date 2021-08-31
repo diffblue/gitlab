@@ -13,24 +13,24 @@ module Mutations
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the site profile belongs to.'
+               description: 'Project the site profile belongs to.'
 
       argument :profile_name, GraphQL::Types::String,
                required: true,
-               description: 'The name of the site profile.'
+               description: 'Name of the site profile.'
 
       argument :target_url, GraphQL::Types::String,
                required: false,
-               description: 'The URL of the target to be scanned.'
+               description: 'URL of the target to be scanned.'
 
       argument :target_type, Types::DastTargetTypeEnum,
                required: false,
-               description: 'The type of target to be scanned.'
+               description: 'Type of target to be scanned.'
 
       argument :excluded_urls, [GraphQL::Types::String],
                required: false,
                default_value: [],
-               description: 'The URLs to skip during an authenticated scan. Defaults to `[]`.'
+               description: 'URLs to skip during an authenticated scan. Defaults to `[]`.'
 
       argument :request_headers, GraphQL::Types::String,
                required: false,

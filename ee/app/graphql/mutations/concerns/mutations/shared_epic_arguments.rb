@@ -7,17 +7,17 @@ module Mutations
     prepended do
       argument :group_path, GraphQL::Types::ID,
                required: true,
-               description: "The group the epic to mutate is in."
+               description: "Group the epic to mutate is in."
 
       argument :title,
                 GraphQL::Types::String,
                 required: false,
-                description: 'The title of the epic.'
+                description: 'Title of the epic.'
 
       argument :description,
                 GraphQL::Types::String,
                 required: false,
-                description: 'The description of the epic.'
+                description: 'Description of the epic.'
 
       argument :confidential,
                 GraphQL::Types::Boolean,
@@ -27,12 +27,12 @@ module Mutations
       argument :start_date_fixed,
                 GraphQL::Types::String,
                 required: false,
-                description: 'The start date of the epic.'
+                description: 'Start date of the epic.'
 
       argument :due_date_fixed,
                 GraphQL::Types::String,
                 required: false,
-                description: 'The end date of the epic.'
+                description: 'End date of the epic.'
 
       argument :start_date_is_fixed,
                 GraphQL::Types::Boolean,
@@ -46,11 +46,11 @@ module Mutations
       argument :add_label_ids,
                [GraphQL::Types::ID],
                required: false,
-               description: 'The IDs of labels to be added to the epic.'
+               description: 'IDs of labels to be added to the epic.'
       argument :remove_label_ids,
                [GraphQL::Types::ID],
                required: false,
-               description: 'The IDs of labels to be removed from the epic.'
+               description: 'IDs of labels to be removed from the epic.'
     end
 
     def validate_arguments!(args)

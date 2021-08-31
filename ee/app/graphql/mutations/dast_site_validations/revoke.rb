@@ -9,7 +9,7 @@ module Mutations
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the site validation belongs to.'
+               description: 'Project the site validation belongs to.'
 
       argument :normalized_target_url, GraphQL::Types::String,
                required: true,

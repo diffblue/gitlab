@@ -10,28 +10,28 @@ module Mutations
 
         field :dast_profile, ::Types::Dast::ProfileType,
               null: true,
-              description: 'The created profile.'
+              description: 'Created profile.'
 
         field :pipeline_url, GraphQL::Types::String,
               null: true,
-              description: 'The URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`.'
+              description: 'URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`.'
 
         argument :full_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project the profile belongs to.'
+                 description: 'Project the profile belongs to.'
 
         argument :name, GraphQL::Types::String,
                  required: true,
-                 description: 'The name of the profile.'
+                 description: 'Name of the profile.'
 
         argument :description, GraphQL::Types::String,
                  required: false,
-                 description: 'The description of the profile. Defaults to an empty string.',
+                 description: 'Description of the profile. Defaults to an empty string.',
                  default_value: ''
 
         argument :branch_name, GraphQL::Types::String,
                  required: false,
-                 description: 'The associated branch.'
+                 description: 'Associated branch.'
 
         argument :dast_site_profile_id, ::Types::GlobalIDType[::DastSiteProfile],
                  required: true,

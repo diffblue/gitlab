@@ -29,7 +29,7 @@ module Mutations
 
             argument :scan_mode, ::Types::AppSec::Fuzzing::API::ScanModeEnum,
               required: true,
-              description: 'The mode for API fuzzing scans.'
+              description: 'Mode for API fuzzing scans.'
 
             argument :scan_profile, GraphQL::Types::String,
               required: false,
@@ -46,7 +46,7 @@ module Mutations
 
             field :gitlab_ci_yaml_edit_path, GraphQL::Types::String,
               null: true,
-              description: "The location at which the project's `.gitlab-ci.yml` file can be edited in the browser."
+              description: "Location at which the project's `.gitlab-ci.yml` file can be edited in the browser."
 
             authorize :create_vulnerability
 

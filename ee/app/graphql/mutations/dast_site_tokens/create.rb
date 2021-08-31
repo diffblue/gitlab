@@ -17,15 +17,15 @@ module Mutations
 
       field :status, Types::DastSiteProfileValidationStatusEnum,
             null: true,
-            description: 'The current validation status of the target.'
+            description: 'Current validation status of the target.'
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the site token belongs to.'
+               description: 'Project the site token belongs to.'
 
       argument :target_url, GraphQL::Types::String,
                required: false,
-               description: 'The URL of the target to be validated.'
+               description: 'URL of the target to be validated.'
 
       authorize :create_on_demand_dast_scan
 

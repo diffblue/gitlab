@@ -9,27 +9,27 @@ module Mutations
         argument :list_id,
                  ::Types::GlobalIDType[::List],
                  required: true,
-                 description: 'The global ID of the list.'
+                 description: 'Global ID of the list.'
 
         argument :limit_metric,
                  EE::Types::ListLimitMetricEnum,
                  required: false,
-                 description: 'The new limit metric type for the list.'
+                 description: 'New limit metric type for the list.'
 
         argument :max_issue_count,
                  GraphQL::Types::Int,
                  required: false,
-                 description: 'The new maximum issue count limit.'
+                 description: 'New maximum issue count limit.'
 
         argument :max_issue_weight,
                  GraphQL::Types::Int,
                  required: false,
-                 description: 'The new maximum issue weight limit.'
+                 description: 'New maximum issue weight limit.'
 
         field :list,
               ::Types::BoardListType,
               null: true,
-              description: 'The updated list.'
+              description: 'Updated list.'
 
         def ready?(**args)
           if limit_metric_settings_of(args).blank?

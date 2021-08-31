@@ -7,7 +7,7 @@ module Mutations
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the site profile belongs to.'
+               description: 'Project the site profile belongs to.'
 
       argument :id, ::Types::GlobalIDType[::DastSiteProfile],
                required: true,

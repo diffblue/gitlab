@@ -11,7 +11,7 @@ module Mutations
         argument :id,
                  ::Types::GlobalIDType[::ComplianceManagement::Framework],
                  required: true,
-                 description: 'The global ID of the compliance framework to destroy.'
+                 description: 'Global ID of the compliance framework to destroy.'
 
         def resolve(id:)
           framework = authorized_find!(id: id)
