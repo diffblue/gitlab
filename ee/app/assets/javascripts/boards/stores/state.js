@@ -15,8 +15,6 @@ export default () => ({
   epicsEndCursor: null,
   epics: [],
   epicsFlags: {},
-  iterations: [],
-  iterationsLoading: false,
   assignees: [],
   assigneesLoading: false,
 });

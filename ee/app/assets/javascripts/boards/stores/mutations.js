@@ -171,20 +171,6 @@ export default {
     }
   },
 
-  [mutationTypes.RECEIVE_ITERATIONS_REQUEST](state) {
-    state.iterationsLoading = true;
-  },
-
-  [mutationTypes.RECEIVE_ITERATIONS_SUCCESS](state, iterations) {
-    state.iterations = iterations;
-    state.iterationsLoading = false;
-  },
-
-  [mutationTypes.RECEIVE_ITERATIONS_FAILURE](state) {
-    state.iterationsLoading = false;
-    state.error = __('Failed to load iterations.');
-  },
-
   [mutationTypes.RECEIVE_ASSIGNEES_REQUEST](state) {
     state.assigneesLoading = true;
   },
