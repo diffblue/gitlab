@@ -21,7 +21,7 @@
       "requested_at": null,
       "user": {
         "id": 16,
-        "email": "bernard_willms@gitlabexample.com",
+        "public_email": "bernard_willms@gitlabexample.com",
         "username": "bernard_willms"
       }
     }
