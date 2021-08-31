@@ -18,7 +18,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
         project.add_developer(developer)
       end
 
-      it 'creates policy project with maintainers and developers from target project as developers' do
+      it 'creates policy project with maintainers and developers from target project as developers', :aggregate_failures do
         response = service.execute
 
         policy_project = response[:policy_project]
@@ -26,6 +26,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService do
         expect(policy_project.namespace).to eq(project.namespace)
         expect(policy_project.team.developers).to contain_exactly(maintainer, developer)
         expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
+        expect(policy_project.repository.readme.data).to include('# Security Policy Project for')
+        expect(policy_project.repository.readme.data).to include('## Default branch protection settings')
       end
     end
 
