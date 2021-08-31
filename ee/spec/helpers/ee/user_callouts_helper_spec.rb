@@ -180,7 +180,7 @@ RSpec.describe EE::UserCalloutsHelper do
     end
   end
 
-  describe '#render_account_recovery_regular_check' do
+  describe '#render_two_factor_auth_recovery_settings_check' do
     let(:user_two_factor_disabled) { create(:user) }
     let(:user_two_factor_enabled) { create(:user, :two_factor) }
     let(:anonymous) { nil }
@@ -206,12 +206,12 @@ RSpec.describe EE::UserCalloutsHelper do
 
       it do
         if should_render?
-          expect(helper).to receive(:render).with('shared/check_recovery_settings')
+          expect(helper).to receive(:render).with('shared/two_factor_auth_recovery_settings_check')
         else
           expect(helper).not_to receive(:render)
         end
 
-        helper.render_account_recovery_regular_check
+        helper.render_two_factor_auth_recovery_settings_check
       end
     end
   end
@@ -392,24 +392,24 @@ RSpec.describe EE::UserCalloutsHelper do
     end
   end
 
-  describe '#dismiss_account_recovery_regular_check' do
+  describe '#dismiss_two_factor_auth_recovery_settings_check' do
     let_it_be(:user) { create(:user) }
 
     before do
       allow(helper).to receive(:current_user).and_return(user)
     end
 
-    it 'dismisses `ACCOUNT_RECOVERY_REGULAR_CHECK` callout' do
+    it 'dismisses `TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK` callout' do
       expect(::Users::DismissUserCalloutService)
         .to receive(:new)
         .with(
           container: nil,
           current_user: user,
-          params: { feature_name: UserCalloutsHelper::ACCOUNT_RECOVERY_REGULAR_CHECK }
+          params: { feature_name: UserCalloutsHelper::TWO_FACTOR_AUTH_RECOVERY_SETTINGS_CHECK }
         )
         .and_call_original
 
-      helper.dismiss_account_recovery_regular_check
+      helper.dismiss_two_factor_auth_recovery_settings_check
     end
   end
 end
