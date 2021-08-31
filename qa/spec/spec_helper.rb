@@ -25,8 +25,8 @@ RSpec.configure do |config|
   config.include QA::Support::Matchers::EventuallyMatcher
   config.include QA::Support::Matchers::HaveMatcher
 
-  config.add_formatter QA::Specs::Helpers::ContextFormatter
-  config.add_formatter QA::Specs::Helpers::QuarantineFormatter
+  config.add_formatter QA::Support::Formatters::ContextFormatter
+  config.add_formatter QA::Support::Formatters::QuarantineFormatter
 
   config.before do |example|
     QA::Runtime::Logger.debug("\nStarting test: #{example.full_description}\n")
