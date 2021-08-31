@@ -1,9 +1,9 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "~/issues_list/queries/issue.fragment.graphql"
 
-query getProjectIssues(
+query getIssues(
   $isSignedIn: Boolean = false
-  $projectPath: ID!
+  $fullPath: ID!
   $search: String
   $sort: IssueSort
   $state: IssuableState
@@ -24,7 +24,7 @@ query getProjectIssues(
   $firstPageSize: Int
   $lastPageSize: Int
 ) {
-  project(fullPath: $projectPath) {
+  project(fullPath: $fullPath) {
     issues(
       search: $search
       sort: $sort
