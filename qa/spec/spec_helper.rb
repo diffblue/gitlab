@@ -27,6 +27,7 @@ RSpec.configure do |config|
 
   config.add_formatter QA::Support::Formatters::ContextFormatter
   config.add_formatter QA::Support::Formatters::QuarantineFormatter
+  config.add_formatter QA::Support::Formatters::TestStatsFormatter if QA::Runtime::Env.running_in_ci?
 
   config.before do |example|
     QA::Runtime::Logger.debug("\nStarting test: #{example.full_description}\n")
