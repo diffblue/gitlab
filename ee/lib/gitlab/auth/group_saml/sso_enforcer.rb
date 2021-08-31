@@ -32,7 +32,7 @@ module Gitlab
           return false unless group
           return false unless group.root_ancestor
 
-          saml_provider = group.root_ancestor.saml_provider
+          saml_provider = group.root_saml_provider
 
           return false unless saml_provider
           return false if user_authorized?(user, group)

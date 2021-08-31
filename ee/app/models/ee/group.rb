@@ -176,6 +176,12 @@ module EE
       end
     end
 
+    attr_writer :root_saml_provider
+
+    def root_saml_provider
+      strong_memoize(:root_saml_provider) { root_ancestor.saml_provider }
+    end
+
     def ip_restriction_ranges
       return unless ip_restrictions.present?
 
