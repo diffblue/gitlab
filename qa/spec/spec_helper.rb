@@ -16,9 +16,6 @@ QA::Runtime::Browser.configure!
 QA::Runtime::AllureReport.configure!
 QA::Runtime::Scenario.from_env(QA::Runtime::Env.runtime_scenario_attributes)
 
-Dir[::File.join(__dir__, "support/helpers/*.rb")].sort.each { |f| require f }
-Dir[::File.join(__dir__, "support/matchers/*.rb")].sort.each { |f| require f }
-Dir[::File.join(__dir__, "support/shared_contexts/*.rb")].sort.each { |f| require f }
 Dir[::File.join(__dir__, "support/shared_examples/*.rb")].sort.each { |f| require f }
 
 RSpec.configure do |config|
