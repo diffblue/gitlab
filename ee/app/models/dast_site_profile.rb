@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DastSiteProfile < ApplicationRecord
+  include Sanitizable
+
   belongs_to :project
   belongs_to :dast_site
 
@@ -24,6 +26,8 @@ class DastSiteProfile < ApplicationRecord
   enum target_type: { website: 0, api: 1 }
 
   delegate :dast_site_validation, to: :dast_site, allow_nil: true
+
+  sanitizes! :name
 
   def self.names(site_profile_ids)
     find(*site_profile_ids).pluck(:name)

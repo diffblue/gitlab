@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DastScannerProfile < ApplicationRecord
+  include Sanitizable
+
   belongs_to :project
 
   validates :project_id, presence: true
@@ -13,6 +15,8 @@ class DastScannerProfile < ApplicationRecord
     passive: 1,
     active: 2
   }
+
+  sanitizes! :name
 
   def self.names(scanner_profile_ids)
     find(*scanner_profile_ids).pluck(:name)
