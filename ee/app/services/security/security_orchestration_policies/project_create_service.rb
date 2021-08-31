@@ -4,6 +4,7 @@ module Security
   module SecurityOrchestrationPolicies
     class ProjectCreateService < ::BaseProjectService
       ACCESS_LEVELS_TO_ADD = [Gitlab::Access::MAINTAINER, Gitlab::Access::DEVELOPER].freeze
+      README_TEMPLATE_PATH = Rails.root.join('ee', 'app', 'views', 'projects', 'security', 'policies', 'readme.md.tt')
 
       def execute
         return error('Security Policy project already exists.') if project.security_orchestration_policy_configuration.present?
@@ -41,8 +42,13 @@ module Security
           requirements_enabled: false,
           builds_enabled: false,
           wiki_enabled: false,
-          snippets_enabled: false
+          snippets_enabled: false,
+          readme_template: readme_template
         }
+      end
+
+      def readme_template
+        ERB.new(File.read(README_TEMPLATE_PATH), trim_mode: '<>').result(binding)
       end
 
       attr_reader :project
