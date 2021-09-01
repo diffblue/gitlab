@@ -11,6 +11,7 @@ status: data_available
 time_frame: all
 data_source: database
 distribution:
-  - ee
+- ee
 tier:
-  - ultimate
+- ultimate
+milestone: "<13.9"

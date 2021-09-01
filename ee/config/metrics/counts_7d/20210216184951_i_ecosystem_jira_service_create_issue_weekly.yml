@@ -13,10 +13,11 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_ecosystem_jira_service_create_issue
+  - i_ecosystem_jira_service_create_issue
 distribution:
 - ee
 tier:
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"
