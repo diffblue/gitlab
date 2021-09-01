@@ -1,6 +1,6 @@
 <script>
-import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import filesQuery from 'shared_queries/repository/files.query.graphql';
+import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import createFlash from '~/flash';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '../../locale';

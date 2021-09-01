@@ -1,5 +1,5 @@
-import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import filesQuery from 'shared_queries/repository/files.query.graphql';
+import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import projectPathQuery from '../queries/project_path.query.graphql';
 import getRefMixin from './get_ref';
 

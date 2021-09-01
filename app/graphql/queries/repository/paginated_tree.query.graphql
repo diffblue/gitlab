@@ -7,7 +7,7 @@ fragment TreeEntry on Entry {
   type
 }
 
-query getFiles($projectPath: ID!, $path: String, $ref: String!, $nextPageCursor: String) {
+query getPaginatedTree($projectPath: ID!, $path: String, $ref: String!, $nextPageCursor: String) {
   project(fullPath: $projectPath) {
     id
     __typename

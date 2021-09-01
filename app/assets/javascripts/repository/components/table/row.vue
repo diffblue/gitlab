@@ -9,8 +9,8 @@ import {
   GlHoverLoadDirective,
 } from '@gitlab/ui';
 import { escapeRegExp } from 'lodash';
-import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import filesQuery from 'shared_queries/repository/files.query.graphql';
+import paginatedTreeQuery from 'shared_queries/repository/paginated_tree.query.graphql';
 import { escapeFileUrl } from '~/lib/utils/url_utility';
 import { TREE_PAGE_SIZE } from '~/repository/constants';
 import FileIcon from '~/vue_shared/components/file_icon.vue';
