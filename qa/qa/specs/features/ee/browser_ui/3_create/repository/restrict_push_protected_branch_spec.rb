@@ -12,13 +12,13 @@ module QA
         it 'unselected maintainer user fails to push' do
           expect { push_new_file(branch_name, as_user: user_maintainer) }.to raise_error(
             QA::Support::Run::CommandError,
-            /remote: GitLab: You are not allowed to push code to protected branches on this project\.([\s\S]+)\[remote rejected\] #{branch_name} -> #{branch_name} \(pre-receive hook declined\)/)
+            /You are not allowed to push code to protected branches on this project\.([\s\S]+)\[remote rejected\] #{branch_name} -> #{branch_name} \(pre-receive hook declined\)/)
         end
 
         it 'selected developer user pushes and merges' do
           push = push_new_file(branch_name, as_user: user_developer)
 
-          expect(push.output).to match(/remote: To create a merge request for protected-branch, visit/)
+          expect(push.output).to match(/To create a merge request for protected-branch, visit/)
 
           Resource::MergeRequest.fabricate_via_api! do |merge_request|
             merge_request.project = project
