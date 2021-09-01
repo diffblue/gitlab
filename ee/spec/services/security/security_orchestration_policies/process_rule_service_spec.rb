@@ -13,18 +13,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
     end
 
     let(:policy) do
-      {
-        name: 'DAST Scan',
-        description: 'This policy runs DAST on pipeline and for every 15 mins',
-        enabled: true,
-        rules: [
-          { type: 'pipeline', branches: %w[production] },
-          { type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' }
-        ],
-        actions: [
-          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-        ]
-      }
+      rules = [
+        { type: 'pipeline', branches: %w[production] },
+        { type: 'schedule', branches: %w[production], cadence: '*/15 * * * *' }
+      ]
+
+      build(:scan_execution_policy, rules: rules)
     end
 
     subject(:service) { described_class.new(policy_configuration: policy_configuration, policy_index: 0, policy: policy) }
@@ -58,17 +52,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
     end
 
     context 'when policy is not of type scheduled' do
-      let(:policy) do
-        {
-          name: 'Run DAST in every pipeline',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: false,
-          rules: [{ type: 'pipeline', branches: %w[production] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        }
-      end
+      let(:policy) { build(:scan_execution_policy) }
 
       it 'deletes schedules' do
         expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)

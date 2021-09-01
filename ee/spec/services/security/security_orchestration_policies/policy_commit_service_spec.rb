@@ -8,42 +8,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
     let_it_be(:current_user) { project.owner }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
-    let(:policy_yaml) do
-      <<-EOS
-        name: Run DAST in every pipeline
-        type: scan_execution_policy
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-      EOS
-    end
-
-    let(:policy) do
-      <<-EOS
-          scan_execution_policy:
-            -  name: Run DAST in every pipeline
-               description: This policy enforces to run DAST for every pipeline within the project
-               enabled: true
-               rules:
-               - type: pipeline
-                 branches:
-                 - "production"
-               actions:
-               - scan: dast
-                 site_profile: Site Profile
-                 scanner_profile: Scanner Profile
-      EOS
-    end
+    let(:policy_hash) { build(:scan_execution_policy, name: 'Test Policy') }
+    let(:input_policy_yaml) { policy_hash.merge(type: 'scan_execution_policy').to_yaml }
+    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy_hash])}
 
     let(:operation) { :append }
-    let(:params) { { policy_yaml: policy_yaml, operation: operation } }
+    let(:params) { { policy_yaml: input_policy_yaml, operation: operation } }
 
     subject(:service) do
       described_class.new(project: project, current_user: current_user, params: params)
@@ -51,19 +21,19 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
     before do
       allow_next_instance_of(Repository) do |repository|
-        allow(repository).to receive(:blob_data_at).and_return(policy)
+        allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
       end
     end
 
     context 'when policy_yaml is invalid' do
-      let(:invalid_policy_yaml) do
+      let(:invalid_input_policy_yaml) do
         <<-EOS
           invalid_name: invalid
           type: scan_execution_policy
         EOS
       end
 
-      let(:params) { { policy_yaml: invalid_policy_yaml, operation: operation } }
+      let(:params) { { policy_yaml: invalid_input_policy_yaml, operation: operation } }
 
       it 'returns error' do
         response = service.execute
@@ -85,23 +55,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
     end
 
     context 'when policy already exists in policy project' do
-      let(:policy) do
-        <<-EOS
-          scan_execution_policy:
-            -  name: Run DAST in every pipeline
-               description: This policy enforces to run DAST for every pipeline within the project
-               enabled: true
-               rules:
-               - type: pipeline
-                 branches:
-                 - "production"
-               actions:
-               - scan: dast
-                 site_profile: Site Profile
-                 scanner_profile: Scanner Profile
-        EOS
-      end
-
       before do
         allow_next_instance_of(::Files::UpdateService) do |instance|
           allow(instance).to receive(:execute).and_return({ status: :success })

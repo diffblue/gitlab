@@ -10,17 +10,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     let(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration) }
     let!(:scanner_profile) { create(:dast_scanner_profile, name: 'Scanner Profile', project: project) }
     let!(:site_profile) { create(:dast_site_profile, name: 'Site Profile', project: project) }
-    let(:policy) do
-      {
-        name: 'Run DAST in every pipeline',
-        description: 'This policy enforces to run DAST for every pipeline within the project',
-        enabled: true,
-        rules: [{ type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' }],
-        actions: [
-          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-        ]
-      }
-    end
+    let(:policy) { build(:scan_execution_policy, enabled: true, rules: [{ type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' }]) }
 
     subject(:service) { described_class.new(container: project, current_user: current_user) }
 
@@ -69,44 +59,22 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
 
     context 'when the branch in rules does not exist' do
       let(:policy) do
-        {
-          name: 'Run DAST in every pipeline',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }],
-          actions: []
-        }
+        build(:scan_execution_policy,
+                           enabled: true,
+                           rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }])
       end
 
       it_behaves_like 'does not execute scan'
     end
 
     context 'when policy actions does not exist' do
-      let(:policy) do
-        {
-          name: 'Run DAST in every pipeline',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }],
-          actions: []
-        }
-      end
+      let(:policy) { build(:scan_execution_policy, :with_schedule, enabled: true, actions: []) }
 
       it_behaves_like 'does not execute scan'
     end
 
     context 'when policy scan type is invalid' do
-      let(:policy) do
-        {
-          name: 'Run DAST in every pipeline',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }],
-          actions: [
-            { scan: 'invalid' }
-          ]
-        }
-      end
+      let(:policy) { build(:scan_execution_policy, :with_schedule, enabled: true, actions: [{ scan: 'invalid' }]) }
 
       it_behaves_like 'does not execute scan'
     end

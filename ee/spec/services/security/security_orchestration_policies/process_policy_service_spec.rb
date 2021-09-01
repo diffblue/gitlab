@@ -6,92 +6,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
   describe '#execute' do
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
 
-    let(:policy) do
-      <<-EOS
-          name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: false
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-      EOS
-    end
+    let(:policy) { build(:scan_execution_policy, name: 'Test Policy', enabled: false) }
+    let(:scheduled_policy) { build(:scan_execution_policy, :with_schedule, name: 'Scheduled DAST') }
+    let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
+    let(:type) { :scan_execution_policy }
+    let(:operation) { :append }
 
     let(:repository_with_existing_policy_yaml) do
-      <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        - name: Scheduled DAST
-          description: This policy executes DAST in a scheduled pipeline
-          enabled: true
-          rules:
-          - type: schedule
-            branches:
-            - "production"
-            cadence: '*/15 * * * *'
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-      EOS
+      pipeline_policy = build(:scan_execution_policy, name: 'Test Policy')
+      build(:scan_execution_policy_yaml, policies: [pipeline_policy, scheduled_policy])
     end
 
     let(:repository_policy_yaml) do
-      <<-EOS
-        scan_execution_policy:
-        - name: Execute DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        - name: Scheduled DAST
-          description: This policy executes DAST in a scheduled pipeline
-          enabled: true
-          rules:
-          - type: schedule
-            branches:
-            - "production"
-            cadence: '*/15 * * * *'
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-      EOS
+      pipeline_policy = build(:scan_execution_policy, name: "Execute DAST in every pipeline")
+      build(:scan_execution_policy_yaml, policies: [pipeline_policy, scheduled_policy])
     end
-
-    let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy).load! }
-    let(:type) { :scan_execution_policy }
-    let(:operation) { :append }
 
     subject(:service) { described_class.new(policy_configuration: policy_configuration, params: { policy: policy_yaml, operation: operation, type: type }) }
 
     context 'when policy is invalid' do
-      let(:policy) do
-        <<-EOS
-          invalid_name: invalid
-        EOS
-      end
+      let(:policy) { { invalid_name: 'invalid' } }
 
       it 'raises StandardError' do
         expect { service.execute }.to raise_error(StandardError, 'Invalid policy yaml')
