@@ -59,7 +59,7 @@ export const expectedMonthData = [
   },
 ];
 
-export const throughputChartQuery = `query ($fullPath: ID!, $labels: [String!], $authorUsername: String, $assigneeUsername: String, $milestoneTitle: String, $sourceBranches: [String!], $targetBranches: [String!]) {
+export const throughputChartQuery = `query ($fullPath: ID!, $labels: [String!], $authorUsername: String, $assigneeUsername: String, $milestoneTitle: String, $sourceBranches: [String!], $targetBranches: [String!], $notLabels: [String!], $notMilestoneTitle: String) {
   throughputChartData: project(fullPath: $fullPath) {
     May_2020: mergeRequests(
       first: 0
@@ -71,6 +71,7 @@ export const throughputChartQuery = `query ($fullPath: ID!, $labels: [String!], 
       milestoneTitle: $milestoneTitle
       sourceBranches: $sourceBranches
       targetBranches: $targetBranches
+      not: {labels: $notLabels, milestoneTitle: $notMilestoneTitle}
     ) {
       count
       totalTimeToMerge
@@ -85,6 +86,7 @@ export const throughputChartQuery = `query ($fullPath: ID!, $labels: [String!], 
       milestoneTitle: $milestoneTitle
       sourceBranches: $sourceBranches
       targetBranches: $targetBranches
+      not: {labels: $notLabels, milestoneTitle: $notMilestoneTitle}
     ) {
       count
       totalTimeToMerge
@@ -99,6 +101,7 @@ export const throughputChartQuery = `query ($fullPath: ID!, $labels: [String!], 
       milestoneTitle: $milestoneTitle
       sourceBranches: $sourceBranches
       targetBranches: $targetBranches
+      not: {labels: $notLabels, milestoneTitle: $notMilestoneTitle}
     ) {
       count
       totalTimeToMerge

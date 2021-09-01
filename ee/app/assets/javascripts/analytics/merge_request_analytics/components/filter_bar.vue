@@ -68,7 +68,6 @@ export default {
           initialMilestones: this.milestonesData,
           unique: true,
           symbol: '%',
-          operators: OPERATOR_IS_ONLY,
           fetchMilestones: this.fetchMilestones,
         },
         {
@@ -80,7 +79,6 @@ export default {
           initialLabels: this.labelsData,
           unique: false,
           symbol: '~',
-          operators: OPERATOR_IS_ONLY,
           fetchLabels: this.fetchLabels,
         },
         {

@@ -14,6 +14,8 @@ query getThroughputTableData(
   $lastPageSize: Int
   $prevPageCursor: String = ""
   $nextPageCursor: String = ""
+  $notLabels: [String!]
+  $notMilestoneTitle: String
 ) {
   project(fullPath: $fullPath) {
     mergeRequests(
@@ -30,6 +32,7 @@ query getThroughputTableData(
       milestoneTitle: $milestoneTitle
       sourceBranches: $sourceBranches
       targetBranches: $targetBranches
+      not: { labels: $notLabels, milestoneTitle: $notMilestoneTitle }
     ) {
       pageInfo {
         ...PageInfo
