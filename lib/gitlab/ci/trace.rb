@@ -214,7 +214,7 @@ module Gitlab
       def already_archived?
         # TODO check checksum to ensure archive completed successfully
         # See https://gitlab.com/gitlab-org/gitlab/-/issues/259619
-        trace_artifact&.archived_trace_exists?
+        trace_artifact.archived_trace_exists?
       end
 
       def unsafe_trace_conditionally_cleanup_before_retry!
