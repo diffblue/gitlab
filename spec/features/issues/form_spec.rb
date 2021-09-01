@@ -4,11 +4,10 @@ require 'spec_helper'
 
 RSpec.describe 'New/edit issue', :js do
   include ActionView::Helpers::JavaScriptHelper
-  include FormHelper
 
   let_it_be(:project)   { create(:project) }
-  let_it_be(:user)      { create(:user)}
-  let_it_be(:user2)     { create(:user)}
+  let_it_be(:user)      { create(:user) }
+  let_it_be(:user2)     { create(:user) }
   let_it_be(:milestone) { create(:milestone, project: project) }
   let_it_be(:label)     { create(:label, project: project) }
   let_it_be(:label2)    { create(:label, project: project) }
@@ -22,7 +21,7 @@ RSpec.describe 'New/edit issue', :js do
     sign_in(user)
   end
 
-  context 'new issue' do
+  describe 'new issue' do
     before do
       visit new_project_issue_path(project)
     end
@@ -257,7 +256,9 @@ RSpec.describe 'New/edit issue', :js do
     end
 
     describe 'milestone' do
-      let!(:milestone) { create(:milestone, title: '">&lt;img src=x onerror=alert(document.domain)&gt;', project: project) }
+      let!(:milestone) do
+        create(:milestone, title: '">&lt;img src=x onerror=alert(document.domain)&gt;', project: project)
+      end
 
       it 'escapes milestone' do
         click_button 'Milestone'
@@ -274,7 +275,7 @@ RSpec.describe 'New/edit issue', :js do
     end
   end
 
-  context 'edit issue' do
+  describe 'edit issue' do
     before do
       visit edit_project_issue_path(project, issue)
     end
@@ -329,7 +330,7 @@ RSpec.describe 'New/edit issue', :js do
     end
   end
 
-  context 'inline edit' do
+  describe 'inline edit' do
     before do
       visit project_issue_path(project, issue)
     end
