@@ -5,7 +5,14 @@ module TrialRegistrations
     LOGO_IMAGE_PATH = "marketing/logos/logo_%<filename>s.svg"
     DEFAULT_OPACITY_CSS_CLASS_LEVEL = 5
 
-    Struct.new('ReassuranceOrg', :name, :opacity_level, keyword_init: true) do
+    class ReassuranceOrg
+      attr_reader :name
+
+      def initialize(name:, opacity_level: DEFAULT_OPACITY_CSS_CLASS_LEVEL)
+        @name = name
+        @opacity_level = opacity_level
+      end
+
       def image_alt_text
         s_('InProductMarketing|%{organization_name} logo') % { organization_name: name }
       end
@@ -15,21 +22,17 @@ module TrialRegistrations
       end
 
       def opacity_css_class
-        "gl-opacity-#{opacity_level}"
-      end
-
-      def opacity_level
-        self[:opacity_level] || DEFAULT_OPACITY_CSS_CLASS_LEVEL
+        "gl-opacity-#{@opacity_level}"
       end
     end
 
     def reassurance_orgs
       [
-        Struct::ReassuranceOrg.new(name: 'Siemens', opacity_level: 6),
-        Struct::ReassuranceOrg.new(name: 'Chorus'),
-        Struct::ReassuranceOrg.new(name: 'KnowBe4', opacity_level: 7),
-        Struct::ReassuranceOrg.new(name: 'Wish'),
-        Struct::ReassuranceOrg.new(name: 'Hotjar')
+        ReassuranceOrg.new(name: 'Siemens', opacity_level: 6),
+        ReassuranceOrg.new(name: 'Chorus'),
+        ReassuranceOrg.new(name: 'KnowBe4', opacity_level: 7),
+        ReassuranceOrg.new(name: 'Wish'),
+        ReassuranceOrg.new(name: 'Hotjar')
       ]
     end
   end
