@@ -43,7 +43,7 @@ module Sidebars
             count_service = ::Groups::EpicsCountService
             count = count_service.new(context.group, context.current_user).count
 
-            format_cached_count(count_service, count)
+            format_cached_count(count_service::CACHED_COUNT_THRESHOLD, count)
           end
         end
 
