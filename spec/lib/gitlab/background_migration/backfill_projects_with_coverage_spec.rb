@@ -66,10 +66,12 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectsWithCoverage, schema
         default_branch: false,
         group_id: group.id
       )
+
+      stub_const("#{described_class}::INSERT_DELAY_SECONDS", 0)
     end
 
     it 'creates entries per project and default_branch combination in the given range', :aggregate_failures do
-      subject.perform(1, 4)
+      subject.perform(1, 4, 2)
 
       entries = project_ci_feature_usages.order('project_id ASC, default_branch DESC')
 
@@ -81,11 +83,11 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectsWithCoverage, schema
 
     context 'when an entry for the project and default branch combination already exists' do
       before do
-        subject.perform(1, 4)
+        subject.perform(1, 4, 2)
       end
 
       it 'does not create a new entry' do
-        expect { subject.perform(1, 4) }.not_to change { project_ci_feature_usages.count }
+        expect { subject.perform(1, 4, 2) }.not_to change { project_ci_feature_usages.count }
       end
     end
   end

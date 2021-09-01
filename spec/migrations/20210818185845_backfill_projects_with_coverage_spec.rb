@@ -17,6 +17,7 @@ RSpec.describe BackfillProjectsWithCoverage do
   describe '#up' do
     before do
       stub_const("#{described_class}::BATCH_SIZE", 2)
+      stub_const("#{described_class}::SUB_BATCH_SIZE", 1)
 
       ci_daily_build_group_report_results.create!(
         id: 1,
@@ -60,8 +61,8 @@ RSpec.describe BackfillProjectsWithCoverage do
         freeze_time do
           migrate!
 
-          expect(described_class::MIGRATION).to be_scheduled_delayed_migration(2.minutes, 1, 2)
-          expect(described_class::MIGRATION).to be_scheduled_delayed_migration(4.minutes, 3, 3)
+          expect(described_class::MIGRATION).to be_scheduled_delayed_migration(2.minutes, 1, 2, 1)
+          expect(described_class::MIGRATION).to be_scheduled_delayed_migration(4.minutes, 3, 3, 1)
           expect(BackgroundMigrationWorker.jobs.size).to eq(2)
         end
       end

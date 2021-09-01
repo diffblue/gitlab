@@ -6,6 +6,7 @@ class BackfillProjectsWithCoverage < ActiveRecord::Migration[6.1]
   MIGRATION = 'BackfillProjectsWithCoverage'
   DELAY_INTERVAL = 2.minutes
   BATCH_SIZE = 10_000
+  SUB_BATCH_SIZE = 100
 
   disable_ddl_transaction!
 
@@ -20,7 +21,8 @@ class BackfillProjectsWithCoverage < ActiveRecord::Migration[6.1]
       CiDailyBuildGroupReportResult,
       MIGRATION,
       DELAY_INTERVAL,
-      batch_size: BATCH_SIZE
+      batch_size: BATCH_SIZE,
+      other_job_arguments: [SUB_BATCH_SIZE]
     )
   end
 
