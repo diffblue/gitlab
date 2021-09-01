@@ -70,6 +70,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size do
       it 'logs the error' do
         expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
           instance_of(Gitlab::Ci::Limit::LimitExceededError),
+          jobs_count: pipeline.statuses.count,
           project_id: project.id, plan: namespace.actual_plan_name,
           project_full_path: project.full_path, pipeline_source: pipeline.source
         )
@@ -152,6 +153,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size do
       it 'logs the pipeline' do
         expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
           instance_of(Gitlab::Ci::Limit::LimitExceededError),
+          jobs_count: pipeline.statuses.count,
           project_id: project.id, plan: namespace.actual_plan_name,
           project_full_path: project.full_path, pipeline_source: pipeline.source
         )
