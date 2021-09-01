@@ -13,11 +13,11 @@ module Mutations
 
       field :status, ::Types::DastSiteProfileValidationStatusEnum,
             null: true,
-            description: 'The current validation status.'
+            description: 'Current validation status.'
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the site profile belongs to.'
+               description: 'Project the site profile belongs to.'
 
       argument :dast_site_token_id, ::Types::GlobalIDType[::DastSiteToken],
                required: true,
@@ -25,11 +25,11 @@ module Mutations
 
       argument :validation_path, GraphQL::Types::String,
                required: true,
-               description: 'The path to be requested during validation.'
+               description: 'Path to be requested during validation.'
 
       argument :strategy, ::Types::DastSiteValidationStrategyEnum,
                required: false,
-               description: 'The validation strategy to be used.'
+               description: 'Validation strategy to be used.'
 
       authorize :create_on_demand_dast_scan
 

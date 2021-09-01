@@ -8,7 +8,7 @@ module Mutations
       argument :board_id,
                ::Types::GlobalIDType[::Board],
                required: true,
-               description: 'The board global ID.'
+               description: 'Board global ID.'
 
       argument :epic_id,
                ::Types::GlobalIDType[::Epic],

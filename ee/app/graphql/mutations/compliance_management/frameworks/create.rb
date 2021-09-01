@@ -9,7 +9,7 @@ module Mutations
         field :framework,
               Types::ComplianceManagement::ComplianceFrameworkType,
               null: true,
-              description: 'The created compliance framework.'
+              description: 'Created compliance framework.'
 
         argument :namespace_path, GraphQL::Types::ID,
                  required: true,

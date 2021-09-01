@@ -35,7 +35,7 @@ module Mutations
         field :epic,
             Types::EpicType,
             null: true,
-            description: 'The epic after mutation.'
+            description: 'Epic after mutation.'
 
         def ready?(**args)
           if args.slice(:from_list_id, :move_after_id, :move_before_id).empty?
