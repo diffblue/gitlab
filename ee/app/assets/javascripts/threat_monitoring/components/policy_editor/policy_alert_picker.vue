@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlLink, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import getAgentCount from '../../graphql/queries/get_agent_count.query.graphql';
 
 export default {
@@ -11,10 +11,11 @@ export default {
     AGENT_REQUIRED: s__(
       'NetworkPolicies|Please %{installLinkStart}install%{installLinkEnd} and %{configureLinkStart}configure a Kubernetes Agent for this project%{configureLinkEnd} to enable alerts.',
     ),
-    BUTTON_LABEL: s__('NetworkPolicies|+ Add alert'),
+    BUTTON_LABEL: s__('NetworkPolicies|Add alert'),
     HIGH_VOLUME_WARNING: s__(
       `NetworkPolicies|Alerts are intended to be selectively used for a limited number of events that are potentially concerning and warrant a manual review. Alerts should not be used as a substitute for a SIEM or a logging tool. High volume alerts are likely to be dropped so as to preserve the stability of GitLab's integration with Kubernetes.`,
     ),
+    REMOVE: __('Remove'),
   },
   components: {
     GlAlert,
@@ -102,6 +103,7 @@ export default {
         variant="link"
         category="primary"
         data-testid="add-alert"
+        icon="plus"
         :disabled="!isAgentInstalled"
         @click="$emit('update-alert', !policyAlert)"
       >
@@ -127,7 +129,7 @@ export default {
           data-testid="remove-alert"
           icon="remove"
           category="tertiary"
-          :aria-label="__('Remove')"
+          :aria-label="$options.i18n.REMOVE"
           @click="$emit('update-alert', !policyAlert)"
         />
       </div>

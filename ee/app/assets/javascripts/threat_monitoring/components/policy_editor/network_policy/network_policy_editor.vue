@@ -33,12 +33,22 @@ import PolicyRuleBuilder from './policy_rule_builder.vue';
 export default {
   EDITOR_MODES,
   i18n: {
+    actions: s__('SecurityOrchestration|Actions'),
+    addRule: s__('SecurityOrchestration|Add rule'),
+    defaultTrafficBehavior: s__(
+      'NetworkPolicies|Traffic that does not match any rule will be blocked.',
+    ),
+    description: __('Description'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
     PARSING_ERROR_MESSAGE,
+    name: __('Name'),
     noEnvironmentDescription: s__(
-      'SecurityOrchestration|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster.',
+      'NetworkPolicies|Network Policies can be used to limit which network traffic is allowed between containers inside the cluster.',
     ),
     noEnvironmentButton: __('Learn more'),
+    policyPreview: s__('SecurityOrchestration|Policy preview'),
+    rules: s__('SecurityOrchestration|Rules'),
+    unparseable: s__('SecurityOrchestration|Unable to parse policy'),
   },
   components: {
     GlEmptyState,
@@ -199,11 +209,11 @@ export default {
         {{ $options.i18n.PARSING_ERROR_MESSAGE }}
       </gl-alert>
 
-      <gl-form-group :label="s__('NetworkPolicies|Name')" label-for="policyName">
+      <gl-form-group :label="$options.i18n.name" label-for="policyName">
         <gl-form-input id="policyName" v-model="policy.name" :disabled="hasParsingError" />
       </gl-form-group>
 
-      <gl-form-group :label="s__('NetworkPolicies|Description')" label-for="policyDescription">
+      <gl-form-group :label="$options.i18n.description" label-for="policyDescription">
         <gl-form-textarea
           id="policyDescription"
           v-model="policy.description"
@@ -217,7 +227,7 @@ export default {
 
       <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ s__('NetworkPolicies|Rules') }}</h4>
+          <h4>{{ $options.i18n.rules }}</h4>
         </template>
 
         <template #disabled>
@@ -240,19 +250,19 @@ export default {
           @remove="removeRule(index)"
         />
 
-        <div class="gl-p-3 gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100 gl-mb-5">
-          <gl-button variant="link" data-testid="add-rule" @click="addRule">{{
-            s__('Network Policy|New rule')
-          }}</gl-button>
+        <div
+          class="gl-p-5 gl-rounded-base gl-border-1 gl-border-solid gl-border-gray-100 gl-mb-5 gl-bg-gray-10"
+        >
+          <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">
+            {{ $options.i18n.addRule }}
+          </gl-button>
         </div>
       </dim-disable-container>
 
       <dim-disable-container data-testid="policy-action-container" :disabled="hasParsingError">
         <template #title>
-          <h4>{{ s__('NetworkPolicies|Actions') }}</h4>
-          <p>
-            {{ s__('NetworkPolicies|Traffic that does not match any rule will be blocked.') }}
-          </p>
+          <h4>{{ $options.i18n.actions }}</h4>
+          <p>{{ $options.i18n.defaultTrafficBehavior }}</p>
         </template>
 
         <template #disabled>
@@ -268,11 +278,11 @@ export default {
     <template #rule-editor-preview>
       <dim-disable-container data-testid="policy-preview-container" :disabled="hasParsingError">
         <template #title>
-          <h5>{{ s__('NetworkPolicies|Policy preview') }}</h5>
+          <h5>{{ $options.i18n.policyPreview }}</h5>
         </template>
 
         <template #disabled>
-          <policy-preview :policy-yaml="s__('NetworkPolicies|Unable to parse policy')" />
+          <policy-preview :policy-yaml="$options.i18n.unparsable" />
         </template>
 
         <policy-preview :policy-yaml="policyYaml" :policy-description="humanizedPolicy" />
