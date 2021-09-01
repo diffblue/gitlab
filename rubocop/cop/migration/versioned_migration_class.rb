@@ -8,7 +8,7 @@ module RuboCop
       class VersionedMigrationClass < RuboCop::Cop::Cop
         include MigrationHelpers
 
-        ENFORCED_SINCE = 2021_08_30_00_00_00
+        ENFORCED_SINCE = 2021_09_02_00_00_00
 
         MSG_INHERIT = 'Don\'t inherit from ActiveRecord::Migration but use Gitlab::Database::Migration[1.0] instead. See https://docs.gitlab.com/ee/development/migration_style_guide.html#migration-helpers-and-versioning.'
         MSG_INCLUDE = 'Don\'t include migration helper modules directly. Inherit from Gitlab::Database::Migration[1.0] instead. See https://docs.gitlab.com/ee/development/migration_style_guide.html#migration-helpers-and-versioning.'
