@@ -1,7 +1,7 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage.secure.coverage_fuzzing_scans
-description: Count of coverage-guided fuzz testing jobs
+description: Number of Coverage Fuzzing security scans run
 product_section: sec
 product_stage: secure
 product_group: group::dynamic analysis

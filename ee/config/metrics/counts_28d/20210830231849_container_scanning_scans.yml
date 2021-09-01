@@ -1,0 +1,16 @@
+---
+key_path: usage_activity_by_stage_monthly.secure.container_scanning_scans
+description: Number of Container Scanning security scans run
+product_section: sec
+product_stage: protect
+product_group: group::container security
+product_category: container_scanning
+value_type: number
+status: data_available
+time_frame: 28d
+data_source: database
+data_category: operational
+distribution:
+  - ee
+tier:
+  - ultimate

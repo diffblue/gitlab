@@ -1,7 +1,7 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage.secure.api_fuzzing_scans
-description: Count of API fuzz testing jobs
+description: Number of DAST API Fuzzing security scans run
 product_section: sec
 product_stage: secure
 product_group: group::dynamic analysis
