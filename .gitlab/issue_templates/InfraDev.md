@@ -1,10 +1,6 @@
 <!--
-Triage of infradev Issues is desired to occur asynchronously. There is also
-a section of the Weekly GitLab SaaS meeting which aims to address anything
-requiring synchronous discussion or which hasn't been triaged. This meeting has
-time constraints and many of the participants may not have a detailed
-understanding of the problems being presented. For maximum efficiency, please
-ensure the following, so that your infradev issues can gain maximum traction.
+Triage of infradev Issues is desired to occur asynchronously.
+For maximum efficiency, please ensure the following, so that your infradev issues can gain maximum traction.
 
 https://about.gitlab.com/handbook/engineering/workflow/#a-guide-to-creating-effective-infradev-issues
 -->
@@ -20,6 +16,7 @@ Clearly state the scope of the problem, and how it affects GitLab.com
 - Quantify the effect of the problem to help ensure that correct prioritization occurs.
 - Include costs to availability. The Incident Budget Explorer dashboard can help here.
 - Include the number of times alerts have fired owing to the problem, how much time was spent dealing with the problem, and how many people were involved.
+- Link to affected incidents, and cross-reference them as related issues.
 - Include screenshots of visualization from Grafana or Kibana.
 - Always include a permalink to the source of the screenshot so that others can investigate further.
 -->
@@ -44,9 +41,10 @@ Ideally, provide a link to a Thanos query or an ELK query and clear instructions
 <!--
 Workflow and other relevant labels
 
-# ~"severity::" ~"priority::"
-# ~"group::" ~"devops::"
-# /assign @
+/label ~"severity::"
+/label ~"priority::"
+/label ~"group::"
+/label ~"devops::"
 
 See also:
 - https://about.gitlab.com/handbook/engineering/quality/issue-triage/#availability
