@@ -39,86 +39,10 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
     required=""
     state="true"
   >
-    <gl-dropdown-stub
-      category="primary"
+    <div
       class="timezone-dropdown gl-w-full"
-      headertext="Select timezone"
-      hideheaderborder="true"
       id="schedule-timezone"
-      size="medium"
-      text=""
-      variant="default"
-    >
-       
-      <gl-search-box-by-type-stub
-        clearbuttontitle="Clear"
-        value=""
-      />
-       
-      <gl-dropdown-item-stub
-        avatarurl=""
-        iconcolor=""
-        iconname=""
-        iconrightarialabel=""
-        iconrightname=""
-        ischecked="true"
-        ischeckitem="true"
-        secondarytext=""
-      >
-        <span
-          class="gl-white-space-nowrap"
-        >
-          (UTC -12:00) -12 International Date Line West
-        </span>
-      </gl-dropdown-item-stub>
-      <gl-dropdown-item-stub
-        avatarurl=""
-        iconcolor=""
-        iconname=""
-        iconrightarialabel=""
-        iconrightname=""
-        ischeckitem="true"
-        secondarytext=""
-      >
-        <span
-          class="gl-white-space-nowrap"
-        >
-          (UTC -11:00) SST American Samoa
-        </span>
-      </gl-dropdown-item-stub>
-      <gl-dropdown-item-stub
-        avatarurl=""
-        iconcolor=""
-        iconname=""
-        iconrightarialabel=""
-        iconrightname=""
-        ischeckitem="true"
-        secondarytext=""
-      >
-        <span
-          class="gl-white-space-nowrap"
-        >
-          (UTC -11:00) SST Midway Island
-        </span>
-      </gl-dropdown-item-stub>
-      <gl-dropdown-item-stub
-        avatarurl=""
-        iconcolor=""
-        iconname=""
-        iconrightarialabel=""
-        iconrightname=""
-        ischeckitem="true"
-        secondarytext=""
-      >
-        <span
-          class="gl-white-space-nowrap"
-        >
-          (UTC -7:00) PT Pacific Time (US & Canada)
-        </span>
-      </gl-dropdown-item-stub>
-       
-      <!---->
-    </gl-dropdown-stub>
+    />
   </gl-form-group-stub>
 </gl-form-stub>
 `;
