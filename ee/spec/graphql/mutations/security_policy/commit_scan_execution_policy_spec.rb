@@ -10,22 +10,7 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
     let_it_be(:policy_management_project) { create(:project, :repository, namespace: user.namespace) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
     let_it_be(:operation_mode) { Types::MutationOperationModeEnum.enum[:append] }
-    let_it_be(:policy_yaml) do
-      <<-EOS
-        name: Run DAST in every pipeline
-        type: scan_execution_policy
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-      EOS
-    end
+    let_it_be(:policy_yaml) { build(:scan_execution_policy).merge(type: 'scan_execution_policy').to_yaml }
 
     subject { mutation.resolve(project_path: project.full_path, policy_yaml: policy_yaml, operation_mode: operation_mode) }
 

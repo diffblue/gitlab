@@ -7,22 +7,7 @@ RSpec.describe 'Create scan execution policy for a project' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: current_user.namespace) }
-  let_it_be(:policy_yaml) do
-    <<-EOS
-        name: Run DAST in every pipeline
-        type: scan_execution_policy
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-    EOS
-  end
+  let_it_be(:policy_yaml) { build(:scan_execution_policy).merge(type: 'scan_execution_policy').to_yaml }
 
   def mutation
     variables = { project_path: project.full_path, policy_yaml: policy_yaml, operation_mode: 'APPEND' }
