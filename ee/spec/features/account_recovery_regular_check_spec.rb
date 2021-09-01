@@ -29,6 +29,7 @@ RSpec.describe 'Account recovery regular check callout' do
           visit profile_two_factor_auth_path
 
           fill_in 'pin_code', with: user_two_factor_disabled.reload.current_otp
+          fill_in 'current_password', with: user_two_factor_disabled.password
 
           click_button 'Register with two-factor app'
 
