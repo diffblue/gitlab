@@ -14,7 +14,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as dateTimeUtility from '~/lib/utils/datetime/date_calculation_utility';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
-import mockTimezones from './mocks/mock_timezones.json';
+
+const mockTimezones = getJSONFixture('timezones/full.json');
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);

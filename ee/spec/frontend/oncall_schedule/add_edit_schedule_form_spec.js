@@ -3,8 +3,10 @@ import { shallowMount } from '@vue/test-utils';
 import AddEditScheduleForm, {
   i18n,
 } from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
+import { stubComponent } from 'helpers/stub_component';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
-import mockTimezones from './mocks/mock_timezones.json';
+
+const mockTimezones = getJSONFixture('timezones/full.json');
 
 describe('AddEditScheduleForm', () => {
   let wrapper;
@@ -13,7 +15,7 @@ describe('AddEditScheduleForm', () => {
   const mockSchedule =
     getOncallSchedulesQueryResponse.data.project.incidentManagementOncallSchedules.nodes[0];
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, stubs = {} } = {}) => {
     wrapper = shallowMount(AddEditScheduleForm, {
       propsData: {
         form: {
@@ -36,12 +38,9 @@ describe('AddEditScheduleForm', () => {
           mutate,
         },
       },
+      stubs,
     });
   };
-
-  beforeEach(() => {
-    createComponent();
-  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -53,6 +52,13 @@ describe('AddEditScheduleForm', () => {
   const findScheduleName = () => wrapper.find(GlFormGroup);
 
   it('renders form layout', () => {
+    createComponent({
+      stubs: {
+        GlDropdown: stubComponent(GlDropdown, {
+          template: `<div />`,
+        }),
+      },
+    });
     expect(wrapper.element).toMatchSnapshot();
   });
 
@@ -68,6 +74,10 @@ describe('AddEditScheduleForm', () => {
   });
 
   describe('Timezone select', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('has options based on provided BE data', () => {
       expect(findDropdownOptions()).toHaveLength(mockTimezones.length);
     });
@@ -81,6 +91,10 @@ describe('AddEditScheduleForm', () => {
     });
 
     describe('timezones filtering', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
       it('should filter options based on search term', async () => {
         const searchTerm = 'Pacific';
         findTimezoneSearchBox().vm.$emit('input', searchTerm);

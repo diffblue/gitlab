@@ -7,7 +7,8 @@ import {
   setParticipantsColors,
 } from 'ee/oncall_schedules/utils/common_utils';
 import * as ColorUtils from '~/lib/utils/color_utils';
-import mockTimezones from './mocks/mock_timezones.json';
+
+const mockTimezones = getJSONFixture('timezones/full.json');
 
 describe('getFormattedTimezone', () => {
   it('formats the timezone', () => {
