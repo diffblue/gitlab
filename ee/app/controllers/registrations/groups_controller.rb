@@ -2,8 +2,6 @@
 
 module Registrations
   class GroupsController < ApplicationController
-    include ::Gitlab::Utils::StrongMemoize
-
     layout 'minimal'
 
     before_action :check_if_gl_com_or_dev
@@ -12,8 +10,6 @@ module Registrations
     feature_category :onboarding
 
     def new
-      record_experiment_user(:learn_gitlab_a, learn_gitlab_context)
-      record_experiment_user(:learn_gitlab_b, learn_gitlab_context)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
     end
 
@@ -73,9 +69,6 @@ module Registrations
     end
 
     def registration_onboarding_flow
-      record_experiment_conversion_event(:learn_gitlab_a, namespace_id: @group.id)
-      record_experiment_conversion_event(:learn_gitlab_b, namespace_id: @group.id)
-
       if helpers.in_trial_during_signup_flow?
         create_lead_and_apply_trial_flow
       else
@@ -134,15 +127,6 @@ module Registrations
       force_company_trial_experiment.track(:create_trial, namespace: @group, user: current_user, label: 'registrations_groups_controller') if success
 
       success
-    end
-
-    def learn_gitlab_context
-      strong_memoize(:learn_gitlab_context) do
-        in_experiment_group_a = Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_a, subject: current_user)
-        in_experiment_group_b = !in_experiment_group_a && Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_b, subject: current_user)
-
-        { in_experiment_group_a: in_experiment_group_a, in_experiment_group_b: in_experiment_group_b }
-      end
     end
   end
 end
