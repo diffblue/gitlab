@@ -191,7 +191,7 @@ module Gitlab
       def unsafe_archive!
         raise ArchiveError, 'Job is not finished yet' unless job.complete?
 
-        unsafe_trace_cleanup!
+        unsafe_trace_conditionally_cleanup_before_retry!
 
         if job.trace_chunks.any?
           Gitlab::Ci::Trace::ChunkedIO.new(job) do |stream|
@@ -217,7 +217,7 @@ module Gitlab
         trace_artifact&.archived_trace_exists?
       end
 
-      def unsafe_trace_cleanup!
+      def unsafe_trace_conditionally_cleanup_before_retry!
         return unless trace_artifact
 
         if already_archived?
