@@ -19,7 +19,7 @@ module AppSec
         def preset_configuration
           {
             'stages' => ['fuzz'],
-            'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }]
+            'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }]
           }
         end
 

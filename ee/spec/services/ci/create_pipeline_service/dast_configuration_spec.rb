@@ -22,7 +22,7 @@ RSpec.describe Ci::CreatePipelineService do
   let(:config) do
     <<~EOY
     include:
-      - template: DAST.gitlab-ci.yml
+      - template: Security/DAST.gitlab-ci.yml
     stages:
       - build
       - dast
@@ -72,6 +72,10 @@ RSpec.describe Ci::CreatePipelineService do
 
       project_features = project.licensed_features
       allow(project).to receive(:licensed_features).and_return(project_features << :dast)
+
+      # The latest version of the template does not run unless DAST is
+      # configured via environment variables.
+      stub_feature_flags(redirect_to_latest_template_security_dast: false)
     end
 
     context 'when the stage is dast' do
