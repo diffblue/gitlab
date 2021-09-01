@@ -240,9 +240,15 @@ class TestMigration < Gitlab::Database::Migration[1.0]
 end
 ```
 
-Note that it is discouraged to include `Gitlab::Database::MigrationHelpers` directly into a
+NOTE:
+It is discouraged to include `Gitlab::Database::MigrationHelpers` directly into a
 migration. Instead, the latest version of `Gitlab::Database::Migration` will expose the latest
 version of migration helpers automatically.
+
+NOTE:
+Migration helpers and versioning are available starting from [14.3](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68986).
+For merge requests targeting previous stable branches, the old format needs to be used and we continue
+to inherit from `ActiveRecord::Migration[6.1]` instead of `Gitlab::Database::Migration[1.0]` for those.
 
 ## Retry mechanism when acquiring database locks
 
