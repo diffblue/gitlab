@@ -39,6 +39,7 @@ import TaskItem from '../extensions/task_item';
 import TaskList from '../extensions/task_list';
 import Text from '../extensions/text';
 import Video from '../extensions/video';
+import WordBreak from '../extensions/word_break';
 import {
   isPlainURL,
   renderHardBreak,
@@ -166,6 +167,7 @@ const defaultSerializerConfig = {
     },
     [Text.name]: defaultMarkdownSerializer.nodes.text,
     [Video.name]: renderPlayable,
+    [WordBreak.name]: (state) => state.write('<wbr>'),
   },
 };
 
