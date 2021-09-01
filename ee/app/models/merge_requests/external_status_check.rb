@@ -19,6 +19,7 @@ module MergeRequests
 
     validates :external_url, presence: true, uniqueness: { scope: :project_id }, addressable_url: true
     validates :name, uniqueness: { scope: :project_id }, presence: true
+    validate :protected_branches_must_belong_to_project
 
     def async_execute(data)
       return unless protected_branches.none? || protected_branches.by_name(data[:object_attributes][:target_branch]).any?
@@ -42,6 +43,10 @@ module MergeRequests
 
     def payload_data(merge_request_hook_data)
       merge_request_hook_data.merge(external_approval_rule: self.to_h)
+    end
+
+    def protected_branches_must_belong_to_project
+      errors.add(:base, 'all protected branches must exist within the project') unless protected_branches.all? { |b| project.protected_branches.include?(b) }
     end
   end
 end

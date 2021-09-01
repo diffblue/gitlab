@@ -39,8 +39,8 @@ RSpec.describe API::StatusChecks do
       end
 
       context 'when merge request has received status check responses' do
-        let!(:non_applicable_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: 'different-branch')]) }
-        let!(:branch_specific_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: merge_request.target_branch)]) }
+        let!(:non_applicable_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: 'different-branch', project: project)]) }
+        let!(:branch_specific_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: merge_request.target_branch, project: project)]) }
         let!(:status_check_response) { create(:status_check_response, external_status_check: rule, merge_request: merge_request, sha: sha) }
 
         it 'returns a 200' do
@@ -286,6 +286,24 @@ RSpec.describe API::StatusChecks do
         subject
 
         expect(response).to have_gitlab_http_status(:success)
+      end
+
+      context 'when referencing a protected branch outside of the project' do
+        let_it_be(:protected_branch) { create(:protected_branch) }
+
+        let(:params) do
+          { name: 'New rule', external_url: 'https://gitlab.com/test/example.json', protected_branch_ids: protected_branch.id }
+        end
+
+        subject do
+          put api(single_object_url, project.owner), params: params
+        end
+
+        it 'is invalid' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
       end
 
       context 'with protected branches' do

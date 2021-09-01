@@ -211,7 +211,7 @@ RSpec.describe MergeRequestPresenter do
 
       context 'without applicable branches' do
         before do
-          create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: 'testbranch')])
+          create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: 'testbranch', project: project)])
         end
 
         it { is_expected.to eq(nil) }
@@ -227,7 +227,7 @@ RSpec.describe MergeRequestPresenter do
 
       context 'with applicable branches' do
         before do
-          create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: merge_request.target_branch)])
+          create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: merge_request.target_branch, project: project)])
         end
 
         it { is_expected.to eq(exposed_path) }
