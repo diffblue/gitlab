@@ -4,10 +4,10 @@ import Project from 'ee/storage_counter/components/project.vue';
 import ProjectsTable from 'ee/storage_counter/components/projects_table.vue';
 import StorageInlineAlert from 'ee/storage_counter/components/storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from 'ee/storage_counter/components/temporary_storage_increase_modal.vue';
-import UsageGraph from 'ee/storage_counter/components/usage_graph.vue';
 import UsageStatistics from 'ee/storage_counter/components/usage_statistics.vue';
 import { formatUsageSize } from 'ee/storage_counter/utils';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 import { namespaceData, withRootStorageStatistics } from '../mock_data';
 
 const TEST_LIMIT = 1000;
