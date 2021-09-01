@@ -1,7 +1,10 @@
-import { __, s__ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 
 export const MAX_LIST_COUNT = 25;
 export const INSTALL_AGENT_MODAL_ID = 'install-agent';
+export const ACTIVE_CONNECTION_TIME = 480000;
+export const TROUBLESHOOTING_LINK =
+  'https://docs.gitlab.com/ee/user/clusters/agent/#troubleshooting';
 
 export const I18N_INSTALL_AGENT_MODAL = {
   next: __('Next'),
@@ -45,4 +48,37 @@ export const I18N_INSTALL_AGENT_MODAL = {
 export const I18N_AVAILABLE_AGENTS_DROPDOWN = {
   selectAgent: s__('ClusterAgents|Select an Agent'),
   registeringAgent: s__('ClusterAgents|Registering Agent'),
+};
+
+export const AGENT_STATUSES = {
+  active: {
+    name: s__('ClusterAgents|Connected'),
+    icon: 'status-success',
+    class: 'text-success-500',
+    tooltip: {
+      title: sprintf(s__('ClusterAgents|Last connected %{timeAgo}.')),
+    },
+  },
+  inactive: {
+    name: s__('ClusterAgents|Not connected'),
+    icon: 'severity-critical',
+    class: 'text-danger-800',
+    tooltip: {
+      title: s__('ClusterAgents|Agent might not be connected to GitLab'),
+      body: sprintf(
+        s__(
+          'ClusterAgents|The Agent has not been connected in a long time. There might be a connectivity issue. Last contact was %{timeAgo}.',
+        ),
+      ),
+    },
+  },
+  unused: {
+    name: s__('ClusterAgents|Never connected'),
+    icon: 'status-neutral',
+    class: 'text-secondary-400',
+    tooltip: {
+      title: s__('ClusterAgents|Agent never connected to GitLab'),
+      body: s__('ClusterAgents|Make sure you are using a valid token.'),
+    },
+  },
 };
