@@ -1,3 +1,4 @@
+import { GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -33,6 +34,7 @@ describe('ee/BoardSettingsSidebar', () => {
           wipLimits: isWipLimitsOn,
         },
         canAdminList: false,
+        scopedLabelsAvailable: true,
       },
       stubs: {
         'board-settings-sidebar-wip-limit': BoardSettingsWipLimit,
@@ -48,12 +50,20 @@ describe('ee/BoardSettingsSidebar', () => {
   it('confirms we render BoardSettingsSidebarWipLimit', () => {
     createComponent({ list: mockLabelList, isWipLimitsOn: true });
 
-    expect(wrapper.find(BoardSettingsWipLimit).exists()).toBe(true);
+    expect(wrapper.findComponent(BoardSettingsWipLimit).exists()).toBe(true);
   });
 
   it('confirms we render BoardSettingsListTypes', () => {
     createComponent({ list: mockMilestoneList });
 
-    expect(wrapper.find(BoardSettingsListTypes).exists()).toBe(true);
+    expect(wrapper.findComponent(BoardSettingsListTypes).exists()).toBe(true);
+  });
+
+  it('passes scoped prop to label when label is scoped', () => {
+    createComponent({
+      list: { ...mockLabelList, label: { ...mockLabelList.label, title: 'foo::bar' } },
+    });
+
+    expect(wrapper.findComponent(GlLabel).props('scoped')).toBe(true);
   });
 });
