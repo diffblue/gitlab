@@ -7174,6 +7174,12 @@ msgstr ""
 msgid "ClusterAgents|Access tokens"
 msgstr ""
 
+msgid "ClusterAgents|Agent might not be connected to GitLab"
+msgstr ""
+
+msgid "ClusterAgents|Agent never connected to GitLab"
+msgstr ""
+
 msgid "ClusterAgents|Alternative installation methods"
 msgstr ""
 
@@ -7187,6 +7193,12 @@ msgid "ClusterAgents|An unknown error occurred. Please try again."
 msgstr ""
 
 msgid "ClusterAgents|Configuration"
+msgstr ""
+
+msgid "ClusterAgents|Connected"
+msgstr ""
+
+msgid "ClusterAgents|Connection status"
 msgstr ""
 
 msgid "ClusterAgents|Copy token"
@@ -7207,6 +7219,9 @@ msgstr ""
 msgid "ClusterAgents|For alternative installation methods %{linkStart}go to the documentation%{linkEnd}."
 msgstr ""
 
+msgid "ClusterAgents|For more troubleshooting information go to"
+msgstr ""
+
 msgid "ClusterAgents|Go to the repository"
 msgstr ""
 
@@ -7222,16 +7237,31 @@ msgstr ""
 msgid "ClusterAgents|Integrate with the GitLab Agent"
 msgstr ""
 
+msgid "ClusterAgents|Last connected %{timeAgo}."
+msgstr ""
+
+msgid "ClusterAgents|Last contact"
+msgstr ""
+
 msgid "ClusterAgents|Last used"
 msgstr ""
 
 msgid "ClusterAgents|Learn how to create an agent access token"
 msgstr ""
 
+msgid "ClusterAgents|Make sure you are using a valid token."
+msgstr ""
+
 msgid "ClusterAgents|Name"
 msgstr ""
 
 msgid "ClusterAgents|Never"
+msgstr ""
+
+msgid "ClusterAgents|Never connected"
+msgstr ""
+
+msgid "ClusterAgents|Not connected"
 msgstr ""
 
 msgid "ClusterAgents|Read more about getting started"
@@ -7253,6 +7283,9 @@ msgid "ClusterAgents|Select the Agent you want to register with GitLab and insta
 msgstr ""
 
 msgid "ClusterAgents|Select which Agent you want to install"
+msgstr ""
+
+msgid "ClusterAgents|The Agent has not been connected in a long time. There might be a connectivity issue. Last contact was %{timeAgo}."
 msgstr ""
 
 msgid "ClusterAgents|The GitLab Agent also requires %{linkStart}enabling the Agent Server%{linkEnd}"

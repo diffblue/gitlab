@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlKeysetPagination, GlLoadingIcon } from '@gitlab/ui';
-import { MAX_LIST_COUNT } from '../constants';
+import { MAX_LIST_COUNT, ACTIVE_CONNECTION_TIME } from '../constants';
 import getAgentsQuery from '../graphql/queries/get_agents.query.graphql';
 import AgentEmptyState from './agent_empty_state.vue';
 import AgentTable from './agent_table.vue';
@@ -55,7 +55,9 @@ export default {
       if (list) {
         list = list.map((agent) => {
           const configFolder = this.folderList[agent.name];
-          return { ...agent, configFolder };
+          const lastContact = this.getLastContact(agent);
+          const status = this.getStatus(lastContact);
+          return { ...agent, configFolder, lastContact, status };
         });
       }
 
@@ -105,6 +107,28 @@ export default {
           this.folderList[folder.name] = folder;
         });
       }
+    },
+    getLastContact(agent) {
+      const tokens = agent?.tokens?.nodes;
+      let lastContact = null;
+      if (tokens?.length) {
+        tokens.forEach((token) => {
+          const lastContactToDate = new Date(token.lastUsedAt).getTime();
+          if (lastContactToDate > lastContact) {
+            lastContact = lastContactToDate;
+          }
+        });
+      }
+      return lastContact;
+    },
+    getStatus(lastContact) {
+      if (lastContact) {
+        const now = new Date().getTime();
+        const diff = now - lastContact;
+
+        return diff > ACTIVE_CONNECTION_TIME ? 'inactive' : 'active';
+      }
+      return 'unused';
     },
   },
 };

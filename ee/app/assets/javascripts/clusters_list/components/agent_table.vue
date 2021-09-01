@@ -1,18 +1,37 @@
 <script>
-import { GlButton, GlLink, GlModalDirective, GlTable } from '@gitlab/ui';
+import {
+  GlButton,
+  GlLink,
+  GlModalDirective,
+  GlTable,
+  GlIcon,
+  GlSprintf,
+  GlTooltip,
+  GlPopover,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { INSTALL_AGENT_MODAL_ID } from '../constants';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import timeagoMixin from '~/vue_shared/mixins/timeago';
+import { INSTALL_AGENT_MODAL_ID, AGENT_STATUSES, TROUBLESHOOTING_LINK } from '../constants';
 
 export default {
   modalId: INSTALL_AGENT_MODAL_ID,
+  statuses: AGENT_STATUSES,
+  troubleshootingLink: TROUBLESHOOTING_LINK,
   components: {
     GlButton,
     GlLink,
     GlTable,
+    GlIcon,
+    GlSprintf,
+    GlTooltip,
+    GlPopover,
+    TimeAgoTooltip,
   },
   directives: {
     GlModalDirective,
   },
+  mixins: [timeagoMixin],
   inject: ['integrationDocsUrl'],
   props: {
     agents: {
@@ -26,6 +45,14 @@ export default {
         {
           key: 'name',
           label: s__('ClusterAgents|Name'),
+        },
+        {
+          key: 'status',
+          label: s__('ClusterAgents|Connection status'),
+        },
+        {
+          key: 'lastContact',
+          label: s__('ClusterAgents|Last contact'),
         },
         {
           key: 'configuration',
@@ -47,18 +74,67 @@ export default {
 
     <gl-table :items="agents" :fields="fields" stacked="md" data-testid="cluster-agent-list-table">
       <template #cell(name)="{ item }">
-        <gl-link :href="item.webPath">
+        <gl-link :href="item.webPath" data-testid="cluster-agent-name-link">
           {{ item.name }}
         </gl-link>
       </template>
 
-      <template #cell(configuration)="{ item }">
-        <!-- eslint-disable @gitlab/vue-require-i18n-strings -->
-        <gl-link v-if="item.configFolder" :href="item.configFolder.webPath">
-          .gitlab/agents/{{ item.name }}
-        </gl-link>
+      <template #cell(status)="{ item }">
+        <span
+          :id="`connection-status-${item.name}`"
+          class="gl-pr-5"
+          data-testid="cluster-agent-connection-status"
+        >
+          <span :class="$options.statuses[item.status].class" class="gl-mr-3">
+            <gl-icon :name="$options.statuses[item.status].icon" :size="12" /></span
+          >{{ $options.statuses[item.status].name }}
+        </span>
+        <gl-tooltip
+          v-if="item.status === 'active'"
+          :target="`connection-status-${item.name}`"
+          placement="right"
+        >
+          <gl-sprintf :message="$options.statuses[item.status].tooltip.title"
+            ><template #timeAgo>{{ timeFormatted(item.lastContact) }}</template>
+          </gl-sprintf>
+        </gl-tooltip>
+        <gl-popover
+          v-else
+          :target="`connection-status-${item.name}`"
+          :title="$options.statuses[item.status].tooltip.title"
+          placement="right"
+          container="viewport"
+        >
+          <p>
+            <gl-sprintf :message="$options.statuses[item.status].tooltip.body"
+              ><template #timeAgo>{{ timeFormatted(item.lastContact) }}</template></gl-sprintf
+            >
+          </p>
+          <p class="gl-mb-0">
+            {{ s__('ClusterAgents|For more troubleshooting information go to') }}
+            <gl-link :href="$options.troubleshootingLink" target="_blank" class="gl-font-sm">
+              {{ $options.troubleshootingLink }}</gl-link
+            >
+          </p>
+        </gl-popover>
+      </template>
 
-        <p v-else>.gitlab/agents/{{ item.name }}</p>
+      <template #cell(lastContact)="{ item }">
+        <span data-testid="cluster-agent-last-contact">
+          <time-ago-tooltip v-if="item.lastContact" :time="item.lastContact" />
+          <span v-else>{{ __('Never') }}</span>
+        </span>
+      </template>
+
+      <template #cell(configuration)="{ item }">
+        <span data-testid="cluster-agent-configuration-link">
+          <!-- eslint-disable @gitlab/vue-require-i18n-strings -->
+          <gl-link v-if="item.configFolder" :href="item.configFolder.webPath">
+            .gitlab/agents/{{ item.name }}
+          </gl-link>
+
+          <span v-else>.gitlab/agents/{{ item.name }}</span>
+        </span>
       </template>
     </gl-table>
   </div>

@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import AgentEmptyState from 'ee/clusters_list/components/agent_empty_state.vue';
 import AgentTable from 'ee/clusters_list/components/agent_table.vue';
 import Agents from 'ee/clusters_list/components/agents.vue';
+import { ACTIVE_CONNECTION_TIME } from 'ee/clusters_list/constants';
 import getAgentsQuery from 'ee/clusters_list/graphql/queries/get_agents.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
@@ -26,7 +27,7 @@ describe('Agents', () => {
     const apolloQueryResponse = {
       data: {
         project: {
-          clusterAgents: { nodes: agents, pageInfo },
+          clusterAgents: { nodes: agents, pageInfo, tokens: { nodes: [] } },
           repository: { tree: { trees: { nodes: trees, pageInfo } } },
         },
       },
@@ -58,16 +59,25 @@ describe('Agents', () => {
   });
 
   describe('when there is a list of agents', () => {
+    let testDate = new Date();
     const agents = [
       {
         id: '1',
         name: 'agent-1',
         webPath: '/agent-1',
+        tokens: null,
       },
       {
         id: '2',
         name: 'agent-2',
         webPath: '/agent-2',
+        tokens: {
+          nodes: [
+            {
+              lastUsedAt: testDate,
+            },
+          ],
+        },
       },
     ];
 
@@ -76,6 +86,37 @@ describe('Agents', () => {
         name: 'agent-2',
         path: '.gitlab/agents/agent-2',
         webPath: '/project/path/.gitlab/agents/agent-2',
+      },
+    ];
+
+    const expectedAgentsList = [
+      {
+        id: '1',
+        name: 'agent-1',
+        webPath: '/agent-1',
+        configFolder: undefined,
+        status: 'unused',
+        lastContact: null,
+        tokens: null,
+      },
+      {
+        id: '2',
+        name: 'agent-2',
+        configFolder: {
+          name: 'agent-2',
+          path: '.gitlab/agents/agent-2',
+          webPath: '/project/path/.gitlab/agents/agent-2',
+        },
+        webPath: '/agent-2',
+        status: 'active',
+        lastContact: new Date(testDate).getTime(),
+        tokens: {
+          nodes: [
+            {
+              lastUsedAt: testDate,
+            },
+          ],
+        },
       },
     ];
 
@@ -89,19 +130,28 @@ describe('Agents', () => {
     });
 
     it('should pass agent and folder info to table component', () => {
-      expect(findAgentTable().props('agents')).toEqual([
-        { id: '1', name: 'agent-1', webPath: '/agent-1', configFolder: undefined },
-        {
-          id: '2',
-          name: 'agent-2',
-          configFolder: {
-            name: 'agent-2',
-            path: '.gitlab/agents/agent-2',
-            webPath: '/project/path/.gitlab/agents/agent-2',
-          },
-          webPath: '/agent-2',
-        },
-      ]);
+      expect(findAgentTable().props('agents')).toMatchObject(expectedAgentsList);
+    });
+
+    describe('when the agent has recently connected tokens', () => {
+      it('should set agent status to active', () => {
+        expect(findAgentTable().props('agents')).toMatchObject(expectedAgentsList);
+      });
+    });
+
+    describe('when the agent has tokens connected more then 8 minutes ago', () => {
+      const now = new Date();
+      testDate = new Date(now.getTime() - ACTIVE_CONNECTION_TIME);
+      it('should set agent status to inactive', () => {
+        expect(findAgentTable().props('agents')).toMatchObject(expectedAgentsList);
+      });
+    });
+
+    describe('when the agent has no connected tokens', () => {
+      testDate = null;
+      it('should set agent status to unused', () => {
+        expect(findAgentTable().props('agents')).toMatchObject(expectedAgentsList);
+      });
     });
 
     it('should not render pagination buttons when there are no additional pages', () => {
