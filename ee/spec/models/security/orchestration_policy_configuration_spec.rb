@@ -11,22 +11,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   let(:default_branch) { security_policy_management_project.default_branch }
   let(:repository) { instance_double(Repository, root_ref: 'master') }
-  let(:policy_yaml) do
-    <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-    EOS
-  end
+  let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')]) }
 
   before do
     allow(security_policy_management_project).to receive(:repository).and_return(repository)
@@ -153,22 +138,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'when policy is present' do
-      let(:policy_yaml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        EOS
-      end
+      let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline' )]) }
 
       it 'retrieves policy by type' do
         expect(subject.first[:name]).to eq('Run DAST in every pipeline')
@@ -189,19 +159,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when file is invalid' do
       let(:policy_yaml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branch: "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        EOS
+        build(:scan_execution_policy_yaml, policies:
+        [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
       end
 
       it { is_expected.to eq(false) }
@@ -213,21 +172,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when policy is passed as argument' do
       let_it_be(:policy_yaml) { nil }
-      let_it_be(:policy) do
-        {
-          scan_execution_policy: [
-            {
-              name: 'Run Scan in every pipeline',
-              description: 'This policy enforces to security scan for every pipeline within the project',
-              enabled: true,
-              rules: [{ type: 'pipeline', branches: %w[production] }],
-              actions: [
-                { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-              ]
-            }
-          ]
-        }
-      end
+      let_it_be(:policy) { { scan_execution_policy: [build(:scan_execution_policy)] } }
 
       context 'when scan type is secret_detection' do
         it 'returns false if extra fields are present' do
@@ -248,72 +193,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   end
 
   describe '#active_policies' do
-    let(:enforce_dast_yaml) do
-      <<-EOS
-      scan_execution_policy:
-      - name: Run DAST in every pipeline
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-      EOS
-    end
-
+    let(:enforce_dast_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy)]) }
     let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
 
     let(:expected_active_policies) do
       [
-        {
-          name: 'Run DAST in every pipeline',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'pipeline', branches: %w[production] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        },
-        {
-          name: 'Run DAST in every pipeline_v1',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'pipeline', branches: %w[master] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        },
-        {
-          name: 'Run DAST in every pipeline_v3',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'pipeline', branches: %w[master] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        },
-        {
-          name: 'Run DAST in every pipeline_v4',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'pipeline', branches: %w[master] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        },
-        {
-          name: 'Run DAST in every pipeline_v5',
-          description: 'This policy enforces to run DAST for every pipeline within the project',
-          enabled: true,
-          rules: [{ type: 'pipeline', branches: %w[master] }],
-          actions: [
-            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-          ]
-        }
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline'),
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline_v1', rules: [{ type: 'pipeline', branches: %w[master] }]),
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline_v3', rules: [{ type: 'pipeline', branches: %w[master] }]),
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline_v4', rules: [{ type: 'pipeline', branches: %w[master] }]),
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline_v5', rules: [{ type: 'pipeline', branches: %w[master] }])
       ]
     end
 
@@ -340,49 +229,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   end
 
   describe '#on_demand_scan_actions' do
-    let(:policy_yaml) do
-      <<-EOS
-      scan_execution_policy:
-        - name: Run DAST in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        - name: Run DAST in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "release/*"
-          actions:
-          - scan: dast
-            site_profile: Site Profile 2
-            scanner_profile: Scanner Profile 2
-        - name: Run DAST in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "*"
-          actions:
-          - scan: dast
-            site_profile: Site Profile 3
-            scanner_profile: Scanner Profile 3
-        - name: Run SAST in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "release/*"
-          actions:
-          - scan: sast
-      EOS
-    end
+    let(:policy1) { build(:scan_execution_policy) }
+    let(:policy2) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }]) }
+    let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' }]) }
+    let(:policy4) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'sast' }]) }
+    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2, policy3, policy4]) }
 
     let(:expected_actions) do
       [
@@ -411,49 +262,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   end
 
   describe '#pipeline_scan_actions' do
-    let(:policy_yaml) do
-      <<-EOS
-      scan_execution_policy:
-        - name: Run DAST and Secret Detection in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile 2
-            scanner_profile: Scanner Profile 2
-          - scan: secret_detection
-        - name: Run DAST in every pipeline
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-        - name: Run Secret Detection for all branches
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "*"
-          actions:
-          - scan: secret_detection
-        - name: Scheduled scan
-          enabled: true
-          rules:
-          - type: schedule
-            cadence: '*/15 * * * *'
-            branches:
-            - "*"
-          actions:
-          - scan: secret_detection
-      EOS
-    end
+    let(:policy1) { build(:scan_execution_policy) }
+    let(:policy2) { build(:scan_execution_policy, actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }, { scan: 'secret_detection' }]) }
+    let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'secret_detection' }]) }
+    let(:policy4) { build(:scan_execution_policy, :with_schedule, actions: [{ scan: 'secret_detection' }]) }
+    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2, policy3, policy4]) }
 
     let(:expected_actions) do
       [{ scan: 'secret_detection' }, { scan: 'secret_detection' }]
@@ -470,23 +283,10 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe '#active_policy_names_with_dast_site_profile' do
     let(:policy_yaml) do
-      <<-EOS
-      scan_execution_policy:
-      - name: Run DAST in every pipeline
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile 2
-      EOS
+      build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
+      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile 2' }
+    ])])
     end
 
     it 'returns list of policy names where site profile is referenced' do
@@ -496,24 +296,10 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe '#active_policy_names_with_dast_scanner_profile' do
     let(:enforce_dast_yaml) do
-      <<-EOS
-      scan_execution_policy:
-      - type: scan_execution_policy
-        name: Run DAST in every pipeline
-        description: This policy enforces to run DAST for every pipeline within the project
-        enabled: true
-        rules:
-        - type: pipeline
-          branches:
-          - "production"
-        actions:
-        - scan: dast
-          site_profile: Site Profile
-          scanner_profile: Scanner Profile
-        - scan: dast
-          site_profile: Site Profile 2
-          scanner_profile: Scanner Profile
-      EOS
+      build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
+      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+      { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile' }
+    ])])
     end
 
     before do

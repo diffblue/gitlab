@@ -138,43 +138,25 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
       let_it_be(:policies_project) { create(:project, :repository) }
       let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_project) }
 
-      let_it_be(:policy_yml) do
-        <<-EOS
-        scan_execution_policy:
-        - name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "master"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-          - scan: dast
-            site_profile: Site Profile 2
-            scanner_profile: Scanner Profile 2
-        - name: Run DAST in every pipeline 2
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "master"
-          actions:
-          - scan: dast
-            site_profile: Site Profile 3
-            scanner_profile: Scanner Profile 3
-          - scan: dast
-            site_profile: Site Profile 4
-            scanner_profile: Scanner Profile 4
-        EOS
+      let(:policy1) do
+        build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
+          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+          { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }
+        ])
       end
+
+      let(:policy2) do
+        build(:scan_execution_policy, name: 'Run DAST in every pipeline 2', rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
+          { scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' },
+          { scan: 'dast', site_profile: 'Site Profile 4', scanner_profile: 'Scanner Profile 4' }
+        ])
+      end
+
+      let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2]) }
 
       before do
         create_list(:dast_site_profile, 30, project: project)
-        create_file_in_repo(policies_project, 'master', 'master', Security::OrchestrationPolicyConfiguration::POLICY_PATH, policy_yml)
+        create_file_in_repo(policies_project, 'master', 'master', Security::OrchestrationPolicyConfiguration::POLICY_PATH, policy_yaml)
       end
 
       it 'only calls Gitaly twice when multiple profiles are present', :request_store do

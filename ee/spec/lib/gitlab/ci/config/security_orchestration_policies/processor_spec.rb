@@ -16,28 +16,18 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   let_it_be(:policies_repository) { create(:project, :repository) }
   let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
-
-  let_it_be(:policy_yml) do
-    <<-EOS
-    scan_execution_policy:
-      -  name: Run DAST in every pipeline
-         description: This policy enforces to run DAST for every pipeline within the project
-         enabled: true
-         rules:
-         - type: pipeline
-           branches:
-           - "production"
-         actions:
-         - scan: dast
-           site_profile: Site Profile
-           scanner_profile: Scanner Profile
-         - scan: secret_detection
-    EOS
+  let_it_be(:policy) do
+    build(:scan_execution_policy, actions: [
+    { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+    { scan: 'secret_detection' }
+  ])
   end
+
+  let_it_be(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy]) }
 
   before do
     allow_next_instance_of(Repository) do |repository|
-      allow(repository).to receive(:blob_data_at).and_return(policy_yml)
+      allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
     end
   end
 
@@ -56,20 +46,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   end
 
   shared_examples 'when policy is invalid' do
-    let_it_be(:policy_yml) do
-      <<-EOS
-      scan_execution_policy:
-        -  name: Run DAST in every pipeline
-           description: This policy enforces to run DAST for every pipeline within the project
-           enabled: true
-           rules:
-           - type: pipeline
-             branches: "production"
-           actions:
-           - scan: dast
-             site_profile: Site Profile
-             scanner_profile: Scanner Profile
-      EOS
+    let_it_be(:policy_yaml) do
+      build(:scan_execution_policy_yaml, policies:
+      [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
     end
 
     it 'does not modify the config', :aggregate_failures do

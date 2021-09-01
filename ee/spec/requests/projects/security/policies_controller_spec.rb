@@ -8,18 +8,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   let_it_be(:project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:policy_management_project) { create(:project, :repository, namespace: owner.namespace) }
   let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
-  let_it_be(:policy) do
-    {
-      name: 'Run DAST in every pipeline',
-      description: 'This policy enforces to run DAST for every pipeline within the project',
-      enabled: true,
-      rules: [{ type: 'pipeline', branches: %w[production] }],
-      actions: [
-        { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-      ]
-    }
-  end
-
+  let_it_be(:policy) { build(:scan_execution_policy) }
   let_it_be(:type) { 'scan_execution_policy' }
   let_it_be(:index) { project_security_policies_url(project) }
   let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
