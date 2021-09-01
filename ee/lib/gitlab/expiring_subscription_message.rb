@@ -88,7 +88,7 @@ module Gitlab
     def expiring_message
       return namespace_expiring_message if namespace
 
-      _('Your %{strong}%{plan_name}%{strong_close} subscription will expire on %{strong}%{expires_on}%{strong_close}. After that, you will not be able to create issues or merge requests as well as many other features.') % { expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close }
+      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. After that date, you cannot create issues or merge requests, or use many other features.') % { expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close }
     end
 
     def namespace_expiring_message
