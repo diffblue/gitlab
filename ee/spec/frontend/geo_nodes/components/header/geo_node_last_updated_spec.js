@@ -83,7 +83,7 @@ describe('GeoNodeLastUpdated', () => {
     it('when sync is not stale popover link renders correctly', () => {
       createComponent({ statusCheckTimestamp: nonStaleStatusTime });
 
-      expect(findPopoverLink().text()).toBe('Learn more about Geo node statuses');
+      expect(findPopoverLink().text()).toBe('Learn more about Geo site statuses');
       expect(findPopoverLink().attributes('href')).toBe(HELP_NODE_HEALTH_URL);
     });
   });

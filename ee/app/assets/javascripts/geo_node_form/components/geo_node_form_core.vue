@@ -51,7 +51,7 @@ export default {
         <gl-sprintf
           :message="
             __(
-              'Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}. %{linkStart}More information%{linkEnd}',
+              'Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}. %{linkStart}Learn more%{linkEnd}',
             )
           "
         >
@@ -138,7 +138,7 @@ export default {
           <gl-sprintf
             :message="
               __(
-                'The URL defined on the primary node that secondary nodes should use to contact it. %{linkStart}More information%{linkEnd}',
+                'The URL defined on the primary node that secondary nodes should use to contact it. %{linkStart}Learn more%{linkEnd}',
               )
             "
           >

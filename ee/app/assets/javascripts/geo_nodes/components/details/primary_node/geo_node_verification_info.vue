@@ -10,7 +10,7 @@ export default {
   i18n: {
     verificationInfo: s__('Geo|Verification information'),
     replicationHelpText: s__(
-      'Geo|Replicated data is verified with the secondary node(s) using checksums.',
+      'Geo|Replicated data is verified with the secondary site(s) using checksums.',
     ),
     learnMore: __('Learn more'),
     progressBarTitle: s__('Geo|%{title} checksum progress'),

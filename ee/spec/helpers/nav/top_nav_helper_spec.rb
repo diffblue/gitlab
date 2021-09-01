@@ -97,7 +97,7 @@ RSpec.describe Nav::TopNavHelper do
           href: url,
           icon: 'location-dot',
           id: 'geo',
-          title: 'Go to primary node'
+          title: 'Go to primary site'
         )
         expect(subject[:secondary]).to eq([expected_secondary])
       end

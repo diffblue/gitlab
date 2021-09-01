@@ -54,12 +54,12 @@ export default {
   <div ref="geoNodeFormSelectiveSyncContainer">
     <h2 class="gl-font-size-h2 gl-my-5">{{ __('Synchronization settings') }}</h2>
     <p class="gl-mb-5">
-      {{ __('Set what should be replicated by this secondary node.') }}
+      {{ __('Set what should be replicated by this secondary site.') }}
       <gl-link
         :href="$options.SELECTIVE_SYNC_MORE_INFO"
         target="_blank"
         data-testid="selectiveSyncMoreInfo"
-        >{{ __('More information') }}</gl-link
+        >{{ __('Learn more') }}</gl-link
       >
     </p>
     <gl-form-group
@@ -108,7 +108,7 @@ export default {
         <gl-sprintf
           :message="
             __(
-              'If enabled, GitLab will handle Object Storage replication using Geo. %{linkStart}More information%{linkEnd}',
+              'If enabled, GitLab will handle Object Storage replication using Geo. %{linkStart}Learn more%{linkEnd}',
             )
           "
         >

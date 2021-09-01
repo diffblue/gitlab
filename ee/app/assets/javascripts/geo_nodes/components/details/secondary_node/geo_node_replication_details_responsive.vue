@@ -13,7 +13,7 @@ export default {
     syncStatus: s__('Geo|Synchronization status'),
     verifStatus: s__('Geo|Verification status'),
     popoverHelpText: s__(
-      'Geo|Replicated data is verified with the secondary node(s) using checksums',
+      'Geo|Replicated data is verified with the secondary site(s) using checksums',
     ),
     learnMore: __('Learn more'),
     nA: __('N/A'),

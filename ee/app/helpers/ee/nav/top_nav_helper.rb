@@ -44,7 +44,7 @@ module EE
         if ::Gitlab::Geo.secondary? && ::Gitlab::Geo.primary_node_configured?
           builder.add_secondary_menu_item(
             id: 'geo',
-            title: _('Go to primary node'),
+            title: _('Go to primary site'),
             icon: 'location-dot',
             href: ::Gitlab::Geo.primary_node.url
           )
