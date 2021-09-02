@@ -7,7 +7,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # Migrating from GitLab Managed Apps to a management project template
 
 The [GitLab Managed Apps](applications.md) deprecated in GitLab 14.0.
-To manage your apps through a cluster management project, you will need a [GitLab Runner](../../ci/runners/index.md) available.
+To manage your apps through a cluster management project, you need a [GitLab Runner](../../ci/runners/index.md) available.
 Then, follow the steps below. You can also watch
 some recorded videos with [live examples](#live-examples).
 
