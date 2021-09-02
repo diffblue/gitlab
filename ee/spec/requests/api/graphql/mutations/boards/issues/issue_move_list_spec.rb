@@ -33,11 +33,11 @@ RSpec.describe 'Reposition and move issue within board lists' do
 
   before do
     stub_licensed_features(epics: true)
-    project.add_maintainer(user)
   end
 
-  context 'when user can admin epic' do
+  context 'when user can admin issue' do
     before do
+      project.add_maintainer(user)
       group.add_maintainer(user)
     end
 
@@ -74,17 +74,6 @@ RSpec.describe 'Reposition and move issue within board lists' do
         expect(response_issue['relativePosition']).to be < existing_issue2.relative_position
         expect(response_issue['epic']).to be_nil
       end
-    end
-  end
-
-  context 'when user can not admin epic' do
-    it 'fails with error' do
-      post_graphql_mutation(mutation(params), current_user: user)
-
-      mutation_response = graphql_mutation_response(:issue_move_list)
-      expect(mutation_response['errors']).to eq(['You are not allowed to move the issue'])
-      expect(mutation_response['issue']['epic']).to eq(nil)
-      expect(mutation_response['issue']['relativePosition']).to eq(3)
     end
   end
 

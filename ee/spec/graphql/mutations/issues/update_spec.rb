@@ -44,8 +44,6 @@ RSpec.describe Mutations::Issues::Update do
 
     context 'when epics feature is disabled' do
       it 'raises an error' do
-        group.add_developer(user)
-
         expect { subject }.to raise_error(::Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
@@ -88,6 +86,14 @@ RSpec.describe Mutations::Issues::Update do
 
           it 'returns the updated issue' do
             expect(mutated_issue.epic).to be_nil
+          end
+        end
+
+        context 'the epic belongs to an external group' do
+          let(:epic) { create(:epic) }
+
+          it 'does not set the epic' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
       end
