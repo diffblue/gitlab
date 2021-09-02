@@ -1789,7 +1789,9 @@ class Project < ApplicationRecord
   end
 
   def any_online_runners?(&block)
-    online_runners_with_tags.any?(&block)
+    ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339937') do
+      online_runners_with_tags.any?(&block)
+    end
   end
 
   def valid_runners_token?(token)
@@ -2895,12 +2897,8 @@ class Project < ApplicationRecord
     update_column(:has_external_issue_tracker, integrations.external_issue_trackers.any?) if Gitlab::Database.read_write?
   end
 
-  def active_runners_with_tags
-    @active_runners_with_tags ||= active_runners.with_tags
-  end
-
   def online_runners_with_tags
-    @online_runners_with_tags ||= active_runners_with_tags.online
+    @online_runners_with_tags ||= active_runners.with_tags.online
   end
 end
 
