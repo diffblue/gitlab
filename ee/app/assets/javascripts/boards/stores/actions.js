@@ -29,10 +29,8 @@ import createEpicBoardListMutation from '../graphql/epic_board_list_create.mutat
 import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
 import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
-import groupBoardIterationsQuery from '../graphql/group_board_iterations.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
-import projectBoardIterationsQuery from '../graphql/project_board_iterations.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
@@ -400,50 +398,6 @@ export default {
       .catch(() =>
         commit(types.MOVE_EPIC_FAILURE, { originalEpic, fromListId, toListId, originalIndex }),
       );
-  },
-
-  fetchIterations({ state, commit }, title) {
-    commit(types.RECEIVE_ITERATIONS_REQUEST);
-
-    const { fullPath, boardType } = state;
-
-    const variables = {
-      fullPath,
-      title,
-    };
-
-    let query;
-    if (boardType === BoardType.project) {
-      query = projectBoardIterationsQuery;
-    }
-    if (boardType === BoardType.group) {
-      query = groupBoardIterationsQuery;
-    }
-
-    if (!query) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      throw new Error('Unknown board type');
-    }
-
-    return gqlClient
-      .query({
-        query,
-        variables,
-      })
-      .then(({ data }) => {
-        const errors = data[boardType]?.errors;
-        const iterations = data[boardType]?.iterations.nodes;
-
-        if (errors?.[0]) {
-          throw new Error(errors[0]);
-        }
-
-        commit(types.RECEIVE_ITERATIONS_SUCCESS, iterations);
-      })
-      .catch((e) => {
-        commit(types.RECEIVE_ITERATIONS_FAILURE);
-        throw e;
-      });
   },
 
   fetchAssignees({ state, commit }, search) {
