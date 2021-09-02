@@ -277,7 +277,11 @@ describe('fetchEpicsSwimlanes', () => {
       [
         {
           type: types.RECEIVE_EPICS_SUCCESS,
-          payload: { epics: [mockEpic], hasMoreEpics: true, epicsEndCursor: 'ENDCURSOR' },
+          payload: {
+            epics: [mockEpic],
+            hasMoreEpics: true,
+            epicsEndCursor: 'ENDCURSOR',
+          },
         },
       ],
       [],
