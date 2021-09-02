@@ -4,6 +4,8 @@ module Gitlab
   module Database
     module LoadBalancing
       class SidekiqClientMiddleware
+        include Gitlab::Utils::StrongMemoize
+
         def call(worker_class, job, _queue, _redis_pool)
           # Mailers can't be constantized
           worker_class = worker_class.to_s.safe_constantize
@@ -35,15 +37,16 @@ module Gitlab
           #
           # TODO: Replace hardcoded database config name :main when we merge unification strategy
           # https://gitlab.com/gitlab-org/gitlab/-/issues/336566
-          wal_location = calculate_wal_location
           job['wal_locations'] = { main: wal_location } if wal_location
         end
 
-        def calculate_wal_location
-          if Session.current.use_primary?
-            load_balancer.primary_write_location
-          else
-            load_balancer.host.database_replica_location
+        def wal_location
+          strong_memoize(:wal_location) do
+            if Session.current.use_primary?
+              load_balancer.primary_write_location
+            else
+              load_balancer.host.database_replica_location
+            end
           end
         end
 

@@ -44,7 +44,7 @@ module Gitlab
 
           return :primary_no_wal unless wal_locations
 
-          if all_replica_caught_up?(wal_locations)
+          if all_databases_has_replica_caught_up?(wal_locations)
             # Happy case: we can read from a replica.
             retried_before?(worker_class, job) ? :replica_retried : :replica
           elsif can_retry?(worker_class, job)
@@ -89,7 +89,7 @@ module Gitlab
           job['retry_count'].nil?
         end
 
-        def all_replica_caught_up?(wal_locations)
+        def all_databases_has_replica_caught_up?(wal_locations)
           wal_locations.all? do |_config_name, location|
             # Once we add support for multiple databases to our load balancer, we would use something like this:
             # Gitlab::Database::DATABASES[config_name].load_balancer.select_up_to_date_host(location)
