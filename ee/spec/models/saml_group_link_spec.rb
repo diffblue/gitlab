@@ -52,10 +52,10 @@ RSpec.describe SamlGroupLink do
   end
 
   describe '#saml_group_name' do
-    it 'strips whitespace from group name' do
+    it 'saves group link name with whitespace' do
       saml_group_link = described_class.new(saml_group_name: '   group   ')
       saml_group_link.valid?
-      expect(saml_group_link.saml_group_name)to eq('group')
+      expect(saml_group_link.saml_group_name).to eq('group')
     end
   end
 
