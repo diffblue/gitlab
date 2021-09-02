@@ -144,7 +144,7 @@ export default {
     },
     normalizeData(key, data) {
       return this.entries[key].concat(
-        this.paginatedTreeEnabled ? data.nodes.map((entry) => entry) : data.map(({ node }) => node),
+        this.paginatedTreeEnabled ? data.nodes : data.map(({ node }) => node),
       );
     },
     hasNextPage(data) {
