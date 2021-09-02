@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Security::StoreScanService do
-  let_it_be(:artifact) { create(:ee_ci_job_artifact, :sast) }
+  let_it_be_with_refind(:artifact) { create(:ee_ci_job_artifact, :sast) }
 
   let(:known_keys) { Set.new }
 
@@ -92,6 +92,18 @@ RSpec.describe Security::StoreScanService do
 
       it 'does not call the `Security::StoreFindingsMetadataService` and returns false' do
         expect(store_scan).to be(false)
+        expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+      end
+    end
+
+    context 'when the report is produced by a retried job' do
+      before do
+        artifact.job.update!(retried: true)
+      end
+
+      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as non latest' do
+        expect { store_scan }.to change { Security::Scan.where(latest: false).count }.by(1)
+
         expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
       end
     end
