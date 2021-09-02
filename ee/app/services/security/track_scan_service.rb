@@ -5,7 +5,7 @@
 # @param build [Ci::Build] the build that ran the scan.
 module Security
   class TrackScanService
-    SECURE_SCAN_SCHEMA_URL = 'iglu:com.gitlab/secure_scan/jsonschema/1-0-1'
+    SECURE_SCAN_SCHEMA_URL = 'iglu:com.gitlab/secure_scan/jsonschema/1-1-0'
 
     def initialize(build)
       @build = build
@@ -40,11 +40,13 @@ module Security
       analyzer = report&.analyzer
       scan = report&.scan
       primary_scanner = report&.primary_scanner
+      findings = report&.findings || []
 
       {
         analyzer: analyzer_id(report),
         analyzer_vendor: analyzer&.vendor,
         analyzer_version: analyzer&.version,
+        findings_count: findings.count,
         end_time: scan&.end_time,
         report_schema_version: report&.version,
         scan_type: scan_type(report, report_type),
