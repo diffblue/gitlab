@@ -1,8 +1,3 @@
-/* global List */
-
-import Vue from 'vue';
-import '~/boards/models/list';
-
 export const mockLabel = {
   id: 'gid://gitlab/GroupLabel/121',
   title: 'To Do',
@@ -66,10 +61,6 @@ export const mockLists = [
     preset: false,
   },
 ];
-
-export const mockListsWithModel = mockLists.map((listMock) =>
-  Vue.observable(new List({ ...listMock, doNotFetchIssues: true })),
-);
 
 const defaultDescendantCounts = {
   openedIssues: 0,

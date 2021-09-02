@@ -3517,12 +3517,6 @@ msgstr ""
 msgid "An error occurred when removing the label."
 msgstr ""
 
-msgid "An error occurred when toggling the notification subscription"
-msgstr ""
-
-msgid "An error occurred when updating the issue weight"
-msgstr ""
-
 msgid "An error occurred when updating the title"
 msgstr ""
 
@@ -3617,9 +3611,6 @@ msgid "An error occurred while fetching projects autocomplete."
 msgstr ""
 
 msgid "An error occurred while fetching reference"
-msgstr ""
-
-msgid "An error occurred while fetching sidebar data"
 msgstr ""
 
 msgid "An error occurred while fetching tags. Retry the search."
@@ -31254,9 +31245,6 @@ msgstr ""
 msgid "Something went wrong while exporting requirements"
 msgstr ""
 
-msgid "Something went wrong while fetching %{listType} list"
-msgstr ""
-
 msgid "Something went wrong while fetching branches"
 msgstr ""
 
@@ -31309,9 +31297,6 @@ msgid "Something went wrong while inserting your image. Please try again."
 msgstr ""
 
 msgid "Something went wrong while merging this merge request. Please try again."
-msgstr ""
-
-msgid "Something went wrong while moving issues."
 msgstr ""
 
 msgid "Something went wrong while obtaining the Let's Encrypt certificate."
