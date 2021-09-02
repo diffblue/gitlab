@@ -92,6 +92,16 @@ msgstr ""
 msgid "#general, #development"
 msgstr ""
 
+msgid "%d Alert"
+msgid_plural "%d Alerts"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d Alert:"
+msgid_plural "%d Alerts:"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d Approval"
 msgid_plural "%d Approvals"
 msgstr[0] ""
@@ -2900,11 +2910,6 @@ msgstr ""
 
 msgid "Akismet API Key"
 msgstr ""
-
-msgid "Alert"
-msgid_plural "Alerts"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "AlertManagement|Acknowledged"
 msgstr ""
