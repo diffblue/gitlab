@@ -3,28 +3,16 @@
 module Gitlab
   module Database
     module Partitioning
-      def self.sync_partitions(partitioned_models = default_partitioned_models)
-        MultiDatabasePartitionManager.new(partitioned_models).sync_partitions
+      def self.register_models(models)
+        registered_models.merge(models)
       end
 
-      def self.default_partitioned_models
-        @default_partitioned_models ||= core_partitioned_models.union(ee_partitioned_models)
+      def self.registered_models
+        @registered_models ||= Set.new
       end
 
-      def self.core_partitioned_models
-        @core_partitioned_models ||= Set[
-          ::AuditEvent,
-          ::WebHookLog
-        ].freeze
-      end
-
-      def self.ee_partitioned_models
-        return Set.new.freeze unless Gitlab.ee?
-
-        @ee_partitioned_models ||= Set[
-          ::IncidentManagement::PendingEscalations::Alert,
-          ::IncidentManagement::PendingEscalations::Issue
-        ].freeze
+      def self.sync_partitions(models_to_sync = registered_models)
+        MultiDatabasePartitionManager.new(models_to_sync).sync_partitions
       end
     end
   end

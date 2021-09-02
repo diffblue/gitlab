@@ -3,66 +3,34 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Database::Partitioning::MultiDatabasePartitionManager, '#sync_partitions' do
-  subject(:sync_partitions) { described_class.new(models).sync_partitions }
+  subject(:sync_partitions) { manager.sync_partitions }
 
-  let(:models) { [double, double] }
+  let(:manager) { described_class.new(models) }
+  let(:models) { [model1, model2] }
 
-  let(:db_name1) { 'db1' }
-  let(:db_name2) { 'db2' }
+  let(:model1) { double('model1', connection: connection1, table_name: 'table1') }
+  let(:model2) { double('model2', connection: connection1, table_name: 'table2') }
 
-  let(:config1) { 'config1' }
-  let(:config2) { 'config2' }
-  let(:configurations) { double }
+  let(:connection1) { double('connection1') }
+  let(:connection2) { double('connection2') }
 
-  let(:manager_class) { Gitlab::Database::Partitioning::PartitionManager }
-  let(:manager1) { double('manager 1') }
-  let(:manager2) { double('manager 2') }
-
-  let(:original_config) { ActiveRecord::Base.connection_db_config }
+  let(:target_manager_class) { Gitlab::Database::Partitioning::PartitionManager }
+  let(:target_manager1) { double('partition manager') }
+  let(:target_manager2) { double('partition manager') }
 
   before do
-    allow(configurations).to receive(:configs_for).with(env_name: Rails.env, name: db_name1).and_return(config1)
-    allow(configurations).to receive(:configs_for).with(env_name: Rails.env, name: db_name2).and_return(config2)
-
-    allow(Gitlab::Database).to receive(:db_config_names).and_return([db_name1, db_name2])
-
-    allow(ActiveRecord::Base).to receive(:configurations).twice.and_return(configurations)
+    allow(manager).to receive(:connection_name).and_return('name')
   end
 
-  it 'syncs model partitions for each database connection' do
-    expect(ActiveRecord::Base).to receive(:establish_connection).with(config1).ordered
-    expect(manager_class).to receive(:new).with(models).and_return(manager1).ordered
-    expect(manager1).to receive(:sync_partitions).ordered
+  it 'syncs model partitions, setting up the appropriate connection for each', :aggregate_failures do
+    expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(model1.connection).and_yield.ordered
+    expect(target_manager_class).to receive(:new).with(model1).and_return(target_manager1).ordered
+    expect(target_manager1).to receive(:sync_partitions)
 
-    expect(ActiveRecord::Base).to receive(:establish_connection).with(config2).ordered
-    expect(manager_class).to receive(:new).with(models).and_return(manager2).ordered
-    expect(manager2).to receive(:sync_partitions).ordered
-
-    expect(ActiveRecord::Base).to receive(:establish_connection).with(original_config).ordered
+    expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(model2.connection).and_yield.ordered
+    expect(target_manager_class).to receive(:new).with(model2).and_return(target_manager2).ordered
+    expect(target_manager2).to receive(:sync_partitions)
 
     sync_partitions
-  end
-
-  context 'if an error is raised' do
-    it 'restores the original connection' do
-      expect(ActiveRecord::Base).to receive(:establish_connection).with(config1).ordered
-      expect(manager_class).to receive(:new).with(models).and_return(manager1).ordered
-      expect(manager1).to receive(:sync_partitions).ordered.and_raise(RuntimeError)
-
-      expect(ActiveRecord::Base).to receive(:establish_connection).with(original_config).ordered
-
-      expect { sync_partitions }.to raise_error(RuntimeError)
-    end
-  end
-
-  context 'if no models are given' do
-    let(:models) { [] }
-
-    it 'does nothing, changing no connections' do
-      expect(ActiveRecord::Base).not_to receive(:establish_connection)
-      expect(manager_class).not_to receive(:new)
-
-      sync_partitions
-    end
   end
 end

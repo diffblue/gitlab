@@ -9,35 +9,27 @@ module Gitlab
         end
 
         def sync_partitions
-          return if models.empty?
+          Gitlab::AppLogger.info(message: "Syncing dynamic postgres partitions")
 
-          each_database_connection do
-            PartitionManager.new(models).sync_partitions
+          models.each do |model|
+            Gitlab::Database::SharedModel.using_connection(model.connection) do
+              Gitlab::AppLogger.debug(message: "Switched database connection",
+                                      connection_name: connection_name,
+                                      table_name: model.table_name)
+
+              PartitionManager.new(model).sync_partitions
+            end
           end
+
+          Gitlab::AppLogger.info(message: "Finished sync of dynamic postgres partitions")
         end
 
         private
 
         attr_reader :models
 
-        def each_database_connection(&block)
-          original_db_config = ActiveRecord::Base.connection_db_config # rubocop:disable Database/MultipleDatabases
-
-          begin
-            with_each_connection(&block)
-          ensure
-            ActiveRecord::Base.establish_connection(original_db_config) # rubocop:disable Database/MultipleDatabases
-          end
-        end
-
-        def with_each_connection
-          Gitlab::Database.db_config_names.each do |db_name|
-            config_for_db_name = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env, name: db_name) # rubocop:disable Database/MultipleDatabases
-
-            ActiveRecord::Base.establish_connection(config_for_db_name)
-
-            yield
-          end
+        def connection_name
+          Gitlab::Database::SharedModel.connection.pool.db_config.name
         end
       end
     end
