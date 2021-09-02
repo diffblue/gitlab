@@ -14,11 +14,22 @@ RSpec.describe Boards::EpicBoards::CreateService, services: true do
   context 'create epic board' do
     it_behaves_like 'create a board', :epic_boards
 
-    it 'tracks epic board creation' do
-      expect(Gitlab::UsageDataCounters::HLLRedisCounter)
-        .to receive(:track_event).with('g_project_management_users_creating_epic_boards', values: user.id)
+    context 'when logged in' do
+      it 'tracks epic board creation' do
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+          .to receive(:track_event).with('g_project_management_users_creating_epic_boards', values: user.id)
 
-      described_class.new(parent, user).execute
+        described_class.new(parent, user).execute
+      end
+    end
+
+    context 'when not logged in' do
+      it 'tracks epic board creation' do
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+          .to receive(:track_event).with('g_project_management_users_creating_epic_boards', values: nil)
+
+        described_class.new(parent, nil).execute
+      end
     end
   end
 end

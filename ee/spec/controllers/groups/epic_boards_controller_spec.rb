@@ -75,6 +75,24 @@ RSpec.describe Groups::EpicBoardsController do
       end
     end
 
+    context 'with non-logged-in user and public group' do
+      let_it_be(:group) { create(:group, :public) }
+
+      before do
+        sign_out(user)
+      end
+
+      it 'creates a new board when group does not have one' do
+        expect { list_boards }.to change(group.epic_boards, :count).by(1)
+      end
+
+      it 'returns a 200 response' do
+        list_boards
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
     context 'json request' do
       it 'is not supported' do
         list_boards(format: :json)
