@@ -16,7 +16,7 @@ class SamlGroupLink < ApplicationRecord
   scope :preload_group, -> { preload(group: :route) }
 
   def strip_whitespace_from_saml_group_name
-    saml_group_name.strip!
+    self.saml_group_name = self&.saml_group_name.strip
   end
 
 end
