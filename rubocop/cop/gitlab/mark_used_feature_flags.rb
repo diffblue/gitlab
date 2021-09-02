@@ -47,10 +47,21 @@ module RuboCop
           :usage_data_static_site_editor_merge_requests # https://gitlab.com/gitlab-org/gitlab/-/issues/284083
         ].freeze
 
+        class << self
+          # We track feature flags in `on_new_investigation` only once per
+          # rubocop whole run instead once per file.
+          attr_accessor :feature_flags_already_tracked
+        end
+
         # Called before all on_... have been called
         # When refining this method, always call `super`
         def on_new_investigation
           super
+
+          return if self.class.feature_flags_already_tracked
+
+          self.class.feature_flags_already_tracked = true
+
           track_dynamic_feature_flags!
           track_usage_data_counters_known_events!
         end
