@@ -17,9 +17,7 @@ module EE
 
       override :elastic_projects
       def elastic_projects
-        ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335946') do
-          @elastic_projects ||= projects.pluck_primary_key
-        end
+        @elastic_projects ||= projects.pluck_primary_key
       end
 
       override :execute

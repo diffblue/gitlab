@@ -24,9 +24,7 @@ module Search
 
     # rubocop: disable CodeReuse/ActiveRecord
     def projects
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/335946') do
-        @projects ||= ProjectsFinder.new(params: { non_archived: true }, current_user: current_user).execute.includes(:topics, :taggings)
-      end
+      @projects ||= ProjectsFinder.new(params: { non_archived: true }, current_user: current_user).execute.preload(:topics, :taggings)
     end
 
     def allowed_scopes
