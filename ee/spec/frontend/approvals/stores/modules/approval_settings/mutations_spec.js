@@ -8,10 +8,11 @@ describe('Group settings store mutations', () => {
   const mapperFn = jest.fn((data) => data);
   const mutations = mutationsFactory(mapperFn);
   const settings = {
-    preventAuthorApproval: true,
-    preventMrApprovalRuleEdit: true,
-    requireUserPassword: true,
-    removeApprovalsOnPush: true,
+    preventAuthorApproval: { value: false },
+    preventCommittersApproval: { value: false },
+    preventMrApprovalRuleEdit: { value: false },
+    requireUserPassword: { value: false },
+    removeApprovalsOnPush: { value: false },
   };
 
   beforeEach(() => {
@@ -100,10 +101,14 @@ describe('Group settings store mutations', () => {
     ${'SET_REMOVE_APPROVALS_ON_PUSH'}      | ${'removeApprovalsOnPush'}
     ${'SET_REQUIRE_USER_PASSWORD'}         | ${'requireUserPassword'}
   `('$mutation', ({ mutation, prop }) => {
+    beforeEach(() => {
+      mutations.RECEIVE_SETTINGS_SUCCESS(state, settings);
+    });
+
     it(`sets the ${prop}`, () => {
       mutations[mutation](state, true);
 
-      expect(state.settings[prop]).toBe(true);
+      expect(state.settings[prop].value).toBe(true);
     });
   });
 });

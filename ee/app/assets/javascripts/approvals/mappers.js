@@ -100,36 +100,40 @@ export const mapMRApprovalSettingsResponse = (res) => {
   };
 };
 
+const invertApprovalSetting = ({ value, ...rest }) => ({ value: !value, ...rest });
+
 export const groupApprovalsMappers = {
   mapDataToState: (data) => ({
-    preventAuthorApproval: !data.allow_author_approval.value,
-    preventMrApprovalRuleEdit: !data.allow_overrides_to_approver_list_per_merge_request.value,
-    requireUserPassword: data.require_password_to_approve.value,
-    removeApprovalsOnPush: !data.retain_approvals_on_push.value,
-    preventCommittersApproval: !data.allow_committer_approval.value,
+    preventAuthorApproval: invertApprovalSetting(data.allow_author_approval),
+    preventMrApprovalRuleEdit: invertApprovalSetting(
+      data.allow_overrides_to_approver_list_per_merge_request,
+    ),
+    requireUserPassword: data.require_password_to_approve,
+    removeApprovalsOnPush: invertApprovalSetting(data.retain_approvals_on_push),
+    preventCommittersApproval: invertApprovalSetting(data.allow_committer_approval),
   }),
-  mapStateToPayload: (state) => ({
-    allow_author_approval: !state.settings.preventAuthorApproval,
-    allow_overrides_to_approver_list_per_merge_request: !state.settings.preventMrApprovalRuleEdit,
-    require_password_to_approve: state.settings.requireUserPassword,
-    retain_approvals_on_push: !state.settings.removeApprovalsOnPush,
-    allow_committer_approval: !state.settings.preventCommittersApproval,
+  mapStateToPayload: ({ settings }) => ({
+    allow_author_approval: !settings.preventAuthorApproval.value,
+    allow_overrides_to_approver_list_per_merge_request: !settings.preventMrApprovalRuleEdit.value,
+    require_password_to_approve: settings.requireUserPassword.value,
+    retain_approvals_on_push: !settings.removeApprovalsOnPush.value,
+    allow_committer_approval: !settings.preventCommittersApproval.value,
   }),
 };
 
 export const projectApprovalsMappers = {
   mapDataToState: (data) => ({
-    preventAuthorApproval: !data.merge_requests_author_approval,
-    preventMrApprovalRuleEdit: data.disable_overriding_approvers_per_merge_request,
-    requireUserPassword: data.require_password_to_approve,
-    removeApprovalsOnPush: data.reset_approvals_on_push,
-    preventCommittersApproval: data.merge_requests_disable_committers_approval,
+    preventAuthorApproval: { value: !data.merge_requests_author_approval },
+    preventMrApprovalRuleEdit: { value: data.disable_overriding_approvers_per_merge_request },
+    requireUserPassword: { value: data.require_password_to_approve },
+    removeApprovalsOnPush: { value: data.reset_approvals_on_push },
+    preventCommittersApproval: { value: data.merge_requests_disable_committers_approval },
   }),
-  mapStateToPayload: (state) => ({
-    merge_requests_author_approval: !state.settings.preventAuthorApproval,
-    disable_overriding_approvers_per_merge_request: state.settings.preventMrApprovalRuleEdit,
-    require_password_to_approve: state.settings.requireUserPassword,
-    reset_approvals_on_push: state.settings.removeApprovalsOnPush,
-    merge_requests_disable_committers_approval: state.settings.preventCommittersApproval,
+  mapStateToPayload: ({ settings }) => ({
+    merge_requests_author_approval: !settings.preventAuthorApproval.value,
+    disable_overriding_approvers_per_merge_request: settings.preventMrApprovalRuleEdit.value,
+    require_password_to_approve: settings.requireUserPassword.value,
+    reset_approvals_on_push: settings.removeApprovalsOnPush.value,
+    merge_requests_disable_committers_approval: settings.preventCommittersApproval.value,
   }),
 };
