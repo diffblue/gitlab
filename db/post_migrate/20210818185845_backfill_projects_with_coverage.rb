@@ -6,7 +6,7 @@ class BackfillProjectsWithCoverage < ActiveRecord::Migration[6.1]
   MIGRATION = 'BackfillProjectsWithCoverage'
   DELAY_INTERVAL = 2.minutes
   BATCH_SIZE = 10_000
-  SUB_BATCH_SIZE = 100
+  SUB_BATCH_SIZE = 1_000
 
   disable_ddl_transaction!
 

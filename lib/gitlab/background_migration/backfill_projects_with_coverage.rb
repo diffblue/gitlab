@@ -4,6 +4,10 @@ module Gitlab
   module BackgroundMigration
     # Backfill project_ci_feature_usages for a range of projects with coverage
     class BackfillProjectsWithCoverage
+      class ProjectCiFeatureUsage < ActiveRecord::Base # rubocop:disable Style/Documentation
+        self.table_name = 'project_ci_feature_usages'
+      end
+
       COVERAGE_ENUM_VALUE = 1
       INSERT_DELAY_SECONDS = 0.1
 
@@ -15,11 +19,7 @@ module Gitlab
         SQL
 
         report_results.to_a.in_groups_of(sub_batch_size, false) do |batch|
-          ActiveRecord::Base.connection.execute <<~SQL
-            INSERT INTO project_ci_feature_usages (project_id, feature, default_branch) VALUES
-            #{build_values(batch)}
-            ON CONFLICT (project_id, feature, default_branch) DO NOTHING;
-          SQL
+          ProjectCiFeatureUsage.insert_all(build_values(batch))
 
           sleep INSERT_DELAY_SECONDS
         end
@@ -29,8 +29,12 @@ module Gitlab
 
       def build_values(batch)
         batch.map do |data|
-          "(#{data['project_id']}, #{COVERAGE_ENUM_VALUE}, #{data['default_branch']})"
-        end.join(', ')
+          {
+            project_id: data['project_id'],
+            feature: COVERAGE_ENUM_VALUE,
+            default_branch: data['default_branch']
+          }
+        end
       end
     end
   end
