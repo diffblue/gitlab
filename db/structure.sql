@@ -16354,7 +16354,8 @@ CREATE TABLE oauth_applications (
     owner_id integer,
     owner_type character varying,
     trusted boolean DEFAULT false NOT NULL,
-    confidential boolean DEFAULT true NOT NULL
+    confidential boolean DEFAULT true NOT NULL,
+    expire_access_tokens boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE oauth_applications_id_seq

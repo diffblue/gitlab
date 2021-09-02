@@ -1741,6 +1741,9 @@ msgstr ""
 msgid "Access to '%{classification_label}' not allowed"
 msgstr ""
 
+msgid "Access tokens expire after 2 hours. A refresh token may be used at any time to generate a new access token. Non-expiring access tokens are deprecated. Clear this setting to enable backward compatibility."
+msgstr ""
+
 msgid "AccessDropdown|Deploy Keys"
 msgstr ""
 
