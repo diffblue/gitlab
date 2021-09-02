@@ -51,6 +51,14 @@ RSpec.describe SamlGroupLink do
     end
   end
 
+  describe '#saml_group_name' do
+    it 'strips whitespace from group name' do
+      saml_group_link = described_class.new(saml_group_name: '   group   ')
+      saml_group_link.valid?
+      expect(saml_group_link.saml_group_name)to eq('group')
+    end
+  end
+
   describe '.by_saml_group_name' do
     let_it_be(:group) { create(:group) }
     let_it_be(:group_link) { create(:saml_group_link, group: group) }
