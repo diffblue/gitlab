@@ -15664,8 +15664,8 @@ Milestone ID wildcard values.
 | ----- | ----------- |
 | <a id="milestonewildcardidany"></a>`ANY` | Milestone is assigned. |
 | <a id="milestonewildcardidnone"></a>`NONE` | No milestone is assigned. |
-| <a id="milestonewildcardidstarted"></a>`STARTED` | An open, started milestone (start date <= today). |
-| <a id="milestonewildcardidupcoming"></a>`UPCOMING` | An open milestone due in the future (due date >= today). |
+| <a id="milestonewildcardidstarted"></a>`STARTED` | Milestone assigned is open and started (start date <= today). |
+| <a id="milestonewildcardidupcoming"></a>`UPCOMING` | Milestone assigned is due closest in the future (due date > today). |
 
 ### `MoveType`
 
@@ -15709,8 +15709,8 @@ Negated Milestone ID wildcard values.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="negatedmilestonewildcardidstarted"></a>`STARTED` | An open, started milestone (start date <= today). |
-| <a id="negatedmilestonewildcardidupcoming"></a>`UPCOMING` | An open milestone due in the future (due date >= today). |
+| <a id="negatedmilestonewildcardidstarted"></a>`STARTED` | Milestone assigned is open and yet to be started (start date > today). |
+| <a id="negatedmilestonewildcardidupcoming"></a>`UPCOMING` | Milestone assigned is open but due in the past (due date <= today). |
 
 ### `NetworkPolicyKind`
 
