@@ -9,6 +9,7 @@ RSpec.describe API::Users do
   let_it_be(:gpg_key) { create(:gpg_key, user: user) }
   let_it_be(:email) { create(:email, user: user) }
 
+  let(:blocked_user) { create(:user, :blocked) }
   let(:omniauth_user) { create(:omniauth_user) }
   let(:ldap_blocked_user) { create(:omniauth_user, provider: 'ldapmain', state: 'ldap_blocked') }
   let(:private_user) { create(:user, private_profile: true) }
@@ -2626,9 +2627,7 @@ RSpec.describe API::Users do
         end
 
         context 'for a blocked user' do
-          before do
-            user.block
-          end
+          let(:user_id) { blocked_user.id }
 
           it 'returns 403' do
             activate
@@ -2723,9 +2722,7 @@ RSpec.describe API::Users do
         end
 
         context 'for a blocked user' do
-          before do
-            user.block
-          end
+          let(:user_id) { blocked_user.id }
 
           it 'returns 403' do
             deactivate
@@ -2788,8 +2785,6 @@ RSpec.describe API::Users do
       subject(:approve) { post api("/users/#{user_id}/approve", api_user) }
 
       let_it_be(:pending_user) { create(:user, :blocked_pending_approval) }
-      let_it_be(:deactivated_user) { create(:user, :deactivated) }
-      let_it_be(:blocked_user) { create(:user, :blocked) }
 
       context 'performed by a non-admin user' do
         let(:api_user) { user }
