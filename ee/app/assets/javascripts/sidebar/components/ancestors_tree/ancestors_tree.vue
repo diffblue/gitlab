@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import { GlLoadingIcon, GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 
@@ -71,7 +70,7 @@ export default {
     </div>
 
     <gl-tooltip :target="() => $refs.sidebarIcon" placement="left" boundary="viewport">
-      <span v-html="tooltipText"></span>
+      <span v-html="tooltipText /* eslint-disable-line vue/no-v-html */"></span>
     </gl-tooltip>
     <div class="title hide-collapsed gl-mb-2">{{ __('Ancestors') }}</div>
 

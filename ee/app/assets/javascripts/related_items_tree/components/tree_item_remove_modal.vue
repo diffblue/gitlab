@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import { GlModal } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapState, mapActions } from 'vuex';
@@ -66,6 +65,6 @@ export default {
       })
     "
   >
-    <p v-html="modalBody"></p>
+    <p v-html="modalBody /* eslint-disable-line vue/no-v-html */"></p>
   </gl-modal>
 </template>

@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import {
   GlAlert,
   GlDropdown,
@@ -129,7 +128,10 @@ export default {
         </gl-dropdown>
       </div>
       <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
-      <div ref="description" v-html="iteration.descriptionHtml"></div>
+      <div
+        ref="description"
+        v-html="iteration.descriptionHtml /* eslint-disable-line vue/no-v-html */"
+      ></div>
       <burn-charts
         :start-date="iteration.startDate"
         :due-date="iteration.dueDate"
