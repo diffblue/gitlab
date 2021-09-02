@@ -80,7 +80,7 @@ module RuboCop
           flag_value = flag_value(node)
           return unless flag_value
 
-          if flag_arg_is_str_or_sym?(node)
+          if flag_arg_is_str_or_sym?(flag_arg)
             if caller_is_feature_gitaly?(node)
               save_used_feature_flag("gitaly_#{flag_value}")
             else
@@ -95,9 +95,9 @@ module RuboCop
                 save_used_feature_flag(matching_feature_flag)
               end
             end
-          elsif flag_arg_is_send_type?(node)
+          elsif flag_arg_is_send_type?(flag_arg)
             puts_if_ci(node, "Feature flag is dynamic: '#{flag_value}.")
-          elsif flag_arg_is_dstr_or_dsym?(node)
+          elsif flag_arg_is_dstr_or_dsym?(flag_arg)
             str_prefix = flag_arg.children[0]
             rest_children = flag_arg.children[1..]
 
@@ -170,18 +170,16 @@ module RuboCop
           end.to_s.tr("\n/", ' _')
         end
 
-        def flag_arg_is_str_or_sym?(node)
-          flag_arg = flag_arg(node)
+        def flag_arg_is_str_or_sym?(flag_arg)
           flag_arg.str_type? || flag_arg.sym_type?
         end
 
-        def flag_arg_is_send_type?(node)
-          flag_arg(node).send_type?
+        def flag_arg_is_send_type?(flag_arg)
+          flag_arg.send_type?
         end
 
-        def flag_arg_is_dstr_or_dsym?(node)
-          flag = flag_arg(node)
-          (flag.dstr_type? || flag.dsym_type?) && flag.children[0].str_type?
+        def flag_arg_is_dstr_or_dsym?(flag_arg)
+          (flag_arg.dstr_type? || flag_arg.dsym_type?) && flag_arg.children[0].str_type?
         end
 
         def caller_is_feature?(node)
