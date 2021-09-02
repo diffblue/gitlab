@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import { GlModal, GlButton } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { __, sprintf } from '~/locale';
@@ -59,7 +58,7 @@ export default {
     :title="__('Merge immediately')"
     @shown="focusCancelButton"
   >
-    <p v-html="bodyText"></p>
+    <p v-html="bodyText /* eslint-disable-line vue/no-v-html */"></p>
     <p>{{ __('Are you sure you want to merge immediately?') }}</p>
     <template #modal-footer>
       <gl-button ref="cancelButton" @click="cancel">{{ __('Cancel') }}</gl-button>

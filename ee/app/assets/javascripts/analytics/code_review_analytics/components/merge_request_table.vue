@@ -118,8 +118,7 @@ export default {
 
     <template #cell(review_time)="{ value }">
       <template v-if="showReviewTime(value)">
-        <!-- eslint-disable-next-line vue/no-v-html-->
-        <span v-html="formatReviewTime(value)"></span>
+        <span v-html="formatReviewTime(value) /* eslint-disable-line vue/no-v-html */"></span>
       </template>
       <template v-else> &ndash; </template>
     </template>
