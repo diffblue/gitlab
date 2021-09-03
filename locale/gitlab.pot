@@ -35718,6 +35718,15 @@ msgstr ""
 msgid "Unable to update this issue at this time."
 msgstr ""
 
+msgid "Unapprove a merge request"
+msgstr ""
+
+msgid "Unapprove the current merge request."
+msgstr ""
+
+msgid "Unapproved the current merge request."
+msgstr ""
+
 msgid "Unarchive project"
 msgstr ""
 
