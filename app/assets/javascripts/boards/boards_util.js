@@ -108,7 +108,8 @@ export function formatIssueInput(issueInput, boardConfig) {
 
   return {
     ...issueInput,
-    milestoneId: milestoneId ? fullMilestoneId(milestoneId) : null,
+    milestoneId:
+      milestoneId && milestoneId !== -1 ? fullMilestoneId(milestoneId) : issueInput.milestoneId,
     labelIds: [...labelIds, ...(labels?.map((l) => fullLabelId(l)) || [])],
     assigneeIds: [...assigneeIds, ...(assigneeId ? [fullUserId(assigneeId)] : [])],
   };
