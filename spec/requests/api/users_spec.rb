@@ -2979,10 +2979,10 @@ RSpec.describe API::Users do
         end
       end
 
-      context 'with an invalid id user' do
+      context 'with an invalid user id' do
         let(:user_id) { 'ASDF' }
 
-        it "returns a 404 for invalid ID" do
+        it 'returns a 404' do
           unblock_user
 
           expect(response).to have_gitlab_http_status(:not_found)
