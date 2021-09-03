@@ -38,8 +38,8 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
       rb_rule = merge_request.approval_rules.code_owner.find_by(name: rb_entry.pattern)
       doc_rule = merge_request.approval_rules.code_owner.find_by(name: doc_entry.pattern)
 
-      expect(rb_rule.users).to eq(rb_owners)
-      expect(doc_rule.users).to eq(doc_owners)
+      expect(rb_rule.users).to match_array(rb_owners)
+      expect(doc_rule.users).to match_array(doc_owners)
 
       expect(rb_rule.groups).to match_array(rb_group_owners)
       expect(doc_rule.groups).to match_array(doc_group_owners)
@@ -62,7 +62,7 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
 
       service.execute
 
-      expect(other_rule.reload.users).to eq(rb_owners)
+      expect(other_rule.reload.users).to match_array(rb_owners)
       expect(other_rule.reload.groups).to match_array(rb_group_owners)
     end
 
