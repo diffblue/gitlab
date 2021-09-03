@@ -6,7 +6,7 @@ description: Unique visitors to /groups/:group/-/analytics/value_stream_analytic
 product_section: dev
 product_stage: manage
 product_group: group::optimize
-product_category: 
+product_category:
 value_type: number
 status: data_available
 time_frame: 28d
@@ -14,10 +14,11 @@ data_source: redis_hll
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - g_analytics_valuestream
+  - g_analytics_valuestream
 distribution:
 - ce
 tier:
 - free
 skip_validation: true
 performance_indicator_type: []
+milestone: "<13.9"

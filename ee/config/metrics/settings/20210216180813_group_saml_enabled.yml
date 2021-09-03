@@ -1,11 +1,12 @@
 ---
 data_category: optional
 key_path: usage_activity_by_stage.manage.group_saml_enabled
-description: Has the instance enabled Group SAML SSO `https://docs.gitlab.com/ee/user/group/saml_sso/` on at least 1 group?
+description: Has the instance enabled Group SAML SSO `https://docs.gitlab.com/ee/user/group/saml_sso/`
+  on at least 1 group?
 product_section: dev
-product_stage: 
+product_stage:
 product_group: group::manage
-product_category: 
+product_category:
 value_type: boolean
 status: data_available
 time_frame: none
@@ -16,3 +17,4 @@ tier:
 - premium
 skip_validation: true
 performance_indicator_type: []
+milestone: "<13.9"

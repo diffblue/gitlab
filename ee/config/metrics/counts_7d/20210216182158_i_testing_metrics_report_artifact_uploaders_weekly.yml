@@ -1,7 +1,8 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.testing.i_testing_metrics_report_artifact_uploaders_weekly
-description: Count of unique users per week who trigger a pipeline that uploads a metrics report.
+description: Count of unique users per week who trigger a pipeline that uploads a
+  metrics report.
 product_section: ops
 product_stage: verify
 product_group: group::testing
@@ -20,3 +21,4 @@ tier:
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"

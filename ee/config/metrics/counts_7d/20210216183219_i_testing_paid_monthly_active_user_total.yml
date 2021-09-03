@@ -1,7 +1,8 @@
 ---
 data_category: optional
 key_path: counts_weekly.aggregated_metrics.i_testing_paid_monthly_active_user_total
-description: Aggregated count of users who have engaged with a Premium or Ultimate tier testing feature per week.
+description: Aggregated count of users who have engaged with a Premium or Ultimate
+  tier testing feature per week.
 product_section: ops
 product_stage: verify
 product_group: group::testing
@@ -16,3 +17,4 @@ tier:
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"
