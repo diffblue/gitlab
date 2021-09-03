@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.compliance.compliance_total_unique_counts_weekly
-description: 'Unique count of compliance actions in a given week'
-product_section: 'dev'
-product_stage: 'manage'
-product_group: 'group::compliance'
-product_category: 'compliance_management'
+description: Unique count of compliance actions in a given week
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category: compliance_management
 value_type: number
 status: data_available
 time_frame: 7d
@@ -24,3 +24,4 @@ tier:
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"

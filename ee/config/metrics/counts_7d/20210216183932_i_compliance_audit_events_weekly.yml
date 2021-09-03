@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.compliance.i_compliance_audit_events_weekly
-description: 'Unique users that have viewed the instance-level audit events screen'
-product_section: 'dev'
-product_stage: 'manage'
-product_group: 'group::compliance'
-product_category: 'audit_events'
+description: Unique users that have viewed the instance-level audit events screen
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category: audit_events
 value_type: number
 status: data_available
 time_frame: 7d
@@ -20,3 +20,4 @@ tier:
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"
