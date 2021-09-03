@@ -25,6 +25,7 @@ exports[`MetricChart component template when isLoading is false and chartData is
   <gl-dropdown-stub
     category="primary"
     class="mb-4 metric-dropdown"
+    clearalltext="Clear all"
     headertext=""
     hideheaderborder="true"
     menu-class="w-100 mw-100"

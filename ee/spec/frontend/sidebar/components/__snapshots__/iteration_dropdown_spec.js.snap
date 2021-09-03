@@ -4,6 +4,7 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
 <gl-dropdown-stub
   category="primary"
   class="gl-w-full"
+  clearalltext="Clear all"
   headertext=""
   hideheaderborder="true"
   size="medium"

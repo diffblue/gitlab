@@ -120,6 +120,8 @@ exports[`OnDemandScansScannerProfileSelector renders properly with profiles 1`] 
                 </div>
               </div>
                
+              <!---->
+               
               <div
                 class="gl-new-dropdown-contents"
               >
