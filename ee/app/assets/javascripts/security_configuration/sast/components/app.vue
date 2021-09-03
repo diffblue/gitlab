@@ -95,9 +95,9 @@ export default {
     </gl-alert>
 
     <header class="gl-my-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid">
-      <h2 class="h4">
+      <h4>
         {{ s__('SecurityConfiguration|SAST Configuration') }}
-      </h2>
+      </h4>
       <p>
         <gl-sprintf :message="$options.i18n.helpText">
           <template #link="{ content }">

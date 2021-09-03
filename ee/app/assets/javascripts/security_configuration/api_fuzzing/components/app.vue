@@ -1,12 +1,11 @@
 <script>
-import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import apiFuzzingCiConfigurationQuery from '../graphql/api_fuzzing_ci_configuration.query.graphql';
 import ConfigurationForm from './configuration_form.vue';
 
 export default {
   components: {
-    GlAlert,
     GlLink,
     GlLoadingIcon,
     GlSprintf,
@@ -35,21 +34,16 @@ export default {
   },
   i18n: {
     title: s__('APIFuzzing|API Fuzzing Configuration'),
-    helpText: s__(`
-      APIFuzzing|Customize common API fuzzing settings to suit your requirements.
-      For details of more advanced configuration options, see the
-      %{docsLinkStart}GitLab API Fuzzing documentation%{docsLinkEnd}.`),
-    notice: s__(`
-      APIFuzzing|Use this tool to generate API fuzzing configuration YAML to copy into your
-      .gitlab-ci.yml file. This tool does not reflect or update your .gitlab-ci.yml file automatically.
-    `),
+    helpText: s__(
+      `APIFuzzing|Customize your project's API fuzzing configuration options and copy the code snippet to your .gitlab-ci.yml file to apply any changes. Note that this tool does not reflect or update your .gitlab-ci.yml file automatically. For details of more advanced configuration options, see the %{docsLinkStart}GitLab API Fuzzing documentation%{docsLinkEnd}.`,
+    ),
   },
 };
 </script>
 
 <template>
   <article>
-    <header class="gl-mt-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid">
+    <header class="gl-my-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid">
       <h4>
         {{ s__('APIFuzzing|API Fuzzing Configuration') }}
       </h4>
@@ -61,10 +55,6 @@ export default {
         </gl-sprintf>
       </p>
     </header>
-
-    <gl-alert :dismissible="false" class="gl-mb-5">
-      {{ $options.i18n.notice }}
-    </gl-alert>
 
     <gl-loading-icon v-if="$apollo.loading" size="lg" />
 

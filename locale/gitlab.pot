@@ -1570,7 +1570,7 @@ msgstr ""
 msgid "APIFuzzing|Configure HTTP basic authentication values. Other authentication methods are supported. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
-msgid "APIFuzzing|Customize common API fuzzing settings to suit your requirements. For details of more advanced configuration options, see the %{docsLinkStart}GitLab API Fuzzing documentation%{docsLinkEnd}."
+msgid "APIFuzzing|Customize your project's API fuzzing configuration options and copy the code snippet to your .gitlab-ci.yml file to apply any changes. Note that this tool does not reflect or update your .gitlab-ci.yml file automatically. For details of more advanced configuration options, see the %{docsLinkStart}GitLab API Fuzzing documentation%{docsLinkEnd}."
 msgstr ""
 
 msgid "APIFuzzing|Enable authentication"
@@ -1631,9 +1631,6 @@ msgid "APIFuzzing|To prevent a security leak, authentication info must be added 
 msgstr ""
 
 msgid "APIFuzzing|To prevent a security leak, authentication info must be added as a %{ciVariablesLinkStart}CI variable%{ciVariablesLinkEnd}. As a user with maintainer access rights, you can manage CI variables in the %{ciSettingsLinkStart}Settings%{ciSettingsLinkEnd} area."
-msgstr ""
-
-msgid "APIFuzzing|Use this tool to generate API fuzzing configuration YAML to copy into your .gitlab-ci.yml file. This tool does not reflect or update your .gitlab-ci.yml file automatically."
 msgstr ""
 
 msgid "APIFuzzing|Username for basic authentication"
