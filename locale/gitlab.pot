@@ -13635,9 +13635,6 @@ msgstr ""
 msgid "Expected documents: %{expected_documents}"
 msgstr ""
 
-msgid "Experienced"
-msgstr ""
-
 msgid "ExperimentSubject|Must have exactly one of User, Namespace, or Project."
 msgstr ""
 
@@ -16555,9 +16552,6 @@ msgstr ""
 msgid "Hello %{name},"
 msgstr ""
 
-msgid "Hello there"
-msgstr ""
-
 msgid "Hello, %{name}!"
 msgstr ""
 
@@ -18967,13 +18961,7 @@ msgstr ""
 msgid "Iteration|cannot be more than 500 years in the future"
 msgstr ""
 
-msgid "I’m familiar with the basics of DevOps."
-msgstr ""
-
 msgid "I’m joining my team who’s already on GitLab"
-msgstr ""
-
-msgid "I’m not familiar with the basics of DevOps."
 msgstr ""
 
 msgid "Jaeger URL"
@@ -23131,9 +23119,6 @@ msgid "Nov"
 msgstr ""
 
 msgid "November"
-msgstr ""
-
-msgid "Novice"
 msgstr ""
 
 msgid "Now, personalize your GitLab experience"
@@ -30908,13 +30893,7 @@ msgstr ""
 msgid "Show list"
 msgstr ""
 
-msgid "Show me advanced features"
-msgstr ""
-
 msgid "Show me how to add a pipeline"
-msgstr ""
-
-msgid "Show me the basics"
 msgstr ""
 
 msgid "Show one file at a time"
@@ -37701,9 +37680,6 @@ msgstr ""
 msgid "Welcome to GitLab,%{br_tag}%{name}!"
 msgstr ""
 
-msgid "Welcome to the guided GitLab tour"
-msgstr ""
-
 msgid "Welcome, %{name}!"
 msgstr ""
 
@@ -37720,9 +37696,6 @@ msgid "What are shared runner pipeline minutes?"
 msgstr ""
 
 msgid "What are you searching for?"
-msgstr ""
-
-msgid "What describes you best?"
 msgstr ""
 
 msgid "What does this command do?"
@@ -37750,9 +37723,6 @@ msgid "What will you use this group for?"
 msgstr ""
 
 msgid "What's new"
-msgstr ""
-
-msgid "What’s your experience level?"
 msgstr ""
 
 msgid "When a deployment job is successful, skip older deployment jobs that are still pending."
