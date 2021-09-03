@@ -64,6 +64,14 @@ describe('projects/settings/components/shared_runners', () => {
       );
     });
 
+    it('credit card alert should be hidden after dismiss', async () => {
+      findCcValidationRequiredAlert().vm.$emit('dismiss');
+
+      await wrapper.vm.$nextTick();
+
+      expect(findCcValidationRequiredAlert().exists()).toBe(false);
+    });
+
     describe('when credit card is validated', () => {
       beforeEach(() => {
         findCcValidationRequiredAlert().vm.$emit('verifiedCreditCard');
