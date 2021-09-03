@@ -2,11 +2,11 @@
 %section.settings.merge-request-approval-settings.no-animate{ class: ('expanded' if expanded_by_default?) }
   .settings-header
     %h4
-      = _('Merge request (MR) approvals')
+      = _('Merge request approvals')
     %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
-      = _('Regulate approvals by authors/committers. Affects all projects.')
+      = _('Configure approvals by authors and committers on all projects.')
 
     = form_for @application_setting, url: general_admin_application_settings_path(anchor: 'merge-request-approval-settings'), html: { class: 'fieldset-form' } do |f|
       = form_errors(@application_setting)

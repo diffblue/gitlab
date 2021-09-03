@@ -160,7 +160,7 @@ describe('ApprovalSettings', () => {
 
       expect(findForm().text()).toContain('Approval settings');
       expect(findForm().text()).toContain(
-        'Define how approval rules are applied as a merge request moves toward completion.',
+        'Define how approval rules are applied to merge requests.',
       );
     });
 
