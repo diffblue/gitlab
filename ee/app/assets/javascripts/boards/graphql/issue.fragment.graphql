@@ -12,6 +12,7 @@ fragment IssueNode on Issue {
   humanTotalTimeSpent
   weight
   confidential
+  hidden
   webUrl
   blocked
   blockedByCount
