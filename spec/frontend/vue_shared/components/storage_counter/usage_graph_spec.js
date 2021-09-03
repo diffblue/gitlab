@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
-import UsageGraph from 'ee/storage_counter/components/usage_graph.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
+import UsageGraph from '~/vue_shared/components/storage_counter/usage_graph.vue';
 
 let data;
 let wrapper;
