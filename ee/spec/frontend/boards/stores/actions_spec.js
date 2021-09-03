@@ -5,7 +5,6 @@ import Vuex from 'vuex';
 import { BoardType, GroupByParamType, listsQuery, issuableTypes } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
-import boardsStoreEE from 'ee/boards/stores/boards_store_ee';
 import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
 import setWindowLocation from 'helpers/set_window_location_helper';
@@ -462,16 +461,7 @@ describe('setShowLabels', () => {
 });
 
 describe('updateListWipLimit', () => {
-  let storeMock;
-
   beforeEach(() => {
-    storeMock = {
-      state: { endpoints: { listsEndpoint: '/test' } },
-      create: () => {},
-      setCurrentBoard: () => {},
-    };
-
-    boardsStoreEE.initEESpecific(storeMock);
     jest.mock('axios');
     axios.put = jest.fn();
     axios.put.mockResolvedValue({ data: {} });

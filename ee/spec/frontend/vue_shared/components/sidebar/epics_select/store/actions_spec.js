@@ -4,7 +4,6 @@ import * as types from 'ee/vue_shared/components/sidebar/epics_select/store/muta
 import createDefaultState from 'ee/vue_shared/components/sidebar/epics_select/store/state';
 import { noneEpic } from 'ee/vue_shared/constants';
 import testAction from 'helpers/vuex_action_helper';
-import boardsStore from '~/boards/stores/boards_store';
 import createFlash from '~/flash';
 
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -257,35 +256,6 @@ describe('EpicsSelect', () => {
             [],
             done,
           );
-        });
-
-        it('should update the epic associated with the issue in BoardsStore if the update happened in Boards', (done) => {
-          boardsStore.detail.issue.updateEpic = jest.fn(() => {});
-          state.issueId = mockIssue.id;
-          const mockApiData = { ...mockAssignRemoveRes };
-          mockApiData.epic.web_url = '';
-
-          testAction(
-            actions.receiveIssueUpdateSuccess,
-            {
-              data: mockApiData,
-              epic: normalizedEpics[0],
-            },
-            state,
-            [
-              {
-                type: types.RECEIVE_ISSUE_UPDATE_SUCCESS,
-                payload: {
-                  selectedEpic: normalizedEpics[0],
-                  selectedEpicIssueId: mockApiData.id,
-                },
-              },
-            ],
-            [],
-            done,
-          );
-
-          expect(boardsStore.detail.issue.updateEpic).toHaveBeenCalled();
         });
 
         it('should set updated selectedEpic with noneEpic to state when payload has matching Epic and Issue IDs and isRemoval param is true', (done) => {

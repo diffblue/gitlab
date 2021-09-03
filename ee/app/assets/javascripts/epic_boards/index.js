@@ -92,11 +92,8 @@ export default () => {
         state: {},
         loading: 0,
         allowSubEpics: parseBoolean($boardApp.dataset.subEpicsFeatureAvailable),
-        boardsEndpoint: $boardApp.dataset.boardsEndpoint,
         recentBoardsEndpoint: $boardApp.dataset.recentBoardsEndpoint,
-        listsEndpoint: $boardApp.dataset.listsEndpoint,
         disabled: parseBoolean($boardApp.dataset.disabled),
-        bulkUpdatePath: $boardApp.dataset.bulkUpdatePath,
         parent: $boardApp.dataset.parent,
         detailIssueVisible: false,
       };
