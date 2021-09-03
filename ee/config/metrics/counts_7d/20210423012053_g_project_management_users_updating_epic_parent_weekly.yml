@@ -10,7 +10,7 @@ product_stage: plan
 product_group: group::product planning
 product_category: epics_usage
 value_type: number
-status: data_available
+status: active
 milestone: '13.12'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60079
 time_frame: 7d

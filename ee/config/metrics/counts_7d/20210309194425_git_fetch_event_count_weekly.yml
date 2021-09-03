@@ -7,7 +7,7 @@ product_stage: enablement
 product_group: group::geo
 product_category: geo_replication
 value_type: number
-status: data_available
+status: active
 milestone: '13.10'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/53888
 time_frame: 7d

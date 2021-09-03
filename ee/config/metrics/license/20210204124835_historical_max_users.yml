@@ -6,7 +6,7 @@ product_stage: fulfillment
 product_group: group::license
 product_category: license
 value_type: number
-status: data_available
+status: active
 time_frame: none
 data_source: database
 data_category: subscription
