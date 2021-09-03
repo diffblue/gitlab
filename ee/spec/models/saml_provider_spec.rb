@@ -154,6 +154,16 @@ RSpec.describe SamlProvider do
     it 'includes SSO URL' do
       expect(settings[:idp_sso_target_url]).to eq saml_provider.sso_url
     end
+
+    context 'when saml_message_max_byte_size present in gitlab settings ' do
+      before do
+        stub_omniauth_setting(saml_message_max_byte_size: 1_000_000)
+      end
+
+      it 'includes saml_message_max_byte_size' do
+        expect(settings[:message_max_bytesize]).to eq 1_000_000
+      end
+    end
   end
 
   describe '#enforced_sso?' do
