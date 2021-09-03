@@ -1615,6 +1615,8 @@ class User < ApplicationRecord
     true
   end
 
+  # TODO Please check all callers and remove allow_cross_joins_across_databases,
+  # when https://gitlab.com/gitlab-org/gitlab/-/issues/336436 is done.
   def ci_owned_runners
     @ci_owned_runners ||= begin
       project_runners = Ci::RunnerProject
@@ -1628,6 +1630,12 @@ class User < ApplicationRecord
         .select('ci_runners.*')
 
       Ci::Runner.from_union([project_runners, group_runners])
+    end
+  end
+
+  def owns_runner?(runner)
+    ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436') do
+      ci_owned_runners.exists?(runner.id)
     end
   end
 
