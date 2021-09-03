@@ -71,8 +71,7 @@ module QA
         # adequately tested elsewhere.
         #
         # There are also FE specs
-        # * ee/spec/javascripts/ide/components/terminal/terminal_spec.js
-        # * ee/spec/frontend/ide/components/terminal/terminal_controls_spec.js
+        # * spec/frontend/ide/components/terminal/terminal_controls_spec.js
         Page::Project::WebIDE::Edit.perform do |edit|
           edit.start_web_terminal
 
