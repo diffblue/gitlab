@@ -5,12 +5,12 @@ module Mutations
     class Base < ::Mutations::BaseMutation
       argument :id, ::Types::GlobalIDType[::Namespace],
                required: true,
-               description: 'The global ID of the namespace to mutate.'
+               description: 'Global ID of the namespace to mutate.'
 
       field :namespace,
             Types::NamespaceType,
             null: true,
-            description: 'The namespace after mutation.'
+            description: 'Namespace after mutation.'
 
       private
 

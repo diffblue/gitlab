@@ -9,7 +9,7 @@ module Mutations
 
       argument :subscribed_state, GraphQL::Types::Boolean,
                required: true,
-               description: 'The desired state of the subscription.'
+               description: 'Desired state of the subscription.'
 
       def resolve(args)
         group_path = args.delete(:group_path)

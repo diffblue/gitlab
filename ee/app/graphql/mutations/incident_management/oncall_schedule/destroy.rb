@@ -8,11 +8,11 @@ module Mutations
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project to remove the on-call schedule from.'
+                 description: 'Project to remove the on-call schedule from.'
 
         argument :iid, GraphQL::Types::String,
                  required: true,
-                 description: 'The on-call schedule internal ID to remove.'
+                 description: 'On-call schedule internal ID to remove.'
 
         def resolve(project_path:, iid:)
           oncall_schedule = authorized_find!(project_path: project_path, iid: iid)
