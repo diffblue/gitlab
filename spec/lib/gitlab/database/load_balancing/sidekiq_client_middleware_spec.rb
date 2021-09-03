@@ -85,7 +85,7 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
         end
 
         it 'passes database_replica_location' do
-          expected_location = { main: location }
+          expected_location = { Gitlab::Database::MAIN_DATABASE_NAME.to_sym => location }
 
           expect(load_balancer).to receive_message_chain(:host, "database_replica_location").and_return(location)
 
@@ -103,7 +103,7 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
         end
 
         it 'passes primary write location', :aggregate_failures do
-          expected_location = { main: location }
+          expected_location = { Gitlab::Database::MAIN_DATABASE_NAME.to_sym => location }
 
           expect(load_balancer).to receive(:primary_write_location).and_return(location)
 
@@ -117,6 +117,16 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
     end
 
     shared_examples_for 'database location was already provided' do
+      let(:old_location) { '0/D525E3A8' }
+      let(:new_location) { 'AB/12345' }
+      let(:wal_locations) { { Gitlab::Database::MAIN_DATABASE_NAME.to_sym => old_location } }
+      let(:job) { { "job_id" => "a180b47c-3fd6-41b8-81e9-34da61c3400e", 'wal_locations' => wal_locations } }
+
+      before do
+        allow(load_balancer).to receive(:primary_write_location).and_return(new_location)
+        allow(load_balancer).to receive(:database_replica_location).and_return(new_location)
+      end
+
       shared_examples_for 'does not set database location again' do |use_primary|
         before do
           allow(Gitlab::Database::LoadBalancing::Session.current).to receive(:use_primary?).and_return(use_primary)
@@ -125,17 +135,8 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
         it 'does not set database locations again' do
           run_middleware
 
-          expect(job['wal_locations']).to eq({ main: old_location })
+          expect(job['wal_locations']).to eq(wal_locations)
         end
-      end
-
-      let(:old_location) { '0/D525E3A8' }
-      let(:new_location) { 'AB/12345' }
-      let(:job) { { "job_id" => "a180b47c-3fd6-41b8-81e9-34da61c3400e", 'wal_locations' => { main: old_location } } }
-
-      before do
-        allow(load_balancer).to receive(:primary_write_location).and_return(new_location)
-        allow(load_balancer).to receive(:database_replica_location).and_return(new_location)
       end
 
       context "when write was performed" do
