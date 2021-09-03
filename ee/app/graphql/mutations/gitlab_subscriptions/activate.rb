@@ -13,7 +13,7 @@ module Mutations
 
       field :license, Types::Admin::CloudLicenses::CurrentLicenseType,
             null: true,
-            description: 'The current license.'
+            description: 'Current license.'
 
       def resolve(activation_code:)
         authorize! :global

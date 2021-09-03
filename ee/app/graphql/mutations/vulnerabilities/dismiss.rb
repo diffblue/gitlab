@@ -9,7 +9,7 @@ module Mutations
 
       field :vulnerability, Types::VulnerabilityType,
             null: true,
-            description: 'The vulnerability after dismissal.'
+            description: 'Vulnerability after dismissal.'
 
       argument :id,
                ::Types::GlobalIDType[::Vulnerability],

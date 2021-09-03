@@ -12,7 +12,7 @@ module Mutations
       field :iteration,
             Types::IterationType,
             null: true,
-            description: 'The created iteration.'
+            description: 'Created iteration.'
 
       argument :iterations_cadence_id,
                ::Types::GlobalIDType[::Iterations::Cadence],
@@ -23,22 +23,22 @@ module Mutations
       argument :title,
                GraphQL::Types::String,
                required: false,
-               description: 'The title of the iteration.'
+               description: 'Title of the iteration.'
 
       argument :description,
                GraphQL::Types::String,
                required: false,
-               description: 'The description of the iteration.'
+               description: 'Description of the iteration.'
 
       argument :start_date,
                GraphQL::Types::String,
                required: false,
-               description: 'The start date of the iteration.'
+               description: 'Start date of the iteration.'
 
       argument :due_date,
                GraphQL::Types::String,
                required: false,
-               description: 'The end date of the iteration.'
+               description: 'End date of the iteration.'
 
       def resolve(args)
         parent = authorized_resource_parent_find!(args)

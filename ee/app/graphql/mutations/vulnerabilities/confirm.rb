@@ -9,7 +9,7 @@ module Mutations
 
       field :vulnerability, Types::VulnerabilityType,
             null: true,
-            description: 'The vulnerability after state change.'
+            description: 'Vulnerability after state change.'
 
       argument :id,
                ::Types::GlobalIDType[::Vulnerability],

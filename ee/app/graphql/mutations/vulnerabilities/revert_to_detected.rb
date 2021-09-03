@@ -9,7 +9,7 @@ module Mutations
 
       field :vulnerability, Types::VulnerabilityType,
             null: true,
-            description: 'The vulnerability after revert.'
+            description: 'Vulnerability after revert.'
 
       argument :id,
                ::Types::GlobalIDType[::Vulnerability],

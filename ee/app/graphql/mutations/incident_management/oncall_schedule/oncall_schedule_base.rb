@@ -7,7 +7,7 @@ module Mutations
         field :oncall_schedule,
               ::Types::IncidentManagement::OncallScheduleType,
               null: true,
-              description: 'The on-call schedule.'
+              description: 'On-call schedule.'
 
         authorize :admin_incident_management_oncall_schedule
 

@@ -11,7 +11,7 @@ module Mutations
         authorize :create_iteration_cadence
 
         argument :group_path, GraphQL::Types::ID, required: true,
-          description: "The group where the iteration cadence is created."
+          description: "Group where the iteration cadence is created."
 
         argument :title, GraphQL::Types::String, required: false,
           description: copy_field_description(Types::Iterations::CadenceType, :title)
@@ -38,7 +38,7 @@ module Mutations
           description: copy_field_description(Types::Iterations::CadenceType, :description)
 
         field :iteration_cadence, Types::Iterations::CadenceType, null: true,
-          description: 'The created iteration cadence.'
+          description: 'Created iteration cadence.'
 
         def resolve(args)
           group = authorized_find!(group_path: args.delete(:group_path))

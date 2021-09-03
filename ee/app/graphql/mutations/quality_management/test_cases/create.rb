@@ -12,24 +12,24 @@ module Mutations
 
         argument :title, GraphQL::Types::String,
                  required: true,
-                 description: 'The test case title.'
+                 description: 'Test case title.'
 
         argument :description, GraphQL::Types::String,
                  required: false,
-                 description: 'The test case description.'
+                 description: 'Test case description.'
 
         argument :label_ids,
                  [GraphQL::Types::ID],
                  required: false,
-                 description: 'The IDs of labels to be added to the test case.'
+                 description: 'IDs of labels to be added to the test case.'
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project full path to create the test case.'
+                 description: 'Project full path to create the test case in.'
 
         field :test_case, Types::IssueType,
               null: true,
-              description: 'The test case created.'
+              description: 'Test case created.'
 
         def resolve(args)
           project_path = args.delete(:project_path)

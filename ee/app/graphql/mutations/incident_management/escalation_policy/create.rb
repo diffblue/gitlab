@@ -10,19 +10,19 @@ module Mutations
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project to create the escalation policy for.'
+                 description: 'Project to create the escalation policy for.'
 
         argument :name, GraphQL::Types::String,
                  required: true,
-                 description: 'The name of the escalation policy.'
+                 description: 'Name of the escalation policy.'
 
         argument :description, GraphQL::Types::String,
                  required: false,
-                 description: 'The description of the escalation policy.'
+                 description: 'Description of the escalation policy.'
 
         argument :rules, [Types::IncidentManagement::EscalationRuleInputType],
                  required: true,
-                 description: 'The steps of the escalation policy.'
+                 description: 'Steps of the escalation policy.'
 
         def resolve(project_path:, **args)
           project = authorized_find!(project_path: project_path, **args)
