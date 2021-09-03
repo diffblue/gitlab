@@ -9401,6 +9401,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueepic"></a>`epic` | [`Epic`](#epic) | Epic to which this issue belongs. |
 | <a id="epicissueepicissueid"></a>`epicIssueId` | [`ID!`](#id) | ID of the epic-issue relation. |
 | <a id="epicissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
+| <a id="epicissuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="epicissuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
 | <a id="epicissuehumantotaltimespent"></a>`humanTotalTimeSpent` | [`String`](#string) | Human-readable total time reported as spent on the issue. |
 | <a id="epicissueid"></a>`id` | [`ID`](#id) | Global ID of the epic-issue relation. |
@@ -10526,6 +10527,7 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="issueemailsdisabled"></a>`emailsDisabled` | [`Boolean!`](#boolean) | Indicates if a project has email notifications disabled: `true` if email notifications are disabled. |
 | <a id="issueepic"></a>`epic` | [`Epic`](#epic) | Epic to which this issue belongs. |
 | <a id="issuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
+| <a id="issuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="issuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
 | <a id="issuehumantotaltimespent"></a>`humanTotalTimeSpent` | [`String`](#string) | Human-readable total time reported as spent on the issue. |
 | <a id="issueid"></a>`id` | [`ID!`](#id) | ID of the issue. |
