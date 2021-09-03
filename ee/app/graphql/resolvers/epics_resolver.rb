@@ -98,7 +98,8 @@ module Resolvers
     def preloads
       {
         parent: [:parent],
-        events: { events: [:target] }
+        events: { events: [:target] },
+        award_emoji: [:award_emoji]
       }
     end
 
