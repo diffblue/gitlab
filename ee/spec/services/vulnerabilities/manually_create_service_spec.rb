@@ -136,6 +136,8 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
 
           finding = vulnerability.finding
           expect(finding.report_type).to eq("generic")
+          expect(finding.message).to eq(params.dig(:message))
+          expect(finding.description).to eq(params.dig(:description))
           expect(finding.severity).to eq(params.dig(:vulnerability, :severity))
           expect(finding.confidence).to eq(params.dig(:vulnerability, :confidence))
 
