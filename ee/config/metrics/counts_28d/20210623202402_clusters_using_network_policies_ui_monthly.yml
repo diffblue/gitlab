@@ -7,7 +7,7 @@ product_stage: protect
 product_group: group::container security
 product_category: container_network_security
 value_type: number
-status: implemented
+status: active
 milestone: '14.1'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64731
 time_frame: 28d
