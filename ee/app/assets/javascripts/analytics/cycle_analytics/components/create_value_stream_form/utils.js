@@ -8,6 +8,7 @@ import {
   defaultFields,
   NAME_MAX_LENGTH,
   formFieldKeys,
+  editableFormFieldKeys,
 } from './constants';
 
 /**
@@ -151,9 +152,10 @@ export const formatStageDataForSubmission = (stages, isEditing = false) => {
       // The new stage is still `custom` but wont have an id until the form submits and its persisted to the DB
       editProps = id ? { id, custom: true } : { custom: true };
     }
+    const editableFields = pick(rest, editableFormFieldKeys);
     // While we work on https://gitlab.com/gitlab-org/gitlab/-/issues/321959 we should not allow editing default
     return custom
-      ? convertObjectPropsToSnakeCase({ ...rest, ...editProps, name })
+      ? convertObjectPropsToSnakeCase({ ...editableFields, ...editProps, name })
       : convertObjectPropsToSnakeCase({ ...editProps, name, custom: false });
   });
 };

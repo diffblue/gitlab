@@ -1,6 +1,7 @@
 import {
   ERRORS,
   NAME_MAX_LENGTH,
+  editableFormFieldKeys,
 } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/constants';
 import {
   initializeFormData,
@@ -177,14 +178,9 @@ describe('formatStageDataForSubmission', () => {
       expect(Object.keys(res).includes('id')).toBe(false);
     });
 
-    it('will not include the event fields', () => {
-      [
-        'start_event_identifier',
-        'start_event_label_id',
-        'end_event_identifier',
-        'end_event_label_id',
-      ].forEach((field) => {
-        expect(Object.keys(res).includes(field)).toBe(false);
+    it('will only include editable fields', () => {
+      Object.keys(res).forEach((field) => {
+        expect(editableFormFieldKeys.includes(field)).toBe(true);
       });
     });
 
