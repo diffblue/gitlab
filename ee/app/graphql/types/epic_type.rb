@@ -145,7 +145,8 @@ module Types
     field :award_emoji,
           Types::AwardEmojis::AwardEmojiType.connection_type,
           null: true,
-          description: 'A list of award emojis associated with the epic.'
+          description: 'A list of award emojis associated with the epic.',
+          authorize: :read_emoji
 
     field :ancestors, Types::EpicType.connection_type,
           null: true,
