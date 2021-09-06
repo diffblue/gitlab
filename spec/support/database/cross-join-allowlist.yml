@@ -329,7 +329,6 @@
 - "./spec/services/ci/play_build_service_spec.rb"
 - "./spec/services/ci/register_job_service_spec.rb"
 - "./spec/services/ci/retry_pipeline_service_spec.rb"
-- "./spec/services/ci/update_build_queue_service_spec.rb"
 - "./spec/services/clusters/applications/prometheus_config_service_spec.rb"
 - "./spec/services/deployments/older_deployments_drop_service_spec.rb"
 - "./spec/services/environments/auto_stop_service_spec.rb"
