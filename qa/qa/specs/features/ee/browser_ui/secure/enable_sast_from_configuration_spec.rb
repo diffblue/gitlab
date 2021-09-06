@@ -118,7 +118,7 @@ module QA
         end
 
         Page::MergeRequest::Show.perform do |merge_request|
-          merge_request.try_to_merge!
+          merge_request.merge_immediately!
         end
 
         Flow::Pipeline.visit_latest_pipeline
