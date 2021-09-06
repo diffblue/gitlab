@@ -10,7 +10,6 @@ Array [
     "id": 18,
     "legend": "Cool legend",
     "name": "Coolest beans stage",
-    "slug": 18,
     "startEventIdentifier": "issue_first_mentioned_in_commit",
     "title": "Coolest beans stage",
   },

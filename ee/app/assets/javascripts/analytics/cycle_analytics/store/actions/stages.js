@@ -78,7 +78,7 @@ export const fetchStageMedianValues = ({ dispatch, commit, getters }) => {
     activeStages,
     currentValueStreamId,
   } = getters;
-  const stageIds = activeStages.map((s) => s.slug);
+  const stageIds = activeStages.map((s) => s.id);
 
   dispatch('requestStageMedianValues');
   return Promise.all(
@@ -115,7 +115,7 @@ export const fetchStageCountValues = ({ commit, getters }) => {
     activeStages,
     currentValueStreamId,
   } = getters;
-  const stageIds = activeStages.map((s) => s.slug);
+  const stageIds = activeStages.map((s) => s.id);
 
   commit(types.REQUEST_STAGE_COUNTS);
   return Promise.all(

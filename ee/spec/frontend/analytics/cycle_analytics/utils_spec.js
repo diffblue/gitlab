@@ -9,7 +9,6 @@ import {
   flattenDurationChartData,
   getDurationChartData,
   transformRawStages,
-  isPersistedStage,
   getTasksByTypeData,
   flattenTaskByTypeSeries,
   orderByDate,
@@ -160,13 +159,6 @@ describe('Value Stream Analytics utils', () => {
       });
     });
 
-    it('sets the slug to the value of the stage id', () => {
-      const transformed = transformRawStages([issueStage, rawCustomStage]);
-      transformed.forEach((t) => {
-        expect(t.slug).toEqual(t.id);
-      });
-    });
-
     it('sets the name to the value of the stage title if its not set', () => {
       const transformed = transformRawStages([issueStage, rawCustomStage]);
       transformed.forEach((t) => {
@@ -196,18 +188,6 @@ describe('Value Stream Analytics utils', () => {
     it('returns an empty object for each stage if there are no errors', () => {
       const res = prepareStageErrors(stages, {});
       expect(res).toEqual([{}, {}, {}]);
-    });
-  });
-
-  describe('isPersistedStage', () => {
-    it.each`
-      custom   | id                    | expected
-      ${true}  | ${'this-is-a-string'} | ${true}
-      ${true}  | ${42}                 | ${true}
-      ${false} | ${42}                 | ${true}
-      ${false} | ${'this-is-a-string'} | ${false}
-    `('with custom=$custom and id=$id', ({ custom, id, expected }) => {
-      expect(isPersistedStage({ custom, id })).toEqual(expected);
     });
   });
 
