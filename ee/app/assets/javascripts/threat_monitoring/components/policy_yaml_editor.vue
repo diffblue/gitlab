@@ -21,8 +21,8 @@ export default {
       return {
         lineNumbers: 'off',
         folding: false,
-        // Investigate the necessity of `glyphMargin` with #326746
-        glyphMargin: false,
+        // This represents 14px, which matches the number of pixels added to the left via glyphMargin
+        padding: { top: 14 },
         renderIndentGuides: false,
         renderWhitespace: 'boundary',
         renderLineHighlight: 'none',

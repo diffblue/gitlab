@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlDrawer } from '@gitlab/ui';
-import { getContentWrapperHeight } from '../../utils';
+import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import CiliumNetworkPolicy from './cilium_network_policy.vue';
 import ScanExecutionPolicy from './scan_execution_policy.vue';
@@ -45,6 +45,9 @@ export default {
     policyComponent() {
       return policyComponent[this.policyType] || null;
     },
+    policyYaml() {
+      return removeUnnecessaryDashes(this.policy.yaml);
+    },
   },
   methods: {
     getDrawerHeaderHeight() {
@@ -84,13 +87,7 @@ export default {
         <p>
           {{ s__("NetworkPolicies|Define this policy's location, conditions and actions.") }}
         </p>
-        <div class="gl-p-3 gl-bg-gray-50">
-          <policy-yaml-editor
-            :value="policy.yaml"
-            data-testid="policy-yaml-editor"
-            class="network-policy-editor"
-          />
-        </div>
+        <policy-yaml-editor :value="policyYaml" data-testid="policy-yaml-editor" />
       </div>
     </div>
   </gl-drawer>
