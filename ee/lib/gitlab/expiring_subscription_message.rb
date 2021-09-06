@@ -52,7 +52,11 @@ module Gitlab
     end
 
     def expiring_subject
-      _('Your subscription will expire in %{remaining_days}.') % { remaining_days: remaining_days_formatted }
+      n_(
+        'Your subscription will expire in %{remaining_days} day.',
+        'Your subscription will expire in %{remaining_days} days.',
+        remaining_days
+      ) % { remaining_days: remaining_days }
     end
 
     def expiration_blocking_message
@@ -66,7 +70,11 @@ module Gitlab
     def expired_message
       return block_changes_message if show_downgrade_messaging?
 
-      _('No worries, you can still use all the %{strong}%{plan_name}%{strong_close} features for now. You have %{remaining_days} to renew your subscription.') % { plan_name: plan_name, remaining_days: remaining_days_formatted, strong: strong, strong_close: strong_close }
+      n_(
+        'No worries, you can still use all the %{strong}%{plan_name}%{strong_close} features for now. You have %{remaining_days} day to renew your subscription.',
+        'No worries, you can still use all the %{strong}%{plan_name}%{strong_close} features for now. You have %{remaining_days} days to renew your subscription.',
+        remaining_days
+      ) % { plan_name: plan_name, remaining_days: remaining_days, strong: strong, strong_close: strong_close }
     end
 
     def block_changes_message
@@ -198,17 +206,15 @@ module Gitlab
       end
     end
 
-    def remaining_days_formatted
-      strong_memoize(:remaining_days_formatted) do
+    def remaining_days
+      strong_memoize(:remaining_days) do
         days = if expired_but_within_cutoff?
                  (subscribable.block_changes_at - Date.today).to_i
                else
                  (expires_at_or_cutoff_at - Date.today).to_i
                end
 
-        days = days < 0 ? 0 : days
-
-        pluralize(days, 'day')
+        days < 0 ? 0 : days
       end
     end
   end
