@@ -225,7 +225,7 @@ module Gitlab
           erase_trace_chunks!
           raise AlreadyArchivedError, 'Could not archive again'
         else
-          # An archive already exists, but its associated file is not complete, so remove it
+          # An archive already exists, but its associated file does not, so remove it
           trace_artifact.destroy!
         end
       end
