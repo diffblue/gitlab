@@ -8,21 +8,15 @@ RSpec.describe Registrations::WelcomeController do
   let_it_be(:project) { create(:project) }
 
   describe '#show' do
-    context 'when the trial_registration_with_reassurance experiment is active', :experiment do
-      before do
-        sign_in(user)
-        stub_experiments(trial_registration_with_reassurance: :control)
+    it 'publishes combined_registration experiment data to the client' do
+      sign_in(user)
+      allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
+
+      wrapped_experiment(experiment(:combined_registration)) do |e|
+        expect(e).to receive(:publish_to_client)
       end
 
-      it 'tracks a "render" event' do
-        expect(experiment(:trial_registration_with_reassurance)).to track(
-          :render,
-          user: user,
-          label: 'registrations:welcome:show'
-        ).with_context(actor: user).on_next_instance
-
-        get :show
-      end
+      get :show
     end
   end
 
@@ -246,6 +240,14 @@ RSpec.describe Registrations::WelcomeController do
         context 'when signup_onboarding is enabled' do
           before do
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
+          end
+
+          context 'when combined_registration is candidate variant' do
+            before do
+              stub_experiments(combined_registration: :candidate)
+            end
+
+            it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
           end
 
           context 'and force_company_trial experiment is candidate' do

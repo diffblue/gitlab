@@ -1,0 +1,288 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Registrations::GroupsProjectsController, :experiment do
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+
+  describe 'GET #new' do
+    it_behaves_like "Registrations::GroupsController GET #new"
+
+    context 'not shared behavior' do
+      subject { get :new }
+
+      before do
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        sign_in(user)
+      end
+
+      it 'builds a project object' do
+        subject
+
+        expect(assigns(:project)).to be_a_new(Project)
+      end
+
+      it 'tracks an event for the combined_registration experiment' do
+        expect(experiment(:combined_registration)).to track(:view_new_group_action).on_next_instance
+
+        subject
+      end
+    end
+  end
+
+  describe 'POST #create' do
+    subject { post :create, params: params }
+
+    let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
+    let(:extra_params) { {} }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, emails: ['', ''] } }
+    let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+    let(:dev_env_or_com) { true }
+
+    context 'with an unauthenticated user' do
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to(new_user_session_path) }
+    end
+
+    context 'with an authenticated user' do
+      before do
+        sign_in(user)
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+      end
+
+      it_behaves_like 'hides email confirmation warning'
+
+      context 'when group and project can be created' do
+        context 'when in the in_trial_onboarding_flow' do
+          let(:extra_params) { { trial_onboarding_flow: true } }
+
+          it 'tracks events for the remove_known_trial_form_fields_welcoming experiment' do
+            expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: anything)
+            expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
+
+            subject
+          end
+        end
+
+        it 'creates a group' do
+          expect { subject }.to change { Group.count }.by(1)
+        end
+
+        it 'tracks an event for the jobs_to_be_done experiment' do
+          stub_experiments(jobs_to_be_done: :candidate)
+
+          expect(experiment(:jobs_to_be_done)).to track(:create_group, namespace: an_instance_of(Group))
+                                                    .on_next_instance
+                                                    .for(:candidate)
+                                                    .with_context(user: user)
+
+          subject
+        end
+
+        it 'tracks create events for the combined_registration experiment' do
+          allow_next_instance_of(::Projects::CreateService) do |service|
+            allow(service).to receive(:after_create_actions)
+          end
+
+          wrapped_experiment(experiment(:combined_registration)) do |e|
+            expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
+            expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
+          end
+
+          subject
+        end
+      end
+
+      context 'when the group cannot be created' do
+        let(:group_params) { { name: '', path: '' } }
+
+        it 'does not create a group', :aggregate_failures do
+          expect { subject }.not_to change { Group.count }
+          expect(assigns(:group).errors).not_to be_blank
+        end
+
+        it 'does not tracks events for the combined_registration experiment' do
+          wrapped_experiment(experiment(:combined_registration)) do |e|
+            expect(e).not_to receive(:track).with(:create_group)
+            expect(e).not_to receive(:track).with(:create_project)
+          end
+
+          subject
+        end
+
+        it 'the project is not disgarded completely' do
+          subject
+
+          expect(assigns(:project).name).to eq('New project')
+        end
+
+        it { is_expected.to have_gitlab_http_status(:ok) }
+        it { is_expected.to render_template(:new) }
+      end
+
+      context "when group can be created but the project can't" do
+        let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+
+        it 'does not create a project', :aggregate_failures do
+          expect { subject }.to change { Group.count }
+          expect { subject }.not_to change { Project.count }
+          expect(assigns(:project).errors).not_to be_blank
+        end
+
+        it 'selectively tracks events for the combined_registration experiment' do
+          wrapped_experiment(experiment(:combined_registration)) do |e|
+            expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
+            expect(e).not_to receive(:track).with(:create_project)
+          end
+
+          subject
+        end
+
+        it { is_expected.to have_gitlab_http_status(:ok) }
+        it { is_expected.to render_template(:new) }
+      end
+
+      context "when a group is already created but a project isn't" do
+        before do
+          group.add_owner(user)
+        end
+
+        let(:group_params) { { id: group.id } }
+
+        it 'creates a project and not another group', :aggregate_failures do
+          expect { subject }.to change { Project.count }
+          expect { subject }.not_to change { Group.count }
+        end
+
+        it 'selectively tracks events for the combined_registration experiment' do
+          allow_next_instance_of(::Projects::CreateService) do |service|
+            allow(service).to receive(:after_create_actions)
+          end
+
+          wrapped_experiment(experiment(:combined_registration)) do |e|
+            expect(e).not_to receive(:track).with(:create_group, namespace: an_instance_of(Group))
+            expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
+          end
+
+          subject
+        end
+
+        context 'it redirects' do
+          let_it_be(:project) { create(:project) }
+
+          before do
+            allow_next_instance_of(::Projects::CreateService) do |service|
+              allow(service).to receive(:execute).and_return(project)
+            end
+          end
+
+          it { is_expected.to redirect_to(continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id)) }
+        end
+      end
+    end
+
+    shared_context 'groups_projects projects concern' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:namespace) { create(:group) }
+
+      let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: "#{Gitlab::VisibilityLevel::PRIVATE}" } }
+      let(:extra_params) { { group: group_params } }
+      let(:params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+      let(:create_service) { double(:create_service) }
+
+      before do
+        allow(controller).to receive(:record_experiment_user).and_call_original
+        allow(controller).to receive(:record_experiment_conversion_event).and_call_original
+
+        allow(Groups::CreateService).to receive(:new).and_call_original
+        allow(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params).permit!).and_return(create_service)
+        allow(create_service).to receive(:execute).and_return(namespace)
+      end
+    end
+
+    it_behaves_like "Registrations::ProjectsController POST #create" do
+      include_context 'groups_projects projects concern'
+    end
+
+    context 'when the user is setup_for_company: true it redirects to the new_trial_path' do
+      it_behaves_like "Registrations::ProjectsController POST #create" do
+        let_it_be(:user) { create(:user, setup_for_company: true) }
+
+        let(:success_path) { new_trial_path }
+
+        include_context 'groups_projects projects concern'
+      end
+    end
+  end
+
+  describe 'POST #import' do
+    subject { post :import, params: params }
+
+    let(:params) { { group: group_params, import_url: new_import_github_path } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, emails: ['', ''] } }
+    let(:dev_env_or_com) { true }
+
+    context 'with an unauthenticated user' do
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to(new_user_session_path) }
+    end
+
+    context 'with an authenticated user' do
+      before do
+        sign_in(user)
+        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
+      end
+
+      it_behaves_like 'hides email confirmation warning'
+
+      context "when a group can't be created" do
+        before do
+          allow_next_instance_of(::Groups::CreateService) do |service|
+            allow(service).to receive(:execute).and_return(Group.new)
+          end
+        end
+
+        it "doesn't track for the combined_registration experiment" do
+          expect(experiment(:combined_registration)).not_to track(:create_group)
+
+          subject
+        end
+
+        it { is_expected.to render_template(:new) }
+      end
+
+      context 'when group can be created' do
+        it 'creates a group' do
+          expect { subject }.to change { Group.count }.by(1)
+        end
+
+        it 'tracks an event for the jobs_to_be_done experiment' do
+          stub_experiments(jobs_to_be_done: :candidate)
+
+          expect(experiment(:jobs_to_be_done)).to track(:create_group, namespace: an_instance_of(Group))
+                                                    .on_next_instance
+                                                    .for(:candidate)
+                                                    .with_context(user: user)
+
+          subject
+        end
+
+        it 'tracks an event for the combined_registration experiment' do
+          expect(experiment(:combined_registration)).to track(:create_group, namespace: an_instance_of(Group))
+                                                    .on_next_instance
+
+          subject
+        end
+
+        it 'redirects to the import url with a namespace_id parameter' do
+          allow_next_instance_of(::Groups::CreateService) do |service|
+            allow(service).to receive(:execute).and_return(group)
+          end
+
+          expect(subject).to redirect_to(new_import_github_url(namespace_id: group.id))
+        end
+      end
+    end
+  end
+end
