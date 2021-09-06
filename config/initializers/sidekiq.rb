@@ -28,7 +28,7 @@ use_sidekiq_legacy_memory_killer = !use_sidekiq_daemon_memory_killer
 
 Sidekiq.configure_server do |config|
   if enable_json_logs
-    Sidekiq.logger.formatter = Gitlab::SidekiqLogging::JSONFormatter.new
+    config.log_formatter = Gitlab::SidekiqLogging::JSONFormatter.new
     config.options[:job_logger] = Gitlab::SidekiqLogging::StructuredLogger
 
     # Remove the default-provided handler. The exception is logged inside
