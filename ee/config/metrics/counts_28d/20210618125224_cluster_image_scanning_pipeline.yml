@@ -7,6 +7,8 @@ product_group: group::container security
 product_category: container_scanning
 value_type: number
 status: implemented
+milestone: "14.1"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64877
 time_frame: 28d
 data_source: database
 data_category: optional
