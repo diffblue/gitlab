@@ -1127,7 +1127,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: true
   :tags: []
 - :name: requirements_management_import_requirements_csv
   :worker_name: RequirementsManagement::ImportRequirementsCsvWorker

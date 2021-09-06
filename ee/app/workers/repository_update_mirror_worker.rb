@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-class RepositoryUpdateMirrorWorker # rubocop:disable Scalability/IdempotentWorker
+class RepositoryUpdateMirrorWorker
   UpdateError = Class.new(StandardError)
 
   include ApplicationWorker
 
+  idempotent!
   data_consistency :always
   include Gitlab::ShellAdapter
   include ProjectStartImport
