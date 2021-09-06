@@ -1,7 +1,7 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.analytics.i_analytics_cohorts_weekly
-description:
+description: Unique visitors to /-/instance_statistics/cohorts
 product_section: fulfillment
 product_stage: fulfillment
 product_group: group::utilization
@@ -16,7 +16,8 @@ options:
   - i_analytics_cohorts
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- premium
+- ultimate
 performance_indicator_type: []
 milestone: "<13.9"

@@ -16,7 +16,8 @@ options:
   - p_analytics_pipelines
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- premium
+- ultimate
 performance_indicator_type: []
 milestone: "<13.9"

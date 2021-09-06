@@ -17,7 +17,8 @@ options:
   - p_analytics_merge_request
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- premium
+- ultimate
 performance_indicator_type: []
 milestone: "<13.9"
