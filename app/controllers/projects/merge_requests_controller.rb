@@ -132,7 +132,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
       format.json do
         Gitlab::PollingInterval.set_header(response, interval: 10_000)
 
-        if params[:serializer] == 'sidebar_extras' && Feature.enabled?(:merge_request_show_render_cached, @project, default_enabled: :yaml)
+        if params[:serializer] == 'sidebar_extras'
           cache_context = [
             params[:serializer],
             current_user&.cache_key,
