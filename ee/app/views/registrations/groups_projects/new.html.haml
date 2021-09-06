@@ -1,0 +1,110 @@
+- @html_class = "subscriptions-layout-html"
+- page_title _('Your GitLab group')
+- form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content] }
+
+- if in_trial_onboarding_flow?
+  .row
+    .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-mt-3
+      = render 'registrations/trial_is_activated_banner'
+
+.row.gl-flex-grow-1
+  .gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-px-5.gl-pb-5
+    .new-project.gl-display-flex.gl-flex-direction-column.gl-align-items-center
+      - unless in_trial_onboarding_flow?
+        #progress-bar
+      %h2.gl-text-center= _('Create or import your first project')
+
+      %p.gl-text-center= _('Projects help you organize your work. They contain your file repository, issues, merge requests, and so much more.')
+
+      .js-toggle-container.gl-w-full
+        %ul.nav.nav-tabs.nav-links.gitlab-tabs.js-group-project-tabs{ role: 'tablist' }
+          %li.nav-item{ role: 'presentation' }
+            %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_event: 'click_tab', track_value: '' }, role: 'tab' }
+              %span= s_('ProjectsNew|Create')
+          %li.nav-item{ role: 'presentation' }
+            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_event: 'click_tab', track_value: '' }, role: 'tab' }
+              %span= s_('ProjectsNew|Import')
+
+        .tab-content.gitlab-tab-content.gl-bg-white.js-group-project-tab-contents
+          #blank-project-pane.tab-pane.js-toggle-container.active{ role: 'tabpanel' }
+            = form_tag users_sign_up_groups_projects_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4' do
+              = form_errors(@group, type: "Group")
+              = form_errors(@project, type: "Project")
+              = render 'layouts/flash'
+
+              = fields_for :group do |gf|
+                .row
+                  .form-group.group-name-holder.col-sm-12
+                    = gf.label :name, class: 'gl-font-weight-bold' do
+                      = _('Group name')
+
+                    - if @group.persisted?
+                      = gf.text_field :name, class: 'form-control js-group-path-source',
+                        disabled: true
+                      = gf.hidden_field :id
+                    - else
+                      = gf.text_field :name, class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-tooltip js-group-name-field',
+                        required: true,
+                        autofocus: true,
+                        data: { title: _('Projects are organized into groups'), placement: 'right', show: true }
+                      = gf.hidden_field :path, class: 'form-control js-autofill-group-path js-group-path-source'
+                      = gf.hidden_field :parent_id, id: 'group_parent_id'
+
+              = fields_for :project do |pf|
+                #blank-project-name.row
+                  .form-group.project-name.col-sm-12
+                    = pf.label :name, class: 'gl-font-weight-bold' do
+                      %span= _('Project name')
+                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source', required: true, data: { track_label: 'blank_project', track_event: 'activate_form_input', track_property: 'project_name', track_value: '' }
+              %p.form-text.gl-text-center
+                = _('Your project will be created at:')
+
+              %p.form-text.gl-text-center.monospace
+                = root_url
+                %span.js-group-path-display>= _('{group}')
+                %span>= _('/')
+                %span.js-project-path-display>= _('{project}')
+
+              %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
+                = _('You can always change your URL later')
+
+              = submit_tag _('Create project'), class: 'btn gl-button btn-success btn-block', data: { track_label: 'blank_project', track_event: 'click_button', track_property: 'create_project', track_value: '' }
+
+          #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
+            - if import_sources_enabled?
+              = form_tag import_users_sign_up_groups_projects_path, class: 'gl-show-field-errors gl-w-full gl-p-4 js-import-project-form' do
+                = form_errors(@group, type: "Group")
+                = render 'layouts/flash'
+
+                = fields_for :group do |gf|
+                  .row
+                    .form-group.group-name-holder.col-sm-12
+                      = gf.label :name, class: 'gl-font-weight-bold' do
+                        = _('Group name')
+
+                      = gf.text_field :name, id: 'import_group_name', class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-field has-tooltip',
+                        required: true,
+                        data: { title: _('Projects are organized into groups'), placement: 'right' }
+                      = gf.hidden_field :path, id: 'import_group_path', class: 'form-control js-autofill-group-path js-import-group-path-source'
+
+                = hidden_field_tag :import_url, nil, class: 'js-import-url'
+                = submit_tag nil, class: 'gl-display-none'
+
+                %p.form-text.gl-text-center
+                  = _('Your project will be created at:')
+
+                %p.form-text.gl-text-center.monospace
+                  = root_url
+                  %span.js-import-group-path-display>= _('{group}')
+                  %span>= _('/')
+                  %span>= _('{project}')
+
+                %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
+                  = _('You can always change your URL later')
+
+              .js-import-project-buttons
+                = render 'projects/import_project_pane'
+            - else
+              .nothing-here-block
+                %h4= s_('ProjectsNew|No import options available')
+                %p= s_('ProjectsNew|Contact an administrator to enable options for importing your project.')

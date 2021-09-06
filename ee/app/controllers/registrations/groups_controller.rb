@@ -2,10 +2,10 @@
 
 module Registrations
   class GroupsController < ApplicationController
-    layout 'minimal'
+    include Registrations::CreateGroup
+    include ::Gitlab::Utils::StrongMemoize
 
-    before_action :check_if_gl_com_or_dev
-    before_action :authorize_create_group!, only: :new
+    layout 'minimal'
 
     feature_category :onboarding
 
@@ -13,6 +13,7 @@ module Registrations
       experiment(:trial_registration_with_reassurance, actor: current_user)
         .track(:render, label: 'registrations:groups:new', user: current_user)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
+      experiment(:combined_registration, user: current_user).track(:view_new_group_action)
     end
 
     def create
@@ -22,18 +23,14 @@ module Registrations
         experiment(:jobs_to_be_done, user: current_user)
           .track(:create_group, namespace: @group)
 
+        experiment(:combined_registration, user: current_user).track(:create_group, namespace: @group)
+
         force_company_trial_experiment.track(:create_group, namespace: @group, user: current_user)
 
         create_successful_flow
       else
         render action: :new
       end
-    end
-
-    protected
-
-    def show_confirm_warning?
-      false
     end
 
     private
@@ -49,14 +46,6 @@ module Registrations
       else
         registration_onboarding_flow
       end
-    end
-
-    def authorize_create_group!
-      access_denied! unless can?(current_user, :create_group)
-    end
-
-    def group_params
-      params.require(:group).permit(:name, :path, :visibility_level)
     end
 
     def apply_trial_for_trial_onboarding_flow
