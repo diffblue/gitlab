@@ -70,6 +70,15 @@ export const formFieldKeys = [
   'endEventLabelId',
 ];
 
+export const editableFormFieldKeys = [
+  ...formFieldKeys,
+  'hidden',
+  'description',
+  'title',
+  'legend',
+  'custom',
+];
+
 export const defaultFields = formFieldKeys.reduce((acc, field) => ({ ...acc, [field]: null }), {});
 export const defaultErrors = formFieldKeys.reduce((acc, field) => ({ ...acc, [field]: [] }), {});
 
