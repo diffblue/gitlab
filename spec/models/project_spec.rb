@@ -2542,7 +2542,7 @@ RSpec.describe Project, factory_default: :keep do
   end
 
   describe '#uses_default_ci_config?' do
-    let(:project) { build(:project)}
+    let(:project) { build(:project) }
 
     it 'has a custom ci config path' do
       project.ci_config_path = 'something_custom'
@@ -2560,6 +2560,44 @@ RSpec.describe Project, factory_default: :keep do
       project.ci_config_path = nil
 
       expect(project.uses_default_ci_config?).to be_truthy
+    end
+  end
+
+  describe '#uses_external_project_ci_config?' do
+    subject(:uses_external_project_ci_config) { project.uses_external_project_ci_config? }
+
+    let(:project) { build(:project) }
+
+    context 'when ci_config_path is configured with external project' do
+      before do
+        project.ci_config_path = '.gitlab-ci.yml@hello/world'
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when ci_config_path is nil' do
+      before do
+        project.ci_config_path = nil
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when ci_config_path is configured with a file in the project' do
+      before do
+        project.ci_config_path = 'hello/world/gitlab-ci.yml'
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when ci_config_path is configured with remote file' do
+      before do
+        project.ci_config_path = 'https://example.org/file.yml'
+      end
+
+      it { is_expected.to eq(false) }
     end
   end
 
@@ -7041,6 +7079,15 @@ RSpec.describe Project, factory_default: :keep do
     it 'creates setting if it does not exist' do
       expect(project.metrics_setting).to be_an_instance_of(ProjectMetricsSetting)
     end
+  end
+
+  describe '#ci_config_external_project' do
+    subject(:ci_config_external_project) { project.ci_config_external_project }
+
+    let(:other_project) { create(:project) }
+    let(:project) { build(:project, ci_config_path: ".gitlab-ci.yml@#{other_project.full_path}") }
+
+    it { is_expected.to eq(other_project) }
   end
 
   describe '#enabled_group_deploy_keys' do
