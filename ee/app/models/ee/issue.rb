@@ -150,7 +150,7 @@ module EE
     end
 
     def can_assign_epic?(user)
-      user&.can?(:admin_epic, project.group)
+      project.group&.feature_available?(:epics) && user&.can?(:admin_issue, project)
     end
 
     def can_be_promoted_to_epic?(user, group = nil)

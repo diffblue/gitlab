@@ -36,12 +36,16 @@ module EpicIssues
     def linkable_issuables(issues)
       @linkable_issues ||= begin
         issues.select do |issue|
-          supports_epics?(issue) &&
-            can?(current_user, :admin_issue, issue) &&
-            issuable_group_descendants.include?(issue.project.group) &&
-            !previous_related_issuables.include?(issue)
+          linkable_issue?(issue)
         end
       end
+    end
+
+    def linkable_issue?(issue)
+      issue.supports_epic? &&
+        issue.project.group&.feature_available?(:epics) &&
+        issuable_group_descendants.include?(issue.project.group) &&
+        !previous_related_issuables.include?(issue)
     end
 
     def previous_related_issuables
@@ -50,10 +54,6 @@ module EpicIssues
 
     def issuable_group_descendants
       @descendants ||= issuable.group.self_and_descendants
-    end
-
-    def supports_epics?(issue)
-      issue.supports_epic? && issue.project.group&.feature_available?(:epics)
     end
   end
 end

@@ -89,6 +89,10 @@ RSpec.describe EpicIssues::CreateService do
     context 'when epics feature is disabled' do
       subject { assign_issue([valid_reference]) }
 
+      before do
+        group.add_developer(user)
+      end
+
       include_examples 'returns an error'
     end
 
@@ -156,7 +160,7 @@ RSpec.describe EpicIssues::CreateService do
               # and we insert 5 issues instead of 1 which we do for control count
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(29)
+                .with_threshold(30)
             end
           end
 
