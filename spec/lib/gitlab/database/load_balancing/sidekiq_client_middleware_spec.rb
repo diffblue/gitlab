@@ -116,7 +116,21 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
       end
     end
 
-    shared_examples_for 'database location was already provided' do
+    context 'when worker cannot be constantized' do
+      let(:worker_class) { 'ActionMailer::MailDeliveryJob' }
+      let(:expected_consistency) { :always }
+
+      include_examples 'does not pass database locations'
+    end
+
+    context 'when worker class does not include ApplicationWorker' do
+      let(:worker_class) { ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper }
+      let(:expected_consistency) { :always }
+
+      include_examples 'does not pass database locations'
+    end
+
+    context 'database wal location was already provided' do
       let(:old_location) { '0/D525E3A8' }
       let(:new_location) { 'AB/12345' }
       let(:wal_locations) { { Gitlab::Database::MAIN_DATABASE_NAME.to_sym => old_location } }
@@ -146,24 +160,6 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqClientMiddleware do
       context "when write was not performed" do
         include_examples 'does not set database location again', false
       end
-    end
-
-    context 'when worker cannot be constantized' do
-      let(:worker_class) { 'ActionMailer::MailDeliveryJob' }
-      let(:expected_consistency) { :always }
-
-      include_examples 'does not pass database locations'
-    end
-
-    context 'when worker class does not include ApplicationWorker' do
-      let(:worker_class) { ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper }
-      let(:expected_consistency) { :always }
-
-      include_examples 'does not pass database locations'
-    end
-
-    context 'database wal location was already provided' do
-      include_examples 'database location was already provided'
     end
 
     context 'when worker data consistency is :always' do
