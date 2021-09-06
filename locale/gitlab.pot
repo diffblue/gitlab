@@ -897,6 +897,9 @@ msgstr ""
 msgid "%{state} epics"
 msgstr ""
 
+msgid "%{strongOpen}Warning:%{strongClose} SAML group links can cause GitLab to automatically remove members from groups."
+msgstr ""
+
 msgid "%{strongStart}Tip:%{strongEnd} You can also checkout merge requests locally by %{linkStart}following these guidelines%{linkEnd}"
 msgstr ""
 
@@ -16112,6 +16115,9 @@ msgid "GroupSAML|To be able to enable group-managed accounts, you first need to 
 msgstr ""
 
 msgid "GroupSAML|To be able to prohibit outer forks, you first need to enforce dedicate group managed accounts."
+msgstr ""
+
+msgid "GroupSAML|Use SAML group links to manage group membership using SAML."
 msgstr ""
 
 msgid "GroupSAML|Valid SAML Response"
