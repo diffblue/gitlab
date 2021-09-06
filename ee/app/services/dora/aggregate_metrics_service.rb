@@ -7,6 +7,20 @@ module Dora
     DEFAULT_INTERVAL = Dora::DailyMetrics::INTERVAL_DAILY
 
     def execute
+      if error = validate_container
+        return error
+      end
+
+      return authorization_error unless authorized?
+
+      execute_without_authorization
+    end
+
+    def execute_without_authorization
+      if error = validate_container
+        return error
+      end
+
       if error = validate
         return error
       end
@@ -21,6 +35,22 @@ module Dora
 
     private
 
+    def authorized?
+      return false unless project_container? || group_container?
+
+      can?(current_user, :read_dora4_analytics, container)
+    end
+
+    def authorization_error
+      error(_('You do not have permission to access dora metrics.'), :unauthorized)
+    end
+
+    def validate_container
+      unless project_container? || group_container?
+        error(_('Container must be a project or a group.'), :bad_request)
+      end
+    end
+
     def validate
       unless (end_date - start_date) <= MAX_RANGE
         return error(_("Date range must be shorter than %{max_range} days.") % { max_range: MAX_RANGE },
@@ -29,10 +59,6 @@ module Dora
 
       unless start_date < end_date
         return error(_('The start date must be ealier than the end date.'), :bad_request)
-      end
-
-      unless project? || group?
-        return error(_('Container must be a project or a group.'), :bad_request)
       end
 
       if group_project_ids.present? && !group?
@@ -52,10 +78,6 @@ module Dora
       unless Environment.tiers[environment_tier]
         return error(_("The environment tier must be one of %{environment_tiers}.") % { environment_tiers: Environment.tiers.keys.join(',') },
                      :bad_request)
-      end
-
-      unless can?(current_user, :read_dora4_analytics, container)
-        return error(_('You do not have permission to access dora metrics.'), :unauthorized)
       end
 
       nil
