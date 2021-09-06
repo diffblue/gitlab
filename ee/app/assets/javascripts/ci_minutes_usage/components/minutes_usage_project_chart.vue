@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlSprintf } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
 import {
@@ -18,7 +18,6 @@ export default {
     GlColumnChart,
     GlDropdown,
     GlDropdownItem,
-    GlSprintf,
   },
   props: {
     minutesUsageData: {
@@ -89,7 +88,7 @@ export default {
           @click="changeSelectedMonth(monthName)"
         >
           <!-- eslint-disable-next-line @gitlab/vue-require-string-literal-i18n-helpers -->
-          <gl-sprintf :message="__(monthName)" />
+          {{ __(monthName) }}
         </gl-dropdown-item>
       </gl-dropdown>
     </div>

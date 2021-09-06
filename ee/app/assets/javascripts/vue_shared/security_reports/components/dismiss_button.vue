@@ -55,8 +55,7 @@ export default {
       class="js-dismiss-btn"
       @click="handleDismissClick"
     >
-      <!-- eslint-disable-next-line @gitlab/vue-require-string-literal-i18n-helpers -->
-      {{ __(buttonText) }}
+      {{ buttonText }}
     </gl-button>
     <gl-button
       v-if="!isDismissed"
