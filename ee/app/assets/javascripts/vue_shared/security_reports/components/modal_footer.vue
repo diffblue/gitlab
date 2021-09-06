@@ -147,6 +147,7 @@ export default {
       data-qa-selector="create_issue_button"
       @click="$emit(actionButtons[0].action)"
     >
+      <!-- eslint-disable-next-line @gitlab/vue-require-string-literal-i18n-helpers -->
       {{ __(actionButtons[0].name) }}
     </gl-button>
   </div>
