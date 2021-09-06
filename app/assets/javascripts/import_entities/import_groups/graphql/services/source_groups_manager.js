@@ -38,10 +38,7 @@ export class SourceGroupsManager {
     this.importStates[importId] = {
       status: jobConfig.status,
       groups: jobConfig.groups.map((g) => ({
-        importTarget: {
-          target_namespace: g.import_target.target_namespace,
-          new_name: g.import_target.new_name,
-        },
+        importTarget: { ...g.import_target },
         id: g.id,
       })),
     };

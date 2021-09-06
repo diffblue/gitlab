@@ -440,9 +440,10 @@ describe('Bulk import resolvers', () => {
         },
       });
 
-      expect(lastImportTarget).toMatchObject(IMPORT_TARGET);
+      expect(lastImportTarget).toStrictEqual(IMPORT_TARGET);
 
-      expect(progress).toMatchObject({
+      expect(progress).toStrictEqual({
+        __typename: clientTypenames.BulkImportProgress,
         id: FAKE_JOB_ID,
         status: NEW_STATUS,
       });
@@ -458,7 +459,8 @@ describe('Bulk import resolvers', () => {
         variables: { id: FAKE_JOB_ID, status: NEW_STATUS },
       });
 
-      expect(statusInResponse).toMatchObject({
+      expect(statusInResponse).toStrictEqual({
+        __typename: clientTypenames.BulkImportProgress,
         id: FAKE_JOB_ID,
         status: NEW_STATUS,
       });
@@ -476,7 +478,13 @@ describe('Bulk import resolvers', () => {
         variables: { sourceGroupId: GROUP_ID, field: FAKE_FIELD, message: FAKE_MESSAGE },
       });
 
-      expect(validationErrors).toMatchObject([{ field: FAKE_FIELD, message: FAKE_MESSAGE }]);
+      expect(validationErrors).toStrictEqual([
+        {
+          __typename: clientTypenames.BulkImportValidationError,
+          field: FAKE_FIELD,
+          message: FAKE_MESSAGE,
+        },
+      ]);
     });
 
     it('removeValidationError removes error from group', async () => {
@@ -497,7 +505,7 @@ describe('Bulk import resolvers', () => {
         variables: { sourceGroupId: GROUP_ID, field: FAKE_FIELD },
       });
 
-      expect(validationErrors).toMatchObject([]);
+      expect(validationErrors).toStrictEqual([]);
     });
   });
 });

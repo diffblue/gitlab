@@ -189,6 +189,24 @@ export default {
   },
 
   methods: {
+    isUnselectable(group) {
+      return !this.isAvailableForImport(group) || this.isInvalid(group);
+    },
+
+    rowClasses(group) {
+      const DEFAULT_CLASSES = [
+        'gl-border-gray-200',
+        'gl-border-0',
+        'gl-border-b-1',
+        'gl-border-solid',
+      ];
+      const result = [...DEFAULT_CLASSES];
+      if (this.isUnselectable(group)) {
+        result.push('gl-cursor-default!');
+      }
+      return result;
+    },
+
     qaRowAttributes(group, type) {
       if (type === 'row') {
         return {
@@ -250,10 +268,7 @@ export default {
 
       const table = this.getTableRef();
       this.groups.forEach((group, idx) => {
-        if (
-          table.isRowSelected(idx) &&
-          (!this.isAvailableForImport(group) || this.isInvalid(group))
-        ) {
+        if (table.isRowSelected(idx) && this.isUnselectable(group)) {
           table.unselectRow(idx);
         }
       });
@@ -338,7 +353,7 @@ export default {
           ref="table"
           class="gl-w-full"
           data-qa-selector="import_table"
-          tbody-tr-class="gl-border-gray-200 gl-border-0 gl-border-b-1 gl-border-solid"
+          :tbody-tr-class="rowClasses"
           :tbody-tr-attr="qaRowAttributes"
           :items="groups"
           :fields="$options.fields"

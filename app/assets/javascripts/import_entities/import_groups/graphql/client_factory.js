@@ -239,8 +239,8 @@ export function createResolvers({ endpoints, sourceUrl, GroupsManager = SourceGr
         });
       },
 
-      async updateImportStatus(_, { id, status }, { client, getCacheKey }) {
-        groupsManager.updateImportProgress(id, status);
+      async updateImportStatus(_, { id, status: newStatus }, { client, getCacheKey }) {
+        groupsManager.updateImportProgress(id, newStatus);
 
         const progressItem = client.readFragment({
           fragment: bulkImportSourceGroupProgressFragment,
@@ -251,7 +251,9 @@ export function createResolvers({ endpoints, sourceUrl, GroupsManager = SourceGr
           }),
         });
 
-        if (status === STATUSES.FINISHED && progressItem && progressItem.status !== status) {
+        const isInProgress = Boolean(progressItem);
+        const { status: currentStatus } = progressItem ?? {};
+        if (newStatus === STATUSES.FINISHED && isInProgress && currentStatus !== newStatus) {
           const groups = groupsManager.getImportedGroupsByJobId(id);
 
           groups.forEach(async ({ id: groupId, importTarget }) => {
@@ -269,7 +271,7 @@ export function createResolvers({ endpoints, sourceUrl, GroupsManager = SourceGr
         return {
           __typename: clientTypenames.BulkImportProgress,
           id,
-          status,
+          status: newStatus,
         };
       },
 

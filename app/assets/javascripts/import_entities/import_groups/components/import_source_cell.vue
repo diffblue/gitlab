@@ -21,7 +21,6 @@ export default {
         ? `${this.group.last_import_target.target_namespace}/${this.group.last_import_target.new_name}`
         : null;
     },
-
     absoluteLastImportPath() {
       return joinPaths(gon.relative_url_root || '/', this.fullLastImportPath);
     },

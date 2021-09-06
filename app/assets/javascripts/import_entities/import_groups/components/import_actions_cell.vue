@@ -27,7 +27,6 @@ export default {
         ? `${this.group.last_import_target.target_namespace}/${this.group.last_import_target.new_name}`
         : null;
     },
-
     absoluteLastImportPath() {
       return joinPaths(gon.relative_url_root || '/', this.fullLastImportPath);
     },
@@ -46,16 +45,6 @@ export default {
 
 <template>
   <span class="gl-white-space-nowrap gl-inline-flex gl-align-items-center">
-    <gl-icon
-      v-if="isFinished"
-      v-gl-tooltip
-      :size="16"
-      name="information-o"
-      :title="
-        s__('BulkImports|Re-import creates a new group. It does not sync with the existing group.')
-      "
-      class="gl-mr-3"
-    />
     <gl-button
       v-if="isAvailableForImport"
       :disabled="isInvalid"
@@ -66,5 +55,15 @@ export default {
     >
       {{ isFinished ? __('Re-import') : __('Import') }}
     </gl-button>
+    <gl-icon
+      v-if="isFinished"
+      v-gl-tooltip
+      :size="16"
+      name="information-o"
+      :title="
+        s__('BulkImports|Re-import creates a new group. It does not sync with the existing group.')
+      "
+      class="gl-ml-3"
+    />
   </span>
 </template>
