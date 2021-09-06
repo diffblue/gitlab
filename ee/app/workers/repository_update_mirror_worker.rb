@@ -7,7 +7,6 @@ class RepositoryUpdateMirrorWorker
 
   idempotent!
   data_consistency :always
-  include Gitlab::ShellAdapter
   include ProjectStartImport
 
   feature_category :source_code_management
