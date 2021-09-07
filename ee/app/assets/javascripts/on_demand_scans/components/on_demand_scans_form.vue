@@ -26,6 +26,7 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -38,6 +39,7 @@ import {
 } from '../settings';
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
+import ScanSchedule from './scan_schedule.vue';
 
 export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
 
@@ -69,6 +71,7 @@ export default {
     RefSelector,
     ScannerProfileSelector,
     SiteProfileSelector,
+    ScanSchedule,
     GlAlert,
     GlButton,
     GlCard,
@@ -86,6 +89,7 @@ export default {
     GlTooltip: GlTooltipDirective,
     validation: validation(),
   },
+  mixins: [glFeatureFlagMixin()],
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
@@ -130,6 +134,7 @@ export default {
       selectedBranch: this.dastScan?.branch?.name ?? this.defaultBranch,
       selectedScannerProfileId: this.dastScan?.dastScannerProfile.id || null,
       selectedSiteProfileId: this.dastScan?.dastSiteProfile.id || null,
+      profileSchedule: this.dastScan?.dastProfileSchedule,
       loading: false,
       errorType: null,
       errors: [],
@@ -198,12 +203,18 @@ export default {
       return isFormInvalid || (loading && loading !== saveScanBtnId);
     },
     formFieldValues() {
-      const { selectedScannerProfileId, selectedSiteProfileId, selectedBranch } = this;
+      const {
+        selectedScannerProfileId,
+        selectedSiteProfileId,
+        selectedBranch,
+        profileSchedule,
+      } = this;
       return {
         ...serializeFormObject(this.form.fields),
         selectedScannerProfileId,
         selectedSiteProfileId,
         selectedBranch,
+        profileSchedule,
       };
     },
     storageKey() {
@@ -236,6 +247,9 @@ export default {
         dastScannerProfileId: this.selectedScannerProfile.id,
         dastSiteProfileId: this.selectedSiteProfile.id,
         branchName: this.selectedBranch,
+        ...(this.glFeatures.dastOnDemandScansScheduler
+          ? { dastProfileSchedule: this.profileSchedule }
+          : {}),
         ...(this.isEdit ? { id: this.dastScan.id } : {}),
         ...serializeFormObject(this.form.fields),
         [this.isEdit ? 'runAfterUpdate' : 'runAfterCreate']: runAfter,
@@ -286,6 +300,7 @@ export default {
       const {
         selectedSiteProfileId,
         selectedScannerProfileId,
+        profileSchedule,
         name,
         description,
         selectedBranch,
@@ -297,6 +312,7 @@ export default {
       // precedence is given to profile IDs passed from the query params
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
+      this.profileSchedule = this.profileSchedule ?? profileSchedule;
     },
   },
 };
@@ -435,6 +451,8 @@ export default {
         :selected-profile="selectedSiteProfile"
         :has-conflict="hasProfilesConflict"
       />
+
+      <scan-schedule v-if="glFeatures.dastOnDemandScansScheduler" v-model="profileSchedule" />
 
       <gl-alert
         v-if="hasProfilesConflict"

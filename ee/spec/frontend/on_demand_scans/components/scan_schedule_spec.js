@@ -1,0 +1,182 @@
+import { GlDatepicker, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
+import { merge } from 'lodash';
+import ScanSchedule from 'ee/on_demand_scans/components/scan_schedule.vue';
+import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans/settings';
+import DropdownInput from 'ee/security_configuration/components/dropdown_input.vue';
+import { stubComponent } from 'helpers/stub_component';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown.vue';
+
+const mockTimezones = getJSONFixture('timezones/full.json');
+const timezoneSST = mockTimezones[2];
+
+describe('ScanSchedule', () => {
+  let wrapper;
+
+  // Finders
+  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findProfileScheduleFormGroup = () => wrapper.findByTestId('profile-schedule-form-group');
+  const findTimezoneDropdown = () => wrapper.findComponent(TimezoneDropdown);
+  const findDatepicker = () => wrapper.findComponent(GlDatepicker);
+  const findTimeInput = () => wrapper.find('input[type="time"]');
+  const findCadenceInput = () => wrapper.findComponent(DropdownInput);
+
+  // Helpers
+  const setTimeInputValue = (value) => {
+    const input = findTimeInput();
+    input.element.value = value;
+    input.trigger('input');
+    return wrapper.vm.$nextTick();
+  };
+
+  const createComponent = (options = {}) => {
+    wrapper = shallowMountExtended(
+      ScanSchedule,
+      merge(
+        {
+          provide: {
+            timezones: mockTimezones,
+          },
+          stubs: {
+            GlFormGroup: stubComponent(GlFormGroup, {
+              props: ['disabled'],
+            }),
+            GlFormCheckbox: stubComponent(GlFormCheckbox, {
+              props: ['checked'],
+            }),
+            TimezoneDropdown: stubComponent(TimezoneDropdown, {
+              props: ['disabled', 'timezoneData', 'value'],
+            }),
+          },
+        },
+        options,
+      ),
+    );
+  };
+
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
+  describe('default state', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('by default, checkbox is unchecked and fields are disabled', () => {
+      expect(findCheckbox().props('checked')).toBe(false);
+      expect(findProfileScheduleFormGroup().props('disabled')).toBe(true);
+      expect(findTimezoneDropdown().props('disabled')).toBe(true);
+      expect(findCadenceInput().props('disabled')).toBe(true);
+    });
+
+    it('initializes timezone dropdown properly', () => {
+      const timezoneDropdown = findTimezoneDropdown();
+
+      expect(timezoneDropdown.props('timezoneData')).toEqual(mockTimezones);
+      expect(timezoneDropdown.props('value')).toBe('');
+    });
+  });
+
+  describe('once schedule is activated', () => {
+    beforeEach(() => {
+      createComponent();
+      findCheckbox().vm.$emit('input', true);
+    });
+
+    it('enables fields', () => {
+      expect(findTimezoneDropdown().attributes('disabled')).toBeUndefined();
+      expect(findProfileScheduleFormGroup().props('disabled')).toBe(false);
+      expect(findTimezoneDropdown().props('disabled')).toBe(false);
+      expect(findCadenceInput().props('disabled')).toBe(false);
+    });
+
+    it('emits input payload', () => {
+      expect(wrapper.emitted().input).toHaveLength(1);
+      expect(wrapper.emitted().input[0]).toEqual([
+        {
+          active: true,
+          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          startsAt: null,
+          timezone: null,
+        },
+      ]);
+    });
+
+    it('computes start date when datepicker and time input are changed', async () => {
+      findDatepicker().vm.$emit('input', new Date('2021-08-12'));
+      await setTimeInputValue('11:00');
+
+      expect(wrapper.emitted().input).toHaveLength(3);
+      expect(wrapper.emitted().input[2]).toEqual([
+        {
+          active: true,
+          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          startsAt: '2021-08-12T11:00:00.000Z',
+          timezone: null,
+        },
+      ]);
+    });
+
+    it('nullyfies start date if date is invalid', async () => {
+      findDatepicker().vm.$emit('input', new Date('2021-08-12'));
+      await setTimeInputValue('');
+
+      expect(wrapper.emitted().input).toHaveLength(3);
+      expect(wrapper.emitted().input[2]).toEqual([
+        {
+          active: true,
+          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          startsAt: null,
+          timezone: null,
+        },
+      ]);
+    });
+
+    it('emits computed cadence value', async () => {
+      findCadenceInput().vm.$emit('input', SCAN_CADENCE_OPTIONS[5].value);
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.emitted().input[1][0].cadence).toEqual({ unit: 'MONTH', duration: 6 });
+    });
+
+    it('deactives schedule when checkbox is unchecked', async () => {
+      findCheckbox().vm.$emit('input', false);
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.emitted().input).toHaveLength(2);
+      expect(wrapper.emitted().input[1]).toEqual([
+        {
+          active: false,
+          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          startsAt: null,
+          timezone: null,
+        },
+      ]);
+    });
+  });
+
+  describe('editing a schedule', () => {
+    const startsAt = '2001-09-27T08:45:00.000Z';
+
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          value: {
+            active: true,
+            startsAt,
+            cadence: { unit: 'MONTH', duration: 1 },
+            timezone: timezoneSST.identifier,
+          },
+        },
+      });
+    });
+
+    it('initializes fields with provided values', () => {
+      expect(findCheckbox().props('checked')).toBe(true);
+      expect(findDatepicker().props('value')).toEqual(new Date(startsAt));
+      expect(findTimeInput().element.value).toBe('08:45');
+      expect(findCadenceInput().props('value')).toBe(SCAN_CADENCE_OPTIONS[3].value);
+    });
+  });
+});
