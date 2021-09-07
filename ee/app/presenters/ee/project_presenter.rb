@@ -30,7 +30,7 @@ module EE
         nil,
         nil,
         {
-          'track-event': 'cta_clicked_button',
+          'track-action': 'cta_clicked_button',
           'track-experiment': 'sast_entry_points'
         }
       )

@@ -38,7 +38,7 @@ export default {
       :value="isShowingLabels"
       :label="__('Show labels')"
       :data-track-property="trackProperty"
-      data-track-event="toggle"
+      data-track-action="toggle"
       data-track-label="show_labels"
       label-position="left"
       aria-describedby="board-labels-toggle-text"
