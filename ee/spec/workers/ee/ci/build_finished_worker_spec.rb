@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Ci::BuildFinishedWorker do
-  let(:ci_runner) { create(:ci_runner) }
-  let(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
-  let(:project) { build.project }
-  let(:namespace) { project.shared_runners_limit_namespace }
+  let_it_be(:ci_runner) { create(:ci_runner) }
+  let_it_be(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
+  let_it_be(:project) { build.project }
+  let_it_be(:namespace) { project.shared_runners_limit_namespace }
 
   subject do
     described_class.new.perform(build.id)
@@ -76,20 +76,6 @@ RSpec.describe Ci::BuildFinishedWorker do
       end
     end
 
-    it 'does not schedule processing of requirement reports by default' do
-      expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
-
-      subject
-    end
-
-    it 'schedules processing of requirement reports if project has requirements' do
-      create(:requirement, project: project)
-
-      expect(RequirementsManagement::ProcessRequirementsReportsWorker).to receive(:perform_async)
-
-      subject
-    end
-
     context 'when token revocation is disabled' do
       before do
         allow_next_instance_of(described_class) do |build_finished_worker|
@@ -101,6 +87,62 @@ RSpec.describe Ci::BuildFinishedWorker do
         expect(ScanSecurityReportSecretsWorker).not_to receive(:perform_async)
 
         subject
+      end
+    end
+
+    it 'does not schedule processing of requirement reports by default' do
+      expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
+
+      subject
+    end
+
+    context 'with requirements' do
+      let_it_be(:requirement) { create(:requirement, project: project) }
+      let_it_be(:user) { create(:user) }
+
+      before do
+        build.update!(user: user)
+        project.add_reporter(user)
+      end
+
+      shared_examples 'schedules processing of requirement reports' do
+        it do
+          expect(RequirementsManagement::ProcessRequirementsReportsWorker).to receive(:perform_async)
+
+          subject
+        end
+      end
+
+      shared_examples 'does not schedule processing of requirement reports' do
+        it do
+          expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+
+      context 'when requirements feature is available' do
+        before do
+          stub_licensed_features(requirements: true)
+        end
+
+        it_behaves_like 'schedules processing of requirement reports'
+
+        context 'when user has insufficient permissions to create test reports' do
+          before do
+            project.add_guest(user)
+          end
+
+          it_behaves_like 'does not schedule processing of requirement reports'
+        end
+      end
+
+      context 'when requirements feature is not available' do
+        before do
+          stub_licensed_features(requirements: false)
+        end
+
+        it_behaves_like 'does not schedule processing of requirement reports'
       end
     end
   end

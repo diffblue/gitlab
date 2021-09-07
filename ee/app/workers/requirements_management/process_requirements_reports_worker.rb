@@ -15,6 +15,11 @@ module RequirementsManagement
       ::Ci::Build.find_by_id(build_id).try do |build|
         RequirementsManagement::ProcessTestReportsService.new(build).execute
       end
+    rescue Gitlab::Access::AccessDeniedError
+      Gitlab::AppLogger.error(
+        "RequirementsManagement::ProcessRequirementsReportsWorker: Insufficient permissions to " \
+        "create tests reports for build #{build_id}, skipping"
+      )
     end
   end
 end
