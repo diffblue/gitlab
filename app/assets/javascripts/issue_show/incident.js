@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import issuableApp from './components/app.vue';
 import incidentTabs from './components/incidents/incident_tabs.vue';
-import { issueState } from './constants';
+import { issueState, IncidentType } from './constants';
 import apolloProvider from './graphql';
 import getIssueStateQuery from './queries/get_issue_state.query.graphql';
 
@@ -21,6 +21,7 @@ export default function initIssuableApp(issuableData = {}) {
   });
 
   const {
+    canCreateIncident,
     canUpdate,
     iid,
     projectNamespace,
@@ -39,6 +40,8 @@ export default function initIssuableApp(issuableData = {}) {
       issuableApp,
     },
     provide: {
+      issueType: IncidentType,
+      canCreateIncident,
       canUpdate,
       fullPath,
       iid,
