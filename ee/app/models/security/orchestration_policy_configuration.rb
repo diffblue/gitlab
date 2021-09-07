@@ -46,7 +46,7 @@ module Security
     end
 
     def enabled?
-      ::Feature.enabled?(:security_orchestration_policies_configuration, project)
+      ::Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
     end
 
     def policy_hash

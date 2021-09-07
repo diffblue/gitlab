@@ -143,7 +143,7 @@ module EE
           end
 
           def scan_policies_menu_item
-            if ::Feature.disabled?(:security_orchestration_policies_configuration, context.project) ||
+            if ::Feature.disabled?(:security_orchestration_policies_configuration, context.project, default_enabled: :yaml) ||
               !can?(context.current_user, :security_orchestration_policies, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :scan_policies)
             end
