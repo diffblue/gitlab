@@ -17,7 +17,8 @@ RSpec.describe Projects::OnDemandScansHelper do
         'scanner-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'scanner-profiles'),
         'site-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'site-profiles'),
         'new-scanner-profile-path' => new_project_security_configuration_dast_scans_dast_scanner_profile_path(project),
-        'new-site-profile-path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project)
+        'new-site-profile-path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project),
+        'timezones' => helper.timezone_data(format: :full).to_json
       )
     end
   end

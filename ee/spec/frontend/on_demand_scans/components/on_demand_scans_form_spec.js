@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import OnDemandScansForm from 'ee/on_demand_scans/components/on_demand_scans_form.vue';
 import ScannerProfileSelector from 'ee/on_demand_scans/components/profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/on_demand_scans/components/profile_selector/site_profile_selector.vue';
+import ScanSchedule from 'ee/on_demand_scans/components/scan_schedule.vue';
 import dastProfileCreateMutation from 'ee/on_demand_scans/graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from 'ee/on_demand_scans/graphql/dast_profile_update.mutation.graphql';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
@@ -44,11 +45,12 @@ const dastScan = {
 };
 
 useLocalStorageSpy();
-jest.mock('~/lib/utils/url_utility', () => ({
-  isAbsolute: jest.requireActual('~/lib/utils/url_utility').isAbsolute,
-  queryToObject: jest.requireActual('~/lib/utils/url_utility').queryToObject,
-  redirectTo: jest.fn(),
-}));
+jest.mock('~/lib/utils/url_utility', () => {
+  return {
+    ...jest.requireActual('~/lib/utils/url_utility'),
+    redirectTo: jest.fn(),
+  };
+});
 
 const LOCAL_STORAGE_KEY = 'group/project/on-demand-scans-new-form';
 
@@ -161,11 +163,15 @@ describe('OnDemandScansForm', () => {
             newScannerProfilePath,
             newSiteProfilePath,
             dastSiteValidationDocsPath,
+            glFeatures: {
+              dastOnDemandScansScheduler: true,
+            },
           },
           stubs: {
             GlFormInput: GlFormInputStub,
             RefSelector: RefSelectorStub,
             LocalStorageSync,
+            ScanSchedule: true,
           },
         },
         { ...options, localVue, apolloProvider },
@@ -201,6 +207,7 @@ describe('OnDemandScansForm', () => {
       createComponent();
 
       expect(wrapper.text()).toContain('New on-demand DAST scan');
+      expect(wrapper.findComponent(ScanSchedule).exists()).toBe(true);
     });
 
     it('populates the branch input with the default branch', () => {
@@ -656,5 +663,17 @@ describe('OnDemandScansForm', () => {
         'You must create a repository within your project to run an on-demand scan.',
       );
     });
+  });
+
+  it('does not render scan schedule when the feature flag is disabled', () => {
+    createComponent({
+      provide: {
+        glFeatures: {
+          dastOnDemandScansScheduler: false,
+        },
+      },
+    });
+
+    expect(wrapper.findComponent(ScanSchedule).exists()).toBe(false);
   });
 });

@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import OnDemandScansForm from './components/on_demand_scans_form.vue';
 import apolloProvider from './graphql/provider';
 
@@ -19,8 +18,9 @@ export default () => {
     newSiteProfilePath,
     newScannerProfilePath,
     helpPagePath,
-    dastScan,
   } = el.dataset;
+  const dastScan = el.dataset.dastScan ? JSON.parse(el.dataset.dastScan) : null;
+  const timezones = JSON.parse(el.dataset.timezones);
 
   return new Vue({
     el,
@@ -34,12 +34,13 @@ export default () => {
       newScannerProfilePath,
       newSiteProfilePath,
       dastSiteValidationDocsPath,
+      timezones,
     },
     render(h) {
       return h(OnDemandScansForm, {
         props: {
           defaultBranch,
-          dastScan: dastScan ? convertObjectPropsToCamelCase(JSON.parse(dastScan)) : null,
+          dastScan,
         },
       });
     },

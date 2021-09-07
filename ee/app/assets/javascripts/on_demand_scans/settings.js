@@ -1,6 +1,6 @@
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const ERROR_RUN_SCAN = 'ERROR_RUN_SCAN';
 export const ERROR_FETCH_SCANNER_PROFILES = 'ERROR_FETCH_SCANNER_PROFILES';
@@ -27,3 +27,22 @@ export const SITE_PROFILES_QUERY = {
   fetchQuery: dastSiteProfilesQuery,
   fetchError: ERROR_FETCH_SITE_PROFILES,
 };
+
+/* eslint-disable @gitlab/require-i18n-strings */
+const DAY_1 = 'DAY_1';
+const WEEK_1 = 'WEEK_1';
+const MONTH_1 = 'MONTH_1';
+const MONTH_3 = 'MONTH_3';
+const MONTH_6 = 'MONTH_6';
+const YEAR_1 = 'YEAR_1';
+/* eslint-enable @gitlab/require-i18n-strings */
+
+export const SCAN_CADENCE_OPTIONS = [
+  { value: '', text: __('Never') },
+  { value: DAY_1, text: __('Every day') },
+  { value: WEEK_1, text: __('Every week') },
+  { value: MONTH_1, text: __('Every month') },
+  { value: MONTH_3, text: __('Every 3 months') },
+  { value: MONTH_6, text: __('Every 6 months') },
+  { value: YEAR_1, text: __('Every year') },
+];

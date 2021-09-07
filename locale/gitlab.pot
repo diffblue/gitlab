@@ -13477,6 +13477,12 @@ msgstr ""
 msgid "Every %{action} attempt has failed: %{job_error_message}. Please try again."
 msgstr ""
 
+msgid "Every 3 months"
+msgstr ""
+
+msgid "Every 6 months"
+msgstr ""
+
 msgid "Every day"
 msgstr ""
 
@@ -13501,6 +13507,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Every week (%{weekday} at %{time})"
+msgstr ""
+
+msgid "Every year"
 msgstr ""
 
 msgid "Everyone"
@@ -23427,10 +23436,16 @@ msgstr ""
 msgid "OnDemandScans|Scanner profile"
 msgstr ""
 
+msgid "OnDemandScans|Schedule scan"
+msgstr ""
+
 msgid "OnDemandScans|Select one of the existing profiles"
 msgstr ""
 
 msgid "OnDemandScans|Site profile"
+msgstr ""
+
+msgid "OnDemandScans|Start time"
 msgstr ""
 
 msgid "OnDemandScans|Use existing scanner profile"
@@ -28078,6 +28093,9 @@ msgid "Reopened this %{quick_action_target}."
 msgstr ""
 
 msgid "Reopens this %{quick_action_target}."
+msgstr ""
+
+msgid "Repeats"
 msgstr ""
 
 msgid "Replace"
