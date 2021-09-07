@@ -28,17 +28,7 @@ RSpec.describe 'Issue Boards new issue', :js do
     end
 
     it 'successfully assigns weight to newly-created issue' do
-      page.within(first('.board')) do
-        find('.issue-count-badge-add-button').click
-      end
-
-      page.within(first('.board-new-issue-form')) do
-        fill_in 'issue_title', with: 'new issue'
-
-        click_button 'Create issue'
-      end
-
-      wait_for_requests
+      create_issue_in_board_list(0)
 
       page.within(first('.board')) do
         find('.board-card').click
@@ -58,16 +48,7 @@ RSpec.describe 'Issue Boards new issue', :js do
 
     describe 'milestone list' do
       it 'successfuly loads milestone to be added to newly created issue' do
-        page.within(all('.board')[1]) do
-          click_button 'New issue'
-        end
-
-        page.within(first('.board-new-issue-form')) do
-          find('.form-control').set('new issue')
-          click_button 'Create issue'
-        end
-
-        wait_for_requests
+        create_issue_in_board_list(1)
 
         page.within(all('.board')[1]) do
           find('.board-card').click
@@ -82,5 +63,18 @@ RSpec.describe 'Issue Boards new issue', :js do
         end
       end
     end
+  end
+
+  def create_issue_in_board_list(list_index)
+    page.within(all('.board')[list_index]) do
+      click_button 'New issue'
+    end
+
+    page.within(first('.board-new-issue-form')) do
+      find('.form-control').set('new issue')
+      click_button 'Create issue'
+    end
+
+    wait_for_requests
   end
 end
