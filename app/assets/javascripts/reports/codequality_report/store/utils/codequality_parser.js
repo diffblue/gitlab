@@ -1,14 +1,15 @@
-export const parseCodeclimateMetrics = (issues = [], path = '') => {
+export const parseCodeclimateMetrics = (issues = [], blobPath = '') => {
   return issues.map((issue) => {
+    const issuePath = issue.file_path || issue.path;
     const parsedIssue = {
       name: issue.description,
-      path: issue.file_path,
-      urlPath: `${path}/${issue.file_path}#L${issue.line}`,
+      path: issuePath,
+      urlPath: `${blobPath}/${issuePath}#L${issue.line}`,
       ...issue,
     };
 
     if (issue?.location?.path) {
-      let parseCodeQualityUrl = `${path}/${issue.location.path}`;
+      let parseCodeQualityUrl = `${blobPath}/${issue.location.path}`;
       parsedIssue.path = issue.location.path;
 
       if (issue?.location?.lines?.begin) {

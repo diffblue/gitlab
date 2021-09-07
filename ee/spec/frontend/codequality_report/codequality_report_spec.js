@@ -1,6 +1,8 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { GlPagination, GlSkeletonLoader } from '@gitlab/ui';
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
+import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
 import { parsedIssues } from './mock_data';
 
 jest.mock('~/flash');
@@ -12,10 +14,11 @@ describe('Codequality report app', () => {
   let wrapper;
   let store;
 
-  const createComponent = (state = {}, issues = [], glFeatures = {}) => {
+  const createComponent = (state = {}, issues = [], glFeatures = {}, mountFn = mount) => {
     store = new Vuex.Store({
       state: {
         pageInfo: {},
+        isLoadingCodequality: false,
         ...state,
       },
       getters: {
@@ -24,7 +27,7 @@ describe('Codequality report app', () => {
       },
     });
 
-    wrapper = mount(CodequalityReportApp, {
+    wrapper = mountFn(CodequalityReportApp, {
       localVue,
       store,
       provide: {
@@ -36,6 +39,9 @@ describe('Codequality report app', () => {
   const findStatus = () => wrapper.find('.js-code-text');
   const findSuccessIcon = () => wrapper.find('.js-ci-status-icon-success');
   const findWarningIcon = () => wrapper.find('.js-ci-status-icon-warning');
+  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findOldPagination = () => wrapper.findComponent(PaginationLinks);
+  const findPagination = () => wrapper.findComponent(GlPagination);
 
   afterEach(() => {
     wrapper.destroy();
@@ -48,6 +54,7 @@ describe('Codequality report app', () => {
 
     it('shows a loading state', () => {
       expect(findStatus().text()).toBe('Loading codeclimate report');
+      expect(findSkeletonLoader().exists()).toBe(true);
     });
   });
 
@@ -85,6 +92,42 @@ describe('Codequality report app', () => {
       expect(issueLink.attributes('href')).toBe(
         '/root/test-codequality/blob/feature-branch/ee/spec/features/admin/geo/admin_geo_projects_spec.rb#L152',
       );
+    });
+  });
+
+  describe('with graphql feature flag disabled', () => {
+    beforeEach(() => {
+      createComponent(
+        {},
+        parsedIssues,
+        {
+          graphqlCodeQualityFullReport: false,
+        },
+        shallowMount,
+      );
+    });
+
+    it('renders the old pagination component', () => {
+      expect(findOldPagination().exists()).toBe(true);
+      expect(findPagination().exists()).toBe(false);
+    });
+  });
+
+  describe('with graphql feature flag enabled', () => {
+    beforeEach(() => {
+      createComponent(
+        {},
+        parsedIssues,
+        {
+          graphqlCodeQualityFullReport: true,
+        },
+        shallowMount,
+      );
+    });
+
+    it('renders the pagination component', () => {
+      expect(findOldPagination().exists()).toBe(false);
+      expect(findPagination().exists()).toBe(true);
     });
   });
 

@@ -34,7 +34,9 @@
     licenses_api_path: licenses_api_path,
     can_manage_licenses: can?(current_user, :admin_software_license_policy, project).to_s } }
 
-- if codequality_report_download_path
+- if codequality_report_download_path || pipeline.can_generate_codequality_reports?
   #js-tab-codequality.tab-pane
     #js-pipeline-codequality-report{ data: { codequality_report_download_path: codequality_report_download_path,
-    blob_path: project_blob_path(project, pipeline.commit) } }
+    blob_path: project_blob_path(project, pipeline.commit),
+    project_path: project.full_path,
+    pipeline_iid: pipeline.iid } }
