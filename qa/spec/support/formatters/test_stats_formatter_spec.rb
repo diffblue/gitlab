@@ -78,7 +78,7 @@ describe QA::Support::Formatters::TestStatsFormatter do
         it('skips export') {}
       end
 
-      expect(influx_client).not_to receive(:create_write_api)
+      expect(influx_client).not_to have_received(:create_write_api)
     end
 
     it "skips export without influxdb token" do
@@ -89,7 +89,7 @@ describe QA::Support::Formatters::TestStatsFormatter do
         it('skips export') {}
       end
 
-      expect(influx_client).not_to receive(:create_write_api)
+      expect(influx_client).not_to have_received(:create_write_api)
     end
   end
 
