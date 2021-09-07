@@ -7,6 +7,15 @@ RSpec.describe CombinedRegistrationExperiment, :experiment do
 
   let_it_be(:user) { create(:user) }
 
+  describe '#signature' do
+    let(:force_company_trial) { experiment(:force_company_trial, user: user) }
+
+    it 'returns the same context key for force_company_trial' do
+      expect(subject.signature[:key]).not_to be_nil
+      expect(subject.signature[:key]).to eq(force_company_trial.signature[:key])
+    end
+  end
+
   describe '#redirect_path' do
     it 'when control passes trial_params to path' do
       stub_experiments(combined_registration: :control)

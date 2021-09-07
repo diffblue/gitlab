@@ -70,6 +70,8 @@ module EE
 
       override :trial_params
       def trial_params
+        return if combined_registration_experiment.variant.name == 'candidate'
+
         experiment(:force_company_trial, user: current_user) do |e|
           e.try { { trial: true } }
           e.run
@@ -87,7 +89,11 @@ module EE
       end
 
       def publish_combined_registration_experiment
-        experiment(:combined_registration, user: current_user).publish_to_client if show_signup_onboarding?
+        combined_registration_experiment.publish_to_client if show_signup_onboarding?
+      end
+
+      def combined_registration_experiment
+        experiment(:combined_registration, user: current_user)
       end
     end
   end
