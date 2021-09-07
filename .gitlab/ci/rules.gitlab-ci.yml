@@ -139,7 +139,6 @@
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*.yml"
   - "lib/gitlab/ci/templates/**/*.yml"
-  - "{,ee/,jh/}changelogs/**/*.yml"
 
 .docs-patterns: &docs-patterns
   - ".gitlab/route-map.yml"
