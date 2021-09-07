@@ -32,6 +32,7 @@ export default (startDate = null, endDate = null) => {
         milestoneTitle: $milestoneTitle,
         sourceBranches: $sourceBranches,
         targetBranches: $targetBranches
+        not: { labels: $notLabels, milestoneTitle: $notMilestoneTitle }
       ) { count, totalTimeToMerge }
     `;
   });
@@ -44,7 +45,9 @@ export default (startDate = null, endDate = null) => {
       $assigneeUsername: String,
       $milestoneTitle: String,
       $sourceBranches: [String!],
-      $targetBranches: [String!]
+      $targetBranches: [String!],
+      $notLabels: [String!],
+      $notMilestoneTitle: String
     ) {
       throughputChartData: project(fullPath: $fullPath) {
         ${computedMonthData}

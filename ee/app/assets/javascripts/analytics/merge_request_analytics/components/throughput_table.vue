@@ -163,7 +163,7 @@ export default {
       selectedLabelList: (state) => state.labels.selectedList,
     }),
     options() {
-      return filterToQueryObject({
+      const options = filterToQueryObject({
         sourceBranches: this.selectedSourceBranch,
         targetBranches: this.selectedTargetBranch,
         milestoneTitle: this.selectedMilestone,
@@ -171,6 +171,12 @@ export default {
         assigneeUsername: this.selectedAssignee,
         labels: this.selectedLabelList,
       });
+
+      return {
+        ...options,
+        notLabels: options['not[labels]'],
+        notMilestoneTitle: options['not[notMilestoneTitle]'],
+      };
     },
     tableDataAvailable() {
       return this.throughputTableData.list?.length;
