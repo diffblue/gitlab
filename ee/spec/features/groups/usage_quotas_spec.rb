@@ -157,7 +157,7 @@ RSpec.describe 'Groups > Usage Quotas' do
 
       link = page.find('a', text: 'Buy additional minutes')
 
-      expect(link['data-track-event']).to eq('click_buy_ci_minutes')
+      expect(link['data-track-action']).to eq('click_buy_ci_minutes')
       expect(link['data-track-label']).to eq(group.actual_plan_name)
       expect(link['data-track-property']).to eq('pipeline_quota_page')
     end
