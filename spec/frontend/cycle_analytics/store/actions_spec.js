@@ -103,6 +103,8 @@ describe('Project Value Stream Analytics actions', () => {
         payload,
       );
       expect(mockCommit).toHaveBeenCalledWith('INITIALIZE_VSA', { endpoints: mockEndpoints });
+
+      expect(mockDispatch).toHaveBeenCalledTimes(4);
       expect(mockDispatch).toHaveBeenCalledWith('filters/setEndpoints', mockFilterEndpoints);
       expect(mockDispatch).toHaveBeenCalledWith('setLoading', true);
       expect(mockDispatch).toHaveBeenCalledWith('fetchValueStreams');
