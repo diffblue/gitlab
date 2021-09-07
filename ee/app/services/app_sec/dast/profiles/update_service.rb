@@ -9,31 +9,58 @@ module AppSec
         def execute
           return unauthorized unless allowed?
           return error('Profile parameter missing') unless dast_profile
+          return error('Dast Profile Schedule not found') if update_schedule? && !schedule
 
-          auditor = AppSec::Dast::Profiles::Audit::UpdateService.new(container: container, current_user: current_user, params: {
-            dast_profile: dast_profile,
-            new_params: dast_profile_params,
-            old_params: dast_profile.attributes.symbolize_keys
-          })
+          build_auditors!
 
-          return error(dast_profile.errors.full_messages) unless dast_profile.update(dast_profile_params)
+          ApplicationRecord.transaction do
+            dast_profile.update!(dast_profile_params)
 
-          auditor.execute
+            update_schedule if update_schedule?
+          end
 
-          return success(dast_profile: dast_profile, pipeline_url: nil) unless params[:run_after_update]
+          execute_auditors!
+
+          unless params[:run_after_update]
+            return success(
+              dast_profile: dast_profile,
+              pipeline_url: nil,
+              dast_profile_schedule: schedule
+            )
+          end
 
           response = create_scan(dast_profile)
 
           return error(response.message) if response.error?
 
-          success(dast_profile: dast_profile, pipeline_url: response.payload.fetch(:pipeline_url))
+          success(
+            dast_profile: dast_profile,
+            pipeline_url: response.payload.fetch(:pipeline_url),
+            dast_profile_schedule: schedule
+          )
+        rescue ActiveRecord::RecordInvalid => err
+          error(err.record.errors.full_messages)
         end
 
         private
 
+        attr_reader :auditors
+
         def allowed?
           container.licensed_feature_available?(:security_on_demand_scans) &&
             can?(current_user, :create_on_demand_dast_scan, container)
+        end
+
+        def update_schedule?
+          schedule_input_params.present?
+        end
+
+        def update_schedule
+          schedule.update!(schedule_input_params)
+        end
+
+        def schedule
+          @schedule ||= dast_profile.dast_profile_schedule
         end
 
         def error(message, opts = {})
@@ -54,6 +81,35 @@ module AppSec
 
         def dast_profile_params
           params.slice(:dast_site_profile_id, :dast_scanner_profile_id, :name, :description, :branch_name)
+        end
+
+        def schedule_input_params
+          # params[:dast_profile_schedule] is `Types::Dast::ProfileScheduleInputType` object.
+          # Using to_h method to convert object into equivalent hash.
+          @schedule_input_params ||= params[:dast_profile_schedule]&.to_h
+        end
+
+        def build_auditors!
+          @auditors = [
+              AppSec::Dast::Profiles::Audit::UpdateService.new(container: container, current_user: current_user, params: {
+              dast_profile: dast_profile,
+              new_params: dast_profile_params,
+              old_params: dast_profile.attributes.symbolize_keys
+            })
+          ]
+
+          if schedule_input_params
+            @auditors <<
+              AppSec::Dast::ProfileSchedules::Audit::UpdateService.new(project: container, current_user: current_user, params: {
+                dast_profile_schedule: schedule,
+                new_params: schedule_input_params,
+                old_params: schedule.attributes.symbolize_keys
+              })
+          end
+        end
+
+        def execute_auditors!
+          auditors.map(&:execute)
         end
 
         def create_scan(dast_profile)
