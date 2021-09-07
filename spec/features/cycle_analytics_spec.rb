@@ -120,13 +120,11 @@ RSpec.describe 'Value Stream Analytics', :js do
       end
 
       it 'can filter the metrics by date' do
-        aggregate_failures 'with relevant values' do
-          expect(metrics_values).to eq(["3.0", "2.0", "1.0", "0.0"])
+        expect(metrics_values).to eq(["3.0", "2.0", "1.0", "0.0"])
 
-          set_daterange(from, to)
+        set_daterange(from, to)
 
-          expect(metrics_values).to eq(['-'] * 4)
-        end
+        expect(metrics_values).to eq(['-'] * 4)
       end
     end
   end
