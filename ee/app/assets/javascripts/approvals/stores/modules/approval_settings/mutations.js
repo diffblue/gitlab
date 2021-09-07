@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { APPROVAL_SETTINGS_I18N } from '../../../constants';
 import * as types from './mutation_types';
 
@@ -8,7 +9,7 @@ export default (mapDataToState) => ({
   },
   [types.RECEIVE_SETTINGS_SUCCESS](state, data) {
     state.settings = { ...mapDataToState(data) };
-    state.initialSettings = { ...state.settings };
+    state.initialSettings = cloneDeep(state.settings);
     state.isLoading = false;
   },
   [types.RECEIVE_SETTINGS_ERROR](state) {
@@ -22,7 +23,7 @@ export default (mapDataToState) => ({
   },
   [types.UPDATE_SETTINGS_SUCCESS](state, data) {
     state.settings = { ...mapDataToState(data) };
-    state.initialSettings = { ...state.settings };
+    state.initialSettings = cloneDeep(state.settings);
     state.isLoading = false;
     state.isUpdated = true;
   },
@@ -36,19 +37,19 @@ export default (mapDataToState) => ({
   [types.DISMISS_ERROR_MESSAGE](state) {
     state.errorMessage = '';
   },
-  [types.SET_PREVENT_AUTHOR_APPROVAL](state, preventAuthorApproval) {
-    state.settings.preventAuthorApproval = preventAuthorApproval;
+  [types.SET_PREVENT_AUTHOR_APPROVAL](state, value) {
+    state.settings.preventAuthorApproval.value = value;
   },
-  [types.SET_PREVENT_COMMITTERS_APPROVAL](state, preventCommittersApproval) {
-    state.settings.preventCommittersApproval = preventCommittersApproval;
+  [types.SET_PREVENT_COMMITTERS_APPROVAL](state, value) {
+    state.settings.preventCommittersApproval.value = value;
   },
-  [types.SET_PREVENT_MR_APPROVAL_RULE_EDIT](state, preventMrApprovalRuleEdit) {
-    state.settings.preventMrApprovalRuleEdit = preventMrApprovalRuleEdit;
+  [types.SET_PREVENT_MR_APPROVAL_RULE_EDIT](state, value) {
+    state.settings.preventMrApprovalRuleEdit.value = value;
   },
-  [types.SET_REMOVE_APPROVALS_ON_PUSH](state, removeApprovalsOnPush) {
-    state.settings.removeApprovalsOnPush = removeApprovalsOnPush;
+  [types.SET_REMOVE_APPROVALS_ON_PUSH](state, value) {
+    state.settings.removeApprovalsOnPush.value = value;
   },
-  [types.SET_REQUIRE_USER_PASSWORD](state, requireUserPassword) {
-    state.settings.requireUserPassword = requireUserPassword;
+  [types.SET_REQUIRE_USER_PASSWORD](state, value) {
+    state.settings.requireUserPassword.value = value;
   },
 });

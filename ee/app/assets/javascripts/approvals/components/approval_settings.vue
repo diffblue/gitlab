@@ -3,7 +3,6 @@ import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon, GlLink } from '@
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { mapComputed } from '~/vuex_shared/bindings';
 import { APPROVAL_SETTINGS_I18N } from '../constants';
 import ApprovalSettingsCheckbox from './approval_settings_checkbox.vue';
 
@@ -48,18 +47,14 @@ export default {
       isUpdated: (state) => state.approvalSettings.isUpdated,
       settings: (state) => state.approvalSettings.settings,
       errorMessage: (state) => state.approvalSettings.errorMessage,
+      preventAuthorApproval: (state) => state.approvalSettings.settings.preventAuthorApproval,
+      preventCommittersApproval: (state) =>
+        state.approvalSettings.settings.preventCommittersApproval,
+      preventMrApprovalRuleEdit: (state) =>
+        state.approvalSettings.settings.preventMrApprovalRuleEdit,
+      removeApprovalsOnPush: (state) => state.approvalSettings.settings.removeApprovalsOnPush,
+      requireUserPassword: (state) => state.approvalSettings.settings.requireUserPassword,
     }),
-    ...mapComputed(
-      [
-        { key: 'preventAuthorApproval', updateFn: 'setPreventAuthorApproval' },
-        { key: 'preventCommittersApproval', updateFn: 'setPreventCommittersApproval' },
-        { key: 'preventMrApprovalRuleEdit', updateFn: 'setPreventMrApprovalRuleEdit' },
-        { key: 'removeApprovalsOnPush', updateFn: 'setRemoveApprovalsOnPush' },
-        { key: 'requireUserPassword', updateFn: 'setRequireUserPassword' },
-      ],
-      undefined,
-      (state) => state.approvalSettings.settings,
-    ),
     ...mapGetters(['settingChanged']),
     hasSettings() {
       return !isEmpty(this.settings);
@@ -77,6 +72,11 @@ export default {
       'updateSettings',
       'dismissErrorMessage',
       'dismissSuccessMessage',
+      'setPreventAuthorApproval',
+      'setPreventCommittersApproval',
+      'setPreventMrApprovalRuleEdit',
+      'setRemoveApprovalsOnPush',
+      'setRequireUserPassword',
     ]),
     async onSubmit() {
       await this.updateSettings(this.approvalSettingsPath);
@@ -124,35 +124,44 @@ export default {
       </p>
       <gl-form-group>
         <approval-settings-checkbox
-          v-model="preventAuthorApproval"
+          :checked="preventAuthorApproval.value"
           :label="settingsLabels.authorApprovalLabel"
-          :locked="!canPreventAuthorApproval"
+          :locked="!canPreventAuthorApproval || preventAuthorApproval.locked"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-author-approval"
+          @input="setPreventAuthorApproval"
         />
         <approval-settings-checkbox
-          v-model="preventCommittersApproval"
+          :checked="preventCommittersApproval.value"
           :label="settingsLabels.preventCommittersApprovalLabel"
-          :locked="!canPreventCommittersApproval"
+          :locked="!canPreventCommittersApproval || preventCommittersApproval.locked"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-committers-approval"
+          @input="setPreventCommittersApproval"
         />
         <approval-settings-checkbox
-          v-model="preventMrApprovalRuleEdit"
+          :checked="preventMrApprovalRuleEdit.value"
           :label="settingsLabels.preventMrApprovalRuleEditLabel"
-          :locked="!canPreventMrApprovalRuleEdit"
+          :locked="!canPreventMrApprovalRuleEdit || preventMrApprovalRuleEdit.locked"
           :locked-text="$options.i18n.lockedByAdmin"
           data-testid="prevent-mr-approval-rule-edit"
+          @input="setPreventMrApprovalRuleEdit"
         />
         <approval-settings-checkbox
-          v-model="requireUserPassword"
+          :checked="requireUserPassword.value"
           :label="settingsLabels.requireUserPasswordLabel"
+          :locked="requireUserPassword.locked"
+          :locked-text="$options.i18n.lockedByAdmin"
           data-testid="require-user-password"
+          @input="setRequireUserPassword"
         />
         <approval-settings-checkbox
-          v-model="removeApprovalsOnPush"
+          :checked="removeApprovalsOnPush.value"
           :label="settingsLabels.removeApprovalsOnPushLabel"
+          :locked="removeApprovalsOnPush.locked"
+          :locked-text="$options.i18n.lockedByAdmin"
           data-testid="remove-approvals-on-push"
+          @input="setRemoveApprovalsOnPush"
         />
       </gl-form-group>
       <gl-button

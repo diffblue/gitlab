@@ -45,15 +45,15 @@ describe('ApprovalSettingsCheckbox', () => {
     });
   });
 
-  describe('value', () => {
-    it('defaults to false when no value is given', () => {
+  describe('checked', () => {
+    it('defaults to false when no checked value is given', () => {
       createWrapper();
 
       expect(findCheckbox().props('checked')).toBe(false);
     });
 
-    it('sets the checkbox to `true` when a `true` value is given', () => {
-      createWrapper({ value: true });
+    it('sets the checkbox to `true` when checked is `true`', () => {
+      createWrapper({ checked: true });
 
       expect(findCheckbox().props('checked')).toBe(true);
     });

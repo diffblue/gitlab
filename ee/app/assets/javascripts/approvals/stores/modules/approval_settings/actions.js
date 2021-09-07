@@ -46,23 +46,23 @@ export default (mapStateToPayload, updateMethod = 'put') => ({
     commit(types.DISMISS_ERROR_MESSAGE);
   },
 
-  setPreventAuthorApproval({ commit }, { preventAuthorApproval }) {
-    commit(types.SET_PREVENT_AUTHOR_APPROVAL, preventAuthorApproval);
+  setPreventAuthorApproval({ commit }, value) {
+    commit(types.SET_PREVENT_AUTHOR_APPROVAL, value);
   },
 
-  setPreventCommittersApproval({ commit }, { preventCommittersApproval }) {
-    commit(types.SET_PREVENT_COMMITTERS_APPROVAL, preventCommittersApproval);
+  setPreventCommittersApproval({ commit }, value) {
+    commit(types.SET_PREVENT_COMMITTERS_APPROVAL, value);
   },
 
-  setPreventMrApprovalRuleEdit({ commit }, { preventMrApprovalRuleEdit }) {
-    commit(types.SET_PREVENT_MR_APPROVAL_RULE_EDIT, preventMrApprovalRuleEdit);
+  setPreventMrApprovalRuleEdit({ commit }, value) {
+    commit(types.SET_PREVENT_MR_APPROVAL_RULE_EDIT, value);
   },
 
-  setRemoveApprovalsOnPush({ commit }, { removeApprovalsOnPush }) {
-    commit(types.SET_REMOVE_APPROVALS_ON_PUSH, removeApprovalsOnPush);
+  setRemoveApprovalsOnPush({ commit }, value) {
+    commit(types.SET_REMOVE_APPROVALS_ON_PUSH, value);
   },
 
-  setRequireUserPassword({ commit }, { requireUserPassword }) {
-    commit(types.SET_REQUIRE_USER_PASSWORD, requireUserPassword);
+  setRequireUserPassword({ commit }, value) {
+    commit(types.SET_REQUIRE_USER_PASSWORD, value);
   },
 });

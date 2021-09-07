@@ -12,7 +12,7 @@ import createStore from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings/';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createGroupApprovalsPayload } from '../mocks';
+import { createGroupApprovalsPayload, createGroupApprovalsState } from '../mocks';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -101,13 +101,7 @@ describe('ApprovalSettings', () => {
   });
 
   describe('with settings', () => {
-    const settings = {
-      allow_author_approval: false,
-      allow_committer_approval: false,
-      allow_overrides_to_approver_list_per_merge_request: false,
-      require_password_to_approve: false,
-      retain_approvals_on_push: false,
-    };
+    const { settings } = createGroupApprovalsState();
 
     beforeEach(() => {
       setupStore(settings);
@@ -146,7 +140,15 @@ describe('ApprovalSettings', () => {
     });
 
     it('renders the button as enabled when a setting was changed', async () => {
-      setupStore({ ...settings, allow_author_approval: true }, settings);
+      const changedSettings = {
+        ...settings,
+        preventAuthorApproval: {
+          ...settings.preventAuthorApproval,
+          value: true,
+        },
+      };
+
+      setupStore(changedSettings, settings);
 
       createWrapper();
       await waitForPromises();
@@ -203,11 +205,18 @@ describe('ApprovalSettings', () => {
         expect(checkbox.props('label')).toBe(PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey]);
       });
 
+      it('sets the locked and lockedText based on the setting values', () => {
+        expect(checkbox.props()).toMatchObject({
+          locked: settings[setting].locked,
+          lockedText: APPROVAL_SETTINGS_I18N.lockedByAdmin,
+        });
+      });
+
       it(`triggers the action ${action} when the value is changed`, async () => {
         await checkbox.vm.$emit('input', true);
         await waitForPromises();
 
-        expect(store.dispatch).toHaveBeenLastCalledWith(action, { [setting]: true });
+        expect(store.dispatch).toHaveBeenLastCalledWith(action, true);
       });
     });
 
@@ -263,6 +272,16 @@ describe('ApprovalSettings', () => {
     });
 
     describe('locked settings', () => {
+      beforeEach(() => {
+        setupStore({
+          ...settings,
+          preventAuthorApproval: {
+            ...settings.preventAuthorApproval,
+            locked: false,
+          },
+        });
+      });
+
       it.each`
         property                          | value    | locked   | testid
         ${'canPreventAuthorApproval'}     | ${true}  | ${false} | ${'prevent-author-approval'}
@@ -276,10 +295,7 @@ describe('ApprovalSettings', () => {
         ({ property, value, locked, testid }) => {
           createWrapper({ [property]: value });
 
-          expect(wrapper.findByTestId(testid).props()).toMatchObject({
-            locked,
-            lockedText: APPROVAL_SETTINGS_I18N.lockedByAdmin,
-          });
+          expect(wrapper.findByTestId(testid).props('locked')).toBe(locked);
         },
       );
     });
