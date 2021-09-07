@@ -186,12 +186,6 @@ can occur because the dependency version resolved during the scan might differ f
 resolved when your project was built and released, in a previous pipeline. Java projects can't have
 lock files. Python projects can have lock files, but GitLab Secure tools don't support them.
 
-## Security scans using Auto DevOps
-
-When using [Auto DevOps](../../../topics/autodevops/index.md), use
-[special environment variables](../../../topics/autodevops/customize.md#cicd-variables)
-to configure daily security scans.
-
 <!-- ## Troubleshooting
 
 Include any troubleshooting steps that you can foresee. If you know beforehand what issues
