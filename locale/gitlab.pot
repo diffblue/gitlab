@@ -38567,6 +38567,9 @@ msgstr ""
 msgid "You need to upload a GitLab project export archive (ending in .gz)."
 msgstr ""
 
+msgid "You need to verify your primary email first before enabling Two-Factor Authentication."
+msgstr ""
+
 msgid "You successfully declined the invitation"
 msgstr ""
 
