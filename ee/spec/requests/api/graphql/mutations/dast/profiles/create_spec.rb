@@ -43,5 +43,32 @@ RSpec.describe 'Creating a DAST Profile' do
 
       expect(mutation_response['pipelineUrl']).not_to be_blank
     end
+
+    context 'when dastProfileSchedule is present' do
+      let(:mutation) do
+        graphql_mutation(
+          mutation_name,
+          full_path: full_path,
+          name: name,
+          branch_name: project.default_branch,
+          dast_site_profile_id: global_id_of(dast_site_profile),
+          dast_scanner_profile_id: global_id_of(dast_scanner_profile),
+          run_after_create: true,
+          dast_profile_schedule: {
+            starts_at: Time.zone.now,
+            active: true,
+            cadence: {
+              duration: 1,
+              unit: "DAY"
+            },
+            timezone: "America/New_York"
+          }
+        )
+      end
+
+      it 'creates dastProfileSchedule when passed' do
+        expect { subject }.to change { Dast::ProfileSchedule.count }.by(1)
+      end
+    end
   end
 end

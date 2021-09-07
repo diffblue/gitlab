@@ -20,6 +20,10 @@ module Mutations
                  required: true,
                  description: 'Project the profile belongs to.'
 
+        argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
+              required: false,
+              description: 'Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+
         argument :name, GraphQL::Types::String,
                  required: true,
                  description: 'Name of the profile.'
@@ -48,9 +52,9 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false)
+        def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false, dast_profile_schedule: nil)
           project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
+          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project, dast_profile_schedule)
 
           # TODO: remove explicit coercion once compatibility layer is removed
           # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
@@ -70,19 +74,35 @@ module Mutations
               branch_name: branch_name,
               dast_site_profile: dast_site_profile,
               dast_scanner_profile: dast_scanner_profile,
-              run_after_create: run_after_create
+              run_after_create: run_after_create,
+              dast_profile_schedule: dast_profile_schedule
             }
           ).execute
 
           return { errors: response.errors } if response.error?
 
-          { errors: [], dast_profile: response.payload.fetch(:dast_profile), pipeline_url: response.payload.fetch(:pipeline_url) }
+          build_response(response.payload)
         end
 
         private
 
-        def allowed?(project)
-          project.feature_available?(:security_on_demand_scans)
+        def allowed?(project, dast_profile_schedule)
+          scheduler_flag_enabled?(dast_profile_schedule, project)
+        end
+
+        def scheduler_flag_enabled?(dast_profile_schedule, project)
+          return true unless dast_profile_schedule
+
+          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
+        end
+
+        def build_response(payload)
+          {
+            errors: [],
+            dast_profile: payload.fetch(:dast_profile),
+            pipeline_url: payload.fetch(:pipeline_url),
+            dast_profile_schedule: payload.fetch(:dast_profile_schedule)
+          }
         end
       end
     end
