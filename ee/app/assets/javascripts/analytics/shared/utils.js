@@ -3,12 +3,6 @@ import { dateFormats } from '~/analytics/shared/constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 
-export const toYmd = (date) => dateFormat(date, dateFormats.isoDate);
-
-export default {
-  toYmd,
-};
-
 export const formattedDate = (d) => dateFormat(d, dateFormats.defaultDate);
 
 /**

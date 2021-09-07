@@ -17,8 +17,8 @@ import {
   prepareStageErrors,
   formatMedianValuesWithOverview,
 } from 'ee/analytics/cycle_analytics/utils';
-import { toYmd } from 'ee/analytics/shared/utils';
 import { createdAfter, createdBefore, rawStageMedians } from 'jest/cycle_analytics/mock_data';
+import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
