@@ -11,12 +11,10 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE, { gqlClient } from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import {
-  fullEpicId,
   fullEpicBoardId,
   formatEpic,
   formatListEpics,
@@ -384,12 +382,12 @@ export default {
       .mutate({
         mutation: epicMoveListMutation,
         variables: {
-          epicId: fullEpicId(itemId),
+          epicId: itemId,
           boardId: fullEpicBoardId(boardId),
           fromListId,
           toListId,
-          moveAfterId: moveAfterId ? fullEpicId(moveAfterId) : undefined,
-          moveBeforeId: moveBeforeId ? fullEpicId(moveBeforeId) : undefined,
+          moveBeforeId,
+          moveAfterId,
         },
       })
       .then(({ data }) => {
@@ -561,7 +559,7 @@ export default {
         }
 
         const rawEpic = data.createEpic?.epic;
-        const formattedEpic = formatEpic({ ...rawEpic, id: getIdFromGraphQLId(rawEpic.id) });
+        const formattedEpic = formatEpic(rawEpic);
         dispatch('removeListItem', { listId: list.id, itemId: placeholderId });
         dispatch('addListItem', { list, item: formattedEpic, position: 0 });
       })

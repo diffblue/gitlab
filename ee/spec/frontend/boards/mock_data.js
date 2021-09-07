@@ -147,8 +147,7 @@ export const mockIssueGroupPath = 'gitlab-org';
 export const mockIssueProjectPath = `${mockIssueGroupPath}/gitlab-test`;
 
 export const mockIssue = {
-  id: '436',
-  fullId: 'gid://gitlab/Issue/436',
+  id: 'gid://gitlab/Issue/436',
   iid: '27',
   title: 'Issue 1',
   referencePath: `${mockIssueProjectPath}#27`,
@@ -233,8 +232,7 @@ export const mockEpic = {
 };
 
 export const mockFormattedBoardEpic = {
-  fullId: 'gid://gitlab/Epic/41',
-  id: 41,
+  id: 'gid://gitlab/Epic/41',
   iid: '1',
   title: 'Epic title',
   referencePath: 'gitlab-org/gitlab-subgroup&41',

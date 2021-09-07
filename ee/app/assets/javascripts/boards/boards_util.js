@@ -1,5 +1,4 @@
 import { FiltersInfo as FiltersInfoCE } from '~/boards/boards_util';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { objectToQuery, queryToObject } from '~/lib/utils/url_utility';
 import {
   EPIC_LANE_BASE_HEIGHT,
@@ -61,12 +60,10 @@ export function formatListEpics(listEpics) {
     return {
       ...map,
       [list.id]: sortedEpics.map((i) => {
-        const id = getIdFromGraphQLId(i.id);
+        const { id } = i;
 
         const listEpic = {
           ...i,
-          id,
-          fullId: i.id,
           labels: i.labels?.nodes || [],
           assignees: i.assignees?.nodes || [],
         };

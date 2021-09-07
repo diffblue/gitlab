@@ -8,6 +8,7 @@ import setWindowLocation from 'helpers/set_window_location_helper';
 import { mockLabel } from './mock_data';
 
 const listId = 'gid://gitlab/Boards::EpicList/3';
+const epicId = 'gid://gitlab/Epic/1';
 
 describe('formatEpic', () => {
   it('formats raw epic object for state', () => {
@@ -19,7 +20,7 @@ describe('formatEpic', () => {
     ];
 
     const rawEpic = {
-      id: 1,
+      id: epicId,
       title: 'Foo',
       labels: {
         nodes: labels,
@@ -48,7 +49,7 @@ describe('formatListEpics', () => {
               {
                 node: {
                   title: 'epic title',
-                  id: 'gid://gitlab/Epic/1',
+                  id: epicId,
                   labels: {
                     nodes: [mockLabel],
                   },
@@ -64,15 +65,14 @@ describe('formatListEpics', () => {
 
     expect(result).toEqual({
       boardItems: {
-        1: {
+        [epicId]: {
           assignees: [],
-          id: 1,
-          fullId: 'gid://gitlab/Epic/1',
+          id: epicId,
           labels: [mockLabel],
           title: 'epic title',
         },
       },
-      listData: { [listId]: [1] },
+      listData: { [listId]: [epicId] },
       listItemsCount: 1,
     });
   });
