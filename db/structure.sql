@@ -98,15 +98,6 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_77f5e1d20482() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."deployable_id_convert_to_bigint" := NEW."deployable_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_8487d4de3e7b() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13234,7 +13225,6 @@ CREATE TABLE deployments (
     tag boolean NOT NULL,
     sha character varying NOT NULL,
     user_id integer,
-    deployable_id_convert_to_bigint integer,
     deployable_type character varying,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -27319,8 +27309,6 @@ CREATE TRIGGER trigger_490d204c00b3 BEFORE INSERT OR UPDATE ON ci_stages FOR EAC
 CREATE TRIGGER trigger_51ab7cef8934 BEFORE INSERT OR UPDATE ON ci_builds_runner_session FOR EACH ROW EXECUTE FUNCTION trigger_51ab7cef8934();
 
 CREATE TRIGGER trigger_542d6c2ad72e BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_542d6c2ad72e();
-
-CREATE TRIGGER trigger_77f5e1d20482 BEFORE INSERT OR UPDATE ON deployments FOR EACH ROW EXECUTE FUNCTION trigger_77f5e1d20482();
 
 CREATE TRIGGER trigger_8487d4de3e7b BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_8487d4de3e7b();
 
