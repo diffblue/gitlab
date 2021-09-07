@@ -23,6 +23,10 @@ module Types
       field :dast_scanner_profile, DastScannerProfileType, null: true,
             description: 'The associated scanner profile.'
 
+      field :dast_profile_schedule, ::Types::Dast::ProfileScheduleType, null: true,
+            description: 'Associated profile schedule. Will always return `null` ' \
+                         'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+
       field :branch, Dast::ProfileBranchType, null: true,
             description: 'The associated branch.',
             calls_gitaly: true
@@ -32,6 +36,12 @@ module Types
 
       def edit_path
         Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(object.project, object)
+      end
+
+      def dast_profile_schedule
+        return unless Feature.enabled?(:dast_on_demand_scans_scheduler, object.project, default_enabled: :yaml)
+
+        object.dast_profile_schedule
       end
     end
   end

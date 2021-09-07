@@ -25,7 +25,8 @@ module Resolvers
         def preloads
           {
             dast_site_profile: [{ dast_site_profile: [:dast_site, :secret_variables] }],
-            dast_scanner_profile: [:dast_scanner_profile]
+            dast_scanner_profile: [:dast_scanner_profile],
+            dast_profile_schedule: [:dast_profile_schedule]
           }
         end
 
