@@ -4,13 +4,11 @@ module EE
   module ProtectedBranches
     module UpdateService
       extend ::Gitlab::Utils::Override
-      include Loggable
 
-      override :execute
-      def execute(protected_branch)
-        super(protected_branch).tap do |protected_branch_service|
-          log_audit_event(protected_branch_service, :update)
-        end
+      def after_execute(protected_branch:, old_merge_access_levels:, old_push_access_levels:)
+        super
+
+        EE::Audit::ProtectedBranchesChangesAuditor.new(current_user, protected_branch, old_merge_access_levels, old_push_access_levels).execute
       end
     end
   end

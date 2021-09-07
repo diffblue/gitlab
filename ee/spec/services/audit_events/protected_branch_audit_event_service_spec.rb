@@ -7,7 +7,7 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
   let(:push_level) { 'No one' }
   let_it_be(:author) { create(:user, :with_sign_ins) }
   let_it_be(:entity) { create(:project, creator: author) }
-  let_it_be(:protected_branch) { create(:protected_branch, :no_one_can_push, project: entity) }
+  let_it_be(:protected_branch) { create(:protected_branch, :no_one_can_push, allow_force_push: true, code_owner_approval_required: true, project: entity) }
 
   let(:logger) { instance_spy(Gitlab::AuditJsonLogger) }
   let(:ip_address) { '192.168.15.18' }
@@ -18,7 +18,7 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
         let(:service) { described_class.new(author, protected_branch, action) }
 
         before do
-          stub_licensed_features(admin_audit_log: true)
+          stub_licensed_features(admin_audit_log: true, code_owner_approval_required: true)
           allow(Gitlab::RequestContext.instance).to receive(:client_ip).and_return(ip_address)
         end
 
@@ -27,13 +27,14 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
 
           security_event = AuditEvent.last
 
-          expect(security_event.details).to eq(
-            action => 'protected_branch',
+          expect(security_event.details).to include(
             author_name: author.name,
             target_id:  protected_branch.id,
             entity_path: entity.full_path,
             target_type: 'ProtectedBranch',
             target_details: protected_branch.name,
+            allow_force_push: true,
+            code_owner_approval_required: true,
             push_access_levels: [push_level],
             merge_access_levels: [merge_level],
             ip_address: ip_address
@@ -56,12 +57,14 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
             entity_id: entity.id,
             entity_type: 'Project',
             entity_path: entity.full_path,
+            allow_force_push: true,
+            code_owner_approval_required: true,
             merge_access_levels: [merge_level],
             push_access_levels: [push_level],
             target_details: protected_branch.name,
             target_id: protected_branch.id,
             target_type: 'ProtectedBranch',
-            action => 'protected_branch',
+            custom_message: action == :add ? /Added/ : /Unprotected/,
             ip_address: ip_address
           )
         end
@@ -70,7 +73,6 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
 
     include_examples 'loggable', :add
     include_examples 'loggable', :remove
-    include_examples 'loggable', :update
 
     context 'when not licensed' do
       let(:service) { described_class.new(author, protected_branch, :add) }
