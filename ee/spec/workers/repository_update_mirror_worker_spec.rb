@@ -8,8 +8,10 @@ RSpec.describe RepositoryUpdateMirrorWorker do
     let!(:project) { create(:project) }
     let!(:import_state) { create(:import_state, :mirror, :scheduled, project: project) }
 
+    subject(:worker) { described_class.new }
+
     before do
-      allow(subject).to receive(:jid).and_return(jid)
+      allow(worker).to receive(:jid).and_return(jid)
     end
 
     it 'sets status as finished when update mirror service executes successfully' do
@@ -56,6 +58,16 @@ RSpec.describe RepositoryUpdateMirrorWorker do
         end
 
         expect { subject.perform(started_project.id) }.to change { import_state.reload.status }.to('finished')
+      end
+    end
+
+    it_behaves_like 'an idempotent worker' do
+      let(:job_args) { [project.id] }
+
+      before do
+        allow_next_instance_of(Projects::UpdateMirrorService) do |instance|
+          allow(instance).to receive(:execute).and_return(status: :success)
+        end
       end
     end
   end
