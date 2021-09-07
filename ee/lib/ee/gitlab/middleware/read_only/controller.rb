@@ -24,6 +24,10 @@ module EE
             'repositories/lfs_locks_api' => %w{verify create unlock}
           }.freeze
 
+          ALLOWLISTED_SIGN_OUT_ROUTES = {
+            'sessions' => %w{destroy}
+          }.freeze
+
           ALLOWLISTED_SIGN_IN_ROUTES = {
             'sessions' => %w{create},
             'oauth/tokens' => %w{create}
@@ -33,12 +37,11 @@ module EE
 
           # In addition to routes allowed in FOSS, allow geo node update route
           # and geo api route, on both Geo primary and secondary.
-          # If this is on a Geo secondary, also allow git write routes.
-          # If in maintenance mode, don't allow git write routes on Geo
-          # secondary either
+          # If this is on a Geo secondary, also allow git write routes and custom logout routes.
+          # If in maintenance mode, don't allow git write routes on Geo secondary either
           override :allowlisted_routes
           def allowlisted_routes
-            allowed = super || geo_node_update_route? || geo_api_route? || admin_settings_update?
+            allowed = super || geo_node_update_route? || geo_api_route? || geo_sign_out_route? || admin_settings_update?
 
             return true if allowed
             return sign_in_route? if ::Gitlab.maintenance_mode?
@@ -90,8 +93,15 @@ module EE
             end
           end
 
+          def geo_sign_out_route?
+            return unless request_path.start_with?('/users/auth/geo/sign_out')
+
+            ALLOWLISTED_SIGN_OUT_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+          end
+
           def sign_in_route?
-            return unless request.post? && request.path.start_with?('/users/sign_in', '/oauth/token')
+            return unless request.post? && request.path.start_with?('/users/sign_in', '/oauth/token',
+              '/users/auth/geo/sign_in')
 
             ALLOWLISTED_SIGN_IN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
           end

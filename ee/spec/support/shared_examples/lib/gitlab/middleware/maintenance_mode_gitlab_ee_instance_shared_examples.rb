@@ -37,6 +37,8 @@ RSpec.shared_examples 'write access for a read-only GitLab (EE) instance in main
       where(:description, :path) do
         'LFS request to batch'        | '/root/rouge.git/info/lfs/objects/batch'
         'to geo replication node api' | "/api/#{API::API.version}/geo_replication/designs/resync"
+        'Geo sign in'                 | '/users/auth/geo/sign_in'
+        'Geo sign out'                | '/users/auth/geo/sign_out'
       end
 
       with_them do
@@ -116,6 +118,7 @@ RSpec.shared_examples 'write access for a read-only GitLab (EE) instance in main
 
       where(:description, :path) do
         'sign in route'     | '/users/sign_in'
+        'sign out route'    | '/users/sign_out'
         'oauth token route' | '/oauth/token'
       end
 
