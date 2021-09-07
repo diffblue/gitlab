@@ -5249,6 +5249,29 @@ The edge type for [`ComplianceFramework`](#complianceframework).
 | <a id="complianceframeworkedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="complianceframeworkedgenode"></a>`node` | [`ComplianceFramework`](#complianceframework) | The item at the end of the edge. |
 
+#### `ConnectedAgentConnection`
+
+The connection type for [`ConnectedAgent`](#connectedagent).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="connectedagentconnectionedges"></a>`edges` | [`[ConnectedAgentEdge]`](#connectedagentedge) | A list of edges. |
+| <a id="connectedagentconnectionnodes"></a>`nodes` | [`[ConnectedAgent]`](#connectedagent) | A list of nodes. |
+| <a id="connectedagentconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ConnectedAgentEdge`
+
+The edge type for [`ConnectedAgent`](#connectedagent).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="connectedagentedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="connectedagentedgenode"></a>`node` | [`ConnectedAgent`](#connectedagent) | The item at the end of the edge. |
+
 #### `ContainerRepositoryConnection`
 
 The connection type for [`ContainerRepository`](#containerrepository).
@@ -8267,6 +8290,7 @@ GitLab CI/CD configuration template.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="clusteragentconnections"></a>`connections` | [`ConnectedAgentConnection`](#connectedagentconnection) | Active connections for the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentcreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp the cluster agent was created. |
 | <a id="clusteragentcreatedbyuser"></a>`createdByUser` | [`UserCore`](#usercore) | User object, containing information about the person who created the agent. |
 | <a id="clusteragentid"></a>`id` | [`ID!`](#id) | ID of the cluster agent. |
@@ -8427,6 +8451,18 @@ Conan metadata.
 | <a id="conanmetadatarecipe"></a>`recipe` | [`String!`](#string) | Recipe of the Conan package. |
 | <a id="conanmetadatarecipepath"></a>`recipePath` | [`String!`](#string) | Recipe path of the Conan package. |
 | <a id="conanmetadataupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
+
+### `ConnectedAgent`
+
+Connection details for an Agent.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="connectedagentconnectedat"></a>`connectedAt` | [`Time`](#time) | When the connection was established. |
+| <a id="connectedagentconnectionid"></a>`connectionId` | [`BigInt`](#bigint) | ID of the connection. |
+| <a id="connectedagentmetadata"></a>`metadata` | [`JSON`](#json) | Information about the Agent. |
 
 ### `ContainerExpirationPolicy`
 
