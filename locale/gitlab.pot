@@ -19803,9 +19803,6 @@ msgstr ""
 msgid "Learn more in the"
 msgstr ""
 
-msgid "Learn more in the|pipeline schedules documentation"
-msgstr ""
-
 msgid "Learn more."
 msgstr ""
 
@@ -40315,6 +40312,9 @@ msgid "personal access tokens"
 msgstr ""
 
 msgid "pipeline"
+msgstr ""
+
+msgid "pipeline schedules documentation"
 msgstr ""
 
 msgid "pod_name can contain only lowercase letters, digits, '-', and '.' and must start and end with an alphanumeric character"
