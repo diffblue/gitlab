@@ -86,7 +86,7 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
    
   <a
     class="btn btn-default btn-md gl-button btn btn-default btn-sm"
-    data-track-event="open_review_app"
+    data-track-action="open_review_app"
     data-track-label="review_app"
     href="http://example.com"
     rel="noopener noreferrer nofollow"
