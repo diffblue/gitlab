@@ -2,6 +2,7 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 
 import BoardNewEpic from 'ee/boards/components/board_new_epic.vue';
+import GroupSelect from 'ee/boards/components/group_select.vue';
 import { mockList } from 'jest/boards/mock_data';
 
 import BoardNewItem from '~/boards/components/board_new_item.vue';
@@ -63,6 +64,13 @@ describe('Epic boards new epic form', () => {
       submitButtonTitle: 'Create epic',
       disableSubmit: false,
     });
+  });
+
+  it('renders group-select dropdown within board-new-item', () => {
+    const boardNewItem = findBoardNewItem();
+    const groupSelect = boardNewItem.findComponent(GroupSelect);
+
+    expect(groupSelect.exists()).toBe(true);
   });
 
   it('calls action `addListNewEpic` when "Create epic" button is clicked', async () => {

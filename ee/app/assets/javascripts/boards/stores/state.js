@@ -17,4 +17,11 @@ export default () => ({
   epicsFlags: {},
   assignees: [],
   assigneesLoading: false,
+  selectedGroup: {},
+  subGroups: [],
+  subGroupsFlags: {
+    isLoading: false,
+    isLoadingMore: false,
+    pageInfo: {},
+  },
 });

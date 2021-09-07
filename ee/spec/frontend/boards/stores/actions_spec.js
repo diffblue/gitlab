@@ -25,6 +25,8 @@ import {
   mockEpic,
   mockMilestones,
   mockAssignees,
+  mockSubGroups,
+  mockGroup0,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -952,7 +954,7 @@ describe('addListNewEpic', () => {
 
     await actions.addListNewEpic(
       { dispatch: jest.fn(), commit: jest.fn(), state },
-      { epicInput: mockEpic, list: fakeList },
+      { epicInput: { ...mockEpic, groupPath: state.fullPath }, list: fakeList },
     );
 
     expect(gqlClient.mutate).toHaveBeenCalledWith({
@@ -990,7 +992,7 @@ describe('addListNewEpic', () => {
 
     await actions.addListNewEpic(
       { dispatch: jest.fn(), commit: jest.fn(), state },
-      { epicInput: epic, list: fakeList },
+      { epicInput: { ...epic, groupPath: state.fullPath }, list: fakeList },
     );
 
     expect(gqlClient.mutate).toHaveBeenCalledWith({
@@ -1239,6 +1241,97 @@ describe('fetchAssignees', () => {
       expect(store.state.assigneesLoading).toBe(false);
       expect(store.state.error).toBe('Failed to load assignees.');
     });
+  });
+});
+
+describe('fetchSubGroups', () => {
+  const state = {
+    fullPath: 'gitlab-org',
+  };
+
+  const pageInfo = {
+    endCursor: '',
+    hasNextPage: false,
+  };
+
+  const queryResponse = {
+    data: {
+      group: {
+        descendantGroups: {
+          nodes: mockSubGroups.slice(1), // First group is root group, so skip it.
+          pageInfo: {
+            endCursor: '',
+            hasNextPage: false,
+          },
+        },
+        ...mockGroup0, // Add root group info
+      },
+    },
+  };
+
+  it('should commit mutations REQUEST_SUB_GROUPS, RECEIVE_SUB_GROUPS_SUCCESS, and SET_SELECTED_GROUP on success', (done) => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+    testAction(
+      actions.fetchSubGroups,
+      {},
+      state,
+      [
+        {
+          type: types.REQUEST_SUB_GROUPS,
+          payload: false,
+        },
+        {
+          type: types.RECEIVE_SUB_GROUPS_SUCCESS,
+          payload: { subGroups: mockSubGroups, pageInfo, fetchNext: false },
+        },
+        {
+          type: types.SET_SELECTED_GROUP,
+          payload: mockGroup0,
+        },
+      ],
+      [],
+      done,
+    );
+  });
+
+  it('should commit mutations REQUEST_SUB_GROUPS and RECEIVE_SUB_GROUPS_FAILURE on failure', (done) => {
+    jest.spyOn(gqlClient, 'query').mockRejectedValue();
+
+    testAction(
+      actions.fetchSubGroups,
+      {},
+      state,
+      [
+        {
+          type: types.REQUEST_SUB_GROUPS,
+          payload: false,
+        },
+        {
+          type: types.RECEIVE_SUB_GROUPS_FAILURE,
+        },
+      ],
+      [],
+      done,
+    );
+  });
+});
+
+describe('setSelectedGroup', () => {
+  it('should commit mutation SET_SELECTED_GROUP', (done) => {
+    testAction(
+      actions.setSelectedGroup,
+      mockGroup0,
+      {},
+      [
+        {
+          type: types.SET_SELECTED_GROUP,
+          payload: mockGroup0,
+        },
+      ],
+      [],
+      done,
+    );
   });
 });
 

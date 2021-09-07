@@ -11,5 +11,6 @@ mutation CreateEpic($input: BoardEpicCreateInput!) {
         }
       }
     }
+    errors
   }
 }
