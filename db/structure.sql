@@ -144,15 +144,6 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_f1ca8ec18d78() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."job_artifact_id_convert_to_bigint" := NEW."job_artifact_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE TABLE audit_events (
     id bigint NOT NULL,
     author_id integer NOT NULL,
@@ -14113,7 +14104,6 @@ ALTER SEQUENCE geo_hashed_storage_migrated_events_id_seq OWNED BY geo_hashed_sto
 
 CREATE TABLE geo_job_artifact_deleted_events (
     id bigint NOT NULL,
-    job_artifact_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     file_path character varying NOT NULL,
     job_artifact_id bigint NOT NULL
 );
@@ -27329,8 +27319,6 @@ CREATE TRIGGER trigger_91dc388a5fe6 BEFORE INSERT OR UPDATE ON dep_ci_build_trac
 CREATE TRIGGER trigger_aebe8b822ad3 BEFORE INSERT OR UPDATE ON taggings FOR EACH ROW EXECUTE FUNCTION trigger_aebe8b822ad3();
 
 CREATE TRIGGER trigger_cf2f9e35f002 BEFORE INSERT OR UPDATE ON ci_build_trace_chunks FOR EACH ROW EXECUTE FUNCTION trigger_cf2f9e35f002();
-
-CREATE TRIGGER trigger_f1ca8ec18d78 BEFORE INSERT OR UPDATE ON geo_job_artifact_deleted_events FOR EACH ROW EXECUTE FUNCTION trigger_f1ca8ec18d78();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
 
