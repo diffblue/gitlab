@@ -61,10 +61,10 @@ module Gitlab
         [10.seconds, 10.minutes]
       ].freeze
 
-      def initialize(logger: NULL_LOGGER, allow_subtrans: true, timing_configuration: DEFAULT_TIMING_CONFIGURATION, klass: nil, env: ENV)
+      def initialize(logger: NULL_LOGGER, allow_savepoints: true, timing_configuration: DEFAULT_TIMING_CONFIGURATION, klass: nil, env: ENV)
         @logger = logger
         @klass = klass
-        @allow_subtrans = allow_subtrans
+        @allow_savepoints = allow_savepoints
         @timing_configuration = timing_configuration
         @env = env
         @current_iteration = 1
@@ -123,7 +123,7 @@ module Gitlab
       end
 
       def run_block_with_lock_timeout
-        raise "WithLockRetries should not run inside already open transaction" if ActiveRecord::Base.connection.transaction_open? && @allow_subtrans.blank?
+        raise "WithLockRetries should not run inside already open transaction" if ActiveRecord::Base.connection.transaction_open? && @allow_savepoints.blank?
 
         ActiveRecord::Base.transaction(requires_new: true) do # rubocop:disable Performance/ActiveRecordSubtransactions
           execute("SET LOCAL lock_timeout TO '#{current_lock_timeout_in_ms}ms'")

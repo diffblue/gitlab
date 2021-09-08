@@ -414,7 +414,7 @@ module Gitlab
         merged_args = {
           klass: self.class,
           logger: Gitlab::BackgroundMigration::Logger,
-          allow_subtrans: true
+          allow_savepoints: true
         }.merge(kwargs)
 
         Gitlab::Database::WithLockRetries.new(**merged_args)

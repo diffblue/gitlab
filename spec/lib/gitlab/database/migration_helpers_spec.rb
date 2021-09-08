@@ -2335,7 +2335,7 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
     it 'defaults to allowing subtransactions' do
       with_lock_retries = double
 
-      expect(Gitlab::Database::WithLockRetries).to receive(:new).with(hash_including(allow_subtrans: true)).and_return(with_lock_retries)
+      expect(Gitlab::Database::WithLockRetries).to receive(:new).with(hash_including(allow_savepoints: true)).and_return(with_lock_retries)
       expect(with_lock_retries).to receive(:run).with(raise_on_exhaustion: false)
 
       model.with_lock_retries(env: env, logger: in_memory_logger) { }

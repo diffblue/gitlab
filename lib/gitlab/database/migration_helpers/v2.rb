@@ -41,7 +41,7 @@ module Gitlab
         # * +logger+ - [Gitlab::JsonLogger]
         # * +env+ - [Hash] custom environment hash, see the example with `DISABLE_LOCK_RETRIES`
         def with_lock_retries(*args, **kwargs, &block)
-          super(*args, **kwargs.merge(allow_subtrans: false), &block)
+          super(*args, **kwargs.merge(allow_savepoints: false), &block)
         end
 
         # Renames a column without requiring downtime.
