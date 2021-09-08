@@ -278,11 +278,11 @@ RSpec.describe DastSiteProfile, type: :model do
         end
 
         it 'works with policy' do
-          expect(Ability.allowed?(user, :read_on_demand_scans, subject)).to be_truthy
+          expect(Ability.allowed?(user, :read_on_demand_dast_scan, subject)).to be_truthy
         end
 
         it 'checks the policy' do
-          expect(Ability).to receive(:allowed?).with(user, :read_on_demand_scans, subject).and_call_original
+          expect(Ability).to receive(:allowed?).with(user, :read_on_demand_dast_scan, subject).and_call_original
 
           subject.secret_ci_variables(user)
         end

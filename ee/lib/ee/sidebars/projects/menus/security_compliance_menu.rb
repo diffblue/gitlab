@@ -87,7 +87,7 @@ module EE
           end
 
           def on_demand_scans_menu_item
-            unless can?(context.current_user, :read_on_demand_scans, context.project)
+            unless can?(context.current_user, :read_on_demand_dast_scan, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :on_demand_scans)
             end
 

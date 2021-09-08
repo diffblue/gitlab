@@ -29,7 +29,7 @@ RSpec.describe GitlabSchema.types['DastScannerProfile'] do
   end
 
   specify { expect(described_class.graphql_name).to eq('DastScannerProfile') }
-  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_scans) }
+  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
 
