@@ -6,13 +6,14 @@ RSpec.describe AwardEmojiPresenter do
   let(:emoji_name) { 'thumbsup' }
   let(:award_emoji) { build(:award_emoji, name: emoji_name) }
   let(:presenter) { described_class.new(award_emoji) }
+  let(:emoji) { TanukiEmoji.find_by_alpha_code(emoji_name) }
 
   describe '#description' do
-    it { expect(presenter.description).to eq Gitlab::Emoji.emojis[emoji_name]['description'] }
+    it { expect(presenter.description).to eq emoji.description }
   end
 
   describe '#unicode' do
-    it { expect(presenter.unicode).to eq Gitlab::Emoji.emojis[emoji_name]['unicode'] }
+    it { expect(presenter.unicode).to eq emoji.hex }
   end
 
   describe '#unicode_version' do
@@ -20,7 +21,7 @@ RSpec.describe AwardEmojiPresenter do
   end
 
   describe '#emoji' do
-    it { expect(presenter.emoji).to eq Gitlab::Emoji.emojis[emoji_name]['moji'] }
+    it { expect(presenter.emoji).to eq emoji.codepoints }
   end
 
   describe 'when presenting an award emoji with an invalid name' do
