@@ -77,9 +77,9 @@ Use lowercase for **boards**, **issue boards**, and **epic boards**.
 
 ## box
 
-Use instead of **field** or **text box**. For example:
+Use **text box** to refer to the UI field. Do not use **field** or **box**. For example:
 
-- In the **Variable name** box, enter `my text`.
+- In the **Variable name** text box, enter `my text`.
 
 ## button
 
@@ -518,6 +518,10 @@ Lowercase. For example:
 
 - Open a terminal.
 - From a terminal, run the `docker login` command.
+
+## text box
+
+Use instead of **field** or **box** when referring to the UI element.
 
 ## there is, there are
 
