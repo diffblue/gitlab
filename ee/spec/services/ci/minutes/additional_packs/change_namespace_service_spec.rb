@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
   describe '#execute' do
     let_it_be(:namespace) { create(:group) }
-    let_it_be(:target) { create(:group) }
+    let_it_be(:target, reload: true) { create(:group) }
     let_it_be(:subgroup) { build(:group, :nested) }
-    let_it_be(:existing_packs) { create_list(:ci_minutes_additional_pack, 5, namespace: namespace) }
     let_it_be(:admin) { create(:user, :admin) }
     let_it_be(:non_admin) { build(:user) }
 
@@ -24,32 +23,29 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
     context 'with an admin user' do
       let(:user) { admin }
 
-      context 'with valid namespace and target namespace' do
-        before do
-          namespace.add_owner(admin)
-          target.add_owner(admin)
-        end
+      shared_examples 'namespace change' do
+        context 'when updating is successful' do
+          it 'moves all existing packs to the target namespace', :aggregate_failures do
+            expect(target.ci_minutes_additional_packs).to be_empty
 
-        it 'moves all existing packs to the target namespace', :aggregate_failures do
-          expect(target.ci_minutes_additional_packs).to be_empty
+            change_namespace
 
-          change_namespace
-
-          expect(target.ci_minutes_additional_packs).to match_array(existing_packs)
-          expect(existing_packs.first.reload.namespace).to eq target
-          expect(change_namespace[:status]).to eq :success
-        end
-
-        it 'kicks off refresh ci minutes service for namespace and target' do
-          expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, namespace) do |instance|
-            expect(instance).to receive(:execute)
+            expect(target.ci_minutes_additional_packs).to match_array(existing_packs)
+            expect(existing_packs.first.reload.namespace).to eq target
+            expect(change_namespace[:status]).to eq :success
           end
 
-          expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, target) do |instance|
-            expect(instance).to receive(:execute)
-          end
+          it 'kicks off refresh ci minutes service for namespace and target' do
+            expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, namespace) do |instance|
+              expect(instance).to receive(:execute)
+            end
 
-          change_namespace
+            expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, target) do |instance|
+              expect(instance).to receive(:execute)
+            end
+
+            change_namespace
+          end
         end
 
         context 'when updating packs fails' do
@@ -76,6 +72,39 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
           it 'returns success' do
             expect(change_namespace[:status]).to eq :success
           end
+        end
+      end
+
+      context 'with valid namespace and target namespace' do
+        let!(:existing_packs) { create_list(:ci_minutes_additional_pack, 5, namespace: namespace) }
+
+        context 'when both namespaces are groups' do
+          before do
+            namespace.add_owner(admin)
+            target.add_owner(admin)
+          end
+
+          include_examples 'namespace change'
+        end
+
+        context 'when a namespace is a kind of user' do
+          let_it_be(:namespace) { admin.namespace }
+
+          before do
+            target.add_owner(admin)
+          end
+
+          include_examples 'namespace change'
+        end
+
+        context 'when a target is a kind of user' do
+          let(:target) { admin.namespace }
+
+          before do
+            namespace.add_owner(admin)
+          end
+
+          include_examples 'namespace change'
         end
       end
 
