@@ -5,7 +5,10 @@ require 'spec_helper'
 RSpec.describe 'Creating a DAST Scanner Profile' do
   include GraphqlHelpers
 
-  let(:profile_name) { FFaker::Company.catch_phrase }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:current_user) { create(:user) }
+  let_it_be(:profile_name) { FFaker::Company.catch_phrase }
+
   let(:dast_scanner_profile) { DastScannerProfile.find_by(project: project, name: profile_name) }
 
   let(:mutation_name) { :dast_scanner_profile_create }
@@ -18,11 +21,12 @@ RSpec.describe 'Creating a DAST Scanner Profile' do
   end
 
   it_behaves_like 'an on-demand scan mutation when user cannot run an on-demand scan'
+
   it_behaves_like 'an on-demand scan mutation when user can run an on-demand scan' do
     it 'returns the dast_scanner_profile id' do
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(mutation_response['id']).to eq(dast_scanner_profile.to_global_id.to_s)
+      expect(mutation_response['id']).to eq(global_id_of(dast_scanner_profile))
     end
 
     it 'sets default values of omitted properties' do

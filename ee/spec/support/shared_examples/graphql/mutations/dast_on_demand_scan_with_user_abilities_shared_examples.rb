@@ -2,13 +2,12 @@
 
 require 'spec_helper'
 
-# There must be a method or let called `mutation` defined that executes
-# the mutation and one called `mutation_name` that is the name of the
-# mutation being executed.
+# There must be a method or let named `mutation` defined that executes the
+# mutation and one named `mutation_name` that is the name of the mutation being
+# executed. There must also be method or let named `project` and one named
+# `current_user.`
 RSpec.shared_examples 'an on-demand scan mutation when user can run an on-demand scan' do
-  let(:project) { create(:project, :repository, creator: current_user) }
-  let(:current_user) { create(:user) }
-  let(:full_path) { project.full_path }
+  let_it_be(:full_path) { project.full_path }
 
   def mutation_response
     graphql_mutation_response(mutation_name)
