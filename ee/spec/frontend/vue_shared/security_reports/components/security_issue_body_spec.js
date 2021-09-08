@@ -7,6 +7,7 @@ import {
 } from 'ee/security_dashboard/store/modules/vulnerabilities/constants';
 import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ReportLink from '~/reports/components/report_link.vue';
 import { STATUS_FAILED } from '~/reports/constants';
 import {
@@ -23,12 +24,14 @@ describe('Security Issue Body', () => {
   const findReportLink = () => wrapper.find(ReportLink);
 
   const createComponent = (issue) => {
-    wrapper = shallowMount(SecurityIssueBody, {
-      propsData: {
-        issue,
-        status: STATUS_FAILED,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(SecurityIssueBody, {
+        propsData: {
+          issue,
+          status: STATUS_FAILED,
+        },
+      }),
+    );
   };
 
   afterEach(() => {
@@ -60,5 +63,14 @@ describe('Security Issue Body', () => {
     it(`does ${hasReportLink ? '' : 'not '}render report link`, () => {
       expect(findReportLink().exists()).toBe(hasReportLink);
     });
+
+    it.each([true, false])(
+      `shows a "dismissed" info correctly when the vulnerability's "isDismissed" property is set to "%s`,
+      (isDismissed) => {
+        createComponent({ ...vuln, isDismissed });
+
+        expect(wrapper.findByTestId('dismissed-badge').exists()).toBe(isDismissed);
+      },
+    );
   });
 });
