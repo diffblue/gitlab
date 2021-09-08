@@ -33,6 +33,15 @@ module Projects
                 branch { name }
                 dastSiteProfile { id }
                 dastScannerProfile { id }
+                dastProfileSchedule {
+                  active
+                  cadence {
+                    duration
+                    unit
+                  }
+                  startsAt
+                  timezone
+                }
               }
             }
           }
