@@ -175,7 +175,7 @@ export default {
       return {
         ...options,
         notLabels: options['not[labels]'],
-        notMilestoneTitle: options['not[notMilestoneTitle]'],
+        notMilestoneTitle: options['not[milestoneTitle]'],
       };
     },
     tableDataAvailable() {
