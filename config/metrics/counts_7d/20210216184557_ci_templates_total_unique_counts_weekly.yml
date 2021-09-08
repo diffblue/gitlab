@@ -58,7 +58,6 @@ options:
   - p_ci_templates_composer
   - p_ci_templates_c
   - p_ci_templates_python
-  - p_ci_templates_android_fastlane
   - p_ci_templates_django
   - p_ci_templates_maven
   - p_ci_templates_flutter
@@ -75,6 +74,8 @@ options:
   - p_ci_templates_scala
   - p_ci_templates_latex
   - p_ci_templates_android
+  - p_ci_templates_android_fastlane
+  - p_ci_templates_android_latest
   - p_ci_templates_indeni_cloudrail
   - p_ci_templates_deploy_ecs
   - p_ci_templates_aws_cf_provision_and_deploy_ec2

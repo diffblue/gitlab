@@ -195,6 +195,10 @@
   category: ci_templates
   redis_slot: ci_templates
   aggregation: weekly
+- name: p_ci_templates_android_latest
+  category: ci_templates
+  redis_slot: ci_templates
+  aggregation: weekly
 - name: p_ci_templates_django
   category: ci_templates
   redis_slot: ci_templates
