@@ -559,6 +559,9 @@ msgstr ""
 msgid "%{doc_link_start}Advanced search%{doc_link_end} is enabled."
 msgstr ""
 
+msgid "%{docs_link_start}Learn about visibility levels.%{docs_link_end}"
+msgstr ""
+
 msgid "%{due_date} (Past due)"
 msgstr ""
 
