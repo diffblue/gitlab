@@ -1,5 +1,5 @@
 <script>
-import { GlModal } from '@gitlab/ui';
+import { GlModal, GlSafeHtmlDirective } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 
@@ -11,6 +11,9 @@ export default {
   itemRemoveModalId,
   components: {
     GlModal,
+  },
+  directives: {
+    SafeHtml: GlSafeHtmlDirective,
   },
   computed: {
     ...mapState(['parentItem', 'removeItemModalProps']),
@@ -65,6 +68,6 @@ export default {
       })
     "
   >
-    <p v-html="modalBody /* eslint-disable-line vue/no-v-html */"></p>
+    <p v-safe-html="modalBody"></p>
   </gl-modal>
 </template>
