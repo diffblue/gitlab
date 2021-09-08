@@ -1,3 +1,3 @@
 - return unless show_pipeline_minutes_notification_dot?(project, namespace)
 
-%span.notification-dot.rounded-circle.gl-absolute.gl-visibility-visible{ data: { track_label: "show_buy_ci_minutes_notification", track_property: current_user.namespace.actual_plan_name, track_event: 'render' } }
+%span.notification-dot.rounded-circle.gl-absolute.gl-visibility-visible{ data: { track_label: "show_buy_ci_minutes_notification", track_property: current_user.namespace.actual_plan_name, track_action: 'render' } }
