@@ -9,7 +9,6 @@ export default () => {
   }
 
   const {
-    dastSiteValidationDocsPath,
     projectPath,
     defaultBranch,
     profilesLibraryPath,
@@ -33,7 +32,6 @@ export default () => {
       siteProfilesLibraryPath,
       newScannerProfilePath,
       newSiteProfilePath,
-      dastSiteValidationDocsPath,
       timezones,
     },
     render(h) {
