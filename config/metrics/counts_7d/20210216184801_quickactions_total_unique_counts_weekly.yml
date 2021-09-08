@@ -1,11 +1,11 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.quickactions.quickactions_total_unique_counts_weekly
-description: ''
-product_section: ''
-product_stage: ''
-product_group: ''
-product_category: ''
+description: Count of WAU using one or more quick actions
+product_section: dev
+product_stage: plan
+product_group: group::project management
+product_category: issue_tracking
 value_type: number
 status: data_available
 time_frame: 7d
@@ -82,8 +82,11 @@ options:
   - i_quickactions_invite_email_single
   - i_quickactions_invite_email_multiple
 distribution:
+- ce
 - ee
-tier: []
-skip_validation: true
+tier:
+- free
+- premium
+- ultimate
 performance_indicator_type: []
 milestone: "<13.9"
