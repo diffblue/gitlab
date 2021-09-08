@@ -10776,6 +10776,12 @@ msgstr ""
 msgid "DelayedJobs|Are you sure you want to run %{job_name} immediately? This job will run automatically after it's timer finishes."
 msgstr ""
 
+msgid "DelayedJobs|Are you sure you want to run %{job_name} immediately? This job will run automatically after its timer finishes."
+msgstr ""
+
+msgid "DelayedJobs|Run the delayed job now?"
+msgstr ""
+
 msgid "DelayedJobs|Start now"
 msgstr ""
 
