@@ -35,7 +35,7 @@ RSpec.describe 'Deletion of custom emoji' do
       it_behaves_like 'does not delete custom emoji'
     end
 
-    context 'when the user is developer and not owner of custom emoji' do
+    context 'when the user is developer and not creator of custom emoji' do
       before do
         group.add_developer(current_user)
       end

@@ -48,7 +48,7 @@ RSpec.describe CustomEmojiPolicy do
         end
       end
 
-      context 'is developer and owner' do
+      context 'is developer and emoji creator' do
         before do
           group.add_developer(user)
           custom_emoji.update_attribute(:creator, user)
