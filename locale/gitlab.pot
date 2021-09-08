@@ -13297,6 +13297,9 @@ msgstr ""
 msgid "Error: %{error_message}"
 msgstr ""
 
+msgid "Error: Couldn't load some or all of the changes."
+msgstr ""
+
 msgid "Error: No AWS credentials were supplied"
 msgstr ""
 
@@ -27817,6 +27820,9 @@ msgid "Release|Something went wrong while getting the release details."
 msgstr ""
 
 msgid "Release|Something went wrong while saving the release details."
+msgstr ""
+
+msgid "Reload page"
 msgstr ""
 
 msgid "Remediations"
