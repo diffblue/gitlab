@@ -9,6 +9,7 @@ RSpec.describe API::Users do
   let_it_be(:gpg_key) { create(:gpg_key, user: user) }
   let_it_be(:email) { create(:email, user: user) }
 
+  let(:blocked_user) { create(:user, :blocked) }
   let(:omniauth_user) { create(:omniauth_user) }
   let(:ldap_blocked_user) { create(:omniauth_user, provider: 'ldapmain', state: 'ldap_blocked') }
   let(:private_user) { create(:user, private_profile: true) }
@@ -2626,16 +2627,14 @@ RSpec.describe API::Users do
         end
 
         context 'for a blocked user' do
-          before do
-            user.block
-          end
+          let(:user_id) { blocked_user.id }
 
           it 'returns 403' do
             activate
 
             expect(response).to have_gitlab_http_status(:forbidden)
             expect(json_response['message']).to eq('403 Forbidden - A blocked user must be unblocked to be activated')
-            expect(user.reload.state).to eq('blocked')
+            expect(blocked_user.reload.state).to eq('blocked')
           end
         end
 
@@ -2723,16 +2722,14 @@ RSpec.describe API::Users do
         end
 
         context 'for a blocked user' do
-          before do
-            user.block
-          end
+          let(:user_id) { blocked_user.id }
 
           it 'returns 403' do
             deactivate
 
             expect(response).to have_gitlab_http_status(:forbidden)
             expect(json_response['message']).to eq('403 Forbidden - A blocked user cannot be deactivated by the API')
-            expect(user.reload.state).to eq('blocked')
+            expect(blocked_user.reload.state).to eq('blocked')
           end
         end
 
@@ -2787,7 +2784,7 @@ RSpec.describe API::Users do
     describe 'POST /users/:id/approve' do
       subject(:approve) { post api("/users/#{user_id}/approve", api_user) }
 
-      let_it_be(:blocked_user) { create(:user, :blocked) }
+      let_it_be(:pending_user) { create(:user, :blocked_pending_approval) }
 
       context 'performed by a non-admin user' do
         let(:api_user) { user }
@@ -3006,7 +3003,6 @@ RSpec.describe API::Users do
       end
 
       context 'with a blocked user' do
-        let(:blocked_user) { create(:user, state: 'blocked') }
         let(:user_id) { blocked_user.id }
 
         it 'returns a 201 if user is already blocked' do
