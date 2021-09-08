@@ -17,19 +17,19 @@ module Types
 
       argument :username_field, GraphQL::Types::String,
                required: false,
-               description: 'The name of username field at the sign-in HTML form.'
+               description: 'Name of username field at the sign-in HTML form.'
 
       argument :password_field, GraphQL::Types::String,
                required: false,
-               description: 'The name of password field at the sign-in HTML form.'
+               description: 'Name of password field at the sign-in HTML form.'
 
       argument :username, GraphQL::Types::String,
                required: false,
-               description: 'The username to authenticate with on the target website.'
+               description: 'Username to authenticate with on the target website.'
 
       argument :password, GraphQL::Types::String,
                required: false,
-               description: 'The password to authenticate with on the target website.'
+               description: 'Password to authenticate with on the target website.'
     end
   end
 end

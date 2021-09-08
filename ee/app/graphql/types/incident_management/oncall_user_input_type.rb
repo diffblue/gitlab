@@ -8,15 +8,15 @@ module Types
 
       argument :username, GraphQL::Types::String,
                 required: true,
-                description: 'The username of the user to participate in the on-call rotation, such as `user_one`.'
+                description: 'Username of the user to participate in the on-call rotation. For example, `"user_one"`.'
 
       argument :color_palette, ::Types::DataVisualizationPalette::ColorEnum,
                 required: false,
-                description: 'A value of DataVisualizationColorEnum. The color from the palette to assign to the on-call user.'
+                description: 'Value of DataVisualizationColorEnum. The color from the palette to assign to the on-call user.'
 
       argument :color_weight, ::Types::DataVisualizationPalette::WeightEnum,
                 required: false,
-                description: 'A value of DataVisualizationWeightEnum. The color weight to assign to for the on-call user. Note: To view on-call schedules in GitLab, do not provide a value below 500. A value between 500 and 950 ensures sufficient contrast.'
+                description: 'Color weight to assign to for the on-call user. To view on-call schedules in GitLab, do not provide a value below 500. A value between 500 and 950 ensures sufficient contrast.'
     end
   end
 end

@@ -57,7 +57,7 @@ module Types
     field :project,
           type: ::Types::ProjectType,
           null: true,
-          description: 'The project on which the vulnerability finding was found.'
+          description: 'Project on which the vulnerability finding was found.'
 
     field :description,
           type: GraphQL::Types::String,
@@ -80,7 +80,7 @@ module Types
     field :state,
           type: VulnerabilityStateEnum,
           null: true,
-          description: "The finding status."
+          description: "Finding status."
 
     def location
       object.location&.merge(report_type: object.report_type)

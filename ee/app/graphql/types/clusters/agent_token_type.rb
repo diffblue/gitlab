@@ -22,7 +22,7 @@ module Types
       field :created_by_user,
             Types::UserType,
             null: true,
-            description: 'The user who created the token.'
+            description: 'User who created the token.'
 
       field :description,
             GraphQL::Types::String,

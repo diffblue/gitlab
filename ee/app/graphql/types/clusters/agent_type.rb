@@ -29,7 +29,7 @@ module Types
             description: 'Name of the cluster agent.'
 
       field :project, Types::ProjectType,
-            description: 'The project this cluster agent is associated with.',
+            description: 'Project this cluster agent is associated with.',
             null: true,
             authorize: :read_project
 

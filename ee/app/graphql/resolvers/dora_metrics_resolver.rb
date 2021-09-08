@@ -11,7 +11,7 @@ module Resolvers
 
     argument :metric, Types::DoraMetricTypeEnum,
              required: true,
-             description: 'The type of metric to return.'
+             description: 'Type of metric to return.'
 
     argument :start_date, Types::DateType,
              required: false,
@@ -27,7 +27,7 @@ module Resolvers
 
     argument :environment_tier, Types::DeploymentTierEnum,
              required: false,
-             description: 'The deployment tier of the environments to return. Defaults to `PRODUCTION`.'
+             description: 'Deployment tier of the environments to return. Defaults to `PRODUCTION`.'
 
     def resolve(params)
       result = ::Dora::AggregateMetricsService

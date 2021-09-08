@@ -8,9 +8,9 @@ module Types
           description: 'ID of the path lock.'
 
     field :path, GraphQL::Types::String, null: true,
-          description: 'The locked path.'
+          description: 'Locked path.'
 
     field :user, ::Types::UserType, null: true,
-          description: 'The user that has locked this path.'
+          description: 'User that has locked this path.'
   end
 end

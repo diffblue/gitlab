@@ -18,7 +18,7 @@ module Resolvers
 
       argument :last_test_report_state, ::Types::RequirementsManagement::RequirementStatusFilterEnum,
                required: false,
-               description: 'The state of latest requirement test report.'
+               description: 'State of latest requirement test report.'
 
       def resolve_with_lookahead(**args)
         # The project could have been loaded in batch by `BatchLoader`.

@@ -104,7 +104,7 @@ module Types
           method: :group_epic_url
 
     field :relative_position, GraphQL::Types::Int, null: true,
-          description: 'The relative position of the epic in the epic tree.'
+          description: 'Relative position of the epic in the epic tree.'
     field :relation_path, GraphQL::Types::String, null: true,
            description: 'URI path of the epic-issue relationship.',
            method: :group_epic_link_path
@@ -145,7 +145,7 @@ module Types
     field :award_emoji,
           Types::AwardEmojis::AwardEmojiType.connection_type,
           null: true,
-          description: 'A list of award emojis associated with the epic.',
+          description: 'List of award emojis associated with the epic.',
           authorize: :read_emoji
 
     field :ancestors, Types::EpicType.connection_type,
