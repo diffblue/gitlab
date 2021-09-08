@@ -10,6 +10,8 @@ class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
   sidekiq_options retry: 3
   include SecurityScansQueue
 
+  feature_category :vulnerability_management
+
   worker_resource_boundary :cpu
 
   def perform(pipeline_id)

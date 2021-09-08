@@ -8,7 +8,7 @@ module Security
 
     sidekiq_options retry: 3
 
-    feature_category :vulnerability_management
+    feature_category :dependency_scanning
 
     idempotent!
 
