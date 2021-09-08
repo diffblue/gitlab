@@ -8,6 +8,7 @@ export default {
     GlSprintf,
     GlLink,
   },
+  inject: ['siteProfilesLibraryPath'],
   dastSiteValidationDocsPath: helpPagePath('user/application_security/dast/index', {
     anchor: 'site-profile-validation',
   }),
@@ -18,6 +19,8 @@ export default {
   <gl-alert
     :title="s__('DastProfiles|You cannot run an active scan against an unvalidated site.')"
     :dismissible="false"
+    :primary-button-text="s__('DastProfiles|Manage site profiles')"
+    :primary-button-link="siteProfilesLibraryPath"
     variant="danger"
   >
     <gl-sprintf
@@ -28,7 +31,7 @@ export default {
       "
     >
       <template #docsLink="{ content }">
-        <gl-link :href="dastSiteValidationDocsPath">{{ content }}</gl-link>
+        <gl-link :href="$options.dastSiteValidationDocsPath">{{ content }}</gl-link>
       </template>
     </gl-sprintf>
   </gl-alert>
