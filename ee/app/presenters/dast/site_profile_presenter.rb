@@ -5,7 +5,7 @@ module Dast
     REDACTED_PASSWORD = '••••••••'
     REDACTED_REQUEST_HEADERS = '••••••••'
 
-    presents :site_profile
+    presents ::DastSiteProfile, as: :site_profile
 
     def password
       return unless site_profile.secret_variables.any? { |variable| variable.key == ::Dast::SiteProfileSecretVariable::PASSWORD }

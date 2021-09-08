@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class EpicIssuePresenter < Gitlab::View::Presenter::Delegated
-  presents :issue
+  delegator_override :issue
+  presents ::EpicIssue, as: :issue
 
   def group_epic_issue_path(current_user)
     return unless can_admin_issue_link?(current_user)

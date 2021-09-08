@@ -4,7 +4,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
   include GitlabRoutingHelper
   include EntityDateHelper
 
-  presents :epic
+  presents ::Epic, as: :epic
 
   def show_data(base_data: {}, author_icon: nil)
     {
@@ -35,6 +35,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
     end
   end
 
+  delegator_override :subscribed?
   def subscribed?
     epic.subscribed?(current_user)
   end
