@@ -22,9 +22,7 @@ module EE
 
             override :errors
             def errors
-              strong_memoize(:errors) do
-                super.concat(dast_configuration.errors)
-              end
+              super.concat(dast_configuration.errors)
             end
 
             private
