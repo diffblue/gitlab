@@ -1,5 +1,5 @@
 <script>
-import { GlModal } from '@gitlab/ui';
+import { GlModal, GlAlert } from '@gitlab/ui';
 import DismissalCommentBoxToggle from 'ee/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue';
 import DismissalCommentModalFooter from 'ee/vue_shared/security_reports/components/dismissal_comment_modal_footer.vue';
 import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
@@ -19,6 +19,7 @@ export default {
     DismissalCommentModalFooter,
     IssueNote,
     MergeRequestNote,
+    GlAlert,
     GlModal,
     ModalFooter,
     SolutionCard,
@@ -252,7 +253,9 @@ export default {
         />
       </div>
 
-      <div v-if="modal.error" class="alert alert-danger">{{ modal.error }}</div>
+      <gl-alert v-if="modal.error" variant="danger" :dismissible="false">{{
+        modal.error
+      }}</gl-alert>
     </slot>
     <template #modal-footer>
       <dismissal-comment-modal-footer
