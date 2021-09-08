@@ -7,5 +7,6 @@
   has_scoped_labels_feature: @project.feature_available?(:scoped_labels).to_s,
   iteration_id: params[:id],
   labels_fetch_path: project_labels_path(@project, format: :json, include_ancestor_groups: true),
+  iterations_list_path: project_iterations_path(@project),
   preview_markdown_path: preview_markdown_path(@project),
   svg_path: image_path('illustrations/issues.svg') } }
