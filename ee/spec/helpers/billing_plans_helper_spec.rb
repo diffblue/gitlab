@@ -146,21 +146,20 @@ RSpec.describe BillingPlansHelper do
     end
 
     context 'when the namespace belongs to a user' do
-      let(:group) { build(:group, type: 'user') }
+      let(:namespace) { build(:namespace) }
 
       context 'when the namespace is free plan' do
         it 'returns attributes with free_personal_namespace true' do
-          expect(helper.subscription_plan_data_attributes(group, plan))
+          expect(helper.subscription_plan_data_attributes(namespace, plan))
             .to include(free_personal_namespace: 'true')
         end
       end
 
       context 'when the namespace is paid plan' do
-        let(:group) { build(:group, type: 'user') }
-        let!(:gitlab_subscription) { build(:gitlab_subscription, :ultimate, namespace: group) }
+        let!(:gitlab_subscription) { build(:gitlab_subscription, :ultimate, namespace: namespace) }
 
         it 'returns attributes with free_personal_namespace false' do
-          expect(helper.subscription_plan_data_attributes(group, plan))
+          expect(helper.subscription_plan_data_attributes(namespace, plan))
             .to include(free_personal_namespace: 'false')
         end
       end
