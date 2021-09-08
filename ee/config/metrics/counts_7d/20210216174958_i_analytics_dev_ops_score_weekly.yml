@@ -16,7 +16,8 @@ options:
   - i_analytics_dev_ops_score
 distribution:
 - ee
-tier: []
-skip_validation: true
+tier:
+- premium
+- ultimate
 performance_indicator_type: []
 milestone: "<13.9"
