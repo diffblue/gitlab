@@ -4,20 +4,12 @@ module Gitlab
   module Emoji
     extend self
 
-    def emojis
-      TanukiEmoji.index.instance_variable_get(:@name_index)
-    end
-
     def emojis_by_moji
       TanukiEmoji.index.instance_variable_get(:@codepoints_index)
     end
 
     def emojis_unicodes
       emojis_by_moji.keys
-    end
-
-    def emojis_names
-      emojis.keys
     end
 
     def emojis_aliases

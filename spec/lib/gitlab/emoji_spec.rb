@@ -3,42 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Emoji do
-  let_it_be(:emojis) { TanukiEmoji.index.all.index_by(&:name) }
   let_it_be(:emojis_by_moji) { TanukiEmoji.index.all.index_by(&:codepoints) }
   let_it_be(:emoji_unicode_versions_by_name) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'emoji-unicode-version-map.json'))) }
   let_it_be(:emojis_aliases) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'aliases.json'))) }
-
-  describe '.emojis' do
-    it 'returns emojis' do
-      current_emojis = described_class.emojis.values
-
-      expect(current_emojis).to match_array(emojis)
-    end
-  end
-
-  describe '.emojis_by_moji' do
-    it 'return emojis by moji' do
-      current_emojis_by_moji = described_class.emojis_by_moji
-
-      expect(current_emojis_by_moji).to eq(emojis_by_moji)
-    end
-  end
-
-  describe '.emojis_unicodes' do
-    it 'returns emoji unicodes' do
-      emoji_keys = described_class.emojis_unicodes
-
-      expect(emoji_keys).to eq(emojis_by_moji.keys)
-    end
-  end
-
-  describe '.emojis_names' do
-    it 'returns emoji names' do
-      emoji_names = described_class.emojis_names
-
-      expect(emoji_names).to eq(emojis.keys)
-    end
-  end
 
   describe '.emojis_aliases' do
     it 'returns emoji aliases' do
