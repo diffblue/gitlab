@@ -544,6 +544,8 @@
       changes: *ci-patterns
     - <<: *if-automated-merge-request
       changes: *code-backstage-patterns
+    - <<: *if-default-refs
+      changes: *backend-patterns
     - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-default-refs
@@ -559,6 +561,9 @@
       when: never
     - <<: *if-default-refs
       changes: *core-frontend-patterns
+      when: never
+    - <<: *if-default-refs
+      changes: *backend-patterns
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
