@@ -35,6 +35,28 @@ module Ci
         # This is better for concurrent updates.
         update_counters(usage, amount_used: amount)
       end
+
+      def total_usage_notified?
+        usage_notified?(0)
+      end
+
+      # Notification_level is set to 100 (meaning 100% remaining minutes) by default.
+      # It is reduced to 30 when the quota available drops below 30%
+      # It is reduced to 5 when the quota available drops below 5%
+      # It is reduced to 0 when the there are no more minutes available.
+      #
+      # Legacy tracking of CI minutes (in `namespaces` table) uses 2 attributes instead.
+      # We are condensing both into `notification_level` in the new monthly tracking.
+      #
+      # Until we retire the legacy CI minutes tracking:
+      #   * notification_level == 0 is equivalent to last_ci_minutes_notification_at being set
+      #   * notification_level between 100 and 0 is equivalent to last_ci_minutes_usage_notification_level
+      #     being set
+      #   * notification_level == 100 is equivalent to neither of the legacy attributes being set,
+      #     meaning that the quota used is still in the bucket 100%-to-30% used.
+      def usage_notified?(remaining_percentage)
+        notification_level == remaining_percentage
+      end
     end
   end
 end
