@@ -9,11 +9,11 @@ module Types
 
       field :start_time, GraphQL::Types::String,
             null: true,
-            description: 'The start of the rotation active period.'
+            description: 'Start of the rotation active period.'
 
       field :end_time, GraphQL::Types::String,
             null: true,
-            description: 'The end of the rotation active period.'
+            description: 'End of the rotation active period.'
 
       alias_method :active_period, :object
 

@@ -5,7 +5,7 @@ module Types
     graphql_name 'NetworkPolicyKind'
     description 'Kind of the network policy'
 
-    value Gitlab::Kubernetes::CiliumNetworkPolicy::KIND, 'The policy kind of Cilium Network Policy.'
-    value Gitlab::Kubernetes::NetworkPolicy::KIND, 'The policy kind of Network Policy.'
+    value Gitlab::Kubernetes::CiliumNetworkPolicy::KIND, 'Policy kind of Cilium Network Policy.'
+    value Gitlab::Kubernetes::NetworkPolicy::KIND, 'Policy kind of Network Policy.'
   end
 end

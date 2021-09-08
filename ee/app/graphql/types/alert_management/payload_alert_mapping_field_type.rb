@@ -11,7 +11,7 @@ module Types
       field :field_name,
             ::Types::AlertManagement::PayloadAlertFieldNameEnum,
             null: true,
-            description: 'A GitLab alert field name.'
+            description: 'GitLab alert field name.'
 
       field :path,
             [::Types::AlertManagement::PayloadAlertFieldPathSegmentType],

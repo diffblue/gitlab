@@ -5,7 +5,7 @@ module Types
     graphql_name 'MoveType'
     description 'The position to which the adjacent object should be moved'
 
-    value 'before', 'The adjacent object will be moved before the object that is being moved.'
-    value 'after', 'The adjacent object will be moved after the object that is being moved.'
+    value 'before', 'Adjacent object is moved before the object that is being moved.'
+    value 'after', 'Adjacent object is moved after the object that is being moved.'
   end
 end

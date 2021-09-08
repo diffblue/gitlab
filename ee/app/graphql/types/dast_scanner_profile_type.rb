@@ -15,10 +15,10 @@ module Types
           method: :name
 
     field :spider_timeout, GraphQL::Types::Int, null: true,
-          description: 'The maximum number of minutes allowed for the spider to traverse the site.'
+          description: 'Maximum number of minutes allowed for the spider to traverse the site.'
 
     field :target_timeout, GraphQL::Types::Int, null: true,
-          description: 'The maximum number of seconds allowed for the site under test to respond to a request.'
+          description: 'Maximum number of seconds allowed for the site under test to respond to a request.'
 
     field :scan_type, Types::DastScanTypeEnum, null: true,
           description: 'Indicates the type of DAST scan that will run. ' \

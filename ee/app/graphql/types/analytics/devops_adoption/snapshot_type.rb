@@ -38,11 +38,11 @@ module Types
         field :total_projects_count, GraphQL::Types::Int, null: true,
               description: 'Total number of projects.'
         field :recorded_at, Types::TimeType, null: false,
-              description: 'The time the snapshot was recorded.'
+              description: 'Time the snapshot was recorded.'
         field :start_time, Types::TimeType, null: false,
-              description: 'The start time for the snapshot where the data points were collected.'
+              description: 'Start time for the snapshot where the data points were collected.'
         field :end_time, Types::TimeType, null: false,
-              description: 'The end time for the snapshot where the data points were collected.'
+              description: 'End time for the snapshot where the data points were collected.'
       end
     end
   end

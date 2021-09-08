@@ -7,19 +7,19 @@ module Types
       description 'Represents an escalation rule'
 
       argument :oncall_schedule_iid, GraphQL::Types::ID, # rubocop: disable Graphql/IDType
-        description: 'The on-call schedule to notify.',
+        description: 'On-call schedule to notify.',
         required: false
 
       argument :username, GraphQL::Types::String,
-        description: 'The username of the user to notify.',
+        description: 'Username of the user to notify.',
         required: false
 
       argument :elapsed_time_seconds, GraphQL::Types::Int,
-        description: 'The time in seconds before the rule is activated.',
+        description: 'Time in seconds before the rule is activated.',
         required: true
 
       argument :status, Types::IncidentManagement::EscalationRuleStatusEnum,
-        description: 'The status required to prevent the rule from activating.',
+        description: 'Status required to prevent the rule from activating.',
         required: true
 
       def prepare

@@ -10,10 +10,10 @@ module Types
 
         field :minutes, ::GraphQL::INT_TYPE, null: true,
               method: :amount_used,
-              description: 'The number of CI minutes used by the project in the month.'
+              description: 'Number of CI minutes used by the project in the month.'
 
         field :name, ::GraphQL::STRING_TYPE, null: true,
-              description: 'The name of the project.'
+              description: 'Name of the project.'
 
         def name
           object.project.name

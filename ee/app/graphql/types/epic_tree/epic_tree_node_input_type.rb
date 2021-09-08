@@ -9,17 +9,17 @@ module Types
       argument :id,
                ::Types::GlobalIDType[::EpicTreeSorting],
                required: true,
-               description: 'The ID of the epic_issue or epic that is being moved.'
+               description: 'ID of the epic issue or epic that is being moved.'
 
       argument :adjacent_reference_id,
                ::Types::GlobalIDType[::EpicTreeSorting],
                required: false,
-               description: 'The ID of the epic_issue or issue that the actual epic or issue is switched with.'
+               description: 'ID of the epic issue or issue the epic or issue is switched with.'
 
       argument :relative_position,
                MoveTypeEnum,
                required: false,
-               description: 'The type of the switch, after or before allowed.'
+               description: 'Type of switch. Valid values are `after` or `before`.'
 
       argument :new_parent_id,
                ::Types::GlobalIDType[::Epic],

@@ -12,23 +12,23 @@ module Types
             description: 'ID of the profile.'
 
       field :name, GraphQL::Types::String, null: true,
-            description: 'The name of the profile.'
+            description: 'Name of the profile.'
 
       field :description, GraphQL::Types::String, null: true,
-            description: 'The description of the scan.'
+            description: 'Description of the scan.'
 
       field :dast_site_profile, DastSiteProfileType, null: true,
-            description: 'The associated site profile.'
+            description: 'Associated site profile.'
 
       field :dast_scanner_profile, DastScannerProfileType, null: true,
-            description: 'The associated scanner profile.'
+            description: 'Associated scanner profile.'
 
       field :dast_profile_schedule, ::Types::Dast::ProfileScheduleType, null: true,
             description: 'Associated profile schedule. Will always return `null` ' \
                          'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
 
       field :branch, Dast::ProfileBranchType, null: true,
-            description: 'The associated branch.',
+            description: 'Associated branch.',
             calls_gitaly: true
 
       field :edit_path, GraphQL::Types::String, null: true,

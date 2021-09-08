@@ -24,17 +24,17 @@ module Types
       field :username_field, GraphQL::Types::String,
             null: true,
             method: :auth_username_field,
-            description: 'The name of username field at the sign-in HTML form.'
+            description: 'Name of username field at the sign-in HTML form.'
 
       field :password_field, GraphQL::Types::String,
             null: true,
             method: :auth_password_field,
-            description: 'The name of password field at the sign-in HTML form.'
+            description: 'Name of password field at the sign-in HTML form.'
 
       field :username, GraphQL::Types::String,
             null: true,
             method: :auth_username,
-            description: 'The username to authenticate with on the target website.'
+            description: 'Username to authenticate with on the target website.'
 
       field :password, GraphQL::Types::String,
             null: true,
