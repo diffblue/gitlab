@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::ResponseCheck do
 
       it 'warns that NameID has changed and will break sign in' do
         expect(subject.errors[:name_id].join).to include('must match stored NameID')
-        expect(subject.errors[:name_id].join).to include('unable to sign in')
+        expect(subject.errors[:name_id].join).to include('allow sign in')
       end
     end
 
