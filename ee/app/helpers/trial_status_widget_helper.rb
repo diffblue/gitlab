@@ -11,13 +11,6 @@ module TrialStatusWidgetHelper
   D14_CALLOUT_ID = 'trial_status_reminder_d14'
   D3_CALLOUT_ID = 'trial_status_reminder_d3'
 
-  # NOTE: We are okay hard-coding the production value for the Ulitmate 1-year
-  # SaaS plan ID while this is all part of an active experiment. If & when the
-  # experiment is deemed a success, part of the clean-up effort will be to
-  # pull the value directly from the CustomersDot API. Value taken from
-  # https://gitlab.com/gitlab-org/customers-gitlab-com/blob/7177f13c478ef623b779d6635c4a58ee650b7884/config/application.yml#L207
-  ZUORA_ULTIMATE_PLAN_ID = '2c92a0ff76f0d5250176f2f8c86f305a'
-
   def trial_status_popover_data_attrs(group)
     base_attrs = trial_status_common_data_attrs(group)
     base_attrs.merge(
@@ -83,6 +76,16 @@ module TrialStatusWidgetHelper
   end
 
   def ultimate_subscription_path_for_group(group)
-    new_subscriptions_path(namespace_id: group.id, plan_id: ZUORA_ULTIMATE_PLAN_ID)
+    new_subscriptions_path(namespace_id: group.id, plan_id: ultimate_plan_id)
+  end
+
+  def ultimate_plan_id
+    strong_memoize(:ultimate_plan_id) do
+      plans = GitlabSubscriptions::FetchSubscriptionPlansService.new(plan: :free).execute
+
+      next unless plans
+
+      plans.find { |data| data['code'] == 'ultimate' }&.fetch('id', nil)
+    end
   end
 end
