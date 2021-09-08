@@ -23798,6 +23798,9 @@ msgstr ""
 msgid "PackageRegistry|Composer"
 msgstr ""
 
+msgid "PackageRegistry|Composer.json with license: %{license} and version: %{version}"
+msgstr ""
+
 msgid "PackageRegistry|Conan"
 msgstr ""
 
@@ -23859,6 +23862,9 @@ msgid "PackageRegistry|Copy registry include"
 msgstr ""
 
 msgid "PackageRegistry|Copy require package include"
+msgstr ""
+
+msgid "PackageRegistry|Copy target SHA"
 msgstr ""
 
 msgid "PackageRegistry|Copy yarn command"
@@ -24033,6 +24039,9 @@ msgid "PackageRegistry|Sorry, your filter produced no results"
 msgstr ""
 
 msgid "PackageRegistry|Source project located at %{link}"
+msgstr ""
+
+msgid "PackageRegistry|Target SHA: %{sha}"
 msgstr ""
 
 msgid "PackageRegistry|There are no other versions of this package."
