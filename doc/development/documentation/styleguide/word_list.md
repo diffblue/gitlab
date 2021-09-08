@@ -93,6 +93,15 @@ Don't use a descriptor.
 One word, **checkbox**. Do not use **check box**.
 
 You **select** (not **check** or **enable**) and **clear** (not **deselect** or **disable**) checkboxes.
+For example:
+
+- Select the **Protect environment** checkbox.
+- Clear the **Protect environment** checkbox.
+
+If you must refer to the checkbox, you can say it is selected or cleared. For example:
+
+- Ensure the **Protect environment** checkbox is cleared.
+- Ensure the **Protect environment** checkbox is selected.
 
 ## CI/CD
 
