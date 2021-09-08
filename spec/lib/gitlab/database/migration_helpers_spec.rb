@@ -2692,6 +2692,10 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
   end
 
   describe '#remove_check_constraint' do
+    before do
+      allow(model).to receive(:transaction_open?).and_return(false)
+    end
+
     it 'removes the constraint' do
       drop_sql = /ALTER TABLE test_table\s+DROP CONSTRAINT IF EXISTS check_name/
 

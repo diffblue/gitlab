@@ -1379,13 +1379,11 @@ into similar problems in the future (e.g. when new tables are created).
       # validate - Whether to validate the constraint in this call
       #
       def add_check_constraint(table, check, constraint_name, validate: true)
-        validate_check_constraint_name!(constraint_name)
-
         # Transactions would result in ALTER TABLE locks being held for the
         # duration of the transaction, defeating the purpose of this method.
-        if transaction_open?
-          raise 'add_check_constraint can not be run inside a transaction'
-        end
+        validate_not_in_transaction!(:add_check_constraint)
+
+        validate_check_constraint_name!(constraint_name)
 
         if check_constraint_exists?(table, constraint_name)
           warning_message = <<~MESSAGE
@@ -1430,6 +1428,10 @@ into similar problems in the future (e.g. when new tables are created).
       end
 
       def remove_check_constraint(table, constraint_name)
+        # This is technically not necessary, but aligned with add_check_constraint
+        # and allows us to continue use with_lock_retries here
+        validate_not_in_transaction!(:remove_check_constraint)
+
         validate_check_constraint_name!(constraint_name)
 
         # DROP CONSTRAINT requires an EXCLUSIVE lock
