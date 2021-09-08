@@ -8644,9 +8644,6 @@ msgstr ""
 msgid "Configure advanced permissions, Large File Storage, and two-factor authentication settings."
 msgstr ""
 
-msgid "Configure approvals by authors and committers on all projects."
-msgstr ""
-
 msgid "Configure existing installation"
 msgstr ""
 
@@ -10907,12 +10904,6 @@ msgid "Define a custom deploy freeze pattern with %{cronSyntaxStart}cron syntax%
 msgstr ""
 
 msgid "Define a custom pattern with cron syntax"
-msgstr ""
-
-msgid "Define approval rules."
-msgstr ""
-
-msgid "Define approval rules. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "Define custom rules for what constitutes spam, independent of Akismet"
@@ -21559,6 +21550,15 @@ msgid "MergeRequestAnalytics|Pipelines"
 msgstr ""
 
 msgid "MergeRequestAnalytics|Time to merge"
+msgstr ""
+
+msgid "MergeRequestApprovals|Define approval rules and settings to ensure %{link_start}separation of duties%{link_end} for new merge requests."
+msgstr ""
+
+msgid "MergeRequestApprovals|Enforce %{link_start}separation of duties%{link_end} for all projects."
+msgstr ""
+
+msgid "MergeRequestApprovals|Enforce %{separationLinkStart}separation of duties%{separationLinkEnd} for all projects. %{learnLinkStart}Learn more.%{learnLinkEnd}"
 msgstr ""
 
 msgid "MergeRequestDiffs|Commenting on lines %{selectStart}start%{selectEnd} to %{end}"
