@@ -26,7 +26,7 @@ export default {
     <gl-sprintf
       :message="
         s__(
-          'DastProfiles|You can either choose a passive scan or validate the target site in your chosen site profile. %{docsLinkStart}Learn more about site validation.%{docsLinkEnd}',
+          'DastProfiles|You can either choose a passive scan or validate the target site from the site profile management page. %{docsLinkStart}Learn more about site validation.%{docsLinkEnd}',
         )
       "
     >
