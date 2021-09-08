@@ -75,7 +75,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
 
     context 'when there an associated secret variable' do
       it 'is redacted' do
-        create(:dast_site_profile_secret_variable, dast_site_profile: object, key: Dast::SiteProfileSecretVariable::REQUEST_HEADERS)
+        create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: object)
 
         expect(resolve_field(:request_headers, object, current_user: user)).to eq('••••••••')
       end
