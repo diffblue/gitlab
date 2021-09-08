@@ -1,0 +1,5 @@
+mutation deleteIteration($id: IterationID!) {
+  iterationDelete(input: { id: $id }) {
+    errors
+  }
+}

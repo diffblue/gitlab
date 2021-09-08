@@ -11,6 +11,7 @@ import {
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { Namespace } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
@@ -49,6 +50,7 @@ export default {
   },
   apollo: {
     workspace: {
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
       skip() {
         return !this.expanded;
       },
