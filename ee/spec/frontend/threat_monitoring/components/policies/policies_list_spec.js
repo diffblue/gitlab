@@ -321,25 +321,6 @@ describe('PoliciesList component', () => {
     });
   });
 
-  describe('given loading environment', () => {
-    beforeEach(() => {
-      mountWrapper({
-        propsData: {
-          hasEnvironment: true,
-        },
-        state: {
-          threatMonitoring: {
-            isLoadingEnvironments: true,
-          },
-        },
-      });
-    });
-
-    it('does not make a request for network policies', () => {
-      expect(networkPoliciesSpy).not.toHaveBeenCalled();
-    });
-  });
-
   describe('given no environments', () => {
     beforeEach(() => {
       mountWrapper({

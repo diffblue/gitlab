@@ -1,7 +1,7 @@
 <script>
 import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ALL_ENVIRONMENT_NAME } from '../constants';
+import { ALL_ENVIRONMENT_NAME, LOADING_TEXT } from '../constants';
 
 export default {
   components: {
@@ -17,12 +17,20 @@ export default {
     },
   },
   computed: {
-    ...mapState('threatMonitoring', ['environments', 'currentEnvironmentId', 'allEnvironments']),
+    ...mapState('threatMonitoring', [
+      'environments',
+      'currentEnvironmentId',
+      'allEnvironments',
+      'isLoadingEnvironments',
+    ]),
     ...mapGetters('threatMonitoring', ['currentEnvironmentName', 'canChangeEnvironment']),
     environmentName() {
-      return this.allEnvironments && this.includeAll
-        ? ALL_ENVIRONMENT_NAME
-        : this.currentEnvironmentName;
+      if (this.isLoadingEnvironments) {
+        return LOADING_TEXT;
+      } else if (this.allEnvironments && this.includeAll) {
+        return ALL_ENVIRONMENT_NAME;
+      }
+      return this.currentEnvironmentName;
     },
   },
   methods: {
@@ -45,16 +53,18 @@ export default {
       toggle-class="gl-truncate"
       :text="environmentName"
       :disabled="!canChangeEnvironment"
+      :loading="isLoadingEnvironments"
     >
       <gl-dropdown-item
         v-for="environment in environments"
         :key="environment.id"
         @click="setCurrentEnvironmentId(environment.id)"
-        >{{ environment.name }}</gl-dropdown-item
       >
-      <gl-dropdown-item v-if="includeAll" @click="setAllEnvironments">{{
-        $options.ALL_ENVIRONMENT_NAME
-      }}</gl-dropdown-item>
+        {{ environment.name }}
+      </gl-dropdown-item>
+      <gl-dropdown-item v-if="includeAll" @click="setAllEnvironments">
+        {{ $options.ALL_ENVIRONMENT_NAME }}
+      </gl-dropdown-item>
     </gl-dropdown>
   </gl-form-group>
 </template>

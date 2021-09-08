@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import EnvironmentPicker from 'ee/threat_monitoring/components/environment_picker.vue';
 import {
   INVALID_CURRENT_ENVIRONMENT_NAME,
+  LOADING_TEXT,
   ALL_ENVIRONMENT_NAME,
 } from 'ee/threat_monitoring/constants';
 import createStore from 'ee/threat_monitoring/store';
@@ -38,10 +39,6 @@ describe('EnvironmentPicker component', () => {
     describe('given there are no environments', () => {
       beforeEach(() => {
         factory();
-      });
-
-      it('has text set to the INVALID_CURRENT_ENVIRONMENT_NAME', () => {
-        expect(findEnvironmentsDropdown().attributes().text).toBe(INVALID_CURRENT_ENVIRONMENT_NAME);
       });
 
       it('has no dropdown items', () => {
@@ -99,13 +96,19 @@ describe('EnvironmentPicker component', () => {
   });
 
   describe.each`
-    context                            | isLoadingEnvironments | isLoadingNetworkPolicyStatistics | environments
-    ${'environments are loading'}      | ${true}               | ${false}                         | ${mockEnvironments}
-    ${'NetPol statistics are loading'} | ${false}              | ${true}                          | ${mockEnvironments}
-    ${'there are no environments'}     | ${false}              | ${false}                         | ${[]}
+    context                            | isLoadingEnvironments | isLoadingNetworkPolicyStatistics | environments        | text                                | loadingState
+    ${'environments are loading'}      | ${true}               | ${false}                         | ${mockEnvironments} | ${LOADING_TEXT}                     | ${'true'}
+    ${'NetPol statistics are loading'} | ${false}              | ${true}                          | ${mockEnvironments} | ${INVALID_CURRENT_ENVIRONMENT_NAME} | ${undefined}
+    ${'there are no environments'}     | ${false}              | ${false}                         | ${[]}               | ${INVALID_CURRENT_ENVIRONMENT_NAME} | ${undefined}
   `(
     'given $context',
-    ({ isLoadingEnvironments, isLoadingNetworkPolicyStatistics, environments }) => {
+    ({
+      isLoadingEnvironments,
+      isLoadingNetworkPolicyStatistics,
+      environments,
+      text,
+      loadingState,
+    }) => {
       beforeEach(() => {
         factory({
           environments,
@@ -118,6 +121,8 @@ describe('EnvironmentPicker component', () => {
 
       it('disables the environments dropdown', () => {
         expect(findEnvironmentsDropdown().attributes('disabled')).toBe('true');
+        expect(findEnvironmentsDropdown().attributes('text')).toBe(text);
+        expect(findEnvironmentsDropdown().attributes('loading')).toBe(loadingState);
       });
     },
   );
