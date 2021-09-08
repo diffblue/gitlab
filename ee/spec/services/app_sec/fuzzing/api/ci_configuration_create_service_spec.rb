@@ -23,7 +23,7 @@ RSpec.describe ::AppSec::Fuzzing::API::CiConfigurationCreateService do
       it 'returns the API fuzzing configuration based on the given parameters' do
         is_expected.to eq({
           'stages' => ['fuzz'],
-          'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+          'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
           'variables' => {
             'FUZZAPI_HTTP_PASSWORD' => '$PASSWORD',
             'FUZZAPI_HTTP_USERNAME' => '$USERNAME',
@@ -50,7 +50,7 @@ RSpec.describe ::AppSec::Fuzzing::API::CiConfigurationCreateService do
       it 'returns the API fuzzing configuration based on the given parameters' do
         is_expected.to eq({
           'stages' => ['fuzz'],
-          'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+          'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
           'variables' => {
             'FUZZAPI_HTTP_PASSWORD' => '$PASSWORD',
             'FUZZAPI_HTTP_USERNAME' => '$USERNAME',
@@ -77,7 +77,7 @@ RSpec.describe ::AppSec::Fuzzing::API::CiConfigurationCreateService do
       it 'returns the API fuzzing configuration based on the given parameters' do
         is_expected.to eq({
           'stages' => ['fuzz'],
-          'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+          'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
           'variables' => {
             'FUZZAPI_HTTP_PASSWORD' => '$PASSWORD',
             'FUZZAPI_HTTP_USERNAME' => '$USERNAME',
@@ -101,7 +101,7 @@ RSpec.describe ::AppSec::Fuzzing::API::CiConfigurationCreateService do
       it 'does not include them in the configuration' do
         is_expected.to eq({
           'stages' => ['fuzz'],
-          'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+          'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
           'variables' => {
             'FUZZAPI_HAR' => 'https://api.gov/api_spec',
             'FUZZAPI_TARGET_URL' => 'https://api.gov'

@@ -38,7 +38,7 @@ RSpec.describe Mutations::AppSec::Fuzzing::API::CiConfiguration::Create do
           )
           expect(Psych.load(subject[:configuration_yaml])).to eq({
             'stages' => ['fuzz'],
-            'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+            'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
             'variables' => {
               'FUZZAPI_HTTP_PASSWORD' => '$PASSWORD',
               'FUZZAPI_HTTP_USERNAME' => '$USERNAME',

@@ -30,7 +30,7 @@ module AppSec
         end
 
         def ci_configuration
-          { 'include' => [{ 'template' => 'DAST-Runner-Validation.gitlab-ci.yml' }] }
+          { 'include' => [{ 'template' => 'Security/DAST-Runner-Validation.gitlab-ci.yml' }] }
         end
 
         def dast_site_validation_variables

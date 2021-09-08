@@ -52,7 +52,7 @@ RSpec.describe 'CreateApiFuzzingCiConfiguration' do
       expect(gitlab_ci_yml_edit_path).to eq(project_ci_pipeline_editor_path(project))
       expect(Psych.load(yaml)).to eq({
         'stages' => ['fuzz'],
-        'include' => [{ 'template' => 'API-Fuzzing.gitlab-ci.yml' }],
+        'include' => [{ 'template' => 'Security/API-Fuzzing.gitlab-ci.yml' }],
         'variables' => {
           'FUZZAPI_HTTP_PASSWORD' => '$PASSWORD',
           'FUZZAPI_HTTP_USERNAME' => '$USERNAME',

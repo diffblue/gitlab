@@ -28,7 +28,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
         stages:
         - dast
         include:
-        - template: DAST-On-Demand-Scan.gitlab-ci.yml
+        - template: Security/DAST-On-Demand-Scan.gitlab-ci.yml
         dast:
           dast_configuration:
             site_profile: #{dast_site_profile.name}
@@ -92,7 +92,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
             stages:
             - dast
             include:
-            - template: DAST-On-Demand-Scan.gitlab-ci.yml
+            - template: Security/DAST-On-Demand-Scan.gitlab-ci.yml
             dast:
               dast_configuration:
                 site_profile: #{dast_site_profile.name}
