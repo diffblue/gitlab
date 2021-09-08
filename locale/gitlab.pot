@@ -38033,6 +38033,9 @@ msgstr ""
 msgid "Work in progress Limit"
 msgstr ""
 
+msgid "WorkItem|Work Items"
+msgstr ""
+
 msgid "Would you like to create a new branch?"
 msgstr ""
 
