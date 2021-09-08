@@ -5,7 +5,9 @@ require 'spec_helper'
 RSpec.describe 'Updating a DAST Profile' do
   include GraphqlHelpers
 
-  let!(:dast_profile) { create(:dast_profile, project: project) }
+  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:current_user) { create(:user) }
+  let_it_be(:dast_profile) { create(:dast_profile, project: project) }
 
   let(:mutation_name) { :dast_profile_update }
 
