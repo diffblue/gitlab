@@ -7,7 +7,21 @@ module Gitlab
         include Gitlab::Database::MigrationHelpers
 
         # Superseded by `create_table` override below
-        undef_method :create_table_with_constraints
+        def create_table_with_constraints(*_)
+          raise <<~EOM
+            #create_table_with_constraints is not supported anymore - use #create_table instead, for example:
+
+              create_table :db_guides do |t|
+                t.bigint :stars, default: 0, null: false
+                t.text :title, limit: 128
+                t.text :notes, limit: 1024
+
+                t.check_constraint 'stars > 1000', name: 'so_many_stars'
+              end
+
+            See https://docs.gitlab.com/ee/development/database/strings_and_the_text_data_type.html
+          EOM
+        end
 
         # Creates a new table, optionally allowing the caller to add text limit constraints to the table.
         # This method only extends Rails' `create_table` method
