@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProfileConflictAlert renders properly 1`] = `
+<gl-alert-stub
+  dismisslabel="Dismiss"
+  primarybuttonlink="/dast_scans#site-profiles"
+  primarybuttontext="Manage site profiles"
+  secondarybuttonlink=""
+  secondarybuttontext=""
+  title="You cannot run an active scan against an unvalidated site."
+  variant="danger"
+>
+  You can either choose a passive scan or validate the target site from the site profile management page. 
+  <gl-link-stub
+    href="/help/user/application_security/dast/index#site-profile-validation"
+  >
+    Learn more about site validation.
+  </gl-link-stub>
+</gl-alert-stub>
+`;

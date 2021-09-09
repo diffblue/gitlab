@@ -37,6 +37,7 @@ import {
   SCANNER_PROFILES_QUERY,
   SITE_PROFILES_QUERY,
 } from '../settings';
+import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
 import ScanSchedule from './scan_schedule.vue';
@@ -69,6 +70,7 @@ export default {
   saveScanBtnId: 'scan-save-button',
   components: {
     RefSelector,
+    ProfileConflictAlert,
     ScannerProfileSelector,
     SiteProfileSelector,
     ScanSchedule,
@@ -102,7 +104,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'helpPagePath', 'dastSiteValidationDocsPath', 'profilesLibraryPath'],
+  inject: ['projectPath', 'helpPagePath', 'profilesLibraryPath'],
   props: {
     defaultBranch: {
       type: String,
@@ -454,25 +456,10 @@ export default {
 
       <scan-schedule v-if="glFeatures.dastOnDemandScansScheduler" v-model="profileSchedule" />
 
-      <gl-alert
+      <profile-conflict-alert
         v-if="hasProfilesConflict"
-        :title="s__('OnDemandScans|You cannot run an active scan against an unvalidated site.')"
-        :dismissible="false"
-        variant="danger"
         data-testid="on-demand-scans-profiles-conflict-alert"
-      >
-        <gl-sprintf
-          :message="
-            s__(
-              'OnDemandScans|You can either choose a passive scan or validate the target site in your chosen site profile. %{docsLinkStart}Learn more about site validation.%{docsLinkEnd}',
-            )
-          "
-        >
-          <template #docsLink="{ content }">
-            <gl-link :href="dastSiteValidationDocsPath">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
+      />
 
       <div class="gl-mt-6 gl-pt-6">
         <gl-button

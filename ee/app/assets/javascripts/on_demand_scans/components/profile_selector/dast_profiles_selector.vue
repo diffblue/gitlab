@@ -1,13 +1,13 @@
 <script>
-import { GlCard, GlSkeletonLoader, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { ERROR_MESSAGES, SCANNER_PROFILES_QUERY, SITE_PROFILES_QUERY } from '../../settings';
+import ProfileConflictAlert from './profile_conflict_alert.vue';
 import ScannerProfileSelector from './scanner_profile_selector.vue';
 import SiteProfileSelector from './site_profile_selector.vue';
 
@@ -36,11 +36,9 @@ export default {
   components: {
     GlCard,
     GlSkeletonLoader,
-    GlAlert,
-    GlSprintf,
+    ProfileConflictAlert,
     ScannerProfileSelector,
     SiteProfileSelector,
-    GlLink,
   },
   inject: ['fullPath'],
   apollo: {
@@ -63,9 +61,6 @@ export default {
       selectedSiteProfileId: null,
       errorType: null,
       errors: [],
-      dastSiteValidationDocsPath: helpPagePath('user/application_security/dast/index', {
-        anchor: 'site-profile-validation',
-      }),
     };
   },
   computed: {
@@ -158,26 +153,11 @@ export default {
         :has-conflict="hasProfilesConflict"
       />
 
-      <gl-alert
+      <profile-conflict-alert
         v-if="hasProfilesConflict"
-        :title="s__('DastProfiles|You cannot run an active scan against an unvalidated site.')"
         class="gl-mb-5"
-        :dismissible="false"
-        variant="danger"
         data-testid="dast-profiles-conflict-alert"
-      >
-        <gl-sprintf
-          :message="
-            s__(
-              'DastProfiles|You can either choose a passive scan or validate the target site in your chosen site profile. %{docsLinkStart}Learn more about site validation.%{docsLinkEnd}',
-            )
-          "
-        >
-          <template #docsLink="{ content }">
-            <gl-link :href="dastSiteValidationDocsPath">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
+      />
     </template>
   </div>
 </template>
