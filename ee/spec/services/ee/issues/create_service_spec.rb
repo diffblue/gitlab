@@ -7,8 +7,11 @@ RSpec.describe Issues::CreateService do
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:project) { create(:project, group: group) }
 
-  let(:params) { { title: 'Awesome issue', description: 'please fix', weight: 9 } }
+  let(:base_params) { { title: 'Awesome issue', description: 'please fix', weight: 9 } }
+  let(:additional_params) { {} }
+  let(:params) { base_params.merge(additional_params) }
   let(:service) { described_class.new(project: project, current_user: user, params: params, spam_params: nil) }
+  let(:created_issue) { service.execute }
 
   describe '#execute' do
     context 'when current user cannot admin issues in the project' do
@@ -17,10 +20,8 @@ RSpec.describe Issues::CreateService do
       end
 
       it 'filters out params that cannot be set without the :admin_issue permission' do
-        issue = service.execute
-
-        expect(issue).to be_persisted
-        expect(issue.weight).to be_nil
+        expect(created_issue).to be_persisted
+        expect(created_issue.weight).to be_nil
       end
     end
 
@@ -31,10 +32,8 @@ RSpec.describe Issues::CreateService do
       end
 
       it 'sets permitted params correctly' do
-        issue = service.execute
-
-        expect(issue).to be_persisted
-        expect(issue.weight).to eq(9)
+        expect(created_issue).to be_persisted
+        expect(created_issue.weight).to eq(9)
       end
 
       context 'when epics are enabled' do
@@ -58,11 +57,9 @@ RSpec.describe Issues::CreateService do
             let(:params) { { title: 'New issue', description: "/epic #{epic.to_reference(project)}" } }
 
             it 'adds an issue to the passed epic' do
-              issue = service.execute
-
-              expect(issue).to be_persisted
-              expect(issue.reload.epic).to eq(epic)
-              expect(issue.confidential).to eq(false)
+              expect(created_issue).to be_persisted
+              expect(created_issue.reload.epic).to eq(epic)
+              expect(created_issue.confidential).to eq(false)
             end
           end
 
@@ -82,10 +79,8 @@ RSpec.describe Issues::CreateService do
             end
 
             it 'sets epic and milestone to issuable and update epic start and due date' do
-              issue = service.execute
-
-              expect(issue.milestone).to eq(milestone)
-              expect(issue.reload.epic).to eq(epic)
+              expect(created_issue.milestone).to eq(milestone)
+              expect(created_issue.reload.epic).to eq(epic)
               expect(epic.reload.start_date).to eq(milestone.start_date)
               expect(epic.due_date).to eq(milestone.due_date)
             end
@@ -106,23 +101,82 @@ RSpec.describe Issues::CreateService do
           end
 
           context 'when adding a public issue to confidential epic' do
+            let(:confidential_epic) { create(:epic, group: group, confidential: true) }
+            let(:params) { { title: 'confidential issue', epic_id: confidential_epic.id } }
+
             it 'creates confidential child issue' do
-              confidential_epic = create(:epic, group: group, confidential: true)
-              params = { title: 'confidential issue', epic_id: confidential_epic.id }
-
-              issue = described_class.new(project: project, current_user: user, params: params, spam_params: nil).execute
-
-              expect(issue.confidential).to eq(true)
+              expect(created_issue).to be_confidential
             end
           end
 
           context 'when adding a confidential issue to public epic' do
+            let(:params) { { title: 'confidential issue', epic_id: epic.id, confidential: true } }
+
             it 'creates a confidential child issue' do
-              params = { title: 'confidential issue', epic_id: epic.id, confidential: true }
+              expect(created_issue).to be_confidential
+            end
+          end
+        end
+      end
 
-              issue = described_class.new(project: project, current_user: user, params: params, spam_params: nil).execute
+      context 'when iterations are available' do
+        let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group) }
+        let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group) }
+        let_it_be(:current_iteration1) { create(:iteration, group: group, iterations_cadence: iteration_cadence1, start_date: 4.days.ago, due_date: 3.days.from_now) }
+        let_it_be(:current_iteration2) { create(:iteration, group: group, iterations_cadence: iteration_cadence2, start_date: 4.days.ago, due_date: 3.days.from_now) }
+        let_it_be(:future_iteration) { create(:iteration, group: group, iterations_cadence: iteration_cadence1, start_date: 6.days.from_now, due_date: 13.days.from_now) }
 
-              expect(issue.confidential).to eq(true)
+        before do
+          stub_licensed_features(iterations: true)
+        end
+
+        context 'when iteration_id is provided' do
+          let(:additional_params) { { iteration_id: future_iteration.id } }
+
+          it 'is successful, and assigns the current iteration to the issue' do
+            expect(created_issue).to be_persisted
+            expect(created_issue).to have_attributes(iteration: future_iteration)
+          end
+
+          context 'when iteration_wildcard_id is provided' do
+            let(:additional_params) { { iteration_id: future_iteration.id, iteration_wildcard_id: 'CURRENT', iteration_cadence_id: iteration_cadence2.id } }
+
+            it 'raises a mutually exclusive argument error' do
+              expect { service.execute }.to raise_error(
+                ::Issues::BaseService::IterationAssignmentError,
+                'Incompatible arguments: iteration_id, iteration_wildcard_id.'
+              )
+            end
+          end
+
+          context "when user can't read the given iteration" do
+            let(:additional_params) { { iteration_id: create(:iteration, group: create(:group, :private)).id } }
+
+            it 'is successful but does not assign the iteration' do
+              expect(created_issue).to be_persisted
+              expect(created_issue).to have_attributes(iteration: nil)
+            end
+          end
+        end
+
+        context 'when iteration_wildcard_id is CURRENT' do
+          let(:additional_params) { { iteration_wildcard_id: 'CURRENT' } }
+
+          context 'when iteration_cadence_id is provided' do
+            let(:additional_params) { { iteration_wildcard_id: 'CURRENT', iteration_cadence_id: iteration_cadence2.id } }
+
+            it 'is successful, and assigns the current iteration to the issue' do
+              expect(created_issue).to be_persisted
+              expect(created_issue).to have_attributes(iteration: current_iteration2)
+            end
+          end
+
+          context 'when iteration_cadence_id is not provided' do
+            it 'always requires iteration cadence id when wildcard is provided' do
+              expect { service.execute }.to raise_error(
+                ::Issues::BaseService::IterationAssignmentError,
+                'iteration_cadence_id is required when iteration_wildcard_id is provided.'
+              )
             end
           end
         end
