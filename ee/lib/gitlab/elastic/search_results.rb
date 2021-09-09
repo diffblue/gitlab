@@ -3,8 +3,10 @@
 module Gitlab
   module Elastic
     class SearchResults
+      include ActionView::Helpers::NumberHelper
       include Gitlab::Utils::StrongMemoize
 
+      ELASTIC_COUNT_LIMIT = 10000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters
@@ -70,21 +72,21 @@ module Gitlab
       def formatted_count(scope)
         case scope
         when 'projects'
-          projects_count.to_s
+          elastic_search_limited_counter_with_delimiter(projects_count)
         when 'notes'
-          notes_count.to_s
+          elastic_search_limited_counter_with_delimiter(notes_count)
         when 'blobs'
-          blobs_count.to_s
+          elastic_search_limited_counter_with_delimiter(blobs_count)
         when 'wiki_blobs'
-          wiki_blobs_count.to_s
+          elastic_search_limited_counter_with_delimiter(wiki_blobs_count)
         when 'commits'
-          commits_count.to_s
+          elastic_search_limited_counter_with_delimiter(commits_count)
         when 'issues'
-          issues_count.to_s
+          elastic_search_limited_counter_with_delimiter(issues_count)
         when 'merge_requests'
-          merge_requests_count.to_s
+          elastic_search_limited_counter_with_delimiter(merge_requests_count)
         when 'milestones'
-          milestones_count.to_s
+          elastic_search_limited_counter_with_delimiter(milestones_count)
         end
       end
 
@@ -338,6 +340,16 @@ module Gitlab
 
       def default_scope
         'projects'
+      end
+
+      def elastic_search_limited_counter_with_delimiter(count)
+        if count.nil?
+          number_with_delimiter(0)
+        elsif count >= ELASTIC_COUNT_LIMIT
+          number_with_delimiter(ELASTIC_COUNT_LIMIT) + '+'
+        else
+          number_with_delimiter(count)
+        end
       end
     end
   end

@@ -40,6 +40,26 @@ RSpec.describe Gitlab::Elastic::SnippetSearchResults, :elastic, :clean_gitlab_re
     end
   end
 
+  describe '#formatted_count' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:value, :expected) do
+      1     | '1'
+      9999  | '9,999'
+      10000 | '10,000+'
+      20000 | '10,000+'
+      0     | '0'
+      nil   | '0'
+    end
+
+    with_them do
+      it 'returns the expected formatted count limited and delimited' do
+        expect(results).to receive(:snippet_titles_count).and_return(value)
+        expect(results.formatted_count('snippets')).to eq(expected)
+      end
+    end
+  end
+
   describe '#highlight_map' do
     it 'returns the expected highlight map' do
       expect(results).to receive(:snippet_titles).and_return([{ _source: { id: 1 }, highlight: 'test <span class="gl-text-gray-900 gl-font-weight-bold">highlight</span>' }])
