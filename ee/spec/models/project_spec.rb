@@ -928,6 +928,35 @@ RSpec.describe Project do
     end
   end
 
+  describe '#membership_locked?' do
+    let(:project) { build_stubbed(:project, group: group) }
+    let(:group) { nil }
+
+    context 'when project has no group' do
+      let(:project) { Project.new }
+
+      it 'is false' do
+        expect(project).not_to be_membership_locked
+      end
+    end
+
+    context 'with group_membership_lock enabled' do
+      let(:group) { build_stubbed(:group, membership_lock: true) }
+
+      it 'is true' do
+        expect(project).to be_membership_locked
+      end
+    end
+
+    context 'with group_membership_lock disabled' do
+      let(:group) { build_stubbed(:group, membership_lock: false) }
+
+      it 'is false' do
+        expect(project).not_to be_membership_locked
+      end
+    end
+  end
+
   describe '#feature_available?' do
     let(:namespace) { build(:namespace) }
     let(:plan_license) { nil }

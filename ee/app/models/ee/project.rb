@@ -470,6 +470,13 @@ module EE
       super && !(group && ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
     end
 
+    override :membership_locked?
+    def membership_locked?
+      return false unless group
+
+      group.membership_lock?
+    end
+
     # TODO: Clean up this method in the https://gitlab.com/gitlab-org/gitlab/issues/33329
     def approvals_before_merge
       return 0 unless feature_available?(:merge_request_approvers)

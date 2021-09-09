@@ -604,6 +604,12 @@ RSpec.describe Project, factory_default: :keep do
     end
   end
 
+  describe '#membership_locked?' do
+    it 'returns false' do
+      expect(build(:project)).not_to be_membership_locked
+    end
+  end
+
   describe '#autoclose_referenced_issues' do
     context 'when DB entry is nil' do
       let(:project) { build(:project, autoclose_referenced_issues: nil) }

@@ -5,9 +5,10 @@ module EE
     module CreateService
       private
 
-      def validate_invites!
+      def validate_invitable!
         super
 
+        check_membership_lock!
         check_quota!
       end
 
@@ -19,6 +20,13 @@ module EE
                 s_("AddMember|Invite limit of %{daily_invites} per day exceeded"),
                 daily_invites: source.actual_limits.daily_invites
               )
+      end
+
+      def check_membership_lock!
+        return unless source.membership_locked?
+
+        @membership_locked = true # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        raise ::Members::CreateService::MembershipLockedError
       end
 
       def invite_quota_exceeded?

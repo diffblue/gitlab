@@ -51,17 +51,6 @@ module EE
           can?(current_user, :read_group_saml_identity, members_source)
         end
 
-        override :create_member
-        def create_member(current_user, user, source, params)
-          member = super
-
-          return false unless member
-
-          log_audit_event(member) if member.persisted? && member.valid?
-
-          member
-        end
-
         def find_member(params)
           source = find_source(:group, params.delete(:id))
           authorize! :override_group_member, source
@@ -75,14 +64,6 @@ module EE
           else
             render_validation_error!(updated_member)
           end
-        end
-
-        def log_audit_event(member)
-          ::AuditEventService.new(
-            current_user,
-            member.source,
-            action: :create
-          ).for_member(member).security_event
         end
       end
     end
