@@ -1,6 +1,7 @@
 <script>
 import { GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import ConfigurationPageLayout from '../../components/configuration_page_layout.vue';
 import apiFuzzingCiConfigurationQuery from '../graphql/api_fuzzing_ci_configuration.query.graphql';
 import ConfigurationForm from './configuration_form.vue';
 
@@ -10,6 +11,7 @@ export default {
     GlLoadingIcon,
     GlSprintf,
     ConfigurationForm,
+    ConfigurationPageLayout,
   },
   inject: {
     fullPath: {
@@ -42,22 +44,18 @@ export default {
 </script>
 
 <template>
-  <article>
-    <header class="gl-my-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid">
-      <h4>
-        {{ s__('APIFuzzing|API Fuzzing Configuration') }}
-      </h4>
-      <p>
-        <gl-sprintf :message="$options.i18n.helpText">
-          <template #docsLink="{ content }">
-            <gl-link :href="apiFuzzingDocumentationPath" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </p>
-    </header>
+  <configuration-page-layout>
+    <template #heading> {{ s__('APIFuzzing|API Fuzzing Configuration') }} </template>
+    <template #description>
+      <gl-sprintf :message="$options.i18n.helpText">
+        <template #docsLink="{ content }">
+          <gl-link :href="apiFuzzingDocumentationPath" target="_blank">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </template>
 
     <gl-loading-icon v-if="$apollo.loading" size="lg" />
 
     <configuration-form v-else :api-fuzzing-ci-configuration="apiFuzzingCiConfiguration" />
-  </article>
+  </configuration-page-layout>
 </template>

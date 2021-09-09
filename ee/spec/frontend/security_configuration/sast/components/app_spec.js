@@ -1,13 +1,14 @@
 import { GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import SASTConfigurationApp from 'ee/security_configuration/sast/components/app.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
 import sastCiConfigurationQuery from 'ee/security_configuration/sast/graphql/sast_ci_configuration.query.graphql';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { sastCiConfigurationQueryResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -25,7 +26,7 @@ describe('SAST Configuration App', () => {
     createMockApollo([[sastCiConfigurationQuery, handler]]);
 
   const createComponent = (options) => {
-    wrapper = shallowMount(
+    wrapper = shallowMountExtended(
       SASTConfigurationApp,
       merge(
         {
@@ -46,10 +47,10 @@ describe('SAST Configuration App', () => {
   const findHeader = () => wrapper.find('header');
   const findSubHeading = () => findHeader().find('p');
   const findLink = (container = wrapper) => container.find(GlLink);
-  const findConfigurationForm = () => wrapper.find(ConfigurationForm);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findErrorAlert = () => wrapper.find('[data-testid="error-alert"]');
-  const findFeedbackAlert = () => wrapper.find('[data-testid="feedback-alert"]');
+  const findConfigurationForm = () => wrapper.findComponent(ConfigurationForm);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findErrorAlert = () => wrapper.findByTestId('error-alert');
+  const findFeedbackAlert = () => wrapper.findByTestId('configuration-page-alert');
 
   afterEach(() => {
     wrapper.destroy();
@@ -59,7 +60,7 @@ describe('SAST Configuration App', () => {
   describe('feedback alert', () => {
     beforeEach(() => {
       createComponent({
-        stubs: { GlSprintf },
+        stubs: { GlSprintf, ConfigurationPageLayout },
       });
     });
 
@@ -90,7 +91,7 @@ describe('SAST Configuration App', () => {
   describe('header', () => {
     beforeEach(() => {
       createComponent({
-        stubs: { GlSprintf },
+        stubs: { GlSprintf, ConfigurationPageLayout },
       });
     });
 
