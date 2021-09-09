@@ -4,6 +4,10 @@ module EE
   module Integration
     extend ActiveSupport::Concern
 
+    prepended do
+      scope :vulnerability_hooks, -> { where(vulnerability_events: true, active: true) }
+    end
+
     EE_COM_PROJECT_SPECIFIC_INTEGRATION_NAMES = %w[
       gitlab_slack_application
     ].freeze
