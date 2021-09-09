@@ -132,6 +132,7 @@ class GroupPolicy < BasePolicy
     enable :create_custom_emoji
     enable :create_package
     enable :create_package_settings
+    enable :developer_access
   end
 
   rule { reporter }.policy do
@@ -161,6 +162,7 @@ class GroupPolicy < BasePolicy
     enable :read_deploy_token
     enable :create_jira_connect_subscription
     enable :update_runners_registration_token
+    enable :maintainer_access
   end
 
   rule { owner }.policy do

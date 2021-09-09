@@ -3,11 +3,13 @@
 class CustomEmojiPolicy < BasePolicy
   delegate { @subject.group }
 
-  condition(:admin_custom_emoji) do
-    @subject.group.member?(@user, Gitlab::Access::MAINTAINER) || @subject.creator == @user
+  condition(:author) { @subject.creator == @user }
+
+  rule { can?(:maintainer_access) }.policy do
+    enable :delete_custom_emoji
   end
 
-  rule { admin_custom_emoji }.policy do
+  rule { author & can?(:developer_access) }.policy do
     enable :delete_custom_emoji
   end
 end

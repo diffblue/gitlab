@@ -1935,14 +1935,14 @@ Input type: `DestroyCustomEmojiInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdestroycustomemojiclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdestroycustomemojiid"></a>`id` | [`CustomEmojiID!`](#customemojiid) | The global ID of the custom emoji to destroy. |
+| <a id="mutationdestroycustomemojiid"></a>`id` | [`CustomEmojiID!`](#customemojiid) | Global ID of the custom emoji to destroy. |
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdestroycustomemojiclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdestroycustomemojicustomemoji"></a>`customEmoji` | [`CustomEmoji`](#customemoji) | The deleted custom emoji. |
+| <a id="mutationdestroycustomemojicustomemoji"></a>`customEmoji` | [`CustomEmoji`](#customemoji) | Deleted custom emoji. |
 | <a id="mutationdestroycustomemojierrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.destroyEpicBoard`
