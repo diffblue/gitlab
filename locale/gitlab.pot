@@ -36156,6 +36156,9 @@ msgstr ""
 msgid "UsageQuota|%{help_link_start}Shared runners%{help_link_end} are disabled, so there are no limits set on pipeline usage"
 msgstr ""
 
+msgid "UsageQuota|%{linkTitle} help link"
+msgstr ""
+
 msgid "UsageQuota|%{percentageLeft} of purchased storage is available"
 msgstr ""
 
@@ -36163,6 +36166,9 @@ msgid "UsageQuota|Artifacts"
 msgstr ""
 
 msgid "UsageQuota|Artifacts is a sum of build and pipeline artifacts."
+msgstr ""
+
+msgid "UsageQuota|Audio samples, videos, datasets, and graphics."
 msgstr ""
 
 msgid "UsageQuota|Buy additional minutes"
@@ -36174,7 +36180,19 @@ msgstr ""
 msgid "UsageQuota|CI minutes usage by project"
 msgstr ""
 
+msgid "UsageQuota|Code packages and container images."
+msgstr ""
+
 msgid "UsageQuota|Current period usage"
+msgstr ""
+
+msgid "UsageQuota|File attachments and smaller design graphics."
+msgstr ""
+
+msgid "UsageQuota|Git repository, managed by the Gitaly service."
+msgstr ""
+
+msgid "UsageQuota|Includes project registry, artifacts, packages, wiki, uploads and other items."
 msgstr ""
 
 msgid "UsageQuota|Increase storage temporarily"
@@ -36195,6 +36213,9 @@ msgstr ""
 msgid "UsageQuota|Packages"
 msgstr ""
 
+msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
+msgstr ""
+
 msgid "UsageQuota|Pipelines"
 msgstr ""
 
@@ -36213,6 +36234,9 @@ msgstr ""
 msgid "UsageQuota|Seats"
 msgstr ""
 
+msgid "UsageQuota|Shared bits of code and text."
+msgstr ""
+
 msgid "UsageQuota|Snippets"
 msgstr ""
 
@@ -36220,6 +36244,12 @@ msgid "UsageQuota|Something went wrong while fetching project storage statistics
 msgstr ""
 
 msgid "UsageQuota|Storage"
+msgstr ""
+
+msgid "UsageQuota|Storage type"
+msgstr ""
+
+msgid "UsageQuota|There is a known issue with Artifact storage where the total could be incorrect for some projects. More details and progress are available in %{warningLinkStart}the epic%{warningLinkEnd}."
 msgstr ""
 
 msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."
@@ -36261,6 +36291,9 @@ msgstr ""
 msgid "UsageQuota|Usage"
 msgstr ""
 
+msgid "UsageQuota|Usage Breakdown"
+msgstr ""
+
 msgid "UsageQuota|Usage Quotas"
 msgstr ""
 
@@ -36283,6 +36316,9 @@ msgid "UsageQuota|When you purchase additional storage, we automatically unlock 
 msgstr ""
 
 msgid "UsageQuota|Wiki"
+msgstr ""
+
+msgid "UsageQuota|Wiki content."
 msgstr ""
 
 msgid "UsageQuota|Wikis"
