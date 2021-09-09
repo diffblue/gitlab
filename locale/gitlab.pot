@@ -13938,9 +13938,6 @@ msgstr ""
 msgid "Failed to load related branches"
 msgstr ""
 
-msgid "Failed to load sidebar lock status"
-msgstr ""
-
 msgid "Failed to load stacktrace."
 msgstr ""
 

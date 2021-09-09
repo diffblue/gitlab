@@ -1,12 +1,12 @@
 import initRelatedFeatureFlags from 'ee/related_feature_flags';
-import initSidebarBundle from 'ee/sidebar/sidebar_bundle';
-
+import { store } from '~/notes/stores';
 import initShow from '~/pages/projects/issues/show';
 import initRelatedIssues from '~/related_issues';
+import initSidebarBundle from '~/sidebar/sidebar_bundle';
 import UserCallout from '~/user_callout';
 
 initShow();
-initSidebarBundle();
+initSidebarBundle(store);
 initRelatedIssues();
 initRelatedFeatureFlags();
 
