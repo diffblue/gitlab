@@ -108,7 +108,7 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
   describe '#applicable_branches' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
     let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
-    let_it_be_with_reload(:rule_schedule) do
+    let_it_be_with_refind(:rule_schedule) do
       create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration)
     end
 
@@ -179,6 +179,90 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
       end
 
       it { is_expected.to be_empty }
+    end
+  end
+
+  describe '#applicable_clusters' do
+    let_it_be_with_reload(:project) { create(:project, :repository) }
+    let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+
+    let!(:rule_schedule) do
+      create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration, rule_index: rule_index)
+    end
+
+    let(:clusters) do
+      {
+        'production-cluster': {
+          namespaces: ['production-namespace']
+        }
+      }
+    end
+
+    let(:policy) do
+      build(:scan_execution_policy, rules: [
+        { type: 'schedule', clusters: clusters, cadence: '*/20 * * * *' },
+        { type: 'pipeline', branches: ['main'] }
+      ])
+    end
+
+    subject { rule_schedule.applicable_clusters }
+
+    before do
+      allow(rule_schedule).to receive(:policy).and_return(policy)
+    end
+
+    context 'when applicable rule contains clusters configuration' do
+      let(:rule_index) { 0 }
+
+      it { is_expected.to eq(clusters) }
+    end
+
+    context 'when applicable rule does not contain clusters configuration' do
+      let(:rule_index) { 1 }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#for_cluster?' do
+    let_it_be_with_reload(:project) { create(:project, :repository) }
+    let_it_be_with_reload(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+
+    let!(:rule_schedule) do
+      create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration, rule_index: rule_index)
+    end
+
+    let(:clusters) do
+      {
+        'production-cluster': {
+          namespaces: ['production-namespace']
+        }
+      }
+    end
+
+    let(:policy) do
+      build(:scan_execution_policy, rules: [
+        { type: 'schedule', clusters: clusters, cadence: '*/20 * * * *' },
+        { type: 'pipeline', branches: ['main'] }
+      ])
+    end
+
+    subject { rule_schedule.for_cluster? }
+
+    before do
+      allow(rule_schedule).to receive(:policy).and_return(policy)
+    end
+
+    context 'when applicable rule contains clusters configuration' do
+      let(:rule_index) { 0 }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when applicable rule does not contain clusters configuration' do
+      let(:rule_index) { 1 }
+
+      it { is_expected.to eq(false) }
     end
   end
 

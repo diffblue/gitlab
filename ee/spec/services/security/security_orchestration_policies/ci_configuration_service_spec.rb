@@ -19,8 +19,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
       end
     end
 
-    context 'when scan type is secret_detection' do
-      context 'when action is valid' do
+    context 'when action is valid' do
+      context 'when scan type is secret_detection' do
         let_it_be(:action) { { scan: 'secret_detection' } }
         let_it_be(:template_name) { 'Jobs/Secret-Detection' }
 
@@ -58,17 +58,72 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         end
       end
 
-      context 'when action is invalid' do
-        let_it_be(:action) { { scan: 'invalid_type' } }
+      context 'when scan type is cluster_image_scanning' do
+        let_it_be(:action) { { scan: 'cluster_image_scanning' } }
+        let_it_be(:template_name) { 'Security/Cluster-Image-Scanning' }
+        let_it_be(:ci_variables) { {} }
 
-        it 'returns prepared CI configuration with error script' do
+        it_behaves_like 'with template name for scan type'
+
+        it 'returns prepared CI configuration for Cluster Image Scanning' do
           expected_configuration = {
-            'allow_failure' => true,
-            'script' => "echo \"Error during Scan execution: Invalid Scan type\" && false"
+            image: '$CIS_ANALYZER_IMAGE',
+            stage: 'test',
+            allow_failure: true,
+            artifacts: {
+              reports: { cluster_image_scanning: 'gl-cluster-image-scanning-report.json' },
+              paths: ['gl-cluster-image-scanning-report.json']
+            },
+            dependencies: [],
+            script: ['/analyzer run'],
+            variables: {
+              CIS_ANALYZER_IMAGE: 'registry.gitlab.com/gitlab-org/security-products/analyzers/cluster-image-scanning:0'
+            }
           }
 
-          expect(subject).to eq(expected_configuration)
+          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
         end
+      end
+
+      context 'when scan type is container_scanning' do
+        let_it_be(:action) { { scan: 'container_scanning' } }
+        let_it_be(:template_name) { 'Security/Container-Scanning' }
+        let_it_be(:ci_variables) { {} }
+
+        it_behaves_like 'with template name for scan type'
+
+        it 'returns prepared CI configuration for Container Scanning' do
+          expected_configuration = {
+            image: '$CS_ANALYZER_IMAGE',
+            stage: 'test',
+            allow_failure: true,
+            artifacts: {
+              reports: { container_scanning: 'gl-container-scanning-report.json' },
+              paths: ['gl-container-scanning-report.json']
+            },
+            dependencies: [],
+            script: ['gtcs scan'],
+            variables: {
+              CS_ANALYZER_IMAGE: 'registry.gitlab.com/security-products/container-scanning:4',
+              GIT_STRATEGY: 'none'
+            }
+          }
+
+          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
+        end
+      end
+    end
+
+    context 'when action is invalid' do
+      let_it_be(:action) { { scan: 'invalid_type' } }
+
+      it 'returns prepared CI configuration with error script' do
+        expected_configuration = {
+          'allow_failure' => true,
+          'script' => "echo \"Error during Scan execution: Invalid Scan type\" && false"
+        }
+
+        expect(subject).to eq(expected_configuration)
       end
     end
   end

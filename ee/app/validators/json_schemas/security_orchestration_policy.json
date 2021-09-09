@@ -1,133 +1,197 @@
 {
   "required": [
-      "scan_execution_policy"
+    "scan_execution_policy"
   ],
   "type": "object",
   "properties": {
-      "scan_execution_policy": {
-          "type": "array",
-          "additionalItems": false,
-          "items": {
-              "maxItems": 5,
+    "scan_execution_policy": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "maxItems": 5,
+        "required": [
+          "name",
+          "enabled",
+          "rules",
+          "actions"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "rules": {
+            "type": "array",
+            "additionalItems": false,
+            "items": {
+              "type": "object",
+              "required": [],
+              "properties": {
+                "type": {
+                  "enum": [
+                    "pipeline",
+                    "schedule"
+                  ],
+                  "type": "string"
+                },
+                "branches": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "cadence": {
+                  "type": "string"
+                },
+                "clusters": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "maxProperties": 1,
+                  "patternProperties": {
+                    "\\A[a-z0-9]([-a-z0-9]*[a-z0-9])?\\z": {
+                      "type": "object",
+                      "properties": {
+                        "namespaces": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "resources": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "containers": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "kinds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "schedule"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "cadence"
+                ]
+              },
+              "additionalProperties": false
+            }
+          },
+          "actions": {
+            "type": "array",
+            "additionalItems": false,
+            "items": {
               "required": [
-                  "name",
-                  "enabled",
-                  "rules",
-                  "actions"
+                "scan"
               ],
               "type": "object",
               "properties": {
-                  "name": {
-                      "minLength": 1,
-                      "type": "string"
-                  },
-                  "description": {
-                      "type": "string"
-                  },
-                  "enabled": {
-                      "type": "boolean"
-                  },
-                  "rules": {
-                      "type": "array",
-                      "additionalItems": false,
-                      "items": {
-                          "type": "object",
-                          "required": [],
-                          "properties": {
-                              "type": {
-                                  "enum": [
-                                      "pipeline",
-                                      "schedule"
-                                  ],
-                                  "type": "string"
-                              },
-                              "branches": {
-                                  "type": "array",
-                                  "additionalItems": false,
-                                  "items": {
-                                      "minLength": 1,
-                                      "type": "string"
-                                  }
-                              },
-                             "cadence": {
-                                  "type": "string"
-                             }
-                          },
-                          "if": {
-                                "properties": {
-                                    "type": {
-                                        "const": "schedule"
-                                    }
-                                }
-                          },
-                          "then": {
-                                "required": ["cadence"]
-                          },
-                          "additionalProperties": false
-                      }
-                  },
-                  "actions": {
-                      "type": "array",
-                      "additionalItems": false,
-                      "items": {
-                          "required": [
-                              "scan"
-                          ],
-                          "type": "object",
-                          "properties": {
-                              "scan": {
-                                  "enum": [
-                                      "dast",
-                                      "secret_detection"
-                                  ],
-                                  "type": "string"
-                              },
-                              "scanner_profile": {
-                                  "type": "string"
-                              },
-                              "site_profile": {
-                                  "type": [
-                                      "string",
-                                      "null"
-                                  ]
-                              }
-                          },
-                          "allOf": [
-                            {
-                              "if": {
-                                "properties": {
-                                  "scan": {
-                                    "const": "dast"
-                                  }
-                                }
-                              },
-                              "then": {
-                                "required": [
-                                  "site_profile"
-                                ],
-                                "maxProperties": 3
-                              }
-                            },
-                            {
-                              "if": {
-                                "properties": {
-                                  "scan": {
-                                    "const": "secret_detection"
-                                  }
-                                }
-                              },
-                              "then": {
-                                "maxProperties": 1
-                              }
-                            }
-                          ],
-                          "additionalProperties": false
-                      }
-                  }
+                "scan": {
+                  "enum": [
+                    "dast",
+                    "secret_detection",
+                    "container_scanning",
+                    "cluster_image_scanning"
+                  ],
+                  "type": "string"
+                },
+                "scanner_profile": {
+                  "type": "string"
+                },
+                "site_profile": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
               },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "dast"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "site_profile"
+                    ],
+                    "maxProperties": 3
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "secret_detection"
+                      }
+                    }
+                  },
+                  "then": {
+                    "maxProperties": 1
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "cluster_image_scanning"
+                      }
+                    }
+                  },
+                  "then": {
+                    "maxProperties": 1
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "container_scanning"
+                      }
+                    }
+                  },
+                  "then": {
+                    "maxProperties": 1
+                  }
+                }
+              ],
               "additionalProperties": false
+            }
           }
+        },
+        "additionalProperties": false
       }
+    }
   },
   "additionalProperties": false
 }

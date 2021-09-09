@@ -33,14 +33,24 @@ module Security
     end
 
     def applicable_branches
-      configured_branches = policy&.dig(:rules, rule_index, :branches)
-      return [] if configured_branches.blank?
+      strong_memoize(:applicable_branches) do
+        configured_branches = policy&.dig(:rules, rule_index, :branches)
+        next [] if configured_branches.blank?
 
-      branch_names = security_orchestration_policy_configuration.project.repository.branches
+        branch_names = security_orchestration_policy_configuration.project.repository.branches
 
-      configured_branches
-        .flat_map { |pattern| RefMatcher.new(pattern).matching(branch_names).map(&:name) }
-        .uniq
+        configured_branches
+          .flat_map { |pattern| RefMatcher.new(pattern).matching(branch_names).map(&:name) }
+          .uniq
+      end
+    end
+
+    def applicable_clusters
+      policy&.dig(:rules, rule_index, :clusters)
+    end
+
+    def for_cluster?
+      applicable_clusters.present?
     end
 
     private

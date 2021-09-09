@@ -7,6 +7,9 @@ module Security
         secret_detection: {
           'SECRET_DETECTION_HISTORIC_SCAN' => 'false',
           'SECRET_DETECTION_DISABLED' => nil
+        },
+        container_scanning: {
+          'CONTAINER_SCANNING_DISABLED' => nil
         }
       }.freeze
 
@@ -29,7 +32,16 @@ module Security
       end
 
       def scan_configuration(action)
-        ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, SCAN_VARIABLES[action[:scan].to_sym])
+        ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, scan_variables(action))
+      end
+
+      def scan_variables(action)
+        case action[:scan].to_sym
+        when :cluster_image_scan
+          ClusterImageScanningCiVariablesService.new(project: project).execute(action).first
+        else
+          SCAN_VARIABLES[action[:scan].to_sym].to_h
+        end
       end
     end
   end
