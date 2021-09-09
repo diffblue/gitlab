@@ -615,7 +615,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 --form "namespace=email" \
 --form "path=impapi" \
---form "file=@/path/to/somefile.txt"
+--form "file=@/path/to/somefile.txt" \
 --form "override_params[visibility]=private" \
 --form "override_params[some_other_param]=some_value" \
 "https://gitlab.example.com/api/v4/projects/import"
