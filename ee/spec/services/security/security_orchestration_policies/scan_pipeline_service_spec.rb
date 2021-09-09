@@ -36,11 +36,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
       let(:actions) do
         [
           { scan: 'secret_detection' },
-          { scan: 'dast', scanner_profile: 'Scanner Profile', site_profile: 'Site Profile' }
+          { scan: 'dast', scanner_profile: 'Scanner Profile', site_profile: 'Site Profile' },
+          { scan: 'cluster_image_scanning' },
+          { scan: 'container_scanning' }
         ]
       end
 
-      it_behaves_like 'creates scan jobs', 2, [:'secret-detection-0', :'dast-1']
+      it_behaves_like 'creates scan jobs', 4, [:'secret-detection-0', :'dast-1', :'cluster-image-scanning-2', :'container-scanning-3']
     end
 
     context 'when there are valid and invalid actions' do
