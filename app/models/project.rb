@@ -1677,6 +1677,10 @@ class Project < ApplicationRecord
     end
   end
 
+  def membership_locked?
+    false
+  end
+
   def bots
     users.project_bot
   end
