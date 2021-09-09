@@ -11,7 +11,6 @@ module EE
       before_action :log_unarchive_audit_event, only: [:unarchive]
 
       before_action only: :show do
-        push_frontend_feature_flag(:cve_id_request_button, project)
         enable_sast_entry_points_experiment
       end
 
@@ -82,13 +81,7 @@ module EE
 
     override :project_setting_attributes
     def project_setting_attributes
-      proj_setting_attrs = super + [:prevent_merge_without_jira_issue]
-
-      if ::Feature.enabled?(:cve_id_request_button, project)
-        proj_setting_attrs << :cve_id_request_enabled
-      end
-
-      proj_setting_attrs
+      super + [:prevent_merge_without_jira_issue, :cve_id_request_enabled]
     end
 
     def project_params_ee

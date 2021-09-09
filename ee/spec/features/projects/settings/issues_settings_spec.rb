@@ -73,40 +73,21 @@ RSpec.describe 'Project settings > Issues', :js do
     end
   end
 
-  context 'when viewing CVE request settings with different :cve_id_request_button feature flag values' do
-    using RSpec::Parameterized::TableSyntax
+  context 'when viewing CVE request settings' do
+    before do
+      allow(::Gitlab).to receive(:com?).and_return(true)
 
-    where(:feature_flag_enabled, :should_show_toggle) do
-      true | true
-      false | false
+      project.update_column(:visibility_level, Gitlab::VisibilityLevel::PUBLIC)
+
+      project_setting = project.project_setting
+      project_setting.cve_id_request_enabled = true
+      project_setting.save!
+
+      visit edit_project_path(project)
     end
 
-    with_them do
-      before do
-        stub_feature_flags(cve_id_request_button: feature_flag_enabled)
-
-        # setup the project so that it *should* be visible IF the feature flag
-        # were enabled
-        allow(::Gitlab).to receive(:com?).and_return(true)
-
-        vis_val = Gitlab::VisibilityLevel.const_get(:PUBLIC, false)
-        project.visibility_level = vis_val
-        project.save!
-
-        project_setting = project.project_setting
-        project_setting.cve_id_request_enabled = true
-        project_setting.save!
-
-        visit edit_project_path(project)
-      end
-
-      it 'CVE ID Request toggle should only be visible if the feature is enabled' do
-        if should_show_toggle
-          expect(page).to have_selector('[data-testid="cve_id_request_toggle"')
-        else
-          expect(page).not_to have_selector('[data-testid="cve_id_request_toggle"')
-        end
-      end
+    it 'CVE ID Request toggle should only be visible if the feature is enabled' do
+      expect(page).to have_selector('[data-testid="cve_id_request_toggle"')
     end
   end
 
