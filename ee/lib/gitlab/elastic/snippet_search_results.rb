@@ -9,7 +9,7 @@ module Gitlab
       end
 
       def formatted_count(scope)
-        snippet_titles_count.to_s
+        elastic_search_limited_counter_with_delimiter(snippet_titles_count)
       end
 
       def snippet_titles_count
