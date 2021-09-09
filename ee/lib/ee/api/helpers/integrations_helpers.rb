@@ -42,6 +42,32 @@ module EE
               *super
             ]
           end
+
+          override :chat_notification_channels
+          def chat_notification_channels
+            [
+              *super,
+              {
+                required: false,
+                name: :vulnerability_channel,
+                type: String,
+                desc: 'The name of the channel to receive vulnerability_events notifications'
+              }
+            ].freeze
+          end
+
+          override :chat_notification_events
+          def chat_notification_events
+            [
+              *super,
+              {
+                required: false,
+                name: :vulnerability_events,
+                type: ::API::Services::Boolean,
+                desc: 'Enable notifications for vulnerability_events'
+              }
+            ].freeze
+          end
         end
       end
     end

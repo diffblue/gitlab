@@ -428,6 +428,14 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
         expect { subject }.to change { Vulnerability.count }.by(4)
       end
 
+      it 'triggers project hooks on new vulnerabilities' do
+        expect_next_instances_of(Vulnerability, 4) do |vulnerability|
+          expect(vulnerability).to receive(:execute_hooks)
+        end
+
+        subject
+      end
+
       it 'updates existing findings with new data' do
         subject
 

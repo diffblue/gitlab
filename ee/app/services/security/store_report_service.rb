@@ -6,7 +6,7 @@ module Security
   class StoreReportService < ::BaseService
     include Gitlab::Utils::StrongMemoize
 
-    attr_reader :pipeline, :report, :project, :vulnerability_finding_to_finding_map
+    attr_reader :pipeline, :report, :project, :vulnerability_finding_to_finding_map, :new_vulnerabilities
 
     BATCH_SIZE = 1000
 
@@ -15,6 +15,7 @@ module Security
       @report = report
       @project = @pipeline.project
       @vulnerability_finding_to_finding_map = {}
+      @new_vulnerabilities = []
     end
 
     def execute
@@ -25,6 +26,7 @@ module Security
 
       vulnerability_ids = create_all_vulnerabilities!
       mark_as_resolved_except(vulnerability_ids)
+      execute_new_vulnerabilities_hooks
 
       start_auto_fix
 
@@ -64,6 +66,10 @@ module Security
       end
 
       vulnerability_ids
+    end
+
+    def execute_new_vulnerabilities_hooks
+      new_vulnerabilities.each { |v| v.execute_hooks }
     end
 
     def mark_as_resolved_except(vulnerability_ids)
@@ -400,7 +406,9 @@ module Security
       vulnerability = if vulnerability_finding.vulnerability_id
                         Vulnerabilities::UpdateService.new(vulnerability_finding.project, pipeline.user, finding: vulnerability_finding, resolved_on_default_branch: false).execute
                       else
-                        Vulnerabilities::CreateService.new(vulnerability_finding.project, pipeline.user, finding_id: vulnerability_finding.id).execute
+                        Vulnerabilities::CreateService.new(vulnerability_finding.project, pipeline.user, finding_id: vulnerability_finding.id).execute.tap do |vuln|
+                          new_vulnerabilities << vuln
+                        end
                       end
 
       create_vulnerability_issue_link(vulnerability)

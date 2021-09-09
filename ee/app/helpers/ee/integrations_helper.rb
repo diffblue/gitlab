@@ -58,5 +58,12 @@ module EE
         issues_list_path: project_integrations_jira_issues_path(@project)
       }
     end
+
+    override :default_integration_event_description
+    def default_integration_event_description(event)
+      return s_("ProjectService|Trigger event when a new, unique vulnerability is recorded. (Note: This feature requires an Ultimate plan.)") if event == 'vulnerability'
+
+      super
+    end
   end
 end

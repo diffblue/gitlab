@@ -30,4 +30,18 @@ RSpec.describe Integration do
       end
     end
   end
+
+  describe '.vulnerability_hooks' do
+    it 'includes services where vulnerability_events is true' do
+      create(:service, active: true, vulnerability_events: true)
+
+      expect(described_class.vulnerability_hooks.count).to eq 1
+    end
+
+    it 'excludes services where vulnerability_events is false' do
+      create(:service, active: true, vulnerability_events: false)
+
+      expect(described_class.vulnerability_hooks.count).to eq 0
+    end
+  end
 end
