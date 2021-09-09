@@ -14,6 +14,7 @@ query groupVulnerabilities(
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
+  $vetEnabled: Boolean = false
 ) {
   group(fullPath: $fullPath) {
     vulnerabilities(
@@ -30,7 +31,7 @@ query groupVulnerabilities(
       hasResolution: $hasResolution
     ) {
       nodes {
-        ...Vulnerability
+        ...VulnerabilityFragment
       }
       pageInfo {
         ...PageInfo

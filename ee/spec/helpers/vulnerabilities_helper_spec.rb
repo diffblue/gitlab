@@ -44,7 +44,7 @@ RSpec.describe VulnerabilitiesHelper do
                     :details)
     end
 
-    let(:desired_serializer_fields) { %i[metadata identifiers name issue_feedback merge_request_feedback project project_fingerprint scanner uuid details dismissal_feedback] }
+    let(:desired_serializer_fields) { %i[metadata identifiers name issue_feedback merge_request_feedback project project_fingerprint scanner uuid details dismissal_feedback false_positive] }
 
     before do
       vulnerability_serializer_stub = instance_double("VulnerabilitySerializer")
