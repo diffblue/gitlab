@@ -30656,6 +30656,9 @@ msgstr ""
 msgid "Set the default branch for this project. All merge requests and commits are made against this branch unless you specify a different one."
 msgstr ""
 
+msgid "Set the default expiration time for job artifacts in all projects. Set to %{code_open}0%{code_close} to never expire artifacts by default. If no unit is written, it defaults to seconds. For example, these are all equivalent: %{code_open}3600%{code_close}, %{code_open}60 minutes%{code_close}, or %{code_open}one hour%{code_close}."
+msgstr ""
+
 msgid "Set the due date to %{due_date}."
 msgstr ""
 
@@ -33329,9 +33332,6 @@ msgid "The default CI/CD configuration file and path for new projects."
 msgstr ""
 
 msgid "The default branch for this project has been changed. Please update your bookmarks."
-msgstr ""
-
-msgid "The default expiration time for job artifacts. 0 for unlimited. The default unit is in seconds, but you can use other units, for example %{code_open}4 mins 2 sec%{code_close}, %{code_open}2h42min%{code_close}."
 msgstr ""
 
 msgid "The dependency list details information about the components used within your project."
