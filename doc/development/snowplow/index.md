@@ -568,14 +568,14 @@ Snowplow Micro is a Docker-based solution for testing frontend and backend event
       formTracking: false,
    ```
 
-1. Update `snowplow_options` in `lib/gitlab/tracking.rb` to add `protocol` and `port`:
+1. Update `options` in `lib/gitlab/tracking.rb` to add `protocol` and `port`:
 
    ```diff
    diff --git a/lib/gitlab/tracking.rb b/lib/gitlab/tracking.rb
    index 618e359211b..e9084623c43 100644
    --- a/lib/gitlab/tracking.rb
    +++ b/lib/gitlab/tracking.rb
-   @@ -41,7 +41,9 @@ def snowplow_options(group)
+   @@ -41,7 +41,9 @@ def options(group)
               cookie_domain: Gitlab::CurrentSettings.snowplow_cookie_domain,
               app_id: Gitlab::CurrentSettings.snowplow_app_id,
               form_tracking: additional_features,
