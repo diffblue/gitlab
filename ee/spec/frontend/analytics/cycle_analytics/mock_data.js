@@ -241,12 +241,12 @@ export const rawDurationData = [
 
 export const transformedDurationData = [
   {
-    slug: 1,
+    id: 1,
     selected: true,
     data: rawDurationData,
   },
   {
-    slug: 2,
+    id: 2,
     selected: true,
     data: rawDurationData,
   },

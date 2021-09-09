@@ -25,7 +25,6 @@ export const FETCH_VALUE_STREAM_DATA = 'fetchValueStreamData';
 
 export const OVERVIEW_STAGE_CONFIG = {
   id: OVERVIEW_STAGE_ID,
-  slug: OVERVIEW_STAGE_ID,
   title: __('Overview'),
   icon: 'home',
 };

@@ -414,8 +414,8 @@ describe('EE Value Stream Analytics component', () => {
   });
 
   describe('Path navigation', () => {
-    const selectedStage = { title: 'Plan', slug: 2 };
-    const overviewStage = { title: 'Overview', slug: OVERVIEW_STAGE_ID };
+    const selectedStage = { id: 2, title: 'Plan' };
+    const overviewStage = { id: OVERVIEW_STAGE_ID, title: 'Overview' };
     let actionSpies = {};
 
     beforeEach(async () => {

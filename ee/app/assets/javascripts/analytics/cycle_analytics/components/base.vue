@@ -124,7 +124,7 @@ export default {
       this.setSelectedProjects(projects);
     },
     onStageSelect(stage) {
-      if (stage.slug === OVERVIEW_STAGE_ID) {
+      if (stage.id === OVERVIEW_STAGE_ID) {
         this.setDefaultSelectedStage();
       } else {
         this.setSelectedStage(stage);
