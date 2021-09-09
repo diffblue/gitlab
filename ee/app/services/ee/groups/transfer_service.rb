@@ -17,7 +17,7 @@ module EE
       def post_update_hooks(updated_project_ids)
         super
 
-        update_elasticsearch_hooks(updated_project_ids)
+        update_elasticsearch_hooks
       end
 
       def lost_groups
@@ -30,11 +30,13 @@ module EE
         end
       end
 
-      def update_elasticsearch_hooks(updated_project_ids)
+      def update_elasticsearch_hooks
         # When a group is moved to a new group, there is no way to know whether the group was using Elasticsearch
-        # before the transfer. If Elasticsearch limit indexing is enabled, each project has the ES cache
+        # before the transfer. If Elasticsearch limit indexing is enabled, the group and each project has the ES cache
         # invalidated. Reindex all projects and associated data to make sure the namespace_ancestry field gets
         # updated in each document.
+        group.invalidate_elasticsearch_indexes_cache! if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+
         ::Project.id_in(group.all_projects.select(:id)).find_each do |project|
           project.invalidate_elasticsearch_indexes_cache! if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
