@@ -59,7 +59,7 @@ module Security
       update_vulnerabilities_identifiers
       update_vulnerabilities_finding_identifiers
 
-      if ::Feature.enabled?(:vulnerability_flags, project, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
+      if ::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
         create_vulnerability_flags_info
       end
 
