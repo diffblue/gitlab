@@ -39,6 +39,7 @@ RSpec.describe Projects::Security::PoliciesHelper do
     let(:base_data) do
       {
         assigned_policy_project: "null",
+        default_environment_id: -1,
         disable_scan_execution_update: "false",
         network_policies_endpoint: kind_of(String),
         configure_agent_help_path: kind_of(String),
@@ -84,7 +85,7 @@ RSpec.describe Projects::Security::PoliciesHelper do
         )
       end
 
-      it { is_expected.to match(base_data) }
+      it { is_expected.to match(base_data.merge(default_environment_id: project.default_environment.id)) }
     end
   end
 end

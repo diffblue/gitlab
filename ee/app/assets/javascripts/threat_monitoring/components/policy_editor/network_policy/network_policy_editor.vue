@@ -4,7 +4,6 @@ import {
   GlFormGroup,
   GlFormInput,
   GlFormTextarea,
-  GlLoadingIcon,
   GlToggle,
   GlButton,
   GlAlert,
@@ -48,13 +47,15 @@ export default {
     noEnvironmentButton: __('Learn more'),
     policyPreview: s__('SecurityOrchestration|Policy preview'),
     rules: s__('SecurityOrchestration|Rules'),
+    saveButtonTooltip: s__(
+      'NetworkPolicies|Network policy can be created after the environment is loaded successfully.',
+    ),
   },
   components: {
     GlEmptyState,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
-    GlLoadingIcon,
     GlToggle,
     GlButton,
     GlAlert,
@@ -65,7 +66,13 @@ export default {
     PolicyEditorLayout,
     DimDisableContainer,
   },
-  inject: ['networkDocumentationPath', 'noEnvironmentSvgPath', 'projectId', 'threatMonitoringPath'],
+  inject: [
+    'hasEnvironment',
+    'networkDocumentationPath',
+    'noEnvironmentSvgPath',
+    'projectId',
+    'threatMonitoringPath',
+  ],
   props: {
     existingPolicy: {
       type: Object,
@@ -95,8 +102,8 @@ export default {
     };
   },
   computed: {
-    hasEnvironment() {
-      return Boolean(this.environments.length);
+    customSaveTooltipText() {
+      return !this.retrievedEnvironments ? this.$options.i18n.saveButtonTooltip : '';
     },
     humanizedPolicy() {
       return this.policy.error ? null : humanizeNetworkPolicy(this.policy);
@@ -109,6 +116,9 @@ export default {
     },
     policyYaml() {
       return this.hasParsingError ? '' : toYaml(this.policy);
+    },
+    retrievedEnvironments() {
+      return !this.isLoadingEnvironments && Boolean(this.environments.length);
     },
     ...mapState('threatMonitoring', [
       'currentEnvironmentId',
@@ -193,9 +203,11 @@ export default {
 </script>
 
 <template>
-  <gl-loading-icon v-if="isLoadingEnvironments" size="lg" />
   <policy-editor-layout
-    v-else-if="hasEnvironment"
+    v-if="hasEnvironment"
+    :custom-save-tooltip-text="customSaveTooltipText"
+    :disable-tooltip="retrievedEnvironments"
+    :disable-update="!retrievedEnvironments"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
     :is-updating-policy="isUpdatingPolicy"

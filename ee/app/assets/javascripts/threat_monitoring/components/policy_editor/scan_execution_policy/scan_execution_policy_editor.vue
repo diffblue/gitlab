@@ -110,6 +110,7 @@ export default {
 
 <template>
   <policy-editor-layout
+    :custom-save-button-text="$options.i18n.createMergeRequest"
     :default-editor-mode="$options.DEFAULT_EDITOR_MODE"
     :disable-update="disableScanExecutionUpdate"
     :editor-modes="$options.EDITOR_MODES"
@@ -121,9 +122,5 @@ export default {
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
     @update-yaml="updateYaml"
-  >
-    <template #save-button-text>
-      {{ $options.i18n.createMergeRequest }}
-    </template>
-  </policy-editor-layout>
+  />
 </template>
