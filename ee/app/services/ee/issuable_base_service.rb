@@ -21,6 +21,8 @@ module EE
         params.delete(:health_status)
       end
 
+      [:iteration, :sprint_id].each { |iteration_param| params.delete(iteration_param) } unless can_admin_issuable
+
       super
     end
 

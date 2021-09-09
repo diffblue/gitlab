@@ -5,7 +5,10 @@ module EE
     module BaseService
       extend ::Gitlab::Utils::Override
 
-      class EpicAssignmentError < ::ArgumentError; end
+      EpicAssignmentError = Class.new(::ArgumentError)
+      IterationAssignmentError = Class.new(StandardError)
+
+      ALLOWED_ITERATION_WILDCARDS = [::Iteration::Predefined::Current.title].freeze
 
       def filter_epic(issue)
         return unless epic_param_present?
@@ -136,6 +139,51 @@ module EE
 
           false
         end
+      end
+
+      private
+
+      def validate_iteration_params!(iteration_params)
+        return false if [iteration_params[:iteration_wildcard_id], iteration_params[:iteration_id]].all?(&:blank?)
+
+        if iteration_params[:iteration_wildcard_id].present? && iteration_params[:iteration_cadence_id].blank?
+          raise IterationAssignmentError, 'iteration_cadence_id is required when iteration_wildcard_id is provided.'
+        end
+
+        if [iteration_params[:iteration_id], iteration_params[:iteration_wildcard_id]].all?(&:present?)
+          raise IterationAssignmentError, 'Incompatible arguments: iteration_id, iteration_wildcard_id.'
+        end
+
+        if iteration_params[:iteration_wildcard_id].present?
+          ALLOWED_ITERATION_WILDCARDS.any? { |wildcard| iteration_params[:iteration_wildcard_id].casecmp?(wildcard) }
+        else
+          true
+        end
+      end
+
+      def find_iteration!(iteration_params, group)
+        # converts params to keys the finder understands
+        finder_params = iteration_params.slice(:iteration_wildcard_id).merge(parent: group, include_ancestors: true)
+        finder_params[:id] = iteration_params[:iteration_id]
+        finder_params[:iteration_cadence_ids] = iteration_params[:iteration_cadence_id]
+
+        iteration = IterationsFinder.new(current_user, finder_params.compact).execute.first
+
+        return unless iteration && current_user.can?(:read_iteration, iteration)
+
+        iteration
+      end
+
+      def process_iteration_id
+        # These iteration params need to be removed unconditionally from params as they do not exist on the model
+        iteration_params = params.extract!(:iteration_wildcard_id, :iteration_cadence_id, :iteration_id)
+
+        return unless project_group&.licensed_feature_available?(:iterations)
+        return unless validate_iteration_params!(iteration_params)
+
+        iteration = find_iteration!(iteration_params, project_group)
+
+        params[:iteration] = iteration if iteration
       end
     end
   end

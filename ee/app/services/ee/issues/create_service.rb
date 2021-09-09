@@ -5,6 +5,13 @@ module EE
     module CreateService
       extend ::Gitlab::Utils::Override
 
+      override :create
+      def create(issuable, skip_system_notes: false)
+        process_iteration_id
+
+        super
+      end
+
       override :filter_params
       def filter_params(issue)
         filter_epic(issue)
