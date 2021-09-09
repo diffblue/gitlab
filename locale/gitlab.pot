@@ -7462,9 +7462,6 @@ msgstr ""
 msgid "ClusterIntegration|Create Kubernetes cluster"
 msgstr ""
 
-msgid "ClusterIntegration|Create a provision role on %{startAwsLink}Amazon Web Services %{externalLinkIcon}%{endLink} using the account and external ID above. %{startMoreInfoLink}More information%{endLink}"
-msgstr ""
-
 msgid "ClusterIntegration|Create cluster on"
 msgstr ""
 
@@ -7897,7 +7894,7 @@ msgstr ""
 msgid "ClusterIntegration|Subnets"
 msgstr ""
 
-msgid "ClusterIntegration|The Amazon Resource Name (ARN) associated with your role. If you do not have a provisioned role, first create one on %{startAwsLink}Amazon Web Services %{externalLinkIcon}%{endLink} using the above account and external IDs. %{startMoreInfoLink}More information%{endLink}"
+msgid "ClusterIntegration|The Amazon Resource Name (ARN) associated with your role. If you do not have a provisioned role, first create one on %{awsLinkStart}Amazon Web Services %{awsLinkEnd} using the above account and external IDs. %{moreInfoStart}More information%{moreInfoEnd}"
 msgstr ""
 
 msgid "ClusterIntegration|The Kubernetes certificate used to authenticate to the cluster."
