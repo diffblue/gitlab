@@ -237,8 +237,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers::V2 do
       expect(buffer.read).to include("\"class\":\"#{model.class}\"")
     end
 
-    using RSpec::Parameterized::TableSyntax
-
     where(raise_on_exhaustion: [true, false])
 
     with_them do
@@ -261,7 +259,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers::V2 do
 
     it 'defaults to disallowing subtransactions' do
       with_lock_retries = double
-
       expect(Gitlab::Database::WithLockRetries).to receive(:new).with(hash_including(allow_savepoints: false)).and_return(with_lock_retries)
       expect(with_lock_retries).to receive(:run).with(raise_on_exhaustion: false)
 

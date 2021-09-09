@@ -2310,8 +2310,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
       expect(buffer.read).to include("\"class\":\"#{model.class}\"")
     end
 
-    using RSpec::Parameterized::TableSyntax
-
     where(raise_on_exhaustion: [true, false])
 
     with_them do
