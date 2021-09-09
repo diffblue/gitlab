@@ -628,7 +628,7 @@ curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 
 ```shell
 curl --globoff --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
-"https://gitlab.example.com/api/v4/projects/169/pipeline?ref=master&variables[][key]=VAR1&variables[][value]=hello&variables[][key]=VAR2&variables[][value]=world"
+"https://gitlab.example.com/api/v4/projects/169/pipeline?ref=master&variables[0][key]=VAR1&variables[0][value]=hello&variables[1][key]=VAR2&variables[1][value]=world"
 
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \
 --header "Content-Type: application/json" \
