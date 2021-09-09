@@ -34572,9 +34572,6 @@ msgstr ""
 msgid "This user cannot be unlocked manually from GitLab"
 msgstr ""
 
-msgid "This user does not have a pending request"
-msgstr ""
-
 msgid "This user has an unconfirmed email address (%{email}). You may force a confirmation."
 msgstr ""
 
@@ -36505,6 +36502,9 @@ msgid "User Settings"
 msgstr ""
 
 msgid "User and IP Rate Limits"
+msgstr ""
+
+msgid "User does not have a pending request"
 msgstr ""
 
 msgid "User identity was successfully created."
