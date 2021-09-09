@@ -279,6 +279,53 @@ RSpec.describe GroupMember do
     end
   end
 
+  context 'check if user cap has been reached' do
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+    let!(:user) { create(:user) }
+
+    subject(:add_user_to_group) { group.add_developer(user) }
+
+    context 'when the :saas_user_caps feature flag is disabled' do
+      before do
+        stub_feature_flags(saas_user_caps: false)
+      end
+
+      it 'leaves the group member state to created' do
+        add_user_to_group
+
+        expect(user.group_members.last).to be_created
+      end
+    end
+
+    context 'when the :saas_user_caps feature flag is enabled' do
+      before do
+        stub_feature_flags(saas_user_caps: group)
+        allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
+      end
+
+      context 'when the user cap for this group has not been reached' do
+        let(:user_cap_reached) { false }
+
+        it 'sets the group member to active' do
+          add_user_to_group
+
+          expect(user.group_members.last).to be_active
+        end
+      end
+
+      context 'when the user cap for this group has been reached' do
+        let(:user_cap_reached) { true }
+
+        it 'sets the group member to awaiting' do
+          add_user_to_group
+
+          expect(user.group_members.last).to be_awaiting
+        end
+      end
+    end
+  end
+
   describe '#provisioned_by_this_group?' do
     let_it_be(:group) { create(:group) }
 
