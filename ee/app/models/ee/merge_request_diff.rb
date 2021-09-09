@@ -30,6 +30,10 @@ module EE
       scope :with_verification_state, ->(state) { joins(:merge_request_diff_detail).where(merge_request_diff_details: { verification_state: verification_state_value(state) }) }
       scope :checksummed, -> { joins(:merge_request_diff_detail).where.not(merge_request_diff_details: { verification_checksum: nil } ) }
       scope :not_checksummed, -> { joins(:merge_request_diff_detail).where(merge_request_diff_details: { verification_checksum: nil } ) }
+
+      def create_verification_details
+        create_merge_request_diff_detail
+      end
     end
 
     class_methods do
@@ -45,19 +49,9 @@ module EE
                              .merge(object_storage_scope(node))
       end
 
-      override :verification_state_table_name
-      def verification_state_table_name
-        'merge_request_diff_details'
-      end
-
-      override :verification_state_model_key
-      def verification_state_model_key
-        'merge_request_diff_id'
-      end
-
-      override :verification_arel_table
-      def verification_arel_table
-        MergeRequestDiffDetail.arel_table
+      override :verification_state_table_class
+      def verification_state_table_class
+        MergeRequestDiffDetail
       end
 
       private

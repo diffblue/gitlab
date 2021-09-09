@@ -18,6 +18,12 @@ module Gitlab
         geo_logger.error(data)
       end
 
+      def log_debug(message, details = {})
+        data = base_log_data(message)
+        data.merge!(details) if details
+        geo_logger.debug(data)
+      end
+
       protected
 
       def base_log_data(message)
