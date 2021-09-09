@@ -6,7 +6,6 @@ class FinalizeCiBuildsMetadataBigintConversion < Gitlab::Database::Migration[1.0
   TABLE_NAME = 'ci_builds_metadata'
 
   def up
-    # TODO: Do these together or in separate migrations? Should the FK swap be done with ci_builds PK swap?
     ensure_batched_background_migration_is_finished(
       job_class_name: 'CopyColumnUsingBackgroundMigrationJob',
       table_name: TABLE_NAME,
@@ -17,7 +16,7 @@ class FinalizeCiBuildsMetadataBigintConversion < Gitlab::Database::Migration[1.0
     ensure_batched_background_migration_is_finished(
       job_class_name: 'CopyColumnUsingBackgroundMigrationJob',
       table_name: TABLE_NAME,
-      column_name: 'build_id',
+      column_name: 'id',
       job_arguments: [["build_id"], ["build_id_convert_to_bigint"]]
     )
 
@@ -40,12 +39,10 @@ class FinalizeCiBuildsMetadataBigintConversion < Gitlab::Database::Migration[1.0
     add_concurrent_index TABLE_NAME, :build_id_convert_to_bigint, unique: true, name: 'index_ci_builds_metadata_on_build_id_convert_to_bigint'
     # rubocop:enable Migration/PreventIndexCreation
 
-    # TODO: Also do this in advance on gitlab.com
     add_concurrent_foreign_key TABLE_NAME, :ci_builds, column: :build_id_convert_to_bigint, on_delete: :cascade,
                                reverse_lock_order: true
 
     with_lock_retries(raise_on_exhaustion: true) do
-      # TODO: Locking two high traffic tables could cause downtime
       execute "LOCK TABLE ci_builds, #{TABLE_NAME} IN ACCESS EXCLUSIVE MODE"
 
       # rubocop:disable Migration/WithLockRetriesDisallowedMethod
