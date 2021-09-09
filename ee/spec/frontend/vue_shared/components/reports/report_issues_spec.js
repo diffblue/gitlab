@@ -1,5 +1,7 @@
+import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import { componentNames } from 'ee/reports/components/issue_body';
+import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import store from 'ee/vue_shared/security_reports/store';
 import { codequalityParsedIssues } from 'ee_jest/vue_mr_widget/mock_data';
 import {
@@ -14,6 +16,7 @@ import { STATUS_FAILED, STATUS_SUCCESS } from '~/reports/constants';
 
 describe('Report issues', () => {
   let vm;
+  let wrapper;
   let ReportIssues;
 
   beforeEach(() => {
@@ -21,7 +24,9 @@ describe('Report issues', () => {
   });
 
   afterEach(() => {
-    vm.$destroy();
+    if (vm?.$destroy) vm.$destroy();
+
+    if (wrapper) wrapper.destroy();
   });
 
   describe('for codequality issues', () => {
@@ -59,14 +64,19 @@ describe('Report issues', () => {
 
   describe('with location', () => {
     it('should render location', () => {
-      vm = mountComponent(ReportIssues, {
-        issue: sastParsedIssues[0],
-        component: componentNames.SecurityIssueBody,
-        status: STATUS_FAILED,
+      vm = mount(ReportIssues, {
+        propsData: {
+          issue: sastParsedIssues[0],
+          component: componentNames.SecurityIssueBody,
+          status: STATUS_FAILED,
+        },
+        stubs: {
+          SecurityIssueBody,
+        },
       });
 
-      expect(vm.$el.textContent).toContain('in');
-      expect(vm.$el.querySelector('.report-block-list-issue a').getAttribute('href')).toEqual(
+      expect(vm.text()).toContain('in');
+      expect(vm.find('.report-block-list-issue a').attributes('href')).toEqual(
         sastParsedIssues[0].urlPath,
       );
     });

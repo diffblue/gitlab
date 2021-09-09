@@ -2,6 +2,13 @@ import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+
+// Force Jest to transpile and cache
+// eslint-disable-next-line no-unused-vars
+import _GroupedBrowserPerformanceReportsApp from 'ee/reports/browser_performance_report/grouped_browser_performance_reports_app.vue';
+// eslint-disable-next-line no-unused-vars
+import _GroupedLoadPerformanceReportsApp from 'ee/reports/load_performance_report/grouped_load_performance_reports_app.vue';
+
 import StatusChecksReportsApp from 'ee/reports/status_checks_report/status_checks_reports_app.vue';
 import PerformanceIssueBody from 'ee/vue_merge_request_widget/components/performance_issue_body.vue';
 import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
@@ -96,7 +103,6 @@ describe('ee merge request widget options', () => {
   });
 
   const findBrowserPerformanceWidget = () => wrapper.find('.js-browser-performance-widget');
-  const findLoadPerformanceWidget = () => wrapper.find('.js-load-performance-widget');
   const findExtendedSecurityWidget = () => wrapper.find('.js-security-widget');
   const findBaseSecurityWidget = () => wrapper.find('[data-testid="security-mr-widget"]');
   const findStatusChecksReport = () => wrapper.findComponent(StatusChecksReportsApp);
@@ -336,29 +342,13 @@ describe('ee merge request widget options', () => {
       };
     });
 
-    describe('when it is loading', () => {
-      it('should render loading indicator', (done) => {
-        mock.onGet('head.json').reply(200, headBrowserPerformance);
-        mock.onGet('base.json').reply(200, baseBrowserPerformance);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        wrapper.vm.mr.browserPerformance = { ...DEFAULT_BROWSER_PERFORMANCE };
-
-        nextTick(() => {
-          expect(trimText(findBrowserPerformanceWidget().text())).toContain(
-            'Loading browser-performance report',
-          );
-
-          done();
-        });
-      });
-    });
-
     describe('with successful request', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
         mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+
+        await waitForPromises();
       });
 
       describe('default', () => {
@@ -500,29 +490,13 @@ describe('ee merge request widget options', () => {
       };
     });
 
-    describe('when it is loading', () => {
-      it('should render loading indicator', (done) => {
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        wrapper.vm.mr.loadPerformance = { ...DEFAULT_LOAD_PERFORMANCE };
-
-        nextTick(() => {
-          expect(trimText(findLoadPerformanceWidget().text())).toContain(
-            'Loading load-performance report',
-          );
-
-          done();
-        });
-      });
-    });
-
     describe('with successful request', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
         mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+
+        await waitForPromises();
       });
 
       describe('default', () => {
