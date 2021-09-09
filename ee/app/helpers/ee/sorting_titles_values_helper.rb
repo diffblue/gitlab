@@ -37,24 +37,12 @@ module EE
       s_('SortOptions|Type')
     end
 
-    def sort_title_title
-      s_('SortOptions|Title')
-    end
-
     def sort_value_start_date
       'start_date_asc'
     end
 
     def sort_value_end_date
       'end_date_asc'
-    end
-
-    def sort_value_title
-      'title_asc'
-    end
-
-    def sort_value_title_desc
-      'title_desc'
     end
 
     def sort_value_end_date_later

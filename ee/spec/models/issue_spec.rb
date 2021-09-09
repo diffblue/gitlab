@@ -381,11 +381,11 @@ RSpec.describe Issue do
   describe '.simple_sorts' do
     it 'includes weight with other base keys' do
       expect(Issue.simple_sorts.keys).to match_array(
-        %w(created_asc created_at_asc created_date created_desc created_at_desc
-           closest_future_date closest_future_date_asc due_date due_date_asc due_date_desc
-           id_asc id_desc relative_position relative_position_asc
-           updated_desc updated_asc updated_at_asc updated_at_desc
-           weight weight_asc weight_desc))
+        %w(closest_future_date closest_future_date_asc created_asc
+           created_at_asc created_at_desc created_date created_desc due_date
+           due_date_asc due_date_desc id_asc id_desc relative_position
+           relative_position_asc title_asc title_desc updated_asc updated_at_asc
+           updated_at_desc updated_desc weight weight_asc weight_desc))
     end
   end
 
