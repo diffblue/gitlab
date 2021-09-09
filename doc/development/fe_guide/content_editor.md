@@ -20,10 +20,14 @@ the native
 
 Follow these instructions to include the Content Editor in a feature.
 
+1. [Include the Content Editor component](#include-the-content-editor-component).
+1. [Set and get Markdown](#set-and-get-markdown).
+1. [Listen for changes](#listen-for-changes).
+
 ### Include the Content Editor component
 
 Import the `ContentEditor` Vue component. We recommend using asynchronous named imports to
-take advantage of caching as the ContentEditor is a big dependency.
+take advantage of caching, as the ContentEditor is a big dependency.
 
 ```html
 <script>
@@ -43,18 +47,20 @@ The Content Editor requires two properties:
 
 - `renderMarkdown` is an asynchronous function that returns the response (String) of invoking the
 [Markdown API](../../api/markdown.md).
-- `uploadsPath` is a URL that points to a [GitLab upload service](../uploads.md#upload-encodings) with `multipart/form-data` support.
+- `uploadsPath` is a URL that points to a [GitLab upload service](../uploads.md#upload-encodings)
+  with `multipart/form-data` support.
 
-See the [`WikiForm.vue`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/pages/shared/wikis/components/wiki_form.vue#L207) component for a production example of these two properties.
+See the [`WikiForm.vue`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/app/assets/javascripts/pages/shared/wikis/components/wiki_form.vue#L207)
+component for a production example of these two properties.
 
 ### Set and get Markdown
 
-The `ContentEditor` Vue component doesn't implement Vue data binding flow (v-model)
+The `ContentEditor` Vue component doesn't implement Vue data binding flow (`v-model`)
 because setting and getting Markdown are expensive operations. Data binding would
-trigger these operations every time that the user interacts with the component.
+trigger these operations every time the user interacts with the component.
 
 Instead, you should obtain an instance of the `ContentEditor` class by listening to the
-`initialized` event.
+`initialized` event:
 
 ```html
 <script>
@@ -90,7 +96,7 @@ export default {
 ### Listen for changes
 
 You can still react to changes in the Content Editor. Reacting to changes helps
-you know if the document is empty or dirty. Use `@change` event handler for
+you know if the document is empty or dirty. Use the `@change` event handler for
 this purpose.
 
 ```html
@@ -127,11 +133,11 @@ export default {
 
 The Content Editor is composed of three main layers:
 
-- The editing tools UI like the toolbar and the table structure editor. They
+- **The editing tools UI**, like the toolbar and the table structure editor. They
   display the editor's state and mutate it by dispatching commands.
-- The Tiptap Editor object manages the editor's state,
-  and expose business logic as commands executed by the editing tools UI.
-- The Markdown serializer transforms a Markdown source string into a ProseMirror
+- **The Tiptap Editor object** manages the editor's state,
+  and exposes business logic as commands executed by the editing tools UI.
+- **The Markdown serializer** transforms a Markdown source string into a ProseMirror
   document and vice versa.
 
 ### Editing tools UI
@@ -141,7 +147,7 @@ dispatch [commands](https://www.tiptap.dev/api/commands/#commands) to mutate it.
 They are located in the `~/content_editor/components` directory. For example,
 the **Bold** toolbar button displays the editor's state by becoming active when
 the user selects bold text. This button also dispatches the `toggleBold` command
-to format text as bold.
+to format text as bold:
 
 ```mermaid
 sequenceDiagram
@@ -154,7 +160,7 @@ sequenceDiagram
 #### Node views
 
 We implement [node views](https://www.tiptap.dev/guide/node-views/vue/#node-views-with-vue)
-to provide inline editing tools for some content types like tables and images. Node views
+to provide inline editing tools for some content types, like tables and images. Node views
 allow separating the presentation of a content type from its
 [model](https://prosemirror.net/docs/guide/#doc.data_structures). Using a Vue component in
 the presentation layer enables sophisticated editing experiences in the Content Editor.
@@ -163,8 +169,11 @@ Node views are located in `~/content_editor/components/wrappers`.
 #### Dispatch commands
 
 You can inject the Tiptap Editor object to Vue components to dispatch
-commands. **notice**: Do not implement logic that changes the editor's
-state in Vue components. Encapsulate this logic in commands and dispatch
+commands.
+
+NOTE:
+Do not implement logic that changes the editor's
+state in Vue components. Encapsulate this logic in commands, and dispatch
 the command from the component's methods.
 
 ```html
@@ -190,10 +199,17 @@ export default {
 #### Query editor's state
 
 Use the `EditorStateObserver` renderless component to react to changes in the
-editor's state like when the document or the selection changes. You can listen to
-the following events: `docUpdate`, `selectionUpdate`, `transaction`, `focus`, `blur`,
-and `error`. Learn more about these events in
-[Tiptap's event guide](https://www.tiptap.dev/api/events/).
+editor's state, such as when the document or the selection changes. You can listen to
+the following events:
+
+- `docUpdate`
+- `selectionUpdate`
+- `transaction`
+- `focus`
+- `blur`
+- `error`.
+
+Learn more about these events in [Tiptap's event guide](https://www.tiptap.dev/api/events/).
 
 ```html
 <script>
@@ -232,8 +248,8 @@ export default {
 
 The Tiptap [Editor](https://www.tiptap.dev/api/editor) class manages
 the editor's state and encapsulates all the business logic that powers
-the Content Editor. The Content Editor takes care of constructing a
-new instance of this class and providing all the necessary extensions to support
+the Content Editor. The Content Editor constructs a new instance of this class and
+provides all the necessary extensions to support
 [GitLab Flavored Markdown](../../user/markdown.md).
 
 #### Implement new extensions
@@ -244,15 +260,14 @@ We recommend checking the list of built-in [nodes](https://www.tiptap.dev/api/no
 [marks](https://www.tiptap.dev/api/marks) before implementing a new extension
 from scratch.
 
-You should store the Content Editor extensions in the
-`~/content_editor/extensions` directory. When using a Tiptap's built-in
-extension, wrap it in a ES6 module inside this directory.
+Store the Content Editor extensions in the `~/content_editor/extensions` directory.
+When using a Tiptap's built-in extension, wrap it in a ES6 module inside this directory:
 
 ```javascript
 export { Bold as default } from '@tiptap/extension-bold';
 ```
 
-Use the `extend` method to customize the Extension's behavior
+Use the `extend` method to customize the Extension's behavior:
 
 ```javascript
 import { HardBreak } from '@tiptap/extension-hard-break';
@@ -269,7 +284,7 @@ export default HardBreak.extend({
 #### Register extensions
 
 Register the new extension in `~/content_editor/services/create_content_editor.js`. Import
-the extension module and add it to the `builtInContentEditorExtensions` array.
+the extension module and add it to the `builtInContentEditorExtensions` array:
 
 ```javascript
 import Emoji from '../extensions/emoji';
@@ -293,7 +308,7 @@ The Markdown Serializer transforms a Markdown String to a
 Deserialization is the process of converting Markdown to a ProseMirror document.
 We take advantage of ProseMirror's
 [HTML parsing and serialization capabilities](https://prosemirror.net/docs/guide/#schema.serialization_and_parsing)
-by first rendering the Markdown as HTML using the [Markdown API endpoint](../../api/markdown.md).
+by first rendering the Markdown as HTML using the [Markdown API endpoint](../../api/markdown.md):
 
 ```mermaid
 sequenceDiagram
@@ -323,7 +338,7 @@ Editor uses [`prosemirror-markdown`](https://github.com/ProseMirror/prosemirror-
 to serialize documents. We recommend reading the
 [MarkdownSerializer](https://github.com/ProseMirror/prosemirror-markdown#class-markdownserializer)
 and [MarkdownSerializerState](https://github.com/ProseMirror/prosemirror-markdown#class-markdownserializerstate)
-classes documentation before implementing a serializer.
+classes documentation before implementing a serializer:
 
 ```mermaid
 sequenceDiagram
