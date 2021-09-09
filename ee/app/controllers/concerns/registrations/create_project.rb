@@ -10,11 +10,6 @@ module Registrations::CreateProject
   included do
     private
 
-    def learn_gitlab_experiment_enabled?
-      Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_a, subject: current_user) ||
-        Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_b, subject: current_user)
-    end
-
     def learn_gitlab_template_path
       file = if helpers.in_trial_onboarding_flow?
                LEARN_GITLAB_ULTIMATE_TEMPLATE
