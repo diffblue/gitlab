@@ -1,4 +1,4 @@
-import { GlModal } from '@gitlab/ui';
+import { GlModal, GlAlert } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import IssueNote from 'ee/vue_shared/security_reports/components/issue_note.vue';
@@ -28,9 +28,24 @@ describe('Security Reports modal', () => {
   };
 
   describe('modal', () => {
+    const findAlert = () => wrapper.findComponent(GlAlert);
+
     it('renders a large modal', () => {
       mountComponent({ modal: createState().modal }, mount);
       expect(modal.props('size')).toBe('lg');
+    });
+
+    it('does not render the error message the modal has no error', () => {
+      mountComponent({ modal: createState().modal });
+      expect(findAlert().exists()).toBe(false);
+    });
+
+    it('renders an error message when the modal has an error', () => {
+      const { modal: modalData } = createState();
+      modalData.error = 'Something went wront';
+      mountComponent({ modal: modalData });
+      expect(findAlert().props('variant')).toBe('danger');
+      expect(findAlert().text()).toBe(modalData.error);
     });
   });
 
