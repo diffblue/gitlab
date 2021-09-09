@@ -21,5 +21,7 @@ RSpec.describe EE::ResourceEvents::SyntheticIterationNotesBuilderService do
         expect(notes.size).to eq(3)
       end
     end
+
+    it_behaves_like 'filters by paginated notes', :resource_iteration_event
   end
 end

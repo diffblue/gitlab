@@ -24,5 +24,22 @@ module EE
         super
       end
     end
+
+    private
+
+    override :synthetic_note_ids_relations
+    def synthetic_note_ids_relations
+      relations = super
+
+      if respond_to?(:resource_weight_events)
+        relations << resource_weight_events.select("'resource_weight_events'", "'NULL'", :id, :created_at)
+      end
+
+      if respond_to?(:resource_iteration_events)
+        relations << resource_iteration_events.select("'resource_iteration_events'", "'NULL'", :id, :created_at)
+      end
+
+      relations
+    end
   end
 end

@@ -22,6 +22,10 @@ module EE
         events = resource.resource_iteration_events.includes(user: :status) # rubocop: disable CodeReuse/ActiveRecord
         apply_common_filters(events)
       end
+
+      def table_name
+        'resource_iteration_events'
+      end
     end
   end
 end

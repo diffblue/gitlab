@@ -13,9 +13,9 @@ module EE
     end
 
     override :discussions_path
-    def discussions_path(issuable)
-      return discussions_group_epic_path(issuable.group, issuable, format: :json) if issuable.is_a?(Epic)
-      return discussions_project_security_vulnerability_path(issuable.project, issuable, format: :json) if issuable.is_a?(Vulnerability)
+    def discussions_path(issuable, **params)
+      return discussions_group_epic_path(issuable.group, issuable, params.merge(format: :json)) if issuable.is_a?(Epic)
+      return discussions_project_security_vulnerability_path(issuable.project, issuable, params.merge(format: :json)) if issuable.is_a?(Vulnerability)
 
       super
     end
