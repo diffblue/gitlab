@@ -318,27 +318,13 @@ RSpec.describe ProjectsHelper do
     it { is_expected.to include(expected_settings) }
 
     context 'cveIdRequestEnabled' do
-      context "with cve_id_request_button feature flag" do
-        where(feature_flag_enabled: [true, false])
-        with_them do
-          before do
-            stub_feature_flags(cve_id_request_button: feature_flag_enabled)
-          end
-
-          it 'includes cveIdRequestEnabled' do
-            expect(subject.key?(:cveIdRequestEnabled)).to eq(feature_flag_enabled)
-          end
-        end
-      end
-
-      where(:project_attrs, :cve_enabled, :expected) do
-        [:public]   | true  | true
-        [:public]   | false | false
-        [:internal] | true  | false
-        [:private]  | true  | false
+      where(:project_attrs, :expected) do
+        [:public]   | true
+        [:internal] | false
+        [:private]  | false
       end
       with_them do
-        let(:project) { create(:project, :with_cve_request, *project_attrs, cve_request_enabled: cve_enabled) }
+        let(:project) { create(:project, :with_cve_request, *project_attrs) }
         subject { helper.project_permissions_settings(project) }
 
         it 'has the correct cveIdRequestEnabled value' do
@@ -372,19 +358,6 @@ RSpec.describe ProjectsHelper do
 
         it 'sets requestCveAvailable to the correct value' do
           expect(subject[:requestCveAvailable]).to eq(is_gitlab_com)
-        end
-      end
-    end
-
-    context "with cve_id_request_button feature flag" do
-      where(feature_flag_enabled: [true, false])
-      with_them do
-        before do
-          stub_feature_flags(cve_id_request_button: feature_flag_enabled)
-        end
-
-        it 'includes requestCveAvailable' do
-          expect(subject.key?(:requestCveAvailable)).to eq(feature_flag_enabled)
         end
       end
     end

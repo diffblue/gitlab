@@ -19,7 +19,7 @@ module EE
         end
       end
 
-      expose :request_cve_enabled_for_user, if: ->(issue) { ::Feature.enabled?(:cve_id_request_button, issue.project) } do |issue|
+      expose :request_cve_enabled_for_user do |issue|
         ::Gitlab.com? \
           && can?(current_user, :admin_project, issue.project) \
           && issue.project.public? \
