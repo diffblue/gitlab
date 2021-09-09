@@ -20873,9 +20873,6 @@ msgstr ""
 msgid "Medium vulnerabilities present"
 msgstr ""
 
-msgid "Member lock"
-msgstr ""
-
 msgid "Member since"
 msgstr ""
 
@@ -20910,6 +20907,9 @@ msgid "Members of %{group} can also push to this branch: %{branch}"
 msgstr ""
 
 msgid "Members of a group may only view projects they have permission to access"
+msgstr ""
+
+msgid "Membership"
 msgstr ""
 
 msgid "Members|%{time} by %{user}"

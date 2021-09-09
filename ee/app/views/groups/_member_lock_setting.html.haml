@@ -1,6 +1,5 @@
 - return unless can?(current_user, :admin_group, group) && License.feature_available?(:member_lock)
 
-%h5= _('Member lock')
 .form-group
   = f.gitlab_ui_checkbox_component :membership_lock,
       _('Prevent adding new members to project membership within this group'),
