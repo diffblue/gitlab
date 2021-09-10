@@ -8,7 +8,7 @@ module Types
 
       present_using ::Dast::SiteProfilePresenter
 
-      authorize :read_on_demand_scans
+      authorize :read_on_demand_dast_scan
 
       field :enabled, GraphQL::Types::Boolean,
             null: true,

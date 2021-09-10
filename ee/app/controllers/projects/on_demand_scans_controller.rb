@@ -5,7 +5,7 @@ module Projects
     include SecurityAndCompliancePermissions
     include API::Helpers::GraphqlHelpers
 
-    before_action :authorize_read_on_demand_scans!, only: :index
+    before_action :authorize_read_on_demand_dast_scan!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new, :edit]
 
     before_action do

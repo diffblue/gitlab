@@ -6,7 +6,7 @@ module Projects
       include SecurityAndCompliancePermissions
 
       before_action do
-        authorize_read_on_demand_scans!
+        authorize_read_on_demand_dast_scan!
         push_frontend_feature_flag(:dast_failed_site_validations, @project, default_enabled: :yaml)
       end
 

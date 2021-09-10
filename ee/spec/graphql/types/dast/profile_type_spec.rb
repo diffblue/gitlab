@@ -11,7 +11,7 @@ RSpec.describe GitlabSchema.types['DastProfile'] do
   let_it_be(:fields) { %i[id name description dastSiteProfile dastScannerProfile dastProfileSchedule branch editPath] }
 
   specify { expect(described_class.graphql_name).to eq('DastProfile') }
-  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_scans) }
+  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)

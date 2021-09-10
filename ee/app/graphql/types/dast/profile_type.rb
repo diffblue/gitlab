@@ -6,7 +6,7 @@ module Types
       graphql_name 'DastProfile'
       description 'Represents a DAST Profile'
 
-      authorize :read_on_demand_scans
+      authorize :read_on_demand_dast_scan
 
       field :id, ::Types::GlobalIDType[::Dast::Profile], null: false,
             description: 'ID of the profile.'

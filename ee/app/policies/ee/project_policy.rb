@@ -209,7 +209,7 @@ module EE
       end
 
       rule { on_demand_scans_enabled & can?(:developer_access) }.policy do
-        enable :read_on_demand_scans
+        enable :read_on_demand_dast_scan
         enable :create_on_demand_dast_scan
       end
 

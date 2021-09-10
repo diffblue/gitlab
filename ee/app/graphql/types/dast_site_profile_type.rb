@@ -9,7 +9,7 @@ module Types
 
     present_using ::Dast::SiteProfilePresenter
 
-    authorize :read_on_demand_scans
+    authorize :read_on_demand_dast_scan
 
     expose_permissions Types::PermissionTypes::DastSiteProfile
 
