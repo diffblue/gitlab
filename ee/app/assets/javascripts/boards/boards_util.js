@@ -91,6 +91,14 @@ export function formatEpicListsPageInfo(lists) {
   return listData;
 }
 
+export function formatEpicInput(epicInput, boardConfig) {
+  const { labelIds = [], ...restEpicInput } = epicInput;
+  return {
+    ...restEpicInput,
+    addLabelIds: [...labelIds, ...boardConfig.labelIds],
+  };
+}
+
 export function transformBoardConfig(boardConfig) {
   const updatedBoardConfig = {};
   const passedFilterParams = queryToObject(window.location.search, { gatherArrays: true });

@@ -934,7 +934,7 @@ describe('addListNewEpic', () => {
     boardType: 'group',
     fullPath: 'gitlab-org/gitlab',
     boardConfig: {
-      labelIds: [],
+      labelIds: ['gid://gitlab/GroupLabel/23'],
       assigneeId: null,
       milestoneId: -1,
     },
@@ -945,7 +945,7 @@ describe('addListNewEpic', () => {
   it('should add board scope to the epic being created', async () => {
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        boardEpicCreate: {
+        createEpic: {
           epic: mockEpic,
           errors: [],
         },
@@ -964,7 +964,7 @@ describe('addListNewEpic', () => {
           ...mockEpic,
           groupPath: state.fullPath,
           id: 'gid://gitlab/Epic/41',
-          labels: [],
+          addLabelIds: ['gid://gitlab/GroupLabel/23'],
         },
       },
     });
@@ -978,7 +978,7 @@ describe('addListNewEpic', () => {
 
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        boardEpicCreate: {
+        createEpic: {
           epic,
           errors: [],
         },
@@ -986,8 +986,8 @@ describe('addListNewEpic', () => {
     });
 
     const payload = {
-      ...epic,
-      labelIds: [...epic.labelIds, 'gid://gitlab/GroupLabel/5'],
+      ...mockEpic,
+      addLabelIds: [...epic.labelIds, 'gid://gitlab/GroupLabel/23'],
     };
 
     await actions.addListNewEpic(
@@ -999,19 +999,22 @@ describe('addListNewEpic', () => {
       mutation: epicCreateMutation,
       variables: {
         input: {
-          ...epic,
+          ...payload,
           groupPath: state.fullPath,
         },
       },
     });
-    expect(payload.labelIds).toEqual(['gid://gitlab/GroupLabel/4', 'gid://gitlab/GroupLabel/5']);
+    expect(payload.addLabelIds).toEqual([
+      'gid://gitlab/GroupLabel/4',
+      'gid://gitlab/GroupLabel/23',
+    ]);
   });
 
   describe('when issue creation mutation request succeeds', () => {
     it('dispatches a correct set of mutations', () => {
       jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
         data: {
-          boardEpicCreate: {
+          createEpic: {
             epic: mockEpic,
             errors: [],
           },
@@ -1054,7 +1057,7 @@ describe('addListNewEpic', () => {
     it('dispatches a correct set of mutations', () => {
       jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
         data: {
-          boardEpicCreate: {
+          createEpic: {
             epic: mockEpic,
             errors: [{ foo: 'bar' }],
           },

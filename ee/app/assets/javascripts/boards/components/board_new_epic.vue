@@ -3,8 +3,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import { toggleFormEventPrefix } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
-
-import { fullEpicBoardId } from '../boards_util';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 import GroupSelect from './group_select.vue';
 
@@ -36,11 +35,12 @@ export default {
   methods: {
     ...mapActions(['addListNewEpic']),
     submit({ title }) {
+      const labels = this.list.label ? [this.list.label] : [];
+
       return this.addListNewEpic({
         epicInput: {
           title,
-          boardId: fullEpicBoardId(this.boardId),
-          listId: this.list.id,
+          labelIds: labels?.map((l) => getIdFromGraphQLId(l.id)),
           groupPath: this.groupPath,
         },
         list: this.list,

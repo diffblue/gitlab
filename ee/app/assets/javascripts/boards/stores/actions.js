@@ -21,6 +21,7 @@ import {
   formatEpic,
   formatListEpics,
   formatEpicListsPageInfo,
+  formatEpicInput,
   FiltersInfo,
 } from '../boards_util';
 
@@ -536,7 +537,7 @@ export default {
   },
 
   addListNewEpic: (
-    { dispatch, commit },
+    { state: { boardConfig }, dispatch, commit },
     { epicInput, list, placeholderId = `tmp-${new Date().getTime()}` },
   ) => {
     const placeholderEpic = {
@@ -552,14 +553,14 @@ export default {
     gqlClient
       .mutate({
         mutation: epicCreateMutation,
-        variables: { input: epicInput },
+        variables: { input: formatEpicInput(epicInput, boardConfig) },
       })
       .then(({ data }) => {
-        if (data.boardEpicCreate.errors?.length) {
-          throw new Error(data.boardEpicCreate.errors[0]);
+        if (data.createEpic.errors?.length) {
+          throw new Error(data.createEpic.errors[0]);
         }
 
-        const rawEpic = data.boardEpicCreate?.epic;
+        const rawEpic = data.createEpic?.epic;
         const formattedEpic = formatEpic({ ...rawEpic, id: getIdFromGraphQLId(rawEpic.id) });
         dispatch('removeListItem', { listId: list.id, itemId: placeholderId });
         dispatch('addListItem', { list, item: formattedEpic, position: 0 });
