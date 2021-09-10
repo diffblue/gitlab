@@ -440,13 +440,13 @@ Do not use. For details, see the [Microsoft style guide](https://docs.microsoft.
 
 ## press
 
-Use when talking about keyboard keys. For example:
+Use **press** when talking about keyboard keys. For example:
 
 - To stop the command, press <kbd>Control</kbd>+<kbd>C</kbd>.
 
 ## profanity
 
-Do not use. Doing so may negatively affect other users and contributors, which is contrary to the GitLab value of [Diversity, Inclusion, and Belonging](https://about.gitlab.com/handbook/values/#diversity-inclusion).
+Do not use profanity. Doing so may negatively affect other users and contributors, which is contrary to the GitLab value of [Diversity, Inclusion, and Belonging](https://about.gitlab.com/handbook/values/#diversity-inclusion).
 
 ## Reporter
 
@@ -464,38 +464,40 @@ Do not use **Reporter permissions**. A user who is assigned the Reporter role ha
 
 ## Repository Mirroring
 
-Title case.
+Use title case for **Repository Mirroring**.
 
 ## roles
 
-Do not use roles and permissions interchangeably. Each user is assigned a role. Each role includes a set of permissions.
+Do not use **roles** and **permissions** interchangeably. Each user is assigned a role. Each role includes a set of permissions.
 
 ## runner, runners
 
-Lowercase. These are the agents that run CI/CD jobs. See also [GitLab Runner](#gitlab-runner) and [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
+Use lowercase for **runners**. These are the agents that run CI/CD jobs. See also [GitLab Runner](#gitlab-runner) and [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
 
 ## sanity check
 
-Do not use. Use **check for completeness** instead. ([Vale](../testing.md#vale) rule: [`InclusionAbleism.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionAbleism.yml))
+Do not use **sanity check**. Use **check for completeness** instead. ([Vale](../testing.md#vale) rule: [`InclusionAbleism.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionAbleism.yml))
 
 ## scalability
 
-Do not use when talking about increasing GitLab performance for additional users. The words scale or scaling are sometimes acceptable, but references to increasing GitLab performance for additional users should direct readers to the GitLab [reference architectures](../../../administration/reference_architectures/index.md) page.
+Do not use **scalability** when talking about increasing GitLab performance for additional users. The words scale or scaling
+are sometimes acceptable, but references to increasing GitLab performance for additional users should direct readers
+to the GitLab [reference architectures](../../../administration/reference_architectures/index.md) page.
 
 ## section
 
-Use to describe an area on a page. For example, if a page has lines that separate the UI
+Use **section** to describe an area on a page. For example, if a page has lines that separate the UI
 into separate areas, refer to these areas as sections.
 
 We often think of expandable/collapsible areas as **sections**. When you refer to expanding
 or collapsing a section, don't include the word **section**.
 
-- Avoid: Expand the **Auto DevOps** section.
-- Use instead: Expand **Auto DevOps**.
+- Do: Expand **Auto DevOps**.
+- Do not: Expand the **Auto DevOps** section.
 
 ## select
 
-Use with buttons, links, menu items, and lists. **Select** applies to more devices,
+Use **select** with buttons, links, menu items, and lists. **Select** applies to more devices,
 while **click** is more specific to a mouse.
 
 ## setup, set up
@@ -507,13 +509,13 @@ Use **setup** as a noun, and **set up** as a verb. For example:
 
 ## sign in
 
-Use instead of **sign on** or **log on** or **log in**. If the user interface has different words, use those.
+Use **sign in** instead of **sign on** or **log on** or **log in**. If the user interface has different words, use those.
 
 You can use **single sign-on**.
 
 ## simply, simple
 
-Do not use. If the user doesn't find the process to be simple, we lose their trust.
+Do not use **simply** or **simple**. If the user doesn't find the process to be simple, we lose their trust.
 
 ## slashes
 
@@ -521,38 +523,38 @@ Instead of **and/or**, use **or** or re-write the sentence. This rule also appli
 
 ## slave
 
-Do not use. Another option is **secondary**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
+Do not use **slave**. Another option is **secondary**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
 
 ## subgroup
 
-Use instead of **sub-group**.
+Use **subgroup** (no hyphen) instead of **sub-group**.
 
 ## that
 
-Do not use when describing a noun. For example:
+Do not use **that** when describing a noun. For example:
 
-- Avoid: The file **that** you save...
-- Use instead: The file you save...
+- Do: The file you save...
+- Do not: The file **that** you save...
 
 See also [this, these, that, those](#this-these-that-those).
 
 ## terminal
 
-Lowercase. For example:
+Use lowercase for **terminal**. For example:
 
 - Open a terminal.
 - From a terminal, run the `docker login` command.
 
 ## text box
 
-Use instead of **field** or **box** when referring to the UI element.
+Use **text box** instead of **field** or **box** when referring to the UI element.
 
 ## there is, there are
 
-Try to avoid. These phrases hide the subject.
+Try to avoid **there is** and **there are**. These phrases hide the subject.
 
-- Avoid: There are holes in the bucket.
-- Use instead: The bucket has holes.
+- Do: The bucket has holes.
+- Do not: There are holes in the bucket.
 
 ## they
 
@@ -564,25 +566,25 @@ a gender-neutral pronoun.
 
 Always follow these words with a noun. For example:
 
-- Avoid: **This** improves performance.
-- Use instead: **This setting** improves performance.
+- Do: **This setting** improves performance.
+- Do not: **This** improves performance.
 
-- Avoid: **These** are the best.
-- Use instead: **These pants** are the best.
+- Do: **These pants** are the best.
+- Do not: **These** are the best.
 
-- Avoid: **That** is the one you are looking for.
-- Use instead: **That Jedi** is the one you are looking for.
+- Do: **That droid** is the one you are looking for.
+- Do not: **That** is the one you are looking for.
 
-- Avoid: **Those** need to be configured.
-- Use instead: **Those settings** need to be configured. (Or even better, **Configure those settings.**)
+- Do: **Those settings** need to be configured. (Or even better, **Configure those settings.**)
+- Do not: **Those** need to be configured.
 
 ## to-do item
 
-Use lowercase. ([Vale](../testing.md#vale) rule: [`ToDo.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/ToDo.yml))
+Use lowercase and hyphenate **to-do** item. ([Vale](../testing.md#vale) rule: [`ToDo.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/ToDo.yml))
 
 ## To-Do List
 
-Use title case. ([Vale](../testing.md#vale) rule: [`ToDo.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/ToDo.yml))
+Use title case for **To-Do List**. ([Vale](../testing.md#vale) rule: [`ToDo.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/ToDo.yml))
 
 ## toggle
 
