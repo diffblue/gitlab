@@ -11581,7 +11581,7 @@ CREATE TABLE ci_minutes_additional_packs (
     expires_at date,
     number_of_minutes integer NOT NULL,
     purchase_xid text,
-    CONSTRAINT check_d7ef254af0 CHECK ((char_length(purchase_xid) <= 32))
+    CONSTRAINT check_d7ef254af0 CHECK ((char_length(purchase_xid) <= 50))
 );
 
 CREATE SEQUENCE ci_minutes_additional_packs_id_seq
