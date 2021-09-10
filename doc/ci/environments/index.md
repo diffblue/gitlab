@@ -35,7 +35,7 @@ To view a list of environments and deployments:
 1. On the left sidebar, select **Deployments > Environments**.
    The environments are displayed.
 
-   ![Environments list](img/environments_list.png)
+   ![Environments list](img/environments_list_v14_3.png)
 
 1. To view a list of deployments for an environment, select the environment name,
    for example, `staging`.
@@ -646,9 +646,9 @@ Web terminals:
 - Are available to project Maintainers and Owners only.
 - Must [be enabled](../../administration/integration/terminal.md).
 
-In the UI, you can view the Web terminal by selecting a **Terminal** button:
+In the UI, you can view the Web terminal by selecting **Terminal** from the actions menu:
 
-![Terminal button on environment index](img/environments_terminal_button_on_index_v13_10.png)
+![Terminal button on environment index](img/environments_terminal_button_on_index_v14_3.png)
 
 You can also access the terminal button from the page for a specific environment:
 

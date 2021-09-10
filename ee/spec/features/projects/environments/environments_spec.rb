@@ -77,7 +77,8 @@ RSpec.describe 'Environments page', :js do
         let(:project) { cluster.project }
 
         it 'shows a terminal button' do
-          expect(page).to have_link(nil, href: terminal_project_environment_path(project, environment))
+          click_button(_('More actions'))
+          expect(page).to have_link(_('Terminal'), href: terminal_project_environment_path(project, environment))
         end
       end
     end
@@ -99,9 +100,8 @@ RSpec.describe 'Environments page', :js do
       end
 
       it 'shows re deploy button' do
-        redeploy_button_selector = %q{button[title="Re-deploy to environment"]}
-
-        expect(page).to have_selector(redeploy_button_selector)
+        click_button(_('More actions'))
+        expect(page).to have_button(s_('Environments|Re-deploy to environment'))
       end
     end
   end
@@ -161,6 +161,7 @@ RSpec.describe 'Environments page', :js do
         let(:project) { cluster.project }
 
         it 'does not shows a terminal button' do
+          expect(page).not_to have_button(_('More actions'))
           expect(page).not_to have_link(nil, href: terminal_project_environment_path(project, environment))
         end
       end
@@ -185,6 +186,7 @@ RSpec.describe 'Environments page', :js do
       it 'does not show a re deploy button' do
         redeploy_button_selector = %q{button[title="Re-deploy to environment"]}
 
+        expect(page).not_to have_button(_('More actions'))
         expect(page).not_to have_selector(redeploy_button_selector)
       end
     end
