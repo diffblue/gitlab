@@ -193,7 +193,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage do
 
               context 'without namespace' do
                 it 'has an expiration blocking message' do
-                  expect(subject).to include("Your #{plan_name.capitalize} subscription will expire on 2020-03-09. After that, you will not be able to create issues or merge requests as well as many other features.")
+                  expect(subject).to include("Your #{plan_name.capitalize} subscription expires on 2020-03-09. After that date, you cannot create issues or merge requests, or use many other features.")
                 end
               end
 
