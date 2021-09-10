@@ -20,19 +20,28 @@ module EE
       end
 
       def filtered_usage_data(payload = raw_payload, parents = [])
-        return if payload.nil?
+        return unless payload.is_a?(Hash)
 
         payload.keep_if do |label, node|
-          if leaf?(node)
-            permitted_categories.include?(metric_category(label, parents))
+          if has_metric_definition?(label, parents)
+            permitted_metric?(label, parents)
           else
-            filtered_usage_data(node, parents.dup << label)
+            filtered_usage_data(node, parents.dup << label) if node.is_a?(Hash)
           end
         end
       end
 
       def permitted_categories
         @permitted_categories ||= ::ServicePing::PermitDataCategoriesService.new.execute
+      end
+
+      def permitted_metric?(key, parent_keys)
+        permitted_categories.include?(metric_category(key, parent_keys))
+      end
+
+      def has_metric_definition?(key, parent_keys)
+        key_path = parent_keys.dup.append(key).join('.')
+        metric_definitions[key_path].present?
       end
 
       def metric_category(key, parent_keys)
@@ -44,10 +53,6 @@ module EE
 
       def metric_definitions
         @metric_definitions ||= ::Gitlab::Usage::MetricDefinition.definitions
-      end
-
-      def leaf?(node)
-        !node.is_a?(Hash)
       end
     end
   end
