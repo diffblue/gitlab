@@ -5,9 +5,13 @@ module QA
     'Create',
     :runner,
     quarantine: {
-      only: { job: 'relative_url' },
-      issue: 'https://gitlab.com/gitlab-org/gitlab/issues/13833',
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/338179',
       type: :bug
+      # This test should remain quarantined for the `relative_url` job after the above issue is resolved if the bug
+      # below hasn't been fixed
+      # only: { job: 'relative_url' },
+      # issue: 'https://gitlab.com/gitlab-org/gitlab/issues/13833',
+      # type: :bug
     }
   ) do
     describe 'Web IDE web terminal' do
