@@ -215,6 +215,10 @@ module EE
       ::Gitlab::Elastic::ElasticsearchEnabledCache.delete_record(:project, project_id)
     end
 
+    def invalidate_elasticsearch_indexes_cache_for_namespace!(namespace_id)
+      ::Gitlab::Elastic::ElasticsearchEnabledCache.delete_record(:namespace, namespace_id)
+    end
+
     def elasticsearch_limited_projects(ignore_namespaces = false)
       return ::Project.where(id: ElasticsearchIndexedProject.select(:project_id)) if ignore_namespaces
 

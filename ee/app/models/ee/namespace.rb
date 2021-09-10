@@ -398,6 +398,10 @@ module EE
       ::Gitlab::CurrentSettings.elasticsearch_indexes_namespace?(self)
     end
 
+    def invalidate_elasticsearch_indexes_cache!
+      ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_namespace!(self.id)
+    end
+
     def enable_temporary_storage_increase!
       update(temporary_storage_increase_ends_on: TEMPORARY_STORAGE_INCREASE_DAYS.days.from_now)
     end
