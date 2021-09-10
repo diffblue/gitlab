@@ -7,6 +7,7 @@ RSpec.shared_context 'stubbed service ping metrics definitions' do
   let(:standard_metrics) do
     [
       metric_attributes('uuid', 'standard'),
+      metric_attributes('recorded_at', 'standard'),
       metric_attributes('settings.collected_data_categories', 'standard', 'object')
     ]
   end
