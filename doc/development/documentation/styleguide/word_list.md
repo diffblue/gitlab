@@ -171,14 +171,14 @@ then follow with the item the user should select. For example:
 
 ## earlier
 
-Use when talking about version numbers.
+Use **earlier** when talking about version numbers.
 
-- Avoid: In GitLab 14.1 and lower.
-- Use instead: In GitLab 14.1 and earlier.
+- Do: In GitLab 14.1 and earlier.
+- Do not: In GitLab 14.1 and lower.
 
 ## easily
 
-Do not use. If the user doesn't find the process to be easy, we lose their trust.
+Do not use **easily**. If the user doesn't find the process to be easy, we lose their trust.
 
 ## e.g.
 
@@ -190,27 +190,27 @@ Do not use **e-mail** with a hyphen. When plural, use **emails** or **email mess
 
 ## enable
 
-See [the Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/e/enable-enables) for guidance.
+See [the Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/e/enable-enables) for guidance on **enable**.
 Use **active** or **on** instead. ([Vale](../testing.md#vale) rule: [`InclusionAbleism.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionAbleism.yml))
 
 ## enter
 
-Use instead of **type** when talking about putting values into text boxes.
+Use **enter** instead of **type** when talking about putting values into text boxes.
 
 ## epic
 
-Lowercase.
+Use lowercase for **epic**.
 
 ## epic board
 
-Lowercase.
+Use lowercase for **epic board**.
 
 ## etc.
 
-Try to avoid. Be as specific as you can. Do not use **and so on** as a replacement.
+Try to avoid **etc.**. Be as specific as you can. Do not use **and so on** as a replacement.
 
-- Avoid: You can update objects, like merge requests, issues, etc.
-- Use instead: You can update objects, like merge requests and issues.
+- Do: You can update objects, like merge requests and issues.
+- Do not: You can update objects, like merge requests, issues, etc.
 
 ## expand
 
@@ -225,36 +225,36 @@ Use **box** instead of **field** or **text box**.
 
 ## foo
 
-Do not use in product documentation. You can use it in our API and contributor documentation, but try to use a clearer and more meaningful example instead.
+Do not use **foo** in product documentation. You can use it in our API and contributor documentation, but try to use a clearer and more meaningful example instead.
 
 ## future tense
 
-When possible, use present tense instead. For example, use **after you execute this command, GitLab displays the result** instead of **after you execute this command, GitLab will display the result**. ([Vale](../testing.md#vale) rule: [`FutureTense.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/FutureTense.yml))
+When possible, use present tense instead of future tense. For example, use **after you execute this command, GitLab displays the result** instead of **after you execute this command, GitLab will display the result**. ([Vale](../testing.md#vale) rule: [`FutureTense.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/FutureTense.yml))
 
 ## Geo
 
-Title case.
+Use title case for **Geo**.
 
 ## GitLab
 
-Do not make possessive (GitLab's). This guidance follows [GitLab Trademark Guidelines](https://about.gitlab.com/handbook/marketing/corporate-marketing/brand-activation/trademark-guidelines/).
+Do not make **GitLab** possessive (GitLab's). This guidance follows [GitLab Trademark Guidelines](https://about.gitlab.com/handbook/marketing/corporate-marketing/brand-activation/trademark-guidelines/).
 
 ## GitLab.com
 
-Refers to the GitLab instance managed by GitLab itself.
+**GitLab.com** refers to the GitLab instance managed by GitLab itself.
 
 ## GitLab SaaS
 
-Refers to the product license that provides access to GitLab.com. Does not refer to the
+**GitLab SaaS** refers to the product license that provides access to GitLab.com. It does not refer to the
 GitLab instance managed by GitLab itself.
 
 ## GitLab Runner
 
-Title case. This is the product you install. See also [runners](#runner-runners) and [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
+Use title case for **GitLab Runner**. This is the product you install. See also [runners](#runner-runners) and [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
 
 ## GitLab self-managed
 
-Refers to the product license for GitLab instances managed by customers themselves.
+Use **GitLab self-managed** to refer to the product license for GitLab instances managed by customers themselves.
 
 ## Guest
 
@@ -272,22 +272,22 @@ Do not use **Guest permissions**. A user who is assigned the Guest role has a se
 
 ## handy
 
-Do not use. If the user doesn't find the feature or process to be handy, we lose their trust.
+Do not use **handy**. If the user doesn't find the feature or process to be handy, we lose their trust.
 
 ## high availability, HA
 
-Do not use. Instead, direct readers to the GitLab [reference architectures](../../../administration/reference_architectures/index.md) for information about configuring GitLab for handling greater amounts of users.
+Do not use **high availability** or **HA**. Instead, direct readers to the GitLab [reference architectures](../../../administration/reference_architectures/index.md) for information about configuring GitLab for handling greater amounts of users.
 
 ## higher
 
-Do not use when talking about version numbers.
+Do not use **higher** when talking about version numbers.
 
-- Avoid: In GitLab 14.1 and higher.
-- Use instead: In GitLab 14.1 and later.
+- Do: In GitLab 14.1 and later.
+- Do not: In GitLab 14.1 and higher.
 
 ## hit
 
-Don't use to mean **press**.
+Don't use **hit** to mean **press**.
 
 - Avoid: Hit the **ENTER** button.
 - Use instead: Press **ENTER**.
@@ -302,11 +302,11 @@ Do not use Latin abbreviations. Use **that is** instead. ([Vale](../testing.md#v
 
 ## in order to
 
-Do not use. Use **to** instead. ([Vale](../testing.md#vale) rule: [`Wordy.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/Wordy.yml))
+Do not use **in order to**. Use **to** instead. ([Vale](../testing.md#vale) rule: [`Wordy.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/Wordy.yml))
 
 ## issue
 
-Lowercase.
+Use lowercase for **issue**.
 
 ## issue board
 
