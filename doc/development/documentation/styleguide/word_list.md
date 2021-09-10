@@ -310,11 +310,11 @@ Lowercase.
 
 ## issue board
 
-Lowercase.
+Use lowercase for **issue board**.
 
 ## issue weights
 
-Lowercase.
+Use lowercase for **issue weights**.
 
 ## job
 
@@ -324,7 +324,7 @@ If you want to use **CI** with the word **job**, use **CI/CD job** rather than *
 
 ## later
 
-Use when talking about version numbers.
+Use **later** when talking about version numbers.
 
 - Avoid: In GitLab 14.1 and higher.
 - Use instead: In GitLab 14.1 and later.
@@ -339,14 +339,14 @@ The list name, and the items you select, should be bold.
 
 ## log in, log on
 
-Do not use. Use [sign in](#sign-in) instead. If the user interface has **Log in**, you can use it.
+Do not use **log in** or **log on**. Use [sign in](#sign-in) instead. If the user interface has **Log in**, you can use it.
 
 ## lower
 
-Do not use when talking about version numbers.
+Do not use **lower** when talking about version numbers.
 
-- Avoid: In GitLab 14.1 and lower.
-- Use instead: In GitLab 14.1 and earlier.
+- Do: In GitLab 14.1 and earlier.
+- Do not: In GitLab 14.1 and lower.
 
 ## Maintainer
 
@@ -364,15 +364,15 @@ Do not use **Maintainer permissions**. A user who is assigned the Maintainer rol
 
 ## mankind
 
-Do not use. Use **people** or **humanity** instead. ([Vale](../testing.md#vale) rule: [`InclusionGender.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionGender.yml))
+Do not use **mankind**. Use **people** or **humanity** instead. ([Vale](../testing.md#vale) rule: [`InclusionGender.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionGender.yml))
 
 ## manpower
 
-Do not use. Use words like **workforce** or **GitLab team members**. ([Vale](../testing.md#vale) rule: [`InclusionGender.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionGender.yml))
+Do not use **manpower**. Use words like **workforce** or **GitLab team members**. ([Vale](../testing.md#vale) rule: [`InclusionGender.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionGender.yml))
 
 ## master
 
-Do not use. Options are **primary** or **main**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
+Do not use **master**. Options are **primary** or **main**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
 
 ## may, might
 
@@ -384,25 +384,25 @@ Do not use first-person singular. Use **you**, **we**, or **us** instead. ([Vale
 
 ## merge requests
 
-Lowercase. If you use **MR** as the acronym, spell it out on first use.
+Use lowercase for **merge requests**. If you use **MR** as the acronym, spell it out on first use.
 
 ## milestones
 
-Lowercase.
+Use lowercase for **milestones**.
 
 ## navigate
 
-Do not use. Use **go** instead. For example:
+Do not use **navigate**. Use **go** instead. For example:
 
 - Go to this webpage.
 - Open a terminal and go to the `runner` directory.
 
 ## need to, should
 
-Try to avoid. If something is required, use **must**.
+Try to avoid **needs to**, because it's wordy. Avoid **should** when you can be more specific. If something is required, use **must**.
 
-- Avoid: You need to set the variable.
-- Use instead: You must set the variable. Or: Set the variable.
+- Do: You must set the variable. Or: Set the variable.
+- Do not: You need to set the variable.
 
 **Should** is acceptable for recommended actions or items, or in cases where an event may not
 happen. For example:
@@ -414,10 +414,10 @@ happen. For example:
 
 ## note that
 
-Do not use.
+Do not use **note that** because it's wordy.
 
-- Avoid: Note that you can change the settings.
-- Use instead: You can change the settings.
+- Do: You can change the settings.
+- Do not: Note that you can change the settings.
 
 ## Owner
 
@@ -432,11 +432,11 @@ Do not use **Owner permissions**. A user who is assigned the Owner role has a se
 
 ## permissions
 
-Do not use roles and permissions interchangeably. Each user is assigned a role. Each role includes a set of permissions.
+Do not use **roles** and **permissions** interchangeably. Each user is assigned a role. Each role includes a set of permissions.
 
 ## please
 
-Do not use. For details, see the [Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/p/please).
+Do not use **please**. For details, see the [Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/p/please).
 
 ## press
 
