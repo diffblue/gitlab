@@ -7,7 +7,7 @@ RSpec.describe Projects::Security::DastProfilesHelper do
     let(:project) { create(:project) }
 
     it 'returns proper data' do
-      expect(helper.dast_profiles_list_data(project)).to match(
+      expect(helper.dast_profiles_list_data(project)).to eq(
         {
           'new_dast_saved_scan_path' => new_project_on_demand_scan_path(project),
           'new_dast_site_profile_path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project),
