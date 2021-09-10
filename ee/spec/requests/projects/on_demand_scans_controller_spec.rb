@@ -83,6 +83,7 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
 
   describe 'GET #edit' do
     let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: project.default_branch_or_main) }
+    let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile) }
 
     let(:dast_profile_id) { dast_profile.id }
     let(:edit_path) { edit_project_on_demand_scan_path(project, id: dast_profile_id) }
@@ -110,7 +111,16 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
             description: dast_profile.description,
             branch: { name: project.default_branch_or_main },
             dastSiteProfile: { id: global_id_of(DastSiteProfile.new(id: dast_profile.dast_site_profile_id)) },
-            dastScannerProfile: { id: global_id_of(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id)) }
+            dastScannerProfile: { id: global_id_of(DastScannerProfile.new(id: dast_profile.dast_scanner_profile_id)) },
+            dastProfileSchedule: {
+              active: dast_profile_schedule.active,
+              cadence: {
+                duration: dast_profile_schedule.cadence[:duration],
+                unit: dast_profile_schedule.cadence[:unit]&.upcase
+              },
+              startsAt: dast_profile_schedule.starts_at.in_time_zone(dast_profile_schedule.timezone).iso8601,
+              timezone: dast_profile_schedule.timezone
+            }
           }.to_json
 
           on_demand_div = Nokogiri::HTML.parse(response.body).at_css('div#js-on-demand-scans-app')
