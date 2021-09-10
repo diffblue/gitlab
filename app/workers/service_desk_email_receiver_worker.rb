@@ -6,6 +6,7 @@ class ServiceDeskEmailReceiverWorker < EmailReceiverWorker # rubocop:disable Sca
   data_consistency :always
 
   feature_category :service_desk
+  urgency :high
   sidekiq_options retry: 3
 
   # https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/1087#jobs-written-to-redis-without-passing-through-the-application
