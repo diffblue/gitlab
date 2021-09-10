@@ -3,7 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Dast::ProfileSchedule, type: :model do
-  subject { create(:dast_profile_schedule) }
+  let(:dast_profile_schedule) { create(:dast_profile_schedule, project: project) }
+
+  let_it_be(:project) { create(:project) }
+  let_it_be(:inactive_dast_profile_schedule) { create(:dast_profile_schedule, active: false, project: project) }
+
+  subject { dast_profile_schedule }
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -55,11 +60,50 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
     end
   end
 
+  describe 'validate' do
+    describe 'validate_plan_limit_not_exceeded_while_activating' do
+      subject { build(:dast_profile_schedule, project: project, dast_profile: create(:dast_profile)) }
+
+      let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
+
+      context 'when the plan limit has not been exceeded' do
+        before do
+          create(:dast_profile_schedule, project: project, dast_profile: create(:dast_profile))
+        end
+
+        it 'can activate the schedule' do
+          expect { subject.save! }.to change { described_class.count }
+
+          subject.active = true
+
+          expect(subject.save).to be true
+        end
+      end
+
+      context 'when the plan limit has been exceeded' do
+        let_it_be(:inactive_schedule) { create(:dast_profile_schedule, project: project, dast_profile: create(:dast_profile), active: false) }
+
+        before do
+          plan_limits.update!(subject.class.limit_name => 1)
+
+          create(:dast_profile_schedule, project: create(:project), dast_profile: create(:dast_profile), active: true)
+        end
+
+        it 'prevents the schedule from being activated', :aggregate_failures do
+          expect { subject.dup.save! }.to change { described_class.count }
+
+          inactive_schedule.active = true
+
+          expect { inactive_schedule.save! }.to raise_error(ActiveRecord::RecordInvalid).and not_change { described_class.count }
+          expect(inactive_schedule.errors[:base]).to contain_exactly("Maximum number of #{inactive_schedule.class.limit_name.humanize(capitalize: false)} (1) exceeded")
+        end
+      end
+    end
+  end
+
   describe 'scopes' do
     describe 'active' do
       it 'includes the correct records' do
-        inactive_dast_profile_schedule = create(:dast_profile_schedule, active: false)
-
         result = described_class.active
 
         aggregate_failures do
@@ -169,6 +213,8 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
   end
 
   describe '#schedule_next_run!' do
+    let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
+
     context 'when repeat? is true' do
       it 'sets active to true' do
         subject.schedule_next_run!
@@ -185,6 +231,20 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
 
         expect(subject.active).to be false
       end
+    end
+  end
+
+  describe 'limitable' do
+    it_behaves_like 'includes Limitable concern' do
+      subject { build(:dast_profile_schedule, project: project, dast_profile: create(:dast_profile)) }
+    end
+  end
+
+  describe '#with_active_schedules' do
+    subject { dast_profile_schedule.with_active_schedules }
+
+    it 'returns only active schedules' do
+      is_expected.not_to include(inactive_dast_profile_schedule)
     end
   end
 end
