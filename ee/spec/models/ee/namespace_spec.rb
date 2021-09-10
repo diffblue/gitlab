@@ -490,6 +490,14 @@ RSpec.describe Namespace do
       end
 
       it { is_expected.to be_falsey }
+
+      context 'with a subgroup' do
+        let(:subgroup) { create(:group, parent: group) }
+
+        it 'feature is not available for the subgroup' do
+          expect(subgroup.feature_available_non_trial?(:resource_access_token)).to be_falsey
+        end
+      end
     end
   end
 

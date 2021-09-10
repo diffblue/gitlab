@@ -173,7 +173,7 @@ module EE
     end
 
     def feature_available_non_trial?(feature)
-      feature_available?(feature.to_sym) && !trial_active?
+      feature_available?(feature.to_sym) && !root_ancestor.trial_active?
     end
 
     override :actual_plan
