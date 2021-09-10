@@ -80,8 +80,7 @@ describe('Epic boards new epic form', () => {
       list: expect.any(Object),
       epicInput: {
         title: 'Foo',
-        boardId: 'gid://gitlab/Boards::EpicBoard/1',
-        listId: 'gid://gitlab/List/1',
+        labelIds: [],
       },
     });
   });
