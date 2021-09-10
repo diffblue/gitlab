@@ -19,13 +19,15 @@ For guidance not on this page, we defer to these style guides:
 
 ## `@mention`
 
-Try to avoid. Say **mention** instead, and consider linking to the
+Try to avoid **`@mention`**. Say **mention** instead, and consider linking to the
 [mentions topic](../../../user/project/issues/issue_data_and_actions.md#mentions).
 Don't use backticks.
 
 ## above
 
-Try to avoid extra words when referring to an example or table in a documentation page, but if required, use **previously** instead.
+Try to avoid using **above** when referring to an example or table in a documentation page. If required, use **previous** instead. For example:
+
+- In the previous example, the dog had fleas.
 
 ## admin, admin area
 
@@ -33,17 +35,17 @@ Use **administration**, **administrator**, **administer**, or **Admin Area** ins
 
 ## allow, enable
 
-Try to avoid, unless you are talking about security-related features. For example:
+Try to avoid **allow** and **enable**, unless you are talking about security-related features. For example:
 
-- Avoid: This feature allows you to create a pipeline.
-- Use instead: Use this feature to create a pipeline.
+- Do: Use this feature to create a pipeline.
+- Do not: This feature allows you to create a pipeline.
 
 This phrasing is more active and is from the user perspective, rather than the person who implemented the feature.
 [View details in the Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/a/allow-allows).
 
 ## Alpha
 
-Uppercase. For example: **The XYZ feature is in Alpha.** or **This Alpha release is ready to test.**
+Use uppercase for **Alpha**. For example: **The XYZ feature is in Alpha.** or **This Alpha release is ready to test.**
 
 You might also want to link to [this section](https://about.gitlab.com/handbook/product/gitlab-the-product/#alpha-beta-ga)
 in the handbook when writing about Alpha features.
@@ -54,22 +56,24 @@ Instead of **and/or**, use **or** or rewrite the sentence to spell out both opti
 
 ## area
 
-Use [section](#section) instead. The only exception is [the Admin Area](#admin-admin-area).
+Use [**section**](#section) instead of **area**. The only exception is [the Admin Area](#admin-admin-area).
 
 ## below
 
-Try to avoid extra words when referring to an example or table in a documentation page, but if required, use **following** instead.
+Try to avoid **below** when referring to an example or table in a documentation page. If required, use **following** instead. For example:
+
+- In the following example, the dog has fleas.
 
 ## Beta
 
-Uppercase. For example: **The XYZ feature is in Beta.** or **This Beta release is ready to test.**
+Use uppercase for **Beta**. For example: **The XYZ feature is in Beta.** or **This Beta release is ready to test.**
 
 You might also want to link to [this section](https://about.gitlab.com/handbook/product/gitlab-the-product/#alpha-beta-ga)
 in the handbook when writing about Beta features.
 
 ## blacklist
 
-Do not use. Another option is **denylist**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
+Do not use **blacklist**. Another option is **denylist**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
 
 ## board
 
