@@ -147,6 +147,16 @@ spec:
     fromEntities:
     - cluster`;
 
+export const mockExistingL3Policy = {
+  name: 'test-policy-02',
+  manifest: mockL3Manifest,
+};
+
+export const mockExistingL7Policy = {
+  name: 'limit-inbound-ip',
+  manifest: mockL7Manifest,
+};
+
 export const mockCiliumPolicy = {
   __typename: 'NetworkPolicy',
   name: 'test-policy-03',
