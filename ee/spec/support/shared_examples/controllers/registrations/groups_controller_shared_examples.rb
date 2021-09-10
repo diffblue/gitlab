@@ -25,12 +25,6 @@ RSpec.shared_examples "Registrations::GroupsController GET #new" do
 
   let_it_be(:user) { create(:user) }
   let(:dev_env_or_com) { true }
-  let(:learn_gitlab_context) do
-    {
-      in_experiment_group_a: false,
-      in_experiment_group_b: false
-    }
-  end
 
   subject { get :new }
 

@@ -22,14 +22,5 @@ module Registrations::CreateGroup
     def group_params
       params.require(:group).permit(:name, :path, :visibility_level)
     end
-
-    def learn_gitlab_context
-      strong_memoize(:learn_gitlab_context) do
-        in_experiment_group_a = Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_a, subject: current_user)
-        in_experiment_group_b = !in_experiment_group_a && Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_b, subject: current_user)
-
-        { in_experiment_group_a: in_experiment_group_a, in_experiment_group_b: in_experiment_group_b }
-      end
-    end
   end
 end
