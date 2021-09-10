@@ -475,8 +475,10 @@ RSpec.describe API::Issues, :mailer do
 
   describe "POST /projects/:id/issues" do
     it 'creates a new project issue' do
-      post api("/projects/#{project.id}/issues", user),
-        params: { title: 'new issue', labels: 'label, label2', weight: 101, assignee_ids: [user2.id] }
+      expect do
+        post api("/projects/#{project.id}/issues", user),
+          params: { title: 'new issue', labels: 'label, label2', weight: 101, assignee_ids: [user2.id] }
+      end.to change(Issue, :count).by(1)
 
       expect(response).to have_gitlab_http_status(:created)
       expect(json_response['title']).to eq('new issue')
@@ -486,6 +488,7 @@ RSpec.describe API::Issues, :mailer do
       expect(json_response['weight']).to eq(101)
       expect(json_response['assignee']['name']).to eq(user2.name)
       expect(json_response['assignees'].first['name']).to eq(user2.name)
+      expect(Issue.last.work_item_type.base_type).to eq('issue')
     end
 
     it_behaves_like 'with epic parameter' do
