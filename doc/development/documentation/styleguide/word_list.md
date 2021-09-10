@@ -83,10 +83,10 @@ Use **text box** to refer to the UI field. Do not use **field** or **box**. For 
 
 ## button
 
-Don't use a descriptor.
+Don't use a descriptor with **button**.
 
-- Avoid: Select the **Run pipelines** button.
-- Use instead: Select **Run pipelines**.
+- Do: Select **Run pipelines**.
+- Do not: Select the **Run pipelines** button.
 
 ## cannot, can not
 
@@ -96,7 +96,7 @@ See also [contractions](index.md#contractions).
 
 ## checkbox
 
-One word, **checkbox**. Do not use **check box**.
+Use one word for **checkbox**. Do not use **check box**.
 
 You **select** (not **check** or **enable**) and **clear** (not **deselect** or **disable**) checkboxes.
 For example:
@@ -111,30 +111,31 @@ If you must refer to the checkbox, you can say it is selected or cleared. For ex
 
 ## CI/CD
 
-Always uppercase. No need to spell out on first use.
+CI/CD is always uppercase. No need to spell it out on first use.
 
 ## click
 
-Do not use. Instead, use **select** with buttons, links, menu items, and lists.
+Do not use **click**. Instead, use **select** with buttons, links, menu items, and lists.
 **Select** applies to more devices, while **click** is more specific to a mouse.
 
 ## collapse
 
-Use instead of **close** when you are talking about expanding or collapsing a section in the UI.
+Use **collapse** instead of **close** when you are talking about expanding or collapsing a section in the UI.
 
 ## confirmation dialog
 
-Use to describe the dialog box that asks you to confirm your action. For example:
+Use **confirmation dialog** to describe the dialog box that asks you to confirm your action. For example:
 
-- From the confirmation dialog, select **OK**.
+- On the confirmation dialog, select **OK**.
 
 ## currently
 
-Do not use when talking about the product or its features. The documentation describes the product as it is today. ([Vale](../testing.md#vale) rule: [`CurrentStatus.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/CurrentStatus.yml))
+Do not use **currently** when talking about the product or its features. The documentation describes the product as it is today.
+([Vale](../testing.md#vale) rule: [`CurrentStatus.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/CurrentStatus.yml))
 
 ## deploy board
 
-Lowercase.
+Use lowercase for **deploy board**.
 
 ## Developer
 
@@ -152,7 +153,7 @@ Do not use **Developer permissions**. A user who is assigned the Developer role 
 
 ## disable
 
-See [the Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/d/disable-disabled) for guidance.
+See [the Microsoft style guide](https://docs.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/d/disable-disabled) for guidance on **disable**.
 Use **inactive** or **off** instead. ([Vale](../testing.md#vale) rule: [`InclusionAbleism.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionAbleism.yml))
 
 ## dropdown, dropdown list
