@@ -3,11 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::Profiles::BuildConfigService do
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
-  let_it_be(:user) { create(:user, developer_projects: [project] ) }
-  let_it_be(:outsider) { create(:user) }
+  let_it_be(:user) { create(:user, developer_projects: [project]) }
 
   let(:dast_site_profile_name) { dast_site_profile.name }
   let(:dast_scanner_profile_name) { dast_scanner_profile.name }
@@ -58,14 +57,8 @@ RSpec.describe AppSec::Dast::Profiles::BuildConfigService do
         end
 
         context 'when the profile cannot be read' do
-          let_it_be(:user) { outsider }
-
-          before do
-            allow_next_instance_of(AppSec::Dast::Profiles::BuildConfigService) do |service|
-              allow(service).to receive(:can?).and_call_original
-              allow(service).to receive(:can?).with(user, :create_on_demand_dast_scan, project).and_return(true)
-            end
-          end
+          let_it_be(:project) { create(:project) }
+          let_it_be(:user) { create(:user, developer_projects: [project]) }
 
           it_behaves_like 'an error occurred' do
             let(:error_message) { "DAST profile not found: #{profile_name}" }
