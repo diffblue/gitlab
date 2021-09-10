@@ -592,19 +592,19 @@ You **turn on** or **turn off** a toggle. For example:
 
 ## type
 
-Do not use if you can avoid it. Use **enter** instead.
+Do not use **type** if you can avoid it. Use **enter** instead.
 
 ## useful
 
-Do not use. If the user doesn't find the process to be useful, we lose their trust.
+Do not use **useful**. If the user doesn't find the process to be useful, we lose their trust.
 
 ## utilize
 
-Do not use. Use **use** instead. It's more succinct and easier for non-native English speakers to understand.
+Do not use **utilize**. Use **use** instead. It's more succinct and easier for non-native English speakers to understand.
 
 ## Value Stream Analytics
 
-Title case.
+Use title case for **Value Stream Analytics**.
 
 ## via
 
@@ -614,14 +614,14 @@ Do not use Latin abbreviations. Use **with**, **through**, or **by using** inste
 
 Try to avoid **we** and focus instead on how the user can accomplish something in GitLab.
 
-- Avoid: We created a feature for you to add widgets.
-- Instead, use: Use widgets when you have work you want to organize.
+- Do: Use widgets when you have work you want to organize.
+- Do not: We created a feature for you to add widgets.
 
 One exception: You can use **we recommend** instead of **it is recommended** or **GitLab recommends**.
 
 ## whitelist
 
-Do not use. Another option is **allowlist**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
+Do not use **whitelist**. Another option is **allowlist**. ([Vale](../testing.md#vale) rule: [`InclusionCultural.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/InclusionCultural.yml))
 
 <!-- vale on -->
 <!-- markdownlint-enable -->
