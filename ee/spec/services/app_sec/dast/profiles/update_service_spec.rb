@@ -8,6 +8,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
   let_it_be(:dast_profile, reload: true) { create(:dast_profile, project: project, branch_name: 'orphaned-branch') }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
+  let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
 
   let(:default_params) do
     {

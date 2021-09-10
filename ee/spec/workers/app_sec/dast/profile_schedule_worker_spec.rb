@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe AppSec::Dast::ProfileScheduleWorker do
   include ExclusiveLeaseHelpers
 
+  let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
   let_it_be(:schedule) { create(:dast_profile_schedule) }
 
   let(:worker) { described_class.new }

@@ -2,10 +2,15 @@
 
 class Dast::ProfileSchedule < ApplicationRecord
   include CronSchedulable
+  include Limitable
 
   CRON_DEFAULT = '* * * * *'
 
   self.table_name = 'dast_profile_schedules'
+
+  self.limit_name = table_name
+  self.limit_scope = :project
+  self.limit_relation = :with_active_schedules
 
   belongs_to :project
   belongs_to :dast_profile, class_name: 'Dast::Profile', optional: false, inverse_of: :dast_profile_schedule
@@ -18,9 +23,12 @@ class Dast::ProfileSchedule < ApplicationRecord
 
   serialize :cadence, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
 
+  validate :validate_plan_limit_not_exceeded_while_activating, if: :will_save_change_to_active?
+
   scope :with_project, -> { includes(:project) }
   scope :with_profile, -> { includes(dast_profile: [:dast_site_profile, :dast_scanner_profile]) }
   scope :with_owner, -> { includes(:owner) }
+  scope :active_for_project, -> (project_id) { where(project_id: project_id).active }
   scope :active, -> { where(active: true) }
 
   before_save :set_cron, :set_next_run_at
@@ -37,6 +45,10 @@ class Dast::ProfileSchedule < ApplicationRecord
 
   def audit_details
     owner&.name
+  end
+
+  def with_active_schedules
+    self.class.active_for_project(project_id)
   end
 
   private
@@ -70,5 +82,12 @@ class Dast::ProfileSchedule < ApplicationRecord
 
   def timezones
     @timezones ||= ActiveSupport::TimeZone.all.map { |tz| tz.tzinfo.identifier }
+  end
+
+  # Plan limit is checked on: :create and if: :will_save_change_to_active?
+  # The will_save_change_to_active? returns false when the new object is created
+  # with the same value as the db defaults. That's why we need to this indirect to call validate_plan_limit_not_exceeded.
+  def validate_plan_limit_not_exceeded_while_activating
+    validate_plan_limit_not_exceeded
   end
 end
