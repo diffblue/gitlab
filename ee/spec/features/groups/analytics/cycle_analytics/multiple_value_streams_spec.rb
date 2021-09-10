@@ -7,6 +7,8 @@ RSpec.describe 'Multiple value streams', :js do
   let_it_be(:group) { create(:group, name: 'CA-test-group') }
   let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
   let_it_be(:sub_group) { create(:group, name: 'CA-sub-group', parent: group) }
+  let_it_be(:group_label1) { create(:group_label, group: group) }
+  let_it_be(:group_label2) { create(:group_label, group: group) }
   let_it_be(:user) do
     create(:user).tap do |u|
       group.add_owner(u)
@@ -70,6 +72,7 @@ RSpec.describe 'Multiple value streams', :js do
 
     it 'can create a value stream with a custom stage and hidden defaults' do
       add_custom_stage_to_form
+      add_custom_label_stage_to_form
 
       # Hide some default stages
       click_action_button('hide', 5)
@@ -126,6 +129,7 @@ RSpec.describe 'Multiple value streams', :js do
 
       it 'can add and remove custom stages' do
         add_custom_stage_to_form
+        add_custom_label_stage_to_form
 
         page.find_button(_('Save Value Stream')).click
         wait_for_requests
@@ -137,6 +141,10 @@ RSpec.describe 'Multiple value streams', :js do
         # Delete the custom stages, delete the last one first since the list gets reordered after a deletion
         click_action_button('remove', 7)
         click_action_button('remove', 6)
+
+        # re-order some stages
+        page.all("[data-testid*='stage-action-move-down-']").first.click
+        page.all("[data-testid*='stage-action-move-up-']").last.click
 
         page.find_button(_('Save Value Stream')).click
         wait_for_requests

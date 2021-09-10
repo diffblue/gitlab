@@ -43,6 +43,12 @@ const initializeStages = (defaultStageConfig, selectedPreset = PRESET_OPTIONS_DE
   return stages.map((stage) => ({ ...stage, transitionKey: uniqueId('stage-') }));
 };
 
+const initializeEditingStages = (stages = []) =>
+  filterStagesByHiddenStatus(cloneDeep(stages), false).map((stage) => ({
+    ...stage,
+    transitionKey: uniqueId(`stage-${stage.name}-`),
+  }));
+
 export default {
   name: 'ValueStreamForm',
   components: {
@@ -93,7 +99,7 @@ export default {
     const { name: nameError = [], stages: stageErrors = [{}] } = initialFormErrors;
     const additionalFields = {
       stages: this.isEditing
-        ? filterStagesByHiddenStatus(cloneDeep(initialStages), false)
+        ? initializeEditingStages(initialStages)
         : initializeStages(defaultStageConfig, initialPreset),
       stageErrors:
         cloneDeep(stageErrors) || initializeStageErrors(defaultStageConfig, initialPreset),
@@ -228,8 +234,8 @@ export default {
     handleMove({ index, direction }) {
       const newStages = this.moveItem(this.stages, index, direction);
       const newErrors = this.moveItem(this.stageErrors, index, direction);
-      Vue.set(this, 'stageErrors', cloneDeep(newErrors));
       Vue.set(this, 'stages', cloneDeep(newStages));
+      Vue.set(this, 'stageErrors', cloneDeep(newErrors));
     },
     validateStageFields(index) {
       Vue.set(this.stageErrors, index, validateStage(this.stages[index]));
@@ -253,7 +259,10 @@ export default {
       Vue.set(this, 'hiddenStages', [
         ...this.hiddenStages.filter((_, i) => i !== hiddenStageIndex),
       ]);
-      Vue.set(this, 'stages', [...this.stages, target]);
+      Vue.set(this, 'stages', [
+        ...this.stages,
+        { ...target, transitionKey: uniqueId(`stage-${target.name}-`) },
+      ]);
     },
     lastStage() {
       const stages = this.$refs.formStages;
@@ -282,6 +291,15 @@ export default {
       const updatedStage = { ...this.stages[activeStageIndex], [field]: value };
       Vue.set(this.stages, activeStageIndex, updatedStage);
     },
+    resetAllFieldsToDefault() {
+      this.name = '';
+      Vue.set(this, 'stages', initializeStages(this.defaultStageConfig, this.selectedPreset));
+      Vue.set(
+        this,
+        'stageErrors',
+        initializeStageErrors(this.defaultStageConfig, this.selectedPreset),
+      );
+    },
     handleResetDefaults() {
       if (this.isEditing) {
         const {
@@ -289,30 +307,18 @@ export default {
         } = this;
         Vue.set(this, 'name', initialName);
         Vue.set(this, 'nameError', []);
-        Vue.set(this, 'stages', cloneDeep(initialStages));
+        Vue.set(this, 'stages', initializeStages(initialStages));
         Vue.set(this, 'stageErrors', [{}]);
       } else {
-        this.name = '';
-        this.defaultStageConfig.forEach((stage, index) => {
-          Vue.set(this.stages, index, { ...stage, hidden: false });
-        });
+        this.resetAllFieldsToDefault();
       }
-    },
-    handleResetBlank() {
-      this.name = '';
-      Vue.set(this, 'stages', initializeStages(this.defaultStageConfig, this.selectedPreset));
     },
     onSelectPreset() {
       if (this.selectedPreset === PRESET_OPTIONS_DEFAULT) {
         this.handleResetDefaults();
       } else {
-        this.handleResetBlank();
+        this.resetAllFieldsToDefault();
       }
-      Vue.set(
-        this,
-        'stageErrors',
-        initializeStageErrors(this.defaultStageConfig, this.selectedPreset),
-      );
     },
     restoreActionTestId(index) {
       return `stage-action-restore-${index}`;

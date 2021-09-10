@@ -103,6 +103,8 @@ describe('ValueStreamForm', () => {
   const clickRestoreStageAtIndex = (index) => findRestoreStageButton(index).vm.$emit('click');
   const expectFieldError = (testId, error = '') =>
     expect(wrapper.findByTestId(testId).attributes('invalid-feedback')).toBe(error);
+  const expectStageTransitionKeys = (stages) =>
+    stages.forEach((stage) => expect(stage.transitionKey).toContain('stage-'));
 
   afterEach(() => {
     wrapper.destroy();
@@ -140,6 +142,16 @@ describe('ValueStreamForm', () => {
       });
     });
 
+    it('each stage has a transition key when toggling', () => {
+      findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
+
+      expectStageTransitionKeys(wrapper.vm.stages);
+
+      findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
+
+      expectStageTransitionKeys(wrapper.vm.stages);
+    });
+
     it('does not display any hidden stages', () => {
       expect(findHiddenStages().length).toBe(0);
     });
@@ -175,6 +187,10 @@ describe('ValueStreamForm', () => {
         await clickAddStage();
 
         expect(wrapper.vm.nameError).toEqual(['Name is required']);
+      });
+
+      it('each stage has a transition key', () => {
+        expectStageTransitionKeys(wrapper.vm.stages);
       });
     });
 
@@ -239,6 +255,10 @@ describe('ValueStreamForm', () => {
         expect(findHiddenStages().length).toBe(0);
       });
 
+      it('each stage has a transition key', () => {
+        expectStageTransitionKeys(wrapper.vm.stages);
+      });
+
       describe('restore defaults button', () => {
         it('will clear the form fields', async () => {
           expect(wrapper.vm.stages).toHaveLength(stageCount);
@@ -279,6 +299,14 @@ describe('ValueStreamForm', () => {
 
           expect(findHiddenStages().length).toBe(hiddenStages.length - 1);
           expect(wrapper.vm.stages.length).toBe(stageCount + 1);
+        });
+
+        it('when a stage is restored it has a transition key', async () => {
+          await clickRestoreStageAtIndex(1);
+
+          expect(wrapper.vm.stages[stageCount].transitionKey).toContain(
+            `stage-${hiddenStages[1].name}-`,
+          );
         });
       });
 
