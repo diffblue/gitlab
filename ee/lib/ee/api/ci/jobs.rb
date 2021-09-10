@@ -19,10 +19,18 @@ module EE
 
               pipeline = current_authenticated_job.pipeline
               project = current_authenticated_job.project
-              allowed_agents = ::Clusters::DeployableAgentsFinder.new(project).execute
+
+              allowed_agents =
+                if ::Feature.enabled?(:group_authorized_agents, project, default_enabled: :yaml)
+                  agent_authorizations = ::Clusters::AgentAuthorizationsFinder.new(project).execute
+                  ::API::Entities::Clusters::AgentAuthorization.represent(agent_authorizations)
+                else
+                  associated_agents = ::Clusters::DeployableAgentsFinder.new(project).execute
+                  ::API::Entities::Clusters::Agent.represent(associated_agents)
+                end
 
               {
-                allowed_agents: ::API::Entities::Clusters::Agent.represent(allowed_agents),
+                allowed_agents: allowed_agents,
                 job: ::API::Entities::Ci::JobRequest::JobInfo.represent(current_authenticated_job),
                 pipeline: ::API::Entities::Ci::PipelineBasic.represent(pipeline),
                 project: ::API::Entities::ProjectIdentity.represent(project),
