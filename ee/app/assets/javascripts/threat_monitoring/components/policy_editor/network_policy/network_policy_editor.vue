@@ -48,7 +48,6 @@ export default {
     noEnvironmentButton: __('Learn more'),
     policyPreview: s__('SecurityOrchestration|Policy preview'),
     rules: s__('SecurityOrchestration|Rules'),
-    unparseable: s__('SecurityOrchestration|Unable to parse policy'),
   },
   components: {
     GlEmptyState,
@@ -101,6 +100,9 @@ export default {
     },
     humanizedPolicy() {
       return this.policy.error ? null : humanizeNetworkPolicy(this.policy);
+    },
+    initialTab() {
+      return this.hasParsingError ? 1 : 0;
     },
     policyAlert() {
       return Boolean(this.policy.annotations);
@@ -282,7 +284,7 @@ export default {
         </template>
 
         <template #disabled>
-          <policy-preview :policy-yaml="$options.i18n.unparsable" />
+          <policy-preview :initial-tab="initialTab" :policy-yaml="yamlEditorValue" />
         </template>
 
         <policy-preview :policy-yaml="policyYaml" :policy-description="humanizedPolicy" />

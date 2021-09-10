@@ -1,5 +1,6 @@
 import { GlEmptyState, GlLoadingIcon, GlToggle } from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
+import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import {
   RuleDirectionInbound,
   PortMatchModeAny,
@@ -56,7 +57,7 @@ describe('NetworkPolicyEditor component', () => {
         ...provide,
       },
       store,
-      stubs: { PolicyYamlEditor: true },
+      stubs: { DimDisableContainer, PolicyYamlEditor: true },
     });
   };
 
@@ -212,8 +213,12 @@ describe('NetworkPolicyEditor component', () => {
       expect(wrapper.findByTestId('policy-action-container').props().disabled).toBe(true);
     });
 
-    it('disables policy preview', () => {
+    it('disables policy preview and sets initial tab to yaml', () => {
       expect(wrapper.findByTestId('policy-preview-container').props().disabled).toBe(true);
+      expect(findPreview().props()).toMatchObject({
+        initialTab: 1,
+        policyYaml: mockExistingL7Policy.manifest,
+      });
     });
 
     it('does not update yaml editor value on switch to yaml editor', async () => {
