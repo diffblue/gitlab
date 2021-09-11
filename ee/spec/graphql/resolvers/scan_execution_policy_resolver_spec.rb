@@ -14,7 +14,7 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
   let(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
   let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy]) }
 
-  let(:repository) { instance_double(Repository, root_ref: 'master') }
+  let(:repository) { instance_double(Repository, root_ref: 'master', empty?: false) }
 
   describe '#resolve' do
     subject(:resolve_scan_policies) { resolve(described_class, obj: project, ctx: { current_user: user }) }
