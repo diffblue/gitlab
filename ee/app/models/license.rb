@@ -15,6 +15,11 @@ class License < ApplicationRecord
 
   EES_FEATURES_WITH_USAGE_PING = %i[
     send_emails_from_admin_area
+    repository_size_limit
+  ].freeze
+
+  EEP_FEATURES_WITH_USAGE_PING = %i[
+    group_ip_restriction
   ].freeze
 
   EES_FEATURES = %i[
@@ -45,7 +50,6 @@ class License < ApplicationRecord
     protected_refs_for_users
     push_rules
     repository_mirrors
-    repository_size_limit
     resource_access_token
     seat_link
     scoped_issue_board
@@ -54,7 +58,7 @@ class License < ApplicationRecord
     wip_limits
   ].freeze + EES_FEATURES_WITH_USAGE_PING
 
-  EEP_FEATURES = EES_FEATURES + %i[
+  EEP_FEATURES = EES_FEATURES + EEP_FEATURES_WITH_USAGE_PING + %i[
     adjourned_deletion_for_projects_and_groups
     admin_audit_log
     auditor_user
@@ -92,7 +96,6 @@ class License < ApplicationRecord
     group_allowed_email_domains
     group_coverage_reports
     group_forking_protection
-    group_ip_restriction
     group_merge_request_analytics
     group_merge_request_approval_settings
     group_milestone_project_releases
@@ -205,7 +208,7 @@ class License < ApplicationRecord
     end
   end.freeze
 
-  FEATURES_WITH_USAGE_PING = EES_FEATURES_WITH_USAGE_PING
+  FEATURES_WITH_USAGE_PING = EES_FEATURES_WITH_USAGE_PING + EEP_FEATURES_WITH_USAGE_PING
 
   # Add on codes that may occur in legacy licenses that don't have a plan yet.
   FEATURES_FOR_ADD_ONS = {

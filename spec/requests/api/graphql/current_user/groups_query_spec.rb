@@ -45,7 +45,8 @@ RSpec.describe 'Query current user groups' do
     new_group = create(:group, :private)
     new_group.add_maintainer(current_user)
 
-    expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
+    # Adds an extra query for checking ip restrictions on group
+    expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control).with_threshold(1)
   end
 
   it 'returns all groups where the user is a direct member' do

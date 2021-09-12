@@ -7,6 +7,32 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
     let(:group) { create(:group) }
     let(:current_ip) { '192.168.0.2' }
 
+    shared_examples 'ip_restriction' do
+      context 'without restriction' do
+        it { is_expected.to be_truthy }
+      end
+
+      context 'with restriction' do
+        before do
+          ranges.each do |range|
+            create(:ip_restriction, group: group, range: range)
+          end
+        end
+
+        context 'address is within one of the ranges' do
+          let(:ranges) { ['192.168.0.0/24', '255.255.255.224/27'] }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'address is outside all of the ranges' do
+          let(:ranges) { ['10.0.0.0/8', '255.255.255.224/27'] }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
     subject { described_class.new(group).allows_current_ip? }
 
     before do
@@ -14,29 +40,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
       stub_licensed_features(group_ip_restriction: true)
     end
 
-    context 'without restriction' do
-      it { is_expected.to be_truthy }
-    end
-
-    context 'with restriction' do
-      before do
-        ranges.each do |range|
-          create(:ip_restriction, group: group, range: range)
-        end
-      end
-
-      context 'address is within one of the ranges' do
-        let(:ranges) { ['192.168.0.0/24', '255.255.255.224/27'] }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'address is outside all of the ranges' do
-        let(:ranges) { ['10.0.0.0/8', '255.255.255.224/27'] }
-
-        it { is_expected.to be_falsey }
-      end
-    end
+    it_behaves_like 'ip_restriction'
 
     context 'feature is disabled' do
       before do
@@ -44,6 +48,29 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
       end
 
       it { is_expected.to be_truthy }
+    end
+
+    context 'when usage ping is enabled' do
+      before do
+        stub_licensed_features(group_ip_restriction: false)
+        stub_application_setting(usage_ping_enabled: true)
+      end
+
+      context 'when feature is activated' do
+        before do
+          stub_application_setting(usage_ping_features_enabled: true)
+        end
+
+        it_behaves_like 'ip_restriction'
+      end
+
+      context 'when feature is deactivated' do
+        before do
+          stub_application_setting(usage_ping_features_enabled: false)
+        end
+
+        it { is_expected.to be_truthy }
+      end
     end
   end
 end

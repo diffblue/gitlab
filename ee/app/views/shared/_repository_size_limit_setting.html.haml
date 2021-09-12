@@ -1,4 +1,4 @@
-- return unless current_user.admin? && License.feature_available?(:repository_size_limit)
+- return unless current_user.admin? && (License.feature_available?(:repository_size_limit) || License.features_with_usage_ping.include?(:repository_size_limit))
 
 - form = local_assigns.fetch(:form)
 - is_project = local_assigns.fetch(:type) == :project

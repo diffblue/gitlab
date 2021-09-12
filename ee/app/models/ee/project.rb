@@ -601,7 +601,7 @@ module EE
           current_size_proc: -> { statistics.total_repository_size },
           limit: actual_size_limit,
           namespace: namespace,
-          enabled: License.feature_available?(:repository_size_limit)
+          enabled: License.feature_available?(:repository_size_limit) || License.features_with_usage_ping.include?(:repository_size_limit)
         )
       end
     end

@@ -1,4 +1,4 @@
-- return if !group.licensed_feature_available?(:group_ip_restriction) || group.parent_id.present?
+- return if !(group.licensed_feature_available?(:group_ip_restriction) || License.features_with_usage_ping.include?(:group_ip_restriction)) || group.parent_id.present?
 - hidden_input_id = 'group_ip_restriction_ranges'
 - label_id = "#{hidden_input_id}_label"
 

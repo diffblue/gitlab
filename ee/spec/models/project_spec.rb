@@ -2377,6 +2377,33 @@ RSpec.describe Project do
             expect(checker.enabled?).to be_falsey
           end
         end
+
+        context 'when usage ping is enabled' do
+          before do
+            stub_licensed_features(repository_size_limit: false)
+            stub_application_setting(usage_ping_enabled: true)
+          end
+
+          context 'when feature is activated' do
+            before do
+              stub_application_setting(usage_ping_features_enabled: true)
+            end
+
+            it 'is enabled' do
+              expect(checker.enabled?).to be_truthy
+            end
+          end
+
+          context 'when feature is deactivated' do
+            before do
+              stub_application_setting(usage_ping_features_enabled: false)
+            end
+
+            it 'is disabled' do
+              expect(checker.enabled?).to be_falsy
+            end
+          end
+        end
       end
     end
   end
