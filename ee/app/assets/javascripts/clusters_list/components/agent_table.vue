@@ -15,9 +15,6 @@ import timeagoMixin from '~/vue_shared/mixins/timeago';
 import { INSTALL_AGENT_MODAL_ID, AGENT_STATUSES, TROUBLESHOOTING_LINK } from '../constants';
 
 export default {
-  modalId: INSTALL_AGENT_MODAL_ID,
-  statuses: AGENT_STATUSES,
-  troubleshootingLink: TROUBLESHOOTING_LINK,
   components: {
     GlButton,
     GlLink,
@@ -33,6 +30,9 @@ export default {
   },
   mixins: [timeagoMixin],
   inject: ['integrationDocsUrl'],
+  INSTALL_AGENT_MODAL_ID,
+  AGENT_STATUSES,
+  TROUBLESHOOTING_LINK,
   props: {
     agents: {
       required: true,
@@ -67,7 +67,10 @@ export default {
 <template>
   <div>
     <div class="gl-display-block gl-text-right gl-my-3">
-      <gl-button v-gl-modal-directive="$options.modalId" variant="success" category="primary"
+      <gl-button
+        v-gl-modal-directive="$options.INSTALL_AGENT_MODAL_ID"
+        variant="success"
+        category="primary"
         >{{ s__('ClusterAgents|Install a new GitLab Agent') }}
       </gl-button>
     </div>
@@ -85,35 +88,35 @@ export default {
           class="gl-pr-5"
           data-testid="cluster-agent-connection-status"
         >
-          <span :class="$options.statuses[item.status].class" class="gl-mr-3">
-            <gl-icon :name="$options.statuses[item.status].icon" :size="12" /></span
-          >{{ $options.statuses[item.status].name }}
+          <span :class="$options.AGENT_STATUSES[item.status].class" class="gl-mr-3">
+            <gl-icon :name="$options.AGENT_STATUSES[item.status].icon" :size="12" /></span
+          >{{ $options.AGENT_STATUSES[item.status].name }}
         </span>
         <gl-tooltip
           v-if="item.status === 'active'"
           :target="`connection-status-${item.name}`"
           placement="right"
         >
-          <gl-sprintf :message="$options.statuses[item.status].tooltip.title"
+          <gl-sprintf :message="$options.AGENT_STATUSES[item.status].tooltip.title"
             ><template #timeAgo>{{ timeFormatted(item.lastContact) }}</template>
           </gl-sprintf>
         </gl-tooltip>
         <gl-popover
           v-else
           :target="`connection-status-${item.name}`"
-          :title="$options.statuses[item.status].tooltip.title"
+          :title="$options.AGENT_STATUSES[item.status].tooltip.title"
           placement="right"
           container="viewport"
         >
           <p>
-            <gl-sprintf :message="$options.statuses[item.status].tooltip.body"
+            <gl-sprintf :message="$options.AGENT_STATUSES[item.status].tooltip.body"
               ><template #timeAgo>{{ timeFormatted(item.lastContact) }}</template></gl-sprintf
             >
           </p>
           <p class="gl-mb-0">
             {{ s__('ClusterAgents|For more troubleshooting information go to') }}
-            <gl-link :href="$options.troubleshootingLink" target="_blank" class="gl-font-sm">
-              {{ $options.troubleshootingLink }}</gl-link
+            <gl-link :href="$options.TROUBLESHOOTING_LINK" target="_blank" class="gl-font-sm">
+              {{ $options.TROUBLESHOOTING_LINK }}</gl-link
             >
           </p>
         </gl-popover>
@@ -122,7 +125,7 @@ export default {
       <template #cell(lastContact)="{ item }">
         <span data-testid="cluster-agent-last-contact">
           <time-ago-tooltip v-if="item.lastContact" :time="item.lastContact" />
-          <span v-else>{{ __('Never') }}</span>
+          <span v-else>{{ s__('ClusterAgents|Never') }}</span>
         </span>
       </template>
 
@@ -134,6 +137,7 @@ export default {
           </gl-link>
 
           <span v-else>.gitlab/agents/{{ item.name }}</span>
+          <!-- eslint-enable @gitlab/vue-require-i18n-strings -->
         </span>
       </template>
     </gl-table>
