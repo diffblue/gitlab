@@ -8369,6 +8369,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="commitpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="commitpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="commitpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ### `ComplianceFramework`
@@ -10990,6 +10991,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="mergerequestpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="mergerequestpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `MergeRequest.reference`
@@ -12777,6 +12779,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="projectpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="projectpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `Project.projectMembers`
