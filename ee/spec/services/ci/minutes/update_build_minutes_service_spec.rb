@@ -112,17 +112,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
         end
       end
 
-      context 'when feature flag ci_minutes_monthly_tracking is disabled' do
-        before do
-          stub_feature_flags(ci_minutes_monthly_tracking: false)
-        end
-
-        it 'does not track usage on a monthly basis' do
-          expect(namespace_amount_used).to eq(0)
-          expect(project_amount_used).to eq(0)
-        end
-      end
-
       context 'when consumption is 0' do
         let(:build) do
           create(:ci_build, :success,
@@ -162,19 +151,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
         end
 
         it_behaves_like 'new tracking matches legacy tracking'
-
-        context 'when feature flag ci_minutes_monthly_tracking is disabled' do
-          before do
-            stub_feature_flags(ci_minutes_monthly_tracking: false)
-          end
-
-          it 'does not track usage on a monthly basis' do
-            subject
-
-            expect(namespace_amount_used).to eq(usage_in_minutes)
-            expect(project_amount_used).to eq(usage_in_minutes)
-          end
-        end
       end
 
       context 'when group is subgroup' do

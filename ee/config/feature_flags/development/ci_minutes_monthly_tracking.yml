@@ -1,8 +1,0 @@
----
-name: ci_minutes_monthly_tracking
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/52915
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/300803 
-milestone: '13.9'
-type: development
-group: group::pipeline execution
-default_enabled: false

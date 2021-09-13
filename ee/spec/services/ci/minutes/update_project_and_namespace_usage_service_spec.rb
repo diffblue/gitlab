@@ -73,19 +73,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
           expect(project_amount_used).to eq(consumption_minutes)
         end
 
-        context 'when feature flag ci_minutes_monthly_tracking is disabled' do
-          before do
-            stub_feature_flags(ci_minutes_monthly_tracking: false)
-          end
-
-          it 'does not update the usage on a monthly basis' do
-            subject.execute(consumption_minutes)
-
-            expect(namespace_amount_used).to eq(0)
-            expect(project_amount_used).to eq(0)
-          end
-        end
-
         context 'when on .com' do
           before do
             allow(Gitlab).to receive(:com?).and_return(true)
@@ -157,19 +144,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
 
           expect(namespace_amount_used).to eq(existing_usage_in_minutes + consumption_minutes)
           expect(project_amount_used).to eq(existing_usage_in_minutes + consumption_minutes)
-        end
-
-        context 'when feature flag ci_minutes_monthly_tracking is disabled' do
-          before do
-            stub_feature_flags(ci_minutes_monthly_tracking: false)
-          end
-
-          it 'does not update usage' do
-            subject.execute(consumption_minutes)
-
-            expect(namespace_amount_used).to eq(existing_usage_in_minutes)
-            expect(project_amount_used).to eq(existing_usage_in_minutes)
-          end
         end
       end
     end
