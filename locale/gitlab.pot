@@ -17477,7 +17477,7 @@ msgstr ""
 msgid "InProductMarketing|Team up in GitLab for greater efficiency"
 msgstr ""
 
-msgid "InProductMarketing|Team work makes the dream work"
+msgid "InProductMarketing|Team work makes the dream work"
 msgstr ""
 
 msgid "InProductMarketing|Test, create, deploy"
