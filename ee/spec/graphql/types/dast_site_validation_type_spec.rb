@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['DastSiteValidation'] do
-  let_it_be(:dast_site_validation) { create(:dast_site_validation) }
+  let_it_be(:dast_site_validation) { create(:dast_site_validation, state: :passed) }
   let_it_be(:project) { dast_site_validation.dast_site_token.project }
   let_it_be(:user) { create(:user) }
   let_it_be(:fields) { %i[id status normalizedTargetUrl] }
@@ -16,7 +16,8 @@ RSpec.describe GitlabSchema.types['DastSiteValidation'] do
       },
       variables: {
         fullPath: project.full_path,
-        normalized_target_urls: [dast_site_validation.url_base]
+        normalized_target_urls: [dast_site_validation.url_base],
+        status: Types::DastSiteValidationStatusEnum.values.fetch('PASSED_VALIDATION').value
       }
     ).as_json
   end
@@ -50,7 +51,7 @@ RSpec.describe GitlabSchema.types['DastSiteValidation'] do
     describe 'status field' do
       subject { response.dig('data', 'project', 'dastSiteValidations', 'edges', 0, 'node', 'status') }
 
-      it { is_expected.to eq('PENDING_VALIDATION') }
+      it { is_expected.to eq('PASSED_VALIDATION') }
     end
   end
 end
