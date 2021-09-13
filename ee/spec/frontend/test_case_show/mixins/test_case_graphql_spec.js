@@ -139,7 +139,7 @@ describe('TestCaseGraphQL Mixin', () => {
 
       return wrapper.vm.addTestCaseAsTodo().then(() => {
         expect(createFlash).toHaveBeenCalledWith({
-          message: 'Something went wrong while adding test case to Todo.',
+          message: 'Something went wrong while adding test case to a to-do item.',
           captureError: true,
           error: expect.any(Object),
         });
@@ -201,7 +201,7 @@ describe('TestCaseGraphQL Mixin', () => {
 
       return wrapper.vm.markTestCaseTodoDone().then(() => {
         expect(createFlash).toHaveBeenCalledWith({
-          message: 'Something went wrong while marking test case todo as done.',
+          message: 'Something went wrong while marking test case to-do item as done.',
           captureError: true,
           error: expect.any(Object),
         });

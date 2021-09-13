@@ -72,7 +72,7 @@ export default {
         });
     },
     /**
-     * We're using Public REST API to add Test Case as a Todo since
+     * We're using Public REST API to add Test Case as a to-do item since
      * GraphQL mutation to do the same is unavailable as of now.
      */
     addTestCaseAsTodo() {
@@ -83,7 +83,7 @@ export default {
         })
         .catch((error) => {
           createFlash({
-            message: s__('TestCases|Something went wrong while adding test case to Todo.'),
+            message: s__('TestCases|Something went wrong while adding test case to a to-do item.'),
             captureError: true,
             error,
           });
@@ -112,7 +112,9 @@ export default {
         })
         .catch((error) => {
           createFlash({
-            message: s__('TestCases|Something went wrong while marking test case todo as done.'),
+            message: s__(
+              'TestCases|Something went wrong while marking test case to-do item as done.',
+            ),
             captureError: true,
             error,
           });
