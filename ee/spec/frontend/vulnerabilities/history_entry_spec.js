@@ -8,7 +8,7 @@ describe('History Entry', () => {
   const systemNote = {
     system: true,
     id: 1,
-    note: 'changed vulnerability status to dismissed',
+    body: 'changed vulnerability status to dismissed',
     systemNoteIconName: 'cancel',
     updatedAt: new Date().toISOString(),
     author: {
@@ -20,11 +20,8 @@ describe('History Entry', () => {
 
   const commentNote = {
     id: 2,
-    note: 'some note',
+    body: 'some note',
     author: {},
-    currentUser: {
-      canEdit: true,
-    },
   };
 
   const createWrapper = (...notes) => {
@@ -33,7 +30,6 @@ describe('History Entry', () => {
     wrapper = shallowMount(HistoryEntry, {
       propsData: {
         discussion,
-        notesUrl: '/notes',
       },
       stubs: { EventItem },
     });
@@ -49,7 +45,7 @@ describe('History Entry', () => {
   it('passes the expected values to the event item component', () => {
     createWrapper(systemNote);
 
-    expect(eventItem().text()).toContain(systemNote.note);
+    expect(eventItem().text()).toContain(systemNote.body);
     expect(eventItem().props()).toMatchObject({
       id: systemNote.id,
       author: systemNote.author,
@@ -79,34 +75,5 @@ describe('History Entry', () => {
     expect(existingComments()).toHaveLength(2);
     expect(commentAt(0).props('comment')).toEqual(commentNote);
     expect(commentAt(1).props('comment')).toEqual(commentNoteClone);
-  });
-
-  it('adds a new comment correctly', async () => {
-    createWrapper(systemNote);
-    newComment().vm.$emit('onCommentAdded', commentNote);
-
-    await wrapper.vm.$nextTick();
-
-    expect(newComment().exists()).toBe(false);
-    expect(existingComments()).toHaveLength(1);
-    expect(commentAt(0).props('comment')).toEqual(commentNote);
-  });
-
-  it('updates an existing comment correctly', async () => {
-    const updatedNote = { ...commentNote, note: 'new note' };
-    createWrapper(systemNote, commentNote);
-    commentAt(0).vm.$emit('onCommentUpdated', updatedNote);
-
-    await wrapper.vm.$nextTick();
-
-    expect(commentAt(0).props('comment')).toBe(updatedNote);
-  });
-
-  it('deletes an existing comment correctly', async () => {
-    createWrapper(systemNote, commentNote);
-    await commentAt(0).vm.$emit('onCommentDeleted', commentNote);
-
-    expect(newComment().exists()).toBe(true);
-    expect(existingComments()).toHaveLength(0);
   });
 });

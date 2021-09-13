@@ -8,7 +8,6 @@ import createFlash from '~/flash';
 import { TYPE_NOTE, TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
-import { normalizeGraphQLNote } from '../helpers';
 import HistoryCommentEditor from './history_comment_editor.vue';
 
 export default {
@@ -63,21 +62,13 @@ export default {
       ];
     },
     initialComment() {
-      return this.comment?.note;
+      return this.comment?.body;
     },
     canEditComment() {
-      return this.comment.currentUser?.canEdit;
+      return this.comment.userPermissions?.adminNote;
     },
     noteHtml() {
-      return this.isSavingComment ? undefined : this.comment.noteHtml;
-    },
-  },
-
-  watch: {
-    'comment.updatedAt': {
-      handler() {
-        this.isSavingComment = false;
-      },
+      return this.isSavingComment ? undefined : this.comment.bodyHtml;
     },
   },
 
@@ -95,13 +86,11 @@ export default {
         },
       });
 
-      const { note, errors } = data.createNote;
+      const { errors } = data.createNote;
 
       if (errors?.length > 0) {
         throw errors;
       }
-
-      this.$emit('onCommentAdded', normalizeGraphQLNote(note));
     },
     async updateComment(body) {
       const { data } = await this.$apollo.mutate({
@@ -112,14 +101,11 @@ export default {
         },
       });
 
-      const { note, errors } = data.updateNote;
+      const { errors } = data.updateNote;
 
       if (errors?.length > 0) {
         throw errors;
       }
-
-      this.cancelEditingComment();
-      this.$emit('onCommentUpdated', normalizeGraphQLNote(note));
     },
     async saveComment(body) {
       this.isSavingComment = true;
@@ -131,15 +117,20 @@ export default {
         } else {
           await this.insertComment(body);
         }
+
+        this.$emit('onCommentUpdated', () => {
+          this.isSavingComment = false;
+          this.cancelEditingComment();
+        });
       } catch {
+        this.isSavingComment = false;
+
         createFlash({
           message: s__(
             'VulnerabilityManagement|Something went wrong while trying to save the comment. Please try again later.',
           ),
         });
       }
-
-      this.isSavingComment = false;
     },
     async deleteComment() {
       this.isDeletingComment = true;
@@ -156,16 +147,18 @@ export default {
           throw data.errors;
         }
 
-        this.$emit('onCommentDeleted', this.comment);
+        this.$emit('onCommentUpdated', () => {
+          this.isDeletingComment = false;
+        });
       } catch {
+        this.isDeletingComment = false;
+
         createFlash({
           message: s__(
             'VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later.',
           ),
         });
       }
-
-      this.isDeletingComment = false;
     },
     cancelEditingComment() {
       this.isEditingComment = false;

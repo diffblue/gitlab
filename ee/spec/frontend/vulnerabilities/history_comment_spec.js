@@ -12,6 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { generateNote } from './mock_data';
 
 jest.mock('~/flash');
 Vue.use(VueApollo);
@@ -59,28 +60,7 @@ describe('History Comment', () => {
     });
   };
 
-  const note = {
-    id: 'gid://gitlab/DiscussionNote/1295',
-    body: 'Created a note.',
-    bodyHtml: '\u003cp\u003eCreated a note\u003c/p\u003e',
-    updatedAt: '2021-08-25T16:21:18Z',
-    system: false,
-    systemNoteIconName: null,
-    userPermissions: {
-      adminNote: true,
-    },
-    author: {
-      id: 'gid://gitlab/User/1',
-      name: 'Administrator',
-      username: 'root',
-      webPath: '/root',
-    },
-  };
-
-  // Needed for now. Will be removed when fetching notes will be done through GraphQL.
-  note.note = note.body;
-  note.noteHtml = note.bodyHtml;
-  note.currentUser = { canEdit: note.userPermissions.adminNote };
+  const note = generateNote();
 
   beforeEach(() => {
     createNoteMutationSpy = jest
@@ -95,8 +75,8 @@ describe('History Comment', () => {
   });
 
   const addCommentButton = () => wrapper.find({ ref: 'addCommentButton' });
-  const commentEditor = () => wrapper.find(HistoryCommentEditor);
-  const eventItem = () => wrapper.find(EventItem);
+  const commentEditor = () => wrapper.findComponent(HistoryCommentEditor);
+  const eventItem = () => wrapper.findComponent(EventItem);
   const editButton = () => wrapper.find('[title="Edit Comment"]');
   const deleteButton = () => wrapper.find('[title="Delete Comment"]');
   const confirmDeleteButton = () => wrapper.find({ ref: 'confirmDeleteButton' });
@@ -228,10 +208,10 @@ describe('History Comment', () => {
   };
 
   describe.each`
-    desc                           | propsData            | expectedEvent         | expectedVars            | mutationSpyFn                  | queryName
-    ${'inserting a new note'}      | ${{}}                | ${'onCommentAdded'}   | ${EXPECTED_CREATE_VARS} | ${() => createNoteMutationSpy} | ${CREATE_NOTE}
-    ${'updating an existing note'} | ${{ comment: note }} | ${'onCommentUpdated'} | ${EXPECTED_UPDATE_VARS} | ${() => updateNoteMutationSpy} | ${UPDATE_NOTE}
-  `('$desc', ({ propsData, expectedEvent, expectedVars, mutationSpyFn, queryName }) => {
+    desc                           | propsData            | expectedVars            | mutationSpyFn                  | queryName
+    ${'inserting a new note'}      | ${{}}                | ${EXPECTED_CREATE_VARS} | ${() => createNoteMutationSpy} | ${CREATE_NOTE}
+    ${'updating an existing note'} | ${{ comment: note }} | ${EXPECTED_UPDATE_VARS} | ${() => updateNoteMutationSpy} | ${UPDATE_NOTE}
+  `('$desc', ({ propsData, expectedVars, mutationSpyFn, queryName }) => {
     let mutationSpy;
 
     beforeEach(() => {
@@ -258,25 +238,19 @@ describe('History Comment', () => {
       expect(commentEditor().props('isSaving')).toBe(true);
     });
 
-    it('emits event when mutation is successful', async () => {
+    it('emits event when mutation is successful with a callback function that resets the state', async () => {
       createWrapper({ propsData });
 
+      const listener = jest.fn().mockImplementation((callback) => callback());
+      wrapper.vm.$on('onCommentUpdated', listener);
+
       await editAndSaveNewContent('new comment');
+      expect(commentEditor().props('isSaving')).toBe(true);
       await waitForPromises();
 
-      expect(wrapper.emitted(expectedEvent)).toEqual([
-        [
-          {
-            ...note,
-            id: 1295,
-            author: {
-              ...note.author,
-              id: 1,
-              path: note.author.webPath,
-            },
-          },
-        ],
-      ]);
+      expect(wrapper.emitted('onCommentUpdated')).toEqual([[expect.any(Function)]]);
+      expect(listener).toHaveBeenCalled();
+      expect(commentEditor().exists()).toBe(false);
     });
 
     describe('when mutation has data error', () => {
@@ -316,7 +290,7 @@ describe('History Comment', () => {
   });
 
   describe('deleting a note', () => {
-    it('deletes the comment when the confirm delete button is clicked', async () => {
+    it('deletes the comment when the confirm delete button is clicked and submits an event to refect the discussions', async () => {
       createWrapper({
         propsData: { comment: note },
       });
@@ -331,8 +305,8 @@ describe('History Comment', () => {
       expect(cancelDeleteButton().props('disabled')).toBe(true);
 
       await waitForPromises();
-      expect(wrapper.emitted().onCommentDeleted).toBeTruthy();
-      expect(wrapper.emitted().onCommentDeleted[0][0]).toEqual(note);
+      expect(wrapper.emitted().onCommentUpdated).toBeTruthy();
+      expect(wrapper.emitted().onCommentUpdated[0][0]).toEqual(expect.any(Function));
     });
 
     it('sends mutation to delete note', async () => {
@@ -383,7 +357,7 @@ describe('History Comment', () => {
     it('does not show the edit/delete buttons if the current user has no edit permissions', () => {
       createWrapper({
         propsData: {
-          comment: { ...note, userPermissions: undefined, currentUser: { canEdit: false } },
+          comment: { ...note, userPermissions: { adminNote: false } },
         },
       });
 

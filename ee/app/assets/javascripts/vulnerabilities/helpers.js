@@ -37,11 +37,6 @@ export const normalizeGraphQLNote = (note) => {
   return {
     ...note,
     id: getIdFromGraphQLId(note.id),
-    note: note.body,
-    noteHtml: note.bodyHtml,
-    currentUser: {
-      canEdit: note.userPermissions?.adminNote,
-    },
     author: {
       ...note.author,
       id: getIdFromGraphQLId(note.author.id),
