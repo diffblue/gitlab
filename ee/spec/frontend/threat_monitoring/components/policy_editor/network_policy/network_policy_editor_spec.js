@@ -6,7 +6,6 @@ import {
   RuleTypeEndpoint,
   EndpointMatchModeLabel,
   fromYaml,
-  buildRule,
   toYaml,
 } from 'ee/threat_monitoring/components/policy_editor/network_policy/lib';
 import NetworkPolicyEditor from 'ee/threat_monitoring/components/policy_editor/network_policy/network_policy_editor.vue';
@@ -17,7 +16,7 @@ import PolicyPreview from 'ee/threat_monitoring/components/policy_editor/policy_
 import createStore from 'ee/threat_monitoring/store';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { redirectTo } from '~/lib/utils/url_utility';
-import { mockL3Manifest, mockL7Manifest } from '../../../mocks/mock_data';
+import { mockExistingL3Policy, mockExistingL7Policy } from '../../../mocks/mock_data';
 
 jest.mock('~/lib/utils/url_utility');
 
@@ -27,7 +26,7 @@ describe('NetworkPolicyEditor component', () => {
 
   const defaultStore = { threatMonitoring: { environments: [{ id: 1 }], currentEnvironmentId: 1 } };
 
-  const factory = ({ propsData, provide = {}, updatedStore = defaultStore, data } = {}) => {
+  const factory = ({ propsData, provide = {}, updatedStore = defaultStore } = {}) => {
     store = createStore();
 
     store.replaceState({
@@ -57,7 +56,6 @@ describe('NetworkPolicyEditor component', () => {
         ...provide,
       },
       store,
-      data,
       stubs: { PolicyYamlEditor: true },
     });
   };
@@ -117,48 +115,22 @@ describe('NetworkPolicyEditor component', () => {
     expect(findComponent().exists()).toBe(state);
   });
 
-  describe('given .yaml editor mode is enabled', () => {
-    beforeEach(() => {
-      factory({
-        data: () => ({
-          editorMode: EDITOR_MODE_YAML,
-        }),
-      });
-    });
+  it('updates policy on yaml editor value change', async () => {
+    findPolicyEditorLayout().vm.$emit('update-yaml', mockExistingL3Policy.manifest);
 
-    it('updates policy on yaml editor value change', async () => {
-      findPolicyEditorLayout().vm.$emit('update-yaml', mockL3Manifest);
-
-      expect(wrapper.vm.policy).toMatchObject({
-        name: 'test-policy-02',
-        description: 'test description',
-        isEnabled: true,
-        endpointMatchMode: EndpointMatchModeLabel,
-        endpointLabels: 'foo:bar',
-        rules: [
-          {
-            ruleType: RuleTypeEndpoint,
-            matchLabels: 'foo:bar',
-          },
-        ],
-        labels: { 'app.gitlab.com/proj': '21' },
-      });
-    });
-
-    it('saves L7 policies', async () => {
-      factory({
-        data: () => ({
-          editorMode: EDITOR_MODE_YAML,
-          yamlEditorValue: mockL7Manifest,
-        }),
-      });
-
-      await findPolicyEditorLayout().vm.$emit('save-policy', EDITOR_MODE_YAML);
-      expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/createPolicy', {
-        environmentId: 1,
-        policy: { manifest: mockL7Manifest },
-      });
-      expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
+    expect(wrapper.vm.policy).toMatchObject({
+      name: 'test-policy-02',
+      description: 'test description',
+      isEnabled: true,
+      endpointMatchMode: EndpointMatchModeLabel,
+      endpointLabels: 'foo:bar',
+      rules: [
+        {
+          ruleType: RuleTypeEndpoint,
+          matchLabels: 'foo:bar',
+        },
+      ],
+      labels: { 'app.gitlab.com/proj': '21' },
     });
   });
 
@@ -213,11 +185,7 @@ describe('NetworkPolicyEditor component', () => {
 
   describe('given there is a yaml parsing error', () => {
     beforeEach(() => {
-      factory({
-        data: () => ({
-          yamlEditorError: {},
-        }),
-      });
+      factory({ propsData: { existingPolicy: mockExistingL7Policy } });
     });
 
     it('disables policy name field', () => {
@@ -252,7 +220,28 @@ describe('NetworkPolicyEditor component', () => {
       findPolicyName().vm.$emit('input', 'test-policy');
       const policyEditorLayout = findPolicyEditorLayout();
       await policyEditorLayout.vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
-      expect(policyEditorLayout.attributes('yamleditorvalue')).toEqual('');
+      expect(policyEditorLayout.attributes('yamleditorvalue')).toEqual(
+        mockExistingL7Policy.manifest,
+      );
+    });
+
+    it('saves unparseable policy', async () => {
+      await findPolicyEditorLayout().vm.$emit('save-policy', EDITOR_MODE_YAML);
+      expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/createPolicy', {
+        environmentId: 1,
+        policy: { manifest: mockExistingL7Policy.manifest },
+      });
+      expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
+    });
+
+    it('removes unparseable policy', async () => {
+      await findPolicyEditorLayout().vm.$emit('remove-policy');
+
+      expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/deletePolicy', {
+        environmentId: 1,
+        policy: { name: mockExistingL7Policy.name, manifest: mockExistingL7Policy.manifest },
+      });
+      expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
     });
   });
 
@@ -279,23 +268,17 @@ describe('NetworkPolicyEditor component', () => {
   });
 
   describe('editing a policy', () => {
-    const manifest = toYaml({
-      name: 'policy',
-      endpointLabels: '',
-      rules: [buildRule()],
-    });
-
     beforeEach(() => {
       factory({
         propsData: {
-          existingPolicy: { name: 'policy', manifest },
+          existingPolicy: mockExistingL3Policy,
           isEditing: true,
         },
       });
     });
 
     it('presents existing policy', () => {
-      expect(findPolicyName().attributes().value).toEqual('policy');
+      expect(findPolicyName().attributes().value).toEqual(mockExistingL3Policy.name);
       expect(wrapper.findAllComponents(PolicyRuleBuilder)).toHaveLength(1);
     });
 
@@ -303,7 +286,10 @@ describe('NetworkPolicyEditor component', () => {
       await findPolicyEditorLayout().vm.$emit('save-policy');
       expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/updatePolicy', {
         environmentId: 1,
-        policy: { name: 'policy', manifest: toYaml(wrapper.vm.policy) },
+        policy: {
+          name: mockExistingL3Policy.name,
+          manifest: toYaml(fromYaml(mockExistingL3Policy.manifest)),
+        },
       });
       expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
     });
@@ -311,7 +297,7 @@ describe('NetworkPolicyEditor component', () => {
     describe('given there is a updatePolicy error', () => {
       beforeEach(() => {
         factory({
-          propsData: { existingPolicy: { name: 'policy', manifest } },
+          propsData: { existingPolicy: mockExistingL3Policy },
           updatedStore: { networkPolicies: { errorUpdatingPolicy: true }, ...defaultStore },
         });
       });
@@ -328,7 +314,10 @@ describe('NetworkPolicyEditor component', () => {
 
       expect(store.dispatch).toHaveBeenCalledWith('networkPolicies/deletePolicy', {
         environmentId: 1,
-        policy: { name: 'policy', manifest: toYaml(wrapper.vm.policy) },
+        policy: {
+          name: mockExistingL3Policy.name,
+          manifest: mockExistingL3Policy.manifest,
+        },
       });
       expect(redirectTo).toHaveBeenCalledWith('/threat-monitoring');
     });

@@ -180,7 +180,7 @@ export default {
       });
     },
     removePolicy() {
-      const policy = { name: this.existingPolicy.name, manifest: toYaml(this.policy) };
+      const policy = { name: this.existingPolicy.name, manifest: this.yamlEditorValue };
 
       return this.deletePolicy({ environmentId: this.currentEnvironmentId, policy }).then(() => {
         if (!this.errorRemovingPolicy) redirectTo(this.threatMonitoringPath);
