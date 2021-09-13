@@ -69,7 +69,7 @@ class FinalizeCiBuildsBigintConversion < Gitlab::Database::Migration[1.0]
     [:ci_build_trace_chunks, :build_id, :cascade, 'fk_rails_'],
     [:ci_build_trace_metadata, :build_id, :cascade, 'fk_rails_'],
     [:ci_builds_runner_session, :build_id, :cascade, 'fk_rails_'],
-    [:ci_builds_metadata, :build_id, :cascade, 'fk_rails_'],
+    [:ci_builds_metadata, :build_id, :cascade, 'fk_'],
     [:ci_job_artifacts, :job_id, :cascade, 'fk_rails_'],
     [:ci_job_variables, :job_id, :cascade, 'fk_rails_'],
     [:ci_pending_builds, :build_id, :cascade, 'fk_rails_'],
