@@ -39,6 +39,10 @@ export const getProfileSettings = ({ createNewProfilePaths }) => ({
         label: s__('DastProfiles|Scan mode'),
         key: 'dastScannerProfile.scanType',
       },
+      {
+        label: s__('DastProfiles|Schedule'),
+        key: 'dastProfileSchedule',
+      },
     ],
     i18n: {
       createNewLinkText: s__('DastProfiles|DAST Scan'),

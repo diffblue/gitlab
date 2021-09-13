@@ -96,7 +96,7 @@ describe('ScanSchedule', () => {
       expect(wrapper.emitted().input[0]).toEqual([
         {
           active: true,
-          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          cadence: {},
           startsAt: null,
           timezone: null,
         },
@@ -111,7 +111,7 @@ describe('ScanSchedule', () => {
       expect(wrapper.emitted().input[2]).toEqual([
         {
           active: true,
-          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          cadence: {},
           startsAt: '2021-08-12T11:00:00.000Z',
           timezone: null,
         },
@@ -126,7 +126,7 @@ describe('ScanSchedule', () => {
       expect(wrapper.emitted().input[2]).toEqual([
         {
           active: true,
-          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          cadence: {},
           startsAt: null,
           timezone: null,
         },
@@ -148,7 +148,7 @@ describe('ScanSchedule', () => {
       expect(wrapper.emitted().input[1]).toEqual([
         {
           active: false,
-          cadence: SCAN_CADENCE_OPTIONS[0].value,
+          cadence: {},
           startsAt: null,
           timezone: null,
         },
@@ -157,26 +157,40 @@ describe('ScanSchedule', () => {
   });
 
   describe('editing a schedule', () => {
-    const startsAt = '2001-09-27T08:45:00.000Z';
+    const schedule = {
+      active: true,
+      startsAt: '2001-09-27T08:45:00.000Z',
+      cadence: { unit: 'MONTH', duration: 1 },
+      timezone: timezoneSST.identifier,
+    };
 
-    beforeEach(() => {
+    it('initializes fields with provided values', () => {
       createComponent({
         propsData: {
           value: {
-            active: true,
-            startsAt,
+            ...schedule,
             cadence: { unit: 'MONTH', duration: 1 },
-            timezone: timezoneSST.identifier,
           },
         },
       });
-    });
 
-    it('initializes fields with provided values', () => {
       expect(findCheckbox().props('checked')).toBe(true);
-      expect(findDatepicker().props('value')).toEqual(new Date(startsAt));
+      expect(findDatepicker().props('value')).toEqual(new Date(schedule.startsAt));
       expect(findTimeInput().element.value).toBe('08:45');
       expect(findCadenceInput().props('value')).toBe(SCAN_CADENCE_OPTIONS[3].value);
+    });
+
+    it('uses default cadence if stored value is empty', () => {
+      createComponent({
+        propsData: {
+          value: {
+            ...schedule,
+            cadence: {},
+          },
+        },
+      });
+
+      expect(findCadenceInput().props('value')).toBe(SCAN_CADENCE_OPTIONS[0].value);
     });
   });
 });

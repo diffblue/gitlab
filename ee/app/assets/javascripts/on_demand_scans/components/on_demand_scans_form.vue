@@ -311,10 +311,10 @@ export default {
       this.form.fields.name.value = name ?? this.form.fields.name.value;
       this.form.fields.description.value = description ?? this.form.fields.description.value;
       this.selectedBranch = selectedBranch;
+      this.profileSchedule = profileSchedule ?? this.profileSchedule;
       // precedence is given to profile IDs passed from the query params
       this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
       this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
-      this.profileSchedule = this.profileSchedule ?? profileSchedule;
     },
   },
 };
@@ -454,7 +454,11 @@ export default {
         :has-conflict="hasProfilesConflict"
       />
 
-      <scan-schedule v-if="glFeatures.dastOnDemandScansScheduler" v-model="profileSchedule" />
+      <scan-schedule
+        v-if="glFeatures.dastOnDemandScansScheduler"
+        v-model="profileSchedule"
+        class="gl-mb-5"
+      />
 
       <profile-conflict-alert
         v-if="hasProfilesConflict"

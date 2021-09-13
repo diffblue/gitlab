@@ -12,7 +12,8 @@ RSpec.describe Projects::Security::DastProfilesHelper do
           'new_dast_saved_scan_path' => new_project_on_demand_scan_path(project),
           'new_dast_site_profile_path' => new_project_security_configuration_dast_scans_dast_site_profile_path(project),
           'new_dast_scanner_profile_path' => new_project_security_configuration_dast_scans_dast_scanner_profile_path(project),
-          'project_full_path' => project.path_with_namespace
+          'project_full_path' => project.path_with_namespace,
+          'timezones' => helper.timezone_data(format: :full).to_json
         }
       )
     end

@@ -39,10 +39,51 @@ const YEAR_1 = 'YEAR_1';
 
 export const SCAN_CADENCE_OPTIONS = [
   { value: '', text: __('Never') },
-  { value: DAY_1, text: __('Every day') },
-  { value: WEEK_1, text: __('Every week') },
-  { value: MONTH_1, text: __('Every month') },
-  { value: MONTH_3, text: __('Every 3 months') },
-  { value: MONTH_6, text: __('Every 6 months') },
-  { value: YEAR_1, text: __('Every year') },
+  {
+    value: DAY_1,
+    text: __('Every day'),
+    description: {
+      text: __('Every day at %{time} %{timezone}'),
+    },
+  },
+  {
+    value: WEEK_1,
+    text: __('Every week'),
+    description: {
+      text: __('Every week on %{day} at %{time} %{timezone}'),
+      dayFormat: { weekday: 'long' },
+    },
+  },
+  {
+    value: MONTH_1,
+    text: __('Every month'),
+    description: {
+      text: __('Every month on the %{day} at %{time} %{timezone}'),
+      dayFormat: { day: 'numeric' },
+    },
+  },
+  {
+    value: MONTH_3,
+    text: __('Every 3 months'),
+    description: {
+      text: __('Every 3 months on the %{day} at %{time} %{timezone}'),
+      dayFormat: { day: 'numeric' },
+    },
+  },
+  {
+    value: MONTH_6,
+    text: __('Every 6 months'),
+    description: {
+      text: __('Every 6 months on the %{day} at %{time} %{timezone}'),
+      dayFormat: { day: 'numeric' },
+    },
+  },
+  {
+    value: YEAR_1,
+    text: __('Every year'),
+    description: {
+      text: __('Every year on %{day} at %{time} %{timezone}'),
+      dayFormat: { month: 'long', day: 'numeric' },
+    },
+  },
 ];

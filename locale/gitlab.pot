@@ -10429,6 +10429,9 @@ msgstr ""
 msgid "DastProfiles|Scanner name"
 msgstr ""
 
+msgid "DastProfiles|Schedule"
+msgstr ""
+
 msgid "DastProfiles|Select branch"
 msgstr ""
 
@@ -13522,7 +13525,13 @@ msgstr ""
 msgid "Every 3 months"
 msgstr ""
 
+msgid "Every 3 months on the %{day} at %{time} %{timezone}"
+msgstr ""
+
 msgid "Every 6 months"
+msgstr ""
+
+msgid "Every 6 months on the %{day} at %{time} %{timezone}"
 msgstr ""
 
 msgid "Every day"
@@ -13531,10 +13540,16 @@ msgstr ""
 msgid "Every day (at %{time})"
 msgstr ""
 
+msgid "Every day at %{time} %{timezone}"
+msgstr ""
+
 msgid "Every month"
 msgstr ""
 
 msgid "Every month (Day %{day} at %{time})"
+msgstr ""
+
+msgid "Every month on the %{day} at %{time} %{timezone}"
 msgstr ""
 
 msgid "Every three months"
@@ -13551,7 +13566,13 @@ msgstr[1] ""
 msgid "Every week (%{weekday} at %{time})"
 msgstr ""
 
+msgid "Every week on %{day} at %{time} %{timezone}"
+msgstr ""
+
 msgid "Every year"
+msgstr ""
+
+msgid "Every year on %{day} at %{time} %{timezone}"
 msgstr ""
 
 msgid "Everyone"
