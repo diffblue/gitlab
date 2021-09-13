@@ -1,4 +1,4 @@
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import DependencyListJobFailedAlert from 'ee/dependencies/components/dependency_list_job_failed_alert.vue';
 
@@ -21,7 +21,7 @@ describe('DependencyListJobFailedAlert component', () => {
   });
 
   it('matches the snapshot', () => {
-    factory({ propsData: { jobPath: '/jobs/foo/3210' } });
+    factory({ propsData: { jobPath: '/jobs/foo/3210' }, stubs: { GlSprintf } });
     expect(wrapper.element).toMatchSnapshot();
   });
 
