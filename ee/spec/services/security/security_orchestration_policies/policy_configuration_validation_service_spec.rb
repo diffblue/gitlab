@@ -92,6 +92,30 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
           expect(response[:invalid_component]).to eq(:parameter)
         end
       end
+
+      context 'when environment_id is provided' do
+        let(:environment_id) { 123 }
+
+        context 'when security_orchestration_policies_configuration is missing' do
+          let(:policy_configuration) { nil }
+
+          it 'ignores policy configuration errors and returns success' do
+            response = service.execute
+
+            expect(response[:status]).to eq(:success)
+          end
+        end
+
+        context 'when security_orchestration_policies_configuration is invalid' do
+          let(:policy_blob) { { scan_execution_policy: 'invalid' }.to_yaml }
+
+          it 'ignores policy configuration errors and returns success' do
+            response = service.execute
+
+            expect(response[:status]).to eq(:success)
+          end
+        end
+      end
     end
 
     context 'when policy.yml is empty' do
