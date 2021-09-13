@@ -97,8 +97,8 @@ On self-managed GitLab, by default this feature is not available. To make it ava
 ask an administrator to [enable the `files_api_throttling` flag](../administration/feature_flags.md). On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.
 The feature is not ready for production use.
 
-This setting limits the request rate on the Packages API per user or IP. For more information, see
-[Files API Rate Limits](../user/admin_area/settings/files_api_rate_limits.md).
+This setting limits the request rate on the Packages API per user or IP address. For more information, read
+[Files API rate limits](../user/admin_area/settings/files_api_rate_limits.md).
 
 - **Default rate limit**: Disabled by default.
 
