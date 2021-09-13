@@ -48,6 +48,13 @@ module Types
             null: true,
             description: 'Web path of the cluster agent.'
 
+      field :connections,
+            Types::Kas::AgentConnectionType.connection_type,
+            null: true,
+            description: 'Active connections for the cluster agent',
+            complexity: 5,
+            resolver: ::Resolvers::Kas::AgentConnectionsResolver
+
       def project
         Gitlab::Graphql::Loaders::BatchModelLoader.new(Project, object.project_id).find
       end
