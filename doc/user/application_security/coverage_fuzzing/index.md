@@ -5,7 +5,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 type: reference, howto
 ---
 
-# Coverage Guided Fuzz Testing **(ULTIMATE)**
+# Coverage-guided fuzz testing **(ULTIMATE)**
 
 GitLab allows you to add coverage-guided fuzz testing to your pipelines. This helps you discover
 bugs and potential security issues that other QA processes may miss. Coverage-guided fuzzing sends
