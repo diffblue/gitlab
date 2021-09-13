@@ -14,7 +14,7 @@ class ProjectImportScheduleWorker
   loggable_arguments 1 # For the job waiter key
 
   # UpdateAllMirrorsWorker depends on the queue size of this worker:
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/325496#note_550866012
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/340630
   tags :needs_own_queue
 
   def perform(project_id)
