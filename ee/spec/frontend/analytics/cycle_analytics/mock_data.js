@@ -239,20 +239,15 @@ export const rawDurationData = [
   },
 ];
 
-export const transformedDurationData = [
-  {
-    id: 1,
-    selected: true,
-    data: rawDurationData,
-  },
-  {
-    id: 2,
-    selected: true,
-    data: rawDurationData,
-  },
-];
+export const transformedDurationData = allowedStages.map(({ id }) => ({
+  id,
+  selected: true,
+  data: rawDurationData,
+}));
 
 export const flattenedDurationData = [
+  { average_duration_in_seconds: 1234000, date: '2019-01-01' },
+  { average_duration_in_seconds: 4321000, date: '2019-01-02' },
   { average_duration_in_seconds: 1234000, date: '2019-01-01' },
   { average_duration_in_seconds: 4321000, date: '2019-01-02' },
   { average_duration_in_seconds: 1234000, date: '2019-01-01' },
