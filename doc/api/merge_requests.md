@@ -625,7 +625,7 @@ Parameters:
 |----------------------------------|----------------|----------|------------------------------------------------------------------------------------------------------------------|
 | `id`                             | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user. |
 | `merge_request_iid`              | integer        | yes      | The internal ID of the merge request.                                                                            |
-| `render_html`                    | integer        | no       | If `true` response includes rendered HTML for title and description.                                             |
+| `render_html`                    | boolean        | no       | If `true` response includes rendered HTML for title and description.                                             |
 | `include_diverged_commits_count` | boolean        | no       | If `true` response includes the commits behind the target branch.                                                |
 | `include_rebase_in_progress`     | boolean        | no       | If `true` response includes whether a rebase operation is in progress.                                           |
 
