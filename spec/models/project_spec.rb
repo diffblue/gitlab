@@ -7055,7 +7055,7 @@ RSpec.describe Project, factory_default: :keep do
 
     subject { project.self_monitoring? }
 
-    context 'when the project is instance self monitoring' do
+    context 'when the project is instance self-monitoring' do
       before do
         stub_application_setting(self_monitoring_project_id: project.id)
       end
@@ -7063,7 +7063,7 @@ RSpec.describe Project, factory_default: :keep do
       it { is_expected.to be true }
     end
 
-    context 'when the project is not self monitoring' do
+    context 'when the project is not self-monitoring' do
       it { is_expected.to be false }
     end
   end
