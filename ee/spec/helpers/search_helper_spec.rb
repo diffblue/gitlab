@@ -149,7 +149,7 @@ RSpec.describe SearchHelper do
     let(:show_snippets) { true }
     let(:collection) { Kaminari.paginate_array([:foo]).page(1).per(10) }
     let(:user) { create(:user) }
-    let(:message) { "Showing %{count} %{scope} for%{term_element}" }
+    let(:message) { "Showing %{count} %{scope} for %{term_element}" }
     let(:new_message) { message + " in your personal and project snippets" }
 
     subject { search_entries_info_template(collection) }
