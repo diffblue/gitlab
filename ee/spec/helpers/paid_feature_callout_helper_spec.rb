@@ -91,6 +91,14 @@ RSpec.describe PaidFeatureCalloutHelper do
     let(:subscription) { instance_double(GitlabSubscription, plan_title: 'Ultimate') }
     let(:group) { instance_double(Group, id: 123, to_param: 'test-group', trial_days_remaining: 12, gitlab_subscription: subscription) }
 
+    before do
+      allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
+        allow(instance).to receive(:execute).and_return([
+          { 'code' => 'premium', 'id' => 'premium-plan-id' }
+        ])
+      end
+    end
+
     subject { helper.paid_feature_popover_data_attrs(group: group, feature_name: 'first feature') }
 
     it 'returns the set of data attributes needed to bootstrap the PaidFeatureCalloutPopover component' do
@@ -99,7 +107,7 @@ RSpec.describe PaidFeatureCalloutHelper do
         days_remaining: 12,
         feature_name: 'first feature',
         href_compare_plans: '/groups/test-group/-/billings',
-        href_upgrade_to_paid: '/-/subscriptions/new?namespace_id=123&plan_id=2c92a00d76f0d5060176f2fb0a5029ff',
+        href_upgrade_to_paid: '/-/subscriptions/new?namespace_id=123&plan_id=premium-plan-id',
         plan_name_for_trial: 'Ultimate',
         plan_name_for_upgrade: 'Premium',
         target_id: 'first-feature-callout'

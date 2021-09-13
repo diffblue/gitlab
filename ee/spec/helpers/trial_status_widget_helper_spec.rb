@@ -30,6 +30,11 @@ RSpec.describe TrialStatusWidgetHelper do
         trial_ends_on: trial_end_date
       )
       stub_experiments(forcibly_show_trial_status_popover: :candidate)
+      allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
+        allow(instance).to receive(:execute).and_return([
+          { 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }
+        ])
+      end
     end
 
     after do
@@ -59,7 +64,7 @@ RSpec.describe TrialStatusWidgetHelper do
           expect(data_attrs).to match(
             shared_expected_attrs.merge(
               group_name: group.name,
-              purchase_href: new_subscriptions_path(namespace_id: group.id, plan_id: described_class::ZUORA_ULTIMATE_PLAN_ID),
+              purchase_href: new_subscriptions_path(namespace_id: group.id, plan_id: 'ultimate-plan-id'),
               target_id: shared_expected_attrs[:container_id],
               start_initially_shown: start_initially_shown,
               trial_end_date: trial_end_date,
