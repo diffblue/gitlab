@@ -14,6 +14,7 @@ import getIssuesCountsQuery from 'ee_else_ce/issues_list/queries/get_issues_coun
 import createFlash from '~/flash';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { ITEM_TYPE } from '~/groups/constants';
 import CsvImportExportButtons from '~/issuable/components/csv_import_export_buttons.vue';
 import IssuableByEmail from '~/issuable/components/issuable_by_email.vue';
 import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
@@ -235,7 +236,7 @@ export default {
       };
     },
     namespace() {
-      return this.isProject ? 'project' : 'group';
+      return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
     },
     hasSearch() {
       return this.searchQuery || Object.keys(this.urlFilterParams).length;

@@ -332,11 +332,11 @@ RSpec.describe IssuesHelper do
         sign_in_path: new_user_session_path
       }
 
-      expect(helper.issues_list_data(project, current_user, finder)).to include(expected)
+      expect(helper.project_issues_list_data(project, current_user, finder)).to include(expected)
     end
   end
 
-  describe '#issues_list_data' do
+  describe '#project_issues_list_data' do
     context 'when user is signed in' do
       it_behaves_like 'issues list data' do
         let(:current_user) { double.as_null_object }

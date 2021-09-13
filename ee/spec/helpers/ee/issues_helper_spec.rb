@@ -124,7 +124,7 @@ RSpec.describe EE::IssuesHelper do
     end
   end
 
-  describe '#issues_list_data' do
+  describe '#project_issues_list_data' do
     let(:current_user) { double.as_null_object }
     let(:finder) { double.as_null_object }
 
@@ -150,14 +150,14 @@ RSpec.describe EE::IssuesHelper do
           group_epics_path: group_epics_path(project.group, format: :json)
         }
 
-        expect(helper.issues_list_data(project, current_user, finder)).to include(expected)
+        expect(helper.project_issues_list_data(project, current_user, finder)).to include(expected)
       end
 
       context 'when project does not have group' do
         let(:project_with_no_group) { create :project }
 
         it 'does not return group_epics_path' do
-          expect(helper.issues_list_data(project_with_no_group, current_user, finder)).not_to include(:group_epics_path)
+          expect(helper.project_issues_list_data(project_with_no_group, current_user, finder)).not_to include(:group_epics_path)
         end
       end
     end
@@ -176,7 +176,7 @@ RSpec.describe EE::IssuesHelper do
           has_multiple_issue_assignees_feature: 'false'
         }
 
-        result = helper.issues_list_data(project, current_user, finder)
+        result = helper.project_issues_list_data(project, current_user, finder)
 
         expect(result).to include(expected)
         expect(result).not_to include(:group_epics_path)
