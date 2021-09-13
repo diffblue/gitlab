@@ -1,5 +1,13 @@
 <script>
-import { GlAlert, GlIcon, GlLink, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlIcon,
+  GlLink,
+  GlLoadingIcon,
+  GlSprintf,
+  GlTable,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { PREDEFINED_NETWORK_POLICIES } from 'ee/threat_monitoring/constants';
 import createFlash from '~/flash';
@@ -37,6 +45,7 @@ export default {
     GlAlert,
     GlIcon,
     GlLink,
+    GlLoadingIcon,
     GlSprintf,
     GlTable,
     EnvironmentPicker,
@@ -81,9 +90,7 @@ export default {
       },
       error: createPolicyFetchError,
       skip() {
-        return (
-          !this.hasEnvironment || this.isLoadingEnvironments || !this.shouldShowNetworkPolicies
-        );
+        return !this.hasEnvironment || !this.shouldShowNetworkPolicies;
       },
     },
     scanExecutionPolicies: {
@@ -108,11 +115,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('threatMonitoring', [
-      'currentEnvironmentId',
-      'allEnvironments',
-      'isLoadingEnvironments',
-    ]),
+    ...mapState('threatMonitoring', ['currentEnvironmentId', 'allEnvironments']),
     ...mapGetters('threatMonitoring', ['currentEnvironmentGid']),
     allPolicyTypes() {
       return {
@@ -142,7 +145,6 @@ export default {
     },
     isLoadingPolicies() {
       return (
-        this.isLoadingEnvironments ||
         this.$apollo.queries.networkPolicies.loading ||
         this.$apollo.queries.scanExecutionPolicies.loading
       );
@@ -315,6 +317,10 @@ export default {
 
       <template #cell(updatedAt)="value">
         {{ getTimeAgoString(value.item.updatedAt) }}
+      </template>
+
+      <template #table-busy>
+        <gl-loading-icon size="lg" />
       </template>
 
       <template #empty>
