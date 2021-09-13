@@ -38,7 +38,7 @@ module Vulnerabilities
     has_many :remediations, through: :finding_remediations
 
     has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :finding, foreign_key: 'occurrence_id'
-    has_many :pipelines, through: :finding_pipelines, class_name: 'Ci::Pipeline'
+    has_many :pipelines, through: :finding_pipelines, class_name: 'Ci::Pipeline', disable_joins: -> { ::Feature.enabled?(:finding_ci_pipeline_disable_joins, default_enabled: :yaml) }
 
     has_many :signatures, class_name: 'Vulnerabilities::FindingSignature', inverse_of: :finding
 
@@ -103,11 +103,6 @@ module Vulnerabilities
     scope :by_location_image, -> (images) do
       where(report_type: REPORT_TYPES_WITH_LOCATION_IMAGE)
         .where("vulnerability_occurrences.location -> 'image' ?| array[:images]", images: images)
-    end
-
-    def self.for_pipelines(pipelines)
-      joins(:finding_pipelines)
-        .where(vulnerability_occurrence_pipelines: { pipeline_id: pipelines })
     end
 
     def self.counted_by_severity
@@ -368,11 +363,19 @@ module Vulnerabilities
     end
 
     def pipeline_branch
-      pipelines&.last&.sha || project.default_branch
+      last_finding_pipeline&.sha || project.default_branch
     end
 
     def false_positive?
       vulnerability_flags.false_positive.any?
+    end
+
+    def first_finding_pipeline
+      finding_pipelines.first&.pipeline
+    end
+
+    def last_finding_pipeline
+      finding_pipelines.last&.pipeline
     end
 
     protected
