@@ -8,6 +8,7 @@ import {
   GlIcon,
   GlLoadingIcon,
   GlModal,
+  GlSafeHtmlDirective,
 } from '@gitlab/ui';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
@@ -46,6 +47,9 @@ export default {
     IterationForm,
     IterationReportTabs,
     GlModal,
+  },
+  directives: {
+    SafeHtml: GlSafeHtmlDirective,
   },
   apollo: {
     iteration: {
@@ -274,10 +278,7 @@ export default {
         </gl-modal>
       </div>
       <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
-      <div
-        ref="description"
-        v-html="iteration.descriptionHtml /* eslint-disable-line vue/no-v-html */"
-      ></div>
+      <div ref="description" v-safe-html="iteration.descriptionHtml"></div>
       <burn-charts
         :start-date="iteration.startDate"
         :due-date="iteration.dueDate"
