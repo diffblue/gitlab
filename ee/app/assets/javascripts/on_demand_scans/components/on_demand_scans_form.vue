@@ -412,6 +412,7 @@ export default {
           class="mw-460"
           data-testid="dast-scan-description-input"
           :placeholder="s__(`OnDemandScans|For example: Tests the login page for SQL injections`)"
+          name="description"
           :state="form.fields.description.state"
         />
       </gl-form-group>
