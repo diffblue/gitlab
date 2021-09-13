@@ -9495,6 +9495,9 @@ msgstr ""
 msgid "Create issue"
 msgstr ""
 
+msgid "Create issue to resolve all threads"
+msgstr ""
+
 msgid "Create iteration"
 msgstr ""
 
@@ -21191,10 +21194,10 @@ msgstr ""
 msgid "MergeRequests|An error occurred while saving the draft comment."
 msgstr ""
 
-msgid "MergeRequests|Failed to squash. Should be done manually."
+msgid "MergeRequests|Create issue to resolve thread"
 msgstr ""
 
-msgid "MergeRequests|Resolve this thread in a new issue"
+msgid "MergeRequests|Failed to squash. Should be done manually."
 msgstr ""
 
 msgid "MergeRequests|Saving the comment failed"
@@ -28614,9 +28617,6 @@ msgid "Resetting the authorization key will invalidate the previous key. Existin
 msgstr ""
 
 msgid "Resolve"
-msgstr ""
-
-msgid "Resolve all threads in new issue"
 msgstr ""
 
 msgid "Resolve conflicts"
@@ -40090,6 +40090,9 @@ msgid_plural "mrWidget|Closes issues"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "mrWidget|Create issue to resolve all threads"
+msgstr ""
+
 msgid "mrWidget|Delete source branch"
 msgstr ""
 
@@ -40198,9 +40201,6 @@ msgid "mrWidget|Remove from merge train"
 msgstr ""
 
 msgid "mrWidget|Request to merge"
-msgstr ""
-
-msgid "mrWidget|Resolve all threads in new issue"
 msgstr ""
 
 msgid "mrWidget|Resolve conflicts"
