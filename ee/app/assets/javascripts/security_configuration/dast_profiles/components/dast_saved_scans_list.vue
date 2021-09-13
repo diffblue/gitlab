@@ -7,6 +7,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import dastProfileRunMutation from '../graphql/dast_profile_run.mutation.graphql';
 import ProfilesList from './dast_profiles_list.vue';
 import DastScanBranch from './dast_scan_branch.vue';
+import ScanSchedule from './dast_scan_schedule.vue';
 import ScanTypeBadge from './dast_scan_type_badge.vue';
 
 export default {
@@ -14,6 +15,7 @@ export default {
     GlButton,
     ProfilesList,
     DastScanBranch,
+    ScanSchedule,
     ScanTypeBadge,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -113,6 +115,11 @@ export default {
     <!-- eslint-disable-next-line vue/valid-v-slot -->
     <template #cell(dastScannerProfile.scanType)="{ value }">
       <scan-type-badge :scan-type="value" />
+    </template>
+
+    <!-- eslint-disable-next-line vue/valid-v-slot -->
+    <template #cell(dastProfileSchedule)="{ value }">
+      <scan-schedule :schedule="value || null" />
     </template>
 
     <template #actions="{ profile }">

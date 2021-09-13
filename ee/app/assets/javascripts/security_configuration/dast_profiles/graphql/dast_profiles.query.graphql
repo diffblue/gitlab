@@ -18,6 +18,16 @@ query DastProfiles($fullPath: ID!, $after: String, $before: String, $first: Int,
             id
             scanType
           }
+          dastProfileSchedule {
+            id
+            active
+            startsAt
+            timezone
+            cadence {
+              unit
+              duration
+            }
+          }
           branch {
             name
             exists

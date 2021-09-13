@@ -15,6 +15,7 @@ export default () => {
       newDastScannerProfilePath,
       newDastSiteProfilePath,
       projectFullPath,
+      timezones,
     },
   } = el;
 
@@ -30,6 +31,9 @@ export default () => {
   return new Vue({
     el,
     apolloProvider,
+    provide: {
+      timezones: JSON.parse(timezones),
+    },
     render(h) {
       return h(DastProfiles, {
         props,

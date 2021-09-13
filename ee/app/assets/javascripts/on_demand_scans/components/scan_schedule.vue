@@ -8,31 +8,7 @@ import {
 } from '~/lib/utils/datetime/date_format_utility';
 import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown.vue';
 import { SCAN_CADENCE_OPTIONS } from '../settings';
-
-/**
- * Converts a cadence option string into the proper schedule parameter.
- * @param {String} str Cadence option's string representation.
- * @returns {Object} Corresponding schedule parameter.
- */
-const toGraphQLCadence = (str) => {
-  if (!str) {
-    return '';
-  }
-  const [unit, duration] = str.split('_');
-  return { unit, duration: Number(duration) };
-};
-
-/**
- * Converts a schedule parameter into the corresponding string option.
- * @param {Object} obj Schedule paramter.
- * @returns {String} Corresponding cadence option's string representation.
- */
-const fromGraphQLCadence = (obj) => {
-  if (!obj) {
-    return '';
-  }
-  return `${obj.unit}_${obj.duration}`.toUpperCase();
-};
+import { toGraphQLCadence, fromGraphQLCadence } from '../utils';
 
 export default {
   name: 'ScanSchedule',
@@ -49,17 +25,17 @@ export default {
     value: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: null,
     },
   },
   data() {
     return {
       form: {
-        isScheduledScan: this.value.active ?? false,
-        selectedTimezone: this.value.timezone ?? null,
+        isScheduledScan: this.value?.active ?? false,
+        selectedTimezone: this.value?.timezone ?? null,
         startDate: null,
         startTime: null,
-        cadence: fromGraphQLCadence(this.value.cadence) ?? SCAN_CADENCE_OPTIONS[0].value,
+        cadence: fromGraphQLCadence(this.value?.cadence),
       },
     };
   },
@@ -79,7 +55,7 @@ export default {
     },
   },
   created() {
-    const date = this.value.startsAt ?? null;
+    const date = this.value?.startsAt ?? null;
     if (date !== null) {
       const localeDate = new Date(
         stripTimezoneFromISODate(date, this.selectedTimezoneData?.offset),
