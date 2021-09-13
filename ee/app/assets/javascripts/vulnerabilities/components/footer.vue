@@ -9,17 +9,17 @@ import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import createFlash from '~/flash';
 import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import axios from '~/lib/utils/axios_utils';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import Poll from '~/lib/utils/poll';
-import { s__, __ } from '~/locale';
+import { s__ } from '~/locale';
 import initUserPopovers from '~/user_popovers';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { normalizeGraphQLNote } from '../helpers';
 import GenericReportSection from './generic_report/report_section.vue';
 import HistoryEntry from './history_entry.vue';
 import RelatedIssues from './related_issues.vue';
 import RelatedJiraIssues from './related_jira_issues.vue';
 import StatusDescription from './status_description.vue';
+
+const TEN_SECONDS = 10000;
 
 export default {
   name: 'VulnerabilityFooter',
@@ -48,9 +48,9 @@ export default {
   },
   data() {
     return {
-      notesLoading: true,
+      discussionsLoading: true,
       discussions: [],
-      lastFetchedAt: null,
+      lastFetchedDiscussionIndex: -1,
     };
   },
   apollo: {
@@ -60,49 +60,24 @@ export default {
         return { id: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerability.id) };
       },
       update: ({ vulnerability }) => {
-        if (!vulnerability) {
-          return [];
-        }
-
-        return vulnerability.discussions.nodes.map((d) => ({ ...d, notes: [] }));
+        return (
+          vulnerability?.discussions?.nodes.map((discussion) => ({
+            ...discussion,
+            notes: discussion.notes.nodes.map(normalizeGraphQLNote),
+          })) || []
+        );
       },
-      result({ error }) {
-        if (!this.poll && !error) {
-          this.createNotesPoll();
-
-          if (!Visibility.hidden()) {
-            this.fetchDiscussions();
-          }
-
-          Visibility.change(() => {
-            if (Visibility.hidden()) {
-              this.poll.stop();
-            } else {
-              this.poll.restart();
-            }
-          });
-        }
+      result() {
+        this.discussionsLoading = false;
+        this.notifyHeaderForStateChangeIfRequired();
+        this.startPolling();
       },
       error() {
-        this.notesLoading = false;
-
-        createFlash({
-          message: s__(
-            'VulnerabilityManagement|Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
-          ),
-        });
+        this.showGraphQLError();
       },
     },
   },
   computed: {
-    noteDictionary() {
-      return this.discussions
-        .flatMap((x) => x.notes)
-        .reduce((acc, note) => {
-          acc[note.id] = note;
-          return acc;
-        }, {});
-    },
     project() {
       return {
         url: this.vulnerability.project.fullPath,
@@ -137,78 +112,73 @@ export default {
       };
     },
   },
+  beforeDestroy() {
+    this.stopPolling();
+  },
   updated() {
     this.$nextTick(() => {
       initUserPopovers(this.$el.querySelectorAll('.js-user-link'));
     });
   },
-  beforeDestroy() {
-    if (this.poll) {
-      this.poll.stop();
-    }
-  },
   methods: {
-    fetchDiscussions() {
-      return this.poll.makeRequest();
-    },
-    findDiscussion(id) {
-      return this.discussions.find((d) => d.id === id);
-    },
-    createNotesPoll() {
-      // note: this polling call will be replaced when migrating the vulnerability details page to GraphQL
-      // related epic: https://gitlab.com/groups/gitlab-org/-/epics/3657
-      this.poll = new Poll({
-        resource: {
-          fetchNotes: () =>
-            axios.get(this.vulnerability.notesUrl, {
-              headers: { 'X-Last-Fetched-At': this.lastFetchedAt },
-            }),
-        },
-        method: 'fetchNotes',
-        successCallback: ({ data: { notes, last_fetched_at: lastFetchedAt } }) => {
-          this.updateNotes(convertObjectPropsToCamelCase(notes, { deep: true }));
-          this.lastFetchedAt = lastFetchedAt;
-          this.notesLoading = false;
-        },
-        errorCallback: () => {
-          this.notesLoading = false;
-          createFlash({
-            message: __('Something went wrong while fetching latest comments.'),
-          });
-        },
-      });
-    },
-    updateNotes(notes) {
-      let shallEmitVulnerabilityChangedEvent;
+    startPolling() {
+      if (this.pollInterval) {
+        return;
+      }
 
-      notes.forEach((note) => {
-        const discussion = this.findDiscussion(note.discussionId);
-        // If the note exists, update it.
-        if (this.noteDictionary[note.id]) {
-          discussion.notes = discussion.notes.map((curr) => (curr.id === note.id ? note : curr));
-        }
-        // If the note doesn't exist, but the discussion does, add the note to the discussion.
-        else if (discussion) {
-          discussion.notes.push(note);
-        }
-        // If the discussion doesn't exist, create it.
-        else {
-          this.discussions.push({
-            id: note.discussionId,
-            replyId: note.discussionId,
-            notes: [note],
-          });
+      if (!Visibility.hidden()) {
+        this.pollInterval = setInterval(this.fetchDiscussions, TEN_SECONDS);
+      }
 
-          // If the vulnerability status has changed, the note will be a system note.
-          // Emit an event that tells the header to refresh the vulnerability.
-          if (note.system === true) {
-            shallEmitVulnerabilityChangedEvent = true;
-          }
+      this.visibilityListener = Visibility.change(() => {
+        if (Visibility.hidden()) {
+          this.stopPolling();
+        } else {
+          this.startPolling();
         }
       });
+    },
+    stopPolling() {
+      if (typeof this.pollInterval !== 'undefined') {
+        clearInterval(this.pollInterval);
+        this.pollInterval = undefined;
+      }
 
-      if (shallEmitVulnerabilityChangedEvent) {
+      if (typeof this.visibilityListener !== 'undefined') {
+        Visibility.unbind(this.visibilityListener);
+        this.visibilityListener = undefined;
+      }
+    },
+    showGraphQLError() {
+      createFlash({
+        message: s__(
+          'VulnerabilityManagement|Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
+        ),
+      });
+    },
+    notifyHeaderForStateChangeIfRequired() {
+      const lastItemIndex = this.discussions.length - 1;
+
+      if (this.lastFetchedDiscussionIndex === lastItemIndex) {
+        return;
+      }
+
+      // Do not notify on page load, or first mount.
+      if (this.lastFetchedDiscussionIndex !== -1) {
         this.$emit('vulnerability-state-change');
+      }
+
+      this.lastFetchedDiscussionIndex = lastItemIndex;
+    },
+    async fetchDiscussions(callback) {
+      try {
+        await this.$apollo.queries.discussions.refetch();
+
+        if (typeof callback === 'function') {
+          callback();
+        }
+      } catch {
+        this.showGraphQLError();
       }
     },
   },
@@ -250,13 +220,14 @@ export default {
       </div>
     </div>
     <hr />
-    <gl-loading-icon v-if="notesLoading" />
-    <ul v-else-if="discussions.length" class="notes discussion-body">
+    <gl-loading-icon v-if="discussionsLoading" />
+    <div v-else-if="discussions.length" class="notes discussion-body">
       <history-entry
         v-for="discussion in discussions"
         :key="discussion.id"
         :discussion="discussion"
+        @onCommentUpdated="fetchDiscussions"
       />
-    </ul>
+    </div>
   </div>
 </template>

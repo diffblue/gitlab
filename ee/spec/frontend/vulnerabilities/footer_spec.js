@@ -1,5 +1,5 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import MockAdapter from 'axios-mock-adapter';
+import Visibility from 'visibilityjs';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
@@ -13,15 +13,14 @@ import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
 import RelatedJiraIssues from 'ee/vulnerabilities/components/related_jira_issues.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+import { normalizeGraphQLNote } from 'ee/vulnerabilities/helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
-import axios from '~/lib/utils/axios_utils';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import initUserPopovers from '~/user_popovers';
+import { generateNote } from './mock_data';
 
-const mockAxios = new MockAdapter(axios);
 jest.mock('~/flash');
 jest.mock('~/user_popovers');
 
@@ -45,11 +44,16 @@ describe('Vulnerability Footer', () => {
 
   let discussion1;
   let discussion2;
-  let notes;
 
-  const discussionsSuccessHandler = (nodes) =>
-    jest.fn().mockResolvedValue({
+  const discussionsHandler = ({
+    discussions: nodes,
+    errors = [],
+    success = true,
+    handler = jest.fn(),
+  }) =>
+    handler[success ? 'mockResolvedValueOnce' : 'mockRejectedValueOnce']({
       data: {
+        errors,
         vulnerability: {
           id: `gid://gitlab/Vulnerability/${vulnerability.id}`,
           discussions: {
@@ -59,31 +63,11 @@ describe('Vulnerability Footer', () => {
       },
     });
 
-  const discussionsErrorHandler = () =>
-    jest.fn().mockRejectedValue({
-      errors: [{ message: 'Something went wrong' }],
-    });
-
-  const createNotesRequest = (notesArray, statusCode = 200) => {
-    return mockAxios
-      .onGet(vulnerability.notesUrl)
-      .replyOnce(statusCode, { notes: notesArray }, { date: Date.now() });
-  };
-
-  const createWrapper = ({ properties, discussionsHandler, mountOptions } = {}) => {
-    createNotesRequest(notes);
-
+  const createWrapper = ({ properties, queryHandler, mountOptions } = {}) => {
     wrapper = shallowMountExtended(VulnerabilityFooter, {
       propsData: { vulnerability: { ...vulnerability, ...properties } },
-      apolloProvider: createMockApollo([[vulnerabilityDiscussionsQuery, discussionsHandler]]),
+      apolloProvider: createMockApollo([[vulnerabilityDiscussionsQuery, queryHandler]]),
       ...mountOptions,
-    });
-  };
-
-  const createWrapperWithDiscussions = (props) => {
-    createWrapper({
-      ...props,
-      discussionsHandler: discussionsSuccessHandler([discussion1, discussion2]),
     });
   };
 
@@ -97,143 +81,133 @@ describe('Vulnerability Footer', () => {
     discussion1 = {
       id: 'gid://gitlab/Discussion/7b4aa2d000ec81ba374a29b3ca3ee4c5f274f9ab',
       replyId: 'gid://gitlab/Discussion/7b4aa2d000ec81ba374a29b3ca3ee4c5f274f9ab',
+      notes: {
+        nodes: [generateNote({ id: 100 })],
+      },
     };
 
     discussion2 = {
       id: 'gid://gitlab/Discussion/0656f86109dc755c99c288c54d154b9705aaa796',
       replyId: 'gid://gitlab/Discussion/0656f86109dc755c99c288c54d154b9705aaa796',
+      notes: {
+        nodes: [generateNote({ id: 200 })],
+      },
     };
-
-    notes = [
-      { id: 100, note: 'some note', discussion_id: discussion1.id },
-      { id: 200, note: 'another note', discussion_id: discussion2.id },
-    ];
   });
 
   afterEach(() => {
     wrapper.destroy();
-    mockAxios.reset();
   });
 
-  describe('discussions and notes', () => {
-    const createWrapperAndFetchNotes = async () => {
-      createWrapperWithDiscussions();
-      await axios.waitForAll();
-      expect(findDiscussions()).toHaveLength(2);
-      expect(findDiscussions().at(0).props('discussion').notes).toHaveLength(1);
+  describe('discussions', () => {
+    const createWrapperAndFetchDiscussions = async ({ discussions, errors, success }) => {
+      createWrapper({ queryHandler: discussionsHandler({ discussions, errors, success }) });
+      await waitForPromises();
     };
 
-    const makePollRequest = async () => {
-      wrapper.vm.poll.makeRequest();
-      await axios.waitForAll();
+    const refetchDiscussions = async () => {
+      findDiscussions().at(0).vm.$emit('onCommentUpdated');
+      await waitForPromises();
     };
 
     it('displays a loading spinner while fetching discussions', async () => {
-      createWrapperWithDiscussions();
+      createWrapper({ queryHandler: discussionsHandler({ discussions: [] }) });
       expect(findDiscussions().exists()).toBe(false);
       expect(findLoadingIcon().exists()).toBe(true);
-      await axios.waitForAll();
+      await waitForPromises();
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
     it('fetches discussions and notes on mount', async () => {
-      await createWrapperAndFetchNotes();
+      await createWrapperAndFetchDiscussions({ discussions: [discussion1, discussion2] });
 
-      expect(findDiscussions().at(0).props()).toEqual({
-        discussion: { ...discussion1, notes: [convertObjectPropsToCamelCase(notes[0])] },
+      expect(findDiscussions().at(0).props()).toStrictEqual({
+        discussion: {
+          ...discussion1,
+          notes: [normalizeGraphQLNote(discussion1.notes.nodes[0])],
+        },
       });
 
-      expect(findDiscussions().at(1).props()).toEqual({
-        discussion: { ...discussion2, notes: [convertObjectPropsToCamelCase(notes[1])] },
+      expect(findDiscussions().at(1).props()).toStrictEqual({
+        discussion: {
+          ...discussion2,
+          notes: [normalizeGraphQLNote(discussion2.notes.nodes[0])],
+        },
       });
     });
 
     it('calls initUserPopovers when the component is updated', async () => {
-      createWrapperWithDiscussions();
+      createWrapper({ queryHandler: discussionsHandler({ discussions: [] }) });
       expect(initUserPopovers).not.toHaveBeenCalled();
-      await axios.waitForAll();
+      await waitForPromises();
       expect(initUserPopovers).toHaveBeenCalled();
     });
 
     it('shows an error the discussions could not be retrieved', async () => {
-      createWrapper({ discussionsHandler: discussionsErrorHandler() });
-      await waitForPromises();
+      await createWrapperAndFetchDiscussions({
+        errors: [{ message: 'Something went wrong' }],
+        success: false,
+      });
       expect(createFlash).toHaveBeenCalledWith({
         message:
           'Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
       });
     });
 
-    it('adds a new note to an existing discussion if the note does not exist', async () => {
-      await createWrapperAndFetchNotes();
-
-      // Fetch a new note
-      const note = { id: 101, note: 'new note', discussion_id: discussion1.id };
-      createNotesRequest([note]);
-      await makePollRequest();
-
-      expect(findDiscussions()).toHaveLength(2);
-      expect(findDiscussions().at(0).props('discussion').notes[1].note).toBe(note.note);
+    it('polls the server every 10 seconds for new discussions and attaches a listener to visibility-js', async () => {
+      const setIntervalSpy = jest.spyOn(window, 'setInterval');
+      const visibilityChangeSpy = jest.spyOn(Visibility, 'change');
+      createWrapper({ queryHandler: discussionsHandler({ discussions: [] }) });
+      expect(setIntervalSpy).not.toHaveBeenCalled();
+      expect(visibilityChangeSpy).not.toHaveBeenCalled();
+      await waitForPromises();
+      expect(setIntervalSpy).toHaveBeenCalledWith(wrapper.vm.fetchDiscussions, 10000);
+      expect(visibilityChangeSpy).toHaveBeenCalled();
     });
 
-    it('updates an existing note if it already exists', async () => {
-      await createWrapperAndFetchNotes();
-
-      const note = { ...notes[0], note: 'updated note' };
-      createNotesRequest([note]);
-      await makePollRequest();
-
-      expect(findDiscussions()).toHaveLength(2);
-      expect(findDiscussions().at(0).props('discussion').notes).toHaveLength(1);
-      expect(findDiscussions().at(0).props('discussion').notes[0].note).toBe(note.note);
-    });
-
-    it('creates a new discussion with a new note if the discussion does not exist', async () => {
-      await createWrapperAndFetchNotes();
-
-      const note = {
-        id: 300,
-        note: 'new note on a new discussion',
-        discussion_id: 'new-discussion-id',
-      };
-
-      createNotesRequest([note]);
-      await makePollRequest();
-
-      expect(findDiscussions()).toHaveLength(3);
-      expect(findDiscussions().at(2).props('discussion').notes).toHaveLength(1);
-      expect(findDiscussions().at(2).props('discussion').notes[0].note).toBe(note.note);
-    });
-
-    it('shows an error if the notes poll fails', async () => {
-      await createWrapperAndFetchNotes();
-
-      createNotesRequest([], 500);
-      await makePollRequest();
-
-      expect(createFlash).toHaveBeenCalledWith({
-        message: 'Something went wrong while fetching latest comments.',
-      });
+    it('removes the poll and visibility listener when unmounted', async () => {
+      const clearIntervalSpy = jest.spyOn(window, 'clearInterval');
+      const visibilityUnbindSpy = jest.spyOn(Visibility, 'unbind');
+      await createWrapperAndFetchDiscussions({ discussions: [] });
+      wrapper.destroy();
+      expect(clearIntervalSpy).toHaveBeenCalled();
+      expect(visibilityUnbindSpy).toHaveBeenCalled();
     });
 
     it('emits the vulnerability-state-change event when the system note is new', async () => {
-      await createWrapperAndFetchNotes();
+      const eventName = 'vulnerability-state-change';
+      const queryHandler = discussionsHandler({ discussions: [discussion1] }); // first call
+      discussionsHandler({ discussions: [discussion1], handler: queryHandler }); // second call is the same
+      discussionsHandler({ discussions: [discussion1, discussion2], handler: queryHandler }); // for the third call we change the number of discussions
 
-      const handler = jest.fn();
-      wrapper.vm.$on('vulnerability-state-change', handler);
+      createWrapper({
+        queryHandler,
+      });
 
-      const note = { system: true, id: 1, discussion_id: 'some-new-discussion-id' };
-      createNotesRequest([note]);
-      await makePollRequest();
+      // Wait that the initial call has been made
+      await waitForPromises();
 
-      expect(handler).toHaveBeenCalledTimes(1);
+      // At this stage the handler should not be called because it's the first call (so page load).
+      expect(wrapper.emitted(eventName)).toBeUndefined();
+
+      // Fetch again with same data
+      await refetchDiscussions();
+
+      // There should be no new discussions so the event should be emitted once
+      expect(wrapper.emitted(eventName)).toBeUndefined();
+
+      // Fetch again with different data
+      await refetchDiscussions();
+
+      // The event should be emitted once as there is a new discussion
+      expect(wrapper.emitted(eventName)).toHaveLength(1);
     });
   });
 
   describe('solution card', () => {
     it('does show solution card when there is one', () => {
       const properties = { remediations: [{ diff: [{}] }], solution: 'some solution' };
-      createWrapper({ properties, discussionsHandler: discussionsSuccessHandler([]) });
+      createWrapper({ properties, discussionsHandler: discussionsHandler({ discussions: [] }) });
 
       expect(wrapper.find(SolutionCard).exists()).toBe(true);
       expect(wrapper.find(SolutionCard).props()).toEqual({
