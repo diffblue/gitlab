@@ -9,7 +9,7 @@ import { createdAfter, createdBefore, group } from 'jest/cycle_analytics/mock_da
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
-  allowedStages as stages,
+  allowedStages as activeStages,
   rawDurationData,
   transformedDurationData,
   endpoints,
@@ -18,9 +18,7 @@ import {
 
 jest.mock('~/flash');
 const selectedGroup = { fullPath: group.path };
-const [stage1, stage2] = stages;
-const hiddenStage = { ...stage1, hidden: true, id: 3, slug: 3 };
-const activeStages = [stage1, stage2];
+const hiddenStage = { ...activeStages[0], hidden: true, id: 3, slug: 3 };
 const [selectedValueStream] = valueStreams;
 const error = new Error(`Request failed with status code ${httpStatusCodes.BAD_REQUEST}`);
 
@@ -197,7 +195,7 @@ describe('DurationChart actions', () => {
 
       testAction(
         actions.updateSelectedDurationChartStages,
-        [...stages],
+        activeStages,
         stateWithDurationData,
         [
           {
@@ -219,7 +217,7 @@ describe('DurationChart actions', () => {
 
       testAction(
         actions.updateSelectedDurationChartStages,
-        [stages[0]],
+        [activeStages[0], activeStages[1]],
         stateWithDurationData,
         [
           {
@@ -227,10 +225,8 @@ describe('DurationChart actions', () => {
             payload: {
               updatedDurationStageData: [
                 transformedDurationData[0],
-                {
-                  ...transformedDurationData[1],
-                  selected: false,
-                },
+                transformedDurationData[1],
+                { ...transformedDurationData[2], selected: false },
               ],
             },
           },
@@ -253,16 +249,10 @@ describe('DurationChart actions', () => {
           {
             type: types.UPDATE_SELECTED_DURATION_CHART_STAGES,
             payload: {
-              updatedDurationStageData: [
-                {
-                  ...transformedDurationData[0],
-                  selected: false,
-                },
-                {
-                  ...transformedDurationData[1],
-                  selected: false,
-                },
-              ],
+              updatedDurationStageData: transformedDurationData.map((d) => ({
+                ...d,
+                selected: false,
+              })),
             },
           },
         ],
