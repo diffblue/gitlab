@@ -4180,6 +4180,27 @@ Input type: `UpdateContainerExpirationPolicyInput`
 | <a id="mutationupdatecontainerexpirationpolicycontainerexpirationpolicy"></a>`containerExpirationPolicy` | [`ContainerExpirationPolicy`](#containerexpirationpolicy) | Container expiration policy after mutation. |
 | <a id="mutationupdatecontainerexpirationpolicyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.updateDependencyProxyImageTtlGroupPolicy`
+
+Input type: `UpdateDependencyProxyImageTtlGroupPolicyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicyenabled"></a>`enabled` | [`Boolean`](#boolean) | Indicates whether the policy is enabled or disabled. |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicygrouppath"></a>`groupPath` | [`ID!`](#id) | Group path for the group dependency proxy image TTL policy. |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicyttl"></a>`ttl` | [`Int`](#int) | Number of days to retain a cached image file. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicydependencyproxyimagettlpolicy"></a>`dependencyProxyImageTtlPolicy` | [`DependencyProxyImageTtlGroupPolicy`](#dependencyproxyimagettlgrouppolicy) | Group image TTL policy after mutation. |
+| <a id="mutationupdatedependencyproxyimagettlgrouppolicyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.updateEpic`
 
 Input type: `UpdateEpicInput`
@@ -8788,6 +8809,19 @@ Dependency proxy blob.
 | <a id="dependencyproxyblobsize"></a>`size` | [`String!`](#string) | Size of the blob file. |
 | <a id="dependencyproxyblobupdatedat"></a>`updatedAt` | [`Time!`](#time) | Date of most recent update. |
 
+### `DependencyProxyImageTtlGroupPolicy`
+
+Group-level Dependency Proxy TTL policy settings.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dependencyproxyimagettlgrouppolicycreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of creation. |
+| <a id="dependencyproxyimagettlgrouppolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether the policy is enabled or disabled. |
+| <a id="dependencyproxyimagettlgrouppolicyttl"></a>`ttl` | [`Int`](#int) | Number of days to retain a cached image file. |
+| <a id="dependencyproxyimagettlgrouppolicyupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of the most recent update. |
+
 ### `DependencyProxyManifest`
 
 Dependency proxy manifest.
@@ -9866,6 +9900,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupdependencyproxyblobs"></a>`dependencyProxyBlobs` | [`DependencyProxyBlobConnection`](#dependencyproxyblobconnection) | Dependency Proxy blobs. (see [Connections](#connections)) |
 | <a id="groupdependencyproxyimagecount"></a>`dependencyProxyImageCount` | [`Int!`](#int) | Number of dependency proxy images cached in the group. |
 | <a id="groupdependencyproxyimageprefix"></a>`dependencyProxyImagePrefix` | [`String!`](#string) | Prefix for pulling images when using the dependency proxy. |
+| <a id="groupdependencyproxyimagettlpolicy"></a>`dependencyProxyImageTtlPolicy` | [`DependencyProxyImageTtlGroupPolicy`](#dependencyproxyimagettlgrouppolicy) | Dependency proxy TTL policy for the group. |
 | <a id="groupdependencyproxymanifests"></a>`dependencyProxyManifests` | [`DependencyProxyManifestConnection`](#dependencyproxymanifestconnection) | Dependency Proxy manifests. (see [Connections](#connections)) |
 | <a id="groupdependencyproxysetting"></a>`dependencyProxySetting` | [`DependencyProxySetting`](#dependencyproxysetting) | Dependency Proxy settings for the group. |
 | <a id="groupdependencyproxytotalsize"></a>`dependencyProxyTotalSize` | [`String!`](#string) | Total size of the dependency proxy cached images. |
