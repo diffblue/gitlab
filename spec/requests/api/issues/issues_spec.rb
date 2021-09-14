@@ -138,6 +138,12 @@ RSpec.describe API::Issues do
         expect(json_response).to be_an Array
       end
 
+      it_behaves_like 'issuable anonymous search' do
+        let(:url) { '/issues' }
+        let(:issuable) { issue }
+        let(:result) { issuable.id }
+      end
+
       it 'returns authentication error without any scope' do
         get api('/issues')
 

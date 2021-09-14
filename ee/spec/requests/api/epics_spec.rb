@@ -199,18 +199,6 @@ RSpec.describe API::Epics do
         expect_paginated_array_response([epic.id])
       end
 
-      it 'returns epics matching given search string for title' do
-        get api(url), params: { search: epic2.title }
-
-        expect_paginated_array_response([epic2.id])
-      end
-
-      it 'returns epics matching given search string for description' do
-        get api(url), params: { search: epic2.description }
-
-        expect_paginated_array_response([epic2.id])
-      end
-
       it 'returns epics matching given status' do
         get api(url, user), params: { state: :opened }
 
@@ -377,6 +365,25 @@ RSpec.describe API::Epics do
         get api(url), params: { labels: [IssuableFinder::Params::FILTER_NONE] }
 
         expect_paginated_array_response(epic.id)
+      end
+
+      context 'with search param' do
+        it 'returns issues matching given search string for title' do
+          get api(url, user), params: { search: epic2.title }
+
+          expect_paginated_array_response(epic2.id)
+        end
+
+        it 'returns issues matching given search string for description' do
+          get api(url, user), params: { search: epic2.description }
+
+          expect_paginated_array_response(epic2.id)
+        end
+
+        it_behaves_like 'issuable anonymous search' do
+          let(:issuable) { epic2 }
+          let(:result) { issuable.id }
+        end
       end
 
       describe "#to_reference" do

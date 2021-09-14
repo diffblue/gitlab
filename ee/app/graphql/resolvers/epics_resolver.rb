@@ -3,6 +3,7 @@
 module Resolvers
   class EpicsResolver < BaseResolver
     include TimeFrameArguments
+    include SearchArguments
     include LooksAhead
     include SetsMaxPageSize
 
@@ -17,10 +18,6 @@ module Resolvers
     argument :state, Types::EpicStateEnum,
              required: false,
              description: 'Filter epics by state.'
-
-    argument :search, GraphQL::Types::String,
-             required: false,
-             description: 'Search query for epic title or description.'
 
     argument :in, [Types::IssuableSearchableFieldEnum],
              required: false,
@@ -74,6 +71,7 @@ module Resolvers
       validate_timeframe_params!(args)
       validate_starts_with_iid!(args)
       validate_search_in_params!(args)
+      validate_anonymous_search_access! if args[:search].present?
 
       super(**args)
     end
