@@ -325,7 +325,7 @@ RSpec.describe Resolvers::EpicsResolver do
     context 'with negated filters' do
       let_it_be(:group) { create(:group) }
       let_it_be(:author) { create(:user) }
-      let_it_be(:label) { create(:label) }
+      let_it_be(:label) { create(:group_label, group: group) }
       let_it_be(:epic_1) { create(:labeled_epic, group: group, labels: [label]) }
       let_it_be(:epic_2) { create(:epic, group: group, author: author) }
       let_it_be(:epic_3) { create(:epic, group: group) }

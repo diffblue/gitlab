@@ -65,7 +65,7 @@ class EpicsFinder < IssuableFinder
     @skip_visibility_check = skip_visibility_check
 
     raise ArgumentError, 'group_id argument is missing' unless params[:group_id]
-    return Epic.none unless Ability.allowed?(current_user, :read_epic, group)
+    return Epic.none unless Ability.allowed?(current_user, :read_epic, params.group)
 
     items = init_collection
     items = filter_items(items)
@@ -83,8 +83,8 @@ class EpicsFinder < IssuableFinder
     groups = if params[:iids].present?
                # If we are querying for specific iids, then we should only be looking at
                # those in the group, not any sub-groups (which can have identical iids).
-               # The `group` method takes care of checking permissions
-               [group]
+               # The `params.group` method takes care of checking permissions
+               [params.group]
              else
                permissioned_related_groups
              end
@@ -141,21 +141,7 @@ class EpicsFinder < IssuableFinder
     # API endpoints send in `nil` values so we test if there are any non-nil
     return items unless not_params&.values&.any?
 
-    items = by_negated_my_reaction_emoji(items)
-
-    by_negated_label(items)
-  end
-
-  def group
-    strong_memoize(:group) do
-      next unless params[:group_id]
-
-      if params[:group_id].is_a?(Group)
-        params[:group_id]
-      else
-        Group.find(params[:group_id])
-      end
-    end
+    by_negated_my_reaction_emoji(items)
   end
 
   def starts_with_iid(items)
@@ -172,13 +158,13 @@ class EpicsFinder < IssuableFinder
     include_descendants = params.fetch(:include_descendant_groups, true)
 
     if include_ancestors && include_descendants
-      group.self_and_hierarchy
+      params.group.self_and_hierarchy
     elsif include_ancestors
-      group.self_and_ancestors
+      params.group.self_and_ancestors
     elsif include_descendants
-      group.self_and_descendants
+      params.group.self_and_descendants
     else
-      Group.id_in(group.id)
+      Group.id_in(params.group.id)
     end
   end
 
@@ -251,7 +237,7 @@ class EpicsFinder < IssuableFinder
     # `groups` is a list of groups in the same group hierarchy, group is
     # highest in the group hierarchy except if we fetch ancestors - in that
     # case top-level group is group's root parent
-    parent = params.fetch(:include_ancestor_groups, false) ? group.root_ancestor : group
+    parent = params.fetch(:include_ancestor_groups, false) ? params.group.root_ancestor : params.group
 
     # If they can view confidential epics in this parent group they can
     # definitely view confidential epics in subgroups.
@@ -290,6 +276,6 @@ class EpicsFinder < IssuableFinder
 
   override :feature_flag_scope
   def feature_flag_scope
-    group
+    params.group
   end
 end
