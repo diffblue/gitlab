@@ -17,9 +17,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   let(:mr) { create_merge_request_closing_issue(user, project, issue, commit_message: "References #{issue.to_reference}") }
   let(:pipeline) { create(:ci_empty_pipeline, status: 'created', project: project, ref: mr.source_branch, sha: mr.source_branch_sha, head_pipeline_of: mr) }
 
-  stage_nav_selector = '.stage-nav'
-  path_nav_selector = '.js-path-navigation'
-  filter_bar_selector = '.js-filter-bar'
+  path_nav_selector = '[data-testid="vsa-path-navigation"]'
+  filter_bar_selector = '[data-testid="vsa-filter-bar"]'
   card_metric_selector = '[data-testid="vsa-time-metrics"] .gl-single-stat'
   new_issues_count = 3
 
@@ -29,7 +28,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
   def select_stage(name)
     string_id = "CycleAnalyticsStage|#{name}"
-    within '[data-testid="gl-path-nav"]' do
+    within '[data-testid="vsa-path-navigation"]' do
       page.find('li', text: s_(string_id), match: :prefer_exact).click
     end
 
@@ -121,12 +120,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       it 'displays the stage table' do
         expect(page).to have_selector('[data-testid="vsa-stage-table"]')
-      end
-    end
-
-    context 'vertical navigation' do
-      it 'does not show the vertical stage navigation' do
-        expect(page).not_to have_selector(stage_nav_selector)
       end
     end
 
@@ -302,7 +295,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       [].concat(stages_without_data, stages_with_data).each do |stage|
         select_stage(stage[:title])
 
-        stage_name = page.find('.js-path-navigation .gl-path-active-item-indigo').text
+        stage_name = page.find("#{path_nav_selector} .gl-path-active-item-indigo").text
         expect(stage_name).to include(stage[:title])
         expect(stage_name).to include(stage[:time])
       end

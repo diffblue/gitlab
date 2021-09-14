@@ -29,6 +29,23 @@
   }
 }
 
+// Since backend wraps event description in a paragraph
+// we need to remove common styles, i.e., spacing
+.stage-item-popover {
+  .stage-event-description p {
+    margin: 0 !important;
+  }
+
+  .popover-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .metric-label {
+    flex: 0 0 20%;
+  }
+}
+
 .stage-list-move {
   transition: transform 0.15s;
 }
