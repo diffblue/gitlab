@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { validateHexColor } from '~/lib/utils/color_utils';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
 import { DEBOUNCE_DELAY } from '../constants';
 import { fetchPipelineConfigurationFileExists, validatePipelineConfirmationFormat } from '../utils';
@@ -102,8 +102,10 @@ export default {
 
       return this.$options.i18n.pipelineConfigurationInputUnknownFile;
     },
-    scopedLabelsHelpPath() {
-      return helpPagePath('user/project/labels.md', { anchor: 'scoped-labels' });
+    compliancePipelineConfigurationHelpPath() {
+      return helpPagePath('user/project/settings/index.md', {
+        anchor: 'compliance-pipeline-configuration',
+      });
     },
   },
   async created() {
@@ -127,30 +129,20 @@ export default {
     }, DEBOUNCE_DELAY),
   },
   i18n: {
-    titleInputLabel: __('Title'),
-    titleInputDescription: s__(
-      'ComplianceFrameworks|Use %{codeStart}::%{codeEnd} to create a %{linkStart}scoped set%{linkEnd} (eg. %{codeStart}SOX::AWS%{codeEnd})',
-    ),
-    titleInputInvalid: __('A title is required'),
-    descriptionInputLabel: __('Description'),
-    descriptionInputInvalid: __('A description is required'),
+    titleInputLabel: s__('ComplianceFrameworks|Name'),
+    titleInputInvalid: s__('ComplianceFrameworks|Name is required'),
+    descriptionInputLabel: s__('ComplianceFrameworks|Description'),
+    descriptionInputInvalid: s__('ComplianceFrameworks|Description is required'),
     pipelineConfigurationInputLabel: s__(
-      'ComplianceFrameworks|Compliance pipeline configuration location (optional)',
-    ),
-    pipelineConfigurationInputSubLabel: s__(
-      'ComplianceFrameworks|Combines with the CI configuration at runtime.',
+      'ComplianceFrameworks|Compliance pipeline configuration (optional)',
     ),
     pipelineConfigurationInputDescription: s__(
-      'ComplianceFrameworks|e.g. include-gitlab.ci.yml@group-name/project-name',
+      'ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}Learn more.%{linkEnd}',
     ),
-    pipelineConfigurationInputInvalidFormat: s__(
-      'ComplianceFrameworks|Invalid format: it should follow the format [PATH].y(a)ml@[GROUP]/[PROJECT]',
-    ),
-    pipelineConfigurationInputUnknownFile: s__(
-      'ComplianceFrameworks|Could not find this configuration location, please try a different location',
-    ),
-    colorInputLabel: __('Background color'),
-    cancelBtnText: __('Cancel'),
+    pipelineConfigurationInputInvalidFormat: s__('ComplianceFrameworks|Invalid format'),
+    pipelineConfigurationInputUnknownFile: s__('ComplianceFrameworks|Configuration not found'),
+    colorInputLabel: s__('ComplianceFrameworks|Background color'),
+    cancelBtnText: s__('ComplianceFrameworks|Cancel'),
   },
 };
 </script>
@@ -162,18 +154,6 @@ export default {
       :state="isValidName"
       data-testid="name-input-group"
     >
-      <template #description>
-        <gl-sprintf :message="$options.i18n.titleInputDescription">
-          <template #code="{ content }">
-            <code>{{ content }}</code>
-          </template>
-
-          <template #link="{ content }">
-            <gl-link :href="scopedLabelsHelpPath" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </template>
-
       <gl-form-input
         :value="name"
         :state="isValidName"
@@ -199,14 +179,24 @@ export default {
     <gl-form-group
       v-if="pipelineConfigurationFullPathEnabled"
       :label="$options.i18n.pipelineConfigurationInputLabel"
-      :description="$options.i18n.pipelineConfigurationInputDescription"
       :invalid-feedback="pipelineConfigurationFeedbackMessage"
       :state="isValidPipelineConfiguration"
       data-testid="pipeline-configuration-input-group"
     >
-      <p class="col-form-label gl-font-weight-normal!">
-        {{ $options.i18n.pipelineConfigurationInputSubLabel }}
-      </p>
+      <template #description>
+        <gl-sprintf :message="$options.i18n.pipelineConfigurationInputDescription">
+          <template #code="{ content }">
+            <code>{{ content }}</code>
+          </template>
+
+          <template #link="{ content }">
+            <gl-link :href="compliancePipelineConfigurationHelpPath" target="_blank">{{
+              content
+            }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </template>
+
       <gl-form-input
         :value="pipelineConfigurationFullPath"
         :state="isValidPipelineConfiguration"

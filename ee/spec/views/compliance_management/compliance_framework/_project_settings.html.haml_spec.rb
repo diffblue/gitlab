@@ -18,7 +18,7 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
   it 'shows the section description' do
     render
 
-    expect(rendered).to have_text 'Select a framework that applies to this project. How are these added?'
+    expect(rendered).to have_text 'Select a compliance framework to apply to this project. Learn more.'
   end
 
   context 'group has compliance frameworks' do

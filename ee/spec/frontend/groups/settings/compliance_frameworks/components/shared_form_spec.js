@@ -63,12 +63,6 @@ describe('SharedForm', () => {
       expect(findCancelBtn()).toExist();
     });
 
-    it('shows the name input description', () => {
-      wrapper = createComponent();
-
-      expect(findNameGroup().text()).toContain('Use :: to create a scoped set (eg. SOX::AWS)');
-    });
-
     it('sets the submit button text from the property', () => {
       wrapper = createComponent();
 
@@ -112,8 +106,8 @@ describe('SharedForm', () => {
 
     it.each`
       pipelineConfigurationFullPath | message
-      ${'foobar'}                   | ${'Invalid format: it should follow the format [PATH].y(a)ml@[GROUP]/[PROJECT]'}
-      ${'foo.yml@bar/baz'}          | ${'Could not find this configuration location, please try a different location'}
+      ${'foobar'}                   | ${'Invalid format'}
+      ${'foo.yml@bar/baz'}          | ${'Configuration not found'}
     `(
       'sets the correct invalid message to the group',
       async ({ pipelineConfigurationFullPath, message }) => {
