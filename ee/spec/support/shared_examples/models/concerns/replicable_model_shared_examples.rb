@@ -37,8 +37,50 @@ RSpec.shared_examples 'a replicable model' do
       stub_current_geo_node(secondary)
     end
 
-    it 'is implemented' do
-      expect(model_record.class.replicables_for_current_secondary(model_record.id)).to be_an(ActiveRecord::Relation)
+    shared_examples 'is implemented and returns a valid relation' do
+      it 'is implemented' do
+        expect(model_record.class.replicables_for_current_secondary(model_record.id)).to be_an(ActiveRecord::Relation)
+      end
+    end
+
+    context 'when syncing object storage is enabled' do
+      before do
+        secondary.update!(sync_object_storage: true)
+      end
+
+      it_behaves_like 'is implemented and returns a valid relation'
+    end
+
+    context 'when syncing object storage is disabled' do
+      before do
+        secondary.update!(sync_object_storage: false)
+      end
+
+      it_behaves_like 'is implemented and returns a valid relation'
+    end
+
+    context 'with selective sync disabled' do
+      before do
+        secondary.update!(selective_sync_type: nil)
+      end
+
+      it_behaves_like 'is implemented and returns a valid relation'
+    end
+
+    context 'with selective sync enabled for namespaces' do
+      before do
+        secondary.update!(selective_sync_type: 'namespaces', namespaces: [build(:group)])
+      end
+
+      it_behaves_like 'is implemented and returns a valid relation'
+    end
+
+    context 'with selective sync enabled for shards' do
+      before do
+        secondary.update!(selective_sync_type: 'shards', selective_sync_shards: ['broken'])
+      end
+
+      it_behaves_like 'is implemented and returns a valid relation'
     end
   end
 end
