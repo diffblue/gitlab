@@ -17,7 +17,7 @@ module Geo
 
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_ssf_service'
-    RETRIES_BEFORE_REDOWNLOAD = 5
+    RETRIES_BEFORE_REDOWNLOAD = 10
 
     def initialize(replicator)
       @replicator = replicator
@@ -245,7 +245,9 @@ module Geo
     def should_be_redownloaded?
       return true if registry.force_to_redownload
 
-      registry.retry_count > RETRIES_BEFORE_REDOWNLOAD
+      retries = registry.retry_count
+
+      retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
     def reschedule_sync

@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:primary) { create(:geo_node, :primary) }
   let_it_be(:secondary) { create(:geo_node) }
@@ -324,6 +325,32 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
       def registry_with_retry_count(retries)
         replicator.registry.update!(retry_count: retries)
+      end
+    end
+  end
+
+  describe '#should_be_redownloaded?' do
+    where(:force_to_redownload, :retry_count, :expected) do
+      false | nil | false
+      false | 0   | false
+      false | 1   | false
+      false | 10  | false
+      false | 11  | true
+      false | 12  | false
+      false | 13  | true
+      false | 14  | false
+      false | 101 | true
+      false | 102 | false
+      true  | nil | true
+      true  | 0   | true
+      true  | 11  | true
+    end
+
+    with_them do
+      it "returns the expected boolean" do
+        registry.update!(retry_count: retry_count, force_to_redownload: force_to_redownload)
+
+        expect(subject.send(:should_be_redownloaded?)).to eq(expected)
       end
     end
   end

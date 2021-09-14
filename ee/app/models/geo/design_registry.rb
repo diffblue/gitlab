@@ -6,7 +6,7 @@ class Geo::DesignRegistry < Geo::BaseRegistry
   MODEL_CLASS = ::Project
   MODEL_FOREIGN_KEY = :project_id
 
-  RETRIES_BEFORE_REDOWNLOAD = 5
+  RETRIES_BEFORE_REDOWNLOAD = 10
 
   belongs_to :project
 
@@ -120,6 +120,6 @@ class Geo::DesignRegistry < Geo::BaseRegistry
   def should_be_redownloaded?
     return true if force_to_redownload
 
-    retry_count > RETRIES_BEFORE_REDOWNLOAD
+    retry_count.present? && retry_count > RETRIES_BEFORE_REDOWNLOAD && retry_count.odd?
   end
 end
