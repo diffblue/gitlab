@@ -10,6 +10,7 @@ export default {
     GlAlert,
     GlLoadingIcon,
     GlToggle,
+    FeatureFlagActions: () => import('ee_component/feature_flags/components/actions.vue'),
     FeatureFlagForm,
   },
   mixins: [glFeatureFlagMixin()],
@@ -61,6 +62,8 @@ export default {
           @change="toggleActive"
         />
         <h3 class="page-title gl-m-0">{{ title }}</h3>
+
+        <feature-flag-actions class="gl-ml-auto" />
       </div>
 
       <gl-alert v-if="error.length" variant="warning" class="gl-mb-5" :dismissible="false">
