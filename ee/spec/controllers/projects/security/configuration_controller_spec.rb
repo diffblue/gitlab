@@ -62,7 +62,7 @@ RSpec.describe Projects::Security::ConfigurationController do
       it 'responds in json format when requested' do
         get :show, params: { namespace_id: project.namespace, project_id: project, format: :json }
 
-        types = %w(sast dast dast_profiles dependency_scanning container_scanning cluster_image_scanning secret_detection coverage_fuzzing license_scanning api_fuzzing)
+        types = %w(sast dast dast_profiles dependency_scanning container_scanning cluster_image_scanning secret_detection coverage_fuzzing license_scanning api_fuzzing corpus_management)
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['features'].map { |f| f['type'] }).to match_array(types)
@@ -188,6 +188,7 @@ RSpec.describe Projects::Security::ConfigurationController do
 
       before do
         stub_feature_flags(security_auto_fix: false)
+        stub_feature_flags(corpus_management: false)
 
         request
       end

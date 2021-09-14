@@ -90,7 +90,68 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:secret_detection, configured: true),
           security_scan(:coverage_fuzzing, configured: false),
           security_scan(:api_fuzzing, configured: false),
-          security_scan(:dast_profiles, configured: true)
+          security_scan(:dast_profiles, configured: true),
+          security_scan(:corpus_management, configured: true)
+        )
+      end
+    end
+
+    context "when coverage fuzzing has run in a pipeline with feature flag off" do
+      before do
+        stub_feature_flags(corpus_management: false)
+        pipeline = create(
+          :ci_pipeline,
+          :auto_devops_source,
+          project: project,
+          ref: project.default_branch,
+          sha: project.commit.sha
+        )
+        create(:ci_build, :coverage_fuzzing, pipeline: pipeline, status: 'success')
+      end
+
+      it 'reports that coverage fuzzing, corpus management, and DAST are configured' do
+        expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
+          security_scan(:dast, configured: false),
+          security_scan(:sast, configured: false),
+          security_scan(:container_scanning, configured: false),
+          security_scan(:cluster_image_scanning, configured: false),
+          security_scan(:dependency_scanning, configured: false),
+          security_scan(:license_scanning, configured: false),
+          security_scan(:secret_detection, configured: false),
+          security_scan(:coverage_fuzzing, configured: true),
+          security_scan(:api_fuzzing, configured: false),
+          security_scan(:dast_profiles, configured: true),
+          security_scan(:corpus_management, configured: true)
+        )
+      end
+    end
+
+    context "when coverage fuzzing has run in a pipeline with feature flag on" do
+      before do
+        stub_feature_flags(corpus_management: true)
+        pipeline = create(
+          :ci_pipeline,
+          :auto_devops_source,
+          project: project,
+          ref: project.default_branch,
+          sha: project.commit.sha
+        )
+        create(:ci_build, :coverage_fuzzing, pipeline: pipeline, status: 'success')
+      end
+
+      it 'reports that coverage fuzzing, corpus management, and DAST are configured' do
+        expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
+          security_scan(:dast, configured: false),
+          security_scan(:sast, configured: false),
+          security_scan(:container_scanning, configured: false),
+          security_scan(:cluster_image_scanning, configured: false),
+          security_scan(:dependency_scanning, configured: false),
+          security_scan(:license_scanning, configured: false),
+          security_scan(:secret_detection, configured: false),
+          security_scan(:coverage_fuzzing, configured: true),
+          security_scan(:api_fuzzing, configured: false),
+          security_scan(:dast_profiles, configured: true),
+          security_scan(:corpus_management, configured: true, configuration_path: project_security_configuration_corpus_management_path(project))
         )
       end
     end
@@ -115,7 +176,8 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:secret_detection, configured: false),
           security_scan(:coverage_fuzzing, configured: false),
           security_scan(:api_fuzzing, configured: false),
-          security_scan(:dast_profiles, configured: true)
+          security_scan(:dast_profiles, configured: true),
+          security_scan(:corpus_management, configured: true)
         )
       end
     end
@@ -147,7 +209,8 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:license_scanning, configured: false),
           security_scan(:secret_detection, configured: true),
           security_scan(:coverage_fuzzing, configured: false),
-          security_scan(:api_fuzzing, configured: false)
+          security_scan(:api_fuzzing, configured: false),
+          security_scan(:corpus_management, configured: true)
         )
       end
 
@@ -171,7 +234,8 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:license_scanning, configured: false),
           security_scan(:secret_detection, configured: false),
           security_scan(:coverage_fuzzing, configured: false),
-          security_scan(:api_fuzzing, configured: false)
+          security_scan(:api_fuzzing, configured: false),
+          security_scan(:corpus_management, configured: true)
         )
       end
 
@@ -188,7 +252,8 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:license_scanning, configured: true),
           security_scan(:secret_detection, configured: true),
           security_scan(:coverage_fuzzing, configured: false),
-          security_scan(:api_fuzzing, configured: false)
+          security_scan(:api_fuzzing, configured: false),
+          security_scan(:corpus_management, configured: true)
         )
       end
 
@@ -241,13 +306,13 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
     end
   end
 
-  def security_scan(type, configured:)
-    configuration_path = configuration_path(type)
+  def security_scan(type, configured:, configuration_path: nil)
+    path = configuration_path || configuration_path(type)
 
     {
       "type" => type.to_s,
       "configured" => configured,
-      "configuration_path" => configuration_path,
+      "configuration_path" => path,
       "available" => licensed_scan_types.include?(type)
     }
   end
@@ -257,7 +322,8 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
       dast: project_security_configuration_dast_path(project),
       dast_profiles: project_security_configuration_dast_scans_path(project),
       sast: project_security_configuration_sast_path(project),
-      api_fuzzing: project_security_configuration_api_fuzzing_path(project)
+      api_fuzzing: project_security_configuration_api_fuzzing_path(project),
+      corpus_management: nil
     }[type]
   end
 
