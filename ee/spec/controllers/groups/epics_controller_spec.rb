@@ -97,6 +97,15 @@ RSpec.describe Groups::EpicsController do
             expect(response).to have_gitlab_http_status(:ok)
           end
         end
+
+        it_behaves_like 'issuable list with anonymous search disabled' do
+          let(:params) { { group_id: group } }
+
+          before do
+            sign_out(user)
+            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+          end
+        end
       end
 
       context 'with page param' do
