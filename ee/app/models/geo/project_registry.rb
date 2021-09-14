@@ -409,7 +409,9 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     ensure_valid_type!(type)
     return true if public_send("force_to_redownload_#{type}") # rubocop:disable GitlabSecurity/PublicSend
 
-    retry_count(type) > RETRIES_BEFORE_REDOWNLOAD
+    retries = retry_count(type)
+
+    retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
   end
 
   def verification_retry_count(type)
