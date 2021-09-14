@@ -1,26 +1,19 @@
 # frozen_string_literal: true
 
-namespace :gemojione do
+namespace :tanuki_emoji do
   desc 'Generates Emoji SHA256 digests'
 
-  task aliases: ['yarn:check', 'environment'] do
-    require 'json'
-
+  task aliases: %w[environment] do
     aliases = {}
 
-    index_file = File.join(Rails.root, 'fixtures', 'emojis', 'index.json')
-    index = Gitlab::Json.parse(File.read(index_file))
-
-    index.each_pair do |key, data|
-      data['aliases'].each do |a|
-        a.tr!(':', '')
-
-        aliases[a] = key
+    TanukiEmoji.index.all.each do |emoji|
+      emoji.aliases.each do |emoji_alias|
+        aliases[TanukiEmoji::Character.format_name(emoji_alias)] = emoji.name
       end
     end
 
-    out = File.join(Rails.root, 'fixtures', 'emojis', 'aliases.json')
-    File.open(out, 'w') do |handle|
+    aliases_json_file = File.join(Rails.root, 'fixtures', 'emojis', 'aliases.json')
+    File.open(aliases_json_file, 'w') do |handle|
       handle.write(Gitlab::Json.pretty_generate(aliases, indent: '   ', space: '', space_before: ''))
     end
   end
@@ -32,51 +25,41 @@ namespace :gemojione do
     # We don't have `node_modules` available in built versions of GitLab
     FileUtils.cp_r(Rails.root.join('node_modules', 'emoji-unicode-version', 'emoji-unicode-version-map.json'), File.join(Rails.root, 'fixtures', 'emojis'))
 
-    dir = Gemojione.images_path
-    resultant_emoji_map = {}
-    resultant_emoji_map_new = {}
+    digest_emoji_map = {}
+    emojis_map = {}
 
-    Gitlab::Emoji.emojis.each do |name, emoji_hash|
-      # Ignore aliases
-      unless Gitlab::Emoji.emojis_aliases.key?(name)
-        fpath = File.join(dir, "#{emoji_hash['unicode']}.png")
-        hash_digest = Digest::SHA256.file(fpath).hexdigest
+    TanukiEmoji.index.all.each do |emoji|
+      emoji_path = File.join(TanukiEmoji.images_path, emoji.image_name)
 
-        category = emoji_hash['category']
-        if name == 'gay_pride_flag'
-          category = 'flags'
-        end
+      digest_entry = {
+        category: emoji.category,
+        moji: emoji.codepoints,
+        description: emoji.description,
+        unicodeVersion: Gitlab::Emoji.emoji_unicode_version(emoji.name),
+        digest: Digest::SHA256.file(emoji_path).hexdigest
+      }
 
-        entry = {
-          category: category,
-          moji: emoji_hash['moji'],
-          description: emoji_hash['description'],
-          unicodeVersion: Gitlab::Emoji.emoji_unicode_version(name),
-          digest: hash_digest
-        }
+      digest_emoji_map[emoji.name] = digest_entry
 
-        resultant_emoji_map[name] = entry
+      # Our new map is only characters to make the json substantially smaller
+      emoji_entry = {
+        c: emoji.category,
+        e: emoji.codepoints,
+        d: emoji.description,
+        u: Gitlab::Emoji.emoji_unicode_version(emoji.name)
+      }
 
-        # Our new map is only characters to make the json substantially smaller
-        new_entry = {
-          c: category,
-          e: emoji_hash['moji'],
-          d: emoji_hash['description'],
-          u: Gitlab::Emoji.emoji_unicode_version(name)
-        }
-
-        resultant_emoji_map_new[name] = new_entry
-      end
+      emojis_map[emoji.name] = emoji_entry
     end
 
-    out = File.join(Rails.root, 'fixtures', 'emojis', 'digests.json')
-    File.open(out, 'w') do |handle|
-      handle.write(Gitlab::Json.pretty_generate(resultant_emoji_map))
+    digests_json = File.join(Rails.root, 'fixtures', 'emojis', 'digests.json')
+    File.open(digests_json, 'w') do |handle|
+      handle.write(Gitlab::Json.pretty_generate(digest_emoji_map))
     end
 
-    out_new = File.join(Rails.root, 'public', '-', 'emojis', '1', 'emojis.json')
-    File.open(out_new, 'w') do |handle|
-      handle.write(Gitlab::Json.pretty_generate(resultant_emoji_map_new))
+    emojis_json = File.join(Rails.root, 'public', '-', 'emojis', '1', 'emojis.json')
+    File.open(emojis_json, 'w') do |handle|
+      handle.write(Gitlab::Json.pretty_generate(emojis_map))
     end
   end
 
@@ -104,23 +87,16 @@ namespace :gemojione do
     SPRITESHEET_WIDTH = 860
     SPRITESHEET_HEIGHT = 840
 
-    # Set up a map to rename image files
-    emoji_unicode_string_to_name_map = {}
-    Gitlab::Emoji.emojis.each do |name, emoji_hash|
-      # Ignore aliases
-      unless Gitlab::Emoji.emojis_aliases.key?(name)
-        emoji_unicode_string_to_name_map[emoji_hash['unicode']] = name
-      end
-    end
-
-    # Copy the Gemojione assets to the temporary folder for renaming
+    # Re-create the assets folder and copy emojis renaming them to use name instead of unicode hex
     emoji_dir = "app/assets/images/emoji"
     FileUtils.rm_rf(emoji_dir)
     FileUtils.mkdir_p(emoji_dir, mode: 0700)
-    FileUtils.cp_r(File.join(Gemojione.images_path, '.'), emoji_dir)
-    Dir[File.join(emoji_dir, "**/*.png")].each do |png|
-      image_path = png
-      rename_to_named_emoji_image!(emoji_unicode_string_to_name_map, image_path)
+
+    TanukiEmoji.index.all.each do |emoji|
+      source = File.join(TanukiEmoji.images_path, emoji.image_name)
+      destination = File.join(emoji_dir, TanukiEmoji.name, '.png')
+
+      FileUtils.cp(source, destination)
     end
 
     Dir.mktmpdir do |tmpdir|
@@ -206,7 +182,7 @@ namespace :gemojione do
     return if defined?(SpriteFactory) && defined?(Magick)
 
     puts <<-MSG.strip_heredoc
-      This task is disabled by default and should only be run when the Gemojione
+      This task is disabled by default and should only be run when the TanukiEmoji
       gem is updated with new Emojis.
 
       To enable this task, *temporarily* add the following lines to Gemfile and
@@ -225,21 +201,5 @@ namespace :gemojione do
     image.resize!(size, size)
     image.write(image_path) { self.quality = 100 }
     image.destroy!
-  end
-
-  EMOJI_IMAGE_PATH_RE = /(.*?)(([0-9a-f]-?)+)\.png$/i.freeze
-  def rename_to_named_emoji_image!(emoji_unicode_string_to_name_map, image_path)
-    # Rename file from unicode to emoji name
-    matches = EMOJI_IMAGE_PATH_RE.match(image_path)
-    preceding_path = matches[1]
-    unicode_string = matches[2]
-    name = emoji_unicode_string_to_name_map[unicode_string]
-    if name
-      new_png_path = File.join(preceding_path, "#{name}.png")
-      FileUtils.mv(image_path, new_png_path)
-      new_png_path
-    else
-      puts "Warning: emoji_unicode_string_to_name_map missing entry for #{unicode_string}. Full path: #{image_path}"
-    end
   end
 end
