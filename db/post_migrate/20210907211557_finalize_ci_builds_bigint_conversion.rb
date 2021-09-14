@@ -98,6 +98,11 @@ class FinalizeCiBuildsBigintConversion < Gitlab::Database::Migration[1.0]
       remove_foreign_key(:dep_ci_build_trace_sections, TABLE_NAME, column: :build_id)
     end
 
+    # Remove this unexpected FK if it exists -  https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5531#note_676576081
+    if foreign_key_exists?(:ci_resources, TABLE_NAME, column: :build_id, name: 'fk_rails_e169a8e3d5')
+      remove_foreign_key(:ci_resources, TABLE_NAME, column: :build_id, name: 'fk_rails_e169a8e3d5')
+    end
+
     swap_columns
   end
 
