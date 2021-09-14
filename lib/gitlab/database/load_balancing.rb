@@ -4,20 +4,19 @@ module Gitlab
   module Database
     module LoadBalancing
       # The exceptions raised for connection errors.
-      CONNECTION_ERRORS = if defined?(PG)
-                            [
-                              PG::ConnectionBad,
-                              PG::ConnectionDoesNotExist,
-                              PG::ConnectionException,
-                              PG::ConnectionFailure,
-                              PG::UnableToSend,
-                              # During a failover this error may be raised when
-                              # writing to a primary.
-                              PG::ReadOnlySqlTransaction
-                            ].freeze
-                          else
-                            [].freeze
-                          end
+      CONNECTION_ERRORS = [
+        PG::ConnectionBad,
+        PG::ConnectionDoesNotExist,
+        PG::ConnectionException,
+        PG::ConnectionFailure,
+        PG::UnableToSend,
+        # During a failover this error may be raised when
+        # writing to a primary.
+        PG::ReadOnlySqlTransaction,
+        # This error is raised when we can't connect to the database in the
+        # first place (e.g. it's offline or the hostname is incorrect).
+        ActiveRecord::ConnectionNotEstablished
+      ].freeze
 
       def self.proxy
         ActiveRecord::Base.load_balancing_proxy
