@@ -34,8 +34,6 @@ export default () => ({
 
   [MODULE_CONTAINER_SCANNING]: {
     paths: {
-      head: null,
-      base: null,
       diffEndpoint: null,
     },
 
@@ -49,8 +47,6 @@ export default () => ({
   },
   [MODULE_DAST]: {
     paths: {
-      head: null,
-      base: null,
       diffEndpoint: null,
     },
 
@@ -65,8 +61,6 @@ export default () => ({
   },
   [MODULE_COVERAGE_FUZZING]: {
     paths: {
-      head: null,
-      base: null,
       diffEndpoint: null,
     },
 
@@ -81,8 +75,6 @@ export default () => ({
   },
   [MODULE_DEPENDENCY_SCANNING]: {
     paths: {
-      head: null,
-      base: null,
       diffEndpoint: null,
     },
 
