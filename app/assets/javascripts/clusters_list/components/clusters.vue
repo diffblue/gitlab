@@ -205,6 +205,8 @@ export default {
       :items="clusters"
       :fields="fields"
       stacked="md"
+      head-variant="white"
+      thead-class="border-bottom"
       class="qa-clusters-table"
       data-testid="cluster_list_table"
     >

@@ -69,13 +69,20 @@ export default {
     <div class="gl-display-block gl-text-right gl-my-3">
       <gl-button
         v-gl-modal-directive="$options.INSTALL_AGENT_MODAL_ID"
-        variant="success"
+        variant="confirm"
         category="primary"
         >{{ s__('ClusterAgents|Install a new GitLab Agent') }}
       </gl-button>
     </div>
 
-    <gl-table :items="agents" :fields="fields" stacked="md" data-testid="cluster-agent-list-table">
+    <gl-table
+      :items="agents"
+      :fields="fields"
+      stacked="md"
+      head-variant="white"
+      thead-class="border-bottom"
+      data-testid="cluster-agent-list-table"
+    >
       <template #cell(name)="{ item }">
         <gl-link :href="item.webPath" data-testid="cluster-agent-name-link">
           {{ item.name }}
