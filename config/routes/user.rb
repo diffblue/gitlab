@@ -36,6 +36,8 @@ scope '-/users', module: :users do
     post :accept, on: :member
     post :decline, on: :member
   end
+
+  resources :group_callouts, only: [:create]
 end
 
 scope(constraints: { username: Gitlab::PathRegex.root_namespace_route_regex }) do
