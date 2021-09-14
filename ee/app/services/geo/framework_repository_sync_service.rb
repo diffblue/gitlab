@@ -245,7 +245,9 @@ module Geo
     def should_be_redownloaded?
       return true if registry.force_to_redownload
 
-      registry.retry_count > RETRIES_BEFORE_REDOWNLOAD
+      retries = registry.retry_count
+
+      retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
     def reschedule_sync
