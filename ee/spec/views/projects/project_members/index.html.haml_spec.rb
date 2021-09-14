@@ -27,7 +27,7 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
 
         expect(rendered).to have_content('Project members')
         expect(rendered).to have_content('You can invite another group to')
-        expect(rendered).not_to have_link('Import a project')
+        expect(rendered).not_to have_link('Import from a project')
         expect(rendered).to have_selector('.js-invite-group-trigger')
         expect(rendered).not_to have_selector('.js-invite-members-trigger')
         expect(rendered).not_to have_content('Members can be added by project')
