@@ -10,7 +10,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   MODEL_FOREIGN_KEY = :project_id
 
   REGISTRY_TYPES = %i{repository wiki}.freeze
-  RETRIES_BEFORE_REDOWNLOAD = 5
+  RETRIES_BEFORE_REDOWNLOAD = 10
 
   sha_attribute :repository_verification_checksum_sha
   sha_attribute :repository_verification_checksum_mismatched

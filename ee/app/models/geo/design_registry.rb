@@ -6,7 +6,7 @@ class Geo::DesignRegistry < Geo::BaseRegistry
   MODEL_CLASS = ::Project
   MODEL_FOREIGN_KEY = :project_id
 
-  RETRIES_BEFORE_REDOWNLOAD = 5
+  RETRIES_BEFORE_REDOWNLOAD = 10
 
   belongs_to :project
 
