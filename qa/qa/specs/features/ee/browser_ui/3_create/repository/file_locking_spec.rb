@@ -64,7 +64,6 @@ module QA
       end
 
       it 'creates a merge request and fails to merge',
-          quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339727', type: :bug },
           testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1520' do
         push branch: 'test', as_user: user_one
 
