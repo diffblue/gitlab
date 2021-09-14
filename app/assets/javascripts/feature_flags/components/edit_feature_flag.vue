@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlLoadingIcon, GlToggle } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import { sprintf, s__ } from '~/locale';
+import { sprintf, __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import FeatureFlagForm from './form.vue';
 
@@ -28,7 +28,7 @@ export default {
     title() {
       return this.iid
         ? `^${this.iid} ${this.name}`
-        : sprintf(s__('Edit %{name}'), { name: this.name });
+        : sprintf(this.$options.i18n.editTitle, { name: this.name });
     },
   },
   created() {
@@ -36,6 +36,11 @@ export default {
   },
   methods: {
     ...mapActions(['updateFeatureFlag', 'fetchFeatureFlag', 'toggleActive']),
+  },
+  i18n: {
+    editTitle: __('Edit %{name}'),
+    toggleLabel: __('Feature flag status'),
+    submit: __('Save changes'),
   },
 };
 </script>
@@ -51,7 +56,7 @@ export default {
           data-track-event="click_button"
           data-track-label="feature_flag_toggle"
           class="gl-mr-4"
-          :label="__('Feature flag status')"
+          :label="$options.i18n.toggleLabel"
           label-position="hidden"
           @change="toggleActive"
         />
@@ -67,7 +72,7 @@ export default {
         :description="description"
         :strategies="strategies"
         :cancel-path="path"
-        :submit-text="__('Save changes')"
+        :submit-text="$options.i18n.submit"
         :active="active"
         @handleSubmit="(data) => updateFeatureFlag(data)"
       />
