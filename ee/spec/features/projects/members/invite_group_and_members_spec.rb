@@ -11,9 +11,9 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
   using RSpec::Parameterized::TableSyntax
 
-  where(:invite_members_group_modal_enabled, :expected_invite_member_selector, :expected_invite_group_selector, :expected_import_button_text) do
-    true  | '.js-invite-members-trigger' | '.js-invite-group-trigger' | 'Import a project'
-    false | '#invite-member-tab'         | '#invite-group-tab'        | 'Import'
+  where(:invite_members_group_modal_enabled, :expected_invite_member_selector, :expected_invite_group_selector, :expected_import_button_selector) do
+    true  | '.js-invite-members-trigger' | '.js-invite-group-trigger' | '.js-import-a-project-modal'
+    false | '#invite-member-tab'         | '#invite-group-tab'        | '.invite-users-form .btn-default'
   end
 
   with_them do
@@ -31,7 +31,7 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
       expect(page).to have_selector(expected_invite_member_selector)
       expect(page).to have_selector(expected_invite_group_selector)
-      expect(page).to have_link(expected_import_button_text)
+      expect(page).to have_selector(expected_import_button_selector)
     end
   end
 
