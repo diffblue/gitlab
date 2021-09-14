@@ -148,8 +148,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
         subject { described_class.new(group, options: { from: two_days_ago, current_user: user }).data }
 
         before do
-          stub_licensed_features(dora4_analytics: true)
-
           travel_to(five_days_ago) do
             create_deployment(project: project, finished_at: Time.current)
             create_deployment(project: project_2, finished_at: Time.current)
@@ -235,8 +233,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
         end
 
         before do
-          stub_licensed_features(dora4_analytics: true)
-
           travel_to(five_days_ago) do
             create_deployment(finished_at: Time.current, project: project)
           end

@@ -5,14 +5,14 @@ require 'spec_helper'
 RSpec.describe Dora::AggregateMetricsService do
   let(:service) { described_class.new(container: container, current_user: user, params: params) }
 
+  around do |example|
+    freeze_time do
+      example.run
+    end
+  end
+
   describe '#execute' do
     subject { service.execute }
-
-    around do |example|
-      freeze_time do
-        example.run
-      end
-    end
 
     shared_examples_for 'request failure' do
       it 'returns error' do
@@ -224,6 +224,36 @@ RSpec.describe Dora::AggregateMetricsService do
       it_behaves_like 'request failure' do
         let(:message) { 'Container must be a project or a group.' }
         let(:http_status) { :bad_request }
+      end
+    end
+  end
+
+  describe '#execute_without_authorization' do
+    context 'runs the service without authorization' do
+      subject { service.execute_without_authorization }
+
+      context 'when passign a non-ultimate group' do
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:production) { create(:environment, :production, project: project) }
+        let_it_be(:maintainer) { create(:user) }
+
+        let(:container) { group }
+        let(:user) { maintainer }
+        let(:params) { { environment_tier: 'production', interval: 'all', metric: 'deployment_frequency' } }
+
+        before do
+          group.add_maintainer(maintainer)
+
+          create(:dora_daily_metrics, deployment_frequency: 2, environment: production)
+
+          stub_licensed_features(dora4_analytics: false)
+        end
+
+        it 'loads the deployment frequency metrics' do
+          expect(subject[:status]).to eq(:success)
+          expect(subject[:data]).to eq(2)
+        end
       end
     end
   end

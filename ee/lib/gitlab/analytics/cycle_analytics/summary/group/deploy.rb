@@ -42,7 +42,7 @@ module Gitlab
                 container: group,
                 current_user: options[:current_user],
                 params: dora_aggregate_metrics_params
-              ).execute
+              ).execute_without_authorization
 
               result[:status] == :success ? (result[:data] || 0) : 0
             end
