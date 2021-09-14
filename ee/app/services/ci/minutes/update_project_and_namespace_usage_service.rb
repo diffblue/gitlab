@@ -28,8 +28,6 @@ module Ci
       private
 
       def preload_minutes_usage_data!
-        return unless monthly_tracking_enabled?
-
         project_usage
         namespace_usage
       end
@@ -48,8 +46,6 @@ module Ci
       end
 
       def track_usage_of_monthly_minutes(consumption)
-        return unless monthly_tracking_enabled?
-
         ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage, consumption) if namespace_usage
         ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage, consumption) if project_usage
       end
@@ -91,11 +87,6 @@ module Ci
           ProjectStatistics.safe_find_or_create_by!(project_id: @project_id)
         rescue ActiveRecord::NotNullViolation, ActiveRecord::RecordInvalid
         end
-      end
-
-      def monthly_tracking_enabled?
-        # TODO(issue 335885): Remove @project
-        Feature.enabled?(:ci_minutes_monthly_tracking, @project, default_enabled: :yaml)
       end
     end
   end
