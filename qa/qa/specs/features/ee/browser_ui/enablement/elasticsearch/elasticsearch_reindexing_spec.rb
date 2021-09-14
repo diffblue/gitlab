@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Search using Elasticsearch', :orchestrated, :elasticsearch, :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332210', type: :investigating } do
+    describe 'Search using Elasticsearch', :orchestrated, :elasticsearch, :requires_admin do
       include Runtime::Fixtures
       let(:project_name) { 'testing_elasticsearch_indexing' }
       let(:project_file_name) { 'elasticsearch.rb' }
