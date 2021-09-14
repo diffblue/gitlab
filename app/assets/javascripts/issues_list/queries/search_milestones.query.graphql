@@ -1,17 +1,17 @@
+#import "./milestone.fragment.graphql"
+
 query searchMilestones($fullPath: ID!, $search: String, $isProject: Boolean = false) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     milestones(searchTitle: $search, includeAncestors: true, includeDescendants: true) {
       nodes {
-        id
-        title
+        ...Milestone
       }
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
     milestones(searchTitle: $search, includeAncestors: true) {
       nodes {
-        id
-        title
+        ...Milestone
       }
     }
   }

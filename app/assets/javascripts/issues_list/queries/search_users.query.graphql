@@ -1,12 +1,11 @@
+#import "./user.fragment.graphql"
+
 query searchUsers($fullPath: ID!, $search: String, $isProject: Boolean = false) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     groupMembers(search: $search) {
       nodes {
         user {
-          id
-          avatarUrl
-          name
-          username
+          ...User
         }
       }
     }
@@ -15,10 +14,7 @@ query searchUsers($fullPath: ID!, $search: String, $isProject: Boolean = false) 
     projectMembers(search: $search) {
       nodes {
         user {
-          id
-          avatarUrl
-          name
-          username
+          ...User
         }
       }
     }
