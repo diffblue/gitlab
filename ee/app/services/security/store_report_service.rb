@@ -6,7 +6,7 @@ module Security
   class StoreReportService < ::BaseService
     include Gitlab::Utils::StrongMemoize
 
-    attr_reader :pipeline, :report, :project, :vulnerability_finding_to_finding_map
+    attr_reader :pipeline, :report, :project, :vulnerability_finding_to_finding_map, :new_vulnerabilities
 
     BATCH_SIZE = 1000
 
@@ -15,6 +15,7 @@ module Security
       @report = report
       @project = @pipeline.project
       @vulnerability_finding_to_finding_map = {}
+      @new_vulnerabilities = []
     end
 
     def execute
@@ -25,6 +26,7 @@ module Security
 
       vulnerability_ids = create_all_vulnerabilities!
       mark_as_resolved_except(vulnerability_ids)
+      execute_new_vulnerabilities_hooks
 
       start_auto_fix
 
@@ -59,11 +61,15 @@ module Security
       update_vulnerabilities_identifiers
       update_vulnerabilities_finding_identifiers
 
-      if ::Feature.enabled?(:vulnerability_flags, project) && project.licensed_feature_available?(:sast_fp_reduction)
+      if ::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
         create_vulnerability_flags_info
       end
 
       vulnerability_ids
+    end
+
+    def execute_new_vulnerabilities_hooks
+      new_vulnerabilities.each { |v| v.execute_hooks }
     end
 
     def mark_as_resolved_except(vulnerability_ids)
@@ -269,9 +275,19 @@ module Security
         records.uniq!
 
         Vulnerabilities::Flag.insert_all(records) if records.present?
+
+        track_events(records) if records.present?
       end
     rescue StandardError => e
       Gitlab::ErrorTracking.track_exception(e, project_id: project.id, pipeline_id: pipeline.id)
+    end
+
+    def track_events(records)
+      records.each do |record|
+        Gitlab::Tracking.event(
+          self.class.to_s, 'flag_vulnerability', label: record[:flag_type].to_s
+        )
+      end
     end
 
     def update_vulnerability_links_info
@@ -390,7 +406,9 @@ module Security
       vulnerability = if vulnerability_finding.vulnerability_id
                         Vulnerabilities::UpdateService.new(vulnerability_finding.project, pipeline.user, finding: vulnerability_finding, resolved_on_default_branch: false).execute
                       else
-                        Vulnerabilities::CreateService.new(vulnerability_finding.project, pipeline.user, finding_id: vulnerability_finding.id).execute
+                        Vulnerabilities::CreateService.new(vulnerability_finding.project, pipeline.user, finding_id: vulnerability_finding.id).execute.tap do |vuln|
+                          new_vulnerabilities << vuln
+                        end
                       end
 
       create_vulnerability_issue_link(vulnerability)

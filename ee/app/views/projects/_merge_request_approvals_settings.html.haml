@@ -3,11 +3,11 @@
 
 %section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings{ class: [('expanded' if expanded)], data: { qa_selector: 'merge_request_approvals_settings_content' } }
   .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge request (MR) approvals')
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge request approvals')
     %button.gl-button.btn.btn-default.js-settings-toggle{ type: 'button' }= expanded ? _("Collapse") : _("Expand")
     %p
-      = _("Define approval settings.")
-      = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank'
+      = _("Define approval rules.")
+      = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank', rel: 'noopener noreferrer'
 
   .settings-content
     = render 'projects/merge_request_approvals_settings_form'

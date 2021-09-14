@@ -62,6 +62,8 @@ RSpec.describe Project do
     it { is_expected.to have_many(:incident_management_oncall_rotations).through(:incident_management_oncall_schedules).source(:rotations) }
     it { is_expected.to have_many(:incident_management_escalation_policies).class_name('IncidentManagement::EscalationPolicy') }
 
+    it { is_expected.to have_many(:security_scans) }
+
     include_examples 'ci_cd_settings delegation'
 
     describe '#merge_pipelines_enabled?' do
@@ -923,6 +925,35 @@ RSpec.describe Project do
     it "returns false" do
       project.namespace.update(share_with_group_lock: true)
       expect(project.allowed_to_share_with_group?).to be_falsey
+    end
+  end
+
+  describe '#membership_locked?' do
+    let(:project) { build_stubbed(:project, group: group) }
+    let(:group) { nil }
+
+    context 'when project has no group' do
+      let(:project) { Project.new }
+
+      it 'is false' do
+        expect(project).not_to be_membership_locked
+      end
+    end
+
+    context 'with group_membership_lock enabled' do
+      let(:group) { build_stubbed(:group, membership_lock: true) }
+
+      it 'is true' do
+        expect(project).to be_membership_locked
+      end
+    end
+
+    context 'with group_membership_lock disabled' do
+      let(:group) { build_stubbed(:group, membership_lock: false) }
+
+      it 'is false' do
+        expect(project).not_to be_membership_locked
+      end
     end
   end
 

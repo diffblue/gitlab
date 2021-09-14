@@ -11,7 +11,7 @@ module Mutations
         argument :id,
                  ::Types::GlobalIDType[::ComplianceManagement::Framework],
                  required: true,
-                 description: 'The global ID of the compliance framework to update.'
+                 description: 'Global ID of the compliance framework to update.'
 
         argument :params, Types::ComplianceManagement::ComplianceFrameworkInputType,
                  required: true,
@@ -20,7 +20,7 @@ module Mutations
         field :compliance_framework,
               Types::ComplianceManagement::ComplianceFrameworkType,
               null: true,
-              description: "The compliance framework after mutation."
+              description: "Compliance framework after mutation."
 
         def resolve(id:, **args)
           framework = authorized_find!(id: id)

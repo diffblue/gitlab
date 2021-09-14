@@ -23,13 +23,17 @@ Implementation patterns are built on the foundational information and testing do
 
 [Omnibus GitLab on AWS EC2 (HA)](manual_install_aws.md) - instructions for installing GitLab on EC2 instances. Manual instructions from which you may build out a GitLab instance or create your own Infrastructure as Code (IaC).
 
-### Gitaly SRE considerations for AWS
+### GitLab Site Reliability Engineering (SRE) for AWS
 
-[Gitaly SRE Considerations for AWS](gitaly_on_aws.md) - important information for implementing and managing GitLab Gitaly on AWS.
+[GitLab SRE Considerations for AWS](gitlab_sre_for_aws.md) - important information and known issues for planning, implementing, upgrading and long term management of GitLab instances and runners on AWS.
 
 ### EKS cluster provisioning best practices
 
 [EKS Cluster Provisioning Patterns](eks_clusters_aws.md) - considerations for setting up EKS cluster for runners and for integrating.
+
+### Scaling HA GitLab Runner on AWS EC2 ASG
+
+The following repository is self-contained in regard to enabling this pattern: [GitLab HA Scaling Runner Vending Machine for AWS EC2 ASG](https://gitlab.com/guided-explorations/aws/gitlab-runner-autoscaling-aws-asg/). The [feature list for this implementation pattern](https://gitlab.com/guided-explorations/aws/gitlab-runner-autoscaling-aws-asg/-/blob/main/FEATURES.md) is good to review to understand the complete value it can deliver.
 
 ## Additional details on implementation patterns
 
@@ -49,7 +53,7 @@ Testing-backed architectural qualification is a fundamental concept behind imple
 Implementation patterns enable platform-specific terminology, best practice architecture, and platform-specific build manifests:
 
 - Implementation patterns are more vendor specific. For instance, advising specific compute instances / VMs / nodes instead of vCPUs or other generalized measures.
-- Implementation patterns are oriented to implementing good architecture for the vendor in view. 
+- Implementation patterns are oriented to implementing good architecture for the vendor in view.
 - Implementation patterns are written to an audience who is familiar with building on the infrastructure that the implementation pattern targets. For example, if the implementation pattern is for GCP, the specific terminology of GCP is used - including using the specific names for PaaS services.
 - Implementation patterns can test and qualify if the versions of PaaS available are compatible with GitLab (for example, PostgreSQL, Redis, etc.).
 

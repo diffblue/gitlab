@@ -14,7 +14,7 @@ export default {
       type: String,
       required: true,
     },
-    value: {
+    checked: {
       type: Boolean,
       required: false,
       default: false,
@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-  <gl-form-checkbox :disabled="locked" :checked="value" @input="input">
+  <gl-form-checkbox :disabled="locked" :checked="checked" @input="input">
     {{ label }}
     <template v-if="locked">
       <gl-icon :id="lockIconId" data-testid="lock-icon" name="lock" />

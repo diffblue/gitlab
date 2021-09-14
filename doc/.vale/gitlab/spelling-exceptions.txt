@@ -161,6 +161,10 @@ deprovisions
 dequarantine
 dequarantined
 dequarantining
+deserialization
+deserialize
+deserializers
+deserializes
 DevOps
 Dhall
 disambiguates
@@ -472,6 +476,7 @@ queryable
 Quicktime
 Rackspace
 Raspbian
+rbenv
 rbtrace
 Rdoc
 reachability
@@ -822,5 +827,6 @@ ytt
 Yubico
 Zeitwerk
 Zendesk
+ZenTao
 zsh
 Zstandard

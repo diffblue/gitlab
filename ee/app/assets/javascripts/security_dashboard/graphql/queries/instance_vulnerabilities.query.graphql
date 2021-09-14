@@ -13,6 +13,7 @@ query instanceVulnerabilities(
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
+  $vetEnabled: Boolean = false
 ) {
   vulnerabilities(
     after: $after
@@ -28,7 +29,7 @@ query instanceVulnerabilities(
     hasResolution: $hasResolution
   ) {
     nodes {
-      ...Vulnerability
+      ...VulnerabilityFragment
     }
     pageInfo {
       ...PageInfo

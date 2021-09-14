@@ -128,6 +128,7 @@ excluded_attributes:
     - :name
     - :path
     - :namespace_id
+    - :project_namespace_id
     - :creator_id
     - :pool_repository_id
     - :import_url
@@ -333,6 +334,9 @@ excluded_attributes:
   project_members:
     - :source_id
     - :invite_email_success
+    - :state
+  group_members:
+    - :state
   metrics:
     - :merge_request_id
     - :pipeline_id

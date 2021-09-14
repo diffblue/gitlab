@@ -39,6 +39,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
             <gl-dropdown-stub
               category="primary"
               class="w-100 metric-col"
+              clearalltext="Clear all"
               headertext=""
               hideheaderborder="true"
               menu-class="w-100 mw-100"

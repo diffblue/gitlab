@@ -2,19 +2,18 @@
 
 module Registrations
   class GroupsController < ApplicationController
+    include Registrations::CreateGroup
     include ::Gitlab::Utils::StrongMemoize
 
     layout 'minimal'
 
-    before_action :check_if_gl_com_or_dev
-    before_action :authorize_create_group!, only: :new
-
     feature_category :onboarding
 
     def new
-      record_experiment_user(:learn_gitlab_a, learn_gitlab_context)
-      record_experiment_user(:learn_gitlab_b, learn_gitlab_context)
+      experiment(:trial_registration_with_reassurance, actor: current_user)
+        .track(:render, label: 'registrations:groups:new', user: current_user)
       @group = Group.new(visibility_level: helpers.default_group_visibility)
+      experiment(:combined_registration, user: current_user).track(:view_new_group_action)
     end
 
     def create
@@ -24,18 +23,14 @@ module Registrations
         experiment(:jobs_to_be_done, user: current_user)
           .track(:create_group, namespace: @group)
 
+        experiment(:combined_registration, user: current_user).track(:create_group, namespace: @group)
+
         force_company_trial_experiment.track(:create_group, namespace: @group, user: current_user)
 
         create_successful_flow
       else
         render action: :new
       end
-    end
-
-    protected
-
-    def show_confirm_warning?
-      false
     end
 
     private
@@ -53,18 +48,17 @@ module Registrations
       end
     end
 
-    def authorize_create_group!
-      access_denied! unless can?(current_user, :create_group)
-    end
-
-    def group_params
-      params.require(:group).permit(:name, :path, :visibility_level)
-    end
-
     def apply_trial_for_trial_onboarding_flow
       if apply_trial
         record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
         record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
+
+        experiment(:trial_registration_with_reassurance, actor: current_user).track(
+          :apply_trial,
+          label: 'registrations:groups:create',
+          namespace: @group,
+          user: current_user
+        )
 
         redirect_to new_users_sign_up_project_path(namespace_id: @group.id, trial: helpers.in_trial_during_signup_flow?, trial_onboarding_flow: true)
       else
@@ -73,9 +67,6 @@ module Registrations
     end
 
     def registration_onboarding_flow
-      record_experiment_conversion_event(:learn_gitlab_a, namespace_id: @group.id)
-      record_experiment_conversion_event(:learn_gitlab_b, namespace_id: @group.id)
-
       if helpers.in_trial_during_signup_flow?
         create_lead_and_apply_trial_flow
       else
@@ -134,15 +125,6 @@ module Registrations
       force_company_trial_experiment.track(:create_trial, namespace: @group, user: current_user, label: 'registrations_groups_controller') if success
 
       success
-    end
-
-    def learn_gitlab_context
-      strong_memoize(:learn_gitlab_context) do
-        in_experiment_group_a = Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_a, subject: current_user)
-        in_experiment_group_b = !in_experiment_group_a && Gitlab::Experimentation.in_experiment_group?(:learn_gitlab_b, subject: current_user)
-
-        { in_experiment_group_a: in_experiment_group_a, in_experiment_group_b: in_experiment_group_b }
-      end
     end
   end
 end

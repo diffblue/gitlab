@@ -17,6 +17,7 @@ module EE
                       ]
 
         before_action only: :show do
+          publish_combined_registration_experiment
           experiment(:trial_registration_with_reassurance, actor: current_user)
             .track(:render, label: 'registrations:welcome:show', user: current_user)
         end
@@ -83,6 +84,10 @@ module EE
         strong_memoize(:learn_gitlab_project) do
           ::Project.find(params[:learn_gitlab_project_id])
         end
+      end
+
+      def publish_combined_registration_experiment
+        experiment(:combined_registration, user: current_user).publish_to_client if show_signup_onboarding?
       end
     end
   end

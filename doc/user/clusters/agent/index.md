@@ -20,7 +20,7 @@ tasks in a secure and cloud-native way. It enables:
 - Pull-based GitOps deployments.
 - [Inventory object](../../infrastructure/clusters/deploy/inventory_object.md) to keep track of objects applied to your cluster.
 - Real-time access to API endpoints in a cluster.
-- Alert generation based on [Container network policy](../../application_security/threat_monitoring/index.md#container-network-policy).
+- Alert generation based on [Container network policy](../../application_security/policies/index.md#container-network-policy).
 - [CI/CD Tunnel](ci_cd_tunnel.md) that enables users to access Kubernetes clusters from GitLab CI/CD jobs even if there is no network connectivity between GitLab Runner and a cluster.
 
 Many more features are planned. Please review [our roadmap](https://gitlab.com/groups/gitlab-org/-/epics/3329)
@@ -76,6 +76,8 @@ The setup process involves a few steps to enable GitOps deployments:
 1. [Generate and copy a Secret token used to connect to the Agent](#create-the-kubernetes-secret).
 1. [Install the Agent into the cluster](#install-the-agent-into-the-cluster).
 1. [Create manifest files](#create-manifest-files).
+
+<i class="fa fa-youtube-play youtube" aria-hidden="true"></i> Watch a GitLab 14.2 [walking-through video](https://www.youtube.com/watch?v=XuBpKtsgGkE) with this process.
 
 ### Upgrades and version compatibility
 
@@ -433,8 +435,8 @@ There are several components that work in concert for the Agent to generate the 
   - Enablement of [hubble-relay](https://docs.cilium.io/en/v1.8/concepts/overview/#hubble) on an
     existing installation.
 - One or more network policies through any of these options:
-  - Use the [Container Network Policy editor](../../application_security/threat_monitoring/index.md#container-network-policy-editor) to create and manage policies.
-  - Use an [AutoDevOps](../../application_security/threat_monitoring/index.md#container-network-policy-management) configuration.
+  - Use the [Container Network Policy editor](../../application_security/policies/index.md#container-network-policy-editor) to create and manage policies.
+  - Use an [AutoDevOps](../../application_security/policies/index.md#container-network-policy) configuration.
   - Add the required labels and annotations to existing network policies.
 - A configuration repository with [Cilium configured in `config.yaml`](repository.md#surface-network-security-alerts-from-cluster-to-gitlab)
 

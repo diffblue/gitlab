@@ -162,6 +162,7 @@ class Project < ApplicationRecord
   belongs_to :creator, class_name: 'User'
   belongs_to :group, -> { where(type: 'Group') }, foreign_key: 'namespace_id'
   belongs_to :namespace
+  belongs_to :project_namespace, class_name: 'Namespaces::ProjectNamespace', foreign_key: 'project_namespace_id', inverse_of: :project
   alias_method :parent, :namespace
   alias_attribute :parent_id, :namespace_id
 
@@ -339,6 +340,7 @@ class Project < ApplicationRecord
   # build traces. Currently there's no efficient way of removing this data in
   # bulk that doesn't involve loading the rows into memory. As a result we're
   # still using `dependent: :destroy` here.
+  has_many :pending_builds, class_name: 'Ci::PendingBuild'
   has_many :builds, class_name: 'Ci::Build', inverse_of: :project, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :processables, class_name: 'Ci::Processable', inverse_of: :project
   has_many :build_trace_chunks, class_name: 'Ci::BuildTraceChunk', through: :builds, source: :trace_chunks
@@ -1675,6 +1677,10 @@ class Project < ApplicationRecord
     end
   end
 
+  def membership_locked?
+    false
+  end
+
   def bots
     users.project_bot
   end
@@ -1782,6 +1788,9 @@ class Project < ApplicationRecord
     Ci::Runner.from_union([runners, group_runners, available_shared_runners])
   end
 
+  # Once issue 339937 is fixed, please search for all mentioned of
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/339937,
+  # and remove the allow_cross_joins_across_databases.
   def active_runners
     strong_memoize(:active_runners) do
       all_available_runners.active
@@ -1789,7 +1798,9 @@ class Project < ApplicationRecord
   end
 
   def any_online_runners?(&block)
-    online_runners_with_tags.any?(&block)
+    ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339937') do
+      online_runners_with_tags.any?(&block)
+    end
   end
 
   def valid_runners_token?(token)
@@ -1798,7 +1809,15 @@ class Project < ApplicationRecord
 
   # rubocop: disable CodeReuse/ServiceClass
   def open_issues_count(current_user = nil)
-    Projects::OpenIssuesCountService.new(self, current_user).count
+    return Projects::OpenIssuesCountService.new(self, current_user).count unless current_user.nil?
+
+    BatchLoader.for(self).batch(replace_methods: false) do |projects, loader|
+      issues_count_per_project = ::Projects::BatchOpenIssuesCountService.new(projects).refresh_cache_and_retrieve_data
+
+      issues_count_per_project.each do |project, count|
+        loader.call(project, count)
+      end
+    end
   end
   # rubocop: enable CodeReuse/ServiceClass
 
@@ -2278,7 +2297,7 @@ class Project < ApplicationRecord
 
   # rubocop: disable CodeReuse/ServiceClass
   def forks_count
-    BatchLoader.for(self).batch do |projects, loader|
+    BatchLoader.for(self).batch(replace_methods: false) do |projects, loader|
       fork_count_per_project = ::Projects::BatchForksCountService.new(projects).refresh_cache_and_retrieve_data
 
       fork_count_per_project.each do |project, count|
@@ -2530,6 +2549,10 @@ class Project < ApplicationRecord
     ci_config_path.blank? || ci_config_path == Gitlab::FileDetector::PATTERNS[:gitlab_ci]
   end
 
+  def uses_external_project_ci_config?
+    !!(ci_config_path =~ %r{@.+/.+})
+  end
+
   def limited_protected_branches(limit)
     protected_branches.limit(limit)
   end
@@ -2638,6 +2661,10 @@ class Project < ApplicationRecord
     repository.gitlab_ci_yml_for(sha, ci_config_path_or_default)
   end
 
+  def ci_config_external_project
+    Project.find_by_full_path(ci_config_path.split('@', 2).last)
+  end
+
   def enabled_group_deploy_keys
     return GroupDeployKey.none unless group
 
@@ -2710,6 +2737,11 @@ class Project < ApplicationRecord
 
   def topic_list
     self.topics.map(&:name)
+  end
+
+  override :after_change_head_branch_does_not_exist
+  def after_change_head_branch_does_not_exist(branch)
+    self.errors.add(:base, _("Could not change HEAD: branch '%{branch}' does not exist") % { branch: branch })
   end
 
   private
@@ -2895,12 +2927,8 @@ class Project < ApplicationRecord
     update_column(:has_external_issue_tracker, integrations.external_issue_trackers.any?) if Gitlab::Database.read_write?
   end
 
-  def active_runners_with_tags
-    @active_runners_with_tags ||= active_runners.with_tags
-  end
-
   def online_runners_with_tags
-    @online_runners_with_tags ||= active_runners_with_tags.online
+    @online_runners_with_tags ||= active_runners.with_tags.online
   end
 end
 

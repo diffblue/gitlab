@@ -1,8 +1,3 @@
-/* global List */
-
-import Vue from 'vue';
-import '~/boards/models/list';
-
 export const mockLabel = {
   id: 'gid://gitlab/GroupLabel/121',
   title: 'To Do',
@@ -66,10 +61,6 @@ export const mockLists = [
     preset: false,
   },
 ];
-
-export const mockListsWithModel = mockLists.map((listMock) =>
-  Vue.observable(new List({ ...listMock, doNotFetchIssues: true })),
-);
 
 const defaultDescendantCounts = {
   openedIssues: 0,
@@ -350,3 +341,29 @@ export const issues = {
   [mockIssue3.id]: mockIssue3,
   [mockIssue4.id]: mockIssue4,
 };
+
+export const mockGroup0 = {
+  __typename: 'Group',
+  id: 'gid://gitlab/Group/22',
+  name: 'Gitlab Org',
+  fullName: 'Gitlab Org',
+  fullPath: 'gitlab-org',
+};
+
+export const mockGroup1 = {
+  __typename: 'Group',
+  id: 'gid://gitlab/Group/108',
+  name: 'Design',
+  fullName: 'Gitlab Org / Design',
+  fullPath: 'gitlab-org/design',
+};
+
+export const mockGroup2 = {
+  __typename: 'Group',
+  id: 'gid://gitlab/Group/109',
+  name: 'Database',
+  fullName: 'Gitlab Org / Database',
+  fullPath: 'gitlab-org/database',
+};
+
+export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];

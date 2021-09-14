@@ -39,6 +39,7 @@ module EE
 
               def log_attrs
                 {
+                  jobs_count: pipeline.statuses.count,
                   pipeline_source: pipeline.source,
                   plan: project.actual_plan_name,
                   project_id: project.id,

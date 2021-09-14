@@ -12,11 +12,13 @@ import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { formType } from '~/boards/constants';
+import updateBoardMutation from '~/boards/graphql/board_update.mutation.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
   stripFinalUrlSegment: jest.requireActual('~/lib/utils/url_utility').stripFinalUrlSegment,
+  getParameterByName: jest.fn().mockName('getParameterByName'),
 }));
 
 Vue.use(Vuex);
@@ -44,6 +46,7 @@ const defaultProps = {
 describe('BoardForm', () => {
   let wrapper;
   let mutate;
+  let store;
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findModalActionPrimary = () => findModal().props('actionPrimary');
@@ -51,18 +54,17 @@ describe('BoardForm', () => {
   const findDeleteConfirmation = () => wrapper.find('[data-testid="delete-confirmation-message"]');
   const findInput = () => wrapper.find('#board-new-name');
 
-  const createStore = () => {
-    return new Vuex.Store({
+  const createStore = ({ getters = {} } = {}) => {
+    store = new Vuex.Store({
       getters: {
         isIssueBoard: () => false,
         isEpicBoard: () => true,
         isGroupBoard: () => true,
         isProjectBoard: () => false,
+        ...getters,
       },
     });
   };
-
-  const store = createStore();
 
   const createComponent = (props) => {
     wrapper = shallowMount(BoardForm, {
@@ -84,9 +86,14 @@ describe('BoardForm', () => {
     wrapper.destroy();
     wrapper = null;
     mutate = null;
+    store = null;
   });
 
   describe('when creating a new epic board', () => {
+    beforeEach(() => {
+      createStore();
+    });
+
     describe('on non-scoped-board', () => {
       beforeEach(() => {
         createComponent({ canAdminBoard: true, currentPage: formType.new });
@@ -176,7 +183,62 @@ describe('BoardForm', () => {
     });
   });
 
+  describe('when editing a scoped issue board', () => {
+    beforeEach(() => {
+      createStore({
+        getters: {
+          isIssueBoard: () => true,
+          isEpicBoard: () => false,
+        },
+      });
+    });
+
+    it('should use global ids for assignee, milestone and iteration when calling GraphQL mutation', async () => {
+      mutate = jest.fn().mockResolvedValue({
+        data: {
+          updateBoard: { board: { id: 'gid://gitlab/Board/321' } },
+        },
+      });
+
+      createComponent({
+        currentBoard: {
+          ...currentBoard,
+          assignee: {
+            id: 1,
+          },
+          milestone: {
+            id: 2,
+          },
+          iteration_id: 3,
+        },
+        canAdminBoard: true,
+        currentPage: formType.edit,
+        scopedIssueBoardFeatureEnabled: true,
+      });
+
+      findInput().trigger('keyup.enter', { metaKey: true });
+
+      await waitForPromises();
+
+      expect(mutate).toHaveBeenCalledWith({
+        mutation: updateBoardMutation,
+        variables: {
+          input: expect.objectContaining({
+            id: `gid://gitlab/Board/${currentBoard.id}`,
+            assigneeId: 'gid://gitlab/User/1',
+            milestoneId: 'gid://gitlab/Milestone/2',
+            iterationId: 'gid://gitlab/Iteration/3',
+          }),
+        },
+      });
+    });
+  });
+
   describe('when editing an epic board', () => {
+    beforeEach(() => {
+      createStore();
+    });
+
     it('calls GraphQL mutation with correct parameters', async () => {
       mutate = jest.fn().mockResolvedValue({
         data: {
@@ -221,6 +283,10 @@ describe('BoardForm', () => {
   });
 
   describe('when deleting an epic board', () => {
+    beforeEach(() => {
+      createStore();
+    });
+
     it('passes correct primary action text and variant', () => {
       createComponent({ canAdminBoard: true, currentPage: formType.delete });
       expect(findModalActionPrimary().text).toBe('Delete');

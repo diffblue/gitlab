@@ -78,6 +78,16 @@ This setting limits the request rate on the Packages API per user or IP. For mor
 
 - **Default rate limit**: Disabled by default.
 
+### Git LFS
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68642) in GitLab 14.3.
+
+This setting limits the request rate on the [Git LFS](../topics/git/lfs/index.md)
+requests per user. For more information, read
+[GitLab Git Large File Storage (LFS) Administration](../administration/lfs/index.md).
+
+- **Default rate limit**: Disabled by default.
+
 ### Import/Export
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/35728) in GitLab 13.2.
@@ -513,6 +523,19 @@ Update `ci_jobs_trace_size_limit` with the new value in megabytes:
 Plan.default.actual_limits.update!(ci_jobs_trace_size_limit: 125)
 ```
 
+### Maximum number of active DAST profile schedules per project
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68551) in GitLab 14.3.
+
+Limit the number of active DAST profile schedules per project. A DAST profile schedule can be active or inactive.
+
+You can change the limit in the [GitLab Rails console](operations/rails_console.md#starting-a-rails-console-session).
+Update `dast_profile_schedules` with the new value:
+
+```ruby
+Plan.default.actual_limits.update!(dast_profile_schedules: 50)
+```
+
 ### Maximum size and depth of CI/CD configuration YAML files
 
 The default maximum size of a CI/CD configuration YAML file is 1 megabyte and the default depth is 100.
@@ -674,7 +697,7 @@ indexed, which have a separate limit. For more information, read
 - For self-managed installations, the field length is unlimited by default.
 
 You can configure this limit for self-managed installations when you
-[enable Elasticsearch](../integration/elasticsearch.md#enabling-advanced-search).
+[enable Elasticsearch](../integration/elasticsearch.md#enable-advanced-search).
 Set the limit to `0` to disable it.
 
 ## Wiki limits
@@ -762,7 +785,7 @@ Set the limit to `0` to allow any file size.
 
 When asking for versions of a given NuGet package name, the GitLab Package Registry returns a maximum of 300 versions.
 
-## Branch retargeting on merge **(FREE SELF)**
+## Branch retargeting on merge
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/320902) in GitLab 13.9.
 

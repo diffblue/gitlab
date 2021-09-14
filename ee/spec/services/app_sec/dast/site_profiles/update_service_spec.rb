@@ -8,8 +8,8 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_site_profile_id) { dast_site_profile.id }
 
-  let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, key: Dast::SiteProfileSecretVariable::REQUEST_HEADERS, dast_site_profile: dast_site_profile) }
-  let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, key: Dast::SiteProfileSecretVariable::PASSWORD, dast_site_profile: dast_site_profile) }
+  let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile) }
+  let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile) }
 
   let_it_be(:new_profile_name) { SecureRandom.hex }
   let_it_be(:new_target_url) { generate(:url) }

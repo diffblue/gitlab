@@ -7,7 +7,8 @@
     %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
-      = _('Prevent users from performing write operations on GitLab while performing maintenance.')
+      = _('Prevent users from performing write operations while GitLab maintenance is in progress.')
+      = link_to _('Learn more.'), help_page_path('administration/maintenance_mode/index'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     #js-maintenance-mode-settings{ data: { "maintenance-enabled" => @application_setting.maintenance_mode,
       "banner-message" => @application_setting.maintenance_mode_message } }

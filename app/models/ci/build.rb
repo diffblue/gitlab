@@ -724,6 +724,10 @@ module Ci
       update_column(:trace, nil)
     end
 
+    def ensure_trace_metadata!
+      Ci::BuildTraceMetadata.find_or_upsert_for!(id)
+    end
+
     def artifacts_expose_as
       options.dig(:artifacts, :expose_as)
     end
@@ -760,7 +764,9 @@ module Ci
 
     def any_runners_available?
       cache_for_available_runners do
-        project.active_runners.exists?
+        ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339937') do
+          project.active_runners.exists?
+        end
       end
     end
 
@@ -1025,9 +1031,10 @@ module Ci
 
     # Consider this object to have a structural integrity problems
     def doom!
-      update_columns(
-        status: :failed,
-        failure_reason: :data_integrity_failure)
+      transaction do
+        update_columns(status: :failed, failure_reason: :data_integrity_failure)
+        all_queuing_entries.delete_all
+      end
     end
 
     def degradation_threshold

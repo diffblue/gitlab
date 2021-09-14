@@ -21,7 +21,8 @@ module EE
             authorize_modify_auto_fix_setting!
           end
 
-          feature_category :static_application_security_testing
+          feature_category :static_application_security_testing, [:show]
+          feature_category :dependency_scanning, [:auto_fix]
         end
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables

@@ -9,7 +9,6 @@ import {
   getTasksByTypeData,
   transformRawTasksByTypeData,
 } from 'ee/analytics/cycle_analytics/utils';
-import { toYmd } from 'ee/analytics/shared/utils';
 import { getJSONFixture } from 'helpers/fixtures';
 import {
   getStageByTitle,
@@ -19,6 +18,7 @@ import {
   createdAfter,
   deepCamelCase,
 } from 'jest/cycle_analytics/mock_data';
+import { toYmd } from '~/analytics/shared/utils';
 import {
   PAGINATION_TYPE,
   PAGINATION_SORT_DIRECTION_DESC,
@@ -239,20 +239,15 @@ export const rawDurationData = [
   },
 ];
 
-export const transformedDurationData = [
-  {
-    slug: 1,
-    selected: true,
-    data: rawDurationData,
-  },
-  {
-    slug: 2,
-    selected: true,
-    data: rawDurationData,
-  },
-];
+export const transformedDurationData = allowedStages.map(({ id }) => ({
+  id,
+  selected: true,
+  data: rawDurationData,
+}));
 
 export const flattenedDurationData = [
+  { average_duration_in_seconds: 1234000, date: '2019-01-01' },
+  { average_duration_in_seconds: 4321000, date: '2019-01-02' },
   { average_duration_in_seconds: 1234000, date: '2019-01-01' },
   { average_duration_in_seconds: 4321000, date: '2019-01-02' },
   { average_duration_in_seconds: 1234000, date: '2019-01-01' },

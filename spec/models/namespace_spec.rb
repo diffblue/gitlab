@@ -157,6 +157,63 @@ RSpec.describe Namespace do
     end
   end
 
+  describe 'handling STI', :aggregate_failures do
+    let(:namespace_type) { nil }
+    let(:namespace) { Namespace.find(create(:namespace, type: namespace_type).id) }
+
+    context 'creating a Group' do
+      let(:namespace_type) { 'Group' }
+
+      it 'is valid' do
+        expect(namespace).to be_a(Group)
+        expect(namespace.kind).to eq('group')
+        expect(namespace.group?).to be_truthy
+      end
+    end
+
+    context 'creating a ProjectNamespace' do
+      let(:namespace_type) { 'Project' }
+
+      it 'is valid' do
+        expect(Namespace.find(namespace.id)).to be_a(Namespaces::ProjectNamespace)
+        expect(namespace.kind).to eq('project')
+        expect(namespace.project?).to be_truthy
+      end
+    end
+
+    context 'creating a UserNamespace' do
+      let(:namespace_type) { 'User' }
+
+      it 'is valid' do
+        # TODO: We create a normal Namespace until
+        #       https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68894 is ready
+        expect(Namespace.find(namespace.id)).to be_a(Namespace)
+        expect(namespace.kind).to eq('user')
+        expect(namespace.user?).to be_truthy
+      end
+    end
+
+    context 'creating a default Namespace' do
+      let(:namespace_type) { nil }
+
+      it 'is valid' do
+        expect(Namespace.find(namespace.id)).to be_a(Namespace)
+        expect(namespace.kind).to eq('user')
+        expect(namespace.user?).to be_truthy
+      end
+    end
+
+    context 'creating an unknown Namespace type' do
+      let(:namespace_type) { 'One' }
+
+      it 'defaults to a Namespace' do
+        expect(Namespace.find(namespace.id)).to be_a(Namespace)
+        expect(namespace.kind).to eq('user')
+        expect(namespace.user?).to be_truthy
+      end
+    end
+  end
+
   describe 'scopes', :aggregate_failures do
     let_it_be(:namespace1) { create(:group, name: 'Namespace 1', path: 'namespace-1') }
     let_it_be(:namespace2) { create(:group, name: 'Namespace 2', path: 'namespace-2') }
@@ -1375,6 +1432,13 @@ RSpec.describe Namespace do
 
       it 'returns root_ancestor for root group without a query' do
         expect { root_group.root_ancestor }.not_to exceed_query_limit(0)
+      end
+
+      it 'returns root_ancestor for nested group with a single query' do
+        nested_group = create(:group, parent: root_group)
+        nested_group.reload
+
+        expect { nested_group.root_ancestor }.not_to exceed_query_limit(1)
       end
 
       it 'returns the top most ancestor' do

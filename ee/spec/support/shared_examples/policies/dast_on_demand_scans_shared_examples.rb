@@ -12,7 +12,7 @@ RSpec.shared_examples 'a dast on-demand scan policy' do
   end
 
   describe 'dast on-demand policies' do
-    let(:policies) { [:create_on_demand_dast_scan, :read_on_demand_scans] }
+    let(:policies) { [:create_on_demand_dast_scan, :read_on_demand_dast_scan] }
 
     context 'when a user does not have access to the project' do
       it { is_expected.to be_disallowed(*policies) }

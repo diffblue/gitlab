@@ -75,10 +75,10 @@ export default {
     <gl-alert
       v-else
       variant="danger"
-      :dismissible="false"
       :title="$options.i18n.dangerAlert.title"
       :primary-button-text="$options.i18n.dangerAlert.primaryButtonText"
       @primaryAction="showModal"
+      @dismiss="$emit('dismiss')"
     >
       <template v-if="customMessage">
         {{ customMessage }}

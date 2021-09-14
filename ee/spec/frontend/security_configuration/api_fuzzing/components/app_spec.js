@@ -1,4 +1,4 @@
-import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import Vue from 'vue';
@@ -6,6 +6,7 @@ import VueApollo from 'vue-apollo';
 import App from 'ee/security_configuration/api_fuzzing/components/app.vue';
 import ConfigurationForm from 'ee/security_configuration/api_fuzzing/components/configuration_form.vue';
 import apiFuzzingCiConfigurationQuery from 'ee/security_configuration/api_fuzzing/graphql/api_fuzzing_ci_configuration.query.graphql';
+import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { apiFuzzingConfigurationQueryResponse } from '../mock_data';
@@ -31,6 +32,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
           apolloProvider: () => createMockApolloProvider(successHandler),
           stubs: {
             GlSprintf,
+            ConfigurationPageLayout,
           },
           provide: {
             fullPath: projectFullPath,
@@ -74,14 +76,6 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
     it('passes the configuration to the form', () => {
       expect(findConfigurationForm().props('apiFuzzingCiConfiguration')).toEqual(
         stripTypenames(apiFuzzingConfigurationQueryResponse.data.project.apiFuzzingCiConfiguration),
-      );
-    });
-
-    it("shows a notice about the tool's purpose", () => {
-      const alert = wrapper.find(GlAlert);
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toBe(
-        'Use this tool to generate API fuzzing configuration YAML to copy into your .gitlab-ci.yml file. This tool does not reflect or update your .gitlab-ci.yml file automatically.',
       );
     });
 

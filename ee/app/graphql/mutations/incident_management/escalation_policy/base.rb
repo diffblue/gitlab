@@ -7,7 +7,7 @@ module Mutations
         field :escalation_policy,
               ::Types::IncidentManagement::EscalationPolicyType,
               null: true,
-              description: 'The escalation policy.'
+              description: 'Escalation policy.'
 
         authorize :admin_incident_management_escalation_policy
 

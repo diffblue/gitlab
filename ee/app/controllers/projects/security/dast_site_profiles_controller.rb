@@ -7,7 +7,7 @@ module Projects
       include API::Helpers::GraphqlHelpers
 
       before_action do
-        authorize_read_on_demand_scans!
+        authorize_read_on_demand_dast_scan!
       end
 
       feature_category :dynamic_application_security_testing

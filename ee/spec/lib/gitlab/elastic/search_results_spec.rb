@@ -43,21 +43,21 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
 
     let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
 
-    where(:scope, :count_method, :expected) do
-      'projects'       | :projects_count       | '1234'
-      'notes'          | :notes_count          | '1234'
-      'blobs'          | :blobs_count          | '1234'
-      'wiki_blobs'     | :wiki_blobs_count     | '1234'
-      'commits'        | :commits_count        | '1234'
-      'issues'         | :issues_count         | '1234'
-      'merge_requests' | :merge_requests_count | '1234'
-      'milestones'     | :milestones_count     | '1234'
-      'unknown'        | nil                   | nil
+    where(:scope, :count_method, :value, :expected) do
+      'projects'       | :projects_count       | 0     | '0'
+      'notes'          | :notes_count          | 100   | '100'
+      'blobs'          | :blobs_count          | 1000  | '1,000'
+      'wiki_blobs'     | :wiki_blobs_count     | 1111  | '1,111'
+      'commits'        | :commits_count        | 9999  | '9,999'
+      'issues'         | :issues_count         | 10000 | '10,000+'
+      'merge_requests' | :merge_requests_count | 20000 | '10,000+'
+      'milestones'     | :milestones_count     | nil   | '0'
+      'unknown'        | nil                   | nil   | nil
     end
 
     with_them do
-      it 'returns the expected formatted count' do
-        expect(results).to receive(count_method).and_return(1234) if count_method
+      it 'returns the expected formatted count limited and delimited' do
+        expect(results).to receive(count_method).and_return(value) if count_method
         expect(results.formatted_count(scope)).to eq(expected)
       end
     end

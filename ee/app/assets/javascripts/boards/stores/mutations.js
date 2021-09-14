@@ -171,20 +171,6 @@ export default {
     }
   },
 
-  [mutationTypes.RECEIVE_ITERATIONS_REQUEST](state) {
-    state.iterationsLoading = true;
-  },
-
-  [mutationTypes.RECEIVE_ITERATIONS_SUCCESS](state, iterations) {
-    state.iterations = iterations;
-    state.iterationsLoading = false;
-  },
-
-  [mutationTypes.RECEIVE_ITERATIONS_FAILURE](state) {
-    state.iterationsLoading = false;
-    state.error = __('Failed to load iterations.');
-  },
-
   [mutationTypes.RECEIVE_ASSIGNEES_REQUEST](state) {
     state.assigneesLoading = true;
   },
@@ -197,5 +183,26 @@ export default {
   [mutationTypes.RECEIVE_ASSIGNEES_FAILURE](state) {
     state.assigneesLoading = false;
     state.error = __('Failed to load assignees.');
+  },
+
+  [mutationTypes.REQUEST_SUB_GROUPS]: (state, fetchNext) => {
+    Vue.set(state, 'subGroupsFlags', {
+      [fetchNext ? 'isLoadingMore' : 'isLoading']: true,
+      pageInfo: state.subGroupsFlags.pageInfo,
+    });
+  },
+
+  [mutationTypes.RECEIVE_SUB_GROUPS_SUCCESS]: (state, { subGroups, pageInfo, fetchNext }) => {
+    Vue.set(state, 'subGroups', fetchNext ? [...state.subGroups, ...subGroups] : subGroups);
+    Vue.set(state, 'subGroupsFlags', { isLoading: false, isLoadingMore: false, pageInfo });
+  },
+
+  [mutationTypes.RECEIVE_SUB_GROUPS_FAILURE]: (state) => {
+    state.error = s__('Boards|An error occurred while fetching child groups. Please try again.');
+    Vue.set(state, 'subGroupsFlags', { isLoading: false, isLoadingMore: false });
+  },
+
+  [mutationTypes.SET_SELECTED_GROUP]: (state, group) => {
+    state.selectedGroup = group;
   },
 };

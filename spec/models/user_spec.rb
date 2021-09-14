@@ -65,9 +65,6 @@ RSpec.describe User do
     it { is_expected.to delegate_method(:render_whitespace_in_code).to(:user_preference) }
     it { is_expected.to delegate_method(:render_whitespace_in_code=).to(:user_preference).with_arguments(:args) }
 
-    it { is_expected.to delegate_method(:experience_level).to(:user_preference) }
-    it { is_expected.to delegate_method(:experience_level=).to(:user_preference).with_arguments(:args) }
-
     it { is_expected.to delegate_method(:markdown_surround_selection).to(:user_preference) }
     it { is_expected.to delegate_method(:markdown_surround_selection=).to(:user_preference).with_arguments(:args) }
 
@@ -82,7 +79,6 @@ RSpec.describe User do
 
     it { is_expected.to delegate_method(:bio).to(:user_detail).allow_nil }
     it { is_expected.to delegate_method(:bio=).to(:user_detail).with_arguments(:args).allow_nil }
-    it { is_expected.to delegate_method(:bio_html).to(:user_detail).allow_nil }
   end
 
   describe 'associations' do
@@ -110,7 +106,6 @@ RSpec.describe User do
     it { is_expected.to have_many(:spam_logs).dependent(:destroy) }
     it { is_expected.to have_many(:todos) }
     it { is_expected.to have_many(:award_emoji).dependent(:destroy) }
-    it { is_expected.to have_many(:triggers).dependent(:destroy) }
     it { is_expected.to have_many(:builds).dependent(:nullify) }
     it { is_expected.to have_many(:pipelines).dependent(:nullify) }
     it { is_expected.to have_many(:chat_names).dependent(:destroy) }
@@ -1859,12 +1854,24 @@ RSpec.describe User do
         expect(user.deactivated?).to be_truthy
       end
 
-      it 'sends deactivated user an email' do
-        expect_next_instance_of(NotificationService) do |notification|
-          allow(notification).to receive(:user_deactivated).with(user.name, user.notification_email)
+      context "when user deactivation emails are disabled" do
+        before do
+          stub_application_setting(user_deactivation_emails_enabled: false)
         end
+        it 'does not send deactivated user an email' do
+          expect(NotificationService).not_to receive(:new)
+          user.deactivate
+        end
+      end
 
-        user.deactivate
+      context "when user deactivation emails are enabled" do
+        it 'sends deactivated user an email' do
+          expect_next_instance_of(NotificationService) do |notification|
+            allow(notification).to receive(:user_deactivated).with(user.name, user.notification_email)
+          end
+
+          user.deactivate
+        end
       end
     end
 
@@ -3635,6 +3642,11 @@ RSpec.describe User do
         it 'loads all the runners in the tree of groups' do
           expect(user.ci_owned_runners).to contain_exactly(runner, group_runner)
         end
+
+        it 'returns true for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(true)
+          expect(user.owns_runner?(group_runner)).to eq(true)
+        end
       end
     end
 
@@ -3647,6 +3659,10 @@ RSpec.describe User do
         it 'loads the runners in the group' do
           expect(user.ci_owned_runners).to contain_exactly(group_runner)
         end
+
+        it 'returns true for owns_runner?' do
+          expect(user.owns_runner?(group_runner)).to eq(true)
+        end
       end
     end
 
@@ -3654,6 +3670,10 @@ RSpec.describe User do
       context 'when the user is the owner of a project' do
         it 'loads the runner belonging to the project' do
           expect(user.ci_owned_runners).to contain_exactly(runner)
+        end
+
+        it 'returns true for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(true)
         end
       end
     end
@@ -3667,6 +3687,10 @@ RSpec.describe User do
         it 'loads the runners of the project' do
           expect(user.ci_owned_runners).to contain_exactly(project_runner)
         end
+
+        it 'returns true for owns_runner?' do
+          expect(user.owns_runner?(project_runner)).to eq(true)
+        end
       end
 
       context 'when the user is a developer' do
@@ -3676,6 +3700,10 @@ RSpec.describe User do
 
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
+        end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(project_runner)).to eq(false)
         end
       end
 
@@ -3687,6 +3715,10 @@ RSpec.describe User do
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
         end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(project_runner)).to eq(false)
+        end
       end
 
       context 'when the user is a guest' do
@@ -3696,6 +3728,10 @@ RSpec.describe User do
 
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
+        end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(project_runner)).to eq(false)
         end
       end
     end
@@ -3709,6 +3745,10 @@ RSpec.describe User do
         it 'does not load the runners of the group' do
           expect(user.ci_owned_runners).to be_empty
         end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(false)
+        end
       end
 
       context 'when the user is a developer' do
@@ -3718,6 +3758,10 @@ RSpec.describe User do
 
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
+        end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(false)
         end
       end
 
@@ -3729,6 +3773,10 @@ RSpec.describe User do
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
         end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(false)
+        end
       end
 
       context 'when the user is a guest' do
@@ -3739,12 +3787,20 @@ RSpec.describe User do
         it 'does not load any runner' do
           expect(user.ci_owned_runners).to be_empty
         end
+
+        it 'returns false for owns_runner?' do
+          expect(user.owns_runner?(runner)).to eq(false)
+        end
       end
     end
 
     context 'without any projects nor groups' do
       it 'does not load any runner' do
         expect(user.ci_owned_runners).to be_empty
+      end
+
+      it 'returns false for owns_runner?' do
+        expect(user.owns_runner?(create(:ci_runner))).to eq(false)
       end
     end
 
@@ -5997,6 +6053,51 @@ RSpec.describe User do
         subject.unset_secondary_emails_matching_deleted_email!(deleted_email)
         expect(subject.read_attribute(:commit_email)).to be nil
       end
+    end
+  end
+
+  describe '#groups_with_developer_maintainer_project_access' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group1) { create(:group) }
+
+    let_it_be(:developer_group1) do
+      create(:group).tap do |g|
+        g.add_developer(user)
+      end
+    end
+
+    let_it_be(:developer_group2) do
+      create(:group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS).tap do |g|
+        g.add_developer(user)
+      end
+    end
+
+    let_it_be(:guest_group1) do
+      create(:group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS).tap do |g|
+        g.add_guest(user)
+      end
+    end
+
+    let_it_be(:developer_group1) do
+      create(:group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS).tap do |g|
+        g.add_maintainer(user)
+      end
+    end
+
+    subject { user.send(:groups_with_developer_maintainer_project_access) }
+
+    shared_examples 'groups_with_developer_maintainer_project_access examples' do
+      specify { is_expected.to contain_exactly(developer_group2) }
+    end
+
+    it_behaves_like 'groups_with_developer_maintainer_project_access examples'
+
+    context 'when feature flag :linear_user_groups_with_developer_maintainer_project_access is disabled' do
+      before do
+        stub_feature_flags(linear_user_groups_with_developer_maintainer_project_access: false)
+      end
+
+      it_behaves_like 'groups_with_developer_maintainer_project_access examples'
     end
   end
 end

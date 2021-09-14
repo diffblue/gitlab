@@ -14,29 +14,19 @@ module EE
 
     override :project_permissions_settings
     def project_permissions_settings(project)
-      settings = super.merge(
-        requirementsAccessLevel: project.requirements_access_level
-      )
-
-      if ::Feature.enabled?(:cve_id_request_button, project)
-        settings[:cveIdRequestEnabled] = project.public? && project.project_setting.cve_id_request_enabled?
-      end
-
-      settings
+      super.merge({
+        requirementsAccessLevel: project.requirements_access_level,
+        cveIdRequestEnabled: (project.public? && project.project_setting.cve_id_request_enabled?)
+      })
     end
 
     override :project_permissions_panel_data
     def project_permissions_panel_data(project)
-      panel_data = super.merge(
-        requirementsAvailable: project.feature_available?(:requirements)
-      )
-
-      if ::Feature.enabled?(:cve_id_request_button, project)
-        panel_data[:requestCveAvailable] = ::Gitlab.com?
-        panel_data[:cveIdRequestHelpPath] = help_page_path('user/application_security/cve_id_request')
-      end
-
-      panel_data
+      super.merge({
+        requirementsAvailable: project.feature_available?(:requirements),
+        requestCveAvailable: ::Gitlab.com?,
+        cveIdRequestHelpPath: help_page_path('user/application_security/cve_id_request')
+      })
     end
 
     override :default_url_to_repo
@@ -202,9 +192,15 @@ module EE
           auto_fix_documentation: help_page_path('user/application_security/index', anchor: 'auto-fix-merge-requests'),
           auto_fix_mrs_path: project_merge_requests_path(@project, label_name: 'GitLab-auto-fix'),
           scanners: VulnerabilityScanners::ListService.new(project).execute.to_json,
-          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s
+          can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
+          false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
+          can_view_false_positive: can_view_false_positive?
         }.merge!(security_dashboard_pipeline_data(project))
       end
+    end
+
+    def can_view_false_positive?
+      (::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)).to_s
     end
 
     def can_update_security_orchestration_policy_project?(project)

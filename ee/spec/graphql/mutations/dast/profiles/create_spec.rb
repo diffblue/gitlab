@@ -14,6 +14,7 @@ RSpec.describe Mutations::Dast::Profiles::Create do
   let(:run_after_create) { false }
 
   let(:dast_profile) { Dast::Profile.find_by(project: project, name: name) }
+  let(:dast_profile_schedule) { nil }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: developer }, field: nil) }
 
@@ -32,7 +33,8 @@ RSpec.describe Mutations::Dast::Profiles::Create do
         branch_name: branch_name,
         dast_site_profile_id: dast_site_profile.to_global_id.to_s,
         dast_scanner_profile_id: dast_scanner_profile.to_global_id.to_s,
-        run_after_create: run_after_create
+        run_after_create: run_after_create,
+        dast_profile_schedule: dast_profile_schedule
       )
     end
 
@@ -50,6 +52,30 @@ RSpec.describe Mutations::Dast::Profiles::Create do
 
           it_behaves_like 'it delegates scan creation to another service' do
             let(:delegated_params) { hash_including(dast_profile: instance_of(Dast::Profile)) }
+          end
+        end
+
+        context 'when dast_on_demand_scans_scheduler feature is enabled' do
+          let(:dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
+
+          before do
+            stub_feature_flags(dast_on_demand_scans_scheduler: true)
+          end
+
+          it 'returns the dast_profile_schedule' do
+            expect(subject[:dast_profile_schedule]).to eq(dast_profile.dast_profile_schedule)
+          end
+        end
+
+        context 'when dast_on_demand_scans_scheduler feature is disabled' do
+          let(:dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
+
+          before do
+            stub_feature_flags(dast_on_demand_scans_scheduler: false)
+          end
+
+          it 'returns the dast_profile_schedule' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
       end

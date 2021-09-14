@@ -217,7 +217,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
   describe('fetchStageMedianValues', () => {
     let mockDispatch = jest.fn();
-    const fetchMedianResponse = activeStages.map(({ slug: id }) => ({ events: [], id }));
+    const fetchMedianResponse = activeStages.map(({ id }) => ({ events: [], id }));
 
     beforeEach(() => {
       state = { ...state, stages, currentGroup };
@@ -257,7 +257,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
     describe(`Status ${httpStatusCodes.OK} and error message in response`, () => {
       const dataError = 'Too much data';
-      const payload = activeStages.map(({ slug: id }) => ({ value: null, id, error: dataError }));
+      const payload = activeStages.map(({ id }) => ({ value: null, id, error: dataError }));
 
       beforeEach(() => {
         mock.onGet(endpoints.stageMedian).reply(httpStatusCodes.OK, { error: dataError });
@@ -316,7 +316,7 @@ describe('Value Stream Analytics actions / stages', () => {
   });
 
   describe('fetchStageCountValues', () => {
-    const fetchCountResponse = activeStages.map(({ slug: id }) => ({ events: [], id }));
+    const fetchCountResponse = activeStages.map(({ id }) => ({ events: [], id }));
 
     beforeEach(() => {
       state = {

@@ -2486,6 +2486,12 @@ RSpec.describe Group do
     end
   end
 
+  describe '#membership_locked?' do
+    it 'returns false' do
+      expect(build(:group)).not_to be_membership_locked
+    end
+  end
+
   describe '#default_owner' do
     let(:group) { build(:group) }
 
@@ -2628,6 +2634,26 @@ RSpec.describe Group do
     end
   end
 
+  describe '.organizations' do
+    it 'returns organizations belonging to the group' do
+      organization1 = create(:organization, group: group)
+      create(:organization)
+      organization3 = create(:organization, group: group)
+
+      expect(group.organizations).to contain_exactly(organization1, organization3)
+    end
+  end
+
+  describe '.contacts' do
+    it 'returns contacts belonging to the group' do
+      contact1 = create(:contact, group: group)
+      create(:contact)
+      contact3 = create(:contact, group: group)
+
+      expect(group.contacts).to contain_exactly(contact1, contact3)
+    end
+  end
+
   describe '#to_ability_name' do
     it 'returns group' do
       group = build(:group)
@@ -2703,6 +2729,18 @@ RSpec.describe Group do
       expect(count_service).to receive(:count)
 
       group.open_merge_requests_count
+    end
+  end
+
+  describe '#dependency_proxy_image_prefix' do
+    let_it_be(:group) { build_stubbed(:group, path: 'GroupWithUPPERcaseLetters') }
+
+    it 'converts uppercase letters to lowercase' do
+      expect(group.dependency_proxy_image_prefix).to end_with("/groupwithuppercaseletters#{DependencyProxy::URL_SUFFIX}")
+    end
+
+    it 'removes the protocol' do
+      expect(group.dependency_proxy_image_prefix).not_to include('http')
     end
   end
 end

@@ -36,7 +36,7 @@ module Mutations
           description: copy_field_description(Types::Iterations::CadenceType, :description)
 
         field :iteration_cadence, Types::Iterations::CadenceType, null: true,
-          description: 'The updated iteration cadence.'
+          description: 'Updated iteration cadence.'
 
         def resolve(id:, **attrs)
           iteration_cadence = authorized_find!(id: id)

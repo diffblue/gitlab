@@ -236,6 +236,12 @@ RSpec.describe TrialsController do
         end
       end
 
+      it 'calls tracking event for combined_registration experiment', :experiment do
+        expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance
+
+        subject
+      end
+
       context 'redirect trial user to feature' do
         using RSpec::Parameterized::TableSyntax
 
@@ -276,6 +282,8 @@ RSpec.describe TrialsController do
 
       context 'with an old namespace' do
         it 'does not track for the force_company_trial experiment' do
+          allow(controller).to receive(:experiment).and_call_original
+
           namespace.update!(created_at: 2.days.ago)
 
           expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)

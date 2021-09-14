@@ -51,7 +51,7 @@ module Ci
         end
 
         def validate_owners!
-          shared_ids = namespace.owner_ids & target.owner_ids
+          shared_ids = owner_ids_for(namespace) & owner_ids_for(target)
 
           raise ChangeNamespaceError, 'Both namespaces must share the same owner' unless shared_ids.any?
         end
@@ -59,6 +59,10 @@ module Ci
         def reset_ci_minutes!
           ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
           ::Ci::Minutes::RefreshCachedDataService.new(target).execute
+        end
+
+        def owner_ids_for(namespace)
+          namespace.user? ? Array(namespace.owner_id) : namespace.owner_ids
         end
       end
     end

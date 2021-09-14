@@ -55,7 +55,7 @@ export default {
       class="js-dismiss-btn"
       @click="handleDismissClick"
     >
-      {{ __(buttonText) }}
+      {{ buttonText }}
     </gl-button>
     <gl-button
       v-if="!isDismissed"

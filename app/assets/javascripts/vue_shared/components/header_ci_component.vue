@@ -1,6 +1,5 @@
 <script>
-/* eslint-disable vue/no-v-html */
-import { GlTooltipDirective, GlLink, GlButton, GlTooltip } from '@gitlab/ui';
+import { GlTooltipDirective, GlLink, GlButton, GlTooltip, GlSafeHtmlDirective } from '@gitlab/ui';
 import { glEmojiTag } from '../../emoji';
 import { __, sprintf } from '../../locale';
 import CiIconBadge from './ci_badge_link.vue';
@@ -25,6 +24,7 @@ export default {
   },
   directives: {
     GlTooltip: GlTooltipDirective,
+    SafeHtml: GlSafeHtmlDirective,
   },
   EMOJI_REF: 'EMOJI_REF',
   props: {
@@ -93,6 +93,7 @@ export default {
       this.$emit('clickedSidebarButton');
     },
   },
+  safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
 };
 </script>
 
@@ -130,8 +131,8 @@ export default {
         <span
           v-if="statusTooltipHTML"
           :ref="$options.EMOJI_REF"
+          v-safe-html:[$options.safeHtmlConfig]="statusTooltipHTML"
           :data-testid="message"
-          v-html="statusTooltipHTML"
         ></span>
       </template>
     </section>

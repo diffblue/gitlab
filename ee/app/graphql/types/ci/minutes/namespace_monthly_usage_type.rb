@@ -9,11 +9,11 @@ module Types
         graphql_name 'CiMinutesNamespaceMonthlyUsage'
 
         field :month, ::GraphQL::STRING_TYPE, null: true,
-              description: 'The month related to the usage data.'
+              description: 'Month related to the usage data.'
 
         field :minutes, ::GraphQL::INT_TYPE, null: true,
               method: :amount_used,
-              description: 'The total number of minutes used by all projects in the namespace.'
+              description: 'Total number of minutes used by all projects in the namespace.'
 
         field :projects, ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type, null: true,
               description: 'CI minutes usage data for projects in the namespace.'

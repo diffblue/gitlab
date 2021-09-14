@@ -52,15 +52,6 @@ RETURN NULL;
 END
 $$;
 
-CREATE FUNCTION trigger_07c94931164e() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."event_id_convert_to_bigint" := NEW."event_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_21e7a2602957() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -80,56 +71,11 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_490d204c00b3() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_51ab7cef8934() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."build_id_convert_to_bigint" := NEW."build_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_542d6c2ad72e() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
   NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_69523443cc10() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_77f5e1d20482() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."deployable_id_convert_to_bigint" := NEW."deployable_id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_8485e97c00e3() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."source_job_id_convert_to_bigint" := NEW."source_job_id";
   RETURN NEW;
 END;
 $$;
@@ -162,30 +108,11 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_be1804f21693() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  NEW."job_id_convert_to_bigint" := NEW."job_id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_cf2f9e35f002() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
   NEW."build_id_convert_to_bigint" := NEW."build_id";
-  RETURN NEW;
-END;
-$$;
-
-CREATE FUNCTION trigger_f1ca8ec18d78() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."job_artifact_id_convert_to_bigint" := NEW."job_artifact_id";
   RETURN NEW;
 END;
 $$;
@@ -248,6 +175,798 @@ CREATE TABLE web_hook_logs (
     created_at timestamp without time zone NOT NULL
 )
 PARTITION BY RANGE (created_at);
+
+CREATE TABLE analytics_cycle_analytics_issue_stage_events (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+)
+PARTITION BY HASH (stage_event_hash_id);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_00 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_00 FOR VALUES WITH (modulus 32, remainder 0);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_01 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_01 FOR VALUES WITH (modulus 32, remainder 1);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_02 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_02 FOR VALUES WITH (modulus 32, remainder 2);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_03 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_03 FOR VALUES WITH (modulus 32, remainder 3);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_04 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_04 FOR VALUES WITH (modulus 32, remainder 4);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_05 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_05 FOR VALUES WITH (modulus 32, remainder 5);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_06 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_06 FOR VALUES WITH (modulus 32, remainder 6);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_07 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_07 FOR VALUES WITH (modulus 32, remainder 7);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_08 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_08 FOR VALUES WITH (modulus 32, remainder 8);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_09 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_09 FOR VALUES WITH (modulus 32, remainder 9);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_10 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_10 FOR VALUES WITH (modulus 32, remainder 10);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_11 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_11 FOR VALUES WITH (modulus 32, remainder 11);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_12 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_12 FOR VALUES WITH (modulus 32, remainder 12);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_13 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_13 FOR VALUES WITH (modulus 32, remainder 13);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_14 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_14 FOR VALUES WITH (modulus 32, remainder 14);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_15 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_15 FOR VALUES WITH (modulus 32, remainder 15);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_16 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_16 FOR VALUES WITH (modulus 32, remainder 16);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_17 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_17 FOR VALUES WITH (modulus 32, remainder 17);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_18 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_18 FOR VALUES WITH (modulus 32, remainder 18);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_19 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_19 FOR VALUES WITH (modulus 32, remainder 19);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_20 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_20 FOR VALUES WITH (modulus 32, remainder 20);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_21 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_21 FOR VALUES WITH (modulus 32, remainder 21);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_22 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_22 FOR VALUES WITH (modulus 32, remainder 22);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_23 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_23 FOR VALUES WITH (modulus 32, remainder 23);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_24 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_24 FOR VALUES WITH (modulus 32, remainder 24);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_25 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_25 FOR VALUES WITH (modulus 32, remainder 25);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_26 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_26 FOR VALUES WITH (modulus 32, remainder 26);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_27 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_27 FOR VALUES WITH (modulus 32, remainder 27);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_28 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_28 FOR VALUES WITH (modulus 32, remainder 28);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_29 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_29 FOR VALUES WITH (modulus 32, remainder 29);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_30 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_30 FOR VALUES WITH (modulus 32, remainder 30);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_31 (
+    stage_event_hash_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_31 FOR VALUES WITH (modulus 32, remainder 31);
+
+CREATE TABLE analytics_cycle_analytics_merge_request_stage_events (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+)
+PARTITION BY HASH (stage_event_hash_id);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_00 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_00 FOR VALUES WITH (modulus 32, remainder 0);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_01 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_01 FOR VALUES WITH (modulus 32, remainder 1);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_02 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_02 FOR VALUES WITH (modulus 32, remainder 2);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_03 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_03 FOR VALUES WITH (modulus 32, remainder 3);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_04 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_04 FOR VALUES WITH (modulus 32, remainder 4);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_05 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_05 FOR VALUES WITH (modulus 32, remainder 5);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_06 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_06 FOR VALUES WITH (modulus 32, remainder 6);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_07 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_07 FOR VALUES WITH (modulus 32, remainder 7);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_08 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_08 FOR VALUES WITH (modulus 32, remainder 8);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_09 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_09 FOR VALUES WITH (modulus 32, remainder 9);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_10 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_10 FOR VALUES WITH (modulus 32, remainder 10);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11 FOR VALUES WITH (modulus 32, remainder 11);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_12 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_12 FOR VALUES WITH (modulus 32, remainder 12);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_13 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_13 FOR VALUES WITH (modulus 32, remainder 13);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_14 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_14 FOR VALUES WITH (modulus 32, remainder 14);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_15 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_15 FOR VALUES WITH (modulus 32, remainder 15);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16 FOR VALUES WITH (modulus 32, remainder 16);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_17 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_17 FOR VALUES WITH (modulus 32, remainder 17);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_18 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_18 FOR VALUES WITH (modulus 32, remainder 18);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_19 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_19 FOR VALUES WITH (modulus 32, remainder 19);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_20 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_20 FOR VALUES WITH (modulus 32, remainder 20);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_21 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_21 FOR VALUES WITH (modulus 32, remainder 21);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_22 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_22 FOR VALUES WITH (modulus 32, remainder 22);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_23 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_23 FOR VALUES WITH (modulus 32, remainder 23);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_24 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_24 FOR VALUES WITH (modulus 32, remainder 24);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_25 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_25 FOR VALUES WITH (modulus 32, remainder 25);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_26 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_26 FOR VALUES WITH (modulus 32, remainder 26);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_27 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_27 FOR VALUES WITH (modulus 32, remainder 27);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_28 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_28 FOR VALUES WITH (modulus 32, remainder 28);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_29 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_29 FOR VALUES WITH (modulus 32, remainder 29);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_30 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_30 FOR VALUES WITH (modulus 32, remainder 30);
+
+CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31 (
+    stage_event_hash_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    group_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    milestone_id bigint,
+    author_id bigint,
+    start_event_timestamp timestamp with time zone NOT NULL,
+    end_event_timestamp timestamp with time zone
+);
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31 FOR VALUES WITH (modulus 32, remainder 31);
 
 CREATE TABLE product_analytics_events_experimental (
     id bigint NOT NULL,
@@ -9606,14 +10325,18 @@ CREATE TABLE application_settings (
     encrypted_customers_dot_jwt_signing_key bytea,
     encrypted_customers_dot_jwt_signing_key_iv bytea,
     pypi_package_requests_forwarding boolean DEFAULT true NOT NULL,
-    max_yaml_size_bytes bigint DEFAULT 1048576 NOT NULL,
-    max_yaml_depth integer DEFAULT 100 NOT NULL,
     throttle_unauthenticated_files_api_requests_per_period integer DEFAULT 125 NOT NULL,
     throttle_unauthenticated_files_api_period_in_seconds integer DEFAULT 15 NOT NULL,
     throttle_authenticated_files_api_requests_per_period integer DEFAULT 500 NOT NULL,
     throttle_authenticated_files_api_period_in_seconds integer DEFAULT 15 NOT NULL,
     throttle_unauthenticated_files_api_enabled boolean DEFAULT false NOT NULL,
     throttle_authenticated_files_api_enabled boolean DEFAULT false NOT NULL,
+    max_yaml_size_bytes bigint DEFAULT 1048576 NOT NULL,
+    max_yaml_depth integer DEFAULT 100 NOT NULL,
+    throttle_authenticated_git_lfs_requests_per_period integer DEFAULT 1000 NOT NULL,
+    throttle_authenticated_git_lfs_period_in_seconds integer DEFAULT 60 NOT NULL,
+    throttle_authenticated_git_lfs_enabled boolean DEFAULT false NOT NULL,
+    user_deactivation_emails_enabled boolean DEFAULT true NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_ext_pipeline_validation_service_url_text_limit CHECK ((char_length(external_pipeline_validation_service_url) <= 255)),
     CONSTRAINT app_settings_registry_exp_policies_worker_capacity_positive CHECK ((container_registry_expiration_policies_worker_capacity >= 0)),
@@ -10571,7 +11294,9 @@ CREATE TABLE ci_build_trace_metadata (
     trace_artifact_id bigint,
     archival_attempts smallint DEFAULT 0 NOT NULL,
     checksum bytea,
-    remote_checksum bytea
+    remote_checksum bytea,
+    last_archival_attempt_at timestamp with time zone,
+    archived_at timestamp with time zone
 );
 
 CREATE TABLE ci_builds (
@@ -10610,7 +11335,7 @@ CREATE TABLE ci_builds (
     coverage_regex character varying,
     auto_canceled_by_id integer,
     retried boolean,
-    stage_id integer,
+    stage_id_convert_to_bigint integer,
     protected boolean,
     failure_reason integer,
     scheduled_at timestamp with time zone,
@@ -10621,7 +11346,7 @@ CREATE TABLE ci_builds (
     processed boolean,
     scheduling_type smallint,
     id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
-    stage_id_convert_to_bigint bigint,
+    stage_id bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 );
 
@@ -10635,8 +11360,8 @@ CREATE SEQUENCE ci_builds_id_seq
 ALTER SEQUENCE ci_builds_id_seq OWNED BY ci_builds.id;
 
 CREATE TABLE ci_builds_metadata (
-    id integer NOT NULL,
-    build_id integer NOT NULL,
+    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
+    build_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     project_id integer NOT NULL,
     timeout integer,
     timeout_source integer DEFAULT 1 NOT NULL,
@@ -10647,8 +11372,8 @@ CREATE TABLE ci_builds_metadata (
     environment_auto_stop_in character varying(255),
     expanded_environment_name character varying(255),
     secrets jsonb DEFAULT '{}'::jsonb NOT NULL,
-    build_id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
-    id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    build_id bigint NOT NULL,
+    id bigint NOT NULL
 );
 
 CREATE SEQUENCE ci_builds_metadata_id_seq
@@ -10662,7 +11387,6 @@ ALTER SEQUENCE ci_builds_metadata_id_seq OWNED BY ci_builds_metadata.id;
 
 CREATE TABLE ci_builds_runner_session (
     id bigint NOT NULL,
-    build_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     url character varying NOT NULL,
     certificate character varying,
     "authorization" character varying,
@@ -10800,6 +11524,7 @@ CREATE TABLE ci_job_artifacts (
     file_location smallint,
     id bigint NOT NULL,
     job_id bigint NOT NULL,
+    locked smallint DEFAULT 2,
     CONSTRAINT check_27f0f6dbab CHECK ((file_store IS NOT NULL))
 );
 
@@ -10874,6 +11599,7 @@ CREATE TABLE ci_namespace_monthly_usages (
     date date NOT NULL,
     additional_amount_available integer DEFAULT 0 NOT NULL,
     amount_used numeric(18,2) DEFAULT 0.0 NOT NULL,
+    notification_level smallint DEFAULT 100 NOT NULL,
     CONSTRAINT ci_namespace_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -11299,7 +12025,6 @@ CREATE SEQUENCE ci_sources_projects_id_seq
 ALTER SEQUENCE ci_sources_projects_id_seq OWNED BY ci_sources_projects.id;
 
 CREATE TABLE ci_stages (
-    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     project_id integer,
     pipeline_id integer,
     created_at timestamp without time zone,
@@ -12345,7 +13070,8 @@ CREATE TABLE dependency_proxy_blobs (
     size bigint,
     file_store integer,
     file_name character varying NOT NULL,
-    file text NOT NULL
+    file text NOT NULL,
+    status smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE dependency_proxy_blobs_id_seq
@@ -12393,6 +13119,7 @@ CREATE TABLE dependency_proxy_manifests (
     file text NOT NULL,
     digest text NOT NULL,
     content_type text,
+    status smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_079b293a7b CHECK ((char_length(file) <= 255)),
     CONSTRAINT check_167a9a8a91 CHECK ((char_length(content_type) <= 255)),
     CONSTRAINT check_c579e3f586 CHECK ((char_length(file_name) <= 255)),
@@ -12473,7 +13200,6 @@ CREATE TABLE deployments (
     tag boolean NOT NULL,
     sha character varying NOT NULL,
     user_id integer,
-    deployable_id_convert_to_bigint integer,
     deployable_type character varying,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -13352,7 +14078,6 @@ ALTER SEQUENCE geo_hashed_storage_migrated_events_id_seq OWNED BY geo_hashed_sto
 
 CREATE TABLE geo_job_artifact_deleted_events (
     id bigint NOT NULL,
-    job_artifact_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     file_path character varying NOT NULL,
     job_artifact_id bigint NOT NULL
 );
@@ -14245,6 +14970,7 @@ CREATE TABLE integrations (
     alert_events boolean,
     group_id bigint,
     type_new text,
+    vulnerability_events boolean DEFAULT false NOT NULL,
     CONSTRAINT check_a948a0aa7e CHECK ((char_length(type_new) <= 255))
 );
 
@@ -14870,7 +15596,9 @@ CREATE TABLE members (
     requested_at timestamp without time zone,
     expires_at date,
     ldap boolean DEFAULT false NOT NULL,
-    override boolean DEFAULT false NOT NULL
+    override boolean DEFAULT false NOT NULL,
+    state smallint DEFAULT 0,
+    invite_email_success boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE members_id_seq
@@ -16639,7 +17367,8 @@ CREATE TABLE plan_limits (
     ci_max_artifact_size_running_container_scanning integer DEFAULT 0 NOT NULL,
     ci_max_artifact_size_cluster_image_scanning integer DEFAULT 0 NOT NULL,
     ci_jobs_trace_size_limit integer DEFAULT 100 NOT NULL,
-    pages_file_entries integer DEFAULT 200000 NOT NULL
+    pages_file_entries integer DEFAULT 200000 NOT NULL,
+    dast_profile_schedules integer DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
@@ -17491,7 +18220,8 @@ CREATE TABLE projects (
     marked_for_deletion_at date,
     marked_for_deletion_by_user_id integer,
     autoclose_referenced_issues boolean,
-    suggestion_commit_message character varying(255)
+    suggestion_commit_message character varying(255),
+    project_namespace_id bigint
 );
 
 CREATE SEQUENCE projects_id_seq
@@ -18239,7 +18969,8 @@ CREATE TABLE security_scans (
     scan_type smallint NOT NULL,
     info jsonb DEFAULT '{}'::jsonb NOT NULL,
     project_id bigint,
-    pipeline_id bigint
+    pipeline_id bigint,
+    latest boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE security_scans_id_seq
@@ -18675,16 +19406,16 @@ CREATE SEQUENCE system_note_metadata_id_seq
 ALTER SEQUENCE system_note_metadata_id_seq OWNED BY system_note_metadata.id;
 
 CREATE TABLE taggings (
-    id integer NOT NULL,
+    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     tag_id integer,
-    taggable_id integer,
+    taggable_id_convert_to_bigint integer,
     taggable_type character varying,
     tagger_id integer,
     tagger_type character varying,
     context character varying,
     created_at timestamp without time zone,
-    id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
-    taggable_id_convert_to_bigint bigint
+    id bigint NOT NULL,
+    taggable_id bigint
 );
 
 CREATE SEQUENCE taggings_id_seq
@@ -21047,6 +21778,204 @@ ALTER TABLE ONLY x509_issuers ALTER COLUMN id SET DEFAULT nextval('x509_issuers_
 ALTER TABLE ONLY zentao_tracker_data ALTER COLUMN id SET DEFAULT nextval('zentao_tracker_data_id_seq'::regclass);
 
 ALTER TABLE ONLY zoom_meetings ALTER COLUMN id SET DEFAULT nextval('zoom_meetings_id_seq'::regclass);
+
+ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_00
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_00_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_01
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_01_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_02
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_02_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_03
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_03_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_04
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_04_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_05
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_05_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_06
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_06_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_07
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_07_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_08
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_08_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_09
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_09_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_10
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_10_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_11
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_11_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_12
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_12_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_13
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_13_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_14
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_14_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_15
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_15_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_16
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_16_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_17
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_17_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_18
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_18_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_19
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_19_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_20
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_20_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_21
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_21_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_22
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_22_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_23
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_23_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_24
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_24_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_25
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_25_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_26
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_26_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_27
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_27_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_28
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_28_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_29
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_29_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_30
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_30_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_31
+    ADD CONSTRAINT analytics_cycle_analytics_issue_stage_events_31_pkey PRIMARY KEY (stage_event_hash_id, issue_id);
+
+ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_00
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_00_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_01
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_01_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_02
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_02_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_03
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_03_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_04
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_04_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_05
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_05_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_06
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_06_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_07
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_07_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_08
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_08_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_09
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_09_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_10
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_10_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_11_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_12
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_12_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_13
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_13_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_14
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_14_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_15
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_15_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_16_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_17
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_17_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_18
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_18_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_19
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_19_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_20
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_20_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_21
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_21_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_22
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_22_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_23
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_23_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_24
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_24_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_25
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_25_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_26
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_26_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_27
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_27_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_28
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_28_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_29
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_29_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_30
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_30_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
+
+ALTER TABLE ONLY gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31
+    ADD CONSTRAINT analytics_cycle_analytics_merge_request_stage_events_31_pkey PRIMARY KEY (stage_event_hash_id, merge_request_id);
 
 ALTER TABLE ONLY product_analytics_events_experimental
     ADD CONSTRAINT product_analytics_events_experimental_pkey PRIMARY KEY (id, project_id);
@@ -23842,6 +24771,10 @@ CREATE UNIQUE INDEX index_dast_site_profiles_on_project_id_and_name ON dast_site
 
 CREATE UNIQUE INDEX index_dast_site_profiles_pipelines_on_ci_pipeline_id ON dast_site_profiles_pipelines USING btree (ci_pipeline_id);
 
+CREATE UNIQUE INDEX index_dast_site_token_on_project_id_and_url ON dast_site_tokens USING btree (project_id, url);
+
+CREATE UNIQUE INDEX index_dast_site_token_on_token ON dast_site_tokens USING btree (token);
+
 CREATE INDEX index_dast_site_tokens_on_project_id ON dast_site_tokens USING btree (project_id);
 
 CREATE INDEX index_dast_site_validations_on_dast_site_token_id ON dast_site_validations USING btree (dast_site_token_id);
@@ -24724,6 +25657,8 @@ CREATE INDEX index_namespaces_on_traversal_ids ON namespaces USING gin (traversa
 
 CREATE INDEX index_namespaces_on_type_and_id_partial ON namespaces USING btree (type, id) WHERE (type IS NOT NULL);
 
+CREATE INDEX index_namespaces_public_groups_name_id ON namespaces USING btree (name, id) WHERE (((type)::text = 'Group'::text) AND (visibility_level = 20));
+
 CREATE INDEX index_non_requested_project_members_on_source_id_and_type ON members USING btree (source_id, source_type) WHERE ((requested_at IS NULL) AND ((type)::text = 'ProjectMember'::text));
 
 CREATE UNIQUE INDEX index_note_diff_files_on_diff_note_id ON note_diff_files USING btree (diff_note_id);
@@ -25169,6 +26104,8 @@ CREATE INDEX index_projects_on_path_trigram ON projects USING gin (path gin_trgm
 CREATE INDEX index_projects_on_pending_delete ON projects USING btree (pending_delete);
 
 CREATE INDEX index_projects_on_pool_repository_id ON projects USING btree (pool_repository_id) WHERE (pool_repository_id IS NOT NULL);
+
+CREATE UNIQUE INDEX index_projects_on_project_namespace_id ON projects USING btree (project_namespace_id);
 
 CREATE INDEX index_projects_on_repository_storage ON projects USING btree (repository_storage);
 
@@ -25958,6 +26895,134 @@ CREATE UNIQUE INDEX vulnerability_occurrence_pipelines_on_unique_keys ON vulnera
 
 CREATE UNIQUE INDEX work_item_types_namespace_id_and_name_unique ON work_item_types USING btree (namespace_id, btrim(lower(name)));
 
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_00_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_01_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_02_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_03_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_04_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_05_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_06_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_07_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_08_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_09_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_10_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_11_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_12_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_13_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_14_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_15_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_16_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_17_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_18_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_19_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_20_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_21_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_22_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_23_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_24_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_25_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_26_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_27_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_28_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_29_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_30_pkey;
+
+ALTER INDEX analytics_cycle_analytics_issue_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_31_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_00_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_01_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_02_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_03_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_04_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_05_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_06_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_07_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_08_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_09_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_10_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_12_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_13_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_14_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_15_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_17_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_18_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_19_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_20_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_21_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_22_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_23_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_24_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_25_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_26_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_27_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_28_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_29_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_30_pkey;
+
+ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31_pkey;
+
 ALTER INDEX index_product_analytics_events_experimental_project_and_time ATTACH PARTITION gitlab_partitions_static.product_analytics_events_expe_project_id_collector_tstamp_idx10;
 
 ALTER INDEX index_product_analytics_events_experimental_project_and_time ATTACH PARTITION gitlab_partitions_static.product_analytics_events_expe_project_id_collector_tstamp_idx11;
@@ -26214,23 +27279,11 @@ ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_p
 
 ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_partitions_static.product_analytics_events_experimental_63_pkey;
 
-CREATE TRIGGER trigger_07c94931164e BEFORE INSERT OR UPDATE ON push_event_payloads FOR EACH ROW EXECUTE FUNCTION trigger_07c94931164e();
-
 CREATE TRIGGER trigger_21e7a2602957 BEFORE INSERT OR UPDATE ON ci_build_needs FOR EACH ROW EXECUTE FUNCTION trigger_21e7a2602957();
 
 CREATE TRIGGER trigger_3f6129be01d2 BEFORE INSERT OR UPDATE ON ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_3f6129be01d2();
 
-CREATE TRIGGER trigger_490d204c00b3 BEFORE INSERT OR UPDATE ON ci_stages FOR EACH ROW EXECUTE FUNCTION trigger_490d204c00b3();
-
-CREATE TRIGGER trigger_51ab7cef8934 BEFORE INSERT OR UPDATE ON ci_builds_runner_session FOR EACH ROW EXECUTE FUNCTION trigger_51ab7cef8934();
-
 CREATE TRIGGER trigger_542d6c2ad72e BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_542d6c2ad72e();
-
-CREATE TRIGGER trigger_69523443cc10 BEFORE INSERT OR UPDATE ON events FOR EACH ROW EXECUTE FUNCTION trigger_69523443cc10();
-
-CREATE TRIGGER trigger_77f5e1d20482 BEFORE INSERT OR UPDATE ON deployments FOR EACH ROW EXECUTE FUNCTION trigger_77f5e1d20482();
-
-CREATE TRIGGER trigger_8485e97c00e3 BEFORE INSERT OR UPDATE ON ci_sources_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_8485e97c00e3();
 
 CREATE TRIGGER trigger_8487d4de3e7b BEFORE INSERT OR UPDATE ON ci_builds_metadata FOR EACH ROW EXECUTE FUNCTION trigger_8487d4de3e7b();
 
@@ -26238,11 +27291,7 @@ CREATE TRIGGER trigger_91dc388a5fe6 BEFORE INSERT OR UPDATE ON dep_ci_build_trac
 
 CREATE TRIGGER trigger_aebe8b822ad3 BEFORE INSERT OR UPDATE ON taggings FOR EACH ROW EXECUTE FUNCTION trigger_aebe8b822ad3();
 
-CREATE TRIGGER trigger_be1804f21693 BEFORE INSERT OR UPDATE ON ci_job_artifacts FOR EACH ROW EXECUTE FUNCTION trigger_be1804f21693();
-
 CREATE TRIGGER trigger_cf2f9e35f002 BEFORE INSERT OR UPDATE ON ci_build_trace_chunks FOR EACH ROW EXECUTE FUNCTION trigger_cf2f9e35f002();
-
-CREATE TRIGGER trigger_f1ca8ec18d78 BEFORE INSERT OR UPDATE ON geo_job_artifact_deleted_events FOR EACH ROW EXECUTE FUNCTION trigger_f1ca8ec18d78();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
 
@@ -26559,6 +27608,9 @@ ALTER TABLE ONLY terraform_state_versions
 
 ALTER TABLE ONLY protected_branch_push_access_levels
     ADD CONSTRAINT fk_7111b68cdb FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT fk_71625606ac FOREIGN KEY (project_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY integrations
     ADD CONSTRAINT fk_71cce407f9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -26970,6 +28022,9 @@ ALTER TABLE ONLY ci_resources
 
 ALTER TABLE ONLY ci_sources_pipelines
     ADD CONSTRAINT fk_e1bad85861 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ci_builds_metadata
+    ADD CONSTRAINT fk_e20479742e FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY gitlab_subscriptions
     ADD CONSTRAINT fk_e2595d00a1 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -28503,9 +29558,6 @@ ALTER TABLE ONLY packages_packages
 
 ALTER TABLE ONLY cluster_platforms_kubernetes
     ADD CONSTRAINT fk_rails_e1e2cf841a FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY ci_builds_metadata
-    ADD CONSTRAINT fk_rails_e20479742e FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerability_finding_evidences
     ADD CONSTRAINT fk_rails_e3205a0c65 FOREIGN KEY (vulnerability_occurrence_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;

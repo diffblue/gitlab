@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable @gitlab/require-string-literal-i18n-helpers */
 import { GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { __, n__, sprintf } from '~/locale';
@@ -28,14 +27,9 @@ export default {
       };
     },
     alertCount() {
-      const text = this.lastAlert ? '%{count} %{alerts}:' : '%{count} %{alerts}';
-      return sprintf(__(text), {
-        count: this.count,
-        alerts: this.pluralizedAlerts,
-      });
-    },
-    pluralizedAlerts() {
-      return n__('Alert', 'Alerts', this.count);
+      return this.lastAlert
+        ? n__('%d Alert:', '%d Alerts:', this.count)
+        : n__('%d Alert', '%d Alerts', this.count);
     },
     alertText() {
       return sprintf(

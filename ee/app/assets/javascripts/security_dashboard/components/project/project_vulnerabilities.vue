@@ -34,6 +34,9 @@ export default {
     hasJiraVulnerabilitiesIntegrationEnabled: {
       default: false,
     },
+    canViewFalsePositive: {
+      default: false,
+    },
   },
   props: {
     filters: {
@@ -62,6 +65,7 @@ export default {
           first: VULNERABILITIES_PER_PAGE,
           sort: this.sort,
           includeExternalIssueLinks: this.hasJiraVulnerabilitiesIntegrationEnabled,
+          vetEnabled: this.canViewFalsePositive,
           ...this.filters,
         };
       },

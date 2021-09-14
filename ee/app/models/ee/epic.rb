@@ -19,6 +19,7 @@ module EE
       include Presentable
       include IdInOrdered
       include Todoable
+      include SortableTitle
 
       enum state_id: {
         opened: ::Epic.available_states[:opened],
@@ -111,9 +112,6 @@ module EE
 
         reorder(keyset_order)
       end
-
-      scope :order_title_asc, -> { reorder(Arel::Nodes::Ascending.new(arel_table[:title].lower)) }
-      scope :order_title_desc, -> { reorder(Arel::Nodes::Descending.new(arel_table[:title].lower)) }
 
       scope :order_closed_date_desc, -> { reorder(closed_at: :desc) }
 
@@ -277,9 +275,7 @@ module EE
             'start_date_asc' => -> { order_start_date_asc },
             'start_date_desc' => -> { order_start_date_desc },
             'end_date_asc' => -> { order_end_date_asc },
-            'end_date_desc' => -> { order_end_date_desc },
-            'title_asc' => -> { order_title_asc },
-            'title_desc' => -> { order_title_desc }
+            'end_date_desc' => -> { order_end_date_desc }
           }
         )
       end

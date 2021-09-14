@@ -63,3 +63,33 @@ export const createGroupApprovalsPayload = () => ({
     inherited_from: null,
   },
 });
+
+export const createGroupApprovalsState = () => ({
+  settings: {
+    preventAuthorApproval: {
+      inherited_from: 'instance',
+      locked: true,
+      value: false,
+    },
+    preventCommittersApproval: {
+      inherited_from: null,
+      locked: false,
+      value: false,
+    },
+    preventMrApprovalRuleEdit: {
+      inherited_from: null,
+      locked: false,
+      value: false,
+    },
+    removeApprovalsOnPush: {
+      inherited_from: null,
+      locked: null,
+      value: false,
+    },
+    requireUserPassword: {
+      inherited_from: null,
+      locked: null,
+      value: true,
+    },
+  },
+});

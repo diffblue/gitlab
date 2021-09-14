@@ -1,51 +1,36 @@
 <script>
 import Vue from 'vue';
-import Vuex, { mapState, mapActions, mapGetters } from 'vuex';
-import { isInViewport } from '~/lib/utils/common_utils';
+import Vuex from 'vuex';
 import { __ } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { DropdownVariant } from './constants';
-import DropdownButton from './dropdown_button.vue';
 import DropdownContents from './dropdown_contents.vue';
 import DropdownValue from './dropdown_value.vue';
 import DropdownValueCollapsed from './dropdown_value_collapsed.vue';
 import issueLabelsQuery from './graphql/issue_labels.query.graphql';
-import labelsSelectModule from './store';
+import {
+  isDropdownVariantSidebar,
+  isDropdownVariantStandalone,
+  isDropdownVariantEmbedded,
+} from './utils';
 
 Vue.use(Vuex);
 
 export default {
-  store: new Vuex.Store(labelsSelectModule()),
   components: {
     DropdownValue,
-    DropdownButton,
     DropdownContents,
     DropdownValueCollapsed,
     SidebarEditableItem,
   },
-  inject: ['iid', 'projectPath'],
+  inject: ['iid', 'projectPath', 'allowLabelEdit'],
   props: {
     allowLabelRemove: {
       type: Boolean,
       required: false,
       default: false,
     },
-    allowLabelEdit: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    allowLabelCreate: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     allowMultiselect: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    allowScopedLabels: {
       type: Boolean,
       required: false,
       default: false,
@@ -64,16 +49,6 @@ export default {
       type: Boolean,
       required: false,
       default: false,
-    },
-    labelsFetchPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    labelsManagePath: {
-      type: String,
-      required: false,
-      default: '',
     },
     labelsFilterBasePath: {
       type: String,
@@ -136,50 +111,7 @@ export default {
       },
     },
   },
-  computed: {
-    ...mapState(['showDropdownContents']),
-    ...mapGetters([
-      'isDropdownVariantSidebar',
-      'isDropdownVariantStandalone',
-      'isDropdownVariantEmbedded',
-    ]),
-  },
-  watch: {
-    selectedLabels(selectedLabels) {
-      this.setInitialState({
-        selectedLabels,
-      });
-    },
-    showDropdownContents(showDropdownContents) {
-      this.setContentIsOnViewport(showDropdownContents);
-    },
-    isEditing(newVal) {
-      if (newVal) {
-        this.toggleDropdownContents();
-      }
-    },
-  },
-  mounted() {
-    this.setInitialState({
-      variant: this.variant,
-      allowLabelRemove: this.allowLabelRemove,
-      allowLabelEdit: this.allowLabelEdit,
-      allowLabelCreate: this.allowLabelCreate,
-      allowMultiselect: this.allowMultiselect,
-      allowScopedLabels: this.allowScopedLabels,
-      dropdownButtonText: this.dropdownButtonText,
-      selectedLabels: this.selectedLabels,
-      labelsFetchPath: this.labelsFetchPath,
-      labelsManagePath: this.labelsManagePath,
-      labelsFilterBasePath: this.labelsFilterBasePath,
-      labelsFilterParam: this.labelsFilterParam,
-      labelsListTitle: this.labelsListTitle,
-      footerCreateLabelTitle: this.footerCreateLabelTitle,
-      footerManageLabelTitle: this.footerManageLabelTitle,
-    });
-  },
   methods: {
-    ...mapActions(['setInitialState']),
     handleDropdownClose(labels) {
       if (labels.length) this.$emit('updateSelectedLabels', labels);
       this.$emit('onDropdownClose');
@@ -190,13 +122,14 @@ export default {
     handleCollapsedValueClick() {
       this.$emit('toggleCollapse');
     },
-    setContentIsOnViewport() {
+    showDropdown() {
       this.$nextTick(() => {
-        if (this.$refs.dropdownContents) {
-          this.contentIsOnViewport = isInViewport(this.$refs.dropdownContents.$el);
-        }
+        this.$refs.dropdownContents.showDropdown();
       });
     },
+    isDropdownVariantSidebar,
+    isDropdownVariantStandalone,
+    isDropdownVariantEmbedded,
   },
 };
 </script>
@@ -205,11 +138,11 @@ export default {
   <div
     class="labels-select-wrapper position-relative"
     :class="{
-      'is-standalone': isDropdownVariantStandalone,
-      'is-embedded': isDropdownVariantEmbedded,
+      'is-standalone': isDropdownVariantStandalone(variant),
+      'is-embedded': isDropdownVariantEmbedded(variant),
     }"
   >
-    <template v-if="isDropdownVariantSidebar">
+    <template v-if="isDropdownVariantSidebar(variant)">
       <dropdown-value-collapsed
         ref="dropdownButtonCollapsed"
         :labels="issueLabels"
@@ -219,15 +152,14 @@ export default {
         ref="editable"
         :title="__('Labels')"
         :loading="labelsSelectInProgress"
-        @open="setContentIsOnViewport"
-        @close="contentIsOnViewport = true"
+        :can-edit="allowLabelEdit"
+        @open="showDropdown"
       >
         <template #collapsed>
           <dropdown-value
             :disable-labels="labelsSelectInProgress"
             :selected-labels="issueLabels"
             :allow-label-remove="allowLabelRemove"
-            :allow-scoped-labels="allowScopedLabels"
             :labels-filter-base-path="labelsFilterBasePath"
             :labels-filter-param="labelsFilterParam"
             @onLabelRemove="$emit('onLabelRemove', $event)"
@@ -240,7 +172,6 @@ export default {
             :disable-labels="labelsSelectInProgress"
             :selected-labels="issueLabels"
             :allow-label-remove="allowLabelRemove"
-            :allow-scoped-labels="allowScopedLabels"
             :labels-filter-base-path="labelsFilterBasePath"
             :labels-filter-param="labelsFilterParam"
             class="gl-mb-2"
@@ -248,17 +179,17 @@ export default {
           >
             <slot></slot>
           </dropdown-value>
-          <dropdown-button />
           <dropdown-contents
             v-if="edit"
             ref="dropdownContents"
+            :dropdown-button-text="dropdownButtonText"
             :allow-multiselect="allowMultiselect"
             :labels-list-title="labelsListTitle"
             :footer-create-label-title="footerCreateLabelTitle"
             :footer-manage-label-title="footerManageLabelTitle"
-            :render-on-top="!contentIsOnViewport"
             :labels-create-title="labelsCreateTitle"
             :selected-labels="selectedLabels"
+            :variant="variant"
             @closeDropdown="collapseDropdown"
             @setLabels="handleDropdownClose"
           />

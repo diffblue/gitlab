@@ -1,5 +1,6 @@
+import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
-import { mockEpics, mockEpic, mockLists, mockIssue, mockIssue2 } from '../mock_data';
+import { mockEpics, mockEpic, mockLists, mockIssue, mockIssue2, mockSubGroups } from '../mock_data';
 
 const initialBoardListsState = {
   'gid://gitlab/List/1': mockLists[0],
@@ -14,6 +15,11 @@ let state = {
   boardLists: initialBoardListsState,
   epicsFlags: {
     [epicId]: { isLoading: true },
+  },
+  subGroupsFlags: {
+    isLoading: false,
+    isLoadingMore: false,
+    pageInfo: {},
   },
 };
 
@@ -290,5 +296,63 @@ describe('SET_BOARD_EPIC_USER_PREFERENCES', () => {
     mutations.SET_BOARD_EPIC_USER_PREFERENCES(state, { epicId: epic.id, userPreferences });
 
     expect(state.epics[0].userPreferences).toEqual(userPreferences);
+  });
+});
+
+describe('REQUEST_SUB_GROUPS', () => {
+  it('Should set isLoading in subGroupsFlags to true in state when fetchNext is false', () => {
+    mutations[types.REQUEST_SUB_GROUPS](state, false);
+
+    expect(state.subGroupsFlags.isLoading).toBe(true);
+  });
+
+  it('Should set isLoadingMore in subGroupsFlags to true in state when fetchNext is true', () => {
+    mutations[types.REQUEST_SUB_GROUPS](state, true);
+
+    expect(state.subGroupsFlags.isLoadingMore).toBe(true);
+  });
+});
+
+describe('RECEIVE_SUB_GROUPS_SUCCESS', () => {
+  it('Should set subGroups and pageInfo to state and isLoading in subGroupsFlags to false', () => {
+    mutations[types.RECEIVE_SUB_GROUPS_SUCCESS](state, {
+      subGroups: mockSubGroups,
+      pageInfo: { hasNextPage: false },
+    });
+
+    expect(state.subGroups).toEqual(mockSubGroups);
+    expect(state.subGroupsFlags.isLoading).toBe(false);
+    expect(state.subGroupsFlags.pageInfo).toEqual({ hasNextPage: false });
+  });
+
+  it('Should merge groups in subGroups in state when fetchNext is true', () => {
+    state = {
+      ...state,
+      subGroups: [mockSubGroups[0]],
+    };
+
+    mutations[types.RECEIVE_SUB_GROUPS_SUCCESS](state, {
+      subGroups: [mockSubGroups[1]],
+      fetchNext: true,
+    });
+
+    expect(state.subGroups).toEqual([mockSubGroups[0], mockSubGroups[1]]);
+  });
+});
+
+describe('RECEIVE_SUB_GROUPS_FAILURE', () => {
+  it('Should set error in state and isLoading in subGroupsFlags to false', () => {
+    mutations[types.RECEIVE_SUB_GROUPS_FAILURE](state);
+
+    expect(state.error).toEqual('An error occurred while fetching child groups. Please try again.');
+    expect(state.subGroupsFlags.isLoading).toBe(false);
+  });
+});
+
+describe('SET_SELECTED_GROUP', () => {
+  it('Should set selectedGroup to state', () => {
+    mutations[types.SET_SELECTED_GROUP](state, mockSubGroups[0]);
+
+    expect(state.selectedGroup).toEqual(mockSubGroups[0]);
   });
 });

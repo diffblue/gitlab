@@ -22,8 +22,8 @@ module Backup
                 end
 
       args = []
-      args += ['-parallel', @parallel.to_s] if type == :create && @parallel
-      args += ['-parallel-storage', @parallel_storage.to_s] if type == :create && @parallel_storage
+      args += ['-parallel', @parallel.to_s] if @parallel
+      args += ['-parallel-storage', @parallel_storage.to_s] if @parallel_storage
 
       @stdin, stdout, @thread = Open3.popen2(ENV, bin_path, command, '-path', backup_repos_path, *args)
 
@@ -55,10 +55,6 @@ module Backup
         gl_project_path: repository.gl_project_path,
         always_create: repo_type.project?
       }.merge(Gitlab::GitalyClient.connection_data(repository.storage)).to_json)
-    end
-
-    def parallel_enqueue?
-      false
     end
 
     private

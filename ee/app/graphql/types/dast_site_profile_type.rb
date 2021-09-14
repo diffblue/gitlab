@@ -9,7 +9,7 @@ module Types
 
     present_using ::Dast::SiteProfilePresenter
 
-    authorize :read_on_demand_scans
+    authorize :read_on_demand_dast_scan
 
     expose_permissions Types::PermissionTypes::DastSiteProfile
 
@@ -17,14 +17,14 @@ module Types
           description: 'ID of the site profile.'
 
     field :profile_name, GraphQL::Types::String, null: true,
-          description: 'The name of the site profile.',
+          description: 'Name of the site profile.',
           method: :name
 
     field :target_url, GraphQL::Types::String, null: true,
-          description: 'The URL of the target to be scanned.'
+          description: 'URL of the target to be scanned.'
 
     field :target_type, Types::DastTargetTypeEnum, null: true,
-          description: 'The type of target to be scanned.'
+          description: 'Type of target to be scanned.'
 
     field :edit_path, GraphQL::Types::String, null: true,
           description: 'Relative web path to the edit page of a site profile.'
@@ -33,14 +33,14 @@ module Types
           description: 'Target authentication details.'
 
     field :excluded_urls, [GraphQL::Types::String], null: true,
-          description: 'The URLs to skip during an authenticated scan.'
+          description: 'URLs to skip during an authenticated scan.'
 
     field :request_headers, GraphQL::Types::String, null: true,
           description: 'Comma-separated list of request header names and values to be ' \
                        'added to every request made by DAST.'
 
     field :validation_status, Types::DastSiteProfileValidationStatusEnum, null: true,
-          description: 'The current validation status of the site profile.',
+          description: 'Current validation status of the site profile.',
           method: :status
 
     field :normalized_target_url, GraphQL::Types::String, null: true,

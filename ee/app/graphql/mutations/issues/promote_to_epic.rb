@@ -9,12 +9,12 @@ module Mutations
 
       argument :group_path, GraphQL::Types::ID,
                required: false,
-               description: 'The group the promoted epic will belong to.'
+               description: 'Group the promoted epic will belong to.'
 
       field :epic,
             Types::EpicType,
             null: true,
-            description: "The epic after issue promotion."
+            description: "Epic after issue promotion."
 
       def resolve(project_path:, iid:, group_path: nil)
         errors = []

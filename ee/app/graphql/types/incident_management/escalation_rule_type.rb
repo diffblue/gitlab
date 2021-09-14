@@ -13,19 +13,19 @@ module Types
 
       field :oncall_schedule, Types::IncidentManagement::OncallScheduleType,
             null: true,
-            description: 'The on-call schedule to notify.'
+            description: 'On-call schedule to notify.'
 
       field :user, Types::UserType,
             null: true,
-            description: 'The user to notify.'
+            description: 'User to notify.'
 
       field :elapsed_time_seconds, GraphQL::Types::Int,
             null: true,
-            description: 'The time in seconds before the rule is activated.'
+            description: 'Time in seconds before the rule is activated.'
 
       field :status, Types::IncidentManagement::EscalationRuleStatusEnum,
             null: true,
-            description: 'The status required to prevent the rule from activating.'
+            description: 'Status required to prevent the rule from activating.'
 
       def oncall_schedule
         Gitlab::Graphql::Loaders::BatchModelLoader.new(::IncidentManagement::OncallSchedule, object.oncall_schedule_id).find

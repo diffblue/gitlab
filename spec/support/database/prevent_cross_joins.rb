@@ -47,7 +47,7 @@ module Database
         Thread.current[:has_cross_join_exception] = true
         raise CrossJoinAcrossUnsupportedTablesError,
           "Unsupported cross-join across '#{tables.join(", ")}' modifying '#{schemas.to_a.join(", ")}' discovered " \
-          "when executing query '#{sql}'"
+          "when executing query '#{sql}'. Please refer to https://docs.gitlab.com/ee/development/database/multiple_databases.html#removing-joins-between-ci_-and-non-ci_-tables for details on how to resolve this exception."
       end
     end
 
@@ -81,7 +81,7 @@ end
 Gitlab::Database.singleton_class.prepend(
   Database::PreventCrossJoins::GitlabDatabaseMixin)
 
-ALLOW_LIST = Set.new(YAML.load_file(Rails.root.join('.cross-join-allowlist.yml'))).freeze
+ALLOW_LIST = Set.new(YAML.load_file(File.join(__dir__, 'cross-join-allowlist.yml'))).freeze
 
 RSpec.configure do |config|
   config.include(::Database::PreventCrossJoins::SpecHelpers)

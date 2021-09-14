@@ -66,6 +66,7 @@ export function initIterationReport({ namespaceType, initiallyEditing } = {}) {
     hasScopedLabelsFeature,
     iterationId,
     labelsFetchPath,
+    iterationsListPath,
     editIterationPath,
     previewMarkdownPath,
     svgPath,
@@ -90,6 +91,7 @@ export function initIterationReport({ namespaceType, initiallyEditing } = {}) {
           previewMarkdownPath,
           svgPath,
           initiallyEditing,
+          iterationsListPath,
         },
       });
     },

@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`False positive alert component should render the alert message 1`] = `
+<gl-alert-stub
+  dismisslabel="Dismiss"
+  primarybuttonlink=""
+  primarybuttontext=""
+  secondarybuttonlink=""
+  secondarybuttontext=""
+  title="False positive detected"
+  variant="warning"
+>
+  <gl-sprintf-stub
+    message="The scanner determined this vulnerability to be a false positive. Verify the evaluation before changing its status. %{linkStart}Learn more about false positive detection.%{linkEnd}"
+  />
+</gl-alert-stub>
+`;

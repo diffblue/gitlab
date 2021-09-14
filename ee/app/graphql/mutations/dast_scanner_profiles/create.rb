@@ -13,19 +13,19 @@ module Mutations
 
       argument :full_path, GraphQL::Types::ID,
                required: true,
-               description: 'The project the scanner profile belongs to.'
+               description: 'Project the scanner profile belongs to.'
 
       argument :profile_name, GraphQL::Types::String,
                 required: true,
-                description: 'The name of the scanner profile.'
+                description: 'Name of the scanner profile.'
 
       argument :spider_timeout, GraphQL::Types::Int,
                 required: false,
-                description: 'The maximum number of minutes allowed for the spider to traverse the site.'
+                description: 'Maximum number of minutes allowed for the spider to traverse the site.'
 
       argument :target_timeout, GraphQL::Types::Int,
                 required: false,
-                description: 'The maximum number of seconds allowed for the site under test to respond to a request.'
+                description: 'Maximum number of seconds allowed for the site under test to respond to a request.'
 
       argument :scan_type, Types::DastScanTypeEnum,
                 required: false,

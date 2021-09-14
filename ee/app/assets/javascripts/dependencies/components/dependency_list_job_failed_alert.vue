@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import { GlAlert } from '@gitlab/ui';
 import { __, sprintf, s__ } from '~/locale';
 
@@ -43,6 +42,6 @@ export default {
     @dismiss="$emit('close')"
     v-on="$listeners"
   >
-    <span v-html="$options.message"></span>
+    <span v-html="$options.message /* eslint-disable-line vue/no-v-html */"></span>
   </gl-alert>
 </template>

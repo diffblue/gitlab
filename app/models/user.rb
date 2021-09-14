@@ -187,7 +187,7 @@ class User < ApplicationRecord
   has_many :todos
   has_many :notification_settings
   has_many :award_emoji,              dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
-  has_many :triggers,                 dependent: :destroy, class_name: 'Ci::Trigger', foreign_key: :owner_id # rubocop:disable Cop/ActiveRecordDependent
+  has_many :triggers,                 class_name: 'Ci::Trigger', foreign_key: :owner_id
 
   has_many :issue_assignees, inverse_of: :assignee
   has_many :merge_request_assignees, inverse_of: :assignee
@@ -253,6 +253,8 @@ class User < ApplicationRecord
   validates :color_scheme_id, allow_nil: true, inclusion: { in: Gitlab::ColorSchemes.valid_ids,
     message: _("%{placeholder} is not a valid color scheme") % { placeholder: '%{value}' } }
 
+  validates :website_url, allow_blank: true, url: true, if: :website_url_changed?
+
   before_validation :sanitize_attrs
   before_validation :reset_secondary_emails, if: :email_changed?
   before_save :default_private_profile_to_false
@@ -307,14 +309,13 @@ class User < ApplicationRecord
             :gitpod_enabled, :gitpod_enabled=,
             :setup_for_company, :setup_for_company=,
             :render_whitespace_in_code, :render_whitespace_in_code=,
-            :experience_level, :experience_level=,
             :markdown_surround_selection, :markdown_surround_selection=,
             to: :user_preference
 
   delegate :path, to: :namespace, allow_nil: true, prefix: true
   delegate :job_title, :job_title=, to: :user_detail, allow_nil: true
   delegate :other_role, :other_role=, to: :user_detail, allow_nil: true
-  delegate :bio, :bio=, :bio_html, to: :user_detail, allow_nil: true
+  delegate :bio, :bio=, to: :user_detail, allow_nil: true
   delegate :webauthn_xid, :webauthn_xid=, to: :user_detail, allow_nil: true
   delegate :pronouns, :pronouns=, to: :user_detail, allow_nil: true
   delegate :pronunciation, :pronunciation=, to: :user_detail, allow_nil: true
@@ -383,6 +384,8 @@ class User < ApplicationRecord
     end
 
     after_transition any => :deactivated do |user|
+      next unless Gitlab::CurrentSettings.user_deactivation_emails_enabled
+
       NotificationService.new.user_deactivated(user.name, user.notification_email)
     end
     # rubocop: enable CodeReuse/ServiceClass
@@ -1613,6 +1616,8 @@ class User < ApplicationRecord
     true
   end
 
+  # TODO Please check all callers and remove allow_cross_joins_across_databases,
+  # when https://gitlab.com/gitlab-org/gitlab/-/issues/336436 is done.
   def ci_owned_runners
     @ci_owned_runners ||= begin
       project_runners = Ci::RunnerProject
@@ -1626,6 +1631,12 @@ class User < ApplicationRecord
         .select('ci_runners.*')
 
       Ci::Runner.from_union([project_runners, group_runners])
+    end
+  end
+
+  def owns_runner?(runner)
+    ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436') do
+      ci_owned_runners.exists?(runner.id)
     end
   end
 
@@ -2117,9 +2128,12 @@ class User < ApplicationRecord
       project_creation_levels << nil
     end
 
-    developer_groups_hierarchy = ::Gitlab::ObjectHierarchy.new(developer_groups).base_and_descendants
-    ::Group.where(id: developer_groups_hierarchy.select(:id),
-                  project_creation_level: project_creation_levels)
+    if Feature.enabled?(:linear_user_groups_with_developer_maintainer_project_access, self, default_enabled: :yaml)
+      developer_groups.self_and_descendants.where(project_creation_level: project_creation_levels)
+    else
+      developer_groups_hierarchy = ::Gitlab::ObjectHierarchy.new(developer_groups).base_and_descendants
+      ::Group.where(id: developer_groups_hierarchy.select(:id), project_creation_level: project_creation_levels)
+    end
   end
 
   def no_recent_activity?

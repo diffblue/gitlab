@@ -311,6 +311,9 @@ module ApplicationSettingsHelper
       :throttle_authenticated_api_enabled,
       :throttle_authenticated_api_period_in_seconds,
       :throttle_authenticated_api_requests_per_period,
+      :throttle_authenticated_git_lfs_enabled,
+      :throttle_authenticated_git_lfs_period_in_seconds,
+      :throttle_authenticated_git_lfs_requests_per_period,
       :throttle_authenticated_web_enabled,
       :throttle_authenticated_web_period_in_seconds,
       :throttle_authenticated_web_requests_per_period,
@@ -380,7 +383,8 @@ module ApplicationSettingsHelper
       :container_registry_expiration_policies_worker_capacity,
       :container_registry_cleanup_tags_service_max_list_size,
       :keep_latest_artifact,
-      :whats_new_variant
+      :whats_new_variant,
+      :user_deactivation_emails_enabled
     ].tap do |settings|
       settings << :deactivate_dormant_users unless Gitlab.com?
     end

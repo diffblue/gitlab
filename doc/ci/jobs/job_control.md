@@ -225,7 +225,7 @@ check the value of the `$CI_PIPELINE_SOURCE` variable:
 | `pipeline`                    | For [multi-project pipelines](../pipelines/multi_project_pipelines.md) created by [using the API with `CI_JOB_TOKEN`](../pipelines/multi_project_pipelines.md#create-multi-project-pipelines-by-using-the-api), or the [`trigger`](../yaml/index.md#trigger) keyword. |
 | `push`                        | For pipelines triggered by a `git push` event, including for branches and tags.                                                                                                                                                  |
 | `schedule`                    | For [scheduled pipelines](../pipelines/schedules.md).                                                                                                                                                                            |
-| `trigger`                     | For pipelines created by using a [trigger token](../triggers/index.md#trigger-token).                                                                                                                                           |
+| `trigger`                     | For pipelines created by using a [trigger token](../triggers/index.md#authentication-tokens).                                                                                                                                           |
 | `web`                         | For pipelines created by using **Run pipeline** button in the GitLab UI, from the project's **CI/CD > Pipelines** section.                                                                                                       |
 | `webide`                      | For pipelines created by using the [WebIDE](../../user/project/web_ide/index.md).                                                                                                                                                |
 
@@ -292,7 +292,7 @@ You can use the `$` character for both variables and paths. For example, if the
 
 ## Reuse rules in different jobs
 
-> [Introduced in](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) GitLab 14.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) in GitLab 14.3.
 
 Use [`!reference` tags](../yaml/index.md#reference-tags) to reuse rules in different
 jobs. You can combine `!reference` rules with regular job-defined rules:
@@ -335,7 +335,7 @@ to control when to add jobs to pipelines.
 In the following example, `job` runs only for:
 
 - Git tags
-- [Triggers](../triggers/index.md#trigger-token)
+- [Triggers](../triggers/index.md#authentication-tokens)
 - [Scheduled pipelines](../pipelines/schedules.md)
 
 ```yaml

@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import {
   GlAlert,
   GlBadge,
@@ -8,14 +7,17 @@ import {
   GlEmptyState,
   GlIcon,
   GlLoadingIcon,
+  GlModal,
 } from '@gitlab/ui';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Namespace } from '../constants';
+import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
 import query from '../queries/iteration.query.graphql';
 import IterationForm from './iteration_form_without_vue_router.vue';
 import IterationReportTabs from './iteration_report_tabs.vue';
@@ -43,6 +45,7 @@ export default {
     GlLoadingIcon,
     IterationForm,
     IterationReportTabs,
+    GlModal,
   },
   apollo: {
     iteration: {
@@ -102,6 +105,11 @@ export default {
       default: '',
     },
     svgPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    iterationsListPath: {
       type: String,
       required: false,
       default: '',
@@ -170,6 +178,32 @@ export default {
       const newUrl = window.location.pathname.replace(/\/edit$/, '');
       window.history.pushState({ prev: page.edit }, null, newUrl);
     },
+    showModal() {
+      this.$refs.modal.show();
+    },
+    focusMenu() {
+      this.$refs.menu.$el.focus();
+    },
+    deleteIteration() {
+      this.$apollo
+        .mutate({
+          mutation: deleteIteration,
+          variables: {
+            id: convertToGraphQLId(TYPE_ITERATION, this.iterationId),
+          },
+        })
+        .then(({ data: { iterationDelete } }) => {
+          if (iterationDelete.errors?.length) {
+            throw iterationDelete.errors[0];
+          }
+
+          this.isEditing = false;
+          visitUrl(this.iterationsListPath);
+        })
+        .catch((err) => {
+          this.error = err;
+        });
+    },
   },
 };
 </script>
@@ -207,6 +241,7 @@ export default {
         >
         <gl-dropdown
           v-if="canEditIteration"
+          ref="menu"
           data-testid="actions-dropdown"
           variant="default"
           toggle-class="gl-text-decoration-none gl-border-0! gl-shadow-none!"
@@ -218,10 +253,31 @@ export default {
             <gl-icon name="ellipsis_v" /><span class="gl-sr-only">{{ __('Actions') }}</span>
           </template>
           <gl-dropdown-item @click="loadEditPage">{{ __('Edit') }}</gl-dropdown-item>
+          <gl-dropdown-item data-testid="delete-iteration" @click="showModal">
+            {{ __('Delete') }}
+          </gl-dropdown-item>
         </gl-dropdown>
+        <gl-modal
+          ref="modal"
+          :modal-id="`${iterationId}-delete-modal`"
+          :title="s__('Iterations|Delete iteration?')"
+          :ok-title="__('Delete')"
+          ok-variant="danger"
+          @hidden="focusMenu"
+          @ok="deleteIteration"
+        >
+          {{
+            s__(
+              'Iterations|This will remove the iteration from any issues that are assigned to it.',
+            )
+          }}
+        </gl-modal>
       </div>
       <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
-      <div ref="description" v-html="iteration.descriptionHtml"></div>
+      <div
+        ref="description"
+        v-html="iteration.descriptionHtml /* eslint-disable-line vue/no-v-html */"
+      ></div>
       <burn-charts
         :start-date="iteration.startDate"
         :due-date="iteration.dueDate"

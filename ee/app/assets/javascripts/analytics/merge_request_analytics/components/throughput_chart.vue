@@ -52,6 +52,8 @@ export default {
         return {
           fullPath: this.fullPath,
           ...options,
+          notLabels: options['not[labels]'],
+          notMilestoneTitle: options['not[milestoneTitle]'],
         };
       },
       error() {

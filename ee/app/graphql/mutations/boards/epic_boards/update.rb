@@ -14,12 +14,12 @@ module Mutations
         argument :id,
                  ::Types::GlobalIDType[::Boards::EpicBoard],
                  required: true,
-                 description: 'The epic board global ID.'
+                 description: 'Epic board global ID.'
 
         field :epic_board,
               Types::Boards::EpicBoardType,
               null: true,
-              description: 'The updated epic board.'
+              description: 'Updated epic board.'
 
         def resolve(**args)
           board = authorized_find!(id: args[:id])

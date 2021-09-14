@@ -385,7 +385,8 @@ describe('ReadyToMerge', () => {
           return wrapper.vm.$nextTick();
         })
         .then(() => {
-          expect(vm.handleMergeButtonClick).toHaveBeenCalled();
+          // false (no auto merge), true (merge immediately), true (confirmation clicked)
+          expect(vm.handleMergeButtonClick).toHaveBeenCalledWith(false, true, true);
         });
     });
 

@@ -7,7 +7,7 @@ module Projects
     before_action :authorize_read_threat_monitoring!
 
     before_action do
-      push_frontend_feature_flag(:security_orchestration_policies_configuration, @project)
+      push_frontend_feature_flag(:security_orchestration_policies_configuration, @project, default_enabled: :yaml)
     end
 
     feature_category :not_owned

@@ -5,17 +5,21 @@ require 'spec_helper'
 RSpec.describe 'Creating a DAST Site Profile' do
   include GraphqlHelpers
 
-  let!(:dast_site_profile) { create(:dast_site_profile, project: project) }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:current_user) { create(:user) }
+  let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
+  let_it_be(:dast_site_profile_id) { global_id_of(dast_site_profile) }
 
-  let(:new_profile_name) { SecureRandom.hex }
-  let(:new_target_url) { generate(:url) }
+  let_it_be(:new_profile_name) { SecureRandom.hex }
+  let_it_be(:new_target_url) { generate(:url) }
 
   let(:mutation_name) { :dast_site_profile_update }
+
   let(:mutation) do
     graphql_mutation(
       mutation_name,
       full_path: full_path,
-      id: dast_site_profile.to_global_id.to_s,
+      id: dast_site_profile_id,
       profile_name: new_profile_name,
       target_url: new_target_url,
       target_type: 'API',
@@ -64,45 +68,26 @@ RSpec.describe 'Creating a DAST Site Profile' do
     end
 
     context 'when the dast_site_profile does not exist' do
-      before do
-        dast_site_profile.destroy!
-      end
+      let_it_be(:dast_site_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'DastSiteProfile', id: non_existing_record_id) }
 
       it_behaves_like 'a mutation that returns errors in the response', errors: ['DastSiteProfile not found']
     end
 
     context 'when wrong type of global id is passed' do
-      let(:mutation) do
-        graphql_mutation(
-          mutation_name,
-          full_path: full_path,
-          id: dast_site_profile.dast_site.to_global_id.to_s,
-          profile_name: new_profile_name,
-          target_url: new_target_url
-        )
-      end
+      let_it_be(:dast_site_profile_id) { global_id_of(project) }
 
       it_behaves_like 'a mutation that returns top-level errors' do
         let(:match_errors) do
-          gid = dast_site_profile.dast_site.to_global_id
-
           eq(["Variable $dastSiteProfileUpdateInput of type DastSiteProfileUpdateInput! " \
-              "was provided invalid value for id (\"#{gid}\" does not represent an instance " \
+              "was provided invalid value for id (\"#{dast_site_profile_id}\" does not represent an instance " \
               "of DastSiteProfile)"])
         end
       end
     end
 
     context 'when the dast_site_profile belongs to a different project' do
-      let(:mutation) do
-        graphql_mutation(
-          mutation_name,
-          full_path: create(:project).full_path,
-          id: dast_site_profile.to_global_id.to_s,
-          profile_name: new_profile_name,
-          target_url: new_target_url
-        )
-      end
+      let_it_be(:other_project) { create(:project, creator: current_user) }
+      let_it_be(:full_path) { other_project.full_path }
 
       it_behaves_like 'a mutation that returns a top-level access error'
     end

@@ -41,8 +41,8 @@ module AppSec
 
           profile = yield(name).execute.first
 
-          unless profile && can?(current_user, :read_on_demand_scans, profile)
-            errors.append("DAST profile not found: #{name}")
+          unless can?(current_user, :read_on_demand_dast_scan, profile)
+            errors.push("DAST profile not found: #{name}")
             return
           end
 

@@ -1,10 +1,4 @@
-import BlockingMergeRequestsBody from 'ee/vue_merge_request_widget/components/blocking_merge_requests/blocking_merge_request_body.vue';
-import PerformanceIssueBody from 'ee/vue_merge_request_widget/components/performance_issue_body.vue';
-import StatusCheckIssueBody from 'ee/vue_merge_request_widget/components/status_check_issue_body.vue';
-import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicenseStatusIcon from 'ee/vue_shared/license_compliance/components/license_status_icon.vue';
-import MetricsReportsIssueBody from 'ee/vue_shared/metrics_reports/components/metrics_reports_issue_body.vue';
-import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import {
   components as componentsCE,
   componentNames as componentNamesCE,
@@ -14,22 +8,30 @@ import {
 
 export const components = {
   ...componentsCE,
-  StatusCheckIssueBody,
-  PerformanceIssueBody,
-  LicenseIssueBody,
-  SecurityIssueBody,
-  MetricsReportsIssueBody,
-  BlockingMergeRequestsBody,
+  StatusCheckIssueBody: () =>
+    import('ee/vue_merge_request_widget/components/status_check_issue_body.vue'),
+  PerformanceIssueBody: () =>
+    import('ee/vue_merge_request_widget/components/performance_issue_body.vue'),
+  LicenseIssueBody: () =>
+    import('ee/vue_shared/license_compliance/components/license_issue_body.vue'),
+  SecurityIssueBody: () =>
+    import('ee/vue_shared/security_reports/components/security_issue_body.vue'),
+  MetricsReportsIssueBody: () =>
+    import('ee/vue_shared/metrics_reports/components/metrics_reports_issue_body.vue'),
+  BlockingMergeRequestsBody: () =>
+    import(
+      'ee/vue_merge_request_widget/components/blocking_merge_requests/blocking_merge_request_body.vue'
+    ),
 };
 
 export const componentNames = {
   ...componentNamesCE,
-  StatusCheckIssueBody: StatusCheckIssueBody.name,
-  PerformanceIssueBody: PerformanceIssueBody.name,
-  LicenseIssueBody: LicenseIssueBody.name,
-  SecurityIssueBody: SecurityIssueBody.name,
-  MetricsReportsIssueBody: MetricsReportsIssueBody.name,
-  BlockingMergeRequestsBody: BlockingMergeRequestsBody.name,
+  StatusCheckIssueBody: 'StatusCheckIssueBody',
+  PerformanceIssueBody: 'PerformanceIssueBody',
+  LicenseIssueBody: 'LicenseIssueBody',
+  SecurityIssueBody: 'SecurityIssueBody',
+  MetricsReportsIssueBody: 'MetricsReportsIssueBody',
+  BlockingMergeRequestsBody: 'BlockingMergeRequestsBody',
 };
 
 export const iconComponents = {

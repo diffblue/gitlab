@@ -1,3 +1,4 @@
+import { GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import { trimText } from 'helpers/text_helper';
@@ -9,6 +10,9 @@ describe('MergeImmediatelyConfirmationDialog', () => {
   beforeEach(() => {
     wrapper = shallowMount(MergeImmediatelyConfirmationDialog, {
       propsData: { docsUrl },
+      stubs: {
+        GlSprintf,
+      },
     });
 
     return wrapper.vm.$nextTick();
@@ -21,10 +25,10 @@ describe('MergeImmediatelyConfirmationDialog', () => {
   });
 
   it('should render a link to the documentation', () => {
-    const docsLink = wrapper.find(`a[href="${docsUrl}"]`);
+    const docsLink = wrapper.findComponent(GlLink);
 
     expect(docsLink.exists()).toBe(true);
-    expect(docsLink.attributes().rel).toBe('noopener noreferrer');
+    expect(docsLink.attributes('href')).toBe(docsUrl);
     expect(trimText(docsLink.text())).toBe('documentation');
   });
 

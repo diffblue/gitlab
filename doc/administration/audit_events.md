@@ -39,7 +39,7 @@ There are two kinds of events logged:
 
 ### Impersonation data
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/536) in [GitLab Premium](https://about.gitlab.com/pricing/) 13.0.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/536) in GitLab 13.0.
 
 When a user is being [impersonated](../user/admin_area/index.md#user-impersonation), their actions are logged as audit events as usual, with two additional details:
 
@@ -48,7 +48,7 @@ When a user is being [impersonated](../user/admin_area/index.md#user-impersonati
 
 ![audit events](img/impersonated_audit_events_v13_8.png)
 
-### Group events **(PREMIUM)**
+### Group events
 
 A user with:
 
@@ -86,7 +86,7 @@ From there, you can see the following actions:
 
 Group events can also be accessed via the [Group Audit Events API](../api/audit_events.md#group-audit-events)
 
-### Project events **(PREMIUM)**
+### Project events
 
 A user with a Maintainer role (or above) can retrieve project audit events of all users.
 A user with a Developer role is limited to project audit events based on their individual actions.
@@ -126,6 +126,9 @@ From there, you can see the following actions:
 - User password required for approvals was updated ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/336211) in GitLab 14.2)
 - Permission to modify merge requests approval rules in merge requests was updated ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/336211) in GitLab 14.2)
 - New approvals requirement when new commits are added to an MR was updated ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/336211) in GitLab 14.2)
+- When [strategies for feature flags](../operations/feature_flags.md#feature-flag-strategies) are changed ([introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68408) in GitLab 14.3)
+- Changed allow push force and code owner approval requirement ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338873) in GitLab 14.3)
+- Added or removed users and groups from protected branch allow to merge and allow to push ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338873) in GitLab 14.3)
 
 Project events can also be accessed via the [Project Audit Events API](../api/audit_events.md#project-audit-events).
 
@@ -133,7 +136,7 @@ Project event queries are limited to a maximum of 30 days.
 
 ### Instance events **(PREMIUM SELF)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2336) in [GitLab Premium](https://about.gitlab.com/pricing/) 9.3.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2336) in GitLab 9.3.
 
 Server-wide audit events introduce the ability to observe user actions across
 the entire instance of your GitLab server, making it easy to understand who
@@ -203,6 +206,8 @@ to request it, or you can [add it yourself](../development/audit_event_guide/).
 
 #### Repository push
 
+> [Deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/337993) in GitLab 14.3.
+
 The current architecture of audit events is not prepared to receive a very high amount of records.
 It may make the user interface for your project or audit events very busy, and the disk space consumed by the
 `audit_events` PostgreSQL table may increase considerably. It's disabled by default
@@ -240,8 +245,8 @@ The search filters you can see depends on which audit level you are at.
 
 ## Export to CSV **(PREMIUM SELF)**
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/1449) in [GitLab Premium](https://about.gitlab.com/pricing/) 13.4.
-> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/285441) in [GitLab Premium](https://about.gitlab.com/pricing/) 13.7.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/1449) in GitLab 13.4.
+> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/285441) in GitLab 13.7.
 
 Export to CSV allows customers to export the current filter view of your audit events as a
 CSV file, which stores tabular data in plain text. The data provides a comprehensive view with respect to

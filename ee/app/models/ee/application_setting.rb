@@ -215,6 +215,10 @@ module EE
       ::Gitlab::Elastic::ElasticsearchEnabledCache.delete_record(:project, project_id)
     end
 
+    def invalidate_elasticsearch_indexes_cache_for_namespace!(namespace_id)
+      ::Gitlab::Elastic::ElasticsearchEnabledCache.delete_record(:namespace, namespace_id)
+    end
+
     def elasticsearch_limited_projects(ignore_namespaces = false)
       return ::Project.where(id: ElasticsearchIndexedProject.select(:project_id)) if ignore_namespaces
 
@@ -231,7 +235,11 @@ module EE
 
       return namespaces if ignore_descendants
 
-      ::Gitlab::ObjectHierarchy.new(namespaces).base_and_descendants
+      if ::Feature.enabled?(:linear_application_settings_elasticsearch_limited_namespaces, default_enabled: :yaml)
+        namespaces.self_and_descendants
+      else
+        ::Gitlab::ObjectHierarchy.new(namespaces).base_and_descendants
+      end
     end
 
     def pseudonymizer_available?

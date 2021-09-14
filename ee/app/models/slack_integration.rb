@@ -7,7 +7,7 @@ class SlackIntegration < ApplicationRecord
   validates :team_name, presence: true
   validates :alias, presence: true,
                     uniqueness: { scope: :team_id, message: 'This alias has already been taken' },
-                    length: 2..80
+                    length: 2..4096
   validates :user_id, presence: true
   validates :integration, presence: true
 

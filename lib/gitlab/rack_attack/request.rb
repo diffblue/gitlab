@@ -3,6 +3,8 @@
 module Gitlab
   module RackAttack
     module Request
+      FILES_PATH_REGEX = %r{^/api/v\d+/projects/[^/]+/repository/files/.+}.freeze
+
       def unauthenticated?
         !(authenticated_user_id([:api, :rss, :ics]) || authenticated_runner_id)
       end
@@ -61,6 +63,7 @@ module Gitlab
       def throttle_unauthenticated?
         !should_be_skipped? &&
         !throttle_unauthenticated_packages_api? &&
+        !throttle_unauthenticated_files_api? &&
         Gitlab::Throttle.settings.throttle_unauthenticated_enabled &&
         unauthenticated?
       end
@@ -68,11 +71,13 @@ module Gitlab
       def throttle_authenticated_api?
         api_request? &&
         !throttle_authenticated_packages_api? &&
+        !throttle_authenticated_files_api? &&
         Gitlab::Throttle.settings.throttle_authenticated_api_enabled
       end
 
       def throttle_authenticated_web?
         web_request? &&
+        !throttle_authenticated_git_lfs? &&
         Gitlab::Throttle.settings.throttle_authenticated_web_enabled
       end
 
@@ -109,6 +114,24 @@ module Gitlab
         Gitlab::Throttle.settings.throttle_authenticated_packages_api_enabled
       end
 
+      def throttle_authenticated_git_lfs?
+        git_lfs_path? &&
+        Gitlab::Throttle.settings.throttle_authenticated_git_lfs_enabled
+      end
+
+      def throttle_unauthenticated_files_api?
+        files_api_path? &&
+        Feature.enabled?(:files_api_throttling, default_enabled: :yaml) &&
+        Gitlab::Throttle.settings.throttle_unauthenticated_files_api_enabled &&
+        unauthenticated?
+      end
+
+      def throttle_authenticated_files_api?
+        files_api_path? &&
+        Feature.enabled?(:files_api_throttling, default_enabled: :yaml) &&
+        Gitlab::Throttle.settings.throttle_authenticated_files_api_enabled
+      end
+
       private
 
       def authenticated_user_id(request_formats)
@@ -129,6 +152,14 @@ module Gitlab
 
       def packages_api_path?
         path =~ ::Gitlab::Regex::Packages::API_PATH_REGEX
+      end
+
+      def git_lfs_path?
+        path =~ Gitlab::PathRegex.repository_git_lfs_route_regex
+      end
+
+      def files_api_path?
+        path =~ FILES_PATH_REGEX
       end
     end
   end

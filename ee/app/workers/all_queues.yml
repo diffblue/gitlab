@@ -1127,7 +1127,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent:
+  :idempotent: true
   :tags: []
 - :name: requirements_management_import_requirements_csv
   :worker_name: RequirementsManagement::ImportRequirementsCsvWorker
@@ -1149,7 +1149,7 @@
   :tags: []
 - :name: security_auto_fix
   :worker_name: Security::AutoFixWorker
-  :feature_category: :vulnerability_management
+  :feature_category: :dependency_scanning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown

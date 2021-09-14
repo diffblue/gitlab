@@ -6,16 +6,15 @@ description: Total visits to /groups/:group/-/analytics/productivity_analytics a
 product_section: dev
 product_stage: manage
 product_group: group::optimize
-product_category: 
+product_category:
 value_type: number
 status: data_available
 time_frame: all
 data_source: redis
 distribution:
-- ce
 - ee
 tier:
-- free
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"

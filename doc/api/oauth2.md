@@ -5,7 +5,7 @@ group: Access
 info: To determine the technical writer assigned to the Stage/Group associated   with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
-# GitLab as an OAuth 2.0 provider
+# GitLab as an OAuth 2.0 provider **(FREE)**
 
 This document covers using the [OAuth2](https://oauth.net/2/) protocol to allow
 other services to access GitLab resources on user's behalf.
@@ -82,7 +82,11 @@ Before starting the flow, generate the `STATE`, the `CODE_VERIFIER` and the `COD
   which use the characters `A-Z`, `a-z`, `0-9`, `-`, `.`, `_`, and `~`.
 - The `CODE_CHALLENGE` is an URL-safe base64-encoded string of the SHA256 hash of the
   `CODE_VERIFIER`
+  - The SHA256 hash must be in binary format before encoding.
   - In Ruby, you can set that up with `Base64.urlsafe_encode64(Digest::SHA256.digest(CODE_VERIFIER), padding: false)`.
+  - For reference, a `CODE_VERIFIER` string of `ks02i3jdikdo2k0dkfodf3m39rjfjsdk0wk349rj3jrhf` when hashed
+    and encoded using the Ruby snippet above produces a `CODE_CHALLENGE` string
+    of `2i0WFA-0AerkjQm4X4oDEhqA17QIAKNjXpagHBXmO_U`.
 
 1. Request authorization code. To do that, you should redirect the user to the
    `/oauth/authorize` page with the following query parameters:
@@ -134,7 +138,7 @@ Before starting the flow, generate the `STATE`, the `CODE_VERIFIER` and the `COD
    ```
 
    Example response:
-   
+
    ```json
    {
      "access_token": "c97d1fe52119f38c7f67f0a14db68d60caa35ddc86fd12401718b649dcfa9c68",

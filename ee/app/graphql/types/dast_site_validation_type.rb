@@ -5,7 +5,7 @@ module Types
     graphql_name 'DastSiteValidation'
     description 'Represents a DAST Site Validation'
 
-    authorize :read_on_demand_scans
+    authorize :read_on_demand_dast_scan
 
     field :id, ::Types::GlobalIDType[::DastSiteValidation], null: false,
           description: 'Global ID of the site validation.'

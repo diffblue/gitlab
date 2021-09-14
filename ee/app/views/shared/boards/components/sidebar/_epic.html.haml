@@ -1,7 +1,0 @@
-- return unless @group&.feature_available?(:epics) || @project&.group&.feature_available?(:epics)
-
-%sidebar-epics-select{ ":sidebar-store" => "issue",
-  ":group-id": "#{@project&.group&.id || @group&.id}",
-  ":issue-id": "issue.id",
-  ":epic-issue-id": "(issue.epic && issue.epic.epic_issue_id) || 0",
-  ":can-edit": can_admin_issue? }

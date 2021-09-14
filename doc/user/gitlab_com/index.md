@@ -9,6 +9,15 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 This page contains information about the settings that are used on GitLab.com, available to
 [GitLab SaaS](https://about.gitlab.com/pricing/) customers.
 
+## Password requirements
+
+GitLab.com has the following requirements for passwords on new accounts and password changes:
+
+- Minimum character length 8 characters.
+- Maximum character lenght 128 characters.
+- All characters are accepted. For example, `~`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `()`,
+  `[]`, `_`, `+`,  `=`, and `-`.
+
 ## SSH key restrictions
 
 GitLab.com uses the default [SSH key restrictions](../../security/ssh_keys_restrictions.md).
@@ -353,7 +362,7 @@ doesn't return the following headers:
 ### Visibility settings
 
 If created before GitLab 12.2 (July 2019), these items have the
-[Internal visibility](../../public_access/public_access.md#internal-projects)
+[Internal visibility](../../public_access/public_access.md#internal-projects-and-groups)
 setting [disabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/12388):
 
 - Projects

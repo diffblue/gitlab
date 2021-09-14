@@ -78,6 +78,23 @@ RSpec.describe 'User views iteration' do
         let(:current_user) { user }
         let(:shows_actions) { true }
       end
+
+      it 'can delete iteration' do
+        sign_in(user)
+
+        visit group_iteration_path(iteration.group, iteration.id)
+
+        click_button 'Actions'
+        click_button 'Delete'
+        page.within '.gl-modal' do
+          click_button 'Delete'
+        end
+
+        wait_for_requests
+
+        expect(page).to have_content('No iterations to show')
+        expect(page).not_to have_content(iteration.title)
+      end
     end
 
     context 'when user does not have edit permissions' do

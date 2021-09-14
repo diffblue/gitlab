@@ -2,12 +2,14 @@
 import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import ConfigurationPageLayout from '../../components/configuration_page_layout.vue';
 import sastCiConfigurationQuery from '../graphql/sast_ci_configuration.query.graphql';
 import ConfigurationForm from './configuration_form.vue';
 
 export default {
   components: {
     ConfigurationForm,
+    ConfigurationPageLayout,
     GlAlert,
     GlLink,
     GlLoadingIcon,
@@ -49,13 +51,9 @@ export default {
     return {
       sastCiConfiguration: null,
       hasLoadingError: false,
-      showFeedbackAlert: true,
     };
   },
   methods: {
-    dismissFeedbackAlert() {
-      this.showFeedbackAlert = false;
-    },
     onError() {
       this.hasLoadingError = true;
     },
@@ -80,32 +78,23 @@ export default {
 </script>
 
 <template>
-  <article>
-    <gl-alert
-      v-if="showFeedbackAlert"
-      data-testid="feedback-alert"
-      class="gl-mt-4"
-      @dismiss="dismissFeedbackAlert"
-    >
+  <configuration-page-layout>
+    <template #alert>
       <gl-sprintf :message="$options.i18n.feedbackAlertMessage">
         <template #link="{ content }">
           <gl-link :href="$options.feedbackIssue" target="_blank">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
-    </gl-alert>
+    </template>
 
-    <header class="gl-my-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid">
-      <h2 class="h4">
-        {{ s__('SecurityConfiguration|SAST Configuration') }}
-      </h2>
-      <p>
-        <gl-sprintf :message="$options.i18n.helpText">
-          <template #link="{ content }">
-            <gl-link :href="sastDocumentationPath" target="_blank" v-text="content" />
-          </template>
-        </gl-sprintf>
-      </p>
-    </header>
+    <template #heading> {{ s__('SecurityConfiguration|SAST Configuration') }} </template>
+    <template #description>
+      <gl-sprintf :message="$options.i18n.helpText">
+        <template #link="{ content }">
+          <gl-link :href="sastDocumentationPath" target="_blank" v-text="content" />
+        </template>
+      </gl-sprintf>
+    </template>
 
     <gl-loading-icon v-if="$apollo.loading" size="lg" />
 
@@ -118,5 +107,5 @@ export default {
     >
 
     <configuration-form v-else :sast-ci-configuration="sastCiConfiguration" />
-  </article>
+  </configuration-page-layout>
 </template>

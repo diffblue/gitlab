@@ -17,7 +17,7 @@ module EE
 
         # Subscriptions to this pipeline
         has_many :downstream_bridges, class_name: '::Ci::Bridge', foreign_key: :upstream_pipeline_id
-        has_many :security_scans, class_name: 'Security::Scan', through: :builds
+        has_many :security_scans, class_name: 'Security::Scan', inverse_of: :pipeline
         has_many :security_findings, class_name: 'Security::Finding', through: :security_scans, source: :findings
 
         has_one :dast_profiles_pipeline, class_name: 'Dast::ProfilesPipeline', foreign_key: :ci_pipeline_id
@@ -175,7 +175,11 @@ module EE
 
       def authorized_cluster_agents
         strong_memoize(:authorized_cluster_agents) do
-          ::Clusters::DeployableAgentsFinder.new(project).execute
+          if ::Feature.enabled?(:group_authorized_agents, project, default_enabled: :yaml)
+            ::Clusters::AgentAuthorizationsFinder.new(project).execute.map(&:agent)
+          else
+            ::Clusters::DeployableAgentsFinder.new(project).execute
+          end
         end
       end
 

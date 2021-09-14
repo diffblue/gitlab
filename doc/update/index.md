@@ -70,6 +70,10 @@ Instructions on how to update a cloud-native deployment are in
 Use the [version mapping](https://docs.gitlab.com/charts/installation/version_mappings.html)
 from the chart version to GitLab version to determine the [upgrade path](#upgrade-paths).
 
+## Plan your upgrade
+
+See the guide to [plan your GitLab upgrade](plan_your_upgrade.md).
+
 ## Checking for background migrations before upgrading
 
 Certain major/minor releases may require different migrations to be
@@ -182,7 +186,7 @@ Find where your version sits in the upgrade path below, and upgrade GitLab
 accordingly, while also consulting the
 [version-specific upgrade instructions](#version-specific-upgrading-instructions):
 
-`8.11.Z` -> [`8.12.0`](#upgrades-from-versions-earlier-than-812) -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> `12.10.14` -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [latest `13.12.Z`](https://about.gitlab.com/releases/categories/releases/) -> [latest `14.0.Z`](#1400) -> [`14.1.Z`](#1410) -> [latest `14.Y.Z`](https://about.gitlab.com/releases/categories/releases/)
+`8.11.Z` -> [`8.12.0`](#upgrades-from-versions-earlier-than-812) -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> `12.10.14` -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [latest `13.12.Z`](https://about.gitlab.com/releases/categories/releases/) -> [latest `14.0.Z`](#1400) -> [latest `14.Y.Z`](https://about.gitlab.com/releases/categories/releases/)
 
 The following table, while not exhaustive, shows some examples of the supported
 upgrade paths.
@@ -368,9 +372,8 @@ for how to proceed.
 - Due to an issue where `BatchedBackgroundMigrationWorkers` were
   [not working](https://gitlab.com/gitlab-org/charts/gitlab/-/issues/2785#note_614738345)
   for self-managed instances, a [fix was created](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65106)
-  and a [14.0.Z](#1400) version was released. If you haven't updated to 14.0.Z, you need
-  to update to at least 14.1.0 that contains the same fix before you update to
-  to 14.2.
+  and a [14.0.Z](#1400) version was released. If you haven't updated to 14.0.5, you need
+  to update to at least 14.1.0 that contains the same fix before you update to 14.2.
 - GitLab 14.2.0 contains background migrations to [address Primary Key overflow risk for tables with an integer PK](https://gitlab.com/groups/gitlab-org/-/epics/4785) for the tables listed below:
 
   - [`ci_build_needs`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65216)
@@ -398,7 +401,7 @@ for how to proceed.
 - Due to an issue where `BatchedBackgroundMigrationWorkers` were
   [not working](https://gitlab.com/gitlab-org/charts/gitlab/-/issues/2785#note_614738345)
   for self-managed instances, a [fix was created](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65106)
-  and a [14.0.Z](#1400) version was released. If you haven't updated to 14.0.Z, you need
+  and a [14.0.Z](#1400) version was released. If you haven't updated to 14.0.5, you need
   to update to at least 14.1.0 that contains the same fix before you update to
   a later version.
 

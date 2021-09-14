@@ -327,7 +327,7 @@ include:
 
 #### Switch between branch pipelines and merge request pipelines
 
-> [Introduced in](https://gitlab.com/gitlab-org/gitlab/-/issues/201845) GitLab 13.8.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/201845) in GitLab 13.8.
 
 To make the pipeline switch from branch pipelines to merge request pipelines after
 a merge request is created, add a `workflow: rules` section to your `.gitlab-ci.yml` file.
@@ -430,7 +430,7 @@ In `include` sections in your `.gitlab-ci.yml` file, you can use:
 - [Project variables](../variables/index.md#add-a-cicd-variable-to-a-project)
 - [Group variables](../variables/index.md#add-a-cicd-variable-to-a-group)
 - [Instance variables](../variables/index.md#add-a-cicd-variable-to-an-instance)
-- Project [predefined variables](../variables/predefined_variables.md).   
+- Project [predefined variables](../variables/predefined_variables.md).
 
 ```yaml
 include:
@@ -622,7 +622,7 @@ Use nested includes to compose a set of includes.
 
 You can have up to 100 includes, but you can't have duplicate includes.
 
-In [GitLab 12.4](https://gitlab.com/gitlab-org/gitlab/-/issues/28212) and later, the time limit
+In [GitLab 12.4 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/28212), the time limit
 to resolve all files is 30 seconds.
 
 #### Additional `includes` examples
@@ -1367,7 +1367,7 @@ pipeline based on branch names or pipeline types.
   | `pushes`                 | For pipelines triggered by a `git push` event, including for branches and tags. |
   | `schedules`              | For [scheduled pipelines](../pipelines/schedules.md). |
   | `tags`                   | When the Git reference for a pipeline is a tag. |
-  | `triggers`               | For pipelines created by using a [trigger token](../triggers/index.md#trigger-token). |
+  | `triggers`               | For pipelines created by using a [trigger token](../triggers/index.md#authentication-tokens). |
   | `web`                    | For pipelines created by using **Run pipeline** button in the GitLab UI, from the project's **CI/CD > Pipelines** section. |
 
 **Example of `only:refs` and `except:refs`**:
@@ -1827,14 +1827,25 @@ rspec:
 
 ### `tags`
 
+> - A limit of 50 tags per job [enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/338929) in GitLab 14.3.
+> - A limit of 50 tags per job [enabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/339855) in GitLab 14.3.
+
 Use `tags` to select a specific runner from the list of all runners that are
 available for the project.
 
 When you register a runner, you can specify the runner's tags, for
-example `ruby`, `postgres`, `development`.
+example `ruby`, `postgres`, or `development`. To pick up and run a job, a runner must
+be assigned every tag listed in the job.
 
-In the following example, the job is run by a runner that
-has both `ruby` and `postgres` tags defined.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
+
+**Possible inputs**:
+
+- An array of tag names.
+- [CI/CD variables](../runners/configure_runners.md#use-cicd-variables-in-tags) in GitLab 14.1 and later.
+
+**Example of `tags`**:
 
 ```yaml
 job:
@@ -1843,45 +1854,16 @@ job:
     - postgres
 ```
 
-You can use tags to run different jobs on different platforms. For
-example, if you have an OS X runner with tag `osx` and a Windows runner with tag
-`windows`, you can run a job on each platform:
+In this example, only runners with *both* the `ruby` and `postgres` tags can run the job.
 
-```yaml
-windows job:
-  stage:
-    - build
-  tags:
-    - windows
-  script:
-    - echo Hello, %USERNAME%!
+**Additional details**:
 
-osx job:
-  stage:
-    - build
-  tags:
-    - osx
-  script:
-    - echo "Hello, $USER!"
-```
+- In [GitLab 14.3](https://gitlab.com/gitlab-org/gitlab/-/issues/338479) and later,
+  the number of tags must be less than `50`.
 
-In [GitLab 14.1 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/35742), you can
-use [CI/CD variables](../variables/index.md) with `tags` for dynamic runner selection:
+**Related topics**:
 
-```yaml
-variables:
-  KUBERNETES_RUNNER: kubernetes
-
-  job:
-    tags:
-      - docker
-      - $KUBERNETES_RUNNER
-    script:
-      - echo "Hello runner selector feature"
-```
-
-NOTE:
-In [GitLab 14.3](https://gitlab.com/gitlab-org/gitlab/-/issues/338479) and later, the number of tags must be less than `50`.
+- [Use tags to control which jobs a runner can run](../runners/configure_runners.md#use-tags-to-control-which-jobs-a-runner-can-run).
 
 ### `allow_failure`
 
@@ -2015,7 +1997,7 @@ In this example, the script:
 
 **Additional details**:
 
-- In [GitLab 13.5](https://gitlab.com/gitlab-org/gitlab/-/issues/201938) and later, you
+- In [GitLab 13.5 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/201938), you
   can use `when:manual` in the same job as [`trigger`](#trigger). In GitLab 13.4 and
   earlier, using them together causes the error `jobs:#{job-name} when should be on_success, on_failure or always`.
 - The default behavior of `allow_failure` changes to `true` with `when: manual`.
@@ -2134,7 +2116,7 @@ review_app:
   stage: deploy
   script: make deploy-app
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.example.com
     on_stop: stop_review_app
 
@@ -2145,7 +2127,7 @@ stop_review_app:
   script: make delete-app
   when: manual
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     action: stop
 ```
 
@@ -2195,7 +2177,7 @@ For example,
 review_app:
   script: deploy-review-app
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     auto_stop_in: 1 day
 ```
 
@@ -2265,12 +2247,12 @@ deploy as review app:
   stage: deploy
   script: make deploy
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.example.com/
 ```
 
 The `deploy as review app` job is marked as a deployment to dynamically
-create the `review/$CI_COMMIT_REF_NAME` environment. `$CI_COMMIT_REF_NAME`
+create the `review/$CI_COMMIT_REF_SLUG` environment. `$CI_COMMIT_REF_SLUG`
 is a [CI/CD variable](../variables/index.md) set by the runner. The
 `$CI_ENVIRONMENT_SLUG` variable is based on the environment name, but suitable
 for inclusion in URLs. If the `deploy as review app` job runs in a branch named
@@ -2299,7 +2281,7 @@ Use the `cache:paths` keyword to choose which files or directories to cache.
 You can use wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
 patterns:
 
-- In [GitLab Runner 13.0](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620) and later,
+- In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
 [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
 - In GitLab Runner 12.10 and earlier,
 [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
@@ -2862,7 +2844,7 @@ Paths are relative to the project directory (`$CI_PROJECT_DIR`) and can't direct
 link outside it. You can use Wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
 patterns and:
 
-- In [GitLab Runner 13.0](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620) and later,
+- In [GitLab Runner 13.0 and later](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/2620),
 [`doublestar.Glob`](https://pkg.go.dev/github.com/bmatcuk/doublestar@v1.2.2?tab=doc#Match).
 - In GitLab Runner 12.10 and earlier,
 [`filepath.Match`](https://pkg.go.dev/path/filepath#Match).
@@ -3118,7 +3100,7 @@ dashboards.
 
 ##### `artifacts:reports:load_performance` **(PREMIUM)**
 
-> - Introduced in [GitLab 13.2](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/35260) in [GitLab Premium](https://about.gitlab.com/pricing/) 13.2.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/35260) in GitLab 13.2.
 > - Requires GitLab Runner 11.5 and above.
 
 The `load_performance` report collects [Load Performance Testing metrics](../../user/project/merge_requests/load_performance_testing.md)
@@ -3161,7 +3143,7 @@ marked as Satisfied.
 ##### `artifacts:reports:sast`
 
 > - Introduced in GitLab 11.5.
-> - Made [available in all tiers](https://gitlab.com/groups/gitlab-org/-/epics/2098) in GitLab 13.3.
+> - [Moved](https://gitlab.com/groups/gitlab-org/-/epics/2098) from GitLab Ultimate to GitLab Free in 13.3.
 > - Requires GitLab Runner 11.5 and above.
 
 The `sast` report collects [SAST vulnerabilities](../../user/application_security/sast/index.md)
@@ -3174,8 +3156,7 @@ dashboards.
 ##### `artifacts:reports:secret_detection`
 
 > - Introduced in GitLab 13.1.
-> - Made [available in all tiers](https://gitlab.com/gitlab-org/gitlab/-/issues/222788) in GitLab
-    13.3.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/222788) to GitLab Free in 13.3.
 > - Requires GitLab Runner 11.5 and above.
 
 The `secret-detection` report collects [detected secrets](../../user/application_security/secret_detection/index.md)
@@ -3402,7 +3383,22 @@ You can specify the number of [retry attempts for certain stages of job executio
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/14887) in GitLab 12.3.
 
-Use `timeout` to configure a timeout for a specific job. For example:
+Use `timeout` to configure a timeout for a specific job. If the job runs for longer
+than the timeout, the job fails.
+
+The job-level timeout can be longer than the [project-level timeout](../pipelines/settings.md#set-a-limit-for-how-long-jobs-can-run).
+but can't be longer than the [runner's timeout](../runners/configure_runners.md#set-maximum-job-timeout-for-a-runner).
+
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
+
+**Possible inputs**: A period of time written in natural language. For example, these are all equivalent:
+
+- `3600 seconds`
+- `60 minutes`
+- `one hour`
+
+**Example of `timeout`**:
 
 ```yaml
 build:
@@ -3413,10 +3409,6 @@ test:
   script: rspec
   timeout: 3h 30m
 ```
-
-The job-level timeout can exceed the
-[project-level timeout](../pipelines/settings.md#set-a-limit-for-how-long-jobs-can-run) but can't
-exceed the runner-specific timeout.
 
 ### `parallel`
 
@@ -3581,7 +3573,7 @@ deploystacks:
 
 ### `trigger`
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/8997) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.8.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/8997) in GitLab Premium 11.8.
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/199224) to GitLab Free in 12.8.
 
 Use `trigger` to define a downstream pipeline trigger. When GitLab starts a `trigger` job,
@@ -3596,11 +3588,11 @@ You can use this keyword to create two different types of downstream pipelines:
 - [Multi-project pipelines](../pipelines/multi_project_pipelines.md#define-multi-project-pipelines-in-your-gitlab-ciyml-file)
 - [Child pipelines](../pipelines/parent_child_pipelines.md)
 
-[In GitLab 13.2](https://gitlab.com/gitlab-org/gitlab/-/issues/197140/) and later, you can
+In [GitLab 13.2 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/197140/), you can
 view which job triggered a downstream pipeline. In the [pipeline graph](../pipelines/index.md#visualize-pipelines),
 hover over the downstream pipeline job.
 
-In [GitLab 13.5](https://gitlab.com/gitlab-org/gitlab/-/issues/201938) and later, you
+In [GitLab 13.5 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/201938), you
 can use [`when:manual`](#when) in the same job as `trigger`. In GitLab 13.4 and
 earlier, using them together causes the error `jobs:#{job-name} when should be on_success, on_failure or always`.
 You [cannot start `manual` trigger jobs with the API](https://gitlab.com/gitlab-org/gitlab/-/issues/284086).
@@ -4493,7 +4485,7 @@ You can use [YAML anchors for variables](#yaml-anchors-for-variables).
 
 ### Prefill variables in manual pipelines
 
-> [Introduced in](https://gitlab.com/gitlab-org/gitlab/-/issues/30101) GitLab 13.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30101) in GitLab 13.7.
 
 Use the `value` and `description` keywords to define [pipeline-level (global) variables that are prefilled](../pipelines/index.md#prefill-variables-in-manual-pipelines)
 when [running a pipeline manually](../pipelines/index.md#run-a-pipeline-manually):
@@ -4761,7 +4753,7 @@ into templates.
 ### `!reference` tags
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/266173) in GitLab 13.9.
-> - `rules` keyword support [introduced in](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) GitLab 14.3.
+> - `rules` keyword support [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) in GitLab 14.3.
 
 Use the `!reference` custom YAML tag to select keyword configuration from other job
 sections and reuse it in the current section. Unlike [YAML anchors](#anchors), you can

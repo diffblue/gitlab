@@ -10,7 +10,7 @@ module Resolvers
     argument :environment_id,
              ::Types::GlobalIDType[::Environment],
              required: false,
-             description: 'The global ID of the environment to filter policies.'
+             description: 'Global ID of the environment to filter policies.'
 
     alias_method :project, :object
 

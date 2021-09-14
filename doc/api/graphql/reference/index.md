@@ -132,7 +132,7 @@ Returns [`GeoNode`](#geonode).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="querygeonodename"></a>`name` | [`String`](#string) | The name of the Geo node. Defaults to the current Geo node name. |
+| <a id="querygeonodename"></a>`name` | [`String`](#string) | Name of the Geo node. Defaults to the current Geo node name. |
 
 ### `Query.group`
 
@@ -631,7 +631,7 @@ Input type: `ApiFuzzingCiConfigurationCreateInput`
 | <a id="mutationapifuzzingciconfigurationcreateauthusername"></a>`authUsername` | [`String`](#string) | CI variable containing the username for authenticating with the target API. |
 | <a id="mutationapifuzzingciconfigurationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationapifuzzingciconfigurationcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
-| <a id="mutationapifuzzingciconfigurationcreatescanmode"></a>`scanMode` | [`ApiFuzzingScanMode!`](#apifuzzingscanmode) | The mode for API fuzzing scans. |
+| <a id="mutationapifuzzingciconfigurationcreatescanmode"></a>`scanMode` | [`ApiFuzzingScanMode!`](#apifuzzingscanmode) | Mode for API fuzzing scans. |
 | <a id="mutationapifuzzingciconfigurationcreatescanprofile"></a>`scanProfile` | [`String`](#string) | Name of a default profile to use for scanning. Ex: Quick-10. |
 | <a id="mutationapifuzzingciconfigurationcreatetarget"></a>`target` | [`String!`](#string) | URL for the target of API fuzzing scans. |
 
@@ -642,7 +642,7 @@ Input type: `ApiFuzzingCiConfigurationCreateInput`
 | <a id="mutationapifuzzingciconfigurationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationapifuzzingciconfigurationcreateconfigurationyaml"></a>`configurationYaml` | [`String`](#string) | A YAML snippet that can be inserted into the project's `.gitlab-ci.yml` to set up API fuzzing scans. |
 | <a id="mutationapifuzzingciconfigurationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationapifuzzingciconfigurationcreategitlabciyamleditpath"></a>`gitlabCiYamlEditPath` | [`String`](#string) | The location at which the project's `.gitlab-ci.yml` file can be edited in the browser. |
+| <a id="mutationapifuzzingciconfigurationcreategitlabciyamleditpath"></a>`gitlabCiYamlEditPath` | [`String`](#string) | Location at which the project's `.gitlab-ci.yml` file can be edited in the browser. |
 
 ### `Mutation.awardEmojiAdd`
 
@@ -760,10 +760,10 @@ Input type: `BoardListUpdateLimitMetricsInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationboardlistupdatelimitmetricsclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationboardlistupdatelimitmetricslimitmetric"></a>`limitMetric` | [`ListLimitMetric`](#listlimitmetric) | The new limit metric type for the list. |
-| <a id="mutationboardlistupdatelimitmetricslistid"></a>`listId` | [`ListID!`](#listid) | The global ID of the list. |
-| <a id="mutationboardlistupdatelimitmetricsmaxissuecount"></a>`maxIssueCount` | [`Int`](#int) | The new maximum issue count limit. |
-| <a id="mutationboardlistupdatelimitmetricsmaxissueweight"></a>`maxIssueWeight` | [`Int`](#int) | The new maximum issue weight limit. |
+| <a id="mutationboardlistupdatelimitmetricslimitmetric"></a>`limitMetric` | [`ListLimitMetric`](#listlimitmetric) | New limit metric type for the list. |
+| <a id="mutationboardlistupdatelimitmetricslistid"></a>`listId` | [`ListID!`](#listid) | Global ID of the list. |
+| <a id="mutationboardlistupdatelimitmetricsmaxissuecount"></a>`maxIssueCount` | [`Int`](#int) | New maximum issue count limit. |
+| <a id="mutationboardlistupdatelimitmetricsmaxissueweight"></a>`maxIssueWeight` | [`Int`](#int) | New maximum issue weight limit. |
 
 #### Fields
 
@@ -771,7 +771,7 @@ Input type: `BoardListUpdateLimitMetricsInput`
 | ---- | ---- | ----------- |
 | <a id="mutationboardlistupdatelimitmetricsclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationboardlistupdatelimitmetricserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationboardlistupdatelimitmetricslist"></a>`list` | [`BoardList`](#boardlist) | The updated list. |
+| <a id="mutationboardlistupdatelimitmetricslist"></a>`list` | [`BoardList`](#boardlist) | Updated list. |
 
 ### `Mutation.bulkEnableDevopsAdoptionNamespaces`
 
@@ -1149,7 +1149,7 @@ Input type: `CreateComplianceFrameworkInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreatecomplianceframeworkclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcreatecomplianceframeworkerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationcreatecomplianceframeworkframework"></a>`framework` | [`ComplianceFramework`](#complianceframework) | The created compliance framework. |
+| <a id="mutationcreatecomplianceframeworkframework"></a>`framework` | [`ComplianceFramework`](#complianceframework) | Created compliance framework. |
 
 ### `Mutation.createCustomEmoji`
 
@@ -1204,24 +1204,24 @@ Input type: `CreateEpicInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationcreateepicaddlabelids"></a>`addLabelIds` | [`[ID!]`](#id) | The IDs of labels to be added to the epic. |
+| <a id="mutationcreateepicaddlabelids"></a>`addLabelIds` | [`[ID!]`](#id) | IDs of labels to be added to the epic. |
 | <a id="mutationcreateepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcreateepicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |
-| <a id="mutationcreateepicdescription"></a>`description` | [`String`](#string) | The description of the epic. |
-| <a id="mutationcreateepicduedatefixed"></a>`dueDateFixed` | [`String`](#string) | The end date of the epic. |
+| <a id="mutationcreateepicdescription"></a>`description` | [`String`](#string) | Description of the epic. |
+| <a id="mutationcreateepicduedatefixed"></a>`dueDateFixed` | [`String`](#string) | End date of the epic. |
 | <a id="mutationcreateepicduedateisfixed"></a>`dueDateIsFixed` | [`Boolean`](#boolean) | Indicates end date should be sourced from due_date_fixed field not the issue milestones. |
-| <a id="mutationcreateepicgrouppath"></a>`groupPath` | [`ID!`](#id) | The group the epic to mutate is in. |
-| <a id="mutationcreateepicremovelabelids"></a>`removeLabelIds` | [`[ID!]`](#id) | The IDs of labels to be removed from the epic. |
-| <a id="mutationcreateepicstartdatefixed"></a>`startDateFixed` | [`String`](#string) | The start date of the epic. |
+| <a id="mutationcreateepicgrouppath"></a>`groupPath` | [`ID!`](#id) | Group the epic to mutate is in. |
+| <a id="mutationcreateepicremovelabelids"></a>`removeLabelIds` | [`[ID!]`](#id) | IDs of labels to be removed from the epic. |
+| <a id="mutationcreateepicstartdatefixed"></a>`startDateFixed` | [`String`](#string) | Start date of the epic. |
 | <a id="mutationcreateepicstartdateisfixed"></a>`startDateIsFixed` | [`Boolean`](#boolean) | Indicates start date should be sourced from start_date_fixed field not the issue milestones. |
-| <a id="mutationcreateepictitle"></a>`title` | [`String`](#string) | The title of the epic. |
+| <a id="mutationcreateepictitle"></a>`title` | [`String`](#string) | Title of the epic. |
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcreateepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreateepicepic"></a>`epic` | [`Epic`](#epic) | The created epic. |
+| <a id="mutationcreateepicepic"></a>`epic` | [`Epic`](#epic) | Created epic. |
 | <a id="mutationcreateepicerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.createImageDiffNote`
@@ -1262,7 +1262,7 @@ Input type: `CreateIssueInput`
 | <a id="mutationcreateissuediscussiontoresolve"></a>`discussionToResolve` | [`String`](#string) | ID of a discussion to resolve. Also pass `merge_request_to_resolve_discussions_of`. |
 | <a id="mutationcreateissueduedate"></a>`dueDate` | [`ISO8601Date`](#iso8601date) | Due date of the issue. |
 | <a id="mutationcreateissueepicid"></a>`epicId` | [`EpicID`](#epicid) | ID of an epic to associate the issue with. |
-| <a id="mutationcreateissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | The desired health status. |
+| <a id="mutationcreateissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Desired health status. |
 | <a id="mutationcreateissueiid"></a>`iid` | [`Int`](#int) | IID (internal ID) of a project issue. Only admins and project owners can modify. |
 | <a id="mutationcreateissuelabelids"></a>`labelIds` | [`[LabelID!]`](#labelid) | IDs of labels to be added to the issue. |
 | <a id="mutationcreateissuelabels"></a>`labels` | [`[String!]`](#string) | Labels of the issue. |
@@ -1272,7 +1272,7 @@ Input type: `CreateIssueInput`
 | <a id="mutationcreateissueprojectpath"></a>`projectPath` | [`ID!`](#id) | Project full path the issue is associated with. |
 | <a id="mutationcreateissuetitle"></a>`title` | [`String!`](#string) | Title of the issue. |
 | <a id="mutationcreateissuetype"></a>`type` | [`IssueType`](#issuetype) | Type of the issue. |
-| <a id="mutationcreateissueweight"></a>`weight` | [`Int`](#int) | The weight of the issue. |
+| <a id="mutationcreateissueweight"></a>`weight` | [`Int`](#int) | Weight of the issue. |
 
 #### Fields
 
@@ -1295,13 +1295,13 @@ Input type: `CreateIterationInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcreateiterationclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreateiterationdescription"></a>`description` | [`String`](#string) | The description of the iteration. |
-| <a id="mutationcreateiterationduedate"></a>`dueDate` | [`String`](#string) | The end date of the iteration. |
+| <a id="mutationcreateiterationdescription"></a>`description` | [`String`](#string) | Description of the iteration. |
+| <a id="mutationcreateiterationduedate"></a>`dueDate` | [`String`](#string) | End date of the iteration. |
 | <a id="mutationcreateiterationgrouppath"></a>`groupPath` | [`ID`](#id) | Full path of the group with which the resource is associated. |
 | <a id="mutationcreateiterationiterationscadenceid"></a>`iterationsCadenceId` | [`IterationsCadenceID`](#iterationscadenceid) | Global ID of the iterations cadence to be assigned to newly created iteration. |
 | <a id="mutationcreateiterationprojectpath"></a>`projectPath` | [`ID`](#id) | Full path of the project with which the resource is associated. |
-| <a id="mutationcreateiterationstartdate"></a>`startDate` | [`String`](#string) | The start date of the iteration. |
-| <a id="mutationcreateiterationtitle"></a>`title` | [`String`](#string) | The title of the iteration. |
+| <a id="mutationcreateiterationstartdate"></a>`startDate` | [`String`](#string) | Start date of the iteration. |
+| <a id="mutationcreateiterationtitle"></a>`title` | [`String`](#string) | Title of the iteration. |
 
 #### Fields
 
@@ -1309,7 +1309,7 @@ Input type: `CreateIterationInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreateiterationclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcreateiterationerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationcreateiterationiteration"></a>`iteration` | [`Iteration`](#iteration) | The created iteration. |
+| <a id="mutationcreateiterationiteration"></a>`iteration` | [`Iteration`](#iteration) | Created iteration. |
 
 ### `Mutation.createNote`
 
@@ -1393,10 +1393,10 @@ Input type: `CreateTestCaseInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcreatetestcaseclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreatetestcasedescription"></a>`description` | [`String`](#string) | The test case description. |
-| <a id="mutationcreatetestcaselabelids"></a>`labelIds` | [`[ID!]`](#id) | The IDs of labels to be added to the test case. |
-| <a id="mutationcreatetestcaseprojectpath"></a>`projectPath` | [`ID!`](#id) | The project full path to create the test case. |
-| <a id="mutationcreatetestcasetitle"></a>`title` | [`String!`](#string) | The test case title. |
+| <a id="mutationcreatetestcasedescription"></a>`description` | [`String`](#string) | Test case description. |
+| <a id="mutationcreatetestcaselabelids"></a>`labelIds` | [`[ID!]`](#id) | IDs of labels to be added to the test case. |
+| <a id="mutationcreatetestcaseprojectpath"></a>`projectPath` | [`ID!`](#id) | Project full path to create the test case in. |
+| <a id="mutationcreatetestcasetitle"></a>`title` | [`String!`](#string) | Test case title. |
 
 #### Fields
 
@@ -1404,7 +1404,7 @@ Input type: `CreateTestCaseInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreatetestcaseclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcreatetestcaseerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationcreatetestcasetestcase"></a>`testCase` | [`Issue`](#issue) | The test case created. |
+| <a id="mutationcreatetestcasetestcase"></a>`testCase` | [`Issue`](#issue) | Test case created. |
 
 ### `Mutation.dastOnDemandScanCreate`
 
@@ -1417,7 +1417,7 @@ Input type: `DastOnDemandScanCreateInput`
 | <a id="mutationdastondemandscancreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdastondemandscancreatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID`](#dastscannerprofileid) | ID of the scanner profile to be used for the scan. |
 | <a id="mutationdastondemandscancreatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be used for the scan. |
-| <a id="mutationdastondemandscancreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site profile belongs to. |
+| <a id="mutationdastondemandscancreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
 
 #### Fields
 
@@ -1435,13 +1435,14 @@ Input type: `DastProfileCreateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationdastprofilecreatebranchname"></a>`branchName` | [`String`](#string) | The associated branch. |
+| <a id="mutationdastprofilecreatebranchname"></a>`branchName` | [`String`](#string) | Associated branch. |
 | <a id="mutationdastprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdastprofilecreatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled. |
 | <a id="mutationdastprofilecreatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be associated. |
 | <a id="mutationdastprofilecreatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be associated. |
-| <a id="mutationdastprofilecreatedescription"></a>`description` | [`String`](#string) | The description of the profile. Defaults to an empty string. |
-| <a id="mutationdastprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the profile belongs to. |
-| <a id="mutationdastprofilecreatename"></a>`name` | [`String!`](#string) | The name of the profile. |
+| <a id="mutationdastprofilecreatedescription"></a>`description` | [`String`](#string) | Description of the profile. Defaults to an empty string. |
+| <a id="mutationdastprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the profile belongs to. |
+| <a id="mutationdastprofilecreatename"></a>`name` | [`String!`](#string) | Name of the profile. |
 | <a id="mutationdastprofilecreaterunaftercreate"></a>`runAfterCreate` | [`Boolean`](#boolean) | Run scan using profile after creation. Defaults to false. |
 
 #### Fields
@@ -1449,9 +1450,9 @@ Input type: `DastProfileCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastprofilecreatedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | The created profile. |
+| <a id="mutationdastprofilecreatedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | Created profile. |
 | <a id="mutationdastprofilecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationdastprofilecreatepipelineurl"></a>`pipelineUrl` | [`String`](#string) | The URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`. |
+| <a id="mutationdastprofilecreatepipelineurl"></a>`pipelineUrl` | [`String`](#string) | URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`. |
 
 ### `Mutation.dastProfileDelete`
 
@@ -1499,14 +1500,15 @@ Input type: `DastProfileUpdateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationdastprofileupdatebranchname"></a>`branchName` | [`String`](#string) | The associated branch. |
+| <a id="mutationdastprofileupdatebranchname"></a>`branchName` | [`String`](#string) | Associated branch. |
 | <a id="mutationdastprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdastprofileupdatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST profile schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled. |
 | <a id="mutationdastprofileupdatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID`](#dastscannerprofileid) | ID of the scanner profile to be associated. |
 | <a id="mutationdastprofileupdatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID`](#dastsiteprofileid) | ID of the site profile to be associated. |
-| <a id="mutationdastprofileupdatedescription"></a>`description` | [`String`](#string) | The description of the profile. Defaults to an empty string. |
-| <a id="mutationdastprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the profile belongs to. |
+| <a id="mutationdastprofileupdatedescription"></a>`description` | [`String`](#string) | Description of the profile. Defaults to an empty string. |
+| <a id="mutationdastprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the profile belongs to. |
 | <a id="mutationdastprofileupdateid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the profile to be deleted. |
-| <a id="mutationdastprofileupdatename"></a>`name` | [`String`](#string) | The name of the profile. |
+| <a id="mutationdastprofileupdatename"></a>`name` | [`String`](#string) | Name of the profile. |
 | <a id="mutationdastprofileupdaterunafterupdate"></a>`runAfterUpdate` | [`Boolean`](#boolean) | Run scan using profile after update. Defaults to false. |
 
 #### Fields
@@ -1514,7 +1516,7 @@ Input type: `DastProfileUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastprofileupdatedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | The updated profile. |
+| <a id="mutationdastprofileupdatedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | Updated profile. |
 | <a id="mutationdastprofileupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationdastprofileupdatepipelineurl"></a>`pipelineUrl` | [`String`](#string) | The URL of the pipeline that was created. Requires the input argument `runAfterUpdate` to be set to `true` when calling the mutation, otherwise no pipeline will be created. |
 
@@ -1527,12 +1529,12 @@ Input type: `DastScannerProfileCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastscannerprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastscannerprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the scanner profile belongs to. |
-| <a id="mutationdastscannerprofilecreateprofilename"></a>`profileName` | [`String!`](#string) | The name of the scanner profile. |
+| <a id="mutationdastscannerprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the scanner profile belongs to. |
+| <a id="mutationdastscannerprofilecreateprofilename"></a>`profileName` | [`String!`](#string) | Name of the scanner profile. |
 | <a id="mutationdastscannerprofilecreatescantype"></a>`scanType` | [`DastScanTypeEnum`](#dastscantypeenum) | Indicates the type of DAST scan that will run. Either a Passive Scan or an Active Scan. |
 | <a id="mutationdastscannerprofilecreateshowdebugmessages"></a>`showDebugMessages` | [`Boolean`](#boolean) | Indicates if debug messages should be included in DAST console output. True to include the debug messages. |
-| <a id="mutationdastscannerprofilecreatespidertimeout"></a>`spiderTimeout` | [`Int`](#int) | The maximum number of minutes allowed for the spider to traverse the site. |
-| <a id="mutationdastscannerprofilecreatetargettimeout"></a>`targetTimeout` | [`Int`](#int) | The maximum number of seconds allowed for the site under test to respond to a request. |
+| <a id="mutationdastscannerprofilecreatespidertimeout"></a>`spiderTimeout` | [`Int`](#int) | Maximum number of minutes allowed for the spider to traverse the site. |
+| <a id="mutationdastscannerprofilecreatetargettimeout"></a>`targetTimeout` | [`Int`](#int) | Maximum number of seconds allowed for the site under test to respond to a request. |
 | <a id="mutationdastscannerprofilecreateuseajaxspider"></a>`useAjaxSpider` | [`Boolean`](#boolean) | Indicates if the AJAX spider should be used to crawl the target site. True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider. |
 
 #### Fields
@@ -1571,13 +1573,13 @@ Input type: `DastScannerProfileUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastscannerprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastscannerprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the scanner profile belongs to. |
+| <a id="mutationdastscannerprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the scanner profile belongs to. |
 | <a id="mutationdastscannerprofileupdateid"></a>`id` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be updated. |
-| <a id="mutationdastscannerprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | The name of the scanner profile. |
+| <a id="mutationdastscannerprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | Name of the scanner profile. |
 | <a id="mutationdastscannerprofileupdatescantype"></a>`scanType` | [`DastScanTypeEnum`](#dastscantypeenum) | Indicates the type of DAST scan that will run. Either a Passive Scan or an Active Scan. |
 | <a id="mutationdastscannerprofileupdateshowdebugmessages"></a>`showDebugMessages` | [`Boolean`](#boolean) | Indicates if debug messages should be included in DAST console output. True to include the debug messages. |
-| <a id="mutationdastscannerprofileupdatespidertimeout"></a>`spiderTimeout` | [`Int!`](#int) | The maximum number of minutes allowed for the spider to traverse the site. |
-| <a id="mutationdastscannerprofileupdatetargettimeout"></a>`targetTimeout` | [`Int!`](#int) | The maximum number of seconds allowed for the site under test to respond to a request. |
+| <a id="mutationdastscannerprofileupdatespidertimeout"></a>`spiderTimeout` | [`Int!`](#int) | Maximum number of minutes allowed for the spider to traverse the site. |
+| <a id="mutationdastscannerprofileupdatetargettimeout"></a>`targetTimeout` | [`Int!`](#int) | Maximum number of seconds allowed for the site under test to respond to a request. |
 | <a id="mutationdastscannerprofileupdateuseajaxspider"></a>`useAjaxSpider` | [`Boolean`](#boolean) | Indicates if the AJAX spider should be used to crawl the target site. True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider. |
 
 #### Fields
@@ -1598,12 +1600,12 @@ Input type: `DastSiteProfileCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastsiteprofilecreateauth"></a>`auth` | [`DastSiteProfileAuthInput`](#dastsiteprofileauthinput) | Parameters for authentication. |
 | <a id="mutationdastsiteprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsiteprofilecreateexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | The URLs to skip during an authenticated scan. Defaults to `[]`. |
-| <a id="mutationdastsiteprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site profile belongs to. |
-| <a id="mutationdastsiteprofilecreateprofilename"></a>`profileName` | [`String!`](#string) | The name of the site profile. |
+| <a id="mutationdastsiteprofilecreateexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | URLs to skip during an authenticated scan. Defaults to `[]`. |
+| <a id="mutationdastsiteprofilecreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
+| <a id="mutationdastsiteprofilecreateprofilename"></a>`profileName` | [`String!`](#string) | Name of the site profile. |
 | <a id="mutationdastsiteprofilecreaterequestheaders"></a>`requestHeaders` | [`String`](#string) | Comma-separated list of request header names and values to be added to every request made by DAST. |
-| <a id="mutationdastsiteprofilecreatetargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | The type of target to be scanned. |
-| <a id="mutationdastsiteprofilecreatetargeturl"></a>`targetUrl` | [`String`](#string) | The URL of the target to be scanned. |
+| <a id="mutationdastsiteprofilecreatetargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | Type of target to be scanned. |
+| <a id="mutationdastsiteprofilecreatetargeturl"></a>`targetUrl` | [`String`](#string) | URL of the target to be scanned. |
 
 #### Fields
 
@@ -1622,7 +1624,7 @@ Input type: `DastSiteProfileDeleteInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastsiteprofiledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsiteprofiledeletefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site profile belongs to. |
+| <a id="mutationdastsiteprofiledeletefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
 | <a id="mutationdastsiteprofiledeleteid"></a>`id` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be deleted. |
 
 #### Fields
@@ -1642,13 +1644,13 @@ Input type: `DastSiteProfileUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastsiteprofileupdateauth"></a>`auth` | [`DastSiteProfileAuthInput`](#dastsiteprofileauthinput) | Parameters for authentication. |
 | <a id="mutationdastsiteprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsiteprofileupdateexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | The URLs to skip during an authenticated scan. |
-| <a id="mutationdastsiteprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site profile belongs to. |
+| <a id="mutationdastsiteprofileupdateexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | URLs to skip during an authenticated scan. |
+| <a id="mutationdastsiteprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
 | <a id="mutationdastsiteprofileupdateid"></a>`id` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be updated. |
-| <a id="mutationdastsiteprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | The name of the site profile. |
+| <a id="mutationdastsiteprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | Name of the site profile. |
 | <a id="mutationdastsiteprofileupdaterequestheaders"></a>`requestHeaders` | [`String`](#string) | Comma-separated list of request header names and values to be added to every request made by DAST. |
-| <a id="mutationdastsiteprofileupdatetargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | The type of target to be scanned. |
-| <a id="mutationdastsiteprofileupdatetargeturl"></a>`targetUrl` | [`String`](#string) | The URL of the target to be scanned. |
+| <a id="mutationdastsiteprofileupdatetargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | Type of target to be scanned. |
+| <a id="mutationdastsiteprofileupdatetargeturl"></a>`targetUrl` | [`String`](#string) | URL of the target to be scanned. |
 
 #### Fields
 
@@ -1667,8 +1669,8 @@ Input type: `DastSiteTokenCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastsitetokencreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsitetokencreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site token belongs to. |
-| <a id="mutationdastsitetokencreatetargeturl"></a>`targetUrl` | [`String`](#string) | The URL of the target to be validated. |
+| <a id="mutationdastsitetokencreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site token belongs to. |
+| <a id="mutationdastsitetokencreatetargeturl"></a>`targetUrl` | [`String`](#string) | URL of the target to be validated. |
 
 #### Fields
 
@@ -1677,7 +1679,7 @@ Input type: `DastSiteTokenCreateInput`
 | <a id="mutationdastsitetokencreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdastsitetokencreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationdastsitetokencreateid"></a>`id` | [`DastSiteTokenID`](#dastsitetokenid) | ID of the site token. |
-| <a id="mutationdastsitetokencreatestatus"></a>`status` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | The current validation status of the target. |
+| <a id="mutationdastsitetokencreatestatus"></a>`status` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | Current validation status of the target. |
 | <a id="mutationdastsitetokencreatetoken"></a>`token` | [`String`](#string) | Token string. |
 
 ### `Mutation.dastSiteValidationCreate`
@@ -1690,9 +1692,9 @@ Input type: `DastSiteValidationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastsitevalidationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdastsitevalidationcreatedastsitetokenid"></a>`dastSiteTokenId` | [`DastSiteTokenID!`](#dastsitetokenid) | ID of the site token. |
-| <a id="mutationdastsitevalidationcreatefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site profile belongs to. |
-| <a id="mutationdastsitevalidationcreatestrategy"></a>`strategy` | [`DastSiteValidationStrategyEnum`](#dastsitevalidationstrategyenum) | The validation strategy to be used. |
-| <a id="mutationdastsitevalidationcreatevalidationpath"></a>`validationPath` | [`String!`](#string) | The path to be requested during validation. |
+| <a id="mutationdastsitevalidationcreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
+| <a id="mutationdastsitevalidationcreatestrategy"></a>`strategy` | [`DastSiteValidationStrategyEnum`](#dastsitevalidationstrategyenum) | Validation strategy to be used. |
+| <a id="mutationdastsitevalidationcreatevalidationpath"></a>`validationPath` | [`String!`](#string) | Path to be requested during validation. |
 
 #### Fields
 
@@ -1701,7 +1703,7 @@ Input type: `DastSiteValidationCreateInput`
 | <a id="mutationdastsitevalidationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdastsitevalidationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationdastsitevalidationcreateid"></a>`id` | [`DastSiteValidationID`](#dastsitevalidationid) | ID of the site validation. |
-| <a id="mutationdastsitevalidationcreatestatus"></a>`status` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | The current validation status. |
+| <a id="mutationdastsitevalidationcreatestatus"></a>`status` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | Current validation status. |
 
 ### `Mutation.dastSiteValidationRevoke`
 
@@ -1712,7 +1714,7 @@ Input type: `DastSiteValidationRevokeInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastsitevalidationrevokeclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsitevalidationrevokefullpath"></a>`fullPath` | [`ID!`](#id) | The project the site validation belongs to. |
+| <a id="mutationdastsitevalidationrevokefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site validation belongs to. |
 | <a id="mutationdastsitevalidationrevokenormalizedtargeturl"></a>`normalizedTargetUrl` | [`String!`](#string) | Normalized URL of the target to be revoked. |
 
 #### Fields
@@ -1851,7 +1853,7 @@ Input type: `DestroyComplianceFrameworkInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdestroycomplianceframeworkclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdestroycomplianceframeworkid"></a>`id` | [`ComplianceManagementFrameworkID!`](#compliancemanagementframeworkid) | The global ID of the compliance framework to destroy. |
+| <a id="mutationdestroycomplianceframeworkid"></a>`id` | [`ComplianceManagementFrameworkID!`](#compliancemanagementframeworkid) | Global ID of the compliance framework to destroy. |
 
 #### Fields
 
@@ -2109,18 +2111,18 @@ Input type: `EpicAddIssueInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicaddissueclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicaddissuegrouppath"></a>`groupPath` | [`ID!`](#id) | The group the epic to mutate belongs to. |
-| <a id="mutationepicaddissueiid"></a>`iid` | [`ID!`](#id) | The IID of the epic to mutate. |
-| <a id="mutationepicaddissueissueiid"></a>`issueIid` | [`String!`](#string) | The IID of the issue to be added. |
-| <a id="mutationepicaddissueprojectpath"></a>`projectPath` | [`ID!`](#id) | The full path of the project the issue belongs to. |
+| <a id="mutationepicaddissuegrouppath"></a>`groupPath` | [`ID!`](#id) | Group the epic to mutate belongs to. |
+| <a id="mutationepicaddissueiid"></a>`iid` | [`ID!`](#id) | IID of the epic to mutate. |
+| <a id="mutationepicaddissueissueiid"></a>`issueIid` | [`String!`](#string) | IID of the issue to be added. |
+| <a id="mutationepicaddissueprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project the issue belongs to. |
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicaddissueclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicaddissueepic"></a>`epic` | [`Epic`](#epic) | The epic after mutation. |
-| <a id="mutationepicaddissueepicissue"></a>`epicIssue` | [`EpicIssue`](#epicissue) | The epic-issue relation. |
+| <a id="mutationepicaddissueepic"></a>`epic` | [`Epic`](#epic) | Epic after mutation. |
+| <a id="mutationepicaddissueepicissue"></a>`epicIssue` | [`EpicIssue`](#epicissue) | Epic-issue relationship. |
 | <a id="mutationepicaddissueerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.epicBoardCreate`
@@ -2144,7 +2146,7 @@ Input type: `EpicBoardCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicboardcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicboardcreateepicboard"></a>`epicBoard` | [`EpicBoard`](#epicboard) | The created epic board. |
+| <a id="mutationepicboardcreateepicboard"></a>`epicBoard` | [`EpicBoard`](#epicboard) | Created epic board. |
 | <a id="mutationepicboardcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.epicBoardListCreate`
@@ -2187,7 +2189,7 @@ Input type: `EpicBoardListDestroyInput`
 | ---- | ---- | ----------- |
 | <a id="mutationepicboardlistdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationepicboardlistdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationepicboardlistdestroylist"></a>`list` | [`EpicList`](#epiclist) | The epic board list. `null` if the board was destroyed successfully. |
+| <a id="mutationepicboardlistdestroylist"></a>`list` | [`EpicList`](#epiclist) | Epic board list. `null` if the board was destroyed successfully. |
 
 ### `Mutation.epicBoardUpdate`
 
@@ -2200,7 +2202,7 @@ Input type: `EpicBoardUpdateInput`
 | <a id="mutationepicboardupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationepicboardupdatehidebackloglist"></a>`hideBacklogList` | [`Boolean`](#boolean) | Whether or not backlog list is hidden. |
 | <a id="mutationepicboardupdatehideclosedlist"></a>`hideClosedList` | [`Boolean`](#boolean) | Whether or not closed list is hidden. |
-| <a id="mutationepicboardupdateid"></a>`id` | [`BoardsEpicBoardID!`](#boardsepicboardid) | The epic board global ID. |
+| <a id="mutationepicboardupdateid"></a>`id` | [`BoardsEpicBoardID!`](#boardsepicboardid) | Epic board global ID. |
 | <a id="mutationepicboardupdatelabelids"></a>`labelIds` | [`[LabelID!]`](#labelid) | IDs of labels to be added to the board. |
 | <a id="mutationepicboardupdatelabels"></a>`labels` | [`[String!]`](#string) | Labels of the issue. |
 | <a id="mutationepicboardupdatename"></a>`name` | [`String`](#string) | Board name. |
@@ -2210,7 +2212,7 @@ Input type: `EpicBoardUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicboardupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicboardupdateepicboard"></a>`epicBoard` | [`EpicBoard`](#epicboard) | The updated epic board. |
+| <a id="mutationepicboardupdateepicboard"></a>`epicBoard` | [`EpicBoard`](#epicboard) | Updated epic board. |
 | <a id="mutationepicboardupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.epicMoveList`
@@ -2234,7 +2236,7 @@ Input type: `EpicMoveListInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicmovelistclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicmovelistepic"></a>`epic` | [`Epic`](#epic) | The epic after mutation. |
+| <a id="mutationepicmovelistepic"></a>`epic` | [`Epic`](#epic) | Epic after mutation. |
 | <a id="mutationepicmovelisterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.epicSetSubscription`
@@ -2246,16 +2248,16 @@ Input type: `EpicSetSubscriptionInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicsetsubscriptionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicsetsubscriptiongrouppath"></a>`groupPath` | [`ID!`](#id) | The group the epic to mutate belongs to. |
-| <a id="mutationepicsetsubscriptioniid"></a>`iid` | [`ID!`](#id) | The IID of the epic to mutate. |
-| <a id="mutationepicsetsubscriptionsubscribedstate"></a>`subscribedState` | [`Boolean!`](#boolean) | The desired state of the subscription. |
+| <a id="mutationepicsetsubscriptiongrouppath"></a>`groupPath` | [`ID!`](#id) | Group the epic to mutate belongs to. |
+| <a id="mutationepicsetsubscriptioniid"></a>`iid` | [`ID!`](#id) | IID of the epic to mutate. |
+| <a id="mutationepicsetsubscriptionsubscribedstate"></a>`subscribedState` | [`Boolean!`](#boolean) | Desired state of the subscription. |
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationepicsetsubscriptionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationepicsetsubscriptionepic"></a>`epic` | [`Epic`](#epic) | The epic after mutation. |
+| <a id="mutationepicsetsubscriptionepic"></a>`epic` | [`Epic`](#epic) | Epic after mutation. |
 | <a id="mutationepicsetsubscriptionerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.epicTreeReorder`
@@ -2266,7 +2268,7 @@ Input type: `EpicTreeReorderInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationepictreereorderbaseepicid"></a>`baseEpicId` | [`EpicID!`](#epicid) | The ID of the base epic of the tree. |
+| <a id="mutationepictreereorderbaseepicid"></a>`baseEpicId` | [`EpicID!`](#epicid) | ID of the base epic of the tree. |
 | <a id="mutationepictreereorderclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationepictreereordermoved"></a>`moved` | [`EpicTreeNodeFieldsInputType!`](#epictreenodefieldsinputtype) | Parameters for updating the tree positions. |
 
@@ -2286,10 +2288,10 @@ Input type: `EscalationPolicyCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationescalationpolicycreatedescription"></a>`description` | [`String`](#string) | The description of the escalation policy. |
-| <a id="mutationescalationpolicycreatename"></a>`name` | [`String!`](#string) | The name of the escalation policy. |
-| <a id="mutationescalationpolicycreateprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to create the escalation policy for. |
-| <a id="mutationescalationpolicycreaterules"></a>`rules` | [`[EscalationRuleInput!]!`](#escalationruleinput) | The steps of the escalation policy. |
+| <a id="mutationescalationpolicycreatedescription"></a>`description` | [`String`](#string) | Description of the escalation policy. |
+| <a id="mutationescalationpolicycreatename"></a>`name` | [`String!`](#string) | Name of the escalation policy. |
+| <a id="mutationescalationpolicycreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to create the escalation policy for. |
+| <a id="mutationescalationpolicycreaterules"></a>`rules` | [`[EscalationRuleInput!]!`](#escalationruleinput) | Steps of the escalation policy. |
 
 #### Fields
 
@@ -2297,7 +2299,7 @@ Input type: `EscalationPolicyCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationescalationpolicycreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationescalationpolicycreateescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | The escalation policy. |
+| <a id="mutationescalationpolicycreateescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | Escalation policy. |
 
 ### `Mutation.escalationPolicyDestroy`
 
@@ -2308,7 +2310,7 @@ Input type: `EscalationPolicyDestroyInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationescalationpolicydestroyid"></a>`id` | [`IncidentManagementEscalationPolicyID!`](#incidentmanagementescalationpolicyid) | The escalation policy internal ID to remove. |
+| <a id="mutationescalationpolicydestroyid"></a>`id` | [`IncidentManagementEscalationPolicyID!`](#incidentmanagementescalationpolicyid) | Escalation policy internal ID to remove. |
 
 #### Fields
 
@@ -2316,7 +2318,7 @@ Input type: `EscalationPolicyDestroyInput`
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicydestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationescalationpolicydestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationescalationpolicydestroyescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | The escalation policy. |
+| <a id="mutationescalationpolicydestroyescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | Escalation policy. |
 
 ### `Mutation.escalationPolicyUpdate`
 
@@ -2327,10 +2329,10 @@ Input type: `EscalationPolicyUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationescalationpolicyupdatedescription"></a>`description` | [`String`](#string) | The description of the escalation policy. |
-| <a id="mutationescalationpolicyupdateid"></a>`id` | [`IncidentManagementEscalationPolicyID!`](#incidentmanagementescalationpolicyid) | The ID of the on-call schedule to create the on-call rotation in. |
-| <a id="mutationescalationpolicyupdatename"></a>`name` | [`String`](#string) | The name of the escalation policy. |
-| <a id="mutationescalationpolicyupdaterules"></a>`rules` | [`[EscalationRuleInput!]`](#escalationruleinput) | The steps of the escalation policy. |
+| <a id="mutationescalationpolicyupdatedescription"></a>`description` | [`String`](#string) | Description of the escalation policy. |
+| <a id="mutationescalationpolicyupdateid"></a>`id` | [`IncidentManagementEscalationPolicyID!`](#incidentmanagementescalationpolicyid) | ID of the on-call schedule to create the on-call rotation in. |
+| <a id="mutationescalationpolicyupdatename"></a>`name` | [`String`](#string) | Name of the escalation policy. |
+| <a id="mutationescalationpolicyupdaterules"></a>`rules` | [`[EscalationRuleInput!]`](#escalationruleinput) | Steps of the escalation policy. |
 
 #### Fields
 
@@ -2338,7 +2340,7 @@ Input type: `EscalationPolicyUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationescalationpolicyupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationescalationpolicyupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationescalationpolicyupdateescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | The escalation policy. |
+| <a id="mutationescalationpolicyupdateescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | Escalation policy. |
 
 ### `Mutation.exportRequirements`
 
@@ -2380,7 +2382,7 @@ Input type: `GitlabSubscriptionActivateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationgitlabsubscriptionactivateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationgitlabsubscriptionactivateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationgitlabsubscriptionactivatelicense"></a>`license` | [`CurrentLicense`](#currentlicense) | The current license. |
+| <a id="mutationgitlabsubscriptionactivatelicense"></a>`license` | [`CurrentLicense`](#currentlicense) | Current license. |
 
 ### `Mutation.groupUpdate`
 
@@ -2628,7 +2630,7 @@ Input type: `IssueSetIterationInput`
 | ---- | ---- | ----------- |
 | <a id="mutationissuesetiterationclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationissuesetiterationiid"></a>`iid` | [`String!`](#string) | IID of the issue to mutate. |
-| <a id="mutationissuesetiterationiterationid"></a>`iterationId` | [`IterationID`](#iterationid) | The iteration to assign to the issue. |
+| <a id="mutationissuesetiterationiterationid"></a>`iterationId` | [`IterationID`](#iterationid) | Iteration to assign to the issue. |
 | <a id="mutationissuesetiterationprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the issue to mutate is in. |
 
 #### Fields
@@ -2736,7 +2738,7 @@ Input type: `IterationCadenceCreateInput`
 | <a id="mutationiterationcadencecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcadencecreatedescription"></a>`description` | [`String`](#string) | Description of the iteration cadence. Maximum length is 5000 characters. |
 | <a id="mutationiterationcadencecreatedurationinweeks"></a>`durationInWeeks` | [`Int`](#int) | Duration in weeks of the iterations within this cadence. |
-| <a id="mutationiterationcadencecreategrouppath"></a>`groupPath` | [`ID!`](#id) | The group where the iteration cadence is created. |
+| <a id="mutationiterationcadencecreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group where the iteration cadence is created. |
 | <a id="mutationiterationcadencecreateiterationsinadvance"></a>`iterationsInAdvance` | [`Int`](#int) | Future iterations to be created when iteration cadence is set to automatic. |
 | <a id="mutationiterationcadencecreaterollover"></a>`rollOver` | [`Boolean`](#boolean) | Whether the iteration cadence should roll over issues to the next iteration or not. |
 | <a id="mutationiterationcadencecreatestartdate"></a>`startDate` | [`Time`](#time) | Timestamp of the iteration cadence start date. |
@@ -2748,7 +2750,7 @@ Input type: `IterationCadenceCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcadencecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcadencecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationiterationcadencecreateiterationcadence"></a>`iterationCadence` | [`IterationCadence`](#iterationcadence) | The created iteration cadence. |
+| <a id="mutationiterationcadencecreateiterationcadence"></a>`iterationCadence` | [`IterationCadence`](#iterationcadence) | Created iteration cadence. |
 
 ### `Mutation.iterationCadenceDestroy`
 
@@ -2794,7 +2796,7 @@ Input type: `IterationCadenceUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcadenceupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcadenceupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationiterationcadenceupdateiterationcadence"></a>`iterationCadence` | [`IterationCadence`](#iterationcadence) | The updated iteration cadence. |
+| <a id="mutationiterationcadenceupdateiterationcadence"></a>`iterationCadence` | [`IterationCadence`](#iterationcadence) | Updated iteration cadence. |
 
 ### `Mutation.iterationCreate`
 
@@ -2805,13 +2807,13 @@ Input type: `iterationCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationiterationcreatedescription"></a>`description` | [`String`](#string) | The description of the iteration. |
-| <a id="mutationiterationcreateduedate"></a>`dueDate` | [`String`](#string) | The end date of the iteration. |
+| <a id="mutationiterationcreatedescription"></a>`description` | [`String`](#string) | Description of the iteration. |
+| <a id="mutationiterationcreateduedate"></a>`dueDate` | [`String`](#string) | End date of the iteration. |
 | <a id="mutationiterationcreategrouppath"></a>`groupPath` | [`ID`](#id) | Full path of the group with which the resource is associated. |
 | <a id="mutationiterationcreateiterationscadenceid"></a>`iterationsCadenceId` | [`IterationsCadenceID`](#iterationscadenceid) | Global ID of the iterations cadence to be assigned to newly created iteration. |
 | <a id="mutationiterationcreateprojectpath"></a>`projectPath` | [`ID`](#id) | Full path of the project with which the resource is associated. |
-| <a id="mutationiterationcreatestartdate"></a>`startDate` | [`String`](#string) | The start date of the iteration. |
-| <a id="mutationiterationcreatetitle"></a>`title` | [`String`](#string) | The title of the iteration. |
+| <a id="mutationiterationcreatestartdate"></a>`startDate` | [`String`](#string) | Start date of the iteration. |
+| <a id="mutationiterationcreatetitle"></a>`title` | [`String`](#string) | Title of the iteration. |
 
 #### Fields
 
@@ -2819,7 +2821,7 @@ Input type: `iterationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationiterationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationiterationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationiterationcreateiteration"></a>`iteration` | [`Iteration`](#iteration) | The created iteration. |
+| <a id="mutationiterationcreateiteration"></a>`iteration` | [`Iteration`](#iteration) | Created iteration. |
 
 ### `Mutation.iterationDelete`
 
@@ -3263,7 +3265,7 @@ Input type: `NamespaceIncreaseStorageTemporarilyInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationnamespaceincreasestoragetemporarilyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationnamespaceincreasestoragetemporarilyid"></a>`id` | [`NamespaceID!`](#namespaceid) | The global ID of the namespace to mutate. |
+| <a id="mutationnamespaceincreasestoragetemporarilyid"></a>`id` | [`NamespaceID!`](#namespaceid) | Global ID of the namespace to mutate. |
 
 #### Fields
 
@@ -3271,7 +3273,7 @@ Input type: `NamespaceIncreaseStorageTemporarilyInput`
 | ---- | ---- | ----------- |
 | <a id="mutationnamespaceincreasestoragetemporarilyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationnamespaceincreasestoragetemporarilyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationnamespaceincreasestoragetemporarilynamespace"></a>`namespace` | [`Namespace`](#namespace) | The namespace after mutation. |
+| <a id="mutationnamespaceincreasestoragetemporarilynamespace"></a>`namespace` | [`Namespace`](#namespace) | Namespace after mutation. |
 
 ### `Mutation.oncallRotationCreate`
 
@@ -3281,15 +3283,15 @@ Input type: `OncallRotationCreateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationoncallrotationcreateactiveperiod"></a>`activePeriod` | [`OncallRotationActivePeriodInputType`](#oncallrotationactiveperiodinputtype) | The active period of time that the on-call rotation should take place. |
+| <a id="mutationoncallrotationcreateactiveperiod"></a>`activePeriod` | [`OncallRotationActivePeriodInputType`](#oncallrotationactiveperiodinputtype) | Active period of time that the on-call rotation should take place. |
 | <a id="mutationoncallrotationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallrotationcreateendsat"></a>`endsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | The end date and time of the on-call rotation, in the timezone of the on-call schedule. |
-| <a id="mutationoncallrotationcreatename"></a>`name` | [`String!`](#string) | The name of the on-call rotation. |
-| <a id="mutationoncallrotationcreateparticipants"></a>`participants` | [`[OncallUserInputType!]!`](#oncalluserinputtype) | The usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies. |
-| <a id="mutationoncallrotationcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to create the on-call schedule in. |
-| <a id="mutationoncallrotationcreaterotationlength"></a>`rotationLength` | [`OncallRotationLengthInputType!`](#oncallrotationlengthinputtype) | The rotation length of the on-call rotation. |
-| <a id="mutationoncallrotationcreatescheduleiid"></a>`scheduleIid` | [`String!`](#string) | The IID of the on-call schedule to create the on-call rotation in. |
-| <a id="mutationoncallrotationcreatestartsat"></a>`startsAt` | [`OncallRotationDateInputType!`](#oncallrotationdateinputtype) | The start date and time of the on-call rotation, in the timezone of the on-call schedule. |
+| <a id="mutationoncallrotationcreateendsat"></a>`endsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | End date and time of the on-call rotation, in the timezone of the on-call schedule. |
+| <a id="mutationoncallrotationcreatename"></a>`name` | [`String!`](#string) | Name of the on-call rotation. |
+| <a id="mutationoncallrotationcreateparticipants"></a>`participants` | [`[OncallUserInputType!]!`](#oncalluserinputtype) | Usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies. |
+| <a id="mutationoncallrotationcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to create the on-call schedule in. |
+| <a id="mutationoncallrotationcreaterotationlength"></a>`rotationLength` | [`OncallRotationLengthInputType!`](#oncallrotationlengthinputtype) | Rotation length of the on-call rotation. |
+| <a id="mutationoncallrotationcreatescheduleiid"></a>`scheduleIid` | [`String!`](#string) | IID of the on-call schedule to create the on-call rotation in. |
+| <a id="mutationoncallrotationcreatestartsat"></a>`startsAt` | [`OncallRotationDateInputType!`](#oncallrotationdateinputtype) | Start date and time of the on-call rotation, in the timezone of the on-call schedule. |
 
 #### Fields
 
@@ -3297,7 +3299,7 @@ Input type: `OncallRotationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallrotationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallrotationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallrotationcreateoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | The on-call rotation. |
+| <a id="mutationoncallrotationcreateoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | On-call rotation. |
 
 ### `Mutation.oncallRotationDestroy`
 
@@ -3308,9 +3310,9 @@ Input type: `OncallRotationDestroyInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationoncallrotationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallrotationdestroyid"></a>`id` | [`IncidentManagementOncallRotationID!`](#incidentmanagementoncallrotationid) | The ID of the on-call rotation to remove. |
-| <a id="mutationoncallrotationdestroyprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to remove the on-call schedule from. |
-| <a id="mutationoncallrotationdestroyscheduleiid"></a>`scheduleIid` | [`String!`](#string) | The IID of the on-call schedule to the on-call rotation belongs to. |
+| <a id="mutationoncallrotationdestroyid"></a>`id` | [`IncidentManagementOncallRotationID!`](#incidentmanagementoncallrotationid) | ID of the on-call rotation to remove. |
+| <a id="mutationoncallrotationdestroyprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to remove the on-call schedule from. |
+| <a id="mutationoncallrotationdestroyscheduleiid"></a>`scheduleIid` | [`String!`](#string) | IID of the on-call schedule to the on-call rotation belongs to. |
 
 #### Fields
 
@@ -3318,7 +3320,7 @@ Input type: `OncallRotationDestroyInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallrotationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallrotationdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallrotationdestroyoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | The on-call rotation. |
+| <a id="mutationoncallrotationdestroyoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | On-call rotation. |
 
 ### `Mutation.oncallRotationUpdate`
 
@@ -3328,14 +3330,14 @@ Input type: `OncallRotationUpdateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationoncallrotationupdateactiveperiod"></a>`activePeriod` | [`OncallRotationActivePeriodInputType`](#oncallrotationactiveperiodinputtype) | The active period of time that the on-call rotation should take place. |
+| <a id="mutationoncallrotationupdateactiveperiod"></a>`activePeriod` | [`OncallRotationActivePeriodInputType`](#oncallrotationactiveperiodinputtype) | Active period of time that the on-call rotation should take place. |
 | <a id="mutationoncallrotationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallrotationupdateendsat"></a>`endsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | The end date and time of the on-call rotation, in the timezone of the on-call schedule. |
-| <a id="mutationoncallrotationupdateid"></a>`id` | [`IncidentManagementOncallRotationID!`](#incidentmanagementoncallrotationid) | The ID of the on-call schedule to create the on-call rotation in. |
-| <a id="mutationoncallrotationupdatename"></a>`name` | [`String`](#string) | The name of the on-call rotation. |
-| <a id="mutationoncallrotationupdateparticipants"></a>`participants` | [`[OncallUserInputType!]`](#oncalluserinputtype) | The usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies. |
-| <a id="mutationoncallrotationupdaterotationlength"></a>`rotationLength` | [`OncallRotationLengthInputType`](#oncallrotationlengthinputtype) | The rotation length of the on-call rotation. |
-| <a id="mutationoncallrotationupdatestartsat"></a>`startsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | The start date and time of the on-call rotation, in the timezone of the on-call schedule. |
+| <a id="mutationoncallrotationupdateendsat"></a>`endsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | End date and time of the on-call rotation, in the timezone of the on-call schedule. |
+| <a id="mutationoncallrotationupdateid"></a>`id` | [`IncidentManagementOncallRotationID!`](#incidentmanagementoncallrotationid) | ID of the on-call schedule to create the on-call rotation in. |
+| <a id="mutationoncallrotationupdatename"></a>`name` | [`String`](#string) | Name of the on-call rotation. |
+| <a id="mutationoncallrotationupdateparticipants"></a>`participants` | [`[OncallUserInputType!]`](#oncalluserinputtype) | Usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies. |
+| <a id="mutationoncallrotationupdaterotationlength"></a>`rotationLength` | [`OncallRotationLengthInputType`](#oncallrotationlengthinputtype) | Rotation length of the on-call rotation. |
+| <a id="mutationoncallrotationupdatestartsat"></a>`startsAt` | [`OncallRotationDateInputType`](#oncallrotationdateinputtype) | Start date and time of the on-call rotation, in the timezone of the on-call schedule. |
 
 #### Fields
 
@@ -3343,7 +3345,7 @@ Input type: `OncallRotationUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallrotationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallrotationupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallrotationupdateoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | The on-call rotation. |
+| <a id="mutationoncallrotationupdateoncallrotation"></a>`oncallRotation` | [`IncidentManagementOncallRotation`](#incidentmanagementoncallrotation) | On-call rotation. |
 
 ### `Mutation.oncallScheduleCreate`
 
@@ -3354,10 +3356,10 @@ Input type: `OncallScheduleCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationoncallschedulecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallschedulecreatedescription"></a>`description` | [`String`](#string) | The description of the on-call schedule. |
-| <a id="mutationoncallschedulecreatename"></a>`name` | [`String!`](#string) | The name of the on-call schedule. |
-| <a id="mutationoncallschedulecreateprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to create the on-call schedule in. |
-| <a id="mutationoncallschedulecreatetimezone"></a>`timezone` | [`String!`](#string) | The timezone of the on-call schedule. |
+| <a id="mutationoncallschedulecreatedescription"></a>`description` | [`String`](#string) | Description of the on-call schedule. |
+| <a id="mutationoncallschedulecreatename"></a>`name` | [`String!`](#string) | Name of the on-call schedule. |
+| <a id="mutationoncallschedulecreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to create the on-call schedule in. |
+| <a id="mutationoncallschedulecreatetimezone"></a>`timezone` | [`String!`](#string) | Timezone of the on-call schedule. |
 
 #### Fields
 
@@ -3365,7 +3367,7 @@ Input type: `OncallScheduleCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallschedulecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallschedulecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallschedulecreateoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | The on-call schedule. |
+| <a id="mutationoncallschedulecreateoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | On-call schedule. |
 
 ### `Mutation.oncallScheduleDestroy`
 
@@ -3376,8 +3378,8 @@ Input type: `OncallScheduleDestroyInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationoncallscheduledestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallscheduledestroyiid"></a>`iid` | [`String!`](#string) | The on-call schedule internal ID to remove. |
-| <a id="mutationoncallscheduledestroyprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to remove the on-call schedule from. |
+| <a id="mutationoncallscheduledestroyiid"></a>`iid` | [`String!`](#string) | On-call schedule internal ID to remove. |
+| <a id="mutationoncallscheduledestroyprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to remove the on-call schedule from. |
 
 #### Fields
 
@@ -3385,7 +3387,7 @@ Input type: `OncallScheduleDestroyInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallscheduledestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallscheduledestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallscheduledestroyoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | The on-call schedule. |
+| <a id="mutationoncallscheduledestroyoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | On-call schedule. |
 
 ### `Mutation.oncallScheduleUpdate`
 
@@ -3396,11 +3398,11 @@ Input type: `OncallScheduleUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationoncallscheduleupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationoncallscheduleupdatedescription"></a>`description` | [`String`](#string) | The description of the on-call schedule. |
-| <a id="mutationoncallscheduleupdateiid"></a>`iid` | [`String!`](#string) | The on-call schedule internal ID to update. |
-| <a id="mutationoncallscheduleupdatename"></a>`name` | [`String`](#string) | The name of the on-call schedule. |
-| <a id="mutationoncallscheduleupdateprojectpath"></a>`projectPath` | [`ID!`](#id) | The project to update the on-call schedule in. |
-| <a id="mutationoncallscheduleupdatetimezone"></a>`timezone` | [`String`](#string) | The timezone of the on-call schedule. |
+| <a id="mutationoncallscheduleupdatedescription"></a>`description` | [`String`](#string) | Description of the on-call schedule. |
+| <a id="mutationoncallscheduleupdateiid"></a>`iid` | [`String!`](#string) | On-call schedule internal ID to update. |
+| <a id="mutationoncallscheduleupdatename"></a>`name` | [`String`](#string) | Name of the on-call schedule. |
+| <a id="mutationoncallscheduleupdateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to update the on-call schedule in. |
+| <a id="mutationoncallscheduleupdatetimezone"></a>`timezone` | [`String`](#string) | Timezone of the on-call schedule. |
 
 #### Fields
 
@@ -3408,7 +3410,7 @@ Input type: `OncallScheduleUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationoncallscheduleupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationoncallscheduleupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationoncallscheduleupdateoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | The on-call schedule. |
+| <a id="mutationoncallscheduleupdateoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | On-call schedule. |
 
 ### `Mutation.pipelineCancel`
 
@@ -3578,7 +3580,7 @@ Input type: `PromoteToEpicInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationpromotetoepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationpromotetoepicgrouppath"></a>`groupPath` | [`ID`](#id) | The group the promoted epic will belong to. |
+| <a id="mutationpromotetoepicgrouppath"></a>`groupPath` | [`ID`](#id) | Group the promoted epic will belong to. |
 | <a id="mutationpromotetoepiciid"></a>`iid` | [`String!`](#string) | IID of the issue to mutate. |
 | <a id="mutationpromotetoepicprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the issue to mutate is in. |
 
@@ -3587,7 +3589,7 @@ Input type: `PromoteToEpicInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationpromotetoepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationpromotetoepicepic"></a>`epic` | [`Epic`](#epic) | The epic after issue promotion. |
+| <a id="mutationpromotetoepicepic"></a>`epic` | [`Epic`](#epic) | Epic after issue promotion. |
 | <a id="mutationpromotetoepicerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationpromotetoepicissue"></a>`issue` | [`Issue`](#issue) | Issue after mutation. |
 
@@ -4099,7 +4101,7 @@ Input type: `UpdateBoardEpicUserPreferencesInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationupdateboardepicuserpreferencesboardid"></a>`boardId` | [`BoardID!`](#boardid) | The board global ID. |
+| <a id="mutationupdateboardepicuserpreferencesboardid"></a>`boardId` | [`BoardID!`](#boardid) | Board global ID. |
 | <a id="mutationupdateboardepicuserpreferencesclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationupdateboardepicuserpreferencescollapsed"></a>`collapsed` | [`Boolean!`](#boolean) | Whether the epic should be collapsed in the board. |
 | <a id="mutationupdateboardepicuserpreferencesepicid"></a>`epicId` | [`EpicID!`](#epicid) | ID of an epic to set preferences for. |
@@ -4142,7 +4144,7 @@ Input type: `UpdateComplianceFrameworkInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationupdatecomplianceframeworkclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationupdatecomplianceframeworkid"></a>`id` | [`ComplianceManagementFrameworkID!`](#compliancemanagementframeworkid) | The global ID of the compliance framework to update. |
+| <a id="mutationupdatecomplianceframeworkid"></a>`id` | [`ComplianceManagementFrameworkID!`](#compliancemanagementframeworkid) | Global ID of the compliance framework to update. |
 | <a id="mutationupdatecomplianceframeworkparams"></a>`params` | [`ComplianceFrameworkInput!`](#complianceframeworkinput) | Parameters to update the compliance framework with. |
 
 #### Fields
@@ -4150,7 +4152,7 @@ Input type: `UpdateComplianceFrameworkInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationupdatecomplianceframeworkclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationupdatecomplianceframeworkcomplianceframework"></a>`complianceFramework` | [`ComplianceFramework`](#complianceframework) | The compliance framework after mutation. |
+| <a id="mutationupdatecomplianceframeworkcomplianceframework"></a>`complianceFramework` | [`ComplianceFramework`](#complianceframework) | Compliance framework after mutation. |
 | <a id="mutationupdatecomplianceframeworkerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.updateContainerExpirationPolicy`
@@ -4186,26 +4188,26 @@ Input type: `UpdateEpicInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationupdateepicaddlabelids"></a>`addLabelIds` | [`[ID!]`](#id) | The IDs of labels to be added to the epic. |
+| <a id="mutationupdateepicaddlabelids"></a>`addLabelIds` | [`[ID!]`](#id) | IDs of labels to be added to the epic. |
 | <a id="mutationupdateepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationupdateepicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |
-| <a id="mutationupdateepicdescription"></a>`description` | [`String`](#string) | The description of the epic. |
-| <a id="mutationupdateepicduedatefixed"></a>`dueDateFixed` | [`String`](#string) | The end date of the epic. |
+| <a id="mutationupdateepicdescription"></a>`description` | [`String`](#string) | Description of the epic. |
+| <a id="mutationupdateepicduedatefixed"></a>`dueDateFixed` | [`String`](#string) | End date of the epic. |
 | <a id="mutationupdateepicduedateisfixed"></a>`dueDateIsFixed` | [`Boolean`](#boolean) | Indicates end date should be sourced from due_date_fixed field not the issue milestones. |
-| <a id="mutationupdateepicgrouppath"></a>`groupPath` | [`ID!`](#id) | The group the epic to mutate is in. |
-| <a id="mutationupdateepiciid"></a>`iid` | [`ID!`](#id) | The IID of the epic to mutate. |
-| <a id="mutationupdateepicremovelabelids"></a>`removeLabelIds` | [`[ID!]`](#id) | The IDs of labels to be removed from the epic. |
-| <a id="mutationupdateepicstartdatefixed"></a>`startDateFixed` | [`String`](#string) | The start date of the epic. |
+| <a id="mutationupdateepicgrouppath"></a>`groupPath` | [`ID!`](#id) | Group the epic to mutate is in. |
+| <a id="mutationupdateepiciid"></a>`iid` | [`ID!`](#id) | IID of the epic to mutate. |
+| <a id="mutationupdateepicremovelabelids"></a>`removeLabelIds` | [`[ID!]`](#id) | IDs of labels to be removed from the epic. |
+| <a id="mutationupdateepicstartdatefixed"></a>`startDateFixed` | [`String`](#string) | Start date of the epic. |
 | <a id="mutationupdateepicstartdateisfixed"></a>`startDateIsFixed` | [`Boolean`](#boolean) | Indicates start date should be sourced from start_date_fixed field not the issue milestones. |
 | <a id="mutationupdateepicstateevent"></a>`stateEvent` | [`EpicStateEvent`](#epicstateevent) | State event for the epic. |
-| <a id="mutationupdateepictitle"></a>`title` | [`String`](#string) | The title of the epic. |
+| <a id="mutationupdateepictitle"></a>`title` | [`String`](#string) | Title of the epic. |
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationupdateepicclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationupdateepicepic"></a>`epic` | [`Epic`](#epic) | The epic after mutation. |
+| <a id="mutationupdateepicepic"></a>`epic` | [`Epic`](#epic) | Epic after mutation. |
 | <a id="mutationupdateepicerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.updateEpicBoardList`
@@ -4269,7 +4271,7 @@ Input type: `UpdateIssueInput`
 | <a id="mutationupdateissuedescription"></a>`description` | [`String`](#string) | Description of the issue. |
 | <a id="mutationupdateissueduedate"></a>`dueDate` | [`ISO8601Date`](#iso8601date) | Due date of the issue. |
 | <a id="mutationupdateissueepicid"></a>`epicId` | [`EpicID`](#epicid) | ID of the parent epic. NULL when removing the association. |
-| <a id="mutationupdateissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | The desired health status. |
+| <a id="mutationupdateissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Desired health status. |
 | <a id="mutationupdateissueiid"></a>`iid` | [`String!`](#string) | IID of the issue to mutate. |
 | <a id="mutationupdateissuelabelids"></a>`labelIds` | [`[ID!]`](#id) | IDs of labels to be set. Replaces existing issue labels. |
 | <a id="mutationupdateissuelocked"></a>`locked` | [`Boolean`](#boolean) | Indicates discussion is locked on the issue. |
@@ -4279,7 +4281,7 @@ Input type: `UpdateIssueInput`
 | <a id="mutationupdateissuestateevent"></a>`stateEvent` | [`IssueStateEvent`](#issuestateevent) | Close or reopen an issue. |
 | <a id="mutationupdateissuetitle"></a>`title` | [`String`](#string) | Title of the issue. |
 | <a id="mutationupdateissuetype"></a>`type` | [`IssueType`](#issuetype) | Type of the issue. |
-| <a id="mutationupdateissueweight"></a>`weight` | [`Int`](#int) | The weight of the issue. |
+| <a id="mutationupdateissueweight"></a>`weight` | [`Int`](#int) | Weight of the issue. |
 
 #### Fields
 
@@ -4372,7 +4374,7 @@ Input type: `UpdateRequirementInput`
 | ---- | ---- | ----------- |
 | <a id="mutationupdaterequirementclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationupdaterequirementdescription"></a>`description` | [`String`](#string) | Description of the requirement. |
-| <a id="mutationupdaterequirementiid"></a>`iid` | [`String!`](#string) | The IID of the requirement to update. |
+| <a id="mutationupdaterequirementiid"></a>`iid` | [`String!`](#string) | IID of the requirement to update. |
 | <a id="mutationupdaterequirementlasttestreportstate"></a>`lastTestReportState` | [`TestReportState`](#testreportstate) | Creates a test report for the requirement with the given state. |
 | <a id="mutationupdaterequirementprojectpath"></a>`projectPath` | [`ID!`](#id) | Full project path the requirement is associated with. |
 | <a id="mutationupdaterequirementstate"></a>`state` | [`RequirementState`](#requirementstate) | State of the requirement. |
@@ -4451,7 +4453,7 @@ Input type: `VulnerabilityConfirmInput`
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityconfirmclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilityconfirmerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationvulnerabilityconfirmvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | The vulnerability after state change. |
+| <a id="mutationvulnerabilityconfirmvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | Vulnerability after state change. |
 
 ### `Mutation.vulnerabilityCreate`
 
@@ -4504,7 +4506,7 @@ Input type: `VulnerabilityDismissInput`
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilitydismissclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilitydismisserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationvulnerabilitydismissvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | The vulnerability after dismissal. |
+| <a id="mutationvulnerabilitydismissvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | Vulnerability after dismissal. |
 
 ### `Mutation.vulnerabilityExternalIssueLinkCreate`
 
@@ -4525,7 +4527,7 @@ Input type: `VulnerabilityExternalIssueLinkCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityexternalissuelinkcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilityexternalissuelinkcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationvulnerabilityexternalissuelinkcreateexternalissuelink"></a>`externalIssueLink` | [`VulnerabilityExternalIssueLink`](#vulnerabilityexternalissuelink) | The created external issue link. |
+| <a id="mutationvulnerabilityexternalissuelinkcreateexternalissuelink"></a>`externalIssueLink` | [`VulnerabilityExternalIssueLink`](#vulnerabilityexternalissuelink) | Created external issue link. |
 
 ### `Mutation.vulnerabilityExternalIssueLinkDestroy`
 
@@ -4536,7 +4538,7 @@ Input type: `VulnerabilityExternalIssueLinkDestroyInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityexternalissuelinkdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationvulnerabilityexternalissuelinkdestroyid"></a>`id` | [`VulnerabilitiesExternalIssueLinkID!`](#vulnerabilitiesexternalissuelinkid) | The global ID of the vulnerability external issue link. |
+| <a id="mutationvulnerabilityexternalissuelinkdestroyid"></a>`id` | [`VulnerabilitiesExternalIssueLinkID!`](#vulnerabilitiesexternalissuelinkid) | Global ID of the vulnerability external issue link. |
 
 #### Fields
 
@@ -4562,7 +4564,7 @@ Input type: `VulnerabilityResolveInput`
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityresolveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilityresolveerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationvulnerabilityresolvevulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | The vulnerability after state change. |
+| <a id="mutationvulnerabilityresolvevulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | Vulnerability after state change. |
 
 ### `Mutation.vulnerabilityRevertToDetected`
 
@@ -4581,7 +4583,7 @@ Input type: `VulnerabilityRevertToDetectedInput`
 | ---- | ---- | ----------- |
 | <a id="mutationvulnerabilityreverttodetectedclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilityreverttodetectederrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationvulnerabilityreverttodetectedvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | The vulnerability after revert. |
+| <a id="mutationvulnerabilityreverttodetectedvulnerability"></a>`vulnerability` | [`Vulnerability`](#vulnerability) | Vulnerability after revert. |
 
 ## Connections
 
@@ -5315,6 +5317,52 @@ The edge type for [`CustomEmoji`](#customemoji).
 | ---- | ---- | ----------- |
 | <a id="customemojiedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="customemojiedgenode"></a>`node` | [`CustomEmoji`](#customemoji) | The item at the end of the edge. |
+
+#### `CustomerRelationsContactConnection`
+
+The connection type for [`CustomerRelationsContact`](#customerrelationscontact).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationscontactconnectionedges"></a>`edges` | [`[CustomerRelationsContactEdge]`](#customerrelationscontactedge) | A list of edges. |
+| <a id="customerrelationscontactconnectionnodes"></a>`nodes` | [`[CustomerRelationsContact]`](#customerrelationscontact) | A list of nodes. |
+| <a id="customerrelationscontactconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CustomerRelationsContactEdge`
+
+The edge type for [`CustomerRelationsContact`](#customerrelationscontact).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationscontactedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="customerrelationscontactedgenode"></a>`node` | [`CustomerRelationsContact`](#customerrelationscontact) | The item at the end of the edge. |
+
+#### `CustomerRelationsOrganizationConnection`
+
+The connection type for [`CustomerRelationsOrganization`](#customerrelationsorganization).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationsorganizationconnectionedges"></a>`edges` | [`[CustomerRelationsOrganizationEdge]`](#customerrelationsorganizationedge) | A list of edges. |
+| <a id="customerrelationsorganizationconnectionnodes"></a>`nodes` | [`[CustomerRelationsOrganization]`](#customerrelationsorganization) | A list of nodes. |
+| <a id="customerrelationsorganizationconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CustomerRelationsOrganizationEdge`
+
+The edge type for [`CustomerRelationsOrganization`](#customerrelationsorganization).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationsorganizationedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="customerrelationsorganizationedgenode"></a>`node` | [`CustomerRelationsOrganization`](#customerrelationsorganization) | The item at the end of the edge. |
 
 #### `DastProfileConnection`
 
@@ -7611,7 +7659,7 @@ Parsed field (with its name) from an alert used for custom mappings.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="alertmanagementpayloadalertmappingfieldfieldname"></a>`fieldName` | [`AlertManagementPayloadAlertFieldName`](#alertmanagementpayloadalertfieldname) | A GitLab alert field name. |
+| <a id="alertmanagementpayloadalertmappingfieldfieldname"></a>`fieldName` | [`AlertManagementPayloadAlertFieldName`](#alertmanagementpayloadalertfieldname) | GitLab alert field name. |
 | <a id="alertmanagementpayloadalertmappingfieldlabel"></a>`label` | [`String`](#string) | Human-readable label of the payload path. |
 | <a id="alertmanagementpayloadalertmappingfieldpath"></a>`path` | [`[PayloadAlertFieldPathSegment!]`](#payloadalertfieldpathsegment) | Path to value inside payload JSON. |
 | <a id="alertmanagementpayloadalertmappingfieldtype"></a>`type` | [`AlertManagementPayloadAlertFieldType`](#alertmanagementpayloadalertfieldtype) | Type of the parsed value. |
@@ -7651,9 +7699,9 @@ An API Fuzzing scan profile.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="apifuzzingscanprofiledescription"></a>`description` | [`String`](#string) | A short description of the profile. |
-| <a id="apifuzzingscanprofilename"></a>`name` | [`String`](#string) | The unique name of the profile. |
-| <a id="apifuzzingscanprofileyaml"></a>`yaml` | [`String`](#string) | A syntax highlit HTML representation of the YAML. |
+| <a id="apifuzzingscanprofiledescription"></a>`description` | [`String`](#string) | Short description of the profile. |
+| <a id="apifuzzingscanprofilename"></a>`name` | [`String`](#string) | Unique name of the profile. |
+| <a id="apifuzzingscanprofileyaml"></a>`yaml` | [`String`](#string) | Syntax highlighted HTML representation of the YAML. |
 
 ### `ApprovalRule`
 
@@ -7800,7 +7848,7 @@ Represents an epic on an issue board.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="boardepicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
-| <a id="boardepicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | A list of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="boardepicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
 | <a id="boardepicclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the epic was closed. |
 | <a id="boardepicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |
 | <a id="boardepiccreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of when the epic was created. |
@@ -7828,7 +7876,7 @@ Represents an epic on an issue board.
 | <a id="boardepicparent"></a>`parent` | [`Epic`](#epic) | Parent epic of the epic. |
 | <a id="boardepicparticipants"></a>`participants` | [`UserCoreConnection`](#usercoreconnection) | List of participants for the epic. (see [Connections](#connections)) |
 | <a id="boardepicrelationpath"></a>`relationPath` | [`String`](#string) | URI path of the epic-issue relationship. |
-| <a id="boardepicrelativeposition"></a>`relativePosition` | [`Int`](#int) | The relative position of the epic in the epic tree. |
+| <a id="boardepicrelativeposition"></a>`relativePosition` | [`Int`](#int) | Relative position of the epic in the epic tree. |
 | <a id="boardepicstartdate"></a>`startDate` | [`Time`](#time) | Start date of the epic. |
 | <a id="boardepicstartdatefixed"></a>`startDateFixed` | [`Time`](#time) | Fixed start date of the epic. |
 | <a id="boardepicstartdatefrommilestones"></a>`startDateFromMilestones` | [`Time`](#time) | Inherited start date of the epic from milestones. |
@@ -8173,8 +8221,8 @@ Represents the total number of issues and their weights for a particular day.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="ciminutesnamespacemonthlyusageminutes"></a>`minutes` | [`Int`](#int) | The total number of minutes used by all projects in the namespace. |
-| <a id="ciminutesnamespacemonthlyusagemonth"></a>`month` | [`String`](#string) | The month related to the usage data. |
+| <a id="ciminutesnamespacemonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Total number of minutes used by all projects in the namespace. |
+| <a id="ciminutesnamespacemonthlyusagemonth"></a>`month` | [`String`](#string) | Month related to the usage data. |
 | <a id="ciminutesnamespacemonthlyusageprojects"></a>`projects` | [`CiMinutesProjectMonthlyUsageConnection`](#ciminutesprojectmonthlyusageconnection) | CI minutes usage data for projects in the namespace. (see [Connections](#connections)) |
 
 ### `CiMinutesProjectMonthlyUsage`
@@ -8183,8 +8231,8 @@ Represents the total number of issues and their weights for a particular day.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="ciminutesprojectmonthlyusageminutes"></a>`minutes` | [`Int`](#int) | The number of CI minutes used by the project in the month. |
-| <a id="ciminutesprojectmonthlyusagename"></a>`name` | [`String`](#string) | The name of the project. |
+| <a id="ciminutesprojectmonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Number of CI minutes used by the project in the month. |
+| <a id="ciminutesprojectmonthlyusagename"></a>`name` | [`String`](#string) | Name of the project. |
 
 ### `CiRunner`
 
@@ -8246,7 +8294,7 @@ GitLab CI/CD configuration template.
 | <a id="clusteragentcreatedbyuser"></a>`createdByUser` | [`UserCore`](#usercore) | User object, containing information about the person who created the agent. |
 | <a id="clusteragentid"></a>`id` | [`ID!`](#id) | ID of the cluster agent. |
 | <a id="clusteragentname"></a>`name` | [`String`](#string) | Name of the cluster agent. |
-| <a id="clusteragentproject"></a>`project` | [`Project`](#project) | The project this cluster agent is associated with. |
+| <a id="clusteragentproject"></a>`project` | [`Project`](#project) | Project this cluster agent is associated with. |
 | <a id="clusteragenttokens"></a>`tokens` | [`ClusterAgentTokenConnection`](#clusteragenttokenconnection) | Tokens associated with the cluster agent. (see [Connections](#connections)) |
 | <a id="clusteragentupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp the cluster agent was updated. |
 | <a id="clusteragentwebpath"></a>`webPath` | [`String`](#string) | Web path of the cluster agent. |
@@ -8259,7 +8307,7 @@ GitLab CI/CD configuration template.
 | ---- | ---- | ----------- |
 | <a id="clusteragenttokenclusteragent"></a>`clusterAgent` | [`ClusterAgent`](#clusteragent) | Cluster agent this token is associated with. |
 | <a id="clusteragenttokencreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp the token was created. |
-| <a id="clusteragenttokencreatedbyuser"></a>`createdByUser` | [`UserCore`](#usercore) | The user who created the token. |
+| <a id="clusteragenttokencreatedbyuser"></a>`createdByUser` | [`UserCore`](#usercore) | User who created the token. |
 | <a id="clusteragenttokendescription"></a>`description` | [`String`](#string) | Description of the token. |
 | <a id="clusteragenttokenid"></a>`id` | [`ClustersAgentTokenID!`](#clustersagenttokenid) | Global ID of the token. |
 | <a id="clusteragenttokenlastusedat"></a>`lastUsedAt` | [`Time`](#time) | Timestamp the token was last used. |
@@ -8298,10 +8346,10 @@ Represents a code quality degradation on the pipeline.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="codequalitydegradationdescription"></a>`description` | [`String!`](#string) | A description of the code quality degradation. |
-| <a id="codequalitydegradationfingerprint"></a>`fingerprint` | [`String!`](#string) | A unique fingerprint to identify the code quality degradation. For example, an MD5 hash. |
-| <a id="codequalitydegradationline"></a>`line` | [`Int!`](#int) | The line on which the code quality degradation occurred. |
-| <a id="codequalitydegradationpath"></a>`path` | [`String!`](#string) | The relative path to the file containing the code quality degradation. |
+| <a id="codequalitydegradationdescription"></a>`description` | [`String!`](#string) | Description of the code quality degradation. |
+| <a id="codequalitydegradationfingerprint"></a>`fingerprint` | [`String!`](#string) | Unique fingerprint to identify the code quality degradation. For example, an MD5 hash. |
+| <a id="codequalitydegradationline"></a>`line` | [`Int!`](#int) | Line on which the code quality degradation occurred. |
+| <a id="codequalitydegradationpath"></a>`path` | [`String!`](#string) | Relative path to the file containing the code quality degradation. |
 | <a id="codequalitydegradationseverity"></a>`severity` | [`CodeQualityDegradationSeverity!`](#codequalitydegradationseverity) | Status of the degradation (BLOCKER, CRITICAL, MAJOR, MINOR, INFO). |
 
 ### `Commit`
@@ -8344,6 +8392,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="commitpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="commitpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="commitpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="commitpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ### `ComplianceFramework`
@@ -8519,6 +8568,35 @@ A custom emoji uploaded by user.
 | <a id="customemojiname"></a>`name` | [`String!`](#string) | Name of the emoji. |
 | <a id="customemojiurl"></a>`url` | [`String!`](#string) | Link to file of the emoji. |
 
+### `CustomerRelationsContact`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationscontactcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the contact was created. |
+| <a id="customerrelationscontactdescription"></a>`description` | [`String`](#string) | Description or notes for the contact. |
+| <a id="customerrelationscontactemail"></a>`email` | [`String`](#string) | Email address of the contact. |
+| <a id="customerrelationscontactfirstname"></a>`firstName` | [`String!`](#string) | First name of the contact. |
+| <a id="customerrelationscontactid"></a>`id` | [`ID!`](#id) | Internal ID of the contact. |
+| <a id="customerrelationscontactlastname"></a>`lastName` | [`String!`](#string) | Last name of the contact. |
+| <a id="customerrelationscontactorganization"></a>`organization` | [`CustomerRelationsOrganization`](#customerrelationsorganization) | Organization of the contact. |
+| <a id="customerrelationscontactphone"></a>`phone` | [`String`](#string) | Phone number of the contact. |
+| <a id="customerrelationscontactupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the contact was last updated. |
+
+### `CustomerRelationsOrganization`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="customerrelationsorganizationcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the organization was created. |
+| <a id="customerrelationsorganizationdefaultrate"></a>`defaultRate` | [`Float`](#float) | Standard billing rate for the organization. |
+| <a id="customerrelationsorganizationdescription"></a>`description` | [`String`](#string) | Description or notes for the organization. |
+| <a id="customerrelationsorganizationid"></a>`id` | [`ID!`](#id) | Internal ID of the organization. |
+| <a id="customerrelationsorganizationname"></a>`name` | [`String`](#string) | Name of the organization. |
+| <a id="customerrelationsorganizationupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the organization was last updated. |
+
 ### `DastProfile`
 
 Represents a DAST Profile.
@@ -8527,13 +8605,14 @@ Represents a DAST Profile.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="dastprofilebranch"></a>`branch` | [`DastProfileBranch`](#dastprofilebranch) | The associated branch. |
-| <a id="dastprofiledastscannerprofile"></a>`dastScannerProfile` | [`DastScannerProfile`](#dastscannerprofile) | The associated scanner profile. |
-| <a id="dastprofiledastsiteprofile"></a>`dastSiteProfile` | [`DastSiteProfile`](#dastsiteprofile) | The associated site profile. |
-| <a id="dastprofiledescription"></a>`description` | [`String`](#string) | The description of the scan. |
+| <a id="dastprofilebranch"></a>`branch` | [`DastProfileBranch`](#dastprofilebranch) | Associated branch. |
+| <a id="dastprofiledastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileSchedule`](#dastprofileschedule) | Associated profile schedule. Will always return `null` if `dast_on_demand_scans_scheduler` feature flag is disabled. |
+| <a id="dastprofiledastscannerprofile"></a>`dastScannerProfile` | [`DastScannerProfile`](#dastscannerprofile) | Associated scanner profile. |
+| <a id="dastprofiledastsiteprofile"></a>`dastSiteProfile` | [`DastSiteProfile`](#dastsiteprofile) | Associated site profile. |
+| <a id="dastprofiledescription"></a>`description` | [`String`](#string) | Description of the scan. |
 | <a id="dastprofileeditpath"></a>`editPath` | [`String`](#string) | Relative web path to the edit page of a profile. |
 | <a id="dastprofileid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the profile. |
-| <a id="dastprofilename"></a>`name` | [`String`](#string) | The name of the profile. |
+| <a id="dastprofilename"></a>`name` | [`String`](#string) | Name of the profile. |
 
 ### `DastProfileBranch`
 
@@ -8544,7 +8623,33 @@ Represents a DAST Profile Branch.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dastprofilebranchexists"></a>`exists` | [`Boolean`](#boolean) | Indicates whether or not the branch exists. |
-| <a id="dastprofilebranchname"></a>`name` | [`String`](#string) | The name of the branch. |
+| <a id="dastprofilebranchname"></a>`name` | [`String`](#string) | Name of the branch. |
+
+### `DastProfileCadence`
+
+Represents DAST Profile Cadence.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilecadenceduration"></a>`duration` | [`Int`](#int) | Duration of the DAST profile cadence. |
+| <a id="dastprofilecadenceunit"></a>`unit` | [`DastProfileCadenceUnit`](#dastprofilecadenceunit) | Unit for the duration of DAST profile cadence. |
+
+### `DastProfileSchedule`
+
+Represents a DAST profile schedule.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilescheduleactive"></a>`active` | [`Boolean`](#boolean) | Status of the DAST profile schedule. |
+| <a id="dastprofileschedulecadence"></a>`cadence` | [`DastProfileCadence`](#dastprofilecadence) | Cadence of the DAST profile schedule. |
+| <a id="dastprofilescheduleid"></a>`id` | [`DastProfileScheduleID!`](#dastprofilescheduleid) | ID of the DAST profile schedule. |
+| <a id="dastprofileschedulenextrunat"></a>`nextRunAt` | [`Time`](#time) | Next run time of the DAST profile schedule in the given timezone. |
+| <a id="dastprofileschedulestartsat"></a>`startsAt` | [`Time`](#time) | Start time of the DAST profile schedule in the given timezone. |
+| <a id="dastprofilescheduletimezone"></a>`timezone` | [`String`](#string) | Time zone of the start time of the DAST profile schedule. |
 
 ### `DastScannerProfile`
 
@@ -8560,8 +8665,8 @@ Represents a DAST scanner profile.
 | <a id="dastscannerprofilereferencedinsecuritypolicies"></a>`referencedInSecurityPolicies` | [`[String!]`](#string) | List of security policy names that are referencing given project. |
 | <a id="dastscannerprofilescantype"></a>`scanType` | [`DastScanTypeEnum`](#dastscantypeenum) | Indicates the type of DAST scan that will run. Either a Passive Scan or an Active Scan. |
 | <a id="dastscannerprofileshowdebugmessages"></a>`showDebugMessages` | [`Boolean!`](#boolean) | Indicates if debug messages should be included in DAST console output. True to include the debug messages. |
-| <a id="dastscannerprofilespidertimeout"></a>`spiderTimeout` | [`Int`](#int) | The maximum number of minutes allowed for the spider to traverse the site. |
-| <a id="dastscannerprofiletargettimeout"></a>`targetTimeout` | [`Int`](#int) | The maximum number of seconds allowed for the site under test to respond to a request. |
+| <a id="dastscannerprofilespidertimeout"></a>`spiderTimeout` | [`Int`](#int) | Maximum number of minutes allowed for the spider to traverse the site. |
+| <a id="dastscannerprofiletargettimeout"></a>`targetTimeout` | [`Int`](#int) | Maximum number of seconds allowed for the site under test to respond to a request. |
 | <a id="dastscannerprofileuseajaxspider"></a>`useAjaxSpider` | [`Boolean!`](#boolean) | Indicates if the AJAX spider should be used to crawl the target site. True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider. |
 
 ### `DastSiteProfile`
@@ -8574,16 +8679,16 @@ Represents a DAST Site Profile.
 | ---- | ---- | ----------- |
 | <a id="dastsiteprofileauth"></a>`auth` | [`DastSiteProfileAuth`](#dastsiteprofileauth) | Target authentication details. |
 | <a id="dastsiteprofileeditpath"></a>`editPath` | [`String`](#string) | Relative web path to the edit page of a site profile. |
-| <a id="dastsiteprofileexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | The URLs to skip during an authenticated scan. |
+| <a id="dastsiteprofileexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | URLs to skip during an authenticated scan. |
 | <a id="dastsiteprofileid"></a>`id` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile. |
 | <a id="dastsiteprofilenormalizedtargeturl"></a>`normalizedTargetUrl` | [`String`](#string) | Normalized URL of the target to be scanned. |
-| <a id="dastsiteprofileprofilename"></a>`profileName` | [`String`](#string) | The name of the site profile. |
+| <a id="dastsiteprofileprofilename"></a>`profileName` | [`String`](#string) | Name of the site profile. |
 | <a id="dastsiteprofilereferencedinsecuritypolicies"></a>`referencedInSecurityPolicies` | [`[String!]`](#string) | List of security policy names that are referencing given project. |
 | <a id="dastsiteprofilerequestheaders"></a>`requestHeaders` | [`String`](#string) | Comma-separated list of request header names and values to be added to every request made by DAST. |
-| <a id="dastsiteprofiletargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | The type of target to be scanned. |
-| <a id="dastsiteprofiletargeturl"></a>`targetUrl` | [`String`](#string) | The URL of the target to be scanned. |
+| <a id="dastsiteprofiletargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | Type of target to be scanned. |
+| <a id="dastsiteprofiletargeturl"></a>`targetUrl` | [`String`](#string) | URL of the target to be scanned. |
 | <a id="dastsiteprofileuserpermissions"></a>`userPermissions` | [`DastSiteProfilePermissions!`](#dastsiteprofilepermissions) | Permissions for the current user on the resource. |
-| <a id="dastsiteprofilevalidationstatus"></a>`validationStatus` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | The current validation status of the site profile. |
+| <a id="dastsiteprofilevalidationstatus"></a>`validationStatus` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | Current validation status of the site profile. |
 
 ### `DastSiteProfileAuth`
 
@@ -8595,10 +8700,10 @@ Input type for DastSiteProfile authentication.
 | ---- | ---- | ----------- |
 | <a id="dastsiteprofileauthenabled"></a>`enabled` | [`Boolean`](#boolean) | Indicates whether authentication is enabled. |
 | <a id="dastsiteprofileauthpassword"></a>`password` | [`String`](#string) | Redacted password to authenticate with on the target website. |
-| <a id="dastsiteprofileauthpasswordfield"></a>`passwordField` | [`String`](#string) | The name of password field at the sign-in HTML form. |
+| <a id="dastsiteprofileauthpasswordfield"></a>`passwordField` | [`String`](#string) | Name of password field at the sign-in HTML form. |
 | <a id="dastsiteprofileauthurl"></a>`url` | [`String`](#string) | The URL of the page containing the sign-in HTML form on the target website. |
-| <a id="dastsiteprofileauthusername"></a>`username` | [`String`](#string) | The username to authenticate with on the target website. |
-| <a id="dastsiteprofileauthusernamefield"></a>`usernameField` | [`String`](#string) | The name of username field at the sign-in HTML form. |
+| <a id="dastsiteprofileauthusername"></a>`username` | [`String`](#string) | Username to authenticate with on the target website. |
+| <a id="dastsiteprofileauthusernamefield"></a>`usernameField` | [`String`](#string) | Name of username field at the sign-in HTML form. |
 
 ### `DastSiteProfilePermissions`
 
@@ -8973,16 +9078,16 @@ Snapshot.
 | <a id="devopsadoptionsnapshotdastenabledcount"></a>`dastEnabledCount` | [`Int`](#int) | Total number of projects with enabled DAST. |
 | <a id="devopsadoptionsnapshotdependencyscanningenabledcount"></a>`dependencyScanningEnabledCount` | [`Int`](#int) | Total number of projects with enabled dependency scanning. |
 | <a id="devopsadoptionsnapshotdeploysucceeded"></a>`deploySucceeded` | [`Boolean!`](#boolean) | At least one deployment succeeded. |
-| <a id="devopsadoptionsnapshotendtime"></a>`endTime` | [`Time!`](#time) | The end time for the snapshot where the data points were collected. |
+| <a id="devopsadoptionsnapshotendtime"></a>`endTime` | [`Time!`](#time) | End time for the snapshot where the data points were collected. |
 | <a id="devopsadoptionsnapshotissueopened"></a>`issueOpened` | [`Boolean!`](#boolean) | At least one issue was opened. |
 | <a id="devopsadoptionsnapshotmergerequestapproved"></a>`mergeRequestApproved` | [`Boolean!`](#boolean) | At least one merge request was approved. |
 | <a id="devopsadoptionsnapshotmergerequestopened"></a>`mergeRequestOpened` | [`Boolean!`](#boolean) | At least one merge request was opened. |
 | <a id="devopsadoptionsnapshotpipelinesucceeded"></a>`pipelineSucceeded` | [`Boolean!`](#boolean) | At least one pipeline succeeded. |
-| <a id="devopsadoptionsnapshotrecordedat"></a>`recordedAt` | [`Time!`](#time) | The time the snapshot was recorded. |
+| <a id="devopsadoptionsnapshotrecordedat"></a>`recordedAt` | [`Time!`](#time) | Time the snapshot was recorded. |
 | <a id="devopsadoptionsnapshotrunnerconfigured"></a>`runnerConfigured` | [`Boolean!`](#boolean) | At least one runner was used. |
 | <a id="devopsadoptionsnapshotsastenabledcount"></a>`sastEnabledCount` | [`Int`](#int) | Total number of projects with enabled SAST. |
 | <a id="devopsadoptionsnapshotsecurityscansucceeded"></a>`securityScanSucceeded` **{warning-solid}** | [`Boolean!`](#boolean) | **Deprecated** in 14.1. Substituted with specific security metrics. Always false. |
-| <a id="devopsadoptionsnapshotstarttime"></a>`startTime` | [`Time!`](#time) | The start time for the snapshot where the data points were collected. |
+| <a id="devopsadoptionsnapshotstarttime"></a>`startTime` | [`Time!`](#time) | Start time for the snapshot where the data points were collected. |
 | <a id="devopsadoptionsnapshottotalprojectscount"></a>`totalProjectsCount` | [`Int`](#int) | Total number of projects. |
 | <a id="devopsadoptionsnapshotvulnerabilitymanagementusedcount"></a>`vulnerabilityManagementUsedCount` | [`Int`](#int) | Total number of projects with vulnerability management used at least once. |
 
@@ -9072,9 +9177,9 @@ Returns [`[DoraMetric!]`](#dorametric).
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dorametricsenddate"></a>`endDate` | [`Date`](#date) | Date range to end at. Default is the current date. |
-| <a id="dorametricsenvironmenttier"></a>`environmentTier` | [`DeploymentTier`](#deploymenttier) | The deployment tier of the environments to return. Defaults to `PRODUCTION`. |
+| <a id="dorametricsenvironmenttier"></a>`environmentTier` | [`DeploymentTier`](#deploymenttier) | Deployment tier of the environments to return. Defaults to `PRODUCTION`. |
 | <a id="dorametricsinterval"></a>`interval` | [`DoraMetricBucketingInterval`](#dorametricbucketinginterval) | How the metric should be aggregrated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`. |
-| <a id="dorametricsmetric"></a>`metric` | [`DoraMetricType!`](#dorametrictype) | The type of metric to return. |
+| <a id="dorametricsmetric"></a>`metric` | [`DoraMetricType!`](#dorametrictype) | Type of metric to return. |
 | <a id="dorametricsstartdate"></a>`startDate` | [`Date`](#date) | Date range to start from. Default is 3 months ago. |
 
 ### `DoraMetric`
@@ -9123,7 +9228,7 @@ Represents an epic.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
-| <a id="epicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | A list of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="epicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
 | <a id="epicclosedat"></a>`closedAt` | [`Time`](#time) | Timestamp of when the epic was closed. |
 | <a id="epicconfidential"></a>`confidential` | [`Boolean`](#boolean) | Indicates if the epic is confidential. |
 | <a id="epiccreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of when the epic was created. |
@@ -9151,7 +9256,7 @@ Represents an epic.
 | <a id="epicparent"></a>`parent` | [`Epic`](#epic) | Parent epic of the epic. |
 | <a id="epicparticipants"></a>`participants` | [`UserCoreConnection`](#usercoreconnection) | List of participants for the epic. (see [Connections](#connections)) |
 | <a id="epicrelationpath"></a>`relationPath` | [`String`](#string) | URI path of the epic-issue relationship. |
-| <a id="epicrelativeposition"></a>`relativePosition` | [`Int`](#int) | The relative position of the epic in the epic tree. |
+| <a id="epicrelativeposition"></a>`relativePosition` | [`Int`](#int) | Relative position of the epic in the epic tree. |
 | <a id="epicstartdate"></a>`startDate` | [`Time`](#time) | Start date of the epic. |
 | <a id="epicstartdatefixed"></a>`startDateFixed` | [`Time`](#time) | Fixed start date of the epic. |
 | <a id="epicstartdatefrommilestones"></a>`startDateFromMilestones` | [`Time`](#time) | Inherited start date of the epic from milestones. |
@@ -9365,6 +9470,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueepic"></a>`epic` | [`Epic`](#epic) | Epic to which this issue belongs. |
 | <a id="epicissueepicissueid"></a>`epicIssueId` | [`ID!`](#id) | ID of the epic-issue relation. |
 | <a id="epicissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
+| <a id="epicissuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="epicissuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
 | <a id="epicissuehumantotaltimespent"></a>`humanTotalTimeSpent` | [`String`](#string) | Human-readable total time reported as spent on the issue. |
 | <a id="epicissueid"></a>`id` | [`ID`](#id) | Global ID of the epic-issue relation. |
@@ -9492,9 +9598,9 @@ Represents an escalation policy.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="escalationpolicytypedescription"></a>`description` | [`String`](#string) | The description of the escalation policy. |
+| <a id="escalationpolicytypedescription"></a>`description` | [`String`](#string) | Description of the escalation policy. |
 | <a id="escalationpolicytypeid"></a>`id` | [`IncidentManagementEscalationPolicyID`](#incidentmanagementescalationpolicyid) | ID of the escalation policy. |
-| <a id="escalationpolicytypename"></a>`name` | [`String`](#string) | The name of the escalation policy. |
+| <a id="escalationpolicytypename"></a>`name` | [`String`](#string) | Name of the escalation policy. |
 | <a id="escalationpolicytyperules"></a>`rules` | [`[EscalationRuleType!]`](#escalationruletype) | Steps of the escalation policy. |
 
 ### `EscalationRuleType`
@@ -9505,11 +9611,11 @@ Represents an escalation rule for an escalation policy.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="escalationruletypeelapsedtimeseconds"></a>`elapsedTimeSeconds` | [`Int`](#int) | The time in seconds before the rule is activated. |
+| <a id="escalationruletypeelapsedtimeseconds"></a>`elapsedTimeSeconds` | [`Int`](#int) | Time in seconds before the rule is activated. |
 | <a id="escalationruletypeid"></a>`id` | [`IncidentManagementEscalationRuleID`](#incidentmanagementescalationruleid) | ID of the escalation policy. |
-| <a id="escalationruletypeoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | The on-call schedule to notify. |
-| <a id="escalationruletypestatus"></a>`status` | [`EscalationRuleStatus`](#escalationrulestatus) | The status required to prevent the rule from activating. |
-| <a id="escalationruletypeuser"></a>`user` | [`UserCore`](#usercore) | The user to notify. |
+| <a id="escalationruletypeoncallschedule"></a>`oncallSchedule` | [`IncidentManagementOncallSchedule`](#incidentmanagementoncallschedule) | On-call schedule to notify. |
+| <a id="escalationruletypestatus"></a>`status` | [`EscalationRuleStatus`](#escalationrulestatus) | Status required to prevent the rule from activating. |
+| <a id="escalationruletypeuser"></a>`user` | [`UserCore`](#usercore) | User to notify. |
 
 ### `Event`
 
@@ -9547,21 +9653,21 @@ Represents an external issue.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="geonodecontainerrepositoriesmaxcapacity"></a>`containerRepositoriesMaxCapacity` | [`Int`](#int) | The maximum concurrency of container repository sync for this secondary node. |
+| <a id="geonodecontainerrepositoriesmaxcapacity"></a>`containerRepositoriesMaxCapacity` | [`Int`](#int) | Maximum concurrency of container repository sync for this secondary node. |
 | <a id="geonodeenabled"></a>`enabled` | [`Boolean`](#boolean) | Indicates whether this Geo node is enabled. |
-| <a id="geonodefilesmaxcapacity"></a>`filesMaxCapacity` | [`Int`](#int) | The maximum concurrency of LFS/attachment backfill for this secondary node. |
+| <a id="geonodefilesmaxcapacity"></a>`filesMaxCapacity` | [`Int`](#int) | Maximum concurrency of LFS/attachment backfill for this secondary node. |
 | <a id="geonodeid"></a>`id` | [`ID!`](#id) | ID of this GeoNode. |
-| <a id="geonodeinternalurl"></a>`internalUrl` | [`String`](#string) | The URL defined on the primary node that secondary nodes should use to contact it. |
-| <a id="geonodeminimumreverificationinterval"></a>`minimumReverificationInterval` | [`Int`](#int) | The interval (in days) in which the repository verification is valid. Once expired, it will be reverified. |
-| <a id="geonodename"></a>`name` | [`String`](#string) | The unique identifier for this Geo node. |
+| <a id="geonodeinternalurl"></a>`internalUrl` | [`String`](#string) | URL defined on the primary node secondary nodes should use to contact it. |
+| <a id="geonodeminimumreverificationinterval"></a>`minimumReverificationInterval` | [`Int`](#int) | Interval (in days) in which the repository verification is valid. After expiry, it is reverted. |
+| <a id="geonodename"></a>`name` | [`String`](#string) | Unique identifier for this Geo node. |
 | <a id="geonodeprimary"></a>`primary` | [`Boolean`](#boolean) | Indicates whether this Geo node is the primary. |
-| <a id="geonodereposmaxcapacity"></a>`reposMaxCapacity` | [`Int`](#int) | The maximum concurrency of repository backfill for this secondary node. |
-| <a id="geonodeselectivesyncnamespaces"></a>`selectiveSyncNamespaces` | [`NamespaceConnection`](#namespaceconnection) | The namespaces that should be synced, if `selective_sync_type` == `namespaces`. (see [Connections](#connections)) |
-| <a id="geonodeselectivesyncshards"></a>`selectiveSyncShards` | [`[String!]`](#string) | The repository storages whose projects should be synced, if `selective_sync_type` == `shards`. |
+| <a id="geonodereposmaxcapacity"></a>`reposMaxCapacity` | [`Int`](#int) | Maximum concurrency of repository backfill for this secondary node. |
+| <a id="geonodeselectivesyncnamespaces"></a>`selectiveSyncNamespaces` | [`NamespaceConnection`](#namespaceconnection) | Namespaces that should be synced, if `selective_sync_type` == `namespaces`. (see [Connections](#connections)) |
+| <a id="geonodeselectivesyncshards"></a>`selectiveSyncShards` | [`[String!]`](#string) | Repository storages whose projects should be synced, if `selective_sync_type` == `shards`. |
 | <a id="geonodeselectivesynctype"></a>`selectiveSyncType` | [`String`](#string) | Indicates if syncing is limited to only specific groups, or shards. |
 | <a id="geonodesyncobjectstorage"></a>`syncObjectStorage` | [`Boolean`](#boolean) | Indicates if this secondary node will replicate blobs in Object Storage. |
-| <a id="geonodeurl"></a>`url` | [`String`](#string) | The user-facing URL for this Geo node. |
-| <a id="geonodeverificationmaxcapacity"></a>`verificationMaxCapacity` | [`Int`](#int) | The maximum concurrency of repository verification for this secondary node. |
+| <a id="geonodeurl"></a>`url` | [`String`](#string) | User-facing URL for this Geo node. |
+| <a id="geonodeverificationmaxcapacity"></a>`verificationMaxCapacity` | [`Int`](#int) | Maximum concurrency of repository verification for this secondary node. |
 
 #### Fields with arguments
 
@@ -9716,12 +9822,14 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupautodevopsenabled"></a>`autoDevopsEnabled` | [`Boolean`](#boolean) | Indicates whether Auto DevOps is enabled for all projects within this group. |
 | <a id="groupavatarurl"></a>`avatarUrl` | [`String`](#string) | Avatar URL of the group. |
 | <a id="groupbillablememberscount"></a>`billableMembersCount` | [`Int`](#int) | Number of billable users in the group. |
+| <a id="groupcontacts"></a>`contacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Find contacts of this group. (see [Connections](#connections)) |
 | <a id="groupcontainerrepositoriescount"></a>`containerRepositoriesCount` | [`Int!`](#int) | Number of container repositories in the group. |
 | <a id="groupcontainslockedprojects"></a>`containsLockedProjects` | [`Boolean!`](#boolean) | Includes at least one project where the repository size exceeds the limit. |
 | <a id="groupcustomemoji"></a>`customEmoji` | [`CustomEmojiConnection`](#customemojiconnection) | Custom emoji within this namespace. Available only when feature flag `custom_emoji` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. (see [Connections](#connections)) |
 | <a id="groupdependencyproxyblobcount"></a>`dependencyProxyBlobCount` | [`Int!`](#int) | Number of dependency proxy blobs cached in the group. |
 | <a id="groupdependencyproxyblobs"></a>`dependencyProxyBlobs` | [`DependencyProxyBlobConnection`](#dependencyproxyblobconnection) | Dependency Proxy blobs. (see [Connections](#connections)) |
 | <a id="groupdependencyproxyimagecount"></a>`dependencyProxyImageCount` | [`Int!`](#int) | Number of dependency proxy images cached in the group. |
+| <a id="groupdependencyproxyimageprefix"></a>`dependencyProxyImagePrefix` | [`String!`](#string) | Prefix for pulling images when using the dependency proxy. |
 | <a id="groupdependencyproxymanifests"></a>`dependencyProxyManifests` | [`DependencyProxyManifestConnection`](#dependencyproxymanifestconnection) | Dependency Proxy manifests. (see [Connections](#connections)) |
 | <a id="groupdependencyproxysetting"></a>`dependencyProxySetting` | [`DependencyProxySetting`](#dependencyproxysetting) | Dependency Proxy settings for the group. |
 | <a id="groupdependencyproxytotalsize"></a>`dependencyProxyTotalSize` | [`String!`](#string) | Total size of the dependency proxy cached images. |
@@ -9738,6 +9846,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="grouplfsenabled"></a>`lfsEnabled` | [`Boolean`](#boolean) | Indicates if Large File Storage (LFS) is enabled for namespace. |
 | <a id="groupmentionsdisabled"></a>`mentionsDisabled` | [`Boolean`](#boolean) | Indicates if a group is disabled from getting mentioned. |
 | <a id="groupname"></a>`name` | [`String!`](#string) | Name of the namespace. |
+| <a id="grouporganizations"></a>`organizations` | [`CustomerRelationsOrganizationConnection`](#customerrelationsorganizationconnection) | Find organizations of this group. (see [Connections](#connections)) |
 | <a id="grouppackagesettings"></a>`packageSettings` | [`PackageSettings`](#packagesettings) | Package settings for the namespace. |
 | <a id="groupparent"></a>`parent` | [`Group`](#group) | Parent group. |
 | <a id="grouppath"></a>`path` | [`String!`](#string) | Path of the namespace. |
@@ -9962,7 +10071,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="groupissuesassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues, "none" and "any" values are supported. |
+| <a id="groupissuesassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="groupissuesassigneeusername"></a>`assigneeUsername` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.11. Use `assigneeUsernames`. |
 | <a id="groupissuesassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
 | <a id="groupissuesauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
@@ -9979,6 +10088,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupissueslabelname"></a>`labelName` | [`[String]`](#string) | Labels applied to this issue. |
 | <a id="groupissuesmilestonetitle"></a>`milestoneTitle` | [`[String]`](#string) | Milestone applied to this issue. |
 | <a id="groupissuesmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
+| <a id="groupissuesmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="groupissuesnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
 | <a id="groupissuessearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
 | <a id="groupissuessort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
@@ -10489,6 +10599,7 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="issueemailsdisabled"></a>`emailsDisabled` | [`Boolean!`](#boolean) | Indicates if a project has email notifications disabled: `true` if email notifications are disabled. |
 | <a id="issueepic"></a>`epic` | [`Epic`](#epic) | Epic to which this issue belongs. |
 | <a id="issuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
+| <a id="issuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="issuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
 | <a id="issuehumantotaltimespent"></a>`humanTotalTimeSpent` | [`String`](#string) | Human-readable total time reported as spent on the issue. |
 | <a id="issueid"></a>`id` | [`ID!`](#id) | ID of the issue. |
@@ -10920,6 +11031,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="mergerequestpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="mergerequestpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="mergerequestpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `MergeRequest.reference`
@@ -11035,7 +11147,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `MergeRequestAssignee.groups`
 
-Groups where the user has access.
+Groups where the user has access. Will always return `null` if `paginatable_namespace_drop_down_for_project_creation` feature flag is disabled.
 
 Returns [`GroupConnection`](#groupconnection).
 
@@ -11281,7 +11393,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `MergeRequestReviewer.groups`
 
-Groups where the user has access.
+Groups where the user has access. Will always return `null` if `paginatable_namespace_drop_down_for_project_creation` feature flag is disabled.
 
 Returns [`GroupConnection`](#groupconnection).
 
@@ -11657,10 +11769,10 @@ The rotation participant and color palette.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncallparticipanttypecolorpalette"></a>`colorPalette` | [`String`](#string) | The color palette to assign to the on-call user. For example "blue". |
-| <a id="oncallparticipanttypecolorweight"></a>`colorWeight` | [`String`](#string) | The color weight to assign to for the on-call user, for example "500". Max 4 chars. For easy identification of the user. |
+| <a id="oncallparticipanttypecolorpalette"></a>`colorPalette` | [`String`](#string) | Color palette to assign to the on-call user. For example "blue". |
+| <a id="oncallparticipanttypecolorweight"></a>`colorWeight` | [`String`](#string) | Color weight to assign to for the on-call user, for example "500". Max 4 chars. For easy identification of the user. |
 | <a id="oncallparticipanttypeid"></a>`id` | [`IncidentManagementOncallParticipantID!`](#incidentmanagementoncallparticipantid) | ID of the on-call participant. |
-| <a id="oncallparticipanttypeuser"></a>`user` | [`UserCore!`](#usercore) | The user who is participating. |
+| <a id="oncallparticipanttypeuser"></a>`user` | [`UserCore!`](#usercore) | User who is participating. |
 
 ### `OncallRotationActivePeriodType`
 
@@ -11670,8 +11782,8 @@ Active period time range for on-call rotation.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncallrotationactiveperiodtypeendtime"></a>`endTime` | [`String`](#string) | The end of the rotation active period. |
-| <a id="oncallrotationactiveperiodtypestarttime"></a>`startTime` | [`String`](#string) | The start of the rotation active period. |
+| <a id="oncallrotationactiveperiodtypeendtime"></a>`endTime` | [`String`](#string) | End of the rotation active period. |
+| <a id="oncallrotationactiveperiodtypestarttime"></a>`startTime` | [`String`](#string) | Start of the rotation active period. |
 
 ### `Package`
 
@@ -11856,8 +11968,8 @@ Represents a file or directory in the project repository that has been locked.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="pathlockid"></a>`id` | [`PathLockID!`](#pathlockid) | ID of the path lock. |
-| <a id="pathlockpath"></a>`path` | [`String`](#string) | The locked path. |
-| <a id="pathlockuser"></a>`user` | [`UserCore`](#usercore) | The user that has locked this path. |
+| <a id="pathlockpath"></a>`path` | [`String`](#string) | Locked path. |
+| <a id="pathlockuser"></a>`user` | [`UserCore`](#usercore) | User that has locked this path. |
 
 ### `Pipeline`
 
@@ -12018,17 +12130,17 @@ Represents vulnerability finding of a security report on the pipeline.
 | ---- | ---- | ----------- |
 | <a id="pipelinesecurityreportfindingconfidence"></a>`confidence` | [`String`](#string) | Type of the security report that found the vulnerability. |
 | <a id="pipelinesecurityreportfindingdescription"></a>`description` | [`String`](#string) | Description of the vulnerability finding. |
-| <a id="pipelinesecurityreportfindingfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. Available only when feature flag `vulnerability_flags` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. |
+| <a id="pipelinesecurityreportfindingfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. |
 | <a id="pipelinesecurityreportfindingidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifier!]!`](#vulnerabilityidentifier) | Identifiers of the vulnerabilit finding. |
 | <a id="pipelinesecurityreportfindinglocation"></a>`location` | [`VulnerabilityLocation`](#vulnerabilitylocation) | Location metadata for the vulnerability. Its fields depend on the type of security scan that found the vulnerability. |
 | <a id="pipelinesecurityreportfindingname"></a>`name` | [`String`](#string) | Name of the vulnerability finding. |
-| <a id="pipelinesecurityreportfindingproject"></a>`project` | [`Project`](#project) | The project on which the vulnerability finding was found. |
+| <a id="pipelinesecurityreportfindingproject"></a>`project` | [`Project`](#project) | Project on which the vulnerability finding was found. |
 | <a id="pipelinesecurityreportfindingprojectfingerprint"></a>`projectFingerprint` | [`String`](#string) | Name of the vulnerability finding. |
 | <a id="pipelinesecurityreportfindingreporttype"></a>`reportType` | [`VulnerabilityReportType`](#vulnerabilityreporttype) | Type of the security report that found the vulnerability finding. |
 | <a id="pipelinesecurityreportfindingscanner"></a>`scanner` | [`VulnerabilityScanner`](#vulnerabilityscanner) | Scanner metadata for the vulnerability. |
 | <a id="pipelinesecurityreportfindingseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability finding. |
 | <a id="pipelinesecurityreportfindingsolution"></a>`solution` | [`String`](#string) | URL to the vulnerability's details page. |
-| <a id="pipelinesecurityreportfindingstate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | The finding status. |
+| <a id="pipelinesecurityreportfindingstate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | Finding status. |
 | <a id="pipelinesecurityreportfindinguuid"></a>`uuid` | [`String`](#string) | Name of the vulnerability finding. |
 
 ### `Project`
@@ -12391,7 +12503,7 @@ Returns [`Issue`](#issue).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectissueassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues, "none" and "any" values are supported. |
+| <a id="projectissueassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissueassigneeusername"></a>`assigneeUsername` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.11. Use `assigneeUsernames`. |
 | <a id="projectissueassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
 | <a id="projectissueauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
@@ -12407,6 +12519,7 @@ Returns [`Issue`](#issue).
 | <a id="projectissuelabelname"></a>`labelName` | [`[String]`](#string) | Labels applied to this issue. |
 | <a id="projectissuemilestonetitle"></a>`milestoneTitle` | [`[String]`](#string) | Milestone applied to this issue. |
 | <a id="projectissuemilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
+| <a id="projectissuemyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuenot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
 | <a id="projectissuesearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
 | <a id="projectissuesort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
@@ -12426,7 +12539,7 @@ Returns [`IssueStatusCountsType`](#issuestatuscountstype).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectissuestatuscountsassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues, "none" and "any" values are supported. |
+| <a id="projectissuestatuscountsassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuestatuscountsassigneeusername"></a>`assigneeUsername` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.11. Use `assigneeUsernames`. |
 | <a id="projectissuestatuscountsassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
 | <a id="projectissuestatuscountsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
@@ -12439,6 +12552,7 @@ Returns [`IssueStatusCountsType`](#issuestatuscountstype).
 | <a id="projectissuestatuscountslabelname"></a>`labelName` | [`[String]`](#string) | Labels applied to this issue. |
 | <a id="projectissuestatuscountsmilestonetitle"></a>`milestoneTitle` | [`[String]`](#string) | Milestone applied to this issue. |
 | <a id="projectissuestatuscountsmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
+| <a id="projectissuestatuscountsmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuestatuscountsnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
 | <a id="projectissuestatuscountssearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
 | <a id="projectissuestatuscountstypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter issues by the given issue types. |
@@ -12459,7 +12573,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectissuesassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues, "none" and "any" values are supported. |
+| <a id="projectissuesassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user assigned to the issues. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuesassigneeusername"></a>`assigneeUsername` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.11. Use `assigneeUsernames`. |
 | <a id="projectissuesassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
 | <a id="projectissuesauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
@@ -12475,6 +12589,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectissueslabelname"></a>`labelName` | [`[String]`](#string) | Labels applied to this issue. |
 | <a id="projectissuesmilestonetitle"></a>`milestoneTitle` | [`[String]`](#string) | Milestone applied to this issue. |
 | <a id="projectissuesmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
+| <a id="projectissuesmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuesnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
 | <a id="projectissuessearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
 | <a id="projectissuessort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
@@ -12653,7 +12768,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectnetworkpoliciesenvironmentid"></a>`environmentId` | [`EnvironmentID`](#environmentid) | The global ID of the environment to filter policies. |
+| <a id="projectnetworkpoliciesenvironmentid"></a>`environmentId` | [`EnvironmentID`](#environmentid) | Global ID of the environment to filter policies. |
 
 ##### `Project.packages`
 
@@ -12704,6 +12819,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectpipelinesref"></a>`ref` | [`String`](#string) | Filter pipelines by the ref they are run for. |
 | <a id="projectpipelinessha"></a>`sha` | [`String`](#string) | Filter pipelines by the sha of the commit they are run for. |
+| <a id="projectpipelinessource"></a>`source` | [`String`](#string) | Filter pipelines by their source. Will be ignored if `dast_view_scans` feature flag is disabled. |
 | <a id="projectpipelinesstatus"></a>`status` | [`PipelineStatusEnum`](#pipelinestatusenum) | Filter pipelines by their status. |
 
 ##### `Project.projectMembers`
@@ -12764,7 +12880,7 @@ Returns [`Requirement`](#requirement).
 | <a id="projectrequirementauthorusername"></a>`authorUsername` | [`[String!]`](#string) | Filter requirements by author username. |
 | <a id="projectrequirementiid"></a>`iid` | [`ID`](#id) | IID of the requirement, e.g., "1". |
 | <a id="projectrequirementiids"></a>`iids` | [`[ID!]`](#id) | List of IIDs of requirements, e.g., `[1, 2]`. |
-| <a id="projectrequirementlasttestreportstate"></a>`lastTestReportState` | [`RequirementStatusFilter`](#requirementstatusfilter) | The state of latest requirement test report. |
+| <a id="projectrequirementlasttestreportstate"></a>`lastTestReportState` | [`RequirementStatusFilter`](#requirementstatusfilter) | State of latest requirement test report. |
 | <a id="projectrequirementsearch"></a>`search` | [`String`](#string) | Search query for requirement title. |
 | <a id="projectrequirementsort"></a>`sort` | [`Sort`](#sort) | List requirements by sort order. |
 | <a id="projectrequirementstate"></a>`state` | [`RequirementState`](#requirementstate) | Filter requirements by state. |
@@ -12786,7 +12902,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectrequirementsauthorusername"></a>`authorUsername` | [`[String!]`](#string) | Filter requirements by author username. |
 | <a id="projectrequirementsiid"></a>`iid` | [`ID`](#id) | IID of the requirement, e.g., "1". |
 | <a id="projectrequirementsiids"></a>`iids` | [`[ID!]`](#id) | List of IIDs of requirements, e.g., `[1, 2]`. |
-| <a id="projectrequirementslasttestreportstate"></a>`lastTestReportState` | [`RequirementStatusFilter`](#requirementstatusfilter) | The state of latest requirement test report. |
+| <a id="projectrequirementslasttestreportstate"></a>`lastTestReportState` | [`RequirementStatusFilter`](#requirementstatusfilter) | State of latest requirement test report. |
 | <a id="projectrequirementssearch"></a>`search` | [`String`](#string) | Search query for requirement title. |
 | <a id="projectrequirementssort"></a>`sort` | [`Sort`](#sort) | List requirements by sort order. |
 | <a id="projectrequirementsstate"></a>`state` | [`RequirementState`](#requirementstate) | Filter requirements by state. |
@@ -13473,8 +13589,8 @@ Represents a resource scanned by a security scan.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="scannedresourcerequestmethod"></a>`requestMethod` | [`String`](#string) | The HTTP request method used to access the URL. |
-| <a id="scannedresourceurl"></a>`url` | [`String`](#string) | The URL scanned by the scanner. |
+| <a id="scannedresourcerequestmethod"></a>`requestMethod` | [`String`](#string) | HTTP request method used to access the URL. |
+| <a id="scannedresourceurl"></a>`url` | [`String`](#string) | URL scanned by the scanner. |
 
 ### `SecurityReportSummary`
 
@@ -13502,7 +13618,7 @@ Represents a section of a summary of a security report.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="securityreportsummarysectionscannedresources"></a>`scannedResources` | [`ScannedResourceConnection`](#scannedresourceconnection) | A list of the first 20 scanned resources. (see [Connections](#connections)) |
+| <a id="securityreportsummarysectionscannedresources"></a>`scannedResources` | [`ScannedResourceConnection`](#scannedresourceconnection) | List of the first 20 scanned resources. (see [Connections](#connections)) |
 | <a id="securityreportsummarysectionscannedresourcescount"></a>`scannedResourcesCount` | [`Int`](#int) | Total number of scanned resources. |
 | <a id="securityreportsummarysectionscannedresourcescsvpath"></a>`scannedResourcesCsvPath` | [`String`](#string) | Path to download all the scanned resources in CSV format. |
 | <a id="securityreportsummarysectionscans"></a>`scans` | [`ScanConnection!`](#scanconnection) | List of security scans ran for the type. (see [Connections](#connections)) |
@@ -14003,8 +14119,8 @@ Represents measured stats metrics for timeboxes.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="timeboxmetricscount"></a>`count` | [`Int!`](#int) | The count metric. |
-| <a id="timeboxmetricsweight"></a>`weight` | [`Int!`](#int) | The weight metric. |
+| <a id="timeboxmetricscount"></a>`count` | [`Int!`](#int) | Count metric. |
+| <a id="timeboxmetricsweight"></a>`weight` | [`Int!`](#int) | Weight metric. |
 
 ### `TimeboxReport`
 
@@ -14187,7 +14303,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `UserCore.groups`
 
-Groups where the user has access.
+Groups where the user has access. Will always return `null` if `paginatable_namespace_drop_down_for_project_creation` feature flag is disabled.
 
 Returns [`GroupConnection`](#groupconnection).
 
@@ -14371,15 +14487,15 @@ Represents a vulnerability.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="vulnerabilityconfirmedat"></a>`confirmedAt` | [`Time`](#time) | Timestamp of when the vulnerability state was changed to confirmed. |
-| <a id="vulnerabilityconfirmedby"></a>`confirmedBy` | [`UserCore`](#usercore) | The user that confirmed the vulnerability. |
+| <a id="vulnerabilityconfirmedby"></a>`confirmedBy` | [`UserCore`](#usercore) | User that confirmed the vulnerability. |
 | <a id="vulnerabilitydescription"></a>`description` | [`String`](#string) | Description of the vulnerability. |
 | <a id="vulnerabilitydetails"></a>`details` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Details of the vulnerability. |
 | <a id="vulnerabilitydetectedat"></a>`detectedAt` | [`Time!`](#time) | Timestamp of when the vulnerability was first detected. |
 | <a id="vulnerabilitydiscussions"></a>`discussions` | [`DiscussionConnection!`](#discussionconnection) | All discussions on this noteable. (see [Connections](#connections)) |
 | <a id="vulnerabilitydismissedat"></a>`dismissedAt` | [`Time`](#time) | Timestamp of when the vulnerability state was changed to dismissed. |
-| <a id="vulnerabilitydismissedby"></a>`dismissedBy` | [`UserCore`](#usercore) | The user that dismissed the vulnerability. |
+| <a id="vulnerabilitydismissedby"></a>`dismissedBy` | [`UserCore`](#usercore) | User that dismissed the vulnerability. |
 | <a id="vulnerabilityexternalissuelinks"></a>`externalIssueLinks` | [`VulnerabilityExternalIssueLinkConnection!`](#vulnerabilityexternalissuelinkconnection) | List of external issue links related to the vulnerability. (see [Connections](#connections)) |
-| <a id="vulnerabilityfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. Available only when feature flag `vulnerability_flags` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. |
+| <a id="vulnerabilityfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. |
 | <a id="vulnerabilityhassolutions"></a>`hasSolutions` | [`Boolean`](#boolean) | Indicates whether there is a solution available for this vulnerability. |
 | <a id="vulnerabilityid"></a>`id` | [`ID!`](#id) | GraphQL ID of the vulnerability. |
 | <a id="vulnerabilityidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifier!]!`](#vulnerabilityidentifier) | Identifiers of the vulnerability. |
@@ -14387,10 +14503,10 @@ Represents a vulnerability.
 | <a id="vulnerabilitymergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request that fixes the vulnerability. |
 | <a id="vulnerabilitynotes"></a>`notes` | [`NoteConnection!`](#noteconnection) | All notes on this noteable. (see [Connections](#connections)) |
 | <a id="vulnerabilityprimaryidentifier"></a>`primaryIdentifier` | [`VulnerabilityIdentifier`](#vulnerabilityidentifier) | Primary identifier of the vulnerability. |
-| <a id="vulnerabilityproject"></a>`project` | [`Project`](#project) | The project on which the vulnerability was found. |
+| <a id="vulnerabilityproject"></a>`project` | [`Project`](#project) | Project on which the vulnerability was found. |
 | <a id="vulnerabilityreporttype"></a>`reportType` | [`VulnerabilityReportType`](#vulnerabilityreporttype) | Type of the security report that found the vulnerability (SAST, DEPENDENCY_SCANNING, CONTAINER_SCANNING, DAST, SECRET_DETECTION, COVERAGE_FUZZING, API_FUZZING, CLUSTER_IMAGE_SCANNING, GENERIC). `Scan Type` in the UI. |
 | <a id="vulnerabilityresolvedat"></a>`resolvedAt` | [`Time`](#time) | Timestamp of when the vulnerability state was changed to resolved. |
-| <a id="vulnerabilityresolvedby"></a>`resolvedBy` | [`UserCore`](#usercore) | The user that resolved the vulnerability. |
+| <a id="vulnerabilityresolvedby"></a>`resolvedBy` | [`UserCore`](#usercore) | User that resolved the vulnerability. |
 | <a id="vulnerabilityresolvedondefaultbranch"></a>`resolvedOnDefaultBranch` | [`Boolean!`](#boolean) | Indicates whether the vulnerability is fixed on the default branch or not. |
 | <a id="vulnerabilityscanner"></a>`scanner` | [`VulnerabilityScanner`](#vulnerabilityscanner) | Scanner metadata for the vulnerability. |
 | <a id="vulnerabilityseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability (INFO, UNKNOWN, LOW, MEDIUM, HIGH, CRITICAL). |
@@ -14468,7 +14584,7 @@ Represents the vulnerability details commit field.
 | <a id="vulnerabilitydetailcommitdescription"></a>`description` | [`String`](#string) | Description of the field. |
 | <a id="vulnerabilitydetailcommitfieldname"></a>`fieldName` | [`String`](#string) | Name of the field. |
 | <a id="vulnerabilitydetailcommitname"></a>`name` | [`String`](#string) | Name of the field. |
-| <a id="vulnerabilitydetailcommitvalue"></a>`value` | [`String!`](#string) | The commit SHA value. |
+| <a id="vulnerabilitydetailcommitvalue"></a>`value` | [`String!`](#string) | Commit SHA value. |
 
 ### `VulnerabilityDetailDiff`
 
@@ -14627,7 +14743,7 @@ Represents an issue link of a vulnerability.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="vulnerabilityissuelinkid"></a>`id` | [`ID!`](#id) | GraphQL ID of the vulnerability. |
-| <a id="vulnerabilityissuelinkissue"></a>`issue` | [`Issue!`](#issue) | The issue attached to issue link. |
+| <a id="vulnerabilityissuelinkissue"></a>`issue` | [`Issue!`](#issue) | Issue attached to issue link. |
 | <a id="vulnerabilityissuelinklinktype"></a>`linkType` | [`VulnerabilityIssueLinkType!`](#vulnerabilityissuelinktype) | Type of the issue link. |
 
 ### `VulnerabilityLocationContainerScanning`
@@ -14777,8 +14893,8 @@ Represents a vulnerable dependency. Used in vulnerability location data.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="vulnerabledependencypackage"></a>`package` | [`VulnerablePackage`](#vulnerablepackage) | The package associated with the vulnerable dependency. |
-| <a id="vulnerabledependencyversion"></a>`version` | [`String`](#string) | The version of the vulnerable dependency. |
+| <a id="vulnerabledependencypackage"></a>`package` | [`VulnerablePackage`](#vulnerablepackage) | Package associated with the vulnerable dependency. |
+| <a id="vulnerabledependencyversion"></a>`version` | [`String`](#string) | Version of the vulnerable dependency. |
 
 ### `VulnerablePackage`
 
@@ -14788,7 +14904,7 @@ Represents a vulnerable package. Used in vulnerability dependency data.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="vulnerablepackagename"></a>`name` | [`String`](#string) | The name of the vulnerable package. |
+| <a id="vulnerablepackagename"></a>`name` | [`String`](#string) | Name of the vulnerable package. |
 
 ### `VulnerableProjectsByGrade`
 
@@ -15138,6 +15254,17 @@ Status of a container repository.
 | <a id="containerrepositorystatusdelete_failed"></a>`DELETE_FAILED` | Delete Failed status. |
 | <a id="containerrepositorystatusdelete_scheduled"></a>`DELETE_SCHEDULED` | Delete Scheduled status. |
 
+### `DastProfileCadenceUnit`
+
+Unit for the duration of Dast Profile Cadence.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="dastprofilecadenceunitday"></a>`DAY` | DAST Profile Cadence duration in days. |
+| <a id="dastprofilecadenceunitmonth"></a>`MONTH` | DAST Profile Cadence duration in months. |
+| <a id="dastprofilecadenceunitweek"></a>`WEEK` | DAST Profile Cadence duration in weeks. |
+| <a id="dastprofilecadenceunityear"></a>`YEAR` | DAST Profile Cadence duration in years. |
+
 ### `DastScanTypeEnum`
 
 | Value | Description |
@@ -15431,6 +15558,8 @@ Values for sorting issues.
 | <a id="issuesortseverity_desc"></a>`SEVERITY_DESC` | Severity from more critical to less critical. |
 | <a id="issuesortsla_due_at_asc"></a>`SLA_DUE_AT_ASC` | Issues with earliest SLA due time shown first. |
 | <a id="issuesortsla_due_at_desc"></a>`SLA_DUE_AT_DESC` | Issues with latest SLA due time shown first. |
+| <a id="issuesorttitle_asc"></a>`TITLE_ASC` | Title by ascending order. |
+| <a id="issuesorttitle_desc"></a>`TITLE_DESC` | Title by descending order. |
 | <a id="issuesortupdated_asc"></a>`UPDATED_ASC` | Updated at ascending order. |
 | <a id="issuesortupdated_desc"></a>`UPDATED_DESC` | Updated at descending order. |
 | <a id="issuesortweight_asc"></a>`WEIGHT_ASC` | Weight by ascending order. |
@@ -15664,8 +15793,8 @@ Milestone ID wildcard values.
 | ----- | ----------- |
 | <a id="milestonewildcardidany"></a>`ANY` | Milestone is assigned. |
 | <a id="milestonewildcardidnone"></a>`NONE` | No milestone is assigned. |
-| <a id="milestonewildcardidstarted"></a>`STARTED` | An open, started milestone (start date <= today). |
-| <a id="milestonewildcardidupcoming"></a>`UPCOMING` | An open milestone due in the future (due date >= today). |
+| <a id="milestonewildcardidstarted"></a>`STARTED` | Milestone assigned is open and started (start date <= today). |
+| <a id="milestonewildcardidupcoming"></a>`UPCOMING` | Milestone assigned is due closest in the future (due date > today). |
 
 ### `MoveType`
 
@@ -15673,8 +15802,8 @@ The position to which the adjacent object should be moved.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="movetypeafter"></a>`after` | The adjacent object will be moved after the object that is being moved. |
-| <a id="movetypebefore"></a>`before` | The adjacent object will be moved before the object that is being moved. |
+| <a id="movetypeafter"></a>`after` | Adjacent object is moved after the object that is being moved. |
+| <a id="movetypebefore"></a>`before` | Adjacent object is moved before the object that is being moved. |
 
 ### `MutationOperationMode`
 
@@ -15709,8 +15838,8 @@ Negated Milestone ID wildcard values.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="negatedmilestonewildcardidstarted"></a>`STARTED` | An open, started milestone (start date <= today). |
-| <a id="negatedmilestonewildcardidupcoming"></a>`UPCOMING` | An open milestone due in the future (due date >= today). |
+| <a id="negatedmilestonewildcardidstarted"></a>`STARTED` | Milestone assigned is open and yet to be started (start date > today). |
+| <a id="negatedmilestonewildcardidupcoming"></a>`UPCOMING` | Milestone assigned is open but due in the past (due date <= today). |
 
 ### `NetworkPolicyKind`
 
@@ -15718,8 +15847,8 @@ Kind of the network policy.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="networkpolicykindciliumnetworkpolicy"></a>`CiliumNetworkPolicy` | The policy kind of Cilium Network Policy. |
-| <a id="networkpolicykindnetworkpolicy"></a>`NetworkPolicy` | The policy kind of Network Policy. |
+| <a id="networkpolicykindciliumnetworkpolicy"></a>`CiliumNetworkPolicy` | Policy kind of Cilium Network Policy. |
+| <a id="networkpolicykindnetworkpolicy"></a>`NetworkPolicy` | Policy kind of Network Policy. |
 
 ### `OncallRotationUnitEnum`
 
@@ -16389,6 +16518,12 @@ An example `CustomEmojiID` is: `"gid://gitlab/CustomEmoji/1"`.
 A `DastProfileID` is a global ID. It is encoded as a string.
 
 An example `DastProfileID` is: `"gid://gitlab/Dast::Profile/1"`.
+
+### `DastProfileScheduleID`
+
+A `DastProfileScheduleID` is a global ID. It is encoded as a string.
+
+An example `DastProfileScheduleID` is: `"gid://gitlab/Dast::ProfileSchedule/1"`.
 
 ### `DastScannerProfileID`
 
@@ -17163,7 +17298,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ###### `User.groups`
 
-Groups where the user has access.
+Groups where the user has access. Will always return `null` if `paginatable_namespace_drop_down_for_project_creation` feature flag is disabled.
 
 Returns [`GroupConnection`](#groupconnection).
 
@@ -17300,7 +17435,7 @@ Field that are available while modifying the custom mapping attributes for an HT
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="alertmanagementpayloadalertfieldinputfieldname"></a>`fieldName` | [`AlertManagementPayloadAlertFieldName!`](#alertmanagementpayloadalertfieldname) | A GitLab alert field name. |
+| <a id="alertmanagementpayloadalertfieldinputfieldname"></a>`fieldName` | [`AlertManagementPayloadAlertFieldName!`](#alertmanagementpayloadalertfieldname) | GitLab alert field name. |
 | <a id="alertmanagementpayloadalertfieldinputlabel"></a>`label` | [`String`](#string) | Human-readable label of the payload path. |
 | <a id="alertmanagementpayloadalertfieldinputpath"></a>`path` | [`[PayloadAlertFieldPathSegment!]!`](#payloadalertfieldpathsegment) | Path to value inside payload JSON. |
 | <a id="alertmanagementpayloadalertfieldinputtype"></a>`type` | [`AlertManagementPayloadAlertFieldType!`](#alertmanagementpayloadalertfieldtype) | Type of the parsed value. |
@@ -17322,7 +17457,7 @@ Field that are available while modifying the custom mapping attributes for an HT
 | <a id="boardissueinputiterationwildcardid"></a>`iterationWildcardId` | [`IterationWildcardId`](#iterationwildcardid) | Filter by iteration ID wildcard. |
 | <a id="boardissueinputlabelname"></a>`labelName` | [`[String]`](#string) | Filter by label name. |
 | <a id="boardissueinputmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Filter by milestone title. |
-| <a id="boardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
+| <a id="boardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="boardissueinputnot"></a>`not` | [`NegatedBoardIssueInput`](#negatedboardissueinput) | List of negated arguments. |
 | <a id="boardissueinputreleasetag"></a>`releaseTag` | [`String`](#string) | Filter by release tag. |
 | <a id="boardissueinputsearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
@@ -17355,6 +17490,30 @@ Field that are available while modifying the custom mapping attributes for an HT
 | <a id="complianceframeworkinputname"></a>`name` | [`String`](#string) | New name for the compliance framework. |
 | <a id="complianceframeworkinputpipelineconfigurationfullpath"></a>`pipelineConfigurationFullPath` | [`String`](#string) | Full path of the compliance pipeline configuration stored in a project repository, such as `.gitlab/.compliance-gitlab-ci.yml@compliance/hipaa` **(ULTIMATE)**. |
 
+### `DastProfileCadenceInput`
+
+Represents DAST Profile Cadence.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilecadenceinputduration"></a>`duration` | [`Int`](#int) | Duration of the DAST Profile Cadence. |
+| <a id="dastprofilecadenceinputunit"></a>`unit` | [`DastProfileCadenceUnit`](#dastprofilecadenceunit) | Unit for the duration of DAST Profile Cadence. |
+
+### `DastProfileScheduleInput`
+
+Input type for DAST Profile Schedules.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="dastprofilescheduleinputactive"></a>`active` | [`Boolean`](#boolean) | Status of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputcadence"></a>`cadence` | [`DastProfileCadenceInput`](#dastprofilecadenceinput) | Cadence of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputstartsat"></a>`startsAt` | [`Time`](#time) | Start time of a Dast Profile Schedule. |
+| <a id="dastprofilescheduleinputtimezone"></a>`timezone` | [`String`](#string) | Time Zone for the Start time of a Dast Profile Schedule. |
+
 ### `DastSiteProfileAuthInput`
 
 Input type for DastSiteProfile authentication.
@@ -17364,11 +17523,11 @@ Input type for DastSiteProfile authentication.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dastsiteprofileauthinputenabled"></a>`enabled` | [`Boolean`](#boolean) | Indicates whether authentication is enabled. |
-| <a id="dastsiteprofileauthinputpassword"></a>`password` | [`String`](#string) | The password to authenticate with on the target website. |
-| <a id="dastsiteprofileauthinputpasswordfield"></a>`passwordField` | [`String`](#string) | The name of password field at the sign-in HTML form. |
+| <a id="dastsiteprofileauthinputpassword"></a>`password` | [`String`](#string) | Password to authenticate with on the target website. |
+| <a id="dastsiteprofileauthinputpasswordfield"></a>`passwordField` | [`String`](#string) | Name of password field at the sign-in HTML form. |
 | <a id="dastsiteprofileauthinputurl"></a>`url` | [`String`](#string) | The URL of the page containing the sign-in HTML form on the target website. |
-| <a id="dastsiteprofileauthinputusername"></a>`username` | [`String`](#string) | The username to authenticate with on the target website. |
-| <a id="dastsiteprofileauthinputusernamefield"></a>`usernameField` | [`String`](#string) | The name of username field at the sign-in HTML form. |
+| <a id="dastsiteprofileauthinputusername"></a>`username` | [`String`](#string) | Username to authenticate with on the target website. |
+| <a id="dastsiteprofileauthinputusernamefield"></a>`usernameField` | [`String`](#string) | Name of username field at the sign-in HTML form. |
 
 ### `DiffImagePositionInput`
 
@@ -17415,7 +17574,7 @@ Input type for DastSiteProfile authentication.
 | ---- | ---- | ----------- |
 | <a id="epicfiltersauthorusername"></a>`authorUsername` | [`String`](#string) | Filter by author username. |
 | <a id="epicfilterslabelname"></a>`labelName` | [`[String]`](#string) | Filter by label name. |
-| <a id="epicfiltersmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
+| <a id="epicfiltersmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="epicfiltersnot"></a>`not` | [`NegatedEpicBoardIssueInput`](#negatedepicboardissueinput) | Negated epic arguments. |
 | <a id="epicfilterssearch"></a>`search` | [`String`](#string) | Search query for epic title or description. |
 
@@ -17427,10 +17586,10 @@ A node of an epic tree.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="epictreenodefieldsinputtypeadjacentreferenceid"></a>`adjacentReferenceId` | [`EpicTreeSortingID`](#epictreesortingid) | The ID of the epic_issue or issue that the actual epic or issue is switched with. |
-| <a id="epictreenodefieldsinputtypeid"></a>`id` | [`EpicTreeSortingID!`](#epictreesortingid) | The ID of the epic_issue or epic that is being moved. |
+| <a id="epictreenodefieldsinputtypeadjacentreferenceid"></a>`adjacentReferenceId` | [`EpicTreeSortingID`](#epictreesortingid) | ID of the epic issue or issue the epic or issue is switched with. |
+| <a id="epictreenodefieldsinputtypeid"></a>`id` | [`EpicTreeSortingID!`](#epictreesortingid) | ID of the epic issue or epic that is being moved. |
 | <a id="epictreenodefieldsinputtypenewparentid"></a>`newParentId` | [`EpicID`](#epicid) | ID of the new parent epic. |
-| <a id="epictreenodefieldsinputtyperelativeposition"></a>`relativePosition` | [`MoveType`](#movetype) | The type of the switch, after or before allowed. |
+| <a id="epictreenodefieldsinputtyperelativeposition"></a>`relativePosition` | [`MoveType`](#movetype) | Type of switch. Valid values are `after` or `before`. |
 
 ### `EscalationRuleInput`
 
@@ -17440,10 +17599,10 @@ Represents an escalation rule.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="escalationruleinputelapsedtimeseconds"></a>`elapsedTimeSeconds` | [`Int!`](#int) | The time in seconds before the rule is activated. |
-| <a id="escalationruleinputoncallscheduleiid"></a>`oncallScheduleIid` | [`ID`](#id) | The on-call schedule to notify. |
-| <a id="escalationruleinputstatus"></a>`status` | [`EscalationRuleStatus!`](#escalationrulestatus) | The status required to prevent the rule from activating. |
-| <a id="escalationruleinputusername"></a>`username` | [`String`](#string) | The username of the user to notify. |
+| <a id="escalationruleinputelapsedtimeseconds"></a>`elapsedTimeSeconds` | [`Int!`](#int) | Time in seconds before the rule is activated. |
+| <a id="escalationruleinputoncallscheduleiid"></a>`oncallScheduleIid` | [`ID`](#id) | On-call schedule to notify. |
+| <a id="escalationruleinputstatus"></a>`status` | [`EscalationRuleStatus!`](#escalationrulestatus) | Status required to prevent the rule from activating. |
+| <a id="escalationruleinputusername"></a>`username` | [`String`](#string) | Username of the user to notify. |
 
 ### `JiraUsersMappingInputType`
 
@@ -17478,7 +17637,7 @@ Represents an escalation rule.
 | <a id="negatedboardissueinputiterationwildcardid"></a>`iterationWildcardId` | [`NegatedIterationWildcardId`](#negatediterationwildcardid) | Filter by iteration ID wildcard. |
 | <a id="negatedboardissueinputlabelname"></a>`labelName` | [`[String]`](#string) | Filter by label name. |
 | <a id="negatedboardissueinputmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Filter by milestone title. |
-| <a id="negatedboardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
+| <a id="negatedboardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="negatedboardissueinputreleasetag"></a>`releaseTag` | [`String`](#string) | Filter by release tag. |
 | <a id="negatedboardissueinputtypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter by the given issue types. |
 | <a id="negatedboardissueinputweight"></a>`weight` | [`String`](#string) | Filter by weight. |
@@ -17491,7 +17650,7 @@ Represents an escalation rule.
 | ---- | ---- | ----------- |
 | <a id="negatedepicboardissueinputauthorusername"></a>`authorUsername` | [`String`](#string) | Filter by author username. |
 | <a id="negatedepicboardissueinputlabelname"></a>`labelName` | [`[String]`](#string) | Filter by label name. |
-| <a id="negatedepicboardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
+| <a id="negatedepicboardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 
 ### `NegatedEpicFilterInput`
 
@@ -17511,6 +17670,7 @@ Represents an escalation rule.
 | ---- | ---- | ----------- |
 | <a id="negatedissuefilterinputassigneeid"></a>`assigneeId` | [`String`](#string) | ID of a user not assigned to the issues. |
 | <a id="negatedissuefilterinputassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users not assigned to the issue. |
+| <a id="negatedissuefilterinputauthorusername"></a>`authorUsername` | [`String`](#string) | Username of a user who didn't author the issue. |
 | <a id="negatedissuefilterinputepicid"></a>`epicId` | [`String`](#string) | ID of an epic not associated with the issues. |
 | <a id="negatedissuefilterinputiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues to exclude. For example, `[1, 2]`. |
 | <a id="negatedissuefilterinputiterationid"></a>`iterationId` | [`[ID!]`](#id) | List of iteration Global IDs not applied to the issue. |
@@ -17518,6 +17678,7 @@ Represents an escalation rule.
 | <a id="negatedissuefilterinputlabelname"></a>`labelName` | [`[String!]`](#string) | Labels not applied to this issue. |
 | <a id="negatedissuefilterinputmilestonetitle"></a>`milestoneTitle` | [`[String!]`](#string) | Milestone not applied to this issue. |
 | <a id="negatedissuefilterinputmilestonewildcardid"></a>`milestoneWildcardId` | [`NegatedMilestoneWildcardId`](#negatedmilestonewildcardid) | Filter by negated milestone wildcard values. |
+| <a id="negatedissuefilterinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
 | <a id="negatedissuefilterinputweight"></a>`weight` | [`String`](#string) | Weight not applied to the issue. |
 
 ### `OncallRotationActivePeriodInputType`
@@ -17528,8 +17689,8 @@ Active period time range for on-call rotation.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncallrotationactiveperiodinputtypeendtime"></a>`endTime` | [`String!`](#string) | The end of the rotation active period in 24 hour format, for example "18:30". |
-| <a id="oncallrotationactiveperiodinputtypestarttime"></a>`startTime` | [`String!`](#string) | The start of the rotation active period in 24 hour format, for example "18:30". |
+| <a id="oncallrotationactiveperiodinputtypeendtime"></a>`endTime` | [`String!`](#string) | End of the rotation active period in 24 hour format. For example, "18:30". |
+| <a id="oncallrotationactiveperiodinputtypestarttime"></a>`startTime` | [`String!`](#string) | Start of the rotation active period in 24 hour format. For example, "18:30". |
 
 ### `OncallRotationDateInputType`
 
@@ -17539,8 +17700,8 @@ Date input type for on-call rotation.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncallrotationdateinputtypedate"></a>`date` | [`String!`](#string) | The date component of the date in YYYY-MM-DD format. |
-| <a id="oncallrotationdateinputtypetime"></a>`time` | [`String!`](#string) | The time component of the date in 24hr HH:MM format. |
+| <a id="oncallrotationdateinputtypedate"></a>`date` | [`String!`](#string) | Date component of the date in YYYY-MM-DD format. |
+| <a id="oncallrotationdateinputtypetime"></a>`time` | [`String!`](#string) | Time component of the date in 24hr HH:MM format. |
 
 ### `OncallRotationLengthInputType`
 
@@ -17550,8 +17711,8 @@ The rotation length of the on-call rotation.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncallrotationlengthinputtypelength"></a>`length` | [`Int!`](#int) | The rotation length of the on-call rotation. |
-| <a id="oncallrotationlengthinputtypeunit"></a>`unit` | [`OncallRotationUnitEnum!`](#oncallrotationunitenum) | The unit of the rotation length of the on-call rotation. |
+| <a id="oncallrotationlengthinputtypelength"></a>`length` | [`Int!`](#int) | Rotation length of the on-call rotation. |
+| <a id="oncallrotationlengthinputtypeunit"></a>`unit` | [`OncallRotationUnitEnum!`](#oncallrotationunitenum) | Unit of the rotation length of the on-call rotation. |
 
 ### `OncallUserInputType`
 
@@ -17561,9 +17722,9 @@ The rotation user and color palette.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="oncalluserinputtypecolorpalette"></a>`colorPalette` | [`DataVisualizationColorEnum`](#datavisualizationcolorenum) | A value of DataVisualizationColorEnum. The color from the palette to assign to the on-call user. |
-| <a id="oncalluserinputtypecolorweight"></a>`colorWeight` | [`DataVisualizationWeightEnum`](#datavisualizationweightenum) | A value of DataVisualizationWeightEnum. The color weight to assign to for the on-call user. Note: To view on-call schedules in GitLab, do not provide a value below 500. A value between 500 and 950 ensures sufficient contrast. |
-| <a id="oncalluserinputtypeusername"></a>`username` | [`String!`](#string) | The username of the user to participate in the on-call rotation, such as `user_one`. |
+| <a id="oncalluserinputtypecolorpalette"></a>`colorPalette` | [`DataVisualizationColorEnum`](#datavisualizationcolorenum) | Value of DataVisualizationColorEnum. The color from the palette to assign to the on-call user. |
+| <a id="oncalluserinputtypecolorweight"></a>`colorWeight` | [`DataVisualizationWeightEnum`](#datavisualizationweightenum) | Color weight to assign to for the on-call user. To view on-call schedules in GitLab, do not provide a value below 500. A value between 500 and 950 ensures sufficient contrast. |
+| <a id="oncalluserinputtypeusername"></a>`username` | [`String!`](#string) | Username of the user to participate in the on-call rotation. For example, `"user_one"`. |
 
 ### `ReleaseAssetLinkInput`
 

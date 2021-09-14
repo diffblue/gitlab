@@ -1,0 +1,22 @@
+---
+data_category: optional
+key_path: usage_activity_by_stage_monthly.enablement.geo_secondary_web_oauth_users
+description: Number of distinct owner ids from secodary geo nodes oauth access grants
+product_section: enablement
+product_stage: enablement
+product_group: group::geo
+product_category: 
+value_type: number
+status: data_available
+milestone: "13.12"
+introduced_by_url: 
+time_frame: 28d
+data_source: database
+distribution:
+- ee
+tier:
+- premium
+- ultimate
+performance_indicator_type:
+- gmau
+- paid_gmau

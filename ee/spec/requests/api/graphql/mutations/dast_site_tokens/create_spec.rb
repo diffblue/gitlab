@@ -5,16 +5,17 @@ require 'spec_helper'
 RSpec.describe 'Creating a DAST Site Token' do
   include GraphqlHelpers
 
-  let(:target_url) { generate(:url) }
-  let(:dast_site_token) { DastSiteToken.find_by!(project: project, token: uuid) }
-  let(:uuid) { '0000-0000-0000-0000' }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:current_user) { create(:user) }
+  let_it_be(:uuid) { '0000-0000-0000-0000' }
 
   let(:mutation_name) { :dast_site_token_create }
+
   let(:mutation) do
     graphql_mutation(
       mutation_name,
       full_path: full_path,
-      target_url: target_url
+      target_url: generate(:url)
     )
   end
 
@@ -23,11 +24,14 @@ RSpec.describe 'Creating a DAST Site Token' do
   end
 
   it_behaves_like 'an on-demand scan mutation when user cannot run an on-demand scan'
+
   it_behaves_like 'an on-demand scan mutation when user can run an on-demand scan' do
     it 'returns the dast_site_token id' do
       subject
 
-      expect(mutation_response["id"]).to eq(dast_site_token.to_global_id.to_s)
+      dast_site_token = DastSiteToken.find_by!(project: project, token: uuid)
+
+      expect(mutation_response["id"]).to eq(global_id_of(dast_site_token))
     end
 
     it 'creates a new dast_site_token' do

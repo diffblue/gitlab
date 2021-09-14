@@ -10,7 +10,7 @@ module Mutations
                required: false,
                loads: Types::IterationType,
                description: <<~DESC
-                 The iteration to assign to the issue.
+                 Iteration to assign to the issue.
                DESC
 
       def resolve(project_path:, iid:, iteration: nil)

@@ -188,6 +188,10 @@ RSpec.describe API::Namespaces do
   end
 
   describe 'PUT /namespaces/:id' do
+    let!(:namespace_statistics) do
+      create(:namespace_statistics, namespace: group1, shared_runners_seconds: 1600 * 60)
+    end
+
     let(:params) do
       {
         shared_runners_minutes_limit: 9001,
@@ -198,9 +202,12 @@ RSpec.describe API::Namespaces do
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
+      group1.update!(shared_runners_minutes_limit: 1000, extra_shared_runners_minutes_limit: 500)
     end
 
     context 'when authenticated as admin' do
+      subject { put api("/namespaces/#{group1.id}", admin), params: params }
+
       it 'updates namespace using full_path when full_path contains dots' do
         put api("/namespaces/#{group1.full_path}", admin), params: params
 
@@ -213,7 +220,7 @@ RSpec.describe API::Namespaces do
       end
 
       it 'updates namespace using id' do
-        put api("/namespaces/#{group1.id}", admin), params: params
+        subject
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['shared_runners_minutes_limit']).to eq(params[:shared_runners_minutes_limit])
@@ -224,7 +231,7 @@ RSpec.describe API::Namespaces do
       it 'expires the CI minutes CachedQuota' do
         expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
 
-        put api("/namespaces/#{group1.id}", admin), params: params
+        subject
       end
 
       context 'when request has extra_shared_runners_minutes_limit param' do
@@ -233,10 +240,29 @@ RSpec.describe API::Namespaces do
           params.delete(:shared_runners_minutes_limit)
         end
 
+        it 'updates the extra shared runners minutes limit' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['extra_shared_runners_minutes_limit'])
+            .to eq(params[:extra_shared_runners_minutes_limit])
+        end
+
         it 'expires the CI minutes CachedQuota' do
           expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
 
-          put api("/namespaces/#{group1.id}", admin), params: params
+          subject
+        end
+
+        it 'updates pending builds data since adding extra minutes the quota is not used up anymore' do
+          minutes_exceeded = group1.ci_minutes_quota.minutes_used_up?
+          expect(minutes_exceeded).to eq(true)
+
+          pending_build = create(:ci_pending_build, namespace: group1, minutes_exceeded: minutes_exceeded)
+
+          subject
+
+          expect(pending_build.reload.minutes_exceeded).to eq(false)
         end
       end
 
@@ -245,7 +271,7 @@ RSpec.describe API::Namespaces do
           params.delete(:shared_runners_minutes_limit)
           expect(Gitlab::Ci::Minutes::CachedQuota).not_to receive(:new)
 
-          put api("/namespaces/#{group1.id}", admin), params: params
+          subject
         end
       end
     end

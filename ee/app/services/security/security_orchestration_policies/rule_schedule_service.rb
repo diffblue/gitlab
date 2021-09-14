@@ -7,7 +7,7 @@ module Security
         schedule.schedule_next_run!
 
         branches = schedule.applicable_branches
-        actions_for(schedule).each { |action| process_action(action, branches) }
+        actions_for(schedule).each { |action| process_action(action, schedule, branches) }
       end
 
       private
@@ -19,9 +19,11 @@ module Security
         policy[:actions]
       end
 
-      def process_action(action, branches)
-        case action[:scan]
+      def process_action(action, schedule, branches)
+        case action[:scan].to_s
         when 'secret_detection' then schedule_scan(action, branches)
+        when 'container_scanning' then schedule_container_scanning_scan(action, schedule, branches)
+        when 'cluster_image_scanning' then schedule_cluster_image_scanning_scan(action, schedule)
         when 'dast' then schedule_dast_on_demand_scan(action, branches)
         end
       end
@@ -32,6 +34,18 @@ module Security
             .new(project: container, current_user: current_user, params: { action: action, branch: branch })
             .execute
         end
+      end
+
+      def schedule_container_scanning_scan(action, schedule, branches)
+        if schedule.for_cluster?
+          schedule_cluster_image_scanning_scan(action, schedule)
+        else
+          schedule_scan(action, branches)
+        end
+      end
+
+      def schedule_cluster_image_scanning_scan(action, schedule)
+        schedule_scan(action.merge(scan: 'cluster_image_scanning', clusters: schedule.applicable_clusters), [container.default_branch_or_main])
       end
 
       def schedule_dast_on_demand_scan(action, branches)

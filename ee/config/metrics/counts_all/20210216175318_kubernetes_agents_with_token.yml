@@ -15,5 +15,5 @@ distribution:
 tier:
 - premium
 - ultimate
-skip_validation: true
 performance_indicator_type: []
+milestone: "<13.9"

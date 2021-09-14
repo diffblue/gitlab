@@ -8,11 +8,11 @@ module Types
 
       argument :length, GraphQL::Types::Int,
                 required: true,
-                description: 'The rotation length of the on-call rotation.'
+                description: 'Rotation length of the on-call rotation.'
 
       argument :unit, Types::IncidentManagement::OncallRotationLengthUnitEnum,
                 required: true,
-                description: 'The unit of the rotation length of the on-call rotation.'
+                description: 'Unit of the rotation length of the on-call rotation.'
     end
   end
 end

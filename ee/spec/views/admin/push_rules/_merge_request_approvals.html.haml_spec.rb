@@ -14,7 +14,7 @@ RSpec.describe 'admin/push_rules/_merge_request_approvals' do
   it 'shows settings form', :aggregate_failures do
     render
 
-    expect(rendered).to have_content(_('Merge request (MR) approvals'))
-    expect(rendered).to have_content(_('Regulate approvals by authors/committers. Affects all projects.'))
+    expect(rendered).to have_content(_('Merge request approvals'))
+    expect(rendered).to have_content(_('Configure approvals by authors and committers on all projects.'))
   end
 end

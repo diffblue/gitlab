@@ -347,18 +347,21 @@ sudo -u git -H GITLAB_ASSUME_YES=1 bundle exec rake gitlab:backup:restore RAILS_
 
 #### Back up Git repositories concurrently
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/37158) in GitLab 13.3.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/37158) in GitLab 13.3.
+> - [Concurrent restore introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69330) in GitLab 14.3
 
 When using [multiple repository storages](../administration/repository_storage_paths.md),
-repositories can be backed up concurrently to help fully use CPU time. The
+repositories can be backed up or restored concurrently to help fully use CPU time. The
 following variables are available to modify the default behavior of the Rake
 task:
 
 - `GITLAB_BACKUP_MAX_CONCURRENCY`: The maximum number of projects to back up at
-  the same time. Defaults to `1`.
+  the same time. Defaults to the number of logical CPUs (in GitLab 14.1 and
+  earlier, defaults to `1`).
 - `GITLAB_BACKUP_MAX_STORAGE_CONCURRENCY`: The maximum number of projects to
   back up at the same time on each storage. This allows the repository backups
-  to be spread across storages. Defaults to `1`.
+  to be spread across storages. Defaults to `2` (in GitLab 14.1 and earlier,
+  defaults to `1`).
 
 For example, for Omnibus GitLab installations with 4 repository storages:
 
@@ -1477,16 +1480,8 @@ If this happens, examine the following:
 ### `gitaly-backup` for repository backup and restore **(FREE SELF)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/333034) in GitLab 14.2.
-> - [Deployed behind a feature flag](../user/feature_flags.md), enabled by default.
-> - Recommended for production use.
-> - For GitLab self-managed instances, GitLab administrators can opt to [disable it](#disable-or-enable-gitaly-backup).
-
-There can be
-[risks when disabling released features](../administration/feature_flags.md#risks-when-disabling-released-features).
-Refer to this feature's version history for more details.
 
 `gitaly-backup` is used by the backup Rake task to create and restore repository backups from Gitaly.
-`gitaly-backup` replaces the previous backup method that directly calls RPCs on Gitaly from GitLab.
 
 The backup Rake task must be able to find this executable. It can be configured in Omnibus GitLab packages:
 
@@ -1498,22 +1493,3 @@ The backup Rake task must be able to find this executable. It can be configured 
 
 1. [Reconfigure GitLab](../administration/restart_gitlab.md#omnibus-gitlab-reconfigure)
    for the changes to take effect
-
-#### Disable or enable `gitaly-backup`
-
-`gitaly-backup` is under development but ready for production use.
-It is deployed behind a feature flag that is **enabled by default**.
-[GitLab administrators with access to the GitLab Rails console](../administration/feature_flags.md)
-can opt to disable it.
-
-To disable it:
-
-```ruby
-Feature.disable(:gitaly_backup)
-```
-
-To enable it:
-
-```ruby
-Feature.enable(:gitaly_backup)
-```

@@ -5,8 +5,12 @@ module Projects
     include SecurityAndCompliancePermissions
     include API::Helpers::GraphqlHelpers
 
-    before_action :authorize_read_on_demand_scans!, only: :index
+    before_action :authorize_read_on_demand_dast_scan!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new, :edit]
+
+    before_action do
+      push_frontend_feature_flag(:dast_on_demand_scans_scheduler, @project, default_enabled: :yaml)
+    end
 
     feature_category :dynamic_application_security_testing
 
@@ -29,6 +33,15 @@ module Projects
                 branch { name }
                 dastSiteProfile { id }
                 dastScannerProfile { id }
+                dastProfileSchedule {
+                  active
+                  cadence {
+                    duration
+                    unit
+                  }
+                  startsAt
+                  timezone
+                }
               }
             }
           }

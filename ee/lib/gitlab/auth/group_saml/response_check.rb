@@ -40,7 +40,7 @@ module Gitlab
         def name_id_matches_identity!
           return unless name_id_changed?
 
-          message = s_('GroupSAML|must match stored NameID of "%{extern_uid}" as we use this to identify users. If the NameID changes users will be unable to sign in.') % { extern_uid: identity&.extern_uid }
+          message = s_('GroupSAML|must match stored NameID of "%{extern_uid}" to identify user and allow sign in') % { extern_uid: identity&.extern_uid }
           errors.add(:name_id, message)
         end
 
@@ -48,13 +48,13 @@ module Gitlab
           return if name_id_format.ends_with?(':persistent')
           return if name_id_format.ends_with?(':emailAddress') && name_id_is_email?
 
-          errors.add(:name_id_format, s_('GroupSAML|should be "persistent"'))
+          errors.add(:name_id_format, s_('GroupSAML|"persistent" recommended'))
         end
 
         def name_id_randomly_generated!
           return unless name_id_is_new? && unreliable_name_id?
 
-          errors.add(:name_id, s_('GroupSAML|should be a random persistent ID, emails are discouraged'))
+          errors.add(:name_id, s_('GroupSAML|recommend persistent ID instead of email'))
         end
 
         def unreliable_name_id?

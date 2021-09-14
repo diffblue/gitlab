@@ -53,6 +53,7 @@ export const MilestoneFilterType = {
 
 export const MilestoneIDs = {
   NONE: 0,
+  ANY: -1,
 };
 
 export const ANY_MILESTONE = {

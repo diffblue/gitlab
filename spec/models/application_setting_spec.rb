@@ -7,6 +7,8 @@ RSpec.describe ApplicationSetting do
 
   subject(:setting) { described_class.create_from_defaults }
 
+  it_behaves_like 'sanitizable', :application_setting, %i[default_branch_name]
+
   it { include(CacheableAttributes) }
   it { include(ApplicationSettingImplementation) }
   it { expect(described_class.current_without_cache).to eq(described_class.last) }
@@ -939,6 +941,8 @@ RSpec.describe ApplicationSetting do
           throttle_unauthenticated_files_api_period_in_seconds
           throttle_authenticated_files_api_requests_per_period
           throttle_authenticated_files_api_period_in_seconds
+          throttle_authenticated_git_lfs_requests_per_period
+          throttle_authenticated_git_lfs_period_in_seconds
         ]
       end
 

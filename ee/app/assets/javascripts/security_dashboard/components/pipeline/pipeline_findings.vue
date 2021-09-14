@@ -16,7 +16,13 @@ export default {
     GlLoadingIcon,
     VulnerabilityList,
   },
-  inject: ['pipeline', 'projectFullPath'],
+  inject: {
+    pipeline: {},
+    projectFullPath: {},
+    canViewFalsePositive: {
+      default: false,
+    },
+  },
   props: {
     filters: {
       type: Object,
@@ -53,6 +59,7 @@ export default {
           ...this.filters,
           pipelineId: this.pipeline.iid,
           fullPath: this.projectFullPath,
+          vetEnabled: this.canViewFalsePositive,
           first: VULNERABILITIES_PER_PAGE,
           reportType: this.normalizeForGraphQLQuery('reportType'),
           severity: this.normalizeForGraphQLQuery('severity'),

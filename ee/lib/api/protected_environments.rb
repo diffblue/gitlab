@@ -105,10 +105,6 @@ module API
 
       before do
         authorize! :admin_protected_environment, user_group
-
-        unless Feature.enabled?(:group_level_protected_environments, user_group, default_enabled: :yaml)
-          not_found!
-        end
       end
 
       desc "Get a group's protected environments" do

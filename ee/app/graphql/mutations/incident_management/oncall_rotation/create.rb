@@ -10,37 +10,37 @@ module Mutations
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project to create the on-call schedule in.'
+                 description: 'Project to create the on-call schedule in.'
 
         argument :schedule_iid, GraphQL::Types::String,
                  required: true,
-                 description: 'The IID of the on-call schedule to create the on-call rotation in.',
+                 description: 'IID of the on-call schedule to create the on-call rotation in.',
                  as: :iid
 
         argument :name, GraphQL::Types::String,
                  required: true,
-                 description: 'The name of the on-call rotation.'
+                 description: 'Name of the on-call rotation.'
 
         argument :starts_at, Types::IncidentManagement::OncallRotationDateInputType,
                  required: true,
-                 description: 'The start date and time of the on-call rotation, in the timezone of the on-call schedule.'
+                 description: 'Start date and time of the on-call rotation, in the timezone of the on-call schedule.'
 
         argument :ends_at, Types::IncidentManagement::OncallRotationDateInputType,
                  required: false,
-                 description: 'The end date and time of the on-call rotation, in the timezone of the on-call schedule.'
+                 description: 'End date and time of the on-call rotation, in the timezone of the on-call schedule.'
 
         argument :rotation_length, Types::IncidentManagement::OncallRotationLengthInputType,
                  required: true,
-                 description: 'The rotation length of the on-call rotation.'
+                 description: 'Rotation length of the on-call rotation.'
 
         argument :active_period, Types::IncidentManagement::OncallRotationActivePeriodInputType,
                  required: false,
-                 description: 'The active period of time that the on-call rotation should take place.'
+                 description: 'Active period of time that the on-call rotation should take place.'
 
         argument :participants,
                  [Types::IncidentManagement::OncallUserInputType],
                  required: true,
-                 description: 'The usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies.'
+                 description: 'Usernames of users participating in the on-call rotation. A maximum limit of 100 participants applies.'
 
         def resolve(iid:, project_path:, participants:, **args)
           project = Project.find_by_full_path(project_path)

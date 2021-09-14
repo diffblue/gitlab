@@ -1,8 +1,9 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicenseStatusIcon from 'ee/vue_shared/license_compliance/components/license_status_icon.vue';
+import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import store from 'ee/vue_shared/security_reports/store';
 import { codequalityParsedIssues } from 'ee_jest/vue_mr_widget/mock_data';
 import {
@@ -26,7 +27,9 @@ describe('Report issue', () => {
   });
 
   afterEach(() => {
-    vm.$destroy();
+    if (vm?.$destroy) vm.$destroy();
+
+    if (wrapper) wrapper.destroy();
   });
 
   describe('for codequality issue', () => {
@@ -64,31 +67,39 @@ describe('Report issue', () => {
 
   describe('with location', () => {
     it('should render location', () => {
-      vm = mountComponent(ReportIssue, {
-        issue: sastParsedIssues[0],
-        component: componentNames.SecurityIssueBody,
-        status: STATUS_FAILED,
+      vm = mount(ReportIssue, {
+        propsData: {
+          issue: sastParsedIssues[0],
+          component: componentNames.SecurityIssueBody,
+          status: STATUS_FAILED,
+        },
+        stubs: {
+          SecurityIssueBody,
+        },
       });
 
-      expect(vm.$el.textContent).toContain('in');
-      expect(vm.$el.querySelector('li a').getAttribute('href')).toEqual(
-        sastParsedIssues[0].urlPath,
-      );
+      expect(vm.text()).toContain('in');
+      expect(vm.find('li a').attributes('href')).toEqual(sastParsedIssues[0].urlPath);
     });
   });
 
   describe('without location', () => {
     it('should not render location', () => {
-      vm = mountComponent(ReportIssue, {
-        issue: {
-          title: 'foo',
+      vm = mount(ReportIssue, {
+        propsData: {
+          issue: {
+            title: 'foo',
+          },
+          component: componentNames.SecurityIssueBody,
+          status: STATUS_SUCCESS,
         },
-        component: componentNames.SecurityIssueBody,
-        status: STATUS_SUCCESS,
+        stubs: {
+          SecurityIssueBody,
+        },
       });
 
-      expect(vm.$el.textContent).not.toContain('in');
-      expect(vm.$el.querySelector('a')).toEqual(null);
+      expect(vm.text()).not.toContain('in');
+      expect(vm.find('a').exists()).toBe(false);
     });
   });
 
@@ -156,12 +167,16 @@ describe('Report issue', () => {
 
   describe('for license compliance issue', () => {
     it('renders LicenseIssueBody & LicenseStatusIcon', () => {
-      wrapper = shallowMount(ReportIssue, {
+      wrapper = mount(ReportIssue, {
         propsData: {
           issue: licenseComplianceParsedIssues[0],
           component: componentNames.LicenseIssueBody,
           iconComponent: iconComponentNames.LicenseStatusIcon,
           status: STATUS_NEUTRAL,
+        },
+        stubs: {
+          LicenseIssueBody,
+          LicenseStatusIcon,
         },
       });
 

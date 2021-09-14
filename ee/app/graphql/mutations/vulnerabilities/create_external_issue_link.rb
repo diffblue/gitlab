@@ -9,7 +9,7 @@ module Mutations
 
       field :external_issue_link, Types::Vulnerability::ExternalIssueLinkType,
             null: true,
-            description: 'The created external issue link.'
+            description: 'Created external issue link.'
 
       argument :id,
                ::Types::GlobalIDType[::Vulnerability],

@@ -8,7 +8,6 @@ import DurationChart from 'ee/analytics/cycle_analytics/components/duration_char
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';
-import { toYmd } from 'ee/analytics/shared/utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   currentGroup,
@@ -16,6 +15,7 @@ import {
   createdAfter,
   selectedProjects,
 } from 'jest/cycle_analytics/mock_data';
+import { toYmd } from '~/analytics/shared/utils';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
 import StageTable from '~/cycle_analytics/components/stage_table.vue';
 import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
@@ -414,8 +414,8 @@ describe('EE Value Stream Analytics component', () => {
   });
 
   describe('Path navigation', () => {
-    const selectedStage = { title: 'Plan', slug: 2 };
-    const overviewStage = { title: 'Overview', slug: OVERVIEW_STAGE_ID };
+    const selectedStage = { id: 2, title: 'Plan' };
+    const overviewStage = { id: OVERVIEW_STAGE_ID, title: 'Overview' };
     let actionSpies = {};
 
     beforeEach(async () => {

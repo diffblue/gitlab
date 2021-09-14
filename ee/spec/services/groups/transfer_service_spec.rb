@@ -29,11 +29,12 @@ RSpec.describe Groups::TransferService, '#execute' do
           create(:elasticsearch_indexed_namespace, namespace: new_group)
         end
 
-        it 'invalidates the cache and indexes the project and all associated data' do
+        it 'invalidates the namespace and project cache and indexes the project and all associated data' do
           expect(project).not_to receive(:maintain_elasticsearch_update)
           expect(project).not_to receive(:maintain_elasticsearch_destroy)
           expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
           expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_project!).with(project.id).and_call_original
+          expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_namespace!).with(group.id).and_call_original
 
           transfer_service.execute(new_group)
         end
@@ -45,11 +46,12 @@ RSpec.describe Groups::TransferService, '#execute' do
           create(:elasticsearch_indexed_namespace, namespace: new_group)
         end
 
-        it 'invalidates the cache and indexes the project and all associated data' do
+        it 'invalidates the namespace and project cache and indexes the project and all associated data' do
           expect(project).not_to receive(:maintain_elasticsearch_update)
           expect(project).not_to receive(:maintain_elasticsearch_destroy)
           expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
           expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_project!).with(project.id).and_call_original
+          expect(::Gitlab::CurrentSettings).to receive(:invalidate_elasticsearch_indexes_cache_for_namespace!).with(group.id).and_call_original
 
           transfer_service.execute(new_group)
         end
@@ -59,11 +61,12 @@ RSpec.describe Groups::TransferService, '#execute' do
     context 'when elasticsearch_limit_indexing is off' do
       let(:new_group) { create(:group, :private) }
 
-      it 'does not invalidate the cache and reindexes projects and associated data' do
+      it 'does not invalidate the namespace or project cache and reindexes projects and associated data' do
         project1 = create(:project, :repository, :public, namespace: group)
         project2 = create(:project, :repository, :public, namespace: group)
         project3 = create(:project, :repository, :private, namespace: group)
 
+        expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_namespace!)
         expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
         expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project1)
         expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project2)

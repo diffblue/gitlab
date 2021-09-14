@@ -106,8 +106,8 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
         end
 
         context 'when secret variables already exist' do
-          let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, key: Dast::SiteProfileSecretVariable::REQUEST_HEADERS, dast_site_profile: dast_site_profile) }
-          let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, key: Dast::SiteProfileSecretVariable::PASSWORD, dast_site_profile: dast_site_profile) }
+          let_it_be(:request_headers_variable) { create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile) }
+          let_it_be(:password_variable) { create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile) }
 
           context 'when the arguments are omitted' do
             subject do

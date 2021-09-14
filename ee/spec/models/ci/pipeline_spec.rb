@@ -13,7 +13,7 @@ RSpec.describe Ci::Pipeline do
   end
 
   describe 'associations' do
-    it { is_expected.to have_many(:security_scans).through(:builds).class_name('Security::Scan') }
+    it { is_expected.to have_many(:security_scans).class_name('Security::Scan') }
     it { is_expected.to have_many(:security_findings).through(:security_scans).class_name('Security::Finding').source(:findings) }
     it { is_expected.to have_many(:downstream_bridges) }
     it { is_expected.to have_many(:vulnerability_findings).through(:vulnerabilities_finding_pipelines).class_name('Vulnerabilities::Finding') }
@@ -634,16 +634,34 @@ RSpec.describe Ci::Pipeline do
   end
 
   describe '#authorized_cluster_agents' do
-    let(:finder) { double(execute: agents) }
-    let(:agents) { double }
+    let(:agent) { instance_double(Clusters::Agent) }
+    let(:authorization) { instance_double(Clusters::Agents::GroupAuthorization, agent: agent) }
+    let(:finder) { double(execute: [authorization]) }
 
     it 'retrieves agent records from the finder and caches the result' do
-      expect(Clusters::DeployableAgentsFinder).to receive(:new).once
+      expect(Clusters::AgentAuthorizationsFinder).to receive(:new).once
+      .with(pipeline.project)
+      .and_return(finder)
+
+      expect(pipeline.authorized_cluster_agents).to contain_exactly(agent)
+      expect(pipeline.authorized_cluster_agents).to contain_exactly(agent) # cached
+    end
+
+    context 'group_authorized_agents feature flag is disabled' do
+      let(:finder) { double(execute: [agent]) }
+
+      before do
+        stub_feature_flags(group_authorized_agents: false)
+      end
+
+      it 'retrieves agent records from the legacy finder and caches the result' do
+        expect(Clusters::DeployableAgentsFinder).to receive(:new).once
         .with(pipeline.project)
         .and_return(finder)
 
-      expect(pipeline.authorized_cluster_agents).to eq(agents)
-      expect(pipeline.authorized_cluster_agents).to eq(agents) # cached
+        expect(pipeline.authorized_cluster_agents).to contain_exactly(agent)
+        expect(pipeline.authorized_cluster_agents).to contain_exactly(agent) # cached
+      end
     end
   end
 end

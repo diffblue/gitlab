@@ -19,18 +19,4 @@ RSpec.describe Groups::ExportMembershipsWorker do
 
     worker.perform(group.id, user.id)
   end
-
-  context 'when there is a Module::DelegationError' do
-    before do
-      allow_next_instance_of(Groups::Memberships::ExportService) do |service|
-        allow(service).to receive(:execute).and_raise(Module::DelegationError)
-      end
-    end
-
-    it 'rescues the exception' do
-      expect(Notify).not_to receive(:memberships_export_email)
-      expect(Raven).to receive(:capture_exception).and_call_original
-      worker.perform(group.id, user.id)
-    end
-  end
 end

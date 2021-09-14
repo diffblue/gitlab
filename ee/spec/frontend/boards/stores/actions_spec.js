@@ -5,7 +5,6 @@ import Vuex from 'vuex';
 import { BoardType, GroupByParamType, listsQuery, issuableTypes } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
-import boardsStoreEE from 'ee/boards/stores/boards_store_ee';
 import * as types from 'ee/boards/stores/mutation_types';
 import mutations from 'ee/boards/stores/mutations';
 import setWindowLocation from 'helpers/set_window_location_helper';
@@ -26,6 +25,8 @@ import {
   mockEpic,
   mockMilestones,
   mockAssignees,
+  mockSubGroups,
+  mockGroup0,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -277,7 +278,11 @@ describe('fetchEpicsSwimlanes', () => {
       [
         {
           type: types.RECEIVE_EPICS_SUCCESS,
-          payload: { epics: [mockEpic], hasMoreEpics: true, epicsEndCursor: 'ENDCURSOR' },
+          payload: {
+            epics: [mockEpic],
+            hasMoreEpics: true,
+            epicsEndCursor: 'ENDCURSOR',
+          },
         },
       ],
       [],
@@ -458,16 +463,7 @@ describe('setShowLabels', () => {
 });
 
 describe('updateListWipLimit', () => {
-  let storeMock;
-
   beforeEach(() => {
-    storeMock = {
-      state: { endpoints: { listsEndpoint: '/test' } },
-      create: () => {},
-      setCurrentBoard: () => {},
-    };
-
-    boardsStoreEE.initEESpecific(storeMock);
     jest.mock('axios');
     axios.put = jest.fn();
     axios.put.mockResolvedValue({ data: {} });
@@ -938,7 +934,7 @@ describe('addListNewEpic', () => {
     boardType: 'group',
     fullPath: 'gitlab-org/gitlab',
     boardConfig: {
-      labelIds: [],
+      labelIds: ['gid://gitlab/GroupLabel/23'],
       assigneeId: null,
       milestoneId: -1,
     },
@@ -949,7 +945,7 @@ describe('addListNewEpic', () => {
   it('should add board scope to the epic being created', async () => {
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        boardEpicCreate: {
+        createEpic: {
           epic: mockEpic,
           errors: [],
         },
@@ -958,7 +954,7 @@ describe('addListNewEpic', () => {
 
     await actions.addListNewEpic(
       { dispatch: jest.fn(), commit: jest.fn(), state },
-      { epicInput: mockEpic, list: fakeList },
+      { epicInput: { ...mockEpic, groupPath: state.fullPath }, list: fakeList },
     );
 
     expect(gqlClient.mutate).toHaveBeenCalledWith({
@@ -968,7 +964,7 @@ describe('addListNewEpic', () => {
           ...mockEpic,
           groupPath: state.fullPath,
           id: 'gid://gitlab/Epic/41',
-          labels: [],
+          addLabelIds: ['gid://gitlab/GroupLabel/23'],
         },
       },
     });
@@ -982,7 +978,7 @@ describe('addListNewEpic', () => {
 
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        boardEpicCreate: {
+        createEpic: {
           epic,
           errors: [],
         },
@@ -990,32 +986,35 @@ describe('addListNewEpic', () => {
     });
 
     const payload = {
-      ...epic,
-      labelIds: [...epic.labelIds, 'gid://gitlab/GroupLabel/5'],
+      ...mockEpic,
+      addLabelIds: [...epic.labelIds, 'gid://gitlab/GroupLabel/23'],
     };
 
     await actions.addListNewEpic(
       { dispatch: jest.fn(), commit: jest.fn(), state },
-      { epicInput: epic, list: fakeList },
+      { epicInput: { ...epic, groupPath: state.fullPath }, list: fakeList },
     );
 
     expect(gqlClient.mutate).toHaveBeenCalledWith({
       mutation: epicCreateMutation,
       variables: {
         input: {
-          ...epic,
+          ...payload,
           groupPath: state.fullPath,
         },
       },
     });
-    expect(payload.labelIds).toEqual(['gid://gitlab/GroupLabel/4', 'gid://gitlab/GroupLabel/5']);
+    expect(payload.addLabelIds).toEqual([
+      'gid://gitlab/GroupLabel/4',
+      'gid://gitlab/GroupLabel/23',
+    ]);
   });
 
   describe('when issue creation mutation request succeeds', () => {
     it('dispatches a correct set of mutations', () => {
       jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
         data: {
-          boardEpicCreate: {
+          createEpic: {
             epic: mockEpic,
             errors: [],
           },
@@ -1058,7 +1057,7 @@ describe('addListNewEpic', () => {
     it('dispatches a correct set of mutations', () => {
       jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
         data: {
-          boardEpicCreate: {
+          createEpic: {
             epic: mockEpic,
             errors: [{ foo: 'bar' }],
           },
@@ -1245,6 +1244,97 @@ describe('fetchAssignees', () => {
       expect(store.state.assigneesLoading).toBe(false);
       expect(store.state.error).toBe('Failed to load assignees.');
     });
+  });
+});
+
+describe('fetchSubGroups', () => {
+  const state = {
+    fullPath: 'gitlab-org',
+  };
+
+  const pageInfo = {
+    endCursor: '',
+    hasNextPage: false,
+  };
+
+  const queryResponse = {
+    data: {
+      group: {
+        descendantGroups: {
+          nodes: mockSubGroups.slice(1), // First group is root group, so skip it.
+          pageInfo: {
+            endCursor: '',
+            hasNextPage: false,
+          },
+        },
+        ...mockGroup0, // Add root group info
+      },
+    },
+  };
+
+  it('should commit mutations REQUEST_SUB_GROUPS, RECEIVE_SUB_GROUPS_SUCCESS, and SET_SELECTED_GROUP on success', (done) => {
+    jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
+
+    testAction(
+      actions.fetchSubGroups,
+      {},
+      state,
+      [
+        {
+          type: types.REQUEST_SUB_GROUPS,
+          payload: false,
+        },
+        {
+          type: types.RECEIVE_SUB_GROUPS_SUCCESS,
+          payload: { subGroups: mockSubGroups, pageInfo, fetchNext: false },
+        },
+        {
+          type: types.SET_SELECTED_GROUP,
+          payload: mockGroup0,
+        },
+      ],
+      [],
+      done,
+    );
+  });
+
+  it('should commit mutations REQUEST_SUB_GROUPS and RECEIVE_SUB_GROUPS_FAILURE on failure', (done) => {
+    jest.spyOn(gqlClient, 'query').mockRejectedValue();
+
+    testAction(
+      actions.fetchSubGroups,
+      {},
+      state,
+      [
+        {
+          type: types.REQUEST_SUB_GROUPS,
+          payload: false,
+        },
+        {
+          type: types.RECEIVE_SUB_GROUPS_FAILURE,
+        },
+      ],
+      [],
+      done,
+    );
+  });
+});
+
+describe('setSelectedGroup', () => {
+  it('should commit mutation SET_SELECTED_GROUP', (done) => {
+    testAction(
+      actions.setSelectedGroup,
+      mockGroup0,
+      {},
+      [
+        {
+          type: types.SET_SELECTED_GROUP,
+          payload: mockGroup0,
+        },
+      ],
+      [],
+      done,
+    );
   });
 });
 

@@ -14,6 +14,11 @@ export default {
     GlLoadingIcon,
     VulnerabilityList,
   },
+  inject: {
+    canViewFalsePositive: {
+      default: false,
+    },
+  },
   props: {
     filters: {
       type: Object,
@@ -49,6 +54,7 @@ export default {
         return {
           first: VULNERABILITIES_PER_PAGE,
           sort: this.sort,
+          vetEnabled: this.canViewFalsePositive,
           ...this.filters,
         };
       },

@@ -11,17 +11,8 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
   let_it_be(:policy_last_updated_at) { Time.now }
   let_it_be(:user) { policy_management_project.owner }
 
-  let_it_be(:policy) do
-    {
-      name: 'Run DAST in every pipeline',
-      description: 'This policy enforces to run DAST for every pipeline within the project',
-      enabled: true,
-      rules: [{ type: 'pipeline', branches: %w[production] }],
-      actions: [
-        { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
-      ]
-    }
-  end
+  let(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
+  let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy]) }
 
   let(:repository) { instance_double(Repository, root_ref: 'master') }
 
@@ -33,7 +24,7 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
       commit.committed_date = policy_last_updated_at
       allow(policy_management_project).to receive(:repository).and_return(repository)
       allow(repository).to receive(:last_commit_for_path).and_return(commit)
-      allow(repository).to receive(:blob_data_at).and_return({ scan_execution_policy: [policy] }.to_yaml)
+      allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
     end
 
     context 'when feature is not licensed' do

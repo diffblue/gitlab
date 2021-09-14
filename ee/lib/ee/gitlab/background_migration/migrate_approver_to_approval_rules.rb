@@ -59,7 +59,7 @@ module EE
           end
 
           def self.safe_find_or_create_by(*args)
-            safe_ensure_unique(retries: 1) do # rubocop:disable Performance/ActiveRecordSubtransactionMethods
+            safe_ensure_unique(retries: 1) do
               find_or_create_by(*args)
             end
           end

@@ -443,6 +443,15 @@ When possible, try to avoid acronyms in headings.
   - List item 2
   ```
 
+### Comments
+
+To embed comments within Markdown, use standard HTML comments that are not rendered
+when published. Example:
+
+```html
+<!-- This is a comment that is not rendered -->
+```
+
 ### Emphasis
 
 - Use double asterisks (`**`) to mark a word or text in bold (`**bold**`).
@@ -465,6 +474,7 @@ Follow these guidelines for punctuation:
 | Use serial commas (Oxford commas) before the final **and** or **or** in a list of three or more items. (Tested in [`OxfordComma.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/OxfordComma.yml).) | You can create new issues, merge requests, and milestones. |
 | Always add a space before and after dashes when using it in a sentence (for replacing a comma, for example). | You should try this - or not. |
 | When a colon is part of a sentence, always use lowercase after the colon. | Linked issues: a way to create a relationship between issues. |
+| Do not use typographer's quotes. Use straight quotes instead. (Tested in [`NonStandardQuotes.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/NonStandardQuotes.yml).) | "It's the questions we can't answer that teach us the most"---Patrick Rothfuss |
 
 <!-- vale gitlab.Repetition = YES -->
 
@@ -756,6 +766,7 @@ Valid for Markdown content only, not for front matter entries:
 
 For other punctuation rules, refer to the
 [Pajamas Design System Punctuation section](https://design.gitlab.com/content/punctuation/).
+This is overridden by the [documentation-specific punctuation rules](#punctuation).
 
 ## Headings
 
@@ -1470,10 +1481,6 @@ tagged and released set of documentation for your installed version:
 When a feature is added or updated, you can include its version information
 either as a **Version history** item or as an inline text reference.
 
-Version text shouldn't include information about the tier in which the feature
-is available. This information is provided by the [product badge](#product-tier-badges)
-displayed for the page or feature.
-
 #### Version text in the **Version History**
 
 If all content in a section is related, add version text after the header for
@@ -1489,6 +1496,8 @@ the section. The version information must:
 - Whenever possible, include a link to the completed issue, merge request, or epic
   that introduced the feature. An issue is preferred over a merge request, and
   a merge request is preferred over an epic.
+- Do not include information about the tier, or a link to the pricing page.
+  The tier is provided by the [product badge](#product-tier-badges) on the heading.
 
 ```markdown
 ## Feature name
@@ -1613,37 +1622,24 @@ When names change, it is more complicated to search or grep text that has line b
 
 ### Product tier badges
 
-Tier badges are displayed as orange text next to a heading. For example:
+Tier badges are displayed as orange text next to a heading. These badges link to the GitLab
+pricing page. For example:
 
 ![Tier badge](img/tier_badge.png)
 
 You must assign a tier badge:
 
-- To [all H1 topic headings](#product-tier-badges-on-headings).
+- To all H1 topic headings.
 - To topic headings that don't apply to the same tier as the H1.
-- To [sections of a topic](#product-tier-badges-on-other-content),
-  if they apply to a tier other than what applies to the H1.
 
-#### Product tier badges on headings
-
-To add a tier badge to a heading, add the relevant [tier badge](#available-product-tier-badges)
+To add a tier badge to a heading, add the relevant tier badge
 after the heading text. For example:
 
 ```markdown
 # Heading title **(FREE)**
 ```
 
-#### Product tier badges on other content
-
-In paragraphs, list names, and table cells, an information icon displays when you
-add a tier badge. More verbose information displays when a user points to the icon:
-
-- `**(FREE)**` displays as **(FREE)**
-- `**(FREE SELF)**` displays as **(FREE SELF)**
-- `**(FREE SAAS)**` displays as **(FREE SAAS)**
-
-The `**(FREE)**` generates a `span` element to trigger the
-badges and tooltips (`<span class="badge-trigger free">`).
+Do not add tier badges inline with other text. The single source of truth for a feature should be the heading where the functionality is described.
 
 #### Available product tier badges
 

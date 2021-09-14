@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe Security::Scan do
   describe 'associations' do
     it { is_expected.to belong_to(:build) }
-    it { is_expected.to have_one(:pipeline).through(:build).class_name('Ci::Pipeline') }
+    it { is_expected.to belong_to(:project) }
+    it { is_expected.to belong_to(:pipeline) }
     it { is_expected.to have_many(:findings) }
   end
 
@@ -34,10 +35,6 @@ RSpec.describe Security::Scan do
         it { is_expected.not_to be_empty }
       end
     end
-  end
-
-  describe '#project' do
-    it { is_expected.to delegate_method(:project).to(:build) }
   end
 
   describe '#name' do
@@ -93,15 +90,17 @@ RSpec.describe Security::Scan do
   end
 
   describe '.has_dismissal_feedback' do
-    let(:scan_1) { create(:security_scan) }
-    let(:scan_2) { create(:security_scan) }
+    let(:project_1) { create(:project) }
+    let(:project_2) { create(:project) }
+    let(:scan_1) { create(:security_scan, project: project_1) }
+    let(:scan_2) { create(:security_scan, project: project_2) }
     let(:expected_scans) { [scan_1] }
 
     subject { described_class.has_dismissal_feedback }
 
     before do
-      create(:vulnerability_feedback, :dismissal, project: scan_1.project, category: scan_1.scan_type)
-      create(:vulnerability_feedback, :issue, project: scan_2.project, category: scan_2.scan_type)
+      create(:vulnerability_feedback, :dismissal, project: project_1, category: scan_1.scan_type)
+      create(:vulnerability_feedback, :issue, project: project_2, category: scan_2.scan_type)
     end
 
     it { is_expected.to match_array(expected_scans) }

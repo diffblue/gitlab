@@ -1,5 +1,3 @@
-// This file is duplicated in ~/boards/models/label.js
-
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 export default class ListLabel {

@@ -14,10 +14,6 @@ module EE
           populate_vulnerability_id
         end
 
-        before_action only: :show do
-          push_frontend_feature_flag(:cve_id_request_button, project)
-        end
-
         before_action :redirect_if_test_case, only: [:show]
 
         feature_category :issue_tracking, [:delete_description_version, :description_diff]

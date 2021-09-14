@@ -6,11 +6,13 @@ RSpec.describe 'User sees new onboarding flow', :js do
   before do
     stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 200)
     allow(Gitlab).to receive(:com?).and_return(true)
-    gitlab_sign_in(:user)
-    visit users_sign_up_welcome_path
   end
 
-  def common_flow
+  it 'shows continuous onboarding flow pages' do
+    visit '/'
+    gitlab_sign_in(:user)
+    visit users_sign_up_welcome_path
+
     expect(page).to have_content('Welcome to GitLab')
     expect(page).to have_content('Your profile Your GitLab group Your first project')
     expect(page).to have_css('li.current', text: 'Your profile')
@@ -37,29 +39,12 @@ RSpec.describe 'User sees new onboarding flow', :js do
     expect(page).to have_field('project_path', with: 'test')
 
     click_on 'Create project'
-  end
 
-  it 'shows onboarding flow pages' do
-    common_flow
-
-    expect(page).to have_content('Welcome to the guided GitLab tour')
+    expect(page).to have_content('Get started with GitLab')
 
     Sidekiq::Worker.drain_all
-    click_on 'Show me the basics'
+    click_on "Ok, let's go"
 
     expect(page).to have_content('Learn GitLab')
-    expect(page).to have_css('.selectable', text: 'Label = ~Novice')
-  end
-
-  context 'continuous onboarding experiment enabled' do
-    before do
-      stub_experiment_for_subject(learn_gitlab_a: true, learn_gitlab_b: true)
-    end
-
-    it 'shows continuous onboarding flow pages' do
-      common_flow
-
-      expect(page).to have_content('Get started with GitLab')
-    end
   end
 end

@@ -1,6 +1,5 @@
 <script>
-/* eslint-disable vue/no-v-html */
-import { GlLoadingIcon, GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlLink, GlTooltip, GlIcon, GlSafeHtmlDirective } from '@gitlab/ui';
 import { escape } from 'lodash';
 
 import { __ } from '~/locale';
@@ -12,6 +11,9 @@ export default {
     GlLoadingIcon,
     GlLink,
     GlTooltip,
+  },
+  directives: {
+    SafeHtml: GlSafeHtmlDirective,
   },
   props: {
     ancestors: {
@@ -71,7 +73,7 @@ export default {
     </div>
 
     <gl-tooltip :target="() => $refs.sidebarIcon" placement="left" boundary="viewport">
-      <span v-html="tooltipText"></span>
+      <span v-safe-html="tooltipText"></span>
     </gl-tooltip>
     <div class="title hide-collapsed gl-mb-2">{{ __('Ancestors') }}</div>
 

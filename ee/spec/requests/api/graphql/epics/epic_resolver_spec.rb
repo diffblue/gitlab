@@ -130,6 +130,37 @@ RSpec.describe 'getting epics information' do
     end
   end
 
+  describe 'N+1 query checks' do
+    let_it_be(:epic_a) { create(:epic, group: group) }
+    let_it_be(:epic_b) { create(:epic, group: group) }
+
+    let(:extra_iid_for_second_query) { epic_b.iid.to_s }
+    let(:search_params) { { iids: [epic_a.iid.to_s] } }
+
+    def execute_query
+      query = graphql_query_for(
+        :group,
+        { full_path: group.full_path },
+        query_graphql_field(
+          :epics, search_params,
+          query_graphql_field(:nodes, nil, requested_fields)
+        )
+      )
+      post_graphql(query, current_user: user)
+    end
+
+    context 'when requesting `award_emoji`' do
+      let(:requested_fields) { 'awardEmoji { nodes { name } }' }
+
+      before do
+        create(:award_emoji, awardable: epic_a, user: user)
+        create(:award_emoji, awardable: epic_b, user: user)
+      end
+
+      include_examples 'N+1 query check'
+    end
+  end
+
   def query_epics_with_events(number)
     epics_field = <<~NODE
       epics {

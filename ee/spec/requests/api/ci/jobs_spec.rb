@@ -26,13 +26,18 @@ RSpec.describe API::Ci::Jobs do
   end
 
   describe 'GET /job/allowed_agents' do
-    let_it_be(:agent) { create(:cluster_agent, project: project) }
+    let_it_be(:group_authorization) { create(:agent_group_authorization) }
+    let_it_be(:associated_agent) { create(:cluster_agent, project: project) }
+
+    let(:implicit_authorization) { Clusters::Agents::ImplicitAuthorization.new(agent: associated_agent) }
+    let(:authorizations_finder) { double(execute: [implicit_authorization, group_authorization]) }
 
     let(:api_user) { developer }
     let(:headers) { { API::Ci::Helpers::Runner::JOB_TOKEN_HEADER => job.token } }
     let(:job) { create(:ci_build, :artifacts, pipeline: pipeline, user: api_user, status: job_status) }
     let(:job_status) { 'running' }
     let(:params) { {} }
+    let(:group_authorized_agents_enabled) { true }
 
     subject do
       get api('/job/allowed_agents'), headers: headers, params: params
@@ -40,7 +45,9 @@ RSpec.describe API::Ci::Jobs do
 
     before do
       stub_licensed_features(cluster_agents: true)
-      agent
+      stub_feature_flags(group_authorized_agents: group_authorized_agents_enabled)
+      allow(Clusters::AgentAuthorizationsFinder).to receive(:new).with(project).and_return(authorizations_finder)
+
       subject
     end
 
@@ -53,7 +60,16 @@ RSpec.describe API::Ci::Jobs do
         expect(json_response.dig('project', 'id')).to eq(job.project_id)
         expect(json_response.dig('user', 'username')).to eq(api_user.username)
         expect(json_response['allowed_agents']).to match_array([
-          { 'id' => agent.id, 'config_project' => a_hash_including('id' => agent.project_id) }
+          {
+            'id' => implicit_authorization.agent_id,
+            'config_project' => hash_including('id' => implicit_authorization.agent.project_id),
+            'configuration' => implicit_authorization.config
+          },
+          {
+            'id' => group_authorization.agent_id,
+            'config_project' => hash_including('id' => group_authorization.agent.project_id),
+            'configuration' => group_authorization.config
+          }
         ])
       end
 
@@ -69,7 +85,40 @@ RSpec.describe API::Ci::Jobs do
           expect(json_response.dig('project', 'id')).to eq(job.project_id)
           expect(json_response.dig('user', 'username')).to eq(api_user.username)
           expect(json_response['allowed_agents']).to match_array([
-            { 'id' => agent.id, 'config_project' => a_hash_including('id' => agent.project_id) }
+            {
+              'id' => implicit_authorization.agent_id,
+              'config_project' => hash_including('id' => implicit_authorization.agent.project_id),
+              'configuration' => implicit_authorization.config
+            },
+            {
+              'id' => group_authorization.agent_id,
+              'config_project' => a_hash_including('id' => group_authorization.agent.project_id),
+              'configuration' => group_authorization.config
+            }
+          ])
+        end
+      end
+
+      context 'group_authorized_agents feature flag is disabled' do
+        let(:group_authorized_agents_enabled) { false }
+        let(:agents_finder) { double(execute: [associated_agent]) }
+
+        before do
+          allow(Clusters::DeployableAgentsFinder).to receive(:new).with(project).and_return(agents_finder)
+        end
+
+        it 'returns agent info', :aggregate_failures do
+          expect(response).to have_gitlab_http_status(:ok)
+
+          expect(json_response.dig('job', 'id')).to eq(job.id)
+          expect(json_response.dig('pipeline', 'id')).to eq(job.pipeline_id)
+          expect(json_response.dig('project', 'id')).to eq(job.project_id)
+          expect(json_response.dig('user', 'username')).to eq(api_user.username)
+          expect(json_response['allowed_agents']).to match_array([
+            {
+              'id' => associated_agent.id,
+              'config_project' => hash_including('id' => associated_agent.project_id)
+            }
           ])
         end
       end

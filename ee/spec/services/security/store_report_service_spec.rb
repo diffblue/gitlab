@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreReportService, '#execute' do
+RSpec.describe Security::StoreReportService, '#execute', :snowplow do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }
@@ -67,7 +67,19 @@ RSpec.describe Security::StoreReportService, '#execute' do
 
           context 'vulnerability flags' do
             it 'inserts all finding flags' do
-              expect { subject }.to change(Vulnerabilities::Flag, :count).by(finding_flags)
+              expect { subject }.to change { Vulnerabilities::Flag.count }.by(finding_flags)
+            end
+
+            it 'tracks the snowplow event' do
+              subject
+
+              if case_name == 'with vulnerability flags'
+                expect_snowplow_event(
+                  category: 'Security::StoreReportService',
+                  action: 'flag_vulnerability',
+                  label: 'false_positive'
+                )
+              end
             end
 
             context 'with vulnerability_flags disabled' do
@@ -76,7 +88,13 @@ RSpec.describe Security::StoreReportService, '#execute' do
               end
 
               it 'does not insert any vulnerability flag' do
-                expect { subject }.not_to change(Vulnerabilities::Flag, :count)
+                expect { subject }.to change { Vulnerabilities::Flag.count }.by(0)
+              end
+
+              it 'does not track a snowplow event' do
+                subject
+
+                expect_no_snowplow_event
               end
             end
           end
@@ -408,6 +426,14 @@ RSpec.describe Security::StoreReportService, '#execute' do
 
       it 'inserts new vulnerabilities with data from findings from this new pipeline' do
         expect { subject }.to change { Vulnerability.count }.by(4)
+      end
+
+      it 'triggers project hooks on new vulnerabilities' do
+        expect_next_instances_of(Vulnerability, 4) do |vulnerability|
+          expect(vulnerability).to receive(:execute_hooks)
+        end
+
+        subject
       end
 
       it 'updates existing findings with new data' do

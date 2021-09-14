@@ -110,6 +110,16 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#invalidate_elasticsearch_indexes_cache!' do
+    let(:namespace) { create :namespace }
+
+    it 'clears the cache for the namespace' do
+      expect(::Gitlab::Elastic::ElasticsearchEnabledCache).to receive(:delete_record).with(:namespace, namespace.id)
+
+      namespace.invalidate_elasticsearch_indexes_cache!
+    end
+  end
+
   describe '#actual_plan_name' do
     let(:namespace) { create(:namespace) }
 

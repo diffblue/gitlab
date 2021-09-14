@@ -47,6 +47,7 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting do
       expect(json_response['personal_access_token_prefix']).to be_nil
       expect(json_response['admin_mode']).to be(false)
       expect(json_response['whats_new_variant']).to eq('all_tiers')
+      expect(json_response['user_deactivation_emails_enabled']).to be(true)
     end
   end
 
@@ -133,6 +134,7 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting do
             import_sources: 'github,bitbucket',
             wiki_page_max_content_bytes: 12345,
             personal_access_token_prefix: "GL-",
+            user_deactivation_emails_enabled: false,
             admin_mode: true
           }
 
@@ -184,6 +186,7 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting do
         expect(json_response['wiki_page_max_content_bytes']).to eq(12345)
         expect(json_response['personal_access_token_prefix']).to eq("GL-")
         expect(json_response['admin_mode']).to be(true)
+        expect(json_response['user_deactivation_emails_enabled']).to be(false)
       end
     end
 
@@ -220,6 +223,45 @@ RSpec.describe API::Settings, 'Settings', :do_not_mock_admin_mode_setting do
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['asset_proxy_allowlist']).to eq(['example.com', '*.example.com', 'localhost'])
+    end
+
+    it 'supports the deprecated `throttle_unauthenticated_*` attributes' do
+      put api('/application/settings', admin), params: {
+        throttle_unauthenticated_enabled: true,
+        throttle_unauthenticated_period_in_seconds: 123,
+        throttle_unauthenticated_requests_per_period: 456
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to include(
+        'throttle_unauthenticated_enabled' => true,
+        'throttle_unauthenticated_period_in_seconds' => 123,
+        'throttle_unauthenticated_requests_per_period' => 456,
+        'throttle_unauthenticated_web_enabled' => true,
+        'throttle_unauthenticated_web_period_in_seconds' => 123,
+        'throttle_unauthenticated_web_requests_per_period' => 456
+      )
+    end
+
+    it 'prefers the new `throttle_unauthenticated_web_*` attributes' do
+      put api('/application/settings', admin), params: {
+        throttle_unauthenticated_enabled: false,
+        throttle_unauthenticated_period_in_seconds: 0,
+        throttle_unauthenticated_requests_per_period: 0,
+        throttle_unauthenticated_web_enabled: true,
+        throttle_unauthenticated_web_period_in_seconds: 123,
+        throttle_unauthenticated_web_requests_per_period: 456
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to include(
+        'throttle_unauthenticated_enabled' => true,
+        'throttle_unauthenticated_period_in_seconds' => 123,
+        'throttle_unauthenticated_requests_per_period' => 456,
+        'throttle_unauthenticated_web_enabled' => true,
+        'throttle_unauthenticated_web_period_in_seconds' => 123,
+        'throttle_unauthenticated_web_requests_per_period' => 456
+      )
     end
 
     it 'disables ability to switch to legacy storage' do

@@ -10,7 +10,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     let(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration) }
     let!(:scanner_profile) { create(:dast_scanner_profile, name: 'Scanner Profile', project: project) }
     let!(:site_profile) { create(:dast_site_profile, name: 'Site Profile', project: project) }
-    let(:policy) { build(:scan_execution_policy, enabled: true, rules: [{ type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' }]) }
+    let(:policy) { build(:scan_execution_policy, enabled: true, rules: [rule]) }
+    let(:rule) { { type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' } }
 
     subject(:service) { described_class.new(container: project, current_user: current_user) }
 
@@ -41,8 +42,82 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     end
 
     context 'when scan type is secret_detection' do
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+      before do
         policy[:actions] = [{ scan: 'secret_detection' }]
+      end
+
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+
+        service.execute(schedule)
+      end
+    end
+
+    context 'when scan type is cluster_image_scanning' do
+      before do
+        policy[:actions] = [{ scan: 'cluster_image_scanning' }]
+      end
+
+      context 'when clusters are not defined in the rule' do
+        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+            receive(:new)
+            .with(project: project, current_user: current_user, params: { action: policy[:actions].first.merge(clusters: nil), branch: project.default_branch_or_main })
+            .and_call_original)
+
+          service.execute(schedule)
+        end
+      end
+
+      context 'when clusters are defined in the rule' do
+        let(:rule) { { type: 'schedule', clusters: { production: {} }, cadence: '*/20 * * * *' } }
+
+        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+            receive(:new)
+            .with(project: project, current_user: current_user, params: { action: policy[:actions].first.merge(clusters: { production: {} }), branch: project.default_branch_or_main })
+            .and_call_original)
+
+          service.execute(schedule)
+        end
+      end
+    end
+
+    context 'when scan type is container_scanning' do
+      before do
+        policy[:actions] = [{ scan: 'container_scanning' }]
+      end
+
+      context 'when clusters are not defined in the rule' do
+        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+            receive(:new)
+            .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'master' })
+            .and_call_original)
+
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+            receive(:new)
+            .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'production' })
+            .and_call_original)
+
+          service.execute(schedule)
+        end
+      end
+
+      context 'when clusters are defined in the rule' do
+        let(:rule) { { type: 'schedule', clusters: { production: {} }, cadence: '*/20 * * * *' } }
+
+        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for single cluster only' do
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+            receive(:new)
+            .with(project: project, current_user: current_user, params: { action: policy[:actions].first.merge(scan: 'cluster_image_scanning', clusters: { production: {} }), branch: project.default_branch_or_main })
+            .and_call_original)
+
+          service.execute(schedule)
+        end
+      end
+
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
         expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
 
         service.execute(schedule)

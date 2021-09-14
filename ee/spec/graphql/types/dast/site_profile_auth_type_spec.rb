@@ -15,7 +15,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfileAuth'] do
   end
 
   specify { expect(described_class.graphql_name).to eq('DastSiteProfileAuth') }
-  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_scans) }
+  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
 
@@ -58,7 +58,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfileAuth'] do
 
     context 'when there an associated secret variable' do
       it 'is redacted' do
-        create(:dast_site_profile_secret_variable, dast_site_profile: object, key: Dast::SiteProfileSecretVariable::PASSWORD)
+        create(:dast_site_profile_secret_variable, :password, dast_site_profile: object)
 
         expect(resolve_field(:password, object, current_user: user)).to eq('••••••••')
       end

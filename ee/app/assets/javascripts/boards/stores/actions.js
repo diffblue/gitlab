@@ -21,6 +21,7 @@ import {
   formatEpic,
   formatListEpics,
   formatEpicListsPageInfo,
+  formatEpicInput,
   FiltersInfo,
 } from '../boards_util';
 
@@ -29,10 +30,9 @@ import createEpicBoardListMutation from '../graphql/epic_board_list_create.mutat
 import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
 import epicMoveListMutation from '../graphql/epic_move_list.mutation.graphql';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
-import groupBoardIterationsQuery from '../graphql/group_board_iterations.query.graphql';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 import listsEpicsQuery from '../graphql/lists_epics.query.graphql';
-import projectBoardIterationsQuery from '../graphql/project_board_iterations.query.graphql';
+import subGroupsQuery from '../graphql/sub_groups.query.graphql';
 import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import updateEpicLabelsMutation from '../graphql/update_epic_labels.mutation.graphql';
 
@@ -402,50 +402,6 @@ export default {
       );
   },
 
-  fetchIterations({ state, commit }, title) {
-    commit(types.RECEIVE_ITERATIONS_REQUEST);
-
-    const { fullPath, boardType } = state;
-
-    const variables = {
-      fullPath,
-      title,
-    };
-
-    let query;
-    if (boardType === BoardType.project) {
-      query = projectBoardIterationsQuery;
-    }
-    if (boardType === BoardType.group) {
-      query = groupBoardIterationsQuery;
-    }
-
-    if (!query) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      throw new Error('Unknown board type');
-    }
-
-    return gqlClient
-      .query({
-        query,
-        variables,
-      })
-      .then(({ data }) => {
-        const errors = data[boardType]?.errors;
-        const iterations = data[boardType]?.iterations.nodes;
-
-        if (errors?.[0]) {
-          throw new Error(errors[0]);
-        }
-
-        commit(types.RECEIVE_ITERATIONS_SUCCESS, iterations);
-      })
-      .catch((e) => {
-        commit(types.RECEIVE_ITERATIONS_FAILURE);
-        throw e;
-      });
-  },
-
   fetchAssignees({ state, commit }, search) {
     commit(types.RECEIVE_ASSIGNEES_REQUEST);
 
@@ -495,6 +451,46 @@ export default {
       });
   },
 
+  fetchSubGroups: ({ commit, state }, { search = '', fetchNext = false } = {}) => {
+    commit(types.REQUEST_SUB_GROUPS, fetchNext);
+
+    const { fullPath } = state;
+
+    const variables = {
+      fullPath,
+      search: search !== '' ? search : undefined,
+      after: fetchNext ? state.subGroupsFlags.pageInfo.endCursor : undefined,
+    };
+
+    return gqlClient
+      .query({
+        query: subGroupsQuery,
+        variables,
+      })
+      .then(({ data }) => {
+        const { id, name, fullName, descendantGroups, __typename } = data.group;
+        const currentGroup = {
+          __typename,
+          id,
+          name,
+          fullName,
+          fullPath: data.group.fullPath,
+        };
+        const subGroups = [currentGroup, ...descendantGroups.nodes];
+        commit(types.RECEIVE_SUB_GROUPS_SUCCESS, {
+          subGroups,
+          pageInfo: descendantGroups.pageInfo,
+          fetchNext,
+        });
+        commit(types.SET_SELECTED_GROUP, currentGroup);
+      })
+      .catch(() => commit(types.RECEIVE_SUB_GROUPS_FAILURE));
+  },
+
+  setSelectedGroup: ({ commit }, group) => {
+    commit(types.SET_SELECTED_GROUP, group);
+  },
+
   createList: (
     { getters, dispatch },
     { backlog, labelId, milestoneId, assigneeId, iterationId },
@@ -541,14 +537,9 @@ export default {
   },
 
   addListNewEpic: (
-    { state: { fullPath }, dispatch, commit },
+    { state: { boardConfig }, dispatch, commit },
     { epicInput, list, placeholderId = `tmp-${new Date().getTime()}` },
   ) => {
-    const input = {
-      ...epicInput,
-      groupPath: fullPath,
-    };
-
     const placeholderEpic = {
       ...epicInput,
       id: placeholderId,
@@ -562,14 +553,14 @@ export default {
     gqlClient
       .mutate({
         mutation: epicCreateMutation,
-        variables: { input },
+        variables: { input: formatEpicInput(epicInput, boardConfig) },
       })
       .then(({ data }) => {
-        if (data.boardEpicCreate.errors?.length) {
-          throw new Error();
+        if (data.createEpic.errors?.length) {
+          throw new Error(data.createEpic.errors[0]);
         }
 
-        const rawEpic = data.boardEpicCreate?.epic;
+        const rawEpic = data.createEpic?.epic;
         const formattedEpic = formatEpic({ ...rawEpic, id: getIdFromGraphQLId(rawEpic.id) });
         dispatch('removeListItem', { listId: list.id, itemId: placeholderId });
         dispatch('addListItem', { list, item: formattedEpic, position: 0 });

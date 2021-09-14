@@ -81,29 +81,11 @@ describe('Grouped metrics reports app', () => {
         ];
       });
 
-      describe('with :usage_data_group_code_coverage_visit_total enabled', () => {
-        beforeEach(() => {
-          mountComponent({ usageDataITestingMetricsReportWidgetTotal: true });
-        });
+      it('tracks group_code_coverage_visit_total metric', () => {
+        findExpandButton().trigger('click');
 
-        it('tracks group_code_coverage_visit_total metric', () => {
-          findExpandButton().trigger('click');
-
-          expect(Api.trackRedisHllUserEvent).toHaveBeenCalledTimes(1);
-          expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(wrapper.vm.$options.expandEvent);
-        });
-      });
-
-      describe('with :usage_data_group_code_coverage_visit_total disabled', () => {
-        beforeEach(() => {
-          mountComponent({ usageDataITestingMetricsReportWidgetTotal: false });
-        });
-
-        it('does not track group_code_coverage_visit_total metric', () => {
-          findExpandButton().trigger('click');
-
-          expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
-        });
+        expect(Api.trackRedisHllUserEvent).toHaveBeenCalledTimes(1);
+        expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(wrapper.vm.$options.expandEvent);
       });
     });
 

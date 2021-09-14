@@ -8,7 +8,7 @@ module Mutations
 
         argument :id, Types::GlobalIDType[::IncidentManagement::EscalationPolicy],
                  required: true,
-                 description: 'The escalation policy internal ID to remove.'
+                 description: 'Escalation policy internal ID to remove.'
 
         def resolve(id:)
           escalation_policy = authorized_find!(id: id)

@@ -19,7 +19,7 @@ module Mutations
         field :epic_board,
               Types::Boards::EpicBoardType,
               null: true,
-              description: 'The created epic board.'
+              description: 'Created epic board.'
 
         def resolve(args)
           group_path = args.delete(:group_path)

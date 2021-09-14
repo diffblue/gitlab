@@ -2,14 +2,12 @@
 import { componentNames } from 'ee/reports/components/issue_body';
 import api from '~/api';
 import ReportSection from '~/reports/components/report_section.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
   name: 'GroupedLoadPerformanceReportsApp',
   components: {
     ReportSection,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     status: {
       type: String,
@@ -47,9 +45,7 @@ export default {
   componentNames,
   methods: {
     handleLoadPerformanceToggleEvent() {
-      if (this.glFeatures.usageDataITestingLoadPerformanceWidgetTotal) {
-        api.trackRedisHllUserEvent(this.$options.expandEvent);
-      }
+      api.trackRedisHllUserEvent(this.$options.expandEvent);
     },
   },
   expandEvent: 'i_testing_load_performance_widget_total',

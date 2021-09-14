@@ -18,6 +18,10 @@ class Group < Namespace
   include EachBatch
   include BulkMemberAccessLoad
 
+  def self.sti_name
+    'Group'
+  end
+
   has_many :all_group_members, -> { where(requested_at: nil) }, dependent: :destroy, as: :source, class_name: 'GroupMember' # rubocop:disable Cop/ActiveRecordDependent
   has_many :group_members, -> { where(requested_at: nil).where.not(members: { access_level: Gitlab::Access::MINIMAL_ACCESS }) }, dependent: :destroy, as: :source # rubocop:disable Cop/ActiveRecordDependent
   alias_method :members, :group_members
@@ -261,6 +265,15 @@ class Group < Namespace
     Gitlab::UrlBuilder.build(self, only_path: only_path)
   end
 
+  def dependency_proxy_image_prefix
+    # The namespace path can include uppercase letters, which
+    # Docker doesn't allow. The proxy expects it to be downcased.
+    url = "#{web_url.downcase}#{DependencyProxy::URL_SUFFIX}"
+
+    # Docker images do not include the protocol
+    url.partition('//').last
+  end
+
   def human_name
     full_name
   end
@@ -297,7 +310,7 @@ class Group < Namespace
   end
 
   def add_users(users, access_level, current_user: nil, expires_at: nil)
-    Members::Groups::CreatorService.add_users( # rubocop:disable CodeReuse/ServiceClass
+    Members::Groups::BulkCreatorService.add_users( # rubocop:disable CodeReuse/ServiceClass
       self,
       users,
       access_level,
@@ -643,6 +656,10 @@ class Group < Namespace
     members.owners.connected_to_user.order_recent_sign_in.limit(Member::ACCESS_REQUEST_APPROVERS_TO_BE_NOTIFIED_LIMIT)
   end
 
+  def membership_locked?
+    false # to support project and group calling this as 'source'
+  end
+
   def supports_events?
     false
   end
@@ -733,6 +750,18 @@ class Group < Namespace
 
   def timelogs
     Timelog.in_group(self)
+  end
+
+  def cached_issues_state_count_enabled?
+    Feature.enabled?(:cached_issues_state_count, self, default_enabled: :yaml)
+  end
+
+  def organizations
+    ::CustomerRelations::Organization.where(group_id: self.id)
+  end
+
+  def contacts
+    ::CustomerRelations::Contact.where(group_id: self.id)
   end
 
   private

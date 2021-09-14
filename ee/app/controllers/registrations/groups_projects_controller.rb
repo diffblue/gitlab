@@ -1,0 +1,85 @@
+# frozen_string_literal: true
+
+module Registrations
+  class GroupsProjectsController < ApplicationController
+    include Registrations::CreateProject
+    include Registrations::CreateGroup
+
+    layout 'minimal'
+
+    feature_category :onboarding
+
+    def new
+      @group = Group.new(visibility_level: helpers.default_group_visibility)
+      @project = Project.new(namespace: @group)
+
+      combined_registration_experiment.track(:view_new_group_action)
+      experiment(:trial_registration_with_reassurance, actor: current_user)
+        .track(:render, label: 'registrations:groups:new', user: current_user)
+    end
+
+    def create
+      @group = if group_id = params[:group][:id]
+                 Group.find_by_id(group_id)
+               else
+                 Groups::CreateService.new(current_user, group_params).execute
+               end
+
+      if @group.persisted?
+        if @group.previously_new_record?
+          combined_registration_experiment.track(:create_group, namespace: @group)
+          experiment(:jobs_to_be_done, user: current_user).track(:create_group, namespace: @group)
+        end
+
+        @project = ::Projects::CreateService.new(current_user, project_params).execute
+        if @project.saved?
+          combined_registration_experiment.track(:create_project, namespace: @project.namespace)
+
+          learn_gitlab_project = create_learn_gitlab_project
+          experiment(:jobs_to_be_done, user: current_user)
+            .track(:create_project, project: @project)
+
+          if helpers.in_trial_onboarding_flow?
+            record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
+            record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
+
+            redirect_to trial_getting_started_users_sign_up_welcome_path(learn_gitlab_project_id: learn_gitlab_project.id)
+          else
+            success_url = current_user.setup_for_company ? new_trial_path : nil
+
+            redirect_to success_url || continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
+          end
+        else
+          render :new
+        end
+      else
+        @project = Project.new(project_params) # #new requires a Project
+        render :new
+      end
+    end
+
+    def import
+      @group = Groups::CreateService.new(current_user, group_params).execute
+      if @group.persisted?
+        combined_registration_experiment.track(:create_group, namespace: @group)
+        experiment(:jobs_to_be_done, user: current_user).track(:create_group, namespace: @group)
+
+        import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
+        redirect_to import_url
+      else
+        @project = Project.new(namespace: @group) # #new requires a Project
+        render :new
+      end
+    end
+
+    private
+
+    def combined_registration_experiment
+      @combined_registration_experiment ||= experiment(:combined_registration, user: current_user)
+    end
+
+    def project_params
+      params.require(:project).permit(project_params_attributes).merge(namespace_id: @group.id)
+    end
+  end
+end

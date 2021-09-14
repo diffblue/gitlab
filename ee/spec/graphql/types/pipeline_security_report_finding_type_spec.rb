@@ -92,9 +92,10 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
         stub_feature_flags(vulnerability_flags: false)
       end
 
-      it 'exposes an error message' do
-        error_msg = subject.dig('errors').first['message']
-        expect(error_msg).to eql("Field 'falsePositive' doesn't exist on type 'PipelineSecurityReportFinding'")
+      it 'returns nil for false-positive field' do
+        vulnerabilities = subject.dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
+
+        expect(vulnerabilities.first['falsePositive']).to be_nil
       end
     end
   end

@@ -10,28 +10,32 @@ module Mutations
 
         field :dast_profile, ::Types::Dast::ProfileType,
               null: true,
-              description: 'The created profile.'
+              description: 'Created profile.'
 
         field :pipeline_url, GraphQL::Types::String,
               null: true,
-              description: 'The URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`.'
+              description: 'URL of the pipeline that was created. Requires `runAfterCreate` to be set to `true`.'
 
         argument :full_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project the profile belongs to.'
+                 description: 'Project the profile belongs to.'
+
+        argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
+              required: false,
+              description: 'Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
 
         argument :name, GraphQL::Types::String,
                  required: true,
-                 description: 'The name of the profile.'
+                 description: 'Name of the profile.'
 
         argument :description, GraphQL::Types::String,
                  required: false,
-                 description: 'The description of the profile. Defaults to an empty string.',
+                 description: 'Description of the profile. Defaults to an empty string.',
                  default_value: ''
 
         argument :branch_name, GraphQL::Types::String,
                  required: false,
-                 description: 'The associated branch.'
+                 description: 'Associated branch.'
 
         argument :dast_site_profile_id, ::Types::GlobalIDType[::DastSiteProfile],
                  required: true,
@@ -48,9 +52,9 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false)
+        def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false, dast_profile_schedule: nil)
           project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
+          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project, dast_profile_schedule)
 
           # TODO: remove explicit coercion once compatibility layer is removed
           # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
@@ -70,19 +74,35 @@ module Mutations
               branch_name: branch_name,
               dast_site_profile: dast_site_profile,
               dast_scanner_profile: dast_scanner_profile,
-              run_after_create: run_after_create
+              run_after_create: run_after_create,
+              dast_profile_schedule: dast_profile_schedule
             }
           ).execute
 
           return { errors: response.errors } if response.error?
 
-          { errors: [], dast_profile: response.payload.fetch(:dast_profile), pipeline_url: response.payload.fetch(:pipeline_url) }
+          build_response(response.payload)
         end
 
         private
 
-        def allowed?(project)
-          project.feature_available?(:security_on_demand_scans)
+        def allowed?(project, dast_profile_schedule)
+          scheduler_flag_enabled?(dast_profile_schedule, project)
+        end
+
+        def scheduler_flag_enabled?(dast_profile_schedule, project)
+          return true unless dast_profile_schedule
+
+          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
+        end
+
+        def build_response(payload)
+          {
+            errors: [],
+            dast_profile: payload.fetch(:dast_profile),
+            pipeline_url: payload.fetch(:pipeline_url),
+            dast_profile_schedule: payload.fetch(:dast_profile_schedule)
+          }
         end
       end
     end

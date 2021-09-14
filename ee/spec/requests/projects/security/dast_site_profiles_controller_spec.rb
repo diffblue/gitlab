@@ -97,8 +97,8 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
 
       context 'record exists' do
         before do
-          create(:dast_site_profile_secret_variable, dast_site_profile: dast_site_profile, key: Dast::SiteProfileSecretVariable::PASSWORD)
-          create(:dast_site_profile_secret_variable, dast_site_profile: dast_site_profile, key: Dast::SiteProfileSecretVariable::REQUEST_HEADERS)
+          create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile)
+          create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: dast_site_profile)
         end
 
         it 'includes a serialized dast_profile in the response body' do

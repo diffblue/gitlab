@@ -33,7 +33,7 @@ export default {
           'UsageQuota|This is the total amount of storage used across your projects within this namespace.',
         ),
         link: {
-          text: s__('UsageQuota|Learn more about usage quotas'),
+          text: `${s__('UsageQuota|Learn more about usage quotas')}.`,
           url: helpPagePath('user/usage_quotas'),
         },
       };

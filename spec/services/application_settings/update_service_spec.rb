@@ -336,6 +336,28 @@ RSpec.describe ApplicationSettings::UpdateService do
     end
   end
 
+  context 'when general rate limits are passed' do
+    let(:params) do
+      {
+        throttle_authenticated_api_enabled: true,
+        throttle_authenticated_api_period_in_seconds: 10,
+        throttle_authenticated_api_requests_per_period: 20,
+        throttle_authenticated_web_enabled: true,
+        throttle_authenticated_web_period_in_seconds: 30,
+        throttle_authenticated_web_requests_per_period: 40,
+        throttle_unauthenticated_enabled: true,
+        throttle_unauthenticated_period_in_seconds: 50,
+        throttle_unauthenticated_requests_per_period: 60
+      }
+    end
+
+    it 'updates general throttle settings' do
+      subject.execute
+
+      expect(application_settings.reload).to have_attributes(params)
+    end
+  end
+
   context 'when package registry rate limits are passed' do
     let(:params) do
       {
@@ -385,6 +407,26 @@ RSpec.describe ApplicationSettings::UpdateService do
       expect(application_settings.throttle_authenticated_files_api_enabled).to be_truthy
       expect(application_settings.throttle_authenticated_files_api_period_in_seconds).to eq(600)
       expect(application_settings.throttle_authenticated_files_api_requests_per_period).to eq(10)
+    end
+  end
+
+  context 'when git lfs rate limits are passed' do
+    let(:params) do
+      {
+        throttle_authenticated_git_lfs_enabled: 1,
+        throttle_authenticated_git_lfs_period_in_seconds: 600,
+        throttle_authenticated_git_lfs_requests_per_period: 10
+      }
+    end
+
+    it 'updates git lfs throttle settings' do
+      subject.execute
+
+      application_settings.reload
+
+      expect(application_settings.throttle_authenticated_git_lfs_enabled).to be_truthy
+      expect(application_settings.throttle_authenticated_git_lfs_period_in_seconds).to eq(600)
+      expect(application_settings.throttle_authenticated_git_lfs_requests_per_period).to eq(10)
     end
   end
 

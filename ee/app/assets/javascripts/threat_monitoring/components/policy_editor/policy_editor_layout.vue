@@ -111,7 +111,7 @@ export default {
         />
       </gl-form-group>
       <div class="gl-display-flex gl-sm-flex-direction-column">
-        <section class="gl-w-full gl-p-5">
+        <section class="gl-w-full" :class="{ 'gl-p-5': shouldShowRuleEditor }">
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
             <slot name="rule-editor"></slot>
           </div>

@@ -14,11 +14,11 @@ module Types
 
       field :name, GraphQL::Types::String,
             null: true,
-            description: 'The name of the escalation policy.'
+            description: 'Name of the escalation policy.'
 
       field :description, GraphQL::Types::String,
             null: true,
-            description: 'The description of the escalation policy.'
+            description: 'Description of the escalation policy.'
 
       field :rules, [Types::IncidentManagement::EscalationRuleType],
             null: true,

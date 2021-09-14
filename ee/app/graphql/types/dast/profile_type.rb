@@ -6,25 +6,29 @@ module Types
       graphql_name 'DastProfile'
       description 'Represents a DAST Profile'
 
-      authorize :read_on_demand_scans
+      authorize :read_on_demand_dast_scan
 
       field :id, ::Types::GlobalIDType[::Dast::Profile], null: false,
             description: 'ID of the profile.'
 
       field :name, GraphQL::Types::String, null: true,
-            description: 'The name of the profile.'
+            description: 'Name of the profile.'
 
       field :description, GraphQL::Types::String, null: true,
-            description: 'The description of the scan.'
+            description: 'Description of the scan.'
 
       field :dast_site_profile, DastSiteProfileType, null: true,
-            description: 'The associated site profile.'
+            description: 'Associated site profile.'
 
       field :dast_scanner_profile, DastScannerProfileType, null: true,
-            description: 'The associated scanner profile.'
+            description: 'Associated scanner profile.'
+
+      field :dast_profile_schedule, ::Types::Dast::ProfileScheduleType, null: true,
+            description: 'Associated profile schedule. Will always return `null` ' \
+                         'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
 
       field :branch, Dast::ProfileBranchType, null: true,
-            description: 'The associated branch.',
+            description: 'Associated branch.',
             calls_gitaly: true
 
       field :edit_path, GraphQL::Types::String, null: true,
@@ -32,6 +36,12 @@ module Types
 
       def edit_path
         Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(object.project, object)
+      end
+
+      def dast_profile_schedule
+        return unless Feature.enabled?(:dast_on_demand_scans_scheduler, object.project, default_enabled: :yaml)
+
+        object.dast_profile_schedule
       end
     end
   end

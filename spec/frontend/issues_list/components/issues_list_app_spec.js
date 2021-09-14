@@ -5,17 +5,17 @@ import { cloneDeep } from 'lodash';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import getIssuesQuery from 'ee_else_ce/issues_list/queries/get_issues.query.graphql';
-import getIssuesCountQuery from 'ee_else_ce/issues_list/queries/get_issues_count.query.graphql';
+import getIssuesCountsQuery from 'ee_else_ce/issues_list/queries/get_issues_counts.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
+  getIssuesCountsQueryResponse,
   getIssuesQueryResponse,
   filteredTokens,
   locationSearch,
   urlParams,
-  getIssuesCountQueryResponse,
 } from 'jest/issues_list/mock_data';
 import createFlash from '~/flash';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -63,15 +63,15 @@ describe('IssuesListApp component', () => {
     canBulkUpdate: false,
     emptyStateSvgPath: 'empty-state.svg',
     exportCsvPath: 'export/csv/path',
+    fullPath: 'path/to/project',
+    hasAnyIssues: true,
     hasBlockedIssuesFeature: true,
     hasIssueWeightsFeature: true,
     hasIterationsFeature: true,
-    hasProjectIssues: true,
     isSignedIn: true,
     issuesPath: 'path/to/issues',
     jiraIntegrationPath: 'jira/integration/path',
     newIssuePath: 'new/issue/path',
-    projectPath: 'path/to/project',
     rssPath: 'rss/path',
     showNewIssueLink: true,
     signInPath: 'sign/in/path',
@@ -97,12 +97,12 @@ describe('IssuesListApp component', () => {
   const mountComponent = ({
     provide = {},
     issuesQueryResponse = jest.fn().mockResolvedValue(defaultQueryResponse),
-    issuesQueryCountResponse = jest.fn().mockResolvedValue(getIssuesCountQueryResponse),
+    issuesCountsQueryResponse = jest.fn().mockResolvedValue(getIssuesCountsQueryResponse),
     mountFn = shallowMount,
   } = {}) => {
     const requestHandlers = [
       [getIssuesQuery, issuesQueryResponse],
-      [getIssuesCountQuery, issuesQueryCountResponse],
+      [getIssuesCountsQuery, issuesCountsQueryResponse],
     ];
     const apolloProvider = createMockApollo(requestHandlers);
 
@@ -134,7 +134,7 @@ describe('IssuesListApp component', () => {
 
     it('renders', () => {
       expect(findIssuableList().props()).toMatchObject({
-        namespace: defaultProvide.projectPath,
+        namespace: defaultProvide.fullPath,
         recentSearchesStorageKey: 'issues',
         searchInputPlaceholder: IssuesListApp.i18n.searchPlaceholder,
         sortOptions: getSortOptions(true, true),
@@ -349,7 +349,7 @@ describe('IssuesListApp component', () => {
         beforeEach(() => {
           setWindowLocation(`?search=no+results`);
 
-          wrapper = mountComponent({ provide: { hasProjectIssues: true }, mountFn: mount });
+          wrapper = mountComponent({ provide: { hasAnyIssues: true }, mountFn: mount });
         });
 
         it('shows empty state', () => {
@@ -363,7 +363,7 @@ describe('IssuesListApp component', () => {
 
       describe('when "Open" tab has no issues', () => {
         beforeEach(() => {
-          wrapper = mountComponent({ provide: { hasProjectIssues: true }, mountFn: mount });
+          wrapper = mountComponent({ provide: { hasAnyIssues: true }, mountFn: mount });
         });
 
         it('shows empty state', () => {
@@ -379,7 +379,7 @@ describe('IssuesListApp component', () => {
         beforeEach(() => {
           setWindowLocation(`?state=${IssuableStates.Closed}`);
 
-          wrapper = mountComponent({ provide: { hasProjectIssues: true }, mountFn: mount });
+          wrapper = mountComponent({ provide: { hasAnyIssues: true }, mountFn: mount });
         });
 
         it('shows empty state', () => {
@@ -395,7 +395,7 @@ describe('IssuesListApp component', () => {
       describe('when user is logged in', () => {
         beforeEach(() => {
           wrapper = mountComponent({
-            provide: { hasProjectIssues: false, isSignedIn: true },
+            provide: { hasAnyIssues: false, isSignedIn: true },
             mountFn: mount,
           });
         });
@@ -434,7 +434,7 @@ describe('IssuesListApp component', () => {
       describe('when user is logged out', () => {
         beforeEach(() => {
           wrapper = mountComponent({
-            provide: { hasProjectIssues: false, isSignedIn: false },
+            provide: { hasAnyIssues: false, isSignedIn: false },
           });
         });
 
@@ -571,9 +571,9 @@ describe('IssuesListApp component', () => {
 
   describe('errors', () => {
     describe.each`
-      error                      | mountOption                   | message
-      ${'fetching issues'}       | ${'issuesQueryResponse'}      | ${IssuesListApp.i18n.errorFetchingIssues}
-      ${'fetching issue counts'} | ${'issuesQueryCountResponse'} | ${IssuesListApp.i18n.errorFetchingCounts}
+      error                      | mountOption                    | message
+      ${'fetching issues'}       | ${'issuesQueryResponse'}       | ${IssuesListApp.i18n.errorFetchingIssues}
+      ${'fetching issue counts'} | ${'issuesCountsQueryResponse'} | ${IssuesListApp.i18n.errorFetchingCounts}
     `('when there is an error $error', ({ mountOption, message }) => {
       beforeEach(() => {
         wrapper = mountComponent({
@@ -696,7 +696,11 @@ describe('IssuesListApp component', () => {
 
           await waitForPromises();
 
-          expect(createFlash).toHaveBeenCalledWith({ message: IssuesListApp.i18n.reorderError });
+          expect(createFlash).toHaveBeenCalledWith({
+            message: IssuesListApp.i18n.reorderError,
+            captureError: true,
+            error: new Error('Request failed with status code 500'),
+          });
         });
       });
     });

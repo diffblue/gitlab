@@ -34,7 +34,7 @@ module Mutations
       private
 
       def allowed?(project)
-        Feature.enabled?(:security_orchestration_policies_configuration, project)
+        Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
       end
 
       def create_project(project)

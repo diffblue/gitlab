@@ -5259,4 +5259,33 @@ RSpec.describe Ci::Build do
       expect(described_class.with_coverage_regex).to eq([build_with_coverage_regex])
     end
   end
+
+  describe '#ensure_trace_metadata!' do
+    it 'delegates to Ci::BuildTraceMetadata' do
+      expect(Ci::BuildTraceMetadata)
+        .to receive(:find_or_upsert_for!)
+        .with(build.id)
+
+      build.ensure_trace_metadata!
+    end
+  end
+
+  describe '#doom!' do
+    subject { build.doom! }
+
+    let_it_be(:build) { create(:ci_build, :queued) }
+
+    it 'updates status and failure_reason', :aggregate_failures do
+      subject
+
+      expect(build.status).to eq("failed")
+      expect(build.failure_reason).to eq("data_integrity_failure")
+    end
+
+    it 'drops associated pending build' do
+      subject
+
+      expect(build.reload.queuing_entry).not_to be_present
+    end
+  end
 end

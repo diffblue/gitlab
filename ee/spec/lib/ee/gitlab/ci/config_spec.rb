@@ -45,30 +45,14 @@ RSpec.describe Gitlab::Ci::Config do
 
     let_it_be(:policies_repository) { create(:project, :repository) }
     let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
-
-    let_it_be(:policy_yml) do
-      <<-EOS
-      scan_execution_policy:
-       -  name: Run DAST in every pipeline
-          description: This policy enforces to run DAST for every pipeline within the project
-          enabled: true
-          rules:
-          - type: pipeline
-            branches:
-            - "production"
-          actions:
-          - scan: dast
-            site_profile: Site Profile
-            scanner_profile: Scanner Profile
-      EOS
-    end
+    let_it_be(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy)]) }
 
     subject(:config) { described_class.new(ci_yml, source_ref_path: ref, project: project, source: source) }
 
     before do
       allow_next_instance_of(Repository) do |repository|
         # allow(repository).to receive(:ls_files).and_return(['.gitlab/security-policies/enforce-dast.yml'])
-        allow(repository).to receive(:blob_data_at).and_return(policy_yml)
+        allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
       end
     end
 

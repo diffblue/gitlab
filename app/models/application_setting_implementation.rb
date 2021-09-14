@@ -163,6 +163,9 @@ module ApplicationSettingImplementation
         throttle_authenticated_api_enabled: false,
         throttle_authenticated_api_period_in_seconds: 3600,
         throttle_authenticated_api_requests_per_period: 7200,
+        throttle_authenticated_git_lfs_enabled: false,
+        throttle_authenticated_git_lfs_period_in_seconds: 60,
+        throttle_authenticated_git_lfs_requests_per_period: 1000,
         throttle_authenticated_web_enabled: false,
         throttle_authenticated_web_period_in_seconds: 3600,
         throttle_authenticated_web_requests_per_period: 7200,
@@ -205,7 +208,8 @@ module ApplicationSettingImplementation
         kroki_url: nil,
         kroki_formats: { blockdiag: false, bpmn: false, excalidraw: false },
         rate_limiting_response_text: nil,
-        whats_new_variant: 0
+        whats_new_variant: 0,
+        user_deactivation_emails_enabled: true
       }
     end
 

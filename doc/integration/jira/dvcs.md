@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 Use the Jira DVCS (distributed version control system) connector if you self-host
 your Jira instance, and you want to sync information
-between GitLab and Jira. If you use Jira Cloud and GitLab.com, you should use the
+between GitLab and Jira. If you use Jira Cloud, you should use the
 [GitLab.com for Jira Cloud app](connect-app.md) unless you specifically need the
 DVCS connector.
 
@@ -16,8 +16,8 @@ When you configure the Jira DVCS connector, make sure your GitLab and Jira insta
 are accessible.
 
 - **Self-managed GitLab**: Your GitLab instance must be accessible by Jira.
-- **Jira Cloud**: Your instance must be accessible through the internet.
 - **Jira Server**: Your network must allow access to your instance.
+- **Jira Cloud**: Your instance must be accessible through the internet.
 
 ## Smart commits
 
@@ -64,22 +64,23 @@ you can still perform multiple actions in a single commit:
 
 We recommend you create and use a `jira` user in GitLab, and use the account
 only for integration work. A separate account ensures regular account
-maintenance does not affect your integration.
+maintenance does not affect your integration. If a `jira` user is not feasible,
+you can set up this integration with your own account instead.
 
 1. In GitLab, [create a user](../../user/profile/account/create_accounts.md) for Jira to
-   use to connect to GitLab. For Jira to access all projects,
-   this user must have an [Administrator](../../user/permissions.md) role.
+   use to connect to GitLab. This user must be added to each project you want Jira to have access to,
+   or have an [Administrator](../../user/permissions.md) role to access all projects.
 1. Sign in as the `jira` user.
 1. In the top right corner, click the account's avatar, and select **Edit profile**.
-1. In the left sidebar, select **Applications**.
+1. On the left sidebar, select **Applications**.
 1. In the **Name** field, enter a descriptive name for the integration, such as `Jira`.
 1. In the **Redirect URI** field, enter the URI appropriate for your version of GitLab,
    replacing `<gitlab.example.com>` with your GitLab instance domain:
    - *For GitLab versions 13.0 and later* **and** *Jira versions 8.14 and later,* use the
      generated `Redirect URL` from
      [Linking GitLab accounts with Jira](https://confluence.atlassian.com/adminjiraserver/linking-gitlab-accounts-1027142272.html).
-   - *For GitLab versions 13.0 and later* **and** *Jira Cloud,* use `https://<gitlab.example.com>/login/oauth/callback`.  
-   - *For GitLab versions 11.3 and later,* use `https://<gitlab.example.com>/login/oauth/callback`.
+   - *For GitLab versions 13.0 and later* **and** *Jira Cloud,* use `https://<gitlab.example.com>/login/oauth/callback`.
+   - *For GitLab versions 11.3 and later* **and** *Jira versions 8.13 and earlier,* use `https://<gitlab.example.com>/login/oauth/callback`.
      If you use GitLab.com, the URL is `https://gitlab.com/login/oauth/callback`.
    - *For GitLab versions 11.2 and earlier,* use
      `https://<gitlab.example.com>/-/jira/login/oauth/callback`.
@@ -105,9 +106,9 @@ it completes, refreshes every 60 minutes:
    - *For Jira versions 8.13 and earlier:* Select **GitHub Enterprise**.
 1. For **Team or User Account**, enter either:
    - *For Jira versions 8.14 and later:*
-      - The relative path of a top-level GitLab group that you have access to.
+      - The relative path of a top-level GitLab group that [the GitLab user](#configure-a-gitlab-application-for-dvcs) has access to.
    - *For Jira versions 8.13 and earlier:*
-      - The relative path of a top-level GitLab group that you have access to.
+      - The relative path of a top-level GitLab group that [the GitLab user](#configure-a-gitlab-application-for-dvcs) has access to.
       - The relative path of your personal namespace.
 
 1. In the **Host URL** field, enter the URI appropriate for your version of GitLab,

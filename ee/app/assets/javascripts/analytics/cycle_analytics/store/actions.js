@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import { removeFlash } from '~/cycle_analytics/utils';
+import { removeFlash, appendExtension } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import httpStatus from '~/lib/utils/http_status';
 import { __ } from '~/locale';
@@ -8,8 +8,6 @@ import * as types from './mutation_types';
 export * from './actions/filters';
 export * from './actions/stages';
 export * from './actions/value_streams';
-
-const appendExtension = (path) => (path.indexOf('.') > -1 ? path : `${path}.json`);
 
 export const setPaths = ({ dispatch }, options) => {
   const { groupPath, milestonesPath = '', labelsPath = '' } = options;

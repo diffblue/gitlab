@@ -190,13 +190,15 @@ RSpec.describe ProjectsHelper do
           empty_state_svg_path: start_with('/assets/illustrations/security-dashboard-empty-state'),
           survey_request_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
           dashboard_documentation: '/help/user/application_security/security_dashboard/index',
+          false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
           security_dashboard_help_path: '/help/user/application_security/security_dashboard/index',
           not_enabled_scanners_help_path: help_page_path('user/application_security/index', anchor: 'quick-start'),
           no_pipeline_run_scanners_help_path: "/#{project.full_path}/-/pipelines/new",
           auto_fix_documentation: help_page_path('user/application_security/index', anchor: 'auto-fix-merge-requests'),
           auto_fix_mrs_path: end_with('/merge_requests?label_name=GitLab-auto-fix'),
           scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
-          can_admin_vulnerability: 'true'
+          can_admin_vulnerability: 'true',
+          can_view_false_positive: 'false'
         }
       end
 
@@ -316,27 +318,13 @@ RSpec.describe ProjectsHelper do
     it { is_expected.to include(expected_settings) }
 
     context 'cveIdRequestEnabled' do
-      context "with cve_id_request_button feature flag" do
-        where(feature_flag_enabled: [true, false])
-        with_them do
-          before do
-            stub_feature_flags(cve_id_request_button: feature_flag_enabled)
-          end
-
-          it 'includes cveIdRequestEnabled' do
-            expect(subject.key?(:cveIdRequestEnabled)).to eq(feature_flag_enabled)
-          end
-        end
-      end
-
-      where(:project_attrs, :cve_enabled, :expected) do
-        [:public]   | true  | true
-        [:public]   | false | false
-        [:internal] | true  | false
-        [:private]  | true  | false
+      where(:project_attrs, :expected) do
+        [:public]   | true
+        [:internal] | false
+        [:private]  | false
       end
       with_them do
-        let(:project) { create(:project, :with_cve_request, *project_attrs, cve_request_enabled: cve_enabled) }
+        let(:project) { create(:project, :with_cve_request, *project_attrs) }
         subject { helper.project_permissions_settings(project) }
 
         it 'has the correct cveIdRequestEnabled value' do
@@ -370,19 +358,6 @@ RSpec.describe ProjectsHelper do
 
         it 'sets requestCveAvailable to the correct value' do
           expect(subject[:requestCveAvailable]).to eq(is_gitlab_com)
-        end
-      end
-    end
-
-    context "with cve_id_request_button feature flag" do
-      where(feature_flag_enabled: [true, false])
-      with_them do
-        before do
-          stub_feature_flags(cve_id_request_button: feature_flag_enabled)
-        end
-
-        it 'includes requestCveAvailable' do
-          expect(subject.key?(:requestCveAvailable)).to eq(feature_flag_enabled)
         end
       end
     end

@@ -147,7 +147,7 @@ export default {
       data-qa-selector="create_issue_button"
       @click="$emit(actionButtons[0].action)"
     >
-      {{ __(actionButtons[0].name) }}
+      {{ actionButtons[0].name }}
     </gl-button>
   </div>
 </template>

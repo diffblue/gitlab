@@ -20,7 +20,7 @@ The following limits are disabled by default:
 To enforce any or all of them:
 
 1. On the top bar, select **Menu > Admin**.
-1. In the left sidebar, select **Settings > Network**, and expand **User and IP rate limits**:
+1. On the left sidebar, select **Settings > Network**, and expand **User and IP rate limits**:
    ![user-and-ip-rate-limits](img/user_and_ip_rate_limits.png)
 
    NOTE:
@@ -136,6 +136,7 @@ The possible names are:
 - `throttle_authenticated_protected_paths_web`
 - `throttle_unauthenticated_packages_api`
 - `throttle_authenticated_packages_api`
+- `throttle_authenticated_git_lfs`
 
 For example, to try out throttles for all authenticated requests to
 non-protected paths can be done by setting

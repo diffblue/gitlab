@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Security Configuration Page Layout component matches the snapshot 1`] = `
+<article>
+  <gl-alert-stub
+    class="gl-mt-4"
+    data-testid="configuration-page-alert"
+    dismissible="true"
+    dismisslabel="Dismiss"
+    primarybuttonlink=""
+    primarybuttontext=""
+    secondarybuttonlink=""
+    secondarybuttontext=""
+    title=""
+    variant="info"
+  >
+    Page alert
+  </gl-alert-stub>
+   
+  <header
+    class="gl-my-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid"
+  >
+    <h4>
+      Page title
+    </h4>
+     
+    <p>
+      Scanner description
+    </p>
+  </header>
+   
+  <div>
+    form
+  </div>
+</article>
+`;

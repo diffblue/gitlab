@@ -94,6 +94,63 @@ RSpec.describe 'Group issues page' do
         expect(page).not_to have_content issue.title[0..80]
       end
     end
+
+    context 'when cached issues state count is enabled', :clean_gitlab_redis_cache do
+      before do
+        stub_feature_flags(cached_issues_state_count: true)
+      end
+
+      it 'truncates issue counts if over the threshold' do
+        allow(Rails.cache).to receive(:read).and_call_original
+        allow(Rails.cache).to receive(:read).with(
+          ['group', group.id, 'issues'],
+          { expires_in: Gitlab::IssuablesCountForState::CACHE_EXPIRES_IN }
+        ).and_return({ opened: 1050, closed: 500, all: 1550 })
+
+        visit issues_group_path(group)
+
+        expect(page).to have_text('Open 1.1k Closed 500 All 1.6k')
+      end
+    end
+
+    context 'when cached issues state count is disabled', :clean_gitlab_redis_cache do
+      before do
+        stub_feature_flags(cached_issues_state_count: false)
+      end
+
+      it 'does not truncate counts if they are over the threshold' do
+        allow_next_instance_of(IssuesFinder) do |finder|
+          allow(finder).to receive(:count_by_state).and_return(true)
+            .and_return({ opened: 1050, closed: 500, all: 1550 })
+        end
+
+        visit issues_group_path(group)
+
+        expect(page).to have_text('Open 1,050 Closed 500 All 1,550')
+      end
+    end
+  end
+
+  context 'projects with issues disabled' do
+    describe 'issue dropdown' do
+      let(:user_in_group) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
+
+      before do
+        [project, project_with_issues_disabled].each { |project| project.add_maintainer(user_in_group) }
+        sign_in(user_in_group)
+        visit issues_group_path(group)
+      end
+
+      it 'shows projects only with issues feature enabled', :js do
+        find('.empty-state .js-lazy-loaded')
+        find('.empty-state .new-project-item-link').click
+
+        page.within('.select2-results') do
+          expect(page).to have_content(project.full_name)
+          expect(page).not_to have_content(project_with_issues_disabled.full_name)
+        end
+      end
+    end
   end
 
   context 'manual ordering', :js do

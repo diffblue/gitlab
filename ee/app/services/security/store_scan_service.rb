@@ -19,12 +19,11 @@ module Security
     end
 
     def execute
-      return deduplicate if security_scan.has_errors?
+      set_security_scan_non_latest! if artifact.job.retried?
 
-      StoreFindingsMetadataService.execute(security_scan, security_report)
-      deduplicate_findings? ? update_deduplicated_findings : register_finding_keys
+      return deduplicate if security_scan.has_errors? || !security_scan.latest?
 
-      deduplicate_findings?
+      store_findings
     end
 
     private
@@ -46,6 +45,17 @@ module Security
       @security_scan ||= Security::Scan.safe_find_or_create_by!(build: artifact.job, scan_type: artifact.file_type) do |scan|
         scan.info['errors'] = security_report.errors.map(&:stringify_keys) if security_report.errored?
       end
+    end
+
+    def store_findings
+      StoreFindingsMetadataService.execute(security_scan, security_report)
+      deduplicate_findings? ? update_deduplicated_findings : register_finding_keys
+
+      deduplicate_findings?
+    end
+
+    def set_security_scan_non_latest!
+      security_scan.update!(latest: false)
     end
 
     def deduplicate_findings?

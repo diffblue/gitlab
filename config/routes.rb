@@ -63,11 +63,12 @@ Rails.application.routes.draw do
       end
     end
 
-    resource :experience_level, only: [:show, :update]
-
     Gitlab.ee do
       resources :groups, only: [:new, :create]
       resources :projects, only: [:new, :create]
+      resources :groups_projects, only: [:new, :create] do
+        post :import, on: :collection
+      end
     end
   end
 
@@ -221,6 +222,7 @@ Rails.application.routes.draw do
 
     draw :snippets
     draw :profile
+    draw :members
 
     # Product analytics collector
     match '/collector/i', to: ProductAnalytics::CollectorApp.new, via: :all

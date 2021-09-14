@@ -3,103 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::GroupsController do
-  using RSpec::Parameterized::TableSyntax
-
-  let_it_be(:user) { create(:user) }
-
-  shared_examples 'hides email confirmation warning' do
-    RSpec::Matchers.define :set_confirm_warning_for do |email|
-      match do |response|
-        expect(controller).to set_flash.now[:warning].to include("Please check your email (#{email}) to verify that you own this address and unlock the power of CI/CD.")
-      end
-    end
-
-    context 'with an unconfirmed email address present' do
-      let(:user) { create(:user, confirmed_at: nil, unconfirmed_email: 'unconfirmed@gitlab.com') }
-
-      it { is_expected.not_to set_confirm_warning_for(user.unconfirmed_email) }
-    end
-
-    context 'without an unconfirmed email address present' do
-      let(:user) { create(:user, confirmed_at: nil) }
-
-      it { is_expected.not_to set_confirm_warning_for(user.email) }
-    end
-  end
-
-  describe 'GET #new', :aggregate_failures do
-    let(:dev_env_or_com) { true }
-    let(:learn_gitlab_context) do
-      {
-        in_experiment_group_a: false,
-        in_experiment_group_b: false
-      }
-    end
-
-    subject { get :new }
-
-    context 'with an unauthenticated user' do
-      it { is_expected.to have_gitlab_http_status(:redirect) }
-      it { is_expected.to redirect_to(new_user_session_path) }
-    end
-
-    context 'with an authenticated user' do
-      before do
-        sign_in(user)
-        allow(::Gitlab).to receive(:dev_env_or_com?).and_return(dev_env_or_com)
-      end
-
-      context 'when on .com' do
-        it { is_expected.to have_gitlab_http_status(:ok) }
-        it { is_expected.to render_template(:new) }
-
-        it 'assigns the group variable to a new Group with the default group visibility' do
-          subject
-          expect(assigns(:group)).to be_a_new(Group)
-
-          expect(assigns(:group).visibility_level).to eq(Gitlab::CurrentSettings.default_group_visibility)
-        end
-
-        context 'with different experiment rollouts' do
-          before do
-            stub_experiment_for_subject(learn_gitlab_a: experiment_a, learn_gitlab_b: experiment_b)
-          end
-
-          where(:experiment_a, :experiment_b, :context) do
-            false       | false         | { in_experiment_group_a: false, in_experiment_group_b: false }
-            false       | true          | { in_experiment_group_a: false, in_experiment_group_b: true }
-            true        | false         | { in_experiment_group_a: true, in_experiment_group_b: false }
-            true        | true          | { in_experiment_group_a: true, in_experiment_group_b: false }
-          end
-
-          with_them do
-            it 'sets the correct context', :aggregate_failures do
-              expect(controller).to receive(:record_experiment_user).with(:learn_gitlab_a, context)
-              expect(controller).to receive(:record_experiment_user).with(:learn_gitlab_b, context)
-
-              subject
-            end
-          end
-        end
-
-        context 'user without the ability to create a group' do
-          let(:user) { create(:user, can_create_group: false) }
-
-          it { is_expected.to have_gitlab_http_status(:not_found) }
-        end
-      end
-
-      context 'when not on .com' do
-        let(:dev_env_or_com) { false }
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
-      end
-
-      it_behaves_like 'hides email confirmation warning'
-    end
+  describe 'GET #new' do
+    it_behaves_like "Registrations::GroupsController GET #new"
   end
 
   describe 'POST #create', :aggregate_failure do
+    let_it_be(:user) { create(:user) }
     let_it_be(:glm_params) { {} }
     let_it_be(:trial_form_params) { { trial: 'false' } }
     let_it_be(:trial_onboarding_flow_params) { {} }
@@ -110,7 +19,7 @@ RSpec.describe Registrations::GroupsController do
       { group: group_params }.merge(glm_params).merge(trial_form_params).merge(trial_onboarding_flow_params)
     end
 
-    subject { post :create, params: params }
+    subject(:post_create) { post :create, params: params }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -128,7 +37,7 @@ RSpec.describe Registrations::GroupsController do
 
         context 'when group can be created' do
           it 'creates a group' do
-            expect { subject }.to change { Group.count }.by(1)
+            expect { post_create }.to change { Group.count }.by(1)
           end
 
           it 'tracks an event for the jobs_to_be_done experiment', :experiment do
@@ -139,7 +48,7 @@ RSpec.describe Registrations::GroupsController do
                                                       .for(:candidate)
                                                       .with_context(user: user)
 
-            subject
+            post_create
           end
 
           context 'when in trial onboarding  - apply_trial_for_trial_onboarding_flow' do
@@ -178,6 +87,19 @@ RSpec.describe Registrations::GroupsController do
               context 'with redirection to projects page' do
                 it { is_expected.to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false, trial_onboarding_flow: true)) }
               end
+
+              it 'tracks an event for the trial_registration_with_reassurance experiment', :experiment do
+                stub_experiments(trial_registration_with_reassurance: :control)
+
+                expect(experiment(:trial_registration_with_reassurance)).to track(
+                  :apply_trial,
+                  user: user,
+                  namespace: group,
+                  label: 'registrations:groups:create'
+                ).with_context(actor: user).on_next_instance
+
+                post_create
+              end
             end
 
             context 'when failing to apply trial' do
@@ -193,16 +115,6 @@ RSpec.describe Registrations::GroupsController do
 
           context 'when not in the trial onboarding - registration_onboarding_flow' do
             let_it_be(:group) { create(:group) }
-
-            it 'calls the record user for learn gitlab experiment' do
-              expect_next_instance_of(Groups::CreateService) do |service|
-                expect(service).to receive(:execute).and_return(group)
-              end
-              expect(controller).to receive(:record_experiment_conversion_event).with(:learn_gitlab_a, namespace_id: group.id)
-              expect(controller).to receive(:record_experiment_conversion_event).with(:learn_gitlab_b, namespace_id: group.id)
-
-              subject
-            end
 
             context 'when trial_during_signup - trial_during_signup_flow' do
               let_it_be(:glm_params) { { glm_source: 'gitlab.com', glm_content: 'content' } }
@@ -276,6 +188,11 @@ RSpec.describe Registrations::GroupsController do
                       expect(e).to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user, label: 'registrations_groups_controller')
                     end
 
+                    post_create
+                  end
+
+                  it 'tracks for the combined_registration experiment', :experiment do
+                    expect(experiment(:combined_registration)).to track(:create_group, namespace: an_instance_of(Group)).on_next_instance
                     subject
                   end
                 end
@@ -302,14 +219,14 @@ RSpec.describe Registrations::GroupsController do
                     expect(service).to receive(:execute).and_return(group)
                   end
 
-                  expect(subject).to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false))
+                  expect(post_create).to redirect_to(new_users_sign_up_project_path(namespace_id: group.id, trial: false))
                 end
 
                 it 'does not call trial creation methods' do
                   expect(controller).not_to receive(:create_lead)
                   expect(controller).not_to receive(:apply_trial)
 
-                  subject
+                  post_create
                 end
 
                 it 'selectively tracks for the force_company_trial experiment', :experiment do
@@ -319,7 +236,7 @@ RSpec.describe Registrations::GroupsController do
                     expect(e).not_to receive(:track).with(:create_trial, namespace: an_instance_of(Group), user: user)
                   end
 
-                  subject
+                  post_create
                 end
               end
             end
@@ -330,14 +247,14 @@ RSpec.describe Registrations::GroupsController do
           let(:group_params) { { name: '', path: '' } }
 
           it 'does not create a group', :aggregate_failures do
-            expect { subject }.not_to change { Group.count }
+            expect { post_create }.not_to change { Group.count }
             expect(assigns(:group).errors).not_to be_blank
           end
 
           it 'does not call call the successful flow' do
             expect(controller).not_to receive(:create_successful_flow)
 
-            subject
+            post_create
           end
 
           it { is_expected.to have_gitlab_http_status(:ok) }

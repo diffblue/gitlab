@@ -6,10 +6,10 @@ module Types
       graphql_name 'DastProfileBranch'
       description 'Represents a DAST Profile Branch'
 
-      authorize :read_on_demand_scans
+      authorize :read_on_demand_dast_scan
 
       field :name, GraphQL::Types::String, null: true,
-            description: 'The name of the branch.',
+            description: 'Name of the branch.',
             calls_gitaly: true
 
       field :exists, GraphQL::Types::Boolean, null: true,

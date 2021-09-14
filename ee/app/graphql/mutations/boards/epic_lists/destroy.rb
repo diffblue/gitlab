@@ -15,7 +15,7 @@ module Mutations
         field :list,
               Types::Boards::EpicListType,
               null: true,
-              description: 'The epic board list. `null` if the board was destroyed successfully.'
+              description: 'Epic board list. `null` if the board was destroyed successfully.'
 
         authorize :admin_epic_board_list
 

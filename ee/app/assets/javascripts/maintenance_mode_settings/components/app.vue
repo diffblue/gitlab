@@ -9,10 +9,10 @@ export default {
   i18n: {
     toggleLabel: __('Enable maintenance mode'),
     toggleHelpText: __(
-      'Non-admin users can sign in with read-only access and make read-only API requests.',
+      'Non-admin users are restricted to read-only access, in both GitLab UI and API.',
     ),
     bannerMessagePlaceholder: __(
-      'GitLab is undergoing maintenance and is operating in a read-only mode.',
+      'GitLab is undergoing maintenance and is operating in read-only mode.',
     ),
     buttonText: __('Save changes'),
   },

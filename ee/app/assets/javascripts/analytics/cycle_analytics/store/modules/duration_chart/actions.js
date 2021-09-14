@@ -25,16 +25,16 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
   } = rootGetters;
   return Promise.all(
     activeStages.map((stage) => {
-      const { slug } = stage;
+      const { id } = stage;
 
       return Api.cycleAnalyticsDurationChart({
         groupId: currentGroupPath,
         valueStreamId: currentValueStreamId,
-        stageId: slug,
+        stageId: id,
         params: cycleAnalyticsRequestParams,
       })
         .then(checkForDataError)
-        .then(({ data }) => ({ slug, selected: true, data }));
+        .then(({ data }) => ({ id, selected: true, data }));
     }),
   )
     .then((data) => commit(types.RECEIVE_DURATION_DATA_SUCCESS, data))
@@ -45,7 +45,7 @@ export const updateSelectedDurationChartStages = ({ state, commit }, stages) => 
   const setSelectedPropertyOnStages = (data) =>
     data.map((stage) => {
       const selected = stages.reduce((result, object) => {
-        if (object.slug === stage.slug) return true;
+        if (object.id === stage.id) return true;
         return result;
       }, false);
 

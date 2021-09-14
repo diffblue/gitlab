@@ -26,3 +26,4 @@ tier:
 performance_indicator_type:
 - gmau
 - paid_gmau
+milestone: "<13.9"

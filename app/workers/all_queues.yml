@@ -2445,7 +2445,7 @@
   :urgency: :high
   :resource_boundary: :cpu
   :weight: 5
-  :idempotent:
+  :idempotent: true
   :tags: []
 - :name: process_commit
   :worker_name: ProcessCommitWorker
@@ -2703,7 +2703,7 @@
   :worker_name: ServiceDeskEmailReceiverWorker
   :feature_category: :service_desk
   :has_external_dependencies:
-  :urgency: :low
+  :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:

@@ -233,7 +233,7 @@ gem 'redis', '~> 4.1.4'
 gem 'connection_pool', '~> 2.0'
 
 # Redis session store
-gem 'redis-rails', '~> 5.0.2'
+gem 'redis-actionpack', '~> 5.2.0'
 
 # Discord integration
 gem 'discordrb-webhooks', '~> 3.4', require: false
@@ -333,7 +333,7 @@ gem 'snowplow-tracker', '~> 0.6.1'
 # Metrics
 gem 'method_source', '~> 1.0', require: false
 gem 'webrick', '~> 1.6.1', require: false
-gem 'prometheus-client-mmap', '~> 0.14.0', require: 'prometheus/client'
+gem 'prometheus-client-mmap', '~> 0.15.0', require: 'prometheus/client'
 
 gem 'warning', '~> 1.2.0'
 

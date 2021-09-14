@@ -12,8 +12,14 @@ module SecurityHelper
       project_list_endpoint: security_projects_path,
       instance_dashboard_settings_path: settings_security_dashboard_path,
       vulnerabilities_export_endpoint: expose_path(api_v4_security_vulnerability_exports_path),
-      scanners: VulnerabilityScanners::ListService.new(InstanceSecurityDashboard.new(current_user)).execute.to_json
+      scanners: VulnerabilityScanners::ListService.new(InstanceSecurityDashboard.new(current_user)).execute.to_json,
+      false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
+      can_view_false_positive: can_view_false_positive?
     }
+  end
+
+  def can_view_false_positive?
+    (::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && ::License.feature_available?(:sast_fp_reduction)).to_s
   end
 
   def security_dashboard_unavailable_view_data

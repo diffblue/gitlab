@@ -158,6 +158,11 @@ module Types
           null: false,
           description: 'Total size of the dependency proxy cached images.'
 
+    field :dependency_proxy_image_prefix,
+          GraphQL::Types::String,
+          null: false,
+          description: 'Prefix for pulling images when using the dependency proxy.'
+
     def label(title:)
       BatchLoader::GraphQL.for(title).batch(key: group) do |titles, loader, args|
         LabelsFinder
@@ -189,6 +194,14 @@ module Types
           null: true,
           resolver: Resolvers::Ci::GroupRunnersResolver,
           description: "Find runners visible to the current user."
+
+    field :organizations, Types::CustomerRelations::OrganizationType.connection_type,
+          null: true,
+          description: "Find organizations of this group."
+
+    field :contacts, Types::CustomerRelations::ContactType.connection_type,
+          null: true,
+          description: "Find contacts of this group."
 
     def avatar_url
       object.avatar_url(only_path: false)

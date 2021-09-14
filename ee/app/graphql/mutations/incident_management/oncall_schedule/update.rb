@@ -8,23 +8,23 @@ module Mutations
 
         argument :project_path, GraphQL::Types::ID,
                  required: true,
-                 description: 'The project to update the on-call schedule in.'
+                 description: 'Project to update the on-call schedule in.'
 
         argument :iid, GraphQL::Types::String,
                  required: true,
-                 description: 'The on-call schedule internal ID to update.'
+                 description: 'On-call schedule internal ID to update.'
 
         argument :name, GraphQL::Types::String,
                  required: false,
-                 description: 'The name of the on-call schedule.'
+                 description: 'Name of the on-call schedule.'
 
         argument :description, GraphQL::Types::String,
                  required: false,
-                 description: 'The description of the on-call schedule.'
+                 description: 'Description of the on-call schedule.'
 
         argument :timezone, GraphQL::Types::String,
                  required: false,
-                 description: 'The timezone of the on-call schedule.'
+                 description: 'Timezone of the on-call schedule.'
 
         def resolve(args)
           oncall_schedule = authorized_find!(project_path: args[:project_path], iid: args[:iid])

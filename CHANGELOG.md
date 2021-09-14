@@ -2,6 +2,15 @@
 documentation](doc/development/changelog.md) for instructions on adding your own
 entry.
 
+## 14.2.3 (2021-09-01)
+
+### Fixed (4 changes)
+
+- [Fix Live Markdown Preview in personal and subgroup projects](gitlab-org/gitlab@20553f93703c0bc076c8e1a4fbc4ce07e2e914b7) ([merge request](gitlab-org/gitlab!69316))
+- [Fix OrphanedInviteTokensCleanup migration](gitlab-org/gitlab@9c59b2fbdfeb250de66a9d2b9424cde9680f86c3) ([merge request](gitlab-org/gitlab!69316))
+- [Reset severity_levels default](gitlab-org/gitlab@34e65788679cfbdeec28357a01a8b303ba61418f) ([merge request](gitlab-org/gitlab!69316))
+- [Geo: Replicate multi-arch containers](gitlab-org/gitlab@fdf88767320016a84c83e896b9f9b90291de89e0) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67624)) **GitLab Enterprise Edition**
+
 ## 14.2.2 (2021-08-31)
 
 ### Security (9 changes)
@@ -576,6 +585,12 @@ entry.
 - [Refactor polling interval multiplier configuration UI and docs](gitlab-org/gitlab@b8ef9101f45759b19d982f3f6ae74cf92e2a31d1) ([merge request](gitlab-org/gitlab!66342))
 - [Add helpful text to URL group validation and limit text](gitlab-org/gitlab@59a5a6266cb0d5434596170ffa36e4e74b8d2c2c) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65369)) **GitLab Enterprise Edition**
 - [Refactor external storage admin area configuration UI and docs](gitlab-org/gitlab@497ba4fc8f4ec1d234c9f5f1ec5c69712b8c7cb3) ([merge request](gitlab-org/gitlab!66219))
+
+## 14.1.5 (2021-09-02)
+
+### Fixed (1 change)
+
+- [Geo: Replicate multi-arch containers](gitlab-org/gitlab@4f74fe9fb6f53cd877d8f793e2ef74c4177006d1) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67624)) **GitLab Enterprise Edition**
 
 ## 14.1.4 (2021-08-31)
 
@@ -1207,6 +1222,10 @@ entry.
 - [Add more logging to track encoding errors appending CI traces](gitlab-org/gitlab@6f240a53fe0d56910347a0615d575ac8c3e7215e) ([merge request](gitlab-org/gitlab!63920))
 - [Remove diffs gradual load feature flag](gitlab-org/gitlab@027d7c4327b5b6205a84281239027273517bf81b) ([merge request](gitlab-org/gitlab!55478))
 - [Remove partial index for Hashed Storage migration](gitlab-org/gitlab@3ed017a1023d7b0941a7606b69e6caee8d22f15c) ([merge request](gitlab-org/gitlab!62920))
+
+## 14.0.10 (2021-09-02)
+
+No changes.
 
 ## 14.0.9 (2021-08-31)
 
@@ -1968,6 +1987,10 @@ entry.
 - [Track usage of the resolve UI](gitlab-org/gitlab@83519fa35b9b2ab17dbd181a1786be8e78d3efb1) ([merge request](gitlab-org/gitlab!61654))
 - [Add missing metrics information](gitlab-org/gitlab@89cd7fe3b95323e635b2d73e08549b2e6153dc4d) ([merge request](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/61772/edit))
 - [Track usage of the resolve UI](gitlab-org/gitlab@35c8e30fce288cecefcf2f7c0077d4608e696519) ([merge request](gitlab-org/gitlab!61654))
+
+## 13.12.11 (2021-09-02)
+
+No changes.
 
 ## 13.12.10 (2021-08-10)
 

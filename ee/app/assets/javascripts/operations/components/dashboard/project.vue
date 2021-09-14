@@ -1,5 +1,4 @@
 <script>
-/* eslint-disable vue/no-v-html */
 import { isEmpty } from 'lodash';
 import { mapActions } from 'vuex';
 import Alerts from 'ee/vue_shared/dashboards/components/alerts.vue';
@@ -128,7 +127,7 @@ export default {
     <div
       v-if="project.upgrade_required"
       class="dashboard-card-body card-body bg-secondary"
-      v-html="unlicensedMessage"
+      v-html="unlicensedMessage /* eslint-disable-line vue/no-v-html */"
     ></div>
 
     <div v-else :class="cardClasses" class="dashboard-card-body card-body">

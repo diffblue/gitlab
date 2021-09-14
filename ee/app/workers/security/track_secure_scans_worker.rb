@@ -6,6 +6,8 @@ module Security
     include ApplicationWorker
     include SecurityScansQueue
 
+    feature_category :vulnerability_management
+
     sidekiq_options retry: 1
     data_consistency :always
     worker_resource_boundary :cpu

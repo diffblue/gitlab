@@ -8,13 +8,14 @@ module EE
             module SchemaValidator
               module Schema
                 extend ::Gitlab::Utils::Override
+
+                CE_TYPES = %i(sast secret_detection).freeze
+
                 override :root_path
                 def root_path
-                  if [:sast, :secret_detection].include?(report_type)
-                    super
-                  else
-                    File.join(__dir__, 'schemas')
-                  end
+                  return super if CE_TYPES.include?(report_type)
+
+                  File.join(__dir__, 'schemas')
                 end
               end
             end

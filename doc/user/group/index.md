@@ -267,7 +267,7 @@ These Group Activity Analytics can be enabled with the `group_activity_analytics
 
 ### View group activity
 
-You can view the most recent actions taken in a group.
+You can view the most recent actions taken in a group, either in your browser or in an RSS feed:
 
 1. On the top bar, select **Menu > Groups**.
 1. Select **Your Groups**.
@@ -316,7 +316,7 @@ In GitLab 13.11, you can optionally replace the sharing form with a modal window
 To share a group after enabling this feature:
 
 1. Go to your group's page.
-1. In the left sidebar, go to **Group information > Members**, and then select **Invite a group**.
+1. On the left sidebar, go to **Group information > Members**, and then select **Invite a group**.
 1. Select a group, and select a **Max role**.
 1. (Optional) Select an **Access expiration date**.
 1. Select **Invite**.

@@ -477,7 +477,7 @@ module EE
     def user_cap_reached?(requested_hosted_plan = nil)
       return false unless ::Feature.enabled?(:saas_user_caps, self, default_enabled: :yaml)
 
-      user_cap = root_ancestor.new_user_signups_cap
+      user_cap = root_ancestor.namespace_settings&.new_user_signups_cap
       return false unless user_cap
 
       user_cap <= billable_members_count(requested_hosted_plan)

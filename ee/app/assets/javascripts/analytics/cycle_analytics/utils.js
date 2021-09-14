@@ -1,14 +1,13 @@
 import dateFormat from 'dateformat';
-import { isNumber, uniqBy } from 'lodash';
+import { uniqBy } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
+import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import httpStatus from '~/lib/utils/http_status';
-import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { toYmd } from '../shared/utils';
 
 const EVENT_TYPE_LABEL = 'label';
 
@@ -45,45 +44,12 @@ export const isLabelEvent = (labelEvents = [], ev = null) =>
 export const getLabelEventsIdentifiers = (events = []) =>
   events.filter((ev) => ev.type && ev.type === EVENT_TYPE_LABEL).map((i) => i.identifier);
 
-/**
- * Checks if the specified stage is in memory or persisted to storage based on the id
- *
- * Default value stream analytics stages are initially stored in memory, when they are first
- * created the id for the stage is the name of the stage in lowercase. This string id
- * is used to fetch stage data (events, median calculation)
- *
- * When either a custom stage is created or an edit is made to a default stage then the
- * default stages get persisted to storage and will have a numeric id. The new numeric
- * id should then be used to access stage data
- *
- */
-export const isPersistedStage = ({ custom, id }) => custom || isNumber(id);
-
-/**
- * Returns the the correct slug to use for a stage
- * default stages use the snakecased title of the stage, while custom
- * stages will have a numeric id
- *
- * @param {Object} obj
- * @param {string} obj.title - title of the stage
- * @param {number} obj.id - numerical object id available for custom stages
- * @param {boolean} obj.custom - boolean flag indicating a custom stage
- * @returns {(number|string)} Returns a numerical id for customs stages and string for default stages
- */
-const stageUrlSlug = ({ id, title, custom = false }) => {
-  if (custom) return id;
-
-  return convertToSnakeCase(title);
-};
-
 export const transformRawStages = (stages = []) =>
   stages.map(({ id, title, name = '', custom = false, ...rest }) => ({
     ...convertObjectPropsToCamelCase(rest, { deep: true }),
     id,
     title,
     custom,
-    slug: isPersistedStage({ custom, id }) ? id : stageUrlSlug({ custom, id, title }),
-    // the name field is used to create a stage, but the get request returns title
     name: name.length ? name : title,
   }));
 
@@ -113,7 +79,7 @@ export const prepareStageErrors = (stages, errors) =>
  * each potentially having multiple data entries.
  * [
  *   {
- *    slug: 'issue',
+ *    id: 'issue',
  *    selected: true,
  *    data: [
  *      {
@@ -159,7 +125,7 @@ export const flattenDurationChartData = (data) =>
  * each potentially having multiple data entries.
  * [
  *   {
- *    slug: 'issue',
+ *    id: 'issue',
  *    selected: true,
  *    data: [
  *      {

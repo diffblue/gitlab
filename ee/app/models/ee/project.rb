@@ -104,6 +104,8 @@ module EE
 
       has_one :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', foreign_key: :project_id, inverse_of: :project
 
+      has_many :security_scans, class_name: 'Security::Scan', inverse_of: :project
+
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
       elastic_index_dependant_association :notes, on_change: :visibility_level
@@ -466,6 +468,13 @@ module EE
     override :allowed_to_share_with_group?
     def allowed_to_share_with_group?
       super && !(group && ::Gitlab::CurrentSettings.lock_memberships_to_ldap?)
+    end
+
+    override :membership_locked?
+    def membership_locked?
+      return false unless group
+
+      group.membership_lock?
     end
 
     # TODO: Clean up this method in the https://gitlab.com/gitlab-org/gitlab/issues/33329
