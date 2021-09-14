@@ -108,6 +108,17 @@ RSpec.describe Note do
   end
 
   describe 'callbacks' do
+    describe '#keep_around_commit' do
+      it 'skips #keep_around_commit if `skip_keep_around_commits` is true ' do
+        noteable = create(:issue)
+        note = build(:note, project: noteable.project, noteable: noteable, skip_keep_around_commits: true)
+
+        expect(note).not_to receive(:keep_around_commit)
+
+        note.save!
+      end
+    end
+
     describe '#notify_after_create' do
       it 'calls #after_note_created on the noteable' do
         noteable = create(:issue)
