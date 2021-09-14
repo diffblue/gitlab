@@ -160,8 +160,5 @@ export function mountSidebar(mediator, store) {
   mountStatusComponent(store);
   mountEpicsSelect();
   mountIterationSelect();
-
-  if (gon.features.cveIdRequestButton) {
-    mountCveIdRequestComponent(store);
-  }
+  mountCveIdRequestComponent(store);
 }
