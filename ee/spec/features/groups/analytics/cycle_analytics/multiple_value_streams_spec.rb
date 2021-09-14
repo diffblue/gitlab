@@ -38,7 +38,7 @@ RSpec.describe 'Multiple value streams', :js do
   end
 
   def path_nav_elem
-    page.find('[data-testid="gl-path-nav"]')
+    page.find('[data-testid="vsa-path-navigation"]')
   end
 
   def click_action_button(action, index)

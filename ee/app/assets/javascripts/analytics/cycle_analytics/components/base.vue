@@ -166,7 +166,8 @@ export default {
     <div v-if="!shouldRenderEmptyState" class="gl-max-w-full">
       <path-navigation
         v-if="selectedStageReady"
-        class="js-path-navigation gl-w-full gl-pb-2"
+        data-testid="vsa-path-navigation"
+        class="gl-w-full gl-pb-2"
         :loading="isLoading"
         :stages="pathNavigationData"
         :selected-stage="selectedStage"
