@@ -92,11 +92,36 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           end
 
           context 'when associated schedule is not present' do
-            it 'communicates failure for dast_profile_schedule' do
+            before do
+              expect(dast_profile.dast_profile_schedule).to be nil
+            end
+
+            it 'creates a new schedule' do
               aggregate_failures do
-                expect(dast_profile.dast_profile_schedule).to be nil
-                expect(subject.status).to eq(:error)
-                expect(subject.message).to include('Dast Profile Schedule not found')
+                expect { subject }.to change { Dast::ProfileSchedule.count }.by(1)
+              end
+            end
+
+            it 'returns the success status' do
+              expect(subject.status).to eq(:success)
+            end
+
+            it 'audits the creation' do
+              schedule = subject.payload[:dast_profile_schedule]
+              audit_event = AuditEvent.find_by(target_id: schedule.id)
+
+              aggregate_failures do
+                expect(audit_event.author).to eq(user)
+                expect(audit_event.entity).to eq(project)
+                expect(audit_event.target_id).to eq(dast_profile.dast_profile_schedule.id)
+                expect(audit_event.target_type).to eq('Dast::ProfileSchedule')
+                expect(audit_event.details).to eq({
+                  author_name: user.name,
+                  custom_message: 'Added DAST profile schedule',
+                  target_id: schedule.id,
+                  target_type: 'Dast::ProfileSchedule',
+                  target_details: user.name
+                })
               end
             end
           end

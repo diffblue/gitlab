@@ -9,7 +9,7 @@ module AppSec
             params[:new_params].each do |property, new_value|
               old_value = params[:old_params][property]
 
-              next if old_value == new_value
+              next if old_value.to_s == new_value.to_s
 
               ::Gitlab::Audit::Auditor.audit(
                 name: 'dast_profile_update',

@@ -9,14 +9,13 @@ module AppSec
         def execute
           return unauthorized unless allowed?
           return error('Profile parameter missing') unless dast_profile
-          return error('Dast Profile Schedule not found') if update_schedule? && !schedule
 
           build_auditors!
 
           ApplicationRecord.transaction do
             dast_profile.update!(dast_profile_params)
 
-            update_schedule if update_schedule?
+            update_or_create_schedule! if schedule_input_params
           end
 
           execute_auditors!
@@ -44,23 +43,31 @@ module AppSec
 
         private
 
-        attr_reader :auditors
+        attr_reader :auditors, :create_schedule_audit
 
         def allowed?
           container.licensed_feature_available?(:security_on_demand_scans) &&
             can?(current_user, :create_on_demand_dast_scan, container)
         end
 
-        def update_schedule?
-          schedule_input_params.present?
-        end
+        def update_or_create_schedule!
+          if schedule
+            schedule.update!(schedule_input_params)
+          else
+            ::Dast::ProfileSchedule.new(
+              dast_profile: dast_profile,
+              owner: current_user,
+              project: container
+            ).tap do |dast_schedule|
+              dast_schedule.update!(schedule_input_params)
+            end
 
-        def update_schedule
-          schedule.update!(schedule_input_params)
+            @create_schedule_audit = true
+          end
         end
 
         def schedule
-          @schedule ||= dast_profile.dast_profile_schedule
+          dast_profile.dast_profile_schedule
         end
 
         def error(message, opts = {})
@@ -98,7 +105,7 @@ module AppSec
             })
           ]
 
-          if schedule_input_params
+          if schedule_input_params && schedule
             @auditors <<
               AppSec::Dast::ProfileSchedules::Audit::UpdateService.new(project: container, current_user: current_user, params: {
                 dast_profile_schedule: schedule,
@@ -110,6 +117,16 @@ module AppSec
 
         def execute_auditors!
           auditors.map(&:execute)
+
+          if create_schedule_audit
+            ::Gitlab::Audit::Auditor.audit(
+              name: 'dast_profile_schedule_create',
+              author: current_user,
+              scope: container,
+              target: schedule,
+              message: 'Added DAST profile schedule'
+            )
+          end
         end
 
         def create_scan(dast_profile)
