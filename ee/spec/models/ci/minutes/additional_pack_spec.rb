@@ -12,7 +12,7 @@ RSpec.describe Ci::Minutes::AdditionalPack do
 
     it { is_expected.to validate_presence_of(:namespace) }
     it { is_expected.to validate_presence_of(:number_of_minutes) }
-    it { is_expected.to validate_length_of(:purchase_xid).is_at_most(32) }
+    it { is_expected.to validate_length_of(:purchase_xid).is_at_most(50) }
 
     context 'when GitLab.com' do
       before do
