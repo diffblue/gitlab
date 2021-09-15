@@ -6,8 +6,8 @@ module Types
       graphql_name 'TestReportState'
       description 'State of a test report'
 
-      value 'PASSED', value: 'passed'
-      value 'FAILED', value: 'failed'
+      value 'PASSED', value: 'passed', description: 'Passed test report.'
+      value 'FAILED', value: 'failed', description: 'Failed test report.'
     end
   end
 end
