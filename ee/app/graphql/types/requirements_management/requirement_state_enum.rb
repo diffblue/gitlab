@@ -6,8 +6,8 @@ module Types
       graphql_name 'RequirementState'
       description 'State of a requirement'
 
-      value 'OPENED', value: 'opened'
-      value 'ARCHIVED', value: 'archived'
+      value 'OPENED', value: 'opened', description: 'Open requirement.'
+      value 'ARCHIVED', value: 'archived', description: 'Archived requirement.'
     end
   end
 end

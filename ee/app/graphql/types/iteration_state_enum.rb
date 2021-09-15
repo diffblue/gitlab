@@ -5,14 +5,14 @@ module Types
     graphql_name 'IterationState'
     description 'State of a GitLab iteration'
 
-    value 'upcoming'
-    value 'started', deprecated: {
+    value 'upcoming', description: 'Upcoming iteration.'
+    value 'started', description: 'Started iteration.', deprecated: {
       reason: "Use current instead",
       milestone: '14.1'
     }
-    value 'current'
-    value 'opened'
-    value 'closed'
-    value 'all'
+    value 'current', description: 'Current iteration.'
+    value 'opened', description: 'Open iteration.'
+    value 'closed', description: 'Closed iteration.'
+    value 'all', description: 'Any iteration.'
   end
 end
