@@ -176,17 +176,14 @@ To perform a one-liner installation, run the command below. Make sure to replace
 - `your-agent-token` with the token received from the previous step (identified as `secret` in the JSON output).
 - `gitlab-kubernetes-agent` with the namespace you defined in the previous step.
 - `wss://kas.gitlab.example.com` with the configured access of the Kubernetes Agent Server (KAS). For GitLab.com users, the KAS is available under `wss://kas.gitlab.com`.
+- `--agent-version=vX.Y.Z` with the latest released patch version matching your GitLab installation's major and minor versions. For example, for GitLab v13.9.0, use `--agent-version=v13.9.1`. You can find your GitLab version under the "Help/Help" menu.
 
 ```shell
-docker run --pull=always --rm registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate --agent-token=your-agent-token --kas-address=wss://kas.gitlab.example.com --agent-version stable --namespace gitlab-kubernetes-agent | kubectl apply -f -
+docker run --pull=always --rm registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate --agent-token=your-agent-token --kas-address=wss://kas.gitlab.example.com --agent-version=vX.Y.Z --namespace gitlab-kubernetes-agent | kubectl apply -f -
 ```
 
-Set `--agent-version` to the latest released patch version matching your
-GitLab installation's major and minor versions. For example, if you have
-GitLab v13.9.0, set `--agent-version=v13.9.1`.
-
 WARNING:
-Version `stable` can be used to refer to the latest stable release at the time when the command runs. It's fine for
+`--agent-version stable` can be used to refer to the latest stable release at the time when the command runs. It's fine for
 testing purposes but for production please make sure to specify a matching version explicitly.
 
 To find out the various options the above Docker container supports, run:
@@ -289,7 +286,7 @@ spec:
       containers:
       - name: agent
         # Make sure to specify a matching version for production
-        image: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk:stable"
+        image: "registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/agentk:vX.Y.Z
         args:
         - --token-file=/config/token
         - --kas-address
