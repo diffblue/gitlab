@@ -25303,9 +25303,6 @@ msgstr ""
 msgid "Please set a new password before proceeding."
 msgstr ""
 
-msgid "Please set up a Service Desk email address in order to add a custom suffix. %{linkStart}Learn more%{linkEnd}."
-msgstr ""
-
 msgid "Please share your feedback about %{featureName} %{linkStart}in this issue%{linkEnd} to help us improve the experience."
 msgstr ""
 
@@ -35149,6 +35146,9 @@ msgid "To accept this invitation, sign in."
 msgstr ""
 
 msgid "To access this domain create a new DNS record"
+msgstr ""
+
+msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "To add an SSH key you need to %{generate_link_start}generate one%{link_end} or use an %{existing_link_start}existing key%{link_end}."
