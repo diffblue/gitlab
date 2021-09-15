@@ -96,4 +96,15 @@ RSpec.describe Projects::DestroyService do
       expect { subject.execute }.to change(AuditEvent, :count)
     end
   end
+
+  context 'when project has an associated ProjectNamespace' do
+    let!(:project_namespace) { create(:project_namespace, project: project) }
+
+    it 'destroys the associated ProjectNamespace also' do
+      subject.execute
+
+      expect { project_namespace.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { project.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end
