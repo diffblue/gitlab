@@ -37,8 +37,14 @@ module EE
           expose :compliance_frameworks do |project, _|
             [project.compliance_framework_setting&.compliance_management_framework&.name].compact
           end
-          expose :issues_template, if: ->(project, _) { project.feature_available?(:issuable_default_templates) }
-          expose :merge_requests_template, if: ->(project, _) { project.feature_available?(:issuable_default_templates) }
+          expose :issues_template, if: ->(project, options) do
+            project.feature_available?(:issuable_default_templates) &&
+              Ability.allowed?(options[:current_user], :read_issue, project)
+          end
+          expose :merge_requests_template, if: ->(project, options) do
+            project.feature_available?(:issuable_default_templates) &&
+              Ability.allowed?(options[:current_user], :read_merge_request, project)
+          end
           expose :merge_pipelines_enabled?, as: :merge_pipelines_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
           expose :merge_trains_enabled?, as: :merge_trains_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
         end
