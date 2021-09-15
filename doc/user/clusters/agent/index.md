@@ -382,29 +382,16 @@ Each time you push a change to a monitored manifest repository, the Agent logs t
 
 #### Example manifest file
 
-This file creates an NGINX deployment.
+This file creates a minimal `ConfigMap`:
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: nginx-deployment
+  name: demo-map
   namespace: gitlab-kubernetes-agent  # Can be any namespace managed by you that the agent has access to.
-spec:
-  selector:
-    matchLabels:
-      app: nginx
-  replicas: 2
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
+data:
+  key: value
 ```
 
 ## Example projects
