@@ -206,7 +206,7 @@ export default {
       :fields="fields"
       stacked="md"
       head-variant="white"
-      thead-class="border-bottom"
+      thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       class="qa-clusters-table"
       data-testid="cluster_list_table"
     >

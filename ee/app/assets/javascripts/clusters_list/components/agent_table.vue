@@ -80,7 +80,7 @@ export default {
       :fields="fields"
       stacked="md"
       head-variant="white"
-      thead-class="border-bottom"
+      thead-class="gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       data-testid="cluster-agent-list-table"
     >
       <template #cell(name)="{ item }">
