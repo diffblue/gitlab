@@ -17,8 +17,8 @@ module Types
             null: true,
             description: 'ID of the connection.'
 
-      field :metadata, # rubocop:disable Graphql/JSONType
-            GraphQL::Types::JSON,
+      field :metadata,
+            Types::Kas::AgentMetadataType,
             method: :agent_meta,
             null: true,
             description: 'Information about the Agent.'
