@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddNamespaceAncestryToIssuesMapping < Elastic::Migration
-  include Elastic::MigrationHelper
+  include Elastic::MigrationBackfillHelper
 
   DOCUMENT_KLASS = Issue
 

@@ -2,15 +2,23 @@
 
 module Elastic
   module MigrationBackfillHelper
+    UPDATE_BATCH_SIZE = 100
+
     def migrate
-      update_mapping!(index_name, { properties: new_mappings }) if respond_to?(:new_mappings)
+      # only create mappings on the first run
+      if respond_to?(:new_mappings) && migration_state[:update_mappings].blank?
+        update_mapping!(index_name, { properties: new_mappings })
+
+        options = { update_mappings: true }
+        set_migration_state(options)
+      end
 
       if completed?
         log "Skipping adding #{field_name} field to #{index_name} documents migration since it is already applied"
         return
       end
 
-      log "Adding #{field_name} field to #{index_name} documents for batch of #{self.class::QUERY_BATCH_SIZE} documents"
+      log "Adding #{field_name} field to #{index_name} documents for batch of #{query_batch_size} documents"
 
       document_references = process_batch!
 
@@ -63,7 +71,7 @@ module Elastic
 
     def process_batch!
       query = {
-        size: self.class::QUERY_BATCH_SIZE,
+        size: query_batch_size,
         query: {
           bool: {
             filter: missing_field_filter
@@ -82,11 +90,28 @@ module Elastic
         Gitlab::Elastic::DocumentReference.new(self.class::DOCUMENT_TYPE, id, es_id, es_parent)
       end
 
-      document_references.each_slice(self.class::UPDATE_BATCH_SIZE) do |refs|
+      document_references.each_slice(update_batch_size) do |refs|
         Elastic::ProcessInitialBookkeepingService.track!(*refs)
       end
 
       document_references
+    end
+
+    def query_batch_size
+      return self.class::QUERY_BATCH_SIZE if self.class.const_defined?(:QUERY_BATCH_SIZE)
+      return batch_size if respond_to?(:batch_size)
+
+      raise NotImplemented
+    end
+
+    def update_batch_size
+      return self.class::UPDATE_BATCH_SIZE if self.class.const_defined?(:UPDATE_BATCH_SIZE)
+
+      UPDATE_BATCH_SIZE
+    end
+
+    def update_mapping!(index_name, mappings)
+      helper.update_mapping(index_name: index_name, mappings: mappings)
     end
   end
 end
