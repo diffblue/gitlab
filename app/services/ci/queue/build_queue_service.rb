@@ -47,7 +47,7 @@ module Ci
 
       def builds_for_project_runner
         relation = new_builds
-          .where(project: runner.projects.without_deleted.with_builds_enabled)
+          .where(project: runner.runner_projects.select(:project_id))
 
         order(relation)
       end
