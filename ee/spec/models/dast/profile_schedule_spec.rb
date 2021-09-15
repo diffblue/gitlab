@@ -97,6 +97,13 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
           expect { inactive_schedule.save! }.to raise_error(ActiveRecord::RecordInvalid).and not_change { described_class.count }
           expect(inactive_schedule.errors[:base]).to contain_exactly("Maximum number of #{inactive_schedule.class.limit_name.humanize(capitalize: false)} (1) exceeded")
         end
+
+        it 'allows the schedule to be deactivated', :aggregate_failures do
+          active_schedule = subject.dup
+
+          expect { active_schedule.save! }.to change { described_class.count }
+          expect(active_schedule.update(active: false)).to be true
+        end
       end
     end
   end
