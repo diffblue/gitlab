@@ -40347,6 +40347,9 @@ msgstr ""
 msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure, or check the %{linkStart}troubleshooting documentation%{linkEnd} to see other possible actions."
 msgstr ""
 
+msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure."
+msgstr ""
+
 msgid "mrWidget|The source branch has been deleted"
 msgstr ""
 
@@ -40387,6 +40390,9 @@ msgid "mrWidget|Use %{linkStart}CI pipelines to test your code%{linkEnd} by simp
 msgstr ""
 
 msgid "mrWidget|You can merge after removing denied licenses"
+msgstr ""
+
+msgid "mrWidget|You can only merge once this merge request is approved."
 msgstr ""
 
 msgid "mrWidget|Your password"
