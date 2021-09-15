@@ -89,6 +89,14 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.approvalRules = mapApprovalRulesResponse(data.rules, this.approvals);
   }
 
+  get hasMergeChecksFailed() {
+    if (!window.gon?.features?.restructuredMrWidget) return false;
+
+    if (this.hasApprovalsAvailable) return !this.isApproved;
+
+    return super.hasMergeChecksFailed;
+  }
+
   initBrowserPerformanceReport(data) {
     this.browserPerformance = data.browser_performance;
     this.browserPerformanceMetrics = {
