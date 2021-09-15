@@ -11629,7 +11629,8 @@ CREATE TABLE ci_pending_builds (
     instance_runners_enabled boolean DEFAULT false NOT NULL,
     namespace_id bigint,
     minutes_exceeded boolean DEFAULT false NOT NULL,
-    tag_ids integer[] DEFAULT '{}'::integer[]
+    tag_ids integer[] DEFAULT '{}'::integer[],
+    namespace_traversal_ids integer[] DEFAULT '{}'::integer[]
 );
 
 CREATE SEQUENCE ci_pending_builds_id_seq
@@ -25150,6 +25151,8 @@ CREATE INDEX index_geo_repository_updated_events_on_source ON geo_repository_upd
 CREATE INDEX index_geo_reset_checksum_events_on_project_id ON geo_reset_checksum_events USING btree (project_id);
 
 CREATE INDEX index_geo_upload_deleted_events_on_upload_id ON geo_upload_deleted_events USING btree (upload_id);
+
+CREATE INDEX index_gin_ci_pending_builds_on_namespace_traversal_ids ON ci_pending_builds USING gin (namespace_traversal_ids);
 
 CREATE INDEX index_gitlab_subscription_histories_on_gitlab_subscription_id ON gitlab_subscription_histories USING btree (gitlab_subscription_id);
 
