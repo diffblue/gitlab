@@ -39934,7 +39934,16 @@ msgstr ""
 msgid "in"
 msgstr ""
 
+msgid "in all GitLab"
+msgstr ""
+
+msgid "in group"
+msgstr ""
+
 msgid "in group %{link_to_group}"
+msgstr ""
+
+msgid "in project"
 msgstr ""
 
 msgid "in project %{link_to_project}"
