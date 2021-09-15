@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import codeQualityQuery from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
+import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
 import * as actions from 'ee/codequality_report/store/actions';
 import { VIEW_EVENT_NAME } from 'ee/codequality_report/store/constants';
 import * as types from 'ee/codequality_report/store/mutation_types';
@@ -33,6 +33,7 @@ describe('Codequality report actions', () => {
   beforeEach(() => {
     mock = new MockAdapter(axios);
     state = defaultState;
+    window.gon = { features: { graphqlCodeQualityFullReport: false } };
   });
 
   afterEach(() => {
@@ -41,9 +42,6 @@ describe('Codequality report actions', () => {
 
   describe('setPage', () => {
     it('sets the page number with feature flag disabled', (done) => {
-      const origGon = window.gon;
-      window.gon = { features: { graphqlCodeQualityFullReport: false } };
-
       return testAction(
         actions.setPage,
         12,
@@ -51,13 +49,10 @@ describe('Codequality report actions', () => {
         [{ type: types.SET_PAGE, payload: { page: 12 } }],
         [],
         done,
-      ).then(() => {
-        window.gon = origGon;
-      });
+      );
     });
 
     it('sets the page number with feature flag enabled', (done) => {
-      const origGon = window.gon;
       window.gon = { features: { graphqlCodeQualityFullReport: true } };
 
       return testAction(
@@ -67,9 +62,7 @@ describe('Codequality report actions', () => {
         [{ type: types.SET_PAGE, payload: { after: '', currentPage: 12 } }],
         [{ type: 'fetchReport' }],
         done,
-      ).then(() => {
-        window.gon = origGon;
-      });
+      );
     });
   });
 
@@ -87,9 +80,6 @@ describe('Codequality report actions', () => {
 
   describe('receiveReportSuccess', () => {
     it('parses the list of issues from the report with feature flag disabled', (done) => {
-      const origGon = window.gon;
-      window.gon = { features: { graphqlCodeQualityFullReport: false } };
-
       return testAction(
         actions.receiveReportSuccess,
         unparsedIssues,
@@ -97,13 +87,10 @@ describe('Codequality report actions', () => {
         [{ type: types.RECEIVE_REPORT_SUCCESS, payload: parsedIssues }],
         [],
         done,
-      ).then(() => {
-        window.gon = origGon;
-      });
+      );
     });
 
     it('parses the list of issues from the report with feature flag enabled', (done) => {
-      const origGon = window.gon;
       window.gon = { features: { graphqlCodeQualityFullReport: true } };
 
       const data = {
@@ -119,9 +106,7 @@ describe('Codequality report actions', () => {
         [{ type: types.RECEIVE_REPORT_SUCCESS_GRAPHQL, payload: { data, parsedIssues } }],
         [],
         done,
-      ).then(() => {
-        window.gon = origGon;
-      });
+      );
     });
   });
 
@@ -145,9 +130,6 @@ describe('Codequality report actions', () => {
       });
 
       it('fetches the report', (done) => {
-        const origGon = window.gon;
-        window.gon = { features: { graphqlCodeQualityFullReport: false } };
-
         return testAction(
           actions.fetchReport,
           null,
@@ -155,9 +137,7 @@ describe('Codequality report actions', () => {
           [],
           [{ type: 'requestReport' }, { type: 'receiveReportSuccess', payload: unparsedIssues }],
           done,
-        ).then(() => {
-          window.gon = origGon;
-        });
+        );
       });
 
       it('shows a flash message when there is an error', (done) => {
@@ -197,12 +177,10 @@ describe('Codequality report actions', () => {
       beforeEach(() => {
         jest.spyOn(gqClient, 'query').mockResolvedValue(mockGraphqlResponse);
         state.paginationData = mockGraphqlPagination;
+        window.gon = { features: { graphqlCodeQualityFullReport: true } };
       });
 
       it('fetches the report', () => {
-        const origGon = window.gon;
-        window.gon = { features: { graphqlCodeQualityFullReport: true } };
-
         return testAction(
           actions.fetchReport,
           null,
@@ -217,13 +195,11 @@ describe('Codequality report actions', () => {
           ],
           () => {
             expect(gqClient.query).toHaveBeenCalledWith({
-              query: codeQualityQuery,
+              query: getCodeQualityViolations,
               variables: { after: '', first: 25, iid: null, projectPath: null },
             });
           },
-        ).then(() => {
-          window.gon = origGon;
-        });
+        );
       });
     });
 

@@ -47,44 +47,37 @@ export const receiveReportSuccess = ({ state, commit }, data) => {
 };
 export const receiveReportError = ({ commit }, error) => commit(types.RECEIVE_REPORT_ERROR, error);
 
-export const fetchReport = ({ state, dispatch }) => {
-  dispatch('requestReport');
+export const fetchReport = async ({ state, dispatch }) => {
+  try {
+    dispatch('requestReport');
+    if (!state.blobPath) throw new Error();
 
-  if (gon.features?.graphqlCodeQualityFullReport) {
-    const { projectPath, pipelineIid, pageInfo } = state;
-    const variables = {
-      projectPath,
-      iid: pipelineIid,
-      first: pageInfo.first,
-      after: pageInfo.after,
-    };
+    if (gon.features?.graphqlCodeQualityFullReport) {
+      const { projectPath, pipelineIid, pageInfo } = state;
+      const variables = {
+        projectPath,
+        iid: pipelineIid,
+        first: pageInfo.first,
+        after: pageInfo.after,
+      };
 
-    return gqClient
-      .query({
-        query: getCodeQualityViolations,
-        variables,
-      })
-      .then(({ data }) => {
-        if (!state.blobPath) throw new Error();
-        dispatch('receiveReportSuccess', data.project.pipeline.codeQualityReports);
-      })
-      .catch((error) => {
-        dispatch('receiveReportError', error);
-        createFlash({
-          message: s__('ciReport|There was an error fetching the codequality report.'),
+      await gqClient
+        .query({
+          query: getCodeQualityViolations,
+          variables,
+        })
+        .then(({ data }) => {
+          dispatch('receiveReportSuccess', data.project?.pipeline?.codeQualityReports);
         });
+    } else {
+      await axios.get(state.endpoint).then(({ data }) => {
+        dispatch('receiveReportSuccess', data);
       });
-  }
-  return axios
-    .get(state.endpoint)
-    .then(({ data }) => {
-      if (!state.blobPath) throw new Error();
-      dispatch('receiveReportSuccess', data);
-    })
-    .catch((error) => {
-      dispatch('receiveReportError', error);
-      createFlash({
-        message: s__('ciReport|There was an error fetching the codequality report.'),
-      });
+    }
+  } catch (error) {
+    dispatch('receiveReportError', error);
+    createFlash({
+      message: s__('ciReport|There was an error fetching the codequality report.'),
     });
+  }
 };
