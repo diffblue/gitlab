@@ -18,7 +18,7 @@ describe('Job log controllers', () => {
     isScrollTopDisabled: false,
     isScrollBottomDisabled: false,
     isScrollingDown: true,
-    isTraceSizeVisible: true,
+    isJobLogSizeVisible: true,
   };
 
   const createWrapper = (props) => {
@@ -38,7 +38,7 @@ describe('Job log controllers', () => {
   const findScrollBottom = () => wrapper.find('[data-testid="job-controller-scroll-bottom"]');
 
   describe('Truncate information', () => {
-    describe('with isTraceSizeVisible', () => {
+    describe('with isJobLogSizeVisible', () => {
       beforeEach(() => {
         createWrapper();
       });
