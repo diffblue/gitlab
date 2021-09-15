@@ -4780,6 +4780,9 @@ msgstr ""
 msgid "Authenticated Git LFS request rate limit"
 msgstr ""
 
+msgid "Authenticated Git LFS requests"
+msgstr ""
+
 msgid "Authenticated web rate limit period in seconds"
 msgstr ""
 
