@@ -7,11 +7,11 @@ import { TEST_HOST } from 'helpers/test_constants';
 describe('Approval Check Popover', () => {
   let wrapper;
 
+  const title = 'Title';
+
   beforeEach(() => {
     wrapper = shallowMount(component, {
-      propsData: {
-        title: 'Title',
-      },
+      propsData: { title },
     });
   });
 
@@ -43,8 +43,8 @@ describe('Approval Check Popover', () => {
 
   it('should render gl-popover with correct props', () => {
     expect(wrapper.find(GlPopover).props()).toMatchObject({
-      title: 'Title',
-      target: 'reportInfo',
+      title,
+      target: `reportInfo-${title}`,
       placement: 'top',
     });
   });
