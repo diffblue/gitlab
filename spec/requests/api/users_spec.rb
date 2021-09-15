@@ -2784,8 +2784,6 @@ RSpec.describe API::Users do
     describe 'POST /users/:id/approve' do
       subject(:approve) { post api("/users/#{user_id}/approve", api_user) }
 
-      let_it_be(:pending_user) { create(:user, :blocked_pending_approval) }
-
       context 'performed by a non-admin user' do
         let(:api_user) { user }
         let(:user_id) { pending_user.id }
