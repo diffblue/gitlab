@@ -53,9 +53,9 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-align-items-center gl-mb-3">
-      <span class="gl-flex-grow-1">{{ $options.i18n.dataType }}</span>
-      <span class="gl-flex-grow-1">{{ $options.i18n.synchronization }}</span>
-      <span class="gl-flex-grow-1">{{ $options.i18n.verification }}</span>
+      <span class="gl-flex-grow-1 gl-flex-basis-0">{{ $options.i18n.dataType }}</span>
+      <span class="gl-flex-grow-1 gl-flex-basis-0">{{ $options.i18n.synchronization }}</span>
+      <span class="gl-flex-grow-1 gl-flex-basis-0">{{ $options.i18n.verification }}</span>
     </div>
     <div
       v-for="type in replicationOverview"
@@ -63,7 +63,9 @@ export default {
       class="gl-display-flex gl-align-items-center gl-mb-3"
       data-testid="replication-type"
     >
-      <span class="gl-flex-grow-1" data-testid="replicable-title">{{ type.title }}</span>
+      <span class="gl-flex-grow-1 gl-flex-basis-0" data-testid="replicable-title">{{
+        type.title
+      }}</span>
       <geo-node-replication-sync-percentage :values="type.sync" />
       <geo-node-replication-sync-percentage :values="type.verification" />
     </div>
