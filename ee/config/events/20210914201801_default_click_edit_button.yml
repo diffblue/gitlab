@@ -1,0 +1,19 @@
+description: "Click issue sidebar weight edit button"
+category: default
+action: click_edit_button
+label_description: ""
+property_description: "`weight`"
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "12.2"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/14944
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
