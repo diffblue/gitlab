@@ -39780,7 +39780,7 @@ msgstr ""
 msgid "encrypted: needs to be a :required, :optional or :migrating!"
 msgstr ""
 
-msgid "ending with MIME type format is not allowed."
+msgid "ending with a file extension is not allowed."
 msgstr ""
 
 msgid "entries cannot be larger than 255 characters"
