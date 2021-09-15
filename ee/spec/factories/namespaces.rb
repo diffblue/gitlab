@@ -47,7 +47,7 @@ end
 FactoryBot.define do
   factory :namespace_with_plan, parent: :namespace do
     transient do
-      plan { :default_plan }
+      plan { :free_plan }
       trial_ends_on { nil }
     end
 
