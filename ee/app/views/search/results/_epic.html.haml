@@ -5,7 +5,7 @@
     - else
       %span.badge.badge-success.badge-pill.gl-badge.sm= _("Open")
     = sprite_icon('eye-slash', css_class: 'gl-text-gray-500 gl-ml-2') if epic.confidential?
-    = link_to group_epic_path(epic.group, epic), data: { track_event: 'click_text', track_label: 'epic_title', track_property: 'search_result' }, class: 'gl-w-full' do
+    = link_to group_epic_path(epic.group, epic), data: { track_action: 'click_text', track_label: 'epic_title', track_property: 'search_result' }, class: 'gl-w-full' do
       %span.term.str-truncated.gl-font-weight-bold.gl-ml-2= epic.title
   .gl-text-gray-500.gl-my-3
     = sprintf(s_('%{group_name}&%{epic_iid} &middot; created %{epic_created} by %{author}'), { group_name: epic.group.full_name, epic_iid: epic.iid, epic_created: time_ago_with_tooltip(epic.created_at, placement: 'bottom'), author: link_to_member(@project, epic.author, avatar: false) }).html_safe

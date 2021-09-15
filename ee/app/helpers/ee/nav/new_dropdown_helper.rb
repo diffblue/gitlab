@@ -14,7 +14,7 @@ module EE
             id: 'create_epic',
             title: _('New epic'),
             href: new_group_epic_path(group),
-            data: { track_event: 'click_link_new_epic', track_label: 'plus_menu_dropdown' }
+            data: { track_action: 'click_link_new_epic', track_label: 'plus_menu_dropdown' }
           )
         end
       end

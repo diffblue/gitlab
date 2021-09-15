@@ -25,7 +25,7 @@ RSpec.describe 'layouts/header/_current_user_dropdown' do
 
     context 'when pipeline minutes need bought without notification dot' do
       it 'has "Buy Pipeline minutes" link with correct data properties', :aggregate_failures do
-        expect(subject).to have_selector('[data-track-event="click_buy_ci_minutes"]')
+        expect(subject).to have_selector('[data-track-action="click_buy_ci_minutes"]')
         expect(subject).to have_selector("[data-track-label='#{user.namespace.actual_plan_name}']")
         expect(subject).to have_selector('[data-track-property="user_dropdown"]')
         expect(subject).to have_link('Buy Pipeline minutes')

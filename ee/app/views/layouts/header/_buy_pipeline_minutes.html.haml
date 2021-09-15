@@ -4,7 +4,7 @@
 - link_emoji = emoji_icon('clock9', 'aria-hidden': true)
 - link_class = 'ci-minutes-emoji js-buy-pipeline-minutes-link'
 - root_namespace = root_ancestor_namespace(project, namespace)
-- data_attributes = { 'track-event': 'click_buy_ci_minutes', 'track-label': root_namespace.actual_plan_name, 'track-property': 'user_dropdown' }
+- data_attributes = { 'track-action': 'click_buy_ci_minutes', 'track-label': root_namespace.actual_plan_name, 'track-property': 'user_dropdown' }
 - path = usage_quotas_path(root_namespace)
 
 - content_for :buy_pipeline_with_subtext do

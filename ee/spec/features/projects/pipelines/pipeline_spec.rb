@@ -224,7 +224,7 @@ RSpec.describe 'Pipeline', :js do
             expect(page).to have_content('Method `new_array` has 12 arguments (exceeds 4 allowed). Consider refactoring.')
             expect(find_link('foo.rb:10')[:href]).to end_with(project_blob_path(project, File.join(pipeline.commit.id, 'foo.rb')) + '#L10')
 
-            expect(page).to have_selector('[data-track-event="click_button"]')
+            expect(page).to have_selector('[data-track-action="click_button"]')
             expect(page).to have_selector('[data-track-label="get_codequality_report"]')
           end
         end

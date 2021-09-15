@@ -70,7 +70,7 @@ export default {
         // eslint-disable-next-line @gitlab/require-i18n-strings
         rel: 'noopener noreferrer',
         class: 'discover-button justify-content-center',
-        'data-track-event': 'click_button',
+        'data-track-action': 'click_button',
       };
     },
   },
@@ -192,7 +192,7 @@ export default {
         variant="default"
         target="_blank"
         rel="noopener noreferrer"
-        data-track-event="click_button"
+        data-track-action="click_button"
         data-track-label="security-discover-feedback-cta"
         :data-track-property="slide"
         :href="linkFeedback"

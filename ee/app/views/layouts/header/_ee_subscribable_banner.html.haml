@@ -4,7 +4,7 @@
 - if message.present? && subscribable.present?
   .container-fluid.container-limited.pt-3
     .gl-alert.gitlab-ee-license-banner.hidden.js-gitlab-ee-license-banner.gl-pb-7.gl-border-1.gl-border-solid.gl-border-gray-100.gl-rounded-base{ role: 'alert', data: { license_expiry: subscribable.expires_at } }
-      %button.gl-alert-dismiss{ type: 'button', 'aria-label' => 'Dismiss', data: { track_event: 'click_button', track_label: 'dismiss_subscribable_banner' } }
+      %button.gl-alert-dismiss{ type: 'button', 'aria-label' => 'Dismiss', data: { track_action: 'click_button', track_label: 'dismiss_subscribable_banner' } }
         = sprite_icon('close', css_class: 'gl-icon js-close')
       .gl-display-flex.gl-flex-direction-row.gl-align-items-center
         .gl-pr-6.gl-pl-5.gl-pt-3.gl-display-none.gl-sm-display-block
@@ -19,7 +19,7 @@
           = message
 
           - if subscribable.block_changes?
-            = link_to _('Upgrade your plan'), upgrade_subscription_path, class: 'btn gl-button btn-confirm', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'upgrade' }
+            = link_to _('Upgrade your plan'), upgrade_subscription_path, class: 'btn gl-button btn-confirm', data: { track_action: 'click_text', track_label: 'subscribable_action', track_property: 'upgrade' }
           - else
-            = link_to _('Renew subscription'), renew_subscription_path, class: 'btn gl-button btn-confirm gl-mr-3 gl-mb-2', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'renew' }
-            = link_to _("That's OK, I don't want to renew"), '#', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' }, 'aria-label' => 'Dismiss', class: 'btn gl-button btn-info btn-info-secondary js-close gl-mb-2'
+            = link_to _('Renew subscription'), renew_subscription_path, class: 'btn gl-button btn-confirm gl-mr-3 gl-mb-2', data: { track_action: 'click_text', track_label: 'subscribable_action', track_property: 'renew' }
+            = link_to _("That's OK, I don't want to renew"), '#', data: { track_action: 'click_text', track_label: 'subscribable_action', track_property: 'thats_ok' }, 'aria-label' => 'Dismiss', class: 'btn gl-button btn-info btn-info-secondary js-close gl-mb-2'

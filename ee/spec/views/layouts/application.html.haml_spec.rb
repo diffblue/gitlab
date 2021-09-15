@@ -14,7 +14,7 @@ RSpec.describe 'layouts/application' do
   end
 
   describe 'layouts/_user_notification_dot' do
-    let(:track_selector) { '[data-track-event="render"][data-track-label="show_buy_ci_minutes_notification"]' }
+    let(:track_selector) { '[data-track-action="render"][data-track-label="show_buy_ci_minutes_notification"]' }
     let(:show_notification_dot) { false }
 
     before do

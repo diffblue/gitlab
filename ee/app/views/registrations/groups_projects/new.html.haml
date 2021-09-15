@@ -19,10 +19,10 @@
       .js-toggle-container.gl-w-full
         %ul.nav.nav-tabs.nav-links.gitlab-tabs.js-group-project-tabs{ role: 'tablist' }
           %li.nav-item{ role: 'presentation' }
-            %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_event: 'click_tab', track_value: '' }, role: 'tab' }
+            %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
               %span= s_('ProjectsNew|Create')
           %li.nav-item{ role: 'presentation' }
-            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_event: 'click_tab', track_value: '' }, role: 'tab' }
+            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
               %span= s_('ProjectsNew|Import')
 
         .tab-content.gitlab-tab-content.gl-bg-white.js-group-project-tab-contents
@@ -55,7 +55,7 @@
                   .form-group.project-name.col-sm-12
                     = pf.label :name, class: 'gl-font-weight-bold' do
                       %span= _('Project name')
-                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source', required: true, data: { track_label: 'blank_project', track_event: 'activate_form_input', track_property: 'project_name', track_value: '' }
+                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source', required: true, data: { track_label: 'blank_project', track_action: 'activate_form_input', track_property: 'project_name', track_value: '' }
               %p.form-text.gl-text-center
                 = _('Your project will be created at:')
 
@@ -68,7 +68,7 @@
               %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
                 = _('You can always change your URL later')
 
-              = submit_tag _('Create project'), class: 'btn gl-button btn-success btn-block', data: { track_label: 'blank_project', track_event: 'click_button', track_property: 'create_project', track_value: '' }
+              = submit_tag _('Create project'), class: 'btn gl-button btn-success btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?
