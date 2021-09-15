@@ -153,7 +153,7 @@ RSpec.describe Users::UpdateService do
       end.not_to change { user.reload.commit_email }
     end
 
-    it 'does not update public if an user has group managed account' do
+    it 'does not update public email if an user has group managed account' do
       allow(user).to receive(:group_managed_account?).and_return(true)
 
       expect do
@@ -161,7 +161,7 @@ RSpec.describe Users::UpdateService do
       end.not_to change { user.reload.public_email }
     end
 
-    it 'does not update public if an user has group managed account' do
+    it 'does not update notification email if an user has group managed account' do
       allow(user).to receive(:group_managed_account?).and_return(true)
 
       expect do

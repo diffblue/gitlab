@@ -17,7 +17,7 @@ RSpec.describe CredentialsInventoryMailer do
     it { is_expected.to have_body_text token.name }
     it { is_expected.to have_body_text "Created on #{token.created_at.to_date.to_s(:medium)}" }
     it { is_expected.to have_body_text 'Scopes: api, sudo'}
-    it { is_expected.to be_delivered_to [token.user.notification_email] }
+    it { is_expected.to be_delivered_to [token.user.notification_email_or_default] }
     it { is_expected.to have_body_text 'Last used 21 days ago' }
   end
 
@@ -26,7 +26,7 @@ RSpec.describe CredentialsInventoryMailer do
 
     let(:params) do
       {
-          notification_email: ssh_key.user.notification_email,
+          notification_email: ssh_key.user.notification_email_or_default,
           title: ssh_key.title,
           last_used_at: ssh_key.last_used_at,
           created_at: ssh_key.created_at
@@ -37,7 +37,7 @@ RSpec.describe CredentialsInventoryMailer do
 
     it { is_expected.to have_subject 'Your SSH key was deleted' }
     it { is_expected.to have_body_text 'The following SSH key was deleted by an administrator, Revoker' }
-    it { is_expected.to be_delivered_to [ssh_key.user.notification_email] }
+    it { is_expected.to be_delivered_to [ssh_key.user.notification_email_or_default] }
     it { is_expected.to have_body_text ssh_key.title }
     it { is_expected.to have_body_text "Created on #{ssh_key.created_at.to_date.to_s(:medium)}" }
     it { is_expected.to have_body_text 'Last used 21 days ago' }

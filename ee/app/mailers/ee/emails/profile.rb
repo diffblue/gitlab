@@ -11,7 +11,7 @@ module EE
         @target_url = profile_personal_access_tokens_url
 
         ::Gitlab::I18n.with_locale(@user.preferred_language) do
-          mail(to: user.notification_email, subject: subject(_("One or more of you personal access tokens were revoked")))
+          mail(to: user.notification_email_or_default, subject: subject(_("One or more of you personal access tokens were revoked")))
         end
       end
     end
