@@ -63,26 +63,30 @@ module QA
       it 'creates a pipeline with merged results', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1517' do
         merge_request.visit!
 
-        Page::MergeRequest::Show.perform do |show|
-          expect(show).to have_pipeline_status('passed'), 'Expected the merge request pipeline to pass.'
+        Support::Retrier.retry_until(max_attempts: 3, sleep_interval: 3) do
+          Page::MergeRequest::Show.perform do |show|
+            expect(show).to have_pipeline_status('passed'), 'Expected the merge request pipeline to pass.'
 
-          # The default option is to merge via merge train,
-          # but that is covered by the 'merges via a merge train' test
-          show.skip_merge_train_and_merge_immediately
+            # The default option is to merge via merge train,
+            # but that is covered by the 'merges via a merge train' test
+            show.skip_merge_train_and_merge_immediately
 
-          expect(show).to be_merged, "Expected content 'The changes were merged' but it did not appear."
+            expect(show).to be_merged, "Expected content 'The changes were merged' but it did not appear."
+          end
         end
       end
 
       it 'merges via a merge train', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1518' do
         merge_request.visit!
 
-        Page::MergeRequest::Show.perform do |show|
-          expect(show).to have_pipeline_status('passed'), 'Expected the merge request pipeline to pass.'
+        Support::Retrier.retry_until(max_attempts: 3, sleep_interval: 3) do
+          Page::MergeRequest::Show.perform do |show|
+            expect(show).to have_pipeline_status('passed'), 'Expected the merge request pipeline to pass.'
 
-          show.merge_via_merge_train
+            show.merge_via_merge_train
 
-          expect(show).to be_merged, "Expected content 'The changes were merged' but it did not appear."
+            expect(show).to be_merged, "Expected content 'The changes were merged' but it did not appear."
+          end
         end
       end
     end
