@@ -28,13 +28,13 @@ module Gitlab
         #
         # Example:
         #
-        #     create_table :some_table do |t|
-        #       t.integer :thing, null: false
-        #       t.text :other_thing
+        #    create_table :db_guides do |t|
+        #      t.bigint :stars, default: 0, null: false
+        #      t.text :title, limit: 128
+        #      t.text :notes, limit: 1024
         #
-        #       t.check_constraint 'thing IS NOT NULL', name: 'thing_is_not_null'
-        #       t.text_limit :other_thing, 255
-        #     end
+        #      t.check_constraint 'stars > 1000', name: 'so_many_stars'
+        #    end
         #
         # See Rails' `create_table` for more info on the available arguments.
         #
