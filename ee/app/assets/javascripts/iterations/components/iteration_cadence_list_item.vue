@@ -21,8 +21,12 @@ import TimeboxStatusBadge from './timebox_status_badge.vue';
 const pageSize = 20;
 
 const i18n = Object.freeze({
-  noResults: s__('Iterations|No iterations in cadence.'),
-  createFirstIteration: s__('Iterations|Create your first iteration'),
+  noResults: {
+    opened: s__('Iterations|No open iterations.'),
+    closed: s__('Iterations|No closed iterations.'),
+    all: s__('Iterations|No iterations in cadence.'),
+  },
+  createIteration: s__('Iterations|Create iteration'),
   error: __('Error loading iterations'),
 
   deleteCadence: s__('Iterations|Delete cadence'),
@@ -65,7 +69,7 @@ export default {
       },
     },
   },
-  inject: ['fullPath', 'canEditCadence', 'namespaceType'],
+  inject: ['fullPath', 'canEditCadence', 'canCreateIteration', 'namespaceType'],
   props: {
     title: {
       type: String,
@@ -305,16 +309,16 @@ export default {
         </template>
       </gl-infinite-scroll>
       <template v-else-if="!loading">
-        <p class="gl-px-7">{{ i18n.noResults }}</p>
+        <p class="gl-px-7">{{ i18n.noResults[iterationState] }}</p>
         <gl-button
-          v-if="!automatic"
+          v-if="!automatic && canCreateIteration"
           variant="confirm"
           category="secondary"
           class="gl-mb-5 gl-ml-7"
           data-qa-selector="create_cadence_cta"
           :to="newIteration"
         >
-          {{ i18n.createFirstIteration }}
+          {{ i18n.createIteration }}
         </gl-button>
       </template>
     </gl-collapse>
