@@ -17,7 +17,7 @@ RSpec.describe AwardEmojiPresenter do
   end
 
   describe '#unicode_version' do
-    it { expect(presenter.unicode_version).to eq Gitlab::Emoji.emoji_unicode_version(emoji_name) }
+    it { expect(presenter.unicode_version).to eq('6.0') }
   end
 
   describe '#emoji' do

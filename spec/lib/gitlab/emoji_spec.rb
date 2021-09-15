@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Emoji do
   let_it_be(:emojis_by_moji) { TanukiEmoji.index.all.index_by(&:codepoints) }
-  let_it_be(:emoji_unicode_versions_by_name) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'emoji-unicode-version-map.json'))) }
   let_it_be(:emojis_aliases) { Gitlab::Json.parse(File.read(Rails.root.join('fixtures', 'emojis', 'aliases.json'))) }
 
   describe '.emojis_aliases' do
@@ -29,14 +28,6 @@ RSpec.describe Gitlab::Emoji do
       emoji_unicode_filename = described_class.emoji_unicode_filename('💯')
 
       expect(emoji_unicode_filename).to eq("emoji_u#{TanukiEmoji.find_by_codepoints('💯').hex}.png")
-    end
-  end
-
-  describe '.emoji_unicode_version' do
-    it 'returns emoji unicode version by name' do
-      emoji_unicode_version = described_class.emoji_unicode_version('100')
-
-      expect(emoji_unicode_version).to eq(emoji_unicode_versions_by_name['100'])
     end
   end
 

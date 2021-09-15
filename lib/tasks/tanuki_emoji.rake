@@ -3,7 +3,7 @@
 namespace :tanuki_emoji do
   desc 'Generates Emoji SHA256 digests'
 
-  task aliases: %w[environment] do
+  task aliases: :environment do
     aliases = {}
 
     TanukiEmoji.index.all.each do |emoji|
@@ -18,12 +18,8 @@ namespace :tanuki_emoji do
     end
   end
 
-  task digests: ['yarn:check', 'environment'] do
+  task digests: :environment do
     require 'digest/sha2'
-    require 'json'
-
-    # We don't have `node_modules` available in built versions of GitLab
-    FileUtils.cp_r(Rails.root.join('node_modules', 'emoji-unicode-version', 'emoji-unicode-version-map.json'), File.join(Rails.root, 'fixtures', 'emojis'))
 
     digest_emoji_map = {}
     emojis_map = {}
@@ -35,7 +31,7 @@ namespace :tanuki_emoji do
         category: emoji.category,
         moji: emoji.codepoints,
         description: emoji.description,
-        unicodeVersion: Gitlab::Emoji.emoji_unicode_version(emoji.name),
+        unicodeVersion: emoji.unicode_version,
         digest: Digest::SHA256.file(emoji_path).hexdigest
       }
 
@@ -46,7 +42,7 @@ namespace :tanuki_emoji do
         c: emoji.category,
         e: emoji.codepoints,
         d: emoji.description,
-        u: Gitlab::Emoji.emoji_unicode_version(emoji.name)
+        u: emoji.unicode_version
       }
 
       emojis_map[emoji.name] = emoji_entry
@@ -71,7 +67,10 @@ namespace :tanuki_emoji do
   # occasionally, such as when new Emojis are added to Gemojione.
   task sprite: :environment do
     begin
+      require 'mini_magick'
       require 'sprite_factory'
+      # Sprite-Factory still requires rmagick, but maybe could be migrated to support minimagick
+      # Upstream issue: https://github.com/jakesgordon/sprite-factory/issues/47#issuecomment-929302890
       require 'rmagick'
     rescue LoadError
       # noop
@@ -94,7 +93,7 @@ namespace :tanuki_emoji do
 
     TanukiEmoji.index.all.each do |emoji|
       source = File.join(TanukiEmoji.images_path, emoji.image_name)
-      destination = File.join(emoji_dir, TanukiEmoji.name, '.png')
+      destination = File.join(emoji_dir, "#{emoji.name}.png")
 
       FileUtils.cp(source, destination)
     end
@@ -179,7 +178,7 @@ namespace :tanuki_emoji do
   end
 
   def check_requirements!
-    return if defined?(SpriteFactory) && defined?(Magick)
+    return if defined?(Magick)
 
     puts <<-MSG.strip_heredoc
       This task is disabled by default and should only be run when the TanukiEmoji
@@ -188,8 +187,12 @@ namespace :tanuki_emoji do
       To enable this task, *temporarily* add the following lines to Gemfile and
       re-bundle:
 
-      gem 'sprite-factory'
-      gem 'rmagick'
+      gem 'rmagick', '~> 3.2'
+
+      It depends on ImageMagick 6, which can be installed via HomeBrew with:
+
+      brew unlink imagemagick
+      brew install imagemagick@6 && brew link imagemagick@6 --force
     MSG
 
     exit 1
@@ -197,9 +200,9 @@ namespace :tanuki_emoji do
 
   def resize!(image_path, size)
     # Resize the image in-place, save it, and free the object
-    image = Magick::Image.read(image_path).first
-    image.resize!(size, size)
-    image.write(image_path) { self.quality = 100 }
-    image.destroy!
+    image = MiniMagick::Image.open(image_path)
+    image.quality(100)
+    image.resize("#{size}x#{size}")
+    image.write(image_path)
   end
 end

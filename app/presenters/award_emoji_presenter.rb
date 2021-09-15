@@ -16,7 +16,7 @@ class AwardEmojiPresenter < Gitlab::View::Presenter::Delegated
   end
 
   def unicode_version
-    Gitlab::Emoji.emoji_unicode_version(award_emoji.name)
+    as_emoji&.unicode_version
   end
 
   private
