@@ -8,7 +8,7 @@ product_stage: manage
 product_group: compliance
 product_category: "Compliance management"
 value_type: number
-status: data_available
+status: active
 milestone: '13.12'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/325545
 time_frame: all

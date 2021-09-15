@@ -7,7 +7,7 @@ product_stage: devops::secure
 product_group: "group::static analysis"
 product_category:
 value_type: number
-status: data_available
+status: active
 milestone: "13.2"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/33881
 time_frame: 28d

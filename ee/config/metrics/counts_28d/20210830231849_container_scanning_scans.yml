@@ -6,7 +6,7 @@ product_stage: protect
 product_group: group::container security
 product_category: container_scanning
 value_type: number
-status: data_available
+status: active
 milestone: "13.9"
 time_frame: 28d
 data_source: database
