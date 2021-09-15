@@ -5,7 +5,7 @@ require 'securerandom'
 
 module QA
   RSpec.describe 'Enablement:Search' do
-    describe 'When using elasticsearch API to search for a public merge request', :orchestrated, :elasticsearch do
+    describe 'When using elasticsearch API to search for a public merge request', :orchestrated, :elasticsearch, :requires_admin do
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
       let(:merge_request) do
