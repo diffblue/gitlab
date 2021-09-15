@@ -14,9 +14,9 @@ const Template = (args, { argTypes }) => ({
     <template #description>Settings section description</template>
     <template #default>
       <p>Content</p>
-      <p>Moar content</p>
+      <p>More content</p>
       <p>Content</p>
-      <p>Moar content...</p>
+      <p>More content...</p>
       <p>Content</p>
     </template>
   </settings-block>

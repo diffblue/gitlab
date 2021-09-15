@@ -111,11 +111,11 @@ describe('Settings Block', () => {
         mountComponent({ collapsible: false });
       });
 
-      it('does not render clickable section title', async () => {
+      it('does not render clickable section title', () => {
         expect(findSectionTitleButton().exists()).toBe(false);
       });
 
-      it('contains expanded class', async () => {
+      it('contains expanded class', () => {
         expect(wrapper.classes('expanded')).toBe(true);
       });
 

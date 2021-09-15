@@ -45,10 +45,17 @@ export default {
       const { collapseAriaLabel, expandAriaLabel } = this.$options.i18n;
       return this.sectionExpanded ? collapseAriaLabel : expandAriaLabel;
     },
+    ariaExpanded() {
+      return String(this.sectionExpanded);
+    },
   },
   methods: {
     toggleSectionExpanded() {
       this.sectionExpanded = !this.sectionExpanded;
+
+      if (this.sectionExpanded) {
+        this.$refs.settingsContent.focus();
+      }
     },
   },
   i18n: {
@@ -71,9 +78,10 @@ export default {
           tabindex="0"
           class="gl-cursor-pointer"
           :aria-controls="settingsContentId"
-          :aria-expanded="sectionExpanded"
+          :aria-expanded="ariaExpanded"
           data-testid="section-title-button"
           @click="toggleSectionExpanded"
+          @keydown.enter.space="toggleSectionExpanded"
         >
           <slot name="title"></slot>
         </span>
@@ -84,7 +92,7 @@ export default {
       <gl-button
         v-if="collapsible"
         :aria-controls="settingsContentId"
-        :aria-expanded="sectionExpanded"
+        :aria-expanded="ariaExpanded"
         :aria-label="toggleButtonAriaLabel"
         @click="toggleSectionExpanded"
       >
@@ -96,7 +104,9 @@ export default {
     </div>
     <div
       :id="settingsContentId"
+      ref="settingsContent"
       :aria-labelledby="settingsLabelId"
+      tabindex="-1"
       role="region"
       class="settings-content"
     >
