@@ -44,6 +44,7 @@ eslint-report.html
 /config/redis.queues.yml
 /config/redis.shared_state.yml
 /config/redis.trace_chunks.yml
+/config/redis.rate_limiting.yml
 /config/unicorn.rb
 /config/puma.rb
 /config/secrets.yml

@@ -176,5 +176,46 @@ searched):
 `GITLAB_REDIS_TRACE_CHUNKS_CONFIG_FILE` environment variable
 2. the configuration file `redis.trace_chunks.yml`
 3. the configuration file pointed to by the
+`GITLAB_REDIS_SHARED_STATE_CONFIG_FILE` environment variable
+4. the configuration file `redis.shared_state.yml`
+5. the configuration file pointed to by the
 `GITLAB_REDIS_CONFIG_FILE` environment variable
-4. the configuration file `resque.yml`
+6. the configuration file `resque.yml`
+
+## redis.rate_limiting.yml
+
+If configured, `redis.rate_limiting.yml` overrides the `resque.yml` settings to
+configure the Redis database instance used for clients of
+`::Gitlab::Redis::RateLimiting` which stores
+[rate limiting](https://docs.gitlab.com/ee/user/admin_area/settings/user_and_ip_rate_limits.html)
+state.
+
+Settings here can be overridden by the environment variable
+`GITLAB_REDIS_RATE_LIMITING_CONFIG_FILE` which provides
+an alternate location for configuration settings.
+
+The order of precedence for the URL used to connect to the Redis instance
+used for `rate_limiting` is:
+1. URL from a configuration file pointed to by the
+`GITLAB_REDIS_RATE_LIMITING_CONFIG_FILE` environment variable
+2. URL from `redis.rate_limiting.yml`
+3. URL from a configuration file pointed to by the
+`GITLAB_REDIS_CACHE_CONFIG_FILE` environment variable
+4. URL from a configuration file pointed to by the
+`GITLAB_REDIS_CONFIG_FILE` environment variable
+5. URL from `resque.yml`
+6. `redis://localhost:6384`
+
+The order of precedence for all other configuration settings for `rate_limiting`
+are selected from only the first of the following files found (if a setting
+is not provided in an earlier file, the remainder of the files are not
+searched):
+1. the configuration file pointed to by the
+`GITLAB_REDIS_RATE_LIMITING_CONFIG_FILE` environment variable
+2. the configuration file `redis.rate_limiting.yml`
+3. the configuration file pointed to by the
+`GITLAB_REDIS_CACHE_CONFIG_FILE` environment variable
+4. the configuration file `redis.cache.yml`
+5. the configuration file pointed to by the
+`GITLAB_REDIS_CONFIG_FILE` environment variable
+6. the configuration file `resque.yml`

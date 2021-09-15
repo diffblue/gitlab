@@ -50,6 +50,9 @@ sed -i 's|url:.*$|url: redis://redis:6379/12|g' config/redis.shared_state.yml
 cp config/redis.trace_chunks.yml.example config/redis.trace_chunks.yml
 sed -i 's|url:.*$|url: redis://redis:6379/13|g' config/redis.trace_chunks.yml
 
+cp config/redis.rate_limiting.yml.example config/redis.rate_limiting.yml
+sed -i 's|url:.*$|url: redis://redis:6379/14|g' config/redis.rate_limiting.yml
+
 if [ "$SETUP_DB" != "false" ]; then
   setup_db
 elif getent hosts postgres; then
