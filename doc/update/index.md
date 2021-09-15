@@ -298,6 +298,24 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 Ruby 2.7.4 is required. Refer to [the Ruby installation instructions](../install/installation.md#2-ruby)
 for how to proceed.
 
+- GitLab 14.3.0 contains background migrations to [address Primary Key overflow risk for tables with an integer PK](https://gitlab.com/groups/gitlab-org/-/epics/4785) for the tables listed below:
+
+  - [`ci_builds.id`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/70245)
+  - [`ci_builds.stage_id`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66688)
+  - [`ci_builds_metadata`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65692)
+  - [`taggings`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66625)
+  - [`events`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64779)
+
+  If the migrations are executed as part of a no-downtime deployment, there's a risk of failure due to lock conflicts with the application logic, resulting in lock timeout or deadlocks. In each case, these migrations are safe to re-run until successful:
+
+  ```shell
+  # For Omnibus GitLab
+  sudo gitlab-rake db:migrate
+
+  # For source installations
+  sudo -u git -H bundle exec rake db:migrate RAILS_ENV=production
+  ```
+
 ### 14.2.0
 
 - Due to an issue where `BatchedBackgroundMigrationWorkers` were
