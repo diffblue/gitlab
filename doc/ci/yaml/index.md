@@ -4351,15 +4351,12 @@ name level and not in the `vault` section.
 
 ### `pages`
 
-Use `pages` to upload static content to GitLab. The content
-is then published as a website. You must:
+Use `pages` to define a [GitLab Pages](../../user/project/pages/index.md) job that
+uploads static content to GitLab. The content is then published as a website.
 
-- Place any static content in a `public/` directory.
-- Define [`artifacts`](#artifacts) with a path to the `public/` directory.
+**Keyword type**: Job name.
 
-The following example moves all files from the root of the project to the
-`public/` directory. The `.public` workaround is so `cp` does not also copy
-`public/` to itself in an infinite loop:
+**Example of `pages`**:
 
 ```yaml
 pages:
@@ -4375,7 +4372,15 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 ```
 
-View the [GitLab Pages user documentation](../../user/project/pages/index.md).
+This example moves all files from the root of the project to the `public/` directory.
+The `.public` workaround is so `cp` does not also copy `public/` to itself in an infinite loop.
+
+**Additional details**:
+
+You must:
+
+- Place any static content in a `public/` directory.
+- Define [`artifacts`](#artifacts) with a path to the `public/` directory.
 
 ### `inherit`
 
