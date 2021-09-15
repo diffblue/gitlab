@@ -15,6 +15,12 @@ fragment IssueNode on Issue {
   hidden
   webUrl
   relativePosition
+  milestone {
+    expired
+    id
+    state
+    title
+  }
   assignees {
     nodes {
       ...User
