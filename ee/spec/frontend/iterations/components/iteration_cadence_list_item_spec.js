@@ -12,6 +12,7 @@ import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
+const { i18n } = IterationCadenceListItem;
 const push = jest.fn();
 const $router = {
   push,
@@ -86,7 +87,7 @@ describe('Iteration cadence list item', () => {
   };
   function createComponent({
     props = {},
-    canCreateCadence,
+    canCreateIteration,
     canEditCadence,
     currentRoute,
     namespaceType = Namespace.Group,
@@ -109,14 +110,14 @@ describe('Iteration cadence list item', () => {
       },
       provide: {
         fullPath,
-        canCreateCadence,
+        canCreateIteration,
         canEditCadence,
         namespaceType,
       },
       propsData: {
         title: cadence.title,
         cadenceId: cadence.id,
-        iterationState: 'open',
+        iterationState: 'opened',
         ...props,
       },
     });
@@ -125,6 +126,8 @@ describe('Iteration cadence list item', () => {
   }
 
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findCreateIterationButton = () =>
+    wrapper.findByRole('link', { text: i18n.createIteration });
   const expand = () => wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
   afterEach(() => {
@@ -142,8 +145,31 @@ describe('Iteration cadence list item', () => {
     expect(resolverMock).not.toHaveBeenCalled();
   });
 
-  it('shows empty text and CTA when no results', async () => {
+  it.each(['opened', 'closed', 'all'])(
+    'shows empty text when no results for list of %s iterations',
+    async (iterationState) => {
+      await createComponent({
+        resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
+        props: {
+          iterationState,
+        },
+      });
+
+      expand();
+
+      await waitForPromises();
+
+      expect(findLoader().exists()).toBe(false);
+      expect(wrapper.text()).toContain(i18n.noResults[iterationState]);
+    },
+  );
+
+  it.each([
+    ['hides', false],
+    ['shows', true],
+  ])('%s Create iteration button when canCreateIteration is %s', async (_, canCreateIteration) => {
     await createComponent({
+      canCreateIteration,
       resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
     });
 
@@ -151,9 +177,7 @@ describe('Iteration cadence list item', () => {
 
     await waitForPromises();
 
-    expect(findLoader().exists()).toBe(false);
-    expect(wrapper.text()).toContain(IterationCadenceListItem.i18n.noResults);
-    expect(wrapper.text()).toContain(IterationCadenceListItem.i18n.createFirstIteration);
+    expect(findCreateIterationButton().exists()).toBe(canCreateIteration);
   });
 
   it('shows iterations after loading', async () => {
@@ -205,7 +229,7 @@ describe('Iteration cadence list item', () => {
     await waitForPromises();
 
     expect(findLoader().exists()).toBe(false);
-    expect(wrapper.text()).toContain(IterationCadenceListItem.i18n.error);
+    expect(wrapper.text()).toContain(i18n.error);
   });
 
   it('calls fetchMore after scrolling down', async () => {

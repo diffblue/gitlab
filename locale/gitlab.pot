@@ -18937,7 +18937,7 @@ msgstr ""
 msgid "Iterations|Create cadence"
 msgstr ""
 
-msgid "Iterations|Create your first iteration"
+msgid "Iterations|Create iteration"
 msgstr ""
 
 msgid "Iterations|Delete cadence"
@@ -18982,10 +18982,16 @@ msgstr ""
 msgid "Iterations|New iteration cadence"
 msgstr ""
 
+msgid "Iterations|No closed iterations."
+msgstr ""
+
 msgid "Iterations|No iteration cadences to show."
 msgstr ""
 
 msgid "Iterations|No iterations in cadence."
+msgstr ""
+
+msgid "Iterations|No open iterations."
 msgstr ""
 
 msgid "Iterations|Number of future iterations you would like to have scheduled"

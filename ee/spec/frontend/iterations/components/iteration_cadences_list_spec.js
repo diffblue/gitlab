@@ -112,6 +112,7 @@ describe('Iteration cadences list', () => {
         namespaceType,
         cadencesListPath,
         canCreateCadence,
+        canCreateIteration: false,
         canEditCadence,
       },
     });
