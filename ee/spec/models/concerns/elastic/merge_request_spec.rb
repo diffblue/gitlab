@@ -72,6 +72,7 @@ RSpec.describe MergeRequest, :elastic do
   it "returns json with all needed elements" do
     merge_request = create :merge_request
     merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
+    create(:award_emoji, :upvote, awardable: merge_request)
 
     expected_hash = merge_request.attributes.extract!(
       'id',
@@ -92,7 +93,8 @@ RSpec.describe MergeRequest, :elastic do
       'type' => merge_request.es_type,
       'merge_requests_access_level' => ProjectFeature::ENABLED,
       'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
-      'project_id' => merge_request.target_project.id
+      'project_id' => merge_request.target_project.id,
+      'upvotes' => 1
     })
 
     expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)

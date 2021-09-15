@@ -29,6 +29,7 @@ module Elastic
 
         data['visibility_level'] = target.project.visibility_level
         data['merge_requests_access_level'] = safely_read_project_feature_for_elasticsearch(:merge_requests)
+        data['upvotes'] = target.lazy_upvotes_count
 
         data.merge(generic_attributes)
       end
