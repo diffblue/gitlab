@@ -6,10 +6,11 @@ import {
   filterVariables,
 } from '~/boards/boards_util';
 import { BoardType } from '~/boards/constants';
+import { gqlClient } from '~/boards/graphql';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
-import actionsCE, { gqlClient } from '~/boards/stores/actions';
+import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';

@@ -25,6 +25,12 @@ fragment IssueNode on Issue {
       ...User
     }
   }
+  milestone {
+    expired
+    id
+    state
+    title
+  }
   labels {
     nodes {
       id
