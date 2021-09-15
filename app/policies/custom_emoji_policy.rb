@@ -9,7 +9,7 @@ class CustomEmojiPolicy < BasePolicy
     enable :delete_custom_emoji
   end
 
-  rule { author & can?(:developer_access) }.policy do
+  rule { author & can?(:create_custom_emoji) }.policy do
     enable :delete_custom_emoji
   end
 end

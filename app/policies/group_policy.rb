@@ -89,6 +89,7 @@ class GroupPolicy < BasePolicy
   rule { guest }.policy do
     enable :read_group
     enable :upload_file
+    enable :guest_access
   end
 
   rule { admin }.policy do
@@ -178,6 +179,7 @@ class GroupPolicy < BasePolicy
     enable :update_default_branch_protection
     enable :create_deploy_token
     enable :destroy_deploy_token
+    enable :owner_access
   end
 
   rule { can?(:read_nested_project_resources) }.policy do

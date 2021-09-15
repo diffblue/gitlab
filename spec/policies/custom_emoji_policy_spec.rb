@@ -58,6 +58,16 @@ RSpec.describe CustomEmojiPolicy do
           expect_allowed(*custom_emoji_permissions)
         end
       end
+
+      context 'is emoji creator but not a member of the group' do
+        before do
+          custom_emoji.update_attribute(:creator, user)
+        end
+
+        it do
+          expect_disallowed(*custom_emoji_permissions)
+        end
+      end
     end
   end
 end
