@@ -53,7 +53,6 @@ module Security
       # environment.
       # This is easier to address from within the class rather than from tests because this leads to bad class design
       # and exposing too much of its implementation details to the test suite.
-      # See also https://stackoverflow.com/questions/15442298/is-sort-in-ruby-stable.
       Gitlab::Utils.stable_sort_by(findings) { |x| [-x.severity_value, -x.confidence_value] }
     end
 
