@@ -18184,7 +18184,6 @@ CREATE TABLE projects (
     public_builds boolean DEFAULT true NOT NULL,
     last_repository_check_failed boolean,
     last_repository_check_at timestamp without time zone,
-    container_registry_enabled boolean,
     only_allow_merge_if_pipeline_succeeds boolean DEFAULT false NOT NULL,
     has_external_issue_tracker boolean,
     repository_storage character varying DEFAULT 'default'::character varying NOT NULL,
