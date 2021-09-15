@@ -37,7 +37,7 @@ RSpec.describe 'Merge request > User merges with Push Rules', :js do
     it 'displays error message after merge request is clicked' do
       click_button 'Merge'
 
-      expect(page).to have_content("Commit author's email '#{user.email}' does not follow the pattern '#{push_rule.author_email_regex}'")
+      expect(page).to have_content("Author's commit email '#{user.email}' does not follow the pattern '#{push_rule.author_email_regex}'")
     end
   end
 

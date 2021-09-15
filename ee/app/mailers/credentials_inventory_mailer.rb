@@ -10,7 +10,7 @@ class CredentialsInventoryMailer < ApplicationMailer
     @token = token
 
     mail(
-      to: token.user.notification_email,
+      to: token.user.notification_email_or_default,
       subject: _('Your Personal Access Token was revoked')
     )
   end
