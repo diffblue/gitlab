@@ -87,9 +87,9 @@ module Elastic
     end
 
     def current_migration
-      uncompleted_migrations = Elastic::MigrationRecord.load_versions(completed: false)
+      completed_migrations = Elastic::MigrationRecord.load_versions(completed: true)
 
-      Elastic::DataMigrationService.migrations.find { |migration| uncompleted_migrations.include?(migration.version) }
+      Elastic::DataMigrationService.migrations.find { |migration| !completed_migrations.include?(migration.version) }
     end
 
     def pause_indexing!(migration)
