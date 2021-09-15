@@ -1924,6 +1924,27 @@ Input type: `DestroyContainerRepositoryTagsInput`
 | <a id="mutationdestroycontainerrepositorytagsdeletedtagnames"></a>`deletedTagNames` | [`[String!]!`](#string) | Deleted container repository tags. |
 | <a id="mutationdestroycontainerrepositorytagserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.destroyCustomEmoji`
+
+Available only when feature flag `custom_emoji` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Input type: `DestroyCustomEmojiInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationdestroycustomemojiclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdestroycustomemojiid"></a>`id` | [`CustomEmojiID!`](#customemojiid) | Global ID of the custom emoji to destroy. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationdestroycustomemojiclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdestroycustomemojicustomemoji"></a>`customEmoji` | [`CustomEmoji`](#customemoji) | Deleted custom emoji. |
+| <a id="mutationdestroycustomemojierrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.destroyEpicBoard`
 
 Input type: `DestroyEpicBoardInput`
