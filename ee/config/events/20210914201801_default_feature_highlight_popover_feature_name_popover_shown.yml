@@ -1,0 +1,19 @@
+description: "Show \"Paid feature highlight\" popover"
+category: default
+action: popover_shown
+label_description: "`feature_highlight_popover:[feature_name]`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: growth
+product_stage: growth
+product_group: group::conversion
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62525
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
