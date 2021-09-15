@@ -46,6 +46,15 @@ RSpec.describe Issues::MoveService do
           move_service.execute(old_issue, new_project)
         end
       end
+
+      context 'when it is not allowed to move issues of given type' do
+        it 'throws error' do
+          requirement_issue = create(:issue, issue_type: :requirement, project: old_project)
+
+          expect { move_service.execute(requirement_issue, new_project) }
+            .to raise_error(StandardError, 'Cannot move issues of \'requirement\' type.')
+        end
+      end
     end
 
     context 'resource weight events' do
