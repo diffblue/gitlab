@@ -53,8 +53,7 @@ module Types
       field :pages_deployment_registries, ::Types::Geo::PagesDeploymentRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::PagesDeploymentRegistriesResolver,
-            description: 'Find Pages Deployment registries on this Geo node',
-            feature_flag: :geo_pages_deployment_replication
+            description: 'Find Pages Deployment registries on this Geo node'
     end
   end
 end
