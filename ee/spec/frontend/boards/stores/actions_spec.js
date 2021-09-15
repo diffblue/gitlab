@@ -14,7 +14,6 @@ import { mockMoveIssueParams, mockMoveData, mockMoveState } from 'jest/boards/mo
 import { formatListIssues } from '~/boards/boards_util';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import {
@@ -1044,7 +1043,7 @@ describe('addListNewEpic', () => {
             type: 'addListItem',
             payload: {
               list: fakeList,
-              item: { ...mockEpic, id: getIdFromGraphQLId(mockEpic.id), assignees: [] },
+              item: { ...mockEpic, assignees: [] },
               position: 0,
             },
           },

@@ -151,7 +151,7 @@ export default {
       }
 
       this.moveIssue({
-        itemId: Number(itemId),
+        itemId,
         itemIid,
         itemPath,
         fromListId: from.dataset.listId,
