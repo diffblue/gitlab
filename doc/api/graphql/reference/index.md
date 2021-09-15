@@ -12547,6 +12547,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="projectdastsitevalidationsnormalizedtargeturls"></a>`normalizedTargetUrls` | [`[String!]`](#string) | Normalized URL of the target to be scanned. |
+| <a id="projectdastsitevalidationsstatus"></a>`status` | [`DastSiteValidationStatusEnum`](#dastsitevalidationstatusenum) | Status of the site validation. Ignored if `dast_failed_site_validations` feature flag is disabled. |
 
 ##### `Project.environment`
 
@@ -15396,6 +15397,15 @@ Unit for the duration of Dast Profile Cadence.
 | <a id="dastsiteprofilevalidationstatusenumnone"></a>`NONE` | No site validation exists. |
 | <a id="dastsiteprofilevalidationstatusenumpassed_validation"></a>`PASSED_VALIDATION` | Site validation process finished successfully. |
 | <a id="dastsiteprofilevalidationstatusenumpending_validation"></a>`PENDING_VALIDATION` | Site validation process has not started. |
+
+### `DastSiteValidationStatusEnum`
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="dastsitevalidationstatusenumfailed_validation"></a>`FAILED_VALIDATION` | Site validation process finished but failed. |
+| <a id="dastsitevalidationstatusenuminprogress_validation"></a>`INPROGRESS_VALIDATION` | Site validation process is in progress. |
+| <a id="dastsitevalidationstatusenumpassed_validation"></a>`PASSED_VALIDATION` | Site validation process finished successfully. |
+| <a id="dastsitevalidationstatusenumpending_validation"></a>`PENDING_VALIDATION` | Site validation process has not started. |
 
 ### `DastSiteValidationStrategyEnum`
 
