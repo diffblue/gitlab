@@ -30,10 +30,6 @@ RSpec.describe 'Issue Boards new issue', :js do
     it 'successfully assigns weight to newly-created issue' do
       create_issue_in_board_list(0)
 
-      page.within(first('.board')) do
-        find('.board-card').click
-      end
-
       page.within(first('[data-testid="issue-boards-sidebar"]')) do
         find('.weight [data-testid="edit-button"]').click
         find('.weight .form-control').set("10\n")
@@ -49,10 +45,6 @@ RSpec.describe 'Issue Boards new issue', :js do
     describe 'milestone list' do
       it 'successfuly loads milestone to be added to newly created issue' do
         create_issue_in_board_list(1)
-
-        page.within(all('.board')[1]) do
-          find('.board-card').click
-        end
 
         page.within('[data-testid="sidebar-milestones"]') do
           click_button 'Edit'

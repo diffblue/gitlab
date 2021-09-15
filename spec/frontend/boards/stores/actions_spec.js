@@ -1326,25 +1326,31 @@ describe('setAssignees', () => {
 });
 
 describe('addListItem', () => {
-  it('should commit ADD_BOARD_ITEM_TO_LIST and UPDATE_BOARD_ITEM mutations', () => {
+  it('should commit ADD_BOARD_ITEM_TO_LIST and UPDATE_BOARD_ITEM mutations, dispatch setActiveId action when inProgress is false', () => {
     const payload = {
       list: mockLists[0],
       item: mockIssue,
       position: 0,
     };
 
-    testAction(actions.addListItem, payload, {}, [
-      {
-        type: types.ADD_BOARD_ITEM_TO_LIST,
-        payload: {
-          listId: mockLists[0].id,
-          itemId: mockIssue.id,
-          atIndex: 0,
-          inProgress: false,
+    testAction(
+      actions.addListItem,
+      payload,
+      {},
+      [
+        {
+          type: types.ADD_BOARD_ITEM_TO_LIST,
+          payload: {
+            listId: mockLists[0].id,
+            itemId: mockIssue.id,
+            atIndex: 0,
+            inProgress: false,
+          },
         },
-      },
-      { type: types.UPDATE_BOARD_ITEM, payload: mockIssue },
-    ]);
+        { type: types.UPDATE_BOARD_ITEM, payload: mockIssue },
+      ],
+      [{ type: 'setActiveId', payload: { id: mockIssue.id, sidebarType: ISSUABLE } }],
+    );
   });
 });
 
