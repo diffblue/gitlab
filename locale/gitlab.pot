@@ -25297,6 +25297,9 @@ msgstr ""
 msgid "Please set a new password before proceeding."
 msgstr ""
 
+msgid "Please set up a Service Desk email address in order to add a custom suffix. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "Please share your feedback about %{featureName} %{linkStart}in this issue%{linkEnd} to help us improve the experience."
 msgstr ""
 
