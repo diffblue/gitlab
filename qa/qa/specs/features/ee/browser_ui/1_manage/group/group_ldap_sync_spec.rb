@@ -5,45 +5,24 @@ module QA
     describe 'LDAP Group sync' do
       include Support::API
 
+      let(:root_group) do
+        Resource::Sandbox.fabricate_via_api! do |resource|
+          resource.path = "group_sync_root_group-#{SecureRandom.hex(4)}"
+        end
+      end
+
       let(:group) do
         Resource::Group.fabricate_via_api! do |resource|
+          resource.sandbox = root_group
           resource.path = "#{group_name}-#{SecureRandom.hex(4)}"
         end
       end
 
-      before(:all) do
-        @original_personal_access_token = Runtime::Env.personal_access_token
-
-        # We need to nil out any existing personal token generated for the non-admin LDAP user and also set
-        # Runtime::Env.ldap_username=nil so that it is not used to create the api client.
-        Runtime::Env.personal_access_token = nil
-        ldap_username = Runtime::Env.ldap_username
-        Runtime::Env.ldap_username = nil
-        @admin_api_client = Runtime::API::Client.as_admin
-        Runtime::Feature.enable(:invite_members_group_modal)
-        Runtime::Env.ldap_username = ldap_username
-
-        # Create the sandbox group as the LDAP user. Without this the admin user
-        # would own the sandbox group and then in subsequent tests the LDAP user
-        # would not have enough permission to push etc.
-        Resource::Sandbox.fabricate_via_api!
-
-        Page::Main::Menu.perform do |menu|
-          menu.sign_out if menu.has_personal_area?
+      after do |example|
+        # If a test fails leave the groups so we can investigate them
+        unless example.exception
+          root_group.remove_via_api!
         end
-
-        Runtime::Browser.visit(:gitlab, Page::Main::Login)
-        Page::Main::Login.perform(&:sign_in_using_admin_credentials)
-
-        Runtime::Env.personal_access_token = Resource::PersonalAccessToken.fabricate!.token
-        Page::Main::Menu.perform(&:sign_out)
-      end
-
-      after(:all) do
-        # Restore the original personal access token so that subsequent tests
-        # don't perform API calls as an admin user while logged in as a non-root
-        # LDAP user
-        Runtime::Env.personal_access_token = @original_personal_access_token
       end
 
       context 'using group cn method' do
@@ -169,7 +148,7 @@ module QA
             resource.email = user[:email]
             resource.extern_uid = user[:extern_uid]
             resource.provider = user[:provider]
-            resource.api_client = @admin_api_client
+            resource.api_client = Runtime::API::Client.as_admin
           end
         end
         created_users
