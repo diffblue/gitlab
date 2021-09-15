@@ -3,15 +3,15 @@ import { GlEmptyState } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import { setUrlFragment } from '~/lib/utils/url_utility';
 import LoadingSkeleton from './loading_skeleton.vue';
-import StatisticsHistory from './statistics_history.vue';
-import StatisticsSummary from './statistics_summary.vue';
 
 export default {
   components: {
     GlEmptyState,
     LoadingSkeleton,
-    StatisticsSummary,
-    StatisticsHistory,
+    StatisticsSummary: () =>
+      import(/* webpackChunkName: 'threat_statistics' */ './statistics_summary.vue'),
+    StatisticsHistory: () =>
+      import(/* webpackChunkName: 'threat_statistics' */ './statistics_history.vue'),
   },
   props: {
     storeNamespace: {
