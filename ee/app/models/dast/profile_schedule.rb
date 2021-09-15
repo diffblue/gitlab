@@ -88,6 +88,8 @@ class Dast::ProfileSchedule < ApplicationRecord
   # The will_save_change_to_active? returns false when the new object is created
   # with the same value as the db defaults. That's why we need to this indirect to call validate_plan_limit_not_exceeded.
   def validate_plan_limit_not_exceeded_while_activating
+    return if active == false
+
     validate_plan_limit_not_exceeded
   end
 end
