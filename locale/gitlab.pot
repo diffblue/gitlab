@@ -35873,9 +35873,6 @@ msgstr ""
 msgid "Unable to fetch branches list, please close the form and try again"
 msgstr ""
 
-msgid "Unable to fetch unscanned projects"
-msgstr ""
-
 msgid "Unable to fetch vulnerable projects"
 msgstr ""
 
@@ -36063,18 +36060,6 @@ msgid "Unresolve thread"
 msgstr ""
 
 msgid "Unresolved"
-msgstr ""
-
-msgid "UnscannedProjects|15 or more days"
-msgstr ""
-
-msgid "UnscannedProjects|30 or more days"
-msgstr ""
-
-msgid "UnscannedProjects|5 or more days"
-msgstr ""
-
-msgid "UnscannedProjects|60 or more days"
 msgstr ""
 
 msgid "Unschedule job"
