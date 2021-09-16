@@ -60,7 +60,7 @@ describe('Approval Check Popover', () => {
     });
 
     describe('approvalConfig', () => {
-      it('returns "Vulberability-Check" config', (done) => {
+      it('returns "Vulnerability-Check" config', (done) => {
         wrapper.setProps({ rule: { name: VULNERABILITY_CHECK_NAME } });
         Vue.nextTick(() => {
           expect(wrapper.vm.approvalRuleConfig.title).toBe(
