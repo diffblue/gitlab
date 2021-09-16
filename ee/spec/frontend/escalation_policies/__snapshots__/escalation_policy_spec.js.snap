@@ -24,101 +24,127 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
         class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-p-5"
       >
         <div
-          class="gl-display-flex gl-align-items-center gl-mb-5"
+          class="gl-display-flex gl-align-items-center escalation-rule-row gl-mb-5"
         >
-          <gl-icon-stub
-            class="gl-mr-3"
-            name="clock"
-            size="16"
-          />
-           IF alert is not 
-                acknowledged
-               in 
           <span
-            class="gl-font-weight-bold"
+            class="rule-condition gl-md-w-full"
           >
-            
-                   1 mins
-                
+            <gl-icon-stub
+              class="gl-mr-3"
+              name="clock"
+              size="16"
+            />
+             IF alert is not 
+                  acknowledged
+                 in 
+            <span
+              class="gl-font-weight-bold"
+            >
+              
+                    1 mins
+                  
+            </span>
           </span>
            
           <span
-            class="right-arrow"
+            class="right-arrow gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            style="width: 4%;"
           >
             <i
               class="right-arrow-head"
             />
           </span>
            
-          <gl-icon-stub
-            class="gl-mr-3"
-            name="notifications"
-            size="16"
-          />
-           THEN 
-                email on-call user in schedule
-                 
-               
           <span
-            class="gl-font-weight-bold"
+            class="gl-display-flex gl-align-items-center rule-action"
           >
-            
-                  Schedule to fill in
+            <span
+              class="gl-text-truncate"
+              title=" THEN email on-call user in schedule Schedule to fill in"
+            >
+              <gl-icon-stub
+                class="gl-mr-3"
+                name="notifications"
+                size="16"
+              />
+               THEN 
+                    email on-call user in schedule
+                   
+              <span
+                class="gl-font-weight-bold"
+              >
                 
+                      Schedule to fill in
+                    
+              </span>
+            </span>
           </span>
         </div>
         <div
-          class="gl-display-flex gl-align-items-center"
+          class="gl-display-flex gl-align-items-center escalation-rule-row"
         >
-          <gl-icon-stub
-            class="gl-mr-3"
-            name="clock"
-            size="16"
-          />
-           IF alert is not 
-                resolved
-               in 
           <span
-            class="gl-font-weight-bold"
+            class="rule-condition gl-md-w-full"
           >
-            
-                   2 mins
-                
+            <gl-icon-stub
+              class="gl-mr-3"
+              name="clock"
+              size="16"
+            />
+             IF alert is not 
+                  resolved
+                 in 
+            <span
+              class="gl-font-weight-bold"
+            >
+              
+                    2 mins
+                  
+            </span>
           </span>
            
           <span
-            class="right-arrow"
+            class="right-arrow gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            style="width: 8%;"
           >
             <i
               class="right-arrow-head"
             />
           </span>
            
-          <gl-icon-stub
-            class="gl-mr-3"
-            name="notifications"
-            size="16"
-          />
-           THEN 
-                email user
-                 
-               
-          <gl-token-stub
-            variant="default"
-            viewonly="true"
+          <span
+            class="gl-display-flex gl-align-items-center rule-action"
           >
-            <gl-avatar-stub
-              alt="avatar"
-              entityid="0"
-              entityname=""
-              shape="circle"
-              size="16"
-              src="avatar.com/lena.png"
-            />
-            
-                  Lena
+            <span
+              class="gl-text-truncate"
+              title=" THEN email user Lena"
+            >
+              <gl-icon-stub
+                class="gl-mr-3"
+                name="notifications"
+                size="16"
+              />
+               THEN 
+                    email user
+                   
+              <gl-token-stub
+                variant="default"
+                viewonly="true"
+              >
+                <gl-avatar-stub
+                  alt="avatar"
+                  entityid="0"
+                  entityname=""
+                  shape="circle"
+                  size="16"
+                  src="avatar.com/lena.png"
+                />
                 
-          </gl-token-stub>
+                      Lena
+                    
+              </gl-token-stub>
+            </span>
+          </span>
         </div>
       </div>
     </gl-collapse-stub>
