@@ -2,12 +2,14 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import BoardFilteredSearch from '~/boards/components/board_filtered_search.vue';
+import { BoardType } from '~/boards/constants';
 import issueBoardFilters from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import { DEFAULT_MILESTONES_GRAPHQL } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
@@ -19,6 +21,7 @@ export default {
   },
   i18n: {
     search: __('Search'),
+    epic: __('Epic'),
     label: __('Label'),
     author: __('Author'),
     assignee: __('Assignee'),
@@ -31,6 +34,7 @@ export default {
     isNot: __('is not'),
   },
   components: { BoardFilteredSearch },
+  inject: ['epicFeatureAvailable'],
   props: {
     fullPath: {
       type: String,
@@ -42,8 +46,17 @@ export default {
     },
   },
   computed: {
+    isGroupBoard() {
+      return this.boardType === BoardType.group;
+    },
+    epicsGroupPath() {
+      return this.isGroupBoard
+        ? this.fullPath
+        : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
+    },
     tokens() {
       const {
+        epic,
         label,
         is,
         isNot,
@@ -90,6 +103,21 @@ export default {
           fetchAuthors,
           preloadedAuthors: this.preloadedAuthors(),
         },
+        ...(this.epicFeatureAvailable
+          ? [
+              {
+                type: 'epic_id',
+                title: epic,
+                icon: 'epic',
+                token: EpicToken,
+                unique: true,
+                symbol: '&',
+                idProperty: 'id',
+                useIdValue: true,
+                fullPath: this.epicsGroupPath,
+              },
+            ]
+          : []),
         {
           icon: 'labels',
           title: label,
