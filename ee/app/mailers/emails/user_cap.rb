@@ -4,7 +4,7 @@ module Emails
   module UserCap
     def user_cap_reached(user_id)
       user = User.find(user_id)
-      email = user.notification_email
+      email = user.notification_email_or_default
 
       @url_to_user_cap = 'https://docs.gitlab.com/ee/user/admin_area/settings/sign_up_restrictions.html#user-cap'
       @url_to_pending_users = 'https://docs.gitlab.com/ee/user/admin_area/approving_users.html#view-user-sign-ups-pending-approval'
