@@ -5,13 +5,22 @@ require 'spec_helper'
 RSpec.describe DastSiteValidations::RevokeService do
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_site_token) { create(:dast_site_token, project: project) }
-  let_it_be(:dast_site_validation1) { create(:dast_site_validation, state: :passed, dast_site_token: dast_site_token) }
-  let_it_be(:dast_site_validation2) { create(:dast_site_validation, state: :passed, dast_site_token: dast_site_token) }
-  let_it_be(:dast_site_validation3) { create(:dast_site_validation, state: :failed, dast_site_token: dast_site_token) }
-  let_it_be(:dast_site_validation4) { create(:dast_site_validation, state: :passed) }
-  let_it_be(:dast_site_validation5) { create(:dast_site_validation, state: :inprogress) }
+  let_it_be(:common_url_base) { DastSiteValidation.get_normalized_url_base(dast_site_token.url) }
 
-  let(:params) { { url_base: dast_site_validation1.url_base } }
+  let_it_be(:dast_site_validation_other_project) { create(:dast_site_validation, dast_site_token: create(:dast_site_token, url: common_url_base)) }
+  let_it_be(:dast_site_validation_other_url) { create(:dast_site_validation, dast_site_token: create(:dast_site_token, project: project)) }
+
+  let_it_be(:external_dast_site_validations) do
+    [dast_site_validation_other_project, dast_site_validation_other_url]
+  end
+
+  let_it_be(:dast_site_validations) do
+    DastSiteValidation.state_machine.states.map do |state|
+      create(:dast_site_validation, state: state.name, dast_site_token: dast_site_token)
+    end
+  end
+
+  let(:params) { { url_base: common_url_base } }
 
   subject { described_class.new(container: project, params: params).execute }
 
@@ -36,17 +45,23 @@ RSpec.describe DastSiteValidations::RevokeService do
         expect(subject.status).to eq(:success)
       end
 
-      it 'deletes dast_site_validations where state=passed' do
-        aggregate_failures do
-          expect { subject }.to change { DastSiteValidation.count }.from(5).to(3)
+      it 'deletes only dast_site_validation validations in the same project that share a common url_base', :aggregate_failures do
+        total = dast_site_validations.size + external_dast_site_validations.size
+        delta = external_dast_site_validations.size
 
-          expect { dast_site_validation1.reload }.to raise_error(ActiveRecord::RecordNotFound)
-          expect { dast_site_validation2.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { subject }.to change { DastSiteValidation.count }.from(total).to(delta)
+
+        dast_site_validations.each do |dast_site_validation|
+          expect { dast_site_validation.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+
+        external_dast_site_validations.each do |dast_site_validation|
+          expect { dast_site_validation_other_project.reload }.not_to raise_error
         end
       end
 
       it 'returns a count of the dast_site_validations that were deleted' do
-        expect(subject.payload[:count]).to eq(2)
+        expect(subject.payload[:count]).to eq(dast_site_validations.size)
       end
 
       context 'when the finder does not find any dast_site_validations' do
