@@ -1,4 +1,4 @@
-import { GlEmptyState, GlLoadingIcon, GlToggle } from '@gitlab/ui';
+import { GlEmptyState, GlToggle } from '@gitlab/ui';
 import { EDITOR_MODE_YAML } from 'ee/threat_monitoring/components/policy_editor/constants';
 import DimDisableContainer from 'ee/threat_monitoring/components/policy_editor/dim_disable_container.vue';
 import {
@@ -46,10 +46,10 @@ describe('NetworkPolicyEditor component', () => {
 
     wrapper = shallowMountExtended(NetworkPolicyEditor, {
       propsData: {
-        hasEnvironment: true,
         ...propsData,
       },
       provide: {
+        hasEnvironment: true,
         networkDocumentationPath: 'path/to/docs',
         noEnvironmentSvgPath: 'path/to/svg',
         threatMonitoringPath: '/threat-monitoring',
@@ -62,7 +62,6 @@ describe('NetworkPolicyEditor component', () => {
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPreview = () => wrapper.findComponent(PolicyPreview);
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findYAMLParsingAlert = () => wrapper.findByTestId('parsing-alert');
@@ -94,6 +93,13 @@ describe('NetworkPolicyEditor component', () => {
     expect(policyEnableToggle.props('label')).toBe(NetworkPolicyEditor.i18n.toggleLabel);
   });
 
+  it('disables the tooltip and enables the save button', () => {
+    expect(findPolicyEditorLayout().props()).toMatchObject({
+      disableTooltip: true,
+      disableUpdate: false,
+    });
+  });
+
   it('renders a default rule with label', () => {
     expect(wrapper.findAllComponents(PolicyRuleBuilder)).toHaveLength(1);
     expect(findPolicyRuleBuilder().exists()).toBe(true);
@@ -110,7 +116,6 @@ describe('NetworkPolicyEditor component', () => {
     ${'add rule button'}            | ${'does display'}     | ${findAddRuleButton}     | ${true}
     ${'policy preview'}             | ${'does display'}     | ${findPreview}           | ${true}
     ${'parsing error alert'}        | ${'does not display'} | ${findYAMLParsingAlert}  | ${false}
-    ${'loading icon'}               | ${'does not display'} | ${findLoadingIcon}       | ${false}
     ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}        | ${false}
   `('$status the $component', async ({ findComponent, state }) => {
     expect(findComponent().exists()).toBe(state);
@@ -356,24 +361,29 @@ describe('NetworkPolicyEditor component', () => {
         updatedStore: { threatMonitoring: { environments: [], isLoadingEnvironments: true } },
       });
     });
-    it.each`
-      component                       | status                | findComponent             | state
-      ${'loading icon'}               | ${'does display'}     | ${findLoadingIcon}        | ${true}
-      ${'policy editor layout'}       | ${'does not display'} | ${findPolicyEditorLayout} | ${false}
-      ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}         | ${false}
-    `('$status the $component', ({ findComponent, state }) => {
-      expect(findComponent().exists()).toBe(state);
+
+    it('does not display the "no environment" empty state', () => {
+      expect(findEmptyState().exists()).toBe(false);
+    });
+
+    it('displays the "PolicyEditorLayout" component enables the tooltip and disables the save button', () => {
+      expect(findPolicyEditorLayout().props()).toMatchObject({
+        disableTooltip: false,
+        disableUpdate: true,
+      });
     });
   });
 
   describe('when no environments are configured', () => {
     beforeEach(() => {
-      factory({ updatedStore: { threatMonitoring: { environments: [] } } });
+      factory({
+        provide: { hasEnvironment: false },
+        updatedStore: { threatMonitoring: { environments: [] } },
+      });
     });
 
     it.each`
       component                       | status                | findComponent             | state
-      ${'loading icon'}               | ${'does display'}     | ${findLoadingIcon}        | ${false}
       ${'policy editor layout'}       | ${'does not display'} | ${findPolicyEditorLayout} | ${false}
       ${'no environment empty state'} | ${'does not display'} | ${findEmptyState}         | ${true}
     `('$status the $component', ({ findComponent, state }) => {

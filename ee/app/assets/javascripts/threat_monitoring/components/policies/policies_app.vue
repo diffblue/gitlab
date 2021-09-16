@@ -1,5 +1,6 @@
 <script>
 import { mapActions } from 'vuex';
+import { isValidEnvironmentId } from '../../utils';
 import PoliciesHeader from './policies_header.vue';
 import PoliciesList from './policies_list.vue';
 
@@ -15,7 +16,7 @@ export default {
       // An invalid default environment id means there there are no available
       // environments, therefore infrastructure cannot be set up. A valid default
       // environment id only means that infrastructure *might* be set up.
-      shouldFetchEnvironment: this.isValidEnvironmentId(this.defaultEnvironmentId),
+      shouldFetchEnvironment: isValidEnvironmentId(this.defaultEnvironmentId),
       shouldUpdatePolicyList: false,
     };
   },
@@ -27,10 +28,6 @@ export default {
   },
   methods: {
     ...mapActions('threatMonitoring', ['fetchEnvironments', 'setCurrentEnvironmentId']),
-
-    isValidEnvironmentId(id) {
-      return Number.isInteger(id) && id >= 0;
-    },
     handleUpdatePolicyList(val) {
       this.shouldUpdatePolicyList = val;
     },

@@ -1,5 +1,12 @@
 <script>
-import { GlButton, GlFormGroup, GlModal, GlModalDirective, GlSegmentedControl } from '@gitlab/ui';
+import {
+  GlButton,
+  GlFormGroup,
+  GlModal,
+  GlModalDirective,
+  GlSegmentedControl,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
 
@@ -15,13 +22,28 @@ export default {
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
-  directives: { GlModal: GlModalDirective },
+  directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
   inject: ['threatMonitoringPath'],
   props: {
+    customSaveButtonText: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    customSaveTooltipText: {
+      type: String,
+      required: false,
+      default: '',
+    },
     defaultEditorMode: {
       type: String,
       required: false,
       default: EDITOR_MODE_RULE,
+    },
+    disableTooltip: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
     disableUpdate: {
       type: Boolean,
@@ -68,10 +90,16 @@ export default {
     deleteModalTitle() {
       return sprintf(s__('NetworkPolicies|Delete policy: %{policy}'), { policy: this.policyName });
     },
+    saveTooltipText() {
+      return this.customSaveTooltipText || this.saveButtonText;
+    },
     saveButtonText() {
-      return this.isEditing
-        ? s__('NetworkPolicies|Save changes')
-        : s__('NetworkPolicies|Create policy');
+      return (
+        this.customSaveButtonText ||
+        (this.isEditing
+          ? s__('NetworkPolicies|Save changes')
+          : s__('NetworkPolicies|Create policy'))
+      );
     },
     shouldShowRuleEditor() {
       return this.selectedEditorMode === EDITOR_MODE_RULE;
@@ -132,18 +160,23 @@ export default {
         </section>
       </div>
     </div>
-    <gl-button
-      type="submit"
-      variant="success"
-      data-testid="save-policy"
-      :loading="isUpdatingPolicy"
-      :disabled="disableUpdate"
-      @click="savePolicy"
+    <span
+      v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
+      class="gl-pt-2"
+      :title="saveTooltipText"
+      data-testid="save-policy-tooltip"
     >
-      <slot name="save-button-text">
+      <gl-button
+        type="submit"
+        variant="success"
+        data-testid="save-policy"
+        :loading="isUpdatingPolicy"
+        :disabled="disableUpdate"
+        @click="savePolicy"
+      >
         {{ saveButtonText }}
-      </slot>
-    </gl-button>
+      </gl-button>
+    </span>
     <gl-button
       v-if="isEditing"
       v-gl-modal="'delete-modal'"

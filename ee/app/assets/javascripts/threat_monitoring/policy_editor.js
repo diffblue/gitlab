@@ -4,7 +4,7 @@ import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_
 import PolicyEditorApp from './components/policy_editor/policy_editor.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import createStore from './store';
-import { gqClient } from './utils';
+import { gqClient, isValidEnvironmentId } from './utils';
 
 Vue.use(VueApollo);
 
@@ -16,6 +16,7 @@ export default () => {
   const el = document.querySelector('#js-policy-builder-app');
   const {
     assignedPolicyProject,
+    defaultEnvironmentId,
     disableScanExecutionUpdate,
     environmentsEndpoint,
     configureAgentHelpPath,
@@ -64,6 +65,7 @@ export default () => {
       noEnvironmentSvgPath,
       projectId,
       projectPath,
+      hasEnvironment: isValidEnvironmentId(parseInt(defaultEnvironmentId, 10)),
       threatMonitoringPath,
     },
     store,

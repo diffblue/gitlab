@@ -5,10 +5,15 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('PolicyEditorLayout component', () => {
   let wrapper;
+  let glTooltipDirectiveMock;
   const threatMonitoringPath = '/threat-monitoring';
 
   const factory = ({ propsData = {} } = {}) => {
+    glTooltipDirectiveMock = jest.fn();
     wrapper = shallowMountExtended(PolicyEditorLayout, {
+      directives: {
+        GlTooltip: glTooltipDirectiveMock,
+      },
       propsData: {
         ...propsData,
       },
@@ -42,6 +47,10 @@ describe('PolicyEditorLayout component', () => {
       ${'delete button'}      | ${'does not display'} | ${findDeletePolicyButton} | ${false}
     `('$status the $component', async ({ findComponent, state }) => {
       expect(findComponent().exists()).toBe(state);
+    });
+
+    it('disables the save button tooltip', async () => {
+      expect(glTooltipDirectiveMock.mock.calls[0][1].value.disabled).toBe(true);
     });
 
     it('does display the correct save button text when creating a new policy', () => {
@@ -124,11 +133,25 @@ describe('PolicyEditorLayout component', () => {
     });
   });
 
-  describe('disabled actions', () => {
-    it('disables the save button', async () => {
+  describe('custom behavior', () => {
+    it('displays the custom save button text when it is passed in', async () => {
+      const customSaveButtonText = 'Custom Text';
+      factory({ propsData: { customSaveButtonText } });
+      expect(findSavePolicyButton().exists()).toBe(true);
+      expect(findSavePolicyButton().text()).toBe(customSaveButtonText);
+    });
+
+    it('disables the save button when "disableUpdate" is true', async () => {
       factory({ propsData: { disableUpdate: true } });
       expect(findSavePolicyButton().exists()).toBe(true);
       expect(findSavePolicyButton().attributes('disabled')).toBe('true');
+    });
+
+    it('enables the save button tooltip when "disableTooltip" is false', async () => {
+      const customSaveTooltipText = 'Custom Test';
+      factory({ propsData: { customSaveTooltipText, disableTooltip: false } });
+      expect(glTooltipDirectiveMock.mock.calls[0][1].value.disabled).toBe(false);
+      expect(glTooltipDirectiveMock.mock.calls[0][0].title).toBe(customSaveTooltipText);
     });
   });
 });

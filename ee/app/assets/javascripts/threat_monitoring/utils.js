@@ -29,6 +29,15 @@ export const getPolicyType = (typeName = '') => {
 };
 
 /**
+ * Checks if an environment id is valid
+ * @param {Number} id environment id
+ * @returns {Boolean}
+ */
+export const isValidEnvironmentId = (id) => {
+  return Number.isInteger(id) && id >= 0;
+};
+
+/**
  * Removes inital line dashes from a policy YAML that is received from the API, which
  * is not required for the user.
  * @param {String} manifest the policy from the API request

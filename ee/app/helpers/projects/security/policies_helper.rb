@@ -22,6 +22,7 @@ module Projects::Security::PoliciesHelper
 
     {
       assigned_policy_project: assigned_policy_project(project).to_json,
+      default_environment_id: project.default_environment&.id || -1,
       disable_scan_execution_update: disable_scan_execution_update.to_s,
       network_policies_endpoint: project_security_network_policies_path(project),
       configure_agent_help_path: help_page_url('user/clusters/agent/repository.html'),
