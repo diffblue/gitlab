@@ -2918,7 +2918,6 @@ RSpec.describe API::Users do
         end
 
         context 'for a blocked user' do
-          let(:blocked_user) { create(:user, :blocked) }
           let(:user_id) { blocked_user.id }
 
           it 'does not reject a blocked user' do
@@ -3036,7 +3035,6 @@ RSpec.describe API::Users do
       end
 
       context 'with a blocked user' do
-        let(:blocked_user) { create(:user, state: 'blocked') }
         let(:user_id) { blocked_user.id }
 
         it 'unblocks a blocked user' do
