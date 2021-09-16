@@ -6225,6 +6225,9 @@ msgstr ""
 msgid "Cancelling Preview"
 msgstr ""
 
+msgid "Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again"
+msgstr ""
+
 msgid "Cannot be assigned to other projects."
 msgstr ""
 
@@ -6274,9 +6277,6 @@ msgid "Cannot promote issue due to insufficient permissions."
 msgstr ""
 
 msgid "Cannot refer to a group %{timebox_type} by an internal id!"
-msgstr ""
-
-msgid "Cannot set confidential epic for a non-confidential issue"
 msgstr ""
 
 msgid "Cannot show preview. For previews on sketch files, they must have the file format introduced by Sketch version 43 and above."
