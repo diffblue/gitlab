@@ -175,7 +175,7 @@ RSpec.describe Namespace do
       it 'is valid' do
         expect(namespace).to be_a(Group)
         expect(namespace.kind).to eq('group')
-        expect(namespace.group?).to be_truthy
+        expect(namespace.group_namespace?).to be_truthy
       end
     end
 
@@ -1558,7 +1558,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#user?' do
+  describe '#user_namespace?' do
     subject { namespace.user_namespace? }
 
     context 'when type is a user' do

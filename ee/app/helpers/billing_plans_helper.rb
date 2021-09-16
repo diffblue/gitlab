@@ -59,7 +59,7 @@ module BillingPlansHelper
     # This can be removed once https://gitlab.com/gitlab-org/gitlab/-/issues/298715 is complete.
     return false unless current_user.last_name.present?
 
-    namespace.group? && (namespace.actual_plan_name == Plan::FREE || namespace.trial_active?)
+    namespace.group_namespace? && (namespace.actual_plan_name == Plan::FREE || namespace.trial_active?)
   end
 
   def plan_feature_list(plan)
@@ -163,7 +163,7 @@ module BillingPlansHelper
   end
 
   def billable_seats_href(namespace)
-    return unless namespace.group?
+    return unless namespace.group_namespace?
 
     group_usage_quotas_path(namespace, anchor: 'seats-quota-tab')
   end

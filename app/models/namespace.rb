@@ -247,13 +247,13 @@ class Namespace < ApplicationRecord
   end
 
   def kind
-    return 'group' if group?
+    return 'group' if group_namespace?
     return 'project' if project_namespace?
 
     'user' # defaults to user
   end
 
-  def group?
+  def group_namespace?
     type == Group.sti_name
   end
 
@@ -263,7 +263,7 @@ class Namespace < ApplicationRecord
 
   def user_namespace?
     # That last bit ensures we're considered a user namespace as a default
-    type.nil? || type == Namespaces::UserNamespace.sti_name || !(group? || project_namespace?)
+    type.nil? || type == Namespaces::UserNamespace.sti_name || !(group_namespace? || project_namespace?)
   end
 
   def owner_required?
@@ -549,7 +549,7 @@ class Namespace < ApplicationRecord
 
     if user_namespace?
       errors.add(:parent_id, _('cannot not be used for user namespace'))
-    elsif group?
+    elsif group_namespace?
       errors.add(:parent_id, _('user namespace cannot be the parent of another namespace')) if parent.user_namespace?
     end
   end

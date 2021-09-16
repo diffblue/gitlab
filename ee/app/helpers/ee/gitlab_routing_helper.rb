@@ -71,7 +71,7 @@ module EE
     end
 
     def usage_quotas_path(namespace, *args)
-      if namespace.group?
+      if namespace.group_namespace?
         group_usage_quotas_path(namespace, *args)
       else
         profile_usage_quotas_path(*args)
