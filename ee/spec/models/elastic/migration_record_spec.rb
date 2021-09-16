@@ -42,13 +42,13 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
   end
 
   describe '#load_from_index' do
-    it 'does not raise an exeption when connection refused' do
+    it 'does not raise an exception when connection refused' do
       allow(Gitlab::Elastic::Helper.default).to receive(:get).and_raise(Faraday::ConnectionFailed)
 
       expect(record.load_from_index).to be_nil
     end
 
-    it 'does not raise an exeption when record does not exist' do
+    it 'does not raise an exception when record does not exist' do
       allow(Gitlab::Elastic::Helper.default).to receive(:get).and_raise(Elasticsearch::Transport::Transport::Errors::NotFound)
 
       expect(record.load_from_index).to be_nil
@@ -95,18 +95,18 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
       expect(described_class.load_versions(completed: false)).to contain_exactly(in_progress_migration.version)
     end
 
-    it 'returns empty array if no index present' do
+    it 'raises an exception if no index present' do
       es_helper.delete_migrations_index
 
-      expect(described_class.load_versions(completed: true)).to eq([])
-      expect(described_class.load_versions(completed: false)).to eq([])
+      expect { described_class.load_versions(completed: true) }.to raise_exception(Elasticsearch::Transport::Transport::Errors::NotFound)
+      expect { described_class.load_versions(completed: false) }.to raise_exception(Elasticsearch::Transport::Transport::Errors::NotFound)
     end
 
-    it 'returns empty array when exception is raised' do
+    it 'raises an exception when exception is raised' do
       allow(Gitlab::Elastic::Helper.default.client).to receive(:search).and_raise(Faraday::ConnectionFailed)
 
-      expect(described_class.load_versions(completed: true)).to eq([])
-      expect(described_class.load_versions(completed: false)).to eq([])
+      expect { described_class.load_versions(completed: true) }.to raise_exception(StandardError)
+      expect { described_class.load_versions(completed: false) }.to raise_exception(StandardError)
     end
   end
 

@@ -65,8 +65,6 @@ module Elastic
             .search(index: helper.migrations_index_name, body: { query: { term: { completed: completed } }, size: ELASTICSEARCH_SIZE })
             .dig('hits', 'hits')
             .map { |v| v['_id'].to_i }
-    rescue StandardError
-      []
     end
 
     def running?
