@@ -158,6 +158,43 @@ module Gitlab
             end
           end
 
+          def update_namespace_name(namespace_id, namespace_name)
+            variables = {
+              namespaceId: namespace_id,
+              namespaceName: namespace_name
+            }
+
+            query = <<~GQL
+              mutation($namespaceId: ID!, $namespaceName: String!) {
+                orderNamespaceNameUpdate(
+                  input: {
+                    namespaceId: $namespaceId,
+                    namespaceName: $namespaceName
+                  }
+                ) {
+                  errors
+                }
+              }
+            GQL
+
+            response = execute_graphql_query(
+              { query: query, variables: variables }
+            )
+
+            return error(CONNECTIVITY_ERROR) unless response[:success]
+
+            response = response.dig(:data, 'data', 'orderNamespaceNameUpdate')
+
+            if response['errors'].blank?
+              { success: true }
+            else
+              error(response['errors'])
+            end
+          rescue Gitlab::HTTP::BlockedUrlError, HTTParty::Error, Errno::ECONNREFUSED, Errno::ECONNRESET, SocketError, Timeout::Error => e
+            Gitlab::ErrorTracking.log_exception(e)
+            error(CONNECTIVITY_ERROR)
+          end
+
           private
 
           def execute_graphql_query(params)

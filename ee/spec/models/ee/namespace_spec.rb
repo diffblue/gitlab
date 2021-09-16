@@ -359,6 +359,58 @@ RSpec.describe Namespace do
     end
   end
 
+  describe 'after_commit :sync_name_with_customers_dot' do
+    let(:namespace) { create(:group) }
+
+    subject(:update_namespace) { namespace.update!(attributes) }
+
+    before do
+      stub_feature_flags(sync_namespace_name_with_cdot: true)
+      allow(Gitlab).to receive(:com?).and_return(true)
+    end
+
+    shared_examples 'no sync' do
+      it 'does not trigger a sync with CustomersDot' do
+        expect(::Namespaces::SyncNamespaceNameWorker).not_to receive(:perform_async)
+
+        update_namespace
+      end
+    end
+
+    context 'when the name is not updated' do
+      let(:attributes) { { path: 'Foo' } }
+
+      include_examples 'no sync'
+    end
+
+    context 'when the name is updated' do
+      let(:attributes) { { name: 'Foo' } }
+
+      context 'with :sync_namespace_name_with_cdot feature flag disabled' do
+        before do
+          stub_feature_flags(sync_namespace_name_with_cdot: false)
+        end
+
+        include_examples 'no sync'
+      end
+
+      context 'when not on Gitlab.com?' do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(false)
+        end
+
+        include_examples 'no sync'
+      end
+
+      it 'triggers a name sync with CustomersDot' do
+        expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async)
+          .with(namespace.id).once
+
+        update_namespace
+      end
+    end
+  end
+
   describe '#move_dir' do
     context 'when running on a primary node' do
       let_it_be(:primary) { create(:geo_node, :primary) }

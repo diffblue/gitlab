@@ -106,6 +106,8 @@ module EE
 
       # Changing the plan or other details may invalidate this cache
       before_save :clear_feature_available_cache
+
+      after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? }
     end
 
     # Only groups can be marked for deletion
@@ -436,6 +438,13 @@ module EE
 
     def clear_feature_available_cache
       clear_memoization(:feature_available)
+    end
+
+    def sync_name_with_customers_dot
+      return unless ::Feature.enabled?(:sync_namespace_name_with_cdot)
+      return unless ::Gitlab.com?
+
+      ::Namespaces::SyncNamespaceNameWorker.perform_async(id)
     end
 
     def load_feature_available(feature)
