@@ -13438,6 +13438,12 @@ msgstr ""
 msgid "Escalation policies must have at least one rule"
 msgstr ""
 
+msgid "EscalationPolicies|%{clockIcon} IF alert is not %{alertStatus} in %{minutes}"
+msgstr ""
+
+msgid "EscalationPolicies|%{notificationIcon} THEN %{doAction} %{forScheduleOrUser}"
+msgstr ""
+
 msgid "EscalationPolicies|+ Add an additional rule"
 msgstr ""
 
@@ -13484,9 +13490,6 @@ msgid "EscalationPolicies|Escalation rules"
 msgstr ""
 
 msgid "EscalationPolicies|Failed to load oncall-schedules"
-msgstr ""
-
-msgid "EscalationPolicies|IF alert is not %{alertStatus} in %{minutes} %{then} THEN %{doAction} %{scheduleOrUser}"
 msgstr ""
 
 msgid "EscalationPolicies|IF alert is not %{alertStatus} in %{minutes} minutes"
