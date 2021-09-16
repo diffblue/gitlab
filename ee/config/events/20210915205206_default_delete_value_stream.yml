@@ -1,0 +1,22 @@
+description: "Delete value stream"
+category: default
+action: delete_value_stream
+label_description: ""
+property_description: ""
+value_description: ""
+extra_properties:
+  name:
+  type: string
+  description: "Selected value stream name"
+identifiers:
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62865
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

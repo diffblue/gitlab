@@ -1,0 +1,19 @@
+description: "Click \"Compare\" button"
+category: default
+action: click_button
+label_description: "`compare_all_plans`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: growth
+product_stage: growth
+product_group: group::conversion
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62525
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

@@ -1,0 +1,19 @@
+description: "Click widget link"
+category: default
+action: click_link
+label_description: "`trial_status_widget`"
+property_description: "`voluntary`"
+value_description: "Remaining trial days"
+extra_properties:
+identifiers:
+product_section: growth
+product_stage: growth
+product_group: group::conversion
+product_category:
+milestone: "14.2"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66199
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

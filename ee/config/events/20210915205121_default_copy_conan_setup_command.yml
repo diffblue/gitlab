@@ -1,0 +1,19 @@
+description: "Copy Conan setup command"
+category: default
+action: copy_conan_setup_command
+label_description: "`code_instruction`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: ops
+product_stage: package
+product_group: group::package
+product_category:
+milestone: "12.7"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/21908
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
