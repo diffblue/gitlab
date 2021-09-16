@@ -311,6 +311,18 @@ RSpec.describe Project do
       end
     end
 
+    describe '.with_security_scans' do
+      it 'returns the correct project' do
+        project_without_security_scans = create(:project)
+        project_with_security_scans = create(:project, :with_security_scans)
+
+        expect(described_class.with_security_scans)
+          .to include(project_with_security_scans)
+        expect(described_class.with_security_scans)
+          .not_to include(project_without_security_scans)
+      end
+    end
+
     describe '.with_github_integration_pipeline_events' do
       it 'returns the correct project' do
         project_with_github_integration_pipeline_events = create(:project, github_integration: create(:github_integration))

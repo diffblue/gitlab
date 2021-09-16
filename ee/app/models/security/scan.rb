@@ -29,6 +29,8 @@ module Security
 
     scope :by_scan_types, -> (scan_types) { where(scan_type: scan_types) }
 
+    scope :scoped_project, -> { where('security_scans.project_id = projects.id') }
+
     scope :has_dismissal_feedback, -> do
       # The `category` enum on `vulnerability_feedback` table starts from 0 but the `scan_type` enum
       # on `security_scans` from 1. For this reason, we have to decrease the value of `scan_type` by one

@@ -603,12 +603,8 @@ RSpec.describe API::Groups do
 
   describe "GET /groups/:id/projects" do
     context "when authenticated as user" do
-      let(:project_with_reports) { create(:project, :public, group: group) }
-      let!(:project_without_reports) { create(:project, :public, group: group) }
-
-      before do
-        create(:ee_ci_job_artifact, :sast, project: project_with_reports)
-      end
+      let!(:project_with_security_scans) { create(:project, :with_security_scans, :public, group: group) }
+      let!(:project_without_security_scans) { create(:project, :public, group: group) }
 
       subject { get api("/groups/#{group.id}/projects", user), params: { with_security_reports: true } }
 
@@ -620,19 +616,19 @@ RSpec.describe API::Groups do
           enable_namespace_license_check!
         end
 
-        it "returns only projects with security reports" do
+        it "returns only projects with security scans" do
           subject
 
-          expect(json_response.map { |p| p['id'] }).to contain_exactly(project_with_reports.id)
+          expect(json_response.map { |p| p['id'] }).to contain_exactly(project_with_security_scans.id)
         end
       end
 
       context 'when security dashboard is disabled for a group' do
-        it "returns all projects regardless of the security reports" do
+        it "returns all projects regardless of the security scans" do
           subject
 
           # using `include` since other projects may be added to this group from different contexts
-          expect(json_response.map { |p| p['id'] }).to include(project_with_reports.id, project_without_reports.id)
+          expect(json_response.map { |p| p['id'] }).to include(project_with_security_scans.id, project_without_security_scans.id)
         end
       end
     end

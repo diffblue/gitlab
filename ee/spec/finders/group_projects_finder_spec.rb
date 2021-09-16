@@ -29,14 +29,10 @@ RSpec.describe GroupProjectsFinder do
     end
   end
 
-  describe "group's projects with security reports" do
+  describe "group's projects with security scans" do
     let(:params) { { with_security_reports: true } }
-    let(:project_with_reports) { create(:project, :public, group: group) }
-    let!(:project_without_reports) { create(:project, :public, group: group) }
-
-    before do
-      create(:ee_ci_job_artifact, :sast, project: project_with_reports)
-    end
+    let!(:project_with_security_scans) { create(:project, :with_security_scans, :public, group: group) }
+    let!(:project_without_security_scans) { create(:project, :public, group: group) }
 
     context 'when security dashboard is enabled for a group' do
       let(:group) { create(:group_with_plan, plan: :ultimate_plan) } # overriding group from 'GroupProjectsFinder context'
@@ -46,14 +42,14 @@ RSpec.describe GroupProjectsFinder do
         enable_namespace_license_check!
       end
 
-      it { is_expected.to contain_exactly(project_with_reports) }
+      it { is_expected.to contain_exactly(project_with_security_scans) }
     end
 
     context 'when security dashboard is disabled for a group' do
-      let(:project_with_reports) { create(:project, :public, group: group) }
+      let(:project_with_security_scans) { create(:project, :public, group: group) }
 
       # using `include` since other projects may be added to this group from different contexts
-      it { is_expected.to include(project_with_reports, project_without_reports) }
+      it { is_expected.to include(project_with_security_scans, project_without_security_scans) }
     end
   end
 end
