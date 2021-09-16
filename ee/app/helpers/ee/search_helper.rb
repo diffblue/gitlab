@@ -165,7 +165,7 @@ module EE
     def allow_filtering_by_iteration?
       # We currently only have group-level iterations so we hide
       # this filter for projects under personal namespaces
-      return false if @project && @project.namespace.user?
+      return false if @project && @project.namespace.user_namespace?
 
       context = @project.presence || @group.presence
 

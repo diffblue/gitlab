@@ -283,7 +283,7 @@ module Gitlab
         token_handler = Gitlab::LfsToken.new(actor)
 
         authentication_abilities =
-          if token_handler.user?
+          if token_handler.user_namespace?
             read_write_project_authentication_abilities
           elsif token_handler.deploy_key_pushable?(project)
             read_write_authentication_abilities

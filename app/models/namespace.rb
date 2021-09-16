@@ -248,7 +248,7 @@ class Namespace < ApplicationRecord
 
   def kind
     return 'group' if group?
-    return 'project' if project?
+    return 'project' if project_namespace?
 
     'user' # defaults to user
   end
@@ -257,17 +257,17 @@ class Namespace < ApplicationRecord
     type == Group.sti_name
   end
 
-  def project?
+  def project_namespace?
     type == Namespaces::ProjectNamespace.sti_name
   end
 
-  def user?
+  def user_namespace?
     # That last bit ensures we're considered a user namespace as a default
-    type.nil? || type == Namespaces::UserNamespace.sti_name || !(group? || project?)
+    type.nil? || type == Namespaces::UserNamespace.sti_name || !(group? || project_namespace?)
   end
 
   def owner_required?
-    user?
+    user_namespace?
   end
 
   def find_fork_of(project)
@@ -314,7 +314,7 @@ class Namespace < ApplicationRecord
   # that belongs to this namespace
   def all_projects
     if Feature.enabled?(:recursive_approach_for_all_projects, default_enabled: :yaml)
-      namespace = user? ? self : self_and_descendant_ids
+      namespace = user_namespace? ? self : self_and_descendant_ids
       Project.where(namespace: namespace)
     else
       Project.inside_path(full_path)
@@ -536,21 +536,21 @@ class Namespace < ApplicationRecord
 
   def validate_parent_type
     unless has_parent?
-      if project?
+      if project_namespace?
         errors.add(:parent_id, _('must be set for a project namespace'))
       end
 
       return
     end
 
-    if parent.project?
+    if parent.project_namespace?
       errors.add(:parent_id, _('project namespace cannot be the parent of another namespace'))
     end
 
-    if user?
+    if user_namespace?
       errors.add(:parent_id, _('cannot not be used for user namespace'))
     elsif group?
-      errors.add(:parent_id, _('user namespace cannot be the parent of another namespace')) if parent.user?
+      errors.add(:parent_id, _('user namespace cannot be the parent of another namespace')) if parent.user_namespace?
     end
   end
 
