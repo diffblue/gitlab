@@ -127,6 +127,7 @@ class Issue < ApplicationRecord
       project: [:route, { namespace: :route }])
   }
   scope :with_issue_type, ->(types) { where(issue_type: types) }
+  scope :without_issue_type, ->(types) { where.not(issue_type: types) }
 
   scope :public_only, -> { where(confidential: false) }
   scope :confidential_only, -> { where(confidential: true) }
