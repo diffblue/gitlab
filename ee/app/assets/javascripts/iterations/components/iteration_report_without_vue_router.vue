@@ -209,6 +209,7 @@ export default {
         });
     },
   },
+  safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
 };
 </script>
 
@@ -278,7 +279,10 @@ export default {
         </gl-modal>
       </div>
       <h3 ref="title" class="page-title">{{ iteration.title }}</h3>
-      <div ref="description" v-safe-html="iteration.descriptionHtml"></div>
+      <div
+        ref="description"
+        v-safe-html:[$options.safeHtmlConfig]="iteration.descriptionHtml"
+      ></div>
       <burn-charts
         :start-date="iteration.startDate"
         :due-date="iteration.dueDate"
