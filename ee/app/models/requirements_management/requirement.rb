@@ -86,7 +86,7 @@ module RequirementsManagement
       end
 
       def sync_params
-        [:title, :description]
+        [:title, :description, :state]
       end
     end
 

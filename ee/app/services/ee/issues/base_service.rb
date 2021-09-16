@@ -107,6 +107,36 @@ module EE
           raise EpicAssignmentError, result[:message]
         end
       end
+
+      # This is part IIb(sync state updates) of the migration from
+      # Requirement (the first class object) to Issue/Work Item (of type Requirement).
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/323779
+      def sync_requirement_state(issue, state, &block)
+        return yield unless issue.requirement?
+
+        requirement = issue.requirement
+
+        return yield unless requirement # no need to use transaction if there is no requirement to sync
+
+        ::Issue.transaction do
+          requirement.state = state
+          requirement.save!
+
+          state == 'archived' ? issue.close!(current_user) : issue.reopen!
+        rescue StandardError => e
+          ::Gitlab::AppLogger.info(
+            message: 'Requirement-Issue state Sync: Associated requirement could not be saved',
+            error: e.message,
+            project_id: project.id,
+            user_id: current_user.id,
+            requirement_id: requirement.id,
+            issue_id: issue.id,
+            state: state
+          )
+
+          false
+        end
+      end
     end
   end
 end

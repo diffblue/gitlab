@@ -8,7 +8,6 @@ module EE
 
       override :filter_params
       def filter_params(issue)
-        params.delete(:skip_auth)
         params.delete(:sprint_id) unless can_admin_issuable?(issue)
 
         filter_epic(issue)
@@ -30,11 +29,6 @@ module EE
         ::Gitlab::StatusPage.trigger_publish(project, current_user, issue) if issue.valid?
 
         result
-      end
-
-      override :can_admin_issuable?
-      def can_admin_issuable?(issuable)
-        skip_auth || super
       end
 
       override :handle_changes
@@ -79,7 +73,7 @@ module EE
 
       private
 
-      attr_accessor :skip_auth, :requirement_to_sync
+      attr_accessor :requirement_to_sync
 
       def handle_iteration_change(issue)
         return unless issue.previous_changes.include?('sprint_id')
