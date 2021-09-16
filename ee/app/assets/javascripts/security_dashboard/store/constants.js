@@ -29,13 +29,6 @@ export const DASHBOARD_TYPES = {
   INSTANCE: 'instance',
 };
 
-export const UNSCANNED_PROJECTS_DATE_RANGES = [
-  { description: s__('UnscannedProjects|5 or more days'), fromDay: 5, toDay: 15 },
-  { description: s__('UnscannedProjects|15 or more days'), fromDay: 15, toDay: 30 },
-  { description: s__('UnscannedProjects|30 or more days'), fromDay: 30, toDay: 60 },
-  { description: s__('UnscannedProjects|60 or more days'), fromDay: 60, toDay: Infinity },
-];
-
 export const PRIMARY_IDENTIFIER_TYPE = 'cve';
 
 export const DAYS = { thirty: 30, sixty: 60, ninety: 90 };

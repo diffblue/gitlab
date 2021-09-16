@@ -4,7 +4,6 @@ import { DASHBOARD_TYPES } from './constants';
 
 import filters from './modules/filters/index';
 import pipelineJobs from './modules/pipeline_jobs/index';
-import unscannedProjects from './modules/unscanned_projects/index';
 import vulnerabilities from './modules/vulnerabilities/index';
 import vulnerableProjects from './modules/vulnerable_projects/index';
 import mediator from './plugins/mediator';
@@ -19,7 +18,6 @@ export const getStoreConfig = (dashboardType = DASHBOARD_TYPES.PROJECT) => ({
     vulnerableProjects,
     filters,
     vulnerabilities,
-    unscannedProjects,
     pipelineJobs,
   },
 });
