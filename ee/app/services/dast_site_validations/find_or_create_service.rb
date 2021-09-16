@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 module DastSiteValidations
-  class CreateService < BaseContainerService
+  class FindOrCreateService < BaseContainerService
     def execute
       return ServiceResponse.error(message: 'Insufficient permissions') unless allowed?
-      return ServiceResponse.success(payload: existing_validation) if existing_validation
 
-      dast_site_validation = create_validation!
+      dast_site_validation = existing_successful_validation || create_validation!
 
       return ServiceResponse.error(message: 'Site does not exist for profile') unless dast_site_validation.dast_site
 
       associate_dast_site!(dast_site_validation)
+
+      return ServiceResponse.success(payload: dast_site_validation) if dast_site_validation.passed?
 
       perform_runner_validation(dast_site_validation)
     rescue ActiveRecord::RecordInvalid => err
@@ -38,8 +39,8 @@ module DastSiteValidations
       @validation_strategy ||= params.fetch(:validation_strategy)
     end
 
-    def existing_validation
-      @existing_validation ||= find_latest_successful_dast_site_validation
+    def existing_successful_validation
+      @existing_successful_validation ||= find_latest_successful_dast_site_validation
     end
 
     def url_base
