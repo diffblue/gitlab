@@ -33,7 +33,7 @@ describe('Security reports summary component', () => {
   const findDownloadLink = () => wrapper.find('[data-testid="download-link"]');
 
   beforeEach(() => {
-    jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockReturnValue(true);
+    jest.spyOn(AccessorUtilities, 'canUseLocalStorage').mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -177,7 +177,7 @@ describe('Security reports summary component', () => {
 
   describe('when localStorage is unavailable', () => {
     beforeEach(() => {
-      jest.spyOn(AccessorUtilities, 'isLocalStorageAccessSafe').mockReturnValue(false);
+      jest.spyOn(AccessorUtilities, 'canUseLocalStorage').mockReturnValue(false);
       createWrapper();
     });
 

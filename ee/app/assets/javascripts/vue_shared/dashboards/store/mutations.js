@@ -23,7 +23,7 @@ export default {
   [types.SET_PROJECTS](state, projects = []) {
     state.projects = projects;
     state.isLoadingProjects = false;
-    if (AccessorUtilities.isLocalStorageAccessSafe()) {
+    if (AccessorUtilities.canUseLocalStorage()) {
       localStorage.setItem(
         state.projectEndpoints.list,
         state.projects.map((p) => p.id),
@@ -57,7 +57,7 @@ export default {
   },
   [types.RECEIVE_PROJECTS_SUCCESS](state, { projects, headers }) {
     let projectIds = [];
-    if (AccessorUtilities.isLocalStorageAccessSafe()) {
+    if (AccessorUtilities.canUseLocalStorage()) {
       projectIds = (localStorage.getItem(state.projectEndpoints.list) || '').split(',');
     }
     // order Projects by ID, with any unassigned ones added to the end
@@ -65,7 +65,7 @@ export default {
       (a, b) => projectIds.indexOf(a.id.toString()) - projectIds.indexOf(b.id.toString()),
     );
     state.isLoadingProjects = false;
-    if (AccessorUtilities.isLocalStorageAccessSafe()) {
+    if (AccessorUtilities.canUseLocalStorage()) {
       localStorage.setItem(
         state.projectEndpoints.list,
         state.projects.map((p) => p.id),

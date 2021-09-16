@@ -41,7 +41,7 @@ export default {
     closePopover() {
       this.showPopover = false;
 
-      if (AccessorUtils.isLocalStorageAccessSafe()) {
+      if (AccessorUtils.canUseLocalStorage()) {
         localStorage.setItem(STORAGE_KEY, 'true');
       }
     },
