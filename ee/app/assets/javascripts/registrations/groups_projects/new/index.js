@@ -1,3 +1,4 @@
+import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import $ from 'jquery';
 import { bindHowToImport } from '~/projects/project_new';
 import { displayGroupPath, displayProjectPath } from './path_display';
@@ -31,12 +32,14 @@ const setAutofocus = () => {
   $('.js-group-project-tabs').on('shown.bs.tab', setInputfocus);
 };
 
+const mobileTooltipOpts = () => (bp.getBreakpointSize() === 'xs' ? { placement: 'bottom' } : {});
+
 export default () => {
   mountProgressBar();
   displayGroupPath('.js-group-path-source', '.js-group-path-display');
   displayGroupPath('.js-import-group-path-source', '.js-import-group-path-display');
   displayProjectPath('.js-project-path-source', '.js-project-path-display');
-  showTooltip('.js-group-name-tooltip');
+  showTooltip('.js-group-name-tooltip', mobileTooltipOpts());
   importButtonsSubmit();
   bindHowToImport();
   setAutofocus();
