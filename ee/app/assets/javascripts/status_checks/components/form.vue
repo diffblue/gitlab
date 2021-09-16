@@ -6,7 +6,7 @@ import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selecto
 import { isSafeURL } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
-  ANY_BRANCH,
+  ALL_BRANCHES,
   EMPTY_STATUS_CHECK,
   NAME_TAKEN_SERVER_ERROR,
   URL_TAKEN_SERVER_ERROR,
@@ -52,7 +52,7 @@ export default {
       return this.isValidName && this.isValidUrl && this.isValidBranches;
     },
     isValidBranches() {
-      return this.branches.every((branch) => isEqual(branch, ANY_BRANCH) || isNumber(branch?.id));
+      return this.branches.every((branch) => isEqual(branch, ALL_BRANCHES) || isNumber(branch?.id));
     },
     isValidName() {
       return Boolean(this.name);
@@ -124,7 +124,7 @@ export default {
       nameDescription: s__('StatusCheck|Examples: QA, Security.'),
       protectedBranchLabel: s__('StatusCheck|Target branch'),
       protectedBranchDescription: s__(
-        'StatusCheck|Apply this status check to any branch or a specific protected branch.',
+        'StatusCheck|Apply this status check to all branches or a specific protected branch.',
       ),
     },
     validations: {

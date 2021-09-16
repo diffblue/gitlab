@@ -16,10 +16,10 @@ describe('Status checks branch', () => {
 
   const findBranch = () => wrapper.find('span');
 
-  it('renders "Any branch" if no branch is given', () => {
+  it('renders "All branches" if no branch is given', () => {
     createWrapper();
 
-    expect(findBranch().text()).toBe('Any branch');
+    expect(findBranch().text()).toBe('All branches');
     expect(findBranch().classes('monospace')).toBe(true);
   });
 

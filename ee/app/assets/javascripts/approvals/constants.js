@@ -5,9 +5,9 @@ export const TYPE_GROUP = 'group';
 export const TYPE_HIDDEN_GROUPS = 'hidden_groups';
 
 export const BRANCH_FETCH_DELAY = 250;
-export const ANY_BRANCH = {
+export const ALL_BRANCHES = {
   id: null,
-  name: __('Any branch'),
+  name: __('All branches'),
 };
 
 export const RULE_TYPE_FALLBACK = 'fallback';
@@ -96,7 +96,7 @@ export const APPROVAL_DIALOG_I18N = {
     nameDescription: s__('ApprovalRule|Examples: QA, Security.'),
     protectedBranchLabel: s__('ApprovalRule|Target branch'),
     protectedBranchDescription: __(
-      'Apply this approval rule to any branch or a specific protected branch.',
+      'Apply this approval rule to all branches or a specific protected branch.',
     ),
     scannersLabel: s__('ApprovalRule|Security scanners'),
     scannersSelectLabel: s__('ApprovalRule|Select scanners'),

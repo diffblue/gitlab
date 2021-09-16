@@ -22,9 +22,9 @@ describe('Rule Branches', () => {
     wrapper = null;
   });
 
-  it('displays "Any branch" if there are no protected branches', () => {
+  it('displays "All branches" if there are no protected branches', () => {
     createComponent();
-    expect(wrapper.text()).toContain('Any branch');
+    expect(wrapper.text()).toContain('All branches');
   });
 
   it('displays the branch name of the first protected branch', () => {

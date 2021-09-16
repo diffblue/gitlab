@@ -3,7 +3,7 @@ import { GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
-import { BRANCH_FETCH_DELAY, ANY_BRANCH } from './constants';
+import { BRANCH_FETCH_DELAY, ALL_BRANCHES } from './constants';
 
 export default {
   components: {
@@ -33,7 +33,7 @@ export default {
       initialLoading: false,
       searching: false,
       searchTerm: '',
-      selected: this.selectedBranches[0] || ANY_BRANCH,
+      selected: this.selectedBranches[0] || ALL_BRANCHES,
     };
   },
   mounted() {
@@ -48,16 +48,16 @@ export default {
   methods: {
     fetchBranches(term) {
       this.searching = true;
-      const excludeAnyBranch = term && !term.toLowerCase().includes('any');
+      const excludeAllBranches = term && !term.toLowerCase().includes('all');
 
       return Api.projectProtectedBranches(this.projectId, term)
         .then((branches) => {
           this.$emit('apiError', { hasErrored: false });
-          this.branches = excludeAnyBranch ? branches : [ANY_BRANCH, ...branches];
+          this.branches = excludeAllBranches ? branches : [ALL_BRANCHES, ...branches];
         })
         .catch((error) => {
           this.$emit('apiError', { hasErrored: true, error });
-          this.branches = excludeAnyBranch ? [] : [ANY_BRANCH];
+          this.branches = excludeAllBranches ? [] : [ALL_BRANCHES];
         })
         .finally(() => {
           this.searching = false;

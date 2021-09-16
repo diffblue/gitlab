@@ -12,9 +12,9 @@ export default {
     branchName() {
       const { protectedBranches } = this.rule;
       const [protectedBranch] = protectedBranches || [];
-      return protectedBranch?.name || __('Any branch');
+      return protectedBranch?.name || __('All branches');
     },
-    isAnyBranch() {
+    isAllBranches() {
       return this.rule.protectedBranches?.length;
     },
   },
@@ -22,5 +22,5 @@ export default {
 </script>
 
 <template>
-  <div :class="{ monospace: isAnyBranch }">{{ branchName }}</div>
+  <div :class="{ monospace: isAllBranches }">{{ branchName }}</div>
 </template>
