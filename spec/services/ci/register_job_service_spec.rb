@@ -87,6 +87,10 @@ module Ci
           end
 
           context 'for specific runner' do
+            before do
+              stub_feature_flags(ci_pending_builds_project_runners_decoupling: false)
+            end
+
             it 'does not pick a build' do
               expect(execute(specific_runner)).to be_nil
             end
@@ -242,6 +246,10 @@ module Ci
           end
 
           context 'and uses project runner' do
+            before do
+              stub_feature_flags(ci_pending_builds_project_runners_decoupling: false)
+            end
+
             let(:build) { execute(specific_runner) }
 
             it { expect(build).to be_nil }
