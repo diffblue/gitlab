@@ -7,7 +7,7 @@ RSpec.describe Ci::GenerateKubeconfigService do
     let(:project) { create(:project) }
     let(:build) { create(:ci_build, project: project) }
     let(:agent1) { create(:cluster_agent, project: project) }
-    let(:agent2) { create(:cluster_agent, project: project) }
+    let(:agent2) { create(:cluster_agent) }
 
     let(:template) { instance_double(Gitlab::Kubernetes::Kubeconfig::Template) }
 
@@ -39,7 +39,7 @@ RSpec.describe Ci::GenerateKubeconfigService do
         user: "agent:#{agent1.id}"
       )
       expect(template).to receive(:add_context).with(
-        name: "#{project.full_path}:#{agent2.name}",
+        name: "#{agent2.project.full_path}:#{agent2.name}",
         cluster: 'gitlab',
         user: "agent:#{agent2.id}"
       )

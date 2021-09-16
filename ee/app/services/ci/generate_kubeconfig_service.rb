@@ -4,7 +4,6 @@ module Ci
   class GenerateKubeconfigService
     def initialize(build)
       @build = build
-      @project = build.project
       @template = Gitlab::Kubernetes::Kubeconfig::Template.new
     end
 
@@ -34,7 +33,7 @@ module Ci
 
     private
 
-    attr_reader :build, :project, :template
+    attr_reader :build, :template
 
     def agents
       build.pipeline.authorized_cluster_agents
@@ -49,7 +48,7 @@ module Ci
     end
 
     def context_name(agent)
-      [project.full_path, agent.name].join(delimiter)
+      [agent.project.full_path, agent.name].join(delimiter)
     end
 
     def agent_token(agent)
