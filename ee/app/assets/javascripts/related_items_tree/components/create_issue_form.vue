@@ -128,7 +128,7 @@ export default {
 
       const storageKey = `${currentUsername}/${STORAGE_KEY.projects}`;
 
-      if (!AccessorUtilities.isLocalStorageAccessSafe()) {
+      if (!AccessorUtilities.canUseLocalStorage()) {
         return [];
       }
 

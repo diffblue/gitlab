@@ -69,7 +69,7 @@ export default {
     },
   },
   created() {
-    this.localStorageUsable = AccessorUtilities.isLocalStorageAccessSafe();
+    this.localStorageUsable = AccessorUtilities.canUseLocalStorage();
     if (this.localStorageUsable) {
       const shouldHideSummaryDetails = Boolean(localStorage.getItem(LOCAL_STORAGE_KEY));
       this.isVisible = !shouldHideSummaryDetails;

@@ -138,7 +138,7 @@ describe('Csv Button Export', () => {
       });
 
       it('sets localStorage', async () => {
-        jest.spyOn(AccessorUtils, 'isLocalStorageAccessSafe').mockImplementation(() => true);
+        jest.spyOn(AccessorUtils, 'canUseLocalStorage').mockImplementation(() => true);
         findPopoverButton().vm.$emit('click');
         await wrapper.vm.$nextTick();
 
@@ -146,7 +146,7 @@ describe('Csv Button Export', () => {
       });
 
       it(`does not set localStorage if it's not available`, async () => {
-        jest.spyOn(AccessorUtils, 'isLocalStorageAccessSafe').mockImplementation(() => false);
+        jest.spyOn(AccessorUtils, 'canUseLocalStorage').mockImplementation(() => false);
         findPopoverButton().vm.$emit('click');
         await wrapper.vm.$nextTick();
 

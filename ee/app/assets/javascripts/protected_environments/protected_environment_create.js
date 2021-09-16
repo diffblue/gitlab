@@ -12,7 +12,7 @@ const PROTECTED_ENVIRONMENT_INPUT = 'input[name="protected_environment[name]"]';
 export default class ProtectedEnvironmentCreate {
   constructor() {
     this.$form = $('.js-new-protected-environment');
-    this.isLocalStorageAvailable = AccessorUtilities.isLocalStorageAccessSafe();
+    this.isLocalStorageAvailable = AccessorUtilities.canUseLocalStorage();
     this.currentProjectUserDefaults = {};
     this.buildDropdowns();
     this.bindEvents();
