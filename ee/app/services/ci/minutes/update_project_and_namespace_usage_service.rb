@@ -5,9 +5,12 @@ module Ci
     class UpdateProjectAndNamespaceUsageService
       include Gitlab::Utils::StrongMemoize
 
-      def initialize(project_id, namespace_id)
+      IDEMPOTENCY_CACHE_TTL = 12.hours
+
+      def initialize(project_id, namespace_id, build_id = nil)
         @project_id = project_id
         @namespace_id = namespace_id
+        @build_id = build_id
         # TODO(issue 335885): Use project_id only and don't query for projects which may be deleted
         @project = Project.find_by_id(project_id)
       end
@@ -16,21 +19,23 @@ module Ci
       def execute(consumption)
         legacy_track_usage_of_monthly_minutes(consumption)
 
-        preload_minutes_usage_data!
-
-        ApplicationRecord.transaction do
+        # TODO: fix this condition after the next deployment when `build_id`
+        # is made a mandatory argument.
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/331785
+        if @build_id
+          ensure_idempotency { track_usage_of_monthly_minutes(consumption) }
+        else
           track_usage_of_monthly_minutes(consumption)
-
-          send_minutes_email_notification
         end
+
+        send_minutes_email_notification
+      end
+
+      def idempotency_cache_key
+        "ci_minutes_usage:#{@project_id}:#{@build_id}:updated"
       end
 
       private
-
-      def preload_minutes_usage_data!
-        project_usage
-        namespace_usage
-      end
 
       def send_minutes_email_notification
         # `perform reset` on `project` because `Namespace#namespace_statistics` will otherwise return stale data.
@@ -46,8 +51,14 @@ module Ci
       end
 
       def track_usage_of_monthly_minutes(consumption)
-        ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage, consumption) if namespace_usage
-        ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage, consumption) if project_usage
+        # preload minutes usage data outside of transaction
+        project_usage
+        namespace_usage
+
+        ::Ci::Minutes::NamespaceMonthlyUsage.transaction do
+          ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage, consumption) if namespace_usage
+          ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage, consumption) if project_usage
+        end
       end
 
       def update_legacy_project_minutes(consumption_in_seconds)
@@ -86,6 +97,28 @@ module Ci
         strong_memoize(:project_statistics) do
           ProjectStatistics.safe_find_or_create_by!(project_id: @project_id)
         rescue ActiveRecord::NotNullViolation, ActiveRecord::RecordInvalid
+        end
+      end
+
+      # Ensure we only add the CI minutes consumption once for the given build
+      # even if the worker is retried.
+      def ensure_idempotency
+        return if already_completed?
+
+        yield
+
+        mark_as_completed!
+      end
+
+      def mark_as_completed!
+        Gitlab::Redis::SharedState.with do |redis|
+          redis.set(idempotency_cache_key, 1, ex: IDEMPOTENCY_CACHE_TTL)
+        end
+      end
+
+      def already_completed?
+        Gitlab::Redis::SharedState.with do |redis|
+          redis.exists(idempotency_cache_key)
         end
       end
     end
