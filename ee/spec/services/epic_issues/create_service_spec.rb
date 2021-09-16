@@ -235,8 +235,8 @@ RSpec.describe EpicIssues::CreateService do
             expect(subject).to eq(
               status: :error,
               http_status: 422,
-              message: "#{invalid_issue1.to_reference} cannot be added: Cannot set confidential epic for a non-confidential issue. "\
-                       "#{invalid_issue2.to_reference} cannot be added: Cannot set confidential epic for a non-confidential issue"
+              message: "#{invalid_issue1.to_reference} cannot be added: Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again. "\
+                       "#{invalid_issue2.to_reference} cannot be added: Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again"
             )
           end
         end

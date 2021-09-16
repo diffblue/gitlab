@@ -59,6 +59,14 @@ RSpec.describe Mutations::Issues::SetEpic do
             expect(mutated_issue.epic).to eq(nil)
           end
         end
+
+        context 'when epic is confidential but issue is public' do
+          let(:epic) { create(:epic, group: group, confidential: true) }
+
+          it 'returns an error with appropriate message' do
+            expect(subject[:errors].first).to include("Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again")
+          end
+        end
       end
     end
   end

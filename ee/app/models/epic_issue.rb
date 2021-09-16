@@ -37,7 +37,7 @@ class EpicIssue < ApplicationRecord
     return unless epic && issue
 
     if epic.confidential? && !issue.confidential?
-      errors.add :issue, _('Cannot set confidential epic for a non-confidential issue')
+      errors.add :issue, _('Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again')
     end
   end
 end

@@ -18,8 +18,12 @@ module Mutations
 
         authorize_admin_rights!(epic)
 
-        ::Issues::UpdateService.new(project: project, current_user: current_user, params: { epic: epic })
-          .execute(issue)
+        begin
+          ::Issues::UpdateService.new(project: project, current_user: current_user, params: { epic: epic })
+            .execute(issue)
+        rescue EE::Issues::BaseService::EpicAssignmentError => error
+          issue.errors.add(:base, error.message)
+        end
 
         {
           issue: issue,
