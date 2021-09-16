@@ -59,7 +59,7 @@ module CredentialsInventoryActions
     if credential.is_a?(Key)
       CredentialsInventoryMailer.ssh_key_deleted_email(
         params: {
-          notification_email: credential.user.notification_email_or_default,
+          notification_email: credential.user.notification_email,
           title: credential.title,
           last_used_at: credential.last_used_at,
           created_at: credential.created_at
