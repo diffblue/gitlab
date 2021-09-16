@@ -1,0 +1,19 @@
+description: "Drag issue card on the board"
+category: default
+action: drag_card
+label_description: "`board`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/63765
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

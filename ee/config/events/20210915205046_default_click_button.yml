@@ -1,0 +1,19 @@
+description: "Click remove list button"
+category: default
+action: click_button
+label_description: "`remove_list`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/63765
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

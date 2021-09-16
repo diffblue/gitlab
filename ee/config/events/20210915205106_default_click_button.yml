@@ -1,0 +1,19 @@
+description: "Set sort order"
+category: default
+action: click_button
+label_description: "`sort_[field]_[direction]`"
+property_description: ""
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: manage
+product_group: group::compliance
+product_category:
+milestone: "14.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62865
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

@@ -1,0 +1,19 @@
+description: "Activate project URL dropdown form input"
+category: default
+action: activate_form_input
+label_description: "`[cicd_for_external_repo | create_from_template | import_project | blank_project]`"
+property_description: "`project_path`"
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "14.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68778
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

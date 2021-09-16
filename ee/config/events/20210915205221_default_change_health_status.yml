@@ -1,0 +1,19 @@
+description: "Change issue health status"
+category: default
+action: change_health_status
+label_description: ""
+property_description: "Issue status"
+value_description: ""
+extra_properties:
+identifiers:
+product_section: dev
+product_stage: plan
+product_group: group::product_planning
+product_category:
+milestone: "12.10"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28547
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
