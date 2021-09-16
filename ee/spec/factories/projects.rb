@@ -39,6 +39,12 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_security_scans do
+      after(:create) do |project|
+        create_list(:security_scan, 2, project: project)
+      end
+    end
+
     trait :with_compliance_framework do
       association :compliance_framework_setting, factory: :compliance_framework_project_setting
     end
