@@ -77,4 +77,33 @@ RSpec.describe 'Project.cluster_agents' do
       end.to issue_same_number_of_queries_as { post_graphql(query, current_user: current_user, variables: [first.with(1)]) }
     end
   end
+
+  context 'selecting connections' do
+    let(:agent_meta) { double(version: '1', commit_id: 'abc', pod_namespace: 'namespace', pod_name: 'pod') }
+    let(:connected_agent) { double(agent_id: agents.first.id, connected_at: 123456, connection_id: 1, agent_meta: agent_meta) }
+
+    let(:metadata_fields) { query_graphql_field(:metadata, {}, [:version, :commit, :pod_namespace, :pod_name], 'AgentMetadata') }
+    let(:cluster_agents_fields) { [:id, query_nodes(:connections, [:connection_id, :connected_at, metadata_fields])] }
+
+    before do
+      allow(Gitlab::Kas::Client).to receive(:new).and_return(double(get_connected_agents: [connected_agent]))
+    end
+
+    it 'can retrieve connections and agent metadata' do
+      post_graphql(query, current_user: current_user)
+
+      connection = graphql_data_at(:project, :cluster_agents, :nodes, :connections, :nodes).first
+
+      expect(connection).to include({
+        'connectionId' => connected_agent.connection_id.to_s,
+        'connectedAt' => Time.at(connected_agent.connected_at),
+        'metadata' => {
+          'version' => agent_meta.version,
+          'commit' => agent_meta.commit_id,
+          'podNamespace' => agent_meta.pod_namespace,
+          'podName' => agent_meta.pod_name
+        }
+      })
+    end
+  end
 end
