@@ -9,8 +9,7 @@ module DastSiteValidations
 
       finder = DastSiteValidationsFinder.new(
         project_id: container.id,
-        url_base: url_base,
-        state: :passed
+        url_base: url_base
       )
 
       result = finder.execute.delete_all
