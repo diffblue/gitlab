@@ -230,43 +230,29 @@ RSpec.describe IssuesFinder do
           end
         end
       end
-    end
-  end
 
-  describe '#with_confidentiality_access_check' do
-    let_it_be(:guest) { create(:user) }
+      context 'with hidden issues' do
+        let_it_be(:banned_user) { create(:user, :banned) }
+        let_it_be(:hidden_issue) { create(:issue, project: project1, author: banned_user) }
 
-    let_it_be(:authorized_user) { create(:user) }
-    let_it_be(:banned_user) { create(:user, :banned) }
-    let_it_be(:project) { create(:project, namespace: authorized_user.namespace) }
-    let_it_be(:public_issue) { create(:issue, project: project) }
-    let_it_be(:confidential_issue) { create(:issue, project: project, confidential: true) }
-    let_it_be(:hidden_issue) { create(:issue, project: project, author: banned_user) }
+        context 'for an auditor' do
+          let(:user) { create(:user, :auditor) }
 
-    context 'when no project filter is given' do
-      let(:params) { {} }
+          context 'when no project filter is given' do
+            let(:params) { {} }
 
-      context 'for an auditor' do
-        let(:auditor_user) { create(:user, :auditor) }
+            it 'returns all issues' do
+              expect(issues).to contain_exactly(issue1, issue2, issue3, issue4, issue5, hidden_issue)
+            end
+          end
 
-        subject { described_class.new(auditor_user, params).with_confidentiality_access_check }
+          context 'when searching within a specific project' do
+            let(:params) { { project_id: project1.id } }
 
-        it 'returns all issues' do
-          expect(subject).to include(public_issue, confidential_issue, hidden_issue)
-        end
-      end
-    end
-
-    context 'when searching within a specific project' do
-      let(:params) { { project_id: project.id } }
-
-      context 'for an auditor' do
-        let(:auditor_user) { create(:user, :auditor) }
-
-        subject { described_class.new(auditor_user, params).with_confidentiality_access_check }
-
-        it 'returns all issues' do
-          expect(subject).to include(public_issue, confidential_issue, hidden_issue)
+            it 'returns all issues' do
+              expect(issues).to contain_exactly(issue1, issue5, hidden_issue)
+            end
+          end
         end
       end
     end
