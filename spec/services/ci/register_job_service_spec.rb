@@ -40,12 +40,16 @@ module Ci
         context 'runner follow tag list' do
           it "picks build with the same tag" do
             pending_job.update!(tag_list: ["linux"])
+            pending_job.reload
+            pending_job.create_queuing_entry!
             specific_runner.update!(tag_list: ["linux"])
             expect(execute(specific_runner)).to eq(pending_job)
           end
 
           it "does not pick build with different tag" do
             pending_job.update!(tag_list: ["linux"])
+            pending_job.reload
+            pending_job.create_queuing_entry!
             specific_runner.update!(tag_list: ["win32"])
             expect(execute(specific_runner)).to be_falsey
           end
@@ -56,6 +60,8 @@ module Ci
 
           it "does not pick build with tag" do
             pending_job.update!(tag_list: ["linux"])
+            pending_job.reload
+            pending_job.create_queuing_entry!
             expect(execute(specific_runner)).to be_falsey
           end
 
