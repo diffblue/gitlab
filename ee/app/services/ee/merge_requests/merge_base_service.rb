@@ -42,8 +42,8 @@ module EE
           "Commit message does not follow the pattern '#{push_rule.commit_message_regex}'"
         elsif push_rule.commit_message_blocked?(params[:commit_message])
           "Commit message contains the forbidden pattern '#{push_rule.commit_message_negative_regex}'"
-        elsif !push_rule.author_email_allowed?(current_user.commit_email_or_default)
-          "Author's commit email '#{current_user.commit_email_or_default}' does not follow the pattern '#{push_rule.author_email_regex}'"
+        elsif !push_rule.author_email_allowed?(current_user.commit_email)
+          "Commit author's email '#{current_user.commit_email}' does not follow the pattern '#{push_rule.author_email_regex}'"
         end
       end
 
