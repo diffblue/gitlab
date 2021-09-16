@@ -21,16 +21,18 @@ module Elastic
       return false unless helper.alias_exists?
 
       in_lock(self.class.name.underscore, ttl: 1.day, retries: 10, sleep_sec: 1) do
+        # migration index should be checked before pulling the current_migration because if no migrations_index exists,
+        # current_migration will return nil
+        unless helper.migrations_index_exists?
+          logger.info 'MigrationWorker: creating migrations index'
+          helper.create_migrations_index
+        end
+
         migration = current_migration
 
         unless migration
           logger.info 'MigrationWorker: no migration available'
           break false
-        end
-
-        unless helper.migrations_index_exists?
-          logger.info 'MigrationWorker: creating migrations index'
-          helper.create_migrations_index
         end
 
         if migration.halted?
@@ -89,7 +91,12 @@ module Elastic
     def current_migration
       completed_migrations = Elastic::MigrationRecord.load_versions(completed: true)
 
+      # use a negative condition to support new migrations which do not exist in the index yet
       Elastic::DataMigrationService.migrations.find { |migration| !completed_migrations.include?(migration.version) }
+    rescue StandardError => e
+      # do not return a migration if there is an issue communicating with the Elasticsearch instance
+      logger.error("MigrationWorker: #{e.class}: #{e.message}")
+      nil
     end
 
     def pause_indexing!(migration)
