@@ -119,8 +119,8 @@ export default {
         this.totalIssues = pageInfo.total;
         this.issuesCount[this.currentState] = nodes.length;
       },
-      error() {
-        this.onJiraIssuesQueryError(new Error(ISSUES_LIST_FETCH_ERROR));
+      error(error) {
+        this.onJiraIssuesQueryError(error, ISSUES_LIST_FETCH_ERROR);
       },
     },
   },
@@ -142,7 +142,6 @@ export default {
         },
       ];
     },
-
     getFilteredSearchValue() {
       const { labels, search } = this.filterParams || {};
       const filteredSearchValue = [];
@@ -167,9 +166,9 @@ export default {
 
       return filteredSearchValue;
     },
-    onJiraIssuesQueryError(error) {
+    onJiraIssuesQueryError(error, message) {
       createFlash({
-        message: error.message,
+        message: message || error.message,
         captureError: true,
         error,
       });
