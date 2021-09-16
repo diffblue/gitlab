@@ -14,6 +14,9 @@ be accessed without authentication if the repository is publicly accessible.
 
 This command provides essentially the same functionality as the `git ls-tree` command. For more information, see the section _Tree Objects_ in the [Git internals documentation](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects/#_tree_objects).
 
+WARNING:
+This endpoint is changing over to keyset-based pagination. This means that iterating pages of results using a number (e.g. `?page=2`) is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67509) and will no longer be supported as of GitLab 15.0. Instead, please use the new keyset pagination system.
+
 ```plaintext
 GET /projects/:id/repository/tree
 ```
@@ -27,6 +30,8 @@ Supported attributes:
 | `ref`       | string         | no       | The name of a repository branch or tag or if not given the default branch. |
 | `recursive` | boolean        | no       | Boolean value used to get a recursive tree (false by default). |
 | `per_page`  | integer        | no       | Number of results to show per page. If not specified, defaults to `20`. [Learn more on pagination](index.md#pagination). |
+| `pagination` | string        | no       | If set to `keyset`, use the new keyset pagination method. |
+| `page_token` | string        | no       | The tree record ID at which to fetch the next page. Only used with keyset pagination. |
 
 ```json
 [
