@@ -39,7 +39,11 @@ module EE
       def with_code_coverage(items)
         return items unless params[:has_code_coverage].present?
 
-        items.with_code_coverage
+        if ::Feature.enabled?(:query_project_ci_feature_usages_for_coverage, namespace, default_enabled: :yaml)
+          items.with_coverage_feature_usage(default_branch: true)
+        else
+          items.with_code_coverage
+        end
       end
     end
   end

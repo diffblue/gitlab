@@ -404,6 +404,37 @@ RSpec.describe Project do
 
       it { is_expected.to contain_exactly(project_1, project_2) }
     end
+
+    describe '.with_coverage_feature_usage' do
+      let_it_be(:project_1) { create(:project) }
+      let_it_be(:project_2) { create(:project) }
+      let_it_be(:project_3) { create(:project) }
+
+      before_all do
+        create(:project_ci_feature_usage, feature: :code_coverage, project: project_1, default_branch: true)
+        create(:project_ci_feature_usage, feature: :code_coverage, project: project_1, default_branch: false)
+        create(:project_ci_feature_usage, feature: :code_coverage, project: project_2, default_branch: false)
+        create(:project_ci_feature_usage, feature: :security_report, project: project_3, default_branch: true)
+      end
+
+      context 'when default_branch is not specified' do
+        subject { described_class.with_coverage_feature_usage }
+
+        it { is_expected.to contain_exactly(project_1, project_2) }
+      end
+
+      context 'when default_branch is set to true' do
+        subject { described_class.with_coverage_feature_usage(default_branch: true) }
+
+        it { is_expected.to contain_exactly(project_1) }
+      end
+
+      context 'when default_branch is set to false' do
+        subject { described_class.with_coverage_feature_usage(default_branch: false) }
+
+        it { is_expected.to contain_exactly(project_1, project_2) }
+      end
+    end
   end
 
   describe 'validations' do

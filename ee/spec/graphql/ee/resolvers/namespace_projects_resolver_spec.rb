@@ -61,9 +61,8 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
       context 'has_code_coverage' do
         subject(:projects) { resolve_projects(has_code_coverage: has_code_coverage) }
 
-        let!(:coverage_1) { create(:ci_daily_build_group_report_result, project: project_1) }
-
         context 'when has_code_coverage is false' do
+          let!(:coverage_1) { create(:ci_daily_build_group_report_result, project: project_1) }
           let(:has_code_coverage) { false }
 
           it { is_expected.to contain_exactly(project_1, project_2) }
@@ -72,7 +71,44 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
         context 'when has_code_coverage is true' do
           let(:has_code_coverage) { true }
 
-          it { is_expected.to contain_exactly(project_1) }
+          before do
+            create(:project_ci_feature_usage, feature: :code_coverage, project: project_1, default_branch: true)
+            create(:ci_daily_build_group_report_result, project: project_1, default_branch: true)
+            create(:project_ci_feature_usage, feature: :code_coverage, project: project_2, default_branch: false)
+            create(:ci_daily_build_group_report_result, project: project_2, default_branch: false)
+          end
+
+          context 'and query_project_ci_feature_usages_for_coverage flag is enabled for the given group' do
+            before do
+              stub_feature_flags(query_project_ci_feature_usages_for_coverage: group)
+            end
+
+            it 'returns projects with code coverage on default branch based on ci feature usages' do
+              record = ActiveRecord::QueryRecorder.new do
+                expect(projects).to contain_exactly(project_1)
+              end
+
+              queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
+
+              expect(queried_ci_table).to eq(false)
+            end
+          end
+
+          context 'and query_project_ci_feature_usages_for_coverage flag is disabled for the given group' do
+            before do
+              stub_feature_flags(query_project_ci_feature_usages_for_coverage: false)
+            end
+
+            it 'returns projects with code coverage on default branch based on daily build group report results' do
+              record = ActiveRecord::QueryRecorder.new do
+                expect(projects).to contain_exactly(project_1)
+              end
+
+              queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
+
+              expect(queried_ci_table).to eq(true)
+            end
+          end
         end
       end
     end
