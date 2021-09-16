@@ -8140,6 +8140,9 @@ msgstr ""
 msgid "Collapse replies"
 msgstr ""
 
+msgid "Collapse settings section"
+msgstr ""
+
 msgid "Collapse sidebar"
 msgstr ""
 
@@ -13684,6 +13687,9 @@ msgid "Expand panel"
 msgstr ""
 
 msgid "Expand pipeline"
+msgstr ""
+
+msgid "Expand settings section"
 msgstr ""
 
 msgid "Expand sidebar"
