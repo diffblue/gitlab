@@ -6,7 +6,6 @@ import {
   GlCollapseToggleDirective,
   GlSprintf,
   GlModalDirective,
-  GlLink,
 } from '@gitlab/ui';
 import { COLLAPSE_SECURITY_REPORTS_SUMMARY_LOCAL_STORAGE_KEY as LOCAL_STORAGE_KEY } from 'ee/security_dashboard/constants';
 import { getFormattedSummary } from 'ee/security_dashboard/helpers';
@@ -25,7 +24,6 @@ export default {
     GlCollapse,
     GlSprintf,
     Modal,
-    GlLink,
     SecurityReportDownloadDropdown,
   },
   directives: {
@@ -118,18 +116,17 @@ export default {
               n__('%d vulnerability', '%d vulnerabilities', scanSummary.vulnerabilitiesCount)
             "
           />
+        </div>
+        <div class="col-4">
           <template v-if="scanSummary.scannedResourcesCount !== undefined">
             <gl-button
               v-if="hasScannedResources(scanSummary)"
               v-gl-modal.dastUrl
-              variant="link"
+              icon="download"
+              size="small"
               data-testid="modal-button"
             >
-              (<gl-sprintf
-                :message="
-                  n__('%d URL scanned', '%d URLs scanned', scanSummary.scannedResourcesCount)
-                "
-              />)
+              {{ s__('SecurityReports|Download scanned URLs') }}
             </gl-button>
 
             <template v-else>
@@ -147,19 +144,21 @@ export default {
               :download-link="downloadLink(scanSummary)"
             />
           </template>
+
           <template v-else-if="scanSummary.scannedResourcesCsvPath">
-            <gl-link
-              download
+            <gl-button
+              icon="download"
+              size="small"
               :href="downloadLink(scanSummary)"
               class="gl-ml-1"
               data-testid="download-link"
             >
-              ({{ s__('SecurityReports|Download scanned resources') }})
-            </gl-link>
+              {{ s__('SecurityReports|Download scanned URLs') }}
+            </gl-button>
           </template>
-        </div>
-        <div class="col-4">
+
           <security-report-download-dropdown
+            v-else
             :text="s__('SecurityReports|Download results')"
             :artifacts="findArtifacts(scanType)"
           />

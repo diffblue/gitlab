@@ -224,11 +224,9 @@ describe('Security reports summary component', () => {
       expect(modal.attributes('modalid')).toBe('dastUrl');
     });
 
-    it('should contain a link with Scanned URLs count', () => {
+    it('should contain a button with Scanned URLs', () => {
       expect(findModalButton().exists()).toBe(true);
-      expect(findModalButton().text()).toContain(
-        `(${dastProps.scannedResourcesCount} URLs scanned)`,
-      );
+      expect(findModalButton().text()).toContain('Download scanned URLs');
     });
 
     it('should link it to the given modal', () => {
