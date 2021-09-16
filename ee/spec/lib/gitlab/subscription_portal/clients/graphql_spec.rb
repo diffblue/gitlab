@@ -380,4 +380,66 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       end
     end
   end
+
+  describe '#update_namespace_name' do
+    subject(:update_request) do
+      client.update_namespace_name('namespace id', 'namespace name')
+    end
+
+    it 'returns success' do
+      expect(client).to receive(:execute_graphql_query).and_return(
+        {
+          success: true,
+          data: {
+            'data' => {
+              'orderNamespaceNameUpdate' => {
+                'errors' => []
+              }
+            }
+          }
+        }
+      )
+
+      result = update_request
+
+      expect(result).to eq({ success: true })
+    end
+
+    it 'returns failure' do
+      expect(client).to receive(:execute_graphql_query).and_return(
+        {
+          success: true,
+          data: {
+            'data' => {
+              'orderNamespaceNameUpdate' => {
+                'errors' => ['error updating the name']
+              }
+            }
+          }
+        }
+      )
+
+      result = update_request
+
+      expect(result).to eq({ errors: ['error updating the name'], success: false })
+    end
+
+    it 'returns connectivity error when remote server returns error' do
+      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: [500, "Internal Server Error"])
+
+      result = update_request
+
+      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+    end
+
+    it 'returns connectivity error when the remote server is unreachable' do
+      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
+      allow(Gitlab::ErrorTracking).to receive(:log_exception)
+
+      result = update_request
+
+      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
+    end
+  end
 end
