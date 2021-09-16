@@ -119,14 +119,16 @@ RSpec.describe 'epics swimlanes', :js do
     end
 
     it 'between lists and epics' do
-      wait_for_board_cards(1, 2)
-      wait_for_board_cards_in_second_epic(1, 1)
+      inspect_requests(inject_headers: { 'X-GITLAB-DISABLE-SQL-QUERY-LIMIT' => 'https://gitlab.com/gitlab-org/gitlab/-/issues/323426' }) do
+        wait_for_board_cards(1, 2)
+        wait_for_board_cards_in_second_epic(1, 1)
 
-      drag(list_from_index: 4, list_to_index: 2)
+        drag(list_from_index: 4, list_to_index: 2)
 
-      wait_for_board_cards(2, 0)
-      wait_for_board_cards(3, 2)
-      wait_for_board_cards_in_first_epic(2, 2)
+        wait_for_board_cards(2, 0)
+        wait_for_board_cards(3, 2)
+        wait_for_board_cards_in_first_epic(2, 2)
+      end
     end
   end
 
