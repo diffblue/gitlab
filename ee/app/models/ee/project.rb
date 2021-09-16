@@ -125,6 +125,13 @@ module EE
         joins(:daily_build_group_report_results).merge(::Ci::DailyBuildGroupReportResult.with_coverage.with_default_branch).group(:id)
       end
 
+      scope :with_coverage_feature_usage, ->(default_branch: nil) do
+        join_conditions = { feature: :code_coverage }
+        join_conditions[:default_branch] = default_branch unless default_branch.nil?
+
+        joins(:ci_feature_usages).where(ci_feature_usages: join_conditions).group(:id)
+      end
+
       scope :including_project, ->(project) { where(id: project) }
       scope :with_wiki_enabled, -> { with_feature_enabled(:wiki) }
       scope :within_shards, -> (shard_names) { where(repository_storage: Array(shard_names)) }
