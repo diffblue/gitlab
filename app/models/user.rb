@@ -231,7 +231,7 @@ class User < ApplicationRecord
   validates :email, confirmation: true
   validates :notification_email, devise_email: true, allow_blank: true, if: ->(user) { user.notification_email != user.email }
   validates :public_email, uniqueness: true, devise_email: true, allow_blank: true
-  validates :commit_email, devise_email: true, allow_blank: true, if: ->(user) { user.commit_email != user.email }
+  validates :commit_email, devise_email: true, allow_blank: true, if: ->(user) { user.commit_email != user.email && user.commit_email != Gitlab::PrivateCommitEmail::TOKEN }
   validates :projects_limit,
     presence: true,
     numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: Gitlab::Database::MAX_INT_VALUE }
@@ -2005,7 +2005,7 @@ class User < ApplicationRecord
   def notification_email_verified
     return if notification_email.blank? || temp_oauth_email?
 
-    errors.add(:notification_email, _("must be an email you have verified")) unless verified_emails.include?(notification_email)
+    errors.add(:notification_email, _("must be an email you have verified")) unless verified_emails.include?(notification_email_or_default)
   end
 
   def public_email_verified
@@ -2017,7 +2017,7 @@ class User < ApplicationRecord
   def commit_email_verified
     return if commit_email.blank?
 
-    errors.add(:commit_email, _("must be an email you have verified")) unless verified_emails.include?(commit_email)
+    errors.add(:commit_email, _("must be an email you have verified")) unless verified_emails.include?(commit_email_or_default)
   end
 
   def callout_dismissed?(callout, ignore_dismissal_earlier_than)

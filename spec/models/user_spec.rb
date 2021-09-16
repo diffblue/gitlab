@@ -703,6 +703,15 @@ RSpec.describe User do
           expect(user).to be_valid
         end
       end
+
+      context 'when commit_email is changed to _private' do
+        it 'passes user validations' do
+          user = create(:user)
+          user.commit_email = '_private'
+
+          expect(user).to be_valid
+        end
+      end
     end
   end
 
