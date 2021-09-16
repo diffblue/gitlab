@@ -40,12 +40,8 @@ module Gitlab
     end
 
     def expired_subject
-      if show_downgrade_messaging? && namespace
-        if auto_renew
-          _('Something went wrong with your automatic subscription renewal.')
-        else
-          _('Your subscription has been downgraded.')
-        end
+      if namespace && auto_renew
+        _('Something went wrong with your automatic subscription renewal.')
       else
         _('Your subscription expired!')
       end
@@ -89,7 +85,11 @@ module Gitlab
 
         _('We tried to automatically renew your subscription for %{strong}%{namespace_name}%{strong_close} on %{expires_on} but something went wrong so your subscription was downgraded to the free plan. Don\'t worry, your data is safe. We suggest you check your payment method and get in touch with our support team (%{support_link}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name, support_link: support_link, expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d") }
       else
-        _('You didn\'t renew your subscription for %{strong}%{namespace_name}%{strong_close} so it was downgraded to the free plan.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name }
+        pricing_url = 'https://about.gitlab.com/pricing/'
+        pricing_link_start = '<a href="%{url}">'.html_safe % { url: pricing_url }
+        support_email = '<a href="mailto:support@gitlab.com">support@gitlab.com</a>'.html_safe
+
+        s_('Subscription|Your subscription for %{strong}%{namespace_name}%{strong_close} has expired and you are now on %{pricing_link_start}the GitLab Free tier%{pricing_link_end}. Don\'t worry, your data is safe. Get in touch with our support team (%{support_email}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, support_email: support_email, pricing_link_start: pricing_link_start, pricing_link_end: '</a>'.html_safe, namespace_name: namespace.name }
       end
     end
 
