@@ -46,7 +46,7 @@ describe('Jobs Store Mutations', () => {
   });
 
   describe('RECEIVE_JOB_LOG_SUCCESS', () => {
-    describe('when trace has state', () => {
+    describe('when job log has state', () => {
       it('sets jobLogState', () => {
         const stateLog =
           'eyJvZmZzZXQiOjczNDQ1MSwibl9vcGVuX3RhZ3MiOjAsImZnX2NvbG9yIjpudWxsLCJiZ19jb2xvciI6bnVsbCwic3R5bGVfbWFzayI6MH0=';
@@ -76,7 +76,7 @@ describe('Jobs Store Mutations', () => {
       });
     });
 
-    it('sets trace, trace size and isJobLogComplete', () => {
+    it('sets job log size and isJobLogComplete', () => {
       mutations[types.RECEIVE_JOB_LOG_SUCCESS](stateCopy, {
         append: true,
         html,

@@ -244,15 +244,15 @@ describe('Job State actions', () => {
       });
 
       describe('when job is incomplete', () => {
-        let tracePayload;
+        let jobLogPayload;
 
         beforeEach(() => {
-          tracePayload = {
+          jobLogPayload = {
             html: 'I, [2018-08-17T22:57:45.707325 #1841]  INFO -- :',
             complete: false,
           };
 
-          mock.onGet(`${TEST_HOST}/endpoint/trace.json`).replyOnce(200, tracePayload);
+          mock.onGet(`${TEST_HOST}/endpoint/trace.json`).replyOnce(200, jobLogPayload);
         });
 
         it('dispatches startPollingJobLog', (done) => {
@@ -263,7 +263,7 @@ describe('Job State actions', () => {
             [],
             [
               { type: 'toggleScrollisInBottom', payload: true },
-              { type: 'receiveJobLogSuccess', payload: tracePayload },
+              { type: 'receiveJobLogSuccess', payload: jobLogPayload },
               { type: 'startPollingJobLog' },
             ],
             done,
@@ -280,7 +280,7 @@ describe('Job State actions', () => {
             [],
             [
               { type: 'toggleScrollisInBottom', payload: true },
-              { type: 'receiveJobLogSuccess', payload: tracePayload },
+              { type: 'receiveJobLogSuccess', payload: jobLogPayload },
             ],
             done,
           );
@@ -390,7 +390,7 @@ describe('Job State actions', () => {
   });
 
   describe('receiveJobLogError', () => {
-    it('should commit stop polling trace', (done) => {
+    it('should commit stop polling job log', (done) => {
       testAction(receiveJobLogError, null, mockedState, [], [{ type: 'stopPollingJobLog' }], done);
     });
   });

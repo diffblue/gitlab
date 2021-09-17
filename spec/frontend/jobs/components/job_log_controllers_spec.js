@@ -47,31 +47,31 @@ describe('Job log controllers', () => {
         expect(findTruncatedInfo().text()).toMatch('499.95 KiB');
       });
 
-      it('renders link to raw trace', () => {
+      it('renders link to raw job log', () => {
         expect(findRawLink().attributes('href')).toBe(defaultProps.rawPath);
       });
     });
   });
 
   describe('links section', () => {
-    describe('with raw trace path', () => {
+    describe('with raw job log path', () => {
       beforeEach(() => {
         createWrapper();
       });
 
-      it('renders raw trace link', () => {
+      it('renders raw job log link', () => {
         expect(findRawLinkController().attributes('href')).toBe(defaultProps.rawPath);
       });
     });
 
-    describe('without raw trace path', () => {
+    describe('without raw job log path', () => {
       beforeEach(() => {
         createWrapper({
           rawPath: null,
         });
       });
 
-      it('does not render raw trace link', () => {
+      it('does not render raw job log link', () => {
         expect(findRawLinkController().exists()).toBe(false);
       });
     });
