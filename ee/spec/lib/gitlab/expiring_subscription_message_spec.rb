@@ -123,7 +123,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage do
                     end
 
                     it 'has an expiration blocking message' do
-                      expect(subject).to include("You didn't renew your subscription for No Limit Records so it was downgraded to the free plan")
+                      expect(subject).to include("Your subscription for No Limit Records has expired and you are now on the GitLab Free tier. Don't worry, your data is safe. Get in touch with our support team (support@gitlab.com). They'll gladly help with your subscription renewal.")
                     end
 
                     context 'is auto_renew' do
