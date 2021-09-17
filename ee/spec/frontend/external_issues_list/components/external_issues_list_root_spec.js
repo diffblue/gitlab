@@ -1,20 +1,24 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { shallowMount, createLocalVue, mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 
-import JiraIssuesListRoot from 'ee/integrations/jira/issues_list/components/jira_issues_list_root.vue';
-import { ISSUES_LIST_FETCH_ERROR } from 'ee/integrations/jira/issues_list/constants';
-import jiraIssues from 'ee/integrations/jira/issues_list/graphql/resolvers/jira_issues';
+import ExternalIssuesListRoot from 'ee/external_issues_list/components/external_issues_list_root.vue';
+import jiraIssuesResolver from 'ee/integrations/jira/issues_list/graphql/resolvers/jira_issues';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import createFlash from '~/flash';
 import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
+import { i18n } from '~/issues_list/constants';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 
-import { mockProvide, mockJiraIssues } from '../mock_data';
+import {
+  mockProvide,
+  mockJiraIssues as mockExternalIssues,
+  mockJiraIssue4 as mockJiraIssueNoReference,
+} from '../mock_data';
 
 jest.mock('~/flash');
 jest.mock('~/issuable_list/constants', () => ({
@@ -31,16 +35,16 @@ jest.mock(
 const resolvedValue = {
   headers: {
     'x-page': 1,
-    'x-total': mockJiraIssues.length,
+    'x-total': mockExternalIssues.length,
   },
-  data: mockJiraIssues,
+  data: mockExternalIssues,
 };
 
 const localVue = createLocalVue();
 
 const resolvers = {
   Query: {
-    jiraIssues,
+    externalIssues: jiraIssuesResolver,
   },
 };
 
@@ -49,7 +53,7 @@ function createMockApolloProvider(mockResolvers = resolvers) {
   return createMockApollo([], mockResolvers);
 }
 
-describe('JiraIssuesListRoot', () => {
+describe('ExternalIssuesListRoot', () => {
   let wrapper;
   let mock;
 
@@ -65,7 +69,7 @@ describe('JiraIssuesListRoot', () => {
     provide = mockProvide,
     initialFilterParams = {},
   } = {}) => {
-    wrapper = shallowMount(JiraIssuesListRoot, {
+    wrapper = shallowMount(ExternalIssuesListRoot, {
       propsData: {
         initialFilterParams,
       },
@@ -155,6 +159,45 @@ describe('JiraIssuesListRoot', () => {
       expect(issuableList.props()).toMatchSnapshot();
     });
 
+    describe('issuable-list reference section', () => {
+      it('renders issuable-list component with correct reference', async () => {
+        jest.spyOn(axios, 'get').mockResolvedValue(resolvedValue);
+
+        wrapper = mount(ExternalIssuesListRoot, {
+          propsData: {
+            initialFilterParams: {},
+          },
+          provide: mockProvide,
+          localVue,
+          apolloProvider: createMockApolloProvider(),
+        });
+        await waitForPromises();
+        expect(wrapper.find('.issuable-info').text()).toContain(
+          resolvedValue.data[0].references.relative,
+        );
+      });
+
+      it('renders issuable-list component with id when references is not presence', async () => {
+        jest.spyOn(axios, 'get').mockResolvedValue({
+          ...resolvedValue,
+          data: [mockJiraIssueNoReference],
+        });
+
+        wrapper = mount(ExternalIssuesListRoot, {
+          propsData: {
+            initialFilterParams: {},
+          },
+          provide: mockProvide,
+          localVue,
+          apolloProvider: createMockApolloProvider(),
+        });
+        await waitForPromises();
+        // Since Jira transformer transforms references.relative into id, we can only test
+        // whether it exists.
+        expect(wrapper.find('.issuable-info').exists()).toBe(false);
+      });
+    });
+
     describe('issuable-list events', () => {
       it('"click-tab" event executes GET request correctly', async () => {
         const issuableList = findIssuableList();
@@ -181,7 +224,7 @@ describe('JiraIssuesListRoot', () => {
         const issuableList = findIssuableList();
         jest.spyOn(axios, 'get').mockResolvedValue({
           ...resolvedValue,
-          headers: { 'x-page': mockPage, 'x-total': mockJiraIssues.length },
+          headers: { 'x-page': mockPage, 'x-total': mockExternalIssues.length },
         });
 
         issuableList.vm.$emit('page-change', mockPage);
@@ -261,7 +304,7 @@ describe('JiraIssuesListRoot', () => {
       it.each`
         APIErrors        | expectedRenderedErrorMessage
         ${['API error']} | ${'API error'}
-        ${undefined}     | ${ISSUES_LIST_FETCH_ERROR}
+        ${undefined}     | ${i18n.errorFetchingIssues}
       `(
         'calls `createFlash` with "$expectedRenderedErrorMessage" when API responds with "$APIErrors"',
         async ({ APIErrors, expectedRenderedErrorMessage }) => {
@@ -287,14 +330,14 @@ describe('JiraIssuesListRoot', () => {
         createComponent({
           apolloProvider: createMockApolloProvider({
             Query: {
-              jiraIssues: jest.fn().mockRejectedValue(new Error('GraphQL networkError')),
+              externalIssues: jest.fn().mockRejectedValue(new Error('GraphQL networkError')),
             },
           }),
         });
         await waitForPromises();
 
         expect(createFlash).toHaveBeenCalledWith({
-          message: ISSUES_LIST_FETCH_ERROR,
+          message: i18n.errorFetchingIssues,
           captureError: true,
           error: expect.any(Object),
         });
@@ -304,10 +347,10 @@ describe('JiraIssuesListRoot', () => {
 
   describe('pagination', () => {
     it.each`
-      scenario                 | issuesListLoadFailed | issues            | shouldShowPaginationControls
-      ${'fails'}               | ${true}              | ${[]}             | ${false}
-      ${'returns no issues'}   | ${false}             | ${[]}             | ${false}
-      ${`returns some issues`} | ${false}             | ${mockJiraIssues} | ${true}
+      scenario                 | issuesListLoadFailed | issues                | shouldShowPaginationControls
+      ${'fails'}               | ${true}              | ${[]}                 | ${false}
+      ${'returns no issues'}   | ${false}             | ${[]}                 | ${false}
+      ${`returns some issues`} | ${false}             | ${mockExternalIssues} | ${true}
     `(
       'sets `showPaginationControls` prop to $shouldShowPaginationControls when request $scenario',
       async ({ issuesListLoadFailed, issues, shouldShowPaginationControls }) => {

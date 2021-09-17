@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`JiraIssuesListRoot when request succeeds renders issuable-list component with correct props 1`] = `
+exports[`ExternalIssuesListRoot when request succeeds renders issuable-list component with correct props 1`] = `
 Object {
   "currentPage": 1,
   "currentTab": "opened",

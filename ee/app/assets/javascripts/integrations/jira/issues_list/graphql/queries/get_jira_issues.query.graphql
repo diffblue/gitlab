@@ -9,7 +9,7 @@ query jiraIssues(
   $state: String
   $page: Integer
 ) {
-  jiraIssues(
+  externalIssues(
     issuesFetchPath: $issuesFetchPath
     search: $search
     labels: $labels
