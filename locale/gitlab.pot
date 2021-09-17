@@ -20681,6 +20681,9 @@ msgstr ""
 msgid "Marked For Deletion At - %{deletion_time}"
 msgstr ""
 
+msgid "Marked as ready. Merging is now allowed."
+msgstr ""
+
 msgid "Marked this %{noun} as a draft."
 msgstr ""
 
@@ -33711,9 +33714,6 @@ msgid "The merge conflicts for this merge request have already been resolved."
 msgstr ""
 
 msgid "The merge conflicts for this merge request have already been resolved. Please return to the merge request."
-msgstr ""
-
-msgid "The merge request can now be merged."
 msgstr ""
 
 msgid "The metric must be one of %{metrics}."
