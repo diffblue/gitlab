@@ -32,7 +32,7 @@ module Gitlab
     private
 
     def license_message_subject
-      message = expired_but_within_cutoff? ? expired_subject : expiring_subject
+      message = subscribable.expired? ? expired_subject : expiring_subject
 
       message = content_tag(:strong, message)
 
@@ -58,7 +58,7 @@ module Gitlab
     def expiration_blocking_message
       return '' unless subscribable.will_block_changes?
 
-      message = expired_but_within_cutoff? ? expired_message : expiring_message
+      message = subscribable.expired? ? expired_message : expiring_message
 
       content_tag(:p, message.html_safe)
     end
@@ -83,7 +83,7 @@ module Gitlab
       if auto_renew
         support_link = '<a href="https://support.gitlab.com">support.gitlab.com</a>'.html_safe
 
-        _('We tried to automatically renew your subscription for %{strong}%{namespace_name}%{strong_close} on %{expires_on} but something went wrong so your subscription was downgraded to the free plan. Don\'t worry, your data is safe. We suggest you check your payment method and get in touch with our support team (%{support_link}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name, support_link: support_link, expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d") }
+        _('We tried to automatically renew your subscription for %{strong}%{namespace_name}%{strong_close} on %{expires_on} but something went wrong so your subscription was downgraded to the free plan. Don\'t worry, your data is safe. We suggest you check your payment method and get in touch with our support team (%{support_link}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name, support_link: support_link, expires_on: subscribable.expires_at.strftime("%Y-%m-%d") }
       else
         pricing_url = 'https://about.gitlab.com/pricing/'
         pricing_link_start = '<a href="%{url}">'.html_safe % { url: pricing_url }
@@ -96,13 +96,13 @@ module Gitlab
     def expiring_message
       return namespace_expiring_message if namespace
 
-      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. After that date, you cannot create issues or merge requests, or use many other features.') % { expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close }
+      _('Your %{strong}%{plan_name}%{strong_close} subscription expires on %{strong}%{expires_on}%{strong_close}. After that date, you cannot create issues or merge requests, or use many other features.') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close }
     end
 
     def namespace_expiring_message
       message = []
 
-      message << _('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: expires_at_or_cutoff_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name }
+      message << _('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name }
 
       message << expiring_features_message
 
@@ -146,13 +146,13 @@ module Gitlab
     end
 
     def expiring_auto_renew?
-      !!auto_renew && !expired_but_within_cutoff?
+      !!auto_renew && !subscribable.expired?
     end
 
     def expired_subscribable_within_notification_window?
-      return true unless expired_but_within_cutoff?
+      return true unless subscribable.expired?
 
-      (expires_at_or_cutoff_at + GRACE_PERIOD_EXTENSION_DAYS) > Date.today
+      (subscribable.expires_at + GRACE_PERIOD_EXTENSION_DAYS) > Date.today
     end
 
     def plan_name
@@ -179,39 +179,16 @@ module Gitlab
       '</strong>'.html_safe
     end
 
-    def grace_period_effective_from
-      Date.parse('2020-07-22')
-    end
-
     def self_managed?
       subscribable.is_a?(::License)
     end
 
-    def expires_at_or_cutoff_at
-      strong_memoize(:expires_at_or_cutoff_at) do
-        # self-managed licenses are unconcerned of our announcement.
-        if self_managed?
-          subscribable.expires_at
-        else
-          cutoff_at = grace_period_effective_from + GRACE_PERIOD_EXTENSION_DAYS
-
-          [subscribable.expires_at, cutoff_at].max
-        end
-      end
-    end
-
-    def expired_but_within_cutoff?
-      strong_memoize(:expired) do
-        subscribable.expired? && expires_at_or_cutoff_at < Date.today
-      end
-    end
-
     def remaining_days
       strong_memoize(:remaining_days) do
-        days = if expired_but_within_cutoff?
+        days = if subscribable.expired?
                  (subscribable.block_changes_at - Date.today).to_i
                else
-                 (expires_at_or_cutoff_at - Date.today).to_i
+                 (subscribable.expires_at - Date.today).to_i
                end
 
         days < 0 ? 0 : days

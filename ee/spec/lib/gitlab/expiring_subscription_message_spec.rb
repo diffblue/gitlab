@@ -23,7 +23,6 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage do
       ).message
     end
 
-    let(:grace_period_effective_from) { expired_date - 35.days }
     let(:today) { Time.utc(2020, 3, 7, 10) }
     let(:expired_date) { Time.utc(2020, 3, 9, 10).to_date }
 
@@ -35,10 +34,6 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage do
     end
 
     with_them do
-      before do
-        allow_any_instance_of(Gitlab::ExpiringSubscriptionMessage).to receive(:grace_period_effective_from).and_return(grace_period_effective_from)
-      end
-
       around do |example|
         travel_to(today) do
           example.run
@@ -297,50 +292,6 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage do
 
                     it { is_expected.to be_nil }
                   end
-                end
-              end
-            end
-
-            context 'subscribable expired a long time ago' do
-              let(:expired_date) { today.to_date - 1.year }
-              let(:grace_period_effective_from) { today.to_date - 25.days }
-
-              before do
-                allow(subscribable).to receive(:expires_at).and_return(expired_date)
-                allow(subscribable).to receive(:block_changes_at).and_return(expired_date)
-                allow(subscribable).to receive(:expired?).and_return(true)
-                allow(subscribable).to receive(:will_block_changes?).and_return(true)
-                allow(subscribable).to receive(:block_changes?).and_return(true)
-                allow(subscribable).to receive(:plan).and_return('free')
-              end
-
-              context 'and is past the cutoff date' do
-                let(:grace_period_effective_from) { today.to_date - 40.days }
-
-                it 'has a nice subject' do
-                  expect(subject).to include('Your subscription expired!')
-                end
-              end
-
-              context 'and is 30 days past the cutoff date' do
-                let(:grace_period_effective_from) { today.to_date - 60.days }
-
-                it 'stops displaying' do
-                  expect(subject).to be nil
-                end
-
-                context 'and force_notification is true' do
-                  let(:force_notification) { true }
-
-                  it 'returns a message' do
-                    expect(subject).to include('Your subscription expired!')
-                  end
-                end
-              end
-
-              context 'and not past the cutoff date' do
-                it 'has a nice subject' do
-                  expect(subject).to include('Your subscription will expire in 5 days')
                 end
               end
             end
