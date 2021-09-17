@@ -29142,6 +29142,9 @@ msgstr ""
 msgid "Runners|Runner #%{runner_id}"
 msgstr ""
 
+msgid "Runners|Runner assigned to project."
+msgstr ""
+
 msgid "Runners|Runner is offline, last contact was %{runner_contact} ago"
 msgstr ""
 
@@ -29152,6 +29155,9 @@ msgid "Runners|Runner is paused, last contact was %{runner_contact} ago"
 msgstr ""
 
 msgid "Runners|Runner registration"
+msgstr ""
+
+msgid "Runners|Runner unassigned from project."
 msgstr ""
 
 msgid "Runners|Runners"
