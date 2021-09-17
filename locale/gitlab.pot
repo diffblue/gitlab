@@ -4106,6 +4106,11 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
+msgid "Apply %d suggestion"
+msgid_plural "Apply %d suggestions"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Apply a label"
 msgstr ""
 
@@ -4113,9 +4118,6 @@ msgid "Apply a template"
 msgstr ""
 
 msgid "Apply suggestion"
-msgstr ""
-
-msgid "Apply suggestions"
 msgstr ""
 
 msgid "Apply template"
