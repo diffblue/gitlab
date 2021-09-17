@@ -4,10 +4,12 @@ require 'spec_helper'
 
 RSpec.describe 'admin Geo Uploads', :js, :geo do
   let!(:geo_node) { create(:geo_node) }
-  let!(:synced_registry) { create(:geo_upload_registry, :with_file, :attachment, success: true) }
+  let!(:synced_registry) { create(:geo_upload_legacy_registry, :with_file, :attachment, success: true) }
 
   before do
     allow(Gitlab::Geo).to receive(:license_allows?).and_return(true)
+    stub_feature_flags(geo_upload_replication: false)
+
     admin = create(:admin)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)

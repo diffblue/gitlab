@@ -47,7 +47,6 @@ namespace :admin do
 
     # Old Routes Replaced in 13.0
     get '/projects', to: redirect(path: 'admin/geo/replication/projects')
-    get '/uploads', to: redirect(path: 'admin/geo/replication/uploads')
     get '/designs', to: redirect(path: 'admin/geo/replication/designs')
 
     resources :nodes, only: [:index, :create, :new, :edit, :update]
@@ -70,7 +69,7 @@ namespace :admin do
 
       resources :designs, only: [:index]
 
-      resources :uploads, only: [:index, :destroy]
+      resources :uploads, only: [:index, :destroy], path: 'legacy-uploads'
 
       get '/:replicable_name_plural', to: 'replicables#index', as: 'replicables'
     end

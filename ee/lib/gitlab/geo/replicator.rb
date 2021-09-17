@@ -159,6 +159,10 @@ module Gitlab
           default_enabled: replication_enabled_by_default?)
       end
 
+      def self.disabled?
+        !enabled?
+      end
+
       # Replication is set behind a feature flag, which is enabled by default.
       # If you want it disabled by default, override this method.
       def self.replication_enabled_by_default?

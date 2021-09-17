@@ -253,6 +253,8 @@ module Gitlab
       end
 
       def print_attachments_status
+        return if ::Geo::UploadReplicator.enabled?
+
         print 'Attachments: '.rjust(GEO_STATUS_COLUMN_WIDTH)
         show_failed_value(current_node_status.attachments_failed_count)
         print "#{current_node_status.attachments_synced_count}/#{current_node_status.attachments_count} "

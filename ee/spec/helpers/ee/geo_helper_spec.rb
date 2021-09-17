@@ -29,7 +29,7 @@ RSpec.describe EE::GeoHelper do
         repositories
         wikis
         lfs_objects
-        attachments
+        uploads
         job_artifacts
         container_repositories
         design_repositories

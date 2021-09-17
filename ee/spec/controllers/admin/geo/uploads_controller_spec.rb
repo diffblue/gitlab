@@ -7,15 +7,17 @@ RSpec.describe Admin::Geo::UploadsController, :geo do
 
   let_it_be(:admin) { create(:admin) }
   let_it_be(:secondary) { create(:geo_node) }
-  let_it_be(:synced_registry) { create(:geo_upload_registry, :with_file, :attachment, success: true) }
-  let_it_be(:failed_registry) { create(:geo_upload_registry, :failed) }
-  let_it_be(:never_registry) { create(:geo_upload_registry, :failed, retry_count: nil) }
+  let_it_be(:synced_registry) { create(:geo_upload_legacy_registry, :with_file, :attachment, success: true) }
+  let_it_be(:failed_registry) { create(:geo_upload_legacy_registry, :failed) }
+  let_it_be(:never_registry) { create(:geo_upload_legacy_registry, :failed, retry_count: nil) }
 
   def css_id(registry)
     "#upload-#{registry.id}-header"
   end
 
   before do
+    stub_feature_flags(geo_upload_replication: false)
+
     sign_in(admin)
   end
 
@@ -94,7 +96,7 @@ RSpec.describe Admin::Geo::UploadsController, :geo do
     subject { delete :destroy, params: { id: registry } }
 
     it_behaves_like 'license required' do
-      let(:registry) { create(:geo_upload_registry) }
+      let(:registry) { create(:geo_upload_legacy_registry) }
     end
 
     context 'with a valid license' do
@@ -103,7 +105,7 @@ RSpec.describe Admin::Geo::UploadsController, :geo do
       end
 
       context 'with an orphaned registry' do
-        let(:registry) { create(:geo_upload_registry, success: true) }
+        let(:registry) { create(:geo_upload_legacy_registry, success: true) }
 
         it 'removes the registry' do
           registry.update_column(:file_id, -1)
@@ -115,7 +117,7 @@ RSpec.describe Admin::Geo::UploadsController, :geo do
       end
 
       context 'with a regular registry' do
-        let(:registry) { create(:geo_upload_registry, :avatar, :with_file, success: true) }
+        let(:registry) { create(:geo_upload_legacy_registry, :avatar, :with_file, success: true) }
 
         it 'does not delete the registry and gives an error' do
           expect(subject).to redirect_to(admin_geo_uploads_path)

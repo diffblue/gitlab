@@ -595,7 +595,7 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def attachments_finder
-    @attachments_finder ||= Geo::AttachmentRegistryFinder.new
+    @attachments_finder ||= Geo::AttachmentLegacyRegistryFinder.new
   end
 
   def job_artifacts_finder

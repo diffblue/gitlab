@@ -55,7 +55,7 @@ module Geo
       raise NotImplementedError
     end
 
-    # Return the absolute path to locally stored package file
+    # Return the absolute path to locally stored file
     #
     # @return [String] File path
     def blob_path
@@ -76,7 +76,7 @@ module Geo
     def calculate_checksum
       raise 'File is not checksummable' unless checksummable?
 
-      model.hexdigest(carrierwave_uploader.path)
+      model.hexdigest(blob_path)
     end
 
     # Returns whether the file exists on disk or in remote storage

@@ -27,14 +27,14 @@ RSpec.describe 'EE-specific admin routing' do
   end
 
   describe Admin::Geo::UploadsController, 'routing' do
-    let!(:upload_registry) { create(:geo_upload_registry, :with_file, :attachment, success: true) }
+    let!(:upload_registry) { create(:geo_upload_legacy_registry, :with_file, :attachment, success: true) }
 
     it 'routes / to #index' do
-      expect(get('/admin/geo/replication/uploads')).to route_to('admin/geo/uploads#index')
+      expect(get('/admin/geo/replication/legacy-uploads')).to route_to('admin/geo/uploads#index')
     end
 
     it 'routes delete /:id to #destroy' do
-      expect(delete("/admin/geo/replication/uploads/#{upload_registry.id}")).to route_to('admin/geo/uploads#destroy', id: upload_registry.to_param)
+      expect(delete("/admin/geo/replication/legacy-uploads/#{upload_registry.id}")).to route_to('admin/geo/uploads#destroy', id: upload_registry.to_param)
     end
   end
 

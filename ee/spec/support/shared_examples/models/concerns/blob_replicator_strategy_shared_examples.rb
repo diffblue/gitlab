@@ -67,6 +67,8 @@ RSpec.shared_examples 'a blob replicator' do
 
   describe '#handle_after_destroy' do
     it 'creates a Geo::Event' do
+      model_record
+
       expect do
         replicator.handle_after_destroy
       end.to change { ::Geo::Event.count }.by(1)
@@ -181,7 +183,7 @@ RSpec.shared_examples 'a blob replicator' do
     context 'when the file is locally stored' do
       context 'when the file exists' do
         it 'returns hexdigest of the file' do
-          expected = described_class.model.hexdigest(subject.carrierwave_uploader.path)
+          expected = described_class.model.hexdigest(subject.blob_path)
 
           expect(subject.calculate_checksum).to eq(expected)
         end
@@ -198,7 +200,8 @@ RSpec.shared_examples 'a blob replicator' do
 
     context 'when the file is remotely stored' do
       it 'raises an error' do
-        allow(subject.carrierwave_uploader).to receive(:file_storage?).and_return(false)
+        carrierwave_uploader = double(file_storage?: false)
+        allow(subject).to receive(:carrierwave_uploader).and_return(carrierwave_uploader)
 
         expect { subject.calculate_checksum }.to raise_error('File is not checksummable')
       end

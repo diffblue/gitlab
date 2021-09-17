@@ -5,13 +5,17 @@ require 'spec_helper'
 RSpec.describe Geo::UploadRegistry, :geo do
   include EE::GeoHelpers
 
+  before do
+    stub_feature_flags(geo_upload_replication: false)
+  end
+
   it_behaves_like 'a BulkInsertSafe model', Geo::UploadRegistry do
-    let(:valid_items_for_bulk_insertion) { build_list(:geo_upload_registry, 10, created_at: Time.zone.now) }
+    let(:valid_items_for_bulk_insertion) { build_list(:geo_upload_legacy_registry, 10, created_at: Time.zone.now) }
     let(:invalid_items_for_bulk_insertion) { [] } # class does not have any validations defined
   end
 
   it 'finds associated Upload record' do
-    registry = create(:geo_upload_registry, :attachment, :with_file)
+    registry = create(:geo_upload_legacy_registry, :attachment, :with_file)
 
     expect(described_class.find(registry.id).upload).to be_an_instance_of(Upload)
   end
@@ -35,13 +39,13 @@ RSpec.describe Geo::UploadRegistry, :geo do
 
     it 'returns untracked IDs as well as tracked IDs that are unused', :aggregate_failures do
       max_id = Upload.maximum(:id)
-      create(:geo_upload_registry, :avatar, file_id: upload_1.id)
-      create(:geo_upload_registry, :file, file_id: upload_3.id)
-      create(:geo_upload_registry, :avatar, file_id: upload_5.id)
-      create(:geo_upload_registry, :personal_file, file_id: upload_6.id)
-      create(:geo_upload_registry, :avatar, file_id: upload_7.id)
-      unused_registry_1 = create(:geo_upload_registry, :attachment, file_id: max_id + 1)
-      unused_registry_2 = create(:geo_upload_registry, :personal_file, file_id: max_id + 2)
+      create(:geo_upload_legacy_registry, :avatar, file_id: upload_1.id)
+      create(:geo_upload_legacy_registry, :file, file_id: upload_3.id)
+      create(:geo_upload_legacy_registry, :avatar, file_id: upload_5.id)
+      create(:geo_upload_legacy_registry, :personal_file, file_id: upload_6.id)
+      create(:geo_upload_legacy_registry, :avatar, file_id: upload_7.id)
+      unused_registry_1 = create(:geo_upload_legacy_registry, :attachment, file_id: max_id + 1)
+      unused_registry_2 = create(:geo_upload_legacy_registry, :personal_file, file_id: max_id + 2)
       range = 1..(max_id + 2)
 
       untracked, unused = described_class.find_registry_differences(range)
@@ -65,8 +69,8 @@ RSpec.describe Geo::UploadRegistry, :geo do
 
   describe '.failed' do
     it 'returns registries in the failed state' do
-      failed = create(:geo_upload_registry, :failed)
-      create(:geo_upload_registry)
+      failed = create(:geo_upload_legacy_registry, :failed)
+      create(:geo_upload_legacy_registry)
 
       expect(described_class.failed).to match_ids(failed)
     end
@@ -74,8 +78,8 @@ RSpec.describe Geo::UploadRegistry, :geo do
 
   describe '.synced' do
     it 'returns registries in the synced state' do
-      create(:geo_upload_registry, :failed)
-      synced = create(:geo_upload_registry)
+      create(:geo_upload_legacy_registry, :failed)
+      synced = create(:geo_upload_legacy_registry)
 
       expect(described_class.synced).to match_ids(synced)
     end
@@ -83,10 +87,10 @@ RSpec.describe Geo::UploadRegistry, :geo do
 
   describe '.retry_due' do
     it 'returns registries in the synced state' do
-      failed = create(:geo_upload_registry, :failed)
-      synced = create(:geo_upload_registry)
-      retry_yesterday = create(:geo_upload_registry, retry_at: Date.yesterday)
-      create(:geo_upload_registry, retry_at: Date.tomorrow)
+      failed = create(:geo_upload_legacy_registry, :failed)
+      synced = create(:geo_upload_legacy_registry)
+      retry_yesterday = create(:geo_upload_legacy_registry, retry_at: Date.yesterday)
+      create(:geo_upload_legacy_registry, retry_at: Date.tomorrow)
 
       expect(described_class.retry_due).to match_ids([failed, synced, retry_yesterday])
     end
@@ -94,9 +98,9 @@ RSpec.describe Geo::UploadRegistry, :geo do
 
   describe '.never_attempted_sync' do
     it 'returns registries that are never synced' do
-      create(:geo_upload_registry, :failed)
-      create(:geo_upload_registry)
-      pending = create(:geo_upload_registry, retry_count: nil, success: false)
+      create(:geo_upload_legacy_registry, :failed)
+      create(:geo_upload_legacy_registry)
+      pending = create(:geo_upload_legacy_registry, retry_count: nil, success: false)
 
       expect(described_class.never_attempted_sync).to match_ids([pending])
     end
@@ -125,7 +129,7 @@ RSpec.describe Geo::UploadRegistry, :geo do
   describe '.with_search' do
     it 'searches registries on path' do
       upload = create(:upload, path: 'uploads/-/system/project/avatar/my-awesome-avatar.png')
-      upload_registry = create(:geo_upload_registry, file_id: upload.id, file_type: :avatar)
+      upload_registry = create(:geo_upload_legacy_registry, file_id: upload.id, file_type: :avatar)
 
       expect(described_class.with_search('awesome-avatar')).to match_ids(upload_registry)
     end
@@ -134,28 +138,28 @@ RSpec.describe Geo::UploadRegistry, :geo do
   describe '#file' do
     it 'returns the path of the upload of a registry' do
       upload = create(:upload, :with_file)
-      registry = create(:geo_upload_registry, :file, file_id: upload.id)
+      registry = create(:geo_upload_legacy_registry, :file, file_id: upload.id)
 
       expect(registry.file).to eq(upload.path)
     end
 
     it 'return "removed" message when the upload no longer exists' do
-      registry = create(:geo_upload_registry, :avatar)
+      registry = create(:geo_upload_legacy_registry, :avatar)
 
       expect(registry.file).to match(/^Removed avatar with id/)
     end
   end
 
   describe '#synchronization_state' do
-    let_it_be(:failed) { create(:geo_upload_registry, :failed) }
-    let_it_be(:synced) { create(:geo_upload_registry) }
+    let_it_be(:failed) { create(:geo_upload_legacy_registry, :failed) }
+    let_it_be(:synced) { create(:geo_upload_legacy_registry) }
 
     it 'returns :synced for a successful synced registry' do
       expect(synced.synchronization_state).to eq(:synced)
     end
 
     it 'returns :never for a successful registry never synced' do
-      never = build(:geo_upload_registry, success: false, retry_count: nil)
+      never = build(:geo_upload_legacy_registry, success: false, retry_count: nil)
 
       expect(never.synchronization_state).to eq(:never)
     end
@@ -164,4 +168,14 @@ RSpec.describe Geo::UploadRegistry, :geo do
       expect(failed.synchronization_state).to eq(:failed)
     end
   end
+end
+
+RSpec.describe Geo::UploadRegistry, :geo, type: :model do
+  let_it_be(:registry) { create(:geo_upload_registry) }
+
+  specify 'factory is valid' do
+    expect(registry).to be_valid
+  end
+
+  include_examples 'a Geo framework registry'
 end

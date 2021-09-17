@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Geo
-  class AttachmentRegistryFinder < FileRegistryFinder
+  class AttachmentLegacyRegistryFinder < FileRegistryFinder
     def registry_class
       Geo::UploadRegistry
     end

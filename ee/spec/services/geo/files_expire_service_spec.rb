@@ -11,7 +11,7 @@ RSpec.describe Geo::FilesExpireService, :geo do
   describe '#execute' do
     let(:file_uploader) { build(:file_uploader, project: project) }
     let!(:upload) { Upload.find_by(path: file_uploader.upload_path) }
-    let!(:upload_registry) { create(:geo_upload_registry, file_id: upload.id) }
+    let!(:upload_registry) { create(:geo_upload_registry, :synced, file_id: upload.id) }
 
     before do
       project.update(path: "#{project.path}_renamed")
@@ -32,7 +32,7 @@ RSpec.describe Geo::FilesExpireService, :geo do
       end
 
       it 'removes upload_registry associates with upload' do
-        expect(upload_registry.success).to be_truthy
+        expect(upload_registry.synced?).to be_truthy
 
         subject.execute
 

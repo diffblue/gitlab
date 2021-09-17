@@ -149,24 +149,11 @@ RSpec.describe GeoNodeStatus, :geo do
       create_list(:user, 3, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png'))
       uploads = Upload.pluck(:id)
 
-      create(:geo_upload_registry, :avatar, file_id: uploads[0])
-      create(:geo_upload_registry, :avatar, file_id: uploads[1])
-      create(:geo_upload_registry, :avatar, :failed, file_id: uploads[2])
+      create(:geo_upload_registry, :synced, file_id: uploads[0])
+      create(:geo_upload_registry, :synced, file_id: uploads[1])
+      create(:geo_upload_registry, :failed, file_id: uploads[2])
 
       expect(subject.attachments_synced_count).to eq(2)
-    end
-  end
-
-  describe '#attachments_synced_missing_on_primary_count' do
-    it 'only counts successful syncs' do
-      create_list(:user, 3, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png'))
-      uploads = Upload.pluck(:id)
-
-      create(:geo_upload_registry, :avatar, file_id: uploads[0], missing_on_primary: true)
-      create(:geo_upload_registry, :avatar, file_id: uploads[1])
-      create(:geo_upload_registry, :avatar, :failed, file_id: uploads[2])
-
-      expect(subject.attachments_synced_missing_on_primary_count).to eq(1)
     end
   end
 
@@ -174,14 +161,12 @@ RSpec.describe GeoNodeStatus, :geo do
     it 'counts failed avatars, attachment, personal snippets and files' do
       # These two should be ignored
       create(:geo_lfs_object_registry, :failed)
-      create(:geo_upload_registry, :with_file)
+      create(:geo_upload_registry)
 
-      create(:geo_upload_registry, :with_file, :failed, file_type: :personal_file)
-      create(:geo_upload_registry, :with_file, :failed, file_type: :attachment)
-      create(:geo_upload_registry, :avatar, :with_file, :failed)
-      create(:geo_upload_registry, :with_file, :failed)
+      create(:geo_upload_registry, :failed)
+      create(:geo_upload_registry, :failed)
 
-      expect(subject.attachments_failed_count).to eq(4)
+      expect(subject.attachments_failed_count).to eq(2)
     end
   end
 
@@ -194,10 +179,10 @@ RSpec.describe GeoNodeStatus, :geo do
       create_list(:user, 4, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png'))
       uploads = Upload.pluck(:id)
 
-      create(:geo_upload_registry, :avatar, file_id: uploads[0])
-      create(:geo_upload_registry, :avatar, file_id: uploads[1])
-      create(:geo_upload_registry, :avatar, :failed, file_id: uploads[2])
-      create(:geo_upload_registry, :avatar, :never_synced, file_id: uploads[3])
+      create(:geo_upload_registry, :synced, file_id: uploads[0])
+      create(:geo_upload_registry, :synced, file_id: uploads[1])
+      create(:geo_upload_registry, :failed, file_id: uploads[2])
+      create(:geo_upload_registry, :started, file_id: uploads[3])
 
       expect(subject.attachments_synced_in_percentage).to be_within(0.0001).of(50)
     end
@@ -247,10 +232,7 @@ RSpec.describe GeoNodeStatus, :geo do
     it 'counts failed job artifacts' do
       # These should be ignored
       create(:geo_upload_registry, :failed)
-      create(:geo_upload_registry, :avatar, :failed)
-      create(:geo_upload_registry, :attachment, :failed)
       create(:geo_job_artifact_registry, :with_artifact, success: true)
-
       create(:geo_job_artifact_registry, :with_artifact, :failed)
 
       expect(subject.job_artifacts_failed_count).to eq(1)
@@ -1130,6 +1112,7 @@ RSpec.describe GeoNodeStatus, :geo do
       Geo::SnippetRepositoryReplicator     | :snippet_repository          | :geo_snippet_repository_registry
       Geo::GroupWikiRepositoryReplicator   | :group_wiki_repository       | :geo_group_wiki_repository_registry
       Geo::PagesDeploymentReplicator       | :pages_deployment            | :geo_pages_deployment_registry
+      Geo::UploadReplicator                | :upload                      | :geo_upload_registry
     end
 
     with_them do
@@ -1344,8 +1327,8 @@ RSpec.describe GeoNodeStatus, :geo do
         stub_current_geo_node(primary)
       end
 
-      it 'does not call AttachmentRegistryFinder#registry_count' do
-        expect_any_instance_of(Geo::AttachmentRegistryFinder).not_to receive(:registry_count)
+      it 'does not call AttachmentLegacyRegistryFinder#registry_count' do
+        expect_any_instance_of(Geo::AttachmentLegacyRegistryFinder).not_to receive(:registry_count)
 
         subject
       end
@@ -1358,8 +1341,8 @@ RSpec.describe GeoNodeStatus, :geo do
     end
 
     context 'on the secondary' do
-      it 'calls AttachmentRegistryFinder#registry_count' do
-        expect_any_instance_of(Geo::AttachmentRegistryFinder).to receive(:registry_count).twice
+      it 'calls AttachmentLegacyRegistryFinder#registry_count' do
+        expect_any_instance_of(Geo::AttachmentLegacyRegistryFinder).to receive(:registry_count).twice
 
         subject
       end

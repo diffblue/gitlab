@@ -54,6 +54,11 @@ module Types
             null: true,
             resolver: ::Resolvers::Geo::PagesDeploymentRegistriesResolver,
             description: 'Find Pages Deployment registries on this Geo node'
+      field :upload_registries, ::Types::Geo::UploadRegistryType.connection_type,
+            null: true,
+            resolver: ::Resolvers::Geo::UploadRegistriesResolver,
+            description: 'Find Upload registries on this Geo node',
+            feature_flag: :geo_upload_replication
     end
   end
 end

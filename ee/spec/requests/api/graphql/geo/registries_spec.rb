@@ -51,4 +51,11 @@ RSpec.describe 'Gets registries' do
     registry_factory: :geo_pages_deployment_registry,
     registry_foreign_key_field_name: 'pagesDeploymentId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'uploadRegistries',
+    registry_class_name: 'UploadRegistry',
+    registry_factory: :geo_upload_registry,
+    registry_foreign_key_field_name: 'fileId'
+  }
 end

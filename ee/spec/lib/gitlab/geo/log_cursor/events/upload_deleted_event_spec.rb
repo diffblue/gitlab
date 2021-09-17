@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::UploadDeletedEvent, :clean_gitlab
       end
 
       it 'removes the tracking database entry if exist' do
-        create(:geo_upload_registry, :avatar, file_id: upload.id)
+        create(:geo_upload_legacy_registry, :avatar, file_id: upload.id)
 
         expect { subject.process }.to change(Geo::UploadRegistry, :count).by(-1)
       end

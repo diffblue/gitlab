@@ -19,7 +19,8 @@ RSpec.describe Geo::RegistryConsistencyService, :geo, :use_clean_rails_memory_st
     {
       Geo::DesignRegistry => :project_with_design,
       Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
-      Geo::PackageFileRegistry => :package_file
+      Geo::PackageFileRegistry => :package_file,
+      Geo::UploadRegistry => :upload
      }.fetch(registry_class, default_factory_name)
   end
 

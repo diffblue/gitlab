@@ -223,7 +223,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
 
     context 'with avatar' do
       let!(:upload) { create(:user, :with_avatar).avatar.upload }
-      let!(:registry) { create(:geo_upload_registry, :avatar, file_id: upload.id) }
+      let!(:registry) { create(:geo_upload_legacy_registry, :avatar, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
       it_behaves_like 'removes'
@@ -250,7 +250,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
 
     context 'with attachment' do
       let!(:upload) { create(:note, :with_attachment).attachment.upload }
-      let!(:registry) { create(:geo_upload_registry, :attachment, file_id: upload.id) }
+      let!(:registry) { create(:geo_upload_legacy_registry, :attachment, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
       it_behaves_like 'removes'
@@ -284,7 +284,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
         Upload.find_by(model: group, uploader: NamespaceFileUploader.name)
       end
 
-      let!(:registry) { create(:geo_upload_registry, :namespace_file, file_id: upload.id) }
+      let!(:registry) { create(:geo_upload_legacy_registry, :namespace_file, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
       it_behaves_like 'removes'
@@ -317,7 +317,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
         Upload.find_by(model: snippet, uploader: PersonalFileUploader.name)
       end
 
-      let!(:registry) { create(:geo_upload_registry, :personal_file, file_id: upload.id) }
+      let!(:registry) { create(:geo_upload_legacy_registry, :personal_file, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
       context 'migrated to object storage' do
@@ -348,7 +348,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
         Upload.find_by(model: appearance, uploader: FaviconUploader.name)
       end
 
-      let!(:registry) { create(:geo_upload_registry, :favicon, file_id: upload.id) }
+      let!(:registry) { create(:geo_upload_legacy_registry, :favicon, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
       it_behaves_like 'removes'
@@ -403,6 +403,33 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
 
         it_behaves_like 'removes package file registry' do
           subject(:service) { described_class.new('package_file', registry.package_file_id) }
+        end
+      end
+    end
+
+    context 'with Uploads(after migrating to SSF)' do
+      let!(:upload) { create(:user, :with_avatar).avatar.upload }
+      let!(:registry) { create(:geo_upload_registry, file_id: upload.id) }
+      let!(:file_path) { upload.retrieve_uploader.file.path }
+
+      it_behaves_like 'removes'
+
+      context 'migrated to object storage' do
+        before do
+          stub_uploads_object_storage(AvatarUploader)
+          upload.update_column(:store, AvatarUploader::Store::REMOTE)
+        end
+
+        context 'with object storage enabled' do
+          it_behaves_like 'removes'
+        end
+
+        context 'with object storage disabled' do
+          before do
+            stub_uploads_object_storage(AvatarUploader, enabled: false)
+          end
+
+          it_behaves_like 'removes registry entry'
         end
       end
     end
