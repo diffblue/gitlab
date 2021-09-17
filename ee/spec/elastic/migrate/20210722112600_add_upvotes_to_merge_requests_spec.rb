@@ -73,25 +73,6 @@ RSpec.describe AddUpvotesToMergeRequests, :elastic, :sidekiq_inline do
 
         migration.migrate
       end
-
-      it 'only updates mappings on the first run' do
-        helper = Gitlab::Elastic::Helper.new
-        allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
-        allow(migration).to receive(:batch_size).and_return(2)
-
-        expect(helper).to receive(:update_mapping).and_call_original
-
-        # cannot use subject in spec because it is memoized
-        migration.migrate
-
-        ensure_elasticsearch_index!
-
-        expect(migration.migration_state).to include(update_mappings: true)
-
-        expect(helper).not_to receive(:update_mapping)
-
-        migration.migrate
-      end
     end
   end
 

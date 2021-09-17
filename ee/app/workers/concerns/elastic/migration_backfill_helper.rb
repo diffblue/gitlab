@@ -5,14 +5,6 @@ module Elastic
     UPDATE_BATCH_SIZE = 100
 
     def migrate
-      # only create mappings on the first run
-      if respond_to?(:new_mappings) && migration_state[:update_mappings].blank?
-        update_mapping!(index_name, { properties: new_mappings })
-
-        options = { update_mappings: true }
-        set_migration_state(options)
-      end
-
       if completed?
         log "Skipping adding #{field_name} field to #{index_name} documents migration since it is already applied"
         return
@@ -108,10 +100,6 @@ module Elastic
       return self.class::UPDATE_BATCH_SIZE if self.class.const_defined?(:UPDATE_BATCH_SIZE)
 
       UPDATE_BATCH_SIZE
-    end
-
-    def update_mapping!(index_name, mappings)
-      helper.update_mapping(index_name: index_name, mappings: mappings)
     end
   end
 end

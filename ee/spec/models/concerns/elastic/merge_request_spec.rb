@@ -69,35 +69,55 @@ RSpec.describe MergeRequest, :elastic do
     expect(results.first.title).to eq('bla-bla merge request')
   end
 
-  it "returns json with all needed elements" do
-    merge_request = create :merge_request
-    merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
-    create(:award_emoji, :upvote, awardable: merge_request)
+  shared_examples 'merge request json fields' do |remove_fields|
+    it "returns json with all needed elements" do
+      merge_request = create :merge_request
+      merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
+      create(:award_emoji, :upvote, awardable: merge_request)
 
-    expected_hash = merge_request.attributes.extract!(
-      'id',
-      'iid',
-      'target_branch',
-      'source_branch',
-      'title',
-      'description',
-      'created_at',
-      'updated_at',
-      'state',
-      'merge_status',
-      'source_project_id',
-      'target_project_id',
-      'author_id'
-    ).merge({
-      'state' => merge_request.state,
-      'type' => merge_request.es_type,
-      'merge_requests_access_level' => ProjectFeature::ENABLED,
-      'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
-      'project_id' => merge_request.target_project.id,
-      'upvotes' => 1
-    })
+      expected_hash = merge_request.attributes.extract!(
+        'id',
+        'iid',
+        'target_branch',
+        'source_branch',
+        'title',
+        'description',
+        'created_at',
+        'updated_at',
+        'state',
+        'merge_status',
+        'source_project_id',
+        'target_project_id',
+        'author_id'
+      ).merge({
+        'state' => merge_request.state,
+        'type' => merge_request.es_type,
+        'merge_requests_access_level' => ProjectFeature::ENABLED,
+        'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
+        'project_id' => merge_request.target_project.id,
+        'upvotes' => 1
+      })
 
-    expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+      expected_hash = expected_hash.except(*remove_fields.map(&:to_s))
+
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
+  end
+
+  context 'add_upvotes_mappings_to_merge_requests is not completed' do
+    before do
+      set_elasticsearch_migration_to(:add_upvotes_mappings_to_merge_requests, including: false)
+    end
+
+    include_context 'merge request json fields', [:upvotes]
+  end
+
+  context 'add_upvotes_mappings_to_merge_requests is completed' do
+    before do
+      set_elasticsearch_migration_to(:add_upvotes_mappings_to_merge_requests, including: true)
+    end
+
+    include_context 'merge request json fields', []
   end
 
   it 'handles when a project is missing project_feature' do
