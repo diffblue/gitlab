@@ -29,6 +29,7 @@ RSpec.describe 'Every metric definition' do
       mock_ci
       mock_monitoring
       user_auth_by_provider
+      promoted_issues
     ).freeze
   end
 
