@@ -12,7 +12,7 @@ RSpec.describe 'Filter issues weight', :js do
   let_it_be(:issue1) { create(:issue, project: project, weight: 1) }
   let_it_be(:issue2) { create(:issue, project: project, weight: 2, title: 'Bug report 1', milestone: milestone, author: user, assignees: [user], labels: [label]) }
 
-  let(:js_dropdown_weight) { '#js-dropdown-weight' }
+  let(:filter_dropdown) { find("#js-dropdown-weight .filter-dropdown") }
 
   shared_examples 'filters by negated weight' do
     it 'excludes issues with specified weight' do
@@ -36,6 +36,14 @@ RSpec.describe 'Filter issues weight', :js do
     sign_in(user)
 
     visit project_issues_path(project)
+  end
+
+  describe 'behavior' do
+    it 'loads all the weights when opened' do
+      input_filtered_search('weight:=', submit: false, extra_space: false)
+
+      expect_filtered_search_dropdown_results(filter_dropdown, 21)
+    end
   end
 
   describe 'only weight' do

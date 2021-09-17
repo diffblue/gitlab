@@ -17,7 +17,7 @@ RSpec.describe 'Group issues page' do
     end
 
     it 'shows sidebar when clicked on "Edit issues"' do
-      find('.js-bulk-update-toggle').click
+      click_button 'Edit issues'
 
       page.within('.js-right-sidebar') do
         expect(page).to have_selector('.issuable-sidebar', visible: true)
@@ -25,15 +25,13 @@ RSpec.describe 'Group issues page' do
     end
 
     it 'shows group milestones within "Milestone" dropdown' do
-      find('.js-bulk-update-toggle').click
+      click_button 'Edit issues'
 
-      page.within('.js-right-sidebar') do
-        find('button.js-milestone-select').click
-        wait_for_requests
+      click_button 'Select milestone'
+      wait_for_requests
 
-        page.within('.dropdown-menu-milestone .dropdown-content') do
-          expect(page).to have_content(milestone.title)
-        end
+      page.within('.dropdown-menu-milestone .dropdown-content') do
+        expect(page).to have_content(milestone.title)
       end
     end
   end
