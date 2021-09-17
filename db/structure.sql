@@ -10894,7 +10894,8 @@ CREATE TABLE boards (
     weight integer,
     hide_backlog_list boolean DEFAULT false NOT NULL,
     hide_closed_list boolean DEFAULT false NOT NULL,
-    iteration_id bigint
+    iteration_id bigint,
+    iteration_cadence_id bigint
 );
 
 CREATE TABLE boards_epic_board_labels (
@@ -24405,6 +24406,8 @@ CREATE INDEX index_boards_epic_user_preferences_on_user_id ON boards_epic_user_p
 
 CREATE INDEX index_boards_on_group_id ON boards USING btree (group_id);
 
+CREATE INDEX index_boards_on_iteration_cadence_id ON boards USING btree (iteration_cadence_id);
+
 CREATE INDEX index_boards_on_iteration_id ON boards USING btree (iteration_id);
 
 CREATE INDEX index_boards_on_milestone_id ON boards USING btree (milestone_id);
@@ -27910,6 +27913,9 @@ ALTER TABLE ONLY alert_management_alerts
 
 ALTER TABLE ONLY identities
     ADD CONSTRAINT fk_aade90f0fc FOREIGN KEY (saml_provider_id) REFERENCES saml_providers(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY boards
+    ADD CONSTRAINT fk_ab0a250ff6 FOREIGN KEY (iteration_cadence_id) REFERENCES iterations_cadences(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dep_ci_build_trace_sections
     ADD CONSTRAINT fk_ab7c104e26 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;

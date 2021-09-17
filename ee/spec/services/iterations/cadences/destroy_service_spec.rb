@@ -12,7 +12,8 @@ RSpec.describe Iterations::Cadences::DestroyService do
   let_it_be(:iteration) { create(:current_iteration, group: group, iterations_cadence: iteration_cadence, start_date: 2.days.ago, due_date: 5.days.from_now) }
   let_it_be(:iteration_list, refind: true) { create(:iteration_list, iteration: iteration) }
   let_it_be(:iteration_event, refind: true) { create(:resource_iteration_event, iteration: iteration) }
-  let_it_be(:board) { create(:board, iteration: iteration, group: group) }
+  let_it_be(:board, refind: true) { create(:board, iteration: iteration, iteration_cadence: iteration_cadence, group: group) }
+  let_it_be(:board2, refind: true) { create(:board, iteration: iteration, group: group) }
   let_it_be(:issue) { create(:issue, namespace: group, iteration: iteration) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, iteration: iteration) }
 
@@ -41,6 +42,7 @@ RSpec.describe Iterations::Cadences::DestroyService do
           expect do
             results
             board.reload
+            board2.reload
             issue.reload
             merge_request.reload
           end.to change(Iterations::Cadence, :count).by(-1).and(
@@ -51,6 +53,10 @@ RSpec.describe Iterations::Cadences::DestroyService do
             change(Iteration, :count).by(-1)
           ).and(
             change(board, :iteration_id).from(iteration.id).to(nil)
+          ).and(
+            change(board2, :iteration_id).from(iteration.id).to(nil)
+          ).and(
+            change(board, :iteration_cadence_id).from(iteration_cadence.id).to(nil)
           ).and(
             change(issue, :iteration).from(iteration).to(nil)
           ).and(

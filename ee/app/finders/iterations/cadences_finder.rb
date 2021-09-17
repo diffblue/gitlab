@@ -13,6 +13,7 @@ module Iterations
     end
 
     def execute
+      raise ArgumentError, 'group argument is missing' unless group.present?
       return Iterations::Cadence.none unless group.iteration_cadences_feature_flag_enabled?
 
       items = Iterations::Cadence.all

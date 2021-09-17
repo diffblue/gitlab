@@ -17,6 +17,10 @@ module EE
       Current = ::Timebox::TimeboxStruct.new('Current', 'current', -4).freeze
 
       ALL = [None, Any, Current].freeze
+
+      def self.by_id(id)
+        ::Iteration::Predefined::ALL.index_by(&:id)[id]
+      end
     end
 
     prepended do

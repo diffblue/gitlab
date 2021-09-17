@@ -17,13 +17,8 @@ module EE
         return if params[:milestone_id].blank?
         return if ::Milestone::Predefined::ALL.map(&:id).include?(params[:milestone_id].to_i)
 
-        finder_params =
-          case parent
-          when Group
-            { group_ids: parent.self_and_ancestors }
-          when Project
-            { project_ids: [parent.id], group_ids: parent.group&.self_and_ancestors }
-          end
+        finder_params = { group_ids: group&.self_and_ancestors }
+        finder_params[:project_ids] = [parent.id] if parent.is_a?(Project)
 
         milestone = ::MilestonesFinder.new(finder_params).find_by(id: params[:milestone_id])
 
@@ -31,13 +26,16 @@ module EE
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
-      def filter_iteration
-        return if params[:iteration_id].blank?
-        return if ::Iteration::Predefined::ALL.map(&:id).include?(params[:iteration_id].to_i)
+      def filter_iteration_and_iteration_cadence
+        return if params[:iteration_id].blank? && params[:iteration_cadence_id].blank?
 
-        iteration = IterationsFinder.new(current_user, iterations_finder_params).find_by(id: params[:iteration_id]) # rubocop: disable CodeReuse/ActiveRecord
+        if params[:iteration_id].present? && !wildcard_iteration_id?
+          filter_iteration
+        else
+          filter_iteration_cadence
+        end
 
-        params.delete(:iteration_id) unless iteration
+        ensure_iteration_cadence if wildcard_iteration_id?
       end
 
       def filter_labels
@@ -52,8 +50,55 @@ module EE
         @labels_service ||= ::Labels::AvailableLabelsService.new(current_user, parent, params)
       end
 
+      private
+
+      def filter_iteration
+        iteration = IterationsFinder.new(current_user, iterations_finder_params).execute.first
+
+        if !iteration
+          params.delete(:iteration_id)
+          params.delete(:iteration_cadence_id)
+        else
+          params[:iteration_cadence_id] = iteration.iterations_cadence_id
+        end
+      end
+
+      def filter_iteration_cadence
+        return if params[:iteration_cadence_id].blank?
+
+        cadence = Iterations::CadencesFinder.new(current_user, group, { include_ancestor_groups: true, id: params[:iteration_cadence_id] }).execute.first
+
+        params.delete(:iteration_cadence_id) unless cadence
+      end
+
+      # todo: enforce iteration_cadence_id before we make multiple iteration cadences GA
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/323653
+      def ensure_iteration_cadence
+        return if params[:iteration_cadence_id].present?
+
+        cadence = Iterations::CadencesFinder.new(current_user, group, { include_ancestor_groups: true }).execute.first
+
+        wildcard_iteration_title = ::Iteration::Predefined.by_id(params[:iteration_id].to_i)&.name&.upcase
+        raise ArgumentError, "No cadence could be found to scope board to #{wildcard_iteration_title} iteration." unless cadence
+      end
+
+      def wildcard_iteration_id?
+        return false if params[:iteration_id].blank?
+
+        ::Iteration::Predefined::ALL.map(&:id).include?(params[:iteration_id].to_i)
+      end
+
+      def group
+        case parent
+        when Group
+          parent
+        when Project
+          parent.group
+        end
+      end
+
       def iterations_finder_params
-        { parent: parent, include_ancestors: true, state: 'all' }
+        { parent: parent, include_ancestors: true, state: 'all', id: params[:iteration_id] }
       end
     end
   end

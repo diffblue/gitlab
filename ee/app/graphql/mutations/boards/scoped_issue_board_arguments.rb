@@ -25,6 +25,11 @@ module Mutations
                  required: false,
                  description: 'ID of iteration to be assigned to the board.'
 
+        argument :iteration_cadence_id,
+                 ::Types::GlobalIDType[::Iterations::Cadence],
+                 required: false,
+                 description: 'ID of iteration cadence to be assigned to the board.'
+
         argument :weight,
                  GraphQL::Types::Int,
                  required: false,
