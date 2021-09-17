@@ -235,11 +235,19 @@ RSpec.describe API::Internal::Kubernetes do
             severity: 'high',
             confidence: 'unknown',
             location: {
+              image: 'index.docker.io/library/nginx:latest',
               kubernetes_resource: {
                 namespace: 'production',
                 kind: 'deployment',
-                name: 'nginx',
-                container: 'nginx'
+                name: 'nginx-ingress',
+                container_name: 'nginx',
+                agent_id: '1'
+              },
+              dependency: {
+                package: {
+                  name: 'libc'
+                },
+                version: 'v1.2.3'
               }
             },
             identifiers: [
@@ -253,7 +261,9 @@ RSpec.describe API::Internal::Kubernetes do
           scanner: {
             id: 'starboard_trivy',
             name: 'Trivy (via Starboard Operator)',
-            vendor: 'GitLab'
+            vendor: {
+              name: 'GitLab'
+            }
           }
         }
       end
@@ -273,6 +283,18 @@ RSpec.describe API::Internal::Kubernetes do
           send_request(params: payload)
 
           expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when required parameters are missing' do
+        where(:missing_param) { %i[vulnerability scanner] }
+
+        with_them do
+          it 'returns bad request' do
+            send_request(params: payload.delete(missing_param))
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
         end
       end
 

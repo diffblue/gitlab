@@ -252,6 +252,27 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
             expect(subject.message).to match(/confirmed_at can only be set/)
           end
         end
+
+        context 'with capitalized enum fields' do
+          let(:params) do
+            {
+              vulnerability: {
+                name: "Test vulnerability",
+                state: "Detected",
+                severity: "Unknown",
+                confidence: "Unknown",
+                identifiers: [identifier_attributes],
+                scanner: scanner_attributes
+              }
+            }
+          end
+
+          it 'does not raise an exception' do
+            expect { subject }.not_to raise_error
+
+            expect(subject.success?).to be_truthy
+          end
+        end
       end
 
       context 'with invalid parameters' do

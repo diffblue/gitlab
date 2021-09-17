@@ -64,7 +64,29 @@ module EE
                     requires :name, type: String
                     requires :severity, type: String
                     requires :confidence, type: String
-                    requires :location, type: Hash
+
+                    requires :location, type: Hash do
+                      requires :image, type: String
+
+                      requires :dependency, type: Hash do
+                        requires :package, type: Hash do
+                          requires :name, type: String
+                        end
+
+                        optional :version, type: String
+                      end
+
+                      requires :kubernetes_resource, type: Hash do
+                        requires :namespace, type: String
+                        requires :name, type: String
+                        requires :kind, type: String
+                        requires :container_name, type: String
+                        requires :agent_id, type: String
+                      end
+
+                      optional :operating_system, type: String
+                    end
+
                     requires :identifiers, type: Array do
                       requires :type, type: String
                       requires :name, type: String
@@ -77,11 +99,13 @@ module EE
                     optional :solution, type: String
                     optional :links, type: Array
                   end
+
                   requires :scanner, type: Hash, desc: 'Scanner details matching the `.scan.scanner` field on the security report schema' do
                     requires :id, type: String
                     requires :name, type: String
-
-                    optional :vendor, type: String
+                    requires :vendor, type: Hash do
+                      requires :name, type: String
+                    end
                   end
                 end
 
