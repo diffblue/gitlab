@@ -19351,6 +19351,9 @@ msgstr ""
 msgid "Job"
 msgstr ""
 
+msgid "Job %{jobName}"
+msgstr ""
+
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
