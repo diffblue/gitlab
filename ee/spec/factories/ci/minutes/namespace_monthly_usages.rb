@@ -6,4 +6,8 @@ FactoryBot.define do
     namespace factory: :namespace
     date { Time.current.utc.beginning_of_month }
   end
+
+  trait :with_warning_notification_level do
+    notification_level { ::Ci::Minutes::Notification::PERCENTAGES.fetch(:warning) }
+  end
 end

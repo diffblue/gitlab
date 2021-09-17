@@ -234,6 +234,17 @@ RSpec.describe API::Namespaces do
         subject
       end
 
+      context 'when current CI minutes notification level is set' do
+        let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
+
+        it 'resets the current CI minutes notification level' do
+          expect do
+            put api("/namespaces/#{group1.id}", admin), params: params
+          end.to change { usage.reload.notification_level }
+             .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
+        end
+      end
+
       context 'when request has extra_shared_runners_minutes_limit param' do
         before do
           params[:extra_shared_runners_minutes_limit] = 1000
@@ -264,6 +275,17 @@ RSpec.describe API::Namespaces do
 
           expect(pending_build.reload.minutes_exceeded).to eq(false)
         end
+
+        context 'when current CI minutes notification level is set' do
+          let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
+
+          it 'resets the current CI minutes notification level' do
+            expect do
+              put api("/namespaces/#{group1.id}", admin), params: params
+            end.to change { usage.reload.notification_level }
+              .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
+          end
+        end
       end
 
       context 'when neither minutes limit params is provided' do
@@ -272,6 +294,18 @@ RSpec.describe API::Namespaces do
           expect(Gitlab::Ci::Minutes::CachedQuota).not_to receive(:new)
 
           subject
+        end
+
+        context 'when current CI minutes notification level is set' do
+          let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
+
+          it 'does not reset the current CI minutes notification level' do
+            params.delete(:shared_runners_minutes_limit)
+
+            expect do
+              put api("/namespaces/#{group1.id}", admin), params: params
+            end.not_to change { usage.reload.notification_level }
+          end
         end
       end
     end

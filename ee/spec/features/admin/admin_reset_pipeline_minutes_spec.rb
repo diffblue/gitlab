@@ -35,7 +35,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
   shared_examples 'rendering error' do
     context 'when resetting pipeline minutes fails' do
       before do
-        allow_any_instance_of(ClearNamespaceSharedRunnersMinutesService).to receive(:execute).and_return(false)
+        allow_any_instance_of(Ci::Minutes::ResetUsageService).to receive(:execute).and_return(false)
       end
 
       it 'renders edit page with an error' do
