@@ -1,3 +1,6 @@
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
+import mockGetJiraIssuesQuery from 'ee/integrations/jira/issues_list/graphql/queries/get_jira_issues.query.graphql';
+
 export const mockProvide = {
   initialState: 'opened',
   initialSortBy: 'created_desc',
@@ -6,6 +9,15 @@ export const mockProvide = {
   projectFullPath: 'gitlab-org/gitlab-test',
   issueCreateUrl: 'https://gitlab-jira.atlassian.net/secure/CreateIssue!default.jspa',
   emptyStatePath: '/assets/illustrations/issues.svg',
+
+  getIssuesQuery: mockGetJiraIssuesQuery,
+  externalIssuesLogo: jiraLogo,
+  externalIssueTrackerName: 'Jira',
+  emptyStateNoIssueText:
+    'Issues created in Jira are shown here once you have created the issues in project setup in Jira.',
+  recentSearchesStorageKey: 'jira_issues',
+  createNewIssueText: 'Create new issue in Jira',
+  searchInputPlaceholderText: 'Search Jira issues',
 };
 
 export const mockJiraIssue1 = {
@@ -84,6 +96,26 @@ export const mockJiraIssue3 = {
   references: {
     relative: 'IG-31594',
   },
+  external_tracker: 'jira',
+};
+
+// issue without reference presence
+export const mockJiraIssue4 = {
+  project_id: 1,
+  title: 'Alias ut modi est labore.',
+  created_at: '2020-03-19T14:31:50.012Z',
+  updated_at: '2020-03-19T14:31:50.012Z',
+  closed_at: null,
+  status: 'Backlog',
+  labels: [],
+  author: {
+    name: 'Gabe Weaver',
+    web_url: 'https://gitlab-jira.atlassian.net/people/5e320a31fe03e20c9d1dccde',
+    avatar_url: null,
+  },
+  assignees: [],
+  web_url: 'https://gitlab-jira.atlassian.net/browse/IG-31594',
+  gitlab_web_url: '',
   external_tracker: 'jira',
 };
 

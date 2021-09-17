@@ -1,48 +1,20 @@
-import Vue from 'vue';
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
+import externalIssuesListFactory from 'ee/external_issues_list';
+import { s__ } from '~/locale';
+import getIssuesQuery from './graphql/queries/get_jira_issues.query.graphql';
+import jiraIssuesResolver from './graphql/resolvers/jira_issues';
 
-import { IssuableStates } from '~/issuable_list/constants';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import { queryToObject } from '~/lib/utils/url_utility';
-
-import JiraIssuesListApp from './components/jira_issues_list_root.vue';
-import apolloProvider from './graphql';
-
-export default function initJiraIssuesList({ mountPointSelector }) {
-  const mountPointEl = document.querySelector(mountPointSelector);
-
-  if (!mountPointEl) {
-    return null;
-  }
-
-  const {
-    page = 1,
-    initialState = IssuableStates.Opened,
-    initialSortBy = 'created_desc',
-  } = mountPointEl.dataset;
-
-  const initialFilterParams = Object.assign(
-    convertObjectPropsToCamelCase(
-      queryToObject(window.location.search.substring(1), { gatherArrays: true }),
-      {
-        dropKeys: ['scope', 'utf8', 'state', 'sort'], // These keys are unsupported/unnecessary
-      },
+export default externalIssuesListFactory({
+  externalIssuesQueryResolver: jiraIssuesResolver,
+  provides: {
+    getIssuesQuery,
+    externalIssuesLogo: jiraLogo,
+    externalIssueTrackerName: 'Jira', // eslint-disable-line @gitlab/require-i18n-strings
+    searchInputPlaceholderText: s__('Integrations|Search Jira issues'),
+    recentSearchesStorageKey: 'jira_issues',
+    createNewIssueText: s__('Integrations|Create new issue in Jira'),
+    emptyStateNoIssueText: s__(
+      'Integrations|Issues created in Jira are shown here once you have created the issues in project setup in Jira.',
     ),
-  );
-
-  return new Vue({
-    el: mountPointEl,
-    provide: {
-      ...mountPointEl.dataset,
-      page: parseInt(page, 10),
-      initialState,
-      initialSortBy,
-    },
-    apolloProvider,
-    render: (createElement) =>
-      createElement(JiraIssuesListApp, {
-        props: {
-          initialFilterParams,
-        },
-      }),
-  });
-}
+  },
+});

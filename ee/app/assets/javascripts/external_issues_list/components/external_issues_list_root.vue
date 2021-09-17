@@ -1,5 +1,4 @@
 <script>
-import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
 import { GlButton, GlIcon, GlLink, GlSprintf, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
 
 import createFlash from '~/flash';
@@ -10,6 +9,7 @@ import {
   AvailableSortOptions,
   DEFAULT_PAGE_SIZE,
 } from '~/issuable_list/constants';
+import { i18n } from '~/issues_list/constants';
 import {
   FILTERED_SEARCH_LABELS,
   FILTERED_SEARCH_TERM,
@@ -18,12 +18,10 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
-import { ISSUES_LIST_FETCH_ERROR } from '../constants';
-import getJiraIssuesQuery from '../graphql/queries/get_jira_issues.query.graphql';
-import JiraIssuesListEmptyState from './jira_issues_list_empty_state.vue';
+import ExternalIssuesListEmptyState from './external_issues_list_empty_state.vue';
 
 export default {
-  name: 'JiraIssuesList',
+  name: 'ExternalIssuesList',
   IssuableListTabs,
   AvailableSortOptions,
   defaultPageSize: DEFAULT_PAGE_SIZE,
@@ -33,7 +31,7 @@ export default {
     GlLink,
     GlSprintf,
     IssuableList,
-    JiraIssuesListEmptyState,
+    ExternalIssuesListEmptyState,
   },
   directives: {
     SafeHtml,
@@ -45,6 +43,12 @@ export default {
     'issuesFetchPath',
     'projectFullPath',
     'issueCreateUrl',
+    'getIssuesQuery',
+    'externalIssuesLogo',
+    'externalIssueTrackerName',
+    'searchInputPlaceholderText',
+    'recentSearchesStorageKey',
+    'createNewIssueText',
   ],
   props: {
     initialFilterParams: {
@@ -55,7 +59,6 @@ export default {
   },
   data() {
     return {
-      jiraLogo,
       issues: [],
       totalIssues: 0,
       currentState: this.initialState,
@@ -71,7 +74,7 @@ export default {
   },
   computed: {
     issuesListLoading() {
-      return this.$apollo.queries.jiraIssues.loading;
+      return this.$apollo.queries.externalIssues.loading;
     },
     showPaginationControls() {
       return Boolean(!this.issuesListLoading && this.issues.length && this.totalIssues > 1);
@@ -90,8 +93,10 @@ export default {
     },
   },
   apollo: {
-    jiraIssues: {
-      query: getJiraIssuesQuery,
+    externalIssues: {
+      query() {
+        return this.getIssuesQuery;
+      },
       variables() {
         return {
           issuesFetchPath: this.issuesFetchPath,
@@ -108,9 +113,9 @@ export default {
           return;
         }
 
-        const { pageInfo, nodes, errors } = data?.jiraIssues ?? {};
+        const { pageInfo, nodes, errors } = data?.externalIssues ?? {};
         if (errors?.length > 0) {
-          this.onJiraIssuesQueryError(new Error(errors[0]));
+          this.onExternalIssuesQueryError(new Error(errors[0]));
           return;
         }
 
@@ -120,7 +125,7 @@ export default {
         this.issuesCount[this.currentState] = nodes.length;
       },
       error(error) {
-        this.onJiraIssuesQueryError(error, ISSUES_LIST_FETCH_ERROR);
+        this.onExternalIssuesQueryError(error, i18n.errorFetchingIssues);
       },
     },
   },
@@ -142,6 +147,7 @@ export default {
         },
       ];
     },
+
     getFilteredSearchValue() {
       const { labels, search } = this.filterParams || {};
       const filteredSearchValue = [];
@@ -166,7 +172,7 @@ export default {
 
       return filteredSearchValue;
     },
-    onJiraIssuesQueryError(error, message) {
+    onExternalIssuesQueryError(error, message) {
       createFlash({
         message: message || error.message,
         captureError: true,
@@ -223,7 +229,7 @@ export default {
     :namespace="projectFullPath"
     :tabs="$options.IssuableListTabs"
     :current-tab="currentState"
-    :search-input-placeholder="s__('Integrations|Search Jira issues')"
+    :search-input-placeholder="searchInputPlaceholderText"
     :search-tokens="getFilteredSearchTokens()"
     :sort-options="$options.AvailableSortOptions"
     :initial-filter-value="getFilteredSearchValue()"
@@ -238,7 +244,7 @@ export default {
     :next-page="currentPage + 1"
     :url-params="urlParams"
     label-filter-param="labels"
-    recent-searches-storage-key="jira_issues"
+    :recent-searches-storage-key="recentSearchesStorageKey"
     @click-tab="onIssuableListClickTab"
     @page-change="onIssuableListPageChange"
     @sort="onIssuableListSort"
@@ -246,16 +252,18 @@ export default {
   >
     <template #nav-actions>
       <gl-button :href="issueCreateUrl" target="_blank" class="gl-my-5">
-        {{ s__('Integrations|Create new issue in Jira') }}
+        {{ createNewIssueText }}
         <gl-icon name="external-link" />
       </gl-button>
     </template>
     <template #reference="{ issuable }">
-      <span v-safe-html="jiraLogo" class="svg-container jira-logo-container"></span>
-      <span v-if="issuable">{{ issuable.references.relative }}</span>
+      <span v-safe-html="externalIssuesLogo" class="svg-container logo-container"></span>
+      <span v-if="issuable">
+        {{ issuable.references ? issuable.references.relative : issuable.id }}
+      </span>
     </template>
     <template #author="{ author }">
-      <gl-sprintf message="%{authorName} in Jira">
+      <gl-sprintf :message="`%{authorName} in ${externalIssueTrackerName}`">
         <template #authorName>
           <gl-link class="author-link js-user-link" target="_blank" :href="author.webUrl">
             {{ author.name }}
@@ -267,7 +275,7 @@ export default {
       <template v-if="issuable"> {{ issuable.status }} </template>
     </template>
     <template #empty-state>
-      <jira-issues-list-empty-state
+      <external-issues-list-empty-state
         :current-state="currentState"
         :issues-count="issuesCount"
         :has-filters-applied="hasFiltersApplied"

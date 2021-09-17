@@ -1,13 +1,14 @@
 import { GlEmptyState, GlSprintf, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import JiraIssuesListEmptyState from 'ee/integrations/jira/issues_list/components/jira_issues_list_empty_state.vue';
+import ExternalIssuesListEmptyState from 'ee/external_issues_list/components/external_issues_list_empty_state.vue';
+import { externalIssuesListEmptyStateI18n } from 'ee/external_issues_list/constants';
 import { IssuableStates } from '~/issuable_list/constants';
 
 import { mockProvide } from '../mock_data';
 
 const createComponent = (props = {}) =>
-  shallowMount(JiraIssuesListEmptyState, {
+  shallowMount(ExternalIssuesListEmptyState, {
     provide: mockProvide,
     propsData: {
       currentState: 'opened',
@@ -22,15 +23,10 @@ const createComponent = (props = {}) =>
     stubs: { GlEmptyState },
   });
 
-describe('JiraIssuesListEmptyState', () => {
-  const titleDefault =
-    'Issues created in Jira are shown here once you have created the issues in project setup in Jira.';
-  const titleWhenFilters = 'Sorry, your filter produced no results';
-  const titleWhenIssues = 'There are no open issues';
-
-  const descriptionWhenFilters = 'To widen your search, change or remove filters above';
-  const descriptionWhenNoIssues = 'To keep this project going, create a new issue.';
+describe('ExternalIssuesListEmptyState', () => {
   let wrapper;
+
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -61,17 +57,19 @@ describe('JiraIssuesListEmptyState', () => {
     });
 
     describe('emptyStateTitle', () => {
-      it(`returns string "${titleWhenFilters}" when hasFiltersApplied prop is true`, async () => {
+      it(`returns correct string when hasFiltersApplied prop is true`, async () => {
         wrapper.setProps({
           hasFiltersApplied: true,
         });
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.emptyStateTitle).toBe(titleWhenFilters);
+        expect(findEmptyState().props('title')).toBe(
+          externalIssuesListEmptyStateI18n.titleWhenFilters,
+        );
       });
 
-      it(`returns string "${titleWhenIssues}" when hasFiltersApplied prop is false and hasIssues is true`, async () => {
+      it(`returns correct string when hasFiltersApplied prop is false and hasIssues is true`, async () => {
         wrapper.setProps({
           hasFiltersApplied: false,
           issuesCount: {
@@ -82,7 +80,9 @@ describe('JiraIssuesListEmptyState', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.emptyStateTitle).toBe(titleWhenIssues);
+        expect(findEmptyState().props('title')).toBe(
+          externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
+        );
       });
 
       it('returns default title string when both hasFiltersApplied and hasIssues props are false', async () => {
@@ -92,29 +92,33 @@ describe('JiraIssuesListEmptyState', () => {
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.emptyStateTitle).toBe(titleDefault);
+        expect(findEmptyState().props('title')).toBe(mockProvide.emptyStateNoIssueText);
       });
     });
 
     describe('emptyStateDescription', () => {
-      it(`returns string "${descriptionWhenFilters}" when hasFiltersApplied prop is true`, async () => {
+      it(`returns correct when hasFiltersApplied prop is true`, async () => {
         wrapper.setProps({
           hasFiltersApplied: true,
         });
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.emptyStateDescription).toBe(descriptionWhenFilters);
+        expect(wrapper.vm.emptyStateDescription).toBe(
+          externalIssuesListEmptyStateI18n.descriptionWhenFilters,
+        );
       });
 
-      it(`returns string "${descriptionWhenNoIssues}" when both hasFiltersApplied and hasIssues props are false`, async () => {
+      it(`returns correct string when both hasFiltersApplied and hasIssues props are false`, async () => {
         wrapper.setProps({
           hasFiltersApplied: false,
         });
 
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.emptyStateDescription).toBe(descriptionWhenNoIssues);
+        expect(wrapper.vm.emptyStateDescription).toBe(
+          externalIssuesListEmptyStateI18n.descriptionWhenNoIssues,
+        );
       });
 
       it(`returns empty string when hasFiltersApplied is false and hasIssues is true`, async () => {
@@ -143,8 +147,7 @@ describe('JiraIssuesListEmptyState', () => {
 
       expect(emptyStateEl.props()).toMatchObject({
         svgPath: mockProvide.emptyStatePath,
-        title:
-          'Issues created in Jira are shown here once you have created the issues in project setup in Jira.',
+        title: mockProvide.emptyStateNoIssueText,
       });
 
       wrapper.setProps({
@@ -153,7 +156,7 @@ describe('JiraIssuesListEmptyState', () => {
 
       await wrapper.vm.$nextTick();
 
-      expect(emptyStateEl.props('title')).toBe('Sorry, your filter produced no results');
+      expect(emptyStateEl.props('title')).toBe(externalIssuesListEmptyStateI18n.titleWhenFilters);
 
       wrapper.setProps({
         hasFiltersApplied: false,
@@ -165,7 +168,9 @@ describe('JiraIssuesListEmptyState', () => {
 
       await wrapper.vm.$nextTick();
 
-      expect(emptyStateEl.props('title')).toBe('There are no open issues');
+      expect(emptyStateEl.props('title')).toBe(
+        externalIssuesListEmptyStateI18n.filterStateEmptyMessage[IssuableStates.Opened],
+      );
     });
 
     it('renders empty state description', () => {
@@ -192,12 +197,12 @@ describe('JiraIssuesListEmptyState', () => {
       expect(descriptionEl.exists()).toBe(false);
     });
 
-    it('renders "Create new issue in Jira" button', () => {
-      const buttonEl = wrapper.find(GlButton);
+    it('renders "create issue button', () => {
+      const buttonEl = wrapper.findComponent(GlButton);
 
       expect(buttonEl.exists()).toBe(true);
       expect(buttonEl.attributes('href')).toBe(mockProvide.issueCreateUrl);
-      expect(buttonEl.text()).toBe('Create new issue in Jira');
+      expect(buttonEl.text()).toBe(mockProvide.createNewIssueText);
     });
   });
 });

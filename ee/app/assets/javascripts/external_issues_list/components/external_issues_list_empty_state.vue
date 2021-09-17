@@ -1,20 +1,17 @@
 <script>
 import { GlEmptyState, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
+import { externalIssuesListEmptyStateI18n as i18n } from 'ee/external_issues_list/constants';
 import { IssuableStates } from '~/issuable_list/constants';
-import { __, s__ } from '~/locale';
 
 export default {
-  FilterStateEmptyMessage: {
-    [IssuableStates.Opened]: __('There are no open issues'),
-    [IssuableStates.Closed]: __('There are no closed issues'),
-  },
   components: {
     GlEmptyState,
     GlButton,
     GlIcon,
     GlSprintf,
   },
-  inject: ['emptyStatePath', 'issueCreateUrl'],
+  // The text injected is sanitized.
+  inject: ['emptyStatePath', 'issueCreateUrl', 'emptyStateNoIssueText', 'createNewIssueText'],
   props: {
     currentState: {
       type: String,
@@ -35,21 +32,25 @@ export default {
       return this.issuesCount[IssuableStates.Opened] + this.issuesCount[IssuableStates.Closed] > 0;
     },
     emptyStateTitle() {
+      const { titleWhenFilters, filterStateEmptyMessage } = i18n;
+
       if (this.hasFiltersApplied) {
-        return __('Sorry, your filter produced no results');
+        return titleWhenFilters;
       } else if (this.hasIssues) {
-        return this.$options.FilterStateEmptyMessage[this.currentState];
+        return filterStateEmptyMessage[this.currentState];
       }
-      return s__(
-        'Integrations|Issues created in Jira are shown here once you have created the issues in project setup in Jira.',
-      );
+
+      return this.emptyStateNoIssueText;
     },
     emptyStateDescription() {
+      const { descriptionWhenFilters, descriptionWhenNoIssues } = i18n;
+
       if (this.hasFiltersApplied) {
-        return __('To widen your search, change or remove filters above');
+        return descriptionWhenFilters;
       } else if (!this.hasIssues) {
-        return s__('Integrations|To keep this project going, create a new issue.');
+        return descriptionWhenNoIssues;
       }
+
       return '';
     },
   },
@@ -63,7 +64,7 @@ export default {
     </template>
     <template v-if="!hasIssues" #actions>
       <gl-button :href="issueCreateUrl" target="_blank" variant="confirm">
-        {{ s__('Integrations|Create new issue in Jira') }}
+        {{ createNewIssueText }}
         <gl-icon name="external-link" />
       </gl-button>
     </template>
