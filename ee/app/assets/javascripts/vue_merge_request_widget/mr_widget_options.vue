@@ -1,18 +1,22 @@
 <script>
-import { GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlSprintf, GlLink, GlSafeHtmlDirective } from '@gitlab/ui';
 import MrWidgetLicenses from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { s__, __, sprintf } from '~/locale';
 import CEWidgetOptions from '~/vue_merge_request_widget/mr_widget_options.vue';
+import MrWidgetEnableFeaturePrompt from './components/states/mr_widget_enable_feature_prompt.vue';
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
 
 export default {
   components: {
+    GlSprintf,
+    GlLink,
     MrWidgetLicenses,
     MrWidgetGeoSecondaryNode,
     MrWidgetPolicyViolation,
+    MrWidgetEnableFeaturePrompt,
     MrWidgetJiraAssociationMissing,
     StatusChecksReportsApp: () =>
       import('ee/reports/status_checks_report/status_checks_reports_app.vue'),
@@ -389,6 +393,31 @@ export default {
         :mr-iid="mr.iid"
         class="js-security-widget"
       />
+      <mr-widget-enable-feature-prompt
+        v-else-if="mr.canReadVulnerabilities"
+        feature="security_reports_mr_widget_prompt"
+      >
+        {{ s__('mrWidget|SAST and Secret Detection is not enabled.') }}
+        <gl-sprintf
+          :message="
+            s__(
+              'mrWidget|%{linkStart}Set up now%{linkEnd} to analyze your source code for known security vulnerabilities.',
+            )
+          "
+        >
+          <template #link="{ content }">
+            <gl-link
+              href="../security/configuration"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track-action="followed"
+              data-track-experiment="security_reports_mr_widget_prompt"
+              >{{ content }}</gl-link
+            >
+          </template>
+        </gl-sprintf>
+      </mr-widget-enable-feature-prompt>
+
       <mr-widget-licenses
         v-if="shouldRenderLicenseReport"
         :api-url="mr.licenseScanning.managed_licenses_path"

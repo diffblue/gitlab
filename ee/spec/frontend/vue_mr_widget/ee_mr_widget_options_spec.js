@@ -24,6 +24,7 @@ import {
   coverageFuzzingDiffSuccessMock,
   apiFuzzingDiffSuccessMock,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
+import { assignGitlabExperiment } from 'helpers/experimentation_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { trimText } from 'helpers/text_helper';
@@ -209,6 +210,22 @@ describe('ee merge request widget options', () => {
             'SAST: Loading resulted in an error',
           );
           done();
+        });
+      });
+    });
+
+    describe('when not enabled', () => {
+      it("doesn't show anything SAST related", () => {
+        createComponent({ propsData: { mrData: mockData } });
+        expect(wrapper.text()).not.toContain('SAST');
+      });
+
+      describe('security_reports_mr_widget_prompt experiment', () => {
+        assignGitlabExperiment('security_reports_mr_widget_prompt', 'candidate');
+
+        it('prompts to enable the feature', () => {
+          createComponent({ propsData: { mrData: mockData } });
+          expect(wrapper.text()).toContain('SAST and Secret Detection is not enabled.');
         });
       });
     });
