@@ -15,7 +15,7 @@ be accessed without authentication if the repository is publicly accessible.
 This command provides essentially the same functionality as the `git ls-tree` command. For more information, see the section _Tree Objects_ in the [Git internals documentation](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects/#_tree_objects).
 
 WARNING:
-This endpoint is changing over to keyset-based pagination. This means that iterating pages of results using a number (e.g. `?page=2`) is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67509) and will no longer be supported as of GitLab 15.0. Instead, please use the new keyset pagination system.
+This endpoint is changing over to keyset-based pagination. This means that iterating pages of results using a number (e.g. `?page=2`) is [deprecated](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/67509) and will no longer be supported as of GitLab 15.0. Instead, please use the new keyset pagination system. For more information on keyset pagination, [please read the dedicated documentation](index.md#keyset-based-pagination).
 
 ```plaintext
 GET /projects/:id/repository/tree
