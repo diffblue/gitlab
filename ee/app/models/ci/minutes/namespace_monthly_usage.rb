@@ -36,8 +36,21 @@ module Ci
         update_counters(usage, amount_used: amount)
       end
 
+      def self.reset_current_usage(namespace)
+        update_current(namespace, amount_used: 0, notification_level: Notification::PERCENTAGES.fetch(:not_set))
+      end
+
+      def self.reset_current_notification_level(namespace)
+        update_current(namespace, notification_level: Notification::PERCENTAGES.fetch(:not_set))
+      end
+
+      def self.update_current(namespace, attributes)
+        current_month.for_namespace(namespace).update_all(attributes)
+      end
+      private_class_method :update_current
+
       def total_usage_notified?
-        usage_notified?(0)
+        usage_notified?(Notification::PERCENTAGES.fetch(:exceeded))
       end
 
       # Notification_level is set to 100 (meaning 100% remaining minutes) by default.

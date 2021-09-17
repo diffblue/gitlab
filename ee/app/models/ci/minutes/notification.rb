@@ -4,6 +4,7 @@ module Ci
   module Minutes
     class Notification
       PERCENTAGES = {
+        not_set: 100,
         warning: 30,
         danger: 5,
         exceeded: 0

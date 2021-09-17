@@ -9,7 +9,7 @@ module EE
       def reset_runners_minutes
         user
 
-        if ClearNamespaceSharedRunnersMinutesService.new(@user.namespace).execute
+        if ::Ci::Minutes::ResetUsageService.new(@user.namespace).execute
           redirect_to [:admin, @user], notice: _('User pipeline minutes were successfully reset.')
         else
           flash.now[:error] = _('There was an error resetting user pipeline minutes.')

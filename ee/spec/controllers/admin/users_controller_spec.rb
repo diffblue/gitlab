@@ -64,7 +64,7 @@ RSpec.describe Admin::UsersController do
     subject { post :reset_runners_minutes, params: { id: user } }
 
     before do
-      allow_next_instance_of(ClearNamespaceSharedRunnersMinutesService) do |instance|
+      allow_next_instance_of(Ci::Minutes::ResetUsageService) do |instance|
         allow(instance).to receive(:execute).and_return(clear_runners_minutes_service_result)
       end
     end
