@@ -2,6 +2,9 @@
 
 class Geo::UploadRegistry < Geo::BaseRegistry
   include Geo::Syncable
+  include ::Geo::ReplicableRegistry
+
+  extend ::Gitlab::Utils::Override
 
   MODEL_CLASS = ::Upload
   MODEL_FOREIGN_KEY = :file_id
@@ -51,7 +54,7 @@ class Geo::UploadRegistry < Geo::BaseRegistry
   # If false, RegistryConsistencyService will frequently check the end of the
   # table to quickly handle new replicables.
   def self.has_create_events?
-    false
+    ::Geo::UploadReplicator.enabled?
   end
 
   def self.insert_for_model_ids(attrs)
@@ -108,5 +111,44 @@ class Geo::UploadRegistry < Geo::BaseRegistry
     return :never if retry_count.nil?
 
     :failed
+  end
+
+  # TODO Remove this when enabling geo_upload_registry by default
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/340617
+  override :registry_consistency_worker_enabled?
+  def self.registry_consistency_worker_enabled?
+    true
+  end
+
+  def self.failed
+    if ::Geo::UploadReplicator.enabled?
+      with_state(:failed)
+    else
+      where(success: false).where.not(retry_count: nil)
+    end
+  end
+
+  def self.never_attempted_sync
+    if ::Geo::UploadReplicator.enabled?
+      pending.where(last_synced_at: nil)
+    else
+      where(success: false, retry_count: nil)
+    end
+  end
+
+  def self.retry_due
+    if ::Geo::UploadReplicator.enabled?
+      where(arel_table[:retry_at].eq(nil).or(arel_table[:retry_at].lt(Time.current)))
+    else
+      where('retry_at is NULL OR retry_at < ?', Time.current)
+    end
+  end
+
+  def self.synced
+    if ::Geo::UploadReplicator.enabled?
+      with_state(:synced).or(where(success: true))
+    else
+      where(success: true)
+    end
   end
 end

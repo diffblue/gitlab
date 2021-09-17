@@ -7,13 +7,13 @@ module EE
     override :reset_column_information
     def reset_column_information(klass)
       super
-    rescue Geo::TrackingBase::SecondaryNotConfigured
+    rescue ::Geo::TrackingBase::SecondaryNotConfigured
     end
 
     override :active_record_base
     def active_record_base
       if geo_migration?
-        Geo::TrackingBase
+        ::Geo::TrackingBase
       else
         super
       end

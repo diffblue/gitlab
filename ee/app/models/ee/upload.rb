@@ -10,6 +10,9 @@ module EE
 
     prepended do
       include ::Gitlab::SQL::Pattern
+      include ::Gitlab::Geo::ReplicableModel
+
+      with_replicator ::Geo::UploadReplicator
 
       after_destroy :log_geo_deleted_event
 

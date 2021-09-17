@@ -33,7 +33,11 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo do
     end
   end
 
-  describe 'visit admin/geo/replication/uploads' do
+  describe 'visit admin/geo/replication/legacy-uploads' do
+    before do
+      stub_feature_flags(geo_upload_replication: false)
+    end
+
     it_behaves_like 'active sidebar link', 'Uploads' do
       let(:path) { admin_geo_uploads_path }
     end

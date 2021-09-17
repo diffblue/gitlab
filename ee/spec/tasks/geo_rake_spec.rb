@@ -330,7 +330,7 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
           /Verified Repositories: /,
           /Wikis: /,
           /Verified Wikis: /,
-          /Attachments: /,
+          /Uploads: /,
           /CI job artifacts: /,
           /Container repositories: /,
           /Design repositories: /,

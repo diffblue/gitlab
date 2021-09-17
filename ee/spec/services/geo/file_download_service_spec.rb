@@ -11,6 +11,8 @@ RSpec.describe Geo::FileDownloadService do
 
   before do
     stub_current_geo_node(secondary)
+
+    stub_feature_flags(geo_upload_replication: false)
   end
 
   describe '#downloader' do
@@ -58,7 +60,7 @@ RSpec.describe Geo::FileDownloadService do
 
     context 'with uploads' do
       let!(:registry_entry) do
-        create(:geo_upload_registry, :avatar, success: false, file_id: file.id, retry_count: 31)
+        create(:geo_upload_legacy_registry, :avatar, success: false, file_id: file.id, retry_count: 31)
       end
 
       let(:file) { create(:upload) }
@@ -233,7 +235,7 @@ RSpec.describe Geo::FileDownloadService do
         when 'job_artifact'
           create(:geo_job_artifact_registry, success: false, artifact_id: file.id, retry_count: 3, retry_at: 1.hour.ago)
         else
-          create(:geo_upload_registry, file_type.to_sym, success: false, file_id: file.id, retry_count: 3, retry_at: 1.hour.ago)
+          create(:geo_upload_legacy_registry, file_type.to_sym, success: false, file_id: file.id, retry_count: 3, retry_at: 1.hour.ago)
         end
       end
 

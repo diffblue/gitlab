@@ -35,7 +35,7 @@ module EE
 
         expose :db_replication_lag_seconds
 
-        expose :attachments_replication_enabled
+        expose :attachments_replication_enabled, if: -> (*) { ::Geo::UploadReplicator.disabled? }
         expose :job_artifacts_replication_enabled
         expose :container_repositories_replication_enabled
         expose :design_repositories_replication_enabled

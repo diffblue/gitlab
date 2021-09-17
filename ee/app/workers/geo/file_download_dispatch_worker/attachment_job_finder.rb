@@ -6,7 +6,7 @@ module Geo
       EXCEPT_RESOURCE_IDS_KEY = :except_ids
 
       def registry_finder
-        @registry_finder ||= Geo::AttachmentRegistryFinder.new
+        @registry_finder ||= Geo::AttachmentLegacyRegistryFinder.new
       end
 
       private

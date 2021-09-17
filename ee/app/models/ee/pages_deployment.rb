@@ -7,7 +7,7 @@ module EE
     prepended do
       include ::Gitlab::Geo::ReplicableModel
 
-      with_replicator Geo::PagesDeploymentReplicator
+      with_replicator ::Geo::PagesDeploymentReplicator
     end
 
     class_methods do

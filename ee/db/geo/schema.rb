@@ -54,9 +54,12 @@ ActiveRecord::Schema.define(version: 2021_08_20_152707) do
     t.string "sha256"
     t.datetime "created_at", null: false
     t.boolean "success", default: false, null: false
-    t.integer "retry_count"
+    t.integer "retry_count", default: 0
     t.datetime "retry_at"
     t.boolean "missing_on_primary", default: false, null: false
+    t.integer "state", limit: 2, default: 0, null: false
+    t.datetime_with_timezone "last_synced_at"
+    t.string "last_sync_failure", limit: 255
     t.index ["file_type", "file_id"], name: "index_file_registry_on_file_type_and_file_id", unique: true
     t.index ["file_type"], name: "index_file_registry_on_file_type"
     t.index ["retry_at"], name: "index_file_registry_on_retry_at"
