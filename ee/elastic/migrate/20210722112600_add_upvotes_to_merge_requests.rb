@@ -9,10 +9,6 @@ class AddUpvotesToMergeRequests < Elastic::Migration
 
   DOCUMENT_TYPE = MergeRequest
 
-  def new_mappings
-    { upvotes: { type: 'integer' } }
-  end
-
   private
 
   def index_name
