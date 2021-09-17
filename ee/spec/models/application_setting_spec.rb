@@ -427,31 +427,43 @@ RSpec.describe ApplicationSetting do
         end
 
         describe '#elasticsearch_indexes_project?' do
-          context 'when project is in a subgroup' do
-            let(:root_group) { create(:group) }
-            let(:subgroup) { create(:group, parent: root_group) }
-            let(:project) { create(:project, group: subgroup) }
+          shared_examples 'whether the project is indexed' do
+            context 'when project is in a subgroup' do
+              let(:root_group) { create(:group) }
+              let(:subgroup) { create(:group, parent: root_group) }
+              let(:project) { create(:project, group: subgroup) }
 
-            before do
-              create(:elasticsearch_indexed_namespace, namespace: root_group)
+              before do
+                create(:elasticsearch_indexed_namespace, namespace: root_group)
+              end
+
+              it 'allows project to be indexed' do
+                expect(setting.elasticsearch_indexes_project?(project)).to be(true)
+              end
             end
 
-            it 'allows project to be indexed' do
-              expect(setting.elasticsearch_indexes_project?(project)).to be(true)
+            context 'when project is in a namespace' do
+              let(:namespace) { create(:namespace) }
+              let(:project) { create(:project, namespace: namespace) }
+
+              before do
+                create(:elasticsearch_indexed_namespace, namespace: namespace)
+              end
+
+              it 'allows project to be indexed' do
+                expect(setting.elasticsearch_indexes_project?(project)).to be(true)
+              end
             end
           end
 
-          context 'when project is in a namespace' do
-            let(:namespace) { create(:namespace) }
-            let(:project) { create(:project, namespace: namespace) }
+          it_behaves_like 'whether the project is indexed'
 
+          context 'when feature flag :linear_application_setting_ancestor_scopes is disabled' do
             before do
-              create(:elasticsearch_indexed_namespace, namespace: namespace)
+              stub_feature_flags(linear_application_setting_ancestor_scopes: false)
             end
 
-            it 'allows project to be indexed' do
-              expect(setting.elasticsearch_indexes_project?(project)).to be(true)
-            end
+            it_behaves_like 'whether the project is indexed'
           end
         end
       end
