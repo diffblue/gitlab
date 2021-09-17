@@ -22,6 +22,6 @@ module EE::Groups::Analytics::CycleAnalyticsHelper
   end
 
   def cycle_analytics_api_paths(group)
-    { milestones_path: group_milestones_path(group), labels_path: group_labels_path(group) }
+    { milestones_path: group_milestones_path(group, format: :json), labels_path: group_labels_path(group, format: :json) }
   end
 end

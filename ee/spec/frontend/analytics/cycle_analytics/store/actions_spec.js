@@ -11,8 +11,8 @@ import httpStatusCodes from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
 const group = { fullPath: 'fake_group_full_path' };
-const milestonesPath = 'fake_milestones_path';
-const labelsPath = 'fake_labels_path';
+const milestonesPath = 'fake_milestones_path.json';
+const labelsPath = 'fake_labels_path.json';
 
 const flashErrorMessage = 'There was an error while fetching value stream analytics data.';
 
@@ -79,8 +79,8 @@ describe('Value Stream Analytics actions', () => {
             type: 'filters/setEndpoints',
             payload: {
               groupEndpoint: 'fake_group_full_path',
-              labelsEndpoint: 'fake_labels_path.json',
-              milestonesEndpoint: 'fake_milestones_path.json',
+              labelsEndpoint: labelsPath,
+              milestonesEndpoint: milestonesPath,
             },
           },
         ],

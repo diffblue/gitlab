@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import { removeFlash, appendExtension } from '~/cycle_analytics/utils';
+import { removeFlash } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import httpStatus from '~/lib/utils/http_status';
 import { __ } from '~/locale';
@@ -13,8 +13,8 @@ export const setPaths = ({ dispatch }, options) => {
   const { groupPath, milestonesPath = '', labelsPath = '' } = options;
 
   return dispatch('filters/setEndpoints', {
-    labelsEndpoint: appendExtension(labelsPath),
-    milestonesEndpoint: appendExtension(milestonesPath),
+    labelsEndpoint: labelsPath,
+    milestonesEndpoint: milestonesPath,
     groupEndpoint: groupPath,
   });
 };
