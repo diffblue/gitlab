@@ -1,5 +1,6 @@
 export const parseCodeclimateMetrics = (issues = [], blobPath = '') => {
   return issues.map((issue) => {
+    // the `file_path` attribute from the artifact is returned as `file` by GraphQL
     const issuePath = issue.file_path || issue.path;
     const parsedIssue = {
       name: issue.description,

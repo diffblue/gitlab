@@ -1,8 +1,3 @@
-import createGqClient, { fetchPolicies } from '~/lib/graphql';
+import createGqClient from '~/lib/graphql';
 
-export const gqClient = createGqClient(
-  {},
-  {
-    fetchPolicy: fetchPolicies.NO_CACHE,
-  },
-);
+export const gqClient = createGqClient();

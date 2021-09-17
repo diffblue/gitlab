@@ -52,17 +52,48 @@ describe('Codequality report actions', () => {
       );
     });
 
-    it('sets the page number with feature flag enabled', (done) => {
-      window.gon = { features: { graphqlCodeQualityFullReport: true } };
+    describe('with the feature flag enabled', () => {
+      let mockPageInfo;
 
-      return testAction(
-        actions.setPage,
-        12,
-        state,
-        [{ type: types.SET_PAGE, payload: { after: '', currentPage: 12 } }],
-        [{ type: 'fetchReport' }],
-        done,
-      );
+      beforeEach(() => {
+        window.gon = { features: { graphqlCodeQualityFullReport: true } };
+        mockPageInfo = {
+          ...mockGraphqlPagination,
+          currentPage: 11,
+        };
+      });
+
+      it('sets the next page number', (done) => {
+        return testAction(
+          actions.setPage,
+          12,
+          { ...state, pageInfo: mockPageInfo },
+          [
+            {
+              type: types.SET_PAGE,
+              payload: { after: mockGraphqlPagination.endCursor, currentPage: 12 },
+            },
+          ],
+          [{ type: 'fetchReport' }],
+          done,
+        );
+      });
+
+      it('sets the previous page number', (done) => {
+        return testAction(
+          actions.setPage,
+          10,
+          { ...state, pageInfo: mockPageInfo },
+          [
+            {
+              type: types.SET_PAGE,
+              payload: { after: mockGraphqlPagination.startCursor, currentPage: 10 },
+            },
+          ],
+          [{ type: 'fetchReport' }],
+          done,
+        );
+      });
     });
   });
 
