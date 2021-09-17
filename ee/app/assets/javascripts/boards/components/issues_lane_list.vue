@@ -131,10 +131,10 @@ export default {
       if (from === to) {
         if (newIndex > oldIndex && children.length > 1) {
           // If issue is being moved down we look for the issue that ends up before
-          moveBeforeId = Number(children[newIndex].dataset.itemId);
+          moveBeforeId = children[newIndex].dataset.itemId;
         } else if (newIndex < oldIndex && children.length > 1) {
           // If issue is being moved up we look for the issue that ends up after
-          moveAfterId = Number(children[newIndex].dataset.itemId);
+          moveAfterId = children[newIndex].dataset.itemId;
         } else {
           // If issue remains in the same list at the same position we do nothing
           return;
@@ -142,11 +142,11 @@ export default {
       } else {
         // We look for the issue that ends up before the moved issue if it exists
         if (children[newIndex - 1]) {
-          moveBeforeId = Number(children[newIndex - 1].dataset.itemId);
+          moveBeforeId = children[newIndex - 1].dataset.itemId;
         }
         // We look for the issue that ends up after the moved issue if it exists
         if (children[newIndex]) {
-          moveAfterId = Number(children[newIndex].dataset.itemId);
+          moveAfterId = children[newIndex].dataset.itemId;
         }
       }
 
