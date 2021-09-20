@@ -10,16 +10,16 @@ export default {
     },
   },
   computed: {
-    isAnyBranch() {
+    isAllBranches() {
       return !this.branches?.length;
     },
     branchName() {
-      return this.isAnyBranch ? __('Any branch') : this.branches[0].name;
+      return this.isAllBranches ? __('All branches') : this.branches[0].name;
     },
   },
 };
 </script>
 
 <template>
-  <span :class="{ monospace: isAnyBranch }">{{ branchName }}</span>
+  <span :class="{ monospace: isAllBranches }">{{ branchName }}</span>
 </template>

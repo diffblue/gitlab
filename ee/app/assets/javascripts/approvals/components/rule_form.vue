@@ -6,7 +6,7 @@ import { REPORT_TYPES, SEVERITY_LEVELS } from 'ee/security_dashboard/store/const
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { sprintf } from '~/locale';
 import {
-  ANY_BRANCH,
+  ALL_BRANCHES,
   TYPE_USER,
   TYPE_GROUP,
   TYPE_HIDDEN_GROUPS,
@@ -136,7 +136,7 @@ export default {
     invalidBranches() {
       if (
         !this.isMrEdit &&
-        !this.branches.every((branch) => isEqual(branch, ANY_BRANCH) || isNumber(branch?.id))
+        !this.branches.every((branch) => isEqual(branch, ALL_BRANCHES) || isNumber(branch?.id))
       ) {
         return APPROVAL_DIALOG_I18N.validations.branchesRequired;
       }

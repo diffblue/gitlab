@@ -76,7 +76,7 @@ describe('Protected Branches Selector', () => {
       ).toBe(true);
     });
 
-    it('displays all the protected branches and any branch', async () => {
+    it('displays all the protected branches and all branches', async () => {
       createComponent();
       await nextTick();
       expect(findDropdown().props('loading')).toBe(true);
@@ -97,7 +97,7 @@ describe('Protected Branches Selector', () => {
         expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: true, error }]]);
       });
 
-      it('returns just the any branch dropdown items', () => {
+      it('returns just the all branch dropdown items', () => {
         expect(findDropdownItems()).toHaveLength(1);
         expect(findDropdownItems().at(0).text()).toBe(TEST_DEFAULT_BRANCH.name);
       });
@@ -126,15 +126,15 @@ describe('Protected Branches Selector', () => {
       expect(findSearch().props('isLoading')).toBe(false);
     });
 
-    it('fetches protected branches with no any branch if there is a search', async () => {
+    it('fetches protected branches with no all branches if there is a search', async () => {
       findSearch().vm.$emit('input', 'main');
       await waitForPromises();
 
       expect(findDropdownItems()).toHaveLength(protectedBranchNames().length);
     });
 
-    it('fetches protected branches with any branch if search contains term "any"', async () => {
-      findSearch().vm.$emit('input', 'any');
+    it('fetches protected branches with all branches if search contains term "all"', async () => {
+      findSearch().vm.$emit('input', 'all');
       await waitForPromises();
 
       expect(findDropdownItems()).toHaveLength(branchNames().length);
@@ -160,10 +160,10 @@ describe('Protected Branches Selector', () => {
       });
     });
 
-    describe('when fetching the branch list fails while searching for the term "any"', () => {
+    describe('when fetching the branch list fails while searching for the term "all"', () => {
       beforeEach(() => {
         jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        findSearch().vm.$emit('input', 'any');
+        findSearch().vm.$emit('input', 'all');
 
         return waitForPromises();
       });
@@ -175,7 +175,7 @@ describe('Protected Branches Selector', () => {
         ]);
       });
 
-      it('returns just the any branch dropdown item', () => {
+      it('returns just the all branch dropdown item', () => {
         expect(findDropdownItems()).toHaveLength(1);
         expect(findDropdownItems().at(0).text()).toBe(TEST_DEFAULT_BRANCH.name);
       });
