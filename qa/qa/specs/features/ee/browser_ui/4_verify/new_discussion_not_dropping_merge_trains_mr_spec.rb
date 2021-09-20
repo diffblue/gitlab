@@ -53,9 +53,11 @@ module QA
         it 'does not drop MR', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1250' do
           start_discussion
 
-          Page::MergeRequest::Show.perform do |show|
-            show.has_pipeline_status?('passed')
-            expect(show).to be_merged
+          Support::Retrier.retry_until(max_attempts: 3, sleep_interval: 3) do
+            Page::MergeRequest::Show.perform do |show|
+              show.has_pipeline_status?('passed')
+              expect(show).to be_merged
+            end
           end
         end
 
