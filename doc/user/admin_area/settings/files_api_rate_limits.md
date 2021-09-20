@@ -7,36 +7,45 @@ type: reference
 
 # Files API rate limits **(FREE SELF)**
 
-To improve the security and durability of your web application, you can enforce
-[rate limits](../../../security/rate_limits.md). You can configure general settings
-for [user and IP rate limits](user_and_ip_rate_limits.md).
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68561) in GitLab 14.3.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available,
+ask an administrator to [enable the `files_api_throttling` flag](../../../administration/feature_flags.md). On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.
+The feature is not ready for production use.
 
 The [Repository files API](../../../api/repository_files.md) enables you to
-fetch, create, update, and delete files in your repository.
+fetch, create, update, and delete files in your repository. To improve the security
+and durability of your web application, you can enforce
+[rate limits](../../../security/rate_limits.md) on this API. Any rate limits you
+create for the Files API override the [general user and IP rate limits](user_and_ip_rate_limits.md).
 
 ## Define Files API rate limits
 
-Prerequisite:
-
-- You must have the Administrator role for your instance.
-
-You can define rate limits for authenticated and unauthenticated Files API
-requests:
-
-1. On the top bar, select **Menu > Admin**.
-1. In the left sidebar, select **Settings > Network**, and expand **Files API Rate Limits**:
-
-   - Unauthenticated Files API requests
-   - Authenticated Files API requests
-
 Rate limits for the Files API are disabled by default. When enabled, they supersede
 the general user and IP rate limits for requests to the
-[Repository files API](../../../api/repository_files.md). You can therefore
-keep the general user and IP rate limits, and increase (if necessary) the rate limits
-for the Files API.
+[Repository files API](../../../api/repository_files.md). You can keep any general user
+and IP rate limits already in place, and increase or decrease the rate limits
+for the Files API. No other new features are provided by this override.
 
-Besides this precedence, there are no differences in functionality compared to the general user and
-IP rate limits. For more details, see [User and IP rate limits](user_and_ip_rate_limits.md).
+Prerequisites:
+
+- You must have the Administrator role for your instance.
+- The `files_api_throttling` feature flag must be enabled.
+
+To override the general user and IP rate limits for requests to the Repository files API:
+
+1. On the top bar, select **Menu > Admin**.
+1. In the left sidebar, select **Settings > Network**, and expand **Files API Rate Limits**.
+1. Select the check boxes for the types of rate limits you want to enable:
+   - **Unauthenticated API request rate limit**
+   - **Authenticated API request rate limit**
+1. _If you enabled unauthenticated API request rate limits:_
+   1. Select the **Max unauthenticated API requests per period per IP**.
+   1. Select the **Unauthenticated API rate limit period in seconds**.
+1. _If you enabled authenticated API request rate limits:_
+   1. Select the **Max authenticated API requests per period per user**.
+   1. Select the **Authenticated API rate limit period in seconds**.
 
 ## Resources
 
