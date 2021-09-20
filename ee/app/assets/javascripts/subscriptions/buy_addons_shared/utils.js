@@ -11,9 +11,10 @@ function arrayToGraphqlArray(arr, typename) {
 }
 
 export function writeInitialDataToApolloCache(apolloProvider, dataset) {
-  const { groupData, namespaceId, redirectAfterSuccess } = dataset;
+  const { groupData, namespaceId, redirectAfterSuccess, subscriptionQuantity } = dataset;
   // eslint-disable-next-line @gitlab/require-i18n-strings
   const namespaces = arrayToGraphqlArray(JSON.parse(groupData), 'Namespace');
+  const quantity = subscriptionQuantity || 1;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
     query: stateQuery,
@@ -25,7 +26,7 @@ export function writeInitialDataToApolloCache(apolloProvider, dataset) {
       namespaces,
       redirectAfterSuccess,
       subscription: {
-        quantity: 1,
+        quantity,
         namespaceId,
         // eslint-disable-next-line @gitlab/require-i18n-strings
         __typename: 'Subscription',

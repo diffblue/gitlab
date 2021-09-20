@@ -21,6 +21,12 @@ export const mockNewUser = 'false';
 export const mockFullName = 'John Admin';
 export const mockSetupForCompany = 'true';
 
+export const mockDefaultCache = {
+  groupData: '[]',
+  namespaceId: 'My Namespace',
+  redirectAfterSuccess: '/',
+};
+
 export const stateData = {
   namespaces: [],
   subscription: {
