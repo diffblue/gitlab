@@ -443,41 +443,61 @@ RSpec.describe Projects::UpdateService do
 
     context 'when updating runners settings' do
       let(:settings) do
-        { instance_runners_enabled: true, namespace_traversal_ids: [] }
+        { instance_runners_enabled: true, namespace_traversal_ids: [123] }
       end
 
       let!(:pending_build) do
         create(:ci_pending_build, project: project, **settings)
       end
 
-      it 'updates builds queue when shared runners get disabled' do
-        expect { update_project(shared_runners_enabled: false) }
-          .to change { pending_build.reload.instance_runners_enabled }.to(false)
+      context 'when project has shared runners enabled' do
+        let(:project) { create(:project, shared_runners_enabled: true) }
 
-        expect(pending_build.reload.instance_runners_enabled).to be false
+        it 'updates builds queue when shared runners get disabled' do
+          expect { update_project(project, admin, shared_runners_enabled: false) }
+            .to change { pending_build.reload.instance_runners_enabled }.to(false)
+
+          expect(pending_build.reload.instance_runners_enabled).to be false
+        end
       end
 
-      it 'updates builds queue when shared runners get enabled' do
-        expect { update_project(shared_runners_enabled: true) }
-          .to not_change { pending_build.reload.instance_runners_enabled }
+      context 'when project has shared runners disabled' do
+        let(:project) { create(:project, shared_runners_enabled: false) }
 
-        expect(pending_build.reload.instance_runners_enabled).to be true
+        it 'updates builds queue when shared runners get enabled' do
+          expect { update_project(project, admin, shared_runners_enabled: true) }
+            .to not_change { pending_build.reload.instance_runners_enabled }
+
+          expect(pending_build.reload.instance_runners_enabled).to be true
+        end
       end
 
-      it 'updates builds queue when group runners get disabled' do
-        update_project(group_runners_enabled: false)
+      context 'when project has group runners enabled' do
+        let(:project) { create(:project, group_runners_enabled: true) }
 
-        expect(pending_build.reload.namespace_traversal_ids).to be_empty
+        before do
+          project.ci_cd_settings.update!(group_runners_enabled: true)
+        end
+
+        it 'updates builds queue when group runners get disabled' do
+          update_project(project, admin, group_runners_enabled: false)
+
+          expect(pending_build.reload.namespace_traversal_ids).to be_empty
+        end
       end
 
-      it 'updates builds queue when group runners get enabled' do
-        update_project(group_runners_enabled: true)
+      context 'when project has group runners disabled' do
+        let(:project) { create(:project, :in_subgroup, group_runners_enabled: false) }
 
-        expect(pending_build.reload.namespace_traversal_ids).not_to be_empty
-      end
+        before do
+          project.ci_cd_settings.update!(group_runners_enabled: false)
+        end
 
-      def update_project(**params)
-        update_project(project, admin, **params)
+        it 'updates builds queue when group runners get enabled' do
+          update_project(project, admin, group_runners_enabled: true)
+
+          expect(pending_build.reload.namespace_traversal_ids).to include(project.namespace.id)
+        end
       end
     end
 

@@ -191,13 +191,23 @@ module Projects
         .execute
     end
 
+    def shared_runners_settings_toggled?
+      project.previous_changes.include?(:shared_runners_enabled)
+    end
+
+    def group_runners_settings_toggled?
+      return false unless project.ci_cd_settings.present?
+
+      project.ci_cd_settings.previous_changes.include?(:group_runners_enabled)
+    end
+
     def runners_settings_toggled?
-      (%w[shared_runners_enabled group_runners_enabled] & project.previous_changes).any?
+      shared_runners_settings_toggled? || group_runners_settings_toggled?
     end
 
     def group_runner_traversal_ids
       if project.group_runners_enabled?
-        project.namespace.traversal_ids
+        project.namespace.reset.traversal_ids
       else
         []
       end
