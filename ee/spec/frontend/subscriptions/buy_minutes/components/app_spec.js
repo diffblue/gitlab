@@ -1,8 +1,11 @@
 import { GlEmptyState } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
+import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import App from 'ee/subscriptions/buy_minutes/components/app.vue';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { planTags } from '../../../../../app/assets/javascripts/subscriptions/buy_addons_shared/constants';
 import { createMockApolloProvider } from '../spec_helper';
@@ -14,12 +17,20 @@ describe('App', () => {
   let wrapper;
 
   function createComponent(apolloProvider) {
-    return shallowMount(App, {
+    return shallowMountExtended(App, {
       localVue,
       propsData: { plan: planTags.CI_1000_MINUTES_PLAN },
       apolloProvider,
+      stubs: {
+        Checkout,
+        AddonPurchaseDetails,
+      },
     });
   }
+
+  const findQuantityText = () => wrapper.findByTestId('addon-quantity-text');
+  const findSummaryLabel = () => wrapper.findByTestId('summary-label');
+  const findSummaryTotal = () => wrapper.findByTestId('summary-total');
 
   afterEach(() => {
     wrapper.destroy();
@@ -81,6 +92,42 @@ describe('App', () => {
 
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(false);
       expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
+    });
+  });
+
+  describe('labels', () => {
+    it('are shown correctly for 1 pack', async () => {
+      const mockApollo = createMockApolloProvider();
+      wrapper = createComponent(mockApollo);
+      await waitForPromises();
+
+      expect(findQuantityText().exists()).toBe(true);
+      expect(findQuantityText().text()).toMatchInterpolatedText(
+        'x 1,000 minutes per pack = 1,000 CI minutes',
+      );
+
+      expect(findSummaryLabel().exists()).toBe(true);
+      expect(findSummaryLabel().text()).toBe('1 CI minute pack');
+
+      expect(findSummaryTotal().exists()).toBe(true);
+      expect(findSummaryTotal().text()).toBe('Total minutes: 1,000');
+    });
+
+    it('are shown correctly for 2 packs', async () => {
+      const mockApollo = createMockApolloProvider({}, { quantity: 2 });
+      wrapper = createComponent(mockApollo);
+      await waitForPromises();
+
+      expect(findQuantityText().exists()).toBe(true);
+      expect(findQuantityText().text()).toMatchInterpolatedText(
+        'x 1,000 minutes per pack = 2,000 CI minutes',
+      );
+
+      expect(findSummaryLabel().exists()).toBe(true);
+      expect(findSummaryLabel().text()).toBe('2 CI minute packs');
+
+      expect(findSummaryTotal().exists()).toBe(true);
+      expect(findSummaryTotal().text()).toBe('Total minutes: 2,000');
     });
   });
 });

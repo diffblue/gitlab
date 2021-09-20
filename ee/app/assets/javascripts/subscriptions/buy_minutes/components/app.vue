@@ -4,9 +4,23 @@ import { GlEmptyState } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
+import { sprintf, formatNumber } from '~/locale';
 import Checkout from '../../buy_addons_shared/components/checkout.vue';
+import AddonPurchaseDetails from '../../buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import OrderSummary from '../../buy_addons_shared/components/order_summary.vue';
-import { planTags, CUSTOMER_CLIENT } from '../../buy_addons_shared/constants';
+import {
+  I18N_CI_MINUTES_PRODUCT_LABEL,
+  I18N_CI_MINUTES_PRODUCT_UNIT,
+  I18N_DETAILS_FORMULA,
+  I18N_CI_MINUTES_FORMULA_TOTAL,
+  i18nCIMinutesSummaryTitle,
+  I18N_CI_MINUTES_SUMMARY_TOTAL,
+  I18N_CI_MINUTES_ALERT_TEXT,
+  planTags,
+  CUSTOMER_CLIENT,
+  CI_MINUTES_PER_PACK,
+} from '../../buy_addons_shared/constants';
+
 import plansQuery from '../../graphql/queries/plans.customer.query.graphql';
 
 export default {
@@ -16,16 +30,46 @@ export default {
     GlEmptyState,
     OrderSummary,
     StepOrderApp,
+    AddonPurchaseDetails,
   },
   i18n: {
     ERROR_FETCHING_DATA_HEADER,
     ERROR_FETCHING_DATA_DESCRIPTION,
+    productLabel: I18N_CI_MINUTES_PRODUCT_LABEL,
+    productUnit: I18N_CI_MINUTES_PRODUCT_UNIT,
+    formula: I18N_DETAILS_FORMULA,
+    formulaTotal: I18N_CI_MINUTES_FORMULA_TOTAL,
+    summaryTitle: i18nCIMinutesSummaryTitle,
+    summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
+    alertText: I18N_CI_MINUTES_ALERT_TEXT,
   },
+  CI_MINUTES_PER_PACK,
   emptySvg,
   data() {
     return {
       hasError: false,
     };
+  },
+  computed: {
+    formulaText() {
+      return sprintf(this.$options.i18n.formula, {
+        quantity: formatNumber(CI_MINUTES_PER_PACK),
+        units: this.$options.i18n.productUnit,
+      });
+    },
+  },
+  methods: {
+    formulaTotal(quantity) {
+      return sprintf(this.$options.i18n.formulaTotal, { totalCiMinutes: formatNumber(quantity) });
+    },
+    summaryTitle(quantity) {
+      return sprintf(this.$options.i18n.summaryTitle(quantity), { quantity });
+    },
+    summaryTotal(quantity) {
+      return sprintf(this.$options.i18n.summaryTotal, {
+        quantity: formatNumber(quantity * CI_MINUTES_PER_PACK),
+      });
+    },
   },
   apollo: {
     plans: {
@@ -59,7 +103,27 @@ export default {
   />
   <step-order-app v-else-if="!$apollo.loading">
     <template #checkout>
-      <checkout :plan="plans[0]" />
+      <checkout :plan="plans[0]">
+        <template #purchase-details>
+          <addon-purchase-details
+            :product-label="$options.i18n.productLabel"
+            :quantity-per-pack="$options.CI_MINUTES_PER_PACK"
+            :show-alert="true"
+            :alert-text="$options.i18n.alertText"
+          >
+            <template #formula="{ quantity }">
+              {{ formulaText }}
+              <strong>{{ formulaTotal(quantity) }}</strong>
+            </template>
+            <template #summary-label="{ quantity }">
+              <strong data-testid="summary-label">
+                {{ summaryTitle(quantity) }}
+              </strong>
+              <p class="gl-mb-0" data-testid="summary-total">{{ summaryTotal(quantity) }}</p>
+            </template>
+          </addon-purchase-details>
+        </template>
+      </checkout>
     </template>
     <template #order-summary>
       <order-summary :plan="plans[0]" />
