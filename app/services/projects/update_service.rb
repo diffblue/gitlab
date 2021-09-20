@@ -207,7 +207,7 @@ module Projects
 
     def group_runner_traversal_ids
       if project.group_runners_enabled?
-        project.namespace.reset.traversal_ids
+        project.namespace.traversal_ids
       else
         []
       end

@@ -490,7 +490,7 @@ RSpec.describe Projects::UpdateService do
         let(:project) { create(:project, :in_subgroup, group_runners_enabled: false) }
 
         before do
-          project.ci_cd_settings.update!(group_runners_enabled: false)
+          project.reload.ci_cd_settings.update!(group_runners_enabled: false)
         end
 
         it 'updates builds queue when group runners get enabled' do
