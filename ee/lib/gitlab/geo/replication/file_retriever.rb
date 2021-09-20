@@ -36,7 +36,7 @@ module Gitlab
           # Remove this when we implement checksums for files on the Object Storage
           return true unless recorded_file.local?
 
-          extra_params[:checksum] == Upload.hexdigest(recorded_file.absolute_path)
+          extra_params[:checksum] == Upload.sha256_hexdigest(recorded_file.absolute_path)
         end
       end
     end

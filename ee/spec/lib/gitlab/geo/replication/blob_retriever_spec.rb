@@ -3,7 +3,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Geo::Replication::BlobRetriever, :aggregate_failures do
   let(:package_file) { create(:package_file, :npm) }
-  let(:package_checksum) { package_file.class.hexdigest(package_file.file.path) }
+  let(:package_checksum) { package_file.class.sha256_hexdigest(package_file.file.path) }
   let(:replicator_class) { Geo::PackageFileReplicator }
   let(:replicator) { replicator_class.new(model_record_id: package_file.id) }
 

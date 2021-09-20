@@ -84,7 +84,7 @@ module Geo
     def calculate_checksum
       raise 'File is not checksummable' unless checksummable?
 
-      model.hexdigest(blob_path)
+      model.sha256_hexdigest(blob_path)
     end
 
     # Returns whether the file exists on disk or in remote storage
