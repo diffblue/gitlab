@@ -10,6 +10,10 @@ const EE_PIPELINE_SOURCES = [
     text: s__('Pipeline|Source|On-Demand DAST Validation'),
     value: 'ondemand_dast_validation',
   },
+  {
+    text: s__('Pipeline|Source|Security Policy'),
+    value: 'security_orchestration_policy',
+  },
 ];
 
 export const PIPELINE_SOURCES = [...CE_PIPELINE_SOURCES, ...EE_PIPELINE_SOURCES];
