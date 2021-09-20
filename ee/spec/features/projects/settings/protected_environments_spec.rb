@@ -118,12 +118,10 @@ RSpec.describe 'Protected Environments' do
   end
 
   def set_allowed_to_deploy(option)
-    find('.js-allowed-to-deploy').click
+    click_button('Select users')
 
-    within('.dropdown-content') do
-      Array(option).each { |opt| click_on(opt) }
+    within '.gl-new-dropdown-contents' do
+      Array(option).each { |opt| find('.gl-new-dropdown-item', text: opt).click }
     end
-
-    find('.js-allowed-to-deploy').click
   end
 end

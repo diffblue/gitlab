@@ -4,7 +4,7 @@ import createFlash from '~/flash';
 import AccessorUtilities from '~/lib/utils/accessor';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
-import AccessDropdown from '~/projects/settings/access_dropdown';
+import { initAccessDropdown } from '~/projects/settings/init_access_dropdown';
 import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
 
 const PROTECTED_ENVIRONMENT_INPUT = 'input[name="protected_environment[name]"]';
@@ -13,9 +13,9 @@ export default class ProtectedEnvironmentCreate {
   constructor() {
     this.$form = $('.js-new-protected-environment');
     this.isLocalStorageAvailable = AccessorUtilities.canUseLocalStorage();
-    this.currentProjectUserDefaults = {};
     this.buildDropdowns();
     this.bindEvents();
+    this.selected = [];
   }
 
   bindEvents() {
@@ -23,17 +23,21 @@ export default class ProtectedEnvironmentCreate {
   }
 
   buildDropdowns() {
-    const $allowedToDeployDropdown = this.$form.find('.js-allowed-to-deploy');
-
     // Cache callback
     this.onSelectCallback = this.onSelect.bind(this);
 
     // Allowed to Deploy dropdown
-    this[`${ACCESS_LEVELS.DEPLOY}_dropdown`] = new AccessDropdown({
-      $dropdown: $allowedToDeployDropdown,
-      accessLevelsData: gon.deploy_access_levels,
-      onSelect: this.onSelectCallback,
-      accessLevel: ACCESS_LEVELS.DEPLOY,
+    const accessDropdown = initAccessDropdown(
+      document.querySelector('.js-allowed-to-deploy-dropdown'),
+      {
+        accessLevelsData: gon.deploy_access_levels,
+        accessLevel: ACCESS_LEVELS.DEPLOY,
+      },
+    );
+
+    accessDropdown.$on('select', (selected) => {
+      this.selected = selected;
+      this.onSelect();
     });
 
     this.createItemDropdown = new CreateItemDropdown({
@@ -46,10 +50,9 @@ export default class ProtectedEnvironmentCreate {
     });
   }
 
-  // Enable submit button after selecting an option
+  // Enable submit button after selecting an option on select
   onSelect() {
-    const $allowedToDeploy = this[`${ACCESS_LEVELS.DEPLOY}_dropdown`].getSelectedItems();
-    const toggle = !(this.$form.find(PROTECTED_ENVIRONMENT_INPUT).val() && $allowedToDeploy.length);
+    const toggle = !(this.$form.find(PROTECTED_ENVIRONMENT_INPUT).val() && this.selected.length);
 
     this.$form.find('input[type="submit"]').attr('disabled', toggle);
   }
@@ -84,21 +87,20 @@ export default class ProtectedEnvironmentCreate {
 
     Object.keys(ACCESS_LEVELS).forEach((level) => {
       const accessLevel = ACCESS_LEVELS[level];
-      const selectedItems = this[`${accessLevel}_dropdown`].getSelectedItems();
       const levelAttributes = [];
 
-      selectedItems.forEach((item) => {
+      this.selected.forEach((item) => {
         if (item.type === LEVEL_TYPES.USER) {
           levelAttributes.push({
-            user_id: item.user_id,
+            user_id: item.id,
           });
         } else if (item.type === LEVEL_TYPES.ROLE) {
           levelAttributes.push({
-            access_level: item.access_level,
+            access_level: item.id,
           });
         } else if (item.type === LEVEL_TYPES.GROUP) {
           levelAttributes.push({
-            group_id: item.group_id,
+            group_id: item.id,
           });
         }
       });
