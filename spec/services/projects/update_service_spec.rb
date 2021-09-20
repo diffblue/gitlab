@@ -441,27 +441,43 @@ RSpec.describe Projects::UpdateService do
       end
     end
 
-    context 'when updating #shared_runners', :https_pages_enabled do
-      let!(:pending_build) { create(:ci_pending_build, project: project, instance_runners_enabled: true) }
-
-      subject(:call_service) do
-        update_project(project, admin, shared_runners_enabled: shared_runners_enabled)
+    context 'when updating runners settings' do
+      let(:settings) do
+        { instance_runners_enabled: true, namespace_traversal_ids: [] }
       end
 
-      context 'when shared runners is toggled' do
-        let(:shared_runners_enabled) { false }
-
-        it 'updates ci pending builds' do
-          expect { call_service }.to change { pending_build.reload.instance_runners_enabled }.to(false)
-        end
+      let!(:pending_build) do
+        create(:ci_pending_build, project: project, **settings)
       end
 
-      context 'when shared runners is not toggled' do
-        let(:shared_runners_enabled) { true }
+      it 'updates builds queue when shared runners get disabled' do
+        expect { update_project(shared_runners_enabled: false) }
+          .to change { pending_build.reload.instance_runners_enabled }.to(false)
 
-        it 'updates ci pending builds' do
-          expect { call_service }.to not_change { pending_build.reload.instance_runners_enabled }
-        end
+        expect(pending_build.reload.instance_runners_enabled).to be false
+      end
+
+      it 'updates builds queue when shared runners get enabled' do
+        expect { update_project(shared_runners_enabled: true) }
+          .to not_change { pending_build.reload.instance_runners_enabled }
+
+        expect(pending_build.reload.instance_runners_enabled).to be true
+      end
+
+      it 'updates builds queue when group runners get disabled' do
+        update_project(group_runners_enabled: false)
+
+        expect(pending_build.reload.namespace_traversal_ids).to be_empty
+      end
+
+      it 'updates builds queue when group runners get enabled' do
+        update_project(group_runners_enabled: true)
+
+        expect(pending_build.reload.namespace_traversal_ids).not_to be_empty
+      end
+
+      def update_project(**params)
+        update_project(project, admin, **params)
       end
     end
 
