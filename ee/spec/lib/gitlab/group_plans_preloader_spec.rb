@@ -23,30 +23,42 @@ RSpec.describe Gitlab::GroupPlansPreloader do
       create(:group, name: 'group-3', parent: group1)
     end
 
-    it 'only executes three SQL queries to preload the data' do
-      amount = ActiveRecord::QueryRecorder
-        .new { preloaded_groups }
-        .count
+    shared_examples 'preloading cases' do
+      it 'only executes three SQL queries to preload the data' do
+        amount = ActiveRecord::QueryRecorder
+          .new { preloaded_groups }
+          .count
 
-      # One query to get the groups and their ancestors, one query to get their
-      # plans, and one query to _just_ get the groups.
-      expect(amount).to eq(3)
+        # One query to get the groups and their ancestors, one query to get their
+        # plans, and one query to _just_ get the groups.
+        expect(amount).to eq(3)
+      end
+
+      it 'associates the correct plans with the correct groups' do
+        expect(preloaded_groups[0].plans).to match_array([plan1])
+        expect(preloaded_groups[1].plans).to match_array([plan2])
+        expect(preloaded_groups[2].plans).to match_array([plan1])
+      end
+
+      it 'does not execute any queries for preloaded plans' do
+        preloaded_groups
+
+        amount = ActiveRecord::QueryRecorder
+          .new { preloaded_groups.each(&:plans) }
+          .count
+
+        expect(amount).to be_zero
+      end
     end
 
-    it 'associates the correct plans with the correct groups' do
-      expect(preloaded_groups[0].plans).to eq([plan1])
-      expect(preloaded_groups[1].plans).to eq([plan2])
-      expect(preloaded_groups[2].plans).to eq([plan1])
-    end
+    it_behaves_like 'preloading cases'
 
-    it 'does not execute any queries for preloaded plans' do
-      preloaded_groups
+    context 'when feature flag :linear_group_plans_preloaded_ancestor_scopes is disabled' do
+      before do
+        stub_feature_flags(linear_group_plans_preloaded_ancestor_scopes: false)
+      end
 
-      amount = ActiveRecord::QueryRecorder
-        .new { preloaded_groups.each(&:plans) }
-        .count
-
-      expect(amount).to be_zero
+      it_behaves_like 'preloading cases'
     end
   end
 end
