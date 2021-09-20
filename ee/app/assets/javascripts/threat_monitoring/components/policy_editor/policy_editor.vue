@@ -88,6 +88,7 @@ export default {
       <gl-form-group :label="s__('SecurityOrchestration|Policy type')" label-for="policyType">
         <gl-form-select
           id="policyType"
+          data-qa-selector="policy_type_form_select"
           :value="policyOptions.value"
           :options="policyTypes"
           :disabled="!shouldAllowPolicyTypeSelection"

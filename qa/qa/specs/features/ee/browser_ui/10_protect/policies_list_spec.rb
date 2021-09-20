@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Protect' do
-    describe 'Threat Monitoring Policy List page' do
+    describe 'Policies List page' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = Runtime::Env.auto_devops_project_name || 'project-with-protect'
@@ -23,13 +23,24 @@ module QA
           project.visit!
         end
 
-        it 'can load Threat Monitoring page and view the policy alert list', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
-          Page::Project::Menu.perform(&:click_on_threat_monitoring)
+        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
+          Page::Project::Menu.perform(&:click_on_policies)
 
-          EE::Page::Project::ThreatMonitoring::AlertsList.perform do |alerts_list|
+          EE::Page::Project::Policies.perform do |policies_list|
             aggregate_failures do
-              expect(alerts_list).to have_alerts_tab
-              expect(alerts_list).to have_alerts_list
+              expect(policies_list).to have_policies_list
+            end
+          end
+        end
+
+        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
+          Page::Project::Menu.perform(&:click_on_policies)
+
+          EE::Page::Project::Policies.perform(&:click_new_policy_button)
+
+          EE::Page::Project::Policies.perform do |policy_editor|
+            aggregate_failures do
+              expect(policies_editor).to have_policy_type_form_select
             end
           end
         end
@@ -64,7 +75,7 @@ module QA
           cluster.remove!
         end
 
-        it 'loads a sample network policy under policies tab on the Threat Monitoring page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1925' do
+        it 'loads a sample network policy under policies page', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1925' do
           Resource::KubernetesCluster::ProjectCluster.fabricate_via_browser_ui! do |k8s_cluster|
             k8s_cluster.project = project
             k8s_cluster.cluster = cluster
@@ -87,11 +98,10 @@ module QA
 
           cluster.add_sample_policy(project, policy_name: policy_name)
 
-          Page::Project::Menu.perform(&:click_on_threat_monitoring)
-          EE::Page::Project::ThreatMonitoring::Index.perform do |index|
-            index.click_policies_tab
+          Page::Project::Menu.perform(&:click_on_policies)
+          EE::Page::Project::Policies::Index.perform do |index|
             aggregate_failures do
-              expect(index).to have_policies_tab
+              expect(policies_list).to have_policies_list
               expect(index.has_content?(policy_name)).to be true
             end
           end

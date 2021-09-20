@@ -1,0 +1,31 @@
+# frozen_string_literal: true
+
+module QA
+  module EE
+    module Page
+      module Project
+        module Policies
+          class Index < QA::Page::Base
+            view 'ee/app/assets/javascripts/threat_monitoring/components/policies/policies_list.vue' do
+              element :policies_list
+            end
+
+            view 'ee/app/assets/javascripts/threat_monitoring/components/policies/policies_header.vue' do
+              element :new_policy_button
+            end
+
+            def policies_list?
+              has_element?(:policies_list)
+            end
+
+            def click_new_policy_button
+              within_element(:policies_container) do
+                click_element(:new_policy_button)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
