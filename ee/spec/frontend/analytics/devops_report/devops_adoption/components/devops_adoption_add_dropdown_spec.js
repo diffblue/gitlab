@@ -170,7 +170,7 @@ describe('DevopsAdoptionAddDropdown', () => {
             it('makes a request to enable the selected group', () => {
               expect(mutateAdd).toHaveBeenCalledWith({
                 displayNamespaceId: groupGid,
-                namespaceIds: ['gid://gitlab/Group/1'],
+                namespaceIds: [groupGids[0]],
               });
             });
 

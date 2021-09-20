@@ -39,7 +39,6 @@ describe('deleteEnabledNamespacesFromCache', () => {
       expect.not.objectContaining({
         data: {
           devopsAdoptionEnabledNamespaces: {
-            __typename: 'devopsAdoptionEnabledNamespaces',
             nodes: devopsAdoptionNamespaceData.nodes,
           },
         },
@@ -49,7 +48,6 @@ describe('deleteEnabledNamespacesFromCache', () => {
       expect.objectContaining({
         data: {
           devopsAdoptionEnabledNamespaces: {
-            __typename: 'devopsAdoptionEnabledNamespaces',
             // Remove the item at the first index
             nodes: devopsAdoptionNamespaceData.nodes.slice(1),
           },
