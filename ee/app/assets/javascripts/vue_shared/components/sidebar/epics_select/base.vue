@@ -184,6 +184,9 @@ export default {
       'assignIssueToEpic',
       'removeIssueFromEpic',
     ]),
+    focusInput() {
+      this.$refs.search.focusInput();
+    },
     handleItemSelect(epic) {
       if (
         this.selectedEpicIssueId &&
@@ -248,10 +251,15 @@ export default {
         :header-text="dropdownHeaderText"
         @keydown.esc.native="hideDropdown"
         @hide="hideDropdown"
+        @shown="focusInput"
         @toggle="toggleFormDropdown"
       >
         <template #header>
-          <gl-search-box-by-type v-model.trim="search" :placeholder="$options.i18n.searchEpic" />
+          <gl-search-box-by-type
+            ref="search"
+            v-model.trim="search"
+            :placeholder="$options.i18n.searchEpic"
+          />
         </template>
         <template v-if="epicListValid">
           <gl-dropdown-item

@@ -1,5 +1,5 @@
-import { GlLoadingIcon, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlLoadingIcon, GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
+import { mount, shallowMount } from '@vue/test-utils';
 
 import { DropdownVariant } from 'ee/vue_shared/components/sidebar/epics_select//constants';
 import EpicsSelectBase from 'ee/vue_shared/components/sidebar/epics_select/base.vue';
@@ -16,17 +16,16 @@ describe('EpicsSelect', () => {
     let wrapperStandalone;
     const store = createDefaultStore();
     const storeStandalone = createDefaultStore();
+    const props = {
+      canEdit: true,
+      initialEpic: mockEpic1,
+      initialEpicLoading: false,
+      epicIssueId: mockIssue.epic_issue_id,
+      groupId: mockEpic1.group_id,
+      issueId: mockIssue.id,
+    };
 
     beforeEach(() => {
-      const props = {
-        canEdit: true,
-        initialEpic: mockEpic1,
-        initialEpicLoading: false,
-        epicIssueId: mockIssue.epic_issue_id,
-        groupId: mockEpic1.group_id,
-        issueId: mockIssue.id,
-      };
-
       wrapper = shallowMount(EpicsSelectBase, {
         store,
         propsData: {
@@ -274,6 +273,16 @@ describe('EpicsSelect', () => {
 
         await wrapper.vm.$nextTick();
         expect(wrapper.findComponent(GlDropdown).findComponent(GlLoadingIcon).exists()).toBe(true);
+      });
+
+      it('focuses on the input when the dropdown is shown', () => {
+        wrapper = mount(EpicsSelectBase, { propsData: props });
+
+        const spy = jest.spyOn(wrapper.findComponent(GlSearchBoxByType).vm, 'focusInput');
+
+        wrapper.findComponent(GlDropdown).vm.$emit('shown');
+
+        expect(spy).toHaveBeenCalledTimes(1);
       });
     });
   });
