@@ -1,4 +1,6 @@
 .gitlab-embed-snippets
+  figcaption
+    = blob.name  
   .js-file-title.file-title-flex-parent
     .file-header-content
       = external_snippet_icon('doc-text')
@@ -17,5 +19,5 @@
         = embedded_raw_snippet_button(@snippet, blob)
 
         = embedded_snippet_download_button(@snippet, blob)
-  %article.file-holder.snippet-file-content
+  %figure.file-holder.snippet-file-content
     = render 'projects/blob/viewer', viewer: blob.simple_viewer, load_async: false, external_embed: true
