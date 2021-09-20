@@ -11914,7 +11914,8 @@ CREATE TABLE ci_resource_groups (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     project_id bigint NOT NULL,
-    key character varying(255) NOT NULL
+    key character varying(255) NOT NULL,
+    process_mode smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE ci_resource_groups_id_seq
