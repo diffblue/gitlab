@@ -9234,6 +9234,9 @@ msgstr ""
 msgid "Copy link to chart"
 msgstr ""
 
+msgid "Copy prefix"
+msgstr ""
+
 msgid "Copy reference"
 msgstr ""
 
@@ -9454,6 +9457,9 @@ msgid "Create a GitLab account first, and then connect it to your %{label} accou
 msgstr ""
 
 msgid "Create a Mattermost team for this group"
+msgstr ""
+
+msgid "Create a local proxy for storing frequently used upstream images. %{docLinkStart}Learn more%{docLinkEnd} about dependency proxies."
 msgstr ""
 
 msgid "Create a local proxy for storing frequently used upstream images. %{link_start}Learn more%{link_end} about dependency proxies."
