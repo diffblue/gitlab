@@ -444,6 +444,37 @@ the current project, and the configuration directory for each agent:
 Additional management interfaces are planned for the GitLab Kubernetes Agent.
 [Provide more feedback in the related epic](https://gitlab.com/groups/gitlab-org/-/epics/4739).
 
+## Remove the GitLab Kubernetes Agent
+
+1. Remove an Agent record with GraphQL by deleting the `clusterAgent` and the `clusterAgentToken`.
+
+   ```graphql
+   mutation deleteAgent {
+     clusterAgentDelete(input: { id: "<cluster-agent-id>" } ) {
+       errors
+     }
+   }
+
+   mutation deleteToken {
+     clusterAgentTokenDelete(input: { id: "<cluster-agent-token-id>" }) {
+       errors
+     }
+   }
+   ```
+
+1. Verify whether the removal occurred successfully. If the output in the Pod logs includes `unauthenticated`, it means that the agent was successfully removed:
+
+   ```json
+      {"level":"warn","time":"2021-04-29T23:44:07.598Z","msg":"GetConfiguration.Recv failed","error":"rpc error:
+      code = Unauthenticated desc = unauthenticated"}
+   ```
+
+1. Delete the GitLab Kubernetes Agent in your cluster:
+
+   ```shell
+   kubectl delete -n gitlab-kubernetes-agent -f ./resources.yml
+   ```
+
 ## Troubleshooting
 
 If you face any issues while using GitLab Kubernetes Agent, you can read the
@@ -580,34 +611,3 @@ Alternatively, you can mount the certificate file at a different location and in
           mountPath: /tmp/myCA.pem
           subPath: myCA.pem
 ```
-
-## Remove the GitLab Kubernetes Agent
-
-1. Remove an Agent record with GraphQL by deleting the `clusterAgent` and the `clusterAgentToken`.
-
-   ```graphql
-   mutation deleteAgent {
-     clusterAgentDelete(input: { id: "<cluster-agent-id>" } ) {
-       errors
-     }
-   }
-
-   mutation deleteToken {
-     clusterAgentTokenDelete(input: { id: "<cluster-agent-token-id>" }) {
-       errors
-     }
-   }
-   ```
-
-1. Verify whether the removal occurred successfully. If the output in the Pod logs includes `unauthenticated`, it means that the agent was successfully removed:
-
-   ```json
-      {"level":"warn","time":"2021-04-29T23:44:07.598Z","msg":"GetConfiguration.Recv failed","error":"rpc error:
-      code = Unauthenticated desc = unauthenticated"}
-   ```
-
-1. Delete the GitLab Kubernetes Agent in your cluster:
-
-   ```shell
-   kubectl delete -n gitlab-kubernetes-agent -f ./resources.yml
-   ```
