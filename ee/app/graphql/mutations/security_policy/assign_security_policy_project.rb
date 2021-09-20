@@ -7,6 +7,10 @@ module Mutations
 
       graphql_name 'SecurityPolicyProjectAssign'
 
+      description 'Assigns the specified project(`security_policy_project_id`) as security policy project '\
+      'for the given project(`project_path`). If the project already has a security policy project, '\
+      'this reassigns the project\'s security policy project with the given `security_policy_project_id`'
+
       authorize :update_security_orchestration_policy_project
 
       argument :project_path, GraphQL::Types::ID,
