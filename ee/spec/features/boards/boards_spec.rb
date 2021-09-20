@@ -81,8 +81,8 @@ RSpec.describe 'Project issue boards', :js do
   context 'total weight' do
     let!(:label) { create(:label, project: project, name: 'Label 1') }
     let!(:list) { create(:list, board: board, label: label, position: 0) }
-    let!(:issue) { create(:issue, project: project, weight: 3) }
-    let!(:issue_2) { create(:issue, project: project, weight: 2) }
+    let!(:issue) { create(:issue, project: project, weight: 3, relative_position: 2) }
+    let!(:issue_2) { create(:issue, project: project, weight: 2, relative_position: 1) }
 
     before do
       project.add_developer(user)
