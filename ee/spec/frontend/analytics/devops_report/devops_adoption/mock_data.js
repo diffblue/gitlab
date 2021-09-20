@@ -1,67 +1,27 @@
-export const groupData = [
-  { id: 1, full_name: 'Foo' },
-  { id: 2, full_name: 'Bar' },
-];
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
-export const groupNodes = [
-  {
+const json = getJSONFixture(
+  'graphql/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql.json',
+);
+
+export const devopsAdoptionNamespaceData = json.data.devopsAdoptionEnabledNamespaces;
+
+export const groupData = devopsAdoptionNamespaceData.nodes.map((node) => {
+  return {
+    fullName: node.namespace.fullName,
+    id: getIdFromGraphQLId(node.namespace.id),
+  };
+});
+
+export const groupNodes = groupData.map((group) => {
+  return {
     __typename: 'Group',
-    full_name: 'Foo',
-    id: 1,
-  },
-  {
-    __typename: 'Group',
-    full_name: 'Bar',
-    id: 2,
-  },
-];
+    ...group,
+  };
+});
 
-export const groupNodeLabelValues = [
-  { label: 'Foo', value: 1 },
-  { label: 'Bar', value: 2 },
-];
-
-export const groupIds = [1, 2];
-
-export const groupGids = ['gid://gitlab/Group/1', 'gid://gitlab/Group/2'];
-
-export const devopsAdoptionNamespaceData = {
-  nodes: [
-    {
-      id: 'gid://gitlab/EnabledNamespace/1',
-      namespace: {
-        fullName: 'Group 1',
-        id: 'gid://gitlab/Group/1',
-      },
-      latestSnapshot: {
-        issueOpened: true,
-        mergeRequestOpened: true,
-        mergeRequestApproved: false,
-        runnerConfigured: true,
-        pipelineSucceeded: false,
-        deploySucceeded: false,
-        codeOwnersUsedCount: 0,
-        sastEnabledCount: 0,
-        dastEnabledCount: 0,
-        coverageFuzzingEnabledCount: 0,
-        dependencyScanningEnabledCount: 0,
-        recordedAt: '2020-10-31T23:59:59Z',
-        __typename: 'latestSnapshot',
-      },
-      __typename: 'devopsAdoptionEnabledNamespace',
-    },
-    {
-      id: 'gid://gitlab/EnabledNamespace/2',
-      namespace: {
-        fullName: 'Group 2',
-        id: 'gid://gitlab/Group/2',
-      },
-      latestSnapshot: null,
-      __typename: 'devopsAdoptionEnabledNamespace',
-    },
-  ],
-  __typename: 'devopsAdoptionEnabledNamespaces',
-};
+export const groupGids = devopsAdoptionNamespaceData.nodes.map((node) => node.namespace.id);
 
 export const devopsAdoptionTableHeaders = [
   {
@@ -103,54 +63,21 @@ export const dataErrorMessage = 'Name already taken.';
 export const genericDeleteErrorMessage =
   'An error occurred while removing the group. Please try again.';
 
+const firstNodelatestSnapshot = devopsAdoptionNamespaceData.nodes[0].latestSnapshot;
+
+const sortedFeatures = DEVOPS_ADOPTION_TABLE_CONFIGURATION.reduce(
+  (features, section) => [...features, ...section.cols],
+  [],
+);
+
 export const overallAdoptionData = {
   displayMeta: false,
-  featureMeta: [
-    {
-      adopted: false,
-      title: 'Approvals',
-    },
-    {
-      adopted: false,
-      title: 'Code owners',
-    },
-    {
-      adopted: true,
-      title: 'Issues',
-    },
-    {
-      adopted: true,
-      title: 'MRs',
-    },
-    {
-      adopted: false,
-      title: 'DAST',
-    },
-    {
-      adopted: false,
-      title: 'Dependency Scanning',
-    },
-    {
-      adopted: false,
-      title: 'Fuzz Testing',
-    },
-    {
-      adopted: false,
-      title: 'SAST',
-    },
-    {
-      adopted: false,
-      title: 'Deploys',
-    },
-    {
-      adopted: false,
-      title: 'Pipelines',
-    },
-    {
-      adopted: true,
-      title: 'Runners',
-    },
-  ],
+  featureMeta: sortedFeatures.map((feature) => {
+    return {
+      title: feature.label,
+      adopted: Boolean(firstNodelatestSnapshot[feature.key]),
+    };
+  }),
   icon: 'tanuki',
   title: 'Overall adoption',
   variant: 'primary',

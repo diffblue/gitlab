@@ -110,7 +110,9 @@ describe('DevopsAdoptionTable', () => {
       it('displays the correct name', () => {
         createComponent();
 
-        expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe('Group 1');
+        expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
+          devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
+        );
       });
 
       describe('"This group" badge', () => {
@@ -220,13 +222,17 @@ describe('DevopsAdoptionTable', () => {
     });
 
     it('sorts the namespaces by name', async () => {
-      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe('Group 1');
+      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
+        devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
+      );
 
       headers.at(0).trigger('click');
 
       await nextTick();
 
-      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe('Group 2');
+      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
+        devopsAdoptionNamespaceData.nodes[1].namespace.fullName,
+      );
     });
 
     it('should update local storage when the sort column changes', async () => {
