@@ -44,7 +44,11 @@ module Gitlab
     end
 
     def self.connected?
-      GeoNode.connected? && GeoNode.table_exists?
+      # GeoNode#connected? only attempts to use existing DB connections so it can't
+      # be relied upon in initializers, without this active DB connectivity check.
+      active_db_connection = GeoNode.connection_pool.with_connection(&:active?) rescue false
+
+      active_db_connection && GeoNode.table_exists?
     end
 
     def self.enabled?
