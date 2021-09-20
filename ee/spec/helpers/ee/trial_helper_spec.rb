@@ -65,13 +65,13 @@ RSpec.describe EE::TrialHelper do
     let_it_be(:group1) { create :group }
     let_it_be(:group2) { create :group }
 
-    let(:trial_group_namespaces) { [] }
+    let(:trialable_group_namespaces) { [] }
 
     let(:new_optgroup_regex) { /<optgroup label="New"><option/ }
     let(:groups_optgroup_regex) { /<optgroup label="Groups"><option/ }
 
     before do
-      allow(helper).to receive(:trial_group_namespaces).and_return(trial_group_namespaces)
+      allow(helper).to receive(:trialable_group_namespaces).and_return(trialable_group_namespaces)
     end
 
     subject { helper.namespace_options_for_select }
@@ -84,7 +84,7 @@ RSpec.describe EE::TrialHelper do
     end
 
     context 'when only group namespaces are eligible' do
-      let(:trial_group_namespaces) { [group1, group2] }
+      let(:trialable_group_namespaces) { [group1, group2] }
 
       it 'returns the "New" and "Groups" option groups', :aggregate_failures do
         is_expected.to match(new_optgroup_regex)
@@ -93,7 +93,7 @@ RSpec.describe EE::TrialHelper do
     end
 
     context 'when some group namespaces are eligible' do
-      let(:trial_group_namespaces) { [group1, group2] }
+      let(:trialable_group_namespaces) { [group1, group2] }
 
       it 'returns the "New", "Groups" option groups', :aggregate_failures do
         is_expected.to match(new_optgroup_regex)
@@ -104,7 +104,7 @@ RSpec.describe EE::TrialHelper do
 
   describe '#trial_selection_intro_text' do
     before do
-      allow(helper).to receive(:any_trial_group_namespaces?).and_return(have_group_namespace)
+      allow(helper).to receive(:any_trialable_group_namespaces?).and_return(have_group_namespace)
     end
 
     subject { helper.trial_selection_intro_text }
@@ -123,7 +123,7 @@ RSpec.describe EE::TrialHelper do
     let_it_be(:have_group_namespace) { false }
 
     before do
-      allow(helper).to receive(:any_trial_group_namespaces?).and_return(have_group_namespace)
+      allow(helper).to receive(:any_trialable_group_namespaces?).and_return(have_group_namespace)
     end
 
     subject { helper.show_trial_namespace_select? }
@@ -286,6 +286,35 @@ RSpec.describe EE::TrialHelper do
 
     with_them do
       it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#only_trialable_group_namespace' do
+    subject { helper.only_trialable_group_namespace }
+
+    let_it_be(:group1) { create :group }
+    let_it_be(:group2) { create :group }
+
+    let(:trialable_group_namespaces) { [group1] }
+
+    before do
+      allow(helper).to receive(:trialable_group_namespaces).and_return(trialable_group_namespaces)
+    end
+
+    context 'when there is 1 namespace group eligible' do
+      it { is_expected.to eq(group1) }
+    end
+
+    context 'when more than 1 namespace is eligible' do
+      let(:trialable_group_namespaces) { [group1, group2] }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when there are 0 namespace groups eligible' do
+      let(:trialable_group_namespaces) { [] }
+
+      it { is_expected.to be_nil }
     end
   end
 end
