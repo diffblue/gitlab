@@ -25351,9 +25351,6 @@ msgstr ""
 msgid "Please set a new password before proceeding."
 msgstr ""
 
-msgid "Please share your feedback about %{featureName} %{linkStart}in this issue%{linkEnd} to help us improve the experience."
-msgstr ""
-
 msgid "Please solve the captcha"
 msgstr ""
 

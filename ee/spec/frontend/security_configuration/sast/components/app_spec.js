@@ -75,17 +75,6 @@ describe('SAST Configuration App', () => {
         target: '_blank',
       });
     });
-
-    describe('when it is dismissed', () => {
-      beforeEach(() => {
-        findFeedbackAlert().vm.$emit('dismiss');
-        return wrapper.vm.$nextTick();
-      });
-
-      it('should not be displayed', () => {
-        expect(findFeedbackAlert().exists()).toBe(false);
-      });
-    });
   });
 
   describe('header', () => {

@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import DismissibleFeedbackAlert from '~/vue_shared/components/dismissible_feedback_alert.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ConfigurationPageLayout from '../../components/configuration_page_layout.vue';
 import sastCiConfigurationQuery from '../graphql/sast_ci_configuration.query.graphql';
@@ -10,6 +11,7 @@ export default {
   components: {
     ConfigurationForm,
     ConfigurationPageLayout,
+    DismissibleFeedbackAlert,
     GlAlert,
     GlLink,
     GlLoadingIcon,
@@ -80,11 +82,17 @@ export default {
 <template>
   <configuration-page-layout>
     <template #alert>
-      <gl-sprintf :message="$options.i18n.feedbackAlertMessage">
-        <template #link="{ content }">
-          <gl-link :href="$options.feedbackIssue" target="_blank">{{ content }}</gl-link>
-        </template>
-      </gl-sprintf>
+      <dismissible-feedback-alert
+        feature-name="sast"
+        class="gl-mt-4"
+        data-testid="configuration-page-alert"
+      >
+        <gl-sprintf :message="$options.i18n.feedbackAlertMessage">
+          <template #link="{ content }">
+            <gl-link :href="$options.feedbackIssue" target="_blank">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </dismissible-feedback-alert>
     </template>
 
     <template #heading> {{ s__('SecurityConfiguration|SAST Configuration') }} </template>
