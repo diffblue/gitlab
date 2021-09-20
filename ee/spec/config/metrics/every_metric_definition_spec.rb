@@ -8,7 +8,6 @@ RSpec.describe 'Every metric definition' do
   let(:usage_ping) { Gitlab::UsageData.uncached_data }
   let(:ignored_usage_ping_key_patterns) do
     %w(
-      geo_node_usage
       license_add_ons
       testing_total_unique_counts
       user_auth_by_provider
@@ -25,7 +24,6 @@ RSpec.describe 'Every metric definition' do
   let(:ignored_metric_files_key_patterns) do
     %w(
       ci_runners_online
-      geo_node_usage
       mock_ci
       mock_monitoring
       user_auth_by_provider
