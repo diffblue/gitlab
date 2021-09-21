@@ -4,11 +4,15 @@ import SubscriptionActivationCard, {
   activateSubscriptionUrl,
 } from 'ee/admin/subscriptions/show/components/subscription_activation_card.vue';
 import SubscriptionActivationErrors from 'ee/admin/subscriptions/show/components/subscription_activation_errors.vue';
-import SubscriptionActivationForm, {
+import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
+import {
+  CONNECTIVITY_ERROR,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
-} from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
-import { CONNECTIVITY_ERROR, uploadLicenseFile } from 'ee/admin/subscriptions/show/constants';
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  uploadLicenseFile,
+} from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { license } from '../mock_data';
 
 describe('CloudLicenseApp', () => {
   let wrapper;
@@ -78,6 +82,21 @@ describe('CloudLicenseApp', () => {
     });
 
     expect(findUploadLink().exists()).toBe(false);
+  });
+
+  describe('when the forms emits a success', () => {
+    beforeEach(() => {
+      createComponent();
+      findSubscriptionActivationForm().vm.$emit(
+        SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+        license.ULTIMATE,
+      );
+    });
+
+    it('passes on the event to the parent component', () => {
+      expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT).length).toBe(1);
+      expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)[0]).toEqual([license.ULTIMATE]);
+    });
   });
 
   describe('when the forms emits a connectivity error', () => {

@@ -132,15 +132,60 @@ RSpec.describe 'Admin views Subscription', :js do
       expect(page).not_to have_link('Export license usage file', href: admin_license_usage_export_path(format: :csv))
     end
 
-    context 'when activating a new subscription' do
+    context 'when activating a subscription fails' do
       before do
-        license = create(:license, data: create(:gitlab_license, { cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export)
+        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+          .to_return(status: 200, body: {
+            "data": {
+              "cloudActivationActivate": {
+                "errors": ["invalid activation code"],
+                "license": nil
+              }
+            }
+          }.to_json, headers: { 'Content-Type' => 'application/json' })
+
+        page.within(find('#content-body', match: :first)) do
+          fill_activation_form
+        end
+      end
+
+      it 'shows an error message' do
+        expect(page).to have_content('An error occurred while activating your subscription.')
+      end
+    end
+
+    context 'when activating a future-dated subscription' do
+      before do
+        license_to_be_created = create(:license, data: create(:gitlab_license, { starts_at: Date.today + 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export)
 
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 200, body: {
             "data": {
               "cloudActivationActivate": {
-                "licenseKey": license.data
+                "licenseKey": license_to_be_created.data
+              }
+            }
+          }.to_json, headers: { 'Content-Type' => 'application/json' })
+
+        page.within(find('#content-body', match: :first)) do
+          fill_activation_form
+        end
+      end
+
+      it 'shows a successful future-dated activation message' do
+        expect(page).to have_content('Your future dated license was successfully added')
+      end
+    end
+
+    context 'when activating a new subscription' do
+      before do
+        license_to_be_created = create(:license, data: create(:gitlab_license, { starts_at: Date.today, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export)
+
+        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+          .to_return(status: 200, body: {
+            "data": {
+              "cloudActivationActivate": {
+                "licenseKey": license_to_be_created.data
               }
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })

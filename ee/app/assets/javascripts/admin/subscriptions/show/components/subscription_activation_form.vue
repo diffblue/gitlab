@@ -13,13 +13,12 @@ import {
   activateLabel,
   INVALID_CODE_ERROR,
   INVALID_CODE_ERROR_MESSAGE,
+  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   subscriptionActivationForm,
   subscriptionQueries,
 } from '../constants';
-import { getErrorsAsData, updateSubscriptionAppCache } from '../graphql/utils';
-
-export const SUBSCRIPTION_ACTIVATION_FAILURE_EVENT = 'subscription-activation-failure';
-export const SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT = 'subscription-activation-success';
+import { getErrorsAsData, getLicenseFromData, updateSubscriptionAppCache } from '../graphql/utils';
 
 export default {
   name: 'SubscriptionActivationForm',
@@ -48,7 +47,6 @@ export default {
       default: false,
     },
   },
-  emits: [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT, SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT],
   data() {
     const form = {
       state: false,
@@ -81,6 +79,9 @@ export default {
     },
   },
   methods: {
+    handleError(error) {
+      this.$emit(SUBSCRIPTION_ACTIVATION_FAILURE_EVENT, error.message);
+    },
     submit() {
       if (!this.form.state) {
         this.form.showValidation = true;
@@ -96,21 +97,26 @@ export default {
               activationCode: this.form.fields.activationCode.value,
             },
           },
-          update: this.updateSubscriptionAppCache,
-        })
-        .then((res) => {
-          const errors = getErrorsAsData(res);
-          if (errors.length) {
-            const [error] = errors;
-            if (error.includes(INVALID_CODE_ERROR_MESSAGE)) {
-              throw new Error(INVALID_CODE_ERROR);
+          update: (cache, res) => {
+            const errors = getErrorsAsData(res);
+            if (errors.length) {
+              const [error] = errors;
+              if (error.includes(INVALID_CODE_ERROR_MESSAGE)) {
+                this.handleError(new Error(INVALID_CODE_ERROR));
+                return;
+              }
+              this.handleError(new Error(error));
+              return;
             }
-            throw new Error(error);
-          }
-          this.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT);
+            const license = getLicenseFromData(res);
+            if (license) {
+              this.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT, license);
+            }
+            this.updateSubscriptionAppCache(cache, res);
+          },
         })
         .catch((error) => {
-          this.$emit(SUBSCRIPTION_ACTIVATION_FAILURE_EVENT, error.message);
+          this.handleError(error);
         })
         .finally(() => {
           this.isLoading = false;

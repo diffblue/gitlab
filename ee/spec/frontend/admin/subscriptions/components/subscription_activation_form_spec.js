@@ -1,13 +1,12 @@
 import { GlForm, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import SubscriptionActivationForm, {
-  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
-  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
-} from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
+import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
 import {
   CONNECTIVITY_ERROR,
   INVALID_CODE_ERROR,
+  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   subscriptionQueries,
 } from 'ee/admin/subscriptions/show/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -140,7 +139,9 @@ describe('SubscriptionActivationForm', () => {
       });
 
       it('emits a successful event', () => {
-        expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)).toEqual([[]]);
+        expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)).toEqual([
+          [activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license],
+        ]);
       });
 
       it('calls the method to update the cache', () => {
