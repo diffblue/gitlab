@@ -44,6 +44,7 @@ module API
       end
       [':id/epics', ':id/-/epics'].each do |path|
         get path do
+          validate_anonymous_search_access! if declared_params[:search].present?
           epics = paginate(find_epics(finder_params: { group_id: user_group.id })).with_api_entity_associations
 
           # issuable_metadata has to be set because `Entities::Epic` doesn't inherit from `Entities::IssuableEntity`

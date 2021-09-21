@@ -144,6 +144,35 @@ RSpec.describe Resolvers::EpicsResolver do
             expect(epics).to match_array([epic2, epic3, epic4])
           end
         end
+
+        context 'with anonymous user' do
+          let_it_be(:current_user) { nil }
+
+          context 'with disable_anonymous_search enabled' do
+            before do
+              stub_feature_flags(disable_anonymous_search: true)
+            end
+
+            it 'returns an error' do
+              error_message = "User must be authenticated to include the `search` argument."
+
+              expect { resolve_epics(search: 'created') }
+                .to raise_error(Gitlab::Graphql::Errors::ArgumentError, error_message)
+            end
+          end
+
+          context 'with disable_anonymous_search disabled' do
+            before do
+              stub_feature_flags(disable_anonymous_search: false)
+            end
+
+            it 'filters epics by search term' do
+              epics = resolve_epics(search: 'created')
+
+              expect(epics).to match_array([epic1, epic2])
+            end
+          end
+        end
       end
 
       context 'with author_username' do
