@@ -58,7 +58,7 @@ module Ci
       end
 
       def recipients
-        namespace.user? ? [namespace.owner_email] : namespace.owners_emails
+        namespace.user_namespace? ? [namespace.owner_email] : namespace.owners_emails
       end
 
       def namespace

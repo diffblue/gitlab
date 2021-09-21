@@ -74,7 +74,7 @@ RSpec.describe Namespace do
 
     with_them do
       before do
-        allow(namespace).to receive(:user?).and_return(user)
+        allow(namespace).to receive(:user_namespace?).and_return(user)
         allow(namespace).to receive(:paid?).and_return(paid)
       end
 

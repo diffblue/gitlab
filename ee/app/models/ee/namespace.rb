@@ -393,7 +393,7 @@ module EE
     end
 
     def free_personal?
-      user? && !paid?
+      user_namespace? && !paid?
     end
 
     def use_elasticsearch?

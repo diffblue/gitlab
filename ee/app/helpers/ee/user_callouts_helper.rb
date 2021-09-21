@@ -92,7 +92,7 @@ module EE
       return false unless namespace.bronze_plan?
       return false if user_dismissed?(EOA_BRONZE_PLAN_BANNER)
 
-      (namespace.group? && namespace.has_owner?(current_user.id)) || !namespace.group?
+      (namespace.group_namespace? && namespace.has_owner?(current_user.id)) || !namespace.group_namespace?
     end
 
     override :dismiss_two_factor_auth_recovery_settings_check

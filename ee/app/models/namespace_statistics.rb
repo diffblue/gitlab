@@ -14,13 +14,13 @@ class NamespaceStatistics < ApplicationRecord
   after_save :update_root_storage_statistics, if: :saved_change_to_storage_size?
   after_destroy :update_root_storage_statistics
 
-  delegate :group?, to: :namespace
+  delegate :group_namespace?, to: :namespace
 
   COLUMNS_TO_REFRESH = [:wiki_size].freeze
 
   def refresh!(only: [])
     return if Gitlab::Database.read_only?
-    return unless group?
+    return unless group_namespace?
 
     COLUMNS_TO_REFRESH.each do |column|
       if only.empty? || only.include?(column)
@@ -44,11 +44,11 @@ class NamespaceStatistics < ApplicationRecord
   private
 
   def group_wiki_available?
-    group? && namespace.feature_available?(:group_wikis)
+    group_namespace? && namespace.feature_available?(:group_wikis)
   end
 
   def update_root_storage_statistics
-    return unless group?
+    return unless group_namespace?
 
     run_after_commit do
       Namespaces::ScheduleAggregationWorker.perform_async(namespace.id)

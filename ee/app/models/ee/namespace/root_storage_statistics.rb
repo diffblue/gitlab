@@ -23,7 +23,7 @@ module EE
         # the query. If this changes in the future and we add some sort of resource to
         # users that it's store in NamespaceStatistics, we will need to remove this
         # guard clause.
-        return {} unless namespace.group?
+        return {} unless namespace.group_namespace?
 
         from_namespace_statistics.take.slice(*NAMESPACE_STATISTICS_ATTRIBUTES)
       end

@@ -134,7 +134,7 @@ module Gitlab
                 plan: namespace.actual_plan_name,
                 trial: !!namespace.trial?,
                 kind: namespace.kind,
-                membersCountWithDescendants: namespace.group? ? namespace.users_with_descendants.count : nil
+                membersCountWithDescendants: namespace.group_namespace? ? namespace.users_with_descendants.count : nil
               }
             end
 

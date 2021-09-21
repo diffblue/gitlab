@@ -62,7 +62,7 @@ module Ci
         end
 
         def owner_ids_for(namespace)
-          namespace.user? ? Array(namespace.owner_id) : namespace.owner_ids
+          namespace.user_namespace? ? Array(namespace.owner_id) : namespace.owner_ids
         end
       end
     end

@@ -7,7 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          with_options if: -> (issue, _) { issue.project.namespace.group? && issue.project.namespace.feature_available?(:epics) } do
+          with_options if: -> (issue, _) { issue.project.namespace.group_namespace? && issue.project.namespace.feature_available?(:epics) } do
             expose :epic_iid do |issue|
               authorized_epic_for(issue)&.iid
             end
