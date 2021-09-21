@@ -61,7 +61,7 @@ RSpec.describe Admin::AuditLogReportsController do
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(response.headers["Content-Length"]).to be_nil
-            expect(response.headers["Cache-Control"]).to eq('no-store')
+            expect(response.headers["Cache-Control"]).to eq('private, no-store')
             expect(response.headers['Content-Type']).to eq('text/csv; charset=utf-8; header=present')
             expect(response.headers['X-Accel-Buffering']).to eq('no')
             expect(response.headers['Last-Modified']).to eq('0')

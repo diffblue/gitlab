@@ -75,7 +75,7 @@ module Security
     end
 
     def grouped_scans
-      @grouped_scans ||= @pipeline.security_scans.by_scan_types(@selection_information.keys).group_by(&:scan_type)
+      @grouped_scans ||= @pipeline.security_scans.by_scan_types(@selection_information.keys.map(&:to_sym) & Security::Scan.scan_types.keys.map(&:to_sym)).group_by(&:scan_type)
     end
   end
 end
