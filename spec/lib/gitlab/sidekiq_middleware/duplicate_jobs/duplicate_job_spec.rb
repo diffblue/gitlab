@@ -491,7 +491,6 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
           expect(duplicate_job).not_to be_idempotent
         end
       end
-
     end
   end
 
