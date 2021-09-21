@@ -29,7 +29,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
       project.repository.create_branch('production', project.default_branch)
 
       allow_next_instance_of(Security::OrchestrationPolicyConfiguration) do |instance|
-        allow(instance).to receive(:active_policies).and_return([policy])
+        allow(instance).to receive(:active_scan_execution_policies).and_return([policy])
       end
     end
 
