@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DastSites::FindOrCreateService do
+RSpec.describe AppSec::Dast::Sites::FindOrCreateService do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, creator: user) }
   let(:url) { generate(:url) }
@@ -16,7 +16,7 @@ RSpec.describe DastSites::FindOrCreateService do
 
     context 'when a user does not have access to the project' do
       it 'raises an exception' do
-        expect { subject }.to raise_error(DastSites::FindOrCreateService::PermissionsError) do |err|
+        expect { subject }.to raise_error(described_class::PermissionsError) do |err|
           expect(err.message).to include('Insufficient permissions')
         end
       end
@@ -63,7 +63,7 @@ RSpec.describe DastSites::FindOrCreateService do
         it 'raises an exception' do
           stub_licensed_features(security_on_demand_scans: false)
 
-          expect { subject }.to raise_error(DastSites::FindOrCreateService::PermissionsError) do |err|
+          expect { subject }.to raise_error(described_class::PermissionsError) do |err|
             expect(err.message).to include('Insufficient permissions')
           end
         end
