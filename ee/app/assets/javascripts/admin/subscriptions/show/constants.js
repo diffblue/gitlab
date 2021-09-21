@@ -7,6 +7,12 @@ export const subscriptionMainTitle = s__('SuperSonics|Your subscription');
 export const subscriptionActivationNotificationText = s__(
   `SuperSonics|Your subscription was successfully activated. You can see the details below.`,
 );
+export const subscriptionActivationFutureDatedNotificationTitle = s__(
+  'SuperSonics|Your future dated license was successfully added',
+);
+export const subscriptionActivationFutureDatedNotificationMessage = s__(
+  'SuperSonics|You have successfully added a license that activates on %{date}. Please see the subscription history table below for more details.',
+);
 export const subscriptionActivationInsertCode = __(
   "If you've purchased or renewed your subscription and have an activation code, please enter it below to start the activation process.",
 );
@@ -116,6 +122,9 @@ export const buySubscriptionCard = {
   ),
   buttonLabel: s__('SuperSonics|Buy subscription'),
 };
+
+export const SUBSCRIPTION_ACTIVATION_FAILURE_EVENT = 'subscription-activation-failure';
+export const SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT = 'subscription-activation-success';
 
 export const INVALID_CODE_ERROR_MESSAGE = 'invalid activation code';
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';

@@ -8,10 +8,13 @@ import SubscriptionBreakdown from 'ee/admin/subscriptions/show/components/subscr
 import {
   noActiveSubscription,
   subscriptionActivationNotificationText,
+  subscriptionActivationFutureDatedNotificationTitle,
   subscriptionHistoryQueries,
   subscriptionMainTitle,
   subscriptionQueries,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from 'ee/admin/subscriptions/show/constants';
+import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { license, subscriptionHistory } from '../mock_data';
@@ -20,6 +23,9 @@ const localVue = createLocalVue();
 localVue.use(VueApollo);
 
 describe('SubscriptionManagementApp', () => {
+  // March 16th, 2020
+  useFakeDate(2021, 2, 16);
+
   let wrapper;
 
   const findActivateSubscriptionCard = () => wrapper.findComponent(SubscriptionActivationCard);
@@ -99,6 +105,28 @@ describe('SubscriptionManagementApp', () => {
       it('does not render the "Export license usage file" link', () => {
         expect(findExportLicenseUsageFileLink().exists()).toBe(false);
       });
+
+      describe('activating the license', () => {
+        it('shows the activation success notification', async () => {
+          await findActivateSubscriptionCard().vm.$emit(
+            SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+            license.ULTIMATE,
+          );
+          expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
+            subscriptionActivationNotificationText,
+          );
+        });
+
+        it('shows the future dated activation success notification', async () => {
+          await findActivateSubscriptionCard().vm.$emit(
+            SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+            license.ULTIMATE_FUTURE_DATED,
+          );
+          expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
+            subscriptionActivationFutureDatedNotificationTitle,
+          );
+        });
+      });
     });
 
     describe('activating the license', () => {
@@ -122,9 +150,23 @@ describe('SubscriptionManagementApp', () => {
         });
       });
 
-      it('shows the activation success notification', () => {
+      it('shows the activation success notification', async () => {
+        await findSubscriptionBreakdown().vm.$emit(
+          SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+          license.ULTIMATE,
+        );
         expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
           subscriptionActivationNotificationText,
+        );
+      });
+
+      it('shows the future dated activation success notification', async () => {
+        await findSubscriptionBreakdown().vm.$emit(
+          SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+          license.ULTIMATE_FUTURE_DATED,
+        );
+        expect(findSubscriptionActivationSuccessAlert().props('title')).toBe(
+          subscriptionActivationFutureDatedNotificationTitle,
         );
       });
     });

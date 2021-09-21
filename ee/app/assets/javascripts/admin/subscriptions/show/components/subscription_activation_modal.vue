@@ -5,6 +5,8 @@ import {
   activateLabel,
   activateSubscription,
   subscriptionActivationInsertCode,
+  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
 } from '../constants';
 import SubscriptionActivationErrors from './subscription_activation_errors.vue';
 import SubscriptionActivationForm from './subscription_activation_form.vue';
@@ -39,14 +41,20 @@ export default {
   data() {
     return {
       error: null,
+      activationListeners: {
+        [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
+        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
+      },
     };
   },
   methods: {
     handleActivationFailure(error) {
       this.error = error;
     },
-    handleActivationSuccess() {
+    handleActivationSuccess(license) {
       this.$emit('change', false);
+      // Pass on event to parent listeners
+      this.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT, license);
     },
     handleChange(event) {
       this.$emit('change', event);
@@ -77,8 +85,7 @@ export default {
     <subscription-activation-form
       ref="form"
       :hide-submit-button="true"
-      @subscription-activation-failure="handleActivationFailure"
-      @subscription-activation-success="handleActivationSuccess"
+      v-on="activationListeners"
     />
   </gl-modal>
 </template>

@@ -156,6 +156,7 @@ export default {
       v-if="hasSubscription"
       v-model="activationModalVisible"
       :modal-id="$options.modal.id"
+      v-on="$listeners"
     />
     <user-callout-dismisser
       v-if="canActivateSubscription"

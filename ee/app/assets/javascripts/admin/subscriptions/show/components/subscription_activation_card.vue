@@ -1,7 +1,13 @@
 <script>
 import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { activateSubscription, howToActivateSubscription, uploadLicenseFile } from '../constants';
+import {
+  activateSubscription,
+  howToActivateSubscription,
+  uploadLicenseFile,
+  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+} from '../constants';
 import SubscriptionActivationErrors from './subscription_activation_errors.vue';
 import SubscriptionActivationForm from './subscription_activation_form.vue';
 
@@ -30,11 +36,19 @@ export default {
   data() {
     return {
       error: null,
+      activationListeners: {
+        [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
+        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
+      },
     };
   },
   methods: {
-    handleFormActivationFailure(error) {
+    handleActivationFailure(error) {
       this.error = error;
+    },
+    handleActivationSuccess(license) {
+      // Pass on event to parent listeners
+      this.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT, license);
     },
   },
 };
@@ -62,10 +76,7 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <subscription-activation-form
-      class="gl-p-5"
-      @subscription-activation-failure="handleFormActivationFailure"
-    />
+    <subscription-activation-form class="gl-p-5" v-on="activationListeners" />
     <template #footer>
       <gl-link
         v-if="licenseUploadPath"

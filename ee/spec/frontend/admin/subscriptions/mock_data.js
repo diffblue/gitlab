@@ -17,6 +17,22 @@ export const license = {
     usersInLicenseCount: '10',
     usersOverLicenseCount: '0',
   },
+  ULTIMATE_FUTURE_DATED: {
+    activatedAt: '2021-03-16',
+    billableUsersCount: '8',
+    expiresAt: '2023-03-16',
+    company: 'ACME Corp',
+    email: 'user@acmecorp.com',
+    id: 'gid://gitlab/License/13',
+    lastSync: '2021-03-16T00:00:00.000',
+    maximumUserCount: '8',
+    name: 'Jane Doe',
+    plan: 'ultimate',
+    startsAt: '2022-03-16',
+    type: subscriptionTypes.CLOUD,
+    usersInLicenseCount: '10',
+    usersOverLicenseCount: '0',
+  },
 };
 
 export const subscriptionHistory = [

@@ -1,18 +1,18 @@
 import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import SubscriptionActivationErrors from 'ee/admin/subscriptions/show/components/subscription_activation_errors.vue';
-import SubscriptionActivationForm, {
-  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
-  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
-} from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
+import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
 import SubscriptionActivationModal from 'ee/admin/subscriptions/show/components/subscription_activation_modal.vue';
 import {
   activateSubscription,
   CONNECTIVITY_ERROR,
+  SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
+  SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   subscriptionActivationInsertCode,
 } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { preventDefault } from '../../test_helpers';
+import { activateLicenseMutationResponse } from '../mock_data';
 
 describe('SubscriptionActivationModal', () => {
   let wrapper;
@@ -106,9 +106,15 @@ describe('SubscriptionActivationModal', () => {
       it('hides the modal', () => {
         expect(wrapper.emitted('change')).toBeUndefined();
 
-        findSubscriptionActivationForm().vm.$emit(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT);
+        findSubscriptionActivationForm().vm.$emit(
+          SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+          activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license,
+        );
 
         expect(wrapper.emitted('change')).toEqual([[false]]);
+        expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT)).toEqual([
+          [activateLicenseMutationResponse.SUCCESS.data.gitlabSubscriptionActivate.license],
+        ]);
       });
     });
 
