@@ -35,13 +35,22 @@ module EE
 
           private
 
-          # In addition to routes allowed in FOSS, allow geo node update route
-          # and geo api route, on both Geo primary and secondary.
-          # If this is on a Geo secondary, also allow git write routes and custom logout routes.
-          # If in maintenance mode, don't allow git write routes on Geo secondary either
           override :allowlisted_routes
+
+          # In addition to routes allowed in FOSS, allow:
+          #
+          # - on both Geo primary and secondary
+          #    - geo node update route
+          #    - geo resync designs route
+          #    - geo custom sign_out route
+          # - on Geo primary
+          #    - geo node status update route
+          # - on Geo secondary with maintenance mode off
+          #    - git write routes
+          #
+          # @return [Boolean] true whether current route is in allow list.
           def allowlisted_routes
-            allowed = super || geo_node_update_route? || geo_api_route? || geo_sign_out_route? || admin_settings_update?
+            allowed = super || geo_node_update_route? || geo_resync_designs_route? || geo_sign_out_route? || admin_settings_update? || geo_node_status_update_route?
 
             return true if allowed
             return sign_in_route? if ::Gitlab.maintenance_mode?
@@ -87,7 +96,7 @@ module EE
             ALLOWLISTED_GIT_READ_WRITE_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
           end
 
-          def geo_api_route?
+          def geo_resync_designs_route?
             ::Gitlab::Middleware::ReadOnly::API_VERSIONS.any? do |version|
               request.path.include?("/api/v#{version}/geo_replication")
             end
@@ -97,6 +106,12 @@ module EE
             return unless request_path.start_with?('/users/auth/geo/sign_out')
 
             ALLOWLISTED_SIGN_OUT_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+          end
+
+          def geo_node_status_update_route?
+            ::Gitlab::Middleware::ReadOnly::API_VERSIONS.any? do |version|
+              request.path.include?("/api/v#{version}/geo/status")
+            end
           end
 
           def sign_in_route?
