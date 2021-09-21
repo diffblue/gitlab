@@ -73,11 +73,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe '.valid_scan_type?' do
     it 'returns true when scan type is valid' do
-      expect(described_class.valid_scan_type?('secret_detection')).to be_truthy
+      expect(Security::ScanExecutionPolicy.valid_scan_type?('secret_detection')).to be_truthy
     end
 
     it 'returns false when scan type is invalid' do
-      expect(described_class.valid_scan_type?('invalid')).to be_falsey
+      expect(Security::ScanExecutionPolicy.valid_scan_type?('invalid')).to be_falsey
     end
   end
 
@@ -206,7 +206,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       ]
     end
 
-    subject(:active_policies) { security_orchestration_policy_configuration.active_policies }
+    subject(:active_scan_execution_policies) { security_orchestration_policy_configuration.active_scan_execution_policies }
 
     before do
       allow(security_policy_management_project).to receive(:repository).and_return(repository)
@@ -214,7 +214,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     it 'returns only enabled policies' do
-      expect(active_policies).to eq(expected_active_policies)
+      expect(active_scan_execution_policies).to eq(expected_active_policies)
     end
 
     context 'when feature is disabled' do
@@ -223,7 +223,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       end
 
       it 'returns empty array' do
-        expect(active_policies).to eq([])
+        expect(active_scan_execution_policies).to eq([])
       end
     end
   end

@@ -28,7 +28,7 @@ module Security
 
     def policy
       strong_memoize(:policy) do
-        security_orchestration_policy_configuration.active_policies.at(policy_index)
+        security_orchestration_policy_configuration.active_scan_execution_policies.at(policy_index)
       end
     end
 

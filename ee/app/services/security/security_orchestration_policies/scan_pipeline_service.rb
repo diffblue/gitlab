@@ -22,7 +22,7 @@ module Security
       private
 
       def valid_scan_type?(scan_type)
-        ::Security::OrchestrationPolicyConfiguration.valid_scan_type?(scan_type)
+        Security::ScanExecutionPolicy.valid_scan_type?(scan_type)
       end
 
       def prepare_policy_configuration(action, index)

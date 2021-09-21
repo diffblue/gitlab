@@ -23,7 +23,7 @@ module Security
         return unless policy_configuration.enabled?
 
         policy[:rules].each_with_index do |rule, rule_index|
-          next if rule[:type] != Security::OrchestrationPolicyConfiguration::RULE_TYPES[:schedule]
+          next if rule[:type] != Security::ScanExecutionPolicy::RULE_TYPES[:schedule]
 
           Security::OrchestrationPolicyRuleSchedule
             .create!(

@@ -20,7 +20,7 @@ module Security
             next
           end
 
-          configuration.active_policies.each_with_index do |policy, policy_index|
+          configuration.active_scan_execution_policies.each_with_index do |policy, policy_index|
             Security::SecurityOrchestrationPolicies::ProcessRuleService
               .new(policy_configuration: configuration, policy_index: policy_index, policy: policy)
               .execute
