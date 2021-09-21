@@ -10,7 +10,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
   end
 
   let(:default_branch) { security_policy_management_project.default_branch }
-  let(:repository) { instance_double(Repository, root_ref: 'master') }
+  let(:repository) { instance_double(Repository, root_ref: 'master', empty?: false) }
   let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')]) }
 
   before do
