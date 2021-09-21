@@ -159,6 +159,22 @@ RSpec.describe EpicsFinder do
           it 'returns all epics with given label' do
             expect(epics(label_name: label.title)).to contain_exactly(labeled_epic)
           end
+
+          context 'with scoped label wildcard' do
+            let_it_be(:scoped_label_1) { create(:group_label, group: group, title: 'devops::plan') }
+            let_it_be(:scoped_label_2) { create(:group_label, group: group, title: 'devops::create') }
+
+            let_it_be(:scoped_labeled_epic_1) { create(:labeled_epic, group: group, labels: [scoped_label_1]) }
+            let_it_be(:scoped_labeled_epic_2) { create(:labeled_epic, group: group, labels: [scoped_label_2]) }
+
+            before do
+              stub_licensed_features(epics: true, scoped_labels: true)
+            end
+
+            it 'returns all epics that match the wildcard' do
+              expect(epics(label_name: 'devops::*')).to contain_exactly(scoped_labeled_epic_1, scoped_labeled_epic_2)
+            end
+          end
         end
 
         context 'by state' do
