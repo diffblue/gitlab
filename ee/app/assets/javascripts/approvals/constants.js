@@ -83,7 +83,7 @@ export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {
 export const GROUP_APPROVAL_SETTINGS_LABELS_I18N = {
   ...PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
   preventMrApprovalRuleEditLabel: s__(
-    'ApprovalSettings|Prevent editing approval rules in projects and merge requests. ',
+    'ApprovalSettings|Prevent editing approval rules in projects and merge requests.',
   ),
 };
 
