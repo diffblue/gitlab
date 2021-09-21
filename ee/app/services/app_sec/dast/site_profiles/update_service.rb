@@ -31,7 +31,7 @@ module AppSec
             })
 
             if target_url = params.delete(:target_url)
-              params[:dast_site] = DastSites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
+              params[:dast_site] = AppSec::Dast::Sites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
             end
 
             handle_secret_variable!(params, :request_headers, ::Dast::SiteProfileSecretVariable::REQUEST_HEADERS)

@@ -18,7 +18,7 @@ module AppSec
           return ServiceResponse.error(message: _('Insufficient permissions')) unless allowed?
 
           ApplicationRecord.transaction do
-            @dast_site = ::DastSites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
+            @dast_site = ::AppSec::Dast::Sites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
             params.merge!(project: project, dast_site: dast_site, name: name).compact!
 
             @dast_site_validation = find_existing_dast_site_validation
