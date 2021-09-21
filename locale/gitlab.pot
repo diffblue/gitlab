@@ -18241,6 +18241,9 @@ msgstr ""
 msgid "Integrations|Send notifications about project events to Unify Circuit."
 msgstr ""
 
+msgid "Integrations|Send notifications about project events to a Unify Circuit conversation. %{docs_link}"
+msgstr ""
+
 msgid "Integrations|Sign in to add namespaces"
 msgstr ""
 
