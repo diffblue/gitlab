@@ -35,6 +35,7 @@ class TrialsController < ApplicationController
     if params[:glm_source] == 'about.gitlab.com'
       redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true)))
     elsif @namespace = helpers.only_trialable_group_namespace
+      params[:namespace_id] = @namespace.id
       apply_trial_and_redirect
     else
       redirect_to select_trials_url(url_params)
