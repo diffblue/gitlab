@@ -8407,6 +8407,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cirunnershortsha"></a>`shortSha` | [`String`](#string) | First eight characters of the runner's token used to authenticate new job requests. Used as the runner's unique ID. |
 | <a id="cirunnerstatus"></a>`status` | [`CiRunnerStatus!`](#cirunnerstatus) | Status of the runner. |
 | <a id="cirunnertaglist"></a>`tagList` | [`[String!]`](#string) | Tags associated with the runner. |
+| <a id="cirunneruserpermissions"></a>`userPermissions` | [`RunnerPermissions!`](#runnerpermissions) | Permissions for the current user on the resource. |
 | <a id="cirunnerversion"></a>`version` | [`String`](#string) | Version of the runner. |
 
 ### `CiStage`
@@ -13675,6 +13676,16 @@ Counts of requirements by their state.
 | ---- | ---- | ----------- |
 | <a id="runnerarchitecturedownloadlocation"></a>`downloadLocation` | [`String!`](#string) | Download location for the runner for the platform architecture. |
 | <a id="runnerarchitecturename"></a>`name` | [`String!`](#string) | Name of the runner platform architecture. |
+
+### `RunnerPermissions`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="runnerpermissionsdeleterunner"></a>`deleteRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `delete_runner` on this resource. |
+| <a id="runnerpermissionsreadrunner"></a>`readRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `read_runner` on this resource. |
+| <a id="runnerpermissionsupdaterunner"></a>`updateRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `update_runner` on this resource. |
 
 ### `RunnerPlatform`
 
