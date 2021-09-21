@@ -16,6 +16,7 @@ import Dropcursor from '../extensions/dropcursor';
 import Emoji from '../extensions/emoji';
 import Figure from '../extensions/figure';
 import FigureCaption from '../extensions/figure_caption';
+import Frontmatter from '../extensions/frontmatter';
 import Gapcursor from '../extensions/gapcursor';
 import HardBreak from '../extensions/hard_break';
 import Heading from '../extensions/heading';
@@ -86,6 +87,7 @@ export const createContentEditor = ({
     Emoji,
     Figure,
     FigureCaption,
+    Frontmatter,
     Gapcursor,
     HardBreak,
     Heading,
