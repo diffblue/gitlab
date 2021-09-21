@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AuditEventPresenter < Gitlab::View::Presenter::Simple
-  presents :audit_event
+  presents ::AuditEvent, as: :audit_event
 
   def author_name
     audit_event.author_name

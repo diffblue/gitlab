@@ -4,6 +4,7 @@ module EE
   module Ci
     module PipelinePresenter
       extend ActiveSupport::Concern
+      extend ::Gitlab::Utils::DelegatorOverride
 
       def expose_security_dashboard?
         return false unless can?(current_user, :read_security_resource, pipeline.project)
@@ -18,6 +19,7 @@ module EE
         end
       end
 
+      delegator_override :retryable?
       def retryable?
         !merge_train_pipeline? && super
       end

@@ -3,6 +3,7 @@
 module EE
   module ProjectPresenter
     extend ::Gitlab::Utils::Override
+    extend ::Gitlab::Utils::DelegatorOverride
 
     override :statistics_buttons
     def statistics_buttons(show_auto_devops_callout:)
@@ -13,6 +14,7 @@ module EE
       [sast_anchor_data.presence].compact
     end
 
+    delegator_override :approver_groups
     def approver_groups
       ::ApproverGroup.filtered_approver_groups(project.approver_groups, current_user)
     end

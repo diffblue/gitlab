@@ -7,7 +7,9 @@ module Projects
       include AutoDevopsHelper
       include LatestPipelineInformation
 
-      presents :project
+      delegator_override_with Gitlab::Utils::StrongMemoize # TODO: Remove `Gitlab::Utils::StrongMemoize` inclusion as it's duplicate
+
+      presents ::Project, as: :project
 
       def to_h
         {
