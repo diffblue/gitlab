@@ -166,7 +166,7 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
   describe '.connected?' do
     context 'when there is a database issue' do
       it 'returns false when it cannot open an active database connection' do
-        allow(GeoNode.connection).to receive(:active?).and_return(false)
+        allow(GeoNode.retrieve_connection).to receive(:active?).and_return(false)
 
         expect(described_class.connected?).to be_falsey
       end
