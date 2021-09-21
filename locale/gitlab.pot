@@ -9057,6 +9057,9 @@ msgstr ""
 msgid "Content parsed with %{link}."
 msgstr ""
 
+msgid "ContentEditor|Table of Contents"
+msgstr ""
+
 msgid "ContentEditor|You have to provide a renderMarkdown function or a custom serializer"
 msgstr ""
 
