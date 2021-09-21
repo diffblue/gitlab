@@ -116,17 +116,11 @@ RSpec.describe API::Ci::Minutes do
   describe 'PATCH /namespaces/:id/minutes/move/:target_id' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:target) { create(:group, owner: namespace.owner) }
-    let_it_be(:unrelated_target) { create(:group) }
     let_it_be(:child_namespace) { create(:group, :nested) }
     let_it_be(:user) { create(:user) }
 
     let(:namespace_id) { namespace.id }
     let(:target_id) { target.id }
-
-    before do
-      namespace.add_owner(user)
-      target.add_owner(user)
-    end
 
     subject(:move_packs) { patch api("/namespaces/#{namespace_id}/minutes/move/#{target_id}", user) }
 
@@ -172,17 +166,6 @@ RSpec.describe API::Ci::Minutes do
 
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(response.body).to include('Target namespace must be a top-level namespace')
-        end
-      end
-
-      context 'when the target namespace is not owned by the same user' do
-        let(:target_id) { unrelated_target.id }
-
-        it 'returns an error' do
-          move_packs
-
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(response.body).to include('Both namespaces must share the same owner')
         end
       end
 

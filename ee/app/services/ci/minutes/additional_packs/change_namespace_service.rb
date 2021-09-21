@@ -16,7 +16,6 @@ module Ci
           authorize_current_user!
 
           validate_namespaces!
-          validate_owners!
 
           Ci::Minutes::AdditionalPack.transaction do
             update_packs
@@ -50,19 +49,9 @@ module Ci
           raise ChangeNamespaceError, 'Namespace and target must be different' if namespace == target
         end
 
-        def validate_owners!
-          shared_ids = owner_ids_for(namespace) & owner_ids_for(target)
-
-          raise ChangeNamespaceError, 'Both namespaces must share the same owner' unless shared_ids.any?
-        end
-
         def reset_ci_minutes!
           ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
           ::Ci::Minutes::RefreshCachedDataService.new(target).execute
-        end
-
-        def owner_ids_for(namespace)
-          namespace.user_namespace? ? Array(namespace.owner_id) : namespace.owner_ids
         end
       end
     end
