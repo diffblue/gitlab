@@ -3,7 +3,6 @@ import { GlDropdown, GlDropdownItem, GlTab, GlTabs } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { getLocationHash } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import * as cacheUtils from '../graphql/cache_utils';
 import { getProfileSettings } from '../settings/profiles';
 import DastFailedSiteValidations from './dast_failed_site_validations.vue';
@@ -16,7 +15,6 @@ export default {
     GlTabs,
     DastFailedSiteValidations,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     createNewProfilePaths: {
       type: Object,
@@ -224,10 +222,7 @@ export default {
 
 <template>
   <section>
-    <dast-failed-site-validations
-      v-if="glFeatures.dastFailedSiteValidations"
-      :full-path="projectFullPath"
-    />
+    <dast-failed-site-validations :full-path="projectFullPath" />
     <header>
       <div class="gl-display-flex gl-align-items-center gl-pt-6 gl-pb-4">
         <h2 class="my-0">

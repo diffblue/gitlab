@@ -12,11 +12,9 @@ module Resolvers
 
     argument :status, Types::DastSiteValidationStatusEnum,
              required: false,
-             description: 'Status of the site validation. Ignored if `dast_failed_site_validations` feature flag is disabled.'
+             description: 'Status of the site validation.'
 
     def resolve(**args)
-      args.delete(:status) unless Feature.enabled?(:dast_failed_site_validations, project, default_enabled: :yaml)
-
       DastSiteValidationsFinder
         .new(project_id: project.id, url_base: args[:normalized_target_urls], state: args[:status], most_recent: true)
         .execute

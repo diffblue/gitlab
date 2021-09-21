@@ -1,8 +1,0 @@
----
-name: dast_failed_site_validations
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56146
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/323961
-milestone: '13.10'
-type: development
-group: group::dynamic analysis
-default_enabled: true
