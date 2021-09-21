@@ -16,6 +16,22 @@ To add a deprecation, use the example.yml file in `/data/deprecations/templates`
 then run `bin/rake gitlab:docs:compile_deprecations`.
 -->
 
+## 15.2
+
+### NFS for Git repository storage deprecated
+
+With the general availability of Gitaly Cluster ([introduced in GitLab 13.0](https://about.gitlab.com/releases/2020/05/22/gitlab-13-0-released/)), we have deprecated development (bugfixes, performance improvements, etc) for NFS for Git repository storage in GitLab 14.0. We will continue to provide technical support for NFS for Git repositories throughout 14.x, but we will remove all support for NFS in GitLab 15.0. Please see our official [Statement of Support](https://about.gitlab.com/support/statement-of-support.html#gitaly-and-nfs) for further information.
+
+Gitaly Cluster offers tremendous benefits for our customers such as:
+
+- [Variable replication factors](../administration/gitaly/index.md#replication-factor).
+- [Strong consistency](../administration/gitaly/index.md#strong-consistency).
+- [Distributed read capabilities](../administration/gitaly/index.md#distributed-reads).
+
+We encourage customers currently using NFS for Git repositories to plan their migration by reviewing our documentation on [migrating to Gitaly Cluster](../administration/gitaly/index.md#migrate-to-gitaly-cluster).
+
+Announced: 2021-06-22
+
 ## 15.0
 
 ### Legacy database configuration
@@ -56,6 +72,14 @@ We decided to remove the GitLab Serverless features as they never really resonat
 
 Announced: 2021-09-22
 
+## 14.6
+
+### Release CLI be distributed as a generic package
+
+The [release-cli](https://gitlab.com/gitlab-org/release-cli) will be released as a [generic package](https://gitlab.com/gitlab-org/release-cli/-/packages) starting in GitLab 14.2. We will continue to deploy it as a binary to S3 until GitLab 14.5 and stop distributing it in S3 in GitLab 14.6.
+
+Announced: 2021-08-22
+
 ## 14.4
 
 ### Rename Task Runner pod to Toolbox
@@ -64,4 +88,4 @@ The Task Runner pod is used to execute periodic housekeeping tasks within the Gi
 
 This will result in the rename of the sub-chart: `gitlab/task-runner` to `gitlab/toolbox`. Resulting pods will be named along the lines of `{{ .Release.Name }}-toolbox`, which will often be `gitlab-toolbox`. They will be locatable with the label `app=toolbox`.
 
-Announced: 2021-09-22
+Announced: 2021-08-22

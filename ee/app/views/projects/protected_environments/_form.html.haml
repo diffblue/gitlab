@@ -11,9 +11,9 @@
         = render partial: 'projects/protected_environments/environments_dropdown', locals: { f: f, project: @project }
 
       .form-group
-        = f.label :deploy_access_levels_attributes, class: 'label-bold' do
+        %label#allowed-users-label.label-bold
           = s_('ProtectedEnvironment|Allowed to deploy')
-        = render partial: 'projects/protected_environments/deploy_access_levels_dropdown', locals: { f: f }
+        .js-allowed-to-deploy-dropdown
 
     .card-footer
       = f.submit s_('ProtectedEnvironment|Protect'), class: 'gl-button btn btn-confirm', disabled: true

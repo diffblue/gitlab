@@ -4,13 +4,7 @@
       .form-group.col-sm-12
         = label_tag :jobs_to_be_done, _("I'm signing up for GitLab because:")
         = select_tag :jobs_to_be_done,
-                options_for_select([_('I want to learn the basics of Git'),
-                  _('I want to move my repository to GitLab from somewhere else'),
-                  _('I want to store my code'),
-                  _('I want to explore GitLab to see if it’s worth switching to'),
-                  _('I want to use GitLab CI with my existing repository'),
-                  _('I’m joining my team who’s already on GitLab'),
-                  [_('A different reason'), 'other']]),
+                options_for_select(shuffled_jobs_to_be_done_options),
                 include_blank: _('Please select...'), class: 'form-control js-jobs-to-be-done-dropdown'
     .row
       .form-group.col-sm-12.js-jobs-to-be-done-other-group.hidden

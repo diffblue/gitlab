@@ -22,7 +22,7 @@ module Clusters
     attr_reader :project, :current_user, :params
 
     def can_read_cluster_agents?
-      project.feature_available?(:cluster_agents) && current_user.can?(:read_cluster, project)
+      current_user.can?(:read_cluster, project)
     end
   end
 end

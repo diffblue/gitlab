@@ -91,7 +91,7 @@ RSpec.describe TrialsController do
       end
     end
 
-    subject do
+    subject(:post_create_lead) do
       post :create_lead, params: post_params
       response
     end
@@ -109,6 +109,50 @@ RSpec.describe TrialsController do
 
         it 'redirects to trial onboarding' do
           is_expected.to redirect_to(new_users_sign_up_group_path(glm_source: 'about.gitlab.com', trial_onboarding_flow: true))
+        end
+      end
+
+      context 'when user has 1 trial eligible namespace', :experiment do
+        let_it_be(:namespace) { create(:group, path: 'namespace-test') }
+
+        let(:apply_trial_result) { true }
+
+        before do
+          namespace.add_owner(user)
+
+          allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+            allow(service).to receive(:execute).and_return({ success: apply_trial_result })
+          end
+        end
+
+        context 'when the ApplyTrialService is successful' do
+          it 'applies a trial to the namespace' do
+            gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
+            apply_trial_params = {
+              uid: user.id,
+              trial_user:  ActionController::Parameters.new(post_params).permit(:namespace_id).merge(gl_com_params)
+            }
+
+            expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+              expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: true })
+            end
+
+            post_create_lead
+          end
+
+          it "tracks for the combined_registration experiment" do
+            expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance
+
+            post_create_lead
+          end
+
+          it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+        end
+
+        context 'when the ApplyTrialService is unsuccessful' do
+          let(:apply_trial_result) { false }
+
+          it { is_expected.to render_template(:select) }
         end
       end
     end
@@ -152,7 +196,7 @@ RSpec.describe TrialsController do
           expect(lead_service).to receive(:execute).with({ trial_user: expected_params }).and_return({ success: true })
         end
 
-        subject
+        post_create_lead
       end
     end
   end

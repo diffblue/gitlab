@@ -4261,9 +4261,6 @@ msgstr ""
 msgid "ApprovalSettings|Prevent editing approval rules in projects and merge requests."
 msgstr ""
 
-msgid "ApprovalSettings|Prevent editing approval rules in projects and merge requests. "
-msgstr ""
-
 msgid "ApprovalSettings|Remove all approvals when commits are added to the source branch."
 msgstr ""
 
@@ -4763,9 +4760,6 @@ msgid "Authenticate with GitHub"
 msgstr ""
 
 msgid "Authenticated API rate limit period in seconds"
-msgstr ""
-
-msgid "Authenticated API request rate limit"
 msgstr ""
 
 msgid "Authenticated API requests"
@@ -6569,16 +6563,19 @@ msgstr ""
 msgid "Checkout|%{name}'s GitLab subscription"
 msgstr ""
 
+msgid "Checkout|%{quantity} GB of storage"
+msgstr ""
+
+msgid "Checkout|%{quantity} storage pack"
+msgid_plural "Checkout|%{quantity} storage packs"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Checkout|%{selectedPlanText} plan"
 msgstr ""
 
 msgid "Checkout|%{startDate} - %{endDate}"
 msgstr ""
-
-msgid "Checkout|%{totalCiMinutes} CI minute"
-msgid_plural "Checkout|%{totalCiMinutes} CI minutes"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "Checkout|%{totalCiMinutes} CI minutes"
 msgstr ""
@@ -6655,6 +6652,9 @@ msgstr ""
 msgid "Checkout|Failed to register credit card. Please try again."
 msgstr ""
 
+msgid "Checkout|GB"
+msgstr ""
+
 msgid "Checkout|GitLab group"
 msgstr ""
 
@@ -6691,6 +6691,9 @@ msgstr ""
 msgid "Checkout|State"
 msgstr ""
 
+msgid "Checkout|Storage packs"
+msgstr ""
+
 msgid "Checkout|Street address"
 msgstr ""
 
@@ -6712,6 +6715,9 @@ msgstr ""
 msgid "Checkout|Total minutes: %{quantity}"
 msgstr ""
 
+msgid "Checkout|Total storage: %{quantity} GB"
+msgstr ""
+
 msgid "Checkout|Users"
 msgstr ""
 
@@ -6730,7 +6736,10 @@ msgstr ""
 msgid "Checkout|company or team"
 msgstr ""
 
-msgid "Checkout|x 1,000 minutes per pack = %{strong}"
+msgid "Checkout|minutes"
+msgstr ""
+
+msgid "Checkout|x %{quantity} %{units} per pack ="
 msgstr ""
 
 msgid "Cherry-pick this commit"
@@ -9234,6 +9243,9 @@ msgstr ""
 msgid "Copy link to chart"
 msgstr ""
 
+msgid "Copy prefix"
+msgstr ""
+
 msgid "Copy reference"
 msgstr ""
 
@@ -9454,6 +9466,9 @@ msgid "Create a GitLab account first, and then connect it to your %{label} accou
 msgstr ""
 
 msgid "Create a Mattermost team for this group"
+msgstr ""
+
+msgid "Create a local proxy for storing frequently used upstream images. %{docLinkStart}Learn more%{docLinkEnd} about dependency proxies."
 msgstr ""
 
 msgid "Create a local proxy for storing frequently used upstream images. %{link_start}Learn more%{link_end} about dependency proxies."
@@ -16660,9 +16675,6 @@ msgstr ""
 msgid "Helps prevent malicious users hide their activity"
 msgstr ""
 
-msgid "Helps reduce request volume (e.g. from crawlers or abusive bots)"
-msgstr ""
-
 msgid "Helps reduce request volume (for example, from crawlers or abusive bots)"
 msgstr ""
 
@@ -16803,6 +16815,9 @@ msgid "How do I set up a Google Chat webhook?"
 msgstr ""
 
 msgid "How do I set up this service?"
+msgstr ""
+
+msgid "How do I use a web terminal?"
 msgstr ""
 
 msgid "How it works"
@@ -18233,6 +18248,9 @@ msgid "Integrations|Search Jira issues"
 msgstr ""
 
 msgid "Integrations|Send notifications about project events to Unify Circuit."
+msgstr ""
+
+msgid "Integrations|Send notifications about project events to a Unify Circuit conversation. %{docs_link}"
 msgstr ""
 
 msgid "Integrations|Sign in to add namespaces"
@@ -20954,10 +20972,10 @@ msgstr ""
 msgid "Maximum time between updates that a mirror can have when scheduled to synchronize."
 msgstr ""
 
-msgid "Maximum time for web terminal websocket connection (in seconds). 0 for unlimited."
+msgid "Maximum time that users are allowed to skip the setup of two-factor authentication (in hours). Set to 0 (zero) to enforce at next sign in."
 msgstr ""
 
-msgid "Maximum time that users are allowed to skip the setup of two-factor authentication (in hours). Set to 0 (zero) to enforce at next sign in."
+msgid "Maximum time, in seconds, for a web terminal websocket connection. 0 for unlimited."
 msgstr ""
 
 msgid "Maximum unauthenticated API requests per rate limit period per IP"
@@ -25349,9 +25367,6 @@ msgid "Please select..."
 msgstr ""
 
 msgid "Please set a new password before proceeding."
-msgstr ""
-
-msgid "Please share your feedback about %{featureName} %{linkStart}in this issue%{linkEnd} to help us improve the experience."
 msgstr ""
 
 msgid "Please solve the captcha"
@@ -30796,9 +30811,6 @@ msgstr ""
 msgid "Set limits for web and API requests."
 msgstr ""
 
-msgid "Set max session time for web terminal."
-msgstr ""
-
 msgid "Set milestone"
 msgstr ""
 
@@ -30845,6 +30857,9 @@ msgid "Set the due date to %{due_date}."
 msgstr ""
 
 msgid "Set the iteration to %{iteration_reference}."
+msgstr ""
+
+msgid "Set the maximum session time for a web terminal."
 msgstr ""
 
 msgid "Set the milestone to %{milestone_reference}."
@@ -33746,9 +33761,6 @@ msgstr ""
 msgid "The number of times an upload record could not find its file"
 msgstr ""
 
-msgid "The package registry rate limits can help reduce request volume (like from crawlers or abusive bots)."
-msgstr ""
-
 msgid "The page could not be displayed because it timed out."
 msgstr ""
 
@@ -36018,9 +36030,6 @@ msgid "Unassigned"
 msgstr ""
 
 msgid "Unauthenticated API rate limit period in seconds"
-msgstr ""
-
-msgid "Unauthenticated API request rate limit"
 msgstr ""
 
 msgid "Unauthenticated requests"

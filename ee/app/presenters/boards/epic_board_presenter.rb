@@ -2,6 +2,6 @@
 
 module Boards
   class EpicBoardPresenter < Gitlab::View::Presenter::Delegated
-    presents :epic_board
+    presents ::Boards::EpicBoard, as: :epic_board
   end
 end

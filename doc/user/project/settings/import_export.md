@@ -139,6 +139,11 @@ The following items are **not** exported:
 - Any encrypted tokens
 - Merge Request Approvers
 
+These content rules also apply to creating projects from templates on the
+[group](../../group/custom_project_templates.md)
+or [instance](../../admin_area/custom_project_templates.md)
+levels, because the same export and import mechanisms are used.
+
 NOTE:
 For more details on the specific data persisted in a project export, see the
 [`import_export.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/import_export/project/import_export.yml) file.
@@ -255,13 +260,13 @@ reduce the repository size for another import attempt.
     git reflog expire --expire=now --all
     git gc --prune=now --aggressive
 
-    # Prepare recreating an importable file 
+    # Prepare recreating an importable file
     git bundle create ../project.bundle smaller-tmp-main
     cd ..
     mv project/ ../"$EXPORT"-project
     cd ..
 
-    # Recreate an importable file 
+    # Recreate an importable file
     tar -czf "$EXPORT"-smaller.tar.gz --directory="$EXPORT"/ .
     ```
 
@@ -274,3 +279,29 @@ reduce the repository size for another import attempt.
    its [default branch](../repository/branches/default.md), and
    delete the temporary, `smaller-tmp-main` branch, and
    the local, temporary data.
+
+### Manually execute export steps
+
+Exports sometimes fail without giving enough information to troubleshoot. In these cases, it can be
+helpful to [execute the export process manually within rails](https://gitlab.com/gitlab-com/runbooks/-/blob/master/docs/uncategorized/project-export.md#export-a-project-via-rails-console).
+Execute each line individually, rather than pasting the entire block at once, so you can see any
+errors each command returns.
+
+```shell
+u = User.find_by_username('someuser')
+p = Project.find_by_full_path('some/project')
+e = Projects::ImportExport::ExportService.new(p,u)
+
+e.send(:version_saver).send(:save)
+e.send(:avatar_saver).send(:save)
+e.send(:project_tree_saver).send(:save)
+e.send(:uploads_saver).send(:save)
+e.send(:wiki_repo_saver).send(:save)
+e.send(:lfs_saver).send(:save)
+e.send(:snippets_repo_saver).send(:save)
+e.send(:design_repo_saver).send(:save)
+
+s = Gitlab::ImportExport::Saver.new(exportable: p, shared:p.import_export_shared)
+s.send(:compress_and_save)
+s.send(:save_upload)
+```

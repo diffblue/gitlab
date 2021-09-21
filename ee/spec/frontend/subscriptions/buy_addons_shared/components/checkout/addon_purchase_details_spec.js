@@ -4,7 +4,6 @@ import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import subscriptionsResolvers from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
-import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
@@ -29,7 +28,7 @@ describe('AddonPurchaseDetails', () => {
     return mockApollo;
   };
 
-  const createComponent = (stateData = {}) => {
+  const createComponent = (stateData = {}, props = {}) => {
     const apolloProvider = createMockApolloProvider(stateData);
     wrapper = mountExtended(AddonPurchaseDetails, {
       localVue,
@@ -37,14 +36,20 @@ describe('AddonPurchaseDetails', () => {
       stubs: {
         Step,
       },
+      propsData: {
+        productLabel: 'CI minute pack',
+        quantityPerPack: 1000,
+        packsFormula: 'x %{packQuantity} minutes per pack = %{strong}',
+        quantityText: '%{quantity} CI minutes',
+        totalPurchase: 'Total minutes: %{quantity}',
+        ...props,
+      },
     });
   };
 
   const findQuantity = () => wrapper.findComponent({ ref: 'quantity' });
   const findGlAlert = () => wrapper.findComponent(GlAlert);
-  const findCiMinutesQuantityText = () => wrapper.findByTestId('ci-minutes-quantity-text');
   const findProductLabel = () => wrapper.findByTestId('product-label');
-  const findSummaryLabel = () => wrapper.findComponent({ ref: 'summary-line-1' });
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 
   beforeEach(() => {
@@ -59,17 +64,8 @@ describe('AddonPurchaseDetails', () => {
     expect(findQuantity().attributes('min')).toBe('1');
   });
 
-  it('displays the alert', () => {
-    expect(findGlAlert().isVisible()).toBe(true);
-    expect(findGlAlert().text()).toMatchInterpolatedText(
-      AddonPurchaseDetails.i18n.ciMinutesAlertText,
-    );
-  });
-
-  it('displays the total CI minutes text', async () => {
-    expect(findCiMinutesQuantityText().text()).toMatchInterpolatedText(
-      'x 1,000 minutes per pack = 1,000 CI minutes',
-    );
+  it('shows the correct product label', () => {
+    expect(findProductLabel().text()).toBe('CI minute pack');
   });
 
   it('is valid', () => {
@@ -84,33 +80,25 @@ describe('AddonPurchaseDetails', () => {
     expect(isStepValid()).toBe(false);
   });
 
-  describe('labels', () => {
-    describe('when quantity is 1', () => {
-      it('shows the correct product label', () => {
-        expect(findProductLabel().text()).toBe('CI minute pack');
-      });
-
-      it('shows the correct summary label', () => {
-        createComponent({ activeStep: STEPS[1] });
-
-        expect(findSummaryLabel().text()).toBe('1 CI minute pack');
-      });
+  describe('alert', () => {
+    it('is hidden if no props passed', () => {
+      expect(findGlAlert().exists()).toBe(false);
     });
 
-    describe('when quantity is more than 1', () => {
-      const stateData = { subscription: { namespaceId: 483, quantity: 2 } };
+    it('is hidden when props are set to false', () => {
+      createComponent({}, { showAlert: false, alertText: 'Alert text about your purchase' });
+      expect(findGlAlert().exists()).toBe(false);
+    });
 
-      it('shows the correct product label', () => {
-        createComponent(stateData);
+    it('is hidden when alertText prop is missing', () => {
+      createComponent({}, { showAlert: true });
+      expect(findGlAlert().exists()).toBe(false);
+    });
 
-        expect(findProductLabel().text()).toBe('CI minute pack');
-      });
-
-      it('shows the correct summary label', () => {
-        createComponent({ ...stateData, activeStep: STEPS[1] });
-
-        expect(findSummaryLabel().text()).toBe('2 CI minute packs');
-      });
+    it('is shown', () => {
+      createComponent({}, { showAlert: true, alertText: 'Alert text about your purchase' });
+      expect(findGlAlert().isVisible()).toBe(true);
+      expect(findGlAlert().text()).toMatchInterpolatedText('Alert text about your purchase');
     });
   });
 });

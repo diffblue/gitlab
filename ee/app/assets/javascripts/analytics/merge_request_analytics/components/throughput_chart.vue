@@ -86,6 +86,9 @@ export default {
         },
         yAxis: {
           name: THROUGHPUT_CHART_STRINGS.Y_AXIS_TITLE,
+          axisLabel: {
+            formatter: (value) => value,
+          },
         },
       };
     },

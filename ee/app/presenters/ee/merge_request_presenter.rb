@@ -4,6 +4,9 @@ module EE
   module MergeRequestPresenter
     include ::VisibleApprovable
     extend ::Gitlab::Utils::Override
+    extend ::Gitlab::Utils::DelegatorOverride
+
+    delegator_override_with ::VisibleApprovable # TODO: Remove `::VisibleApprovable` inclusion as it's duplicate
 
     APPROVALS_WIDGET_FULL_TYPE = 'full'
 
@@ -33,6 +36,7 @@ module EE
       help_page_path('ci/pipelines/merge_trains.md', anchor: 'immediately-merge-a-merge-request-with-a-merge-train')
     end
 
+    delegator_override :target_project
     def target_project
       merge_request.target_project.present(current_user: current_user)
     end
@@ -41,6 +45,7 @@ module EE
       @code_owner_rules ||= merge_request.approval_rules.code_owner.with_users.to_a
     end
 
+    delegator_override :approver_groups
     def approver_groups
       ::ApproverGroup.filtered_approver_groups(merge_request.approver_groups, current_user)
     end
@@ -54,6 +59,7 @@ module EE
       expose_mr_approval_path? ? APPROVALS_WIDGET_FULL_TYPE : super
     end
 
+    delegator_override :missing_security_scan_types
     def missing_security_scan_types
       merge_request.missing_security_scan_types if expose_missing_security_scan_types?
     end

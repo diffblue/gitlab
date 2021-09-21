@@ -101,6 +101,7 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck do
 
       it "sets the git env correctly for all hooks", :request_store do
         expect(Gitaly::Repository).to receive(:new)
+                                        .at_least(:once)
                                         .with(a_hash_including(git_object_directory: "objects"))
                                         .and_call_original
 

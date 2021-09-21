@@ -54,11 +54,6 @@ describe('EE - DastProfiles', () => {
         {
           propsData: defaultProps,
           mocks: defaultMocks,
-          provide: {
-            glFeatures: {
-              dastFailedSiteValidations: true,
-            },
-          },
         },
         options,
       ),
@@ -247,20 +242,6 @@ describe('EE - DastProfiles', () => {
       getProfilesComponent(profileType).vm.$emit('delete-profile');
 
       expect(mutate).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('dastFailedSiteValidations feature flag disabled', () => {
-    it('does not render the failed site validations summary', () => {
-      createComponent({
-        provide: {
-          glFeatures: {
-            dastFailedSiteValidations: false,
-          },
-        },
-      });
-
-      expect(wrapper.findComponent(DastFailedSiteValidations).exists()).toBe(false);
     });
   });
 });

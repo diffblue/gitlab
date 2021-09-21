@@ -42,6 +42,14 @@ module Gitlab
           end
           # rubocop: enable CodeReuse/ActiveRecord
 
+          # rubocop: disable CodeReuse/ActiveRecord
+          def include_in(query)
+            query
+              .from(Arel::Nodes::Grouping.new(Arel.sql(object_type.all.to_sql)).as(object_type.table_name))
+              .joins("LEFT JOIN LATERAL (#{subquery.to_sql}) #{join_expression_name} ON TRUE")
+          end
+          # rubocop: enable CodeReuse/ActiveRecord
+
           private
 
           def resource_label_events_table

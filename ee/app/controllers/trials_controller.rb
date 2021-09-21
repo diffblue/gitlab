@@ -34,34 +34,15 @@ class TrialsController < ApplicationController
 
     if params[:glm_source] == 'about.gitlab.com'
       redirect_to(new_users_sign_up_group_path(url_params.merge(trial_onboarding_flow: true)))
+    elsif @namespace = helpers.only_trialable_group_namespace
+      apply_trial_and_redirect
     else
       redirect_to select_trials_url(url_params)
     end
   end
 
   def apply
-    return render(:select) if @namespace.invalid?
-
-    @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
-
-    if @result&.dig(:success)
-      record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @namespace.id)
-      record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
-
-      experiment(:trial_registration_with_reassurance, actor: current_user)
-        .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
-      experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
-
-      experiment(:combined_registration, user: current_user).track(:create_trial)
-
-      if discover_group_security_flow?
-        redirect_trial_user_to_feature_experiment_flow
-      else
-        redirect_to group_url(@namespace, { trial: true })
-      end
-    else
-      render :select
-    end
+    apply_trial_and_redirect
   end
 
   def extend_reactivate
@@ -202,5 +183,30 @@ class TrialsController < ApplicationController
 
   def discover_group_security_flow?
     %w(discover-group-security discover-project-security).include?(params[:glm_content])
+  end
+
+  def apply_trial_and_redirect
+    return render(:select) if @namespace.invalid?
+
+    @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
+
+    if @result&.dig(:success)
+      record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @namespace.id)
+      record_experiment_conversion_event(:remove_known_trial_form_fields_welcoming)
+
+      experiment(:trial_registration_with_reassurance, actor: current_user)
+        .track(:apply_trial, label: 'trials:apply', namespace: @namespace, user: current_user)
+      experiment(:force_company_trial, user: current_user).track(:create_trial, namespace: @namespace, user: current_user, label: 'trials_controller') if @namespace.created_at > 24.hours.ago
+
+      experiment(:combined_registration, user: current_user).track(:create_trial)
+
+      if discover_group_security_flow?
+        redirect_trial_user_to_feature_experiment_flow
+      else
+        redirect_to group_url(@namespace, { trial: true })
+      end
+    else
+      render :select
+    end
   end
 end

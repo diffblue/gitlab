@@ -3,7 +3,7 @@
 class SubscriptionPresenter < Gitlab::View::Presenter::Delegated
   GRACE_PERIOD_EXTENSION_DAYS = 14.days
 
-  presents :subscription
+  presents ::Subscription, as: :subscription
 
   def block_changes?
     will_block_changes? && (block_changes_at < Date.today)

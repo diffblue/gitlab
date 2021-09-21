@@ -83,16 +83,6 @@ RSpec.describe Resolvers::DastSiteValidationResolver do
 
         it { is_expected.to contain_exactly(dast_site_validation4) }
       end
-
-      context 'when dast_failed_site_validations feature flag is disabled' do
-        let(:status) { 'PASSED_VALIDATION' }
-
-        before do
-          stub_feature_flags(dast_failed_site_validations: false)
-        end
-
-        it_behaves_like 'there is no filtering'
-      end
     end
   end
 
