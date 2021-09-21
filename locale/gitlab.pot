@@ -34157,6 +34157,9 @@ msgstr ""
 msgid "There was an error fetching projects"
 msgstr ""
 
+msgid "There was an error fetching search autocomplete suggestions"
+msgstr ""
+
 msgid "There was an error fetching stage total counts"
 msgstr ""
 
