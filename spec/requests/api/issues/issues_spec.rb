@@ -262,6 +262,38 @@ RSpec.describe API::Issues do
 
           it_behaves_like 'issues statistics'
         end
+
+        context 'with search param' do
+          let(:params) { { scope: 'all', search: 'foo' } }
+          let(:counts) { { all: 1, closed: 0, opened: 1 } }
+
+          it_behaves_like 'issues statistics'
+
+          context 'with anonymous user' do
+            let(:user) { nil }
+
+            context 'with disable_anonymous_search disabled' do
+              before do
+                stub_feature_flags(disable_anonymous_search: false)
+              end
+
+              it_behaves_like 'issues statistics'
+            end
+
+            context 'with disable_anonymous_search enabled' do
+              before do
+                stub_feature_flags(disable_anonymous_search: true)
+              end
+
+              it 'returns a unprocessable entity 422' do
+                get api("/issues_statistics"), params: params
+
+                expect(response).to have_gitlab_http_status(:unprocessable_entity)
+                expect(json_response['message']).to include('User must be authenticated to use search')
+              end
+            end
+          end
+        end
       end
     end
 
