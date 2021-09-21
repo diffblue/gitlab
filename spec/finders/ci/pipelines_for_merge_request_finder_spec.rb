@@ -134,39 +134,8 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       end
     end
 
-    shared_examples 'returns all pipelines for merge request' do
-      context 'when pipelines exist for the branch and merge request' do
-        let(:source_ref) { 'feature' }
-        let(:target_ref) { 'master' }
-
-        let!(:branch_pipeline) do
-          create(:ci_pipeline, source: :push, project: project,
-            ref: source_ref, sha: shas.second)
-        end
-
-        let!(:tag_pipeline) do
-          create(:ci_pipeline, project: project, ref: source_ref, tag: true)
-        end
-
-        let!(:detached_merge_request_pipeline) do
-          create(:ci_pipeline, source: :merge_request_event, project: project,
-            ref: source_ref, sha: shas.second, merge_request: merge_request)
-        end
-
-        let(:merge_request) do
-          create(:merge_request, source_project: project, source_branch: source_ref,
-            target_project: project, target_branch: target_ref)
-        end
-
-        let(:project) { create(:project, :repository) }
-        let(:shas) { project.repository.commits(source_ref, limit: 2).map(&:id) }
-
-        before do
-          create(:merge_request_diff_commit,
-            merge_request_diff: merge_request.merge_request_diff,
-            sha: shas.second, relative_order: 1)
-        end
-
+    context 'when pipelines exist for the branch and merge request' do
+      shared_examples 'returns all pipelines for merge request' do
         it 'returns merge request pipeline first' do
           expect(subject.all).to eq([detached_merge_request_pipeline, branch_pipeline])
         end
@@ -174,12 +143,12 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
         context 'when there are a branch pipeline and a merge request pipeline' do
           let!(:branch_pipeline_2) do
             create(:ci_pipeline, source: :push, project: project,
-              ref: source_ref, sha: shas.first)
+                   ref: source_ref, sha: shas.first)
           end
 
           let!(:detached_merge_request_pipeline_2) do
             create(:ci_pipeline, source: :merge_request_event, project: project,
-              ref: source_ref, sha: shas.first, merge_request: merge_request)
+                   ref: source_ref, sha: shas.first, merge_request: merge_request)
           end
 
           it 'returns merge request pipelines first' do
@@ -194,7 +163,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
         context 'when there are multiple merge request pipelines from the same branch' do
           let!(:branch_pipeline_2) do
             create(:ci_pipeline, source: :push, project: project,
-              ref: source_ref, sha: shas.first)
+                   ref: source_ref, sha: shas.first)
           end
 
           let!(:branch_pipeline_with_sha_not_belonging_to_merge_request) do
@@ -203,19 +172,19 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
 
           let!(:detached_merge_request_pipeline_2) do
             create(:ci_pipeline, source: :merge_request_event, project: project,
-              ref: source_ref, sha: shas.first, merge_request: merge_request_2)
+                   ref: source_ref, sha: shas.first, merge_request: merge_request_2)
           end
 
           let(:merge_request_2) do
             create(:merge_request, source_project: project, source_branch: source_ref,
-              target_project: project, target_branch: 'stable')
+                   target_project: project, target_branch: 'stable')
           end
 
           before do
             shas.each.with_index do |sha, index|
               create(:merge_request_diff_commit,
-                merge_request_diff: merge_request_2.merge_request_diff,
-                sha: sha, relative_order: index)
+                     merge_request_diff: merge_request_2.merge_request_diff,
+                     sha: sha, relative_order: index)
             end
           end
 
@@ -235,7 +204,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
         context 'when detached merge request pipeline is run on head ref of the merge request' do
           let!(:detached_merge_request_pipeline) do
             create(:ci_pipeline, source: :merge_request_event, project: project,
-              ref: merge_request.ref_path, sha: shas.second, merge_request: merge_request)
+                   ref: merge_request.ref_path, sha: shas.second, merge_request: merge_request)
           end
 
           it 'sets the head ref of the merge request to the pipeline ref' do
@@ -246,17 +215,81 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
             expect(merge_request.all_pipelines).to include(detached_merge_request_pipeline)
           end
         end
+
+        it 'does not write a log message' do
+          allow(Gitlab::AppLogger).to receive(:warn).and_call_original
+
+          subject.all
+
+          expect(Gitlab::AppLogger).not_to have_received(:warn)
+        end
       end
-    end
 
-    it_behaves_like 'returns all pipelines for merge request'
+      let(:source_ref) { 'feature' }
+      let(:target_ref) { 'master' }
 
-    context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag disabled' do
+      let!(:branch_pipeline) do
+        create(:ci_pipeline, source: :push, project: project,
+               ref: source_ref, sha: shas.second)
+      end
+
+      let!(:tag_pipeline) do
+        create(:ci_pipeline, project: project, ref: source_ref, tag: true)
+      end
+
+      let!(:detached_merge_request_pipeline) do
+        create(:ci_pipeline, source: :merge_request_event, project: project,
+               ref: source_ref, sha: shas.second, merge_request: merge_request)
+      end
+
+      let(:merge_request) do
+        create(:merge_request, source_project: project, source_branch: source_ref,
+               target_project: project, target_branch: target_ref)
+      end
+
+      let(:project) { create(:project, :repository) }
+      let(:shas) { project.repository.commits(source_ref, limit: 2).map(&:id) }
+
       before do
-        stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: false)
+        create(:merge_request_diff_commit,
+               merge_request_diff: merge_request.merge_request_diff,
+               sha: shas.second, relative_order: 1)
       end
 
-      it_behaves_like 'returns all pipelines for merge request'
+      context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag enabled' do
+        before do
+          stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: merge_request.source_project)
+        end
+
+        it_behaves_like 'returns all pipelines for merge request'
+
+        context 'when total commits exceed the limit' do
+          before do
+            stub_const("#{described_class}::COMMITS_LIMIT", 1)
+          end
+
+          it 'writes a log message' do
+            allow(Gitlab::AppLogger).to receive(:warn).and_call_original
+
+            subject.all
+
+            expect(Gitlab::AppLogger).to have_received(:warn).with(
+              message: "A merge request has more than #{described_class::COMMITS_LIMIT} commits",
+              project_id: merge_request.source_project.id,
+              merge_request_id: merge_request.id,
+              total_commits: 2
+            )
+          end
+        end
+      end
+
+      context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag disabled' do
+        before do
+          stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: false)
+        end
+
+        it_behaves_like 'returns all pipelines for merge request'
+      end
     end
   end
 end
