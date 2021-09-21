@@ -107,7 +107,7 @@ RSpec.describe 'Project mirror', :js do
     end
 
     describe 'password authentication' do
-      it 'can be set up' do
+      it 'can be set up', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/329304' do
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
