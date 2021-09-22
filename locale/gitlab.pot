@@ -694,6 +694,9 @@ msgstr ""
 msgid "%{label_for_message} unavailable"
 msgstr ""
 
+msgid "%{lessThan} 1 hour"
+msgstr ""
+
 msgid "%{lets_encrypt_link_start}Let's Encrypt%{lets_encrypt_link_end} is a free, automated, and open certificate authority (CA) that issues digital certificates to enable HTTPS (SSL/TLS) for sites."
 msgstr ""
 
@@ -1052,9 +1055,6 @@ msgid "%{webhooks_link_start}%{webhook_type}%{link_end} enable you to send notif
 msgstr ""
 
 msgid "%{wildcards_link_start}Wildcards%{wildcards_link_end} such as %{code_tag_start}v*%{code_tag_end} or %{code_tag_start}*-release%{code_tag_end} are supported."
-msgstr ""
-
-msgid "&lt; 1 hour"
 msgstr ""
 
 msgid "'%{data}' at %{location} does not match format: %{format}"

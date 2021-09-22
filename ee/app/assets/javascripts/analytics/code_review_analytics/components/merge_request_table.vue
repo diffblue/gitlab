@@ -2,7 +2,6 @@
 import { GlTable, GlLink, GlIcon, GlAvatarLink, GlAvatar, GlTooltipDirective } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapState } from 'vuex';
-import { sanitize } from '~/lib/dompurify';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { __, sprintf, n__ } from '~/locale';
 import ApproversColumn from './approvers_column.vue';
@@ -40,7 +39,7 @@ export default {
         return n__('1 hour', '%d hours', hours);
       }
 
-      return sanitize(__('&lt; 1 hour'), { ALLOWED_TAGS: [] });
+      return sprintf(__('%{lessThan} 1 hour'), { lessThan: '<' }, false);
     },
   },
   tableHeaderFields: [
@@ -118,7 +117,7 @@ export default {
 
     <template #cell(review_time)="{ value }">
       <template v-if="showReviewTime(value)">
-        <span v-html="formatReviewTime(value) /* eslint-disable-line vue/no-v-html */"></span>
+        <span v-text="formatReviewTime(value)"></span>
       </template>
       <template v-else> &ndash; </template>
     </template>
