@@ -1,5 +1,6 @@
 <script>
 import { GlLabel, GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { SCOPED_LABEL_DELIMITER } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import { DELETE_BUTTON_LABEL, EDIT_BUTTON_LABEL } from '../constants';
 
 export default {
@@ -22,7 +23,7 @@ export default {
   },
   computed: {
     isScoped() {
-      return this.framework.name.includes('::');
+      return this.framework.name.includes(SCOPED_LABEL_DELIMITER);
     },
   },
   i18n: {
