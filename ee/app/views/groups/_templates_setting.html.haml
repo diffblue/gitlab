@@ -7,7 +7,8 @@
     %button.btn.gl-button.js-settings-toggle{ type: 'button' }
       = expanded ? _('Collapse') : _('Expand')
     %p
-      = _('Set a template repository for projects in this group')
+      = _('Select a repository containing templates for common files.')
+      = link_to _('What templates can I create?'), help_page_path('user/admin_area/settings/instance_template_repository.md', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     = form_for @group, url: group_path, html: { class: 'fieldset-form' } do |f|
       = form_errors(@group)
@@ -17,7 +18,8 @@
           = f.label :file_template_project_id, class: 'label-light' do
             .form-text.text-muted
               = _('Select a template repository')
-              = link_to sprite_icon('question-o'), help_page_path('user/group/index.md', anchor: 'group-file-templates'), target: '_blank'
           = project_select_tag('group[file_template_project_id]', class: 'project-item-select hidden-filter-value qa-file-template-repository-dropdown', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
             placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true }, value: @group.checked_file_template_project_id)
+          = s_('Create common files more quickly, and standardize their format.')
+          = link_to s_("How do I use file templates?"), help_page_path('user/project/repository/web_editor.md', anchor: 'template-dropdowns'), target: '_blank', rel: 'noopener noreferrer'
       = f.submit _('Save changes'), class: "btn gl-button btn-success", data: { qa_selector: 'save_changes_button' }
