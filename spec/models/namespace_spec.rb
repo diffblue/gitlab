@@ -200,9 +200,7 @@ RSpec.describe Namespace do
       let(:namespace_type) { user_sti_name }
 
       it 'is valid' do
-        # TODO: We create a normal Namespace until
-        #       https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68894 is ready
-        expect(Namespace.find(namespace.id)).to be_a(Namespace)
+        expect(Namespace.find(namespace.id)).to be_a(Namespaces::UserNamespace)
         expect(namespace.kind).to eq('user')
         expect(namespace.user_namespace?).to be_truthy
       end
@@ -221,7 +219,7 @@ RSpec.describe Namespace do
     context 'creating an unknown Namespace type' do
       let(:namespace_type) { 'One' }
 
-      it 'defaults to a Namespace' do
+      it 'creates a default Namespace' do
         expect(Namespace.find(namespace.id)).to be_a(Namespace)
         expect(namespace.kind).to eq('user')
         expect(namespace.user_namespace?).to be_truthy
