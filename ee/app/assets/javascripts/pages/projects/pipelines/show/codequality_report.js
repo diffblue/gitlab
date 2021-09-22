@@ -11,8 +11,18 @@ export default () => {
 
   if (tabsElement && codequalityTab) {
     const fetchReportAction = 'fetchReport';
-    const { codequalityReportDownloadPath, blobPath } = codequalityTab.dataset;
-    const store = createStore({ endpoint: codequalityReportDownloadPath, blobPath });
+    const {
+      codequalityReportDownloadPath,
+      blobPath,
+      projectPath,
+      pipelineIid,
+    } = codequalityTab.dataset;
+    const store = createStore({
+      endpoint: codequalityReportDownloadPath,
+      blobPath,
+      projectPath,
+      pipelineIid,
+    });
 
     const isCodequalityTabActive = Boolean(
       document.querySelector('.pipelines-tabs > li > a.codequality-tab.active'),

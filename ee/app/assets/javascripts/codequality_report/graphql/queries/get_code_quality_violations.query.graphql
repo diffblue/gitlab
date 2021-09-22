@@ -1,0 +1,23 @@
+query getCodeQualityViolations($projectPath: ID!, $iid: ID!, $first: Int, $after: String) {
+  project(fullPath: $projectPath) {
+    pipeline(iid: $iid) {
+      codeQualityReports(first: $first, after: $after) {
+        count
+        edges {
+          node {
+            line
+            description
+            path
+            fingerprint
+            severity
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+}
