@@ -48,10 +48,10 @@ RSpec.describe Mutations::DastSiteValidations::Revoke do
           end
         end
 
-        it 'correctly calls DastSiteValidations::RevokeService' do
+        it 'correctly calls AppSec::Dast::SiteValidations::RevokeService' do
           params = { container: project, params: { url_base: dast_site_validation1.url_base } }
 
-          expect(DastSiteValidations::RevokeService).to receive(:new).with(params).and_call_original
+          expect(AppSec::Dast::SiteValidations::RevokeService).to receive(:new).with(params).and_call_original
 
           subject
         end

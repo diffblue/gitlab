@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DastSiteValidations::RevokeService do
+RSpec.describe AppSec::Dast::SiteValidations::RevokeService do
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_site_token) { create(:dast_site_token, project: project) }
   let_it_be(:common_url_base) { DastSiteValidation.get_normalized_url_base(dast_site_token.url) }
