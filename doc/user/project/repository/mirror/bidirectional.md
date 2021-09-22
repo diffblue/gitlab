@@ -141,7 +141,7 @@ Note that this sample has a few limitations:
 
 WARNING:
 Bidirectional mirroring should not be used as a permanent configuration. Refer to
-[Migrating from Perforce Helix](../import/perforce.md) for alternative migration approaches.
+[Migrating from Perforce Helix](../../import/perforce.md) for alternative migration approaches.
 
 [Git Fusion](https://www.perforce.com/manuals/git-fusion/#Git-Fusion/section_avy_hyc_gl.html) provides a Git interface
 to [Perforce Helix](https://www.perforce.com/products) which can be used by GitLab to bidirectionally
