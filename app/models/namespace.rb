@@ -101,6 +101,8 @@ class Namespace < ApplicationRecord
       saved_change_to_name? || saved_change_to_path? || saved_change_to_parent_id?
   }
 
+  # TODO: change to `type: Namespaces::UserNamespace.sti_name` when
+  #       working on issue https://gitlab.com/gitlab-org/gitlab/-/issues/341070
   scope :user_namespaces, -> { where(type: [nil, Namespaces::UserNamespace.sti_name]) }
   scope :sort_by_type, -> { order(Gitlab::Database.nulls_first_order(:type)) }
   scope :include_route, -> { includes(:route) }

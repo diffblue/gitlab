@@ -1343,6 +1343,8 @@ RSpec.describe User do
     let_it_be(:free_group) { create(:group_with_plan, plan: :free_plan) }
     let_it_be(:group_without_plan) { create(:group) }
 
+    # TODO: this `where/when` can be removed in issue https://gitlab.com/gitlab-org/gitlab/-/issues/341070
+    #       At that point we only need to check `user_namespace`
     where(namespace_type: [:namespace, :user_namespace])
 
     with_them do

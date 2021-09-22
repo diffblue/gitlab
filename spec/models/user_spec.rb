@@ -2544,6 +2544,8 @@ RSpec.describe User do
   describe '.find_by_full_path' do
     using RSpec::Parameterized::TableSyntax
 
+    # TODO: this `where/when` can be removed in issue https://gitlab.com/gitlab-org/gitlab/-/issues/341070
+    #       At that point we only need to check `user_namespace`
     where(namespace_type: [:namespace, :user_namespace])
 
     with_them do
