@@ -98,6 +98,7 @@ categories << :database if helper.mr_labels.include?('database')
 
 # Ensure to spin for Product Intelligence reviewer when ~"product intelligence::review pending" is applied
 categories << :product_intelligence if helper.mr_labels.include?("product intelligence::review pending")
+categories.delete(:product_intelligence) unless helper.mr_labels.include?("product intelligence")
 
 if changes.any?
   project = project_helper.project_name
