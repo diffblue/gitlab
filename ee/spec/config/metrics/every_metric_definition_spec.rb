@@ -12,6 +12,7 @@ RSpec.describe 'Every metric definition' do
       testing_total_unique_counts
       user_auth_by_provider
       package_events_i_package_container_push_package
+      package_events_i_package_container_pull_package
     ).freeze
   end
 
