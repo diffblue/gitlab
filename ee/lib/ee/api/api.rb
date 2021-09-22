@@ -30,7 +30,7 @@ module EE
         mount ::API::GroupPushRule
         mount ::API::MergeTrains
         mount ::API::GroupHooks
-        mount ::API::GroupMergeRequestApprovalSettings
+        mount ::API::MergeRequestApprovalSettings
         mount ::API::Scim
         mount ::API::ManagedLicenses
         mount ::API::ProjectApprovals

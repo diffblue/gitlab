@@ -2,12 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupMergeRequestApprovalSettings do
+RSpec.describe API::MergeRequestApprovalSettings do
   let_it_be_with_reload(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:project) { create(:project, group: group) }
   let_it_be(:setting) { create(:group_merge_request_approval_setting, group: group) }
-
-  let(:url) { "/groups/#{group.id}/merge_request_approval_setting" }
 
   shared_examples "resolvable" do
     using RSpec::Parameterized::TableSyntax
@@ -44,6 +43,8 @@ RSpec.describe API::GroupMergeRequestApprovalSettings do
   end
 
   describe 'GET /groups/:id/merge_request_approval_settings' do
+    let(:url) { "/groups/#{group.id}/merge_request_approval_setting" }
+
     context 'when feature flag is disabled' do
       before do
         stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
@@ -131,6 +132,7 @@ RSpec.describe API::GroupMergeRequestApprovalSettings do
   end
 
   describe 'PUT /groups/:id/merge_request_approval_setting' do
+    let(:url) { "/groups/#{group.id}/merge_request_approval_setting" }
     let(:params) { { allow_author_approval: true } }
 
     context 'when feature flag is disabled' do
@@ -172,13 +174,13 @@ RSpec.describe API::GroupMergeRequestApprovalSettings do
         end
 
         context 'when update fails' do
-          let(:params) { { allow_author_approval: nil } }
+          let(:params) { { allow_author_approval: 45 } }
 
           it 'returns 400 status', :aggregate_failures do
             put api(url, user), params: params
 
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to eq('allow_author_approval' => ['must be a boolean value'])
+            expect(json_response['error']).to match(/allow_.*_approval is invalid/)
           end
         end
 
@@ -206,6 +208,101 @@ RSpec.describe API::GroupMergeRequestApprovalSettings do
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
+      end
+    end
+  end
+
+  describe 'GET /projects/:id/merge_request_approval_settings' do
+    let(:url) { "/projects/#{project.id}/merge_request_approval_setting" }
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+      end
+
+      it 'returns 404 status' do
+        get api(url, user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature flag is enabled' do
+      before do
+        group.add_owner(user)
+        allow(Ability).to receive(:allowed?).and_call_original
+        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+        stub_licensed_features(group_merge_request_approval_settings: true)
+        allow(Ability).to receive(:allowed?)
+                            .with(user, :admin_merge_request_approval_settings, project)
+                            .and_return(true)
+      end
+
+      it 'matches the response schema' do
+        get api(url, user)
+
+        expect(response).to match_response_schema('public_api/v4/group_merge_request_approval_settings', dir: 'ee')
+      end
+
+      context 'when the project does not have existing settings' do
+        before do
+          project.update!(
+            merge_requests_author_approval: nil,
+            merge_requests_disable_committers_approval: nil,
+            disable_overriding_approvers_per_merge_request: nil,
+            reset_approvals_on_push: nil,
+            require_password_to_approve: nil
+          )
+        end
+
+        it 'returns in-memory default settings', :aggregate_failures do
+          get api(url, user)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['allow_author_approval']['value']).to eq(false)
+          expect(json_response['allow_committer_approval']['value']).to eq(false)
+          expect(json_response['allow_overrides_to_approver_list_per_merge_request']['value']).to eq(false)
+          expect(json_response['retain_approvals_on_push']['value']).to eq(false)
+          expect(json_response['require_password_to_approve']['value']).to eq(false)
+        end
+      end
+    end
+  end
+
+  describe 'PUT /projects/:id/merge_request_approval_settings' do
+    let(:url) { "/projects/#{project.id}/merge_request_approval_setting" }
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+      end
+
+      it 'returns 404 status' do
+        put api(url, user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature flag is enabled' do
+      let(:params) { { retain_approvals_on_push: false } }
+
+      before do
+        group.add_owner(user)
+        allow(Ability).to receive(:allowed?).and_call_original
+        stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+        stub_licensed_features(group_merge_request_approval_settings: true)
+        allow(Ability).to receive(:allowed?)
+                            .with(user, :admin_merge_request_approval_settings, project)
+                            .and_return(true)
+      end
+
+      it 'matches the response schema and updates the params' do
+        put api(url, user), params: params
+
+        expect(project.reset_approvals_on_push).to be true
+
+        expect(response).to match_response_schema('public_api/v4/group_merge_request_approval_settings', dir: 'ee')
       end
     end
   end

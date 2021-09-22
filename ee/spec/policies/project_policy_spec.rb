@@ -1404,6 +1404,35 @@ RSpec.describe ProjectPolicy do
     end
   end
 
+  describe ':admin_merge_request_approval_settings' do
+    let(:project) { private_project }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:role, :licensed, :allowed) do
+      :guest      | true  | false
+      :reporter   | true  | false
+      :developer  | true  | false
+      :maintainer | false | false
+      :maintainer | true  | false
+      :owner      | false | false
+      :owner      | true  | true
+      :admin      | true  | true
+      :admin      | false | false
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      before do
+        stub_licensed_features(group_merge_request_approval_settings: licensed)
+        enable_admin_mode!(current_user) if role == :admin
+      end
+
+      it { is_expected.to(allowed ? be_allowed(:admin_merge_request_approval_settings) : be_disallowed(:admin_merge_request_approval_settings)) }
+    end
+  end
+
   describe ':modify_approvers_rules' do
     it_behaves_like 'merge request approval settings' do
       let(:app_setting) { :disable_overriding_approvers_per_merge_request }

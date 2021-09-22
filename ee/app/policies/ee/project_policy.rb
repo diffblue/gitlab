@@ -32,6 +32,10 @@ module EE
           ::Gitlab::CurrentSettings.disable_overriding_approvers_per_merge_request
       end
 
+      condition(:group_merge_request_approval_settings_enabled) do
+        @subject.feature_available?(:group_merge_request_approval_settings)
+      end
+
       with_scope :global
       condition(:locked_merge_request_author_setting) do
         License.feature_available?(:admin_merge_request_approvers_rules) &&
@@ -387,6 +391,10 @@ module EE
       end
 
       rule { auditor | can?(:developer_access) }.enable :add_project_to_instance_security_dashboard
+
+      rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
+        enable :admin_merge_request_approval_settings
+      end
     end
 
     override :lookup_access_level!
