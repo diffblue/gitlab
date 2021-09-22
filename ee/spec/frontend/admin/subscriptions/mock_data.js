@@ -139,3 +139,6 @@ export const activateLicenseMutationResponse = {
     },
   },
 };
+
+export const fakeActivationCodeTrimmed = 'aaaassssddddffff992200gg';
+export const fakeActivationCode = `    ${fakeActivationCodeTrimmed}   `;

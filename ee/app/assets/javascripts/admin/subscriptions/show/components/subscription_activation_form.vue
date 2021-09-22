@@ -20,6 +20,15 @@ import {
 } from '../constants';
 import { getErrorsAsData, getLicenseFromData, updateSubscriptionAppCache } from '../graphql/utils';
 
+const feedbackMap = {
+  valueMissing: {
+    isInvalid: (el) => el.validity?.valueMissing,
+  },
+  patternMismatch: {
+    isInvalid: (el) => el.validity?.patternMismatch,
+  },
+};
+
 export default {
   name: 'SubscriptionActivationForm',
   components: {
@@ -33,12 +42,14 @@ export default {
   },
   i18n: {
     acceptTerms: subscriptionActivationForm.acceptTerms,
+    activationCodeFeedback: subscriptionActivationForm.activationCodeFeedback,
     activateLabel,
     activationCode: subscriptionActivationForm.activationCode,
+    acceptTermsFeedback: subscriptionActivationForm.acceptTermsFeedback,
     pasteActivationCode: subscriptionActivationForm.pasteActivationCode,
   },
   directives: {
-    validation: validation(),
+    validation: validation(feedbackMap),
   },
   props: {
     hideSubmitButton: {
@@ -73,9 +84,6 @@ export default {
     checkboxLabelClass() {
       // by default, if the value is not false the text will look green, therefore we force it to gray-900
       return this.form.fields.terms.state === false ? '' : 'gl-text-gray-900!';
-    },
-    isRequestingActivation() {
-      return this.isLoading;
     },
   },
   methods: {
@@ -132,6 +140,7 @@ export default {
       <gl-form-group
         class="gl-flex-grow-1"
         :invalid-feedback="form.fields.activationCode.feedback"
+        :state="form.fields.activationCode.state"
         data-testid="form-group-activation-code"
       >
         <label class="gl-w-full" for="activation-code-group">
@@ -141,21 +150,29 @@ export default {
           id="activation-code-group"
           v-model.trim="form.fields.activationCode.value"
           v-validation:[form.showValidation]
+          class="gl-mb-4"
           :disabled="isLoading"
           :placeholder="$options.i18n.pasteActivationCode"
           :state="form.fields.activationCode.state"
+          :validation-message="$options.i18n.activationCodeFeedback"
           name="activationCode"
-          class="gl-mb-4"
+          pattern="\w{24}"
           required
         />
       </gl-form-group>
 
-      <gl-form-group class="gl-mb-0" data-testid="form-group-terms">
+      <gl-form-group
+        class="gl-mb-0"
+        :invalid-feedback="form.fields.terms.feedback"
+        :state="form.fields.terms.state"
+        data-testid="form-group-terms"
+      >
         <gl-form-checkbox
           id="subscription-form-terms-check"
           v-model="form.fields.terms.value"
           v-validation:[form.showValidation]
           :state="form.fields.terms.state"
+          :validation-message="$options.i18n.acceptTermsFeedback"
           name="terms"
           required
         >
@@ -173,7 +190,7 @@ export default {
 
       <gl-button
         v-if="!hideSubmitButton"
-        :loading="isRequestingActivation"
+        :loading="isLoading"
         category="primary"
         class="gl-mt-6 js-no-auto-disable"
         data-testid="activate-button"

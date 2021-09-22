@@ -82,10 +82,14 @@ export const manualSyncFailureText = s__(
 
 export const subscriptionActivationForm = {
   activationCode: s__('SuperSonics|Activation code'),
+  activationCodeFeedback: s__(
+    'SuperSonics|The activation code should be a 24-character alphanumeric string',
+  ),
   pasteActivationCode: s__('SuperSonics|Paste your activation code'),
   acceptTerms: s__(
     'SuperSonics|I agree that my use of the GitLab Software is subject to the Subscription Agreement located at the %{linkStart}Terms of Service%{linkEnd}, unless otherwise agreed to in writing with GitLab.',
   ),
+  acceptTermsFeedback: s__('SuperSonics|Please agree to the Subscription Agreement'),
 };
 
 export const subscriptionSyncStatus = {
