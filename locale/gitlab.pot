@@ -32765,6 +32765,9 @@ msgstr ""
 msgid "SuperSonics|Plan"
 msgstr ""
 
+msgid "SuperSonics|Please agree to the Subscription Agreement"
+msgstr ""
+
 msgid "SuperSonics|Ready to get started? A GitLab plan is ideal for scaling organizations and for multi team usage."
 msgstr ""
 
@@ -32793,6 +32796,9 @@ msgid "SuperSonics|Sync subscription request."
 msgstr ""
 
 msgid "SuperSonics|The activation code is not valid. Please make sure to copy it exactly from the Customers Portal or confirmation email. Learn more about %{linkStart}activating your subscription%{linkEnd}."
+msgstr ""
+
+msgid "SuperSonics|The activation code should be a 24-character alphanumeric string"
 msgstr ""
 
 msgid "SuperSonics|There is a connectivity issue."

@@ -8,21 +8,23 @@ import {
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   subscriptionQueries,
+  subscriptionActivationForm,
 } from 'ee/admin/subscriptions/show/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { preventDefault, stopPropagation } from '../../test_helpers';
-import { activateLicenseMutationResponse } from '../mock_data';
+import {
+  activateLicenseMutationResponse,
+  fakeActivationCodeTrimmed,
+  fakeActivationCode,
+} from '../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
 
 describe('SubscriptionActivationForm', () => {
   let wrapper;
-
-  const fakeActivationCodeTrimmed = 'aaasddfffdddas';
-  const fakeActivationCode = `${fakeActivationCodeTrimmed}   `;
 
   const createMockApolloProvider = (resolverMock) => {
     localVue.use(VueApollo);
@@ -32,8 +34,8 @@ describe('SubscriptionActivationForm', () => {
   const findActivateButton = () => wrapper.findByTestId('activate-button');
   const findAgreementCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findAgreementCheckboxInput = () => findAgreementCheckbox().find('input');
-  const findAgreementCheckboxFormGroupSpan = () =>
-    wrapper.findByTestId('form-group-terms').find('span');
+  const findAgreementCheckboxFormGroup = () => wrapper.findByTestId('form-group-terms');
+  const findAgreementCheckboxFormGroupSpan = () => findAgreementCheckboxFormGroup().find('span');
   const findActivationCodeFormGroup = () => wrapper.findByTestId('form-group-activation-code');
   const findActivationCodeInput = () => wrapper.findComponent(GlFormInput);
   const findActivateSubscriptionForm = () => wrapper.findComponent(GlForm);
@@ -102,16 +104,55 @@ describe('SubscriptionActivationForm', () => {
       findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
     });
 
-    it('shows an error for the text field', () => {
-      expect(findActivationCodeFormGroup().text()).toContain('Please fill out this field.');
+    it('shows the help text field', () => {
+      expect(findActivationCodeFormGroup().text()).toContain(
+        subscriptionActivationForm.activationCodeFeedback,
+      );
     });
 
-    it('applies the correct class', () => {
+    it('applies the correct class and shows help text field', () => {
       expect(findAgreementCheckboxFormGroupSpan().attributes('class')).toBe('');
+      expect(findAgreementCheckboxFormGroup().text()).toContain(
+        subscriptionActivationForm.acceptTermsFeedback,
+      );
     });
 
     it('does not perform any mutation', () => {
       expect(mutationMock).toHaveBeenCalledTimes(0);
+    });
+
+    describe('adds text that does not match the pattern', () => {
+      beforeEach(async () => {
+        await findActivationCodeInput().vm.$emit('input', `${fakeActivationCode}2021-asdf`);
+      });
+
+      it('shows the help text field', () => {
+        expect(findActivationCodeFormGroup().text()).toContain(
+          subscriptionActivationForm.activationCodeFeedback,
+        );
+      });
+
+      describe('corrects fields to be valid', () => {
+        beforeEach(async () => {
+          await findActivationCodeInput().vm.$emit('input', fakeActivationCode);
+          await findAgreementCheckboxInput().trigger('click');
+        });
+
+        it('hides the help text field', () => {
+          expect(findActivationCodeFormGroup().text()).not.toContain(
+            subscriptionActivationForm.activationCodeFeedback,
+          );
+        });
+
+        it('updates the validation class and hides help text field', () => {
+          expect(findAgreementCheckboxFormGroupSpan().attributes('class')).toBe(
+            'gl-text-gray-900!',
+          );
+          expect(findAgreementCheckboxFormGroup().text()).not.toContain(
+            subscriptionActivationForm.acceptTermsFeedback,
+          );
+        });
+      });
     });
   });
 

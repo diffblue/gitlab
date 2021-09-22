@@ -222,7 +222,7 @@ RSpec.describe 'Admin views Subscription', :js do
   private
 
   def fill_activation_form
-    fill_in 'activationCode', with: 'fake-activation-code'
+    fill_in 'activationCode', with: '00112233aaaassssddddffff'
     check 'subscription-form-terms-check'
     click_button 'Activate'
   end
