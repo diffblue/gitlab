@@ -48,18 +48,4 @@ RSpec.describe Elastic::MigrationOptions do
       expect(subject).to eq(30.seconds)
     end
   end
-
-  describe '#batch_size' do
-    subject { migration_class.new.batch_size }
-
-    it 'has a default' do
-      expect(subject).to eq(described_class::DEFAULT_BATCH_SIZE)
-    end
-
-    it 'respects when batch_size is set for the class' do
-      migration_class.batch_size 10000
-
-      expect(subject).to eq(10000)
-    end
-  end
 end

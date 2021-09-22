@@ -15,9 +15,9 @@ module Elastic
     def setup
       clear_tracking!
       delete_indices!
+      helper.create_empty_index(options: { settings: { number_of_replicas: 0 } })
       helper.create_migrations_index
       ::Elastic::DataMigrationService.mark_all_as_completed!
-      helper.create_empty_index(options: { settings: { number_of_replicas: 0 } })
       helper.create_standalone_indices
       refresh_elasticsearch_index!
     end

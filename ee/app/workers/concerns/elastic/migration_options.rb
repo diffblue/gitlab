@@ -6,14 +6,9 @@ module Elastic
     include Gitlab::ClassAttributes
 
     DEFAULT_THROTTLE_DELAY = 5.minutes
-    DEFAULT_BATCH_SIZE = 1000
 
     def batched?
       self.class.get_batched
-    end
-
-    def batch_size
-      self.class.get_batch_size
     end
 
     def throttle_delay
@@ -59,14 +54,6 @@ module Elastic
 
       def get_throttle_delay
         class_attributes[:throttle_delay] || DEFAULT_THROTTLE_DELAY
-      end
-
-      def batch_size(value)
-        class_attributes[:batch_size] = value
-      end
-
-      def get_batch_size
-        class_attributes[:batch_size] || DEFAULT_BATCH_SIZE
       end
     end
   end
