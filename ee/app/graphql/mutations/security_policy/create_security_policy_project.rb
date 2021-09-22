@@ -7,6 +7,8 @@ module Mutations
 
       graphql_name 'SecurityPolicyProjectCreate'
 
+      description 'Creates and assigns a security policy project for the given project(`project_path`)'
+
       authorize :update_security_orchestration_policy_project
 
       argument :project_path, GraphQL::Types::ID,

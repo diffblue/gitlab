@@ -7,6 +7,8 @@ module Mutations
 
       graphql_name 'ScanExecutionPolicyCommit'
 
+      description 'Commits the `policy_yaml` content to the assigned security policy project for the given project(`project_path`)'
+
       authorize :security_orchestration_policies
 
       argument :project_path, GraphQL::Types::ID,

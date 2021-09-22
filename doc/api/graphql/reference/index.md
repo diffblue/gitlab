@@ -3904,6 +3904,8 @@ Input type: `RunnersRegistrationTokenResetInput`
 
 ### `Mutation.scanExecutionPolicyCommit`
 
+Commits the `policy_yaml` content to the assigned security policy project for the given project(`project_path`).
+
 Input type: `ScanExecutionPolicyCommitInput`
 
 #### Arguments
@@ -3925,6 +3927,8 @@ Input type: `ScanExecutionPolicyCommitInput`
 
 ### `Mutation.securityPolicyProjectAssign`
 
+Assigns the specified project(`security_policy_project_id`) as security policy project for the given project(`project_path`). If the project already has a security policy project, this reassigns the project's security policy project with the given `security_policy_project_id`.
+
 Input type: `SecurityPolicyProjectAssignInput`
 
 #### Arguments
@@ -3943,6 +3947,8 @@ Input type: `SecurityPolicyProjectAssignInput`
 | <a id="mutationsecuritypolicyprojectassignerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.securityPolicyProjectCreate`
+
+Creates and assigns a security policy project for the given project(`project_path`).
 
 Input type: `SecurityPolicyProjectCreateInput`
 
