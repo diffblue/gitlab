@@ -3937,9 +3937,6 @@ msgstr ""
 msgid "Any Milestone"
 msgstr ""
 
-msgid "Any eligible user"
-msgstr ""
-
 msgid "Any encrypted tokens"
 msgstr ""
 
@@ -12344,6 +12341,9 @@ msgid "Elastic|None. Select namespaces to index."
 msgstr ""
 
 msgid "Elastic|None. Select projects to index."
+msgstr ""
+
+msgid "Eligible users"
 msgstr ""
 
 msgid "Email"
