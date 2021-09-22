@@ -107,7 +107,7 @@ fingerprints in the open for you to check:
 - [AWS CodeCommit](https://docs.aws.amazon.com/codecommit/latest/userguide/regions.html#regions-fingerprints)
 - [Bitbucket](https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/)
 - [GitHub](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints)
-- [GitLab.com](../../gitlab_com/index.md#ssh-host-keys-fingerprints)
+- [GitLab.com](../../../gitlab_com/index.md#ssh-host-keys-fingerprints)
 - [Launchpad](https://help.launchpad.net/SSHFingerprints)
 - [Savannah](http://savannah.gnu.org/maintenance/SshAccess/)
 - [SourceForge](https://sourceforge.net/p/forge/documentation/SSH%20Key%20Fingerprints/)
@@ -164,7 +164,7 @@ update button which is available on the **Mirroring repositories** section of th
 ## Resources
 
 - Configure a [Pull Mirroring Interval](../../../../administration/instance_limits.md#pull-mirroring-interval)
-- [Disable mirrors for a project](../../../user/admin_area/settings/visibility_and_access_controls.md#enable-project-mirroring)
+- [Disable mirrors for a project](../../../admin_area/settings/visibility_and_access_controls.md#enable-project-mirroring)
 - [Secrets file and mirroring](../../../../raketasks/backup_restore.md#when-the-secrets-file-is-lost)
 
 ## Troubleshooting
