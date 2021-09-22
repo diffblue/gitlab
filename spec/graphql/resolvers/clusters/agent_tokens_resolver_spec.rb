@@ -11,7 +11,6 @@ RSpec.describe Resolvers::Clusters::AgentTokensResolver do
   describe '#resolve' do
     let(:agent) { create(:cluster_agent) }
     let(:user) { create(:user, maintainer_projects: [agent.project]) }
-    let(:feature_available) { true }
     let(:ctx) { Hash(current_user: user) }
 
     let!(:matching_token1) { create(:cluster_agent_token, agent: agent, last_used_at: 5.days.ago) }
@@ -20,18 +19,8 @@ RSpec.describe Resolvers::Clusters::AgentTokensResolver do
 
     subject { resolve(described_class, obj: agent, ctx: ctx) }
 
-    before do
-      stub_licensed_features(cluster_agents: feature_available)
-    end
-
     it 'returns tokens associated with the agent, ordered by last_used_at' do
       expect(subject).to eq([matching_token2, matching_token1])
-    end
-
-    context 'feature is not available' do
-      let(:feature_available) { false }
-
-      it { is_expected.to be_empty }
     end
 
     context 'user does not have permission' do

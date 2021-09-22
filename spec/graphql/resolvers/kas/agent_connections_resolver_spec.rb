@@ -15,7 +15,6 @@ RSpec.describe Resolvers::Kas::AgentConnectionsResolver do
 
     let(:user) { create(:user, maintainer_projects: [project]) }
     let(:ctx) { Hash(current_user: user) }
-    let(:feature_available) { true }
 
     let(:connection1) { double(agent_id: agent1.id) }
     let(:connection2) { double(agent_id: agent1.id) }
@@ -30,8 +29,6 @@ RSpec.describe Resolvers::Kas::AgentConnectionsResolver do
     end
 
     before do
-      stub_licensed_features(cluster_agents: feature_available)
-
       allow(Gitlab::Kas::Client).to receive(:new).and_return(kas_client)
     end
 
@@ -58,12 +55,6 @@ RSpec.describe Resolvers::Kas::AgentConnectionsResolver do
       it 'raises a graphql error' do
         expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, 'GRPC::DeadlineExceeded')
       end
-    end
-
-    context 'feature is not available' do
-      let(:feature_available) { false }
-
-      it { is_expected.to be_empty }
     end
 
     context 'user does not have permission' do
