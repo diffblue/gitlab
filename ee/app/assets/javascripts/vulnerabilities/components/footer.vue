@@ -71,6 +71,7 @@ export default {
         this.discussionsLoading = false;
         this.notifyHeaderForStateChangeIfRequired();
         this.startPolling();
+        this.bindVisibilityListener();
       },
       error() {
         this.showGraphQLError();
@@ -114,6 +115,7 @@ export default {
   },
   beforeDestroy() {
     this.stopPolling();
+    this.unbindVisibilityListener();
   },
   updated() {
     this.$nextTick(() => {
@@ -129,6 +131,17 @@ export default {
       if (!Visibility.hidden()) {
         this.pollInterval = setInterval(this.fetchDiscussions, TEN_SECONDS);
       }
+    },
+    stopPolling() {
+      if (typeof this.pollInterval !== 'undefined') {
+        clearInterval(this.pollInterval);
+        this.pollInterval = undefined;
+      }
+    },
+    bindVisibilityListener() {
+      if (this.visibilityListener) {
+        return;
+      }
 
       this.visibilityListener = Visibility.change(() => {
         if (Visibility.hidden()) {
@@ -138,12 +151,7 @@ export default {
         }
       });
     },
-    stopPolling() {
-      if (typeof this.pollInterval !== 'undefined') {
-        clearInterval(this.pollInterval);
-        this.pollInterval = undefined;
-      }
-
+    unbindVisibilityListener() {
       if (typeof this.visibilityListener !== 'undefined') {
         Visibility.unbind(this.visibilityListener);
         this.visibilityListener = undefined;
