@@ -19,7 +19,7 @@ export default {
 
 <template>
   <div class="d-flex align-items-center">
-    <span class="mt-n1">{{ __('Any eligible user') }}</span>
+    <span class="mt-n1">{{ __('Eligible users') }}</span>
     <span id="popovercontainer" class="ml-2 align-self-end">
       <gl-icon
         id="pop-approver"
