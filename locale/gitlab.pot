@@ -12061,9 +12061,6 @@ msgstr ""
 msgid "Download %{format}:"
 msgstr ""
 
-msgid "Download %{name} artifact"
-msgstr ""
-
 msgid "Download (%{fileSizeReadable})"
 msgstr ""
 
