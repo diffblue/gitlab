@@ -79,30 +79,17 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
         let!(:existing_packs) { create_list(:ci_minutes_additional_pack, 5, namespace: namespace) }
 
         context 'when both namespaces are groups' do
-          before do
-            namespace.add_owner(admin)
-            target.add_owner(admin)
-          end
-
           include_examples 'namespace change'
         end
 
         context 'when a namespace is a kind of user' do
           let_it_be(:namespace) { admin.namespace }
 
-          before do
-            target.add_owner(admin)
-          end
-
           include_examples 'namespace change'
         end
 
         context 'when a target is a kind of user' do
           let(:target) { admin.namespace }
-
-          before do
-            namespace.add_owner(admin)
-          end
 
           include_examples 'namespace change'
         end
@@ -141,15 +128,6 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService do
         it 'returns an error' do
           expect(change_namespace[:status]).to eq :error
           expect(change_namespace[:message]).to eq 'Target namespace must be a top-level namespace'
-        end
-      end
-
-      context 'when the namespaces do not share an owner' do
-        let(:namespace) { create(:group) }
-
-        it 'returns an error' do
-          expect(change_namespace[:status]).to eq :error
-          expect(change_namespace[:message]).to eq 'Both namespaces must share the same owner'
         end
       end
 
