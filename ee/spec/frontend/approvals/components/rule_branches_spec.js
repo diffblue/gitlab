@@ -22,9 +22,12 @@ describe('Rule Branches', () => {
     wrapper = null;
   });
 
+  const findBranch = () => wrapper.find('div');
+
   it('displays "All branches" if there are no protected branches', () => {
     createComponent();
-    expect(wrapper.text()).toContain('All branches');
+    expect(findBranch().text()).toContain('All branches');
+    expect(findBranch().classes('monospace')).toBe(true);
   });
 
   it('displays the branch name of the first protected branch', () => {
@@ -45,7 +48,8 @@ describe('Rule Branches', () => {
       rule,
     });
 
-    expect(wrapper.text()).toContain('main');
-    expect(wrapper.text()).not.toContain('hello');
+    expect(findBranch().text()).toContain('main');
+    expect(findBranch().text()).not.toContain('hello');
+    expect(findBranch().classes('monospace')).toBe(false);
   });
 });

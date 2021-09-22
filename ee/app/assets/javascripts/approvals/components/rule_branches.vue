@@ -15,7 +15,7 @@ export default {
       return protectedBranch?.name || __('All branches');
     },
     isAllBranches() {
-      return this.rule.protectedBranches?.length;
+      return !this.rule.protectedBranches?.length;
     },
   },
 };
