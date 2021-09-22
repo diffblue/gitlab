@@ -179,6 +179,7 @@ RSpec.describe TrialsController do
         {
           work_email: user.email,
           uid: user.id,
+          setup_for_company: nil,
           skip_email_confirmation: true,
           gitlab_com_trial: true,
           provider: 'gitlab',
