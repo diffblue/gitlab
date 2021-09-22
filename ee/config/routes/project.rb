@@ -136,8 +136,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resources :oncall_schedules, only: [:index], path: 'oncall_schedules'
           resources :escalation_policies, only: [:index], path: 'escalation_policies'
         end
-
-        resources :cluster_agents, only: [:show], param: :name
       end
       # End of the /-/ scope.
 

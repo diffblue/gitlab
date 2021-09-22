@@ -30,9 +30,8 @@ RSpec.describe 'Delete a cluster agent' do
     end
   end
 
-  context 'with premium plan and project permissions' do
+  context 'with project permissions' do
     before do
-      allow(License).to receive(:current).and_return(create(:license, plan: ::License::PREMIUM_PLAN))
       project.add_maintainer(current_user)
     end
 
