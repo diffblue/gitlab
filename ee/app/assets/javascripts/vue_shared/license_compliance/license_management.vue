@@ -1,6 +1,6 @@
 <script>
-import { GlButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { GlButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import { s__ } from '~/locale';
 import PaginatedList from '~/vue_shared/components/paginated_list.vue';
@@ -97,7 +97,7 @@ export default {
             data-qa-selector="license_add_button"
             @click="openAddLicenseForm"
           >
-            {{ s__('LicenseCompliance|Add a license') }}
+            {{ s__('LicenseCompliance|Add license policy') }}
           </gl-button>
 
           <license-approvals class="gl-ml-3" />
