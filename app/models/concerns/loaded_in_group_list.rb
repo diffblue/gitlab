@@ -69,7 +69,7 @@ module LoadedInGroupList
   end
 
   def subgroup_count
-    @subgroup_count ||= try(:preloaded_subgroup_count) || children.count
+    @subgroup_count ||= try(:preloaded_subgroup_count) || children.without_project_namespaces.count
   end
 
   def member_count

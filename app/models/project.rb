@@ -98,7 +98,7 @@ class Project < ApplicationRecord
   before_validation :mark_remote_mirrors_for_removal, if: -> { RemoteMirror.table_exists? }
 
   before_save :ensure_runners_token
-  before_save :ensure_project_namespace_in_sync
+  before_validation :ensure_project_namespace_in_sync
 
   after_save :update_project_statistics, if: :saved_change_to_namespace_id?
 
@@ -476,6 +476,7 @@ class Project < ApplicationRecord
   validates :project_feature, presence: true
 
   validates :namespace, presence: true
+  validates :project_namespace, presence: true, on: :create, if: -> { self.namespace.blank? || self.root_namespace.project_namespace_creation_enabled? }
   validates :name, uniqueness: { scope: :namespace_id }
   validates :import_url, public_url: { schemes: ->(project) { project.persisted? ? VALID_MIRROR_PROTOCOLS : VALID_IMPORT_PROTOCOLS },
                                        ports: ->(project) { project.persisted? ? VALID_MIRROR_PORTS : VALID_IMPORT_PORTS },
@@ -2918,13 +2919,31 @@ class Project < ApplicationRecord
     @online_runners_with_tags ||= active_runners.with_tags.online
   end
 
+  def create_project_namespace
+    project_namespace = Namespaces::ProjectNamespace.new(project: self)
+    sync_attributes(project_namespace)
+
+    self.project_namespace = project_namespace
+  end
+
   def ensure_project_namespace_in_sync
-    if changes.keys & [:name, :path, :namespace_id, :visibility_level] && project_namespace.present?
-      project_namespace.name = name
-      project_namespace.path = path
-      project_namespace.parent = namespace
-      project_namespace.visibility_level = visibility_level
+    if new_record? && !project_namespace
+      create_project_namespace if !self.namespace || self.root_namespace.project_namespace_creation_enabled?
+    else
+      sync_attributes(project_namespace) if sync_project_namespace?
     end
+  end
+
+  def sync_project_namespace?
+    changes.keys & [:name, :path, :namespace_id, :namespace, :visibility_level] && project_namespace.present?
+  end
+
+  def sync_attributes(project_namespace)
+    project_namespace.name = name
+    project_namespace.path = path
+    project_namespace.parent = namespace
+    project_namespace.shared_runners_enabled = shared_runners_enabled
+    project_namespace.visibility_level = visibility_level
   end
 end
 

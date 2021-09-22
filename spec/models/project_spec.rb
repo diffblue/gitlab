@@ -191,7 +191,7 @@ RSpec.describe Project, factory_default: :keep do
       # using delete rather than destroy due to `delete` skipping AR hooks/callbacks
       # so it's ensured to work at the DB level. Uses AFTER DELETE trigger.
       let_it_be(:project) { create(:project) }
-      let_it_be(:project_namespace) { create(:project_namespace, project: project) }
+      let_it_be(:project_namespace) { project.project_namespace }
 
       it 'also deletes the associated ProjectNamespace' do
         project.delete
@@ -316,8 +316,8 @@ RSpec.describe Project, factory_default: :keep do
     end
 
     it 'validates the visibility' do
-      expect_any_instance_of(described_class).to receive(:visibility_level_allowed_as_fork).and_call_original
-      expect_any_instance_of(described_class).to receive(:visibility_level_allowed_by_group).and_call_original
+      expect_any_instance_of(described_class).to receive(:visibility_level_allowed_as_fork).twice.and_call_original
+      expect_any_instance_of(described_class).to receive(:visibility_level_allowed_by_group).twice.and_call_original
 
       create(:project)
     end

@@ -96,7 +96,9 @@ module Groups
 
     # rubocop: disable CodeReuse/ActiveRecord
     def namespace_with_same_path?
-      Namespace.exists?(path: @group.path, parent: @new_parent_group)
+      # Only check user namespace and Group, the ProjectNamespace will fail at project level
+      # TODO 70972: review the exclusion of ProjectNamespace
+      Namespace.without_project_namespaces.exists?(path: @group.path, parent: @new_parent_group)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 

@@ -185,9 +185,7 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
 
         context 'when projects have project namespaces' do
           let_it_be(:project1) { create(:project, :private, namespace: group) }
-          let_it_be(:project_namespace1) { create(:project_namespace, project: project1) }
           let_it_be(:project2) { create(:project, :private, namespace: group) }
-          let_it_be(:project_namespace2) { create(:project_namespace, project: project2) }
 
           it_behaves_like 'project namespace path is in sync with project path' do
             let(:group_full_path) { "#{group.path}" }
@@ -264,8 +262,6 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
         end
 
         context 'when projects have project namespaces' do
-          let!(:project_namespace) { create(:project_namespace, project: project) }
-
           before do
             transfer_service.execute(new_parent_group)
           end
@@ -445,8 +441,6 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
       context 'when transferring a group with project descendants' do
         let!(:project1) { create(:project, :repository, :private, namespace: group) }
         let!(:project2) { create(:project, :repository, :internal, namespace: group) }
-        let!(:project_namespace1) { create(:project_namespace, project: project1) }
-        let!(:project_namespace2) { create(:project_namespace, project: project2) }
 
         before do
           TestEnv.clean_test_path
@@ -483,8 +477,6 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
           let!(:project1) { create(:project, :repository, :public, namespace: group) }
           let!(:project2) { create(:project, :repository, :public, namespace: group) }
           let!(:new_parent_group) { create(:group, :private) }
-          let!(:project_namespace1) { create(:project_namespace, project: project1) }
-          let!(:project_namespace2) { create(:project_namespace, project: project2) }
 
           it 'updates projects visibility to match the new parent' do
             group.projects.each do |project|
@@ -504,8 +496,6 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
         let!(:project2) { create(:project, :repository, :internal, namespace: group) }
         let!(:subgroup1) { create(:group, :private, parent: group) }
         let!(:subgroup2) { create(:group, :internal, parent: group) }
-        let!(:project_namespace1) { create(:project_namespace, project: project1) }
-        let!(:project_namespace2) { create(:project_namespace, project: project2) }
 
         before do
           TestEnv.clean_test_path

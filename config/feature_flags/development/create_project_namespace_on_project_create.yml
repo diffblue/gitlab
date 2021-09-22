@@ -1,0 +1,8 @@
+---
+name: create_project_namespace_on_project_create
+introduced_by_url:
+rollout_issue_url:
+milestone: '14.4'
+type: development
+group: group::workspace
+default_enabled: false

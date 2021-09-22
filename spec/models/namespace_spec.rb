@@ -32,9 +32,10 @@ RSpec.describe Namespace do
     describe '#children' do
       let_it_be(:group) { create(:group) }
       let_it_be(:subgroup) { create(:group, parent: group) }
-      let_it_be(:project_namespace) { create(:project_namespace, parent: group) }
+      let_it_be(:project_with_namespace) { create(:project, namespace: group) }
 
       it 'excludes project namespaces' do
+        expect(project_with_namespace.project_namespace.parent).to eq(group)
         expect(group.children).to match_array([subgroup])
       end
     end
@@ -239,8 +240,10 @@ RSpec.describe Namespace do
         let(:namespace) { build(:project_namespace) }
 
         it 'allows to update path to single char' do
-          namespace = create(:project_namespace)
-          namespace.update!(path: 'j')
+          project = create(:project)
+          namespace = project.project_namespace
+
+          namespace.update(path: 'j')
 
           expect(namespace).to be_valid
         end
@@ -342,9 +345,13 @@ RSpec.describe Namespace do
 
     describe '.without_project_namespaces' do
       let_it_be(:user_namespace) { create(:user_namespace) }
-      let_it_be(:project_namespace) { create(:project_namespace) }
+      let_it_be(:project) { create(:project) }
+      let_it_be(:project_namespace) { project.project_namespace }
 
       it 'excludes project namespaces' do
+        expect(project_namespace).not_to be_nil
+        expect(project_namespace.parent).not_to be_nil
+        expect(described_class.all).to include(project_namespace)
         expect(described_class.without_project_namespaces).to match_array([namespace, namespace1, namespace2, namespace1sub, namespace2sub, user_namespace, project_namespace.parent])
       end
     end
