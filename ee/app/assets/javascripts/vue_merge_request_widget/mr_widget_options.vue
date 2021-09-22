@@ -305,6 +305,7 @@ export default {
           </template>
         </mr-widget-alert-message>
       </div>
+      <extensions-container :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
       <grouped-codequality-reports-app
         v-if="shouldRenderCodeQuality"
