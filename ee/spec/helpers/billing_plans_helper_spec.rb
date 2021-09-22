@@ -167,7 +167,7 @@ RSpec.describe BillingPlansHelper do
   end
 
   describe '#use_new_purchase_flow?' do
-    where type: ['Group', nil],
+    where type: [Group.sti_name, nil],
       plan: Plan.all_plans,
       trial_active: [true, false]
 
@@ -183,7 +183,7 @@ RSpec.describe BillingPlansHelper do
       subject { helper.use_new_purchase_flow?(namespace) }
 
       it do
-        result = type == 'Group' && (plan == Plan::FREE || trial_active)
+        result = type == Group.sti_name && (plan == Plan::FREE || trial_active)
 
         is_expected.to be(result)
       end
@@ -349,7 +349,7 @@ RSpec.describe BillingPlansHelper do
     let(:plan) { double('Plan') }
 
     it 'is upgradable' do
-      group = double('Group', upgradable?: true)
+      group = double(Group.sti_name, upgradable?: true)
 
       expect(helper).to receive(:plan_upgrade_url)
 
@@ -357,7 +357,7 @@ RSpec.describe BillingPlansHelper do
     end
 
     it 'is purchasable' do
-      group = double('Group', upgradable?: false)
+      group = double(Group.sti_name, upgradable?: false)
 
       expect(helper).to receive(:plan_purchase_url)
       helper.plan_purchase_or_upgrade_url(group, plan)
