@@ -127,10 +127,9 @@ RSpec.describe TrialsController do
 
         context 'when the ApplyTrialService is successful' do
           it 'applies a trial to the namespace' do
-            gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
             apply_trial_params = {
               uid: user.id,
-              trial_user:  ActionController::Parameters.new(post_params).permit(:namespace_id).merge(gl_com_params)
+              trial_user:  ActionController::Parameters.new(post_params).permit(:namespace_id).merge(namespace_id: namespace.id, gitlab_com_trial: true, sync_to_gl: true)
             }
 
             expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
