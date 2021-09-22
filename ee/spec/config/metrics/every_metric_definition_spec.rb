@@ -14,6 +14,7 @@ RSpec.describe 'Every metric definition' do
       package_events_i_package_container_push_package
       package_events_i_package_container_pull_package
       package_events_i_package_debian_push_package
+      package_events_i_package_container_delete_package
     ).freeze
   end
 
