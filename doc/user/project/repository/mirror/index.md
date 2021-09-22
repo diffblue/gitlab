@@ -14,25 +14,25 @@ a repository outside of GitLab.
 A repository mirror at GitLab updates automatically. You can also manually trigger an update:
 
 - At most once every five minutes on GitLab.com.
-- According to a [limit set by the administrator](../../../administration/instance_limits.md#pull-mirroring-interval)
+- According to a [limit set by the administrator](../../../../administration/instance_limits.md#pull-mirroring-interval)
   on self-managed instances.
 
 There are two kinds of repository mirroring supported by GitLab:
 
-- [Push](#push-to-a-remote-repository): for mirroring a GitLab repository to another location.
-- [Pull](#pull-from-a-remote-repository): for mirroring a repository from another location to GitLab.
+- [Push](push.md): for mirroring a GitLab repository to another location.
+- [Pull](pull.md): for mirroring a repository from another location to GitLab.
 
 When the mirror repository is updated, all new branches, tags, and commits are visible in the
 project's activity feed.
 
-Users with the [Maintainer role](../../permissions.md) for the project can also force an
+Users with the [Maintainer role](../../../permissions.md) for the project can also force an
 immediate update, unless:
 
 - The mirror is already being updated.
-- The [limit for pull mirroring interval seconds](../../../administration/instance_limits.md#pull-mirroring-interval) has not elapsed after its last update.
+- The [limit for pull mirroring interval seconds](../../../../administration/instance_limits.md#pull-mirroring-interval) has not elapsed after its last update.
 
 For security reasons, the URL to the original repository is only displayed to users with the
-[Maintainer role](../../permissions.md) or the [Owner role](../../permissions.md) for the mirrored
+[Maintainer role](../../../permissions.md) or the [Owner role](../../../permissions.md) for the mirrored
 project.
 
 ## Use cases
@@ -56,7 +56,7 @@ The following are some possible use cases for repository mirroring:
 > Moved to GitLab Premium in 13.9.
 
 Based on the mirror direction that you choose, you can opt to mirror only the
-[protected branches](../protected_branches.md) in the mirroring project,
+[protected branches](../../protected_branches.md) in the mirroring project,
 either from or to your remote repository. For pull mirroring, non-protected branches in
 the mirroring project are not mirrored and can diverge.
 
@@ -80,7 +80,7 @@ If you're mirroring over SSH (using an `ssh://` URL), you can authenticate using
 
 - Password-based authentication, just as over HTTPS.
 - Public key authentication. This is often more secure than password authentication,
-  especially when the other repository supports [deploy keys](../deploy_keys/index.md).
+  especially when the other repository supports [deploy keys](../../deploy_keys/index.md).
 
 To get started:
 
@@ -141,7 +141,7 @@ GitLab generates a 4096-bit RSA key that can be copied by selecting the **Copy S
 You then must add the public SSH key to the other repository's configuration:
 
 - If the other repository is hosted on GitLab, you should add the public SSH key
-  as a [deploy key](../../project/deploy_keys/index.md).
+  as a [deploy key](../../../project/deploy_keys/index.md).
 - If the other repository is hosted elsewhere, you must add the key to
   your user's  `authorized_keys` file. Paste the entire public SSH key into the
   file on its own line and save it.
@@ -161,6 +161,12 @@ update button which is available on the **Mirroring repositories** section of th
 
 ![Repository mirroring force update user interface](img/repository_mirroring_force_update.png)
 
+## Resources
+
+- Configure a [Pull Mirroring Interval](../../../../administration/instance_limits.md#pull-mirroring-interval)
+- [Disable mirrors for a project](../../../user/admin_area/settings/visibility_and_access_controls.md#enable-project-mirroring)
+- [Secrets file and mirroring](../../../../raketasks/backup_restore.md#when-the-secrets-file-is-lost)
+
 ## Troubleshooting
 
 Should an error occur during a push, GitLab displays an **Error** highlight for that repository. Details on the error can then be seen by hovering over the highlight text.
@@ -179,7 +185,7 @@ must update your mirroring username and password to ensure that `%40` characters
 ### Connection blocked because server only allows public key authentication
 
 As the error indicates, the connection is getting blocked between GitLab and the remote repository. Even if a
-[TCP Check](../../../administration/raketasks/maintenance.md#check-tcp-connectivity-to-a-remote-site) is successful,
+[TCP Check](../../../../administration/raketasks/maintenance.md#check-tcp-connectivity-to-a-remote-site) is successful,
 you must check any networking components in the route from GitLab to the remote Server to ensure there's no blockage.
 
 For example, we've seen this error when a Firewall was performing a `Deep SSH Inspection` on outgoing packets.
@@ -187,7 +193,7 @@ For example, we've seen this error when a Firewall was performing a `Deep SSH In
 ### Could not read username: terminal prompts disabled
 
 If you receive this error after creating a new project using
-[GitLab CI/CD for external repositories](../../../ci/ci_cd_for_external_repos/):
+[GitLab CI/CD for external repositories](../../../../ci/ci_cd_for_external_repos/):
 
 ```plaintext
 "2:fetch remote: "fatal: could not read Username for 'https://bitbucket.org': terminal prompts disabled\n": exit status 128."

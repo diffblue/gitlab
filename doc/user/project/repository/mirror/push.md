@@ -15,7 +15,7 @@ For an existing project, you can set up push mirroring as follows:
 1. Enter a repository URL.
 1. In the **Mirror direction** dropdown, select **Push**.
 1. Select an authentication method from the **Authentication method** dropdown.
-   You can authenticate with either a password or an [SSH key](#ssh-authentication).
+   You can authenticate with either a password or an [SSH key](index.md#ssh-authentication).
 1. Select the **Only mirror protected branches** checkbox, if necessary.
 1. Select the **Keep divergent refs** checkbox, if desired.
 1. Select **Mirror repository** to save the configuration.
@@ -23,11 +23,11 @@ For an existing project, you can set up push mirroring as follows:
 When push mirroring is enabled, only push commits directly to the mirrored repository to prevent the
 mirror diverging.
 
-Unlike [pull mirroring](#how-it-works), the mirrored repository is not periodically auto-synced.
+Unlike [pull mirroring](pull.md), the mirrored repository is not periodically auto-synced.
 The mirrored repository receives all changes only when:
 
 - Commits are pushed to GitLab.
-- A [forced update](#force-an-update) is initiated.
+- A [forced update](index.md#force-an-update) is initiated.
 
 Changes pushed to files in the repository are automatically pushed to the remote mirror at least:
 
@@ -40,7 +40,7 @@ section.
 ## Configure push mirrors through the API
 
 You can also create and modify project push mirrors through the
-[remote mirrors API](../../../api/remote_mirrors.md).
+[remote mirrors API](../../../../api/remote_mirrors.md).
 
 ## Keep divergent refs
 
@@ -60,7 +60,7 @@ failed update. Refs that exist in the mirror repository but not in the local
 repository are left untouched.
 
 NOTE:
-After the mirror is created, this option can only be modified via the [API](../../../api/remote_mirrors.md).
+After the mirror is created, this option can only be modified via the [API](../../../../api/remote_mirrors.md).
 
 ## Set up a push mirror from GitLab to GitHub
 
@@ -159,7 +159,7 @@ If it isn't working correctly, a red `error` tag appears and shows the error mes
 
 ## Set up a push mirror to another GitLab instance with 2FA activated
 
-1. On the destination GitLab instance, create a [personal access token](../../profile/personal_access_tokens.md) with `write_repository` scope.
+1. On the destination GitLab instance, create a [personal access token](../../../profile/personal_access_tokens.md) with `write_repository` scope.
 1. On the source GitLab instance:
    1. Fill in the **Git repository URL** field using this format: `https://oauth2@<destination host>/<your_gitlab_group_or_name>/<your_gitlab_project>.git`.
    1. Fill in the **Password** field with the GitLab personal access token created on the destination GitLab instance.

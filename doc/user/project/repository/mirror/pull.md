@@ -39,7 +39,7 @@ directly to the repository on GitLab. Instead, any commits should be pushed to t
 Changes pushed to the remote repository are pulled into the GitLab repository, either:
 
 - Automatically in a certain period of time.
-- When a [forced update](#force-an-update) is initiated.
+- When a [forced update](index.md#force-an-update) is initiated.
 
 WARNING:
 If you do manually update a branch in the GitLab repository, the branch becomes diverged from
@@ -52,7 +52,7 @@ After the pull mirroring feature has been enabled for a repository, the reposito
 
 Once per minute, a Sidekiq cron job schedules repository mirrors to update, based on:
 
-- The capacity available. This is determined by Sidekiq settings. For GitLab.com, see [GitLab.com Sidekiq settings](../../gitlab_com/index.md#sidekiq).
+- The capacity available. This is determined by Sidekiq settings. For GitLab.com, see [GitLab.com Sidekiq settings](../../../gitlab_com/index.md#sidekiq).
 - The number of repository mirrors already in the queue that are due to be updated. Being due depends on when the repository mirror was last updated and how many times it's been retried.
 
 Repository mirrors are updated as Sidekiq becomes available to process them. If the process of updating the repository mirror:
@@ -93,14 +93,14 @@ and mirroring attempts stop. This failure is visible in either the:
 - Project's main dashboard.
 - Pull mirror settings page.
 
-You can resume the project mirroring again by [forcing an update](#force-an-update).
+You can resume the project mirroring again by [forcing an update](index.md#force-an-update).
 
 ## Trigger an update using the API
 
 > Moved to GitLab Premium in 13.9.
 
 Pull mirroring uses polling to detect new branches and commits added upstream, often minutes
-afterwards. If you notify GitLab by [API](../../../api/projects.md#start-the-pull-mirroring-process-for-a-project),
+afterwards. If you notify GitLab by [API](../../../../api/projects.md#start-the-pull-mirroring-process-for-a-project),
 updates are pulled immediately.
 
-For more information, see [Start the pull mirroring process for a Project](../../../api/projects.md#start-the-pull-mirroring-process-for-a-project).
+For more information, see [Start the pull mirroring process for a Project](../../../../api/projects.md#start-the-pull-mirroring-process-for-a-project).

@@ -18,29 +18,29 @@ bidirectional mirroring, you should prepare for the likely conflicts by deciding
 them and how.
 
 Rewriting any mirrored commit on either remote causes conflicts and mirroring to fail. This can
-be prevented by [mirroring only protected branches](#mirror-only-protected-branches).
+be prevented by [mirroring only protected branches](index.md#mirror-only-protected-branches).
 
-You should [protect the branches](../protected_branches.md) you wish to mirror on both
+You should [protect the branches](../../protected_branches.md) you wish to mirror on both
 remotes to prevent conflicts caused by rewriting history.
 
 Bidirectional mirroring also creates a race condition where commits made close together to the same
 branch causes conflicts. The race condition can be mitigated by reducing the mirroring delay by using
-a [Push event webhook](../integrations/webhooks.md#push-events) to trigger an immediate
+a [Push event webhook](../../integrations/webhooks.md#push-events) to trigger an immediate
 pull to GitLab. Push mirroring from GitLab is rate limited to once per minute when only push mirroring
 protected branches.
 
 ## Configure a webhook to trigger an immediate pull to GitLab
 
-Assuming you have already configured the [push](#set-up-a-push-mirror-to-another-gitlab-instance-with-2fa-activated)
-and [pull](#pull-from-a-remote-repository) mirrors in the upstream GitLab instance, to trigger an
-immediate pull as suggested above, you must configure a [Push Event Web Hook](../integrations/webhooks.md#push-events)
+Assuming you have already configured the [push](push.md#set-up-a-push-mirror-to-another-gitlab-instance-with-2fa-activated)
+and [pull](pull.md#pull-from-a-remote-repository) mirrors in the upstream GitLab instance, to trigger an
+immediate pull as suggested above, you must configure a [Push Event Web Hook](../../integrations/webhooks.md#push-events)
 in the downstream instance.
 
 To do this:
 
-1. Create a [personal access token](../../profile/personal_access_tokens.md) with `API` scope.
+1. Create a [personal access token](../../../profile/personal_access_tokens.md) with `API` scope.
 1. In your project, go to **Settings > Webhooks**.
-1. Add the webhook URL which (in this case) uses the [Pull Mirror API](../../../api/projects.md#start-the-pull-mirroring-process-for-a-project)
+1. Add the webhook URL which (in this case) uses the [Pull Mirror API](../../../../api/projects.md#start-the-pull-mirroring-process-for-a-project)
    request to trigger an immediate pull after updates to the repository.
 
    ```plaintext
@@ -65,7 +65,7 @@ the upstream Git repository. In this configuration one Git repository acts as
 the authoritative upstream, and the other as downstream. The `pre-receive` hook
 is installed on the downstream repository.
 
-Read about [configuring Server hooks](../../../administration/server_hooks.md) on the GitLab server.
+Read about [configuring Server hooks](../../../../administration/server_hooks.md) on the GitLab server.
 
 A sample `pre-receive` hook is provided below.
 
