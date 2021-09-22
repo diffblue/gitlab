@@ -26,8 +26,8 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo do
     end
   end
 
-  describe 'visiting geo nodes' do
-    it_behaves_like 'active sidebar link', 'Nodes' do
+  describe 'visiting geo sites' do
+    it_behaves_like 'active sidebar link', 'Sites' do
       let(:path) { admin_geo_nodes_path }
     end
   end
