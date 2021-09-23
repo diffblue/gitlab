@@ -35118,7 +35118,7 @@ msgstr ""
 msgid "TimeTrackingEstimated|Est"
 msgstr ""
 
-msgid "TimeTracking|%{startTag}Spent: %{endTag}%{timeSpentHumanReadable}"
+msgid "TimeTracking|%{spentStart}Spent: %{spentEnd}"
 msgstr ""
 
 msgid "TimeTracking|Estimated:"
