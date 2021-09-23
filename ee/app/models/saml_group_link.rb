@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class SamlGroupLink < ApplicationRecord
+  include StripAttribute
   belongs_to :group
 
   enum access_level: ::Gitlab::Access.options_with_owner
 
-  before_validation :strip_whitespace_from_saml_group_name
+  strip_attributes! :saml_group_name
 
   validates :group, :access_level, presence: true
   validates :saml_group_name, presence: true, uniqueness: { scope: [:group_id] }, length: { maximum: 255 }
@@ -15,8 +16,5 @@ class SamlGroupLink < ApplicationRecord
   scope :by_group_id, ->(group_id) { where(group_id: group_id) }
   scope :preload_group, -> { preload(group: :route) }
 
-  def strip_whitespace_from_saml_group_name
-    self.saml_group_name = self&.saml_group_name.strip
-  end
 
 end
