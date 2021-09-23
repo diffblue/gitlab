@@ -191,5 +191,24 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
         end
       end
     end
+
+    context 'when image is given' do
+      let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+
+      let(:params) { { image: [cluster_finding.location['image']] } }
+
+      it 'only returns vulnerabilities with given image' do
+        is_expected.to contain_exactly(cluster_vulnerability)
+      end
+
+      context 'when different report_type is given along with image' do
+        let(:params) { { report_type: %w[sast], image: [cluster_finding.location['image']] } }
+
+        it 'returns empty list' do
+          is_expected.to be_empty
+        end
+      end
+    end
   end
 end

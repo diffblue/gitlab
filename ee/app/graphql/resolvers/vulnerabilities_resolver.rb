@@ -43,6 +43,12 @@ module Resolvers
              required: false,
              description: 'Returns only the vulnerabilities which have linked issues.'
 
+    argument :image, [GraphQL::Types::String],
+             required: false,
+             description: "Filter vulnerabilities by location image. When this filter is present, "\
+                          "the response only matches entries for a `reportType` "\
+                          "that includes #{::Vulnerabilities::Finding::REPORT_TYPES_WITH_LOCATION_IMAGE.map { |type| "`#{type}`" }.join(', ')}."
+
     def resolve(**args)
       return Vulnerability.none unless vulnerable
 

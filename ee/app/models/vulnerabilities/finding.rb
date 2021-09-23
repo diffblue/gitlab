@@ -13,6 +13,7 @@ module Vulnerabilities
 
     FINDINGS_PER_PAGE = 20
     MAX_NUMBER_OF_IDENTIFIERS = 20
+    REPORT_TYPES_WITH_LOCATION_IMAGE = %w[container_scanning cluster_image_scanning].freeze
 
     paginates_per FINDINGS_PER_PAGE
 
@@ -95,6 +96,10 @@ module Vulnerabilities
 
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
     scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
+    scope :by_location_image, -> (images) do
+      where(report_type: REPORT_TYPES_WITH_LOCATION_IMAGE)
+        .where("vulnerability_occurrences.location -> 'image' ?| array[:images]", images: images)
+    end
 
     def self.for_pipelines(pipelines)
       joins(:finding_pipelines)

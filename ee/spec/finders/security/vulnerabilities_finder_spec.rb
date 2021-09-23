@@ -157,4 +157,46 @@ RSpec.describe Security::VulnerabilitiesFinder do
       is_expected.to contain_exactly(vulnerability4)
     end
   end
+
+  context 'when filtered by image' do
+    let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+
+    let(:filters) { { image: [finding.location['image']] } }
+    let(:feature_enabled) { true }
+
+    before do
+      stub_feature_flags(vulnerability_location_image_filter: feature_enabled)
+    end
+
+    context 'when vulnerability_location_image_filter is disabled' do
+      let(:feature_enabled) { false }
+
+      it 'does not include cluster vulnerability' do
+        is_expected.not_to contain_exactly(cluster_vulnerability)
+      end
+    end
+
+    context 'when vulnerability_location_image_filter is enabled' do
+      it 'only returns vulnerabilities matching the given image' do
+        is_expected.to contain_exactly(cluster_vulnerability)
+      end
+
+      context 'when different report_type is passed' do
+        let(:filters) { { report_type: %w[dast], image: [finding.location['image']] }}
+
+        it 'returns empty list' do
+          is_expected.to be_empty
+        end
+      end
+    end
+
+    context 'when vulnerable is InstanceSecurityDashboard' do
+      let(:vulnerable) { InstanceSecurityDashboard.new(project.users.first) }
+
+      it 'does not include cluster vulnerability' do
+        is_expected.not_to contain_exactly(cluster_vulnerability)
+      end
+    end
+  end
 end

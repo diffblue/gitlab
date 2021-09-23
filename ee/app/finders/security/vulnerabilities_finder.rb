@@ -9,10 +9,11 @@
 #   params: optional! a hash with one or more of the following:
 #     project_ids: if `vulnerable` includes multiple projects (like a Group), this filter will restrict
 #                   the vulnerabilities returned to those in the group's projects that also match these IDs
+#     image: only return vulnerabilities with these location images
 #     report_types: only return vulnerabilities from these report types
 #     severities: only return vulnerabilities with these severities
 #     states: only return vulnerabilities in these states
-#     has_resolution: only return vulnerabilities thah have resolution
+#     has_resolution: only return vulnerabilities that have resolution
 #     has_issues: only return vulnerabilities that have issues linked
 #     sort: return vulnerabilities ordered by severity_asc or severity_desc
 
@@ -22,11 +23,13 @@ module Security
 
     def initialize(vulnerable, params = {})
       @params = params
+      @vulnerable = vulnerable
       @vulnerabilities = vulnerable.vulnerabilities
     end
 
     def execute
       filter_by_projects
+      filter_by_image
       filter_by_report_types
       filter_by_severities
       filter_by_states
@@ -40,7 +43,7 @@ module Security
 
     private
 
-    attr_reader :params, :vulnerabilities
+    attr_reader :params, :vulnerable, :vulnerabilities
 
     def filter_by_projects
       if params[:project_id].present?
@@ -87,6 +90,15 @@ module Security
     def filter_by_issues
       if params[:has_issues].in?([true, false])
         @vulnerabilities = vulnerabilities.with_issues(params[:has_issues])
+      end
+    end
+
+    def filter_by_image
+      # This filter will not work for InstanceSecurityDashboard, because InstanceSecurityDashboard could have multiple projects.
+      return if vulnerable.is_a?(InstanceSecurityDashboard)
+
+      if params[:image].present? && Feature.enabled?(:vulnerability_location_image_filter, vulnerable, default_enabled: :yaml)
+        @vulnerabilities = vulnerabilities.with_container_image(params[:image])
       end
     end
 
