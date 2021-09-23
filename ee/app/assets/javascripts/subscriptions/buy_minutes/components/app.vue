@@ -16,6 +16,8 @@ import {
   i18nCIMinutesSummaryTitle,
   I18N_CI_MINUTES_SUMMARY_TOTAL,
   I18N_CI_MINUTES_ALERT_TEXT,
+  I18N_CI_MINUTES_PRICE_PRE_UNIT,
+  I18N_CI_MINUTES_TITLE,
   planTags,
   CUSTOMER_CLIENT,
   CI_MINUTES_PER_PACK,
@@ -42,6 +44,8 @@ export default {
     summaryTitle: i18nCIMinutesSummaryTitle,
     summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
     alertText: I18N_CI_MINUTES_ALERT_TEXT,
+    title: I18N_CI_MINUTES_TITLE,
+    pricePerUnit: I18N_CI_MINUTES_PRICE_PRE_UNIT,
   },
   CI_MINUTES_PER_PACK,
   emptySvg,
@@ -68,6 +72,11 @@ export default {
     summaryTotal(quantity) {
       return sprintf(this.$options.i18n.summaryTotal, {
         quantity: formatNumber(quantity * CI_MINUTES_PER_PACK),
+      });
+    },
+    pricePerUnitLabel(price) {
+      return sprintf(this.$options.i18n.pricePerUnit, {
+        selectedPlanPrice: price,
       });
     },
   },
@@ -119,14 +128,18 @@ export default {
               <strong data-testid="summary-label">
                 {{ summaryTitle(quantity) }}
               </strong>
-              <p class="gl-mb-0" data-testid="summary-total">{{ summaryTotal(quantity) }}</p>
+              <div data-testid="summary-total">{{ summaryTotal(quantity) }}</div>
             </template>
           </addon-purchase-details>
         </template>
       </checkout>
     </template>
     <template #order-summary>
-      <order-summary :plan="plans[0]" />
+      <order-summary :plan="plans[0]" :title="$options.i18n.title">
+        <template #price-per-unit="{ price }">
+          {{ pricePerUnitLabel(price) }}
+        </template>
+      </order-summary>
     </template>
   </step-order-app>
 </template>

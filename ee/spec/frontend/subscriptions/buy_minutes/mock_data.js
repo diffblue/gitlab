@@ -22,8 +22,8 @@ export const mockFullName = 'John Admin';
 export const mockSetupForCompany = 'true';
 
 export const mockDefaultCache = {
-  groupData: '[]',
-  namespaceId: 'My Namespace',
+  groupData: mockNamespaces,
+  namespaceId: 132,
   redirectAfterSuccess: '/',
 };
 

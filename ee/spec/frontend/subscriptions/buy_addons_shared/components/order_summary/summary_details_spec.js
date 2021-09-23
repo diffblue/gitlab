@@ -43,10 +43,6 @@ describe('SummaryDetails', () => {
       expect(wrapper.findByTestId('selected-plan').text()).toMatchInterpolatedText('Test (x1)');
     });
 
-    it('renders the price per unit', () => {
-      expect(wrapper.findByTestId('price-per-unit').text()).toBe('$10 per pack of 1,000 minutes');
-    });
-
     it('displays the total amount', () => {
       expect(findTotalAmount().text()).toBe('$10');
     });

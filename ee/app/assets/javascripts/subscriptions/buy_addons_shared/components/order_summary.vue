@@ -3,7 +3,7 @@ import { GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import { TAX_RATE } from 'ee/subscriptions/new/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
-import { sprintf, s__ } from '~/locale';
+import { sprintf } from '~/locale';
 import SummaryDetails from './order_summary/summary_details.vue';
 
 export default {
@@ -20,6 +20,14 @@ export default {
     plan: {
       type: Object,
       required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    purchaseHasExpiration: {
+      type: Boolean,
+      required: false,
     },
   },
   apollo: {
@@ -62,14 +70,11 @@ export default {
       return this.selectedGroup.name;
     },
     titleWithName() {
-      return sprintf(this.$options.i18n.title, { name: this.namespaceName });
+      return sprintf(this.title, { name: this.namespaceName });
     },
     isVisible() {
       return !this.$apollo.loading;
     },
-  },
-  i18n: {
-    title: s__("Checkout|%{name}'s CI minutes"),
   },
   taxRate: TAX_RATE,
 };
@@ -79,18 +84,18 @@ export default {
     v-if="isVisible"
     class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-mt-2 mt-lg-5"
   >
-    <div class="d-lg-none">
+    <div class="gl-lg-display-none">
       <div v-gl-collapse-toggle.summary-details>
-        <h4 class="d-flex justify-content-between gl-font-lg">
-          <div class="d-flex">
+        <div class="gl-display-flex gl-justify-content-between gl-font-lg">
+          <div class="gl-display-flex">
             <gl-icon v-if="isBottomSummaryVisible" name="chevron-down" />
             <gl-icon v-else name="chevron-right" />
-            <div data-testid="title">{{ titleWithName }}</div>
+            <h4 data-testid="title">{{ titleWithName }}</h4>
           </div>
-          <div class="gl-ml-3" data-testid="amount">
+          <p class="gl-ml-3" data-testid="amount">
             {{ formatAmount(totalAmount, quantityPresent) }}
-          </div>
-        </h4>
+          </p>
+        </div>
       </div>
       <gl-collapse id="summary-details" v-model="isBottomSummaryVisible">
         <summary-details
@@ -102,15 +107,21 @@ export default {
           :total-amount="totalAmount"
           :quantity="subscription.quantity"
           :tax-rate="$options.taxRate"
-        />
+          :purchase-has-expiration="purchaseHasExpiration"
+        >
+          <template #price-per-unit="{ price }">
+            <slot name="price-per-unit" :price="price"></slot>
+          </template>
+          <template #tooltip>
+            <slot name="tooltip"></slot>
+          </template>
+        </summary-details>
       </gl-collapse>
     </div>
-    <div class="d-none d-lg-block">
-      <div class="append-bottom-20">
-        <h4>
-          {{ titleWithName }}
-        </h4>
-      </div>
+    <div class="gl-display-none gl-lg-display-block">
+      <h4 class="gl-mb-5">
+        {{ titleWithName }}
+      </h4>
       <summary-details
         :vat="vat"
         :total-ex-vat="totalExVat"
@@ -120,7 +131,15 @@ export default {
         :total-amount="totalAmount"
         :quantity="subscription.quantity"
         :tax-rate="$options.taxRate"
-      />
+        :purchase-has-expiration="purchaseHasExpiration"
+      >
+        <template #price-per-unit="{ price }">
+          <slot name="price-per-unit" :price="price"></slot>
+        </template>
+        <template #tooltip>
+          <slot name="tooltip"></slot>
+        </template>
+      </summary-details>
     </div>
   </div>
 </template>
