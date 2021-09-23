@@ -5,7 +5,7 @@ module Elastic
     attr_reader :version, :name, :filename
 
     delegate :migrate, :skip_migration?, :completed?, :batched?, :throttle_delay, :pause_indexing?,
-      :space_requirements?, :space_required_bytes, :obsolete?,
+      :space_requirements?, :space_required_bytes, :obsolete?, :batch_size,
       to: :migration
 
     ELASTICSEARCH_SIZE = 25

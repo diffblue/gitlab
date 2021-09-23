@@ -113,13 +113,13 @@ RSpec.describe Issue, :elastic do
     let_it_be(:issue) { create(:issue, project: project, assignees: [assignee]) }
     let_it_be(:award_emoji) { create(:award_emoji, :upvote, awardable: issue) }
 
-    context 'when add_namespace_ancestry_to_issues_mapping migration is not done' do
+    context 'when add_namespace_ancestry_ids_to_issues_mapping migration is not done' do
       before do
-        set_elasticsearch_migration_to :add_namespace_ancestry_to_issues_mapping, including: false
+        set_elasticsearch_migration_to :add_namespace_ancestry_ids_to_issues_mapping, including: false
       end
 
       it "returns json without namespace_ancestry" do
-        expect(issue.__elasticsearch__.as_indexed_json.keys).not_to include('namespace_ancestry')
+        expect(issue.__elasticsearch__.as_indexed_json.keys).not_to include('namespace_ancestry_ids')
       end
     end
 
@@ -138,7 +138,7 @@ RSpec.describe Issue, :elastic do
                 'type' => issue.es_type,
                 'state' => issue.state,
                 'upvotes' => 1,
-                'namespace_ancestry' => "#{group.id}-#{subgroup.id}"
+                'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-"
               })
 
       expected_hash['assignee_id'] = [assignee.id]
