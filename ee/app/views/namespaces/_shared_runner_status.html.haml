@@ -1,9 +1,10 @@
 - namespace = local_assigns.fetch(:namespace)
 - minutes_quota = namespace.ci_minutes_quota
+- minutes_quota_presenter = Ci::Minutes::QuotaPresenter.new(minutes_quota)
 
-- if minutes_quota.display_shared_runners_data?
+- if minutes_quota_presenter.display_shared_runners_data?
   %li
     %span.light= _('Pipeline minutes quota:')
     %strong
-      = ci_minutes_report(minutes_quota.monthly_minutes_report)
+      = ci_minutes_report(minutes_quota_presenter.monthly_minutes_report)
       = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank'
