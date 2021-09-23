@@ -1,8 +1,0 @@
----
-name: ci_parallel_minutes_reset
-introduced_by_url: 
-rollout_issue_url: 
-milestone: '12.10'
-type: development
-group: group::pipeline execution
-default_enabled: true
