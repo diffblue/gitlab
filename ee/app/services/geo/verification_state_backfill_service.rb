@@ -66,7 +66,7 @@ module Geo
 
     def create_verification_details(range, for_creation_ids)
       replicable_model.find(for_creation_ids).map do |replicable|
-        replicable.create_verification_details
+        replicable.save_verification_details
       end
 
       log_created(range, for_creation_ids)
