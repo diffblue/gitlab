@@ -73,19 +73,13 @@ module Ci
       attr_reader :build
 
       def validate_preconditions
-        if !feature_enabled?
-          ServiceResponse.error(message: 'Feature not enabled')
-        elsif !build.running?
+        if !build.running?
           ServiceResponse.error(message: 'Build is not running')
         elsif !build.cost_factor_enabled?
           ServiceResponse.error(message: 'Cost factor not enabled for build')
         else
           ServiceResponse.success
         end
-      end
-
-      def feature_enabled?
-        Feature.enabled?(:ci_minutes_track_live_consumption, build.project, default_enabled: :yaml)
       end
 
       def consumption_since_last_update
