@@ -24118,6 +24118,9 @@ msgstr ""
 msgid "PackageRegistry|Install package version"
 msgstr ""
 
+msgid "PackageRegistry|Instance-level"
+msgstr ""
+
 msgid "PackageRegistry|Invalid Package: failed metadata extraction"
 msgstr ""
 
@@ -24161,6 +24164,9 @@ msgid "PackageRegistry|Package updated by commit %{link} on branch %{branch}, bu
 msgstr ""
 
 msgid "PackageRegistry|Pip Command"
+msgstr ""
+
+msgid "PackageRegistry|Project-level"
 msgstr ""
 
 msgid "PackageRegistry|Publish and share packages for a variety of common package managers. %{docLinkStart}More information%{docLinkEnd}"
