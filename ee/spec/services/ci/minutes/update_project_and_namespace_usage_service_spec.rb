@@ -170,6 +170,23 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
           it_behaves_like 'does not update monthly consumption'
           it_behaves_like 'updates legacy consumption' # not idempotent / to be removed
 
+          it 'logs the event' do
+            expect(::Gitlab::AppJsonLogger)
+              .to receive(:info)
+              .with(event: 'ci_minutes_consumption_already_updated', build_id: build.id)
+              .and_call_original
+
+            subject
+          end
+
+          context 'when feature flag idempotent_ci_minutes_consumption is disabled' do
+            before do
+              stub_feature_flags(idempotent_ci_minutes_consumption: false)
+            end
+
+            it_behaves_like 'updates monthly consumption'
+          end
+
           context 'when build_id is not provided as parameter' do
             let(:service) { described_class.new(project.id, namespace.id) }
 

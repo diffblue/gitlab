@@ -14,14 +14,14 @@ module Ci
 
         return unless consumption > 0
 
-        update_minutes(consumption)
+        update_minutes(consumption, build)
         compare_with_live_consumption(build, consumption)
       end
 
       private
 
-      def update_minutes(consumption)
-        ::Ci::Minutes::UpdateProjectAndNamespaceUsageWorker.perform_async(consumption, project.id, namespace.id)
+      def update_minutes(consumption, build)
+        ::Ci::Minutes::UpdateProjectAndNamespaceUsageWorker.perform_async(consumption, project.id, namespace.id, build.id)
       end
 
       def compare_with_live_consumption(build, consumption)
