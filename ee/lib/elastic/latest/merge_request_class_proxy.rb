@@ -30,7 +30,7 @@ module Elastic
 
       # rubocop: disable CodeReuse/ActiveRecord
       def preload_indexing_data(relation)
-        Preloaders::MergeRequestsPreloader.new(relation).execute
+        relation.includes(target_project: [:project_feature])
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
