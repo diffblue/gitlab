@@ -520,6 +520,55 @@ FactoryBot.define do
       end
     end
 
+    trait :with_cluster_image_scanning_scanning_metadata do
+      after(:build) do |finding, _|
+        finding.report_type = "cluster_image_scanning"
+        finding.name = "CVE-2017-16997 in libc"
+        finding.metadata_version = "2.3"
+        finding.location = {
+          "dependency": {
+            "package": {
+              "name": "glibc"
+            },
+            "version": "2.24-11+deb9u3"
+          },
+          "operating_system": "alpine 3.7",
+          "image": "alpine:3.7"
+        }
+        finding.raw_metadata = {
+          "category": "cluster_image_scanning",
+          "name": "CVE-2017-16997 in libc",
+          "severity": "high",
+          "solution": "Upgrade glibc from 2.24-11+deb9u3 to 2.24-11+deb9u4",
+          "scanner": {
+            "id": "starboard",
+            "name": "Starboard"
+          },
+          "location": {
+            "dependency": {
+              "package": {
+                "name": "glibc"
+              },
+              "version": "2.24-11+deb9u3"
+            },
+            "operating_system": "alpine 3.7",
+            "image": "alpine:3.7"
+          },
+          "identifiers": [{
+            "type": "cve",
+            "name": "CVE-2017-16997",
+            "value": "CVE-2017-16997",
+            "url": "https://security-tracker.debian.org/tracker/CVE-2017-16997"
+          }],
+          "links": [
+            {
+              "url": "https://security-tracker.debian.org/tracker/CVE-2017-16997"
+            }
+          ]
+        }.to_json
+      end
+    end
+
     trait :identifier do
       after(:build) do |finding|
         identifier = build(
