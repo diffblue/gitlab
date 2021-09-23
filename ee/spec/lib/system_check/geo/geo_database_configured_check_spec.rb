@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe SystemCheck::Geo::GeoDatabaseConfiguredCheck, :silence_stdout do
   subject { described_class.new }
 
-  describe '#multi_check' do
+  describe '#multi_check', :reestablished_active_record_base do
     it "checks database configuration" do
       stub_configuration_check(false)
 
