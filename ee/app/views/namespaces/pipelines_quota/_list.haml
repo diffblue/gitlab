@@ -1,6 +1,8 @@
 - namespace = locals.fetch(:namespace)
 - projects = locals.fetch(:projects)
 - minutes_quota = namespace.ci_minutes_quota
+- minutes_quota_presenter = Ci::Minutes::QuotaPresenter.new(minutes_quota)
+
 
 .pipeline-quota.container-fluid
   .row
@@ -21,19 +23,19 @@
         - else
           = s_('UsageQuota|Current period usage')
       %div
-        = ci_minutes_report(minutes_quota.monthly_minutes_report)
+        = ci_minutes_report(minutes_quota_presenter.monthly_minutes_report)
         minutes
         = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/continuous_integration', anchor: 'shared-runners-pipeline-minutes-quota'), target: '_blank', 'aria-label': _('Shared runners help link')
 
     .col-sm-6.right
-      - if minutes_quota.display_minutes_available_data?
-        #{minutes_quota.monthly_percent_used}% used
-      - elsif !minutes_quota.any_project_enabled?
+      - if minutes_quota_presenter.display_minutes_available_data?
+        #{minutes_quota_presenter.monthly_percent_used}% used
+      - elsif !minutes_quota_presenter.any_project_enabled?
         0% used
       - else
         = s_('UsageQuota|Unlimited')
 
-      = ci_minutes_progress_bar(minutes_quota.monthly_percent_used)
+      = ci_minutes_progress_bar(minutes_quota_presenter.monthly_percent_used)
 
   = render 'namespaces/pipelines_quota/extra_shared_runners_minutes_quota', namespace: namespace
 
@@ -48,7 +50,7 @@
         = _('Minutes')
 
   %tbody
-    - if !minutes_quota.any_project_enabled?
+    - if !minutes_quota_presenter.any_project_enabled?
       %tr
         %td{ colspan: 2 }
           .nothing-here-block

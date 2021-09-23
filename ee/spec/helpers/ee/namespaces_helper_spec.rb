@@ -51,9 +51,10 @@ RSpec.describe EE::NamespacesHelper do
 
   describe '#ci_minutes_report' do
     let(:quota) { Ci::Minutes::Quota.new(user_group) }
+    let(:quota_presenter) { Ci::Minutes::QuotaPresenter.new(quota) }
 
     describe 'rendering monthly minutes report' do
-      let(:report) { quota.monthly_minutes_report }
+      let(:report) { quota_presenter.monthly_minutes_report }
 
       context "when ci minutes quota is not enabled" do
         before do
@@ -62,7 +63,7 @@ RSpec.describe EE::NamespacesHelper do
 
         context 'and the namespace is eligible for unlimited' do
           before do
-            allow(quota).to receive(:namespace_eligible?).and_return(true)
+            allow(quota).to receive(:namespace_root?).and_return(true)
             allow(user_group).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
           end
 
@@ -79,7 +80,7 @@ RSpec.describe EE::NamespacesHelper do
 
         context 'and the namespace is not eligible for unlimited' do
           before do
-            allow(quota).to receive(:namespace_eligible?).and_return(false)
+            allow(quota).to receive(:namespace_root?).and_return(false)
           end
 
           it 'returns Not supported for the limit section' do
@@ -103,7 +104,7 @@ RSpec.describe EE::NamespacesHelper do
     end
 
     describe 'rendering purchased minutes report' do
-      let(:report) { quota.purchased_minutes_report }
+      let(:report) { Ci::Minutes::QuotaPresenter.new(quota).purchased_minutes_report }
 
       context 'when extra minutes are assigned' do
         it 'returns the proper values for used and limit sections' do

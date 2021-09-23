@@ -2,11 +2,12 @@
 
 - namespace = local_assigns.fetch(:namespace)
 - minutes_quota = namespace.ci_minutes_quota
+- minutes_quota_presenter = Ci::Minutes::QuotaPresenter.new(minutes_quota)
 - return unless minutes_quota.enabled?
 
 
-- if minutes_quota.display_shared_runners_data?
+- if minutes_quota_presenter.display_shared_runners_data?
   %li
     %span.light= _('Additional minutes:')
     %strong
-      = ci_minutes_report(minutes_quota.purchased_minutes_report)
+      = ci_minutes_report(minutes_quota_presenter.purchased_minutes_report)
