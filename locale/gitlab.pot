@@ -16672,6 +16672,21 @@ msgstr ""
 msgid "Hello, %{username}!"
 msgstr ""
 
+msgid "HelloMessage|%{handshake_emoji} Contribute to GitLab: %{contribute_link}"
+msgstr ""
+
+msgid "HelloMessage|%{magnifier_emoji} Create a new GitLab issue: %{new_issue_link}"
+msgstr ""
+
+msgid "HelloMessage|%{rocket_emoji} We like your curiosity! Help us improve GitLab by joining the team: %{jobs_page_link}"
+msgstr ""
+
+msgid "HelloMessage|Does this page need fixes or improvements? Open an issue or contribute a merge request to help make GitLab more lovable. At GitLab, everyone can contribute!"
+msgstr ""
+
+msgid "HelloMessage|Welcome to GitLab!"
+msgstr ""
+
 msgid "Help"
 msgstr ""
 
