@@ -60,7 +60,7 @@ We should aim to not remove sensitive configuration in the *next major* release 
 
 See the table below for some examples:
 
-| Config. type | Deprecation announced | Final minor release | Remove |
+| Configuration type | Deprecation announced | Final minor release | Remove |
 | -------- | -------- | -------- | -------- |
 | Sensitive | 10.1.0   | 10.9.0   | 11.0.0 |
 | Sensitive | 10.7.0   | 10.9.0   | 12.0.0 |
