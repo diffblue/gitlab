@@ -63,18 +63,11 @@ module QA
             end
 
             # We need to strip off the user from the URI, otherwise we won't
-            # get the correct output produced from the git CLI.
+            # get the correct output
             primary_uri = project.repository_http_location.uri
             primary_uri.user = nil
 
-            # The secondary inserts a special path prefix.
-            # See `Gitlab::Geo::GitPushHttp::PATH_PREFIX`.
-            path = File.join(git_push_http_path_prefix, '\d+', primary_uri.path)
-            absolute_path = primary_uri.to_s.sub(primary_uri.path, path)
-
-            # The git cli produces the 'warning: redirecting to..' output
-            # internally.
-            expect(push.output).to match(/warning: redirecting to #{absolute_path}/)
+            expect(push.output).to match(%r{This request to a Geo secondary node will be forwarded to the.*Geo primary node:.*#{primary_uri}}m)
 
             # Validate git push worked and new content is visible
             Page::Project::Show.perform do |show|
@@ -145,19 +138,11 @@ module QA
             end
 
             # We need to strip off the user from the URI, otherwise we won't
-            # get the correct output produced from the git CLI.
+            # get the correct output
             primary_uri = project.repository_http_location.uri
             primary_uri.user = nil
 
-            # The secondary inserts a special path prefix.
-            # See `Gitlab::Geo::GitPushHttp::PATH_PREFIX`.
-            path = File.join(git_push_http_path_prefix, '\d+', primary_uri.path)
-            absolute_path = primary_uri.to_s.sub(primary_uri.path, path)
-
-            # The git cli produces the 'warning: redirecting to..' output
-            # internally.
-            expect(push.output).to match(/warning: redirecting to #{absolute_path}/)
-            expect(push.output).to match(/Locking support detected on remote "#{location.uri}"/)
+            expect(push.output).to match(%r{This request to a Geo secondary node will be forwarded to the.*Geo primary node:.*#{primary_uri}}m)
 
             # Validate git push worked and new content is visible
             Page::Project::Show.perform do |show|
