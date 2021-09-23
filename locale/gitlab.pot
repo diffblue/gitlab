@@ -968,11 +968,6 @@ msgstr ""
 msgid "%{template_project_id} is unknown or invalid"
 msgstr ""
 
-msgid "%{text} %{files}"
-msgid_plural "%{text} %{files} files"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%{text} is available"
 msgstr ""
 
