@@ -20,7 +20,7 @@ module Mutations
       def resolve(full_path:, normalized_target_url:)
         project = authorized_find!(full_path)
 
-        response = ::DastSiteValidations::RevokeService.new(
+        response = ::AppSec::Dast::SiteValidations::RevokeService.new(
           container: project,
           params: { url_base: normalized_target_url }
         ).execute
