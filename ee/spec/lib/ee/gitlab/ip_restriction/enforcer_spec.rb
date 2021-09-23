@@ -56,7 +56,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
         stub_application_setting(usage_ping_enabled: true)
       end
 
-      context 'when feature is activated' do
+      context 'when usage_ping_features_enabled is activated' do
         before do
           stub_application_setting(usage_ping_features_enabled: true)
         end
@@ -64,7 +64,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
         it_behaves_like 'ip_restriction'
       end
 
-      context 'when feature is deactivated' do
+      context 'when usage_ping_features_enabled is deactivated' do
         before do
           stub_application_setting(usage_ping_features_enabled: false)
         end
