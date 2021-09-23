@@ -38,7 +38,7 @@ module Mutations
 
         dast_site_token = dast_site_token_id.find
 
-        response = ::DastSiteValidations::FindOrCreateService.new(
+        response = ::AppSec::Dast::SiteValidations::FindOrCreateService.new(
           container: project,
           current_user: current_user,
           params: {
