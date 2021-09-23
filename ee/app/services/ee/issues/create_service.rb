@@ -27,6 +27,22 @@ module EE
           end
         end
       end
+
+      override :before_create
+      def before_create(issue)
+        super
+
+        assign_requirement_to_be_synced_for(issue)
+      end
+
+      override :after_create
+      def after_create(issue)
+        super
+
+        requirement_to_sync.issue_id = issue.id if requirement_to_sync
+
+        save_requirement
+      end
     end
   end
 end

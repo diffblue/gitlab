@@ -34,6 +34,47 @@ RSpec.describe RequirementsManagement::CreateRequirementService do
         expect(requirement.created_at).not_to eq(params[:created_at])
         expect(requirement.author_id).not_to eq(params[:author_id])
       end
+
+      context 'when syncing with requirement issues' do
+        it 'creates an issue and a requirement' do
+          expect { subject }.to change { Issue.count }.by(1)
+            .and change { RequirementsManagement::Requirement.count }.by(1)
+        end
+
+        it 'creates an associated issue of type requirement with same attributes' do
+          requirement = subject
+          issue = requirement.reload.requirement_issue
+
+          expect(issue).to be_persisted
+          expect(issue.title).to eq(requirement.title)
+          expect(issue.description).to eq(requirement.description)
+          expect(issue.author).to eq(requirement.author)
+          expect(issue.project).to eq(requirement.project)
+          expect(issue.requirement?).to eq(true)
+        end
+
+        context 'when creation of requirement fails' do
+          it 'does not create issue' do
+            allow_next_instance_of(RequirementsManagement::Requirement) do |instance|
+              allow(instance).to receive(:valid?).and_return(false)
+            end
+
+            expect { subject }. to change { Issue.count }.by(0)
+              .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+        end
+
+        context 'when creation of issue fails' do
+          it 'does not create requirement' do
+            allow_next_instance_of(Issue) do |instance|
+              allow(instance).to receive(:valid?).and_return(false)
+            end
+
+            expect { subject }. to change { Issue.count }.by(0)
+              .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+        end
+      end
     end
 
     context 'when user is not allowed to create requirements' do

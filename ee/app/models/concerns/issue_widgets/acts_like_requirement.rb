@@ -7,7 +7,7 @@ module IssueWidgets
     included do
       attr_accessor :requirement_sync_error
 
-      after_validation :invalidate_if_sync_error, on: [:update]
+      after_validation :invalidate_if_sync_error, on: [:update, :create]
 
       # This will mean that non-Requirement issues essentially ignore this relationship and always return []
       has_many :test_reports, -> { joins(:requirement_issue).where(issues: { issue_type: WorkItem::Type.base_types[:requirement] }) },
@@ -20,6 +20,7 @@ module IssueWidgets
     end
 
     def invalidate_if_sync_error
+      return unless requirement? # No need to invalidate if issue_type != requirement
       return unless requirement_sync_error
       return unless requirement
 
