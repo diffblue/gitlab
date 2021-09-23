@@ -35376,6 +35376,9 @@ msgstr ""
 msgid "To connect an SVN repository, check out %{svn_link}."
 msgstr ""
 
+msgid "To continue using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc."
+msgstr ""
+
 msgid "To continue, you need to select the link in the confirmation email we sent to verify your email address. If you didn't get our email, select %{strongStart}Resend confirmation email.%{strongEnd}"
 msgstr ""
 
@@ -35479,6 +35482,9 @@ msgid "To set up this integration:"
 msgstr ""
 
 msgid "To specify the notification level per project of a group you belong to, you need to visit project page and change notification level there."
+msgstr ""
+
+msgid "To start using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc."
 msgstr ""
 
 msgid "To unsubscribe from this issue, please paste the following link into your browser:"

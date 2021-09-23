@@ -4,7 +4,10 @@
 %h3.page-title= _('Upload License')
 
 %p.light
-  To #{License.current ? "continue" : "start"} using GitLab Enterprise Edition, upload the <code>.gitlab-license</code> file or enter the license key you have received from GitLab Inc.
+  - if License.current
+    = _('To continue using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc.').html_safe % {codeOpen: '<code>'.html_safe, codeClose: '</code>'.html_safe}
+  - else
+    = _('To start using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc.').html_safe % {codeOpen: '<code>'.html_safe, codeClose: '</code>'.html_safe}
 
 %hr
 = form_for @license, url: admin_license_path, html: { multipart: true, class: 'fieldset-form' } do |f|
