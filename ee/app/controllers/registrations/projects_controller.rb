@@ -26,9 +26,6 @@ module Registrations
 
         learn_gitlab_project = create_learn_gitlab_project
 
-        experiment(:jobs_to_be_done, user: current_user)
-          .track(:create_project, project: @project)
-
         experiment(:force_company_trial, user: current_user)
           .track(:create_project, namespace: @project.namespace, project: @project, user: current_user)
 

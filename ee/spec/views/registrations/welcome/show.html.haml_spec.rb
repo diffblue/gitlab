@@ -14,13 +14,11 @@ RSpec.describe 'registrations/welcome/show' do
 
   describe 'forms and progress bar' do
     let_it_be(:user_other_role_details_enabled) { false }
-    let_it_be(:stubbed_experiments) { {} }
 
     before do
       allow(view).to receive(:redirect_path).and_return(redirect_path)
       allow(view).to receive(:signup_onboarding_enabled?).and_return(signup_onboarding_enabled)
       stub_feature_flags(user_other_role_details: user_other_role_details_enabled)
-      stub_experiments(stubbed_experiments)
 
       render
     end
@@ -62,13 +60,9 @@ RSpec.describe 'registrations/welcome/show' do
         end
       end
 
-      context 'experiment(:jobs_to_be_done)' do
-        let_it_be(:stubbed_experiments) { { jobs_to_be_done: :candidate } }
-
-        it 'renders a select and text field for additional information' do
-          is_expected.to have_selector('select[name="user[registration_objective]"]')
-          is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
-        end
+      it 'renders a select and text field for additional information' do
+        is_expected.to have_selector('select[name="user[registration_objective]"]')
+        is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
       end
     end
   end

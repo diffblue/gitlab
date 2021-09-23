@@ -28,7 +28,6 @@ module Registrations
       if @group.persisted?
         if @group.previously_new_record?
           combined_registration_experiment.track(:create_group, namespace: @group)
-          experiment(:jobs_to_be_done, user: current_user).track(:create_group, namespace: @group)
         end
 
         @project = ::Projects::CreateService.new(current_user, project_params).execute
@@ -36,8 +35,6 @@ module Registrations
           combined_registration_experiment.track(:create_project, namespace: @project.namespace)
 
           learn_gitlab_project = create_learn_gitlab_project
-          experiment(:jobs_to_be_done, user: current_user)
-            .track(:create_project, project: @project)
 
           if helpers.in_trial_onboarding_flow?
             record_experiment_user(:remove_known_trial_form_fields_welcoming, namespace_id: @group.id)
@@ -62,7 +59,6 @@ module Registrations
       @group = Groups::CreateService.new(current_user, group_params).execute
       if @group.persisted?
         combined_registration_experiment.track(:create_group, namespace: @group)
-        experiment(:jobs_to_be_done, user: current_user).track(:create_group, namespace: @group)
 
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
         redirect_to import_url
