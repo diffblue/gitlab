@@ -14,6 +14,10 @@ module EE
         enable_sast_entry_points_experiment
       end
 
+      before_action only: :edit do
+        push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor)
+      end
+
       feature_category :projects, [:restore]
     end
 

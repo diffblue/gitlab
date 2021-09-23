@@ -4276,6 +4276,9 @@ msgstr ""
 msgid "ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator."
 msgstr ""
 
+msgid "ApprovalSettings|This setting is configured in %{groupName} and can only be changed by an administrator or group owner."
+msgstr ""
+
 msgid "ApprovalStatusTooltip|Adheres to separation of duties"
 msgstr ""
 

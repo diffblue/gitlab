@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import GroupSettingsApp from './components/group_settings/app.vue';
-import { groupApprovalsMappers } from './mappers';
+import { mergeRequestApprovalSettingsMappers } from './mappers';
 import createStore from './stores';
 import approvalSettingsModule from './stores/modules/approval_settings';
 
@@ -12,7 +12,7 @@ const mountGroupApprovalSettings = (el) => {
 
   const { defaultExpanded, approvalSettingsPath } = el.dataset;
   const store = createStore({
-    approvalSettings: approvalSettingsModule(groupApprovalsMappers),
+    approvalSettings: approvalSettingsModule(mergeRequestApprovalSettingsMappers),
   });
 
   return new Vue({

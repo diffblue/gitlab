@@ -59,24 +59,27 @@ module EE
 
     def approvals_app_data(project = @project)
       {
-        data: {
-          'project_id': project.id,
-          'can_edit': can_modify_approvers.to_s,
-          'can_modify_author_settings': can_modify_author_settings.to_s,
-          'can_modify_commiter_settings': can_modify_commiter_settings.to_s,
-          'project_path': expose_path(api_v4_projects_path(id: project.id)),
-          'settings_path': expose_path(api_v4_projects_approval_settings_path(id: project.id)),
-          'approvals_path': expose_path(api_v4_projects_approvals_path(id: project.id)),
-          'rules_path': expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
-          'allow_multi_rule': project.multiple_approval_rules_available?.to_s,
-          'eligible_approvers_docs_path': help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
-          'security_approvals_help_page_path': help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          'security_configuration_path': project_security_configuration_path(project),
-          'vulnerability_check_help_page_path': help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
-          'license_check_help_page_path': help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
-          'coverage_check_help_page_path': help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
-        }
-      }
+        project_id: project.id,
+        can_edit: can_modify_approvers.to_s,
+        can_modify_author_settings: can_modify_author_settings.to_s,
+        can_modify_commiter_settings: can_modify_commiter_settings.to_s,
+        project_path: expose_path(api_v4_projects_path(id: project.id)),
+        settings_path: expose_path(api_v4_projects_approval_settings_path(id: project.id)),
+        approvals_path: expose_path(api_v4_projects_approvals_path(id: project.id)),
+        rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: project.id)),
+        allow_multi_rule: project.multiple_approval_rules_available?.to_s,
+        eligible_approvers_docs_path: help_page_path('user/project/merge_requests/approvals/rules', anchor: 'eligible-approvers'),
+        security_approvals_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        security_configuration_path: project_security_configuration_path(project),
+        vulnerability_check_help_page_path: help_page_path('user/application_security/index', anchor: 'security-approvals-in-merge-requests'),
+        license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
+        coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
+      }.tap do |data|
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor)
+          data[:approvals_path] = expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id))
+          data[:group_name] = project.root_ancestor.name
+        end
+      end
     end
 
     def status_checks_app_data(project)

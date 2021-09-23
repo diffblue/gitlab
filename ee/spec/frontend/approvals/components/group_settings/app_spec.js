@@ -7,7 +7,7 @@ import Vuex from 'vuex';
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import GroupSettingsApp from 'ee/approvals/components/group_settings/app.vue';
 import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
-import { groupApprovalsMappers } from 'ee/approvals/mappers';
+import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';
 import { createStoreOptions } from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings';
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
@@ -44,7 +44,9 @@ describe('EE Approvals Group Settings App', () => {
     axiosMock = new MockAdapter(axios);
     axiosMock.onGet('*');
 
-    store = createStoreOptions({ approvalSettings: approvalSettingsModule(groupApprovalsMappers) });
+    store = createStoreOptions({
+      approvalSettings: approvalSettingsModule(mergeRequestApprovalSettingsMappers),
+    });
   });
 
   afterEach(() => {

@@ -1,8 +1,8 @@
-import { groupApprovalsMappers } from 'ee/approvals/mappers';
+import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';
 import { createGroupApprovalsPayload, createGroupApprovalsState } from './mocks';
 
 describe('approvals mappers', () => {
-  describe('groupApprovalsMappers', () => {
+  describe('mergeRequestApprovalSettingsMappers', () => {
     const approvalsState = createGroupApprovalsState();
     const approvalsFetchPayload = createGroupApprovalsPayload();
     const approvalsUpdatePayload = {
@@ -14,13 +14,13 @@ describe('approvals mappers', () => {
     };
 
     it('maps data to state', () => {
-      expect(groupApprovalsMappers.mapDataToState(approvalsFetchPayload)).toStrictEqual(
-        approvalsState.settings,
-      );
+      expect(
+        mergeRequestApprovalSettingsMappers.mapDataToState(approvalsFetchPayload),
+      ).toStrictEqual(approvalsState.settings);
     });
 
     it('maps state to payload', () => {
-      expect(groupApprovalsMappers.mapStateToPayload(approvalsState)).toStrictEqual(
+      expect(mergeRequestApprovalSettingsMappers.mapStateToPayload(approvalsState)).toStrictEqual(
         approvalsUpdatePayload,
       );
     });

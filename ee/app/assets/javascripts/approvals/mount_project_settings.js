@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import ProjectSettingsApp from './components/project_settings/app.vue';
-import { projectApprovalsMappers } from './mappers';
+import { projectApprovalsMappers, mergeRequestApprovalSettingsMappers } from './mappers';
 import createStore from './stores';
 import approvalSettingsModule from './stores/modules/approval_settings';
 import projectSettingsModule from './stores/modules/project_settings';
@@ -18,9 +18,17 @@ export default function mountProjectSettingsApprovals(el) {
   } = el.dataset;
 
   const modules = {
-    approvalSettings: approvalSettingsModule({ updateMethod: 'post', ...projectApprovalsMappers }),
     approvals: projectSettingsModule(),
   };
+
+  if (gon.features.groupMergeRequestApprovalSettingsFeatureFlag) {
+    modules.approvalSettings = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
+  } else {
+    modules.approvalSettings = approvalSettingsModule({
+      updateMethod: 'post',
+      ...projectApprovalsMappers,
+    });
+  }
 
   const store = createStore(modules, {
     ...el.dataset,

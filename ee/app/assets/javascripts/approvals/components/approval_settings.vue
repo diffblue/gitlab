@@ -3,7 +3,8 @@ import { GlAlert, GlButton, GlForm, GlFormGroup, GlLoadingIcon, GlLink } from '@
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { APPROVAL_SETTINGS_I18N } from '../constants';
+import { sprintf } from '~/locale';
+import { APPROVAL_SETTINGS_I18N, TYPE_GROUP } from '../constants';
 import ApprovalSettingsCheckbox from './approval_settings_checkbox.vue';
 
 export default {
@@ -54,6 +55,7 @@ export default {
         state.approvalSettings.settings.preventMrApprovalRuleEdit,
       removeApprovalsOnPush: (state) => state.approvalSettings.settings.removeApprovalsOnPush,
       requireUserPassword: (state) => state.approvalSettings.settings.requireUserPassword,
+      groupName: (state) => state.settings.groupName,
     }),
     ...mapGetters(['settingChanged']),
     hasSettings() {
@@ -80,6 +82,16 @@ export default {
     ]),
     async onSubmit() {
       await this.updateSettings(this.approvalSettingsPath);
+    },
+    lockedText({ locked, inheritedFrom }) {
+      if (!locked) {
+        return null;
+      }
+      if (inheritedFrom === TYPE_GROUP) {
+        const { groupName } = this;
+        return sprintf(APPROVAL_SETTINGS_I18N.lockedByGroupOwner, { groupName });
+      }
+      return APPROVAL_SETTINGS_I18N.lockedByAdmin;
     },
   },
   i18n: APPROVAL_SETTINGS_I18N,
@@ -127,7 +139,7 @@ export default {
           :checked="preventAuthorApproval.value"
           :label="settingsLabels.authorApprovalLabel"
           :locked="!canPreventAuthorApproval || preventAuthorApproval.locked"
-          :locked-text="$options.i18n.lockedByAdmin"
+          :locked-text="lockedText(preventAuthorApproval)"
           data-testid="prevent-author-approval"
           @input="setPreventAuthorApproval"
         />
@@ -135,7 +147,7 @@ export default {
           :checked="preventCommittersApproval.value"
           :label="settingsLabels.preventCommittersApprovalLabel"
           :locked="!canPreventCommittersApproval || preventCommittersApproval.locked"
-          :locked-text="$options.i18n.lockedByAdmin"
+          :locked-text="lockedText(preventCommittersApproval)"
           data-testid="prevent-committers-approval"
           @input="setPreventCommittersApproval"
         />
@@ -143,7 +155,7 @@ export default {
           :checked="preventMrApprovalRuleEdit.value"
           :label="settingsLabels.preventMrApprovalRuleEditLabel"
           :locked="!canPreventMrApprovalRuleEdit || preventMrApprovalRuleEdit.locked"
-          :locked-text="$options.i18n.lockedByAdmin"
+          :locked-text="lockedText(preventMrApprovalRuleEdit)"
           data-testid="prevent-mr-approval-rule-edit"
           @input="setPreventMrApprovalRuleEdit"
         />
@@ -151,7 +163,7 @@ export default {
           :checked="requireUserPassword.value"
           :label="settingsLabels.requireUserPasswordLabel"
           :locked="requireUserPassword.locked"
-          :locked-text="$options.i18n.lockedByAdmin"
+          :locked-text="lockedText(requireUserPassword)"
           data-testid="require-user-password"
           @input="setRequireUserPassword"
         />
@@ -159,7 +171,7 @@ export default {
           :checked="removeApprovalsOnPush.value"
           :label="settingsLabels.removeApprovalsOnPushLabel"
           :locked="removeApprovalsOnPush.locked"
-          :locked-text="$options.i18n.lockedByAdmin"
+          :locked-text="lockedText(removeApprovalsOnPush)"
           data-testid="remove-approvals-on-push"
           @input="setRemoveApprovalsOnPush"
         />

@@ -64,6 +64,9 @@ export const APPROVAL_SETTINGS_I18N = {
   lockedByAdmin: s__(
     'ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator.',
   ),
+  lockedByGroupOwner: s__(
+    'ApprovalSettings|This setting is configured in %{groupName} and can only be changed by an administrator or group owner.',
+  ),
 };
 
 export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {

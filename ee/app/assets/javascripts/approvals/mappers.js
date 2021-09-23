@@ -1,3 +1,4 @@
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { RULE_TYPE_REGULAR, RULE_TYPE_ANY_APPROVER } from './constants';
 
 const visibleTypes = new Set([RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR]);
@@ -102,16 +103,20 @@ export const mapMRApprovalSettingsResponse = (res) => {
 
 const invertApprovalSetting = ({ value, ...rest }) => ({ value: !value, ...rest });
 
-export const groupApprovalsMappers = {
-  mapDataToState: (data) => ({
-    preventAuthorApproval: invertApprovalSetting(data.allow_author_approval),
-    preventMrApprovalRuleEdit: invertApprovalSetting(
-      data.allow_overrides_to_approver_list_per_merge_request,
+export const mergeRequestApprovalSettingsMappers = {
+  mapDataToState: (data) =>
+    convertObjectPropsToCamelCase(
+      {
+        preventAuthorApproval: invertApprovalSetting(data.allow_author_approval),
+        preventMrApprovalRuleEdit: invertApprovalSetting(
+          data.allow_overrides_to_approver_list_per_merge_request,
+        ),
+        requireUserPassword: data.require_password_to_approve,
+        removeApprovalsOnPush: invertApprovalSetting(data.retain_approvals_on_push),
+        preventCommittersApproval: invertApprovalSetting(data.allow_committer_approval),
+      },
+      { deep: true },
     ),
-    requireUserPassword: data.require_password_to_approve,
-    removeApprovalsOnPush: invertApprovalSetting(data.retain_approvals_on_push),
-    preventCommittersApproval: invertApprovalSetting(data.allow_committer_approval),
-  }),
   mapStateToPayload: ({ settings }) => ({
     allow_author_approval: !settings.preventAuthorApproval.value,
     allow_overrides_to_approver_list_per_merge_request: !settings.preventMrApprovalRuleEdit.value,
