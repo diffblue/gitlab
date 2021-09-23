@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Value Stream Analytics LabelsSelector with no item selected will render the label selector 1`] = `
-"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" text=\\"\\" showhighlighteditemstitle=\\"true\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" class=\\"gl-w-full\\">
+"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" clearalltextclass=\\"gl-px-5\\" text=\\"\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" class=\\"gl-w-full\\">
   <gl-dropdown-section-header-stub>Select a label </gl-dropdown-section-header-stub>
   <div class=\\"mb-3 px-3\\">
     <gl-search-box-by-type-stub value=\\"\\" clearbuttontitle=\\"Clear\\"></gl-search-box-by-type-stub>
@@ -30,7 +30,7 @@ exports[`Value Stream Analytics LabelsSelector with no item selected will render
 `;
 
 exports[`Value Stream Analytics LabelsSelector with selectedLabelIds set will render the label selector 1`] = `
-"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" text=\\"\\" showhighlighteditemstitle=\\"true\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" class=\\"gl-w-full\\">
+"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" clearalltextclass=\\"gl-px-5\\" text=\\"\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" class=\\"gl-w-full\\">
   <gl-dropdown-section-header-stub>Select a label </gl-dropdown-section-header-stub>
   <div class=\\"mb-3 px-3\\">
     <gl-search-box-by-type-stub value=\\"\\" clearbuttontitle=\\"Clear\\"></gl-search-box-by-type-stub>
