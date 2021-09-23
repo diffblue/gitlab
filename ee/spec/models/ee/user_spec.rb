@@ -1336,66 +1336,75 @@ RSpec.describe User do
   end
 
   context 'paid namespaces' do
-    let_it_be(:user) { create(:user) }
+    using RSpec::Parameterized::TableSyntax
+
     let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:bronze_group) { create(:group_with_plan, plan: :bronze_plan) }
     let_it_be(:free_group) { create(:group_with_plan, plan: :free_plan) }
     let_it_be(:group_without_plan) { create(:group) }
 
-    describe '#has_paid_namespace?' do
-      context 'when the user has Reporter or higher on at least one paid group' do
-        it 'returns true' do
-          ultimate_group.add_reporter(user)
-          bronze_group.add_guest(user)
+    # TODO: this `where/when` can be removed in issue https://gitlab.com/gitlab-org/gitlab/-/issues/341070
+    #       At that point we only need to check `user_namespace`
+    where(namespace_type: [:namespace, :user_namespace])
 
-          expect(user.has_paid_namespace?).to eq(true)
+    with_them do
+      let(:user) { create(:user, namespace: create(namespace_type)) }
+
+      describe '#has_paid_namespace?' do
+        context 'when the user has Reporter or higher on at least one paid group' do
+          it 'returns true' do
+            ultimate_group.add_reporter(user)
+            bronze_group.add_guest(user)
+
+            expect(user.has_paid_namespace?).to eq(true)
+          end
+        end
+
+        context 'when the user is only a Guest on paid groups' do
+          it 'returns false' do
+            ultimate_group.add_guest(user)
+            bronze_group.add_guest(user)
+            free_group.add_owner(user)
+
+            expect(user.has_paid_namespace?).to eq(false)
+          end
+        end
+
+        context 'when the user is not a member of any groups with plans' do
+          it 'returns false' do
+            group_without_plan.add_owner(user)
+
+            expect(user.has_paid_namespace?).to eq(false)
+          end
         end
       end
 
-      context 'when the user is only a Guest on paid groups' do
-        it 'returns false' do
-          ultimate_group.add_guest(user)
-          bronze_group.add_guest(user)
-          free_group.add_owner(user)
+      describe '#owns_paid_namespace?' do
+        context 'when the user is an owner of at least one paid group' do
+          it 'returns true' do
+            ultimate_group.add_owner(user)
+            bronze_group.add_owner(user)
 
-          expect(user.has_paid_namespace?).to eq(false)
+            expect(user.owns_paid_namespace?).to eq(true)
+          end
         end
-      end
 
-      context 'when the user is not a member of any groups with plans' do
-        it 'returns false' do
-          group_without_plan.add_owner(user)
+        context 'when the user is only a Maintainer on paid groups' do
+          it 'returns false' do
+            ultimate_group.add_maintainer(user)
+            bronze_group.add_maintainer(user)
+            free_group.add_owner(user)
 
-          expect(user.has_paid_namespace?).to eq(false)
+            expect(user.owns_paid_namespace?).to eq(false)
+          end
         end
-      end
-    end
 
-    describe '#owns_paid_namespace?' do
-      context 'when the user is an owner of at least one paid group' do
-        it 'returns true' do
-          ultimate_group.add_owner(user)
-          bronze_group.add_owner(user)
+        context 'when the user is not a member of any groups with plans' do
+          it 'returns false' do
+            group_without_plan.add_owner(user)
 
-          expect(user.owns_paid_namespace?).to eq(true)
-        end
-      end
-
-      context 'when the user is only a Maintainer on paid groups' do
-        it 'returns false' do
-          ultimate_group.add_maintainer(user)
-          bronze_group.add_maintainer(user)
-          free_group.add_owner(user)
-
-          expect(user.owns_paid_namespace?).to eq(false)
-        end
-      end
-
-      context 'when the user is not a member of any groups with plans' do
-        it 'returns false' do
-          group_without_plan.add_owner(user)
-
-          expect(user.owns_paid_namespace?).to eq(false)
+            expect(user.owns_paid_namespace?).to eq(false)
+          end
         end
       end
     end
