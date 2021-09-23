@@ -15,6 +15,7 @@ import Division from '../extensions/division';
 import Emoji from '../extensions/emoji';
 import Figure from '../extensions/figure';
 import FigureCaption from '../extensions/figure_caption';
+import Frontmatter from '../extensions/frontmatter';
 import HardBreak from '../extensions/hard_break';
 import Heading from '../extensions/heading';
 import HorizontalRule from '../extensions/horizontal_rule';
@@ -136,6 +137,20 @@ const defaultSerializerConfig = {
       const { name } = node.attrs;
 
       state.write(`:${name}:`);
+    },
+    [Frontmatter.name]: (state, node) => {
+      const { language } = node.attrs;
+      const syntax = {
+        toml: '+++',
+        json: ';;;',
+        yaml: '---',
+      }[language];
+
+      state.write(`${syntax}\n`);
+      state.text(node.textContent, false);
+      state.ensureNewLine();
+      state.write(syntax);
+      state.closeBlock(node);
     },
     [Figure.name]: renderHTMLNode('figure'),
     [FigureCaption.name]: renderHTMLNode('figcaption'),
