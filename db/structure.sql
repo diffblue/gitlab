@@ -13703,7 +13703,6 @@ CREATE SEQUENCE error_tracking_errors_id_seq
 ALTER SEQUENCE error_tracking_errors_id_seq OWNED BY error_tracking_errors.id;
 
 CREATE TABLE events (
-    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     project_id integer,
     author_id integer NOT NULL,
     target_id integer,
