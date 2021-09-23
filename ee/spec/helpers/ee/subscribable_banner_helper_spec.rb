@@ -216,4 +216,11 @@ RSpec.describe EE::SubscribableBannerHelper do
       expect(helper.instance_variable_get(:@display_subscription_banner)).to be true
     end
   end
+
+  describe '#link_to_button_style' do
+    it 'return correct link with path and track property' do
+      expect(link_to_button_style(path: '/subscriptions', track_property: 'test-track-label')).to match %r{<a.*href="/subscriptions".*>.*</a>}m
+      expect(link_to_button_style(path: '/subscriptions', track_property: 'test-track-label')).to match %r{<a.*data-track-property="test-track-label".*>.*</a>}m
+    end
+  end
 end

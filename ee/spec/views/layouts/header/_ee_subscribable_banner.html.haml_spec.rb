@@ -27,7 +27,7 @@ RSpec.describe 'layouts/header/_ee_subscribable_banner' do
       let(:license) { build(:gitlab_license, expires_at: Date.current - 1.week) }
 
       it 'shows the upgrade plan link' do
-        expect(rendered).to have_link 'Upgrade your plan', href: view.upgrade_subscription_path
+        expect(rendered).to have_link 'Renew subscription', href: view.upgrade_subscription_path
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe 'layouts/header/_ee_subscribable_banner' do
       let(:license) { build(:gitlab_license, expires_at: Date.current - 3.weeks) }
 
       it 'shows the renew plan link' do
-        expect(rendered).to have_link 'Renew your subscription', href: view.renew_subscription_path
+        expect(rendered).to have_link 'Renew subscription', href: view.renew_subscription_path
       end
     end
   end
