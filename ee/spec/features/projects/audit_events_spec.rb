@@ -133,34 +133,42 @@ RSpec.describe 'Projects > Audit Events', :js do
     end
   end
 
-  describe 'changing merge request approval permission for authors and reviewers' do
-    before do
-      project.add_developer(pete)
-    end
+  context 'with the group_merge_request_approval_settings feature' do
+    where(feature_enabled: [true, false])
 
-    it "appears in the project's audit events", :js do
-      visit edit_project_path(project)
+    with_them do
+      describe 'changing merge request approval permission for authors and reviewers' do
+        before do
+          stub_feature_flags(group_merge_request_approval_settings_feature_flag: feature_enabled)
+          stub_licensed_features(group_merge_request_approval_settings: feature_enabled)
+          project.add_developer(pete)
+        end
 
-      page.within('[data-testid="merge-request-approval-settings"]') do
-        find('[data-testid="prevent-author-approval"] > input').set(false)
-        find('[data-testid="prevent-committers-approval"] > input').set(true)
-        click_button 'Save changes'
-      end
+        it "appears in the project's audit events", :js do
+          visit edit_project_path(project)
 
-      wait_for_all_requests
+          page.within('[data-testid="merge-request-approval-settings"]') do
+            find('[data-testid="prevent-author-approval"] > input').set(false)
+            find('[data-testid="prevent-committers-approval"] > input').set(true)
+            click_button 'Save changes'
+          end
 
-      page.within('.sidebar-top-level-items') do
-        click_link 'Security & Compliance'
-        click_link 'Audit Events'
-      end
+          wait_for_all_requests
 
-      wait_for_all_requests
+          page.within('.sidebar-top-level-items') do
+            click_link 'Security & Compliance'
+            click_link 'Audit Events'
+          end
 
-      page.within('.audit-log-table') do
-        expect(page).to have_content(project.owner.name)
-        expect(page).to have_content('Changed prevent merge request approval from authors')
-        expect(page).to have_content('Changed prevent merge request approval from reviewers')
-        expect(page).to have_content(project.name)
+          wait_for_all_requests
+
+          page.within('.audit-log-table') do
+            expect(page).to have_content(project.owner.name)
+            expect(page).to have_content('Changed prevent merge request approval from authors')
+            expect(page).to have_content('Changed prevent merge request approval from reviewers')
+            expect(page).to have_content(project.name)
+          end
+        end
       end
     end
   end

@@ -7,11 +7,13 @@ import {
   PROJECT_APPROVAL_SETTINGS_LABELS_I18N,
   APPROVAL_SETTINGS_I18N,
 } from 'ee/approvals/constants';
-import { groupApprovalsMappers } from 'ee/approvals/mappers';
+import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';
 import createStore from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings/';
+import projectSettingsModule from 'ee/approvals/stores/modules/project_settings/';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { sprintf } from '~/locale';
 import { createGroupApprovalsPayload, createGroupApprovalsState } from '../mocks';
 
 const localVue = createLocalVue();
@@ -26,7 +28,7 @@ describe('ApprovalSettings', () => {
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
 
   const setupStore = (data = {}, initialData) => {
-    const module = approvalSettingsModule(groupApprovalsMappers);
+    const module = approvalSettingsModule(mergeRequestApprovalSettingsMappers);
 
     module.state.settings = data;
     module.state.initialSettings = initialData || data;
@@ -36,7 +38,7 @@ describe('ApprovalSettings', () => {
     jest.spyOn(actions, 'dismissErrorMessage').mockImplementation();
     jest.spyOn(actions, 'dismissSuccessMessage').mockImplementation();
 
-    store = createStore({ approvalSettings: module });
+    store = createStore({ approvalSettings: module, approvals: projectSettingsModule() });
   };
 
   const createWrapper = (props = {}) => {
@@ -185,8 +187,10 @@ describe('ApprovalSettings', () => {
       ${'remove-approvals-on-push'}      | ${'setRemoveApprovalsOnPush'}     | ${'removeApprovalsOnPush'}     | ${'removeApprovalsOnPushLabel'}
     `('with the $testid checkbox', ({ testid, action, setting, labelKey }) => {
       let checkbox = null;
+      const groupName = 'GitLab Org';
 
       beforeEach(async () => {
+        store.state.settings.groupName = groupName;
         jest.spyOn(store, 'dispatch').mockImplementation();
         createWrapper();
         await waitForPromises();
@@ -205,11 +209,22 @@ describe('ApprovalSettings', () => {
         expect(checkbox.props('label')).toBe(PROJECT_APPROVAL_SETTINGS_LABELS_I18N[labelKey]);
       });
 
-      it('sets the locked and lockedText based on the setting values', () => {
-        expect(checkbox.props()).toMatchObject({
-          locked: settings[setting].locked,
-          lockedText: APPROVAL_SETTINGS_I18N.lockedByAdmin,
-        });
+      it('sets the locked prop', () => {
+        expect(checkbox.props('locked')).toBe(settings[setting].locked);
+      });
+
+      it('sets the lockedText prop', () => {
+        const { inheritedFrom, locked } = settings[setting];
+
+        let expectedText = null;
+
+        if (locked && inheritedFrom === 'group') {
+          expectedText = sprintf(APPROVAL_SETTINGS_I18N.lockedByGroupOwner, { groupName });
+        } else if (locked && inheritedFrom === 'instance') {
+          expectedText = APPROVAL_SETTINGS_I18N.lockedByAdmin;
+        }
+
+        expect(checkbox.props('lockedText')).toBe(expectedText);
       });
 
       it(`triggers the action ${action} when the value is changed`, async () => {
@@ -273,13 +288,7 @@ describe('ApprovalSettings', () => {
 
     describe('locked settings', () => {
       beforeEach(() => {
-        setupStore({
-          ...settings,
-          preventAuthorApproval: {
-            ...settings.preventAuthorApproval,
-            locked: false,
-          },
-        });
+        setupStore(createGroupApprovalsState(false).settings);
       });
 
       it.each`

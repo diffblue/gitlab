@@ -8,7 +8,7 @@ export default (mapDataToState) => ({
     state.errorMessage = '';
   },
   [types.RECEIVE_SETTINGS_SUCCESS](state, data) {
-    state.settings = { ...mapDataToState(data) };
+    state.settings = mapDataToState(data);
     state.initialSettings = cloneDeep(state.settings);
     state.isLoading = false;
   },
@@ -22,7 +22,7 @@ export default (mapDataToState) => ({
     state.errorMessage = '';
   },
   [types.UPDATE_SETTINGS_SUCCESS](state, data) {
-    state.settings = { ...mapDataToState(data) };
+    state.settings = mapDataToState(data);
     state.initialSettings = cloneDeep(state.settings);
     state.isLoading = false;
     state.isUpdated = true;

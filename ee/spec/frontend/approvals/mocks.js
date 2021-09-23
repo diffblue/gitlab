@@ -44,8 +44,8 @@ export const createGroupApprovalsPayload = () => ({
   },
   allow_committer_approval: {
     value: true,
-    locked: false,
-    inherited_from: null,
+    locked: true,
+    inherited_from: 'group',
   },
   allow_overrides_to_approver_list_per_merge_request: {
     value: true,
@@ -64,31 +64,31 @@ export const createGroupApprovalsPayload = () => ({
   },
 });
 
-export const createGroupApprovalsState = () => ({
+export const createGroupApprovalsState = (locked = null) => ({
   settings: {
     preventAuthorApproval: {
-      inherited_from: 'instance',
-      locked: true,
+      inheritedFrom: 'instance',
+      locked: locked ?? true,
       value: false,
     },
     preventCommittersApproval: {
-      inherited_from: null,
-      locked: false,
+      inheritedFrom: 'group',
+      locked: locked ?? true,
       value: false,
     },
     preventMrApprovalRuleEdit: {
-      inherited_from: null,
-      locked: false,
+      inheritedFrom: null,
+      locked: locked ?? false,
       value: false,
     },
     removeApprovalsOnPush: {
-      inherited_from: null,
-      locked: null,
+      inheritedFrom: null,
+      locked,
       value: false,
     },
     requireUserPassword: {
-      inherited_from: null,
-      locked: null,
+      inheritedFrom: null,
+      locked,
       value: true,
     },
   },
