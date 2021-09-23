@@ -21,10 +21,6 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
 
     let(:ctx) { { current_user: current_user } }
 
-    before do
-      stub_licensed_features(cluster_agents: true)
-    end
-
     subject { resolve_agents }
 
     context 'the current user has access to clusters' do

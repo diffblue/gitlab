@@ -19,7 +19,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     expected_fields = %w[
       vulnerabilities vulnerability_scanners requirement_states_count
       vulnerability_severities_count packages compliance_frameworks vulnerabilities_count_by_day
-      security_dashboard_path iterations iteration_cadences cluster_agents repository_size_excess actual_repository_size_limit
+      security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
       code_coverage_summary api_fuzzing_ci_configuration path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies
     ]
@@ -98,139 +98,6 @@ RSpec.describe GitlabSchema.types['Project'] do
       expect(vulnerabilities.first['title']).to eq('A terrible one!')
       expect(vulnerabilities.first['state']).to eq('DETECTED')
       expect(vulnerabilities.first['severity']).to eq('CRITICAL')
-    end
-  end
-
-  describe 'agent_configurations' do
-    let_it_be(:query) do
-      %(
-        query {
-          project(fullPath: "#{project.full_path}") {
-            agentConfigurations {
-              nodes {
-                agentName
-              }
-            }
-          }
-        }
-      )
-    end
-
-    let(:agent_name) { 'example-agent-name' }
-    let(:kas_client) { instance_double(Gitlab::Kas::Client, list_agent_config_files: [double(agent_name: agent_name)]) }
-
-    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
-
-    before do
-      stub_licensed_features(cluster_agents: true)
-
-      project.add_maintainer(user)
-      allow(Gitlab::Kas::Client).to receive(:new).and_return(kas_client)
-    end
-
-    it 'returns configured agents' do
-      agents = subject.dig('data', 'project', 'agentConfigurations', 'nodes')
-
-      expect(agents.count).to eq(1)
-      expect(agents.first['agentName']).to eq(agent_name)
-    end
-  end
-
-  describe 'cluster_agents' do
-    let_it_be(:cluster_agent) { create(:cluster_agent, project: project, name: 'agent-name') }
-    let_it_be(:query) do
-      %(
-        query {
-          project(fullPath: "#{project.full_path}") {
-            clusterAgents {
-              count
-              nodes {
-                id
-                name
-                createdAt
-                updatedAt
-
-                project {
-                  id
-                }
-              }
-            }
-          }
-        }
-      )
-    end
-
-    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
-
-    before do
-      stub_licensed_features(cluster_agents: true)
-
-      project.add_maintainer(user)
-    end
-
-    it 'returns associated cluster agents' do
-      agents = subject.dig('data', 'project', 'clusterAgents', 'nodes')
-
-      expect(agents.count).to be(1)
-      expect(agents.first['id']).to eq(cluster_agent.to_global_id.to_s)
-      expect(agents.first['name']).to eq('agent-name')
-      expect(agents.first['createdAt']).to be_present
-      expect(agents.first['updatedAt']).to be_present
-      expect(agents.first['project']['id']).to eq(project.to_global_id.to_s)
-    end
-
-    it 'returns count of cluster agents' do
-      count = subject.dig('data', 'project', 'clusterAgents', 'count')
-
-      expect(count).to be(project.cluster_agents.size)
-    end
-  end
-
-  describe 'cluster_agent' do
-    let_it_be(:cluster_agent) { create(:cluster_agent, project: project, name: 'agent-name') }
-    let_it_be(:agent_token) { create(:cluster_agent_token, agent: cluster_agent) }
-    let_it_be(:query) do
-      %(
-        query {
-          project(fullPath: "#{project.full_path}") {
-            clusterAgent(name: "#{cluster_agent.name}") {
-              id
-
-              tokens {
-                count
-                nodes {
-                  id
-                }
-              }
-            }
-          }
-        }
-      )
-    end
-
-    subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
-
-    before do
-      stub_licensed_features(cluster_agents: true)
-
-      project.add_maintainer(user)
-    end
-
-    it 'returns associated cluster agents' do
-      agent = subject.dig('data', 'project', 'clusterAgent')
-      tokens = agent.dig('tokens', 'nodes')
-
-      expect(agent['id']).to eq(cluster_agent.to_global_id.to_s)
-
-      expect(tokens.count).to be(1)
-      expect(tokens.first['id']).to eq(agent_token.to_global_id.to_s)
-    end
-
-    it 'returns count of agent tokens' do
-      agent = subject.dig('data', 'project', 'clusterAgent')
-      count = agent.dig('tokens', 'count')
-
-      expect(cluster_agent.agent_tokens.size).to be(count)
     end
   end
 

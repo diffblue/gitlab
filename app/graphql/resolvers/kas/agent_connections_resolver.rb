@@ -24,7 +24,7 @@ module Resolvers
       private
 
       def can_read_connected_agents?
-        project.licensed_feature_available?(:cluster_agents) && current_user.can?(:admin_cluster, project)
+        current_user.can?(:admin_cluster, project)
       end
 
       def get_connected_agents

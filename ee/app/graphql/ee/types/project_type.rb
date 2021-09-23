@@ -95,25 +95,6 @@ module EE
               resolver: ::Resolvers::DastSiteValidationResolver,
               description: 'DAST Site Validations associated with the project.'
 
-        field :agent_configurations,
-              ::Types::Kas::AgentConfigurationType.connection_type,
-              null: true,
-              description: 'Agent configurations defined by the project',
-              resolver: ::Resolvers::Kas::AgentConfigurationsResolver
-
-        field :cluster_agent,
-              ::Types::Clusters::AgentType,
-              null: true,
-              description: 'Find a single cluster agent by name.',
-              resolver: ::Resolvers::Clusters::AgentsResolver.single
-
-        field :cluster_agents,
-              ::Types::Clusters::AgentType.connection_type,
-              extras: [:lookahead],
-              null: true,
-              description: 'Cluster agents associated with the project.',
-              resolver: ::Resolvers::Clusters::AgentsResolver
-
         field :repository_size_excess,
               GraphQL::FLOAT_TYPE,
               null: true,
