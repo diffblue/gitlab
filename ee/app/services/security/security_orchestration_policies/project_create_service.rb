@@ -35,7 +35,7 @@ module Security
           security_policy_target_project_id: project.id,
           name: "#{project.name} - Security policy project",
           description: "This project is automatically generated to manage security policies for the project.",
-          namespace_id: project.namespace.id,
+          namespace_id: project.namespace_id,
           initialize_with_readme: true,
           container_registry_enabled: false,
           packages_enabled: false,
