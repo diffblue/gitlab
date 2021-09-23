@@ -1,11 +1,21 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 import ScanErrorsAlert from 'ee/security_dashboard/components/pipeline/scan_errors_alert.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import VulnerabilityReport from 'ee/security_dashboard/components/shared/vulnerability_report.vue';
+import {
+  pipelineSecurityReportSummary,
+  pipelineSecurityReportSummaryWithErrors,
+  scansWithErrors,
+  pipelineSecurityReportSummaryEmpty,
+} from './mock_data';
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -31,7 +41,11 @@ describe('Pipeline Security Dashboard component', () => {
   const findVulnerabilityReport = () => wrapper.findComponent(VulnerabilityReport);
   const findScanErrorsAlert = () => wrapper.findComponent(ScanErrorsAlert);
 
-  const factory = ({ data, stubs, provide } = {}) => {
+  const factory = ({ stubs, provide, requestHandlers } = {}) => {
+    if (requestHandlers) {
+      localVue.use(VueApollo);
+    }
+
     store = new Vuex.Store({
       modules: {
         vulnerabilities: {
@@ -53,6 +67,7 @@ describe('Pipeline Security Dashboard component', () => {
 
     wrapper = shallowMount(PipelineSecurityDashboard, {
       localVue,
+      ...(requestHandlers && { apolloProvider: createMockApollo(requestHandlers) }),
       store,
       provide: {
         projectId,
@@ -70,12 +85,6 @@ describe('Pipeline Security Dashboard component', () => {
         ...provide,
       },
       stubs,
-      data() {
-        return {
-          securityReportSummary: {},
-          ...data,
-        };
-      },
     });
   };
 
@@ -150,43 +159,14 @@ describe('Pipeline Security Dashboard component', () => {
 
   describe('scans error alert', () => {
     describe('with errors', () => {
-      const reportSummary = {
-        scanner_1: {
-          // this scan contains errors
-          scans: {
-            nodes: [
-              { errors: ['scanner 1 - error 1', 'scanner 1 - error 2'], name: 'foo' },
-              { errors: ['scanner 1 - error 3', 'scanner 1 - error 4'], name: 'bar' },
-            ],
-          },
-        },
-        scanner_2: null,
-        scanner_3: {
-          // this scan contains errors
-          scans: {
-            nodes: [{ errors: ['scanner 3 - error 1', 'scanner 3 - error 2'], name: 'baz' }],
-          },
-        },
-        scanner_4: {
-          scans: {
-            nodes: [{ errors: [], name: 'quz' }],
-          },
-        },
-      };
-      const scansWithErrors = [
-        ...reportSummary.scanner_1.scans.nodes,
-        ...reportSummary.scanner_3.scans.nodes,
-      ];
-
-      const securityReportSummary = {
-        reports: reportSummary,
-      };
-
       beforeEach(() => {
         factory({
-          data: {
-            securityReportSummary,
-          },
+          requestHandlers: [
+            [
+              pipelineSecurityReportSummaryQuery,
+              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryWithErrors),
+            ],
+          ],
         });
       });
 
@@ -196,26 +176,14 @@ describe('Pipeline Security Dashboard component', () => {
     });
 
     describe('without errors', () => {
-      const reportSummary = {
-        dast: {
-          scans: [
-            {
-              name: 'dast',
-              errors: [],
-            },
-          ],
-        },
-      };
-
-      const securityReportSummary = {
-        reports: reportSummary,
-      };
-
       beforeEach(() => {
         factory({
-          data: {
-            securityReportSummary,
-          },
+          requestHandlers: [
+            [
+              pipelineSecurityReportSummaryQuery,
+              jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummary),
+            ],
+          ],
         });
       });
 
@@ -226,32 +194,25 @@ describe('Pipeline Security Dashboard component', () => {
   });
 
   describe('security reports summary', () => {
-    const reportSummary = {
-      dast: {
-        vulnerabilitiesCount: 123,
+    it.each`
+      response                              | shouldShowReportSummary
+      ${pipelineSecurityReportSummary}      | ${true}
+      ${pipelineSecurityReportSummaryEmpty} | ${false}
+    `(
+      'shows the summary is "$shouldShowReportSummary"',
+      async ({ response, shouldShowReportSummary }) => {
+        factory({
+          requestHandlers: [
+            [pipelineSecurityReportSummaryQuery, jest.fn().mockResolvedValueOnce(response)],
+          ],
+        });
+
+        await nextTick();
+
+        expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(
+          shouldShowReportSummary,
+        );
       },
-    };
-
-    const securityReportSummary = {
-      reports: reportSummary,
-    };
-
-    it('shows the summary if it is non-empty', () => {
-      factory({
-        data: {
-          securityReportSummary,
-        },
-      });
-      expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(true);
-    });
-
-    it('does not show the summary if it is empty', () => {
-      factory({
-        data: {
-          securityReportSummary: null,
-        },
-      });
-      expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(false);
-    });
+    );
   });
 });
