@@ -81,12 +81,6 @@ describe('Timezone Dropdown', () => {
         it('will default the value of the input to an empty string', () => {
           expect($inputEl.val()).toBe('');
         });
-
-        it('will add a new dropdown item for selecting an empty value', () => {
-          expect(
-            $(`${tzListSel}:contains('${findDropdownToggleText().html()}')`, $wrapper).length,
-          ).not.toBe(0);
-        });
       });
     });
 
@@ -201,14 +195,6 @@ describe('Timezone Dropdown', () => {
           identifier: 'Africa/Accra',
         }),
       ).toEqual('[UTC 0] Accra');
-    });
-
-    it('returns name when no offset is provided', () => {
-      expect(
-        formatTimezone({
-          name: 'Foo bar',
-        }),
-      ).toEqual('Foo bar');
     });
   });
 
