@@ -20,8 +20,28 @@ module QA
           end
         end
 
+        # Get group iterations
+        #
+        # @return [Array<QA::EE::Resource::GroupIteration>]
+        def iterations
+          parse_body(api_get_from(api_iterations_path)).map do |iteration|
+            GroupIteration.init do |resource|
+              resource.group = self
+              resource.api_client = api_client
+              resource.id = iteration[:id]
+              resource.iid = iteration[:iid]
+              resource.title = iteration[:title]
+              resource.description = iteration[:description]
+            end
+          end
+        end
+
         def api_epics_path
           "#{api_get_path}/epics"
+        end
+
+        def api_iterations_path
+          "#{api_get_path}/iterations"
         end
       end
     end

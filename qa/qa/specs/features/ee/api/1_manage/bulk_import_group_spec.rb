@@ -6,6 +6,7 @@ module QA
     describe 'Bulk group import' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
+      # validate different epic author is migrated correctly
       let(:author_api_client) { Runtime::API::Client.new(user: author) }
 
       let(:user) do
@@ -46,6 +47,13 @@ module QA
       let(:source_epics) { source_group.epics }
       let(:imported_epics) { imported_group.epics }
 
+      let(:source_iteration) do
+        EE::Resource::GroupIteration.fabricate_via_api! do |iteration|
+          iteration.api_client = api_client
+          iteration.group = source_group
+        end
+      end
+
       # Find epic by title
       #
       # @param [Array] epics
@@ -76,6 +84,8 @@ module QA
 
         child_epic.award_emoji('thumbsup')
         child_epic.award_emoji('thumbsdown')
+
+        source_iteration
       end
 
       after do
@@ -83,7 +93,10 @@ module QA
         author.remove_via_api!
       end
 
-      it 'imports group epics', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1921' do
+      it(
+        'imports group epics and iterations',
+        testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1921'
+      ) do
         expect { imported_group.import_status }.to(
           eventually_eq('finished').within(max_duration: 300, sleep_interval: 2)
         )
@@ -91,11 +104,17 @@ module QA
         source_parent_epic = find_epic(source_epics, 'Parent epic')
         imported_parent_epic = find_epic(imported_epics, 'Parent epic')
         imported_child_epic = find_epic(imported_epics, 'Child epic')
+        imported_iteration = imported_group.reload!.iterations.find { |ml| ml.title == source_iteration.title }
 
-        aggregate_failures 'epics imported incorrectly' do
+        aggregate_failures do
           expect(imported_epics).to eq(source_epics)
           expect(imported_child_epic.parent_id).to eq(imported_parent_epic.id)
           expect(imported_parent_epic.author).to eq(source_parent_epic.author)
+
+          expect(imported_iteration).to eq(source_iteration)
+          expect(imported_iteration.iid).to eq(source_iteration.iid)
+          expect(imported_iteration.created_at).to eq(source_iteration.created_at)
+          expect(imported_iteration.updated_at).to eq(source_iteration.updated_at)
         end
       end
     end

@@ -6,19 +6,21 @@ module QA
       class GroupIteration < QA::Resource::Base
         include Support::Dates
 
-        attr_accessor :title
-
         attribute :group do
           QA::Resource::Group.fabricate_via_api! do |group|
             group.path = "group-to-test-iterations-#{SecureRandom.hex(8)}"
           end
         end
 
-        attribute :id
-        attribute :start_date
-        attribute :due_date
-        attribute :description
-        attribute :title
+        attributes :id,
+                   :iid,
+                   :description,
+                   :title,
+                   :state,
+                   :start_date,
+                   :due_date,
+                   :created_at,
+                   :updated_at
 
         def initialize
           @start_date = current_date_yyyy_mm_dd
@@ -34,23 +36,68 @@ module QA
 
           QA::EE::Page::Group::Iteration::Index.perform(&:click_new_iteration_button)
 
-          QA::EE::Page::Group::Iteration::New.perform do |new|
-            new.fill_title(@title)
-            new.fill_description(@description)
-            new.fill_start_date(@start_date)
-            new.fill_due_date(@due_date)
-            new.click_create_iteration_button
+          QA::EE::Page::Group::Iteration::New.perform do |iteration_page|
+            iteration_page.fill_title(@title)
+            iteration_page.fill_description(@description)
+            iteration_page.fill_start_date(@start_date)
+            iteration_page.fill_due_date(@due_date)
+            iteration_page.click_create_iteration_button
           end
         end
 
-        def api_get_path
-          "gid://gitlab/Iteration/#{id}"
+        # Iteration attributes
+        #
+        # @return [String]
+        def gql_attributes
+          @gql_attributes ||= <<~GQL
+            id
+            iid
+            description
+            title
+            state
+            startDate
+            dueDate
+            createdAt
+            updatedAt
+            webUrl
+          GQL
         end
 
+        # Path for fetching iteration
+        #
+        # @return [String]
+        def api_get_path
+          "/graphql"
+        end
+
+        # Fetch iteration
+        #
+        # @return [Hash]
+        def api_get
+          process_api_response(
+            api_post_to(
+              api_get_path,
+              <<~GQL
+                query {
+                  iteration(id: "gid://gitlab/Iteration/#{id}") {
+                    #{gql_attributes}
+                  }
+                }
+              GQL
+            )
+          )
+        end
+
+        # Path to create iteration
+        #
+        # @return [String]
         def api_post_path
           "/graphql"
         end
 
+        # Graphql mutation for iteration creation
+        #
+        # @return [String]
         def api_post_body
           <<~GQL
             mutation {
@@ -62,17 +109,44 @@ module QA
                 dueDate: "#{@due_date}"
                 }) {
                 iteration {
-                  id
-                  title
-                  description
-                  startDate
-                  dueDate
-                  webUrl
+                  #{gql_attributes}
                 }
                 errors
               }
             }
           GQL
+        end
+
+        # Object comparison
+        #
+        # @param [QA::EE::Resource::GroupIteration] other
+        # @return [Boolean]
+        def ==(other)
+          other.is_a?(GroupIteration) && comparable_iteration == other.comparable_iteration
+        end
+
+        # Override inspect for a better rspec failure diff output
+        #
+        # @return [String]
+        def inspect
+          JSON.pretty_generate(comparable_iteration)
+        end
+
+        protected
+
+        # Return subset of fields for comparing iterations
+        #
+        # @return [Hash]
+        def comparable_iteration
+          reload! unless api_response
+
+          api_response.slice(
+            :title,
+            :description,
+            :state,
+            :due_date,
+            :start_date
+          )
         end
       end
     end
