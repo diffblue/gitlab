@@ -90,6 +90,6 @@ the feature will continue working the same way as if you had `gitlab_rails['bett
 However, setting the old version of configuration will print out a deprecation
 notice at the end of installation/upgrade/reconfigure run.
 
-With GitLab 11, `gitlab_rails['configuration'] = true` will no longer work and you will have to manually change the configuration in `/etc/gitlab/gitlab.rb` to the new valid config.
+With GitLab 11, `gitlab_rails['configuration'] = true` will no longer work and you will have to manually change the configuration in `/etc/gitlab/gitlab.rb` to the new valid configuration.
 **Note** If this configuration option is sensitive and can put integrity of the installation or
 data in danger, installation/upgrade will be aborted.
