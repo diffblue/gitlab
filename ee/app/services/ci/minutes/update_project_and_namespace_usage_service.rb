@@ -22,7 +22,7 @@ module Ci
         # TODO: fix this condition after the next deployment when `build_id`
         # is made a mandatory argument.
         # https://gitlab.com/gitlab-org/gitlab/-/issues/331785
-        if @build_id
+        if @build_id && idempotent_consumption_enabled?
           ensure_idempotency { track_usage_of_monthly_minutes(consumption) }
         else
           track_usage_of_monthly_minutes(consumption)
@@ -103,7 +103,10 @@ module Ci
       # Ensure we only add the CI minutes consumption once for the given build
       # even if the worker is retried.
       def ensure_idempotency
-        return if already_completed?
+        if already_completed?
+          ::Gitlab::AppJsonLogger.info(event: 'ci_minutes_consumption_already_updated', build_id: @build_id)
+          return
+        end
 
         yield
 
@@ -120,6 +123,15 @@ module Ci
         Gitlab::Redis::SharedState.with do |redis|
           redis.exists(idempotency_cache_key)
         end
+      end
+
+      # When running this worker the project might have been deleted.
+      # In this case we consider the feature flag disabled for backward
+      # compatibility.
+      def idempotent_consumption_enabled?
+        return false unless @project
+
+        Feature.enabled?(:idempotent_ci_minutes_consumption, @project, default_enabled: :yaml)
       end
     end
   end
