@@ -17,7 +17,7 @@ RSpec.describe Ci::RetryBuildService do
 
   it_behaves_like 'restricts access to protected environments'
 
-  describe '#reprocess' do
+  describe '#clone!' do
     context 'when user has ability to execute build' do
       let_it_be(:namespace) { create(:namespace) }
       let_it_be(:ultimate_plan) { create(:ultimate_plan) }
@@ -27,7 +27,7 @@ RSpec.describe Ci::RetryBuildService do
 
       let(:new_build) do
         travel_to(1.second.from_now) do
-          service.reprocess!(build)
+          service.clone!(build)
         end
       end
 
