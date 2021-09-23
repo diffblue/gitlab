@@ -3,6 +3,8 @@ import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
+import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
+import SummaryDetails from 'ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
 import App from 'ee/subscriptions/buy_minutes/components/app.vue';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -24,6 +26,8 @@ describe('App', () => {
       stubs: {
         Checkout,
         AddonPurchaseDetails,
+        OrderSummary,
+        SummaryDetails,
       },
     });
   }
@@ -31,6 +35,7 @@ describe('App', () => {
   const findQuantityText = () => wrapper.findByTestId('addon-quantity-text');
   const findSummaryLabel = () => wrapper.findByTestId('summary-label');
   const findSummaryTotal = () => wrapper.findByTestId('summary-total');
+  const findPriceLabel = () => wrapper.findByTestId('price-per-unit');
 
   afterEach(() => {
     wrapper.destroy();
@@ -101,16 +106,12 @@ describe('App', () => {
       wrapper = createComponent(mockApollo);
       await waitForPromises();
 
-      expect(findQuantityText().exists()).toBe(true);
       expect(findQuantityText().text()).toMatchInterpolatedText(
         'x 1,000 minutes per pack = 1,000 CI minutes',
       );
-
-      expect(findSummaryLabel().exists()).toBe(true);
       expect(findSummaryLabel().text()).toBe('1 CI minute pack');
-
-      expect(findSummaryTotal().exists()).toBe(true);
       expect(findSummaryTotal().text()).toBe('Total minutes: 1,000');
+      expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 minutes');
     });
 
     it('are shown correctly for 2 packs', async () => {
@@ -118,15 +119,10 @@ describe('App', () => {
       wrapper = createComponent(mockApollo);
       await waitForPromises();
 
-      expect(findQuantityText().exists()).toBe(true);
       expect(findQuantityText().text()).toMatchInterpolatedText(
         'x 1,000 minutes per pack = 2,000 CI minutes',
       );
-
-      expect(findSummaryLabel().exists()).toBe(true);
       expect(findSummaryLabel().text()).toBe('2 CI minute packs');
-
-      expect(findSummaryTotal().exists()).toBe(true);
       expect(findSummaryTotal().text()).toBe('Total minutes: 2,000');
     });
   });

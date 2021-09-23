@@ -6546,6 +6546,9 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
+msgid "Checkout|$%{selectedPlanPrice} per 10 GB storage per pack"
+msgstr ""
+
 msgid "Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes"
 msgstr ""
 
@@ -6564,6 +6567,9 @@ msgid "Checkout|%{name}'s CI minutes"
 msgstr ""
 
 msgid "Checkout|%{name}'s GitLab subscription"
+msgstr ""
+
+msgid "Checkout|%{name}'s storage subscription"
 msgstr ""
 
 msgid "Checkout|%{quantity} GB of storage"
@@ -6728,6 +6734,9 @@ msgid "Checkout|You'll create your new group after checkout"
 msgstr ""
 
 msgid "Checkout|Your organization"
+msgstr ""
+
+msgid "Checkout|Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
 msgstr ""
 
 msgid "Checkout|Your subscription will be applied to this group"

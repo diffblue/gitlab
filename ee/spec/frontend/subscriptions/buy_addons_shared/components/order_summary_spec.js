@@ -47,6 +47,7 @@ describe('Order Summary', () => {
       apolloProvider,
       propsData: {
         plan: mockCiMinutesPlans[0],
+        title: "%{name}'s CI minutes",
       },
     });
   };

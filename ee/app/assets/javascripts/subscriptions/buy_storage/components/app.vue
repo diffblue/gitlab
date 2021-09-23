@@ -1,6 +1,6 @@
 <script>
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg';
-import { GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
@@ -15,6 +15,9 @@ import {
   I18N_STORAGE_FORMULA_TOTAL,
   i18nStorageSummaryTitle,
   I18N_STORAGE_SUMMARY_TOTAL,
+  I18N_STORAGE_TITLE,
+  I18N_STORAGE_PRICE_PRE_UNIT,
+  I18N_STORAGE_TOOLTIP_NOTE,
   planTags,
   CUSTOMER_CLIENT,
   STORAGE_PER_PACK,
@@ -29,6 +32,10 @@ export default {
     OrderSummary,
     StepOrderApp,
     AddonPurchaseDetails,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   i18n: {
     ERROR_FETCHING_DATA_HEADER,
@@ -39,6 +46,9 @@ export default {
     formulaTotal: I18N_STORAGE_FORMULA_TOTAL,
     summaryTitle: i18nStorageSummaryTitle,
     summaryTotal: I18N_STORAGE_SUMMARY_TOTAL,
+    title: I18N_STORAGE_TITLE,
+    pricePerUnit: I18N_STORAGE_PRICE_PRE_UNIT,
+    tooltipNote: I18N_STORAGE_TOOLTIP_NOTE,
   },
   emptySvg,
   STORAGE_PER_PACK,
@@ -65,6 +75,11 @@ export default {
     summaryTotal(quantity) {
       return sprintf(this.$options.i18n.summaryTotal, {
         quantity: formatNumber(quantity * STORAGE_PER_PACK),
+      });
+    },
+    pricePerUnitLabel(price) {
+      return sprintf(this.$options.i18n.pricePerUnit, {
+        selectedPlanPrice: price,
       });
     },
   },
@@ -121,7 +136,20 @@ export default {
       </checkout>
     </template>
     <template #order-summary>
-      <order-summary :plan="plans[0]" />
+      <order-summary :plan="plans[0]" :title="$options.i18n.title" purchase-has-expiration>
+        <template #price-per-unit="{ price }">
+          {{ pricePerUnitLabel(price) }}
+        </template>
+        <template #tooltip>
+          <gl-icon
+            v-gl-tooltip.right
+            :title="$options.i18n.tooltipNote"
+            :aria-label="$options.i18n.tooltipNote"
+            role="tooltip"
+            name="question"
+          />
+        </template>
+      </order-summary>
     </template>
   </step-order-app>
 </template>

@@ -1,7 +1,15 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
-import { s__ } from '~/locale';
+import { formatNumber } from '~/locale';
+import {
+  I18N_SUMMARY_DATES,
+  I18N_SUMMARY_QUANTITY,
+  I18N_SUMMARY_SUBTOTAL,
+  I18N_SUMMARY_TAX,
+  I18N_SUMMARY_TAX_NOTE,
+  I18N_SUMMARY_TOTAL,
+} from '../../constants';
 
 export default {
   components: {
@@ -42,6 +50,7 @@ export default {
     purchaseHasExpiration: {
       type: Boolean,
       required: false,
+      default: false,
     },
   },
   data() {
@@ -62,75 +71,78 @@ export default {
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
     },
+    formattedPrice() {
+      return formatNumber(this.selectedPlanPrice);
+    },
   },
   i18n: {
-    quantity: s__('Checkout|(x%{quantity})'),
-    pricePerUnitPerYear: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes'),
-    dates: s__('Checkout|%{startDate} - %{endDate}'),
-    subtotal: s__('Checkout|Subtotal'),
-    tax: s__('Checkout|Tax'),
-    taxNote: s__('Checkout|(may be %{linkStart}charged upon purchase%{linkEnd})'),
-    total: s__('Checkout|Total'),
+    quantity: I18N_SUMMARY_QUANTITY,
+    dates: I18N_SUMMARY_DATES,
+    subtotal: I18N_SUMMARY_SUBTOTAL,
+    tax: I18N_SUMMARY_TAX,
+    taxNote: I18N_SUMMARY_TAX_NOTE,
+    total: I18N_SUMMARY_TOTAL,
   },
 };
 </script>
 <template>
   <div>
-    <div
-      class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mt-3 gl-mb-3"
-    >
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-my-3">
       <div data-testid="selected-plan">
         {{ selectedPlanText }}
         <span v-if="quantity" data-testid="quantity">{{
           sprintf($options.i18n.quantity, { quantity })
         }}</span>
       </div>
-      <div data-testid="amount">{{ formatAmount(totalExVat, hasPositiveQuantity) }}</div>
+      <div>
+        {{ formatAmount(totalExVat, hasPositiveQuantity) }}
+      </div>
     </div>
-    <div class="gl-text-gray-500" data-testid="price-per-unit">
-      {{
-        sprintf($options.i18n.pricePerUnitPerYear, {
-          selectedPlanPrice: selectedPlanPrice.toLocaleString(),
-        })
-      }}
+    <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-py-3">
+      <div class="gl-text-gray-500" data-testid="price-per-unit">
+        <slot name="price-per-unit" :price="formattedPrice"></slot>
+      </div>
+      <div v-if="purchaseHasExpiration" class="gl-text-gray-500" data-testid="subscription-period">
+        {{
+          sprintf($options.i18n.dates, {
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate),
+          })
+        }}
+        <slot name="tooltip"></slot>
+      </div>
     </div>
-    <div v-if="purchaseHasExpiration" class="gl-text-gray-500" data-testid="subscription-period">
-      {{
-        sprintf($options.i18n.dates, {
-          startDate: formatDate(startDate),
-          endDate: formatDate(endDate),
-        })
-      }}
-    </div>
-    <div>
-      <div class="border-bottom gl-mt-3 gl-mb-3"></div>
+    <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-py-3">
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
         <div>{{ $options.i18n.subtotal }}</div>
-        <div data-testid="total-ex-vat">{{ formatAmount(totalExVat, hasPositiveQuantity) }}</div>
+        <div data-testid="total-ex-vat">
+          {{ formatAmount(totalExVat, hasPositiveQuantity) }}
+        </div>
       </div>
       <div class="gl-display-flex gl-justify-content-space-between gl-text-gray-500">
-        <div>
-          <div data-testid="vat-info-line">
-            <gl-sprintf :message="taxLine">
-              <template #link="{ content }">
-                <gl-link
-                  class="gl-text-decoration-underline gl-text-gray-500"
-                  href="https://about.gitlab.com/handbook/tax/#indirect-taxes-management"
-                  target="_blank"
-                  data-testid="vat-help-link"
-                  >{{ content }}</gl-link
-                >
-              </template>
-            </gl-sprintf>
-          </div>
+        <div data-testid="vat-info-line">
+          <gl-sprintf :message="taxLine">
+            <template #link="{ content }">
+              <gl-link
+                class="gl-text-decoration-underline gl-text-gray-500"
+                href="https://about.gitlab.com/handbook/tax/#indirect-taxes-management"
+                target="_blank"
+                data-testid="vat-help-link"
+                >{{ content }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
         </div>
         <div data-testid="vat">{{ taxAmount }}</div>
       </div>
     </div>
-    <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mt-3 gl-mb-3"></div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-font-lg">
+    <div
+      class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-font-lg gl-mt-3"
+    >
       <div>{{ $options.i18n.total }}</div>
-      <div data-testid="total-amount">{{ formatAmount(totalAmount, hasPositiveQuantity) }}</div>
+      <div data-testid="total-amount">
+        {{ formatAmount(totalAmount, hasPositiveQuantity) }}
+      </div>
     </div>
   </div>
 </template>
