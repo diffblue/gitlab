@@ -66,8 +66,16 @@ module Geo
       ::Geo::FileRegistryRemovalService.new(
         replicable_name,
         model_record_id,
-        event_data[:blob_path]
+        removed_blob_path(event_data[:uploader_class], event_data[:blob_path])
       ).execute
+    end
+
+    def removed_blob_path(uploader_class, path)
+      return unless path.present?
+      # Backward compatibility check. Remove in 15.x
+      return path if uploader_class.nil?
+
+      File.join(uploader_class.constantize.root, path)
     end
 
     # Returns a checksum of the file
@@ -97,7 +105,7 @@ module Geo
     end
 
     def deleted_params
-      { model_record_id: model_record.id, blob_path: blob_path }
+      { model_record_id: model_record.id, uploader_class: carrierwave_uploader.class.to_s, blob_path: carrierwave_uploader.relative_path }
     end
 
     # Return whether it's capable of generating a checksum of itself
