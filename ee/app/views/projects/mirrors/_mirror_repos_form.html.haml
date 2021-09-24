@@ -38,7 +38,7 @@
     = f.label :mirror_overwrites_diverged_branches, _('Overwrite diverged branches'), class: 'form-check-label'
     .form-text.text-muted
       = _("If disabled, a diverged local branch will not be automatically updated with commits from its remote counterpart, to prevent local data loss. If the default branch (%{default_branch}) has diverged and cannot be updated, mirroring will fail. Other diverged branches are silently ignored.") % { default_branch: @project.default_branch }
-      = link_to _('Learn more.'), help_page_path('user/project/repository/repository_mirroring', anchor: 'overwrite-diverged-branches'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/pull.md', anchor: 'overwrite-diverged-branches'), target: '_blank', rel: 'noopener noreferrer'
 
   - if @project.builds_enabled?
     = render 'shared/mirror_trigger_builds_setting', f: f, checked: false

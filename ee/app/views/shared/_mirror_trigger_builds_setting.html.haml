@@ -8,4 +8,4 @@
   .form-text.text-muted
     = _('Trigger pipelines when branches or tags are updated in the upstream repository. Depending on the activity of the upstream repository, this may greatly increase the load on your CI runners. Only enable this if you know they can handle the load.')
     %strong= _('CI will run using the credentials assigned above.')
-    = link_to _('Learn more.'), help_page_path('user/project/repository/repository_mirroring', anchor: 'trigger-pipelines-for-mirror-updates'), target: '_blank', rel: 'noopener noreferrer'
+    = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/pull.md', anchor: 'trigger-pipelines-for-mirror-updates'), target: '_blank', rel: 'noopener noreferrer'
