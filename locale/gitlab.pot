@@ -1931,9 +1931,6 @@ msgstr ""
 msgid "Add a general comment to this %{noteableDisplayName}."
 msgstr ""
 
-msgid "Add a general comment to this %{noteable_name}."
-msgstr ""
-
 msgid "Add a homepage to your wiki that contains information about your project and GitLab will display it here instead of this message."
 msgstr ""
 
@@ -8275,12 +8272,6 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-msgid "Comment & close %{noteable_name}"
-msgstr ""
-
-msgid "Comment & reopen %{noteable_name}"
-msgstr ""
-
 msgid "Comment & resolve thread"
 msgstr ""
 
@@ -11997,12 +11988,6 @@ msgid "Discover|Start a free trial"
 msgstr ""
 
 msgid "Discover|Upgrade now"
-msgstr ""
-
-msgid "Discuss a specific suggestion or question"
-msgstr ""
-
-msgid "Discuss a specific suggestion or question that needs to be resolved"
 msgstr ""
 
 msgid "Discuss a specific suggestion or question that needs to be resolved."
@@ -23866,9 +23851,6 @@ msgstr ""
 msgid "Open a CLI and connect to the cluster you want to install the Agent in. Use this installation method to minimize any manual steps. The token is already included in the command."
 msgstr ""
 
-msgid "Open comment type dropdown"
-msgstr ""
-
 msgid "Open epics"
 msgstr ""
 
@@ -32247,12 +32229,6 @@ msgid "Start search"
 msgstr ""
 
 msgid "Start thread"
-msgstr ""
-
-msgid "Start thread & close %{noteable_name}"
-msgstr ""
-
-msgid "Start thread & reopen %{noteable_name}"
 msgstr ""
 
 msgid "Start your Free Ultimate Trial"
