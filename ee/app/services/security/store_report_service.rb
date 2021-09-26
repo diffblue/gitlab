@@ -269,7 +269,7 @@ module Security
 
       vulnerability_finding_to_finding_map.each_slice(BATCH_SIZE) do |vf_to_findings|
         records = vf_to_findings.flat_map do |vulnerability_finding, finding|
-          finding.flags.map { |flag| timestamps.merge(**flag.to_hash, vulnerability_occurrence_id: vulnerability_finding.id) }
+          finding.flags.map { |flag| timestamps.merge(**flag.to_h, vulnerability_occurrence_id: vulnerability_finding.id) }
         end
 
         records.uniq!

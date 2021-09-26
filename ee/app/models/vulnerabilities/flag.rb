@@ -15,7 +15,7 @@ module Vulnerabilities
     }
 
     def initialize(attributes)
-      attributes = attributes.to_hash if attributes.instance_of?(Gitlab::Ci::Reports::Security::Flag)
+      attributes = attributes.to_h if attributes.respond_to?(:to_h)
       super(attributes)
     end
   end
