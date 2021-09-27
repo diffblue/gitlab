@@ -29,7 +29,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section] }
   validates :rule_type, uniqueness: { scope: :merge_request_id, message: proc { _('any-approver for the merge request already exists') } }, if: :any_approver?
-  validates :report_type, presence: true, if: :report_approver?
 
   belongs_to :merge_request, inverse_of: :approval_rules
 
@@ -53,12 +52,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   alias_method :regular, :regular?
   alias_method :code_owner, :code_owner?
-
-  enum report_type: {
-    vulnerability: 1,
-    license_scanning: 2,
-    code_coverage: 3
-  }
 
   scope :vulnerability_report, -> { report_approver.vulnerability }
   scope :license_compliance, -> { report_approver.license_scanning }

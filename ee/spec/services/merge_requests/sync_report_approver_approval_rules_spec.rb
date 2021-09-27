@@ -8,13 +8,20 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules do
   let(:merge_request) { create(:merge_request) }
 
   describe '#execute' do
+    using RSpec::Parameterized::TableSyntax
+
     before do
       stub_licensed_features(report_approver_rules: true)
     end
 
-    ApprovalRuleLike::REPORT_TYPES_BY_DEFAULT_NAME.keys.each do |default_name|
-      context "when a project has a single `#{default_name}` approval rule" do
-        let(:report_type) { ApprovalRuleLike::REPORT_TYPES_BY_DEFAULT_NAME[default_name] }
+    where(:default_name, :report_type) do
+      'Vulnerability-Check' | :vulnerability
+      'License-Check'       | :license_scanning
+      'Coverage-Check'      | :code_coverage
+    end
+
+    context 'when a project has a single approval rule for each report_type' do
+      with_them do
         let!(:report_approval_project_rule) { create(:approval_project_rule, report_type, project: merge_request.target_project, approvals_required: 2) }
         let!(:regular_approval_project_rule) { create(:approval_project_rule, project: merge_request.target_project) }
 

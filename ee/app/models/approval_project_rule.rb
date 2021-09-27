@@ -50,7 +50,6 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def apply_report_approver_rules_to(merge_request)
-    report_type = report_type_for(self)
     rule = merge_request
       .approval_rules
       .report_approver
@@ -68,10 +67,6 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   private
-
-  def report_type_for(rule)
-    ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME[rule.name]
-  end
 
   def attributes_to_apply_for(report_type)
     attributes
