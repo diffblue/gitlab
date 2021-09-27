@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::PopulateAnyApprovalRuleForMergeRequests, schema: 2019_09_05_091831 do
+RSpec.describe Gitlab::BackgroundMigration::PopulateAnyApprovalRuleForMergeRequests, schema: 20181228175414 do
   let(:namespaces) { table(:namespaces) }
   let(:namespace) { namespaces.create!(name: 'gitlab', path: 'gitlab-org') }
   let(:projects) { table(:projects) }
