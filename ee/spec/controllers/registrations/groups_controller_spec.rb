@@ -135,6 +135,7 @@ RSpec.describe Registrations::GroupsController do
                   first_name: user.first_name,
                   last_name: user.last_name,
                   uid: user.id,
+                  setup_for_company: nil,
                   skip_email_confirmation: true,
                   gitlab_com_trial: true,
                   provider: 'gitlab',
