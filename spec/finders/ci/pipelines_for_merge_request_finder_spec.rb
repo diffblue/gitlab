@@ -97,7 +97,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
 
     shared_examples 'returning pipelines with proper ordering' do
       let!(:all_pipelines) do
-        merge_request.all_commit_shas.map do |sha|
+        merge_request.recent_diff_head_shas.map do |sha|
           create(:ci_empty_pipeline,
             project: project, sha: sha, ref: merge_request.source_branch)
         end
@@ -215,14 +215,6 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
             expect(merge_request.all_pipelines).to include(detached_merge_request_pipeline)
           end
         end
-
-        it 'does not write a log message' do
-          allow(Gitlab::AppLogger).to receive(:warn).and_call_original
-
-          subject.all
-
-          expect(Gitlab::AppLogger).not_to have_received(:warn)
-        end
       end
 
       let(:source_ref) { 'feature' }
@@ -230,7 +222,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
 
       let!(:branch_pipeline) do
         create(:ci_pipeline, source: :push, project: project,
-               ref: source_ref, sha: shas.second)
+               ref: source_ref, sha: merge_request.merge_request_diff.head_commit_sha)
       end
 
       let!(:tag_pipeline) do
@@ -250,37 +242,12 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       let(:project) { create(:project, :repository) }
       let(:shas) { project.repository.commits(source_ref, limit: 2).map(&:id) }
 
-      before do
-        create(:merge_request_diff_commit,
-               merge_request_diff: merge_request.merge_request_diff,
-               sha: shas.second, relative_order: 1)
-      end
-
       context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag enabled' do
         before do
           stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: merge_request.source_project)
         end
 
         it_behaves_like 'returns all pipelines for merge request'
-
-        context 'when total commits exceed the limit' do
-          before do
-            stub_const("#{described_class}::COMMITS_LIMIT", 1)
-          end
-
-          it 'writes a log message' do
-            allow(Gitlab::AppLogger).to receive(:warn).and_call_original
-
-            subject.all
-
-            expect(Gitlab::AppLogger).to have_received(:warn).with(
-              message: "A merge request has more than #{described_class::COMMITS_LIMIT} commits",
-              project_id: merge_request.source_project.id,
-              merge_request_id: merge_request.id,
-              total_commits: 2
-            )
-          end
-        end
       end
 
       context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag disabled' do
