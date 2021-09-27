@@ -31,7 +31,8 @@ module Resolvers
 
         args[:id] = parse_id(id) if id.present?
 
-        cadences = ::Iterations::CadencesFinder.new(current_user, group, args).execute
+        cadences = ::Iterations::Cadence.none
+        cadences = ::Iterations::CadencesFinder.new(current_user, group, args).execute if group.iteration_cadences_feature_flag_enabled?
 
         offset_pagination(cadences)
       end

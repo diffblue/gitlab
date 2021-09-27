@@ -34,16 +34,6 @@ RSpec.describe Iterations::CadencesFinder do
       group.add_reporter(user)
     end
 
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(iteration_cadences: false)
-      end
-
-      it 'returns no cadences' do
-        expect(subject).to be_empty
-      end
-    end
-
     context 'iterations cadences for group' do
       it 'returns iterations cadences' do
         expect(subject).to contain_exactly(

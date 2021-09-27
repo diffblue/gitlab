@@ -47,13 +47,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
         expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
       end
 
-      it 'does not observe the difference between actual vs live consumption' do
-        expect(::Gitlab::Ci::Pipeline::Metrics)
-          .not_to receive(:gitlab_ci_difference_live_vs_actual_minutes)
-
-        subject
-      end
-
       it 'does not send an email' do
         allow(Gitlab).to receive(:com?).and_return(true)
 
@@ -200,26 +193,7 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
           build.update!(status: :success)
         end
 
-        it 'observes the difference between actual vs live consumption' do
-          histogram = double(:histogram)
-          expect(::Gitlab::Ci::Pipeline::Metrics)
-            .to receive(:gitlab_ci_difference_live_vs_actual_minutes)
-            .and_return(histogram)
-
-          expect(histogram).to receive(:observe).with({ plan: 'free' }, 5 * cost_factor)
-
-          subject
-        end
-
         it_behaves_like 'new tracking matches legacy tracking'
-      end
-
-      context 'when live tracking does not exist for the build' do
-        it 'does not observe the difference' do
-          expect(::Gitlab::Ci::Pipeline::Metrics).not_to receive(:gitlab_ci_difference_live_vs_actual_minutes)
-
-          subject
-        end
       end
     end
 
