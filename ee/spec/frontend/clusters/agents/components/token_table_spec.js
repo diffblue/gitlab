@@ -63,16 +63,16 @@ describe('ClusterAgentTokenTable', () => {
   });
 
   it.each`
-    lastUsedText    | lineNumber
+    lastContactText | lineNumber
     ${'2 days ago'} | ${0}
     ${'Never'}      | ${1}
   `(
-    'displays last used information "$lastUsedText" for line "$lineNumber"',
-    ({ lastUsedText, lineNumber }) => {
+    'displays last contact information "$lastContactText" for line "$lineNumber"',
+    ({ lastContactText, lineNumber }) => {
       const tokens = wrapper.findAllByTestId('agent-token-used');
       const token = tokens.at(lineNumber);
 
-      expect(token.text()).toBe(lastUsedText);
+      expect(token.text()).toBe(lastContactText);
     },
   );
 

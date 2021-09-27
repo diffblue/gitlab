@@ -18,7 +18,7 @@ export default {
     createToken: s__('ClusterAgents|You will need to create a token to connect to your agent'),
     dateCreated: s__('ClusterAgents|Date created'),
     description: s__('ClusterAgents|Description'),
-    lastUsed: s__('ClusterAgents|Last used'),
+    lastUsed: s__('ClusterAgents|Last contact'),
     learnMore: s__('ClusterAgents|Learn how to create an agent access token'),
     name: s__('ClusterAgents|Name'),
     neverUsed: s__('ClusterAgents|Never'),
