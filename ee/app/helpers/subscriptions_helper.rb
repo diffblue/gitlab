@@ -16,15 +16,9 @@ module SubscriptionsHelper
     }
   end
 
-  def buy_minutes_addon_data(group)
+  def buy_addon_data(group, anchor, purchased_product)
     {
-      redirect_after_success: group_usage_quotas_path(group, anchor: 'pipelines-quota-tab', purchased_product: _('CI minutes'))
-    }.merge(addon_data(group))
-  end
-
-  def buy_storage_addon_data(group)
-    {
-      redirect_after_success: group_usage_quotas_path(group, anchor: 'storage-quota-tab', purchased_product: _('Storage'))
+      redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product)
     }.merge(addon_data(group))
   end
 

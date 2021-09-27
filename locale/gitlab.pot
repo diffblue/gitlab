@@ -6760,6 +6760,9 @@ msgstr ""
 msgid "Checkout|Zip code"
 msgstr ""
 
+msgid "Checkout|a storage subscription"
+msgstr ""
+
 msgid "Checkout|company or team"
 msgstr ""
 
