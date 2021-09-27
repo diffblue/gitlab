@@ -705,6 +705,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: geo:geo_verification_state_backfill
+  :worker_name: Geo::VerificationStateBackfillWorker
+  :feature_category: :geo_replication
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent:
+  :tags: []
 - :name: geo:geo_verification_timeout
   :worker_name: Geo::VerificationTimeoutWorker
   :feature_category: :geo_replication

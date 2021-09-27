@@ -92,6 +92,10 @@ module Gitlab
           end
         end
 
+        def create_verification_details
+          raise NotImplementedError
+        end
+
         private_class_method :start_verification_batch
         private_class_method :start_verification_batch_query
         private_class_method :start_verification_batch_subselect
@@ -202,27 +206,24 @@ module Gitlab
             .lock('FOR UPDATE SKIP LOCKED') # rubocop:disable CodeReuse/ActiveRecord
         end
 
+        # Override this method in the class that includes this concern to specify
+        # a different ActiveRecord class to store verification state
+        # See module EE::MergeRequestDiff for example
+        def verification_state_table_class
+          self
+        end
+
         # Overridden in ReplicableRegistry
-        # This method can also be overriden in the replicable model class that
-        # includes this concern to specify the primary key of the database
-        # table that stores verification state
-        # See module EE::MergeRequestDiff for example
         def verification_state_model_key
-          self.primary_key
+          verification_state_table_class.primary_key
         end
 
-        # Override this method in the class that includes this concern to specify
-        # a different database table to store verification state
-        # See module EE::MergeRequestDiff for example
         def verification_state_table_name
-          table_name
+          verification_state_table_class.table_name
         end
 
-        # Override this method in the class that includes this concern to specify
-        # a different arel table to store verification state
-        # See module EE::MergeRequestDiff for example
         def verification_arel_table
-          arel_table
+          verification_state_table_class.arel_table
         end
 
         # Fail verification for records which started verification a long time ago
@@ -288,6 +289,27 @@ module Gitlab
             SET "verification_state" = #{pending_enum_value}
             WHERE #{self.verification_state_model_key} IN (#{relation.select(self.verification_state_model_key).to_sql})
           SQL
+        end
+
+        # rubocop:disable CodeReuse/ActiveRecord
+        def pluck_verification_details_ids_in_range(range)
+          verification_state_table_class
+            .where(self.verification_state_model_key => range)
+            .pluck(self.verification_state_model_key)
+        end
+        # rubocop:enable CodeReuse/ActiveRecord
+
+        def pluck_verifiable_ids_in_range(range)
+          self
+            .available_verifiables
+            .primary_key_in(range)
+            .pluck_primary_key
+        end
+
+        # @return whether primary checksum data is stored in a table separate
+        #         from the model table
+        def separate_verification_state_table?
+          verification_state_table_name != table_name
         end
       end
 

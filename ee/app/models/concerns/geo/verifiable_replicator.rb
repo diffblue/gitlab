@@ -8,6 +8,7 @@ module Geo
 
     DEFAULT_VERIFICATION_BATCH_SIZE = 10
     DEFAULT_REVERIFICATION_BATCH_SIZE = 1000
+    DEFAULT_VERIFICATION_STATE_BACKFILL_BATCH_SIZE = 10000
 
     included do
       event :checksum_succeeded
@@ -46,7 +47,13 @@ module Geo
 
         # Secondaries don't need to run this since they will receive an event for each
         # rechecksummed resource: https://gitlab.com/gitlab-org/gitlab/-/issues/13842
-        ::Geo::ReverificationBatchWorker.perform_with_capacity(replicable_name) if ::Gitlab::Geo.primary?
+        return unless ::Gitlab::Geo.primary?
+
+        ::Geo::ReverificationBatchWorker.perform_with_capacity(replicable_name)
+
+        if Feature.enabled?(:verification_state_backfill_worker, default_enabled: :yaml) && verification_query_class.separate_verification_state_table?
+          ::Geo::VerificationStateBackfillWorker.perform_async(replicable_name)
+        end
       end
 
       # Called by VerificationBatchWorker.
@@ -107,6 +114,20 @@ module Geo
         reverify_batch(batch_size: reverification_batch_size)
       end
 
+      # Gets the next batch of rows from the replicable table, and inserts and
+      # deletes corresponding rows in the verification state table.
+      #
+      # @return [Boolean] whether any rows needed to be inserted or deleted
+      def backfill_verification_state_table
+        return false unless Gitlab::Geo.primary?
+
+        Geo::VerificationStateBackfillService.new(model, batch_size: verification_state_backfill_batch_size).execute
+      rescue StandardError => e
+        log_error("Error while updating verifiables", e)
+
+        raise
+      end
+
       # If primary, query the model table.
       # If secondary, query the registry table.
       def verification_query_class
@@ -121,6 +142,11 @@ module Geo
       # @return [Integer] number of records to reverify per batch job
       def reverification_batch_size
         DEFAULT_REVERIFICATION_BATCH_SIZE
+      end
+
+      # @return [Integer] number of records to check for backfill per batch job
+      def verification_state_backfill_batch_size
+        DEFAULT_VERIFICATION_STATE_BACKFILL_BATCH_SIZE
       end
 
       def checksummed_count
