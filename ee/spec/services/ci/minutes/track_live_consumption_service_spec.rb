@@ -139,14 +139,6 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService do
 
         it_behaves_like 'limit exceeded'
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_minutes_track_live_consumption: false)
-        end
-
-        it_behaves_like 'returns early', 'Feature not enabled'
-      end
     end
   end
 
