@@ -51,7 +51,7 @@
             group_name: @group.name,
             group_id: @group.id,
             full_path: @group.full_path,
-            auto_complete_epics: 'true',
+            auto_complete_epics: allow_sub_epics,
             auto_complete_issues: 'true',
             user_signed_in: current_user.present? ? 'true' : 'false',
             allow_sub_epics: allow_sub_epics,
