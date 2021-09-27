@@ -6510,6 +6510,7 @@ The connection type for [`Package`](#package).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packageconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="packageconnectionedges"></a>`edges` | [`[PackageEdge]`](#packageedge) | A list of edges. |
 | <a id="packageconnectionnodes"></a>`nodes` | [`[Package]`](#package) | A list of nodes. |
 | <a id="packageconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
