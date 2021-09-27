@@ -20,7 +20,7 @@ module ComplianceManagement
       def allow_author_approval
         instance_value = !instance_settings.prevent_merge_requests_author_approval
         group_value = group_settings&.allow_author_approval
-        project_value = @project&.merge_requests_author_approval
+        project_value = @project && @project.read_attribute(:merge_requests_author_approval)
 
         setting(instance_value, group_value, project_value)
       end
@@ -28,7 +28,7 @@ module ComplianceManagement
       def allow_committer_approval
         instance_value = !instance_settings.prevent_merge_requests_committers_approval
         group_value = group_settings&.allow_committer_approval
-        project_value = @project ? !@project.merge_requests_disable_committers_approval : nil
+        project_value = @project && !@project.read_attribute(:merge_requests_disable_committers_approval)
 
         setting(instance_value, group_value, project_value)
       end
@@ -36,21 +36,21 @@ module ComplianceManagement
       def allow_overrides_to_approver_list_per_merge_request
         instance_value = !instance_settings.disable_overriding_approvers_per_merge_request
         group_value = group_settings&.allow_overrides_to_approver_list_per_merge_request
-        project_value = @project ? !@project.disable_overriding_approvers_per_merge_request : nil
+        project_value = @project && !@project.read_attribute(:disable_overriding_approvers_per_merge_request)
 
         setting(instance_value, group_value, project_value)
       end
 
       def retain_approvals_on_push
         group_value = group_settings&.retain_approvals_on_push
-        project_value = @project ? !@project.reset_approvals_on_push : nil
+        project_value = @project && !@project.read_attribute(:reset_approvals_on_push)
 
         setting(nil, group_value, project_value)
       end
 
       def require_password_to_approve
         group_value = group_settings&.require_password_to_approve
-        project_value = @project&.require_password_to_approve
+        project_value = @project && @project.read_attribute(:require_password_to_approve)
 
         ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
           value: require_password_value(group_value, project_value),

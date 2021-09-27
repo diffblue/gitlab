@@ -94,7 +94,6 @@ class License < ApplicationRecord
     group_forking_protection
     group_ip_restriction
     group_merge_request_analytics
-    group_merge_request_approval_settings
     group_milestone_project_releases
     group_project_templates
     group_repository_analytics

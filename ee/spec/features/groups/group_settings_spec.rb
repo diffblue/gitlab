@@ -322,7 +322,7 @@ RSpec.describe 'Edit group settings' do
     context 'when feature flag is enabled and group is licensed' do
       before do
         stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-        stub_licensed_features(group_merge_request_approval_settings: true)
+        stub_licensed_features(merge_request_approvers: true)
       end
 
       it 'allows to save settings' do
@@ -355,7 +355,7 @@ RSpec.describe 'Edit group settings' do
     context 'when feature flag is disabled and group is not licensed' do
       before do
         stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
-        stub_licensed_features(group_merge_request_approval_settings: false)
+        stub_licensed_features(merge_request_approvers: false)
       end
 
       it 'is not visible' do
