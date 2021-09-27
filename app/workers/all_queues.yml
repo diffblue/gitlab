@@ -1418,7 +1418,7 @@
   :urgency: :high
   :resource_boundary: :unknown
   :weight: 3
-  :idempotent:
+  :idempotent: true
   :tags: []
 - :name: pipeline_cache:expire_pipeline_cache
   :worker_name: ExpirePipelineCacheWorker
