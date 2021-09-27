@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Geo::DatabaseTasks, :reestablished_active_record_base do
-  let(:schema_file) { Rails.root.join('tmp', 'tests', 'geo_schema.rb').to_s }
+  let(:schema_file) { Rails.root.join('tmp', 'tests', 'geo_structure.sql').to_s }
 
   subject { described_class }
 
@@ -59,8 +59,8 @@ RSpec.describe Gitlab::Geo::DatabaseTasks, :reestablished_active_record_base do
 
   describe described_class::Schema do
     describe '.dump' do
-      it 'calls ActiveRecord::SchemaDumper.dump' do
-        expect(ActiveRecord::SchemaDumper).to receive(:dump)
+      it 'calls ActiveRecord::Tasks::DatabaseTasks.dump_schema' do
+        expect(ActiveRecord::Tasks::DatabaseTasks).to receive(:dump_schema)
 
         subject.dump
       end

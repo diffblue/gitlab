@@ -64,10 +64,7 @@ module Gitlab
           require 'active_record/schema_dumper'
 
           Gitlab::Geo::DatabaseTasks.with_geo_db do
-            filename = ENV['SCHEMA'] || File.join(ActiveRecord::Tasks::DatabaseTasks.db_dir, 'schema.rb')
-            File.open(filename, "w:utf-8") do |file|
-              ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, file)
-            end
+            ActiveRecord::Tasks::DatabaseTasks.dump_schema(Gitlab::Geo::DatabaseTasks.db_config)
           end
         end
       end
@@ -132,10 +129,10 @@ module Gitlab
           Gitlab::Geo::DatabaseTasks.with_geo_db do
             should_reconnect = ActiveRecord::Base.connection_pool.active_connection?
             ActiveRecord::Schema.verbose = false
-            ActiveRecord::Tasks::DatabaseTasks.load_schema(ActiveRecord::Base.configurations.configs_for(env_name: 'test').first, :ruby, ENV['SCHEMA'])
+            ActiveRecord::Tasks::DatabaseTasks.load_schema(ActiveRecord::Base.configurations.configs_for(env_name: 'test').first, :sql, ENV['SCHEMA'])
           ensure
             if should_reconnect
-              ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env).first)
+              ActiveRecord::Base.establish_connection(Gitlab::Geo::DatabaseTasks.db_config)
             end
           end
         end
@@ -152,6 +149,7 @@ module Gitlab
           database_config: YAML.load_file(GEO_DATABASE_CONFIG),
           db_dir: GEO_DB_DIR,
           migrations_paths: geo_migrations_paths,
+          schema_migrations_path: geo_schema_migrations_path,
           seed_loader: SeedLoader.new
         }
       end
@@ -170,6 +168,10 @@ module Gitlab
         Rails.root.join(GEO_DB_DIR, 'post_migrate')
       end
 
+      def geo_schema_migrations_path
+        Rails.root.join(GEO_DB_DIR, 'schema_migrations').to_s
+      end
+
       def with_geo_db
         abort_if_no_geo_config!
 
@@ -177,7 +179,8 @@ module Gitlab
           database_config: ActiveRecord::Tasks::DatabaseTasks.database_configuration&.dup || YAML.load_file(DATABASE_CONFIG),
           db_dir: ActiveRecord::Tasks::DatabaseTasks.db_dir,
           migrations_paths: ActiveRecord::Tasks::DatabaseTasks.migrations_paths,
-          seed_loader: ActiveRecord::Tasks::DatabaseTasks.seed_loader
+          seed_loader: ActiveRecord::Tasks::DatabaseTasks.seed_loader,
+          schema_migrations_path: Gitlab::Database::SchemaMigrations::Context.default_schema_migrations_path
         }
 
         set_db_env(geo_settings)
@@ -187,16 +190,21 @@ module Gitlab
         set_db_env(original_settings)
       end
 
+      def db_config
+        ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env).first
+      end
+
       def set_db_env(settings)
         ActiveRecord::Tasks::DatabaseTasks.database_configuration = settings[:database_config]
         ActiveRecord::Tasks::DatabaseTasks.db_dir = settings[:db_dir]
         ActiveRecord::Tasks::DatabaseTasks.migrations_paths = settings[:migrations_paths]
         ActiveRecord::Tasks::DatabaseTasks.seed_loader = settings[:seed_loader]
 
-        ActiveRecord::Base.configurations       = ActiveRecord::Tasks::DatabaseTasks.database_configuration || {}
+        ActiveRecord::Base.configurations = ActiveRecord::Tasks::DatabaseTasks.database_configuration || {}
         ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
+        Gitlab::Database::SchemaMigrations::Context.default_schema_migrations_path = settings[:schema_migrations_path]
 
-        ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.configs_for(env_name: ActiveRecord::Tasks::DatabaseTasks.env).first)
+        ActiveRecord::Base.establish_connection(db_config)
       end
 
       class SeedLoader
