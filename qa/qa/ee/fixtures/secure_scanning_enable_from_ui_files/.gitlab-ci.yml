@@ -2,15 +2,20 @@ include:
   template: License-Scanning.gitlab-ci.yml
 
 .sast-analyzer:
-  tags: [secure_sast]
   script:
     - echo "Skipped"
   artifacts:
     reports:
       sast: gl-sast-report.json
 
+.ds-analyzer:
+  script:
+    - echo "Skipped"
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning-report.json
+
 license_scanning:
-  tags: [secure_sast]
   script:
     - echo "Skipped"
   artifacts:
