@@ -245,12 +245,12 @@ class EpicsFinder < IssuableFinder
 
     # If we don't account for confidential (assume it will be filtered later by
     # with_confidentiality_access_check) then as long as the user can see all
-    # epics in this group they can see in all subgroups. This is only true for
-    # private top level groups because it's possible that a top level public
+    # epics in this group they can see in all subgroups if member of parent group.
+    # This is only true for private top level groups because it's possible that a top level public
     # group has private subgroups and therefore they would not necessarily be
     # able to read epics in the private subgroup even though they can in the
     # parent group.
-    !include_confidential && parent.private? && Ability.allowed?(current_user, :read_epic, parent)
+    !include_confidential && Ability.allowed?(current_user, :list_subgroup_epics, parent)
   end
 
   def by_confidential(items)

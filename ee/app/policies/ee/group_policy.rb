@@ -145,6 +145,10 @@ module EE
       rule { guest }.policy do
         enable :read_wiki
         enable :read_group_release_stats
+
+        # Only used on specific scenario to filter out subgroup epics not visible
+        # to user when showing parent group epics list
+        enable :list_subgroup_epics
       end
 
       rule { reporter }.policy do
