@@ -2,6 +2,8 @@
 
 module API
   class Dependencies < ::API::Base
+    include PaginationParams
+
     feature_category :dependency_scanning
 
     helpers do
@@ -31,6 +33,7 @@ module API
                  coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
                  desc: "Returns dependencies belonging to specified package managers: #{::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES.join(', ')}.",
                  values: ::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES
+        use :pagination
       end
 
       get ':id/dependencies' do
@@ -39,7 +42,7 @@ module API
         ::Gitlab::Tracking.event(self.options[:for].name, 'view_dependencies', project: user_project, user: current_user, namespace: user_project.namespace)
 
         dependency_params = declared_params(include_missing: false).merge(project: user_project)
-        dependencies = dependencies_by(dependency_params)
+        dependencies = paginate(::Gitlab::ItemsCollection.new(dependencies_by(dependency_params)))
 
         present dependencies, with: ::EE::API::Entities::Dependency, user: current_user, project: user_project
       end
