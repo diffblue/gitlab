@@ -41,6 +41,8 @@ module Security
     end
 
     scope :latest, -> { where(latest: true) }
+    # We are going to deprecate the following scope soon as this requires join between ci and non-ci table
+    # which will not be possible after database decomposition (https://gitlab.com/groups/gitlab-org/-/epics/6373)
     scope :latest_successful_by_build, -> { joins(:build).where(ci_builds: { retried: [nil, false], status: 'success' }) }
     scope :without_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) = 0") }
 
