@@ -20176,10 +20176,10 @@ msgstr ""
 msgid "LicenseCompliance|Acceptable license to be used in the project"
 msgstr ""
 
-msgid "LicenseCompliance|Add a license"
+msgid "LicenseCompliance|Add license and related policy"
 msgstr ""
 
-msgid "LicenseCompliance|Add license and related policy"
+msgid "LicenseCompliance|Add license policy"
 msgstr ""
 
 msgid "LicenseCompliance|Allow"
