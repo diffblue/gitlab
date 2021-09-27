@@ -207,7 +207,7 @@ RSpec.shared_examples 'a blob replicator' do
     context 'when the file is locally stored' do
       context 'when the file exists' do
         it 'returns hexdigest of the file' do
-          expected = described_class.model.hexdigest(subject.blob_path)
+          expected = described_class.model.sha256_hexdigest(subject.blob_path)
 
           expect(subject.calculate_checksum).to eq(expected)
         end
