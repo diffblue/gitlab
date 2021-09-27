@@ -174,6 +174,23 @@ describe('Vulnerability Footer', () => {
       expect(visibilityUnbindSpy).toHaveBeenCalled();
     });
 
+    it('does not remove the listener when the visibility changes', async () => {
+      const clearIntervalSpy = jest.spyOn(window, 'clearInterval');
+      const visibilityUnbindSpy = jest.spyOn(Visibility, 'unbind');
+      const visibilityHiddenSpy = jest
+        .spyOn(Visibility, 'hidden')
+        .mockImplementationOnce(() => false) // This is called in startPolling
+        .mockImplementationOnce(() => true); // This is called in visibilityChangeListener
+      const visibilityChangeSpy = jest
+        .spyOn(Visibility, 'change')
+        .mockImplementation((callback) => callback());
+      await createWrapperAndFetchDiscussions({ discussions: [] });
+      expect(visibilityHiddenSpy).toHaveBeenCalled();
+      expect(visibilityChangeSpy).toHaveBeenCalled();
+      expect(clearIntervalSpy).toHaveBeenCalled();
+      expect(visibilityUnbindSpy).not.toHaveBeenCalled();
+    });
+
     it('emits the vulnerability-state-change event when the system note is new', async () => {
       const eventName = 'vulnerability-state-change';
       const queryHandler = discussionsHandler({ discussions: [discussion1] }); // first call
