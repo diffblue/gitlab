@@ -99,7 +99,7 @@ RSpec.describe 'Epics through GroupQuery' do
           it_behaves_like 'sorted paginated query', is_reversible: true do
             let(:sort_param) { :start_date_asc }
             let(:first_param) { 2 }
-            let(:expected_results) { global_ids(epic4, epic3, epic2, epic) }
+            let(:all_records) { global_ids(epic4, epic3, epic2, epic) }
           end
         end
 
@@ -107,7 +107,7 @@ RSpec.describe 'Epics through GroupQuery' do
           it_behaves_like 'sorted paginated query', is_reversible: true do
             let(:sort_param) { :start_date_desc }
             let(:first_param) { 2 }
-            let(:expected_results) { global_ids(epic, epic2, epic3, epic4) }
+            let(:all_records) { global_ids(epic, epic2, epic3, epic4) }
           end
         end
 
@@ -115,7 +115,7 @@ RSpec.describe 'Epics through GroupQuery' do
           it_behaves_like 'sorted paginated query', is_reversible: true do
             let(:sort_param) { :end_date_asc }
             let(:first_param) { 2 }
-            let(:expected_results) { global_ids(epic3, epic4, epic, epic2) }
+            let(:all_records) { global_ids(epic3, epic4, epic, epic2) }
           end
         end
 
@@ -123,7 +123,7 @@ RSpec.describe 'Epics through GroupQuery' do
           it_behaves_like 'sorted paginated query', is_reversible: true do
             let(:sort_param) { :end_date_desc }
             let(:first_param) { 2 }
-            let(:expected_results) { global_ids(epic2, epic, epic4, epic3) }
+            let(:all_records) { global_ids(epic2, epic, epic4, epic3) }
           end
         end
       end

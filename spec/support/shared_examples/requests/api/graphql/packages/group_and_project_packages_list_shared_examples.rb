@@ -95,7 +95,7 @@ RSpec.shared_examples 'group and project packages query' do
         it_behaves_like 'sorted paginated query' do
           let(:sort_param) { order }
           let(:first_param) { 4 }
-          let(:expected_results) { ascending_packages }
+          let(:all_records) { ascending_packages }
         end
       end
     end
@@ -105,7 +105,7 @@ RSpec.shared_examples 'group and project packages query' do
         it_behaves_like 'sorted paginated query' do
           let(:sort_param) { order }
           let(:first_param) { 4 }
-          let(:expected_results) { ascending_packages.reverse }
+          let(:all_records) { ascending_packages.reverse }
         end
       end
     end

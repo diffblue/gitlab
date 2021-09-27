@@ -26,19 +26,19 @@ RSpec.describe 'getting an issue list for a project' do
 
       context 'when ascending' do
         it_behaves_like 'sorted paginated query' do
-          let(:node_path)        { %w[iid] }
-          let(:sort_param)       { :WEIGHT_ASC }
-          let(:first_param)      { 2 }
-          let(:expected_results) { [weight_issue3, weight_issue5, weight_issue1, weight_issue4, weight_issue2].map { |i| i.iid.to_s } }
+          let(:node_path) { %w[iid] }
+          let(:sort_param) { :WEIGHT_ASC }
+          let(:first_param) { 2 }
+          let(:all_records) { [weight_issue3, weight_issue5, weight_issue1, weight_issue4, weight_issue2].map { |i| i.iid.to_s } }
         end
       end
 
       context 'when descending' do
         it_behaves_like 'sorted paginated query' do
-          let(:node_path)        { %w[iid] }
-          let(:sort_param)       { :WEIGHT_DESC }
-          let(:first_param)      { 2 }
-          let(:expected_results) { [weight_issue1, weight_issue5, weight_issue3, weight_issue4, weight_issue2].map { |i| i.iid.to_s } }
+          let(:node_path) { %w[iid] }
+          let(:sort_param) { :WEIGHT_DESC }
+          let(:first_param) { 2 }
+          let(:all_records) { [weight_issue1, weight_issue5, weight_issue3, weight_issue4, weight_issue2].map { |i| i.iid.to_s } }
         end
       end
     end

@@ -367,7 +367,7 @@ RSpec.describe 'getting group information' do
         let(:node_path) { ['averageCoverage'] }
         let(:sort_param) { }
         let(:first_param) { 2 }
-        let(:expected_results) { [cov_1, cov_2, cov_3, cov_4, cov_5].reverse.map(&:coverage) }
+        let(:all_records) { [cov_1, cov_2, cov_3, cov_4, cov_5].reverse.map(&:coverage) }
       end
     end
   end

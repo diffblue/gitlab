@@ -55,8 +55,8 @@ RSpec.describe 'getting test reports of a requirement' do
       post_graphql(query, current_user: current_user)
 
       test_reports_ids = test_reports_data.map { |result| result['node']['id'] }
-      expected_results = [test_report_1.to_global_id.to_s, test_report_2.to_global_id.to_s]
-      expect(test_reports_ids).to match_array(expected_results)
+      all_records = [test_report_1.to_global_id.to_s, test_report_2.to_global_id.to_s]
+      expect(test_reports_ids).to match_array(all_records)
     end
 
     context 'with pagination' do
@@ -76,7 +76,7 @@ RSpec.describe 'getting test reports of a requirement' do
       it_behaves_like 'sorted paginated query' do
         let(:sort_param)       { :CREATED_ASC }
         let(:first_param)      { 2 }
-        let(:expected_results) do
+        let(:all_records) do
           in_creation_order.map { |r| global_id_of(r) }
         end
       end
@@ -84,7 +84,7 @@ RSpec.describe 'getting test reports of a requirement' do
       it_behaves_like 'sorted paginated query' do
         let(:sort_param)       { :CREATED_DESC }
         let(:first_param)      { 2 }
-        let(:expected_results) do
+        let(:all_records) do
           in_creation_order.reverse.map { |r| global_id_of(r) }
         end
       end

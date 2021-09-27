@@ -43,7 +43,7 @@ RSpec.describe 'get list of epics for an epic  board list' do
 
   describe 'sorting and pagination' do
     let(:epic_fields) { all_graphql_fields_for('epics'.classify) }
-    let(:expected_results) { [epic2.to_global_id.to_s, epic1.to_global_id.to_s, epic3.to_global_id.to_s] }
+    let(:all_records) { [epic2.to_global_id.to_s, epic1.to_global_id.to_s, epic3.to_global_id.to_s] }
 
     def pagination_results_data(nodes)
       nodes.map { |list| list['id'] }

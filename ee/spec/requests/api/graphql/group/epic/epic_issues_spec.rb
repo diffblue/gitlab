@@ -89,7 +89,7 @@ RSpec.describe 'Getting issues for an epic' do
           let(:current_user) { user }
           let(:sort_param) { }
           let(:first_param) { 1 }
-          let(:expected_results) { [issue, confidential_issue].map { |i| global_id_of(i) } }
+          let(:all_records) { [issue, confidential_issue].map { |i| global_id_of(i) } }
         end
       end
     end
