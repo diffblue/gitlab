@@ -48,6 +48,15 @@ RSpec.describe Issues::CloneService do
       end
     end
 
+    context 'when it is not allowed to clone issues of given type' do
+      it 'throws error' do
+        requirement_issue = create(:issue, issue_type: :requirement, project: old_project)
+
+        expect { clone_service.execute(requirement_issue, new_project) }
+          .to raise_error(StandardError, 'Cannot clone issues of \'requirement\' type.')
+      end
+    end
+
     context 'epics' do
       context 'issue assigned to epic' do
         let_it_be(:epic) { create(:epic, group: group) }

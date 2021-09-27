@@ -15,6 +15,7 @@ module EE
             available_features[:epics] = %w(issue)
             available_features[:sla] = %w(incident)
             available_features[:confidentiality] += %w(test_case)
+            available_features[:move_and_clone] += %w(test_case)
           end
         end
       end
