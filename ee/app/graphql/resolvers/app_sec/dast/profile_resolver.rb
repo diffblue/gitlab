@@ -20,14 +20,16 @@ module Resolvers
           apply_lookahead(find_dast_profiles(args))
         end
 
+        DAST_PROFILE_PRELOAD = {
+          dast_site_profile: [{ dast_site_profile: [:dast_site, :secret_variables] }],
+          dast_scanner_profile: [:dast_scanner_profile],
+          dast_profile_schedule: [:dast_profile_schedule]
+        }.freeze
+
         private
 
         def preloads
-          {
-            dast_site_profile: [{ dast_site_profile: [:dast_site, :secret_variables] }],
-            dast_scanner_profile: [:dast_scanner_profile],
-            dast_profile_schedule: [:dast_profile_schedule]
-          }
+          DAST_PROFILE_PRELOAD
         end
 
         def find_dast_profiles(args)
