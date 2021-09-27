@@ -15,6 +15,7 @@ module API
         optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
         optional :severity_levels, type: Array[String], desc: 'The security levels to be considered by the approval rule'
+        optional :report_type, type: String, desc: 'The type of the report required when rule type equals to report_approver'
       end
 
       params :update_project_approval_rule do

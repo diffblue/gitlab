@@ -9,12 +9,6 @@ module ApprovalRules
       @rule = target.approval_rules.build
       @params = params
 
-      # report_approver rule_type is currently auto-set according to rulename
-      # Techdebt to be addressed with: https://gitlab.com/gitlab-org/gitlab/issues/12759
-      if target.is_a?(Project) && ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME.key?(params[:name])
-        params.reverse_merge!(rule_type: :report_approver)
-      end
-
       # If merge request approvers are specified, they take precedence over project
       # approvers.
       copy_approval_project_rule_properties(params) if target.is_a?(MergeRequest)

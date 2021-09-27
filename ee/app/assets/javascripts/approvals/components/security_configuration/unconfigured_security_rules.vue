@@ -4,7 +4,7 @@ import { mapState, mapActions } from 'vuex';
 import {
   LICENSE_CHECK_NAME,
   VULNERABILITY_CHECK_NAME,
-  LICENSE_SCANNING,
+  REPORT_TYPE_LICENSE_SCANNING,
   COVERAGE_CHECK_NAME,
 } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
@@ -98,7 +98,7 @@ export default {
       return (
         matchRule.name !== LICENSE_CHECK_NAME ||
         features.some((feature) => {
-          return feature.type === LICENSE_SCANNING && feature.configured;
+          return feature.type === REPORT_TYPE_LICENSE_SCANNING && feature.configured;
         })
       );
     },

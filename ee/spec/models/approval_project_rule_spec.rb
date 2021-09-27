@@ -124,15 +124,24 @@ RSpec.describe ApprovalProjectRule do
       subject.groups << group
     end
 
-    ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME.each do |name, value|
-      context "when the project rule is for a `#{name}`" do
-        subject { create(:approval_project_rule, value, :requires_approval, project: project) }
+    where(:default_name, :report_type) do
+      'Vulnerability-Check' | :vulnerability
+      'License-Check'       | :license_scanning
+      'Coverage-Check'      | :code_coverage
+    end
+
+    context "when there is a project rule for each report type" do
+      with_them do
+        subject { create(:approval_project_rule, report_type, :requires_approval, project: project) }
 
         let!(:result) { subject.apply_report_approver_rules_to(merge_request) }
 
         specify { expect(merge_request.reload.approval_rules).to match_array([result]) }
         specify { expect(result.users).to match_array([user]) }
         specify { expect(result.groups).to match_array([group]) }
+        specify { expect(result.name).to be(:default_name) }
+        specify { expect(result.rule_type).to be(:report_approver) }
+        specify { expect(result.report_type).to be(:report_type) }
       end
     end
   end

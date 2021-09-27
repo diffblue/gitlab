@@ -7,11 +7,6 @@ module ApprovalRuleLike
   DEFAULT_NAME_FOR_LICENSE_REPORT = 'License-Check'
   DEFAULT_NAME_FOR_VULNERABILITY_REPORT = 'Vulnerability-Check'
   DEFAULT_NAME_FOR_COVERAGE = 'Coverage-Check'
-  REPORT_TYPES_BY_DEFAULT_NAME = {
-    DEFAULT_NAME_FOR_LICENSE_REPORT => :license_scanning,
-    DEFAULT_NAME_FOR_VULNERABILITY_REPORT => :vulnerability,
-    DEFAULT_NAME_FOR_COVERAGE => :code_coverage
-  }.freeze
   APPROVALS_REQUIRED_MAX = 100
   ALL_MEMBERS = 'All Members'
 
@@ -23,8 +18,15 @@ module ApprovalRuleLike
       after_add: :audit_add, after_remove: :audit_remove
     has_many :group_users, -> { distinct }, through: :groups, source: :users
 
+    enum report_type: {
+      vulnerability: 1,
+      license_scanning: 2,
+      code_coverage: 3
+    }
+
     validates :name, presence: true
     validates :approvals_required, numericality: { less_than_or_equal_to: APPROVALS_REQUIRED_MAX, greater_than_or_equal_to: 0 }
+    validates :report_type, presence: true, if: :report_approver?
 
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
