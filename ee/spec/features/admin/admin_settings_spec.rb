@@ -286,6 +286,10 @@ RSpec.describe 'Admin updates EE-only settings' do
   end
 
   context 'sign up settings', :js do
+    before do
+      visit general_admin_application_settings_path
+    end
+
     context 'when license has active user count' do
       let(:license) { create(:license, restrictions: { active_user_count: 1 }) }
 
@@ -294,8 +298,6 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'disallows entering user cap greater then license allows' do
-        visit general_admin_application_settings_path
-
         page.within('#js-signup-settings') do
           fill_in 'application_setting[new_user_signups_cap]', with: 5
 
@@ -309,8 +311,6 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'changes the user cap from unlimited to 5' do
-      visit general_admin_application_settings_path
-
       expect(current_settings.new_user_signups_cap).to be_nil
 
       page.within('#js-signup-settings') do
@@ -328,8 +328,6 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'changes the user cap to unlimited' do
-        visit general_admin_application_settings_path
-
         page.within('#js-signup-settings') do
           fill_in 'application_setting[new_user_signups_cap]', with: nil
 
@@ -342,11 +340,10 @@ RSpec.describe 'Admin updates EE-only settings' do
       context 'with pending users' do
         before do
           create(:user, :blocked_pending_approval)
+          visit general_admin_application_settings_path
         end
 
         it 'displays a modal confirmation when removing the cap' do
-          visit general_admin_application_settings_path
-
           page.within('#js-signup-settings') do
             fill_in 'application_setting[new_user_signups_cap]', with: nil
 
@@ -358,6 +355,74 @@ RSpec.describe 'Admin updates EE-only settings' do
           end
 
           expect(current_settings.new_user_signups_cap).to be_nil
+        end
+      end
+    end
+
+    context 'form submit button confirmation modal for side-effect of possibly adding unwanted new users' do
+      [
+        [:unchanged_true, :unchanged, false, :submits_form],
+        [:unchanged_false, :unchanged, false, :submits_form],
+        [:toggled_off, :unchanged, true, :shows_confirmation_modal],
+        [:toggled_off, :unchanged, false, :submits_form],
+        [:toggled_on, :unchanged, false, :submits_form],
+        [:unchanged_false, :increased, true, :shows_confirmation_modal],
+        [:unchanged_true, :increased, false, :submits_form],
+        [:toggled_off, :increased, true, :shows_confirmation_modal],
+        [:toggled_off, :increased, false, :submits_form],
+        [:toggled_on, :increased, true, :shows_confirmation_modal],
+        [:toggled_on, :increased, false, :submits_form],
+        [:toggled_on, :decreased, false, :submits_form],
+        [:toggled_on, :decreased, true, :submits_form],
+        [:unchanged_false, :changed_from_limited_to_unlimited, true, :shows_confirmation_modal],
+        [:unchanged_false, :changed_from_limited_to_unlimited, false, :submits_form],
+        [:unchanged_false, :changed_from_unlimited_to_limited, false, :submits_form],
+        [:unchanged_false, :unchanged_unlimited, false, :submits_form]
+      ].each do |(require_admin_approval_action, user_cap_action, add_pending_user, button_effect)|
+        it "#{button_effect} if 'require admin approval for new sign-ups' is #{require_admin_approval_action} and the user cap is #{user_cap_action} and #{add_pending_user ? "has" : "doesn't have"} pending user count" do
+          user_cap_default = 5
+          require_admin_approval_value = [:unchanged_true, :toggled_off].include?(require_admin_approval_action)
+
+          current_settings.update_attribute(:require_admin_approval_after_user_signup, require_admin_approval_value)
+
+          unless [:changed_from_unlimited_to_limited, :unchanged_unlimited].include?(user_cap_action)
+            current_settings.update_attribute(:new_user_signups_cap, user_cap_default)
+          end
+
+          if add_pending_user
+            create(:user, :blocked_pending_approval)
+            visit general_admin_application_settings_path
+          end
+
+          page.within('#js-signup-settings') do
+            case require_admin_approval_action
+            when :toggled_on
+              find('[data-testid="require-admin-approval-checkbox"]').set(true)
+            when :toggled_off
+              find('[data-testid="require-admin-approval-checkbox"]').set(false)
+            end
+
+            case user_cap_action
+            when :increased
+              fill_in 'application_setting[new_user_signups_cap]', with: user_cap_default + 1
+            when :decreased
+              fill_in 'application_setting[new_user_signups_cap]', with: user_cap_default - 1
+            when :changed_from_limited_to_unlimited
+              fill_in 'application_setting[new_user_signups_cap]', with: nil
+            when :changed_from_unlimited_to_limited
+              fill_in 'application_setting[new_user_signups_cap]', with: user_cap_default
+            end
+
+            click_button 'Save changes'
+          end
+
+          case button_effect
+          when :shows_confirmation_modal
+            expect(page).to have_selector('.modal')
+            expect(page).to have_css('.modal .modal-body', text: 'By making this change, you will automatically approve 1 user with the pending approval status.')
+          when :submits_form
+            expect(page).to have_content 'Application settings saved successfully'
+          end
         end
       end
     end
