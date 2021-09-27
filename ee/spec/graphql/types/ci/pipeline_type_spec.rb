@@ -10,6 +10,7 @@ RSpec.describe GitlabSchema.types['Pipeline'] do
         security_report_summary
         security_report_findings
         code_quality_reports
+        dast_profile
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)

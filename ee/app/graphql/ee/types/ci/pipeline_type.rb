@@ -25,8 +25,18 @@ module EE
             null: true,
             description: 'Code Quality degradations reported on the pipeline.'
 
+          field :dast_profile,
+            ::Types::Dast::ProfileType,
+            null: true,
+            description: 'DAST profile associated with the pipeline. Returns `null`' \
+                         'if `dast_view_scans` feature flag is disabled.'
+
           def code_quality_reports
             pipeline.codequality_reports.sort_degradations!.values.presence
+          end
+
+          def dast_profile
+            pipeline.dast_profile if ::Feature.enabled?(:dast_view_scans, pipeline.project, default_enabled: :yaml)
           end
         end
       end
