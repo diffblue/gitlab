@@ -92,6 +92,7 @@ class TrialsController < ApplicationController
     attrs = {}
     attrs[:work_email] = current_user.email
     attrs[:uid] = current_user.id
+    attrs[:setup_for_company] = current_user.setup_for_company
     attrs[:skip_email_confirmation] = true
     attrs[:gitlab_com_trial] = true
     attrs[:provider] = 'gitlab'

@@ -95,6 +95,7 @@ module Registrations
           first_name: current_user.first_name,
           last_name: current_user.last_name,
           uid: current_user.id,
+          setup_for_company: current_user.setup_for_company,
           skip_email_confirmation: true,
           gitlab_com_trial: true,
           provider: 'gitlab',
