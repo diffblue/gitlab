@@ -815,6 +815,61 @@ RSpec.describe User do
     end
   end
 
+  describe '#password_expired_if_applicable?' do
+    let(:user) { build(:user, password_expires_at: password_expires_at) }
+
+    subject { user.password_expired_if_applicable? }
+
+    shared_examples 'password expired not applicable' do
+      context 'when password_expires_at is not set' do
+        let(:password_expires_at) {}
+
+        it 'returns false' do
+          is_expected.to be_falsey
+        end
+      end
+
+      context 'when password_expires_at is in the past' do
+        let(:password_expires_at) { 1.minute.ago }
+
+        it 'returns false' do
+          is_expected.to be_falsey
+        end
+      end
+
+      context 'when password_expires_at is in the future' do
+        let(:password_expires_at) { 1.minute.from_now }
+
+        it 'returns false' do
+          is_expected.to be_falsey
+        end
+      end
+    end
+
+    context 'when password_automatically_set is true' do
+      context 'with a SCIM identity' do
+        let_it_be(:scim_identity) { create(:scim_identity, active: true) }
+        let_it_be(:user) { scim_identity.user }
+
+        it_behaves_like 'password expired not applicable'
+      end
+
+      context 'with a SAML identity' do
+        let_it_be(:saml_identity) { create(:group_saml_identity) }
+        let_it_be(:user) { saml_identity.user }
+
+        it_behaves_like 'password expired not applicable'
+      end
+
+      context 'with a smartcard identity' do
+        let_it_be(:smartcard_identity) { create(:smartcard_identity) }
+        let_it_be(:user) { smartcard_identity.user }
+
+        it_behaves_like 'password expired not applicable'
+      end
+    end
+  end
+
   describe '#user_authorized_by_provisioning_group?' do
     context 'when user is provisioned by group' do
       let(:group) { build(:group) }
