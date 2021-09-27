@@ -22,6 +22,12 @@ module Analytics
       def self.relative_positioning_parent_column
         :group_id
       end
+
+      def self.distinct_stages_within_hierarchy(group)
+        with_preloaded_labels
+          .where(group_id: group.self_and_descendants.select(:id))
+          .select("DISTINCT ON(stage_event_hash_id) #{quoted_table_name}.*")
+      end
     end
   end
 end
