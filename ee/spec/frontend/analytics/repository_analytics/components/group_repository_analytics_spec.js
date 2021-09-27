@@ -46,15 +46,5 @@ describe('Group repository analytics app', () => {
         expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(VISIT_EVENT_NAME);
       });
     });
-
-    describe('with the feature flag disabled', () => {
-      beforeEach(() => {
-        createComponent({ [VISIT_EVENT_FEATURE_FLAG]: false });
-      });
-
-      it('does not track a visit event on mount', () => {
-        expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
-      });
-    });
   });
 });
