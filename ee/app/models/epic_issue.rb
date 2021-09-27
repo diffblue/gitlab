@@ -31,6 +31,11 @@ class EpicIssue < ApplicationRecord
     select(selection).in_epic(node.parent_ids)
   end
 
+  # TODO add this method to validate records (see https://gitlab.com/gitlab-org/gitlab/-/issues/339514)
+  def epic_and_issue_at_same_group_hierarchy?
+    epic.group.self_and_hierarchy.include?(issue.project.group)
+  end
+
   private
 
   def validate_confidential_epic

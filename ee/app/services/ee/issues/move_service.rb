@@ -18,12 +18,19 @@ module EE
       def rewrite_epic_issue
         return unless epic_issue = original_entity.epic_issue
         return unless can?(current_user, :update_epic, epic_issue.epic.group)
+        return unless epic_and_issue_at_same_group_hierarchy?(new_entity, epic_issue.epic)
 
         updated = epic_issue.update(issue_id: new_entity.id)
 
         ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user) if updated
 
         original_entity.reset
+      end
+
+      def epic_and_issue_at_same_group_hierarchy?(new_issue, epic)
+        temp_epic_issue = EpicIssue.new(issue_id: new_issue.id, epic_id: epic.id)
+
+        temp_epic_issue.epic_and_issue_at_same_group_hierarchy?
       end
 
       def track_epic_issue_moved_from_project

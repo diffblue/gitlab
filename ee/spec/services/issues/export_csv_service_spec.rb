@@ -43,6 +43,20 @@ RSpec.describe Issues::ExportCsvService do
           expect(csv[0]['Epic Title']).to eq(epic.title)
           expect(csv[1]['Epic Title']).to be_nil
         end
+
+        context 'when epic and issue are not from same group hierarchy' do
+          let(:epic) { create(:epic) }
+
+          specify 'epic ID' do
+            expect(csv[0]['Epic ID']).to be_nil
+            expect(csv[1]['Epic ID']).to be_nil
+          end
+
+          specify 'epic Title' do
+            expect(csv[0]['Epic Title']).to be_nil
+            expect(csv[1]['Epic Title']).to be_nil
+          end
+        end
       end
     end
   end
