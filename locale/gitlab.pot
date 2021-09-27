@@ -24827,48 +24827,6 @@ msgstr ""
 msgid "PipelineSchedules|Variables"
 msgstr ""
 
-msgid "PipelineSource|API"
-msgstr ""
-
-msgid "PipelineSource|Chat"
-msgstr ""
-
-msgid "PipelineSource|External"
-msgstr ""
-
-msgid "PipelineSource|External Pull Request"
-msgstr ""
-
-msgid "PipelineSource|Merge Request"
-msgstr ""
-
-msgid "PipelineSource|On-Demand DAST Scan"
-msgstr ""
-
-msgid "PipelineSource|On-Demand DAST Validation"
-msgstr ""
-
-msgid "PipelineSource|Parent Pipeline"
-msgstr ""
-
-msgid "PipelineSource|Pipeline"
-msgstr ""
-
-msgid "PipelineSource|Push"
-msgstr ""
-
-msgid "PipelineSource|Schedule"
-msgstr ""
-
-msgid "PipelineSource|Trigger"
-msgstr ""
-
-msgid "PipelineSource|Web"
-msgstr ""
-
-msgid "PipelineSource|Web IDE"
-msgstr ""
-
 msgid "PipelineStatusTooltip|Pipeline: %{ciStatus}"
 msgstr ""
 
