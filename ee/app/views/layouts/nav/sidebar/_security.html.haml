@@ -1,7 +1,7 @@
 %aside.nav-sidebar{ class: ("sidebar-collapsed-desktop" if collapsed_sidebar?), 'aria-label': _('Security navigation') }
   .nav-sidebar-inner-scroll
     .context-header
-      = link_to security_dashboard_path, title: _('Security Dashboard'), id: 'logo' do
+      = link_to security_dashboard_path, title: _('Security Dashboard'), id: 'logo', class: 'has-tooltip', data: { container: 'body', placement: 'right' } do
         %span{ class: ['avatar-container', 'rect-avatar', 'settings-avatar', 's32'] }
           = brand_header_logo
         %span.sidebar-context-title
