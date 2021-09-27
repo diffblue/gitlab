@@ -61,14 +61,38 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       end
     end
 
-    ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME.keys.each do |rule_name|
-      context "when creating a '#{rule_name}' approval rule" do
-        it 'specifies a `rule_type` of `report_approver`' do
-          expect do
-            post api(url, current_user), params: params.merge(name: rule_name)
-          end.to change { ApprovalProjectRule.report_approver.count }.from(0).to(1)
+    context 'with rule_type set to report_approver' do
+      before do
+        params.merge!(rule_type: :report_approver)
+      end
 
-          expect(response).to have_gitlab_http_status(:created)
+      context 'without report_type' do
+        it 'returns a error http status' do
+          expect do
+            post api(url, current_user), params: params.merge(name: 'Vulnerability-Check')
+          end.not_to change { ApprovalProjectRule.report_approver.count }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when creating a approval rule for each report_type' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:rule_name, :report_type) do
+          'Vulnerability-Check' | :vulnerability
+          'License-Check'       | :license_scanning
+          'Coverage-Check'      | :code_coverage
+        end
+
+        with_them do
+          it 'specifies `report_rule` and `report_type`' do
+            expect do
+              post api(url, current_user), params: params.merge(name: rule_name, report_type: report_type)
+            end.to change { ApprovalProjectRule.report_approver.count }.from(0).to(1)
+
+            expect(response).to have_gitlab_http_status(:created)
+          end
         end
       end
     end

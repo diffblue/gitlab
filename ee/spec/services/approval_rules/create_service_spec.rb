@@ -209,15 +209,31 @@ RSpec.describe ApprovalRules::CreateService do
       end
     end
 
-    ApprovalProjectRule::REPORT_TYPES_BY_DEFAULT_NAME.keys.each do |rule_name|
-      context "when the rule name is `#{rule_name}`" do
-        subject { described_class.new(target, user, { name: rule_name, approvals_required: 1 }) }
+    context 'with rule_type set to :report_approver' do
+      let(:result) { subject.execute }
 
-        let(:result) { subject.execute }
+      context 'without report_type' do
+        subject { described_class.new(target, user, { name: 'Vulnerability-Check', approvals_required: 1, rule_type: :report_approver }) }
 
-        specify { expect(result[:status]).to eq(:success) }
-        specify { expect(result[:rule].approvals_required).to eq(1) }
-        specify { expect(result[:rule].rule_type).to eq('report_approver') }
+        specify { expect(result[:status]).to eq(:error) }
+      end
+
+      context 'with report_type set to any of valid value' do
+        using RSpec::Parameterized::TableSyntax
+
+        subject { described_class.new(target, user, { name: rule_name, approvals_required: 1, rule_type: :report_approver, report_type: report_type }) }
+
+        where(:rule_name, :report_type) do
+          'Vulnerability-Check' | :vulnerability
+          'License-Check'       | :license_scanning
+          'Coverage-Check'      | :code_coverage
+        end
+
+        with_them do
+          specify { expect(result[:status]).to eq(:success) }
+          specify { expect(result[:rule].approvals_required).to eq(1) }
+          specify { expect(result[:rule].rule_type).to eq('report_approver') }
+        end
       end
     end
   end

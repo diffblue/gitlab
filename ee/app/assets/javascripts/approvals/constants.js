@@ -21,7 +21,9 @@ export const VULNERABILITY_CHECK_NAME = 'Vulnerability-Check';
 export const LICENSE_CHECK_NAME = 'License-Check';
 export const COVERAGE_CHECK_NAME = 'Coverage-Check';
 
-export const LICENSE_SCANNING = 'license_scanning';
+export const REPORT_TYPE_LICENSE_SCANNING = 'license_scanning';
+export const REPORT_TYPE_VULNERABILITY = 'vulnerability';
+export const REPORT_TYPE_CODE_COVERAGE = 'code_coverage';
 
 export const APPROVAL_RULE_CONFIGS = {
   [VULNERABILITY_CHECK_NAME]: {
@@ -30,6 +32,7 @@ export const APPROVAL_RULE_CONFIGS = {
       'SecurityApprovals|A merge request approval is required when a security report contains a new vulnerability.',
     ),
     documentationText: s__('SecurityApprovals|Learn more about Vulnerability-Check'),
+    reportType: REPORT_TYPE_VULNERABILITY,
   },
   [LICENSE_CHECK_NAME]: {
     title: s__('SecurityApprovals|License-Check'),
@@ -37,6 +40,7 @@ export const APPROVAL_RULE_CONFIGS = {
       'SecurityApprovals|A merge request approval is required when the license compliance report contains a denied license.',
     ),
     documentationText: s__('SecurityApprovals|Learn more about License-Check'),
+    reportType: REPORT_TYPE_LICENSE_SCANNING,
   },
   [COVERAGE_CHECK_NAME]: {
     title: s__('SecurityApprovals|Coverage-Check'),
@@ -44,6 +48,7 @@ export const APPROVAL_RULE_CONFIGS = {
       'SecurityApprovals|A merge request approval is required when test coverage declines.',
     ),
     documentationText: s__('SecurityApprovals|Learn more about Coverage-Check'),
+    reportType: REPORT_TYPE_CODE_COVERAGE,
   },
 };
 

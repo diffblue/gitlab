@@ -1,5 +1,10 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import { RULE_TYPE_REGULAR, RULE_TYPE_ANY_APPROVER } from './constants';
+import {
+  RULE_TYPE_REGULAR,
+  RULE_TYPE_ANY_APPROVER,
+  APPROVAL_RULE_CONFIGS,
+  RULE_TYPE_REPORT_APPROVER,
+} from './constants';
 
 const visibleTypes = new Set([RULE_TYPE_ANY_APPROVER, RULE_TYPE_REGULAR]);
 
@@ -25,6 +30,14 @@ function withDefaultEmptyRule(rules = []) {
   ];
 }
 
+function ruleTypeFromName(ruleName) {
+  return ruleName in APPROVAL_RULE_CONFIGS ? RULE_TYPE_REPORT_APPROVER : undefined;
+}
+
+function reportTypeFromName(ruleName) {
+  return APPROVAL_RULE_CONFIGS[ruleName]?.reportType;
+}
+
 export const mapApprovalRuleRequest = (req) => ({
   name: req.name,
   approvals_required: req.approvalsRequired,
@@ -35,6 +48,8 @@ export const mapApprovalRuleRequest = (req) => ({
   scanners: req.scanners,
   vulnerabilities_allowed: req.vulnerabilitiesAllowed,
   severity_levels: req.severityLevels,
+  report_type: reportTypeFromName(req.name),
+  rule_type: ruleTypeFromName(req.name),
 });
 
 export const mapApprovalFallbackRuleRequest = (req) => ({

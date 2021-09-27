@@ -61,6 +61,7 @@ FactoryBot.define do
     trait :vulnerability_report do
       rule_type { :report_approver }
       name { ApprovalRuleLike::DEFAULT_NAME_FOR_VULNERABILITY_REPORT }
+      report_type { :vulnerability }
     end
 
     trait :vulnerability do
@@ -70,11 +71,13 @@ FactoryBot.define do
     trait :license_scanning do
       name { ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT }
       rule_type { :report_approver }
+      report_type { :license_scanning }
     end
 
     trait :code_coverage do
       name { ApprovalRuleLike::DEFAULT_NAME_FOR_COVERAGE }
       rule_type { :report_approver }
+      report_type { :code_coverage }
     end
   end
 end
