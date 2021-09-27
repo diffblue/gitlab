@@ -52,7 +52,7 @@ RSpec.describe 'Merge requests > User merges immediately', :js do
 
         find(':focus').send_keys :enter
 
-        expect(merge_button).to have_no_content('Merge in progress')
+        expect(merge_button).to have_content('Start merge train')
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe 'Merge requests > User merges immediately', :js do
 
         click_button 'Merge immediately'
 
-        expect(merge_button).to have_content('Merge in progress')
+        expect(find('.media-body h4')).to have_content('Merging!')
       end
     end
   end
