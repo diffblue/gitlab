@@ -13,7 +13,7 @@
     %h5
       = _("Subscriptions")
       %span.badge.badge-pill
-        = @project.upstream_projects.count + @project.downstream_projects.count
+        = @project.upstream_projects_count + @project.downstream_projects_count
 
     %table.table.gl-mt-3
       %thead

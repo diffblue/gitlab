@@ -794,6 +794,14 @@ module EE
       available_features[feature]
     end
 
+    def upstream_projects_count
+      upstream_project_subscriptions.count
+    end
+
+    def downstream_projects_count
+      downstream_project_subscriptions.count
+    end
+
     def merge_pipelines_enabled?
       return false unless ci_cd_settings
 
