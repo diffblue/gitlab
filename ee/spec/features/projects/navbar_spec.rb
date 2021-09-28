@@ -80,21 +80,4 @@ RSpec.describe 'Project navbar' do
       it_behaves_like 'verified navigation bar'
     end
   end
-
-  context 'when requirements is available' do
-    before do
-      stub_licensed_features(requirements: true)
-      insert_after_nav_item(
-        _('Merge requests'),
-        new_nav_item: {
-          nav_item: _('Requirements'),
-          nav_sub_items: []
-        }
-      )
-
-      visit project_path(project)
-    end
-
-    it_behaves_like 'verified navigation bar'
-  end
 end
