@@ -10,6 +10,7 @@ module EE
     extend ::Gitlab::Utils::Override
     extend ::Gitlab::Cache::RequestCache
     include ::Gitlab::Utils::StrongMemoize
+    include ::Admin::RepoSizeLimitHelper
 
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
     PUBLIC_COST_FACTOR_RELEASE_DAY = Date.new(2021, 7, 17).freeze
@@ -601,7 +602,7 @@ module EE
           current_size_proc: -> { statistics.total_repository_size },
           limit: actual_size_limit,
           namespace: namespace,
-          enabled: License.feature_available?(:repository_size_limit) || License.features_with_usage_ping.include?(:repository_size_limit)
+          enabled: repo_size_limit_feature_available?
         )
       end
     end
