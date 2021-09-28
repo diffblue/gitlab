@@ -4,6 +4,8 @@ import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
+import AddIssuableForm from '~/related_issues/components/add_issuable_form.vue';
+import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import RelatedItemsTreeApp from 'ee/related_items_tree/components/related_items_tree_app.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
 import createDefaultStore from 'ee/related_items_tree/store';
@@ -31,6 +33,9 @@ const createComponent = () => {
   return shallowMount(RelatedItemsTreeApp, {
     localVue,
     store,
+    stubs: {
+      SlotSwitch,
+    },
   });
 };
 
@@ -39,6 +44,7 @@ describe('RelatedItemsTreeApp', () => {
   let wrapper;
 
   const findCreateIssueForm = () => wrapper.find(CreateIssueForm);
+  const findAddItemForm = () => wrapper.find(AddIssuableForm);
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
@@ -230,7 +236,7 @@ describe('RelatedItemsTreeApp', () => {
     it('renders item add/create form container element', () => {
       wrapper.vm.$store.dispatch('toggleAddItemForm', {
         toggleState: true,
-        issuableType: issuableTypesMap.Epic,
+        issuableType: issuableTypesMap.EPIC,
       });
 
       return wrapper.vm.$nextTick().then(() => {
@@ -241,5 +247,34 @@ describe('RelatedItemsTreeApp', () => {
     it('does not render create issue form', () => {
       expect(findCreateIssueForm().exists()).toBe(false);
     });
+
+    it.each`
+      issuableType              | autoCompleteIssues | autoCompleteEpics | expectedAutoCompleteIssues | expectedAutoCompleteEpics
+      ${issuableTypesMap.ISSUE} | ${true}            | ${true}           | ${true}                    | ${false}
+      ${issuableTypesMap.EPIC}  | ${true}            | ${true}           | ${false}                   | ${true}
+    `(
+      'enables $issuableType autocomplete only when "issuableType" is "$issuableType" and autocomplete for it is supported',
+      async ({
+        issuableType,
+        autoCompleteIssues,
+        autoCompleteEpics,
+        expectedAutoCompleteIssues,
+        expectedAutoCompleteEpics,
+      }) => {
+        wrapper.vm.$store.dispatch('toggleAddItemForm', {
+          toggleState: true,
+          issuableType,
+        });
+        wrapper.vm.$store.state.autoCompleteIssues = autoCompleteIssues;
+        wrapper.vm.$store.state.autoCompleteEpics = autoCompleteEpics;
+
+        await wrapper.vm.$nextTick();
+
+        expect(findAddItemForm().props()).toMatchObject({
+          autoCompleteIssues: expectedAutoCompleteIssues,
+          autoCompleteEpics: expectedAutoCompleteEpics,
+        });
+      },
+    );
   });
 });

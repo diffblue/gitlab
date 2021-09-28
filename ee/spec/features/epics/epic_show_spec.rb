@@ -33,6 +33,18 @@ RSpec.describe 'Epic show', :js do
     sign_in(user)
   end
 
+  def add_existing_item(type)
+    button_name = type == 'issue' ? 'Add an existing issue' : 'Add an existing epic'
+    input_character = type == 'issue' ? '#' : '&'
+
+    page.within('.js-epic-tabs-content #tree') do
+      find('.js-add-epics-issues-button .dropdown-toggle').click
+      click_button button_name
+      find('.js-add-issuable-form-input').native.send_keys(input_character)
+      wait_for_requests
+    end
+  end
+
   describe 'when sub-epics feature is available' do
     before do
       visit group_epic_path(group, epic)
@@ -57,6 +69,24 @@ RSpec.describe 'Epic show', :js do
             expect(find('.tree-item:nth-child(1) .sortable-link')).to have_content('Child epic B')
             expect(find('.tree-item:nth-child(2) .sortable-link')).to have_content('Child epic A')
           end
+        end
+      end
+
+      it 'autocompletes issues when "#" is input in the add item form', :aggregate_failures do
+        add_existing_item('issue')
+        page.within('#atwho-ground-add-related-issues-form-input') do
+          expect(page).to have_selector('#at-view-issues', visible: true)
+          expect(page).not_to have_selector('#at-view-epics')
+          expect(page).to have_selector('.atwho-view-ul li', count: 1)
+        end
+      end
+
+      it 'autocompletes epics when "&" is input in the add item form', :aggregate_failures do
+        add_existing_item('epic')
+        page.within('#atwho-ground-add-related-issues-form-input') do
+          expect(page).not_to have_selector('#at-view-issues')
+          expect(page).to have_selector('#at-view-epics', visible: true)
+          expect(page).to have_selector('.atwho-view-ul li', count: 4)
         end
       end
     end
