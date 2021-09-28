@@ -61,7 +61,9 @@ module Analytics
       # rubocop: enable CodeReuse/ActiveRecord
 
       def runner_configured
-        Ci::Runner.active.belonging_to_group_or_project(snapshot_groups, snapshot_project_ids).exists?
+        ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/337541') do
+          Ci::Runner.active.belonging_to_group_or_project(snapshot_groups, snapshot_project_ids).exists?
+        end
       end
 
       def pipeline_succeeded
@@ -119,10 +121,16 @@ module Analytics
       # rubocop: disable CodeReuse/ActiveRecord
       def projects_count_with_artifact(artifacts_scope)
         subquery = artifacts_scope.created_in_time_range(from: range_start, to: range_end)
-          .where(Ci::JobArtifact.arel_table[:project_id].eq(Project.arel_table[:id])).arel.exists
+          .where(Ci::JobArtifact.arel_table[:project_id].eq(Arel.sql('project_ids.id'))).arel.exists
 
         snapshot_project_ids.each_slice(1000).sum do |project_ids|
-          Project.where(id: project_ids).where(subquery).count
+          ids = project_ids.map { |id| [id] }
+          # To avoid cross-database join, we swap out the FROM part with just the project_ids we need
+          Project
+            .select(:id)
+            .from("(#{Arel::Nodes::ValuesList.new(ids).to_sql}) project_ids (id)")
+            .where(subquery)
+            .count
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord
