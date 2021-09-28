@@ -34,8 +34,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     end
 
     context 'when scan type is dast' do
-      it 'invokes DastOnDemandScans::CreateService' do
-        expect(::DastOnDemandScans::CreateService).to receive(:new).twice.and_call_original
+      it 'invokes AppSec::Dast::Scans::CreateService' do
+        expect(::AppSec::Dast::Scans::CreateService).to receive(:new).twice.and_call_original
 
         service.execute(schedule)
       end

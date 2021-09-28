@@ -53,7 +53,7 @@ module Security
         dast_scanner_profile = find_dast_scanner_profile(container, action[:scanner_profile])
 
         branches.each do |branch|
-          ::DastOnDemandScans::CreateService.new(
+          ::AppSec::Dast::Scans::CreateService.new(
             container: container,
             current_user: current_user,
             params: {
