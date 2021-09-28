@@ -27,7 +27,7 @@ describe('Rule Branches', () => {
   it('displays "All branches" if there are no protected branches', () => {
     createComponent();
     expect(findBranch().text()).toContain('All branches');
-    expect(findBranch().classes('monospace')).toBe(true);
+    expect(findBranch().classes('monospace')).toBe(false);
   });
 
   it('displays the branch name of the first protected branch', () => {
@@ -50,6 +50,6 @@ describe('Rule Branches', () => {
 
     expect(findBranch().text()).toContain('main');
     expect(findBranch().text()).not.toContain('hello');
-    expect(findBranch().classes('monospace')).toBe(false);
+    expect(findBranch().classes('monospace')).toBe(true);
   });
 });

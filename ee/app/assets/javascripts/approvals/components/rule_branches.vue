@@ -22,5 +22,5 @@ export default {
 </script>
 
 <template>
-  <div :class="{ monospace: isAllBranches }">{{ branchName }}</div>
+  <div :class="{ monospace: !isAllBranches }">{{ branchName }}</div>
 </template>
