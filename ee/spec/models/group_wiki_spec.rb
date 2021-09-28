@@ -47,6 +47,16 @@ RSpec.describe GroupWiki do
             shard_name: shard
           )
         end
+
+        context 'on a read-only instance' do
+          before do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          end
+
+          it 'does not attempt to create a new entry' do
+            expect { subject.track_wiki_repository(shard) }.not_to change(wiki_container, :group_wiki_repository)
+          end
+        end
       end
 
       context 'when a tracking entry exists' do
@@ -63,6 +73,23 @@ RSpec.describe GroupWiki do
             disk_path: 'fancy/new/path',
             shard_name: shard
           )
+        end
+
+        context 'on a read-only instance' do
+          before do
+            allow(Gitlab::Database).to receive(:read_only?).and_return(true)
+          end
+
+          it 'does not update the storage location' do
+            allow(subject.storage).to receive(:disk_path).and_return('fancy/new/path')
+
+            subject.track_wiki_repository(shard)
+
+            expect(wiki_container.group_wiki_repository).not_to have_attributes(
+              disk_path: 'fancy/new/path',
+              shard_name: shard
+            )
+          end
         end
       end
     end
