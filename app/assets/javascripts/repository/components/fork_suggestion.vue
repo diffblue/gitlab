@@ -23,8 +23,10 @@ export default {
 </script>
 
 <template>
-  <div class="file-fork-suggestion">
-    <span class="file-fork-suggestion-note" data-testid="message">{{ $options.i18n.message }}</span>
+  <div
+    class="gl-display-flex gl-justify-content-end gl-align-items-center gl-bg-gray-10 gl-px-5 gl-py-2 gl-border-1 gl-border-b-solid gl-border-gray-100"
+  >
+    <span class="gl-mr-6" data-testid="message">{{ $options.i18n.message }}</span>
 
     <gl-button
       class="gl-mr-3"
@@ -36,7 +38,7 @@ export default {
       {{ $options.i18n.fork }}
     </gl-button>
 
-    <gl-button class="gl-mr-3" data-testid="cancel" @click="$emit('cancel')">
+    <gl-button data-testid="cancel" @click="$emit('cancel')">
       {{ $options.i18n.cancel }}
     </gl-button>
   </div>
