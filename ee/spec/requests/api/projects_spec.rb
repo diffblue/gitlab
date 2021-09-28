@@ -276,31 +276,59 @@ RSpec.describe API::Projects do
       end
     end
 
-    context 'issuable default templates feature is available' do
-      before do
-        stub_licensed_features(issuable_default_templates: true)
+    context 'issuable default templates' do
+      let(:project) { create(:project, :public) }
+
+      context 'when feature is available' do
+        before do
+          stub_licensed_features(issuable_default_templates: true)
+        end
+
+        it 'returns issuable default templates' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to have_key 'issues_template'
+          expect(json_response).to have_key 'merge_requests_template'
+        end
+
+        context 'when user does not have permission to see issues' do
+          let(:project) { create(:project, :public, :issues_private) }
+
+          it 'does not return issue default templates' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).not_to have_key 'issues_template'
+            expect(json_response).to have_key 'merge_requests_template'
+          end
+        end
+
+        context 'when user does not have permission to see merge requests' do
+          let(:project) { create(:project, :public, :merge_requests_private) }
+
+          it 'does not return merge request default templates' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to have_key 'issues_template'
+            expect(json_response).not_to have_key 'merge_requests_template'
+          end
+        end
       end
 
-      it 'returns issuable default templates' do
-        subject
+      context 'issuable default templates feature not available' do
+        before do
+          stub_licensed_features(issuable_default_templates: false)
+        end
 
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to have_key 'issues_template'
-        expect(json_response).to have_key 'merge_requests_template'
-      end
-    end
+        it 'does not return issuable default templates' do
+          subject
 
-    context 'issuable default templates feature not available' do
-      before do
-        stub_licensed_features(issuable_default_templates: false)
-      end
-
-      it 'does not return issuable default templates' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).not_to have_key 'issues_template'
-        expect(json_response).not_to have_key 'merge_requests_template'
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).not_to have_key 'issues_template'
+          expect(json_response).not_to have_key 'merge_requests_template'
+        end
       end
     end
 
