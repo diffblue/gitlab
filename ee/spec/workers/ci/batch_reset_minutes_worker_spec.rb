@@ -78,17 +78,5 @@ RSpec.describe Ci::BatchResetMinutesWorker do
         expect(last_namespace.reset.extra_shared_runners_minutes_limit).to eq 50
       end
     end
-
-    context 'when feature flag ci_parallel_minutes_reset is disabled' do
-      before do
-        stub_feature_flags(ci_parallel_minutes_reset: false)
-      end
-
-      it 'does not call Ci::Minutes::BatchResetService' do
-        expect(Ci::Minutes::BatchResetService).not_to receive(:new)
-
-        worker.perform(first_namespace.id, last_namespace.id)
-      end
-    end
   end
 end
