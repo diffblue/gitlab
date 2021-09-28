@@ -135,7 +135,8 @@ RSpec.describe Registrations::WelcomeController do
         user: {
           role: 'software_developer',
           setup_for_company: setup_for_company,
-          email_opted_in: email_opted_in
+          email_opted_in: email_opted_in,
+          registration_objective: 'code_storage'
         }
       }
     end
@@ -177,6 +178,14 @@ RSpec.describe Registrations::WelcomeController do
         context 'when on gitlab.com' do
           before do
             allow(::Gitlab).to receive(:com?).and_return(true)
+          end
+
+          context 'when registration_objective field is provided' do
+            it 'sets the registration_objective' do
+              subject
+
+              expect(controller.current_user.registration_objective).to eq('code_storage')
+            end
           end
 
           context 'when setup for company is false' do

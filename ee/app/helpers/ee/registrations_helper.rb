@@ -10,8 +10,10 @@ module EE
       super.merge(api_path: suggestion_path)
     end
 
-    def shuffled_jobs_to_be_done_options
-      jobs_to_be_done_options.shuffle.append([_('A different reason'), 'other'])
+    def shuffled_registration_objective_options
+      options = registration_objective_options
+      other = options.extract!(:other).to_a.flatten
+      options.to_a.shuffle.append(other).map { |option| option.reverse }
     end
 
     private
@@ -23,15 +25,10 @@ module EE
       end
     end
 
-    def jobs_to_be_done_options
-      [
-        _('I want to learn the basics of Git'),
-        _('I want to move my repository to GitLab from somewhere else'),
-        _('I want to store my code'),
-        _('I want to explore GitLab to see if it’s worth switching to'),
-        _('I want to use GitLab CI with my existing repository'),
-        _('I’m joining my team who’s already on GitLab')
-      ]
+    def registration_objective_options
+      localized_jobs_to_be_done_choices.merge(
+        joining_team: _('I’m joining my team who’s already on GitLab')
+      )
     end
   end
 end
