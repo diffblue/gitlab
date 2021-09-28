@@ -71,7 +71,7 @@ RSpec.describe 'Query.project(fullPath).dastSiteValidations' do
       let(:sort_param) { nil }
       let(:first_param) { 3 }
 
-      let(:expected_results) do
+      let(:all_records) do
         [
           dast_site_validation4,
           dast_site_validation3,

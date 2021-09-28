@@ -69,7 +69,7 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
       let(:sort_param) { nil }
       let(:first_param) { 3 }
 
-      let(:expected_results) do
+      let(:all_records) do
         [dast_profile4, dast_profile3, dast_profile2, dast_profile1].map { |validation| global_id_of(validation)}
       end
     end

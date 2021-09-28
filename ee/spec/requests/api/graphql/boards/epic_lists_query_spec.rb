@@ -41,7 +41,7 @@ RSpec.describe 'get list of epic boards' do
 
     describe 'sorting and pagination' do
       let(:data_path) { [:group, :epicBoard, :lists] }
-      let(:expected_results) { [list3.to_global_id.to_s, list1.to_global_id.to_s, list2.to_global_id.to_s] }
+      let(:all_records) { [list3.to_global_id.to_s, list1.to_global_id.to_s, list2.to_global_id.to_s] }
 
       def pagination_results_data(nodes)
         nodes.map { |list| list['id'] }
