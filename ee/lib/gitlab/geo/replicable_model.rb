@@ -21,7 +21,28 @@ module Gitlab
 
         # These scopes are intended to be overridden as needed
         scope :available_replicables, -> { all }
-        scope :available_verifiables, -> { self.respond_to?(:with_files_stored_locally) ? available_replicables.with_files_stored_locally : available_replicables }
+
+        # On primary, `verifiables` are records that can be checksummed and/or are replicable.
+
+        # On secondary, `verifiables` are records that have already been replicated
+        # and (ideally) have been checksummed on the primary
+
+        scope :verifiables, -> { self.respond_to?(:with_files_stored_locally) ? available_replicables.with_files_stored_locally : available_replicables }
+
+        # When storing verification details in the same table as the model,
+        # the scope `available_verifiables` returns only those records
+        # that are eligible for verification, i.e. the same as the scope
+        # `verifiables`.
+
+        # When using a separate table to store verification details,
+        # the scope `available_verifiables` should return all records
+        # from the separate table because the separate table will
+        # always only have records corresponding to replicables that are verifiable.
+        # For this, override the scope in the replicable model, e.g. like so in
+        # `MergeRequestDiff`,
+        # `scope :available_verifiables, -> { joins(:merge_request_diff_detail) }`
+
+        scope :available_verifiables, -> { verifiables }
       end
 
       class_methods do

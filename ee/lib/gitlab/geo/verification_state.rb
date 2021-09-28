@@ -95,7 +95,7 @@ module Gitlab
         def save_verification_details
           return unless self.class.separate_verification_state_table?
 
-          return unless self.class.available_verifiables.primary_key_in(self).exists?
+          return unless self.class.verifiables.primary_key_in(self).exists?
 
           # During a transaction, `verification_state_object` could be built before
           # a value for `verification_state_model_key` exists. So we check for that
@@ -306,7 +306,7 @@ module Gitlab
 
         def pluck_verifiable_ids_in_range(range)
           self
-            .available_verifiables
+            .verifiables
             .primary_key_in(range)
             .pluck_primary_key
         end

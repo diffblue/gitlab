@@ -40,13 +40,17 @@ module Geo
     end
 
     # This method creates or deletes verification details records.
-    # It creates for available verifiables where records don't exist yet.
+    #
+    # It looks for replicable records that are eligible for verification (scoped
+    # as `verifiables`) but whose corresponding verification details record doesn't
+    # exist yet.
     # These would be replicable records that have recently become scoped as
-    # available_verifiables.
+    # `verifiables`, but were not so at the time of creation.
     # New replicable records will automatically create child records in the
     # verification details table, hence not created in this method.
+    #
     # When a replicable record is no longer a part of the scope
-    # available_veriables, it is deleted.
+    # `verifiables`, the corresponding verification state record needs to be deleted.
     # When a replicable record is deleted, the child record in the verification
     # details table is automatically removed, hence not deleted in this method.
     #
