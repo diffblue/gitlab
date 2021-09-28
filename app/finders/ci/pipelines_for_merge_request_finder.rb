@@ -5,6 +5,8 @@ module Ci
   class PipelinesForMergeRequestFinder
     include Gitlab::Utils::StrongMemoize
 
+    COMMITS_LIMIT = 100
+
     def initialize(merge_request, current_user)
       @merge_request = merge_request
       @current_user = current_user
@@ -12,7 +14,7 @@ module Ci
 
     attr_reader :merge_request, :current_user
 
-    delegate :recent_diff_head_shas, :commit_shas, :target_project, :source_project, :source_branch, to: :merge_request
+    delegate :merge_request_diffs, :commit_shas, :target_project, :source_project, :source_branch, to: :merge_request
 
     # Fetch all pipelines that the user can read.
     def execute
@@ -88,6 +90,11 @@ module Ci
       else
         pipelines_using_cte
       end
+    end
+
+    def recent_diff_head_shas
+      # We're limiting the number of commits' SHAs to 100 since they are used in a WHERE clause of a query
+      merge_request_diffs.recent.limit(COMMITS_LIMIT).pluck(:head_commit_sha).uniq # rubocop: disable CodeReuse/ActiveRecord
     end
 
     # NOTE: this method returns only parent merge request pipelines.
