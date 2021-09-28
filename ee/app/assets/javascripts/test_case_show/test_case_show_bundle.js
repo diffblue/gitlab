@@ -16,7 +16,7 @@ export default function initTestCaseShow({ mountPointSelector }) {
   }
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
+    defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
   });
 
   const sidebarOptions = JSON.parse(el.dataset.sidebarOptions);
