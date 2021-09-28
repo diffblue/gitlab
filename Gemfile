@@ -348,6 +348,8 @@ group :development do
 
   # thin instead webrick
   gem 'thin', '~> 1.8.0'
+
+  gem 'sprite-factory', '~> 1.7'
 end
 
 group :development, :test do
