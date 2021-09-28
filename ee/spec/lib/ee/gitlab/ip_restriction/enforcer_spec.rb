@@ -42,7 +42,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
 
     it_behaves_like 'ip_restriction'
 
-    context 'feature is disabled' do
+    context 'group_ip_restriction feature is disabled' do
       before do
         stub_licensed_features(group_ip_restriction: false)
       end
@@ -56,7 +56,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
         stub_application_setting(usage_ping_enabled: true)
       end
 
-      context 'when usage_ping_features_enabled is activated' do
+      context 'when usage_ping_features_enabled is enabled' do
         before do
           stub_application_setting(usage_ping_features_enabled: true)
         end
@@ -64,13 +64,22 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
         it_behaves_like 'ip_restriction'
       end
 
-      context 'when usage_ping_features_enabled is deactivated' do
+      context 'when usage_ping_features_enabled is disabled' do
         before do
           stub_application_setting(usage_ping_features_enabled: false)
         end
 
         it { is_expected.to be_truthy }
       end
+    end
+
+    context 'when usage ping is disabled' do
+      before do
+        stub_licensed_features(group_ip_restriction: false)
+        stub_application_setting(usage_ping_enabled: false)
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 end

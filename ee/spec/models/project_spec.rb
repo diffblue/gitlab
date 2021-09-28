@@ -2363,7 +2363,7 @@ RSpec.describe Project do
             stub_licensed_features(repository_size_limit: true)
           end
 
-          it 'is enabled' do
+          it 'size limit is enabled' do
             expect(checker.enabled?).to be_truthy
           end
         end
@@ -2373,7 +2373,7 @@ RSpec.describe Project do
             stub_licensed_features(repository_size_limit: false)
           end
 
-          it 'is disabled' do
+          it 'size limit is disabled' do
             expect(checker.enabled?).to be_falsey
           end
         end
@@ -2384,24 +2384,35 @@ RSpec.describe Project do
             stub_application_setting(usage_ping_enabled: true)
           end
 
-          context 'when feature is activated' do
+          context 'when usage_ping_features is activated' do
             before do
               stub_application_setting(usage_ping_features_enabled: true)
             end
 
-            it 'is enabled' do
+            it 'size limit is enabled' do
               expect(checker.enabled?).to be_truthy
             end
           end
 
-          context 'when feature is deactivated' do
+          context 'when usage_ping_features is disabled' do
             before do
               stub_application_setting(usage_ping_features_enabled: false)
             end
 
-            it 'is disabled' do
+            it 'size limit is disabled' do
               expect(checker.enabled?).to be_falsy
             end
+          end
+        end
+
+        context 'when usage ping is disabled' do
+          before do
+            stub_licensed_features(repository_size_limit: false)
+            stub_application_setting(usage_ping_enabled: false)
+          end
+
+          it 'size limit is disabled' do
+            expect(checker.enabled?).to be_falsey
           end
         end
       end
