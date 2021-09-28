@@ -1,0 +1,5 @@
+fragment ZentaoUser on UserCore {
+  avatarUrl
+  name
+  webUrl
+}

@@ -1,0 +1,6 @@
+fragment ZentaoLabel on Label {
+  title
+  name
+  color
+  textColor
+}

@@ -37,9 +37,9 @@ RSpec.describe 'Namespace.projects' do
 
       it_behaves_like 'sorted paginated query' do
         let(:node_path) { %w[name] }
-        let(:sort_param)       { :STORAGE }
-        let(:first_param)      { 2 }
-        let(:expected_results) { [project_4, project_2, project_3].map(&:name) }
+        let(:sort_param) { :STORAGE }
+        let(:first_param) { 2 }
+        let(:all_records) { [project_4, project_2, project_3].map(&:name) }
       end
     end
   end
