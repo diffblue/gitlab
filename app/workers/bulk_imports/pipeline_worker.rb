@@ -16,7 +16,7 @@ module BulkImports
 
     def perform(pipeline_tracker_id, stage, entity_id)
       pipeline_tracker = ::BulkImports::Tracker
-        .with_status(:created)
+        .with_status(:created, :started)
         .find_by_id(pipeline_tracker_id)
 
       if pipeline_tracker.present?

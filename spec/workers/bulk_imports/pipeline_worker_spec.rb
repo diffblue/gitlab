@@ -27,42 +27,59 @@ RSpec.describe BulkImports::PipelineWorker do
       .and_return([[0, pipeline_class]])
   end
 
-  it 'runs the given pipeline successfully' do
-    pipeline_tracker = create(
-      :bulk_import_tracker,
-      entity: entity,
-      pipeline_name: 'FakePipeline'
-    )
+  shared_examples 'successfully runs the pipeline' do
+    it 'runs the given pipeline successfully' do
+      expect_next_instance_of(Gitlab::Import::Logger) do |logger|
+        expect(logger)
+          .to receive(:info)
+          .with(
+            worker: described_class.name,
+            pipeline_name: 'FakePipeline',
+            entity_id: entity.id
+          )
+      end
 
-    expect_next_instance_of(Gitlab::Import::Logger) do |logger|
-      expect(logger)
-        .to receive(:info)
-        .with(
-          worker: described_class.name,
-          pipeline_name: 'FakePipeline',
-          entity_id: entity.id
-        )
+      expect(BulkImports::EntityWorker)
+        .to receive(:perform_async)
+        .with(entity.id, pipeline_tracker.stage)
+
+      expect(subject).to receive(:jid).and_return('jid')
+
+      subject.perform(pipeline_tracker.id, pipeline_tracker.stage, entity.id)
+
+      pipeline_tracker.reload
+
+      expect(pipeline_tracker.status_name).to eq(:finished)
+      expect(pipeline_tracker.jid).to eq('jid')
     end
+  end
 
-    expect(BulkImports::EntityWorker)
-      .to receive(:perform_async)
-      .with(entity.id, pipeline_tracker.stage)
+  it_behaves_like 'successfully runs the pipeline' do
+    let(:pipeline_tracker) do
+      create(
+        :bulk_import_tracker,
+        entity: entity,
+        pipeline_name: 'FakePipeline'
+      )
+    end
+  end
 
-    expect(subject).to receive(:jid).and_return('jid')
-
-    subject.perform(pipeline_tracker.id, pipeline_tracker.stage, entity.id)
-
-    pipeline_tracker.reload
-
-    expect(pipeline_tracker.status_name).to eq(:finished)
-    expect(pipeline_tracker.jid).to eq('jid')
+  it_behaves_like 'successfully runs the pipeline' do
+    let(:pipeline_tracker) do
+      create(
+        :bulk_import_tracker,
+        :started,
+        entity: entity,
+        pipeline_name: 'FakePipeline'
+      )
+    end
   end
 
   context 'when the pipeline cannot be found' do
     it 'logs the error' do
       pipeline_tracker = create(
         :bulk_import_tracker,
-        :started,
+        :finished,
         entity: entity,
         pipeline_name: 'FakePipeline'
       )
