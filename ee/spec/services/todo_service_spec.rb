@@ -324,7 +324,7 @@ RSpec.describe TodoService do
     let(:project) { create(:project, :private, :repository) }
     let(:merge_request) { create(:merge_request, source_project: project, author: author) }
 
-    context 'an approver has lost access to the project' do
+    context 'an approver has lost access to the project', :sidekiq_inline do
       before do
         create(:approver, user: non_member, target: project)
         project.members.find_by(user_id: non_member.id).destroy
