@@ -1,7 +1,14 @@
 <script>
-import { GlButton, GlIcon, GlLink, GlSprintf, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import {
+  GlButton,
+  GlIcon,
+  GlLink,
+  GlSprintf,
+  GlSafeHtmlDirective as SafeHtml,
+  GlAlert,
+} from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 
-import createFlash from '~/flash';
 import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
 import {
   IssuableStates,
@@ -30,6 +37,7 @@ export default {
     GlIcon,
     GlLink,
     GlSprintf,
+    GlAlert,
     IssuableList,
     ExternalIssuesListEmptyState,
   },
@@ -70,6 +78,7 @@ export default {
         [IssuableStates.Closed]: 0,
         [IssuableStates.All]: 0,
       },
+      errorMessage: null,
     };
   },
   computed: {
@@ -173,11 +182,9 @@ export default {
       return filteredSearchValue;
     },
     onExternalIssuesQueryError(error, message) {
-      createFlash({
-        message: message || error.message,
-        captureError: true,
-        error,
-      });
+      this.errorMessage = message || error.message;
+
+      Sentry.captureException(error);
     },
     onIssuableListClickTab(selectedIssueState) {
       this.currentPage = 1;
@@ -225,7 +232,11 @@ export default {
 </script>
 
 <template>
+  <gl-alert v-if="errorMessage" class="gl-mt-3" variant="danger" :dismissible="false">
+    {{ errorMessage }}
+  </gl-alert>
   <issuable-list
+    v-else
     :namespace="projectFullPath"
     :tabs="$options.IssuableListTabs"
     :current-tab="currentState"
