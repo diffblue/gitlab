@@ -41,7 +41,7 @@ RSpec.describe 'Requirements list', :js do
     end
 
     it 'shows the requirements in the navigation sidebar' do
-      expect(first('.nav-sidebar  .active a .nav-item-name')).to have_content('Requirements')
+      expect(first('.nav-sidebar .active .sidebar-sub-level-items')).to have_content('Requirements')
     end
 
     it 'shows requirements tabs for each status type' do
