@@ -9982,7 +9982,7 @@ msgstr ""
 msgid "Custom notification events"
 msgstr ""
 
-msgid "Custom notification levels are the same as participating levels. With custom notification levels you will also receive notifications for select events. To find out more, check out %{notificationLinkStart} notification emails%{notificationLinkEnd}."
+msgid "Custom notification levels are the same as participating levels. With custom notification levels you will also receive notifications for select events. To find out more, check out %{notificationLinkStart}notification emails%{notificationLinkEnd}."
 msgstr ""
 
 msgid "Custom project templates"
@@ -24827,6 +24827,48 @@ msgstr ""
 msgid "PipelineSchedules|Variables"
 msgstr ""
 
+msgid "PipelineSource|API"
+msgstr ""
+
+msgid "PipelineSource|Chat"
+msgstr ""
+
+msgid "PipelineSource|External"
+msgstr ""
+
+msgid "PipelineSource|External Pull Request"
+msgstr ""
+
+msgid "PipelineSource|Merge Request"
+msgstr ""
+
+msgid "PipelineSource|On-Demand DAST Scan"
+msgstr ""
+
+msgid "PipelineSource|On-Demand DAST Validation"
+msgstr ""
+
+msgid "PipelineSource|Parent Pipeline"
+msgstr ""
+
+msgid "PipelineSource|Pipeline"
+msgstr ""
+
+msgid "PipelineSource|Push"
+msgstr ""
+
+msgid "PipelineSource|Schedule"
+msgstr ""
+
+msgid "PipelineSource|Trigger"
+msgstr ""
+
+msgid "PipelineSource|Web"
+msgstr ""
+
+msgid "PipelineSource|Web IDE"
+msgstr ""
+
 msgid "PipelineStatusTooltip|Pipeline: %{ciStatus}"
 msgstr ""
 
@@ -25127,49 +25169,7 @@ msgstr ""
 msgid "Pipeline|Source"
 msgstr ""
 
-msgid "PipelineSource|API"
-msgstr ""
-
-msgid "PipelineSource|Chat"
-msgstr ""
-
-msgid "PipelineSource|External"
-msgstr ""
-
-msgid "PipelineSource|External Pull Request"
-msgstr ""
-
-msgid "PipelineSource|Merge Request"
-msgstr ""
-
-msgid "PipelineSource|On-Demand DAST Scan"
-msgstr ""
-
-msgid "PipelineSource|On-Demand DAST Validation"
-msgstr ""
-
-msgid "PipelineSource|Parent Pipeline"
-msgstr ""
-
-msgid "PipelineSource|Pipeline"
-msgstr ""
-
-msgid "PipelineSource|Push"
-msgstr ""
-
-msgid "PipelineSource|Schedule"
-msgstr ""
-
-msgid "PipelineSource|Security Policy"
-msgstr ""
-
-msgid "PipelineSource|Trigger"
-msgstr ""
-
-msgid "PipelineSource|Web"
-msgstr ""
-
-msgid "PipelineSource|Web IDE"
+msgid "Pipeline|Source|Security Policy"
 msgstr ""
 
 msgid "Pipeline|Specify variable values to be used in this run. The values specified in %{linkStart}CI/CD settings%{linkEnd} will be used by default."
