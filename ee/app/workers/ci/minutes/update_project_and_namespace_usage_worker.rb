@@ -9,7 +9,7 @@ module Ci
       urgency :low
       data_consistency :always # primarily performs writes
 
-      def perform(consumption, project_id, namespace_id, build_id = nil)
+      def perform(consumption, project_id, namespace_id, build_id)
         ::Ci::Minutes::UpdateProjectAndNamespaceUsageService
           .new(project_id, namespace_id, build_id)
           .execute(consumption)
