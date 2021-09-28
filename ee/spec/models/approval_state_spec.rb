@@ -1336,7 +1336,7 @@ RSpec.describe ApprovalState do
             expect(subject.can_approve?(nil)).to be_falsey
           end
 
-          context 'when an approver does not have access to the merge request' do
+          context 'when an approver does not have access to the merge request', :sidekiq_inline do
             before do
               project.members.find_by(user_id: developer.id).destroy!
             end
