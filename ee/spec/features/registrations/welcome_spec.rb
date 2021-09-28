@@ -59,7 +59,7 @@ RSpec.describe 'Welcome screen', :js do
       it 'allows specifying other for the jobs_to_be_done experiment', :experiment do
         expect(page).not_to have_content('Why are you signing up? (Optional)')
 
-        select 'A different reason', from: 'jobs_to_be_done'
+        select 'A different reason', from: 'user_registration_objective'
 
         expect(page).to have_content('Why are you signing up? (Optional)')
 

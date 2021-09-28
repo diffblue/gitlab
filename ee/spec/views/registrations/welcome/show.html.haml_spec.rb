@@ -66,7 +66,7 @@ RSpec.describe 'registrations/welcome/show' do
         let_it_be(:stubbed_experiments) { { jobs_to_be_done: :candidate } }
 
         it 'renders a select and text field for additional information' do
-          is_expected.to have_selector('select[name="jobs_to_be_done"]')
+          is_expected.to have_selector('select[name="user[registration_objective]"]')
           is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
         end
       end

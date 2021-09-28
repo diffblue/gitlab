@@ -9,25 +9,17 @@ RSpec.describe EE::RegistrationsHelper do
     end
   end
 
-  describe '#shuffled_jobs_to_be_done_options' do
-    subject { helper.shuffled_jobs_to_be_done_options }
+  describe '#shuffled_registration_objective_options' do
+    subject(:shuffled_options) { helper.shuffled_registration_objective_options }
 
-    let(:array_double) { double(:array) }
+    it 'has values that match all UserDetail registration objective keys' do
+      shuffled_option_values = shuffled_options.map { |item| item.last }
 
-    it 'uses shuffle' do
-      allow(helper).to receive(:jobs_to_be_done_options).and_return(array_double)
-
-      expect(array_double).to receive(:shuffle).and_return([])
-
-      subject
-    end
-
-    it 'has a number of options' do
-      expect(subject.count).to eq(7)
+      expect(shuffled_option_values).to contain_exactly(*UserDetail.registration_objectives.keys)
     end
 
     it '"other" is always the last option' do
-      expect(subject.last).to eq(['A different reason', 'other'])
+      expect(shuffled_options.last).to eq(['A different reason', 'other'])
     end
   end
 end

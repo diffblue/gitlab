@@ -282,7 +282,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
             .to eq(::Gitlab::Access::OWNER)
         end
 
-        it 'updates projects authorizations' do
+        it 'updates projects authorizations', :sidekiq_inline do
           project = create(:project, namespace: group)
           group.add_user(user, Gitlab::Access::MAINTAINER)
 
