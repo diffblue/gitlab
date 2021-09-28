@@ -183,13 +183,10 @@ module Gitlab
 
             return error(CONNECTIVITY_ERROR) unless response[:success]
 
-            response = response.dig(:data, 'data', 'orderNamespaceNameUpdate')
+            errors = response.dig(:data, 'errors') ||
+              response.dig(:data, 'data', 'orderNamespaceNameUpdate', 'errors')
 
-            if response['errors'].blank?
-              { success: true }
-            else
-              error(response['errors'])
-            end
+            errors.blank? ? { success: true } : error(errors)
           rescue Gitlab::HTTP::BlockedUrlError, HTTParty::Error, Errno::ECONNREFUSED, Errno::ECONNRESET, SocketError, Timeout::Error => e
             Gitlab::ErrorTracking.log_exception(e)
             error(CONNECTIVITY_ERROR)
