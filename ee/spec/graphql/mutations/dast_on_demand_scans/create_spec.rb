@@ -83,7 +83,7 @@ RSpec.describe Mutations::DastOnDemandScans::Create do
               ci_configuration: kind_of(String)
             )
 
-            expect_any_instance_of(::Ci::RunDastScanService).to receive(:execute).with(args).and_call_original
+            expect_any_instance_of(::AppSec::Dast::Scans::RunService).to receive(:execute).with(args).and_call_original
 
             subject
           end

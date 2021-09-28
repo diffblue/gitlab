@@ -71,7 +71,7 @@ module Mutations
       # rubocop: enable CodeReuse/ActiveRecord
 
       def create_on_demand_dast_scan(project, dast_site_profile, dast_scanner_profile)
-        ::DastOnDemandScans::CreateService.new(
+        ::AppSec::Dast::Scans::CreateService.new(
           container: project,
           current_user: current_user,
           params: {

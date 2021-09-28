@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.shared_examples 'it delegates scan creation to another service' do
-  it 'calls DastOnDemandScans::CreateService' do
-    expect(DastOnDemandScans::CreateService).to receive(:new).with(hash_including(params: delegated_params)).and_call_original
+  it 'calls AppSec::Dast::Scans::CreateService' do
+    expect(AppSec::Dast::Scans::CreateService).to receive(:new).with(hash_including(params: delegated_params)).and_call_original
 
     subject
   end

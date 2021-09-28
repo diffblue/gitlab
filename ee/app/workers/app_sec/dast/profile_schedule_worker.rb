@@ -37,7 +37,7 @@ module AppSec
       end
 
       def service(schedule)
-        ::DastOnDemandScans::CreateService.new(
+        ::AppSec::Dast::Scans::CreateService.new(
           container: schedule.project,
           current_user: schedule.owner,
           params: {

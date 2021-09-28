@@ -9,11 +9,11 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
 
   let(:worker) { described_class.new }
   let(:logger) { worker.send(:logger) }
-  let(:service) { instance_double(::DastOnDemandScans::CreateService) }
+  let(:service) { instance_double(::AppSec::Dast::Scans::CreateService) }
   let(:service_result) { ServiceResponse.success }
 
   before do
-    allow(::DastOnDemandScans::CreateService)
+    allow(::AppSec::Dast::Scans::CreateService)
       .to receive(:new)
       .and_return(service)
     allow(service).to receive(:execute)
@@ -97,7 +97,7 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
       end
 
       it 'executes the rule schedule service' do
-        expect(::DastOnDemandScans::CreateService).not_to receive(:new)
+        expect(::AppSec::Dast::Scans::CreateService).not_to receive(:new)
 
         subject
       end
