@@ -13,8 +13,6 @@ module EE
           if jira_menu.render?
             replace_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu, jira_menu)
           end
-
-          insert_menu_after(::Sidebars::Projects::Menus::MergeRequestsMenu, ::Sidebars::Projects::Menus::RequirementsMenu.new(context))
         end
 
         private

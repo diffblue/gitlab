@@ -12,6 +12,7 @@ module EE
             return false unless super
 
             add_item(iterations_menu_item)
+            add_item(requirements_menu_item)
 
             true
           end
@@ -32,6 +33,20 @@ module EE
               link: link,
               active_routes: { controller: controller },
               item_id: :iterations
+            )
+          end
+
+          def requirements_menu_item
+            if !context.project.licensed_feature_available?(:requirements) ||
+              !can?(context.current_user, :read_requirement, context.project)
+              return ::Sidebars::NilMenuItem.new(item_id: :requirements)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Requirements'),
+              link: project_requirements_management_requirements_path(context.project),
+              active_routes: { path: 'requirements#index' },
+              item_id: :requirements
             )
           end
         end
