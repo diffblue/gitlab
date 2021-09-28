@@ -65,15 +65,11 @@ module EE
           end
 
           def group_context?(parent)
-            strong_memoize(:group_context) do
-              parent.is_a?(Group)
-            end
+            parent.is_a?(Group)
           end
 
           def project_context?(parent)
-            strong_memoize(:project_context) do
-              parent.is_a?(Project)
-            end
+            parent.is_a?(Project)
           end
 
           def references_in(text, pattern = ::Iteration.reference_pattern)
