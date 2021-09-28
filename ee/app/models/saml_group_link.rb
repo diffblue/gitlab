@@ -15,6 +15,4 @@ class SamlGroupLink < ApplicationRecord
   scope :by_saml_group_name, -> (name) { where(saml_group_name: name) }
   scope :by_group_id, ->(group_id) { where(group_id: group_id) }
   scope :preload_group, -> { preload(group: :route) }
-
-
 end
