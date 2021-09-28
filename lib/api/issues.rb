@@ -4,7 +4,6 @@ module API
   class Issues < ::API::Base
     include PaginationParams
     helpers Helpers::IssuesHelpers
-    helpers Helpers::RateLimiter
 
     before { authenticate_non_get! }
 

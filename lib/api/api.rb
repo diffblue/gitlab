@@ -132,6 +132,7 @@ module API
     helpers ::API::Helpers
     helpers ::API::Helpers::CommonHelpers
     helpers ::API::Helpers::PerformanceBarHelpers
+    helpers ::API::Helpers::RateLimiter
 
     namespace do
       after do
