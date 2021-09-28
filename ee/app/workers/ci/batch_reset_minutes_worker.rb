@@ -11,8 +11,6 @@ module Ci
     idempotent!
 
     def perform(from_id, to_id)
-      return unless Feature.enabled?(:ci_parallel_minutes_reset, default_enabled: true)
-
       ::Ci::Minutes::BatchResetService.new.execute!(ids_range: (from_id..to_id))
     end
   end
