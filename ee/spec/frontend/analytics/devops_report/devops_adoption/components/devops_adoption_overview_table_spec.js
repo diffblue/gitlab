@@ -9,6 +9,7 @@ import {
 } from 'ee/analytics/devops_report/devops_adoption/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { devopsAdoptionNamespaceData } from '../mock_data';
 
 const DELETE_MODAL_ID = 'delete-modal-test-unique-id';
@@ -33,6 +34,10 @@ describe('DevopsAdoptionOverviewTable', () => {
     });
   };
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -46,6 +51,9 @@ describe('DevopsAdoptionOverviewTable', () => {
 
   const findDeleteModal = () => wrapper.findComponent(DevopsAdoptionDeleteModal);
 
+  const findSortByLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(0);
+  const findSortDescLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(1);
+
   describe('table headings', () => {
     beforeEach(() => {
       createComponent();
@@ -54,9 +62,11 @@ describe('DevopsAdoptionOverviewTable', () => {
     it('displays the table headings', () => {
       const headerTexts = wrapper
         .findAllByTestId(TABLE_TEST_IDS_HEADERS)
-        .wrappers.map((x) => x.text());
+        .wrappers.map((x) => x.text().split('\n')[0]);
 
-      expect(headerTexts).toEqual(['Group', 'Dev', 'Sec', 'Ops', '']);
+      headerTexts.pop(); // Remove the blank entry at the end used for the actions
+
+      expect(headerTexts).toEqual(['Group', 'Dev', 'Sec', 'Ops']);
     });
   });
 
@@ -182,5 +192,46 @@ describe('DevopsAdoptionOverviewTable', () => {
         expect(wrapper.emitted(event)).toStrictEqual([[arg]]);
       },
     );
+  });
+
+  describe('sorting', () => {
+    let headers;
+
+    beforeEach(() => {
+      createComponent();
+      headers = wrapper.findAllByTestId(TABLE_TEST_IDS_HEADERS);
+    });
+
+    it.each`
+      column    | index
+      ${'name'} | ${0}
+      ${'dev'}  | ${1}
+    `('sorts correctly $column column', async ({ index }) => {
+      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
+        devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
+      );
+
+      await headers.at(index).trigger('click');
+
+      expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
+        devopsAdoptionNamespaceData.nodes[1].namespace.fullName,
+      );
+    });
+
+    it('should update local storage when the sort column changes', async () => {
+      expect(findSortByLocalStorageSync().props('value')).toBe('name');
+
+      await headers.at(1).trigger('click');
+
+      expect(findSortByLocalStorageSync().props('value')).toBe('dev');
+    });
+
+    it('should update local storage when the sort direction changes', async () => {
+      expect(findSortDescLocalStorageSync().props('value')).toBe(false);
+
+      await headers.at(0).trigger('click');
+
+      expect(findSortDescLocalStorageSync().props('value')).toBe(true);
+    });
   });
 });

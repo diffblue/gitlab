@@ -9,6 +9,7 @@ import {
   GlProgressBar,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
+import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { formatNumber } from '~/locale';
 import {
   TABLE_TEST_IDS_HEADERS,
@@ -20,14 +21,28 @@ import {
   TABLE_TEST_IDS_ACTIONS,
   TABLE_TEST_IDS_NAMESPACE,
   DEVOPS_ADOPTION_TABLE_CONFIGURATION,
+  OVERVIEW_TABLE_SORT_BY_STORAGE_KEY,
+  OVERVIEW_TABLE_SORT_DESC_STORAGE_KEY,
+  OVERVIEW_TABLE_NAME_KEY,
 } from '../constants';
 import DevopsAdoptionDeleteModal from './devops_adoption_delete_modal.vue';
 
 const thClass = ['gl-bg-white!', 'gl-text-gray-400'];
 
+const formatter = (value, key, item) => {
+  if (key === OVERVIEW_TABLE_NAME_KEY) {
+    return item.group?.namespace?.fullName;
+  } else if (item.adoption[key]) return item.adoption[key].adopted;
+
+  return 0;
+};
+
 const fieldOptions = {
   thClass,
   thAttr: { 'data-testid': TABLE_TEST_IDS_HEADERS },
+  sortable: true,
+  sortByFormatted: true,
+  formatter,
 };
 
 export default {
@@ -39,6 +54,7 @@ export default {
     GlBadge,
     GlProgressBar,
     DevopsAdoptionDeleteModal,
+    LocalStorageSync,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -54,6 +70,8 @@ export default {
     NAMESPACE: TABLE_TEST_IDS_NAMESPACE,
   },
   cols: DEVOPS_ADOPTION_TABLE_CONFIGURATION,
+  sortByStorageKey: OVERVIEW_TABLE_SORT_BY_STORAGE_KEY,
+  sortDescStorageKey: OVERVIEW_TABLE_SORT_DESC_STORAGE_KEY,
   props: {
     data: {
       type: Object,
@@ -63,6 +81,8 @@ export default {
   },
   data() {
     return {
+      sortBy: OVERVIEW_TABLE_NAME_KEY,
+      sortDesc: false,
       selectedNamespace: null,
       deleteModalId: uniqueId('delete-modal-'),
     };
@@ -74,7 +94,7 @@ export default {
     tableHeaderFields() {
       return [
         {
-          key: 'name',
+          key: OVERVIEW_TABLE_NAME_KEY,
           label: I18N_GROUP_COL_LABEL,
           ...fieldOptions,
           thClass: ['gl-w-grid-size-30', ...thClass],
@@ -90,6 +110,7 @@ export default {
           key: 'actions',
           tdClass: 'actions-cell',
           ...fieldOptions,
+          sortable: false,
         },
       ];
     },
@@ -137,12 +158,16 @@ export default {
 </script>
 <template>
   <div>
+    <local-storage-sync v-model="sortBy" :storage-key="$options.sortByStorageKey" as-json />
+    <local-storage-sync v-model="sortDesc" :storage-key="$options.sortDescStorageKey" as-json />
     <h4>{{ tableHeader }}</h4>
     <gl-table
       :fields="tableHeaderFields"
       :items="formattedData"
       thead-class="gl-border-t-0 gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
       stacked="md"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="sortDesc"
     >
       <template v-for="header in tableHeaderFields" #[headerSlotName(header.key)]>
         {{ header.label }}
