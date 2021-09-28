@@ -9,8 +9,11 @@ RSpec.describe Gitlab::ImportExport::AttributesPermitter do
     let(:attributes_permitter) { described_class.new }
 
     where(:relation_name, :permitted_attributes_defined) do
-      :push_rule    | true
-      :issuable_sla | false
+      :push_rule               | true
+      :issuable_sla            | false
+      :unprotect_access_levels | true
+      :deploy_access_levels    | true
+      :protected_environments  | true
     end
 
     with_them do
