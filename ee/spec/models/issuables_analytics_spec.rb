@@ -22,7 +22,7 @@ RSpec.describe IssuablesAnalytics do
 
     context 'when issuable relation is ordered by priority' do
       it 'generates chart data correctly' do
-        issues = project.issues.order_by_position_and_priority
+        issues = project.issues.order_labels_priority
         data = described_class.new(issuables: issues).data
 
         seed.each_pair do |months_back, issues_count|
