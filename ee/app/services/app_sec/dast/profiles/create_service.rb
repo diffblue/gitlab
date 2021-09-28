@@ -60,7 +60,7 @@ module AppSec
         end
 
         def create_on_demand_scan(dast_profile)
-          ::DastOnDemandScans::CreateService.new(
+          ::AppSec::Dast::Scans::CreateService.new(
             container: container,
             current_user: current_user,
             params: { dast_profile: dast_profile }

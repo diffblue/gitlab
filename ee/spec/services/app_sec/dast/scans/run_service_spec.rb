@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::RunDastScanService do
+RSpec.describe AppSec::Dast::Scans::RunService do
   include Ci::TemplateHelpers
 
   let_it_be(:user) { create(:user) }

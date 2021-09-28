@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DastOnDemandScans::CreateService do
+RSpec.describe AppSec::Dast::Scans::CreateService do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
@@ -18,12 +18,12 @@ RSpec.describe DastOnDemandScans::CreateService do
     ).execute
   end
 
-  shared_examples 'a service that calls Ci::RunDastScanService' do
-    it 'delegates pipeline creation to Ci::RunDastScanService', :aggregate_failures do
-      service = double(Ci::RunDastScanService)
+  shared_examples 'a service that calls AppSec::Dast::Scans::RunService' do
+    it 'delegates pipeline creation to AppSec::Dast::Scans::RunService', :aggregate_failures do
+      service = double(AppSec::Dast::Scans::RunService)
       response = ServiceResponse.error(message: 'Stubbed response')
 
-      expect(Ci::RunDastScanService).to receive(:new).and_return(service)
+      expect(AppSec::Dast::Scans::RunService).to receive(:new).and_return(service)
       expect(service).to receive(:execute).with(expected_params).and_return(response)
 
       subject
@@ -61,7 +61,7 @@ RSpec.describe DastOnDemandScans::CreateService do
           expect(subject.payload[:pipeline_url]).to be_a(String)
         end
 
-        it_behaves_like 'a service that calls Ci::RunDastScanService' do
+        it_behaves_like 'a service that calls AppSec::Dast::Scans::RunService' do
           let(:expected_params) do
             hash_including(
               dast_profile: nil,
@@ -107,7 +107,7 @@ RSpec.describe DastOnDemandScans::CreateService do
             expect(subject.status).to eq(:success)
           end
 
-          it_behaves_like 'a service that calls Ci::RunDastScanService' do
+          it_behaves_like 'a service that calls AppSec::Dast::Scans::RunService' do
             let(:expected_params) { hash_including(dast_profile: dast_profile) }
           end
         end
