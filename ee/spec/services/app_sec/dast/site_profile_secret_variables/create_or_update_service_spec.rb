@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dast::SiteProfileSecretVariables::CreateOrUpdateService do
+RSpec.describe AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService do
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }
   let_it_be(:developer) { create(:user, developer_projects: [project] ) }

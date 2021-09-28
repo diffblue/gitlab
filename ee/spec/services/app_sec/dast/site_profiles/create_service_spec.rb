@@ -150,7 +150,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
 
       shared_examples 'it handles secret variable creation failure' do
         before do
-          allow_next_instance_of(Dast::SiteProfileSecretVariables::CreateOrUpdateService) do |service|
+          allow_next_instance_of(AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService) do |service|
             response = ServiceResponse.error(message: 'Something went wrong')
 
             allow(service).to receive(:execute).and_return(response)

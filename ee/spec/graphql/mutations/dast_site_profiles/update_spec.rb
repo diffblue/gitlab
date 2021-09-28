@@ -146,10 +146,10 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
 
         context 'when variable creation fails' do
           it 'returns an error and the dast_site_profile' do
-            service = double(Dast::SiteProfileSecretVariables::CreateOrUpdateService)
+            service = double(AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService)
             result = ServiceResponse.error(payload: create(:dast_site_profile), message: 'Oops')
 
-            allow(Dast::SiteProfileSecretVariables::CreateOrUpdateService).to receive(:new).and_return(service)
+            allow(AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService).to receive(:new).and_return(service)
             allow(service).to receive(:execute).and_return(result)
 
             expect(subject).to include(errors: ['Oops'])

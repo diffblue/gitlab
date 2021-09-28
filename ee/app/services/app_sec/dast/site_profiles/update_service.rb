@@ -73,7 +73,7 @@ module AppSec
 
           return delete_secret_variable!(key) if value == ''
 
-          response = ::Dast::SiteProfileSecretVariables::CreateOrUpdateService.new(
+          response = ::AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService.new(
             container: project,
             current_user: current_user,
             params: { dast_site_profile: dast_site_profile, key: key, raw_value: value }
@@ -90,7 +90,7 @@ module AppSec
 
           return ServiceResponse.success unless variable
 
-          response = ::Dast::SiteProfileSecretVariables::DestroyService.new(
+          response = ::AppSec::Dast::SiteProfileSecretVariables::DestroyService.new(
             container: project,
             current_user: current_user,
             params: { dast_site_profile_secret_variable: variable }
