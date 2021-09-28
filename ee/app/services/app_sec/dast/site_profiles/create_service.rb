@@ -51,7 +51,7 @@ module AppSec
         def create_secret_variable!(key, value)
           return ServiceResponse.success unless value
 
-          response = ::Dast::SiteProfileSecretVariables::CreateOrUpdateService.new(
+          response = ::AppSec::Dast::SiteProfileSecretVariables::CreateOrUpdateService.new(
             container: project,
             current_user: current_user,
             params: { dast_site_profile: dast_site_profile, key: key, raw_value: value }
