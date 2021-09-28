@@ -2012,9 +2012,6 @@ msgstr ""
 msgid "Add deploy keys to grant read/write access to this repository. %{link_start}What are deploy keys?%{link_end}"
 msgstr ""
 
-msgid "Add domain"
-msgstr ""
-
 msgid "Add email address"
 msgstr ""
 
@@ -3849,9 +3846,6 @@ msgid "An example project that shows off the best practices for setting up GitLa
 msgstr ""
 
 msgid "An example showing how to use Jsonnet with GitLab dynamic child pipelines"
-msgstr ""
-
-msgid "An instance-level serverless domain already exists."
 msgstr ""
 
 msgid "An issue already exists"
@@ -10900,9 +10894,6 @@ msgstr ""
 msgid "Delete corpus"
 msgstr ""
 
-msgid "Delete domain"
-msgstr ""
-
 msgid "Delete file"
 msgstr ""
 
@@ -10928,9 +10919,6 @@ msgid "Delete row"
 msgstr ""
 
 msgid "Delete self monitoring project"
-msgstr ""
-
-msgid "Delete serverless domain?"
 msgstr ""
 
 msgid "Delete snippet"
@@ -12027,18 +12015,6 @@ msgid "Domain"
 msgstr ""
 
 msgid "Domain Name"
-msgstr ""
-
-msgid "Domain cannot be deleted while associated to one or more clusters."
-msgstr ""
-
-msgid "Domain was successfully created."
-msgstr ""
-
-msgid "Domain was successfully deleted."
-msgstr ""
-
-msgid "Domain was successfully updated."
 msgstr ""
 
 msgid "Don't have an account yet?"
@@ -14144,9 +14120,6 @@ msgid "Failed to upgrade."
 msgstr ""
 
 msgid "Failed to upload object map file"
-msgstr ""
-
-msgid "Failed to verify domain ownership"
 msgstr ""
 
 msgid "Failure"
@@ -23807,9 +23780,6 @@ msgstr ""
 msgid "Operation timed out. Check pod logs for %{pod_name} for more details."
 msgstr ""
 
-msgid "Operations"
-msgstr ""
-
 msgid "Operations Dashboard"
 msgstr ""
 
@@ -30674,9 +30644,6 @@ msgstr ""
 msgid "Serverless"
 msgstr ""
 
-msgid "Serverless domain"
-msgstr ""
-
 msgid "Serverless platform"
 msgstr ""
 
@@ -30828,9 +30795,6 @@ msgid "Set a password on your account to pull or push via %{protocol}."
 msgstr ""
 
 msgid "Set access permissions for this token."
-msgstr ""
-
-msgid "Set an instance-wide domain that will be available to all clusters when installing Knative."
 msgstr ""
 
 msgid "Set any rate limit to %{code_open}0%{code_close} to disable the limit."
@@ -32629,9 +32593,6 @@ msgid "Successfully unlocked"
 msgstr ""
 
 msgid "Successfully updated %{last_updated_timeago}."
-msgstr ""
-
-msgid "Successfully verified domain ownership"
 msgstr ""
 
 msgid "Suggest code changes which can be immediately applied in one click. Try it out!"
@@ -38438,9 +38399,6 @@ msgstr ""
 msgid "You are about to add %{usersTag} people to the discussion. They will all receive a notification."
 msgstr ""
 
-msgid "You are about to delete %{domain} from your instance. This domain will no longer be available to any Knative application."
-msgstr ""
-
 msgid "You are about to permanently delete this project"
 msgstr ""
 
@@ -38856,9 +38814,6 @@ msgid "You may close the milestone now."
 msgstr ""
 
 msgid "You must be logged in to search across all of GitLab"
-msgstr ""
-
-msgid "You must disassociate %{domain} from all clusters it is attached to before deletion."
 msgstr ""
 
 msgid "You must have developer or higher permissions in the associated project to view job logs when debug trace is enabled. To disable debug trace, set the 'CI_DEBUG_TRACE' variable to 'false' in your pipeline configuration or CI/CD settings. If you need to view this job log, a project maintainer must add you to the project with developer permissions or higher."
