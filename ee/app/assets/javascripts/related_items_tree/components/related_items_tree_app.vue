@@ -5,6 +5,7 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import { __, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
+import { issuableTypesMap } from '~/related_issues/constants';
 import { OVERFLOW_AFTER } from '../constants';
 import CreateEpicForm from './create_epic_form.vue';
 import CreateIssueForm from './create_issue_form.vue';
@@ -92,6 +93,12 @@ export default {
         { name: createEpic, value: this.createIssuableText },
         { name: createIssue, value: this.createIssuableText },
       ];
+    },
+    enableEpicsAutoComplete() {
+      return this.issuableType === issuableTypesMap.EPIC && this.autoCompleteEpics;
+    },
+    enableIssuesAutoComplete() {
+      return this.issuableType === issuableTypesMap.ISSUE && this.autoCompleteIssues;
     },
   },
   mounted() {
@@ -205,6 +212,8 @@ export default {
             :is-submitting="itemAddInProgress"
             :pending-references="pendingReferences"
             :auto-complete-sources="itemAutoCompleteSources"
+            :auto-complete-epics="enableEpicsAutoComplete"
+            :auto-complete-issues="enableIssuesAutoComplete"
             :path-id-separator="itemPathIdSeparator"
             :has-error="itemAddFailure"
             :item-add-failure-type="itemAddFailureType"
