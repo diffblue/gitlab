@@ -2,10 +2,8 @@
   - e.try do
     .row
       .form-group.col-sm-12
-        = label_tag :jobs_to_be_done, _("I'm signing up for GitLab because:")
-        = select_tag :jobs_to_be_done,
-                options_for_select(shuffled_jobs_to_be_done_options),
-                include_blank: _('Please select...'), class: 'form-control js-jobs-to-be-done-dropdown'
+        = label_tag :user_registration_objective, _("I'm signing up for GitLab because:")
+        = f.select :registration_objective, shuffled_registration_objective_options, { include_blank: _('Please select...') }, class: 'form-control js-jobs-to-be-done-dropdown'
     .row
       .form-group.col-sm-12.js-jobs-to-be-done-other-group.hidden
         = label_tag :jobs_to_be_done_other, _('Why are you signing up? (Optional)')
