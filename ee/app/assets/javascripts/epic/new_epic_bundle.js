@@ -35,6 +35,8 @@ export function initEpicForm() {
     apolloProvider,
     provide: {
       groupPath,
+      fullPath: groupPath,
+      allowLabelCreate: true,
       groupEpicsPath,
       labelsFetchPath,
       labelsManagePath,
