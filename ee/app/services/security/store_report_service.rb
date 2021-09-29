@@ -73,6 +73,8 @@ module Security
     end
 
     def mark_as_resolved_except(vulnerability_ids)
+      return if ::Vulnerabilities::Finding::REPORT_TYPES_REQUIRING_MANUAL_RESOLUTION.include?(report.type)
+
       project.vulnerabilities
              .with_report_types(report.type)
              .id_not_in(vulnerability_ids)
