@@ -20352,6 +20352,9 @@ msgstr ""
 msgid "Limit namespaces and projects that can be indexed"
 msgstr ""
 
+msgid "Limit project size at a global, group and project level. %{link_start}Learn more%{link_end}."
+msgstr ""
+
 msgid "Limit sign in from multiple IP addresses"
 msgstr ""
 
@@ -25258,7 +25261,7 @@ msgstr ""
 msgid "Pipeline|We are currently unable to fetch pipeline data"
 msgstr ""
 
-msgid "Pipeline|You’re about to stop pipeline %{pipelineId}."
+msgid "Pipeline|You’re about to stop pipeline #%{pipelineId}."
 msgstr ""
 
 msgid "Pipeline|for"
@@ -28950,6 +28953,9 @@ msgid "Restoring the group will prevent the group, its subgroups and projects fr
 msgstr ""
 
 msgid "Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it."
+msgstr ""
+
+msgid "Restrict group access by IP address. %{link_start}Learn more%{link_end}."
 msgstr ""
 
 msgid "Restrict membership by email domain"

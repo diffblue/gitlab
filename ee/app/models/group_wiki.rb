@@ -12,6 +12,8 @@ class GroupWiki < Wiki
   end
 
   def track_wiki_repository(shard)
+    return unless ::Gitlab::Database.read_write?
+
     storage_record = container.group_wiki_repository || container.build_group_wiki_repository
     storage_record.update!(shard_name: shard, disk_path: storage.disk_path)
   end
