@@ -191,7 +191,7 @@ module EE
 
       def project_has_subscriptions?
         project.feature_available?(:ci_project_subscriptions) &&
-          project.downstream_projects.any?
+          project.downstream_project_subscriptions.any?
       end
 
       def merge_train_ref?
