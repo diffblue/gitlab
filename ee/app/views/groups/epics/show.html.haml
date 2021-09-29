@@ -58,7 +58,7 @@
             allow_issuable_health_status: allow_issuable_health_status,
             initial: issuable_initial_data(@epic).to_json } }
     - if sub_epics_feature_available
-      #roadmap.tab-pane
+      #roadmap.tab-pane.gl-display-none
         .row
           %section.col-md-12
             #js-roadmap{ data: { epics_path: group_epics_path(@group, parent_id: @epic.id, format: :json),

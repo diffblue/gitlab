@@ -4,9 +4,10 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default class EpicTabs {
   constructor() {
-    this.epicTreesEnabled = gon.features && gon.features.epicTrees;
     this.wrapper = document.querySelector('.js-epic-container');
     this.epicTabs = this.wrapper.querySelector('.js-epic-tabs-container');
+    this.treeTabPane = document.querySelector('#tree.tab-pane');
+    this.roadmapTabPane = document.querySelector('#roadmap.tab-pane');
     this.discussionFilterContainer = this.epicTabs.querySelector('.js-discussion-filter-container');
     const allowSubEpics = parseBoolean(this.epicTabs.dataset.allowSubEpics);
 
@@ -48,9 +49,13 @@ export default class EpicTabs {
       this.initRoadmap();
       this.roadmapTabLoaded = true;
     }
+    this.roadmapTabPane.classList.remove('gl-display-none', 'show');
+    this.treeTabPane.classList.add('gl-display-none', 'show');
   }
 
   onRoadmapHide() {
     this.wrapper.classList.add('container-limited');
+    this.roadmapTabPane.classList.add('gl-display-none', 'show');
+    this.treeTabPane.classList.remove('gl-display-none', 'show');
   }
 }
