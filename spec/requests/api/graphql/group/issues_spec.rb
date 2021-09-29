@@ -72,6 +72,16 @@ RSpec.describe 'getting an issue list for a group' do
           expect(issues_ids).to be_empty
         end
       end
+
+      context 'filtering for non-confidential issues' do
+        let(:issue_filter_params) { { confidential: false } }
+
+        it 'returns correctly filtered issues' do
+          post_graphql(query, current_user: current_user)
+
+          expect(issues_ids).to contain_exactly(issue1_gid, issue2_gid)
+        end
+      end
     end
 
     context 'when the user can see confidential issues' do
@@ -92,6 +102,16 @@ RSpec.describe 'getting an issue list for a group' do
           post_graphql(query, current_user: current_user)
 
           expect(issues_ids).to contain_exactly(confidential_issue1_gid, confidential_issue2_gid)
+        end
+      end
+
+      context 'filtering for non-confidential issues' do
+        let(:issue_filter_params) { { confidential: false } }
+
+        it 'returns correctly filtered issues' do
+          post_graphql(query, current_user: current_user)
+
+          expect(issues_ids).to contain_exactly(issue1_gid, issue2_gid)
         end
       end
     end

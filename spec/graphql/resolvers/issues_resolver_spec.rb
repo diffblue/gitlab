@@ -32,7 +32,7 @@ RSpec.describe Resolvers::IssuesResolver do
   end
 
   context "with a project" do
-    let!(:obj) { project }
+    let(:obj) { project }
 
     before_all do
       project.add_developer(current_user)
@@ -229,25 +229,37 @@ RSpec.describe Resolvers::IssuesResolver do
         end
       end
 
-      context 'filtering for confidential issues' do
+      context 'confidential issues' do
         include_context 'filtering for confidential issues'
 
-        context 'when filter is explicitly set to false' do
-          it 'returns all viewable issues' do
+        context "when user is allowed to view confidential issues" do
+          it 'returns all viewable issues by default' do
             expect(resolve_issues).to contain_exactly(issue1, issue2, confidential_issue1)
           end
-        end
 
-        context "when user is allowed to view confidential issues" do
-          it "returns only the confidential issues of the project" do
+          it 'returns only the non-confidential issues for the project when filter is set to false' do
+            expect(resolve_issues({ confidential: false })).to contain_exactly(issue1, issue2)
+          end
+
+          it "returns only the confidential issues for the project when filter is set to true" do
             expect(resolve_issues({ confidential: true })).to contain_exactly(confidential_issue1)
           end
         end
 
         context "when user is not allowed to see confidential issues" do
-          it 'does not return the confidential issues' do
+          before do
             project.add_guest(current_user)
+          end
 
+          it 'returns all viewable issues by default' do
+            expect(resolve_issues).to contain_exactly(issue1, issue2)
+          end
+
+          it 'does not return the confidential issues when filter is set to false' do
+            expect(resolve_issues({ confidential: false })).to contain_exactly(issue1, issue2)
+          end
+
+          it 'does not return the confidential issues when filter is set to true' do
             expect(resolve_issues({ confidential: true })).to be_empty
           end
         end
@@ -550,7 +562,7 @@ RSpec.describe Resolvers::IssuesResolver do
   end
 
   context "with a group" do
-    let!(:obj) { group }
+    let(:obj) { group }
 
     before do
       group.add_developer(current_user)
@@ -565,26 +577,42 @@ RSpec.describe Resolvers::IssuesResolver do
         expect(resolve_issues({ not: { types: ['issue'] } })).to contain_exactly(issue1)
       end
 
-      context 'filtering for confidential issues' do
+      context "confidential issues" do
         include_context 'filtering for confidential issues'
 
-        context 'when filter is explicitly set to false' do
-          it 'returns all viewable issues' do
+        context "when user is allowed to view confidential issues" do
+          it 'returns all viewable issues by default' do
             expect(resolve_issues).to contain_exactly(issue1, issue2, issue3, confidential_issue1, confidential_issue2)
           end
-        end
 
-        context "when user is allowed to view confidential issues" do
-          it "returns only the confidential issues for the group" do
-            expect(resolve_issues({ confidential: true })).to contain_exactly(confidential_issue1, confidential_issue2)
+          context 'filtering for confidential issues' do
+            it 'returns only the non-confidential issues for the group when filter is set to false' do
+              expect(resolve_issues({ confidential: false })).to contain_exactly(issue1, issue2, issue3)
+            end
+
+            it "returns only the confidential issues for the group when filter is set to true" do
+              expect(resolve_issues({ confidential: true })).to contain_exactly(confidential_issue1, confidential_issue2)
+            end
           end
         end
 
         context "when user is not allowed to see confidential issues" do
-          it 'does not return the confidential issues' do
+          before do
             group.add_guest(current_user)
+          end
 
-            expect(resolve_issues({ confidential: true })).to be_empty
+          it 'returns all viewable issues by default' do
+            expect(resolve_issues).to contain_exactly(issue1, issue2, issue3)
+          end
+
+          context 'filtering for confidential issues' do
+            it 'does not return the confidential issues when filter is set to false' do
+              expect(resolve_issues({ confidential: false })).to contain_exactly(issue1, issue2, issue3)
+            end
+
+            it 'does not return the confidential issues when filter is set to true' do
+              expect(resolve_issues({ confidential: true })).to be_empty
+            end
           end
         end
       end
@@ -598,7 +626,7 @@ RSpec.describe Resolvers::IssuesResolver do
       end
     end
 
-    let!(:obj) { project }
+    let(:obj) { project }
 
     it "returns nil without breaking" do
       expect(resolve_issues(iids: ["don't", "break"])).to be_empty
