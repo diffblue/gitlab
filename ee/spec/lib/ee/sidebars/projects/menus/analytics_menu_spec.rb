@@ -50,10 +50,10 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
 
     describe 'Issue' do
       let(:item_id) { :issues }
-      let(:flag_enabled) { true }
+      let(:licensed) { true }
 
       before do
-        stub_licensed_features(issues_analytics: flag_enabled)
+        stub_licensed_features(issues_analytics: licensed)
       end
 
       specify { is_expected.not_to be_nil }
@@ -64,16 +64,8 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
         specify { is_expected.to be_nil }
       end
 
-      describe 'when feature flag :project_level_issues_analytics is not enabled' do
-        before do
-          stub_feature_flags(project_level_issues_analytics: false)
-        end
-
-        specify { is_expected.to be_nil }
-      end
-
       describe 'when licensed feature issues analytics is not enabled' do
-        let(:flag_enabled) { false }
+        let(:licensed) { false }
 
         specify { is_expected.to be_nil }
       end
