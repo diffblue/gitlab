@@ -28,8 +28,8 @@ export default {
     },
     summaryDescription() {
       const {
-        startDate,
-        endDate,
+        createdAfter,
+        createdBefore,
         selectedProjectIds,
         currentGroup: { name: groupName },
       } = this.selectedTasksByTypeFilters;
@@ -38,14 +38,14 @@ export default {
       const str =
         selectedProjectCount > 0
           ? s__(
-              "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{startDate} to %{endDate}",
+              "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}",
             )
           : s__(
-              "CycleAnalytics|Showing data for group '%{groupName}' from %{startDate} to %{endDate}",
+              "CycleAnalytics|Showing data for group '%{groupName}' from %{createdAfter} to %{createdBefore}",
             );
       return sprintf(str, {
-        startDate: formattedDate(startDate),
-        endDate: formattedDate(endDate),
+        createdAfter: formattedDate(createdAfter),
+        createdBefore: formattedDate(createdBefore),
         groupName,
         selectedProjectCount,
       });

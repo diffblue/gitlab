@@ -10198,10 +10198,10 @@ msgid_plural "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCo
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{startDate} to %{endDate}"
+msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
 msgstr ""
 
-msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{startDate} to %{endDate}"
+msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
 msgstr ""
 
 msgid "CycleAnalytics|Stages"
@@ -31287,6 +31287,9 @@ msgid "Showing all epics"
 msgstr ""
 
 msgid "Showing all issues"
+msgstr ""
+
+msgid "Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
 msgstr ""
 
 msgid "Showing data for workflow items created in this date range. Date range cannot exceed %{maxDateRange} days."
