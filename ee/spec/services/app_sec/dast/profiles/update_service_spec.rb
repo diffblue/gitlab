@@ -9,6 +9,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
   let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
+  let_it_be(:scheduler_owner) { create(:user, name: 'Scheduler Owner') }
 
   let(:default_params) do
     {
@@ -59,7 +60,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
       context 'when the user can run a DAST scan' do
         before do
-          project.add_developer(user)
+          project.add_users([user, scheduler_owner], :developer)
         end
 
         it 'communicates success' do
@@ -127,23 +128,68 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           end
 
           context 'when associated schedule is present' do
-            before do
-              create(:dast_profile_schedule, dast_profile: dast_profile)
-            end
+            let_it_be_with_reload(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile, owner: scheduler_owner) }
 
             it 'updates the dast profile schedule' do
-              updated_schedule = subject.payload[:dast_profile_schedule].reload
+              subject
 
               aggregate_failures do
-                expect(updated_schedule.active).to eq(params[:dast_profile_schedule][:active])
-                expect(updated_schedule.starts_at.to_i).to eq(params[:dast_profile_schedule][:starts_at].to_i)
-                expect(updated_schedule.timezone).to eq(params[:dast_profile_schedule][:timezone])
-                expect(updated_schedule.cadence).to eq(params[:dast_profile_schedule][:cadence].stringify_keys)
+                expect(dast_profile_schedule.active).to eq(params[:dast_profile_schedule][:active])
+                expect(dast_profile_schedule.starts_at.to_i).to eq(params[:dast_profile_schedule][:starts_at].to_i)
+                expect(dast_profile_schedule.timezone).to eq(params[:dast_profile_schedule][:timezone])
+                expect(dast_profile_schedule.cadence).to eq(params[:dast_profile_schedule][:cadence].stringify_keys)
               end
             end
 
             it 'creates the audit event' do
               expect { subject }.to change { AuditEvent.where(target_id: dast_profile.dast_profile_schedule.id).count }
+            end
+
+            context 'when the owner is valid' do
+              it 'does not updates the schedule owner' do
+                subject
+
+                expect(dast_profile_schedule.user_id).to eq(scheduler_owner.id)
+              end
+            end
+
+            context 'when the owner was deleted' do
+              before do
+                scheduler_owner.destroy!
+                subject.payload[:dast_profile_schedule].reload
+              end
+
+              it 'updates the schedule owner' do
+                subject
+
+                expect(dast_profile_schedule.user_id).to eq(user.id)
+              end
+            end
+
+            context 'when the owner permission was downgraded' do
+              before do
+                project.add_guest(scheduler_owner)
+              end
+
+              it 'updates the schedule owner' do
+                subject
+
+                expect(dast_profile_schedule.user_id).to eq(user.id)
+              end
+            end
+
+            context 'when the owner was removed from the project' do
+              before do
+                stub_feature_flags(member_destroy_async_auth_refresh: false)
+                project.team.truncate
+                project.add_developer(user)
+              end
+
+              it 'updates the schedule owner' do
+                subject
+
+                expect(dast_profile_schedule.user_id).to eq(user.id)
+              end
             end
           end
         end
