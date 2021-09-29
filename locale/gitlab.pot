@@ -6249,9 +6249,6 @@ msgstr ""
 msgid "Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again"
 msgstr ""
 
-msgid "Cannot be assigned to other projects."
-msgstr ""
-
 msgid "Cannot be merged automatically"
 msgstr ""
 
@@ -23190,9 +23187,6 @@ msgstr ""
 msgid "Not available for protected branches"
 msgstr ""
 
-msgid "Not available to run jobs."
-msgstr ""
-
 msgid "Not confidential"
 msgstr ""
 
@@ -29229,6 +29223,15 @@ msgstr ""
 msgid "Runners|Are you sure you want to delete this runner?"
 msgstr ""
 
+msgid "Runners|Associated with one or more projects"
+msgstr ""
+
+msgid "Runners|Available to all projects"
+msgstr ""
+
+msgid "Runners|Available to all projects and subgroups in the group"
+msgstr ""
+
 msgid "Runners|Can run untagged jobs"
 msgstr ""
 
@@ -29287,6 +29290,9 @@ msgid "Runners|New registration token generated!"
 msgstr ""
 
 msgid "Runners|New runner, has not connected yet"
+msgstr ""
+
+msgid "Runners|Not available to run jobs"
 msgstr ""
 
 msgid "Runners|Not connected"
@@ -29412,6 +29418,9 @@ msgstr ""
 msgid "Runners|You can set up a specific runner to be used by multiple projects but you cannot make this a shared runner."
 msgstr ""
 
+msgid "Runners|You cannot assign to other projects"
+msgstr ""
+
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
 msgstr ""
 
@@ -29440,15 +29449,6 @@ msgid "Running"
 msgstr ""
 
 msgid "Runs a number of housekeeping tasks within the current repository, such as compressing file revisions and removing unreachable objects."
-msgstr ""
-
-msgid "Runs jobs from all unassigned projects in its group."
-msgstr ""
-
-msgid "Runs jobs from all unassigned projects."
-msgstr ""
-
-msgid "Runs jobs from assigned projects."
 msgstr ""
 
 msgid "SAML"
