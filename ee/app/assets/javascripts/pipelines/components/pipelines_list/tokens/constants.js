@@ -3,11 +3,11 @@ import { PIPELINE_SOURCES as CE_PIPELINE_SOURCES } from '~/pipelines/components/
 
 const EE_PIPELINE_SOURCES = [
   {
-    text: s__('Pipeline|Source|On-Demand DAST Scan'),
+    text: s__('PipelineSource|On-Demand DAST Scan'),
     value: 'ondemand_dast_scan',
   },
   {
-    text: s__('Pipeline|Source|On-Demand DAST Validation'),
+    text: s__('PipelineSource|On-Demand DAST Validation'),
     value: 'ondemand_dast_validation',
   },
   {
