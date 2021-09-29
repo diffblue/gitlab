@@ -13,6 +13,8 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/createEpic.mutation.graphql';
 
 export default {
@@ -25,7 +27,9 @@ export default {
     GlFormGroup,
     MarkdownField,
     LabelsSelectVue,
+    LabelsSelectWidget,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'groupPath',
     'groupEpicsPath',
@@ -106,6 +110,11 @@ export default {
       this.startDateFixed = val;
     },
     handleUpdateSelectedLabels(labels) {
+      if (this.glFeatures.labelsWidget) {
+        this.labels = labels;
+        return;
+      }
+
       const ids = [];
       const allLabels = [...labels, ...this.labels];
 
@@ -177,7 +186,23 @@ export default {
       </gl-form-group>
       <hr />
       <gl-form-group :label="__('Labels')">
+        <labels-select-widget
+          v-if="glFeatures.labelsWidget"
+          class="block labels js-labels-block"
+          :allow-label-create="true"
+          :allow-multiselect="true"
+          :allow-scoped-labels="false"
+          :labels-filter-base-path="groupEpicsPath"
+          :selected-labels="labels"
+          issuable-type="epic"
+          variant="embedded"
+          data-qa-selector="labels_block"
+          @updateSelectedLabels="handleUpdateSelectedLabels"
+        >
+          {{ __('None') }}
+        </labels-select-widget>
         <labels-select-vue
+          v-else
           :allow-label-edit="false"
           :allow-label-create="true"
           :allow-multiselect="true"
