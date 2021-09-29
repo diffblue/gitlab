@@ -178,7 +178,7 @@ export default {
     <gl-loading-icon v-if="loading" size="md" class="mt-8" />
 
     <div v-if="showChart" class="issues-analytics-chart">
-      <h4 class="chart-title">{{ s__('IssuesAnalytics|Issues opened per month') }}</h4>
+      <h4 class="gl-mt-6 gl-mb-7">{{ s__('IssuesAnalytics|Issues opened per month') }}</h4>
 
       <gl-column-chart
         data-qa-selector="issues_analytics_graph"
@@ -191,10 +191,10 @@ export default {
       />
       <div class="d-flex">
         <gl-chart-legend v-if="chart" :chart="chart" :series-info="seriesInfo" />
-        <div class="issues-analytics-legend">
-          <span>{{ s__('IssuesAnalytics|Total:') }} {{ seriesTotal }}</span>
-          <span>&#8226;</span>
-          <span>{{ s__('IssuesAnalytics|Avg/Month:') }} {{ seriesAverage }}</span>
+        <div class="gl-font-sm gl-text-gray-500">
+          {{ s__('IssuesAnalytics|Total:') }} {{ seriesTotal }}
+          &#8226;
+          {{ s__('IssuesAnalytics|Avg/Month:') }} {{ seriesAverage }}
         </div>
       </div>
     </div>
