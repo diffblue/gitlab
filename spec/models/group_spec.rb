@@ -718,6 +718,21 @@ RSpec.describe Group do
       expect(group.group_members.developers.map(&:user)).to include(user)
       expect(group.group_members.guests.map(&:user)).not_to include(user)
     end
+
+    context 'when `tasks_to_be_done` and `tasks_project_id` are passed' do
+      let!(:project) { create(:project, group: group) }
+
+      before do
+        group.add_users([user], :developer, tasks_to_be_done: %w(ci code), tasks_project_id: project.id)
+      end
+
+      it 'updates the attributes', :aggregate_failures do
+        member = group.group_members.last
+
+        expect(member.tasks_to_be_done).to match_array([:ci, :code])
+        expect(member.tasks_project).to eq(project)
+      end
+    end
   end
 
   describe '#avatar_type' do

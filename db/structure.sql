@@ -15690,7 +15690,9 @@ CREATE TABLE members (
     ldap boolean DEFAULT false NOT NULL,
     override boolean DEFAULT false NOT NULL,
     state smallint DEFAULT 0,
-    invite_email_success boolean DEFAULT true NOT NULL
+    invite_email_success boolean DEFAULT true NOT NULL,
+    tasks_to_be_done integer[],
+    tasks_project_id bigint
 );
 
 CREATE SEQUENCE members_id_seq
@@ -25661,6 +25663,8 @@ CREATE INDEX index_members_on_requested_at ON members USING btree (requested_at)
 
 CREATE INDEX index_members_on_source_id_and_source_type ON members USING btree (source_id, source_type);
 
+CREATE INDEX index_members_on_tasks_project_id ON members USING btree (tasks_project_id);
+
 CREATE INDEX index_members_on_user_id_and_access_level_requested_at_is_null ON members USING btree (user_id, access_level) WHERE (requested_at IS NULL);
 
 CREATE INDEX index_members_on_user_id_created_at ON members USING btree (user_id, created_at) WHERE ((ldap = true) AND ((type)::text = 'GroupMember'::text) AND ((source_type)::text = 'Namespace'::text));
@@ -27571,6 +27575,9 @@ ALTER TABLE ONLY notification_settings
 
 ALTER TABLE ONLY lists
     ADD CONSTRAINT fk_0d3f677137 FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY members
+    ADD CONSTRAINT fk_0d981b659b FOREIGN KEY (tasks_project_id) REFERENCES projects(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY ci_unit_test_failures
     ADD CONSTRAINT fk_0f09856e1f FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;

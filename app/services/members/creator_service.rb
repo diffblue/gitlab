@@ -57,7 +57,9 @@ module Members
       {
         created_by: member.created_by || current_user,
         access_level: access_level,
-        expires_at: args[:expires_at]
+        expires_at: args[:expires_at],
+        tasks_to_be_done: args[:tasks_to_be_done],
+        tasks_project_id: args[:tasks_project_id]
       }
     end
 

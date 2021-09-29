@@ -196,4 +196,55 @@ RSpec.describe Members::CreateService, :aggregate_failures, :clean_gitlab_redis_
       end
     end
   end
+
+  context 'when assigning tasks to be done' do
+    let(:additional_params) do
+      { invite_source: '_invite_source_', tasks_to_be_done: %w(ci code), tasks_project_id: source.id }
+    end
+
+    it 'creates 2 task issues', :aggregate_failures do
+      expect(TasksToBeDone::CreateWorker)
+        .to receive(:perform_async)
+        .with(source.id, user.id, [member.id], %w(ci code))
+        .once
+        .and_call_original
+      expect { execute_service }.to change { source.issues.count }.by(2)
+
+      source.issues.each do |issue|
+        expect(issue.project).to eq(source)
+        expect(issue.author).to eq(user)
+        expect(issue.assignees).to match_array([member])
+      end
+    end
+
+    context 'when passing many user ids' do
+      let(:another_user) { create(:user) }
+      let(:user_ids) { [member.id, another_user.id].join(',') }
+
+      it 'still creates 2 task issues', :aggregate_failures do
+        expect(TasksToBeDone::CreateWorker)
+          .to receive(:perform_async)
+          .with(source.id, user.id, [member.id, another_user.id], %w(ci code))
+          .once
+          .and_call_original
+        expect { execute_service }.to change { source.issues.count }.by(2)
+
+        source.issues.each do |issue|
+          expect(issue.project).to eq(source)
+          expect(issue.author).to eq(user)
+          expect(issue.assignees).to match_array([member, another_user])
+        end
+      end
+    end
+
+    context 'when a `tasks_project_id` is missing' do
+      let(:additional_params) do
+        { invite_source: '_invite_source_', tasks_to_be_done: %w(ci code) }
+      end
+
+      it 'still creates 2 task issues', :aggregate_failures do
+        expect(TasksToBeDone::CreateWorker).not_to receive(:perform_async)
+      end
+    end
+  end
 end

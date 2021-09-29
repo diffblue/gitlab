@@ -166,6 +166,32 @@ RSpec.describe API::Invitations do
         end
       end
 
+      context 'with tasks_to_be_done and tasks_project_id in the params' do
+        context 'when there is 1 invitation' do
+          it 'saves the tasks_to_be_done and the tasks_projects_id' do
+            post invitations_url(source, maintainer),
+                 params: { email: email, access_level: Member::DEVELOPER, tasks_to_be_done: %w(code ci), tasks_project_id: project.id }
+
+            member = source.members.find_by(invite_email: email)
+            expect(member.tasks_to_be_done).to match_array([:code, :ci])
+            expect(member.tasks_project_id).to eq(project.id)
+          end
+        end
+
+        context 'when there are multiple invitations' do
+          it 'saves the tasks_to_be_done and the tasks_projects_id' do
+            post invitations_url(source, maintainer),
+                 params: { email: [email, email2].join(','), access_level: Member::DEVELOPER, tasks_to_be_done: %w(code ci), tasks_project_id: project.id }
+
+            members = source.members.where(invite_email: [email, email2])
+            members.each do |member|
+              expect(member.tasks_to_be_done).to match_array([:code, :ci])
+              expect(member.tasks_project_id).to eq(project.id)
+            end
+          end
+        end
+      end
+
       context 'with invite_source considerations', :snowplow do
         let(:params) { { email: email, access_level: Member::DEVELOPER } }
 

@@ -299,6 +299,18 @@ RSpec.shared_examples_for "member creation" do
         end
       end
     end
+
+    context 'when `tasks_to_be_done` and `tasks_project_id` are passed' do
+      it 'updates the attributes', :aggregate_failures do
+        task_project = source.is_a?(Group) ? create(:project, group: source) : source
+        described_class.new(source, user, :developer, tasks_to_be_done: %w(ci code), tasks_project_id: task_project.id).execute
+
+        member = source.members.last
+
+        expect(member.tasks_to_be_done).to match_array([:ci, :code])
+        expect(member.tasks_project).to eq(task_project)
+      end
+    end
   end
 end
 
@@ -377,6 +389,17 @@ RSpec.shared_examples_for "bulk member creation" do
         expect(members.size).to eq(3)
         expect(members).to all(be_a(member_type))
         expect(members).to all(be_persisted)
+      end
+    end
+
+    context 'when `tasks_to_be_done` and `tasks_project_id` are passed' do
+      it 'updates the attributes', :aggregate_failures do
+        task_project = source.is_a?(Group) ? create(:project, group: source) : source
+        members = described_class.add_users(source, [user1], :developer, tasks_to_be_done: %w(ci code), tasks_project_id: task_project.id)
+        member = members.last
+
+        expect(member.tasks_to_be_done).to match_array([:ci, :code])
+        expect(member.tasks_project).to eq(task_project)
       end
     end
   end

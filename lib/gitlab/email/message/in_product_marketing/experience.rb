@@ -60,6 +60,10 @@ module Gitlab
             s_('InProductMarketing|Feedback from users like you really improves our product. Thanks for your help!')
           end
 
+          def invite_members?
+            false
+          end
+
           private
 
           def onboarding_progress

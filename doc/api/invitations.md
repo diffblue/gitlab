@@ -43,6 +43,8 @@ POST /projects/:id/invitations
 | `expires_at` | string | no | A date string in the format YEAR-MONTH-DAY |
 | `invite_source` | string | no | The source of the invitation that starts the member creation process. See [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/327120). |
 | `areas_of_focus` | string | no | Areas the inviter wants the member to focus upon. |
+| `tasks_to_be_done` | array of strings | no | Areas the inviter wants the member to focus upon. |
+| `tasks_project_id` | integer | no | The project ID in which to create the task issues. |
 
 ```shell
 curl --request POST --header "PRIVATE-TOKEN: <your_access_token>" \

@@ -63,10 +63,14 @@ module Members
         invites,
         params[:access_level],
         expires_at: params[:expires_at],
-        current_user: current_user
+        current_user: current_user,
+        tasks_to_be_done: params[:tasks_to_be_done],
+        tasks_project_id: params[:tasks_project_id]
       )
 
       members.each { |member| process_result(member) }
+
+      create_tasks_to_be_done
     end
 
     def process_result(member)
@@ -110,6 +114,14 @@ module Members
       areas_of_focus.each do |area_of_focus|
         Gitlab::Tracking.event(self.class.name, 'area_of_focus', label: area_of_focus, property: member.id.to_s)
       end
+    end
+
+    def create_tasks_to_be_done
+      # Only create task issues for existing users. Tasks for new users are created when they signup.
+      return if self.instance_of?(Members::InviteService)
+      return if params[:tasks_to_be_done].blank? || params[:tasks_project_id].blank?
+
+      TasksToBeDone::CreateWorker.perform_async(params[:tasks_project_id], current_user.id, invites.map(&:to_i), params[:tasks_to_be_done])
     end
 
     def areas_of_focus

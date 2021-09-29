@@ -406,6 +406,32 @@ RSpec.describe API::Members do
         end
       end
 
+      context 'with tasks_to_be_done and tasks_project_id in the params' do
+        context 'when there is 1 user to add' do
+          it 'saves the tasks_to_be_done and the tasks_projects_id' do
+            post api("/#{source_type.pluralize}/#{source.id}/members", maintainer),
+                 params: { user_id: stranger.id, access_level: Member::DEVELOPER, tasks_to_be_done: %w(code ci), tasks_project_id: project.id }
+
+            member = source.members.find_by(user_id: stranger.id)
+            expect(member.tasks_to_be_done).to match_array([:code, :ci])
+            expect(member.tasks_project_id).to eq(project.id)
+          end
+        end
+
+        context 'when there are multiple users to add' do
+          it 'saves the tasks_to_be_done and the tasks_projects_id' do
+            post api("/#{source_type.pluralize}/#{source.id}/members", maintainer),
+                 params: { user_id: [developer.id, stranger.id].join(','), access_level: Member::DEVELOPER, tasks_to_be_done: %w(code ci), tasks_project_id: project.id }
+
+            members = source.members.where(user_id: [developer.id, stranger.id])
+            members.each do |member|
+              expect(member.tasks_to_be_done).to match_array([:code, :ci])
+              expect(member.tasks_project_id).to eq(project.id)
+            end
+          end
+        end
+      end
+
       it "returns 409 if member already exists" do
         post api("/#{source_type.pluralize}/#{source.id}/members", maintainer),
              params: { user_id: maintainer.id, access_level: Member::MAINTAINER }

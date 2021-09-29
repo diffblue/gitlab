@@ -40,6 +40,10 @@ module Gitlab
           def logo_path
             'mailers/in_product_marketing/team-0.png'
           end
+
+          def invite_members?
+            false
+          end
         end
       end
     end

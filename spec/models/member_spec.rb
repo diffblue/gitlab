@@ -9,6 +9,7 @@ RSpec.describe Member do
 
   describe 'Associations' do
     it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:tasks_project).class_name('Project') }
   end
 
   describe 'Validation' do
@@ -678,6 +679,18 @@ RSpec.describe Member do
       expect(member.invite_token).not_to be_nil
       expect_any_instance_of(Member).not_to receive(:after_accept_invite)
     end
+
+    it 'schedules a TasksToBeDone::CreateWorker task' do
+      member.tasks_to_be_done = %w(ci code)
+      member.tasks_project = member.project
+
+      expect(TasksToBeDone::CreateWorker)
+        .to receive(:perform_async)
+        .with(member.project.id, member.created_by_id, [user.id], [:ci, :code])
+        .once
+
+      member.accept_invite!(user)
+    end
   end
 
   describe '#decline_invite!' do
@@ -782,6 +795,66 @@ RSpec.describe Member do
       let(:user) { build(:user) }
 
       it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#tasks_to_be_done' do
+    subject { member.tasks_to_be_done }
+
+    let(:member) { Member.new }
+
+    before do
+      member[:tasks_to_be_done] = [0, 1]
+    end
+
+    it 'returns an array of symbols for the corresponding integers' do
+      expect(subject).to match_array([:ci, :code])
+    end
+  end
+
+  describe '#tasks_to_be_done=' do
+    let(:member) { Member.new }
+
+    context 'when passing valid values' do
+      subject { member[:tasks_to_be_done] }
+
+      before do
+        member.tasks_to_be_done = tasks
+      end
+
+      context 'when passing tasks as strings' do
+        let(:tasks) { %w(ci code) }
+
+        it 'sets an array of integers for the corresponding tasks' do
+          expect(subject).to match_array([0, 1])
+        end
+      end
+
+      context 'when passing a single task' do
+        let(:tasks) { :ci }
+
+        it 'sets an array of integers for the corresponding tasks' do
+          expect(subject).to match_array([1])
+        end
+      end
+
+      context 'when passing a task twice' do
+        let(:tasks) { %w(ci ci) }
+
+        it 'is set only once' do
+          expect(subject).to match_array([1])
+        end
+      end
+    end
+
+    context 'when passing an invalid value' do
+      it 'raises an error' do
+        expect do
+          member.tasks_to_be_done = 'invalid_task'
+        end.to raise_error(
+          ArgumentError, 'invalid_task is not a valid value for tasks_to_be_done'
+        )
+      end
     end
   end
 

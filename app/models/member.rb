@@ -16,12 +16,18 @@ class Member < ApplicationRecord
 
   AVATAR_SIZE = 40
   ACCESS_REQUEST_APPROVERS_TO_BE_NOTIFIED_LIMIT = 10
+  TASKS_TO_BE_DONE = {
+    code: 0,
+    ci: 1,
+    issues: 2
+  }.freeze
 
   attr_accessor :raw_invite_token
 
   belongs_to :created_by, class_name: "User"
   belongs_to :user
   belongs_to :source, polymorphic: true # rubocop:disable Cop/PolymorphicAssociations
+  belongs_to :tasks_project, class_name: 'Project'
 
   delegate :name, :username, :email, to: :user, prefix: true
 
@@ -377,6 +383,16 @@ class Member < ApplicationRecord
     created_by&.name
   end
 
+  def tasks_to_be_done
+    Array(self[:tasks_to_be_done]).map { |task| TASKS_TO_BE_DONE.key(task) }
+  end
+
+  def tasks_to_be_done=(tasks)
+    self[:tasks_to_be_done] = Array(tasks).map do |task|
+      TASKS_TO_BE_DONE[task.to_sym] || raise(ArgumentError, "#{task} is not a valid value for tasks_to_be_done")
+    end.uniq
+  end
+
   private
 
   def send_invite
@@ -413,6 +429,10 @@ class Member < ApplicationRecord
 
   def after_accept_invite
     post_create_hook
+
+    run_after_commit_or_now do
+      TasksToBeDone::CreateWorker.perform_async(tasks_project_id, created_by_id, [user_id.to_i], tasks_to_be_done)
+    end
   end
 
   def after_decline_invite

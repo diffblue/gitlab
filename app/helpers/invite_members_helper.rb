@@ -32,7 +32,10 @@ module InviteMembersHelper
     dataset = {
       id: source.id,
       name: source.name,
-      default_access_level: Gitlab::Access::GUEST
+      default_access_level: Gitlab::Access::GUEST,
+      tasks_to_be_done_options: tasks_to_be_done_options.to_json,
+      projects: projects_for_source(source).to_json,
+      new_project_path: source.is_a?(Group) ? new_project_path(namespace_id: source.id) : ''
     }
 
     experiment(:member_areas_of_focus, user: current_user) do |e|
@@ -70,5 +73,14 @@ module InviteMembersHelper
   # Overridden in EE
   def users_filter_data(group)
     {}
+  end
+
+  def tasks_to_be_done_options
+    ::Member::TASKS_TO_BE_DONE.keys.map { |task| { value: task, text: localized_tasks_to_be_done_choices[task] } }
+  end
+
+  def projects_for_source(source)
+    projects = source.is_a?(Project) ? [source] : source.projects
+    projects.map { |project| { id: project.id, title: project.title } }
   end
 end
