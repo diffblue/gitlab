@@ -240,20 +240,19 @@ RSpec.describe 'epics list', :js do
         end
 
         it 'renders epics item with metadata', :aggregate_failures do
-          page.within('.issuable-list-container .issuable-list') do
-            expect(page.all('.issuable-info-container')[0].find('.issue-title')).to have_content(epic2.title)
-            expect(page.all('.issuable-info-container')[0].find('.issuable-reference')).to have_content("&#{epic2.iid}")
-            expect(page.all('.issuable-info-container')[0].find('.issuable-authored')).to have_content('created')
-            expect(page.all('.issuable-info-container')[0].find('.issuable-authored')).to have_content("by #{epic2.author.name}")
+          page.within('.issuable-list .issue:first-of-type') do
+            expect(page).to have_link(epic2.title)
+            expect(page).to have_text("&#{epic2.iid}")
+            expect(page).to have_text("created just now by #{epic2.author.name}")
           end
         end
 
         it 'renders epic item timeframe', :aggregate_failures do
-          page.within('.issuable-list-container .issuable-list') do
-            expect(page.all('.issuable-info-container')[0].find('.issuable-info')).to have_content('Dec 15, 2020 – No due date')
-            expect(page.all('.issuable-info-container')[1].find('.issuable-info')).to have_content('Dec 15, 2020 – Jan 15, 2021')
-            expect(page.all('.issuable-info-container')[2].find('.issuable-info')).to have_content('No start date – Jan 15, 2021')
-          end
+          issues = page.all('.issue')
+
+          expect(issues[0]).to have_text('Dec 15, 2020 – No due date')
+          expect(issues[1]).to have_text('Dec 15, 2020 – Jan 15, 2021')
+          expect(issues[2]).to have_text('No start date – Jan 15, 2021')
         end
       end
 
