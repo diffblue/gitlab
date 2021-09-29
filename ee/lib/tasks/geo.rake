@@ -38,7 +38,7 @@ namespace :geo do
       puts "Current version: #{Gitlab::Geo::DatabaseTasks.version}"
     end
 
-    desc 'GitLab | Geo | DB | Drops and recreates the database from ee/db/geo/schema.rb for the current environment and loads the seeds.'
+    desc 'GitLab | Geo | DB | Drops and recreates the database from ee/db/geo/structure.sql for the current environment and loads the seeds.'
     task reset: [:environment] do
       ns['drop'].invoke
       ns['create'].invoke
@@ -77,16 +77,23 @@ namespace :geo do
     end
 
     namespace :schema do
-      desc 'GitLab | Geo | DB | Schema | Load a schema.rb file into the database'
+      desc 'GitLab | Geo | DB | Schema | Load a structure.sql file into the database'
       task load: [:environment] do
-        Gitlab::Geo::DatabaseTasks.load_schema_current(:ruby, ENV['SCHEMA'])
+        Gitlab::Geo::DatabaseTasks.load_schema_current(ActiveRecord::Base.schema_format, ENV['SCHEMA'])
       end
 
-      desc 'GitLab | Geo | DB | Schema | Create a ee/db/geo/schema.rb file that is portable against any DB supported by AR'
+      desc 'GitLab | Geo | DB | Schema | Create a ee/db/geo/structure.sql file that is portable against any DB supported by AR'
       task dump: [:environment] do
         Gitlab::Geo::DatabaseTasks::Schema.dump
 
         ns['schema:dump'].reenable
+      end
+    end
+
+    # Inform Rake that custom tasks should be run every time rake db:schema:dump is run
+    Rake::Task['geo:db:schema:dump'].enhance do
+      Gitlab::Geo::DatabaseTasks.with_geo_db do
+        Rake::Task['gitlab:db:clean_structure_sql'].invoke
       end
     end
 

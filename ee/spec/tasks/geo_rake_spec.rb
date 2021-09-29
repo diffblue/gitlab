@@ -6,7 +6,13 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
   include ::EE::GeoHelpers
 
   before do
+    Rake.application.rake_require 'active_record/railties/databases'
+    Rake.application.rake_require 'tasks/gitlab/db'
     Rake.application.rake_require 'tasks/geo'
+
+    # empty task as env is already loaded
+    Rake::Task.define_task :environment
+
     stub_licensed_features(geo: true)
   end
 
@@ -133,15 +139,16 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
   describe 'geo:db:schema_load' do
     it 'loads schema file into database' do
       allow(ENV).to receive(:[]).with('SCHEMA')
-      expect(Gitlab::Geo::DatabaseTasks).to receive(:load_schema_current).with(:ruby, ENV['SCHEMA'])
+      expect(Gitlab::Geo::DatabaseTasks).to receive(:load_schema_current).with(:sql, ENV['SCHEMA'])
 
       run_rake_task('geo:db:schema:load')
     end
   end
 
   describe 'geo:db:schema_dump' do
-    it 'creates schema.rb file' do
+    it 'creates a clean structure.sql file', :reestablished_active_record_base do
       expect(Gitlab::Geo::DatabaseTasks::Schema).to receive(:dump)
+      expect(Rake::Task['gitlab:db:clean_structure_sql']).to receive(:invoke)
 
       run_rake_task('geo:db:schema:dump')
     end
