@@ -51,6 +51,10 @@ class Dast::ProfileSchedule < ApplicationRecord
     self.class.active_for_project(project_id)
   end
 
+  def owner_valid?
+    Ability.allowed?(owner, :create_on_demand_dast_scan, project)
+  end
+
   private
 
   def deactivate!

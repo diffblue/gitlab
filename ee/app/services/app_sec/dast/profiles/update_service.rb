@@ -52,7 +52,9 @@ module AppSec
 
         def update_or_create_schedule!
           if schedule
-            schedule.update!(schedule_input_params)
+            attributes = schedule_input_params
+            attributes = attributes.merge(user_id: current_user.id) unless schedule.owner_valid?
+            schedule.update!(attributes)
           else
             ::Dast::ProfileSchedule.new(
               dast_profile: dast_profile,
