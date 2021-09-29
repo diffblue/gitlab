@@ -100,7 +100,7 @@ export default {
 </script>
 
 <template>
-  <section class="media-section mr-widget-border-top">
+  <section class="media-section mr-widget-border-top" data-testid="widget-extension">
     <div class="media gl-p-5">
       <status-icon :status="statusIconName" class="align-self-center" />
       <div class="media-body d-flex flex-align-self-center align-items-center">
@@ -114,13 +114,18 @@ export default {
           v-if="isCollapsible"
           size="small"
           class="float-right align-self-center"
+          data-testid="toggle-button"
           @click="toggleCollapsed"
         >
           {{ isCollapsed ? __('Expand') : __('Collapse') }}
         </gl-button>
       </div>
     </div>
-    <div v-if="!isCollapsed" class="mr-widget-grouped-section">
+    <div
+      v-if="!isCollapsed"
+      class="mr-widget-grouped-section"
+      data-testid="widget-extension-collapsed-section"
+    >
       <div v-if="isLoadingExpanded" class="report-block-container">
         <gl-loading-icon size="sm" inline /> {{ __('Loading...') }}
       </div>
