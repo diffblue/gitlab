@@ -12,7 +12,7 @@ module Geo
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
     idempotent!
-    sidekiq_options retry: false, dead: false
+    sidekiq_options retry: false
     feature_category :geo_replication
 
     def perform
