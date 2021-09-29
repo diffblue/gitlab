@@ -2045,6 +2045,9 @@ msgstr ""
 msgid "Add new directory"
 msgstr ""
 
+msgid "Add new service account"
+msgstr ""
+
 msgid "Add or remove previously merged commits"
 msgstr ""
 
@@ -3957,6 +3960,9 @@ msgid "Any milestone"
 msgstr ""
 
 msgid "Any namespace"
+msgstr ""
+
+msgid "App Engine description and apps that are suitable for this deployment target"
 msgstr ""
 
 msgid "App ID"
@@ -7174,6 +7180,12 @@ msgstr ""
 msgid "Closes this %{quick_action_target}."
 msgstr ""
 
+msgid "Cloud Functions description and apps that are suitable for this deployment target"
+msgstr ""
+
+msgid "Cloud Run description and apps that are suitable for this deployment target"
+msgstr ""
+
 msgid "Cloud licenses can not be removed."
 msgstr ""
 
@@ -8611,6 +8623,9 @@ msgid "Configure the default first day of the week and time tracking units."
 msgstr ""
 
 msgid "Configure the way a user creates a new account."
+msgstr ""
+
+msgid "Configure via Merge Request"
 msgstr ""
 
 msgid "Configure which lists are shown for anyone who visits this board"
@@ -11383,6 +11398,9 @@ msgid "Deployment frequency"
 msgstr ""
 
 msgid "Deployments"
+msgstr ""
+
+msgid "Deployments to Google Kubernetes Engine can be "
 msgstr ""
 
 msgid "Deployments|%{deployments} environment impacted."
@@ -15830,6 +15848,12 @@ msgid "Go to your snippets"
 msgstr ""
 
 msgid "Goal of the changes and what reviewers should be aware of"
+msgstr ""
+
+msgid "Google Cloud"
+msgstr ""
+
+msgid "Google Cloud offers several deployment targets. Select the one most suitable for your project."
 msgstr ""
 
 msgid "Google authentication is not %{link_start}properly configured%{link_end}. Ask your GitLab administrator if you want to use this service."
@@ -30832,6 +30856,9 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
+msgid "Service Accounts keys are required to authorize GitLab to deploy your Google Cloud project."
+msgstr ""
+
 msgid "Service Desk"
 msgstr ""
 
@@ -40165,6 +40192,9 @@ msgstr ""
 msgid "in"
 msgstr ""
 
+msgid "in Infrastructure :: Kubernetes clusters"
+msgstr ""
+
 msgid "in all GitLab"
 msgstr ""
 
@@ -40318,6 +40348,9 @@ msgid "locked by %{path_lock_user_name} %{created_at}"
 msgstr ""
 
 msgid "log in"
+msgstr ""
+
+msgid "managed"
 msgstr ""
 
 msgid "manual"

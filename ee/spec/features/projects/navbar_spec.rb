@@ -16,6 +16,7 @@ RSpec.describe 'Project navbar' do
 
     insert_package_nav(_('Infrastructure'))
     insert_infrastructure_registry_nav
+    insert_infrastructure_google_cloud_nav
   end
 
   context 'when issue analytics is available' do
