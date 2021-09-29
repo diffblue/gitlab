@@ -532,6 +532,9 @@ Settings.cron_jobs['namespaces_prune_aggregation_schedules_worker']['job_class']
 Settings.cron_jobs['container_expiration_policy_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['container_expiration_policy_worker']['cron'] ||= '50 * * * *'
 Settings.cron_jobs['container_expiration_policy_worker']['job_class'] = 'ContainerExpirationPolicyWorker'
+Settings.cron_jobs['image_ttl_group_policy_worker'] ||= Settingslogic.new({})
+Settings.cron_jobs['image_ttl_group_policy_worker']['cron'] ||= '40 0 * * *'
+Settings.cron_jobs['image_ttl_group_policy_worker']['job_class'] = 'DependencyProxy::ImageTtlGroupPolicyWorker'
 Settings.cron_jobs['x509_issuer_crl_check_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['x509_issuer_crl_check_worker']['cron'] ||= '30 1 * * *'
 Settings.cron_jobs['x509_issuer_crl_check_worker']['job_class'] = 'X509IssuerCrlCheckWorker'

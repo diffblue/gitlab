@@ -198,6 +198,8 @@ RSpec.describe 'Every Sidekiq worker' do
         'DeleteMergedBranchesWorker' => 3,
         'DeleteStoredFilesWorker' => 3,
         'DeleteUserWorker' => 3,
+        'DependencyProxy::CleanupBlobWorker' => 3,
+        'DependencyProxy::CleanupManifestWorker' => 3,
         'Deployments::AutoRollbackWorker' => 3,
         'Deployments::DropOlderDeploymentsWorker' => 3,
         'Deployments::FinishedWorker' => 3,
