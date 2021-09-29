@@ -2,23 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::IpRestrictionHelper do
-  let(:group) { create(:group) }
+RSpec.describe Admin::RepoSizeLimitHelper do
+  describe '#repo_size_limit_feature_available?' do
+    subject { helper.repo_size_limit_feature_available? }
 
-  describe '#ip_restriction_feature_available' do
-    subject { helper.ip_restriction_feature_available?(group) }
-
-    context 'when group_ip_restriction feature is available' do
+    context 'when repository_size_limit feature is available' do
       before do
-        stub_licensed_features(group_ip_restriction: true)
+        stub_licensed_features(repository_size_limit: true)
       end
 
-      it { is_expected.to be_truthy }
+      it  { is_expected.to be_truthy }
     end
 
-    context 'when group_ip_restriction feature is disabled' do
+    context 'when repo_size_limit_feature_available is not available' do
       before do
-        stub_licensed_features(group_ip_restriction: false)
+        stub_licensed_features(repository_size_limit: false)
       end
 
       it { is_expected.to be_falsey }
@@ -26,6 +24,7 @@ RSpec.describe Admin::IpRestrictionHelper do
 
     context 'when usage ping is enabled' do
       before do
+        stub_licensed_features(repository_size_limit: false)
         stub_application_setting(usage_ping_enabled: true)
       end
 
@@ -49,6 +48,7 @@ RSpec.describe Admin::IpRestrictionHelper do
     context 'when usage ping is disabled' do
       before do
         stub_application_setting(usage_ping_enabled: false)
+        stub_licensed_features(repository_size_limit: false)
       end
 
       it { is_expected.to be_falsey }
