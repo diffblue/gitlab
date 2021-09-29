@@ -65,8 +65,7 @@ module EE
           end
 
           def show_issues_analytics?
-            ::Feature.enabled?(:project_level_issues_analytics, context.project, default_enabled: true) &&
-              context.project.licensed_feature_available?(:issues_analytics) &&
+            context.project.licensed_feature_available?(:issues_analytics) &&
               can?(context.current_user, :read_project, context.project)
           end
 
