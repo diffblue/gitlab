@@ -93,9 +93,9 @@ module EE
       has_many :project_aliases
 
       has_many :upstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :downstream_project_id, inverse_of: :downstream_project
-      has_many :upstream_projects, class_name: 'Project', through: :upstream_project_subscriptions, source: :upstream_project
+      has_many :upstream_projects, class_name: 'Project', through: :upstream_project_subscriptions, source: :upstream_project, disable_joins: -> { ::Feature.enabled?(:disable_joins_upstream_downstream_projects, default_enabled: :yaml) }
       has_many :downstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :upstream_project_id, inverse_of: :upstream_project
-      has_many :downstream_projects, class_name: 'Project', through: :downstream_project_subscriptions, source: :downstream_project
+      has_many :downstream_projects, class_name: 'Project', through: :downstream_project_subscriptions, source: :downstream_project, disable_joins: -> { ::Feature.enabled?(:disable_joins_upstream_downstream_projects, default_enabled: :yaml) }
 
       has_many :sourced_pipelines, class_name: 'Ci::Sources::Project', foreign_key: :source_project_id
 
@@ -793,6 +793,14 @@ module EE
       end
 
       available_features[feature]
+    end
+
+    def upstream_projects_count
+      upstream_project_subscriptions.count
+    end
+
+    def downstream_projects_count
+      downstream_project_subscriptions.count
     end
 
     def merge_pipelines_enabled?

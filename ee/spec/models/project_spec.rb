@@ -3032,6 +3032,54 @@ RSpec.describe Project do
     end
   end
 
+  describe '#upstream_projects' do
+    it 'returns the upstream projects' do
+      primary_project = create(:project, :public)
+      upstream_project = create(:project, :public)
+      primary_project.upstream_projects << upstream_project
+
+      with_cross_joins_prevented do
+        expect(primary_project.upstream_projects).to eq([upstream_project])
+      end
+    end
+  end
+
+  describe '#upstream_projects_count' do
+    it 'returns the upstream projects count' do
+      primary_project = create(:project, :public)
+      upstream_projects = create_list(:project, 2, :public)
+      primary_project.upstream_projects = upstream_projects
+
+      with_cross_joins_prevented do
+        expect(primary_project.upstream_projects_count).to eq(2)
+      end
+    end
+  end
+
+  describe '#downstream_projects' do
+    it 'returns the downstream projects' do
+      primary_project = create(:project, :public)
+      downstream_project = create(:project, :public)
+      primary_project.downstream_projects << downstream_project
+
+      with_cross_joins_prevented do
+        expect(primary_project.downstream_projects).to eq([downstream_project])
+      end
+    end
+  end
+
+  describe '#downstream_projects_count' do
+    it 'returns the downstream projects count' do
+      primary_project = create(:project, :public)
+      downstream_projects = create_list(:project, 2, :public)
+      primary_project.downstream_projects = downstream_projects
+
+      with_cross_joins_prevented do
+        expect(primary_project.downstream_projects_count).to eq(2)
+      end
+    end
+  end
+
   describe '#vulnerability_report_rule' do
     subject { project.vulnerability_report_rule }
 
