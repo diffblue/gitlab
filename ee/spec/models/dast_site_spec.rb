@@ -44,4 +44,16 @@ RSpec.describe DastSite, type: :model do
       end
     end
   end
+
+  describe 'callbacks' do
+    context 'when there is a related site token' do
+      let_it_be(:dast_site) { create(:dast_site, project: project) }
+      let_it_be(:dast_site_token) { create(:dast_site_token, project: dast_site.project, url: dast_site.url) }
+      let_it_be(:dast_site_validations) { create_list(:dast_site_validation, 5, dast_site_token: dast_site_token) }
+
+      it 'ensures it and associated site validations cleaned up on destroy' do
+        expect { dast_site.destroy! }.to change { DastSiteToken.count }.from(1).to(0).and change { DastSiteValidation.count }.from(5).to(0)
+      end
+    end
+  end
 end
