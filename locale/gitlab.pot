@@ -15922,9 +15922,6 @@ msgstr ""
 msgid "Group ID"
 msgstr ""
 
-msgid "Group ID: %{group_id}"
-msgstr ""
-
 msgid "Group Owner must have signed in with SAML before enabling Group Managed Accounts"
 msgstr ""
 
@@ -16097,6 +16094,12 @@ msgid "GroupImport|The group was successfully imported."
 msgstr ""
 
 msgid "GroupImport|Unable to process group import file"
+msgstr ""
+
+msgid "GroupPage|Copy group ID"
+msgstr ""
+
+msgid "GroupPage|Group ID: %{group_id}"
 msgstr ""
 
 msgid "GroupRoadmap|%{dateWord} – No end date"
