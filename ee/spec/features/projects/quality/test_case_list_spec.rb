@@ -74,12 +74,11 @@ RSpec.describe 'Test Cases', :js do
 
       it 'shows test cases title and metadata' do
         page.within('.issuable-list-container .issuable-list li.issue', match: :first) do
-          expect(page.find('.issue-title')).to have_content(test_case1.title)
-          expect(page.find('.issuable-reference')).to have_content("##{test_case1.iid}")
-          expect(page.find('.issuable-info')).to have_link(label.title, href: "?label_name[]=#{label.title}")
-          expect(page.find('.issuable-authored')).to have_content('created 5 days ago by')
-          expect(page.find('.author')).to have_content(user.name)
-          expect(page.find('div.issuable-updated-at')).to have_content('updated 2 days ago')
+          expect(page).to have_link(test_case1.title)
+          expect(page).to have_text("##{test_case1.iid}")
+          expect(page).to have_link(label.title, href: "?label_name[]=#{label.title}")
+          expect(page).to have_text("created 5 days ago by #{user.name}")
+          expect(page).to have_text('updated 2 days ago')
         end
       end
     end

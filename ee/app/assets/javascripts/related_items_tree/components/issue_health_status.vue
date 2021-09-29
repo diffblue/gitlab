@@ -24,11 +24,11 @@ export default {
 </script>
 
 <template>
-  <div class="health-status">
+  <span class="health-status">
     <span class="gl-label gl-label-sm" :class="statusClass">
       <span v-gl-tooltip class="gl-label-text" :title="__('Health status')">
         {{ statusText }}
       </span>
     </span>
-  </div>
+  </span>
 </template>
