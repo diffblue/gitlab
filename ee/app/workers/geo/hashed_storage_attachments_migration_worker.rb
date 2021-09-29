@@ -6,7 +6,6 @@ module Geo
 
     data_consistency :always
 
-    sidekiq_options retry: 3
     include GeoQueue
 
     loggable_arguments 1, 2
