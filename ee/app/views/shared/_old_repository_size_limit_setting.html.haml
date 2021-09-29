@@ -1,4 +1,4 @@
-- return unless current_user.admin? && License.feature_available?(:repository_size_limit)
+- return unless current_user.admin? && repo_size_limit_feature_available?
 
 - form = local_assigns.fetch(:form)
 - type = local_assigns.fetch(:type)
