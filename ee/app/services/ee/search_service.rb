@@ -37,7 +37,7 @@ module EE
     def projects
       strong_memoize(:projects) do
         next unless params[:project_ids].present? && params[:project_ids].is_a?(String)
-        next unless group.present? && ::Feature.enabled?(:advanced_search_multi_project_select, group)
+        next unless ::Feature.enabled?(:advanced_search_multi_project_select, current_user, default_enabled: :yaml)
 
         project_ids = params[:project_ids].split(',')
         the_projects = ::Project.where(id: project_ids)
