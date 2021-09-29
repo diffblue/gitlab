@@ -3710,6 +3710,9 @@ msgstr ""
 msgid "An error occurred while loading merge requests."
 msgstr ""
 
+msgid "An error occurred while loading projects."
+msgstr ""
+
 msgid "An error occurred while loading the Needs tab."
 msgstr ""
 
@@ -22708,6 +22711,9 @@ msgstr ""
 msgid "New issue"
 msgstr ""
 
+msgid "New issue in %{project}"
+msgstr ""
+
 msgid "New issue title"
 msgstr ""
 
@@ -30554,6 +30560,9 @@ msgid "Select project and zone to choose machine type"
 msgstr ""
 
 msgid "Select project to choose zone"
+msgstr ""
+
+msgid "Select project to create issue"
 msgstr ""
 
 msgid "Select projects"
