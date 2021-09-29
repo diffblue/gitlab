@@ -1,11 +1,11 @@
 import { GlAlert, GlButton, GlFormInputGroup } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import AvailableAgentsDropdown from 'ee/clusters_list/components/available_agents_dropdown.vue';
-import InstallAgentModal from 'ee/clusters_list/components/install_agent_modal.vue';
-import { I18N_INSTALL_AGENT_MODAL } from 'ee/clusters_list/constants';
-import createAgentMutation from 'ee/clusters_list/graphql/mutations/create_agent.mutation.graphql';
-import createAgentTokenMutation from 'ee/clusters_list/graphql/mutations/create_agent_token.mutation.graphql';
+import AvailableAgentsDropdown from '~/clusters_list/components/available_agents_dropdown.vue';
+import InstallAgentModal from '~/clusters_list/components/install_agent_modal.vue';
+import { I18N_INSTALL_AGENT_MODAL } from '~/clusters_list/constants';
+import createAgentMutation from '~/clusters_list/graphql/mutations/create_agent.mutation.graphql';
+import createAgentTokenMutation from '~/clusters_list/graphql/mutations/create_agent_token.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeBlock from '~/vue_shared/components/code_block.vue';

@@ -1,5 +1,5 @@
 import { GlAlert, GlEmptyState, GlSprintf } from '@gitlab/ui';
-import AgentEmptyState from 'ee/clusters_list/components/agent_empty_state.vue';
+import AgentEmptyState from '~/clusters_list/components/agent_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const emptyStateImage = '/path/to/image';

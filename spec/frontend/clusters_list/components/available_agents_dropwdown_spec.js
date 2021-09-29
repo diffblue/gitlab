@@ -1,9 +1,9 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { createLocalVue, mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import AvailableAgentsDropdown from 'ee/clusters_list/components/available_agents_dropdown.vue';
-import { I18N_AVAILABLE_AGENTS_DROPDOWN } from 'ee/clusters_list/constants';
-import agentConfigurationsQuery from 'ee/clusters_list/graphql/queries/agent_configurations.query.graphql';
+import AvailableAgentsDropdown from '~/clusters_list/components/available_agents_dropdown.vue';
+import { I18N_AVAILABLE_AGENTS_DROPDOWN } from '~/clusters_list/constants';
+import agentConfigurationsQuery from '~/clusters_list/graphql/queries/agent_configurations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { agentConfigurationsResponse } from './mock_data';
 

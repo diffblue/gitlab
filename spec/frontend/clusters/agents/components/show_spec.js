@@ -1,9 +1,9 @@
 import { GlAlert, GlKeysetPagination, GlLoadingIcon, GlSprintf, GlTab } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import ClusterAgentShow from 'ee/clusters/agents/components/show.vue';
-import TokenTable from 'ee/clusters/agents/components/token_table.vue';
-import getAgentQuery from 'ee/clusters/agents/graphql/queries/get_cluster_agent.query.graphql';
+import ClusterAgentShow from '~/clusters/agents/components/show.vue';
+import TokenTable from '~/clusters/agents/components/token_table.vue';
+import getAgentQuery from '~/clusters/agents/graphql/queries/get_cluster_agent.query.graphql';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
