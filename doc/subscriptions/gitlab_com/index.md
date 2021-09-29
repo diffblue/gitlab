@@ -353,7 +353,7 @@ Be aware that:
 
 ### Purchase additional CI minutes on GitLab SaaS
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/54934)
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6574) in GitLab 14.3.
 
 FLAG:
 On self-managed GitLab, this feature is unavailable.
