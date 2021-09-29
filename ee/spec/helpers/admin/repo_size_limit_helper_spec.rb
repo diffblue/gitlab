@@ -11,7 +11,7 @@ RSpec.describe Admin::RepoSizeLimitHelper do
         stub_licensed_features(repository_size_limit: true)
       end
 
-      it  { is_expected.to be_truthy }
+      it { is_expected.to be_truthy }
     end
 
     context 'when repo_size_limit_feature_available is not available' do
