@@ -340,10 +340,6 @@ To purchase additional minutes for your personal namespace:
 
 Be aware that:
 
-- If you have purchased extra CI minutes before the purchase of a paid plan,
-  we calculate a pro-rated charge for your paid plan. That means you may
-  be charged for less than one year because your subscription was previously
-  created with the extra CI minutes.
 - After the extra CI minutes have been assigned to a Group, they can't be transferred
   to a different Group by themselves, but they will transfer along with a subscription when
   changing the linked namespace for the subscription.
@@ -353,7 +349,7 @@ Be aware that:
 
 ### Purchase additional CI minutes on GitLab SaaS
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6574) in GitLab 14.3.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6574) in GitLab 14.4.
 
 FLAG:
 On self-managed GitLab, this feature is unavailable.
@@ -361,8 +357,8 @@ On GitLab.com, this feature is available.
 
 If you're using GitLab SaaS, you can purchase additional CI minutes so your
 pipelines aren't blocked after you have used all your CI minutes from your
-main quota. You can find pricing for additional CI/CD minutes in the
-[GitLab Customers Portal](https://customers.gitlab.com/plans). Additional minutes:
+main quota. You can find pricing for additional CI/CD minutes on the
+[GitLab Pricing page](https://about.gitlab.com/pricing/). Additional minutes:
 
 - Are only used after the shared quota included in your subscription runs out.
 - Roll over month to month.
@@ -390,10 +386,6 @@ To purchase additional minutes for your personal namespace:
 
 Be aware that:
 
-- If you have purchased extra CI minutes before the purchase of a paid plan,
-  we calculate a pro-rated charge for your paid plan. That means you may
-  be charged for less than one year because your subscription was previously
-  created with the extra CI minutes.
 - After the extra CI minutes have been assigned to a Group, they can't be transferred
   to a different Group.
 - If you have used more minutes than your default quota, these minutes will
