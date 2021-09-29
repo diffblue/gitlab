@@ -247,22 +247,20 @@ describe('Value Stream Analytics utils', () => {
     });
 
     it('will return blank arrays if given no data', () => {
-      [{ data: [], startDate: createdAfter, endDate: createdBefore }, [], {}].forEach(
-        (chartData) => {
-          transformed = getTasksByTypeData(chartData);
-          ['data', 'groupBy'].forEach((key) => {
-            expect(transformed[key]).toEqual([]);
-          });
-        },
-      );
+      [{ data: [], createdAfter, createdBefore }, [], {}].forEach((chartData) => {
+        transformed = getTasksByTypeData(chartData);
+        ['data', 'groupBy'].forEach((key) => {
+          expect(transformed[key]).toEqual([]);
+        });
+      });
     });
 
     describe('with data', () => {
       beforeEach(() => {
         transformed = getTasksByTypeData({
           data: rawTasksByTypeData,
-          startDate: createdAfter,
-          endDate: createdBefore,
+          createdAfter,
+          createdBefore,
         });
       });
 

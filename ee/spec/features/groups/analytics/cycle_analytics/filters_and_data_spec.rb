@@ -212,6 +212,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
         expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
         expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
+        expect(page.find('.js-tasks-by-type-chart')).to have_text(_("Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
       end
     end
   end

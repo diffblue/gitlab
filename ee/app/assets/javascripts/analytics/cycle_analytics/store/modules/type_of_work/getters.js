@@ -21,10 +21,6 @@ export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}) => {
 export const tasksByTypeChartData = ({ data = [] } = {}, _, rootState = {}) => {
   const { createdAfter = null, createdBefore = null } = rootState;
   return data.length
-    ? getTasksByTypeData({
-        data,
-        startDate: createdAfter,
-        endDate: createdBefore,
-      })
+    ? getTasksByTypeData({ data, createdAfter, createdBefore })
     : { groupBy: [], data: [] };
 };
