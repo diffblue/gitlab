@@ -11216,7 +11216,9 @@ CREATE TABLE bulk_imports (
     source_type smallint NOT NULL,
     status smallint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    source_version text,
+    CONSTRAINT check_ea4e58775a CHECK ((char_length(source_version) <= 63))
 );
 
 CREATE SEQUENCE bulk_imports_id_seq

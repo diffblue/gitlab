@@ -20,6 +20,12 @@ RSpec.describe BulkImports::Groups::Stage do
     ]
   end
 
+  subject do
+    bulk_import = build(:bulk_import)
+
+    described_class.new(bulk_import)
+  end
+
   describe '#each' do
     it 'iterates over all pipelines with the stage number' do
       expect(subject.pipelines).to match_array(pipelines)
