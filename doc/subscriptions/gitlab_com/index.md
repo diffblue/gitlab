@@ -373,17 +373,6 @@ To purchase additional minutes for your group on GitLab SaaS:
 
    The **Additional minutes** displayed now includes the purchased additional CI minutes, plus any minutes rolled over from last month.
 
-To purchase additional minutes for your personal namespace:
-
-1. In the top-right corner, select your avatar.
-1. Select **Edit profile**.
-1. In the left sidebar, select **Usage Quotas**.
-1. Select **Buy additional minutes**.
-1. Complete the details about the transaction. Once we have processed your payment, the extra CI minutes are synced to your personal namespace.
-1. To confirm the available CI minutes for your personal projects, go to the **Usage Quotas** settings again.
-
-   The **Additional minutes** displayed now includes the purchased additional CI minutes, plus any minutes rolled over from last month.
-
 Be aware that:
 
 - After the extra CI minutes have been assigned to a Group, they can't be transferred
