@@ -83,7 +83,7 @@ module Users
     end
 
     def lazy_user_availability(user)
-      BatchLoader.for(user.id).batch(replace_methods: false) do |user_ids, loader|
+      BatchLoader.for(user.id).batch do |user_ids, loader|
         user_ids.each_slice(1_000) do |sliced_user_ids|
           UserStatus
             .select(:user_id, :availability)
