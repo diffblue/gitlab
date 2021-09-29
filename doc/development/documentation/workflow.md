@@ -156,13 +156,13 @@ Remember:
 
 Ensure the following if skipping an initial Technical Writer review:
 
-- Those [product badges](styleguide/index.md#product-tier-badges) are applied.
-- That the GitLab [version](styleguide/index.md#gitlab-versions) that
-  introduced the feature has been included.
-- Those changes to headings don't affect in-app hyperlinks.
+- [Product badges](styleguide/index.md#product-tier-badges) are applied.
+- The GitLab [version](styleguide/index.md#gitlab-versions) that
+  introduced the feature is included.
+- Changes to headings don't affect in-app hyperlinks.
 - Specific [user permissions](../../user/permissions.md) are documented.
-- That new documents are linked from higher-level indexes, for discoverability.
-- A style guide is followed:
+- New documents are linked from higher-level indexes, for discoverability.
+- The style guide is followed:
   - For [directories and files](styleguide/index.md#work-with-directories-and-files).
   - For [images](styleguide/index.md#images).
 
