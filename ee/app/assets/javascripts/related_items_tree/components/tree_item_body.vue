@@ -233,7 +233,7 @@ export default {
             <div
               v-if="isEpic"
               ref="countBadge"
-              class="issue-count-badge text-secondary gl-display-inline-flex gl-py-0 p-lg-0"
+              class="gl-text-gray-500 gl-display-inline-flex gl-py-0 p-lg-0"
             >
               <span
                 v-if="allowSubEpics"
