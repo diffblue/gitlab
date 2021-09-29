@@ -23,7 +23,6 @@ RSpec.describe 'Project.cluster_agents' do
 
   before do
     allow(Gitlab::Kas::Client).to receive(:new).and_return(double(get_connected_agents: []))
-    stub_licensed_features(cluster_agents: true)
   end
 
   it 'can retrieve cluster agents' do

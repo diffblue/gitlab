@@ -190,7 +190,7 @@ module EE
           scope :without_uuid, -> { where(uuid: nil) }
 
           def feedback
-            BatchLoader.for(finding_key).batch(replace_methods: false) do |finding_keys, loader|
+            BatchLoader.for(finding_key).batch do |finding_keys, loader|
               project_ids = finding_keys.map { |key| key[:project_id] }
               categories = finding_keys.map { |key| key[:category] }
               fingerprints = finding_keys.map { |key| key[:project_fingerprint] }

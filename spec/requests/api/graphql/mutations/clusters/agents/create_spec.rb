@@ -28,21 +28,8 @@ RSpec.describe 'Create a new cluster agent' do
     end
   end
 
-  context 'without premium plan' do
+  context 'with user permissions' do
     before do
-      allow(License).to receive(:current).and_return(create(:license, plan: ::License::STARTER_PLAN))
-      project.add_maintainer(current_user)
-    end
-
-    it 'does not create cluster agent and returns error message', :aggregate_failures do
-      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Clusters::Agent, :count)
-      expect(mutation_response['errors']).to eq(['This feature is only available for premium plans'])
-    end
-  end
-
-  context 'with premium plan and user permissions' do
-    before do
-      allow(License).to receive(:current).and_return(create(:license, plan: ::License::PREMIUM_PLAN))
       project.add_maintainer(current_user)
     end
 

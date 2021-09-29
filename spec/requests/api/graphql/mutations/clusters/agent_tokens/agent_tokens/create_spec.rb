@@ -31,21 +31,8 @@ RSpec.describe 'Create a new cluster agent token' do
     end
   end
 
-  context 'without premium plan' do
-    before do
-      stub_licensed_features(cluster_agents: false)
-      cluster_agent.project.add_maintainer(current_user)
-    end
-
-    it 'does not create a token and returns error message', :aggregate_failures do
-      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Clusters::AgentToken, :count)
-      expect(mutation_response['errors']).to eq(['This feature is only available for premium plans'])
-    end
-  end
-
   context 'with project permissions' do
     before do
-      stub_licensed_features(cluster_agents: true)
       cluster_agent.project.add_maintainer(current_user)
     end
 

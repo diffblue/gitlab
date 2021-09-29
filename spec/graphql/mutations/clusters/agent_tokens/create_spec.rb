@@ -30,19 +30,8 @@ RSpec.describe Mutations::Clusters::AgentTokens::Create do
       end
     end
 
-    context 'without premium plan' do
+    context 'with user permissions' do
       before do
-        stub_licensed_features(cluster_agents: false)
-        cluster_agent.project.add_maintainer(user)
-      end
-
-      it { expect(subject[:secret]).to be_nil }
-      it { expect(subject[:errors]).to eq(['This feature is only available for premium plans']) }
-    end
-
-    context 'with premium plan and user permissions' do
-      before do
-        stub_licensed_features(cluster_agents: true)
         cluster_agent.project.add_maintainer(user)
       end
 

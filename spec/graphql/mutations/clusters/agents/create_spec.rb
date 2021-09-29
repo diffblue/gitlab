@@ -26,19 +26,8 @@ RSpec.describe Mutations::Clusters::Agents::Create do
       end
     end
 
-    context 'without premium plan' do
+    context 'with user permissions' do
       before do
-        allow(License).to receive(:current).and_return(create(:license, plan: ::License::STARTER_PLAN))
-        project.add_maintainer(user)
-      end
-
-      it { expect(subject[:clusters_agent]).to be_nil }
-      it { expect(subject[:errors]).to eq(['This feature is only available for premium plans']) }
-    end
-
-    context 'with premium plan and user permissions' do
-      before do
-        allow(License).to receive(:current).and_return(create(:license, plan: ::License::PREMIUM_PLAN))
         project.add_maintainer(user)
       end
 
