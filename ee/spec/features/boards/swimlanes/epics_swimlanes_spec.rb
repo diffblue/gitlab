@@ -119,12 +119,12 @@ RSpec.describe 'epics swimlanes', :js do
     end
 
     it 'displays new issue button' do
-      expect(first('.board')).to have_selector('.issue-count-badge-add-button', count: 1)
+      expect(first('.board')).to have_button('New issue', count: 1)
     end
 
     it 'shows form in unassigned issues lane when clicking button' do
       page.within(first('.board')) do
-        find('.issue-count-badge-add-button').click
+        click_button 'New issue'
       end
 
       page.within("[data-testid='board-lane-unassigned-issues']") do
@@ -134,7 +134,7 @@ RSpec.describe 'epics swimlanes', :js do
 
     it 'hides form when clicking cancel' do
       page.within(first('.board')) do
-        find('.issue-count-badge-add-button').click
+        click_button 'New issue'
       end
 
       page.within("[data-testid='board-lane-unassigned-issues']") do
@@ -148,7 +148,7 @@ RSpec.describe 'epics swimlanes', :js do
 
     it 'creates new issue in unassigned issues lane' do
       page.within(first('.board')) do
-        find('.issue-count-badge-add-button').click
+        click_button 'New issue'
       end
 
       wait_for_all_requests
@@ -160,7 +160,7 @@ RSpec.describe 'epics swimlanes', :js do
 
       wait_for_all_requests
 
-      page.within(first('.board .issue-count-badge-count')) do
+      page.within(first('.board [data-testid="issue-count-badge"]')) do
         expect(page).to have_content('3')
       end
 

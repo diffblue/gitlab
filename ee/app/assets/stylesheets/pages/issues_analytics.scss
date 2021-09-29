@@ -11,14 +11,3 @@
     max-width: px-to-rem($milestone-title-max-width);
   }
 }
-
-.issues-analytics-chart {
-  .chart-title {
-    margin: $gl-padding-24 0 $gl-padding-32;
-  }
-}
-
-.issues-analytics-legend {
-  font-size: $gl-font-size-small;
-  color: $gl-text-color-secondary;
-}
