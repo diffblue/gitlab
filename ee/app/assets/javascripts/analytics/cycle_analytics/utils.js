@@ -214,20 +214,20 @@ export const flattenTaskByTypeSeries = (series = {}) =>
  *
  * @param {Object} obj
  * @param {RawTasksByTypeData[]} obj.data - array of raw data, each element contains a label and series
- * @param {Date} obj.startDate - start date in ISO date format
- * @param {Date} obj.endDate - end date in ISO date format
+ * @param {Date} obj.createdAfter - start date in ISO date format
+ * @param {Date} obj.createdBefore - end date in ISO date format
  *
  * @returns {TransformedTasksByTypeData} The transformed data ready for use in charts
  */
-export const getTasksByTypeData = ({ data = [], startDate = null, endDate = null }) => {
-  if (!startDate || !endDate || !data.length) {
+export const getTasksByTypeData = ({ data = [], createdAfter = null, createdBefore = null }) => {
+  if (!createdAfter || !createdBefore || !data.length) {
     return {
       groupBy: [],
       data: [],
     };
   }
 
-  const groupBy = getDatesInRange(startDate, endDate, toYmd).sort(orderByDate);
+  const groupBy = getDatesInRange(createdAfter, createdBefore, toYmd).sort(orderByDate);
   const zeroValuesForEachDataPoint = groupBy.reduce(
     (acc, date) => ({
       ...acc,

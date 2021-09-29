@@ -10198,10 +10198,10 @@ msgid_plural "CycleAnalytics|Showing %{subjectFilterText} and %{selectedLabelsCo
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{startDate} to %{endDate}"
+msgid "CycleAnalytics|Showing data for group '%{groupName}' and %{selectedProjectCount} projects from %{createdAfter} to %{createdBefore}"
 msgstr ""
 
-msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{startDate} to %{endDate}"
+msgid "CycleAnalytics|Showing data for group '%{groupName}' from %{createdAfter} to %{createdBefore}"
 msgstr ""
 
 msgid "CycleAnalytics|Stages"
@@ -24487,6 +24487,18 @@ msgstr ""
 msgid "Password was successfully updated. Please sign in again."
 msgstr ""
 
+msgid "PasswordPrompt|Confirm password"
+msgstr ""
+
+msgid "PasswordPrompt|Confirm password to continue"
+msgstr ""
+
+msgid "PasswordPrompt|Password is required"
+msgstr ""
+
+msgid "PasswordPrompt|Please enter your password to confirm"
+msgstr ""
+
 msgid "Passwords should be unique and not used for any other sites or services."
 msgstr ""
 
@@ -25931,6 +25943,9 @@ msgid "Profiles|Enter how your name is pronounced to help people address you cor
 msgstr ""
 
 msgid "Profiles|Enter your name, so people you know can recognize you"
+msgstr ""
+
+msgid "Profiles|Enter your password to confirm the email change"
 msgstr ""
 
 msgid "Profiles|Enter your pronouns to let people know how to refer to you"
@@ -31274,6 +31289,9 @@ msgstr ""
 msgid "Showing all issues"
 msgstr ""
 
+msgid "Showing data for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
+msgstr ""
+
 msgid "Showing data for workflow items created in this date range. Date range cannot exceed %{maxDateRange} days."
 msgstr ""
 
@@ -35150,7 +35168,7 @@ msgstr ""
 msgid "TimeTrackingEstimated|Est"
 msgstr ""
 
-msgid "TimeTracking|%{startTag}Spent: %{endTag}%{timeSpentHumanReadable}"
+msgid "TimeTracking|%{spentStart}Spent: %{spentEnd}"
 msgstr ""
 
 msgid "TimeTracking|Estimated:"
@@ -35388,6 +35406,9 @@ msgstr ""
 msgid "To connect an SVN repository, check out %{svn_link}."
 msgstr ""
 
+msgid "To continue using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc."
+msgstr ""
+
 msgid "To continue, you need to select the link in the confirmation email we sent to verify your email address. If you didn't get our email, select %{strongStart}Resend confirmation email.%{strongEnd}"
 msgstr ""
 
@@ -35491,6 +35512,9 @@ msgid "To set up this integration:"
 msgstr ""
 
 msgid "To specify the notification level per project of a group you belong to, you need to visit project page and change notification level there."
+msgstr ""
+
+msgid "To start using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc."
 msgstr ""
 
 msgid "To unsubscribe from this issue, please paste the following link into your browser:"

@@ -1093,7 +1093,6 @@ module API
         attrs = declared_params(include_missing: false)
 
         service = ::UserPreferences::UpdateService.new(current_user, attrs).execute
-
         if service.success?
           present preferences, with: Entities::UserPreferences
         else

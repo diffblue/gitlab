@@ -222,8 +222,8 @@ export const taskByTypeFilters = {
     fullPath: 'gitlab-org',
   },
   selectedProjectIds: [],
-  startDate: new Date('2019-12-11'),
-  endDate: new Date('2020-01-10'),
+  createdAfter: new Date('2019-12-11'),
+  createdBefore: new Date('2020-01-10'),
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
   selectedLabelIds: [1, 2, 3],
 };
