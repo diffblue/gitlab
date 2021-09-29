@@ -6,7 +6,6 @@ module Clusters
       ALLOWED_PARAMS = %i[agent_id description name].freeze
 
       def execute
-        return error_feature_not_available unless container.feature_available?(:cluster_agents)
         return error_no_permissions unless current_user.can?(:create_cluster, container)
 
         token = ::Clusters::AgentToken.new(filtered_params.merge(created_by_user: current_user))
@@ -19,10 +18,6 @@ module Clusters
       end
 
       private
-
-      def error_feature_not_available
-        ServiceResponse.error(message: s_('ClusterAgent|This feature is only available for premium plans'))
-      end
 
       def error_no_permissions
         ServiceResponse.error(message: s_('ClusterAgent|User has insufficient permissions to create a token for this project'))

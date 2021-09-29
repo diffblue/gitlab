@@ -6,10 +6,6 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        mount_mutation ::Mutations::Clusters::Agents::Create
-        mount_mutation ::Mutations::Clusters::Agents::Delete
-        mount_mutation ::Mutations::Clusters::AgentTokens::Create
-        mount_mutation ::Mutations::Clusters::AgentTokens::Delete
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Destroy
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Update
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Create

@@ -7,27 +7,9 @@ RSpec.describe Clusters::Agents::CreateService do
 
   let(:project) { create(:project, :public, :repository) }
   let(:user) { create(:user) }
-  let(:license) { create(:license, plan: ::License::PREMIUM_PLAN) }
 
   describe '#execute' do
-    context 'without premium plan' do
-      before do
-        allow(License).to receive(:current).and_return(create(:license, plan: ::License::STARTER_PLAN))
-      end
-
-      it 'returns missing plan error' do
-        expect(service.execute(name: 'without-license')).to eq({
-          status: :error,
-          message: 'This feature is only available for premium plans'
-        })
-      end
-    end
-
     context 'without user permissions' do
-      before do
-        allow(License).to receive(:current).and_return(license)
-      end
-
       it 'returns errors when user does not have permissions' do
         expect(service.execute(name: 'missing-permissions')).to eq({
           status: :error,
@@ -36,14 +18,13 @@ RSpec.describe Clusters::Agents::CreateService do
       end
     end
 
-    context 'with premium plan and user permissions' do
+    context 'with user permissions' do
       before do
-        allow(License).to receive(:current).and_return(license)
         project.add_maintainer(user)
       end
 
       it 'creates a new clusters_agent' do
-        expect { service.execute(name: 'with-license-and-user') }.to change { ::Clusters::Agent.count }.by(1)
+        expect { service.execute(name: 'with-user') }.to change { ::Clusters::Agent.count }.by(1)
       end
 
       it 'returns success status', :aggregate_failures do
