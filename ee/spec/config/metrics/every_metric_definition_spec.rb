@@ -39,6 +39,9 @@ RSpec.describe 'Every metric definition' do
       p_ci_templates_auto_devops_build
       p_ci_templates_auto_devops_deploy
       p_ci_templates_auto_devops_deploy_latest
+      p_ci_templates_implicit_auto_devops_build
+      p_ci_templates_implicit_auto_devops_deploy_latest
+      p_ci_templates_implicit_auto_devops_deploy
     ).freeze
   end
 
