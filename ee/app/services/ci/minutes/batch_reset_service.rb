@@ -98,17 +98,19 @@ module Ci
         Arel::Nodes::NamedFunction.new(name, attrs)
       end
 
+      # rubocop: disable CodeReuse/ActiveRecord
       def reset_shared_runners_seconds!(namespaces)
         NamespaceStatistics
           .for_namespaces(namespaces)
-          .with_any_ci_minutes_used
+          .where.not(shared_runners_seconds: 0)
           .update_all(shared_runners_seconds: 0, shared_runners_seconds_last_reset: Time.current)
 
         ::ProjectStatistics
           .for_namespaces(namespaces)
-          .with_any_ci_minutes_used
+          .where.not(shared_runners_seconds: 0)
           .update_all(shared_runners_seconds: 0, shared_runners_seconds_last_reset: Time.current)
       end
+      # rubocop: enable CodeReuse/ActiveRecord
 
       def reset_ci_minutes_notifications!(namespaces)
         namespaces.without_last_ci_minutes_notification.update_all(

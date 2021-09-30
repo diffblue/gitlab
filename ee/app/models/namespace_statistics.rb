@@ -8,7 +8,6 @@ class NamespaceStatistics < ApplicationRecord
   validates :namespace, presence: true
 
   scope :for_namespaces, -> (namespaces) { where(namespace: namespaces) }
-  scope :with_any_ci_minutes_used, -> { where.not(shared_runners_seconds: 0) }
 
   before_save :update_storage_size
   after_save :update_root_storage_statistics, if: :saved_change_to_storage_size?

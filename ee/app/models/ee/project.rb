@@ -190,7 +190,7 @@ module EE
           .order(excess_arel.desc)
       end
 
-      delegate :shared_runners_minutes, :shared_runners_seconds, :shared_runners_seconds_last_reset,
+      delegate :shared_runners_seconds, :shared_runners_seconds_last_reset,
         to: :statistics, allow_nil: true
 
       delegate :ci_minutes_quota, to: :shared_runners_limit_namespace
@@ -361,6 +361,14 @@ module EE
 
     def can_override_approvers?
       !disable_overriding_approvers_per_merge_request
+    end
+
+    def ci_minutes_used(namespace_actor)
+      if namespace_actor.new_monthly_ci_minutes_enabled?
+        ci_minutes_usage.amount_used.to_i
+      else
+        shared_runners_seconds.to_i / 60
+      end
     end
 
     def shared_runners_available?
@@ -838,6 +846,12 @@ module EE
     end
 
     private
+
+    def ci_minutes_usage
+      strong_memoize(:ci_minutes_usage) do
+        ::Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: id)
+      end
+    end
 
     def github_integration_enabled?
       feature_available?(:github_project_service_integration)
