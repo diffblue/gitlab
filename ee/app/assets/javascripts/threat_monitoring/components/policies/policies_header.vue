@@ -101,7 +101,12 @@ export default {
       >
         {{ $options.i18n.editPolicyProjectButtonText }}
       </gl-button>
-      <gl-button data-testid="new-policy-button" variant="confirm" :href="newPolicyPath">
+      <gl-button
+        data-testid="new-policy-button"
+        data-qa-selector="new_policy_button"
+        variant="confirm"
+        :href="newPolicyPath"
+      >
         {{ $options.i18n.newPolicyButtonText }}
       </gl-button>
       <scan-new-policy-modal

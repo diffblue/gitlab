@@ -30,6 +30,14 @@ module QA
               end
             end
 
+            def click_on_policies
+              hover_security_compliance do
+                within_submenu do
+                  click_element(:sidebar_menu_item_link, menu_item: 'Policies')
+                end
+              end
+            end
+
             def click_on_vulnerability_report
               hover_security_compliance do
                 within_submenu do
