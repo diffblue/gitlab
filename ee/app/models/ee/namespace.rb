@@ -252,6 +252,12 @@ module EE
       @ci_minutes_quota ||= ::Ci::Minutes::Quota.new(self)
     end
 
+    def new_monthly_ci_minutes_enabled?
+      strong_memoize(:new_monthly_ci_minutes_enabled) do
+        ::Feature.enabled?(:ci_use_new_monthly_minutes, self, default_enabled: :yaml)
+      end
+    end
+
     # The same method name is used also at project level
     def shared_runners_minutes_limit_enabled?
       any_project_with_shared_runners_enabled? && ci_minutes_quota.enabled?
