@@ -81,26 +81,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
-  describe '#enabled?' do
-    subject { security_orchestration_policy_configuration.enabled? }
-
-    context 'when feature is enabled' do
-      before do
-        stub_feature_flags(security_orchestration_policies_configuration: true)
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when feature is disabled' do
-      before do
-        stub_feature_flags(security_orchestration_policies_configuration: false)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-  end
-
   describe '#policy_configuration_exists?' do
     subject { security_orchestration_policy_configuration.policy_configuration_exists? }
 
@@ -215,16 +195,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     it 'returns only enabled policies' do
       expect(active_scan_execution_policies).to eq(expected_active_policies)
-    end
-
-    context 'when feature is disabled' do
-      before do
-        stub_feature_flags(security_orchestration_policies_configuration: false)
-      end
-
-      it 'returns empty array' do
-        expect(active_scan_execution_policies).to eq([])
-      end
     end
   end
 

@@ -65,8 +65,6 @@ module EE
         return unless security_policy_target_project_id.present?
 
         if (security_policy_target_project = ::Project.find(security_policy_target_project_id))
-          return unless ::Feature.enabled?(:security_orchestration_policies_configuration, security_policy_target_project, default_enabled: :yaml)
-
           ::Security::Orchestration::AssignService
             .new(security_policy_target_project, current_user, policy_project_id: project.id)
             .execute

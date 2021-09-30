@@ -26,8 +26,6 @@ module Security
     end
 
     def active_scan_execution_policies
-      return [] unless enabled?
-
       scan_execution_policy.select { |config| config[:enabled] }.first(POLICY_LIMIT)
     end
 

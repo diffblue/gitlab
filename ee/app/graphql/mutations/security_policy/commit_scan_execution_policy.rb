@@ -31,7 +31,6 @@ module Mutations
 
       def resolve(args)
         project = authorized_find!(args[:project_path])
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
 
         result = commit_policy(project, args[:policy_yaml], args[:operation_mode])
         error_message = result[:status] == :error ? result[:message] : nil
@@ -43,10 +42,6 @@ module Mutations
       end
 
       private
-
-      def allowed?(project)
-        Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
-      end
 
       def commit_policy(project, policy_yaml, operation_mode)
         ::Security::SecurityOrchestrationPolicies::PolicyCommitService

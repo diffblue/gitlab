@@ -21,7 +21,6 @@ module Mutations
 
       def resolve(args)
         project = authorized_find!(args[:project_path])
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
 
         result = create_project(project)
 
@@ -34,10 +33,6 @@ module Mutations
       end
 
       private
-
-      def allowed?(project)
-        Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
-      end
 
       def create_project(project)
         ::Security::SecurityOrchestrationPolicies::ProjectCreateService

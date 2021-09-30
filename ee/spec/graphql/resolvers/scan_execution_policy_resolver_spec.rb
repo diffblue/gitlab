@@ -62,16 +62,6 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
           expect { resolve_scan_policies }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
         end
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(security_orchestration_policies_configuration: false)
-        end
-
-        it 'returns empty list' do
-          expect(resolve_scan_policies).to eq([])
-        end
-      end
     end
   end
 end

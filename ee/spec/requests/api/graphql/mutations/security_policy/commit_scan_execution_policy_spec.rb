@@ -25,21 +25,6 @@ RSpec.describe 'Create scan execution policy for a project' do
     graphql_mutation_response(:scan_execution_policy_commit)
   end
 
-  context 'when feature is disabled' do
-    before do
-      project.add_maintainer(current_user)
-
-      stub_licensed_features(security_orchestration_policies: true)
-      stub_feature_flags(security_orchestration_policies_configuration: false)
-    end
-
-    it 'does not create branch' do
-      post_graphql_mutation(mutation, current_user: current_user)
-
-      expect(graphql_errors).to include(a_hash_including('message' => 'Feature disabled'))
-    end
-  end
-
   context 'when security_orchestration_policies_configuration already exists for project' do
     let_it_be(:security_policy_management_project) { create(:project, :repository, namespace: current_user.namespace) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: security_policy_management_project) }
@@ -49,7 +34,6 @@ RSpec.describe 'Create scan execution policy for a project' do
       security_policy_management_project.add_developer(current_user)
 
       stub_licensed_features(security_orchestration_policies: true)
-      stub_feature_flags(security_orchestration_policies_configuration: true)
     end
 
     it 'creates a branch with commit' do

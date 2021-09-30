@@ -13,13 +13,11 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   let_it_be(:index) { project_security_policies_url(project) }
   let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
   let_it_be(:new) { new_project_security_policy_url(project) }
-
   let_it_be(:feature_enabled) { true }
 
   before do
     project.add_developer(user)
     sign_in(user)
-    stub_feature_flags(security_orchestration_policies_configuration: feature_enabled)
     stub_licensed_features(security_orchestration_policies: feature_enabled)
     allow_next_instance_of(Repository) do |repository|
       allow(repository).to receive(:blob_data_at).and_return({ scan_execution_policy: [policy] }.to_yaml)
@@ -205,18 +203,15 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   describe 'GET #new' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:feature_flag, :license, :status) do
-      true | true | :ok
-      false | false | :not_found
-      false | true | :not_found
-      true | false | :not_found
+    where(:license, :status) do
+      true | :ok
+      false | :not_found
     end
 
     subject(:request) { get new, params: { namespace_id: project.namespace, project_id: project } }
 
     with_them do
       before do
-        stub_feature_flags(security_orchestration_policies_configuration: feature_flag)
         stub_licensed_features(security_orchestration_policies: license)
       end
 
@@ -231,18 +226,15 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
   describe 'GET #index' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:feature_flag, :license, :status) do
-      true | true | :ok
-      false | false | :not_found
-      false | true | :not_found
-      true | false | :not_found
+    where(:license, :status) do
+      true | :ok
+      false | :not_found
     end
 
     subject(:request) { get index, params: { namespace_id: project.namespace, project_id: project } }
 
     with_them do
       before do
-        stub_feature_flags(security_orchestration_policies_configuration: feature_flag)
         stub_licensed_features(security_orchestration_policies: license)
       end
 

@@ -23,7 +23,6 @@ module Mutations
 
       def resolve(args)
         project = authorized_find!(args[:project_path])
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
 
         policy_project = find_policy_project(args[:security_policy_project_id])
         raise_resource_not_available_error! unless policy_project.present?
@@ -41,10 +40,6 @@ module Mutations
         # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
         id = ::Types::GlobalIDType[::Project].coerce_isolated_input(id)
         ::Gitlab::Graphql::Lazy.force(GitlabSchema.object_from_id(id, expected_type: Project))
-      end
-
-      def allowed?(project)
-        Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
       end
 
       def assign_project(project, policy_project)

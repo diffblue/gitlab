@@ -196,27 +196,16 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu do
     describe 'Policies' do
       let(:item_id) { :scan_policies }
 
-      context 'when feature flag :security_orchestration_policies_configuration is enabled' do
-        before do
-          stub_feature_flags(security_orchestration_policies_configuration: true)
-          stub_licensed_features(security_orchestration_policies: true)
-        end
-
-        context 'when user can access policies tab' do
-          it { is_expected.not_to be_nil }
-        end
-
-        context 'when user cannot access policies tab' do
-          let(:user) { nil }
-
-          it { is_expected.to be_nil }
-        end
+      before do
+        stub_licensed_features(security_orchestration_policies: true)
       end
 
-      context 'when feature flag :security_orchestration_policies_configuration is disabled' do
-        before do
-          stub_feature_flags(security_orchestration_policies_configuration: false)
-        end
+      context 'when user can access policies tab' do
+        it { is_expected.not_to be_nil }
+      end
+
+      context 'when user cannot access policies tab' do
+        let(:user) { nil }
 
         it { is_expected.to be_nil }
       end
