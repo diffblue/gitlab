@@ -6760,6 +6760,9 @@ msgstr ""
 msgid "Checkout|Zip code"
 msgstr ""
 
+msgid "Checkout|a storage subscription"
+msgstr ""
+
 msgid "Checkout|company or team"
 msgstr ""
 
@@ -9510,9 +9513,6 @@ msgstr ""
 msgid "Create a Mattermost team for this group"
 msgstr ""
 
-msgid "Create a local proxy for storing frequently used upstream images. %{docLinkStart}Learn more%{docLinkEnd} about dependency proxies."
-msgstr ""
-
 msgid "Create a local proxy for storing frequently used upstream images. %{link_start}Learn more%{link_end} about dependency proxies."
 msgstr ""
 
@@ -11158,6 +11158,12 @@ msgid "Dependency proxy feature is limited to public groups for now."
 msgstr ""
 
 msgid "Dependency proxy image prefix"
+msgstr ""
+
+msgid "DependencyProxy|Create a local proxy for storing frequently used upstream images. %{docLinkStart}Learn more%{docLinkEnd} about dependency proxies."
+msgstr ""
+
+msgid "DependencyProxy|Dependency Proxy"
 msgstr ""
 
 msgid "DependencyProxy|Toggle Dependency Proxy"

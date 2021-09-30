@@ -19,7 +19,7 @@ module Elastic
         options[:features] = 'issues'
         options[:no_join_project] = true
         context.name(:issue) do
-          query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
+          query_hash = context.name(:authorized) { authorization_filter(query_hash, options) }
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
         end
@@ -54,6 +54,30 @@ module Elastic
         else
           super
         end
+      end
+
+      def should_use_project_ids_filter?(options)
+        options[:project_ids] == :any ||
+        options[:group_ids].blank? ||
+        Feature.disabled?(:elasticsearch_use_group_level_optimization) ||
+        !Elastic::DataMigrationService.migration_has_finished?(:redo_backfill_namespace_ancestry_ids_for_issues)
+      end
+
+      def authorization_filter(query_hash, options)
+        return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
+
+        current_user = options[:current_user]
+        namespace_ancestry = Namespace.find(authorized_namespace_ids(current_user, options))
+                                      .map(&:elastic_namespace_ancestry)
+
+        return project_ids_filter(query_hash, options) if namespace_ancestry.blank?
+
+        context.name(:namespace) do
+          query_hash[:query][:bool][:filter] ||= []
+          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, namespace_ancestry)
+        end
+
+        query_hash
       end
 
       # Builds an elasticsearch query that will select documents from a

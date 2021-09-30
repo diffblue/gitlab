@@ -381,6 +381,37 @@ module Elastic
 
         authorized_project_ids.to_a
       end
+
+      def authorized_namespace_ids(current_user, options = {})
+        return [] unless current_user && options[:group_ids].present?
+
+        authorized_ids = current_user.authorized_groups.pluck_primary_key.to_set
+        authorized_ids.intersection(options[:group_ids].to_set).to_a
+      end
+
+      def ancestry_filter(current_user, namespace_ancestry)
+        return {} unless current_user
+        return {} if namespace_ancestry.blank?
+
+        context.name(:ancestry_filter) do
+          filters = namespace_ancestry.map do |namespace_ids|
+            {
+              prefix: {
+                namespace_ancestry_ids: {
+                  _name: context.name(:descendants),
+                  value: namespace_ids
+                }
+              }
+            }
+          end
+
+          {
+            bool: {
+              should: filters
+            }
+          }
+        end
+      end
     end
   end
 end
