@@ -19,6 +19,7 @@ export const subscriptionActivationInsertCode = __(
 export const howToActivateSubscription = s__(
   'SuperSonics|Learn how to %{linkStart}activate your subscription%{linkEnd}.',
 );
+export const cancelLabel = __('Cancel');
 export const activateLabel = s__('SuperSonics|Activate');
 export const activateSubscription = s__('SuperSonics|Activate subscription');
 export const activateCloudLicense = s__('SuperSonics|Activate cloud license');
@@ -129,6 +130,7 @@ export const buySubscriptionCard = {
 
 export const SUBSCRIPTION_ACTIVATION_FAILURE_EVENT = 'subscription-activation-failure';
 export const SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT = 'subscription-activation-success';
+export const SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT = 'subscription-activation-finalized';
 
 export const INVALID_CODE_ERROR_MESSAGE = 'invalid activation code';
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';
