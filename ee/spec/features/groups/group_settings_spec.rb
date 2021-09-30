@@ -367,7 +367,7 @@ RSpec.describe 'Edit group settings' do
   end
 
   describe 'email domain validation', :js do
-    let(:domain_field_selector) { '[placeholder="Enter domain"]' }
+    let(:domain_field_selector) { '[placeholder="example.com"]' }
 
     before do
       stub_licensed_features(group_allowed_email_domains: true)

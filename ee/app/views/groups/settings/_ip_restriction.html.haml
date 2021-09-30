@@ -8,9 +8,8 @@
   .js-ip-restriction{ data: { hidden_input_id: hidden_input_id, label_id: label_id } }
   = f.hidden_field :ip_restriction_ranges, id: hidden_input_id
   .form-text.text-muted
-    - read_more_link = link_to(_('Read more'), help_page_path('user/group/index.md', anchor: 'restrict-group-access-by-ip-address'))
-    = _('This group, including all subgroups, projects and git repositories, will be reachable from only the specified IP address ranges.')
+    - learn_more_link = link_to(_('Learn more'), help_page_path('user/group/index.md', anchor: 'restrict-group-access-by-ip-address'))
+    = _('Only users from the specified IP address ranges are able to reach this group, including all subgroups, projects, and Git repositories.')
     %br
     = _('Multiple IP address ranges are supported.')
-    %br
-    = html_escape(_('Example: %{ip_address}. %{read_more_link}.')) % { read_more_link: read_more_link, ip_address: tag.code('192.168.0.0/24') }
+    = html_escape(_('%{learn_more_link}.')) % { learn_more_link: learn_more_link }
