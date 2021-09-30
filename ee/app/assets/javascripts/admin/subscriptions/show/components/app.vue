@@ -64,9 +64,6 @@ export default {
     return {
       currentSubscription: {},
       activationNotification: null,
-      activationListeners: {
-        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.displayActivationNotification,
-      },
       subscriptionHistory: [],
     };
   },
@@ -77,6 +74,11 @@ export default {
     canShowSubscriptionDetails() {
       return this.hasActiveLicense || this.hasValidSubscriptionData;
     },
+  },
+  created() {
+    this.$options.activationListeners = {
+      [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.displayActivationNotification,
+    };
   },
   methods: {
     displayActivationNotification(license) {
@@ -123,14 +125,14 @@ export default {
       v-if="canShowSubscriptionDetails"
       :subscription="currentSubscription"
       :subscription-list="subscriptionHistory"
-      v-on="activationListeners"
+      v-on="$options.activationListeners"
     />
     <div v-else class="row">
       <div class="col-12 col-lg-8 offset-lg-2">
         <h3 class="gl-mb-7 gl-mt-6 gl-text-center" data-testid="subscription-activation-title">
           {{ $options.i18n.noActiveSubscription }}
         </h3>
-        <subscription-activation-card v-on="activationListeners" />
+        <subscription-activation-card v-on="$options.activationListeners" />
         <div class="row gl-mt-7">
           <div class="col-lg-6">
             <subscription-trial-card />

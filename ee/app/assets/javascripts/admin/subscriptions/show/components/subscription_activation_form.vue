@@ -15,6 +15,7 @@ import {
   INVALID_CODE_ERROR_MESSAGE,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
   subscriptionActivationForm,
   subscriptionQueries,
 } from '../constants';
@@ -93,6 +94,7 @@ export default {
     submit() {
       if (!this.form.state) {
         this.form.showValidation = true;
+        this.$emit(SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT);
         return;
       }
       this.form.showValidation = false;
@@ -127,6 +129,7 @@ export default {
           this.handleError(error);
         })
         .finally(() => {
+          this.$emit(SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT);
           this.isLoading = false;
         });
     },

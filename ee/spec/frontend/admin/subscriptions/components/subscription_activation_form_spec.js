@@ -7,12 +7,14 @@ import {
   INVALID_CODE_ERROR,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
   subscriptionQueries,
   subscriptionActivationForm,
 } from 'ee/admin/subscriptions/show/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { preventDefault, stopPropagation } from '../../test_helpers';
 import {
   activateLicenseMutationResponse,
@@ -121,6 +123,10 @@ describe('SubscriptionActivationForm', () => {
       expect(mutationMock).toHaveBeenCalledTimes(0);
     });
 
+    it(`emits the ${SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT} event`, () => {
+      expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT).length).toBe(1);
+    });
+
     describe('adds text that does not match the pattern', () => {
       beforeEach(async () => {
         await findActivationCodeInput().vm.$emit('input', `${fakeActivationCode}2021-asdf`);
@@ -151,6 +157,12 @@ describe('SubscriptionActivationForm', () => {
           expect(findAgreementCheckboxFormGroup().text()).not.toContain(
             subscriptionActivationForm.acceptTermsFeedback,
           );
+        });
+
+        it(`emits the ${SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT} event`, async () => {
+          findActivateSubscriptionForm().vm.$emit('submit', createFakeEvent());
+          await waitForPromises();
+          expect(wrapper.emitted(SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT).length).toBe(2);
         });
       });
     });

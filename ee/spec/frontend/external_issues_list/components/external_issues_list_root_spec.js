@@ -1,3 +1,5 @@
+import { GlAlert } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { shallowMount, createLocalVue, mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
@@ -8,7 +10,6 @@ import jiraIssuesResolver from 'ee/integrations/jira/issues_list/graphql/resolve
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import createFlash from '~/flash';
 import IssuableList from '~/issuable_list/components/issuable_list_root.vue';
 import { i18n } from '~/issues_list/constants';
 import axios from '~/lib/utils/axios_utils';
@@ -61,8 +62,20 @@ describe('ExternalIssuesListRoot', () => {
   const mockLabel = 'ecosystem';
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const createLabelFilterEvent = (data) => ({ type: 'labels', value: { data } });
   const createSearchFilterEvent = (data) => ({ type: 'filtered-search-term', value: { data } });
+
+  const expectErrorHandling = (expectedRenderedErrorMessage) => {
+    const issuesList = findIssuableList();
+    const alert = findAlert();
+
+    expect(issuesList.exists()).toBe(false);
+
+    expect(alert.exists()).toBe(true);
+    expect(alert.text()).toBe(expectedRenderedErrorMessage);
+    expect(Sentry.captureException).toHaveBeenCalledWith(expect.any(Error));
+  };
 
   const createComponent = ({
     apolloProvider = createMockApolloProvider(),
@@ -300,13 +313,17 @@ describe('ExternalIssuesListRoot', () => {
   });
 
   describe('error handling', () => {
+    beforeEach(() => {
+      jest.spyOn(Sentry, 'captureException');
+    });
+
     describe('when request fails', () => {
       it.each`
         APIErrors        | expectedRenderedErrorMessage
         ${['API error']} | ${'API error'}
         ${undefined}     | ${i18n.errorFetchingIssues}
       `(
-        'calls `createFlash` with "$expectedRenderedErrorMessage" when API responds with "$APIErrors"',
+        'displays error alert with "$expectedRenderedErrorMessage" when API responds with "$APIErrors"',
         async ({ APIErrors, expectedRenderedErrorMessage }) => {
           jest.spyOn(axios, 'get');
           mock
@@ -316,17 +333,13 @@ describe('ExternalIssuesListRoot', () => {
           createComponent();
           await waitForPromises();
 
-          expect(createFlash).toHaveBeenCalledWith({
-            message: expectedRenderedErrorMessage,
-            captureError: true,
-            error: expect.any(Object),
-          });
+          expectErrorHandling(expectedRenderedErrorMessage);
         },
       );
     });
 
     describe('when GraphQL network error is encountered', () => {
-      it('calls `createFlash` correctly with default error message', async () => {
+      it('displays error alert with default error message', async () => {
         createComponent({
           apolloProvider: createMockApolloProvider({
             Query: {
@@ -336,35 +349,24 @@ describe('ExternalIssuesListRoot', () => {
         });
         await waitForPromises();
 
-        expect(createFlash).toHaveBeenCalledWith({
-          message: i18n.errorFetchingIssues,
-          captureError: true,
-          error: expect.any(Object),
-        });
+        expectErrorHandling(i18n.errorFetchingIssues);
       });
     });
   });
 
   describe('pagination', () => {
     it.each`
-      scenario                 | issuesListLoadFailed | issues                | shouldShowPaginationControls
-      ${'fails'}               | ${true}              | ${[]}                 | ${false}
-      ${'returns no issues'}   | ${false}             | ${[]}                 | ${false}
-      ${`returns some issues`} | ${false}             | ${mockExternalIssues} | ${true}
+      scenario                 | issues                | shouldShowPaginationControls
+      ${'returns no issues'}   | ${[]}                 | ${false}
+      ${`returns some issues`} | ${mockExternalIssues} | ${true}
     `(
       'sets `showPaginationControls` prop to $shouldShowPaginationControls when request $scenario',
-      async ({ issuesListLoadFailed, issues, shouldShowPaginationControls }) => {
+      async ({ issues, shouldShowPaginationControls }) => {
         jest.spyOn(axios, 'get');
-        mock
-          .onGet(mockProvide.issuesFetchPath)
-          .replyOnce(
-            issuesListLoadFailed ? httpStatus.INTERNAL_SERVER_ERROR : httpStatus.OK,
-            issues,
-            {
-              'x-page': 1,
-              'x-total': issues.length,
-            },
-          );
+        mock.onGet(mockProvide.issuesFetchPath).replyOnce(httpStatus.OK, issues, {
+          'x-page': 1,
+          'x-total': issues.length,
+        });
 
         createComponent();
         await waitForPromises();

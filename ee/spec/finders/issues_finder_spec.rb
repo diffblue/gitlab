@@ -10,6 +10,101 @@ RSpec.describe IssuesFinder do
     context 'scope: all' do
       let(:scope) { 'all' }
 
+      describe 'filter by scoped label wildcard' do
+        let_it_be(:search_user) { create(:user) }
+
+        let_it_be(:group_devops_plan_label) { create(:group_label, group: group, title: 'devops::plan') }
+        let_it_be(:group_wfe_in_dev_label) { create(:group_label, group: group, title: 'workflow::frontend::in dev') }
+        let_it_be(:group_wfe_in_review_label) { create(:group_label, group: group, title: 'workflow::frontend::in review') }
+        let_it_be(:subgroup_devops_create_label) { create(:group_label, group: subgroup, title: 'devops::create') }
+        let_it_be(:project_wbe_in_dev_label) { create(:label, project: project3, title: 'workflow::backend::in dev') }
+        let_it_be(:project_label) { create(:label, project: project3) }
+
+        let_it_be(:devops_plan_be_in_dev_issue) { create(:labeled_issue, project: project3, labels: [group_devops_plan_label, project_wbe_in_dev_label]) }
+        let_it_be(:project_fe_in_dev_issue) { create(:labeled_issue, project: project3, labels: [project_label, group_wfe_in_dev_label]) }
+        let_it_be(:devops_create_issue) { create(:labeled_issue, project: project3, labels: [subgroup_devops_create_label]) }
+        let_it_be(:be_in_dev_issue) { create(:labeled_issue, project: project3, labels: [project_wbe_in_dev_label]) }
+        let_it_be(:project_fe_in_review_issue) { create(:labeled_issue, project: project3, labels: [project_label, group_wfe_in_review_label]) }
+
+        before_all do
+          project3.add_developer(search_user)
+        end
+
+        before do
+          stub_licensed_features(scoped_labels: true)
+        end
+
+        let(:base_params) { { project_id: project3.id } }
+
+        context 'when scoped labels are unavailable' do
+          let(:params) { base_params.merge(label_name: 'devops::*') }
+
+          before do
+            stub_licensed_features(scoped_labels: false)
+          end
+
+          it 'does not return any results' do
+            expect(issues).to be_empty
+          end
+        end
+
+        context 'when project scope is not given' do
+          let(:params) { { label_name: 'devops::*' } }
+
+          it 'does not return any results' do
+            expect(issues).to be_empty
+          end
+        end
+
+        context 'with a single wildcard filter' do
+          let(:params) { base_params.merge(label_name: 'devops::*') }
+
+          it 'returns issues that have labels that match the wildcard' do
+            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, devops_create_issue)
+          end
+        end
+
+        context 'with multiple wildcard filters' do
+          let(:params) { base_params.merge(label_name: ['devops::*', 'workflow::backend::*']) }
+
+          it 'returns issues that have labels that match both wildcards' do
+            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue)
+          end
+        end
+
+        context 'combined with a regular label filter' do
+          let(:params) { base_params.merge(label_name: [project_label.name, 'workflow::frontend::*']) }
+
+          it 'returns issues that have labels that match the wildcard and the regular label' do
+            expect(issues).to contain_exactly(project_fe_in_dev_issue, project_fe_in_review_issue)
+          end
+        end
+
+        context 'with nested prefix' do
+          let(:params) { base_params.merge(label_name: 'workflow::*') }
+
+          it 'returns issues that have labels that match the prefix' do
+            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue, project_fe_in_dev_issue, project_fe_in_review_issue)
+          end
+        end
+
+        context 'with overlapping prefixes' do
+          let(:params) { base_params.merge(label_name: ['workflow::*', 'workflow::backend::*']) }
+
+          it 'returns issues that have labels that match both prefixes' do
+            expect(issues).to contain_exactly(devops_plan_be_in_dev_issue, be_in_dev_issue)
+          end
+        end
+
+        context 'using NOT' do
+          let(:params) { base_params.merge(not: { label_name: 'devops::*' }) }
+
+          it 'returns issues that do not have labels that match the wildcard' do
+            expect(issues).to contain_exactly(issue4, project_fe_in_dev_issue, project_fe_in_review_issue, be_in_dev_issue)
+          end
+        end
+      end
+
       describe 'filter by weight' do
         let_it_be(:issue_with_weight_1) { create(:issue, project: project3, weight: 1) }
         let_it_be(:issue_with_weight_42) { create(:issue, project: project3, weight: 42) }

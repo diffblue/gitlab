@@ -1,21 +1,18 @@
 <script>
 import { GlModal } from '@gitlab/ui';
-import { __ } from '~/locale';
 import {
   activateLabel,
+  cancelLabel,
   activateSubscription,
   subscriptionActivationInsertCode,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
 } from '../constants';
 import SubscriptionActivationErrors from './subscription_activation_errors.vue';
 import SubscriptionActivationForm from './subscription_activation_form.vue';
 
 export default {
-  actionCancel: { text: __('Cancel') },
-  actionPrimary: {
-    text: activateLabel,
-  },
   bodyText: subscriptionActivationInsertCode,
   title: activateSubscription,
   name: 'SubscriptionActivationModal',
@@ -41,13 +38,37 @@ export default {
   data() {
     return {
       error: null,
-      activationListeners: {
-        [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
-        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
-      },
+      isLoading: false,
+    };
+  },
+  computed: {
+    actionCancel() {
+      return { text: cancelLabel };
+    },
+    actionPrimary() {
+      return {
+        text: activateLabel,
+        attributes: [
+          {
+            variant: 'confirm',
+            category: 'primary',
+            loading: this.isLoading,
+          },
+        ],
+      };
+    },
+  },
+  created() {
+    this.$options.activationListeners = {
+      [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
+      [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
+      [SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT]: this.handleActivationFinalized,
     };
   },
   methods: {
+    handleActivationFinalized() {
+      this.isLoading = false;
+    },
     handleActivationFailure(error) {
       this.error = error;
     },
@@ -60,6 +81,7 @@ export default {
       this.$emit('change', event);
     },
     handlePrimary() {
+      this.isLoading = true;
       this.$refs.form.submit();
     },
     removeError() {
@@ -74,8 +96,8 @@ export default {
     :visible="visible"
     :modal-id="modalId"
     :title="$options.title"
-    :action-cancel="$options.actionCancel"
-    :action-primary="$options.actionPrimary"
+    :action-cancel="actionCancel"
+    :action-primary="actionPrimary"
     @primary.prevent="handlePrimary"
     @hidden="removeError"
     @change="handleChange"
@@ -85,7 +107,7 @@ export default {
     <subscription-activation-form
       ref="form"
       :hide-submit-button="true"
-      v-on="activationListeners"
+      v-on="$options.activationListeners"
     />
   </gl-modal>
 </template>

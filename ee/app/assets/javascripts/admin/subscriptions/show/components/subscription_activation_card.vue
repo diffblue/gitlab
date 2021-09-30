@@ -36,10 +36,12 @@ export default {
   data() {
     return {
       error: null,
-      activationListeners: {
-        [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
-        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
-      },
+    };
+  },
+  created() {
+    this.$options.activationListeners = {
+      [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
+      [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
     };
   },
   methods: {
@@ -76,7 +78,7 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <subscription-activation-form class="gl-p-5" v-on="activationListeners" />
+    <subscription-activation-form class="gl-p-5" v-on="$options.activationListeners" />
     <template #footer>
       <gl-link
         v-if="licenseUploadPath"
