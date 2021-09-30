@@ -2,10 +2,8 @@
 import { GlIcon, GlLink, GlPopover, GlTabs, GlTab } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Alerts from './alerts/alerts.vue';
 import NoEnvironmentEmptyState from './no_environment_empty_state.vue';
-import PolicyList from './policy_list.vue';
 import ThreatMonitoringFilters from './threat_monitoring_filters.vue';
 import ThreatMonitoringSection from './threat_monitoring_section.vue';
 
@@ -20,10 +18,8 @@ export default {
     Alerts,
     ThreatMonitoringFilters,
     ThreatMonitoringSection,
-    PolicyList,
     NoEnvironmentEmptyState,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['documentationPath'],
   props: {
     defaultEnvironmentId: {
@@ -47,11 +43,6 @@ export default {
       // environment id only means that infrastructure *might* be set up.
       isSetUpMaybe: this.isValidEnvironmentId(this.defaultEnvironmentId),
     };
-  },
-  computed: {
-    shouldShowPolicies() {
-      return !this.glFeatures.securityOrchestrationPoliciesConfiguration;
-    },
   },
   created() {
     if (this.isSetUpMaybe) {
@@ -102,19 +93,6 @@ export default {
         <alerts />
       </gl-tab>
       <gl-tab
-        v-if="shouldShowPolicies"
-        ref="policyTab"
-        :title="s__('ThreatMonitoring|Policies')"
-        data-qa-selector="policies_tab"
-      >
-        <no-environment-empty-state v-if="!isSetUpMaybe" />
-        <policy-list
-          v-else
-          :documentation-path="documentationPath"
-          :new-policy-path="newPolicyPath"
-        />
-      </gl-tab>
-      <gl-tab
         :title="s__('ThreatMonitoring|Statistics')"
         data-testid="threat-monitoring-statistics-tab"
       >
@@ -123,7 +101,7 @@ export default {
           <threat-monitoring-filters />
 
           <threat-monitoring-section
-            ref="policySection"
+            data-testid="threat-monitoring-statistics-section"
             store-namespace="threatMonitoringNetworkPolicy"
             :title="s__('ThreatMonitoring|Container Network Policy')"
             :subtitle="s__('ThreatMonitoring|Packet Activity')"

@@ -22493,9 +22493,6 @@ msgstr ""
 msgid "NetworkPolicies|IP/subnet"
 msgstr ""
 
-msgid "NetworkPolicies|If you are using Auto DevOps, your %{monospacedStart}auto-deploy-values.yaml%{monospacedEnd} file will not be updated if you change a policy in this section. Auto DevOps users should make changes by following the %{linkStart}Container Network Policy documentation%{linkEnd}."
-msgstr ""
-
 msgid "NetworkPolicies|Invalid or empty policy"
 msgstr ""
 
@@ -22520,16 +22517,10 @@ msgstr ""
 msgid "NetworkPolicies|New policy"
 msgstr ""
 
-msgid "NetworkPolicies|No policies detected"
-msgstr ""
-
 msgid "NetworkPolicies|None selected"
 msgstr ""
 
 msgid "NetworkPolicies|Please %{installLinkStart}install%{installLinkEnd} and %{configureLinkStart}configure a Kubernetes Agent for this project%{configureLinkEnd} to enable alerts."
-msgstr ""
-
-msgid "NetworkPolicies|Policies are a specification of how groups of pods are allowed to communicate with each other's network endpoints."
 msgstr ""
 
 msgid "NetworkPolicies|Policy %{policyName} was successfully changed"
@@ -35064,9 +35055,6 @@ msgid "ThreatMonitoring|Operations Per Second"
 msgstr ""
 
 msgid "ThreatMonitoring|Packet Activity"
-msgstr ""
-
-msgid "ThreatMonitoring|Policies"
 msgstr ""
 
 msgid "ThreatMonitoring|Requests"
