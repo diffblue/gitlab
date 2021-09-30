@@ -11,7 +11,13 @@ class DastSite < ApplicationRecord
   validates :project_id, presence: true
   validate :dast_site_validation_project_id_fk
 
+  after_destroy :cleanup_dast_site_token
+
   private
+
+  def cleanup_dast_site_token
+    DastSiteToken.where(project_id: project.id, url: url).delete_all
+  end
 
   def dast_site_validation_project_id_fk
     return unless dast_site_validation_id
