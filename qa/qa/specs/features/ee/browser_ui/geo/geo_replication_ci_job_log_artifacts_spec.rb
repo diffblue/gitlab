@@ -80,6 +80,8 @@ module QA
       end
 
       it 'replicates the job artifact to the secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1658' do
+        artifact_page_retry_attempts = 12
+
         Runtime::Logger.debug('Visiting the secondary Geo site')
 
         Flow::Login.while_signed_in(address: :geo_secondary) do
@@ -107,7 +109,7 @@ module QA
           end
 
           Page::Project::Artifact::Show.perform do |artifact|
-            artifact.go_to_directory(@directory_name)
+            artifact.go_to_directory(@directory_name, artifact_page_retry_attempts)
             expect(artifact).to have_content(@file_name)
           end
         end
