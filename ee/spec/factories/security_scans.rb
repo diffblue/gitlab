@@ -6,5 +6,9 @@ FactoryBot.define do
     build factory: [:ci_build, :success]
     pipeline { build.pipeline }
     project { build.project }
+
+    trait :with_error do
+      info { { errors: [{ type: 'ParsingError', message: 'Unknown error happened' }] } }
+    end
   end
 end
