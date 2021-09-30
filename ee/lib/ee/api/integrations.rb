@@ -2,7 +2,7 @@
 
 module EE
   module API
-    module Services
+    module Integrations
       extend ActiveSupport::Concern
 
       prepended do
