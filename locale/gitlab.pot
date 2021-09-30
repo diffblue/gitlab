@@ -22556,9 +22556,6 @@ msgstr ""
 msgid "NetworkPolicies|Policy definition"
 msgstr ""
 
-msgid "NetworkPolicies|Policy editor"
-msgstr ""
-
 msgid "NetworkPolicies|Rule"
 msgstr ""
 
