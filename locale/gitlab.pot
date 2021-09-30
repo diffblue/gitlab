@@ -17303,7 +17303,7 @@ msgstr[1] ""
 msgid "Importing..."
 msgstr ""
 
-msgid "Import|A repository URL usually ends in a .git suffix, although this is not required. Double check to make sure your repository URL is correct."
+msgid "Import|There is not a valid Git repository at this URL. If your HTTP repository is not publicly accessible, verify your credentials."
 msgstr ""
 
 msgid "Improve customer support with Service Desk"
