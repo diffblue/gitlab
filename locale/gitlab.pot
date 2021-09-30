@@ -40504,6 +40504,9 @@ msgstr ""
 msgid "mrWidget|Failed to load deployment statistics"
 msgstr ""
 
+msgid "mrWidget|Hide %{widget} details"
+msgstr ""
+
 msgid "mrWidget|If the %{missingBranchName} branch exists in your local repository, you can merge this merge request manually using the command line"
 msgstr ""
 
@@ -40624,6 +40627,9 @@ msgid "mrWidget|Set by %{merge_author} to be merged automatically when the pipel
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to start a merge train when the pipeline succeeds"
+msgstr ""
+
+msgid "mrWidget|Show %{widget} details"
 msgstr ""
 
 msgid "mrWidget|The changes were merged into"
