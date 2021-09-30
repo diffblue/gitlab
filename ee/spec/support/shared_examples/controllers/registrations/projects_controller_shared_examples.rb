@@ -39,19 +39,6 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
       expect(subject).to redirect_to(success_path || continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: first_project.id))
     end
 
-    context 'jobs_to_be_done experiment' do
-      let(:jobs_to_be_done_experiment) { experiment(:jobs_to_be_done_experiment) }
-
-      it 'tracks an event for the jobs_to_be_done experiment', :experiment do
-        allow(controller).to receive(:experiment).with(:jobs_to_be_done, user: user).and_return(jobs_to_be_done_experiment)
-        allow(jobs_to_be_done_experiment).to receive(:track).and_call_original
-
-        expect(jobs_to_be_done_experiment).to receive(:track).with(:create_project, project: an_instance_of(Project))
-
-        subject
-      end
-    end
-
     context 'learn gitlab project' do
       using RSpec::Parameterized::TableSyntax
 

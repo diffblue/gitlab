@@ -69,17 +69,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           expect { subject }.to change { Group.count }.by(1)
         end
 
-        it 'tracks an event for the jobs_to_be_done experiment' do
-          stub_experiments(jobs_to_be_done: :candidate)
-
-          expect(experiment(:jobs_to_be_done)).to track(:create_group, namespace: an_instance_of(Group))
-                                                    .on_next_instance
-                                                    .for(:candidate)
-                                                    .with_context(user: user)
-
-          subject
-        end
-
         it 'tracks create events for the combined_registration experiment' do
           allow_next_instance_of(::Projects::CreateService) do |service|
             allow(service).to receive(:after_create_actions)
@@ -255,17 +244,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       context 'when group can be created' do
         it 'creates a group' do
           expect { subject }.to change { Group.count }.by(1)
-        end
-
-        it 'tracks an event for the jobs_to_be_done experiment' do
-          stub_experiments(jobs_to_be_done: :candidate)
-
-          expect(experiment(:jobs_to_be_done)).to track(:create_group, namespace: an_instance_of(Group))
-                                                    .on_next_instance
-                                                    .for(:candidate)
-                                                    .with_context(user: user)
-
-          subject
         end
 
         it 'tracks an event for the combined_registration experiment' do

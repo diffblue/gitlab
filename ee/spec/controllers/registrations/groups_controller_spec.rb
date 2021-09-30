@@ -40,17 +40,6 @@ RSpec.describe Registrations::GroupsController do
             expect { post_create }.to change { Group.count }.by(1)
           end
 
-          it 'tracks an event for the jobs_to_be_done experiment', :experiment do
-            stub_experiments(jobs_to_be_done: :candidate)
-
-            expect(experiment(:jobs_to_be_done)).to track(:create_group, namespace: an_instance_of(Group))
-                                                      .on_next_instance
-                                                      .for(:candidate)
-                                                      .with_context(user: user)
-
-            post_create
-          end
-
           context 'when in trial onboarding  - apply_trial_for_trial_onboarding_flow' do
             let_it_be(:group) { create(:group) }
             let_it_be(:trial_onboarding_flow_params) { { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' } }
