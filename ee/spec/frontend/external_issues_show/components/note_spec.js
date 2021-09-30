@@ -1,8 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
-import JiraIssueNote from 'ee/integrations/jira/issues_show/components/note.vue';
+import JiraIssueNote from 'ee/external_issues_show/components/note.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-import { mockJiraIssueComment } from '../mock_data';
+import { mockExternalIssueComment } from '../mock_data';
 
 describe('JiraIssuesNote', () => {
   let wrapper;
@@ -15,11 +15,11 @@ describe('JiraIssuesNote', () => {
     wrapper = extendedWrapper(
       shallowMount(JiraIssueNote, {
         propsData: {
-          authorName: mockJiraIssueComment.author.name,
-          authorWebUrl: mockJiraIssueComment.author.web_url,
-          authorAvatarUrl: mockJiraIssueComment.author.avatar_url,
-          noteCreatedAt: mockJiraIssueComment.created_at,
-          noteBodyHtml: mockJiraIssueComment.body_html,
+          authorName: mockExternalIssueComment.author.name,
+          authorWebUrl: mockExternalIssueComment.author.web_url,
+          authorAvatarUrl: mockExternalIssueComment.author.avatar_url,
+          noteCreatedAt: mockExternalIssueComment.created_at,
+          noteBodyHtml: mockExternalIssueComment.body_html,
           ...props,
         },
         slots,

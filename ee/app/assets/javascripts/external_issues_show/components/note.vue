@@ -42,6 +42,11 @@ export default {
       required: false,
       default: undefined,
     },
+    badgeText: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     noteAnchor() {

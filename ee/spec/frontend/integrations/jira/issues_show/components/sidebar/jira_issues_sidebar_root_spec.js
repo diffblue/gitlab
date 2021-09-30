@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
-import Assignee from 'ee/integrations/jira/issues_show/components/sidebar/assignee.vue';
-import IssueDueDate from 'ee/integrations/jira/issues_show/components/sidebar/issue_due_date.vue';
-import IssueField from 'ee/integrations/jira/issues_show/components/sidebar/issue_field.vue';
+import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
+import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
+import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
 import Sidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import CopyableField from '~/vue_shared/components/sidebar/copyable_field.vue';
