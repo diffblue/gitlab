@@ -715,13 +715,13 @@ msgstr ""
 msgid "%{link_start}Learn more%{link_end} about roles."
 msgstr ""
 
-msgid "%{link_start}Learn more%{link_end} about what information is shared with GitLab Inc."
-msgstr ""
-
 msgid "%{link_start}Remove the %{draft_snippet} prefix%{link_end} from the title to allow this merge request to be merged when it's ready."
 msgstr ""
 
 msgid "%{link_start}Start the title with %{draft_snippet}%{link_end} to prevent a merge request that is a work in progress from being merged before it's ready."
+msgstr ""
+
+msgid "%{link_start}What information does GitLab Inc. collect?%{link_end}"
 msgstr ""
 
 msgid "%{listToShow}, and %{awardsListLength} more"
@@ -876,7 +876,7 @@ msgid_plural "%{securityScanner} results are not available because a pipeline ha
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%{service_ping_link_start}Learn more%{service_ping_link_end} about what information is shared with GitLab Inc."
+msgid "%{service_ping_link_start}What information is shared with GitLab Inc.?%{service_ping_link_end}"
 msgstr ""
 
 msgid "%{size} %{unit}"
@@ -12580,6 +12580,9 @@ msgstr ""
 msgid "Enable SSL verification"
 msgstr ""
 
+msgid "Enable Service Ping"
+msgstr ""
+
 msgid "Enable Snowplow tracking"
 msgstr ""
 
@@ -12673,7 +12676,7 @@ msgstr ""
 msgid "Enable or disable the Pseudonymizer data collection."
 msgstr ""
 
-msgid "Enable or disable version check and service ping."
+msgid "Enable or disable version check and Service Ping."
 msgstr ""
 
 msgid "Enable protected paths rate limit"
@@ -12689,9 +12692,6 @@ msgid "Enable reCAPTCHA for login."
 msgstr ""
 
 msgid "Enable repository checks"
-msgstr ""
-
-msgid "Enable service ping"
 msgstr ""
 
 msgid "Enable shared runners for all projects and subgroups in this group."
@@ -15514,6 +15514,9 @@ msgstr ""
 msgid "GitLab group: %{source_link}"
 msgstr ""
 
+msgid "GitLab informs you if a new version is available."
+msgstr ""
+
 msgid "GitLab is a complete DevOps platform, delivered as a single application, fundamentally changing the way Development, Security, and Ops teams collaborate"
 msgstr ""
 
@@ -15554,9 +15557,6 @@ msgid "GitLab uses %{linkStart}Sidekiq%{linkEnd} to process background jobs"
 msgstr ""
 
 msgid "GitLab version"
-msgstr ""
-
-msgid "GitLab will inform you if a new version is available."
 msgstr ""
 
 msgid "GitLab will run a background job that will produce pseudonymized CSVs of the GitLab database that will be uploaded to your configured object storage directory."
@@ -20397,7 +20397,7 @@ msgstr ""
 msgid "Limit namespaces and projects that can be indexed"
 msgstr ""
 
-msgid "Limit project size at a global, group and project level. %{link_start}Learn more%{link_end}."
+msgid "Limit project size at a global, group, and project level. %{link_start}Learn more%{link_end}."
 msgstr ""
 
 msgid "Limit sign in from multiple IP addresses"
@@ -35460,7 +35460,7 @@ msgstr ""
 msgid "To define internal users, first enable new users set to external"
 msgstr ""
 
-msgid "To enable Registration Features, make sure \"Enable service ping\" is checked."
+msgid "To enable Registration Features, first enable Service Ping."
 msgstr ""
 
 msgid "To ensure no loss of personal content, this account should only be used for matters related to %{group_name}."
@@ -35487,7 +35487,7 @@ msgstr ""
 msgid "To get started, use the link below to confirm your account."
 msgstr ""
 
-msgid "To help improve GitLab and its user experience, GitLab will periodically collect usage information."
+msgid "To help improve GitLab and its user experience, GitLab periodically collects usage information."
 msgstr ""
 
 msgid "To help improve GitLab, we would like to periodically %{docs_link}. This can be changed at any time in %{settings_link}."
