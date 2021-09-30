@@ -59,16 +59,39 @@ RSpec.describe NetworkPolicies::DeployResourceService do
     end
 
     context 'with resource_name' do
-      let(:resource_name) { 'policy2' }
+      let(:resource_name) { 'policy' }
 
-      it 'updates resource in the deployment namespace and returns success response with a policy' do
-        namespaced_policy = policy.generate
-        namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
-        namespaced_policy[:metadata][:name] = 'policy2'
+      context 'when name is not updated' do
+        it 'updates resource in the deployment namespace and returns success response with a policy' do
+          namespaced_policy = policy.generate
+          namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
 
-        expect(kubeclient).to receive(:update_network_policy).with(namespaced_policy) { policy.generate }
-        expect(subject).to be_success
-        expect(subject.payload.as_json).to eq(policy.as_json)
+          expect(kubeclient).to receive(:update_network_policy).with(namespaced_policy)
+          expect(subject).to be_success
+          expect(subject.payload.as_json).to eq(policy.as_json)
+        end
+      end
+
+      context 'when name is updated' do
+        let(:policy) do
+          Gitlab::Kubernetes::NetworkPolicy.new(
+            name: 'policy2',
+            namespace: 'another',
+            selector: { matchLabels: { role: 'db' } },
+            ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
+          )
+        end
+
+        it 'destroys and recreates resource in the deployment namespace and returns success response with a policy' do
+          namespaced_policy = policy.generate
+          namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
+          namespaced_policy[:metadata][:resourceVersion] = nil
+
+          expect(kubeclient).to receive(:delete_network_policy).with(resource_name, environment.deployment_namespace)
+          expect(kubeclient).to receive(:create_network_policy).with(namespaced_policy)
+          expect(subject).to be_success
+          expect(subject.payload.as_json).to eq(policy.as_json)
+        end
       end
     end
 
@@ -137,14 +160,62 @@ RSpec.describe NetworkPolicies::DeployResourceService do
       context 'with resource_name' do
         let(:resource_name) { 'policy' }
 
-        it 'updates resource in the deployment namespace and returns success response with a policy' do
-          namespaced_policy = policy.generate
-          namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
-          namespaced_policy[:metadata][:name] = resource_name
+        before do
+          allow(Gitlab::Kubernetes::CiliumNetworkPolicy).to receive(:from_resource).and_return policy
+          allow(Gitlab::Kubernetes::CiliumNetworkPolicy).to receive(:from_yaml).and_return policy
+        end
 
-          expect(kubeclient).to receive(:update_cilium_network_policy).with(namespaced_policy) { policy.generate }
-          expect(subject).to be_success
-          expect(subject.payload.as_json).to eq(policy.as_json)
+        context 'when name is not updated' do
+          it 'updates resource in the deployment namespace and returns success response with a policy' do
+            namespaced_policy = policy.generate
+            namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
+
+            expect(kubeclient).to receive(:update_cilium_network_policy).with(namespaced_policy)
+            expect(subject).to be_success
+            expect(subject.payload.as_json).to eq(policy.as_json)
+          end
+        end
+
+        context 'when name is updated' do
+          let(:policy) do
+            Gitlab::Kubernetes::CiliumNetworkPolicy.new(
+              name: 'policy2',
+              namespace: 'namespace',
+              resource_version: 101,
+              selector: { matchLabels: { role: 'db' } },
+              ingress: [{ fromEndpoints: [{ matchLabels: { project: 'myproject' } }] }]
+            )
+          end
+
+          let(:manifest) do
+            <<~POLICY
+              apiVersion: cilium.io/v2
+              kind: CiliumNetworkPolicy
+              metadata:
+                name: policy2
+                namespace: another
+                resourceVersion: 101
+              spec:
+                endpointSelector:
+                  matchLabels:
+                    role: db
+                ingress:
+                - fromEndpoints:
+                  - matchLabels:
+                      project: myproject
+            POLICY
+          end
+
+          it 'destroys and recreates resource in the deployment namespace and returns success response with a policy' do
+            namespaced_policy = policy.generate
+            namespaced_policy[:metadata][:namespace] = environment.deployment_namespace
+            namespaced_policy[:metadata][:resourceVersion] = nil
+
+            expect(kubeclient).to receive(:delete_cilium_network_policy).with(resource_name, environment.deployment_namespace)
+            expect(kubeclient).to receive(:create_cilium_network_policy).with(namespaced_policy)
+            expect(subject).to be_success
+            expect(subject.payload.as_json).to eq(policy.as_json)
+          end
         end
       end
     end
