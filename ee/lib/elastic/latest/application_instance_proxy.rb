@@ -5,8 +5,6 @@ module Elastic
     class ApplicationInstanceProxy < Elasticsearch::Model::Proxy::InstanceMethodsProxy
       include InstanceProxyUtil
 
-      NAMESPACE_ANCESTRY_SEPARATOR = '-'
-
       def es_parent
         "project_#{target.project_id}" unless target.is_a?(Project) || target&.project_id.nil?
       end
@@ -21,8 +19,7 @@ module Elastic
 
       def namespace_ancestry
         project = target.is_a?(Project) ? target : target.project
-        namespace = project.namespace
-        namespace.self_and_ancestor_ids(hierarchy_order: :desc).join(NAMESPACE_ANCESTRY_SEPARATOR) + NAMESPACE_ANCESTRY_SEPARATOR
+        project.namespace.elastic_namespace_ancestry
       end
 
       private

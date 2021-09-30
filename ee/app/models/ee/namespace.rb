@@ -404,6 +404,11 @@ module EE
       ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_namespace!(self.id)
     end
 
+    def elastic_namespace_ancestry
+      separator = '-'
+      self_and_ancestor_ids(hierarchy_order: :desc).join(separator) + separator
+    end
+
     def enable_temporary_storage_increase!
       update(temporary_storage_increase_ends_on: TEMPORARY_STORAGE_INCREASE_DAYS.days.from_now)
     end
