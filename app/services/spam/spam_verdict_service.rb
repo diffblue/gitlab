@@ -73,18 +73,11 @@ module Spam
 
       begin
         result, attribs, _error = spamcheck_client.issue_spam?(spam_issue: target, user: user, context: context)
-        return [nil, attribs] unless result
-
         # @TODO log if error is not nil https://gitlab.com/gitlab-org/gitlab/-/issues/329545
-
-        return [result, attribs] if result == NOOP || attribs["monitorMode"] == "true"
-
-        # Duplicate logic with Akismet logic in #akismet_verdict
-        if Gitlab::Recaptcha.enabled? && result != ALLOW
-          [CONDITIONAL_ALLOW, attribs]
-        else
-          [result, attribs]
-        end
+         
+        return [nil, attribs] unless result
+        [result, attribs]
+        
       rescue StandardError => e
         Gitlab::ErrorTracking.log_exception(e)
 
