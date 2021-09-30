@@ -1,15 +1,15 @@
 import { GlAvatarLabeled, GlAvatarLink, GlAvatar } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Assignee from 'ee/integrations/jira/issues_show/components/sidebar/assignee.vue';
+import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import AssigneeTitle from '~/sidebar/components/assignees/assignee_title.vue';
 
-import { mockJiraIssue } from '../../mock_data';
+import { mockExternalIssue } from '../../mock_data';
 
-const mockAssignee = convertObjectPropsToCamelCase(mockJiraIssue.assignees[0], { deep: true });
+const mockAssignee = convertObjectPropsToCamelCase(mockExternalIssue.assignees[0], { deep: true });
 
-describe('JiraIssuesSidebarAssignee', () => {
+describe('ExternalIssuesSidebarAssignee', () => {
   let wrapper;
 
   const findNoAssigneeText = () => wrapper.findByTestId('no-assignee-text');

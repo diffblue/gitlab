@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`JiraIssuesSidebarAssignee with assignee template renders avatar components 1`] = `
+exports[`ExternalIssuesSidebarAssignee with assignee template renders avatar components 1`] = `
 <div>
   <div
     class="hide-collapsed"
@@ -44,7 +44,7 @@ exports[`JiraIssuesSidebarAssignee with assignee template renders avatar compone
 </div>
 `;
 
-exports[`JiraIssuesSidebarAssignee with no assignee template renders template without avatar components (the "None" state) 1`] = `
+exports[`ExternalIssuesSidebarAssignee with no assignee template renders template without avatar components (the "None" state) 1`] = `
 <div>
   <div
     class="hide-collapsed"

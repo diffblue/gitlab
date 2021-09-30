@@ -1,9 +1,9 @@
 import { GlDropdownItem, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import IssueFieldDropdown from 'ee/integrations/jira/issues_show/components/sidebar/issue_field_dropdown.vue';
+import IssueFieldDropdown from 'ee/external_issues_show/components/sidebar/issue_field_dropdown.vue';
 
-import { mockJiraIssueStatuses } from '../../mock_data';
+import { mockExternalIssueStatuses } from '../../mock_data';
 
 describe('IssueFieldDropdown', () => {
   let wrapper;
@@ -31,9 +31,9 @@ describe('IssueFieldDropdown', () => {
   it.each`
     loading  | items
     ${true}  | ${[]}
-    ${true}  | ${mockJiraIssueStatuses}
+    ${true}  | ${mockExternalIssueStatuses}
     ${false} | ${[]}
-    ${false} | ${mockJiraIssueStatuses}
+    ${false} | ${mockExternalIssueStatuses}
   `('with loading = $loading, items = $items', ({ loading, items }) => {
     createComponent({
       props: {
@@ -47,7 +47,7 @@ describe('IssueFieldDropdown', () => {
     if (!loading) {
       if (items.length) {
         findAllGlDropdownItems().wrappers.forEach((itemWrapper, index) => {
-          expect(itemWrapper.text()).toBe(mockJiraIssueStatuses[index].title);
+          expect(itemWrapper.text()).toBe(mockExternalIssueStatuses[index].title);
         });
       } else {
         expect(wrapper.text()).toBe(emptyText);

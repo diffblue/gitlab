@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 
-import IssueDueDate from 'ee/integrations/jira/issues_show/components/sidebar/issue_due_date.vue';
+import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 
 import { useFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
