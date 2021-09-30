@@ -8,9 +8,7 @@ module Autocomplete
     #                projects.
     #
     # params - A Hash containing additional parameters to set.
-    #
-    # The supported parameters are those supported by
-    # `Autocomplete::ProjectFinder`.
+    #          The supported parameters are those supported by `Autocomplete::ProjectFinder`.
     def initialize(current_user, params = {})
       @current_user = current_user
       @params = params
@@ -22,8 +20,21 @@ module Autocomplete
         .new(current_user, params)
         .execute
 
-      project ? project.invited_groups : Group.none
+      return Group.none unless project
+
+      invited_groups(project)
     end
     # rubocop: enable CodeReuse/Finder
+
+    private
+
+    def invited_groups(project)
+      invited_groups = project.invited_groups
+
+      Group.from_union([
+        invited_groups.public_to_user(current_user),
+        invited_groups.for_authorized_group_members(current_user)
+      ])
+    end
   end
 end

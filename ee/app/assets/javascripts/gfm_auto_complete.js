@@ -48,7 +48,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
             return {
               id: m.iid,
               reference: m.reference,
-              title: m.title.replace(/<(?:.|\n)*?>/gm, ''),
+              title: m.title,
               search: `${m.iid} ${m.title}`,
             };
           });
@@ -82,7 +82,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
             }
             return {
               id: m.id,
-              title: m.title.replace(/<(?:.|\n)*?>/gm, ''),
+              title: m.title,
               reference: m.reference,
               search: `${m.id} ${m.title}`,
             };

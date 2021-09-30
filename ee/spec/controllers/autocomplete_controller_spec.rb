@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe AutocompleteController do
-  let(:project) { create(:project) }
-  let(:user) { project.owner }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, namespace: user.namespace) }
 
   context 'GET users' do
-    let!(:user2) { create(:user) }
-    let!(:non_member) { create(:user) }
+    let_it_be(:user2) { create(:user) }
+    let_it_be(:non_member) { create(:user) }
 
     context 'project members' do
       before do
@@ -58,12 +58,14 @@ RSpec.describe AutocompleteController do
   end
 
   context 'groups' do
-    let(:matching_group) { create(:group) }
-    let(:non_matching_group) { create(:group) }
-    let(:user2) { create(:user) }
+    let_it_be(:public_group) { create(:group, :public) }
+    let_it_be(:authorized_private_group) { create(:group, :private) }
+    let_it_be(:unauthorized_private_group) { create(:group, :private) }
+    let_it_be(:non_invited_group) { create(:group, :public) }
 
-    before do
-      project.invited_groups << matching_group
+    before_all do
+      authorized_private_group.add_guest(user)
+      project.invited_groups = [public_group, authorized_private_group, unauthorized_private_group]
     end
 
     context "while fetching all groups belonging to a project" do
@@ -72,14 +74,17 @@ RSpec.describe AutocompleteController do
         get(:project_groups, params: { project_id: project.id })
       end
 
-      it 'returns a single group', :aggregate_failures do
-        expect(json_response).to be_kind_of(Array)
-        expect(json_response.size).to eq(1)
-        expect(json_response.first.values_at('id', 'name')).to eq [matching_group.id, matching_group.name]
+      it 'returns groups invited to the project that the user can see' do
+        expect(json_response).to contain_exactly(
+          a_hash_including("id" => authorized_private_group.id),
+          a_hash_including("id" => public_group.id)
+        )
       end
     end
 
     context "while fetching all groups belonging to a project the current user cannot access" do
+      let(:user2) { create(:user) }
+
       before do
         sign_in(user2)
         get(:project_groups, params: { project_id: project.id })
@@ -91,7 +96,7 @@ RSpec.describe AutocompleteController do
     context "while fetching all groups belonging to an invalid project ID" do
       before do
         sign_in(user)
-        get(:project_groups, params: { project_id: 'invalid' })
+        get(:project_groups, params: { project_id: non_existing_record_id })
       end
 
       it { expect(response).to be_not_found }
@@ -119,7 +124,7 @@ RSpec.describe AutocompleteController do
     end
 
     context 'as admin' do
-      let(:user) { create(:admin) }
+      let_it_be(:user) { create(:admin) }
 
       describe "while searching for a project by namespace" do
         let(:search) { group.path }
@@ -171,7 +176,7 @@ RSpec.describe AutocompleteController do
     end
 
     context 'as admin' do
-      let(:user) { create(:admin) }
+      let_it_be(:user) { create(:admin) }
 
       describe "while searching for a namespace by group path" do
         let(:search) { 'group' }
