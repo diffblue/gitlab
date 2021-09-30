@@ -63,7 +63,7 @@ module IssueResolverArguments
     argument :confidential,
              GraphQL::Types::Boolean,
              required: false,
-             description: 'Filter for confidential issues. "false" excludes confidential issues. "true" returns only the confidential issues.'
+             description: 'Filter for confidential issues. If "false", excludes confidential issues. If "true", returns only confidential issues.'
     argument :not, Types::Issues::NegatedIssueFilterInputType,
              description: 'Negated arguments.',
              prepare: ->(negated_args, ctx) { negated_args.to_h },
