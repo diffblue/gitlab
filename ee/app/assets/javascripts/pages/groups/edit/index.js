@@ -7,7 +7,7 @@ import { __ } from '~/locale';
 initAccessRestrictionField({
   selector: '.js-allowed-email-domains',
   props: {
-    placeholder: __('Enter domain'),
+    placeholder: __('example.com'),
     regexErrorMessage: __('The domain you entered is misformatted.'),
     disallowedValueErrorMessage: __('The domain you entered is not allowed.'),
   },
@@ -15,7 +15,7 @@ initAccessRestrictionField({
 
 initAccessRestrictionField({
   selector: '.js-ip-restriction',
-  props: { placeholder: __('Enter IP address range') },
+  props: { placeholder: __('192.168.0.0/24') },
   qaSelector: 'ip_restriction_field',
   customValidator: validateRestrictedIpAddress,
 });
