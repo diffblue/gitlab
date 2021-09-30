@@ -1,8 +1,0 @@
----
-name: async_filtering
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/36421
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/243781
-milestone: '13.3'
-type: development
-group: group::product planning
-default_enabled: true

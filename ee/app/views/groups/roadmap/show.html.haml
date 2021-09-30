@@ -12,9 +12,6 @@
 
 - has_filters_applied = params[:label_name].present? || params[:author_username].present? || params[:search].present?
 
-- if !Feature.enabled?(:async_filtering, @group, default_enabled: true)
-  = render 'shared/epic/search_bar', type: :epics, show_roadmap_presets: true, hide_extra_sort_options: true
-
 #js-roadmap{ data: { epics_path: group_epics_path(@group, format: :json),
   group_id: @group.id,
   full_path: @group.full_path,

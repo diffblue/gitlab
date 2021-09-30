@@ -69,13 +69,10 @@ export default {
       'filterParams',
     ]),
     showFilteredSearchbar() {
-      if (this.glFeatures.asyncFiltering) {
-        if (this.epicsFetchResultEmpty) {
-          return this.hasFiltersApplied;
-        }
-        return true;
+      if (this.epicsFetchResultEmpty) {
+        return this.hasFiltersApplied;
       }
-      return false;
+      return true;
     },
     timeframeStart() {
       return this.timeframe[0];
