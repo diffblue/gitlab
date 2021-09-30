@@ -6,10 +6,6 @@ module Projects
 
     before_action :authorize_read_threat_monitoring!
 
-    before_action do
-      push_frontend_feature_flag(:security_orchestration_policies_configuration, @project, default_enabled: :yaml)
-    end
-
     feature_category :not_owned
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -19,19 +15,17 @@ module Projects
     # rubocop: enable CodeReuse/ActiveRecord
 
     def edit
-      @environment = project.environments.find(params[:environment_id])
-      @policy_name = params[:id]
-      response = NetworkPolicies::FindResourceService.new(
-        resource_name: @policy_name,
-        environment: @environment,
-        kind: params[:kind].presence || Gitlab::Kubernetes::CiliumNetworkPolicy::KIND
-      ).execute
+      redirect_to edit_project_security_policy_path(
+        project,
+        environment_id: params[:environment_id],
+        id: params[:id],
+        type: params[:type],
+        kind: params[:kind]
+      )
+    end
 
-      if response.success?
-        @policy = response.payload
-      else
-        render_404
-      end
+    def new
+      redirect_to new_project_security_policy_path(project)
     end
   end
 end
