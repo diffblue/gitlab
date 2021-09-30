@@ -206,8 +206,24 @@ RSpec.describe Search::GroupService do
         permission_table_for_guest_feature_access
       end
 
-      with_them do
-        it_behaves_like 'search respects visibility'
+      context 'elasticsearch_use_group_level_optimization is enabled' do
+        before do
+          stub_feature_flags(elasticsearch_use_group_level_optimization: true)
+        end
+
+        with_them do
+          it_behaves_like 'search respects visibility'
+        end
+      end
+
+      context 'elasticsearch_use_group_level_optimization is disabled' do
+        before do
+          stub_feature_flags(elasticsearch_use_group_level_optimization: false)
+        end
+
+        with_them do
+          it_behaves_like 'search respects visibility'
+        end
       end
     end
 
@@ -296,13 +312,27 @@ RSpec.describe Search::GroupService do
       let!(:new_updated) { create(:issue, project: project, title: 'updated recent', updated_at: 1.day.ago) }
       let!(:very_old_updated) { create(:issue, project: project, title: 'updated very old', updated_at: 1.year.ago) }
 
+      let(:results_created) { described_class.new(nil, group, search: 'sorted', sort: sort).execute }
+      let(:results_updated) { described_class.new(nil, group, search: 'updated', sort: sort).execute }
+
       before do
         ensure_elasticsearch_index!
       end
 
-      include_examples 'search results sorted' do
-        let(:results_created) { described_class.new(nil, group, search: 'sorted', sort: sort).execute }
-        let(:results_updated) { described_class.new(nil, group, search: 'updated', sort: sort).execute }
+      context 'elasticsearch_use_group_level_optimization is enabled' do
+        before do
+          stub_feature_flags(elasticsearch_use_group_level_optimization: true)
+        end
+
+        include_examples 'search results sorted'
+      end
+
+      context 'elasticsearch_use_group_level_optimization is disabled' do
+        before do
+          stub_feature_flags(elasticsearch_use_group_level_optimization: false)
+        end
+
+        include_examples 'search results sorted'
       end
     end
 
