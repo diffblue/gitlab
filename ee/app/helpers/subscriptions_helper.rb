@@ -24,7 +24,7 @@ module SubscriptionsHelper
 
   def buy_storage_addon_data(group)
     {
-      redirect_after_success: group_usage_quotas_path(group, anchor: 'pipelines-quota-tab', purchased_product: _('Storage'))
+      redirect_after_success: group_usage_quotas_path(group, anchor: 'storage-quota-tab', purchased_product: _('Storage'))
     }.merge(addon_data(group))
   end
 
