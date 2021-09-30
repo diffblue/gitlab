@@ -400,45 +400,54 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
         }
       )
 
-      result = update_request
-
-      expect(result).to eq({ success: true })
+      expect(update_request).to eq({ success: true })
     end
 
-    it 'returns failure' do
+    it 'returns top level errors' do
+      top_level_errors = ['Validation error', 'Errors in query execution']
+
+      expect(client).to receive(:execute_graphql_query).and_return(
+        {
+          success: true,
+          data: {
+            'errors' => top_level_errors
+          }
+        }
+      )
+
+      expect(update_request).to eq({ errors: top_level_errors, success: false })
+    end
+
+    it 'returns errors as data' do
+      errors_as_data = ['error updating the name']
+
       expect(client).to receive(:execute_graphql_query).and_return(
         {
           success: true,
           data: {
             'data' => {
               'orderNamespaceNameUpdate' => {
-                'errors' => ['error updating the name']
+                'errors' => errors_as_data
               }
             }
           }
         }
       )
 
-      result = update_request
-
-      expect(result).to eq({ errors: ['error updating the name'], success: false })
+      expect(update_request).to eq({ errors: errors_as_data, success: false })
     end
 
     it 'returns connectivity error when remote server returns error' do
       stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: [500, "Internal Server Error"])
 
-      result = update_request
-
-      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+      expect(update_request).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
     end
 
     it 'returns connectivity error when the remote server is unreachable' do
       stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
       allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
-      result = update_request
-
-      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+      expect(update_request).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
       expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
     end
   end
