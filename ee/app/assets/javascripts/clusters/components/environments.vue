@@ -120,7 +120,7 @@ export default {
 
       <!-- column: Pods in use -->
       <template #head(rolloutStatus)="data">
-        {{ data.label }} <span class="badge badge-pill pods-badge bold">{{ podsInUseCount }}</span>
+        {{ data.label }} <span class="badge badge-pill bold">{{ podsInUseCount }}</span>
       </template>
 
       <template #cell(rolloutStatus)="row">
@@ -150,10 +150,7 @@ export default {
 
         <!-- Empty state -->
         <div v-else class="deployments-empty d-flex">
-          <gl-icon
-            name="warning"
-            class="cluster-deployments-warning mr-2 align-self-center flex-shrink-0"
-          />
+          <gl-icon name="warning" class="gl-text-orange-500 mr-2 align-self-center flex-shrink-0" />
           <span>
             <gl-sprintf
               :message="
