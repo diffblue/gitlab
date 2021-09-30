@@ -36,7 +36,6 @@ module NetworkPolicies
     def setup_resource
       @resource = policy.generate
       resource[:metadata][:namespace] = kubernetes_namespace
-      resource[:metadata][:name] = resource_name if resource_name
     end
 
     def load_policy_from_resource
@@ -56,18 +55,26 @@ module NetworkPolicies
     end
 
     def deploy_cilium_network_policy
-      if resource_name
-        platform.kubeclient.update_cilium_network_policy(resource)
-      else
+      return platform.kubeclient.create_cilium_network_policy(resource) unless resource_name
+
+      if resource_name != resource.dig(:metadata, :name)
+        platform.kubeclient.delete_cilium_network_policy(resource_name, kubernetes_namespace)
+        resource[:metadata][:resourceVersion] = nil
         platform.kubeclient.create_cilium_network_policy(resource)
+      else
+        platform.kubeclient.update_cilium_network_policy(resource)
       end
     end
 
     def deploy_network_policy
-      if resource_name
-        platform.kubeclient.update_network_policy(resource)
-      else
+      return platform.kubeclient.create_network_policy(resource) unless resource_name
+
+      if resource_name != resource.dig(:metadata, :name)
+        platform.kubeclient.delete_network_policy(resource_name, kubernetes_namespace)
+        resource[:metadata][:resourceVersion] = nil
         platform.kubeclient.create_network_policy(resource)
+      else
+        platform.kubeclient.update_network_policy(resource)
       end
     end
   end

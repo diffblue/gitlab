@@ -40,17 +40,46 @@ module Security
         .merge(Vulnerabilities::Feedback.for_dismissal)
     end
 
-    scope :latest_successful_by_build, -> { joins(:build).where(ci_builds: { status: 'success', retried: [nil, false] }) }
+    scope :latest, -> { where(latest: true) }
+    scope :latest_successful_by_build, -> { joins(:build).where(ci_builds: { retried: [nil, false], status: 'success' }) }
+    scope :without_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) = 0") }
 
     delegate :name, to: :build
 
     before_save :ensure_project_id_pipeline_id
 
     def has_errors?
-      info&.fetch('errors', []).present?
+      processing_errors.present?
+    end
+
+    def processing_errors
+      info&.fetch('errors', [])
+    end
+
+    def processing_errors=(errors)
+      info['errors'] = errors
+    end
+
+    def add_processing_error!(error)
+      info['errors'] = processing_errors.push(error.stringify_keys)
+
+      save!
+    end
+
+    # Returns the findings from the source report
+    def report_findings
+      @report_findings ||= security_report&.findings.to_a
     end
 
     private
+
+    def security_report
+      job_artifact&.security_report
+    end
+
+    def job_artifact
+      build.job_artifacts.find_by_file_type(scan_type)
+    end
 
     def ensure_project_id_pipeline_id
       self.project_id ||= build.project_id

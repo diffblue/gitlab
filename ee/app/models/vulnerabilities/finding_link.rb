@@ -9,5 +9,7 @@ module Vulnerabilities
     validates :finding, presence: true
     validates :url, presence: true, length: { maximum: 255 }
     validates :name, length: { maximum: 2048 }
+
+    scope :by_finding_id, -> (finding_ids) { where(vulnerability_occurrence_id: finding_ids) }
   end
 end

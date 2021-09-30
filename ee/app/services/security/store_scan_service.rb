@@ -43,7 +43,7 @@ module Security
 
     def security_scan
       @security_scan ||= Security::Scan.safe_find_or_create_by!(build: artifact.job, scan_type: artifact.file_type) do |scan|
-        scan.info['errors'] = security_report.errors.map(&:stringify_keys) if security_report.errored?
+        scan.processing_errors = security_report.errors.map(&:stringify_keys) if security_report.errored?
       end
     end
 

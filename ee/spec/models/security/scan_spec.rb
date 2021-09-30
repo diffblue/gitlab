@@ -106,6 +106,75 @@ RSpec.describe Security::Scan do
     it { is_expected.to match_array(expected_scans) }
   end
 
+  describe '.without_errors' do
+    let(:scan_1) { create(:security_scan, :with_error) }
+    let(:scan_2) { create(:security_scan) }
+
+    subject { described_class.without_errors }
+
+    it { is_expected.to contain_exactly(scan_2) }
+  end
+
+  describe '.latest' do
+    let!(:latest_scan) { create(:security_scan, latest: true) }
+    let!(:retried_scan) { create(:security_scan, latest: false) }
+
+    subject { described_class.latest }
+
+    it { is_expected.to match_array([latest_scan]) }
+  end
+
+  describe '#report_findings' do
+    let(:artifact) { create(:ee_ci_job_artifact, :dast) }
+    let(:scan) { create(:security_scan, build: artifact.job) }
+    let(:artifact_finding_uuids) { artifact.security_report.findings.map(&:uuid) }
+
+    subject { scan.report_findings.map(&:uuid) }
+
+    it { is_expected.to match_array(artifact_finding_uuids) }
+  end
+
+  describe '#processing_errors' do
+    let(:scan) { build(:security_scan, :with_error) }
+
+    subject { scan.processing_errors }
+
+    it { is_expected.to eq([{ 'type' => 'ParsingError', 'message' => 'Unknown error happened' }]) }
+  end
+
+  describe '#processing_errors=' do
+    let(:scan) { create(:security_scan) }
+
+    subject(:set_processing_errors) { scan.processing_errors = [:foo] }
+
+    it 'sets the processing errors' do
+      expect { set_processing_errors }.to change { scan.info['errors'] }.from(nil).to([:foo])
+    end
+  end
+
+  describe '#add_processing_error!' do
+    let(:error) { { type: 'foo', message: 'bar' } }
+
+    subject(:add_processing_error) { scan.add_processing_error!(error) }
+
+    context 'when the scan does not have any errors' do
+      let(:scan) { create(:security_scan) }
+
+      it 'persists the error' do
+        expect { add_processing_error }.to change { scan.reload.info['errors'] }.from(nil).to([{ 'type' => 'foo', 'message' => 'bar' }])
+      end
+    end
+
+    context 'when the scan already has some errors' do
+      let(:scan) { create(:security_scan, :with_error) }
+
+      it 'persists the new error with the existing ones' do
+        expect { add_processing_error }.to change { scan.reload.info['errors'] }.from([{ 'type' => 'ParsingError', 'message' => 'Unknown error happened' }])
+                                                                                .to([{ 'type' => 'ParsingError', 'message' => 'Unknown error happened' }, { 'type' => 'foo', 'message' => 'bar' }])
+      end
+    end
+  end
+
   it_behaves_like 'having unique enum values'
 
   it 'sets `project_id` and `pipeline_id` before save' do

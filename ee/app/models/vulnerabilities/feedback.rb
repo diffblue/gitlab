@@ -30,6 +30,7 @@ module Vulnerabilities
     validates :pipeline, same_project_association: true, if: :pipeline_id?
 
     scope :with_associations, -> { includes(:pipeline, :issue, :merge_request, :author, :comment_author) }
+    scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
 
     scope :all_preloaded, -> do
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)

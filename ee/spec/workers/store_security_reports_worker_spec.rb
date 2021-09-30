@@ -63,17 +63,35 @@ RSpec.describe StoreSecurityReportsWorker do
           stub_licensed_features(report_type => true)
         end
 
-        it 'executes StoreReportsService for given pipeline' do
-          expect(Security::StoreReportsService).to receive(:new)
-            .with(pipeline).once.and_call_original
-
-          described_class.new.perform(pipeline.id)
-        end
-
         it 'scans security reports for token revocation' do
           expect(::ScanSecurityReportSecretsWorker).to receive(:perform_async)
 
           described_class.new.perform(pipeline.id)
+        end
+
+        context 'when the `security_report_ingestion_framework` feature is enabled' do
+          before do
+            stub_feature_flags(security_report_ingestion_framework: project)
+          end
+
+          it 'executes IngestReportsService for given pipeline' do
+            expect(::Security::Ingestion::IngestReportsService).to receive(:execute).with(pipeline)
+
+            described_class.new.perform(pipeline.id)
+          end
+        end
+
+        context 'when the `security_report_ingestion_framework` feature is disabled' do
+          before do
+            stub_feature_flags(security_report_ingestion_framework: false)
+          end
+
+          it 'executes StoreReportsService for given pipeline' do
+            expect(Security::StoreReportsService).to receive(:new)
+              .with(pipeline).once.and_call_original
+
+            described_class.new.perform(pipeline.id)
+          end
         end
       end
     end

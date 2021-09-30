@@ -69,6 +69,8 @@ RSpec.describe 'New project', :js do
       end
 
       it '"Import project" tab creates projects with features enabled' do
+        stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack").to_return(status: 200, body: "001e# servdice=git-upload-pack")
+
         visit new_project_path
         find('[data-qa-panel-name="import_project"]').click # rubocop:disable QA/SelectorUsage
 
@@ -76,6 +78,9 @@ RSpec.describe 'New project', :js do
           first('.js-import-git-toggle-button').click
 
           fill_in 'project_import_url', with: 'http://foo.git'
+
+          wait_for_requests
+
           fill_in 'project_name', with: 'import-project-with-features1'
           fill_in 'project_path', with: 'import-project-with-features1'
           choose 'project_visibility_level_20'

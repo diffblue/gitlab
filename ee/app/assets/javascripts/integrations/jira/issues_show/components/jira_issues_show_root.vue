@@ -7,6 +7,7 @@ import {
   GlBadge,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
+import Note from 'ee/external_issues_show/components/note.vue';
 import { fetchIssue, fetchIssueStatuses, updateIssue } from 'ee/integrations/jira/issues_show/api';
 
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
@@ -15,7 +16,6 @@ import createFlash from '~/flash';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
-import Note from './note.vue';
 
 export default {
   name: 'JiraIssuesShow',

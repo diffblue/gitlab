@@ -1,6 +1,6 @@
 import { GlButton, GlIcon } from '@gitlab/ui';
 
-import IssueField from 'ee/integrations/jira/issues_show/components/sidebar/issue_field.vue';
+import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
 
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
