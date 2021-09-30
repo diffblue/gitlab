@@ -83,6 +83,14 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         end
       end
 
+      context 'when there is no suggested path based from the name' do
+        let(:group_params) { { name: '⛄⛄⛄', path: '' } }
+
+        it 'creates a group' do
+          expect { subject }.to change { Group.count }.by(1)
+        end
+      end
+
       context 'when the group cannot be created' do
         let(:group_params) { { name: '', path: '' } }
 
@@ -239,6 +247,15 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         end
 
         it { is_expected.to render_template(:new) }
+      end
+
+      context 'when there is no suggested path based from the group name' do
+        let(:group_params) { { name: '⛄⛄⛄', path: '' } }
+
+        it 'creates a group, and redirects' do
+          expect { subject }.to change { Group.count }.by(1)
+          expect(subject).to have_gitlab_http_status(:redirect)
+        end
       end
 
       context 'when group can be created' do

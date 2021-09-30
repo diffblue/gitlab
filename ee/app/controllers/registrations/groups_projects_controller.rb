@@ -22,7 +22,7 @@ module Registrations
       @group = if group_id = params[:group][:id]
                  Group.find_by_id(group_id)
                else
-                 Groups::CreateService.new(current_user, group_params).execute
+                 Groups::CreateService.new(current_user, modified_group_params).execute
                end
 
       if @group.persisted?
@@ -56,7 +56,7 @@ module Registrations
     end
 
     def import
-      @group = Groups::CreateService.new(current_user, group_params).execute
+      @group = Groups::CreateService.new(current_user, modified_group_params).execute
       if @group.persisted?
         combined_registration_experiment.track(:create_group, namespace: @group)
 
@@ -76,6 +76,16 @@ module Registrations
 
     def project_params
       params.require(:project).permit(project_params_attributes).merge(namespace_id: @group.id)
+    end
+
+    def modified_group_params
+      group_name = params.dig(:group, :name)
+
+      if group_name.present? && params.dig(:group, :path).blank?
+        group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
+      else
+        group_params
+      end
     end
   end
 end
