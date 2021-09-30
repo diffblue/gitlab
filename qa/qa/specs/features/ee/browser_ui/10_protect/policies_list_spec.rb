@@ -26,9 +26,9 @@ module QA
         it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
           Page::Project::Menu.perform(&:click_on_policies)
 
-          EE::Page::Project::Policies.perform do |policies_list|
+          EE::Page::Project::Policies::Index.perform do |policies_page|
             aggregate_failures do
-              expect(policies_list).to have_policies_list
+              expect(policies_page).to have_policies_list
             end
           end
         end
@@ -36,11 +36,11 @@ module QA
         it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
           Page::Project::Menu.perform(&:click_on_policies)
 
-          EE::Page::Project::Policies.perform(&:click_new_policy_button)
+          EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
 
-          EE::Page::Project::Policies.perform do |policy_editor|
+          EE::Page::Project::Policies::PolicyEditor.perform do |policy_editor|
             aggregate_failures do
-              expect(policies_editor).to have_policy_type_form_select
+              expect(policy_editor).to have_policy_type_form_select
             end
           end
         end

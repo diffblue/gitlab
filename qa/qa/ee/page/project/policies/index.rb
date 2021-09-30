@@ -14,14 +14,12 @@ module QA
               element :new_policy_button
             end
 
-            def policies_list?
+            def has_policies_list?
               has_element?(:policies_list)
             end
 
             def click_new_policy_button
-              within_element(:policies_container) do
-                click_element(:new_policy_button)
-              end
+              click_element(:new_policy_button)
             end
           end
         end
