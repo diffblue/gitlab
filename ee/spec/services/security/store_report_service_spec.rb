@@ -477,6 +477,15 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
         end
       end
 
+      context 'when the existing vulnerability requires manual resolution' do
+        let(:trait) { :secret_detection }
+        let!(:finding) { create(:vulnerabilities_finding, :with_secret_detection, project: project, pipelines: [pipeline]) }
+
+        it 'wont mark the vulnerability as resolved on default branch' do
+          expect { subject }.not_to change { finding.vulnerability.reload.resolved_on_default_branch }
+        end
+      end
+
       context 'when the existing resolved vulnerability is discovered again on the latest report' do
         before do
           vulnerability.update_column(:resolved_on_default_branch, true)
