@@ -260,10 +260,10 @@ module EE
     def any_project_with_shared_runners_enabled?
       if ::Feature.enabled?(:cache_shared_runners_enabled, self, default_enabled: :yaml)
         Rails.cache.fetch([self, :has_project_with_shared_runners_enabled], expires_in: 5.minutes) do
-          all_projects.with_shared_runners.any?
+          any_project_with_shared_runners_enabled_with_cte?
         end
       else
-        all_projects.with_shared_runners.any?
+        any_project_with_shared_runners_enabled_with_cte?
       end
     end
 
@@ -419,6 +419,25 @@ module EE
     end
 
     private
+
+    def any_project_with_shared_runners_enabled_with_cte?
+      if ::Feature.enabled?(:use_cte_for_any_project_with_shared_runners_enabled, self, default_enabled: :yaml)
+        projects_query = if user_namespace?
+                           projects
+                         else
+                           cte = ::Gitlab::SQL::CTE.new(:namespace_self_and_descendants_cte, self_and_descendant_ids)
+
+                           ::Project
+                             .with(cte.to_arel)
+                             .from([::Project.table_name, cte.table.name].join(', '))
+                             .where(::Project.arel_table[:namespace_id].eq(cte.table[:id]))
+                         end
+
+        projects_query.with_shared_runners.any?
+      else
+        all_projects.with_shared_runners.any?
+      end
+    end
 
     def fallback_plan
       if ::Gitlab.com?
