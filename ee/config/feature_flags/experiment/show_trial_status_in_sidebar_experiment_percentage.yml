@@ -1,8 +1,0 @@
----
-name: show_trial_status_in_sidebar_experiment_percentage
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/50090
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/281019
-milestone: '13.8'
-type: experiment
-group: group::conversion
-default_enabled: false

@@ -15,12 +15,17 @@ RSpec.describe 'Billing plan pages', :feature, :js do
   let(:plans_data) { billing_plans_data }
 
   before do
+    stub_application_setting(check_namespace_plan: true)
+
     stub_feature_flags(show_billing_eoa_banner: true)
     stub_feature_flags(hide_deprecated_billing_plans: false)
+
+    stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
     stub_eoa_eligibility_request(namespace.id)
-    stub_application_setting(check_namespace_plan: true)
+
     allow(Gitlab).to receive(:com?) { true }
+
     sign_in(user)
   end
 
@@ -412,8 +417,11 @@ RSpec.describe 'Billing plan pages', :feature, :js do
         let(:plan) { free_plan }
 
         let!(:subscription) do
-          create(:gitlab_subscription, namespace: namespace, hosted_plan: premium_plan,
-                 trial: true, trial_ends_on: Date.current.tomorrow, seats: 15)
+          create(:gitlab_subscription, :active_trial,
+            namespace: namespace,
+            hosted_plan: premium_plan,
+            seats: 15
+          )
         end
 
         before do
