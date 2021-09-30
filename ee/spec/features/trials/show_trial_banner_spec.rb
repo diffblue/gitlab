@@ -3,37 +3,40 @@
 require 'spec_helper'
 
 RSpec.describe 'Show trial banner', :js do
-  include StubRequests
   include SubscriptionPortalHelpers
 
-  let!(:user) { create(:user) }
-  let!(:group) { create(:group) }
-  let!(:ultimate_plan) { create(:ultimate_plan) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+
+  let(:ultimate_plan) { create(:ultimate_plan) }
 
   before do
     stub_application_setting(check_namespace_plan: true)
     allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
-    stub_billing_plans(namespace_id)
+    stub_billing_plans(nil)
 
-    group.add_owner(user)
-    create(:gitlab_subscription, namespace: user.namespace, hosted_plan: ultimate_plan, trial: true, trial_ends_on: Date.current + 1.month)
-    create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, trial: true, trial_ends_on: Date.current + 1.month)
-
-    gitlab_sign_in(user)
+    sign_in(user)
   end
 
   context "when user's trial is active" do
-    let(:namespace_id) { user.namespace_id }
+    before do
+      create(:gitlab_subscription, :active_trial, namespace: user.namespace, hosted_plan: ultimate_plan)
+      stub_billing_plans(user.namespace_id)
+    end
 
     it 'renders congratulations banner for user in profile billing page' do
-      visit profile_billings_path + '?trial=true'
+      visit profile_billings_path(trial: true)
 
       expect(page).to have_content('Congratulations, your free trial is activated.')
     end
   end
 
   context "when group's trial is active" do
-    let(:namespace_id) { group.id }
+    before do
+      group.add_owner(user)
+      create(:gitlab_subscription, :active_trial, namespace: group, hosted_plan: ultimate_plan)
+      stub_billing_plans(group.id)
+    end
 
     it 'renders congratulations banner for group in group details page' do
       visit group_path(group, trial: true)
