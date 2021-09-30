@@ -192,12 +192,13 @@ At this point, your **secondary** node contains an up-to-date copy of everything
 
 ## Promote the **secondary** node
 
-Finally, follow the [Disaster Recovery docs](index.md) to promote the
-**secondary** node to a **primary** node. This process causes a brief outage on the **secondary** node, and users may need to log in again.
+After the replication is finished, [promote the **secondary** node to a **primary** node](index.md). This process causes a brief outage on the **secondary** node, and users may need to log in again. If you follow the steps correctly, the old primary Geo site should still be disabled and user traffic should go to the newly-promoted site instead.
 
-Once it is completed, the maintenance window is over! Your new **primary** node, now
-begin to diverge from the old one. If problems do arise at this point, failing
+When the promotion is completed, the maintenance window is over, and your new **primary** node now
+begins to diverge from the old one. If problems do arise at this point, failing
 back to the old **primary** node [is possible](bring_primary_back.md), but likely to result
 in the loss of any data uploaded to the new **primary** in the meantime.
 
-Don't forget to remove the broadcast message after failover is complete.
+Don't forget to remove the broadcast message after the failover is complete.
+
+Finally, you can bring the [old site back as a secondary](bring_primary_back.md#configure-the-former-primary-node-to-be-a-secondary-node).
