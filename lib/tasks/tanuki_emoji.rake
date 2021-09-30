@@ -25,7 +25,7 @@ namespace :tanuki_emoji do
     emojis_map = {}
 
     TanukiEmoji.index.all.each do |emoji|
-      emoji_path = File.join(TanukiEmoji.images_path, emoji.image_name)
+      emoji_path = Gitlab::Emoji.emoji_public_absolute_path.join("#{emoji.name}.png")
 
       digest_entry = {
         category: emoji.category,
@@ -53,10 +53,38 @@ namespace :tanuki_emoji do
       handle.write(Gitlab::Json.pretty_generate(digest_emoji_map))
     end
 
-    emojis_json = File.join(Rails.root, 'public', '-', 'emojis', '1', 'emojis.json')
+    emojis_json = Gitlab::Emoji.emoji_public_absolute_path.join('emojis.json')
     File.open(emojis_json, 'w') do |handle|
       handle.write(Gitlab::Json.pretty_generate(emojis_map))
     end
+  end
+
+  desc 'Import emoji assets from TanukiEmoji to versioned folder'
+  task import: :environment do
+    require 'mini_magick'
+
+    # Setting to the same size as previous gemojione images
+    EMOJI_SIZE = 64
+
+    emoji_dir = Gitlab::Emoji.emoji_public_absolute_path
+
+    puts "Importing emojis into: #{emoji_dir} ..."
+
+    # Re-create the assets folder and copy emojis renaming them to use name instead of unicode hex
+    FileUtils.rm_rf(emoji_dir) if Dir.exist?(emoji_dir)
+    FileUtils.mkdir_p(emoji_dir, mode: 0700)
+
+    TanukiEmoji.index.all.each do |emoji|
+      source = File.join(TanukiEmoji.images_path, emoji.image_name)
+      destination = File.join(emoji_dir, "#{emoji.name}.png")
+
+      FileUtils.cp(source, destination)
+      resize!(destination, EMOJI_SIZE)
+      print emoji.codepoints
+    end
+
+    puts
+    puts "Done!"
   end
 
   # This task will generate a standard and Retina sprite of all of the current
@@ -67,7 +95,6 @@ namespace :tanuki_emoji do
   # occasionally, such as when new Emojis are added to Gemojione.
   task sprite: :environment do
     begin
-      require 'mini_magick'
       require 'sprite_factory'
       # Sprite-Factory still requires rmagick, but maybe could be migrated to support minimagick
       # Upstream issue: https://github.com/jakesgordon/sprite-factory/issues/47#issuecomment-929302890
@@ -86,17 +113,9 @@ namespace :tanuki_emoji do
     SPRITESHEET_WIDTH = 860
     SPRITESHEET_HEIGHT = 840
 
-    # Re-create the assets folder and copy emojis renaming them to use name instead of unicode hex
-    emoji_dir = "app/assets/images/emoji"
-    FileUtils.rm_rf(emoji_dir)
-    FileUtils.mkdir_p(emoji_dir, mode: 0700)
+    emoji_dir = Gitlab::Emoji.emoji_public_absolute_path
 
-    TanukiEmoji.index.all.each do |emoji|
-      source = File.join(TanukiEmoji.images_path, emoji.image_name)
-      destination = File.join(emoji_dir, "#{emoji.name}.png")
-
-      FileUtils.cp(source, destination)
-    end
+    puts "Preparing sprites for regular size: #{SIZE}px..."
 
     Dir.mktmpdir do |tmpdir|
       FileUtils.cp_r(File.join(emoji_dir, '.'), tmpdir)
@@ -105,10 +124,15 @@ namespace :tanuki_emoji do
         Dir["**/*.png"].each do |png|
           tmp_image_path = File.join(tmpdir, png)
           resize!(tmp_image_path, SIZE)
+          print emoji.codepoints
         end
       end
 
-      style_path = Rails.root.join(*%w(app assets stylesheets framework emoji_sprites.scss))
+      puts
+
+      style_path = Rails.root.join(*%w(app assets stylesheets emoji_sprites.scss))
+
+      puts "Compiling sprites regular sprites..."
 
       # Combine the resized assets into a packed sprite and re-generate the SCSS
       SpriteFactory.cssurl = "image-url('$IMAGE')"
@@ -140,19 +164,23 @@ namespace :tanuki_emoji do
           height: #{SIZE}px;
           width: #{SIZE}px;
 
+          /* stylelint-disable media-feature-name-no-vendor-prefix */
           @media only screen and (-webkit-min-device-pixel-ratio: 2),
-                 only screen and (min--moz-device-pixel-ratio: 2),
-                 only screen and (-o-min-device-pixel-ratio: 2/1),
-                 only screen and (min-device-pixel-ratio: 2),
-                 only screen and (min-resolution: 192dpi),
-                 only screen and (min-resolution: 2dppx) {
+            only screen and (min--moz-device-pixel-ratio: 2),
+            only screen and (-o-min-device-pixel-ratio: 2/1),
+            only screen and (min-device-pixel-ratio: 2),
+            only screen and (min-resolution: 192dpi),
+            only screen and (min-resolution: 2dppx) {
             background-image: image-url('emoji@2x.png');
             background-size: #{SPRITESHEET_WIDTH}px #{SPRITESHEET_HEIGHT}px;
           }
+          /* stylelint-enable media-feature-name-no-vendor-prefix */
         }
         CSS
       end
     end
+
+    puts "Preparing sprites for HiDPI size: #{RETINA}px..."
 
     # Now do it again but for Retina
     Dir.mktmpdir do |tmpdir|
@@ -163,8 +191,13 @@ namespace :tanuki_emoji do
         Dir["**/*.png"].each do |png|
           tmp_image_path = File.join(tmpdir, png)
           resize!(tmp_image_path, RETINA)
+          print emoji.codepoints
         end
       end
+
+      puts
+
+      puts "Compiling HiDPI sprites..."
 
       # Combine the resized assets into a packed sprite and re-generate the SCSS
       SpriteFactory.run!(tmpdir, {
@@ -175,12 +208,13 @@ namespace :tanuki_emoji do
         layout:       :packed
       })
     end
+
+    puts "Done!"
   end
 
   def check_requirements!
-    return if defined?(Magick)
-
-    puts <<-MSG.strip_heredoc
+    unless defined?(Magick)
+      puts <<~MSG
       This task is disabled by default and should only be run when the TanukiEmoji
       gem is updated with new Emojis.
 
@@ -193,6 +227,19 @@ namespace :tanuki_emoji do
 
       brew unlink imagemagick
       brew install imagemagick@6 && brew link imagemagick@6 --force
+      MSG
+
+      exit 1
+    end
+
+    return if Dir.exist? Gitlab::Emoji.emoji_public_absolute_path
+
+    puts <<~MSG
+    You first need to import the assets for Emoji version: #{Gitlab::Emoji::EMOJI_VERSION}
+
+    Run the following task:
+
+    rake tanuki_emoji:import
     MSG
 
     exit 1

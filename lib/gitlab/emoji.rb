@@ -4,6 +4,17 @@ module Gitlab
   module Emoji
     extend self
 
+    # When updating emoji assets increase the version below
+    # and update the version number in `app/assets/javascripts/emoji/index.js`
+    EMOJI_VERSION = 1
+
+    # Return a Pathname to emoji's current versioned folder
+    #
+    # @return [Pathname] Absolute Path to versioned emojis folder in `public`
+    def emoji_public_absolute_path
+      Rails.root.join("public/-/emojis/#{EMOJI_VERSION}")
+    end
+
     def emoji_image_tag(name, src)
       image_options = {
         class:  'emoji',
