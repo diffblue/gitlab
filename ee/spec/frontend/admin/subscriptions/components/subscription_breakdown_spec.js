@@ -255,7 +255,7 @@ describe('Subscription Breakdown', () => {
       it.each`
         url                  | type                              | shouldShow
         ${licenseRemovePath} | ${subscriptionTypes.LICENSE_FILE} | ${true}
-        ${licenseRemovePath} | ${subscriptionTypes.CLOUD}        | ${false}
+        ${licenseRemovePath} | ${subscriptionTypes.CLOUD}        | ${true}
         ${''}                | ${subscriptionTypes.LICENSE_FILE} | ${false}
         ${''}                | ${subscriptionTypes.CLOUD}        | ${false}
         ${undefined}         | ${subscriptionTypes.LICENSE_FILE} | ${false}

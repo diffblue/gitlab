@@ -16,6 +16,22 @@ RSpec.describe 'Admin views Subscription', :js do
     end
   end
 
+  shared_examples 'license removal' do
+    context 'when removing a license file' do
+      before do
+        accept_alert do
+          click_on 'Remove license'
+        end
+      end
+
+      it 'shows a message saying the license was correctly removed' do
+        page.within(find('#content-body', match: :first)) do
+          expect(page).to have_content('The license was removed.')
+        end
+      end
+    end
+  end
+
   context 'with a cloud license' do
     let!(:license) { create_current_license(cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN) }
 
@@ -51,6 +67,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it_behaves_like 'an "Export license usage file" button'
+      it_behaves_like 'license removal'
     end
   end
 
@@ -62,20 +79,7 @@ RSpec.describe 'Admin views Subscription', :js do
     end
 
     it_behaves_like 'an "Export license usage file" button'
-
-    context 'when removing a license file' do
-      before do
-        accept_alert do
-          click_on 'Remove license'
-        end
-      end
-
-      it 'shows a message saying the license was correctly removed' do
-        page.within(find('#content-body', match: :first)) do
-          expect(page).to have_content('The license was removed.')
-        end
-      end
-    end
+    it_behaves_like 'license removal'
 
     context 'when activating another subscription' do
       before do

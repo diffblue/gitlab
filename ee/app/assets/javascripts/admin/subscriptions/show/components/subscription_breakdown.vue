@@ -93,7 +93,7 @@ export default {
       return this.licenseUploadPath && this.isLicenseFileType;
     },
     canRemoveLicense() {
-      return this.licenseRemovePath && this.isLicenseFileType;
+      return this.licenseRemovePath;
     },
     hasSubscription() {
       return Boolean(Object.keys(this.subscription).length);

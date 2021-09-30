@@ -86,13 +86,17 @@ RSpec.describe API::License, api: true do
 
     let(:endpoint) { "/license/#{license.id}" }
 
-    it 'destroys a license and returns 204' do
-      delete api(endpoint, admin)
+    shared_examples 'license removal' do
+      it 'destroys a license and returns 204' do
+        delete api(endpoint, admin)
 
-      expect(response).to have_gitlab_http_status(:no_content)
-      expect(response.message).to eq('No Content')
-      expect(License.where(id: license.id)).not_to exist
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(response.message).to eq('No Content')
+        expect(License.where(id: license.id)).not_to exist
+      end
     end
+
+    it_behaves_like 'license removal'
 
     it "returns an error if the license doesn't exist" do
       delete api("/license/0", admin)
@@ -111,12 +115,7 @@ RSpec.describe API::License, api: true do
     context 'with a cloud license' do
       let(:cloud_licensing_enabled) { true }
 
-      it 'returns 422 and does not delete the license' do
-        delete api(endpoint, admin)
-
-        expect(response).to have_gitlab_http_status(:unprocessable_entity)
-        expect(License.where(id: license.id)).to exist
-      end
+      it_behaves_like 'license removal'
     end
   end
 

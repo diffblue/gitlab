@@ -16,6 +16,16 @@ RSpec.describe Licenses::DestroyService do
 
       expect(License.where(id: license.id)).not_to exist
     end
+
+    context 'with cloud license' do
+      let(:license) { create(:license, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN) }
+
+      it 'destroys a license' do
+        destroy_with(user)
+
+        expect(License.where(id: license.id)).not_to exist
+      end
+    end
   end
 
   context 'when admin mode is disabled' do

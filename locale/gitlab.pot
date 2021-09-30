@@ -7189,9 +7189,6 @@ msgstr ""
 msgid "Cloud Run description and apps that are suitable for this deployment target"
 msgstr ""
 
-msgid "Cloud licenses can not be removed."
-msgstr ""
-
 msgid "Cluster"
 msgstr ""
 
