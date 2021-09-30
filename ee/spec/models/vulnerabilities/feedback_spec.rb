@@ -159,6 +159,15 @@ RSpec.describe Vulnerabilities::Feedback do
     end
   end
 
+  describe '.by_finding_uuid' do
+    let(:feedback_1) { create(:vulnerability_feedback) }
+    let(:feedback_2) { create(:vulnerability_feedback) }
+
+    subject { described_class.by_finding_uuid([feedback_2.finding_uuid]) }
+
+    it { is_expected.to eq([feedback_2]) }
+  end
+
   describe '.with_category' do
     it 'filters by category' do
       described_class.categories.each do |category, _|
