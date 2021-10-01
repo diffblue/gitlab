@@ -117,9 +117,26 @@ RSpec.describe 'Epic show', :js do
         expect(find('.content-wrapper .container-fluid:not(.breadcrumbs)')[:class]).not_to include('container-limited')
       end
     end
+
+    it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures do
+      find('.js-epic-tabs-container #roadmap-tab').click
+      wait_for_all_requests # Wait for Roadmap bundle load and then Epics fetch load
+
+      page.within('.js-epic-tabs-content') do
+        expect(page).to have_selector('#roadmap.tab-pane', visible: true)
+        expect(page).to have_selector('#tree.tab-pane', visible: false)
+      end
+
+      find('.js-epic-tabs-container #tree-tab').click
+
+      page.within('.js-epic-tabs-content') do
+        expect(page).to have_selector('#tree.tab-pane', visible: true)
+        expect(page).to have_selector('#roadmap.tab-pane', visible: false)
+      end
+    end
   end
 
-  describe 'when sub-epics feature not is available' do
+  describe 'when the sub-epics feature is not available' do
     before do
       visit group_epic_path(group, epic)
     end
