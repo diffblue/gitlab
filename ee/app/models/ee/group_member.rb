@@ -8,10 +8,6 @@ module EE
     prepended do
       include UsageStatistics
 
-      STATE_CREATED = 0
-      STATE_AWAITING = 1
-      STATE_ACTIVE = 2
-
       validate :sso_enforcement, if: :group
       validate :group_domain_limitations, if: :group_has_domain_limitations?
 
@@ -29,24 +25,6 @@ module EE
       scope :guests, -> { where(access_level: ::Gitlab::Access::GUEST) }
       scope :non_owners, -> { where("members.access_level < ?", ::Gitlab::Access::OWNER) }
       scope :by_user_id, ->(user_id) { where(user_id: user_id) }
-
-      state_machine :state, initial: :created do
-        event :wait do
-          transition created: :awaiting
-          transition active: :awaiting
-        end
-
-        event :activate do
-          transition created: :active
-          transition awaiting: :active
-        end
-
-        state :created, value: STATE_CREATED
-        state :awaiting, value: STATE_AWAITING
-        state :active, value: STATE_ACTIVE
-      end
-
-      before_create :set_membership_activation
     end
 
     class_methods do
@@ -95,12 +73,6 @@ module EE
       super
 
       execute_hooks_for(:destroy)
-    end
-
-    def set_membership_activation
-      return unless ::Feature.enabled?(:saas_user_caps, group, default_enabled: :yaml)
-
-      self.state = group.user_cap_reached? ? STATE_AWAITING : STATE_ACTIVE
     end
 
     def execute_hooks_for(event)
