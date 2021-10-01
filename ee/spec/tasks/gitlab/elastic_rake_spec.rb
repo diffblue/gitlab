@@ -244,4 +244,60 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
       expect { subject }.to output(/your cluster size should be at least 20.5 MB/).to_stdout
     end
   end
+
+  describe 'pause_indexing' do
+    subject { run_rake_task('gitlab:elastic:pause_indexing') }
+
+    let(:settings) { ::Gitlab::CurrentSettings }
+
+    before do
+      allow(settings).to receive(:elasticsearch_pause_indexing?).and_return(indexing_paused)
+    end
+
+    context 'when indexing is already paused' do
+      let(:indexing_paused) { true }
+
+      it 'does not do anything' do
+        expect(settings).not_to receive(:update!)
+        expect { subject }.to output(/Indexing is already paused/).to_stdout
+      end
+    end
+
+    context 'when indexing is running' do
+      let(:indexing_paused) { false }
+
+      it 'pauses indexing' do
+        expect(settings).to receive(:update!).with(elasticsearch_pause_indexing: true)
+        expect { subject }.to output(/Indexing is now paused/).to_stdout
+      end
+    end
+
+    describe 'resume_indexing' do
+      subject { run_rake_task('gitlab:elastic:resume_indexing') }
+
+      let(:settings) { ::Gitlab::CurrentSettings }
+
+      before do
+        allow(settings).to receive(:elasticsearch_pause_indexing?).and_return(indexing_paused)
+      end
+
+      context 'when indexing is already running' do
+        let(:indexing_paused) { false }
+
+        it 'does not do anything' do
+          expect(settings).not_to receive(:update!)
+          expect { subject }.to output(/Indexing is already running/).to_stdout
+        end
+      end
+
+      context 'when indexing is not running' do
+        let(:indexing_paused) { true }
+
+        it 'resumes indexing' do
+          expect(settings).to receive(:update!).with(elasticsearch_pause_indexing: false)
+          expect { subject }.to output(/Indexing is now running/).to_stdout
+        end
+      end
+    end
+  end
 end

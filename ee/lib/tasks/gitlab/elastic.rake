@@ -178,6 +178,30 @@ namespace :gitlab do
       puts 'Please note that it is possible to index only selected namespaces/projects by using Elasticsearch indexing restrictions.'
     end
 
+    desc "GitLab | Elasticsearch | Pause indexing"
+    task pause_indexing: :environment do
+      puts "Pausing indexing...".color(:green)
+
+      if ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
+        puts "Indexing is already paused.".color(:orange)
+      else
+        ::Gitlab::CurrentSettings.update!(elasticsearch_pause_indexing: true)
+        puts "Indexing is now paused.".color(:green)
+      end
+    end
+
+    desc "GitLab | Elasticsearch | Resume indexing"
+    task resume_indexing: :environment do
+      puts "Resuming indexing...".color(:green)
+
+      if ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
+        ::Gitlab::CurrentSettings.update!(elasticsearch_pause_indexing: false)
+        puts "Indexing is now running.".color(:green)
+      else
+        puts "Indexing is already running.".color(:orange)
+      end
+    end
+
     def project_id_batches(&blk)
       relation = Project.all
 
