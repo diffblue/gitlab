@@ -189,7 +189,7 @@ RSpec.describe Groups::GroupMembersController do
             post :request_access, params: { group_id: group }
 
             expect(controller).to set_flash.to "Your request for access could not be processed: "\
-              "User email 'unverified@gitlab.com' is not a verified email."
+              "The member's email address email 'unverified@gitlab.com' is not a verified email."
             expect(response).to redirect_to(group_path(group))
             expect(group.requesters.exists?(user_id: requesting_user)).to be_falsey
             expect(group.users).not_to include requesting_user

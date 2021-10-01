@@ -21,40 +21,37 @@ RSpec.describe API::Invitations, 'EE Invitations' do
     end
   end
 
-  shared_examples 'admin signup restrictions email error' do
-    context 'when restricted by admin signup restriction - denylist' do
-      before do
-        stub_application_setting(domain_denylist_enabled: true)
-        stub_application_setting(domain_denylist: ['example.org'])
-      end
-
-      # this response code should be changed to 4xx: https://gitlab.com/gitlab-org/gitlab/-/issues/321706
-      it_behaves_like 'restricted email error', 'User is not from an allowed domain.', :created
+  shared_examples 'admin signup restrictions email error - denylist' do |message, code|
+    before do
+      stub_application_setting(domain_denylist_enabled: true)
+      stub_application_setting(domain_denylist: ['example.org'])
     end
 
-    context 'when restricted by admin signup restriction - allowlist' do
-      before do
-        stub_application_setting(domain_allowlist: ['example.com'])
-      end
+    it_behaves_like 'restricted email error', message, code
+  end
 
-      # this response code should be changed to 4xx: https://gitlab.com/gitlab-org/gitlab/-/issues/321706
-      it_behaves_like 'restricted email error', 'User domain is not authorized for sign-up.', :created
+  shared_examples 'admin signup restrictions email error - allowlist' do |message, code|
+    before do
+      stub_application_setting(domain_allowlist: ['example.com'])
     end
 
-    context 'when restricted by admin signup restriction - email restrictions' do
-      before do
-        stub_application_setting(email_restrictions_enabled: true)
-        stub_application_setting(email_restrictions: '([\+]|\b(\w*example.org\w*)\b)')
-      end
+    it_behaves_like 'restricted email error', message, code
+  end
 
-      # this response code should be changed to 4xx: https://gitlab.com/gitlab-org/gitlab/-/issues/321706
-      it_behaves_like 'restricted email error', 'User is not allowed. Try again with a different email address, or contact your GitLab admin.', :created
+  shared_examples 'admin signup restrictions email error - email restrictions' do |message, code|
+    before do
+      stub_application_setting(email_restrictions_enabled: true)
+      stub_application_setting(email_restrictions: '([\+]|\b(\w*example.org\w*)\b)')
     end
+
+    it_behaves_like 'restricted email error', message, code
   end
 
   describe 'POST /groups/:id/invitations' do
+    it_behaves_like 'admin signup restrictions email error - denylist', "The member's email address is not allowed for this group. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check the &#39;Domain denylist&#39;.", :created
     context 'when the group is restricted by admin signup restrictions' do
-      it_behaves_like 'admin signup restrictions email error'
+      it_behaves_like 'admin signup restrictions email error - allowlist', "The member's email address is not allowed for this group. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Allowed domains for sign-ups&#39;.", :created
+      it_behaves_like 'admin signup restrictions email error - email restrictions', "The member's email address is not allowed for this group. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Email restrictions for sign-ups&#39;.", :created
     end
 
     context 'when the group is restricted by group signup restriction - allowed domains for signup' do
@@ -63,8 +60,7 @@ RSpec.describe API::Invitations, 'EE Invitations' do
         create(:allowed_email_domain, group: group, domain: 'example.com')
       end
 
-      # this response code should be changed to 4xx: https://gitlab.com/gitlab-org/gitlab/-/issues/321706
-      it_behaves_like 'restricted email error', "Invite email email does not match the allowed domain of example.com", :success
+      it_behaves_like 'restricted email error', "The member's email address is not allowed for this group. Go to the group’s &#39;Settings &gt; General&#39; page, and check &#39;Restrict membership by email domain&#39;.", :success
     end
   end
 
@@ -74,7 +70,11 @@ RSpec.describe API::Invitations, 'EE Invitations' do
     let(:url) { "/projects/#{project.id}/invitations" }
 
     context 'when the project is restricted by admin signup restrictions' do
-      it_behaves_like 'admin signup restrictions email error'
+      it_behaves_like 'admin signup restrictions email error - denylist', "The member's email address is not allowed for this project. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check the &#39;Domain denylist&#39;.", :created
+      context 'when the group is restricted by admin signup restrictions' do
+        it_behaves_like 'admin signup restrictions email error - allowlist', "The member's email address is not allowed for this project. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Allowed domains for sign-ups&#39;.", :created
+        it_behaves_like 'admin signup restrictions email error - email restrictions', "The member's email address is not allowed for this project. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Email restrictions for sign-ups&#39;.", :created
+      end
     end
   end
 end

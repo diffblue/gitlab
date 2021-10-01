@@ -53,7 +53,7 @@ RSpec.shared_examples 'member validations' do
   end
 end
 
-RSpec.shared_examples 'member group domain validations' do
+RSpec.shared_examples 'member group domain validations' do |source_type|
   context 'validates group domain limitations' do
     let(:group) { create(:group) }
     let(:gitlab_user) { create(:user, email: 'test@gitlab.com') }
@@ -77,11 +77,20 @@ RSpec.shared_examples 'member group domain validations' do
         expect(build(member_type, source: source, user: acme_user)).to be_valid
       end
 
-      it 'shows proper error message' do
+      it 'shows proper error message when not invited by admin' do
         member = build(member_type, source: source, user: gmail_user)
+        allow(member).to receive_message_chain(:created_by, :can_admin_all_resources?).and_return(false)
 
         expect(member).to be_invalid
-        expect(member.errors[:user]).to include("email does not match the allowed domains: gitlab.com, acme.com")
+        expect(member.errors[:user]).to include("is not allowed for this #{source_type}. Check with your administrator.")
+      end
+
+      it 'shows proper error message when invited by admin' do
+        member = build(member_type, source: source, user: gmail_user)
+        allow(member).to receive_message_chain(:created_by, :can_admin_all_resources?).and_return(true)
+
+        expect(member).to be_invalid
+        expect(member.errors[:user]).to include("is not allowed for this #{source_type}. Go to the group’s &#39;Settings &gt; General&#39; page, and check &#39;Restrict membership by email domain&#39;.")
       end
 
       it 'shows proper error message for single domain limitation' do
@@ -89,7 +98,7 @@ RSpec.shared_examples 'member group domain validations' do
         member = build(member_type, source: source, user: gmail_user)
 
         expect(member).to be_invalid
-        expect(member.errors[:user]).to include("email does not match the allowed domain of gitlab.com")
+        expect(member.errors[:user]).to include("is not allowed for this #{source_type}. Check with your administrator.")
       end
 
       it 'invited email must match at least one of the allowed domain emails' do

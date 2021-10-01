@@ -95,7 +95,7 @@ RSpec.describe ProjectMember do
     let(:subgroup) { create(:group, parent: group) }
     let(:nested_source) { create(:project, namespace: subgroup) }
 
-    it_behaves_like 'member group domain validations'
+    it_behaves_like 'member group domain validations', 'project'
 
     it 'does not validate personal projects' do
       unconfirmed_gitlab_user = create(:user, :unconfirmed, email: 'unverified@gitlab.com')
