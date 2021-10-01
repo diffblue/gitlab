@@ -43,16 +43,6 @@ RSpec.describe Ci::StuckBuilds::DropScheduledService do
     end
   end
 
-  context 'for deleted project' do
-    let(:scheduled_at) { 2.days.ago }
-
-    before do
-      job.project.update!(pending_delete: true)
-    end
-
-    it_behaves_like 'job is dropped with failure reason', 'stale_schedule'
-  end
-
   context 'when there are no stale scheduled builds' do
     let(:job) { }
 

@@ -69,15 +69,4 @@ RSpec.describe Ci::StuckBuilds::DropRunningService do
       end
     end
   end
-
-  context 'for deleted project' do
-    let(:status) { 'running' }
-    let(:updated_at) { 2.days.ago }
-
-    before do
-      job.project.update!(pending_delete: true)
-    end
-
-    it_behaves_like 'job is dropped with failure reason', 'stuck_or_timeout_failure'
-  end
 end
