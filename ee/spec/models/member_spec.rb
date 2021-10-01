@@ -161,4 +161,82 @@ RSpec.describe Member, type: :model do
       end
     end
   end
+
+  context 'check if user cap has been reached' do
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, namespace: group)}
+
+    let!(:user) { create(:user) }
+
+    subject(:add_user_to_group) { group.add_developer(user) }
+
+    context 'when the :saas_user_caps feature flag is disabled' do
+      before do
+        stub_feature_flags(saas_user_caps: false)
+      end
+
+      it 'leaves the group member state to created' do
+        add_user_to_group
+
+        expect(user.group_members.last).to be_created
+      end
+
+      it 'leaves the project member state to created' do
+        project.add_developer(user)
+
+        expect(user.project_members.last).to be_created
+      end
+    end
+
+    context 'when the :saas_user_caps feature flag is enabled' do
+      before do
+        stub_feature_flags(saas_user_caps: group)
+
+        allow(project.group).to receive(:user_cap_reached?).and_return(user_cap_reached)
+        allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
+      end
+
+      context 'when the user cap for this group has not been reached' do
+        let(:user_cap_reached) { false }
+
+        it 'sets the group member to active' do
+          add_user_to_group
+
+          expect(user.group_members.last).to be_active
+        end
+
+        it 'sets the project member to active' do
+          project.add_developer(user)
+
+          expect(user.project_members.last).to be_active
+        end
+      end
+
+      context 'when the user cap for this group has been reached' do
+        let(:user_cap_reached) { true }
+
+        it 'sets the group member to awaiting' do
+          add_user_to_group
+
+          expect(user.group_members.last).to be_awaiting
+        end
+
+        it 'sets the project member to awaiting' do
+          project.add_developer(user)
+
+          expect(user.project_members.last).to be_awaiting
+        end
+      end
+    end
+
+    context 'when user is added to a group-less project' do
+      let(:project) { create(:project) }
+
+      it 'adds project member and leaves the state to created' do
+        project.add_developer(user)
+
+        expect(user.project_members.last).to be_created
+      end
+    end
+  end
 end

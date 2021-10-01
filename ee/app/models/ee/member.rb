@@ -6,6 +6,28 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      STATE_CREATED = 0
+      STATE_AWAITING = 1
+      STATE_ACTIVE = 2
+
+      state_machine :state, initial: :created do
+        event :wait do
+          transition created: :awaiting
+          transition active: :awaiting
+        end
+
+        event :activate do
+          transition created: :active
+          transition awaiting: :active
+        end
+
+        state :created, value: STATE_CREATED
+        state :awaiting, value: STATE_AWAITING
+        state :active, value: STATE_ACTIVE
+      end
+
+      before_create :set_membership_activation
+
       scope :with_csv_entity_associations, -> do
         includes(:user, source: [:route, :parent])
       end
@@ -118,6 +140,12 @@ module EE
 
     def email_not_verified
       _("email '%{email}' is not a verified email." % { email: user.email })
+    end
+
+    def set_membership_activation
+      return unless group && ::Feature.enabled?(:saas_user_caps, group, default_enabled: :yaml)
+
+      self.state = group.user_cap_reached? ? STATE_AWAITING : STATE_ACTIVE
     end
   end
 end
