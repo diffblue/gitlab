@@ -130,7 +130,7 @@ export const EXTENSION_ICON_CLASS = {
   error: 'gl-text-red-500',
   notice: 'gl-text-gray-500',
   severityCritical: 'gl-text-red-800',
-  severityHigh: 'gl-text-red-500',
+  severityHigh: 'gl-text-red-600',
   severityMedium: 'gl-text-orange-400',
   severityLow: 'gl-text-orange-300',
   severityInfo: 'gl-text-blue-400',
