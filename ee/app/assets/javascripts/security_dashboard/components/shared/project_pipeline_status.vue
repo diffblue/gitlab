@@ -39,9 +39,6 @@ export default {
     },
   },
   i18n: {
-    title: __(
-      'The Vulnerability Report shows the results of the last successful pipeline run on the default branch.',
-    ),
     lastUpdated: __('Last updated'),
     autoFixSolutions: s__('AutoRemediation|Auto-fix solutions'),
     autoFixMrsLink: s__('AutoRemediation|%{mrsCount} ready for review'),
@@ -51,7 +48,6 @@ export default {
 
 <template>
   <div v-if="shouldShowPipelineStatus">
-    <h6 class="gl-font-weight-normal">{{ $options.i18n.title }}</h6>
     <div
       class="gl-display-flex gl-align-items-center gl-border-solid gl-border-1 gl-border-gray-100 gl-p-6"
     >
