@@ -151,6 +151,7 @@ RSpec.describe Projects::ThreatMonitoringController do
             project,
             environment_id: environment_id,
             id: 'policy',
+            type: :container_policy,
             kind: kind
           )
         )

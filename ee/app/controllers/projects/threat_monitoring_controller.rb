@@ -19,7 +19,7 @@ module Projects
         project,
         environment_id: params[:environment_id],
         id: params[:id],
-        type: params[:type],
+        type: :container_policy,
         kind: params[:kind]
       )
     end

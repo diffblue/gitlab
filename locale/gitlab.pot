@@ -22541,9 +22541,6 @@ msgstr ""
 msgid "NetworkPolicies|Network traffic"
 msgstr ""
 
-msgid "NetworkPolicies|New policy"
-msgstr ""
-
 msgid "NetworkPolicies|None selected"
 msgstr ""
 
