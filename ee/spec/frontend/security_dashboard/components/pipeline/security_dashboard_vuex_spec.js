@@ -1,9 +1,8 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { merge } from 'lodash';
 import { nextTick } from 'vue';
 import Vuex from 'vuex';
-import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';
 import LoadingError from 'ee/security_dashboard/components/pipeline/loading_error.vue';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
@@ -45,7 +44,7 @@ describe('Security Dashboard component', () => {
       }),
     );
 
-    wrapper = mount(SecurityDashboard, {
+    wrapper = shallowMount(SecurityDashboard, {
       store,
       propsData: {
         dashboardDocumentation: '',
@@ -71,10 +70,6 @@ describe('Security Dashboard component', () => {
   describe('default', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('renders the filters', () => {
-      expect(wrapper.find(Filters).exists()).toBe(true);
     });
 
     it('renders the security dashboard table ', () => {
