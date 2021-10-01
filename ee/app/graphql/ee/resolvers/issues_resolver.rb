@@ -16,6 +16,9 @@ module EE
         argument :epic_id, GraphQL::Types::String,
                  required: false,
                  description: 'ID of an epic associated with the issues, "none" and "any" values are supported.'
+        argument :include_subepics, GraphQL::Types::Boolean,
+                 required: false,
+                 description: 'Whether to include subepics when filtering issues by epicId.'
         argument :weight, GraphQL::Types::String,
                  required: false,
                  description: 'Weight applied to the issue, "none" and "any" values are supported.'

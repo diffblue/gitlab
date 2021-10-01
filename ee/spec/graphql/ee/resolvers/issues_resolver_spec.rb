@@ -12,7 +12,7 @@ RSpec.describe Resolvers::IssuesResolver do
   context "with a project" do
     describe '#resolve' do
       let_it_be(:epic1) { create :epic, group: group }
-      let_it_be(:epic2) { create :epic, group: group }
+      let_it_be(:epic2) { create :epic, group: group, parent: epic1 }
 
       let_it_be(:iteration1) { create(:iteration, group: group, start_date: 2.weeks.ago, due_date: 1.week.ago) }
       let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now) }
@@ -133,6 +133,10 @@ RSpec.describe Resolvers::IssuesResolver do
 
         it 'returns issues with any epic when epic_id is specific' do
           expect(resolve_issues(epic_id: epic1.id.to_s)).to contain_exactly(issue1)
+        end
+
+        it 'includes issues associated with subepics when specified' do
+          expect(resolve_issues(epic_id: epic1.id.to_s, include_subepics: true)).to contain_exactly(issue1, issue2)
         end
       end
 
