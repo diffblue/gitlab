@@ -103,8 +103,11 @@ module EE
     end
 
     def email_does_not_match_any_allowed_domains(email)
-      n_("email does not match the allowed domain of %{email_domains}", "email does not match the allowed domains: %{email_domains}", group_allowed_email_domains.size) %
-        { email_domains: group_allowed_email_domains.map(&:domain).join(', ') }
+      msg_1 = signup_email_invalid_message
+
+      msg_2 = error_message[created_by_key][:group_setting]
+
+      [msg_1, msg_2].join(' ')
     end
 
     def matches_at_least_one_group_allowed_email_domain?(email)

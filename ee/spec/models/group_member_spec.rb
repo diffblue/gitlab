@@ -12,7 +12,7 @@ RSpec.describe GroupMember do
       let(:source) { group }
       let(:nested_source) { create(:group, parent: group) }
 
-      it_behaves_like 'member group domain validations'
+      it_behaves_like 'member group domain validations', 'group'
     end
 
     describe 'access level inclusion' do
