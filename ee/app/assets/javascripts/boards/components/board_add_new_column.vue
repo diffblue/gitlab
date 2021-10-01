@@ -212,6 +212,8 @@ export default {
     },
 
     setSelectedItem(selectedId) {
+      this.selectedId = selectedId;
+
       const item = this.items.find(({ id }) => id === selectedId);
       if (!selectedId || !item) {
         this.selectedItem = null;
@@ -286,8 +288,8 @@ export default {
 
     <template v-if="hasItems" #items>
       <gl-form-radio-group
-        v-model="selectedId"
         class="gl-overflow-y-auto gl-px-5"
+        :checked="selectedId"
         data-testid="selectItem"
         @change="setSelectedItem"
       >
