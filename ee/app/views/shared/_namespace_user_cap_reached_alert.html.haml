@@ -1,0 +1,24 @@
+- namespace = @project&.namespace || @group
+- return unless namespace.present?
+
+- root_namespace = namespace.root_ancestor
+- pending_users_link = usage_quotas_path(root_namespace, anchor: 'seats-quota-tab')
+- link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'
+- user_caps_link_start = link_start.html_safe % { url: help_page_path('user/admin_area/settings/sign_up_restrictions', anchor: 'user-cap') }
+- users_pending_approval_link_start = link_start.html_safe % { url: help_page_path('user/admin_area/moderate_users') }
+- link_end = '</a>'.html_safe
+
+.gl-py-5
+  .gl-alert.gl-alert-warning{ role: 'alert' }
+    = sprite_icon('warning', css_class: "gl-icon gl-alert-icon")
+    .gl-alert-title
+      %h4.gl-alert-title= s_('NamespaceUserCap|Your group has reached its billable member limit')
+
+    %button.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss'), data: { level: :warning } }
+      = sprite_icon('close', css_class: 'gl-icon')
+
+    .gl-alert-body
+      = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}User Caps%{link_end} and %{users_pending_approval_link_start}Users Pending Approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
+
+    .gl-alert-actions
+      = link_to(s_('NamespaceUserCap|View pending user approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
