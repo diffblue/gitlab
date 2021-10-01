@@ -29562,7 +29562,7 @@ msgstr ""
 msgid "Save pipeline schedule"
 msgstr ""
 
-msgid "Save space and find images in the container Registry. remove unneeded tags and keep only the ones you want. %{linkStart}How does cleanup work?%{linkEnd}"
+msgid "Save storage space by automatically deleting tags from the container registry and keeping the ones you want. %{linkStart}How does cleanup work?%{linkEnd}"
 msgstr ""
 
 msgid "Saving"
