@@ -1,17 +1,4 @@
-.issue-token {
-  display: inline-flex;
-  align-items: stretch;
-  max-width: 100%;
-  line-height: 1.75;
-  white-space: nowrap;
-}
-
 .issue-token-link {
-  display: inline-flex;
-  min-width: 0;
-
-  color: $gl-text-color-secondary;
-
   &[href] {
     color: $blue-600;
   }
@@ -24,14 +11,8 @@
 }
 
 .issue-token-reference {
-  display: flex;
-  align-items: center;
   margin-right: 1px;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
   background-color: $gray-lighter;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
   transition: background $general-hover-transition-duration $general-hover-transition-curve, color $general-hover-transition-duration $general-hover-transition-curve;
 
   .issue-token:hover &,
@@ -43,12 +24,7 @@
 }
 
 .issue-token-title {
-  overflow: hidden;
-  display: flex;
-  align-items: baseline;
-  padding-left: 0.5em;
   background-color: $gray-normal;
-  color: $gl-text-color-secondary;
   transition: background $general-hover-transition-duration $general-hover-transition-curve;
 
   .issue-token:hover &,
@@ -57,26 +33,8 @@
   }
 }
 
-.issue-token-title-standalone {
-  padding-right: 0.5em;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-}
-
-.issue-token-title-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .issue-token-remove-button {
-  display: flex;
-  align-items: center;
-  padding: 0 0.5em;
   background-color: $gray-normal;
-  border: 0;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-  color: $gl-text-color-secondary;
   transition: background $general-hover-transition-duration $general-hover-transition-curve;
 
   &:hover,
@@ -89,9 +47,6 @@
 }
 
 .cve-id-request {
-  padding-bottom: 0;
-  border-bottom: 0;
-
   .help-button,
   .close-help-button {
     cursor: pointer;
@@ -108,10 +63,6 @@
   .help-state-toggle-enter,
   .help-state-toggle-leave-active {
     opacity: 0;
-  }
-
-  .cve-id-request-content {
-    margin-top: 16px;
   }
 
   .cve-id-request-help-state {

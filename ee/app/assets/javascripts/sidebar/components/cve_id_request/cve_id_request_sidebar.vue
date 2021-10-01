@@ -76,7 +76,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="confidential" class="block cve-id-request">
+  <div v-if="confidential" class="cve-id-request gl-display-block gl-pb-0 gl-border-b-0">
     <div
       v-gl-tooltip.viewport.left
       :title="tooltipTitle"
@@ -107,7 +107,7 @@ export default {
         <gl-icon name="close" />
       </div>
 
-      <div class="cve-id-request-content">
+      <div class="gl-mt-5">
         <gl-link
           :href="newCveIdRequestUrl"
           target="_blank"
