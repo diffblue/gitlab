@@ -164,6 +164,10 @@ module Gitlab
         client.indices.exists_alias(name: name || target_name)
       end
 
+      def alias_missing?(name: nil)
+        !alias_exists?(name: name)
+      end
+
       # Calls Elasticsearch refresh API to ensure data is searchable
       # immediately.
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
