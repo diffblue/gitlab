@@ -24646,6 +24646,9 @@ msgstr ""
 msgid "PerformanceBar|First Contentful Paint"
 msgstr ""
 
+msgid "PerformanceBar|Flamegraph"
+msgstr ""
+
 msgid "PerformanceBar|Frontend resources"
 msgstr ""
 
