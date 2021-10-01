@@ -1,21 +1,17 @@
 <script>
 import { GlLoadingIcon, GlButton, GlBadge } from '@gitlab/ui';
-import fetchHeaderVulnerabilityQuery from 'ee/security_dashboard/graphql/header_vulnerability.graphql';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import createFlash from '~/flash';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
-import {
-  VULNERABILITY_STATE_OBJECTS,
-  FEEDBACK_TYPES,
-  HEADER_ACTION_BUTTONS,
-  gidPrefix,
-} from '../constants';
+import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
@@ -35,7 +31,7 @@ export default {
   },
 
   props: {
-    initialVulnerability: {
+    vulnerability: {
       type: Object,
       required: true,
     },
@@ -46,11 +42,7 @@ export default {
       isProcessingAction: false,
       isLoadingVulnerability: false,
       isLoadingUser: false,
-      // Spread operator because the header could modify the `project`
-      // prop leading to an error in the footer component.
-      vulnerability: { ...this.initialVulnerability },
       user: undefined,
-      shouldRefreshVulnerability: false,
     };
   },
 
@@ -58,38 +50,6 @@ export default {
     confirmed: 'danger',
     resolved: 'success',
     detected: 'warning',
-  },
-
-  apollo: {
-    vulnerability: {
-      query: fetchHeaderVulnerabilityQuery,
-      manual: true,
-      fetchPolicy: 'no-cache',
-      variables() {
-        return {
-          id: `${gidPrefix}${this.vulnerability.id}`,
-        };
-      },
-      result({ data: { vulnerability } }) {
-        this.shouldRefreshVulnerability = false;
-        this.isLoadingVulnerability = false;
-
-        this.vulnerability = {
-          ...this.vulnerability,
-          ...normalizeGraphQLVulnerability(vulnerability),
-        };
-      },
-      error() {
-        createFlash({
-          message: s__(
-            'VulnerabilityManagement|Something went wrong while trying to refresh the vulnerability. Please try again later.',
-          ),
-        });
-      },
-      skip() {
-        return !this.shouldRefreshVulnerability;
-      },
-    },
   },
 
   computed: {
@@ -178,16 +138,17 @@ export default {
       try {
         const { data } = await this.$apollo.mutate({
           mutation: vulnerabilityStateMutations[action],
-          variables: { id: `${gidPrefix}${this.vulnerability.id}`, ...payload },
+          variables: {
+            id: convertToGraphQLId(TYPE_VULNERABILITY, this.vulnerability.id),
+            ...payload,
+          },
         });
         const [queryName] = Object.keys(data);
 
-        this.vulnerability = {
+        this.$emit('vulnerability-state-change', {
           ...this.vulnerability,
           ...normalizeGraphQLVulnerability(data[queryName].vulnerability),
-        };
-
-        this.$emit('vulnerability-state-change');
+        });
       } catch (error) {
         createFlash({
           message: {
@@ -244,10 +205,6 @@ export default {
         fileData: this.vulnerability.remediations[0].diff,
         fileName: `remediation.patch`,
       });
-    },
-    refreshVulnerability() {
-      this.isLoadingVulnerability = true;
-      this.shouldRefreshVulnerability = true;
     },
   },
 };

@@ -35,7 +35,7 @@ export default (el) => {
     },
     render: (h) =>
       h(App, {
-        props: { vulnerability },
+        props: { initialVulnerability: vulnerability },
       }),
   });
 };
