@@ -1,7 +1,6 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { mapActions } from 'vuex';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
@@ -16,7 +15,6 @@ export default {
     NetworkPolicyEditor,
     ScanExecutionPolicyEditor,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['policyType'],
   props: {
     assignedPolicyProject: {
@@ -58,7 +56,7 @@ export default {
       );
     },
     shouldAllowPolicyTypeSelection() {
-      return !this.existingPolicy && this.glFeatures.securityOrchestrationPoliciesConfiguration;
+      return !this.existingPolicy;
     },
   },
   created() {

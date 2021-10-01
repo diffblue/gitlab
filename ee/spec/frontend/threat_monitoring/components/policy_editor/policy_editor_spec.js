@@ -57,11 +57,10 @@ describe('PolicyEditor component', () => {
       expect(findNeworkPolicyEditor().props('existingPolicy')).toBe(null);
     });
 
-    it('renders the disabled form select', () => {
+    it('renders the form select', () => {
       const formSelect = findFormSelect();
-      expect(formSelect.exists()).toBe(true);
       expect(formSelect.attributes('value')).toBe(POLICY_TYPE_COMPONENT_OPTIONS.container.value);
-      expect(formSelect.attributes('disabled')).toBe('true');
+      expect(formSelect.attributes('disabled')).toBe(undefined);
     });
 
     it('shows an alert when "error" is emitted from the component', async () => {
@@ -110,17 +109,5 @@ describe('PolicyEditor component', () => {
         expect(component.props('isEditing')).toBe(true);
       },
     );
-  });
-
-  describe('with "securityOrchestrationPoliciesConfiguration" feature flag enabled', () => {
-    beforeEach(() => {
-      factory({ provide: { glFeatures: { securityOrchestrationPoliciesConfiguration: true } } });
-    });
-
-    it('renders the form select', () => {
-      const formSelect = findFormSelect();
-      expect(formSelect.exists()).toBe(true);
-      expect(formSelect.attributes('disabled')).toBe(undefined);
-    });
   });
 });
