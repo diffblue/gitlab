@@ -194,6 +194,35 @@ RSpec.describe Gitlab::SidekiqLogging::StructuredLogger do
       end
     end
 
+    context 'with enqueue latency' do
+      let(:expected_start_payload) do
+        start_payload.merge(
+          'scheduled_at' => job['scheduled_at'],
+          'enqueue_latency_s' => 1.hour.to_f
+        )
+      end
+
+      let(:expected_end_payload) do
+        end_payload.merge('enqueue_latency_s' => 1.hour.to_f)
+      end
+
+      before do
+        # enqueued_at is set to created_at
+        job['scheduled_at'] = created_at - 1.hour
+      end
+
+      it 'logs with scheduling latency' do
+        Timecop.freeze(timestamp) do
+          expect(logger).to receive(:info).with(expected_start_payload).ordered
+          expect(logger).to receive(:info).with(expected_end_payload).ordered
+          expect(subject).to receive(:log_job_start).and_call_original
+          expect(subject).to receive(:log_job_done).and_call_original
+
+          call_subject(job, 'test_queue') { }
+        end
+      end
+    end
+
     context 'with Gitaly, Rugged, and Redis calls' do
       let(:timing_data) do
         {
