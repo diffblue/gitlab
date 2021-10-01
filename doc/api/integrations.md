@@ -545,6 +545,42 @@ Get Emails on Push integration settings for a project.
 GET /projects/:id/integrations/emails-on-push
 ```
 
+## Engineering Workflow Management (EWM)
+
+Use IBM Engineering Workflow Management (EWM) as a project's issue tracker.
+
+### Create/Edit EWM service
+
+Set EWM service for a project.
+
+```plaintext
+PUT /projects/:id/services/ewm
+```
+
+Parameters:
+
+| Parameter | Type | Required | Description |
+| --------- | ---- | -------- | ----------- |
+| `new_issue_url` | string | true | The URL to create an issue in EWM |
+| `project_url`   | string | true | The URL to the project in EWM |
+| `issues_url`    | string | true | The URL to view an issue in EWM. Must contain `:id` |
+
+### Delete EWM service
+
+Delete EWM service for a project.
+
+```plaintext
+DELETE /projects/:id/services/ewm
+```
+
+### Get EWM service settings
+
+Get EWM service settings for a project.
+
+```plaintext
+GET /projects/:id/services/ewm
+```
+
 ## Confluence integration
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/220934) in GitLab 13.2.
