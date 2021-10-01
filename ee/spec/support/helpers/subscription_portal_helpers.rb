@@ -4,7 +4,7 @@ module SubscriptionPortalHelpers
   include StubRequests
 
   def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil, assisted_upgrade_plan_id = nil)
-    stub_full_request("#{EE::SUBSCRIPTIONS_URL}/graphql", method: :post)
+    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
       .with(
         body: "{\"query\":\"{\\n  subscription(namespaceId: \\\"#{namespace_id}\\\") {\\n    eoaStarterBronzeEligible\\n    assistedUpgradePlanId\\n    freeUpgradePlanId\\n  }\\n}\\n\"}",
         headers: {
@@ -28,7 +28,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_billing_plans(namespace_id, plan = 'free', plans_data = nil, raise_error: nil)
-    stub = stub_full_request("#{EE::SUBSCRIPTIONS_URL}/gitlab_plans?namespace_id=#{namespace_id}&plan=#{plan}")
+    stub = stub_full_request("#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?namespace_id=#{namespace_id}&plan=#{plan}")
              .with(headers: { 'Accept' => 'application/json' })
     if raise_error
       stub.to_raise(raise_error)

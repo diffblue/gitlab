@@ -7,10 +7,8 @@ module CustomersDot
 
     feature_category :purchase
 
-    BASE_URL = Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
-
     def graphql
-      response = Gitlab::HTTP.post("#{BASE_URL}/graphql",
+      response = Gitlab::HTTP.post(EE::SUBSCRIPTIONS_GRAPHQL_URL,
         body: request.raw_post,
         headers: forward_headers
       )

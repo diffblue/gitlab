@@ -24,7 +24,7 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_feature_flags(allow_extend_reactivate_trial: true)
     stub_billing_plans(nil)
-    stub_full_request("#{EE::SUBSCRIPTIONS_URL}/gitlab_plans?plan=#{plan.name}&namespace_id=#{group.id}")
+    stub_full_request("#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=#{plan.name}&namespace_id=#{group.id}")
       .to_return(status: 200, body: plans_data.to_json)
     stub_full_request("#{EE::SUBSCRIPTIONS_URL}/trials/extend_reactivate_trial", method: :put)
       .to_return(status: 200)

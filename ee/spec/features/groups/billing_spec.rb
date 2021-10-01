@@ -58,7 +58,7 @@ RSpec.describe 'Groups > Billing', :js do
         expect(page).to have_content("#{group.name} is currently using the Free Plan")
         within subscription_table do
           expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-          expect(page).to have_link("Upgrade", href: "#{EE::SUBSCRIPTIONS_URL}/subscriptions")
+          expect(page).to have_link("Upgrade", href: EE::SUBSCRIPTIONS_MANAGE_URL)
           expect(page).not_to have_link("Manage")
         end
       end
@@ -85,7 +85,7 @@ RSpec.describe 'Groups > Billing', :js do
         within subscription_table do
           expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
           expect(page).to have_link("Upgrade", href: upgrade_url)
-          expect(page).to have_link("Manage", href: "#{EE::SUBSCRIPTIONS_URL}/subscriptions")
+          expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
           expect(page).to have_link("Add seats", href: extra_seats_url)
           expect(page).to have_link("Renew", href: renew_url)
           expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
@@ -122,7 +122,7 @@ RSpec.describe 'Groups > Billing', :js do
         expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
         within subscription_table do
           expect(page).not_to have_link("Upgrade")
-          expect(page).to have_link("Manage", href: "#{EE::SUBSCRIPTIONS_URL}/subscriptions")
+          expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
         end
       end
     end

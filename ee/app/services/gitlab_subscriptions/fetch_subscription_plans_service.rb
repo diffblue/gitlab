@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 module GitlabSubscriptions
   class FetchSubscriptionPlansService
-    URL = "#{EE::SUBSCRIPTIONS_URL}/gitlab_plans"
-
     def initialize(plan:, namespace_id: nil)
       @plan = plan
       @namespace_id = namespace_id
@@ -16,7 +14,7 @@ module GitlabSubscriptions
 
     def send_request
       response = Gitlab::HTTP.get(
-        URL,
+        EE::SUBSCRIPTIONS_GITLAB_PLANS_URL,
         allow_local_requests: true,
         query: { plan: @plan, namespace_id: @namespace_id },
         headers: { 'Accept' => 'application/json' }

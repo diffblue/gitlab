@@ -24,11 +24,11 @@ module EE
     def renew_subscription_path
       return plan_renew_url(current_namespace) if decorated_subscription
 
-      "#{EE::SUBSCRIPTIONS_URL}/subscriptions"
+      SUBSCRIPTIONS_MANAGE_URL
     end
 
     def upgrade_subscription_path
-      "#{EE::SUBSCRIPTIONS_URL}/subscriptions"
+      SUBSCRIPTIONS_MANAGE_URL
     end
 
     def link_to_button_style(path:, track_property:)

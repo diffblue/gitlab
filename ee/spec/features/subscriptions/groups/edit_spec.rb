@@ -12,7 +12,7 @@ RSpec.describe 'Welcome screen', :js do
     before do
       group.add_owner(user)
       gitlab_sign_in(user)
-      stub_request(:get, "#{EE::SUBSCRIPTIONS_URL}/gitlab_plans?plan=free&namespace_id=")
+      stub_request(:get, "#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=free&namespace_id=")
         .to_return(status: 200, body: '{}', headers: {})
 
       visit edit_subscriptions_group_path(group.path, params)

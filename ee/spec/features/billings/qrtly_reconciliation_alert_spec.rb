@@ -20,7 +20,7 @@ RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js do
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_full_request("#{EE::SUBSCRIPTIONS_URL}/gitlab_plans?plan=#{plan.name}&namespace_id=#{namespace.id}")
+    stub_full_request("#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=#{plan.name}&namespace_id=#{namespace.id}")
       .to_return(status: 200, body: plans_data.to_json)
     sign_in(user)
   end
