@@ -14,9 +14,13 @@ module Ci
 
     def execute!(stream)
       clone_file!(stream, JobArtifactUploader.workhorse_upload_path) do |clone_path|
-        md5_checksum   = self.class.md5_hexdigest(clone_path)
-        trace_artifact = create_build_trace!(job, clone_path)
-        trace_metadata.track_archival!(trace_artifact.id, md5_checksum)
+        md5_checksum    = self.class.md5_hexdigest(clone_path)
+        sha256_checksum = self.class.sha256_hexdigest(clone_path)
+
+        job.transaction do
+          trace_artifact = create_build_trace!(clone_path, sha256_checksum)
+          trace_metadata.track_archival!(trace_artifact.id, md5_checksum)
+        end
       end
     end
 
@@ -34,7 +38,7 @@ module Ci
       end
     end
 
-    def create_build_trace!(job, path)
+    def create_build_trace!(path, file_sha256)
       File.open(path) do |stream|
         # TODO: Set `file_format: :raw` after we've cleaned up legacy traces migration
         # https://gitlab.com/gitlab-org/gitlab-foss/merge_requests/20307
@@ -42,7 +46,7 @@ module Ci
           project: job.project,
           file_type: :trace,
           file: stream,
-          file_sha256: self.class.sha256_hexdigest(path))
+          file_sha256: file_sha256)
       end
     end
   end
