@@ -5,8 +5,6 @@ module Ci
     include ::Gitlab::Utils::StrongMemoize
     include Checksummable
 
-    attr_reader :job, :trace_metadata
-
     def initialize(job, trace_metadata)
       @job = job
       @trace_metadata = trace_metadata
@@ -25,6 +23,8 @@ module Ci
     end
 
     private
+
+    attr_reader :job, :trace_metadata
 
     def clone_file!(src_stream, temp_dir)
       FileUtils.mkdir_p(temp_dir)
