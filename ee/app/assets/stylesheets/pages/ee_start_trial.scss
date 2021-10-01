@@ -35,36 +35,3 @@
     opacity: 0.6;
   }
 }
-
-/* Trial License Install Modal */
-.modal-upload-trial-license {
-  .svg-container {
-    width: 90px;
-    height: 90px;
-  }
-
-  .trial-license-preview {
-    max-height: 300px;
-  }
-
-  /* Pure CSS License Key Preview Toggle */
-  .trial-license-preview,
-  .show-license,
-  .hide-license:target {
-    display: none;
-  }
-
-  .hide-license,
-  .hide-license:target + .show-license,
-  .hide-license:target ~ .trial-license-preview {
-    display: block;
-  }
-
-  .show-license,
-  .hide-license {
-    &:hover {
-      text-decoration: none;
-      color: $gray-900;
-    }
-  }
-}

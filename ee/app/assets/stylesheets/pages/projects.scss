@@ -1,26 +1,4 @@
-.protected-branch-push-access-list,
-.protected-branch-merge-access-list {
-  a {
-    color: $white;
-  }
-}
-
 .project-mirror-settings {
-  .ssh-public-key,
-  .btn-copy-ssh-public-key {
-    float: left;
-  }
-
-  .ssh-public-key {
-    width: 94%;
-    word-wrap: break-word;
-    word-break: break-all;
-  }
-
-  .btn-copy-ssh-public-key {
-    margin-left: 5px;
-  }
-
   .known-hosts {
     font-family: $monospace-font;
   }
@@ -36,16 +14,6 @@
       text-decoration: line-through;
     }
   }
-}
-
-.load-wrapper {
-  position: absolute;
-  background: $black-transparent;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .project-mirror-text {

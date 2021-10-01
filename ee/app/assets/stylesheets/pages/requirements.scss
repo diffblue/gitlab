@@ -1,26 +1,4 @@
 .requirements-container {
-  // Following overrides will be removed once
-  // we add filtered search bar on the page
-  // see https://gitlab.com/gitlab-org/gitlab/-/issues/212543
-  @include media-breakpoint-down(xs) {
-    .top-area {
-      border-bottom: 0;
-
-      .nav-links.mobile-separator {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  .requirement-form {
-    .requirement-form-textarea {
-      line-height: $gl-line-height-24;
-      // We need `!important` here as GlFormTextarea (based on `BFormTextarea`)
-      // somehow applies inline styles ¯\_(ツ)_/¯.
-      overflow-y: auto !important;
-    }
-  }
-
   .requirement-form-drawer {
     &.zen-mode {
       // We need to override `z-index` provided to GlDrawer
