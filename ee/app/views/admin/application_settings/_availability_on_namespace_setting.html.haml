@@ -7,4 +7,6 @@
   .form-check
     = form.check_box :check_namespace_plan, class: 'form-check-input'
     = form.label :check_namespace_plan, class: 'form-check-label' do
-      = _("Enabling this will only make licensed EE features available to projects if the project namespace's plan includes the feature or if the project is public.")
+      = _("Allow use of licensed EE features")
+      .help-block
+        = _("Licensed Enterprise Edition features can be used if the project namespace's plan includes the feature, or if the project is public.")

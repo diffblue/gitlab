@@ -8,4 +8,4 @@
   = form.number_field :repository_size_limit, value: form.object.repository_size_limit.try(:to_mb), class: 'form-control gl-form-input', min: 0, title: _('Maximum size limit for each repository.'), data: { toggle: 'tooltip', container: 'body' }
   %span.form-text.text-muted#repository_size_limit_help_block
     = _('Includes LFS objects. It can be overridden per group, or per project. 0 for unlimited.')
-    = link_to sprite_icon('question-o'), help_page_path('user/admin_area/settings/account_and_limit_settings')
+    = link_to _('Learn more.'), help_page_path('user/admin_area/settings/account_and_limit_settings'), target: '_blank', rel: 'noopener noreferrer'
