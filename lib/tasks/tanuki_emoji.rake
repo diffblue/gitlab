@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 namespace :tanuki_emoji do
-  desc 'Generates Emoji SHA256 digests'
-
+  desc 'Generates Emoji aliases fixtures'
   task aliases: :environment do
     aliases = {}
 
@@ -18,6 +17,7 @@ namespace :tanuki_emoji do
     end
   end
 
+  desc 'Generates Emoji SHA256 digests'
   task digests: :environment do
     require 'digest/sha2'
 
@@ -84,15 +84,15 @@ namespace :tanuki_emoji do
     end
 
     puts
-    puts "Done!"
+    puts 'Done!'
   end
 
   # This task will generate a standard and Retina sprite of all of the current
-  # Gemojione Emojis, with the accompanying SCSS map.
+  # TanukiEmoji Emojis, with the accompanying SCSS map.
   #
   # It will not appear in `rake -T` output, and the dependent gems are not
   # included in the Gemfile by default, because this task will only be needed
-  # occasionally, such as when new Emojis are added to Gemojione.
+  # occasionally, such as when new Emojis are added to TanukiEmoji.
   task sprite: :environment do
     begin
       require 'sprite_factory'
@@ -124,15 +124,16 @@ namespace :tanuki_emoji do
         Dir["**/*.png"].each do |png|
           tmp_image_path = File.join(tmpdir, png)
           resize!(tmp_image_path, SIZE)
-          print emoji.codepoints
+          print '.'
         end
       end
+      puts ' Done!'
 
-      puts
+      puts "\n"
 
       style_path = Rails.root.join(*%w(app assets stylesheets emoji_sprites.scss))
 
-      puts "Compiling sprites regular sprites..."
+      print 'Compiling sprites regular sprites... '
 
       # Combine the resized assets into a packed sprite and re-generate the SCSS
       SpriteFactory.cssurl = "image-url('$IMAGE')"
@@ -179,25 +180,29 @@ namespace :tanuki_emoji do
         CSS
       end
     end
+    puts 'Done!'
+
+    puts "\n"
 
     puts "Preparing sprites for HiDPI size: #{RETINA}px..."
 
     # Now do it again but for Retina
     Dir.mktmpdir do |tmpdir|
-      # Copy the Gemojione assets to the temporary folder for resizing
+      # Copy the TanukiEmoji assets to the temporary folder for resizing
       FileUtils.cp_r(File.join(emoji_dir, '.'), tmpdir)
 
       Dir.chdir(tmpdir) do
         Dir["**/*.png"].each do |png|
           tmp_image_path = File.join(tmpdir, png)
           resize!(tmp_image_path, RETINA)
-          print emoji.codepoints
+          print '.'
         end
       end
+      puts ' Done!'
 
-      puts
+      puts "\n"
 
-      puts "Compiling HiDPI sprites..."
+      print 'Compiling HiDPI sprites...'
 
       # Combine the resized assets into a packed sprite and re-generate the SCSS
       SpriteFactory.run!(tmpdir, {
@@ -209,7 +214,7 @@ namespace :tanuki_emoji do
       })
     end
 
-    puts "Done!"
+    puts ' Done!'
   end
 
   def check_requirements!
