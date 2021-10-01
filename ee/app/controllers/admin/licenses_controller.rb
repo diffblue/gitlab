@@ -44,10 +44,6 @@ class Admin::LicensesController < Admin::ApplicationController
     end
 
     redirect_to admin_subscription_path, status: :found
-  rescue Licenses::DestroyService::DestroyCloudLicenseError => e
-    flash[:error] = e.message
-
-    redirect_to admin_subscription_path, status: :found
   end
 
   def sync_seat_link

@@ -6,10 +6,6 @@ module API
 
     feature_category :license
 
-    rescue_from Licenses::DestroyService::DestroyCloudLicenseError do |e|
-      render_api_error!(e.message, 422)
-    end
-
     resource :license do
       desc 'Get information on the currently active license' do
         success EE::API::Entities::GitlabLicenseWithActiveUsers
