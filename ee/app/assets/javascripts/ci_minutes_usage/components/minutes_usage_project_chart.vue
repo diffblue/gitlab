@@ -2,6 +2,7 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
+import { __ } from '~/locale';
 import {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
@@ -14,6 +15,20 @@ export default {
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
+  i18n: {
+    january: __('January'),
+    february: __('February'),
+    march: __('March'),
+    april: __('April'),
+    may: __('May'),
+    june: __('June'),
+    july: __('July'),
+    august: __('August'),
+    september: __('September'),
+    october: __('October'),
+    november: __('November'),
+    december: __('December'),
+  },
   components: {
     GlColumnChart,
     GlDropdown,
@@ -71,6 +86,9 @@ export default {
     setFirstMonthDropdown() {
       [this.selectedMonth] = this.months;
     },
+    getTranslatedMonthName(month) {
+      return this.$options.i18n[month.toLowerCase()] ?? month;
+    },
   },
 };
 </script>
@@ -87,7 +105,7 @@ export default {
           data-testid="month-dropdown-item"
           @click="changeSelectedMonth(monthName)"
         >
-          {{ monthName }}
+          {{ getTranslatedMonthName(monthName) }}
         </gl-dropdown-item>
       </gl-dropdown>
     </div>
