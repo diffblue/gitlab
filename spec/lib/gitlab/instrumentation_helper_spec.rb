@@ -164,7 +164,7 @@ RSpec.describe Gitlab::InstrumentationHelper do
       0                              | nil                            | "2019-10-23T12:13:16.000+0200" | nil
       -1                             | nil                            | "2019-10-23T12:13:16.000+0200" | nil
       "2019-06-01T02:00:00.000+0000" | nil                            | "2019-06-01T00:00:00.000+0000" | 0
-      Time.at(1571999233)            | nil                            | "2019-10-25T12:29:16.000+0200" | 123
+      Time.at(1571999233).utc        | nil                            | "2019-10-25T12:29:16.000+0200" | 123
     end
 
     describe '.queue_duration_for_job' do
@@ -172,7 +172,7 @@ RSpec.describe Gitlab::InstrumentationHelper do
         let(:job) { { 'enqueued_at' => end_time, 'created_at' => start_time } }
 
         it "returns the correct duration" do
-          Timecop.freeze(Time.iso8601(time_now)) do
+          travel_to(Time.iso8601(time_now)) do
             expect(described_class.queue_duration_for_job(job)).to eq(expected_duration)
           end
         end
@@ -184,7 +184,7 @@ RSpec.describe Gitlab::InstrumentationHelper do
         let(:job) { { 'enqueued_at' => end_time, 'scheduled_at' => start_time } }
 
         it "returns the correct duration" do
-          Timecop.freeze(Time.iso8601(time_now)) do
+          travel_to(Time.iso8601(time_now)) do
             expect(described_class.enqueue_latency_for_scheduled_job(job)).to eq(expected_duration)
           end
         end
