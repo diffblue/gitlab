@@ -38,6 +38,10 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
         it { is_expected.to be_falsey }
 
         context 'with sub-group' do
+          before do
+            allow(group).to receive(:root_ancestor).and_return(root_group)
+          end
+
           let(:group) { create(:group, parent: root_group) }
 
           subject { described_class.new(user, group).access_restricted? }
@@ -149,6 +153,18 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           end
 
           it { is_expected.to be_falsey }
+
+          context 'when group is a subgroup' do
+            before do
+              allow(group).to receive(:root_ancestor).and_return(root_group)
+            end
+
+            let(:group) { create(:group, parent: root_group) }
+
+            subject { described_class.new(user, group).access_restricted? }
+
+            it { is_expected.to be_truthy }
+          end
         end
 
         context 'with project bot' do
