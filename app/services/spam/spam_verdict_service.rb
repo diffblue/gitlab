@@ -76,6 +76,7 @@ module Spam
         # @TODO log if error is not nil https://gitlab.com/gitlab-org/gitlab/-/issues/329545
          
         return [nil, attribs] unless result
+
         [result, attribs]
         
       rescue StandardError => e
