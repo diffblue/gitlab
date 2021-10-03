@@ -41,28 +41,10 @@ RSpec.describe Ci::Bridge do
         bridge.enqueue!
       end
 
-      context 'when the create_cross_project_pipeline_worker_rename feature is enabled' do
-        before do
-          stub_feature_flags(create_cross_project_pipeline_worker_rename: true)
-        end
+      it 'does not schedule downstream pipeline creation' do
+        bridge.enqueue!
 
-        it 'does not schedule downstream pipeline creation' do
-          bridge.enqueue!
-
-          expect(::Ci::CreateDownstreamPipelineWorker.jobs).to be_empty
-        end
-      end
-
-      context 'when the create_cross_project_pipeline_worker_rename feature is not enabled' do
-        before do
-          stub_feature_flags(create_cross_project_pipeline_worker_rename: false)
-        end
-
-        it 'does not schedule downstream pipeline creation' do
-          bridge.enqueue!
-
-          expect(::Ci::CreateCrossProjectPipelineWorker.jobs).to be_empty
-        end
+        expect(::Ci::CreateDownstreamPipelineWorker.jobs).to be_empty
       end
     end
   end
