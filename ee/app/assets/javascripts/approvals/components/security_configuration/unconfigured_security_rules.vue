@@ -4,7 +4,6 @@ import { mapState, mapActions } from 'vuex';
 import {
   LICENSE_CHECK_NAME,
   VULNERABILITY_CHECK_NAME,
-  REPORT_TYPE_LICENSE_SCANNING,
   COVERAGE_CHECK_NAME,
 } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
@@ -41,9 +40,6 @@ export default {
         {
           name: VULNERABILITY_CHECK_NAME,
           description: s__(
-            'SecurityApprovals|Configurable if security scanners are enabled. %{linkStart}Learn more.%{linkEnd}',
-          ),
-          enableDescription: s__(
             'SecurityApprovals|Requires approval for vulnerabilities. %{linkStart}Learn more.%{linkEnd}',
           ),
           docsPath: this.vulnerabilityCheckHelpPagePath,
@@ -51,9 +47,6 @@ export default {
         {
           name: LICENSE_CHECK_NAME,
           description: s__(
-            'SecurityApprovals|License Scanning must be enabled. %{linkStart}Learn more%{linkEnd}.',
-          ),
-          enableDescription: s__(
             'SecurityApprovals|Requires approval for Denied licenses. %{linkStart}More information%{linkEnd}',
           ),
           docsPath: this.licenseCheckHelpPagePath,
@@ -61,9 +54,6 @@ export default {
         {
           name: COVERAGE_CHECK_NAME,
           description: s__(
-            'SecurityApprovals|Test coverage must be enabled. %{linkStart}Learn more%{linkEnd}.',
-          ),
-          enableDescription: s__(
             'SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}Learn more.%{linkEnd}',
           ),
           docsPath: this.coverageCheckHelpPagePath,
@@ -73,10 +63,9 @@ export default {
     unconfiguredRules() {
       return this.securityRules.reduce((filtered, securityRule) => {
         const hasApprovalRuleDefined = this.hasApprovalRuleDefined(securityRule);
-        const hasConfiguredJob = this.hasConfiguredJob(securityRule);
 
-        if (!hasApprovalRuleDefined || !hasConfiguredJob) {
-          filtered.push({ ...securityRule, hasConfiguredJob });
+        if (!hasApprovalRuleDefined) {
+          filtered.push({ ...securityRule });
         }
         return filtered;
       }, []);
@@ -92,15 +81,6 @@ export default {
       return this.rules.some((rule) => {
         return matchRule.name === rule.name;
       });
-    },
-    hasConfiguredJob(matchRule) {
-      const { features = [] } = this.configuration;
-      return (
-        matchRule.name !== LICENSE_CHECK_NAME ||
-        features.some((feature) => {
-          return feature.type === REPORT_TYPE_LICENSE_SCANNING && feature.configured;
-        })
-      );
     },
   },
 };

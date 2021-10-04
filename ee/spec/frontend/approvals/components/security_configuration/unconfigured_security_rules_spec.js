@@ -3,7 +3,6 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import UnconfiguredSecurityRule from 'ee/approvals/components/security_configuration/unconfigured_security_rule.vue';
 import UnconfiguredSecurityRules from 'ee/approvals/components/security_configuration/unconfigured_security_rules.vue';
-import { VULNERABILITY_CHECK_NAME, LICENSE_CHECK_NAME } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
 import projectSettingsModule from 'ee/approvals/stores/modules/project_settings';
 
@@ -56,42 +55,6 @@ describe('UnconfiguredSecurityRules component', () => {
 
     it('should render a unconfigured-security-rule component for every security rule ', () => {
       expect(wrapper.findAll(UnconfiguredSecurityRule).length).toBe(3);
-    });
-
-    describe('when license_scanning is set to true', () => {
-      beforeEach(() => {
-        store.state.securityConfiguration.configuration = {
-          features: [{ type: 'license_scanning', configured: true }],
-        };
-      });
-
-      it('returns true', () => {
-        expect(wrapper.vm.hasConfiguredJob({ name: LICENSE_CHECK_NAME })).toBe(true);
-      });
-    });
-
-    describe('when license_scanning is set to false', () => {
-      beforeEach(() => {
-        store.state.securityConfiguration.configuration = {
-          features: [{ type: 'license_scanning', configured: false }],
-        };
-      });
-
-      it('returns false', () => {
-        expect(wrapper.vm.hasConfiguredJob({ name: LICENSE_CHECK_NAME })).toBe(false);
-      });
-    });
-
-    describe('when all other scanners are set to false', () => {
-      beforeEach(() => {
-        store.state.securityConfiguration.configuration = {
-          features: [{ type: 'container_scanning', configured: false }],
-        };
-      });
-
-      it('returns true', () => {
-        expect(wrapper.vm.hasConfiguredJob({ name: VULNERABILITY_CHECK_NAME })).toBe(true);
-      });
     });
   });
 
