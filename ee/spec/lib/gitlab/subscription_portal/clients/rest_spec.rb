@@ -53,7 +53,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     end
   end
 
-  describe '#create_trial_account' do
+  describe '#generate_trial' do
     subject do
       client.generate_trial({})
     end
