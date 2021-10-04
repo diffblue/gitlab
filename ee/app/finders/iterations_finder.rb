@@ -23,8 +23,6 @@ class IterationsFinder
   def execute(skip_authorization: false)
     @skip_authorization = skip_authorization
 
-    handle_wildcard_params
-
     items = Iteration.all
     items = by_id(items)
     items = by_iid(items)
@@ -41,14 +39,6 @@ class IterationsFinder
   private
 
   attr_reader :skip_authorization
-
-  # wildcard params do not override other explicitely given params
-  def handle_wildcard_params
-    if params[:iteration_wildcard_id] && params[:iteration_wildcard_id].casecmp?(::Iteration::Predefined::Current.title)
-      params[:start_date] ||= Date.today
-      params[:end_date] ||= Date.today
-    end
-  end
 
   def by_groups(items)
     return Iteration.none unless skip_authorization || Ability.allowed?(current_user, :read_iteration, params[:parent])

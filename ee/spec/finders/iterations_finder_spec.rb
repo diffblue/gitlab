@@ -67,28 +67,6 @@ RSpec.describe IterationsFinder do
       it 'returns iterations for groups' do
         expect(subject).to contain_exactly(closed_iteration, started_group_iteration, upcoming_group_iteration)
       end
-
-      context 'with filters' do
-        context 'by iteration_wildcard_id' do
-          let_it_be(:started_group_iteration2) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, group: iteration_cadence1.group, title: 'one test', start_date: 1.day.ago, due_date: Date.today) }
-
-          before do
-            params[:iteration_wildcard_id] = 'CURRENT'
-          end
-
-          it 'returns CURRENT iterations without ancestors' do
-            expect(subject).to contain_exactly(started_group_iteration, started_group_iteration2)
-          end
-
-          context 'when iteration_cadence_id is provided' do
-            it 'returns CURRENT iteration for the given cadence' do
-              params[:iteration_cadence_ids] = iteration_cadence1.id
-
-              expect(subject).to contain_exactly(started_group_iteration2)
-            end
-          end
-        end
-      end
     end
 
     context 'iterations for project with ancestors' do
@@ -154,22 +132,6 @@ RSpec.describe IterationsFinder do
         params[:iteration_cadence_ids] = [iteration_cadence1.id, iteration_cadence2.id]
 
         expect(subject).to contain_exactly(closed_iteration, started_group_iteration, upcoming_group_iteration)
-      end
-
-      context 'by iteration_wildcard_id' do
-        before do
-          params[:iteration_wildcard_id] = 'CURRENT'
-        end
-
-        it 'returns CURRENT iterations' do
-          expect(subject).to contain_exactly(root_group_iteration, started_group_iteration)
-        end
-
-        it 'returns CURRENT iteration for the specified cadence' do
-          params[:iteration_cadence_ids] = started_group_iteration.iterations_cadence.id
-
-          expect(subject).to contain_exactly(started_group_iteration)
-        end
       end
 
       context 'by timeframe' do
