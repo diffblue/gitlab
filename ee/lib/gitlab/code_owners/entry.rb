@@ -92,7 +92,7 @@ module Gitlab
       def matching_emails?(user)
         raise "Emails not loaded for #{user}" unless user.emails.loaded?
 
-        emails.any? { |email| user.any_email?(email) }
+        emails.any? { |email| user.verified_email?(email) }
       end
     end
   end

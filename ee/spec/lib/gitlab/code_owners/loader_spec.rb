@@ -31,7 +31,7 @@ RSpec.describe Gitlab::CodeOwners::Loader do
     project.add_developer(documentation_owner)
     project.add_developer(test_owner)
 
-    create(:email, user: email_owner, email: 'owner2@gitlab.org')
+    create(:email, :confirmed, user: email_owner, email: 'owner2@gitlab.org')
 
     allow(project.repository).to receive(:code_owners_blob).and_return(codeowner_blob)
   end
@@ -74,7 +74,7 @@ RSpec.describe Gitlab::CodeOwners::Loader do
         expect(loader.entries).to contain_exactly(expected_entry, other_entry)
       end
 
-      it 'performs 6 query for users and groups' do
+      it 'performs 8 queries for users and groups' do
         test_group = create(:group, path: 'test-group')
         test_group.add_developer(create(:user))
 
@@ -84,12 +84,12 @@ RSpec.describe Gitlab::CodeOwners::Loader do
         create(:project_group_link, project: project, group: test_group)
         create(:project_group_link, project: project, group: another_group)
 
-        # - 1 query for users
+        # - 2 queries for users
         # - 1 for the emails to later divide them across the entries
         # - 2 for groups with joined routes and users
-        # - 2 for loading the users for the parent group(s)
+        # - 3 for loading the users for the parent group(s)
         #
-        expect { loader.entries }.not_to exceed_query_limit(6)
+        expect { loader.entries }.not_to exceed_query_limit(8)
       end
     end
 

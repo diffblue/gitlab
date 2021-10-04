@@ -116,14 +116,26 @@ RSpec.describe Gitlab::CodeOwners::Entry do
       expect(entry.users).to contain_exactly(user, second_user)
     end
 
-    it 'adds users by secondary email, case-insensitively' do
-      second_user = create(:user)
-      second_user.emails.create!(email: 'JaNe@GitLab.org')
-      second_user.emails.load
+    context 'adding users by secondary email, case-insensitively' do
+      it 'finds both users when the email address is confirmed/verified' do
+        second_user = create(:user)
+        second_user.emails.create!(email: 'JaNe@GitLab.org', confirmed_at: Time.current)
+        second_user.emails.load
 
-      entry.add_matching_users_from([second_user, user])
+        entry.add_matching_users_from([second_user, user])
 
-      expect(entry.users).to contain_exactly(user, second_user)
+        expect(entry.users).to contain_exactly(user, second_user)
+      end
+
+      it 'finds only the first user when the email address for the second is unconfirmed/unverified' do
+        second_user = create(:user)
+        second_user.emails.create!(email: 'JaNe@GitLab.org')
+        second_user.emails.load
+
+        entry.add_matching_users_from([second_user, user])
+
+        expect(entry.users).to contain_exactly(user)
+      end
     end
   end
 end
