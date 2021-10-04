@@ -13,6 +13,7 @@ code_quality:
     paths:
       - gl-code-quality-report.json  # GitLab-specific
   rules: !reference [".reports:rules:code_quality", rules]
+  allow_failure: true
 
 .sast-analyzer:
   # We need to re-`extends` from `sast` as the `extends` here overrides the one from the template.
@@ -31,12 +32,15 @@ code_quality:
 
 brakeman-sast:
   rules: !reference [".reports:rules:brakeman-sast", rules]
+  allow_failure: true
 
 nodejs-scan-sast:
   rules: !reference [".reports:rules:nodejs-scan-sast", rules]
+  allow_failure: true
 
 semgrep-sast:
   rules: !reference [".reports:rules:semgrep-sast", rules]
+  allow_failure: true
 
 gosec-sast:
   variables:
@@ -53,6 +57,7 @@ gosec-sast:
     paths:
       - vendor/go
   rules: !reference [".reports:rules:gosec-sast", rules]
+  allow_failure: true
 
 .secret-analyzer:
   extends: .default-retry
@@ -64,6 +69,7 @@ gosec-sast:
 
 secret_detection:
   rules: !reference [".reports:rules:secret_detection", rules]
+  allow_failure: true
 
 .ds-analyzer:
   # We need to re-`extends` from `dependency_scanning` as the `extends` here overrides the one from the template.
@@ -88,15 +94,19 @@ gemnasium-dependency_scanning:
     # Lower execa severity based on https://gitlab.com/gitlab-org/gitlab/-/issues/223859#note_452922390
     - jq '(.vulnerabilities[] | select (.cve == "yarn.lock:execa:gemnasium:05cfa2e8-2d0c-42c1-8894-638e2f12ff3d")).severity = "Medium"' gl-dependency-scanning-report.json > temp.json && mv temp.json gl-dependency-scanning-report.json
   rules: !reference [".reports:rules:gemnasium-dependency_scanning", rules]
+  allow_failure: true
 
 bundler-audit-dependency_scanning:
   rules: !reference [".reports:rules:bundler-audit-dependency_scanning", rules]
+  allow_failure: true
 
 retire-js-dependency_scanning:
   rules: !reference [".reports:rules:retire-js-dependency_scanning", rules]
+  allow_failure: true
 
 gemnasium-python-dependency_scanning:
   rules: !reference [".reports:rules:gemnasium-python-dependency_scanning", rules]
+  allow_failure: true
 
 # Analyze dependencies for malicious behavior
 # See https://gitlab.com/gitlab-com/gl-security/security-research/package-hunter
@@ -144,3 +154,4 @@ license_scanning:
   artifacts:
     expire_in: 1 week  # GitLab-specific
   rules: !reference [".reports:rules:license_scanning", rules]
+  allow_failure: true

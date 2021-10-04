@@ -45,6 +45,7 @@
     reports:
       dast: gl-dast-report.json
     expire_in: 1 week  # GitLab-specific
+  allow_failure: true
 
 # DAST scan with a subset of Release scan rules.
 DAST-fullscan-ruleset1:
