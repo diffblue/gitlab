@@ -5179,9 +5179,6 @@ msgstr ""
 msgid "Below you will find all the groups that are public."
 msgstr ""
 
-msgid "Beta"
-msgstr ""
-
 msgid "Bi-weekly code coverage"
 msgstr ""
 
@@ -16618,7 +16615,7 @@ msgstr ""
 msgid "GroupsNew|No import options available"
 msgstr ""
 
-msgid "GroupsNew|Not all related objects are migrated, as %{docs_link_start}described here%{docs_link_end}. Please %{feedback_link_start}leave feedback%{feedback_link_end} on this feature."
+msgid "GroupsNew|Not all related objects are migrated. %{docs_link_start}More info%{docs_link_end}."
 msgstr ""
 
 msgid "GroupsNew|Personal access token"
