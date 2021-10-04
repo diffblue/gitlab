@@ -61,7 +61,7 @@ export default {
 
       return this.pipeline.id;
     },
-    shouldRenderMergeTrainHelperText() {
+    shouldRenderMergeTrainHelperIcon() {
       return (
         this.pipeline &&
         isNumber(this.pipelineId) &&

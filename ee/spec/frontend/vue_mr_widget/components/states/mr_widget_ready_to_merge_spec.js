@@ -2,7 +2,7 @@ import { GlLink, GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
-import MergeTrainHelperText from 'ee/vue_merge_request_widget/components/merge_train_helper_text.vue';
+import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_train_helper_icon.vue';
 import { MERGE_DISABLED_TEXT_UNAPPROVED } from 'ee/vue_merge_request_widget/mixins/ready_to_merge';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
 import {
@@ -67,7 +67,7 @@ describe('ReadyToMerge', () => {
       },
       stubs: {
         MergeImmediatelyConfirmationDialog,
-        MergeTrainHelperText,
+        MergeTrainHelperIcon,
         GlSprintf,
         GlLink,
         MergeTrainFailedPipelineConfirmationDialog,
@@ -83,11 +83,7 @@ describe('ReadyToMerge', () => {
   const findMergeButton = () => wrapper.find('[data-testid="merge-button"]');
   const findMergeButtonDropdown = () => wrapper.find('.js-merge-moment');
   const findMergeImmediatelyButton = () => wrapper.find('.js-merge-immediately-button');
-  const findMergeTrainHelperText = () => wrapper.find(MergeTrainHelperText);
-  const findMergeTrainPipelineLink = () =>
-    findMergeTrainHelperText().find('[data-testid="pipeline-link"]');
-  const findMergeTrainDocumentationLink = () =>
-    findMergeTrainHelperText().find('[data-testid="documentation-link"]');
+  const findMergeTrainHelperIcon = () => wrapper.find(MergeTrainHelperIcon);
   const findFailedPipelineMergeTrainText = () =>
     wrapper.find('[data-testid="failed-pipeline-merge-train-text"]');
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
@@ -207,84 +203,26 @@ describe('ReadyToMerge', () => {
     });
   });
 
-  describe('shouldRenderMergeTrainHelperText', () => {
-    it('should render the helper text if MTWPS is available and the user has not yet pressed the MTWPS button', () => {
+  describe('shouldRenderMergeTrainHelperIcon', () => {
+    it('should render the helper icon if MTWPS is available and the user has not yet pressed the MTWPS button', () => {
       factory({
         onlyAllowMergeIfPipelineSucceeds: true,
         preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
         autoMergeEnabled: false,
       });
 
-      expect(findMergeTrainHelperText().exists()).toBe(true);
+      expect(findMergeTrainHelperIcon().exists()).toBe(true);
     });
   });
 
-  describe('merge train helper text', () => {
-    it('does not render the merge train helper text if the MTWPS strategy is not available', () => {
+  describe('merge train helper icon', () => {
+    it('does not render the merge train helper icon if the MTWPS strategy is not available', () => {
       factory({
         availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
         pipeline: activePipeline,
       });
 
-      expect(findMergeTrainHelperText().exists()).toBe(false);
-    });
-
-    it('renders the correct merge train helper text when there is an existing merge train', () => {
-      factory({
-        onlyAllowMergeIfPipelineSucceeds: true,
-        preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        autoMergeEnabled: false,
-        mergeTrainsCount: 2,
-        pipeline: activePipeline,
-      });
-
-      expect(findMergeTrainHelperText().text()).toContain(
-        `This action will add the merge request to the merge train when pipeline #${activePipeline.id} succeeds.`,
-      );
-    });
-
-    it('renders the correct merge train helper text when there is no existing merge train', () => {
-      factory({
-        onlyAllowMergeIfPipelineSucceeds: true,
-        preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        autoMergeEnabled: false,
-        mergeTrainsCount: 0,
-        pipeline: activePipeline,
-      });
-
-      expect(findMergeTrainHelperText().text()).toContain(
-        `This action will start a merge train when pipeline #${activePipeline.id} succeeds.`,
-      );
-    });
-
-    it('renders the correct pipeline link inside the message', () => {
-      factory({
-        onlyAllowMergeIfPipelineSucceeds: true,
-        preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        autoMergeEnabled: false,
-        mergeTrainsCount: 0,
-        pipeline: activePipeline,
-      });
-
-      const pipelineLink = findMergeTrainPipelineLink();
-
-      expect(pipelineLink.text()).toContain(activePipeline.id);
-      expect(pipelineLink.attributes('href')).toBe(activePipeline.path);
-    });
-
-    it('renders the documentation link inside the message', () => {
-      factory({
-        onlyAllowMergeIfPipelineSucceeds: true,
-        preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
-        autoMergeEnabled: false,
-        mergeTrainsCount: 0,
-        pipeline: activePipeline,
-      });
-
-      const pipelineLink = findMergeTrainDocumentationLink();
-
-      expect(pipelineLink.text()).toContain('More information');
-      expect(pipelineLink.attributes('href')).toBe(mr.mergeTrainWhenPipelineSucceedsDocsPath);
+      expect(findMergeTrainHelperIcon().exists()).toBe(false);
     });
   });
 
