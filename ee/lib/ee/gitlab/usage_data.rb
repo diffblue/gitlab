@@ -416,9 +416,8 @@ module EE
 
           ::Security::Scan.scan_types.each do |name, scan_type|
             relation = ::Security::Scan
-                         .latest_successful_by_build
                          .by_scan_types(scan_type)
-                         .where(security_scans: time_period)
+                         .where(time_period)
 
             metric_name = "#{name}_pipeline"
             aggregated_metrics_params = {
@@ -429,7 +428,7 @@ module EE
 
             pipelines_with_secure_jobs[metric_name.to_sym] =
               if start_id && finish_id
-                estimate_batch_distinct_count(relation, :commit_id, batch_size: 1000, start: start_id, finish: finish_id) do |result|
+                estimate_batch_distinct_count(relation, :pipeline_id, batch_size: 1000, start: start_id, finish: finish_id) do |result|
                   ::Gitlab::Usage::Metrics::Aggregates::Sources::PostgresHll
                     .save_aggregated_metrics(**aggregated_metrics_params.merge({ data: result }))
                 end
