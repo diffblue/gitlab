@@ -65,7 +65,7 @@ RSpec.describe ::Gitlab::SubscriptionPortal do
     end
   end
 
-  describe '.self.add_extra_seats_url' do
+  describe '.add_extra_seats_url' do
     subject { described_class.add_extra_seats_url(group_id) }
 
     let(:group_id) { 153 }
@@ -73,7 +73,7 @@ RSpec.describe ::Gitlab::SubscriptionPortal do
     it { is_expected.to eq("https://customers.stg.gitlab.com/gitlab/namespaces/#{group_id}/extra_seats") }
   end
 
-  describe '.self.upgrade_subscription_url' do
+  describe '.upgrade_subscription_url' do
     subject { described_class.upgrade_subscription_url(group_id, plan_id) }
 
     let(:group_id) { 153 }
@@ -82,7 +82,7 @@ RSpec.describe ::Gitlab::SubscriptionPortal do
     it { is_expected.to eq("https://customers.stg.gitlab.com/gitlab/namespaces/#{group_id}/upgrade/#{plan_id}") }
   end
 
-  describe '.self.renew_subscription_url' do
+  describe '.renew_subscription_url' do
     subject { described_class.renew_subscription_url(group_id) }
 
     let(:group_id) { 153 }
