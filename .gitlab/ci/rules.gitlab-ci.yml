@@ -354,6 +354,10 @@
   - "danger/**/*"
   - "tooling/danger/**/*"
 
+.core-backend-patterns: &core-backend-patterns
+  - "{,jh/}Gemfile{,.lock}"
+  - "{,ee/,jh/}config/**/*.rb"
+
 .core-frontend-patterns: &core-frontend-patterns
   - "{package.json,yarn.lock}"
   - "babel.config.js"
@@ -658,6 +662,8 @@
   rules:
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+    - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-merge-request
       changes: *db-patterns
@@ -674,6 +680,9 @@
     - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+      when: never
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
@@ -700,6 +709,8 @@
   rules:
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+    - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
       changes: *backend-patterns
@@ -716,6 +727,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -724,6 +738,8 @@
 .rails:rules:ee-and-foss-integration:
   rules:
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -741,6 +757,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -749,6 +768,8 @@
 .rails:rules:ee-and-foss-system:
   rules:
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -766,6 +787,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -774,6 +798,8 @@
 .rails:rules:ee-and-foss-fast_spec_helper:
   rules:
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -791,6 +817,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -806,6 +835,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-merge-request
@@ -827,6 +858,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -838,6 +872,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -857,6 +893,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -867,6 +906,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -886,6 +927,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -896,6 +940,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -915,6 +961,9 @@
     - <<: *if-merge-request-labels-run-all-rspec
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-merge-request
@@ -925,6 +974,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-security-merge-request
@@ -945,6 +996,9 @@
     - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-security-merge-request
@@ -959,6 +1013,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -979,6 +1035,9 @@
     - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-security-merge-request
@@ -991,6 +1050,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -1011,6 +1072,9 @@
     - <<: *if-automated-merge-request
       when: never
     - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
       changes: *ci-patterns
       when: never
     - <<: *if-security-merge-request
@@ -1023,6 +1087,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
     - <<: *if-merge-request
       changes: *ci-patterns
     - <<: *if-automated-merge-request
@@ -1041,6 +1107,9 @@
     - <<: *if-merge-request-approved
       when: never
     - <<: *if-automated-merge-request
+      when: never
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
       when: never
     - <<: *if-merge-request
       changes: *ci-patterns
