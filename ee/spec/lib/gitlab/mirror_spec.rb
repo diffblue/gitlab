@@ -3,8 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Mirror do
-  before do
-    Sidekiq::Logging.logger = nil
+  around do |example|
+    original_logger = Sidekiq.logger
+    Sidekiq.logger = nil
+
+    example.run
+
+    Sidekiq.logger = original_logger
   end
 
   describe '#configure_cron_job!' do
