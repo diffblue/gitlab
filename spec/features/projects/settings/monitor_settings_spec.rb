@@ -52,10 +52,8 @@ RSpec.describe 'Projects > Settings > For a forked project', :js do
         click_settings_tab
 
         expect(find_field(create_issue)).to be_checked
-        expect(page).to have_selector(:id, 'alert-integration-settings-issue-template', text: 'bug')
-
-        click_settings_tab
         expect(find_field(send_email)).not_to be_checked
+        expect(page).to have_selector(:id, 'alert-integration-settings-issue-template', text: 'bug')
       end
 
       def click_settings_tab
@@ -68,6 +66,8 @@ RSpec.describe 'Projects > Settings > For a forked project', :js do
         page.within '[data-testid="alert-integration-settings"]' do
           click_button 'Save changes'
         end
+
+        wait_for_all_requests
       end
     end
 
