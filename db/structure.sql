@@ -17828,7 +17828,7 @@ CREATE TABLE project_error_tracking_settings (
     encrypted_token_iv character varying,
     project_name character varying,
     organization_name character varying,
-    integrated boolean DEFAULT false NOT NULL
+    integrated boolean DEFAULT true NOT NULL
 );
 
 CREATE TABLE project_export_jobs (
