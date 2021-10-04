@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Profile > Usage Quota' do
+  include ::Ci::MinutesHelpers
+
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user, reload: true) { create(:user) }
@@ -36,7 +38,7 @@ RSpec.describe 'Profile > Usage Quota' do
 
       before do
         project.update!(shared_runners_enabled: shared_runners_enabled)
-        statistics.update!(shared_runners_seconds: used.minutes.to_i)
+        set_ci_minutes_used(namespace, used)
         namespace.update!(shared_runners_minutes_limit: quota)
 
         visit profile_usage_quotas_path

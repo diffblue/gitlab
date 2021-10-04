@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::EmailNotificationService do
+  include ::Ci::MinutesHelpers
+
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
 
@@ -88,11 +90,9 @@ RSpec.describe Ci::Minutes::EmailNotificationService do
         Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
       end
 
-      let!(:namespace_statistics) do
-        create(:namespace_statistics, namespace: namespace, shared_runners_seconds: minutes_used * 60)
-      end
-
       before do
+        set_ci_minutes_used(namespace, minutes_used)
+
         namespace_usage.update_column(:notification_level, current_notification_level)
         namespace.update_column(:shared_runners_minutes_limit, monthly_minutes_limit)
 
