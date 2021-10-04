@@ -117,6 +117,7 @@ X-Gitlab-Event: Push Hook
 ```json
 {
   "object_kind": "push",
+  "event_name": "push",
   "before": "95790bf891e76fee5e1747ab589903a6a1f80f22",
   "after": "da1560886d4f094c3e6c9ef40349f7d38b5d27d7",
   "ref": "refs/heads/master",
@@ -207,6 +208,7 @@ X-Gitlab-Event: Tag Push Hook
 ```json
 {
   "object_kind": "tag_push",
+  "event_name": "tag_push",
   "before": "0000000000000000000000000000000000000000",
   "after": "82b3d5ae55f7080f1e6022629cdb57bfae7cccc7",
   "ref": "refs/tags/v1.0.0",
@@ -435,6 +437,7 @@ X-Gitlab-Event: Note Hook
 ```json
 {
   "object_kind": "note",
+  "event_type": "note",
   "user": {
     "id": 1,
     "name": "Administrator",
@@ -517,6 +520,7 @@ X-Gitlab-Event: Note Hook
 ```json
 {
   "object_kind": "note",
+  "event_type": "note",
   "user": {
     "id": 1,
     "name": "Administrator",
@@ -646,6 +650,7 @@ X-Gitlab-Event: Note Hook
 ```json
 {
   "object_kind": "note",
+  "event_type": "note",
   "user": {
     "id": 1,
     "name": "Administrator",
@@ -741,6 +746,9 @@ X-Gitlab-Event: Note Hook
 NOTE:
 `assignee_id` field is deprecated and now shows the first assignee only.
 
+NOTE:
+`event_type` is set to `confidential_note` for confidential issues.
+
 #### Comment on code snippet
 
 **Request header**:
@@ -754,6 +762,7 @@ X-Gitlab-Event: Note Hook
 ```json
 {
   "object_kind": "note",
+  "event_type": "note",
   "user": {
     "id": 1,
     "name": "Administrator",
@@ -842,6 +851,7 @@ X-Gitlab-Event: Merge Request Hook
 ```json
 {
   "object_kind": "merge_request",
+  "event_type": "merge_request",
   "user": {
     "id": 1,
     "name": "Administrator",
