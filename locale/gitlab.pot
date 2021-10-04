@@ -5860,6 +5860,9 @@ msgstr ""
 msgid "BulkImport|From source group"
 msgstr ""
 
+msgid "BulkImport|Group import history"
+msgstr ""
+
 msgid "BulkImport|Import failed: Destination cannot be a subgroup of the source group. Change the destination and try again."
 msgstr ""
 
@@ -5878,6 +5881,12 @@ msgstr ""
 msgid "BulkImport|Name already exists."
 msgstr ""
 
+msgid "BulkImport|New group"
+msgstr ""
+
+msgid "BulkImport|No history is available"
+msgstr ""
+
 msgid "BulkImport|No parent"
 msgstr ""
 
@@ -5890,6 +5899,9 @@ msgstr ""
 msgid "BulkImport|Showing %{start}-%{end} of %{total} matching filter \"%{filter}\" from %{link}"
 msgstr ""
 
+msgid "BulkImport|Source group"
+msgstr ""
+
 msgid "BulkImport|To new group"
 msgstr ""
 
@@ -5897,6 +5909,9 @@ msgid "BulkImport|Update of import statuses with realtime changes failed"
 msgstr ""
 
 msgid "BulkImport|You have no groups to import"
+msgstr ""
+
+msgid "BulkImport|Your imported groups will appear here."
 msgstr ""
 
 msgid "BulkImport|expected an associated Group but has an associated Project"
@@ -17208,10 +17223,16 @@ msgstr ""
 msgid "Import from Jira"
 msgstr ""
 
+msgid "Import group"
+msgstr ""
+
 msgid "Import group from file"
 msgstr ""
 
 msgid "Import groups"
+msgstr ""
+
+msgid "Import history"
 msgstr ""
 
 msgid "Import in progress"
