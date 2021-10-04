@@ -75,33 +75,15 @@ RSpec.describe Projects::ThreatMonitoringController do
 
     context 'with authorized user' do
       before do
+        stub_licensed_features(threat_monitoring: true)
         project.add_developer(user)
         sign_in(user)
       end
 
-      context 'when feature is available' do
-        before do
-          stub_licensed_features(threat_monitoring: true)
-        end
+      it 'redirects to policies#new page' do
+        subject
 
-        it 'renders the new template' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to render_template(:new)
-        end
-      end
-
-      context 'when feature is not available' do
-        before do
-          stub_licensed_features(threat_monitoring: false)
-        end
-
-        it 'returns 404' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
+        expect(response).to redirect_to(new_project_security_policy_path(project))
       end
     end
 
@@ -110,16 +92,10 @@ RSpec.describe Projects::ThreatMonitoringController do
         sign_in(user)
       end
 
-      context 'when feature is available' do
-        before do
-          stub_licensed_features(threat_monitoring: true)
-        end
+      it 'returns 404' do
+        subject
 
-        it 'returns 404' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
 
@@ -144,96 +120,41 @@ RSpec.describe Projects::ThreatMonitoringController do
     let(:kind) { 'CiliumNetworkPolicy' }
 
     context 'with authorized user' do
+      let(:service) { instance_double('NetworkPolicies::FindResourceService', execute: ServiceResponse.success(payload: policy)) }
+      let(:policy) do
+        Gitlab::Kubernetes::CiliumNetworkPolicy.new(
+          name: 'policy',
+          namespace: 'another',
+          selector: { matchLabels: { role: 'db' } },
+          ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
+        )
+      end
+
       before do
+        stub_licensed_features(threat_monitoring: true)
+
+        allow(NetworkPolicies::FindResourceService).to(
+          receive(:new)
+            .with(resource_name: 'policy', environment: environment, kind: Gitlab::Kubernetes::CiliumNetworkPolicy::KIND)
+            .and_return(service)
+        )
+
         project.add_developer(user)
         sign_in(user)
       end
 
-      context 'when feature is available' do
-        let(:service) { instance_double('NetworkPolicies::FindResourceService', execute: ServiceResponse.success(payload: policy)) }
-        let(:policy) do
-          Gitlab::Kubernetes::CiliumNetworkPolicy.new(
-            name: 'policy',
-            namespace: 'another',
-            selector: { matchLabels: { role: 'db' } },
-            ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
+      it 'redirects to policies#edit page' do
+        subject
+
+        expect(response).to redirect_to(
+          edit_project_security_policy_path(
+            project,
+            environment_id: environment_id,
+            id: 'policy',
+            type: :container_policy,
+            kind: kind
           )
-        end
-
-        before do
-          stub_licensed_features(threat_monitoring: true)
-
-          allow(NetworkPolicies::FindResourceService).to(
-            receive(:new)
-              .with(resource_name: 'policy', environment: environment, kind: Gitlab::Kubernetes::CiliumNetworkPolicy::KIND)
-              .and_return(service)
-          )
-        end
-
-        it 'renders the new template' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to render_template(:edit)
-        end
-
-        context 'when different policy kind is requested' do
-          let(:policy) do
-            Gitlab::Kubernetes::NetworkPolicy.new(
-              name: 'not-cilium-policy',
-              namespace: 'another',
-              selector: { matchLabels: { role: 'db' } },
-              ingress: [{ from: [{ namespaceSelector: { matchLabels: { project: 'myproject' } } }] }]
-            )
-          end
-
-          before do
-            allow(NetworkPolicies::FindResourceService).to(
-              receive(:new)
-                .with(resource_name: 'policy', environment: environment, kind: Gitlab::Kubernetes::NetworkPolicy::KIND)
-                .and_return(service)
-            )
-          end
-
-          it 'renders the new template' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to render_template(:edit)
-          end
-        end
-
-        context 'when environment is missing' do
-          let(:environment_id) { 'missing' }
-
-          it 'returns 404' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
-        end
-
-        context 'when service failed' do
-          let(:service) { instance_double('NetworkPolicies::FindResourceService', execute: ServiceResponse.error(message: 'error')) }
-
-          it 'returns 404' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
-        end
-      end
-
-      context 'when feature is not available' do
-        before do
-          stub_licensed_features(threat_monitoring: false)
-        end
-
-        it 'returns 404' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
+        )
       end
     end
 
@@ -242,16 +163,10 @@ RSpec.describe Projects::ThreatMonitoringController do
         sign_in(user)
       end
 
-      context 'when feature is available' do
-        before do
-          stub_licensed_features(threat_monitoring: true)
-        end
+      it 'returns 404' do
+        subject
 
-        it 'returns 404' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
 
