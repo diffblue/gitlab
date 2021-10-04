@@ -114,14 +114,9 @@ module Gitlab
         # query.
         #
         def verification_pending_batch(batch_size:)
-          relation = verification_pending_batch_relation(batch_size: batch_size)
+          relation = verification_pending.order(Gitlab::Database.nulls_first_order(:verified_at)).limit(batch_size) # rubocop:disable CodeReuse/ActiveRecord
 
           start_verification_batch(relation)
-        end
-
-        # Overridden by Geo::VerifiableRegistry
-        def verification_pending_batch_relation(batch_size:)
-          verification_pending.order(Gitlab::Database.nulls_first_order(:verified_at)).limit(batch_size) # rubocop:disable CodeReuse/ActiveRecord
         end
 
         # Returns IDs of records that failed to verify (calculate and save checksum).
@@ -130,24 +125,14 @@ module Gitlab
         # query.
         #
         def verification_failed_batch(batch_size:)
-          relation = verification_failed_batch_relation(batch_size: batch_size)
+          relation = verification_failed.verification_retry_due.order(Gitlab::Database.nulls_first_order(:verification_retry_at)).limit(batch_size) # rubocop:disable CodeReuse/ActiveRecord
 
           start_verification_batch(relation)
         end
 
-        # Overridden by Geo::VerifiableRegistry
-        def verification_failed_batch_relation(batch_size:)
-          verification_failed.verification_retry_due.order(Gitlab::Database.nulls_first_order(:verification_retry_at)).limit(batch_size) # rubocop:disable CodeReuse/ActiveRecord
-        end
-
         # @return [Integer] number of records that need verification
         def needs_verification_count(limit:)
-          needs_verification_relation.limit(limit).count # rubocop:disable CodeReuse/ActiveRecord
-        end
-
-        # Overridden by Geo::VerifiableRegistry
-        def needs_verification_relation
-          needs_verification
+          needs_verification.limit(limit).count # rubocop:disable CodeReuse/ActiveRecord
         end
 
         # @return [Integer] number of records that need reverification
