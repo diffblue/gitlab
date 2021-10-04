@@ -1,6 +1,7 @@
-<!-- OneTrust -->
-= javascript_include_tag "https://cdn.cookielaw.org/consent/-/OtAutoBlock.js"
-%script{ :src => "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", :charset => "UTF-8", :"data-domain-script" => "-", :defer => true, :nonce => true }
-= javascript_tag do
-  :plain
-    function OptanonWrapper() { }
+- if one_trust_enabled?
+  <!-- OneTrust -->
+  = javascript_include_tag "https://cdn.cookielaw.org/consent/#{extra_config.one_trust_id}/OtAutoBlock.js"
+  %script{ :src => "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", :charset => "UTF-8", :"data-domain-script" => extra_config.one_trust_id, :defer => true, :nonce => true }
+  = javascript_tag nonce: true do
+    :plain
+      function OptanonWrapper() { }
