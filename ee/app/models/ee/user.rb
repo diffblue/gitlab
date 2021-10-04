@@ -74,9 +74,11 @@ module EE
 
       has_many :user_permission_export_uploads
 
-      has_many :oncall_participants, class_name: 'IncidentManagement::OncallParticipant', inverse_of: :user
+      has_many :oncall_participants, -> { not_removed }, class_name: 'IncidentManagement::OncallParticipant', inverse_of: :user
       has_many :oncall_rotations, class_name: 'IncidentManagement::OncallRotation', through: :oncall_participants, source: :rotation
-      has_many :oncall_schedules, class_name: 'IncidentManagement::OncallSchedule', through: :oncall_rotations, source: :schedule
+      has_many :oncall_schedules, -> { distinct }, class_name: 'IncidentManagement::OncallSchedule', through: :oncall_rotations, source: :schedule
+      has_many :escalation_rules, -> { not_removed }, class_name: 'IncidentManagement::EscalationRule', inverse_of: :user
+      has_many :escalation_policies, -> { distinct }, class_name: 'IncidentManagement::EscalationPolicy', through: :escalation_rules, source: :policy
 
       scope :not_managed, ->(group: nil) {
         scope = where(managing_group_id: nil)

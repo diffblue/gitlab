@@ -9,8 +9,8 @@ module EE
       super
 
       ActiveRecord::Associations::Preloader.new.preload(members, user: { group_saml_identities: :saml_provider })
-      ActiveRecord::Associations::Preloader.new.preload(members, user: { oncall_participants: { rotation: :schedule } })
       ActiveRecord::Associations::Preloader.new.preload(members, user: :oncall_schedules)
+      ActiveRecord::Associations::Preloader.new.preload(members, user: :escalation_policies)
       ActiveRecord::Associations::Preloader.new.preload(members, user: :user_detail)
     end
   end

@@ -7,10 +7,7 @@ module EE
 
       prepended do
         expose :oncall_schedules, with: ::IncidentManagement::OncallScheduleEntity
-
-        def oncall_schedules
-          object.oncall_schedules.uniq
-        end
+        expose :escalation_policies, with: ::IncidentManagement::EscalationPolicyEntity
       end
     end
   end

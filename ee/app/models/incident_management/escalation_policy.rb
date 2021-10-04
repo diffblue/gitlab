@@ -12,6 +12,10 @@ module IncidentManagement
     validates :name, presence: true, uniqueness: { scope: [:project_id] }, length: { maximum: 72 }
     validates :description, length: { maximum: 160 }
 
+    scope :for_project, -> (project) { where(project: project) }
+
     accepts_nested_attributes_for :rules
+
+    delegate :name, to: :project, prefix: true
   end
 end

@@ -21,7 +21,7 @@ module EE
 
       override :users_with_included_associations
       def users_with_included_associations(users)
-        super.includes(:oncall_schedules) # rubocop: disable CodeReuse/ActiveRecord
+        super.includes(:oncall_schedules, :escalation_policies) # rubocop: disable CodeReuse/ActiveRecord
       end
 
       override :log_impersonation_event
