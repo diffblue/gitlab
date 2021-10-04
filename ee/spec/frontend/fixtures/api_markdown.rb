@@ -16,11 +16,7 @@ RSpec.describe API::MergeRequests, '(JavaScript fixtures)', type: :request do
   let(:group_wiki_page) { create(:wiki_page, wiki: group_wiki) }
   let(:project_wiki_page) { create(:wiki_page, wiki: project_wiki) }
 
-  fixture_subdir = 'api/markdown'
-
   before(:all) do
-    clean_frontend_fixtures(fixture_subdir)
-
     group.add_owner(user)
   end
 
@@ -44,7 +40,7 @@ RSpec.describe API::MergeRequests, '(JavaScript fixtures)', type: :request do
 
       name = "#{context}_#{name}" unless context.empty?
 
-      it "#{fixture_subdir}/#{name}.json" do
+      it "api/markdown/#{name}.json" do
         api_url = case context
                   when 'group_wiki'
                     "/groups/#{group.full_path}/-/wikis/#{group_wiki_page.slug}/preview_markdown"

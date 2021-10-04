@@ -11,10 +11,6 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
 
   render_views
 
-  before(:all) do
-    clean_frontend_fixtures('ee/merge_requests/')
-  end
-
   before do
     sign_in(user)
   end

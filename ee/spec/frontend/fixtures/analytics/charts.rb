@@ -12,10 +12,6 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     freeze_time { example.run }
   end
 
-  before(:all) do
-    clean_frontend_fixtures('analytics/charts/')
-  end
-
   describe Groups::Analytics::TasksByTypeController, type: :controller do
     render_views
 
