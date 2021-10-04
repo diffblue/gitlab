@@ -236,7 +236,7 @@ module Gitlab
       end
 
       def archive_stream!(stream)
-        ::Ci::ArchiveBuildTraceService.new(job, trace_metadata).execute!(stream)
+        ::Gitlab::Ci::Trace::Archive.new(job, trace_metadata).execute!(stream)
       end
 
       def trace_metadata

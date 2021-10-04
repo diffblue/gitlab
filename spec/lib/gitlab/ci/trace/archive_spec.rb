@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::ArchiveBuildTraceService do
+RSpec.describe Gitlab::Ci::Trace::Archive do
   let_it_be(:job) { create(:ci_build, :success, :trace_live) }
   let_it_be(:trace_metadata) { create(:ci_build_trace_metadata, build: job) }
   let_it_be(:src_checksum) do
