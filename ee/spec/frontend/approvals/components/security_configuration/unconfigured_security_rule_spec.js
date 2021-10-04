@@ -20,22 +20,19 @@ describe('UnconfiguredSecurityRule component', () => {
 
   const vulnCheckRule = {
     name: VULNERABILITY_CHECK_NAME,
-    description: 'vuln-check description without enable button',
-    enableDescription: 'vuln-check description with enable button',
+    description: 'vuln-check description with enable button',
     docsPath: 'docs/vuln-check',
   };
 
   const licenseCheckRule = {
     name: LICENSE_CHECK_NAME,
-    description: 'license-check description without enable button',
-    enableDescription: 'license-check description with enable button',
+    description: 'license-check description with enable button',
     docsPath: 'docs/license-check',
   };
 
   const coverageCheckRule = {
     name: COVERAGE_CHECK_NAME,
-    description: 'coverage-check description without enable button',
-    enableDescription: 'coverage-check description with enable button',
+    description: 'coverage-check description with enable button',
     docsPath: 'docs/coverage-check',
   };
 
@@ -56,13 +53,13 @@ describe('UnconfiguredSecurityRule component', () => {
 
   describe.each`
     rule                 | ruleName                  | descriptionText
-    ${licenseCheckRule}  | ${licenseCheckRule.name}  | ${licenseCheckRule.enableDescription}
-    ${vulnCheckRule}     | ${vulnCheckRule.name}     | ${vulnCheckRule.enableDescription}
-    ${coverageCheckRule} | ${coverageCheckRule.name} | ${coverageCheckRule.enableDescription}
-  `('with a configured job that is eligible for $ruleName', ({ rule, descriptionText }) => {
+    ${licenseCheckRule}  | ${licenseCheckRule.name}  | ${licenseCheckRule.description}
+    ${vulnCheckRule}     | ${vulnCheckRule.name}     | ${vulnCheckRule.description}
+    ${coverageCheckRule} | ${coverageCheckRule.name} | ${coverageCheckRule.description}
+  `('with $ruleName', ({ rule, descriptionText }) => {
     beforeEach(() => {
       createWrapper({
-        rule: { ...rule, hasConfiguredJob: true },
+        rule: { ...rule },
       });
       description = findDescription();
     });
@@ -76,26 +73,6 @@ describe('UnconfiguredSecurityRule component', () => {
     it('should emit the "enable" event when the button is clicked', () => {
       findButton().trigger('click');
       expect(wrapper.emitted('enable')).toEqual([[]]);
-    });
-  });
-
-  describe.each`
-    rule                 | ruleName                  | descriptionText
-    ${licenseCheckRule}  | ${licenseCheckRule.name}  | ${licenseCheckRule.description}
-    ${vulnCheckRule}     | ${vulnCheckRule.name}     | ${vulnCheckRule.description}
-    ${coverageCheckRule} | ${coverageCheckRule.name} | ${coverageCheckRule.description}
-  `('with a unconfigured job that is eligible for $ruleName', ({ rule, descriptionText }) => {
-    beforeEach(() => {
-      createWrapper({
-        rule: { ...rule, hasConfiguredJob: false },
-      });
-      description = findDescription();
-    });
-
-    it('should render the row with the decription and no button', () => {
-      expect(description.exists()).toBe(true);
-      expect(description.text()).toBe(descriptionText);
-      expect(findButton().exists()).toBe(false);
     });
   });
 });
