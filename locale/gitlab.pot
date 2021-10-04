@@ -24670,7 +24670,7 @@ msgstr ""
 msgid "PerformanceBar|First Contentful Paint"
 msgstr ""
 
-msgid "PerformanceBar|Flamegraph"
+msgid "PerformanceBar|Flamegraph with mode:"
 msgstr ""
 
 msgid "PerformanceBar|Frontend resources"
@@ -24704,6 +24704,15 @@ msgid "PerformanceBar|Total duration"
 msgstr ""
 
 msgid "PerformanceBar|Trace"
+msgstr ""
+
+msgid "PerformanceBar|cpu"
+msgstr ""
+
+msgid "PerformanceBar|object"
+msgstr ""
+
+msgid "PerformanceBar|wall"
 msgstr ""
 
 msgid "Period in seconds"
