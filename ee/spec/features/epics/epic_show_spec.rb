@@ -118,7 +118,7 @@ RSpec.describe 'Epic show', :js do
       end
     end
 
-    it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures do
+    it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342232' do
       find('.js-epic-tabs-container #roadmap-tab').click
       wait_for_all_requests # Wait for Roadmap bundle load and then Epics fetch load
 
