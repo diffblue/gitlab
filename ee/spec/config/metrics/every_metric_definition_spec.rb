@@ -34,6 +34,14 @@ RSpec.describe 'Every metric definition' do
       templates_gitlab_slack_application_active
       groups_inheriting_gitlab_slack_application_active
       projects_inheriting_gitlab_slack_application_active
+      p_ci_templates_5_min_production_app
+      p_ci_templates_aws_cf_deploy_ec2
+      p_ci_templates_auto_devops_build
+      p_ci_templates_auto_devops_deploy
+      p_ci_templates_auto_devops_deploy_latest
+      p_ci_templates_implicit_auto_devops_build
+      p_ci_templates_implicit_auto_devops_deploy_latest
+      p_ci_templates_implicit_auto_devops_deploy
     ).freeze
   end
 
