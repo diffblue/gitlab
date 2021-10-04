@@ -64,6 +64,17 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
     it_behaves_like 'when http call raises an exception'
   end
 
+  describe '#generate_hand_raise_lead' do
+    subject do
+      client.generate_hand_raise_lead({})
+    end
+
+    it_behaves_like 'when response is successful'
+    it_behaves_like 'when response code is 422'
+    it_behaves_like 'when response code is 500'
+    it_behaves_like 'when http call raises an exception'
+  end
+
   describe '#extend_reactivate_trial' do
     let(:http_method) { :put }
 

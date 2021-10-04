@@ -13,6 +13,10 @@ module Gitlab
             http_post("trials", admin_headers, params)
           end
 
+          def generate_hand_raise_lead(params)
+            http_post("trials/create_hand_raise_lead", admin_headers, params)
+          end
+
           def extend_reactivate_trial(params)
             http_put("trials/extend_reactivate_trial", admin_headers, params)
           end
