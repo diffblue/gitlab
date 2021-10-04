@@ -31258,6 +31258,9 @@ msgstr ""
 msgid "Show Pipeline IID"
 msgstr ""
 
+msgid "Show all %{issuable_type}."
+msgstr ""
+
 msgid "Show all activity"
 msgstr ""
 
