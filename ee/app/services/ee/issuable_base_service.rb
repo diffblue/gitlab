@@ -21,10 +21,6 @@ module EE
         params.delete(:health_status)
       end
 
-      # Filter these iteration params unconditionally as they do not exist on the model.
-      # They must be used before reaching this filter if present.
-      [:iteration_wildcard_id, :iteration_cadence_id, :iteration_id].each { |iteration_param| params.delete(iteration_param) }
-
       super
     end
 

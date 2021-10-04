@@ -5,8 +5,7 @@ module EE
     module BaseService
       extend ::Gitlab::Utils::Override
 
-      EpicAssignmentError = Class.new(::ArgumentError)
-      IterationAssignmentError = Class.new(StandardError)
+      class EpicAssignmentError < ::ArgumentError; end
 
       def filter_epic(issue)
         return unless epic_param_present?
@@ -107,42 +106,6 @@ module EE
         if result[:status] == :error
           raise EpicAssignmentError, result[:message]
         end
-      end
-
-      private
-
-      def validate_iteration_params!(iteration_params)
-        if iteration_params[:iteration_wildcard_id].present? && iteration_params[:iteration_cadence_id].blank?
-          raise IterationAssignmentError, 'iteration_cadence_id is required when iteration_wildcard_id is provided.'
-        end
-
-        if [iteration_params[:iteration_id], iteration_params[:iteration_wildcard_id]].all?(&:present?)
-          raise IterationAssignmentError, 'Incompatible arguments: iteration_id, iteration_wildcard_id.'
-        end
-      end
-
-      def find_iteration!(iteration_params, group)
-        validate_iteration_params!(iteration_params)
-
-        # converts params to keys the finder understands
-        finder_params = iteration_params.slice(:iteration_wildcard_id).merge(parent: group, include_ancestors: true)
-        finder_params[:id] = iteration_params[:iteration_id]
-        finder_params[:iteration_cadence_ids] = iteration_params[:iteration_cadence_id]
-
-        iteration = IterationsFinder.new(current_user, finder_params.compact).execute.first
-
-        return unless iteration && current_user.can?(:read_iteration, iteration)
-
-        iteration
-      end
-
-      def process_iteration_id
-        return unless project_group&.licensed_feature_available?(:iterations)
-
-        iteration_params = params.slice(:iteration_wildcard_id, :iteration_cadence_id, :iteration_id)
-        iteration = find_iteration!(iteration_params, project_group)
-
-        params[:iteration] = iteration if iteration
       end
     end
   end
