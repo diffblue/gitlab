@@ -1,9 +1,11 @@
 = form_with url: configure_import_bulk_imports_path, class: 'group-form gl-show-field-errors' do |f|
   .gl-border-l-solid.gl-border-r-solid.gl-border-gray-100.gl-border-1.gl-p-5
-    %h4.gl-display-flex
-      = s_('GroupsNew|Import groups from another instance of GitLab')
-      %span.badge.badge-info.badge-pill.gl-badge.md.gl-ml-3
-        = _('Beta')
+    .gl-display-flex.gl-align-items-center
+      %h4.gl-display-inline-flex
+        = s_('GroupsNew|Import groups from another instance of GitLab')
+        %span.badge.badge-info.badge-pill.gl-badge.md.gl-ml-3
+          = _('Beta')
+      = link_to _('History'), history_import_bulk_imports_path, class: 'gl-link gl-ml-auto'
     .gl-alert.gl-alert-warning{ role: 'alert' }
       = sprite_icon('warning', css_class: 'gl-icon s16 gl-alert-icon gl-alert-icon-no-title')
       .gl-alert-body
