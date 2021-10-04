@@ -3,25 +3,44 @@
 require 'spec_helper'
 
 RSpec.describe EE::MembersPreloader do
+  include OncallHelpers
+
   describe '#preload_all' do
-    let(:group) { create(:group) }
-    let(:saml_provider) { create(:saml_provider, group: group) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:saml_provider) { create(:saml_provider, group: group) }
+    let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project, rule_count: 0) }
 
-    def group_sso_with_preload(members)
-      MembersPreloader.new(members).preload_all
-      MembersPresenter.new(members, current_user: nil).map(&:group_sso?)
-    end
-
-    it 'preloads SAML identities to avoid N+1 queries in MembersPresenter' do
+    it 'preloads associations to avoid N+1 queries' do
       member = create(:group_member, group: group)
-      create(:group_saml_identity, user: member.user, saml_provider: saml_provider)
-      control = ActiveRecord::QueryRecorder.new { group_sso_with_preload([member]) }
+      create_member_associations(member)
+
+      control = ActiveRecord::QueryRecorder.new { access_group_with_preload([member]) }
 
       members = create_list(:group_member, 3, group: group)
-      create(:group_saml_identity, user: members.first.user, saml_provider: saml_provider)
-      create(:group_saml_identity, user: members.last.user, saml_provider: saml_provider)
+      create_member_associations(members.first)
+      create_member_associations(members.last)
 
-      expect { group_sso_with_preload(members) }.not_to exceed_query_limit(control)
+      expect { access_group_with_preload(members) }.not_to exceed_query_limit(control)
+    end
+
+    def access_group_with_preload(members)
+      MembersPreloader.new(members).preload_all
+      MembersPresenter.new(members, current_user: nil).map(&:group_sso?)
+
+      members.each do |member|
+        member.user.oncall_schedules.any?
+        member.user.escalation_policies.any?
+        member.user.user_detail
+      end
+    end
+
+    def create_member_associations(member)
+      create(:group_saml_identity, user: member.user, saml_provider: saml_provider)
+      create_schedule_with_user(project, member.user)
+      create(:incident_management_escalation_rule, :with_user, policy: escalation_policy, user: member.user)
+      member.user.user_detail.save!
+      member.reload
     end
   end
 end

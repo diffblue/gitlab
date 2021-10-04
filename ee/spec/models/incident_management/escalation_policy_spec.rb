@@ -30,4 +30,20 @@ RSpec.describe IncidentManagement::EscalationPolicy do
     it { is_expected.to validate_length_of(:name).is_at_most(72) }
     it { is_expected.to validate_length_of(:description).is_at_most(160) }
   end
+
+  describe 'delegations' do
+    it { is_expected.to delegate_method(:name).to(:project).with_prefix }
+  end
+
+  describe 'scopes' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
+    let_it_be(:other_policy) { create(:incident_management_escalation_policy) }
+
+    describe '.for_project' do
+      subject { described_class.for_project(project) }
+
+      it { is_expected.to contain_exactly(policy) }
+    end
+  end
 end

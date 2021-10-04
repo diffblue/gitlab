@@ -15,7 +15,7 @@ RSpec.describe IncidentManagement::OncallScheduleEntity do
 
       expect(attributes[:name]).to eq(schedule.name)
       expect(attributes[:project_name]).to eq(schedule.project.name)
-      expect(attributes[:schedule_url]).to eq(schedule_url)
+      expect(attributes[:url]).to eq(schedule_url)
       expect(attributes[:project_url]).to eq(project_url)
     end
   end

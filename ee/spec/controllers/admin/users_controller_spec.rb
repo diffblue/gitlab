@@ -10,6 +10,15 @@ RSpec.describe Admin::UsersController do
     sign_in(admin)
   end
 
+  describe 'GET #index' do
+    it 'eager loads obstacles to user deletion' do
+      get :index
+
+      expect(assigns(:users).first.association(:oncall_schedules)).to be_loaded
+      expect(assigns(:users).first.association(:escalation_policies)).to be_loaded
+    end
+  end
+
   describe 'POST update' do
     context 'updating name' do
       shared_examples_for 'admin can update the name of a user' do

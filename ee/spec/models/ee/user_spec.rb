@@ -31,6 +31,8 @@ RSpec.describe User do
     it { is_expected.to have_many(:oncall_participants).class_name('IncidentManagement::OncallParticipant') }
     it { is_expected.to have_many(:oncall_rotations).class_name('IncidentManagement::OncallRotation').through(:oncall_participants) }
     it { is_expected.to have_many(:oncall_schedules).class_name('IncidentManagement::OncallSchedule').through(:oncall_rotations) }
+    it { is_expected.to have_many(:escalation_rules).class_name('IncidentManagement::EscalationRule') }
+    it { is_expected.to have_many(:escalation_policies).class_name('IncidentManagement::EscalationPolicy').through(:escalation_rules) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:user) }
   end
 
@@ -1894,6 +1896,44 @@ RSpec.describe User do
       group_with_plan.add_owner(user)
 
       is_expected.to be(false)
+    end
+  end
+
+  describe '.oncall_schedules' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:participant, reload: true) { create(:incident_management_oncall_participant, user: user) }
+    let_it_be(:schedule, reload: true) { participant.rotation.schedule }
+
+    it 'excludes removed participants' do
+      participant.update!(is_removed: true)
+
+      expect(user.oncall_schedules).to be_empty
+    end
+
+    it 'excludes duplicates' do
+      create(:incident_management_oncall_rotation, schedule: schedule) do |rotation|
+        create(:incident_management_oncall_participant, user: user, rotation: rotation)
+      end
+
+      expect(user.oncall_schedules).to contain_exactly(schedule)
+    end
+  end
+
+  describe '.escalation_policies' do
+    let_it_be(:rule, reload: true) { create(:incident_management_escalation_rule, :with_user) }
+    let_it_be(:policy, reload: true) { rule.policy }
+    let_it_be(:user) { rule.user }
+
+    it 'excludes removed rules' do
+      rule.update!(is_removed: true)
+
+      expect(user.escalation_policies).to be_empty
+    end
+
+    it 'excludes duplicates' do
+      create(:incident_management_escalation_rule, :with_user, :resolved, policy: policy, user: user)
+
+      expect(user.escalation_policies).to contain_exactly(policy)
     end
   end
 end

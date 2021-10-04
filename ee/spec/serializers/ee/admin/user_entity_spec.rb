@@ -15,7 +15,7 @@ RSpec.describe Admin::UserEntity do
     subject { entity.as_json&.keys }
 
     it 'exposes correct attributes' do
-      is_expected.to include(:oncall_schedules)
+      is_expected.to include(:oncall_schedules, :escalation_policies)
     end
   end
 end
