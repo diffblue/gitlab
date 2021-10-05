@@ -87,8 +87,7 @@ export default {
           data-testid="month-dropdown-item"
           @click="changeSelectedMonth(monthName)"
         >
-          <!-- eslint-disable-next-line @gitlab/vue-require-string-literal-i18n-helpers -->
-          {{ __(monthName) }}
+          {{ monthName }}
         </gl-dropdown-item>
       </gl-dropdown>
     </div>
