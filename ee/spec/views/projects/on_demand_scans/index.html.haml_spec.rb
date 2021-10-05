@@ -9,7 +9,7 @@ RSpec.describe "projects/on_demand_scans/index", type: :view do
   end
 
   it 'renders Vue app root' do
-    expect(rendered).to have_selector('#js-on-demand-scans-form')
+    expect(rendered).to have_selector('#js-on-demand-scans')
   end
 
   it 'passes on-demand scans docs page URL' do

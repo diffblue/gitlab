@@ -23666,6 +23666,9 @@ msgstr ""
 msgid "OnDemandScans|My daily scan"
 msgstr ""
 
+msgid "OnDemandScans|New DAST scan"
+msgstr ""
+
 msgid "OnDemandScans|New on-demand DAST scan"
 msgstr ""
 
@@ -23676,6 +23679,12 @@ msgid "OnDemandScans|No profile yet. In order to create a new scan, you need to 
 msgstr ""
 
 msgid "OnDemandScans|On-demand Scans"
+msgstr ""
+
+msgid "OnDemandScans|On-demand scans"
+msgstr ""
+
+msgid "OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Lean more%{learnMoreLinkEnd}."
 msgstr ""
 
 msgid "OnDemandScans|On-demand scans run outside the DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}"
