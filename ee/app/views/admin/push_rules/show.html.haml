@@ -2,7 +2,7 @@
 - page_title _("Push Rules")
 - @content_class = "limit-container-width" unless fluid_layout
 
-%section.settings.no-animate{ class: ('expanded' if expanded_by_default?) }
+%section.settings.no-animate#js-push-rule-settings{ class: ('expanded' if expanded_by_default?) }
   .settings-header
     %h4
       = _('Push Rules')

@@ -5,15 +5,11 @@
     = _("Define how approval rules are applied to merge requests.")
     = link_to _("Learn more."), help_page_path("user/admin_area/merge_requests_approvals.md"), target: '_blank', rel: 'noopener noreferrer'
   .gl-form-checkbox-group
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = f.check_box :prevent_merge_requests_author_approval, class: 'custom-control-input'
-      = f.label :prevent_merge_requests_author_approval, class: 'custom-control-label' do
-        = s_('ApprovalSettings|Prevent approval by author.')
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = f.check_box :prevent_merge_requests_committers_approval, class: 'custom-control-input'
-      = f.label :prevent_merge_requests_committers_approval, class: 'custom-control-label' do
-        = s_('ApprovalSettings|Prevent approvals by users who add commits.')
-    .gl-form-checkbox.custom-control.custom-checkbox
-      = f.check_box :disable_overriding_approvers_per_merge_request , class: 'custom-control-input'
-      = f.label :disable_overriding_approvers_per_merge_request , class: 'custom-control-label' do
-        = s_('ApprovalSettings|Prevent editing approval rules in projects and merge requests.')
+    = f.gitlab_ui_checkbox_component :prevent_merge_requests_author_approval,
+        s_('ApprovalSettings|Prevent approval by author.')
+
+    = f.gitlab_ui_checkbox_component :prevent_merge_requests_committers_approval,
+        s_('ApprovalSettings|Prevent approvals by users who add commits.')
+
+    = f.gitlab_ui_checkbox_component :disable_overriding_approvers_per_merge_request,
+        s_('ApprovalSettings|Prevent editing approval rules in projects and merge requests.')
