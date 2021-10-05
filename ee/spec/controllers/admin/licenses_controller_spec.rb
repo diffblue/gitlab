@@ -40,7 +40,7 @@ RSpec.describe Admin::LicensesController do
       end.not_to change(License, :count)
 
       expect(response).to render_template(:new)
-      expect(response.body).to include('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.')
+      expect(response.body).to include(_('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
     end
 
     it 'redirects to the subscription page when a valid license is entered/uploaded' do
