@@ -1,3 +1,4 @@
+// TODO: remove jquery dep
 import $ from 'jquery';
 
 import { loadHTMLFixture } from 'helpers/fixtures';
