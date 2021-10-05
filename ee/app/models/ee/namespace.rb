@@ -471,7 +471,6 @@ module EE
     end
 
     def sync_name_with_customers_dot
-      return unless ::Feature.enabled?(:sync_namespace_name_with_cdot)
       return unless ::Gitlab.com?
 
       ::Namespaces::SyncNamespaceNameWorker.perform_async(id)
