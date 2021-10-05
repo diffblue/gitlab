@@ -220,7 +220,7 @@ module EE
                  File.join(geo_secondary_referrer_path_prefix, geo_request_fullpath_for_primary)
                end
 
-        ::Gitlab::Utils.append_path(::Gitlab::Geo.primary_node.internal_url, path)
+        ::Gitlab::Utils.append_path(::Gitlab::Geo.primary_node.url, path)
       end
 
       def geo_secondary_referrer_path_prefix

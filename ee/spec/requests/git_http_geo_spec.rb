@@ -13,8 +13,9 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
   let_it_be(:project_no_repo) { create(:project, :private) }
 
   let_it_be(:primary_url) { 'http://primary.example.com' }
+  let_it_be(:primary_internal_url) { 'http://primary-internal.example.com' }
   let_it_be(:secondary_url) { 'http://secondary.example.com' }
-  let_it_be(:primary) { create(:geo_node, :primary, url: primary_url) }
+  let_it_be(:primary) { create(:geo_node, :primary, url: primary_url, internal_url: primary_internal_url) }
   let_it_be(:secondary) { create(:geo_node, url: secondary_url) }
 
   let!(:user) { create(:user) }
