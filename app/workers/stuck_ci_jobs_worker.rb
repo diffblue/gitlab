@@ -15,8 +15,6 @@ class StuckCiJobsWorker # rubocop:disable Scalability/IdempotentWorker
   feature_category :continuous_integration
   worker_resource_boundary :cpu
 
-  EXCLUSIVE_LEASE_KEY = 'stuck_ci_builds_worker_lease'
-
   def perform
     Ci::StuckBuilds::DropRunningWorker.perform_in(20.minutes)
     Ci::StuckBuilds::DropScheduledWorker.perform_in(40.minutes)
