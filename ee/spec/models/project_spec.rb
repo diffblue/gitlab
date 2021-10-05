@@ -254,6 +254,18 @@ RSpec.describe Project do
         end
       end
     end
+
+    context 'when deleting security policy project' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:policy_management_project) { create(:project) }
+      let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
+
+      it 'also deletes the associated security_orchestration_policy_configuration' do
+        policy_management_project.delete
+
+        expect(project.reload.security_orchestration_policy_configuration).to be_nil
+      end
+    end
   end
 
   context 'scopes' do
