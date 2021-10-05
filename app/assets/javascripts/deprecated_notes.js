@@ -129,7 +129,13 @@ export default class Notes {
     this.$wrapperEl.on('click', '.js-note-edit', this.showEditForm.bind(this));
     this.$wrapperEl.on('click', '.note-edit-cancel', this.cancelEdit);
     // Reopen and close actions for Issue/MR combined with note form submit
-    this.$wrapperEl.on('click', '.js-comment-submit-button > button:first-child', this.postComment);
+    this.$wrapperEl.on(
+      'click',
+      // this oddly written selector needs to match the old style (input with class) as
+      // well as the new DOM styling from the Vue-based note form
+      'input.js-comment-submit-button, .js-comment-submit-button > button:first-child',
+      this.postComment,
+    );
     this.$wrapperEl.on('click', '.js-comment-save-button', this.updateComment);
     this.$wrapperEl.on('keyup input', '.js-note-text', this.updateTargetButtons);
     // resolve a discussion
