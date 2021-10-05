@@ -55,6 +55,7 @@ export default {
   computed: {
     ...mapState([
       'currentGroupId',
+      'epicIid',
       'epics',
       'milestones',
       'timeframe',
@@ -158,7 +159,10 @@ export default {
 
 <template>
   <div class="roadmap-app-container gl-h-full">
-    <roadmap-filters v-if="showFilteredSearchbar" :timeframe-range-type="timeframeRangeType" />
+    <roadmap-filters
+      v-if="showFilteredSearchbar && !epicIid"
+      :timeframe-range-type="timeframeRangeType"
+    />
     <gl-alert
       v-if="isWarningVisible"
       variant="warning"

@@ -106,32 +106,17 @@ describe('RoadmapApp', () => {
       store.commit(types.RECEIVE_EPICS_SUCCESS, { epics: [] });
     });
 
-    it('contains path for the empty state illustration', () => {
-      expect(wrapper.find(EpicsListEmpty).props('emptyStateIllustrationPath')).toBe(
+    it('shows epic-list-empty component', () => {
+      const epicsListEmpty = wrapper.findComponent(EpicsListEmpty);
+      expect(epicsListEmpty.exists()).toBe(true);
+      expect(epicsListEmpty.props()).toMatchObject({
         emptyStateIllustrationPath,
-      );
-    });
-
-    it('contains whether to apply filters', () => {
-      expect(wrapper.find(EpicsListEmpty).props('hasFiltersApplied')).toBe(hasFiltersApplied);
-    });
-
-    it('contains whether it is child epics', () => {
-      expect(wrapper.find(EpicsListEmpty).props('isChildEpics')).toBe(false);
-    });
-
-    it('contains the preset type', () => {
-      expect(wrapper.find(EpicsListEmpty).props('presetType')).toBe(presetType);
-    });
-
-    it('contains the start of the timeframe', () => {
-      expect(wrapper.find(EpicsListEmpty).props('timeframeStart')).toStrictEqual(timeframe[0]);
-    });
-
-    it('contains the end of the timeframe', () => {
-      expect(wrapper.find(EpicsListEmpty).props('timeframeEnd')).toStrictEqual(
-        timeframe[timeframe.length - 1],
-      );
+        hasFiltersApplied,
+        presetType,
+        timeframeStart: timeframe[0],
+        timeframeEnd: timeframe[timeframe.length - 1],
+        isChildEpics: false,
+      });
     });
   });
 
@@ -141,32 +126,32 @@ describe('RoadmapApp', () => {
       store.commit(types.RECEIVE_EPICS_SUCCESS, { epics });
     });
 
-    it('contains roadmap filters UI', () => {
-      expect(wrapper.find(RoadmapFilters).exists()).toBe(true);
+    it('does not show filters UI when epicIid is present', async () => {
+      store.dispatch('setInitialData', {
+        epicIid: mockFormattedEpic.iid,
+      });
+
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.findComponent(RoadmapFilters).exists()).toBe(false);
     });
 
-    it('contains the current group id', () => {
-      expect(wrapper.find(RoadmapShell).props('currentGroupId')).toBe(currentGroupId);
+    it('shows roadmap filters UI when epicIid is not present', () => {
+      // By default, `epicIid` is not set on store.
+      expect(wrapper.findComponent(RoadmapFilters).exists()).toBe(true);
     });
 
-    it('contains epics', () => {
-      expect(wrapper.find(RoadmapShell).props('epics')).toEqual(epics);
-    });
-
-    it('contains whether filters are applied', () => {
-      expect(wrapper.find(RoadmapShell).props('hasFiltersApplied')).toBe(hasFiltersApplied);
-    });
-
-    it('contains milestones', () => {
-      expect(wrapper.find(RoadmapShell).props('milestones')).toEqual([]);
-    });
-
-    it('contains the preset type', () => {
-      expect(wrapper.find(RoadmapShell).props('presetType')).toBe(presetType);
-    });
-
-    it('contains timeframe', () => {
-      expect(wrapper.find(RoadmapShell).props('timeframe')).toEqual(timeframe);
+    it('shows roadmap-shell component', () => {
+      const roadmapShell = wrapper.findComponent(RoadmapShell);
+      expect(wrapper.find(RoadmapShell).exists()).toBe(true);
+      expect(roadmapShell.props()).toMatchObject({
+        currentGroupId,
+        epics,
+        hasFiltersApplied,
+        presetType,
+        timeframe,
+        milestones: [],
+      });
     });
   });
 
