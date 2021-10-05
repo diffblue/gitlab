@@ -18,14 +18,9 @@ module SubscriptionsHelper
 
   def buy_addon_data(group, anchor, purchased_product)
     {
-      redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product)
-    }.merge(addon_data(group))
-  end
-
-  def addon_data(group)
-    {
       group_data: [present_group(group)].to_json,
       namespace_id: params[:selected_group],
+      redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product),
       source: params[:source]
     }
   end
