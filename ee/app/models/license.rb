@@ -89,6 +89,7 @@ class License < ApplicationRecord
     extended_audit_events
     external_authorization_service_api_management
     feature_flags_related_issues
+    feature_flags_code_references
     file_locks
     geo
     generic_alert_fingerprinting
