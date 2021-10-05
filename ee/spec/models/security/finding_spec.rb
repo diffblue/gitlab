@@ -33,7 +33,7 @@ RSpec.describe Security::Finding do
   describe '.by_build_ids' do
     subject { described_class.by_build_ids(finding_1.scan.build_id) }
 
-    it { is_expected.to eq([finding_1]) }
+    it { with_cross_joins_prevented { is_expected.to match_array([finding_1]) } }
   end
 
   describe '.by_severity_levels' do

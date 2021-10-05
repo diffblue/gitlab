@@ -89,6 +89,16 @@ RSpec.describe Security::Scan do
     it { is_expected.to match_array([second_successful_scan]) }
   end
 
+  describe '.by_build_ids' do
+    let!(:sast_scan) { create(:security_scan, scan_type: :sast) }
+    let!(:dast_scan) { create(:security_scan, scan_type: :dast, build: sast_scan.build) }
+    let(:expected_scans) { [sast_scan, dast_scan] }
+
+    subject { described_class.by_build_ids(expected_scans.map(&:build_id)) }
+
+    it { with_cross_joins_prevented { is_expected.to match_array(expected_scans) } }
+  end
+
   describe '.has_dismissal_feedback' do
     let(:project_1) { create(:project) }
     let(:project_2) { create(:project) }
