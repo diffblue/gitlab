@@ -1,0 +1,7 @@
+name: in_app_hand_raise_pql
+introduced_by_url: 
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/334211
+milestone: '14.4'
+type: development
+group: group::conversion
+default_enabled: false
