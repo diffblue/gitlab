@@ -143,7 +143,11 @@ module EE
 
         def security_products_usage
           results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
-            response[attribs[:name]] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
+            response[attribs[:name]] = if ::Feature.enabled?(:quarantine_security_products_usage_metrics, type: :ops, default_enabled: :yaml)
+                                         ::Gitlab::Database::BatchCounter::FALLBACK
+                                       else
+                                         count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
+                                       end
           end
 
           # handle license rename https://gitlab.com/gitlab-org/gitlab/issues/8911
