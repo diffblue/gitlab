@@ -24,10 +24,10 @@
 
   .js-serverless-survey-banner{ data: { user_name: current_user.name, user_email: current_user.email } }
 
-  %h4.gl-mt-5.gl-mb-7
-    %span.badge.badge-neutral.badge-pill.gl-badge.md.gl-vertical-align-middle
-      = cluster_type_label(@cluster.cluster_type)
+  %h4.gl-my-5
     = @cluster.name
+    %span.badge.badge-info.badge-pill.gl-badge.md.gl-vertical-align-middle
+      = cluster_type_label(@cluster.cluster_type)
 
   = render 'banner'
 
