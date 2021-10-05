@@ -785,23 +785,121 @@ RSpec.describe ApprovalState do
     end
 
     describe '#authors_can_approve?' do
-      context 'when project allows author approval' do
+      context 'group_merge_request_approval_settings_feature_flag is enabled' do
         before do
-          project.update!(merge_requests_author_approval: true)
+          stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+        end
+        context 'allow_author_approval is resolved to not be permitted' do
+          before do
+            allow_next_instance_of ComplianceManagement::MergeRequestApprovalSettings::Resolver do |instance|
+              allow(instance).to receive(:allow_author_approval).and_return(
+                ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false, locked: false, inherited_from: nil)
+              )
+            end
+          end
+
+          it 'returns false' do
+            expect(subject.authors_can_approve?).to be false
+          end
         end
 
-        it 'returns true' do
-          expect(subject.authors_can_approve?).to eq(true)
+        context 'allow_author_approval is resolved to be permitted' do
+          before do
+            allow_next_instance_of ComplianceManagement::MergeRequestApprovalSettings::Resolver do |instance|
+              allow(instance).to receive(:allow_author_approval).and_return(
+                ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true, locked: false, inherited_from: nil)
+              )
+            end
+          end
+
+          it 'returns true' do
+            expect(subject.authors_can_approve?).to be true
+          end
         end
       end
 
-      context 'when project disallows author approval' do
+      context 'group_merge_request_approval_settings_feature_flag is disabled' do
         before do
-          project.update!(merge_requests_author_approval: false)
+          stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+        end
+        context 'when project allows author approval' do
+          before do
+            project.update!(merge_requests_author_approval: true)
+          end
+
+          it 'returns true' do
+            expect(subject.authors_can_approve?).to eq(true)
+          end
         end
 
-        it 'returns true' do
-          expect(subject.authors_can_approve?).to eq(false)
+        context 'when project disallows author approval' do
+          before do
+            project.update!(merge_requests_author_approval: false)
+          end
+
+          it 'returns true' do
+            expect(subject.authors_can_approve?).to eq(false)
+          end
+        end
+      end
+    end
+
+    describe '#committers_can_approve?' do
+      context 'group_merge_request_approval_settings_feature_flag is enabled' do
+        before do
+          stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
+        end
+        context 'allow_committer_approval is resolved to not be permitted' do
+          before do
+            allow_next_instance_of ComplianceManagement::MergeRequestApprovalSettings::Resolver do |instance|
+              allow(instance).to receive(:allow_committer_approval).and_return(
+                ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false, locked: false, inherited_from: nil)
+              )
+            end
+          end
+
+          it 'returns false' do
+            expect(subject.committers_can_approve?).to be false
+          end
+        end
+
+        context 'allow_committer_approval is resolved to be permitted' do
+          before do
+            allow_next_instance_of ComplianceManagement::MergeRequestApprovalSettings::Resolver do |instance|
+              allow(instance).to receive(:allow_committer_approval).and_return(
+                ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true, locked: false, inherited_from: nil)
+              )
+            end
+          end
+
+          it 'returns false' do
+            expect(subject.committers_can_approve?).to be true
+          end
+        end
+      end
+
+      context 'group_merge_request_approval_settings_feature_flag is disabled' do
+        before do
+          stub_feature_flags(group_merge_request_approval_settings_feature_flag: false)
+        end
+        context 'when project allows committer approval' do
+          before do
+            project.update!(merge_requests_disable_committers_approval: false)
+          end
+
+          it 'returns true' do
+            expect(subject.committers_can_approve?).to eq(true)
+          end
+        end
+
+        context 'when project disallows committer approval' do
+          before do
+            project.update!(merge_requests_disable_committers_approval: true)
+          end
+
+          it 'returns true' do
+            expect(subject.committers_can_approve?).to eq(false)
+          end
         end
       end
     end

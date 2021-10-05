@@ -232,7 +232,7 @@ RSpec.describe API::MergeRequestApprovalSettings do
         group.add_owner(user)
         allow(Ability).to receive(:allowed?).and_call_original
         stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-        stub_licensed_features(group_merge_request_approval_settings: true)
+        stub_licensed_features(merge_request_approvers: true)
         allow(Ability).to receive(:allowed?)
                             .with(user, :admin_merge_request_approval_settings, project)
                             .and_return(true)
@@ -291,7 +291,7 @@ RSpec.describe API::MergeRequestApprovalSettings do
         group.add_owner(user)
         allow(Ability).to receive(:allowed?).and_call_original
         stub_feature_flags(group_merge_request_approval_settings_feature_flag: true)
-        stub_licensed_features(group_merge_request_approval_settings: true)
+        stub_licensed_features(merge_request_approvers: true)
         allow(Ability).to receive(:allowed?)
                             .with(user, :admin_merge_request_approval_settings, project)
                             .and_return(true)

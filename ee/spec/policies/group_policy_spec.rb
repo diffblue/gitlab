@@ -1589,7 +1589,7 @@ RSpec.describe GroupPolicy do
         let(:current_user) { public_send(role) }
 
         before do
-          stub_licensed_features(group_merge_request_approval_settings: licensed)
+          stub_licensed_features(merge_request_approvers: licensed)
           enable_admin_mode!(current_user) if admin_mode
           group.parent = build(:group) unless root_group
         end

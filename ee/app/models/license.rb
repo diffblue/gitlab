@@ -99,7 +99,6 @@ class License < ApplicationRecord
     group_coverage_reports
     group_forking_protection
     group_merge_request_analytics
-    group_merge_request_approval_settings
     group_milestone_project_releases
     group_project_templates
     group_repository_analytics

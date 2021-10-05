@@ -140,7 +140,7 @@ RSpec.describe 'Projects > Audit Events', :js do
       describe 'changing merge request approval permission for authors and reviewers' do
         before do
           stub_feature_flags(group_merge_request_approval_settings_feature_flag: feature_enabled)
-          stub_licensed_features(group_merge_request_approval_settings: feature_enabled)
+          stub_licensed_features(merge_request_approvers: true)
           project.add_developer(pete)
         end
 
@@ -157,6 +157,9 @@ RSpec.describe 'Projects > Audit Events', :js do
 
           page.within('.sidebar-top-level-items') do
             click_link 'Security & Compliance'
+
+            wait_for_all_requests
+
             click_link 'Audit Events'
           end
 

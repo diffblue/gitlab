@@ -543,7 +543,13 @@ module EE
     end
 
     def reset_approvals_on_push
-      super && feature_available?(:merge_request_approvers)
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor)
+        !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+                                                                    .retain_approvals_on_push
+                                                                    .value && feature_available?(:merge_request_approvers)
+      else
+        super && feature_available?(:merge_request_approvers)
+      end
     end
     alias_method :reset_approvals_on_push?, :reset_approvals_on_push
 
@@ -571,7 +577,13 @@ module EE
     end
 
     def require_password_to_approve
-      super && password_authentication_enabled_for_web?
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor)
+        ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+                                                                    .require_password_to_approve
+                                                                    .value && password_authentication_enabled_for_web?
+      else
+        super && password_authentication_enabled_for_web?
+      end
     end
 
     def require_password_to_approve?
@@ -728,9 +740,17 @@ module EE
 
     def disable_overriding_approvers_per_merge_request
       strong_memoize(:disable_overriding_approvers_per_merge_request) do
-        next super unless License.feature_available?(:admin_merge_request_approvers_rules)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+          super unless feature_available?(:admin_merge_request_approvers_rules)
 
-        ::Gitlab::CurrentSettings.disable_overriding_approvers_per_merge_request? || super
+          !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                      .allow_overrides_to_approver_list_per_merge_request
+                                                                      .value
+        else
+          next super unless feature_available?(:admin_merge_request_approvers_rules)
+
+          ::Gitlab::CurrentSettings.disable_overriding_approvers_per_merge_request? || super
+        end
       end
     end
 
@@ -740,10 +760,18 @@ module EE
 
     def merge_requests_author_approval
       strong_memoize(:merge_requests_author_approval) do
-        next super unless License.feature_available?(:admin_merge_request_approvers_rules)
-        next false if ::Gitlab::CurrentSettings.prevent_merge_requests_author_approval?
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+          super unless feature_available?(:admin_merge_request_approvers_rules)
 
-        super
+          ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                       .allow_author_approval
+                                                                       .value
+        else
+          next super unless License.feature_available?(:admin_merge_request_approvers_rules)
+          next false if ::Gitlab::CurrentSettings.prevent_merge_requests_author_approval?
+
+          !!read_attribute(:merge_requests_author_approval)
+        end
       end
     end
 
@@ -753,9 +781,17 @@ module EE
 
     def merge_requests_disable_committers_approval
       strong_memoize(:merge_requests_disable_committers_approval) do
-        next super unless License.feature_available?(:admin_merge_request_approvers_rules)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+          super unless feature_available?(:admin_merge_request_approvers_rules)
 
-        ::Gitlab::CurrentSettings.prevent_merge_requests_committers_approval? || super
+          !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
+                                                                       .allow_committer_approval
+                                                                       .value
+        else
+          next super unless License.feature_available?(:admin_merge_request_approvers_rules)
+
+          ::Gitlab::CurrentSettings.prevent_merge_requests_committers_approval? || super
+        end
       end
     end
 
