@@ -3,7 +3,6 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 import Api from 'ee/api';
-import fetchHeaderVulnerabilityQuery from 'ee/security_dashboard/graphql/header_vulnerability.graphql';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import Header from 'ee/vulnerabilities/components/header.vue';
@@ -90,7 +89,7 @@ describe('Vulnerability Header', () => {
       localVue,
       apolloProvider,
       propsData: {
-        initialVulnerability: {
+        vulnerability: {
           ...defaultVulnerability,
           ...vulnerability,
         },
@@ -103,7 +102,6 @@ describe('Vulnerability Header', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
     mockAxios.reset();
     createFlash.mockReset();
   });
@@ -136,12 +134,14 @@ describe('Vulnerability Header', () => {
         createWrapper({ apolloProvider });
       });
 
-      it(`updates the state properly - ${action}`, async () => {
+      it(`emits the updated vulnerability properly - ${action}`, async () => {
         const dropdown = wrapper.find(VulnerabilityStateDropdown);
         dropdown.vm.$emit('change', { action });
 
         await waitForPromises();
-        expect(findBadge().text()).toBe(expected);
+        expect(wrapper.emitted('vulnerability-state-change')[0][0]).toMatchObject({
+          state: expected,
+        });
       });
 
       it(`emits an event when the state is changed - ${action}`, async () => {
@@ -416,65 +416,6 @@ describe('Vulnerability Header', () => {
       return waitForPromises().then(() => {
         expect(mockAxios.history.get).toHaveLength(1);
         expect(findStatusDescription().props('isLoadingUser')).toBe(false);
-      });
-    });
-  });
-
-  describe('refresh vulnerability', () => {
-    describe('on success', () => {
-      beforeEach(() => {
-        const apolloProvider = createApolloProvider([
-          fetchHeaderVulnerabilityQuery,
-          jest.fn().mockResolvedValue({
-            data: {
-              errors: [],
-              vulnerability: {
-                id: 'gid://gitlab/Vulnerability/54',
-                [`resolvedAt`]: '2020-09-16T11:13:26Z',
-                state: 'RESOLVED',
-              },
-            },
-          }),
-        ]);
-
-        createWrapper({
-          apolloProvider,
-          vulnerability: getVulnerability({}),
-        });
-      });
-
-      it('fetches the vulnerability when refreshVulnerability method is called', async () => {
-        expect(findBadge().text()).toBe('detected');
-        wrapper.vm.refreshVulnerability();
-        await waitForPromises();
-        expect(findBadge().text()).toBe('resolved');
-      });
-    });
-
-    describe('on failure', () => {
-      beforeEach(() => {
-        const apolloProvider = createApolloProvider([
-          fetchHeaderVulnerabilityQuery,
-          jest.fn().mockRejectedValue({
-            data: {
-              errors: [{ message: 'something went wrong while fetching the vulnerability' }],
-              vulnerability: null,
-            },
-          }),
-        ]);
-
-        createWrapper({
-          apolloProvider,
-          vulnerability: getVulnerability({}),
-        });
-      });
-
-      it('calls createFlash', async () => {
-        expect(findBadge().text()).toBe('detected');
-        wrapper.vm.refreshVulnerability();
-        await waitForPromises();
-        expect(findBadge().text()).toBe('detected');
-        expect(createFlash).toHaveBeenCalledTimes(1);
       });
     });
   });
