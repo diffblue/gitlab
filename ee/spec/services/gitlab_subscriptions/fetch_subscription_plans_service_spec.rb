@@ -6,7 +6,7 @@ RSpec.describe GitlabSubscriptions::FetchSubscriptionPlansService do
   describe '#execute' do
     subject(:execute_service) { described_class.new(plan: plan).execute }
 
-    let(:endpoint_url) { "#{EE::SUBSCRIPTIONS_URL}/gitlab_plans" }
+    let(:endpoint_url) { EE::SUBSCRIPTIONS_GITLAB_PLANS_URL }
     let(:plan) { 'bronze' }
     let(:response_mock) { double(body: [{ 'foo' => 'bar' }].to_json) }
 

@@ -43,7 +43,7 @@ module BillingPlansHelper
       add_seats_href: add_seats_url(namespace),
       plan_upgrade_href: plan_upgrade_url(namespace, plan),
       plan_renew_href: plan_renew_url(namespace),
-      customer_portal_url: "#{EE::SUBSCRIPTIONS_URL}/subscriptions",
+      customer_portal_url: EE::SUBSCRIPTIONS_MANAGE_URL,
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name,
       free_personal_namespace: namespace.free_personal?.to_s
@@ -147,19 +147,19 @@ module BillingPlansHelper
   def add_seats_url(group)
     return unless group
 
-    "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
+    ::Gitlab::SubscriptionPortal.add_extra_seats_url(group.id)
   end
 
   def plan_upgrade_url(group, plan)
     return unless group && plan&.id
 
-    "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/upgrade/#{plan.id}"
+    ::Gitlab::SubscriptionPortal.upgrade_subscription_url(group.id, plan.id)
   end
 
   def plan_renew_url(group)
     return unless group
 
-    "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
+    ::Gitlab::SubscriptionPortal.renew_subscription_url(group.id)
   end
 
   def billable_seats_href(namespace)
