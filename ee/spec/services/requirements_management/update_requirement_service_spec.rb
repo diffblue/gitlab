@@ -11,7 +11,8 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
 
   let_it_be(:project) { create(:project)}
   let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:requirement) { create(:requirement, project: project, title: title, description: description) }
+
+  let!(:requirement) { create(:requirement, project: project, title: title, description: description, state: :opened) }
 
   let(:params) do
     {
@@ -47,7 +48,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
         )
       end
 
-      context 'when updating title or description' do
+      context 'when updating title, description or state' do
         shared_examples 'keeps requirement and its requirement_issue in sync' do
           it 'keeps title and description in sync' do
             subject
@@ -58,6 +59,12 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
             expect(requirement).to have_attributes(
               title: requirement.requirement_issue.title,
               description: requirement.requirement_issue.description)
+
+            # Both objects (Requirement | Requirement Issue) state enums have the same integers
+            # but on Requirement 'closed' means 'archived'.
+            # requirement: enum state: { opened: 1, archived: 2 }
+            # issue:       STATE_ID_MAP = { opened: 1, closed: 2, ...
+            expect(requirement.read_attribute_before_type_cast(:state)). to eq(requirement.requirement_issue.state_id)
           end
         end
 
@@ -72,7 +79,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
         end
 
         context 'if there is an associated requirement_issue' do
-          let_it_be_with_reload(:requirement_issue) { create(:requirement_issue, requirement: requirement, title: title, description: description) }
+          let!(:requirement_issue) { create(:requirement_issue, requirement: requirement, title: title, description: description, state: :opened) }
 
           let(:params) do
             { title: new_title, description: new_description }
@@ -84,28 +91,50 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
               .and change { requirement.requirement_issue.title }.from(title).to(new_title)
           end
 
-          context 'when updating only title' do
+          context 'when updating title' do
             let(:params) do
               { title: new_title }
             end
 
-            it "updates requirement's title" do
+            it "updates requirement's issue title" do
               expect { subject }.to change { requirement.requirement_issue.reload.title }.from(title).to(new_title)
             end
 
             it_behaves_like 'keeps requirement and its requirement_issue in sync'
           end
 
-          context "updates requirement's description" do
+          context 'when updating description' do
             let(:params) do
               { description: new_description }
             end
 
-            it 'updates description' do
+            it "updates requirement's issue description" do
               expect { subject }.to change { requirement.requirement_issue.reload.description }.from(description).to(new_description)
             end
 
             it_behaves_like 'keeps requirement and its requirement_issue in sync'
+          end
+
+          context 'when updating state' do
+            context 'to archived' do
+              let(:params) do
+                { state: 'archived' }
+              end
+
+              it_behaves_like 'keeps requirement and its requirement_issue in sync'
+            end
+
+            context 'to opened' do
+              let(:params) do
+                { state: 'opened' }
+              end
+
+              before do
+                requirement.update!(state: 'archived')
+              end
+
+              it_behaves_like 'keeps requirement and its requirement_issue in sync'
+            end
           end
 
           context 'if update fails' do
@@ -126,6 +155,15 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
                   allow(service).to receive(:execute).and_return(requirement_issue)
                 end
 
+                allow_next_instance_of(::Issues::ReopenService) do |service|
+                  allow(service).to receive(:execute).and_return(requirement_issue)
+                end
+
+                allow_next_instance_of(::Issues::CloseService) do |service|
+                  allow(service).to receive(:execute).and_return(requirement_issue)
+                end
+
+                allow(requirement).to receive(:requirement_issue).and_return(requirement_issue)
                 allow(requirement_issue).to receive(:invalid?).and_return(true).at_least(:once)
               end
 
@@ -140,18 +178,6 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
                 expect(requirement.errors[:base]).to include(/Associated issue/)
               end
             end
-          end
-
-          context 'when updating some unrelated field' do
-            let(:params) do
-              { state: :archived }
-            end
-
-            it 'does not update the associated requirement issue' do
-              expect { subject }.not_to change { requirement.requirement_issue.state }
-            end
-
-            it_behaves_like 'keeps requirement and its requirement_issue in sync'
           end
         end
 

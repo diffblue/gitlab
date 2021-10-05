@@ -5,7 +5,7 @@ module RequirementsManagement
     def execute(requirement)
       raise Gitlab::Access::AccessDeniedError unless can?(current_user, :update_requirement, project)
 
-      attrs = whitelisted_requirement_params
+      attrs = allowlisted_requirement_params
 
       requirement.assign_attributes(attrs)
 
@@ -40,7 +40,7 @@ module RequirementsManagement
       TestReport.build_report(requirement: requirement, state: params[:last_test_report_state], author: current_user).save!
     end
 
-    def whitelisted_requirement_params
+    def allowlisted_requirement_params
       params.slice(:title, :description, :state)
     end
 
@@ -54,11 +54,31 @@ module RequirementsManagement
 
       requirement_issue = requirement.requirement_issue
 
-      # Skip authorisation so we don't risk a permissions mismatch while still getting the advantages
-      # of the service, such as system notes.
-      params = sync_attrs.merge(skip_auth: true)
-      ::Issues::UpdateService.new(project: project, current_user: current_user, params: params)
+      state_change = sync_attrs.delete(:state)
+      update_requirement_issue_title_and_description(requirement_issue, sync_attrs)
+      update_requirement_issue_state(requirement_issue, state_change)
+    end
+
+    def update_requirement_issue_title_and_description(requirement_issue, params)
+      return requirement_issue unless params.any?
+
+      title_and_description = params.with_indifferent_access.slice(:title, :description)
+
+      ::Issues::UpdateService.new(project: project, current_user: current_user, params: title_and_description)
         .execute(requirement_issue)
+    end
+
+    def update_requirement_issue_state(requirement_issue, new_state)
+      return requirement_issue unless new_state
+
+      service =
+        if new_state.to_sym == :opened
+          ::Issues::ReopenService
+        else
+          ::Issues::CloseService
+        end
+
+      service.new(project: project, current_user: current_user).execute(requirement_issue, skip_authorization: true)
     end
   end
 end
