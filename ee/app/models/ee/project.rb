@@ -459,6 +459,7 @@ module EE
       end
     end
 
+    override :execute_hooks
     def execute_hooks(data, hooks_scope = :push_hooks)
       super
 
