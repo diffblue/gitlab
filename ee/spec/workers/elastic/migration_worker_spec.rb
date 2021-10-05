@@ -26,7 +26,7 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
 
       context 'an unexecuted migration present' do
         before do
-          allow(subject).to receive(:current_migration).and_return(migration)
+          allow(Elastic::MigrationRecord).to receive(:current_migration).and_return(migration)
         end
 
         it 'creates an index if it does not exist' do
