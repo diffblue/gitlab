@@ -30,7 +30,6 @@ RSpec.describe SamlGroupLink do
         expect(saml_group_link.saml_group_name).to eq('group')
       end
     end
-
   end
 
   describe '.by_id_and_group_id' do
