@@ -21,6 +21,16 @@ RSpec.describe SamlGroupLink do
 
       it { is_expected.to validate_uniqueness_of(:saml_group_name).scoped_to([:group_id]) }
     end
+
+    context 'saml_group_name with whitespaces' do
+      it 'saves group link name without whitespace' do
+        saml_group_link = described_class.new(saml_group_name: '   group   ')
+        saml_group_link.valid?
+
+        expect(saml_group_link.saml_group_name).to eq('group')
+      end
+    end
+
   end
 
   describe '.by_id_and_group_id' do
@@ -48,14 +58,6 @@ RSpec.describe SamlGroupLink do
 
         expect(results).to match_array([group_link])
       end
-    end
-  end
-
-  describe '#saml_group_name' do
-    it 'saves group link name with whitespace' do
-      saml_group_link = described_class.new(saml_group_name: '   group   ')
-      saml_group_link.valid?
-      expect(saml_group_link.saml_group_name).to eq('group')
     end
   end
 
