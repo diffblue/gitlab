@@ -190,7 +190,7 @@ export default {
       </div>
     </div>
 
-    <div class="add-issuable-form-actions clearfix">
+    <div class="gl-mt-5 gl-clearfix">
       <gl-button
         :disabled="isSubmitButtonDisabled"
         :loading="isSubmitting"
