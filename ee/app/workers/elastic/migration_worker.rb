@@ -28,7 +28,7 @@ module Elastic
           helper.create_migrations_index
         end
 
-        migration = current_migration
+        migration = Elastic::MigrationRecord.current_migration
 
         unless migration
           logger.info 'MigrationWorker: no migration available'
@@ -66,6 +66,8 @@ module Elastic
 
         Elastic::DataMigrationService.drop_migration_has_finished_cache!(migration)
       end
+    rescue StandardError => e
+      logger.error("#{self.class.name}: #{e.class} #{e.message}")
     end
 
     private
@@ -86,17 +88,6 @@ module Elastic
         logger.info "MigrationWorker: migration[#{migration.name}] kicking off next migration batch"
         Elastic::MigrationWorker.perform_in(migration.throttle_delay)
       end
-    end
-
-    def current_migration
-      completed_migrations = Elastic::MigrationRecord.load_versions(completed: true)
-
-      # use a negative condition to support new migrations which do not exist in the index yet
-      Elastic::DataMigrationService.migrations.find { |migration| !completed_migrations.include?(migration.version) }
-    rescue StandardError => e
-      # do not return a migration if there is an issue communicating with the Elasticsearch instance
-      logger.error("MigrationWorker: #{e.class}: #{e.message}")
-      nil
     end
 
     def pause_indexing!(migration)

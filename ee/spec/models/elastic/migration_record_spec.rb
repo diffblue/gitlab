@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Elastic::MigrationRecord, :elastic do
+  using RSpec::Parameterized::TableSyntax
+
   let(:record) { described_class.new(version: Time.now.to_i, name: 'ExampleMigration', filename: nil) }
 
   describe '#save!' do
@@ -110,9 +112,30 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
     end
   end
 
-  describe '#running?' do
-    using RSpec::Parameterized::TableSyntax
+  describe '#current_migration' do
+    before do
+      allow(Elastic::DataMigrationService).to receive(:migrations).and_return([record])
+      allow(described_class).to receive(:completed_versions).and_return(completed_migrations.map(&:version))
+    end
 
+    context 'when there is an unexecuted migration' do
+      let(:completed_migrations) { [] }
+
+      it 'returns the correct migration' do
+        expect(described_class.current_migration).to eq record
+      end
+    end
+
+    context 'when there are no uncompleted migrations' do
+      let(:completed_migrations) { [record] }
+
+      it 'returns nil' do
+        expect(described_class.current_migration).to be_nil
+      end
+    end
+  end
+
+  describe '#running?' do
     before do
       allow(record).to receive(:halted?).and_return(halted)
       allow(record).to receive(:started?).and_return(started)
@@ -130,6 +153,26 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
     with_them do
       it 'returns the expected result' do
         expect(record.running?).to eq(expected)
+      end
+    end
+  end
+
+  describe '#stopped?' do
+    before do
+      allow(record).to receive(:halted?).and_return(halted)
+      allow(record).to receive(:completed?).and_return(completed)
+    end
+
+    where(:halted, :completed, :expected) do
+      false | false | false
+      false | true  | true
+      true  | false | true
+      true  | true  | true
+    end
+
+    with_them do
+      it 'returns the expected result' do
+        expect(record.stopped?).to eq(expected)
       end
     end
   end

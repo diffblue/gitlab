@@ -38,7 +38,7 @@ module Elastic
     def load_from_index
       client.get(index: index_name, id: version)
     rescue StandardError => e
-      logger.error("[Elastic::MigrationRecord]: #{e.class}: #{e.message}")
+      logger.error("[#{self.class.name}]: #{e.class}: #{e.message}")
       nil
     end
 
@@ -59,6 +59,14 @@ module Elastic
       name.underscore
     end
 
+    def running?
+      started? && !stopped?
+    end
+
+    def stopped?
+      halted? || completed?
+    end
+
     def self.load_versions(completed:)
       helper = Gitlab::Elastic::Helper.default
       helper.client
@@ -67,8 +75,15 @@ module Elastic
             .map { |v| v['_id'].to_i }
     end
 
-    def running?
-      started? && !halted? && !completed?
+    def self.completed_versions
+      load_versions(completed: true)
+    end
+
+    def self.current_migration
+      completed_migrations = completed_versions
+
+      # use exclude to support new migrations which do not exist in the index yet
+      Elastic::DataMigrationService.migrations.find { |migration| completed_migrations.exclude?(migration.version) } # rubocop: disable CodeReuse/ServiceClass
     end
 
     private
