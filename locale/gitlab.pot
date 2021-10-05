@@ -13875,9 +13875,6 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-msgid "Export %{name}"
-msgstr ""
-
 msgid "Export %{requirementsCount} requirements?"
 msgstr ""
 
@@ -13888,6 +13885,12 @@ msgid "Export commit custody report"
 msgstr ""
 
 msgid "Export group"
+msgstr ""
+
+msgid "Export issues"
+msgstr ""
+
+msgid "Export merge requests"
 msgstr ""
 
 msgid "Export project"
@@ -33664,6 +33667,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "The API key used by GitLab for accessing the Spam Check service endpoint."
+msgstr ""
+
+msgid "The CSV export will be created in the background. Once finished, it will be sent to %{email} in an attachment."
 msgstr ""
 
 msgid "The GitLab subscription service (customers.gitlab.com) is currently experiencing an outage. You can monitor the status and get updates at %{linkStart}status.gitlab.com%{linkEnd}."
