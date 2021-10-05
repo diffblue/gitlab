@@ -139,7 +139,7 @@ RSpec.describe TrialsController do
             post_create_lead
           end
 
-          it "tracks for the combined_registration experiment" do
+          it 'tracks for the combined_registration experiment' do
             expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance
 
             post_create_lead
@@ -170,7 +170,7 @@ RSpec.describe TrialsController do
           first_name: user.first_name,
           last_name: user.last_name,
           phone_number: '1111111111',
-          number_of_users: "20",
+          number_of_users: '20',
           country: 'IN'
         }
       end
@@ -447,7 +447,7 @@ RSpec.describe TrialsController do
       end
     end
 
-    it "calls the ApplyTrialService with correct parameters" do
+    it 'calls the ApplyTrialService with correct parameters' do
       gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
       post_params = {
         namespace_id: namespace.id.to_s,
@@ -511,7 +511,7 @@ RSpec.describe TrialsController do
       end
 
       context 'when cannot find the namespace' do
-        let(:namespace_id) { 'invalid-namespace-id' }
+        let(:namespace_id) { non_existing_record_id.to_s }
 
         it 'returns 404' do
           is_expected.to have_gitlab_http_status(:not_found)
@@ -555,7 +555,7 @@ RSpec.describe TrialsController do
       end
     end
 
-    it "calls the ExtendReactivateTrialService with correct parameters" do
+    it 'calls the ExtendReactivateTrialService with correct parameters' do
       gl_com_params = { gitlab_com_trial: true }
       put_params = {
         namespace_id: namespace.id.to_s,
