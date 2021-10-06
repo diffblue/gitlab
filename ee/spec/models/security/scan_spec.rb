@@ -70,13 +70,20 @@ RSpec.describe Security::Scan do
   end
 
   describe '.by_scan_types' do
-    let!(:sast_scan) { create(:security_scan, scan_type: :sast) }
-    let!(:dast_scan) { create(:security_scan, scan_type: :dast) }
+    let_it_be(:sast_scan) { create(:security_scan, scan_type: :sast) }
+    let_it_be(:dast_scan) { create(:security_scan, scan_type: :dast) }
+
     let(:expected_scans) { [sast_scan] }
 
     subject { described_class.by_scan_types(:sast) }
 
     it { is_expected.to match_array(expected_scans) }
+
+    context 'when an invalid enum value is given' do
+      subject { described_class.by_scan_types([:sast, :generic]) }
+
+      it { is_expected.to match_array(expected_scans) }
+    end
   end
 
   describe '.latest_successful_by_build' do
