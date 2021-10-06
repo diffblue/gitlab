@@ -17062,7 +17062,7 @@ CREATE TABLE packages_helm_file_metadata (
     package_file_id bigint NOT NULL,
     channel text NOT NULL,
     metadata jsonb,
-    CONSTRAINT check_c34067922d CHECK ((char_length(channel) <= 63))
+    CONSTRAINT check_06e8d100af CHECK ((char_length(channel) <= 255))
 );
 
 CREATE TABLE packages_maven_metadata (
