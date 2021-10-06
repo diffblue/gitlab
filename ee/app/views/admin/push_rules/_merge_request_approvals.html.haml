@@ -1,5 +1,5 @@
 - return unless License.feature_available?(:admin_merge_request_approvers_rules)
-%section.settings.merge-request-approval-settings.no-animate{ class: ('expanded' if expanded_by_default?) }
+%section.settings.no-animate#js-merge-request-approval-settings{ class: ('expanded' if expanded_by_default?), data: { testid: 'merge-request-approval-settings' } }
   .settings-header
     %h4
       = _('Merge request approvals')
@@ -8,7 +8,8 @@
     %p
       = _('Configure approvals by authors and committers on all projects.')
 
-    = form_for @application_setting, url: general_admin_application_settings_path(anchor: 'merge-request-approval-settings'), html: { class: 'fieldset-form' } do |f|
+  .settings-content
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-merge-request-approval-settings'), html: { class: 'fieldset-form' } do |f|
       = form_errors(@application_setting)
 
       = render 'merge_request_approvals_fields', f: f

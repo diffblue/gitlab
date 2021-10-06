@@ -19,7 +19,7 @@ RSpec.describe 'Admin interacts with merge requests approvals settings' do
   end
 
   it 'updates instance-level merge request approval settings and enforces project-level ones', :js do
-    page.within('.merge-request-approval-settings') do
+    page.within('[data-testid="merge-request-approval-settings"]') do
       check 'Prevent approval by author.'
       check 'Prevent approvals by users who add commits.'
       check _('Prevent editing approval rules in projects and merge requests.')
