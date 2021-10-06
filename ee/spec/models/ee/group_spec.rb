@@ -1518,7 +1518,8 @@ RSpec.describe Group do
           let(:new_user_signups_cap) { 100 }
 
           before do
-            allow(group).to receive(:billable_members_count).and_return(billable_members_count)
+            allow(root_group).to receive(:billable_members_count).and_return(billable_members_count)
+            allow(group).to receive(:root_ancestor).and_return(root_group)
           end
 
           context 'when this cap is higher than the number of billable members' do

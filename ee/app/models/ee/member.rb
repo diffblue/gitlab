@@ -143,7 +143,7 @@ module EE
     end
 
     def set_membership_activation
-      return unless group && ::Feature.enabled?(:saas_user_caps, group, default_enabled: :yaml)
+      return unless group && ::Feature.enabled?(:saas_user_caps, group.root_ancestor, default_enabled: :yaml)
 
       self.state = group.user_cap_reached? ? STATE_AWAITING : STATE_ACTIVE
     end
