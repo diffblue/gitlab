@@ -13,6 +13,7 @@ import {
   I18N_STORAGE_PRODUCT_UNIT,
   I18N_DETAILS_FORMULA,
   I18N_STORAGE_FORMULA_TOTAL,
+  I18N_DETAILS_FORMULA_WITH_ALERT,
   i18nStorageSummaryTitle,
   I18N_STORAGE_SUMMARY_TOTAL,
   I18N_STORAGE_TITLE,
@@ -43,6 +44,7 @@ export default {
     productLabel: I18N_STORAGE_PRODUCT_LABEL,
     productUnit: I18N_STORAGE_PRODUCT_UNIT,
     formula: I18N_DETAILS_FORMULA,
+    formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
     formulaTotal: I18N_STORAGE_FORMULA_TOTAL,
     summaryTitle: i18nStorageSummaryTitle,
     summaryTotal: I18N_STORAGE_SUMMARY_TOTAL,
@@ -57,17 +59,24 @@ export default {
       hasError: false,
     };
   },
-  computed: {
-    formulaText() {
-      return sprintf(this.$options.i18n.formula, {
+  methods: {
+    isQuantityValid(quantity) {
+      return Number.isFinite(quantity) && quantity > 0;
+    },
+    formulaText(quantity) {
+      const formulaText = this.isQuantityValid(quantity)
+        ? this.$options.i18n.formula
+        : this.$options.i18n.formulaWithAlert;
+
+      return sprintf(formulaText, {
         quantity: formatNumber(STORAGE_PER_PACK),
         units: this.$options.i18n.productUnit,
       });
     },
-  },
-  methods: {
     formulaTotal(quantity) {
-      return sprintf(this.$options.i18n.formulaTotal, { quantity: formatNumber(quantity) });
+      const total = sprintf(this.$options.i18n.formulaTotal, { quantity: formatNumber(quantity) });
+
+      return this.isQuantityValid(quantity) ? total : '';
     },
     summaryTitle(quantity) {
       return sprintf(this.$options.i18n.summaryTitle(quantity), { quantity });
@@ -122,7 +131,7 @@ export default {
             :quantity-per-pack="$options.STORAGE_PER_PACK"
           >
             <template #formula="{ quantity }">
-              {{ formulaText }}
+              {{ formulaText(quantity) }}
               <strong>{{ formulaTotal(quantity) }}</strong>
             </template>
             <template #summary-label="{ quantity }">

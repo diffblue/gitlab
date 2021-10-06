@@ -105,6 +105,7 @@ export default {
           name="quantity"
           type="number"
           :min="1"
+          :state="isValid"
           data-qa-selector="quantity"
           class="gl-w-15"
         />

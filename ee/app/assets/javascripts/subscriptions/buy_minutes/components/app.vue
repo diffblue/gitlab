@@ -12,6 +12,7 @@ import {
   I18N_CI_MINUTES_PRODUCT_LABEL,
   I18N_CI_MINUTES_PRODUCT_UNIT,
   I18N_DETAILS_FORMULA,
+  I18N_DETAILS_FORMULA_WITH_ALERT,
   I18N_CI_MINUTES_FORMULA_TOTAL,
   i18nCIMinutesSummaryTitle,
   I18N_CI_MINUTES_SUMMARY_TOTAL,
@@ -40,6 +41,7 @@ export default {
     productLabel: I18N_CI_MINUTES_PRODUCT_LABEL,
     productUnit: I18N_CI_MINUTES_PRODUCT_UNIT,
     formula: I18N_DETAILS_FORMULA,
+    formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
     formulaTotal: I18N_CI_MINUTES_FORMULA_TOTAL,
     summaryTitle: i18nCIMinutesSummaryTitle,
     summaryTotal: I18N_CI_MINUTES_SUMMARY_TOTAL,
@@ -54,17 +56,26 @@ export default {
       hasError: false,
     };
   },
-  computed: {
-    formulaText() {
-      return sprintf(this.$options.i18n.formula, {
+  methods: {
+    isQuantityValid(quantity) {
+      return Number.isFinite(quantity) && quantity > 0;
+    },
+    formulaText(quantity) {
+      const formulaText = this.isQuantityValid(quantity)
+        ? this.$options.i18n.formula
+        : this.$options.i18n.formulaWithAlert;
+
+      return sprintf(formulaText, {
         quantity: formatNumber(CI_MINUTES_PER_PACK),
         units: this.$options.i18n.productUnit,
       });
     },
-  },
-  methods: {
     formulaTotal(quantity) {
-      return sprintf(this.$options.i18n.formulaTotal, { totalCiMinutes: formatNumber(quantity) });
+      const total = sprintf(this.$options.i18n.formulaTotal, {
+        totalCiMinutes: formatNumber(quantity),
+      });
+
+      return this.isQuantityValid(quantity) ? total : '';
     },
     summaryTitle(quantity) {
       return sprintf(this.$options.i18n.summaryTitle(quantity), { quantity });
@@ -121,7 +132,7 @@ export default {
             :alert-text="$options.i18n.alertText"
           >
             <template #formula="{ quantity }">
-              {{ formulaText }}
+              {{ formulaText(quantity) }}
               <strong>{{ formulaTotal(quantity) }}</strong>
             </template>
             <template #summary-label="{ quantity }">

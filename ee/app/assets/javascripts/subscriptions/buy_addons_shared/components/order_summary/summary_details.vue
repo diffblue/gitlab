@@ -90,7 +90,7 @@ export default {
     <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-my-3">
       <div data-testid="selected-plan">
         {{ selectedPlanText }}
-        <span v-if="quantity" data-testid="quantity">{{
+        <span v-if="hasPositiveQuantity" data-testid="quantity">{{
           sprintf($options.i18n.quantity, { quantity })
         }}</span>
       </div>
