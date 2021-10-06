@@ -1,7 +1,7 @@
 import { GlDatepicker, GlFormCheckbox, GlFormGroup } from '@gitlab/ui';
 import { merge } from 'lodash';
-import ScanSchedule from 'ee/on_demand_scans/components/scan_schedule.vue';
-import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans/settings';
+import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
+import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans_form/settings';
 import DropdownInput from 'ee/security_configuration/components/dropdown_input.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';

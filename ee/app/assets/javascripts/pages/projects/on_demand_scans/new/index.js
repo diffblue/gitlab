@@ -1,3 +1,3 @@
-import initOnDemanScans from 'ee/on_demand_scans';
+import initOnDemanScansForm from 'ee/on_demand_scans_form';
 
-initOnDemanScans();
+initOnDemanScansForm();

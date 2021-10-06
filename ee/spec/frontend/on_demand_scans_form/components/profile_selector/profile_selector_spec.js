@@ -1,7 +1,7 @@
 import { GlDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import OnDemandScansProfileSelector from 'ee/on_demand_scans/components/profile_selector/profile_selector.vue';
+import OnDemandScansProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/profile_selector.vue';
 import { scannerProfiles } from '../../mocks/mock_data';
 
 describe('OnDemandScansProfileSelector', () => {

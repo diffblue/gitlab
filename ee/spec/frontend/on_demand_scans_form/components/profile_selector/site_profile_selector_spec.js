@@ -1,25 +1,28 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import ProfileSelector from 'ee/on_demand_scans/components/profile_selector/profile_selector.vue';
-import OnDemandScansScannerProfileSelector from 'ee/on_demand_scans/components/profile_selector/scanner_profile_selector.vue';
-import ScannerProfileSummary from 'ee/on_demand_scans/components/profile_selector/scanner_profile_summary.vue';
-import { scannerProfiles } from '../../mocks/mock_data';
+import ProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/profile_selector.vue';
+import OnDemandScansSiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
+import SiteProfileSummary from 'ee/on_demand_scans_form/components/profile_selector/site_profile_summary.vue';
+import { siteProfiles } from '../../mocks/mock_data';
 
-const TEST_LIBRARY_PATH = '/test/scanner/profiles/library/path';
-const TEST_NEW_PATH = '/test/new/scanner/profile/path';
+const TEST_LIBRARY_PATH = '/test/site/profiles/library/path';
+const TEST_NEW_PATH = '/test/new/site/profile/path';
 const TEST_ATTRS = {
   'data-foo': 'bar',
 };
-const profiles = scannerProfiles.map((x) => {
-  return { ...x, dropdownLabel: x.profileName };
+const profiles = siteProfiles.map((x) => {
+  return {
+    ...x,
+    dropdownLabel: `${x.profileName}: ${x.targetUrl}`,
+  };
 });
 
-describe('OnDemandScansScannerProfileSelector', () => {
+describe('OnDemandScansSiteProfileSelector', () => {
   let wrapper;
 
   const wrapperFactory = (mountFn = shallowMount) => (options = {}) => {
     wrapper = mountFn(
-      OnDemandScansScannerProfileSelector,
+      OnDemandScansSiteProfileSelector,
       merge(
         {
           propsData: {
@@ -27,8 +30,8 @@ describe('OnDemandScansScannerProfileSelector', () => {
           },
           attrs: TEST_ATTRS,
           provide: {
-            scannerProfilesLibraryPath: TEST_LIBRARY_PATH,
-            newScannerProfilePath: TEST_NEW_PATH,
+            siteProfilesLibraryPath: TEST_LIBRARY_PATH,
+            newSiteProfilePath: TEST_NEW_PATH,
           },
           slots: {
             summary: `<div>${profiles[0].profileName}'s summary</div>`,
@@ -61,14 +64,24 @@ describe('OnDemandScansScannerProfileSelector', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
 
-  it('render summary component ', () => {
-    const selectedProfile = profiles[0];
+  describe('profile summary', () => {
+    it('is rendered when a profile is selected', () => {
+      const selectedProfile = profiles[0];
 
-    createComponent({
-      propsData: { profiles, value: selectedProfile.id, selectedProfile },
+      createComponent({
+        propsData: { profiles, value: selectedProfile.id, selectedProfile },
+      });
+
+      expect(wrapper.findComponent(SiteProfileSummary).exists()).toBe(true);
     });
 
-    expect(wrapper.findComponent(ScannerProfileSummary).exists()).toBe(true);
+    it('is not rendered when no profile is selected', () => {
+      createComponent({
+        propsData: { profiles, selectedProfile: null },
+      });
+
+      expect(wrapper.findComponent(SiteProfileSummary).exists()).toBe(false);
+    });
   });
 
   it('sets listeners on profile selector component', () => {
@@ -89,6 +102,7 @@ describe('OnDemandScansScannerProfileSelector', () => {
         propsData: { profiles },
       });
       const sel = findProfileSelector();
+
       expect(sel.props()).toEqual({
         libraryPath: TEST_LIBRARY_PATH,
         newProfilePath: TEST_NEW_PATH,

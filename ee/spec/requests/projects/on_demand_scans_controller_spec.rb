@@ -123,7 +123,7 @@ RSpec.describe Projects::OnDemandScansController, type: :request do
             }
           }.to_json
 
-          on_demand_div = Nokogiri::HTML.parse(response.body).at_css('div#js-on-demand-scans-app')
+          on_demand_div = Nokogiri::HTML.parse(response.body).at_css('div#js-on-demand-scans-form')
 
           expect(on_demand_div.attributes['data-dast-scan'].value).to include(json_data)
         end

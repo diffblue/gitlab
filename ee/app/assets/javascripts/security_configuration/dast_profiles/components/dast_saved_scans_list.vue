@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { ERROR_RUN_SCAN, ERROR_MESSAGES } from 'ee/on_demand_scans/settings';
+import { ERROR_RUN_SCAN, ERROR_MESSAGES } from 'ee/on_demand_scans_form/settings';
 import { redirectTo } from '~/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import dastProfileRunMutation from '../graphql/dast_profile_run.mutation.graphql';

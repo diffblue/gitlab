@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlSprintf, GlButton, GlForm, GlAlert } from '@gitlab/ui';
-import DastProfilesSelector from 'ee/on_demand_scans/components/profile_selector/dast_profiles_selector.vue';
+import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import { s__, __ } from '~/locale';

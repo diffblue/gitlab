@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import OnDemandScansProfileSummaryCell from 'ee/on_demand_scans/components/profile_selector/summary_cell.vue';
+import OnDemandScansProfileSummaryCell from 'ee/on_demand_scans_form/components/profile_selector/summary_cell.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 describe('OnDemandScansProfileSummaryCell', () => {
