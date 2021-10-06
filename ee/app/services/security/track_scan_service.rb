@@ -30,7 +30,7 @@ module Security
                                'scan',
                                context: [context],
                                idempotency_key: Digest::SHA256.hexdigest(idempotency_key),
-                               user: build.user_id,
+                               user: build.user,
                                project: build.project_id,
                                label: analyzer_id(report),
                                property: scan_type(report, report_type))
