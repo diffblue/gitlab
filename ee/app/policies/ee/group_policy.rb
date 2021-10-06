@@ -13,6 +13,9 @@ module EE
       condition(:epics_available) { @subject.feature_available?(:epics) }
       condition(:iterations_available) { @subject.feature_available?(:iterations) }
       condition(:subepics_available) { @subject.feature_available?(:subepics) }
+      condition(:external_audit_events_available) do
+        @subject.feature_available?(:external_audit_events) && ::Feature.enabled?(:ff_external_audit_events_namespace, @subject, default_enabled: :yaml)
+      end
       condition(:contribution_analytics_available) do
         @subject.feature_available?(:contribution_analytics)
       end
@@ -387,6 +390,9 @@ module EE
       rule { can?(:owner_access) & group_membership_export_available }.enable :export_group_memberships
       rule { can?(:owner_access) & compliance_framework_available }.enable :admin_compliance_framework
       rule { can?(:owner_access) & group_level_compliance_pipeline_available }.enable :admin_compliance_pipeline_configuration
+      rule { can?(:owner_access) & external_audit_events_available }.policy do
+        enable :admin_external_audit_events
+      end
     end
 
     override :lookup_access_level!

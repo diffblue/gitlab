@@ -83,6 +83,9 @@ module EE
         mount_mutation ::Mutations::SecurityPolicy::AssignSecurityPolicyProject
         mount_mutation ::Mutations::SecurityPolicy::CreateSecurityPolicyProject
         mount_mutation ::Mutations::Security::CiConfiguration::ConfigureDependencyScanning
+        mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Create
+        mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Destroy
+        mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Update
 
         prepend(Types::DeprecatedMutations)
       end

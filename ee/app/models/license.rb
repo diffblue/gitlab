@@ -163,6 +163,7 @@ class License < ApplicationRecord
     enterprise_templates
     environment_alerts
     evaluate_group_level_compliance_pipeline
+    external_audit_events
     group_ci_cd_analytics
     group_level_compliance_dashboard
     group_level_devops_adoption
