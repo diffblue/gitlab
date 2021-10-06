@@ -133,23 +133,6 @@ RSpec.describe SubscriptionsHelper do
     end
   end
 
-  describe '#addon_data' do
-    subject(:addon_data) { helper.addon_data(group) }
-
-    let_it_be(:user) { create(:user, name: 'First Last') }
-    let_it_be(:group) { create(:group, name: 'My Namespace') }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-      allow(helper).to receive(:params).and_return({ selected_group: group.id.to_s, source: 'some_source' })
-      group.add_owner(user)
-    end
-
-    it { is_expected.to include(namespace_id: group.id.to_s) }
-    it { is_expected.to include(source: 'some_source') }
-    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":1,"guests":0}]}) }
-  end
-
   describe '#buy_addon_data' do
     subject(:buy_addon_data) { helper.buy_addon_data(group, anchor, purchased_product) }
 

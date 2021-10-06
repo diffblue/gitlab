@@ -5965,9 +5965,6 @@ msgstr ""
 msgid "CI configuration validated, including all configuration added with the %{codeStart}includes%{codeEnd} keyword. %{link}"
 msgstr ""
 
-msgid "CI minutes"
-msgstr ""
-
 msgid "CI settings"
 msgstr ""
 
@@ -6635,6 +6632,9 @@ msgid "Checkout|CI minute pack"
 msgstr ""
 
 msgid "Checkout|CI minute packs are only used after you've used your subscription's monthly quota. The additional minutes will roll over month to month and are valid for one year."
+msgstr ""
+
+msgid "Checkout|CI minutes"
 msgstr ""
 
 msgid "Checkout|Checkout"
