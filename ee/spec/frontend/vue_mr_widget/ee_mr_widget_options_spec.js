@@ -20,7 +20,7 @@ import {
   dastDiffSuccessMock,
   containerScanningDiffSuccessMock,
   dependencyScanningDiffSuccessMock,
-  secretScanningDiffSuccessMock,
+  secretDetectionDiffSuccessMock,
   coverageFuzzingDiffSuccessMock,
   apiFuzzingDiffSuccessMock,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
@@ -55,7 +55,7 @@ const SAST_SELECTOR = '.js-sast-widget';
 const DAST_SELECTOR = '.js-dast-widget';
 const DEPENDENCY_SCANNING_SELECTOR = '.js-dependency-scanning-widget';
 const CONTAINER_SCANNING_SELECTOR = '.js-container-scanning';
-const SECRET_SCANNING_SELECTOR = '.js-secret-scanning';
+const SECRET_DETECTION_SELECTOR = '.js-secret-detection';
 const COVERAGE_FUZZING_SELECTOR = '.js-coverage-fuzzing-widget';
 const API_FUZZING_SELECTOR = '.js-api-fuzzing-widget';
 
@@ -836,8 +836,8 @@ describe('ee merge request widget options', () => {
     });
   });
 
-  describe('Secret Scanning', () => {
-    const SECRET_SCANNING_ENDPOINT = 'secret_detection_report';
+  describe('Secret Detection', () => {
+    const SECRET_DETECTION_ENDPOINT = 'secret_detection_report';
 
     beforeEach(() => {
       gl.mrWidgetData = {
@@ -845,31 +845,31 @@ describe('ee merge request widget options', () => {
         enabled_reports: {
           secret_detection: true,
           // The below property needs to exist until
-          // secret scanning is implemented in backend
+          // secret Detection is implemented in backend
           // Or for some other reason I'm yet to find
           dast: true,
         },
-        secret_scanning_comparison_path: SECRET_SCANNING_ENDPOINT,
+        secret_detection_comparison_path: SECRET_DETECTION_ENDPOINT,
         vulnerability_feedback_path: VULNERABILITY_FEEDBACK_ENDPOINT,
       };
     });
 
     describe('when it is loading', () => {
       it('should render loading indicator', () => {
-        mock.onGet(SECRET_SCANNING_ENDPOINT).reply(200, secretScanningDiffSuccessMock);
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
 
         expect(
-          trimText(findExtendedSecurityWidget().find(SECRET_SCANNING_SELECTOR).text()),
-        ).toContain('Secret scanning is loading');
+          trimText(findExtendedSecurityWidget().find(SECRET_DETECTION_SELECTOR).text()),
+        ).toContain('Secret detection is loading');
       });
     });
 
     describe('with successful request', () => {
       beforeEach(() => {
-        mock.onGet(SECRET_SCANNING_ENDPOINT).reply(200, secretScanningDiffSuccessMock);
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
@@ -880,11 +880,11 @@ describe('ee merge request widget options', () => {
           expect(
             trimText(
               findExtendedSecurityWidget()
-                .find(`${SECRET_SCANNING_SELECTOR} .report-block-list-issue-description`)
+                .find(`${SECRET_DETECTION_SELECTOR} .report-block-list-issue-description`)
                 .text(),
             ),
           ).toEqual(
-            'Secret scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+            'Secret detection detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
           );
           done();
         });
@@ -893,7 +893,7 @@ describe('ee merge request widget options', () => {
 
     describe('with failed request', () => {
       beforeEach(() => {
-        mock.onGet(SECRET_SCANNING_ENDPOINT).reply(500, {});
+        mock.onGet(SECRET_DETECTION_ENDPOINT).reply(500, {});
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(500, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
@@ -901,8 +901,8 @@ describe('ee merge request widget options', () => {
 
       it('should render error indicator', (done) => {
         setImmediate(() => {
-          expect(findExtendedSecurityWidget().find(SECRET_SCANNING_SELECTOR).text()).toContain(
-            'Secret scanning: Loading resulted in an error',
+          expect(findExtendedSecurityWidget().find(SECRET_DETECTION_SELECTOR).text()).toContain(
+            'Secret detection: Loading resulted in an error',
           );
           done();
         });

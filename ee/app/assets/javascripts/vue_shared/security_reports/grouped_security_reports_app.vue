@@ -1,4 +1,6 @@
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
+import { once } from 'lodash';
 import {
   GlButton,
   GlSprintf,
@@ -6,8 +8,6 @@ import {
   GlModalDirective,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { once } from 'lodash';
-import { mapActions, mapState, mapGetters } from 'vuex';
 import { componentNames } from 'ee/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
 import { mrStates } from '~/mr_popover/constants';
@@ -126,7 +126,7 @@ export default {
       required: false,
       default: '',
     },
-    secretScanningHelpPath: {
+    secretDetectionHelpPath: {
       type: String,
       required: false,
       default: '',
@@ -230,7 +230,7 @@ export default {
       required: false,
       default: '',
     },
-    secretScanningComparisonPath: {
+    secretDetectionComparisonPath: {
       type: String,
       required: false,
       default: '',
@@ -386,8 +386,8 @@ export default {
       this.fetchDependencyScanningDiff();
     }
 
-    if (this.secretScanningComparisonPath && this.hasSecretDetectionReports) {
-      this.setSecretDetectionDiffEndpoint(this.secretScanningComparisonPath);
+    if (this.secretDetectionComparisonPath && this.hasSecretDetectionReports) {
+      this.setSecretDetectionDiffEndpoint(this.secretDetectionComparisonPath);
       this.fetchSecretDetectionDiff();
     }
 
@@ -640,9 +640,9 @@ export default {
           <summary-row
             :nested-summary="true"
             :status-icon="secretDetectionStatusIcon"
-            :popover-options="secretScanningPopover"
-            class="js-secret-scanning"
-            data-testid="secret-scan-report"
+            :popover-options="secretDetectionPopover"
+            class="js-secret-detection"
+            data-testid="secret-detection-report"
           >
             <template #summary>
               <security-summary :message="groupedSecretDetectionText" />
@@ -655,7 +655,7 @@ export default {
             :unresolved-issues="secretDetection.newIssues"
             :resolved-issues="secretDetection.resolvedIssues"
             :component="$options.componentNames.SecurityIssueBody"
-            data-testid="secret-scanning-issues-list"
+            data-testid="secret-detection-issues-list"
           />
         </template>
 
