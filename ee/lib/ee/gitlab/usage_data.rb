@@ -414,9 +414,9 @@ module EE
 
           start_id, finish_id = min_max_security_scan_id(time_period)
 
-          ::Security::Scan.scan_types.each do |name, scan_type|
+          ::Security::Scan.scan_types.each do |name, _|
             relation = ::Security::Scan
-                         .by_scan_types(scan_type)
+                         .by_scan_types(name)
                          .where(time_period)
 
             metric_name = "#{name}_pipeline"
