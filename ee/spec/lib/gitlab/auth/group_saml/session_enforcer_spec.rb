@@ -44,7 +44,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             allow(group).to receive(:root_ancestor).and_return(root_group)
           end
 
-          let(:group) { create(:group, parent: root_group) }
+          let(:group) { create(:group) }
 
           subject(:enforced?) { described_class.new(user, group).access_restricted? }
 
@@ -189,7 +189,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
               allow(group).to receive(:root_ancestor).and_return(root_group)
             end
 
-            let(:group) { create(:group, parent: root_group) }
+            let(:group) { create(:group) }
 
             subject(:enforced?) { described_class.new(user, group).access_restricted? }
 
