@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class MergeRequestComplianceEntity < Grape::Entity
+  include MergeRequestMetricsHelper
   include RequestAwareEntity
 
   SUCCESS_APPROVAL_STATUS = :success
@@ -75,7 +76,7 @@ class MergeRequestComplianceEntity < Grape::Entity
   end
 
   def merged_by
-    merge_request.metrics.merged_by
+    build_metrics(merge_request).merged_by
   end
 
   def target_branch_uri

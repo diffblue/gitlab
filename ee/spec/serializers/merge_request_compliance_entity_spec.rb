@@ -39,6 +39,14 @@ RSpec.describe MergeRequestComplianceEntity do
       )
     end
 
+    it 'builds the merge request metrics' do
+      expect_any_instance_of(MergeRequestMetricsHelper) do |instance|
+        expect(instance).to receive(:build_metrics).with(merge_request)
+      end
+
+      subject
+    end
+
     describe 'with an approver' do
       let_it_be(:approver) { create(:user) }
       let_it_be(:approval) { create :approval, merge_request: merge_request, user: approver }
