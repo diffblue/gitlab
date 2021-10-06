@@ -6,7 +6,7 @@ import DastSiteAuthSection from 'ee/security_configuration/dast_profiles/dast_si
 import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_site_profiles/components/dast_site_profile_form.vue';
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_update.mutation.graphql';
-import { siteProfiles, policySiteProfile } from 'ee_jest/on_demand_scans/mocks/mock_data';
+import { siteProfiles, policySiteProfile } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 

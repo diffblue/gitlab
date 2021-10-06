@@ -1,6 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import { ERROR_RUN_SCAN, ERROR_MESSAGES } from 'ee/on_demand_scans/settings';
+import { ERROR_RUN_SCAN, ERROR_MESSAGES } from 'ee/on_demand_scans_form/settings';
 import ProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
 import Component from 'ee/security_configuration/dast_profiles/components/dast_saved_scans_list.vue';
 import DastScanBranch from 'ee/security_configuration/dast_profiles/components/dast_scan_branch.vue';

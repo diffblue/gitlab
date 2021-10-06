@@ -1,11 +1,11 @@
 import { GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
-import DastProfilesSelector from 'ee/on_demand_scans/components/profile_selector/dast_profiles_selector.vue';
+import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import ConfigurationForm from 'ee/security_configuration/dast/components/configuration_form.vue';
-import { scannerProfiles, siteProfiles } from 'ee_jest/on_demand_scans/mocks/mock_data';
+import { scannerProfiles, siteProfiles } from 'ee_jest/on_demand_scans_form/mocks/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { CODE_SNIPPET_SOURCE_DAST } from '~/pipeline_editor/components/code_snippet_alert/constants';
 import { DAST_HELP_PATH } from '~/security_configuration/components/constants';

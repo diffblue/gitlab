@@ -1,4 +1,4 @@
-import { toGraphQLCadence, fromGraphQLCadence } from 'ee/on_demand_scans/utils';
+import { toGraphQLCadence, fromGraphQLCadence } from 'ee/on_demand_scans_form/utils';
 
 describe('On-demand scans utils', () => {
   describe('toGraphQLCadence', () => {

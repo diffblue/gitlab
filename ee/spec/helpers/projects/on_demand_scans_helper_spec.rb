@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::OnDemandScansHelper do
-  describe '#on_demand_scans_data' do
+  describe '#on_demand_scans_form_data' do
     let_it_be(:project) { create(:project) }
     let_it_be(:timezones) { [{ identifier: "Europe/Paris" }] }
 
@@ -14,7 +14,7 @@ RSpec.describe Projects::OnDemandScansHelper do
     end
 
     it 'returns proper data' do
-      expect(helper.on_demand_scans_data(project)).to match(
+      expect(helper.on_demand_scans_form_data(project)).to match(
         'help-page-path' => "/help/user/application_security/dast/index#on-demand-scans",
         'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg'),
         'default-branch' => "default-branch",

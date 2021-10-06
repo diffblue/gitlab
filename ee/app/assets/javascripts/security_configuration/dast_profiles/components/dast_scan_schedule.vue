@@ -1,7 +1,7 @@
 <script>
 import { GlTooltipDirective } from '@gitlab/ui';
-import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans/settings';
-import { fromGraphQLCadence } from 'ee/on_demand_scans/utils';
+import { SCAN_CADENCE_OPTIONS } from 'ee/on_demand_scans_form/settings';
+import { fromGraphQLCadence } from 'ee/on_demand_scans_form/utils';
 import { stripTimezoneFromISODate } from '~/lib/utils/datetime/date_format_utility';
 import { sprintf } from '~/locale';
 

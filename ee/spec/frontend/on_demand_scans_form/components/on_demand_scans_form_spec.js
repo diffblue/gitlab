@@ -2,12 +2,12 @@ import { GlForm, GlFormInput, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
-import OnDemandScansForm from 'ee/on_demand_scans/components/on_demand_scans_form.vue';
-import ScannerProfileSelector from 'ee/on_demand_scans/components/profile_selector/scanner_profile_selector.vue';
-import SiteProfileSelector from 'ee/on_demand_scans/components/profile_selector/site_profile_selector.vue';
-import ScanSchedule from 'ee/on_demand_scans/components/scan_schedule.vue';
-import dastProfileCreateMutation from 'ee/on_demand_scans/graphql/dast_profile_create.mutation.graphql';
-import dastProfileUpdateMutation from 'ee/on_demand_scans/graphql/dast_profile_update.mutation.graphql';
+import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
+import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
+import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
+import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
+import dastProfileCreateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_create.mutation.graphql';
+import dastProfileUpdateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_update.mutation.graphql';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
@@ -32,7 +32,7 @@ const siteProfilesLibraryPath = '/security/configuration/dast_scans#site-profile
 const newScannerProfilePath = '/security/configuration/dast_scans/dast_scanner_profile/new';
 const newSiteProfilePath = `/${projectPath}/-/security/configuration/dast_scans`;
 const pipelineUrl = `/${projectPath}/pipelines/123`;
-const editPath = `/${projectPath}/on_demand_scans/1/edit`;
+const editPath = `/${projectPath}/on_demand_scans_form/1/edit`;
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
 const [nonValidatedSiteProfile, validatedSiteProfile] = siteProfiles;
 const dastScan = {

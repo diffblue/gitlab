@@ -3,7 +3,7 @@ import OnDemandScansForm from './components/on_demand_scans_form.vue';
 import apolloProvider from './graphql/provider';
 
 export default () => {
-  const el = document.querySelector('#js-on-demand-scans-app');
+  const el = document.querySelector('#js-on-demand-scans-form');
   if (!el) {
     return null;
   }
