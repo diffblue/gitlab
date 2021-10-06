@@ -82,7 +82,7 @@ module Ci
     end
 
     def all_pipelines_for_merge_request
-      if Feature.enabled?(:decomposed_ci_query_in_pipelines_for_merge_request_finder, source_project, default_enabled: :yaml)
+      if Feature.enabled?(:decomposed_ci_query_in_pipelines_for_merge_request_finder, target_project, default_enabled: :yaml)
         pipelines_for_merge_request = triggered_by_merge_request
         pipelines_for_branch = triggered_for_branch.for_sha(recent_diff_head_shas(COMMITS_LIMIT))
 

@@ -242,7 +242,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
 
       context 'when `decomposed_ci_query_in_pipelines_for_merge_request_finder` feature flag enabled' do
         before do
-          stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: merge_request.source_project)
+          stub_feature_flags(decomposed_ci_query_in_pipelines_for_merge_request_finder: merge_request.target_project)
         end
 
         it_behaves_like 'returns all pipelines for merge request'
