@@ -37,10 +37,20 @@ module Ci
 
       private
 
+      # We want to rescue and track exceptions to ensure the service
+      # remains idempotent. Sending email notifications is not as critical
+      # as this service idempotency.
+      # TODO: we should move this to be an async job.
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/335885
       def send_minutes_email_notification
         # `perform reset` on `project` because `Namespace#namespace_statistics` will otherwise return stale data.
         # TODO(issue 335885): Remove @project
         ::Ci::Minutes::EmailNotificationService.new(@project.reset).execute if ::Gitlab.com?
+      rescue StandardError => e
+        ::Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e,
+          project_id: @project_id,
+          namespace_id: @namespace_id,
+          build_id: @build_id)
       end
 
       def legacy_track_usage_of_monthly_minutes(consumption)

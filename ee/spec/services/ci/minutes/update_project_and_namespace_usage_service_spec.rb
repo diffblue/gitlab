@@ -96,6 +96,22 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
 
           subject
         end
+
+        context 'when an error is raised by the email notification' do
+          before do
+            allow_next_instance_of(Ci::Minutes::EmailNotificationService) do |service|
+              allow(service).to receive(:execute).and_raise(StandardError)
+            end
+          end
+
+          it 'rescues and tracks the exception' do
+            expect(::Gitlab::ErrorTracking)
+              .to receive(:track_and_raise_for_dev_exception)
+              .with(an_instance_of(StandardError), project_id: project.id, namespace_id: namespace.id, build_id: build.id)
+
+            subject
+          end
+        end
       end
 
       context 'when not on .com' do
