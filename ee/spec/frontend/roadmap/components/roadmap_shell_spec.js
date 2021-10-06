@@ -79,12 +79,6 @@ describe('RoadmapShell', () => {
     store = null;
   });
 
-  describe('data', () => {
-    it('returns default data props', () => {
-      expect(wrapper.vm.timeframeStartOffset).toBe(0);
-    });
-  });
-
   describe('methods', () => {
     beforeEach(() => {
       document.body.innerHTML +=

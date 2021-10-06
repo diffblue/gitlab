@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { PRESET_TYPES, EXTEND_AS } from 'ee/roadmap/constants';
+import { PRESET_TYPES } from 'ee/roadmap/constants';
 import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
@@ -14,9 +14,7 @@ import {
   mockGroupId,
   basePath,
   mockTimeframeInitialDate,
-  mockTimeframeMonthsPrepend,
   mockTimeframeMonthsAppend,
-  rawEpics,
   mockRawEpic,
   mockRawEpic2,
   mockFormattedEpic,
@@ -216,104 +214,6 @@ describe('Roadmap Vuex Actions', () => {
           ],
         );
       });
-    });
-  });
-
-  describe('fetchEpicsForTimeframe', () => {
-    describe('success', () => {
-      it('should perform REQUEST_EPICS_FOR_TIMEFRAME mutation and dispatch receiveEpicsSuccess action when request is successful', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-          Promise.resolve({
-            data: mockGroupEpicsQueryResponse.data,
-          }),
-        );
-
-        return testAction(
-          actions.fetchEpicsForTimeframe,
-          { timeframe: mockTimeframeMonths },
-          state,
-          [
-            {
-              type: types.REQUEST_EPICS_FOR_TIMEFRAME,
-            },
-          ],
-          [
-            {
-              type: 'receiveEpicsSuccess',
-              payload: {
-                rawEpics: mockGroupEpics,
-                pageInfo: mockPageInfo,
-                newEpic: true,
-                timeframeExtended: true,
-              },
-            },
-          ],
-        );
-      });
-    });
-
-    describe('failure', () => {
-      it('should perform REQUEST_EPICS_FOR_TIMEFRAME mutation and dispatch requestEpicsFailure action when request fails', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockRejectedValue();
-
-        return testAction(
-          actions.fetchEpicsForTimeframe,
-          { timeframe: mockTimeframeMonths },
-          state,
-          [
-            {
-              type: types.REQUEST_EPICS_FOR_TIMEFRAME,
-            },
-          ],
-          [
-            {
-              type: 'receiveEpicsFailure',
-            },
-          ],
-        );
-      });
-    });
-  });
-
-  describe('extendTimeframe', () => {
-    it('should prepend to timeframe when called with extend type prepend', () => {
-      return testAction(
-        actions.extendTimeframe,
-        { extendAs: EXTEND_AS.PREPEND },
-        state,
-        [{ type: types.PREPEND_TIMEFRAME, payload: mockTimeframeMonthsPrepend }],
-        [],
-      );
-    });
-
-    it('should append to timeframe when called with extend type append', () => {
-      return testAction(
-        actions.extendTimeframe,
-        { extendAs: EXTEND_AS.APPEND },
-        state,
-        [{ type: types.APPEND_TIMEFRAME, payload: mockTimeframeMonthsAppend }],
-        [],
-      );
-    });
-  });
-
-  describe('refreshEpicDates', () => {
-    it('should update epics after refreshing epic dates to match with updated timeframe', () => {
-      const epics = rawEpics.map((epic) =>
-        roadmapItemUtils.formatRoadmapItemDetails(
-          epic,
-          state.timeframeStartDate,
-          state.timeframeEndDate,
-        ),
-      );
-
-      return testAction(
-        actions.refreshEpicDates,
-        {},
-        { ...state, timeframe: mockTimeframeMonths.concat(mockTimeframeMonthsAppend), epics },
-        [{ type: types.SET_EPICS, payload: epics }],
-        [],
-      );
     });
   });
 

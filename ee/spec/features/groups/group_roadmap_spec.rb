@@ -29,7 +29,6 @@ RSpec.describe 'group epic roadmap', :js do
   before do
     stub_licensed_features(epics: true)
     stub_feature_flags(unfiltered_epic_aggregates: false)
-    stub_feature_flags(performance_roadmap: false)
     stub_feature_flags(roadmap_daterange_filter: false)
 
     sign_in(user)

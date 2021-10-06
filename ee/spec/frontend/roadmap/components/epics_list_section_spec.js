@@ -59,7 +59,6 @@ const createComponent = ({
   currentGroupId = mockGroupId,
   presetType = PRESET_TYPES.MONTHS,
   hasFiltersApplied = false,
-  performanceRoadmap = false,
 } = {}) => {
   return shallowMountExtended(EpicsListSection, {
     localVue,
@@ -75,11 +74,6 @@ const createComponent = ({
       currentGroupId,
       hasFiltersApplied,
     },
-    provide: {
-      glFeatures: {
-        performanceRoadmap,
-      },
-    },
   });
 };
 
@@ -87,7 +81,6 @@ describe('EpicsListSectionComponent', () => {
   let wrapper;
 
   beforeEach(() => {
-    gon.features = { performanceRoadmap: false };
     wrapper = createComponent();
   });
 
@@ -249,6 +242,8 @@ describe('EpicsListSectionComponent', () => {
   });
 
   describe('template', () => {
+    const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
+
     it('renders component container element with class `epics-list-section`', () => {
       expect(wrapper.classes('epics-list-section')).toBe(true);
     });
@@ -263,44 +258,35 @@ describe('EpicsListSectionComponent', () => {
       expect(wrapper.find('.epics-list-item-empty').exists()).toBe(true);
     });
 
+    it('renders gl-intersection-observer component', () => {
+      expect(findIntersectionObserver().exists()).toBe(true);
+    });
+
+    it('calls action `fetchEpics` when gl-intersection-observer appears in viewport', () => {
+      const fakeFetchEpics = jest.spyOn(wrapper.vm, 'fetchEpics').mockImplementation();
+
+      findIntersectionObserver().vm.$emit('appear');
+
+      expect(fakeFetchEpics).toHaveBeenCalledWith({
+        endCursor: mockPageInfo.endCursor,
+      });
+    });
+
+    it('renders gl-loading icon when epicsFetchForNextPageInProgress is true', async () => {
+      wrapper.vm.$store.commit(REQUEST_EPICS_FOR_NEXT_PAGE);
+
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.findByTestId('next-page-loading').text()).toContain('Loading epics');
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
+    });
+
     it('renders bottom shadow element when `showBottomShadow` prop is true', () => {
       wrapper.setData({
         showBottomShadow: true,
       });
 
       expect(wrapper.find('.epic-scroll-bottom-shadow').exists()).toBe(true);
-    });
-
-    describe('when `performanceRoadmap` feature flag is enabled', () => {
-      const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
-
-      beforeEach(() => {
-        gon.features = { performanceRoadmap: true };
-        wrapper = createComponent({ performanceRoadmap: true });
-      });
-
-      it('renders gl-intersection-observer component', () => {
-        expect(findIntersectionObserver().exists()).toBe(true);
-      });
-
-      it('calls action `fetchEpics` when gl-intersection-observer appears in viewport', () => {
-        const fakeFetchEpics = jest.spyOn(wrapper.vm, 'fetchEpics').mockImplementation();
-
-        findIntersectionObserver().vm.$emit('appear');
-
-        expect(fakeFetchEpics).toHaveBeenCalledWith({
-          endCursor: mockPageInfo.endCursor,
-        });
-      });
-
-      it('renders gl-loading icon when epicsFetchForNextPageInProgress is true', async () => {
-        wrapper.vm.$store.commit(REQUEST_EPICS_FOR_NEXT_PAGE);
-
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.findByTestId('next-page-loading').text()).toContain('Loading epics');
-        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-      });
     });
   });
 
