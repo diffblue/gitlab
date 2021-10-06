@@ -135,7 +135,7 @@ class PagesDomain < ApplicationRecord
   end
 
   def untrusted_ca_certs_bundle
-    ::Gitlab::Email::Smime::Certificate.load_ca_certs_bundle(certificate)
+    ::Gitlab::X509::Certificate.load_ca_certs_bundle(certificate)
   end
 
   def expired?
