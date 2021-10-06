@@ -39775,6 +39775,11 @@ msgstr ""
 msgid "ciReport|Investigate this vulnerability by creating an issue"
 msgstr ""
 
+msgid "ciReport|Load performance test metrics detected %{strongStart}%{changesFound}%{strongEnd} change"
+msgid_plural "ciReport|Load performance test metrics detected %{strongStart}%{changesFound}%{strongEnd} changes"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ciReport|Load performance test metrics: "
 msgstr ""
 
