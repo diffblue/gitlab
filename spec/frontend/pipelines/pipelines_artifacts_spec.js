@@ -1,4 +1,4 @@
-import { GlAlert, GlDropdown, GlDropdownItem, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlDropdown, GlDropdownItem, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -47,7 +47,6 @@ describe('Pipelines Artifacts dropdown', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findFirstGlDropdownItem = () => wrapper.find(GlDropdownItem);
   const findAllGlDropdownItems = () => wrapper.find(GlDropdown).findAll(GlDropdownItem);
 
@@ -60,17 +59,19 @@ describe('Pipelines Artifacts dropdown', () => {
     wrapper = null;
   });
 
-  it('should render the dropdown', () => {
-    createComponent();
+  describe('when artifacts are loading', () => {
+    it('should render the dropdown with loading status', () => {
+      createComponent({ mockData: { isLoading: true } });
 
-    expect(findDropdown().exists()).toBe(true);
+      expect(findDropdown().exists()).toBe(true);
+      expect(findDropdown().attributes('loading')).toBe('true');
+    });
   });
 
-  it('should fetch artifacts on dropdown click', async () => {
+  it('should fetch artifacts on mount', async () => {
     const endpoint = artifactsEndpoint.replace(artifactsEndpointPlaceholder, pipelineId);
     mockAxios.onGet(endpoint).replyOnce(200, { artifacts });
     createComponent();
-    findDropdown().vm.$emit('show');
     await waitForPromises();
 
     expect(mockAxios.history.get).toHaveLength(1);
@@ -95,7 +96,6 @@ describe('Pipelines Artifacts dropdown', () => {
       const endpoint = artifactsEndpoint.replace(artifactsEndpointPlaceholder, pipelineId);
       mockAxios.onGet(endpoint).replyOnce(500);
       createComponent();
-      findDropdown().vm.$emit('show');
       await waitForPromises();
 
       const error = findAlert();
@@ -105,20 +105,10 @@ describe('Pipelines Artifacts dropdown', () => {
   });
 
   describe('with no artifacts received', () => {
-    it('should render empty alert message', () => {
+    it('should not render the dropdown', () => {
       createComponent({ mockData: { artifacts: [] } });
 
-      const emptyAlert = findAlert();
-      expect(emptyAlert.exists()).toBe(true);
-      expect(emptyAlert.text()).toBe(i18n.noArtifacts);
-    });
-  });
-
-  describe('when artifacts are loading', () => {
-    it('should show loading icon', () => {
-      createComponent({ mockData: { isLoading: true } });
-
-      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findDropdown().exists()).toBe(false);
     });
   });
 });

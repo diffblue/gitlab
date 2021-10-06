@@ -4,7 +4,6 @@ import {
   GlDropdown,
   GlDropdownItem,
   GlDropdownSectionHeader,
-  GlLoadingIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
@@ -27,7 +26,6 @@ export default {
     GlDropdown,
     GlDropdownItem,
     GlDropdownSectionHeader,
-    GlLoadingIcon,
   },
   inject: {
     artifactsEndpoint: {
@@ -49,6 +47,14 @@ export default {
       hasError: false,
       isLoading: false,
     };
+  },
+  computed: {
+    shouldShowDropdown() {
+      return this.isLoading || this.hasError || this.artifacts?.length;
+    },
+  },
+  mounted() {
+    this.fetchArtifacts();
   },
   methods: {
     fetchArtifacts() {
@@ -75,16 +81,17 @@ export default {
 </script>
 <template>
   <gl-dropdown
+    v-if="shouldShowDropdown"
     v-gl-tooltip
     class="build-artifacts js-pipeline-dropdown-download"
     :title="$options.i18n.artifacts"
     :text="$options.i18n.artifacts"
     :aria-label="$options.i18n.artifacts"
+    :loading="isLoading"
     icon="download"
     right
     lazy
     text-sr-only
-    @show.once="fetchArtifacts"
   >
     <gl-dropdown-section-header>{{
       $options.i18n.artifactSectionHeader
@@ -92,12 +99,6 @@ export default {
 
     <gl-alert v-if="hasError" variant="danger" :dismissible="false">
       {{ $options.i18n.artifactsFetchErrorMessage }}
-    </gl-alert>
-
-    <gl-loading-icon v-else-if="isLoading" size="sm" />
-
-    <gl-alert v-else-if="!artifacts.length" variant="info" :dismissible="false">
-      {{ $options.i18n.noArtifacts }}
     </gl-alert>
 
     <gl-dropdown-item
