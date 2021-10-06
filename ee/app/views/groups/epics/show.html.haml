@@ -84,6 +84,7 @@
         notes_filters: UserPreference.notes_filters.to_json } }
   .row
     %section.col-md-12
+      -# haml-lint:disable InlineJavaScript
       %script.js-notes-data{ type: "application/json" }= initial_notes_data(true).to_json.html_safe
       .issuable-discussion
         = render 'discussion'
