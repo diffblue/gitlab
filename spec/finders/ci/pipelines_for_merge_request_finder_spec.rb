@@ -44,7 +44,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       let(:actor) { developer_in_both }
 
       it 'returns all pipelines' do
-        is_expected.to eq([pipeline_in_fork, pipeline_in_parent])
+        is_expected.to match_array([pipeline_in_fork, pipeline_in_parent])
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       let(:actor) { reporter_in_parent_and_developer_in_fork }
 
       it 'returns all pipelines' do
-        is_expected.to eq([pipeline_in_fork, pipeline_in_parent])
+        is_expected.to match_array([pipeline_in_fork, pipeline_in_parent])
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       let(:actor) { developer_in_parent }
 
       it 'returns pipelines in parent' do
-        is_expected.to eq([pipeline_in_parent])
+        is_expected.to match_array([pipeline_in_parent])
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
       let(:actor) { developer_in_fork }
 
       it 'returns pipelines in fork' do
-        is_expected.to eq([pipeline_in_fork])
+        is_expected.to match_array([pipeline_in_fork])
       end
     end
 
@@ -195,9 +195,7 @@ RSpec.describe Ci::PipelinesForMergeRequestFinder do
                       branch_pipeline])
 
             expect(described_class.new(merge_request_2, nil).all)
-              .to eq([detached_merge_request_pipeline_2,
-                      branch_pipeline_2,
-                      branch_pipeline])
+              .to match_array([detached_merge_request_pipeline_2, branch_pipeline_2, branch_pipeline])
           end
         end
 
