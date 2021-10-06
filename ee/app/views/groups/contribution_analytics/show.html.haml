@@ -68,6 +68,7 @@
       #js_issues_chart_vue
 
   #js-group-member-contributions{ data: { member_contributions_path: group_contribution_analytics_path(@group, { start_date: @start_date, format: :json }) } }
+  -# haml-lint:disable InlineJavaScript
   %script#js-analytics-data{ type: "application/json" }
     = @data_collector.group_member_contributions_table_data.to_json.html_safe
 - elsif show_promotions?
