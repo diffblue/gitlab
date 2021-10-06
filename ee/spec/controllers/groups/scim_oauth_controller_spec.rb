@@ -22,38 +22,6 @@ RSpec.describe Groups::ScimOauthController do
       stub_licensed_features(group_saml: true)
     end
 
-    describe 'GET #show' do
-      subject { get :show, params: { group_id: group }, format: :json }
-
-      before do
-        group.add_owner(user)
-      end
-
-      context 'without token' do
-        it 'shows an empty response' do
-          subject
-
-          expect(json_response).to eq({})
-        end
-      end
-
-      context 'with token' do
-        let!(:scim_token) { create(:scim_oauth_access_token, group: group) }
-
-        it 'shows the token' do
-          subject
-
-          expect(json_response['scim_token']).to eq(scim_token.token)
-        end
-
-        it 'shows the url' do
-          subject
-
-          expect(json_response['scim_api_url']).not_to be_empty
-        end
-      end
-    end
-
     describe 'POST #create' do
       subject { post :create, params: { group_id: group }, format: :json }
 
