@@ -14,12 +14,11 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
 
     subject { mutation.resolve(project_path: project.full_path, policy_yaml: policy_yaml, operation_mode: operation_mode) }
 
-    context 'when feature is enabled and permission is set for user' do
+    context 'when permission is set for user' do
       before do
         project.add_maintainer(user)
 
         stub_licensed_features(security_orchestration_policies: true)
-        stub_feature_flags(security_orchestration_policies_configuration: true)
       end
 
       it 'returns branch name' do
@@ -27,17 +26,6 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
 
         expect(result[:errors]).to be_empty
         expect(result[:branch]).not_to be_empty
-      end
-    end
-
-    context 'when feature is disabled' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-        stub_feature_flags(security_orchestration_policies_configuration: false)
-      end
-
-      it 'raises exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
 

@@ -54,62 +54,44 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::SecurityOrchestrationPolic
         stub_licensed_features(security_orchestration_policies: true)
       end
 
-      context 'when policy is disabled' do
+      context 'when policy file is missing' do
         before do
-          allow(security_orchestration_policy_configuration).to receive(:enabled?).and_return(false)
+          allow(security_orchestration_policy_configuration).to receive(:policy_configuration_exists?).and_return(false)
         end
 
-        it 'does not return warning' do
+        it 'returns warning' do
           step.perform!
 
-          expect(warning_messages).to be_empty
+          expect(warning_messages).to include('scan-execution-policy: policy not applied, .gitlab/security-policies/policy.yml file is missing')
         end
       end
 
-      context 'when policy is enabled' do
+      context 'when policy file is present' do
         before do
-          allow(security_orchestration_policy_configuration).to receive(:enabled?).and_return(true)
+          allow(security_orchestration_policy_configuration).to receive(:policy_configuration_exists?).and_return(true)
         end
 
-        context 'when policy file is missing' do
+        context 'when policy file is invalid' do
           before do
-            allow(security_orchestration_policy_configuration).to receive(:policy_configuration_exists?).and_return(false)
+            allow(security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(false)
           end
 
           it 'returns warning' do
             step.perform!
 
-            expect(warning_messages).to include('scan-execution-policy: policy not applied, .gitlab/security-policies/policy.yml file is missing')
+            expect(warning_messages).to include('scan-execution-policy: policy not applied, .gitlab/security-policies/policy.yml file is invalid')
           end
         end
 
-        context 'when policy file is present' do
+        context 'when policy file is valid' do
           before do
-            allow(security_orchestration_policy_configuration).to receive(:policy_configuration_exists?).and_return(true)
+            allow(security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(true)
           end
 
-          context 'when policy file is invalid' do
-            before do
-              allow(security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(false)
-            end
+          it 'does not return warning' do
+            step.perform!
 
-            it 'returns warning' do
-              step.perform!
-
-              expect(warning_messages).to include('scan-execution-policy: policy not applied, .gitlab/security-policies/policy.yml file is invalid')
-            end
-          end
-
-          context 'when policy file is valid' do
-            before do
-              allow(security_orchestration_policy_configuration).to receive(:policy_configuration_valid?).and_return(true)
-            end
-
-            it 'does not return warning' do
-              step.perform!
-
-              expect(warning_messages).to be_empty
-            end
+            expect(warning_messages).to be_empty
           end
         end
       end

@@ -16,10 +16,9 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
 
     subject { mutation.resolve(project_path: project.full_path, security_policy_project_id: policy_project_id) }
 
-    context 'when feature is enabled and permission is set for user' do
+    context 'when permission is set for user' do
       before do
         stub_licensed_features(security_orchestration_policies: true)
-        stub_feature_flags(security_orchestration_policies_configuration: true)
       end
 
       context 'when user is an owner of the project' do
@@ -47,17 +46,6 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
 
     context 'when policy_project_id is invalid' do
       let_it_be(:policy_project_id) { 'invalid' }
-
-      it 'raises exception' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-    end
-
-    context 'when feature is disabled' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-        stub_feature_flags(security_orchestration_policies_configuration: false)
-      end
 
       it 'raises exception' do
         expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)

@@ -15,8 +15,7 @@ module Gitlab
 
           def perform
             return @config unless project&.feature_available?(:security_orchestration_policies)
-            return @config unless security_orchestration_policy_configuration&.enabled?
-            return @config unless security_orchestration_policy_configuration.policy_configuration_valid?
+            return @config unless security_orchestration_policy_configuration&.policy_configuration_valid?
             return @config unless extend_configuration?
 
             merged_config = @config

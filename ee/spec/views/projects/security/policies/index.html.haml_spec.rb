@@ -7,7 +7,6 @@ RSpec.describe "projects/security/policies/index", type: :view do
   let(:project) { create(:project) }
 
   before do
-    stub_feature_flags(security_orchestration_policies_configuration: true)
     sign_in(user)
     render template: 'projects/security/policies/index', locals: { project: project }
   end

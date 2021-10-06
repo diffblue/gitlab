@@ -363,38 +363,13 @@ RSpec.describe Projects::CreateService, '#execute' do
     before do
       opts[:security_policy_target_project_id] = security_policy_target_project.id
 
-      stub_licensed_features(security_orchestration_policies: feature_enabled)
-      stub_feature_flags(security_orchestration_policies_configuration: feature_enabled)
+      stub_licensed_features(security_orchestration_policies: true)
     end
 
-    context 'when feature flag is enabled globally' do
-      let_it_be(:feature_enabled) { true }
+    it 'creates security policy configuration for the project' do
+      expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
 
-      it 'creates security policy configuration for the project' do
-        expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
-
-        create_project(user, opts)
-      end
-    end
-
-    context 'when feature flag is disabled globally' do
-      let_it_be(:feature_enabled) { false }
-
-      it 'does not create security policy configuration' do
-        expect(::Security::Orchestration::AssignService).not_to receive(:new)
-
-        create_project(user, opts)
-      end
-    end
-
-    context 'when feature flag is enabled only for target project' do
-      let_it_be(:feature_enabled) { security_policy_target_project }
-
-      it 'creates security policy configuration' do
-        expect(::Security::Orchestration::AssignService).to receive_message_chain(:new, :execute)
-
-        create_project(user, opts)
-      end
+      create_project(user, opts)
     end
   end
 

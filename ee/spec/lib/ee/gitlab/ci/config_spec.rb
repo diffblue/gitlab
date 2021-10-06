@@ -67,77 +67,61 @@ RSpec.describe Gitlab::Ci::Config do
         stub_licensed_features(security_orchestration_policies: true)
       end
 
-      context 'when feature is not enabled' do
-        before do
-          stub_feature_flags(security_orchestration_policies_configuration: false)
-        end
-
+      context 'when policy is not applicable on branch from the pipeline' do
         it 'does not modify the config' do
           expect(config.to_hash).to eq(sample_job: { script: ["echo 'test'"] })
         end
       end
 
-      context 'when feature is enabled' do
-        before do
-          stub_feature_flags(security_orchestration_policies_configuration: true)
-        end
+      context 'when policy is not applicable on branch from the pipeline' do
+        let_it_be(:ref) { 'refs/heads/production' }
 
-        context 'when policy is not applicable on branch from the pipeline' do
-          it 'does not modify the config' do
-            expect(config.to_hash).to eq(sample_job: { script: ["echo 'test'"] })
+        context 'when DAST profiles are not found' do
+          it 'adds a job with error message' do
+            expect(config.to_hash).to eq(
+              sample_job: { script: ["echo 'test'"] },
+              'dast-on-demand-0': { allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' }
+            )
           end
         end
 
-        context 'when policy is not applicable on branch from the pipeline' do
-          let_it_be(:ref) { 'refs/heads/production' }
+        context 'when DAST profiles are found' do
+          let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, name: 'Scanner Profile') }
+          let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, name: 'Site Profile') }
 
-          context 'when DAST profiles are not found' do
-            it 'adds a job with error message' do
-              expect(config.to_hash).to eq(
-                sample_job: { script: ["echo 'test'"] },
-                'dast-on-demand-0': { allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' }
-              )
-            end
-          end
-
-          context 'when DAST profiles are found' do
-            let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, name: 'Scanner Profile') }
-            let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project, name: 'Site Profile') }
-
-            let(:expected_configuration) do
-              {
-                sample_job: {
-                  script: ["echo 'test'"]
+          let(:expected_configuration) do
+            {
+              sample_job: {
+                script: ["echo 'test'"]
+              },
+              'dast-on-demand-0': {
+                stage: 'dast',
+                image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
+                variables: {
+                  DAST_VERSION: 2,
+                  SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
+                  GIT_STRATEGY: 'none'
                 },
-                'dast-on-demand-0': {
-                  stage: 'dast',
-                  image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
-                  variables: {
-                    DAST_VERSION: 2,
-                    SECURE_ANALYZERS_PREFIX: secure_analyzers_prefix,
-                    GIT_STRATEGY: 'none'
-                  },
-                  allow_failure: true,
-                  script: ['/analyze'],
-                  artifacts: { reports: { dast: 'gl-dast-report.json' } },
-                  dast_configuration: {
-                    site_profile: dast_site_profile.name,
-                    scanner_profile: dast_scanner_profile.name
-                  }
+                allow_failure: true,
+                script: ['/analyze'],
+                artifacts: { reports: { dast: 'gl-dast-report.json' } },
+                dast_configuration: {
+                  site_profile: dast_site_profile.name,
+                  scanner_profile: dast_scanner_profile.name
                 }
               }
-            end
+            }
+          end
 
-            it 'extends config with additional jobs' do
-              expect(config.to_hash).to include(expected_configuration)
-            end
+          it 'extends config with additional jobs' do
+            expect(config.to_hash).to include(expected_configuration)
+          end
 
-            context 'when source is ondemand_dast_scan' do
-              let(:source) { 'ondemand_dast_scan' }
+          context 'when source is ondemand_dast_scan' do
+            let(:source) { 'ondemand_dast_scan' }
 
-              it 'does not modify the config' do
-                expect(config.to_hash).to eq(sample_job: { script: ["echo 'test'"] })
-              end
+            it 'does not modify the config' do
+              expect(config.to_hash).to eq(sample_job: { script: ["echo 'test'"] })
             end
           end
         end

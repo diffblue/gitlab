@@ -28,10 +28,6 @@ module Security
       self.exists?(security_policy_management_project_id: project_id)
     end
 
-    def enabled?
-      ::Feature.enabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
-    end
-
     def policy_hash
       strong_memoize(:policy_hash) do
         next if policy_blob.blank?

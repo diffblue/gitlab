@@ -27,7 +27,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
       allow(policy_configuration).to receive(:policy_last_updated_by).and_return(owner)
     end
 
-    context 'when security_orchestration_policies_configuration feature is enabled and policy is scheduled' do
+    context 'when security_orchestration_policies_configuration policy is scheduled' do
       it 'creates new schedule' do
         service.execute
 
@@ -37,17 +37,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
         expect(new_schedule.id).not_to eq(schedule.id)
         expect(new_schedule.rule_index).to eq(1)
         expect(new_schedule.next_run_at).to be > schedule.next_run_at
-      end
-    end
-
-    context 'when security_orchestration_policies_configuration feature is disabled' do
-      before do
-        stub_feature_flags(security_orchestration_policies_configuration: false)
-      end
-
-      it 'deletes schedules' do
-        expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
-        expect(policy_configuration.configured_at).not_to be_nil
       end
     end
 

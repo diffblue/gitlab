@@ -20,8 +20,6 @@ module Security
       attr_reader :policy_configuration, :policy_index, :policy
 
       def create_new_schedule_rules
-        return unless policy_configuration.enabled?
-
         policy[:rules].each_with_index do |rule, rule_index|
           next if rule[:type] != Security::ScanExecutionPolicy::RULE_TYPES[:schedule]
 

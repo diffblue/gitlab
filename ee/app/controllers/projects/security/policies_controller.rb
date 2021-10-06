@@ -8,11 +8,6 @@ module Projects
       before_action :authorize_security_orchestration_policies!
       before_action :validate_policy_configuration, only: :edit
 
-      before_action do
-        push_frontend_feature_flag(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
-        check_feature_flag!
-      end
-
       feature_category :security_orchestration
 
       def index
@@ -88,10 +83,6 @@ module Projects
 
       def policy_configuration
         @policy_configuration ||= project.security_orchestration_policy_configuration
-      end
-
-      def check_feature_flag!
-        render_404 if Feature.disabled?(:security_orchestration_policies_configuration, project, default_enabled: :yaml)
       end
     end
   end

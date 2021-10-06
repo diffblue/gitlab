@@ -10,7 +10,7 @@ module Resolvers
     alias_method :project, :object
 
     def resolve(**args)
-      return [] unless enabled_and_valid?
+      return [] unless valid?
 
       authorize!
 
@@ -37,8 +37,8 @@ module Resolvers
       @policy_configuration ||= project.security_orchestration_policy_configuration
     end
 
-    def enabled_and_valid?
-      policy_configuration.present? && policy_configuration.enabled? && policy_configuration.policy_configuration_valid?
+    def valid?
+      policy_configuration.present? && policy_configuration.policy_configuration_valid?
     end
   end
 end
