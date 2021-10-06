@@ -2,12 +2,14 @@
 import { GlSprintf, GlLink, GlSafeHtmlDirective } from '@gitlab/ui';
 import MrWidgetLicenses from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
+import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import { s__, __, sprintf } from '~/locale';
 import CEWidgetOptions from '~/vue_merge_request_widget/mr_widget_options.vue';
 import MrWidgetEnableFeaturePrompt from './components/states/mr_widget_enable_feature_prompt.vue';
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
+import loadPerformanceExtension from './extensions/load_performance';
 
 export default {
   components: {
@@ -184,11 +186,21 @@ export default {
     },
     hasLoadPerformancePaths(newVal) {
       if (newVal) {
+        this.registerLoadPerformance();
         this.fetchLoadPerformance();
       }
     },
   },
   methods: {
+    registerLoadPerformance() {
+      const shouldShowExtension =
+        window.gon.features.refactorMrWidgetsExtensions ||
+        window.gon.features.refactorMrWidgetsExtensionsUser;
+
+      if (shouldShowExtension) {
+        registerExtension(loadPerformanceExtension);
+      }
+    },
     getServiceEndpoints(store) {
       const base = CEWidgetOptions.methods.getServiceEndpoints(store);
 
