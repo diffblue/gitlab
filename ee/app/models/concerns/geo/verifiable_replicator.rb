@@ -178,7 +178,7 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.synced.verification_succeeded.count
+        registry_class.verification_succeeded.count
       end
 
       def verification_failed_count
@@ -186,7 +186,7 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.synced.verification_failed.count
+        registry_class.verification_failed.count
       end
 
       def verification_total_count
@@ -194,7 +194,7 @@ module Geo
         # Bonus: This causes the progress bar to be hidden.
         return unless verification_enabled?
 
-        registry_class.synced.available_verifiables.count
+        registry_class.available_verifiables.count
       end
     end
 
