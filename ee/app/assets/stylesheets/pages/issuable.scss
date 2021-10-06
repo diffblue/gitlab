@@ -31,21 +31,6 @@
   }
 }
 
-.add-issuable-form-input-wrapper {
-  height: auto;
-  padding: $gl-vert-padding $gl-vert-padding 0 $gl-input-padding;
-
-  &.focus,
-  &.focus:hover {
-    border-color: $blue-300;
-    box-shadow: 0 0 4px $dropdown-input-focus-shadow;
-  }
-
-  .gl-show-field-errors &.form-control:not(textarea) {
-    height: auto;
-  }
-}
-
 .limit-container-width {
   .epic-page-container .issuable-details,
   .emoji-list-container {
