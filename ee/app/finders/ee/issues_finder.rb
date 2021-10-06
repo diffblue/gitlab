@@ -116,9 +116,7 @@ module EE
       {
         parent: params.parent,
         include_ancestors: true,
-        state: 'opened',
-        start_date: Date.today,
-        end_date: Date.today
+        iteration_wildcard_id: ::Iteration::Predefined::Current.title
       }
     end
   end
