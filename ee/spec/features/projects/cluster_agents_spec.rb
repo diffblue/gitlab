@@ -13,34 +13,6 @@ RSpec.describe 'ClusterAgents', :js do
     gitlab_sign_in(user)
   end
 
-  context 'non-premium user' do
-    before do
-      stub_licensed_features(cluster_agents: false)
-    end
-
-    context 'when user visits agents index page' do
-      before do
-        visit project_clusters_path(project)
-      end
-
-      it 'does not display agent information', :aggregate_failures do
-        expect(page).to have_content('Integrate with a cluster certificate')
-        expect(page).not_to have_content('GitLab Agent managed clusters')
-      end
-    end
-
-    context 'when user visits agents show page' do
-      before do
-        visit project_cluster_agent_path(project, agent.name)
-      end
-
-      it 'displays not found' do
-        expect(page).to have_title('Not Found')
-        expect(page).to have_content('Page Not Found')
-      end
-    end
-  end
-
   context 'premium user' do
     before do
       stub_licensed_features(cluster_agents: true)

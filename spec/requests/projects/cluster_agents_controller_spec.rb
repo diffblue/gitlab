@@ -27,27 +27,13 @@ RSpec.describe Projects::ClusterAgentsController do
     context 'when user is authorized' do
       let(:user) { project.creator }
 
-      context 'without premium plan' do
-        before do
-          sign_in(user)
-          subject
-        end
-
-        it 'shows 404' do
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
+      before do
+        sign_in(user)
+        subject
       end
 
-      context 'with premium plan' do
-        before do
-          stub_licensed_features(cluster_agents: true)
-          sign_in(user)
-          subject
-        end
-
-        it 'renders content' do
-          expect(response).to be_successful
-        end
+      it 'renders content' do
+        expect(response).to be_successful
       end
     end
   end

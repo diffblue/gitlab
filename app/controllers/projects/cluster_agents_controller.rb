@@ -12,7 +12,7 @@ class Projects::ClusterAgentsController < Projects::ApplicationController
   private
 
   def authorize_can_read_cluster_agent!
-    return if can?(current_user, :admin_cluster, project) && project.feature_available?(:cluster_agents)
+    return if can?(current_user, :admin_cluster, project)
 
     access_denied!
   end
