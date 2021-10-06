@@ -73,12 +73,10 @@ RSpec.describe 'Epic Issues', :js do
     def add_issues(references)
       find(".related-items-tree-container .js-add-epics-issues-button").click
       find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing issue').click
-      find('.related-items-tree-container .js-add-issuable-form-input').set(references)
-      # When adding long references, for some reason the input gets stuck
-      # waiting for more text. Send a keystroke before clicking the button to
-      # get out of this mode.
-      find('.related-items-tree-container .js-add-issuable-form-input').send_keys(:tab)
-      find('.related-items-tree-container .js-add-issuable-form-add-button').click
+      fill_in 'Paste issue link', with: "#{references} "
+      within '.add-item-form-container' do
+        click_button 'Add'
+      end
 
       wait_for_requests
     end
@@ -86,10 +84,10 @@ RSpec.describe 'Epic Issues', :js do
     def add_epics(references)
       find('.related-items-tree-container .js-add-epics-issues-button').click
       find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing epic').click
-      find('.related-items-tree-container .js-add-issuable-form-input').set(references)
-
-      find('.related-items-tree-container .js-add-issuable-form-input').send_keys(:tab)
-      find('.related-items-tree-container .js-add-issuable-form-add-button').click
+      fill_in 'Paste epic link', with: "#{references} "
+      within '.add-item-form-container' do
+        click_button 'Add'
+      end
 
       wait_for_requests
     end

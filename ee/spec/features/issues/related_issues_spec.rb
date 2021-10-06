@@ -52,9 +52,9 @@ RSpec.describe 'Related issues', :js do
     context 'with "Relates to", "Blocks", "Is blocked by" groupings' do
       def add_linked_issue(issue, radio_input_value)
         click_button 'Add a related issue'
-        find('.js-add-issuable-form-input').set "#{issue.to_reference(project)} "
+        fill_in 'Paste issue link', with: "#{issue.to_reference(project)} "
         find("input[name=\"linked-issue-type-radio\"][value=\"#{radio_input_value}\"]").click
-        find('.js-add-issuable-form-add-button').click
+        click_button 'Add'
 
         wait_for_requests
       end

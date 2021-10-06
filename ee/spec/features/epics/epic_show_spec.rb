@@ -40,7 +40,7 @@ RSpec.describe 'Epic show', :js do
     page.within('.js-epic-tabs-content #tree') do
       find('.js-add-epics-issues-button .dropdown-toggle').click
       click_button button_name
-      find('.js-add-issuable-form-input').native.send_keys(input_character)
+      fill_in "Paste #{type} link", with: input_character
       wait_for_requests
     end
   end
