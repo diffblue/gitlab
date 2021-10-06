@@ -132,4 +132,23 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
       expect(project.push_rule.deny_delete_tag).to be_truthy
     end
   end
+
+  describe 'boards' do
+    let_it_be(:project) { create(:project, :builds_enabled, :issues_disabled, name: 'project', path: 'project') }
+
+    let(:user) { create(:user) }
+
+    before do
+      setup_import_export_config('complex')
+      restored_project_json
+    end
+
+    it 'has milestone associated with the issue board' do
+      expect(Project.find_by_path('project').boards.find_by_name('TestBoardABC').milestone.name).to eq('test milestone')
+    end
+
+    it 'has milestone associated with the issue board list' do
+      expect(Project.find_by_path('project').boards.find_by_name('TestBoardABC').lists.first.milestone.name).to eq('test milestone')
+    end
+  end
 end
