@@ -29,15 +29,41 @@ RSpec.describe Clusters::AgentAuthorizationsFinder do
       it { is_expected.to be_empty }
     end
 
+    describe 'project authorizations' do
+      context 'agent configuration project does not share a root namespace with the given project' do
+        let(:unrelated_agent) { create(:cluster_agent) }
+
+        before do
+          create(:agent_project_authorization, agent: unrelated_agent, project: requesting_project)
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'with project authorizations present' do
+        let!(:authorization) {create(:agent_project_authorization, agent: production_agent, project: requesting_project) }
+
+        it { is_expected.to match_array [authorization] }
+      end
+
+      context 'with overlapping authorizations' do
+        let!(:agent) { create(:cluster_agent, project: requesting_project) }
+        let!(:project_authorization) { create(:agent_project_authorization, agent: agent, project: requesting_project) }
+        let!(:group_authorization) { create(:agent_group_authorization, agent: agent, group: bottom_level_group) }
+
+        it { is_expected.to match_array [project_authorization] }
+      end
+    end
+
     describe 'implicit authorizations' do
       let!(:associated_agent) { create(:cluster_agent, project: requesting_project) }
 
-      it 'returns authorazations for agents directly associated with the project' do
+      it 'returns authorizations for agents directly associated with the project' do
         expect(subject.count).to eq(1)
 
-        authorazation = subject.first
-        expect(authorazation).to be_a(Clusters::Agents::ImplicitAuthorization)
-        expect(authorazation.agent).to eq(associated_agent)
+        authorization = subject.first
+        expect(authorization).to be_a(Clusters::Agents::ImplicitAuthorization)
+        expect(authorization.agent).to eq(associated_agent)
       end
     end
 

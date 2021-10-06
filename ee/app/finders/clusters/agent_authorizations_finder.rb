@@ -9,7 +9,9 @@ module Clusters
     def execute
       return [] unless feature_available?
 
-      implicit_authorizations + group_authorizations
+      # closest, most-specific authorization for a given agent wins
+      (project_authorizations + implicit_authorizations + group_authorizations)
+        .uniq(&:agent_id)
     end
 
     private
@@ -27,6 +29,17 @@ module Clusters
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
+    def project_authorizations
+      ancestor_ids = project.group ? project.ancestors.select(:id) : project.namespace_id
+
+      Clusters::Agents::ProjectAuthorization
+        .where(project_id: project.id)
+        .joins(agent: :project)
+        .preload(agent: :project)
+        .where(cluster_agents: { projects: { namespace_id: ancestor_ids } })
+        .to_a
+    end
+
     def group_authorizations
       return [] unless project.group
 
