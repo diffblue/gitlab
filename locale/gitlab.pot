@@ -6784,6 +6784,9 @@ msgstr ""
 msgid "Checkout|minutes"
 msgstr ""
 
+msgid "Checkout|x %{quantity} %{units} per pack"
+msgstr ""
+
 msgid "Checkout|x %{quantity} %{units} per pack ="
 msgstr ""
 

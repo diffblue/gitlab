@@ -125,5 +125,13 @@ describe('App', () => {
       expect(findSummaryLabel().text()).toBe('2 CI minute packs');
       expect(findSummaryTotal().text()).toBe('Total minutes: 2,000');
     });
+
+    it('are not shown if input is invalid', async () => {
+      const mockApollo = createMockApolloProvider({}, { quantity: -1 });
+      wrapper = createComponent(mockApollo);
+      await waitForPromises();
+
+      expect(findQuantityText().text()).toMatchInterpolatedText('x 1,000 minutes per pack');
+    });
   });
 });

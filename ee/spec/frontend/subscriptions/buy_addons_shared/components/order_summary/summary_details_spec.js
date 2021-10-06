@@ -73,7 +73,7 @@ describe('SummaryDetails', () => {
 
   describe('when quantity is less or equal to zero', () => {
     beforeEach(() => {
-      wrapper = createComponent({ quantity: 0 });
+      wrapper = createComponent({ quantity: -1 });
     });
 
     it('does not render quantity', () => {

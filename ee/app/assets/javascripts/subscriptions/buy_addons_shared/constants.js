@@ -43,6 +43,7 @@ export const I18N_STORAGE_TOOLTIP_NOTE = s__(
 export const I18N_DETAILS_STEP_TITLE = s__('Checkout|Purchase details');
 export const I18N_DETAILS_NEXT_STEP_BUTTON_TEXT = s__('Checkout|Continue to billing');
 export const I18N_DETAILS_FORMULA = s__('Checkout|x %{quantity} %{units} per pack =');
+export const I18N_DETAILS_FORMULA_WITH_ALERT = s__('Checkout|x %{quantity} %{units} per pack');
 
 export const I18N_SUMMARY_QUANTITY = s__('Checkout|(x%{quantity})');
 export const I18N_SUMMARY_DATES = s__('Checkout|%{startDate} - %{endDate}');
