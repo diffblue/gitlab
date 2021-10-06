@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Package', :orchestrated, :group_saml, :requires_admin do
+  # This test is disabled on staging and production due to `top_level_group_creation_enabled` set to false.
+  # See: https://gitlab.com/gitlab-org/gitlab/-/issues/342329#note_696599160
+  # When FF enabled, the test is failing with https://gitlab.com/gitlab-org/gitlab/-/issues/342523
+  RSpec.describe 'Package', :orchestrated, :group_saml, :requires_admin, quarantine: { only: [:staging, :production], issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342523', type: :investigating } do
     describe 'Dependency Proxy Group SSO' do
       include Support::API
 
