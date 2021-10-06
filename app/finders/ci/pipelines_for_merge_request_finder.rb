@@ -14,7 +14,7 @@ module Ci
 
     attr_reader :merge_request, :current_user
 
-    delegate :merge_request_diffs, :commit_shas, :target_project, :source_project, :source_branch, to: :merge_request
+    delegate :recent_diff_head_shas, :commit_shas, :target_project, :source_project, :source_branch, to: :merge_request
 
     # Fetch all pipelines that the user can read.
     def execute
@@ -84,17 +84,12 @@ module Ci
     def all_pipelines_for_merge_request
       if Feature.enabled?(:decomposed_ci_query_in_pipelines_for_merge_request_finder, source_project, default_enabled: :yaml)
         pipelines_for_merge_request = triggered_by_merge_request
-        pipelines_for_branch = triggered_for_branch.for_sha(recent_diff_head_shas)
+        pipelines_for_branch = triggered_for_branch.for_sha(recent_diff_head_shas(COMMITS_LIMIT))
 
         Ci::Pipeline.from_union([pipelines_for_merge_request, pipelines_for_branch])
       else
         pipelines_using_cte
       end
-    end
-
-    def recent_diff_head_shas
-      # We're limiting the number of commits' SHAs to 100 since they are used in a WHERE clause of a query
-      merge_request_diffs.recent.limit(COMMITS_LIMIT).pluck(:head_commit_sha).uniq # rubocop: disable CodeReuse/ActiveRecord
     end
 
     # NOTE: this method returns only parent merge request pipelines.
