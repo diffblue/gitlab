@@ -20,6 +20,7 @@ RSpec.describe GitlabSchema.types['Group'] do
   it { expect(described_class).to have_graphql_field(:code_coverage_activities) }
   it { expect(described_class).to have_graphql_field(:stats) }
   it { expect(described_class).to have_graphql_field(:billable_members_count) }
+  it { expect(described_class).to have_graphql_field(:external_audit_event_destinations) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }

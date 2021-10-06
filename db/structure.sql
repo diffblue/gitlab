@@ -10604,6 +10604,24 @@ CREATE SEQUENCE atlassian_identities_user_id_seq
 
 ALTER SEQUENCE atlassian_identities_user_id_seq OWNED BY atlassian_identities.user_id;
 
+CREATE TABLE audit_events_external_audit_event_destinations (
+    id bigint NOT NULL,
+    namespace_id bigint NOT NULL,
+    destination_url text NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT check_2feafb9daf CHECK ((char_length(destination_url) <= 255))
+);
+
+CREATE SEQUENCE audit_events_external_audit_event_destinations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE audit_events_external_audit_event_destinations_id_seq OWNED BY audit_events_external_audit_event_destinations.id;
+
 CREATE SEQUENCE audit_events_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -17389,7 +17407,8 @@ CREATE TABLE plan_limits (
     ci_max_artifact_size_cluster_image_scanning integer DEFAULT 0 NOT NULL,
     ci_jobs_trace_size_limit integer DEFAULT 100 NOT NULL,
     pages_file_entries integer DEFAULT 200000 NOT NULL,
-    dast_profile_schedules integer DEFAULT 1 NOT NULL
+    dast_profile_schedules integer DEFAULT 1 NOT NULL,
+    external_audit_event_destinations integer DEFAULT 5 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
@@ -20951,6 +20970,8 @@ ALTER TABLE ONLY atlassian_identities ALTER COLUMN user_id SET DEFAULT nextval('
 
 ALTER TABLE ONLY audit_events ALTER COLUMN id SET DEFAULT nextval('audit_events_id_seq'::regclass);
 
+ALTER TABLE ONLY audit_events_external_audit_event_destinations ALTER COLUMN id SET DEFAULT nextval('audit_events_external_audit_event_destinations_id_seq'::regclass);
+
 ALTER TABLE ONLY authentication_events ALTER COLUMN id SET DEFAULT nextval('authentication_events_id_seq'::regclass);
 
 ALTER TABLE ONLY award_emoji ALTER COLUMN id SET DEFAULT nextval('award_emoji_id_seq'::regclass);
@@ -22323,6 +22344,9 @@ ALTER TABLE ONLY ar_internal_metadata
 
 ALTER TABLE ONLY atlassian_identities
     ADD CONSTRAINT atlassian_identities_pkey PRIMARY KEY (user_id);
+
+ALTER TABLE ONLY audit_events_external_audit_event_destinations
+    ADD CONSTRAINT audit_events_external_audit_event_destinations_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id, created_at);
@@ -25114,6 +25138,8 @@ CREATE INDEX index_experiment_users_on_user_id ON experiment_users USING btree (
 CREATE UNIQUE INDEX index_experiments_on_name ON experiments USING btree (name);
 
 CREATE INDEX index_expired_and_not_notified_personal_access_tokens ON personal_access_tokens USING btree (id, expires_at) WHERE ((impersonation = false) AND (revoked = false) AND (expire_notification_delivered = false));
+
+CREATE UNIQUE INDEX index_external_audit_event_destinations_on_namespace_id ON audit_events_external_audit_event_destinations USING btree (namespace_id, destination_url);
 
 CREATE UNIQUE INDEX index_external_pull_requests_on_project_and_branches ON external_pull_requests USING btree (project_id, source_branch, target_branch);
 
@@ -28320,6 +28346,9 @@ ALTER TABLE ONLY packages_conan_file_metadata
 
 ALTER TABLE ONLY ci_build_pending_states
     ADD CONSTRAINT fk_rails_0bbbfeaf9d FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY audit_events_external_audit_event_destinations
+    ADD CONSTRAINT fk_rails_0bc80a4edc FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY operations_user_lists
     ADD CONSTRAINT fk_rails_0c716e079b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
