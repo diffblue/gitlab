@@ -10,7 +10,7 @@ module Geo
     include ::Gitlab::Geo::LogHelpers
 
     idempotent!
-    sidekiq_options retry: false, dead: false
+    sidekiq_options retry: false
     loggable_arguments 0
 
     def perform(replicable_name)

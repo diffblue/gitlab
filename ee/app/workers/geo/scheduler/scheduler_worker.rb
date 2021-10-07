@@ -7,7 +7,7 @@ module Geo
 
       data_consistency :always
 
-      sidekiq_options retry: 3
+      sidekiq_options retry: false
       include GeoQueue
       include ExclusiveLeaseGuard
       include ::Gitlab::Geo::LogHelpers

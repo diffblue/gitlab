@@ -8,7 +8,7 @@ module Geo
     include GeoQueue
     include Gitlab::Geo::LogHelpers
 
-    sidekiq_options retry: 3, dead: false
+    sidekiq_options retry: 1, dead: false
 
     sidekiq_retry_in { |count| 30 * count }
 
