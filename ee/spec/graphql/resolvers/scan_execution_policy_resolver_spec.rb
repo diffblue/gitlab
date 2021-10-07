@@ -12,7 +12,7 @@ RSpec.describe Resolvers::ScanExecutionPolicyResolver do
   let_it_be(:user) { policy_management_project.owner }
 
   let(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
-  let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy]) }
+  let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
 
   let(:repository) { instance_double(Repository, root_ref: 'master', empty?: false) }
 

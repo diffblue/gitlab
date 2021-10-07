@@ -7,7 +7,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyService do
     let(:project) { create(:project) }
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let(:policy) { build(:scan_execution_policy) }
-    let(:policy_blob) { build(:scan_execution_policy_yaml, policies: [policy]) }
+    let(:policy_blob) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
     let(:type) { :scan_execution_policy }
     let(:name) { policy[:name] }
 

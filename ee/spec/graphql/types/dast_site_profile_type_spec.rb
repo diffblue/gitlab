@@ -152,7 +152,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
         ])
       end
 
-      let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2]) }
+      let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2]) }
 
       before do
         create_list(:dast_site_profile, 30, project: project)

@@ -3,6 +3,7 @@
 module Security
   class OrchestrationPolicyConfiguration < ApplicationRecord
     include Security::ScanExecutionPolicy
+    include Security::ScanResultPolicy
     include EachBatch
     include Gitlab::Utils::StrongMemoize
 
@@ -10,7 +11,7 @@ module Security
 
     POLICY_PATH = '.gitlab/security-policies/policy.yml'
     POLICY_SCHEMA_PATH = 'ee/app/validators/json_schemas/security_orchestration_policy.json'
-    AVAILABLE_POLICY_TYPES = %i{scan_execution_policy}.freeze
+    AVAILABLE_POLICY_TYPES = %i{scan_execution_policy scan_result_policy}.freeze
 
     belongs_to :project, inverse_of: :security_orchestration_policy_configuration
     belongs_to :security_policy_management_project, class_name: 'Project', foreign_key: 'security_policy_management_project_id'

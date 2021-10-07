@@ -1,8 +1,9 @@
 {
-  "required": [
-    "scan_execution_policy"
-  ],
   "type": "object",
+  "anyOf":[
+    {"required": ["scan_execution_policy"]},
+    {"required": ["scan_result_policy"]}
+  ],
   "properties": {
     "scan_execution_policy": {
       "type": "array",
@@ -186,6 +187,121 @@
                 }
               ],
               "additionalProperties": false
+            }
+          }
+        }
+      }
+    },
+    "scan_result_policy": {
+      "type": "array",
+      "additionalItems": false,
+      "items": {
+        "maxItems": 5,
+        "required": [
+          "name",
+          "enabled",
+          "rules",
+          "actions"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "rules": {
+            "type": "array",
+            "additionalItems": false,
+            "items": {
+              "type": "object",
+              "required": [
+                "branches",
+                "scanners",
+                "vulnerabilities_allowed",
+                "severity_levels"
+              ],
+              "properties": {
+                "type": {
+                  "enum": [
+                    "scan_finding"
+                  ],
+                  "type": "string"
+                },
+                "branches": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "scanners": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items":{
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "vulnerabilities_allowed":{
+                  "type": "integer"
+                },
+                "severity_levels":{
+                  "type": "array",
+                  "additionalItems": false,
+                  "items":{
+                    "type": {
+                      "enum": [
+                        "critical",
+                        "high",
+                        "medium",
+                        "low",
+                        "info",
+                        "unknown"
+                      ],
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "actions": {
+            "type": "array",
+            "additionalItems": false,
+            "items": {
+              "required": [
+                "type",
+                "approvals_required",
+                "approvers"
+              ],
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": [
+                    "require_approval"
+                  ],
+                  "type": "string"
+                },
+                "approvals_required": {
+                  "type": "integer"
+                },
+                "approvers": {
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },

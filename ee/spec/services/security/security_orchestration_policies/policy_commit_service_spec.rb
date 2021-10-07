@@ -10,7 +10,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
     let(:policy_hash) { build(:scan_execution_policy, name: 'Test Policy') }
     let(:input_policy_yaml) { policy_hash.merge(type: 'scan_execution_policy').to_yaml }
-    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy_hash])}
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy_hash])}
 
     let(:operation) { :append }
     let(:params) { { policy_yaml: input_policy_yaml, operation: operation } }
