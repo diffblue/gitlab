@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import fixture from 'test_fixtures/pipelines/pipelines.json';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PipelinesTable from '~/pipelines/components/pipelines_list/pipelines_table.vue';
 import { PipelineKeyOptions } from '~/pipelines/constants';
@@ -11,8 +12,6 @@ describe('Pipelines Table', () => {
   let pipeline;
   let wrapper;
 
-  const jsonFixtureName = 'pipelines/pipelines.json';
-
   const defaultProps = {
     pipelines: [],
     viewType: 'root',
@@ -20,7 +19,8 @@ describe('Pipelines Table', () => {
   };
 
   const createMockPipeline = () => {
-    const { pipelines } = getJSONFixture(jsonFixtureName);
+    // Clone fixture as it could be modified by tests
+    const { pipelines } = JSON.parse(JSON.stringify(fixture));
     return pipelines.find((p) => p.user !== null && p.commit !== null);
   };
 
