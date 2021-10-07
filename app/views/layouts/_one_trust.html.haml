@@ -1,0 +1,6 @@
+<!-- OneTrust -->
+= javascript_include_tag "https://cdn.cookielaw.org/consent/-/OtAutoBlock.js"
+%script{ :src => "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", :charset => "UTF-8", :"data-domain-script" => "-", :defer => true, :nonce => true }
+= javascript_tag do
+  :plain
+    function OptanonWrapper() { }
