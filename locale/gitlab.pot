@@ -19195,6 +19195,9 @@ msgstr ""
 msgid "Iterations|The duration for each iteration (in weeks)"
 msgstr ""
 
+msgid "Iterations|The iteration has been deleted."
+msgstr ""
+
 msgid "Iterations|The start date of your first iteration"
 msgstr ""
 

@@ -15,7 +15,7 @@ import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Namespace } from '../constants';
 import deleteIteration from '../queries/destroy_iteration.mutation.graphql';
@@ -202,6 +202,8 @@ export default {
           }
 
           this.isEditing = false;
+
+          this.$toast.show(s__('Iterations|The iteration has been deleted.'));
           visitUrl(this.iterationsListPath);
         })
         .catch((err) => {

@@ -115,6 +115,7 @@ export default {
           }
 
           this.$router.push('/');
+          this.$toast.show(s__('Iterations|The iteration has been deleted.'));
         })
         .catch((err) => {
           this.error = err;

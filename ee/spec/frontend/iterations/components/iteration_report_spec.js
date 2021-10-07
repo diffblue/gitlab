@@ -21,6 +21,9 @@ const $router = {
     },
   },
 };
+const $toast = {
+  show: jest.fn(),
+};
 
 describe('Iterations report', () => {
   let wrapper;
@@ -72,6 +75,7 @@ describe('Iterations report', () => {
       },
       mocks: {
         $router,
+        $toast,
       },
       stubs: {
         GlLoadingIcon,
@@ -148,6 +152,7 @@ describe('Iterations report', () => {
       await waitForPromises();
 
       expect($router.push).toHaveBeenCalledWith('/');
+      expect($toast.show).toHaveBeenCalledWith('The iteration has been deleted.');
     });
 
     it('shows error when delete fails', async () => {
