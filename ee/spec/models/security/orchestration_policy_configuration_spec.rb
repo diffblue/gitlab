@@ -11,7 +11,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   let(:default_branch) { security_policy_management_project.default_branch }
   let(:repository) { instance_double(Repository, root_ref: 'master', empty?: false) }
-  let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')]) }
+  let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline')], scan_result_policy: [build(:scan_result_policy, name: 'Containe security critical severities')]) }
 
   before do
     allow(security_policy_management_project).to receive(:repository).and_return(repository)
@@ -118,7 +118,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'when policy is present' do
-      let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline' )]) }
+      let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline' )]) }
 
       it 'retrieves policy by type' do
         expect(subject.first[:name]).to eq('Run DAST in every pipeline')
@@ -139,7 +139,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when file is invalid' do
       let(:policy_yaml) do
-        build(:scan_execution_policy_yaml, policies:
+        build(:orchestration_policy_yaml, scan_execution_policy:
         [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
       end
 
@@ -172,8 +172,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
-  describe '#active_policies' do
-    let(:enforce_dast_yaml) { build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy)]) }
+  describe '#active_scan_execution_policies' do
+    let(:enforce_dast_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)]) }
     let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
 
     let(:expected_active_policies) do
@@ -203,7 +203,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     let(:policy2) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }]) }
     let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' }]) }
     let(:policy4) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'sast' }]) }
-    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2, policy3, policy4]) }
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2, policy3, policy4]) }
 
     let(:expected_actions) do
       [
@@ -236,7 +236,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     let(:policy2) { build(:scan_execution_policy, actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }, { scan: 'secret_detection' }]) }
     let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'secret_detection' }]) }
     let(:policy4) { build(:scan_execution_policy, :with_schedule, actions: [{ scan: 'secret_detection' }]) }
-    let(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy1, policy2, policy3, policy4]) }
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2, policy3, policy4]) }
 
     let(:expected_actions) do
       [{ scan: 'secret_detection' }, { scan: 'secret_detection' }]
@@ -253,7 +253,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe '#active_policy_names_with_dast_site_profile' do
     let(:policy_yaml) do
-      build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
+      build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
       { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
       { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile 2' }
     ])])
@@ -266,7 +266,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
   describe '#active_policy_names_with_dast_scanner_profile' do
     let(:enforce_dast_yaml) do
-      build(:scan_execution_policy_yaml, policies: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
+      build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy, name: 'Run DAST in every pipeline', actions: [
       { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
       { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile' }
     ])])
@@ -338,6 +338,46 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       delete_all_schedules
 
       expect(security_orchestration_policy_configuration.rule_schedules).to be_empty
+    end
+  end
+
+  describe '#active_result_execution_policies' do
+    let(:scan_result_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy)]) }
+    let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
+
+    subject(:active_scan_result_policies) { security_orchestration_policy_configuration.active_scan_result_policies }
+
+    before do
+      allow(security_policy_management_project).to receive(:repository).and_return(repository)
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+    end
+
+    it 'returns only enabled policies' do
+      expect(active_scan_result_policies.pluck(:enabled).uniq).to contain_exactly(true)
+    end
+
+    it 'returns only 5 from all active policies' do
+      expect(active_scan_result_policies.count).to be(5)
+    end
+
+    context 'when scan_result_policy feature flag is disabled' do
+      before do
+        stub_feature_flags(scan_result_policy: false)
+      end
+
+      it 'returns empty array' do
+        expect(active_scan_result_policies).to match_array([])
+      end
+    end
+  end
+
+  describe '#scan_result_policies' do
+    let(:policy_yaml) { fixture_file('security_orchestration.yml', dir: 'ee') }
+
+    subject(:scan_result_policies) { security_orchestration_policy_configuration.scan_result_policies }
+
+    it 'returns all scan result policies' do
+      expect(scan_result_policies.pluck(:enabled)).to contain_exactly(true, true, false, true, true, true, true, true)
     end
   end
 end

@@ -25,13 +25,45 @@ FactoryBot.define do
     end
   end
 
-  factory :scan_execution_policy_yaml, class: Struct.new(:scan_execution_policy) do
+  factory :scan_result_policy, class: Struct.new(:name, :description, :enabled, :actions, :rules) do
     skip_create
 
     initialize_with do
-      policies = attributes[:policies]
+      name = attributes[:name]
+      description = attributes[:description]
+      enabled = attributes[:enabled]
+      actions = attributes[:actions]
+      rules = attributes[:rules]
 
-      YAML.dump(new(policies).to_h.deep_stringify_keys)
+      new(name, description, enabled, actions, rules).to_h
+    end
+
+    sequence(:name) { |n| "test-policy-#{n}" }
+    description { 'This policy considers only container scanning and critical severities' }
+    enabled { true }
+    rules do
+      [
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical]
+        }
+      ]
+    end
+
+    actions { [{ type: 'require_approval', approvals_required: 1, approvers: %w[admin] }] }
+  end
+
+  factory :orchestration_policy_yaml, class: Struct.new(:scan_execution_policy, :scan_result_policy) do
+    skip_create
+
+    initialize_with do
+      scan_execution_policy = attributes[:scan_execution_policy]
+      scan_result_policy = attributes[:scan_result_policy]
+
+      YAML.dump(new(scan_execution_policy, scan_result_policy).to_h.compact.deep_stringify_keys)
     end
   end
 end

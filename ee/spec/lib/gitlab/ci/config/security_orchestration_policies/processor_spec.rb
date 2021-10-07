@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   ])
   end
 
-  let_it_be(:policy_yaml) { build(:scan_execution_policy_yaml, policies: [policy]) }
+  let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
 
   before do
     allow_next_instance_of(Repository) do |repository|
@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
 
   shared_examples 'when policy is invalid' do
     let_it_be(:policy_yaml) do
-      build(:scan_execution_policy_yaml, policies:
+      build(:orchestration_policy_yaml, scan_execution_policy:
       [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
     end
 

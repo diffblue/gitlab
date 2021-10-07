@@ -14,12 +14,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
 
     let(:repository_with_existing_policy_yaml) do
       pipeline_policy = build(:scan_execution_policy, name: 'Test Policy')
-      build(:scan_execution_policy_yaml, policies: [pipeline_policy, scheduled_policy])
+      build(:orchestration_policy_yaml, scan_execution_policy: [pipeline_policy, scheduled_policy])
     end
 
     let(:repository_policy_yaml) do
       pipeline_policy = build(:scan_execution_policy, name: "Execute DAST in every pipeline")
-      build(:scan_execution_policy_yaml, policies: [pipeline_policy, scheduled_policy])
+      build(:orchestration_policy_yaml, scan_execution_policy: [pipeline_policy, scheduled_policy])
     end
 
     subject(:service) { described_class.new(policy_configuration: policy_configuration, params: { policy: policy_yaml, operation: operation, type: type }) }

@@ -75,3 +75,164 @@ scan_execution_policy:
     - scan: dast
       site_profile: Site Profile
       scanner_profile: Scanner Profile
+scan_result_policy:
+- name: critical vulnerability CS approvals
+  description: critical severity level only for container scanning
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - container_scanning
+    vulnerabilities_allowed: 0
+    severity_levels:
+    - critical
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - dast
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - info
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - container_scanning
+    vulnerabilities_allowed: 10
+    severity_levels:
+    - info
+  actions:
+  - type: require_approval
+    approvals_required: 1
+    approvers:
+    - admin
+- name: Enabled DAST policy
+  description: enabled police with low and medium severity levels only for DAST
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - dast
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - medium
+    - low
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+    - developer.local
+- name: Disabled DAST policy
+  description: disabled police with low and medium severity levels only for DAST
+  enabled: false
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - dast
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - medium
+    - low
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+    - developer.local
+- name: Enabled SAST policy
+  description: enabled police with low and medium severity levels only for SAST
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - sast
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - medium
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+- name: Enabled CS policy
+  description: enabled police with low severity levels only for CS
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - container_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - low
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - developer.local
+- name: Enabled DAST and SAST policy
+  description: disabled police with unknown severity levels only for DAST and SAST
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - dast
+    - sast
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - unknown
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+    - developer.local
+- name: Enabled dependency scanning policy
+  description: disabled police with unknown severity levels only for dependency scanning
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - dependency_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - unknown
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+    - developer.local
+- name: Enabled secret detection policy
+  description: disabled police with unknown severity levels only for secret detection
+  enabled: true
+  rules:
+  - type: scan_finding
+    branches:
+    - master
+    scanners:
+    - secret_detection
+    vulnerabilities_allowed: 1
+    severity_levels:
+    - unknown
+  actions:
+  - type: require_approval
+    approvals_required: 2
+    approvers:
+    - admin
+    - developer.local

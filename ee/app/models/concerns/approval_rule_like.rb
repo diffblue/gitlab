@@ -21,7 +21,8 @@ module ApprovalRuleLike
     enum report_type: {
       vulnerability: 1,
       license_scanning: 2,
-      code_coverage: 3
+      code_coverage: 3,
+      scan_finding: 4
     }
 
     validates :name, presence: true
