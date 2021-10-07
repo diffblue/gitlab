@@ -27,6 +27,8 @@ module Security
       cluster_image_scanning: 8
     }
 
+    enum status: { created: 0, succeeded: 1, failed: 2 }
+
     scope :by_scan_types, -> (scan_types) { where(scan_type: sanitize_scan_types(scan_types)) }
 
     scope :scoped_project, -> { where('security_scans.project_id = projects.id') }

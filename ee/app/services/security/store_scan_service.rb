@@ -19,9 +19,9 @@ module Security
     end
 
     def execute
-      set_security_scan_non_latest! if artifact.job.retried?
+      set_security_scan_non_latest! if job.retried?
 
-      return deduplicate if security_scan.has_errors? || !security_scan.latest?
+      return deduplicate if security_scan.has_errors? || !security_scan.latest? || !security_scan.succeeded?
 
       store_findings
     end
@@ -29,7 +29,7 @@ module Security
     private
 
     attr_reader :artifact, :known_keys, :deduplicate
-    delegate :project, to: :artifact, private: true
+    delegate :project, :job, to: :artifact, private: true
 
     def security_report
       @security_report ||= artifact.security_report.tap do |report|
@@ -42,8 +42,9 @@ module Security
     end
 
     def security_scan
-      @security_scan ||= Security::Scan.safe_find_or_create_by!(build: artifact.job, scan_type: artifact.file_type) do |scan|
+      @security_scan ||= Security::Scan.safe_find_or_create_by!(build: job, scan_type: artifact.file_type) do |scan|
         scan.processing_errors = security_report.errors.map(&:stringify_keys) if security_report.errored?
+        scan.status = job.success? ? :succeeded : :failed
       end
     end
 

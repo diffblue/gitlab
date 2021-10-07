@@ -7,6 +7,10 @@ RSpec.describe Security::StoreScanService do
 
   let(:known_keys) { Set.new }
 
+  before do
+    artifact.job.update!(status: :success)
+  end
+
   describe '.execute' do
     let(:mock_service_object) { instance_double(described_class, execute: true) }
 
@@ -57,6 +61,10 @@ RSpec.describe Security::StoreScanService do
       known_keys.add(finding_key)
     end
 
+    it 'creates a succeeded security scan' do
+      expect { store_scan }.to change { Security::Scan.succeeded.count }.by(1)
+    end
+
     context 'when the `vulnerability_finding_signatures` licensed feature is available' do
       before do
         stub_licensed_features(vulnerability_finding_signatures: true)
@@ -96,6 +104,18 @@ RSpec.describe Security::StoreScanService do
       end
     end
 
+    context 'when the report is produced by a failed job' do
+      before do
+        artifact.job.update!(status: :failed)
+      end
+
+      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as failed' do
+        expect { store_scan }.to change { Security::Scan.failed.count }.by(1)
+
+        expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+      end
+    end
+
     context 'when the report is produced by a retried job' do
       before do
         artifact.job.update!(retried: true)
@@ -120,7 +140,7 @@ RSpec.describe Security::StoreScanService do
       end
 
       context 'when the security scan already exists for the artifact' do
-        let_it_be(:security_scan) { create(:security_scan, build: artifact.job, scan_type: :sast) }
+        let_it_be(:security_scan) { create(:security_scan, build: artifact.job, scan_type: :sast, status: :succeeded) }
         let_it_be(:unique_security_finding) do
           create(:security_finding,
                  scan: security_scan,
