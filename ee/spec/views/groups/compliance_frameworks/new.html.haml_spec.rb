@@ -17,7 +17,7 @@ RSpec.describe 'groups/compliance_frameworks/new.html.haml' do
   it 'shows the compliance frameworks form', :aggregate_failures do
     render
 
-    expect(rendered).to have_content('New Compliance Framework')
+    expect(rendered).to have_content('New compliance framework')
     expect(rendered).to have_css('#js-compliance-frameworks-form')
   end
 end

@@ -19,10 +19,8 @@ export default {
     },
   },
   i18n: {
-    heading: s__('ComplianceFrameworks|There are no compliance frameworks set up yet'),
-    description: s__(
-      'ComplianceFrameworks|Once a compliance framework is added it will appear here.',
-    ),
+    heading: s__('ComplianceFrameworks|No compliance frameworks are configured'),
+    description: s__('ComplianceFrameworks|Configured compliance frameworks appear here.'),
     addButton: s__('ComplianceFrameworks|Add framework'),
   },
 };

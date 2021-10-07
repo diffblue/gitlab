@@ -6,7 +6,7 @@ RSpec.describe 'groups/_compliance_frameworks.html.haml' do
   let_it_be(:group) { build(:group) }
 
   let(:title) { 'Compliance frameworks' }
-  let(:description) { 'Configure frameworks to apply enforceable rules to projects.' }
+  let(:description) { 'Configure compliance frameworks to make them available to projects in this group.' }
 
   before do
     assign(:group, group)
