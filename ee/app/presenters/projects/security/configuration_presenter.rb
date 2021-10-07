@@ -22,7 +22,10 @@ module Projects
           latest_pipeline_path: latest_pipeline_path,
           auto_fix_enabled: autofix_enabled,
           can_toggle_auto_fix_settings: auto_fix_permission,
-          gitlab_ci_present: project.uses_default_ci_config?,
+          # TODO: gitlab_ci_present will incorrectly report `false` if the CI/CD configuration file name
+          # has been customized and a file with the given custom name exists in the repo. This edge case
+          # will be addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/342465
+          gitlab_ci_present: project.repository.gitlab_ci_yml.present?,
           gitlab_ci_history_path: gitlab_ci_history_path,
           auto_fix_user_path: '/' # TODO: real link will be updated with https://gitlab.com/gitlab-org/gitlab/-/issues/215669
         }
