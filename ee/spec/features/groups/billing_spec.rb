@@ -71,6 +71,10 @@ RSpec.describe 'Groups > Billing', :js do
         create(:gitlab_subscription, end_date: Date.today + 14.days, namespace: group, hosted_plan: bronze_plan, seats: 15)
       end
 
+      before do
+        stub_feature_flags(new_customersdot_staging_url: false)
+      end
+
       it_behaves_like 'hides search settings'
 
       it 'shows the proper title and subscription data' do

@@ -19,6 +19,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
 
     stub_feature_flags(show_billing_eoa_banner: true)
     stub_feature_flags(hide_deprecated_billing_plans: false)
+    stub_feature_flags(new_customersdot_staging_url: false)
 
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
