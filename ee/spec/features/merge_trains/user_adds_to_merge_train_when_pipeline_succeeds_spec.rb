@@ -79,6 +79,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
 
     context "when user clicks 'Delete source branch" do
       before do
+        wait_for_requests
         click_button 'Delete source branch'
       end
 
