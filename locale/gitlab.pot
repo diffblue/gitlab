@@ -14854,6 +14854,9 @@ msgstr ""
 msgid "Framework successfully deleted"
 msgstr ""
 
+msgid "Free"
+msgstr ""
+
 msgid "Free Trial of GitLab.com Ultimate"
 msgstr ""
 
@@ -27040,6 +27043,9 @@ msgstr ""
 msgid "ProjectsNew|Allows you to immediately clone this project’s repository. Skip this if you plan to push up an existing repository."
 msgstr ""
 
+msgid "ProjectsNew|Analyze your source code for known security vulnerabilities."
+msgstr ""
+
 msgid "ProjectsNew|Connect your external repository to GitLab CI/CD."
 msgstr ""
 
@@ -27067,6 +27073,9 @@ msgstr ""
 msgid "ProjectsNew|Description format"
 msgstr ""
 
+msgid "ProjectsNew|Enable Static Application Security Testing (SAST)"
+msgstr ""
+
 msgid "ProjectsNew|Import"
 msgstr ""
 
@@ -27080,6 +27089,9 @@ msgid "ProjectsNew|Migrate your data from an external source like GitHub, Bitbuc
 msgstr ""
 
 msgid "ProjectsNew|No import options available"
+msgstr ""
+
+msgid "ProjectsNew|Project Configuration"
 msgstr ""
 
 msgid "ProjectsNew|Project description %{tag_start}(optional)%{tag_end}"
