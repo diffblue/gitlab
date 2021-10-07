@@ -34,6 +34,7 @@ FactoryBot.define do
 
     trait(:di_packages) do
       file_type { :di_packages }
+      file_fixture { 'spec/fixtures/packages/debian/distribution/D-I-Packages' }
     end
 
     trait(:object_storage) do
