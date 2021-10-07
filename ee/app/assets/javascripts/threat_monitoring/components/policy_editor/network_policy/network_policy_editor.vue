@@ -71,7 +71,7 @@ export default {
     'networkDocumentationPath',
     'noEnvironmentSvgPath',
     'projectId',
-    'threatMonitoringPath',
+    'policiesPath',
   ],
   props: {
     existingPolicy: {
@@ -188,14 +188,14 @@ export default {
       }
 
       return saveFn({ environmentId: this.currentEnvironmentId, policy }).then(() => {
-        if (!this.errorUpdatingPolicy) redirectTo(this.threatMonitoringPath);
+        if (!this.errorUpdatingPolicy) redirectTo(this.policiesPath);
       });
     },
     removePolicy() {
       const policy = { name: this.existingPolicy.name, manifest: this.yamlEditorValue };
 
       return this.deletePolicy({ environmentId: this.currentEnvironmentId, policy }).then(() => {
-        if (!this.errorRemovingPolicy) redirectTo(this.threatMonitoringPath);
+        if (!this.errorRemovingPolicy) redirectTo(this.policiesPath);
       });
     },
   },

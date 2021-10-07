@@ -23,7 +23,7 @@ export default {
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
-  inject: ['threatMonitoringPath'],
+  inject: ['policiesPath'],
   props: {
     customSaveButtonText: {
       type: String,
@@ -186,7 +186,7 @@ export default {
       :loading="isRemovingPolicy"
       >{{ s__('NetworkPolicies|Delete policy') }}</gl-button
     >
-    <gl-button category="secondary" :href="threatMonitoringPath">{{ __('Cancel') }}</gl-button>
+    <gl-button category="secondary" :href="policiesPath">{{ __('Cancel') }}</gl-button>
     <gl-modal
       modal-id="delete-modal"
       :title="deleteModalTitle"

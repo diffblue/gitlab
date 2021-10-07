@@ -24,7 +24,7 @@ export default () => {
     networkDocumentationPath,
     networkPoliciesEndpoint,
     noEnvironmentSvgPath,
-    threatMonitoringPath,
+    policiesPath,
     policy,
     policyType,
     projectPath,
@@ -66,7 +66,7 @@ export default () => {
       projectId,
       projectPath,
       hasEnvironment: isValidEnvironmentId(parseInt(defaultEnvironmentId, 10)),
-      threatMonitoringPath,
+      policiesPath,
     },
     store,
     render(createElement) {
