@@ -210,6 +210,7 @@ module EE
 
       rule { coverage_fuzzing_enabled & can?(:developer_access) }.policy do
         enable :read_coverage_fuzzing
+        enable :create_coverage_fuzzing_corpus
       end
 
       rule { on_demand_scans_enabled & can?(:developer_access) }.policy do
