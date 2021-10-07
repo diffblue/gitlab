@@ -1,7 +1,8 @@
+import metaFixture from 'test_fixtures/epic/mock_meta.json';
+import mockDataFixture from 'test_fixtures/epic/mock_data.json';
 import { TEST_HOST } from 'spec/test_constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
-const metaFixture = getJSONFixture('epic/mock_meta.json');
 const meta = JSON.parse(metaFixture.meta);
 const initial = JSON.parse(metaFixture.initial);
 
@@ -14,7 +15,7 @@ export const mockEpicMeta = {
 
 export const mockEpicData = convertObjectPropsToCamelCase(
   {
-    ...getJSONFixture('epic/mock_data.json'),
+    ...mockDataFixture,
     ...initial,
     endpoint: TEST_HOST,
     sidebarCollapsed: false,

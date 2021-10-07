@@ -1,3 +1,4 @@
+import tasksByType from 'test_fixtures/analytics/charts/type_of_work/tasks_by_type.json';
 import { uniq } from 'lodash';
 import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
@@ -182,9 +183,7 @@ export const labelEndEvent = customStageLabelEvents.find(
 
 const dateRange = getDatesInRange(createdAfter, createdBefore, toYmd);
 
-export const apiTasksByTypeData = getJSONFixture(
-  'analytics/charts/type_of_work/tasks_by_type.json',
-).map((labelData) => {
+export const apiTasksByTypeData = tasksByType.map((labelData) => {
   // add data points for our mock date range
   const maxValue = 10;
   const series = dateRange.map((date) => [date, Math.floor(Math.random() * Math.floor(maxValue))]);

@@ -1,6 +1,9 @@
 import { GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
+import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_month.json';
+import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -8,16 +11,6 @@ import httpStatus from '~/lib/utils/http_status';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 
 jest.mock('~/flash');
-
-const lastWeekData = getJSONFixture(
-  'api/dora/metrics/daily_lead_time_for_changes_for_last_week.json',
-);
-const lastMonthData = getJSONFixture(
-  'api/dora/metrics/daily_lead_time_for_changes_for_last_month.json',
-);
-const last90DaysData = getJSONFixture(
-  'api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json',
-);
 
 describe('lead_time_charts.vue', () => {
   useFixturesFakeDate();

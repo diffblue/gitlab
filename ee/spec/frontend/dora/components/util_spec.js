@@ -1,8 +1,5 @@
+import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_week.json';
 import { apiDataToChartSeries, buildNullSeriesForLeadTimeChart } from 'ee/dora/components/util';
-
-const lastWeekData = getJSONFixture(
-  'api/dora/metrics/daily_lead_time_for_changes_for_last_week.json',
-);
 
 describe('ee/dora/components/util.js', () => {
   describe('apiDataToChartSeries', () => {
