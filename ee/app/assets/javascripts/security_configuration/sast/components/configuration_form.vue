@@ -207,7 +207,7 @@ export default {
         class="gl-mr-3 js-no-auto-disable"
         :loading="isSubmitting"
         type="submit"
-        variant="success"
+        variant="confirm"
         category="primary"
         data-qa-selector="submit_button"
         >{{ $options.i18n.submitButton }}</gl-button
