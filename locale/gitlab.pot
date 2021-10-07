@@ -29199,9 +29199,6 @@ msgstr ""
 msgid "Runners are processes that pick up and execute CI/CD jobs for GitLab."
 msgstr ""
 
-msgid "Runners can be:"
-msgstr ""
-
 msgid "Runners currently online: %{active_runners_count}"
 msgstr ""
 
@@ -38798,9 +38795,6 @@ msgid "You can only upload one design when dropping onto an existing design."
 msgstr ""
 
 msgid "You can recover this project until %{date}"
-msgstr ""
-
-msgid "You can register runners as separate users, on separate servers, and on your local machine. Register as many runners as you want."
 msgstr ""
 
 msgid "You can resolve the merge conflict using either the Interactive mode, by choosing %{use_ours} or %{use_theirs} buttons, or by editing the files directly. Commit these changes into %{branch_name}"
