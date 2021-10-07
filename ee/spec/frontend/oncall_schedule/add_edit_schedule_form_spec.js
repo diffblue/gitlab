@@ -1,12 +1,11 @@
 import { GlSearchBoxByType, GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import AddEditScheduleForm, {
   i18n,
 } from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
-
-const mockTimezones = getJSONFixture('timezones/full.json');
 
 describe('AddEditScheduleForm', () => {
   let wrapper;
