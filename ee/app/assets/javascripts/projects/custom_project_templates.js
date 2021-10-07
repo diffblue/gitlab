@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import { Rails } from '~/lib/utils/rails_ujs';
+import eventHub from '~/pages/projects/new/event_hub';
 import projectNew from '~/projects/project_new';
 
 const bindEvents = () => {
@@ -30,7 +31,7 @@ const bindEvents = () => {
 
   function hideNonRootParentPathOptions() {
     const rootParent = `/${
-      $namespaceSelect.find('option:selected').data('show-path').split('/')[1]
+      $namespaceSelect.find('option:selected').data('show-path')?.split('/')[1]
     }`;
 
     $namespaceSelect
@@ -56,6 +57,8 @@ const bindEvents = () => {
     const templateName = $(this).data('template-name');
 
     if (subgroupId) {
+      eventHub.$emit('select-template', groupId);
+
       $subgroupWithTemplatesIdInput.val(subgroupId);
       $namespaceSelect.val(groupId).trigger('change');
 

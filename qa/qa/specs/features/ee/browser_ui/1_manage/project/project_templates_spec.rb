@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Manage' do
-    describe 'Project templates' do
+    describe 'Project templates', :requires_admin do
       include Support::API
 
       before(:all) do
@@ -34,6 +34,10 @@ module QA
           push.files = @files
           push.commit_message = 'Add test files'
         end
+      end
+
+      before do
+        Runtime::Feature.enable(:paginatable_namespace_drop_down_for_project_creation)
       end
 
       context 'built-in', :requires_admin do
