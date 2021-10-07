@@ -271,3 +271,32 @@ curl --header "Private-Token: <personal_access_token>" \
 ```
 
 This writes the downloaded file using the remote filename in the current directory.
+
+## Download a source packages index
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71918) in GitLab 15.4.
+
+Download a source packages index.
+
+```plaintext
+GET <route-prefix>/dists/*distribution/:component/source/Sources
+```
+
+| Attribute         | Type   | Required | Description |
+| ----------------- | ------ | -------- | ----------- |
+| `distribution`    | string | yes      | The codename or suite of the Debian distribution. |
+| `component`       | string | yes      | The distribution component name. |
+
+```shell
+curl --header "Private-Token: <personal_access_token>" "https://gitlab.example.com/api/v4/projects/1/packages/debian/dists/my-distro/main/source/Sources"
+```
+
+Write the output to a file:
+
+```shell
+curl --header "Private-Token: <personal_access_token>" \
+     "https://gitlab.example.com/api/v4/projects/1/packages/debian/dists/my-distro/main/source/Sources" \
+     --remote-name
+```
+
+This writes the downloaded file using the remote filename in the current directory.

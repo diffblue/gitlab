@@ -134,6 +134,19 @@ module API
                 end
               end
 
+              namespace 'source', requirements: COMPONENT_ARCHITECTURE_REQUIREMENTS do
+                # GET {projects|groups}/:id/packages/debian/dists/*distribution/:component/source/Sources
+                # https://wiki.debian.org/DebianRepository/Format#A.22Sources.22_Indices
+                desc 'The source files index' do
+                  detail 'This feature was introduced in GitLab 15.4'
+                end
+
+                route_setting :authentication, authenticate_non_public: true
+                get 'Sources' do
+                  present_index_file!(:sources)
+                end
+              end
+
               params do
                 requires :architecture, type: String, desc: 'The Debian Architecture', regexp: Gitlab::Regex.debian_architecture_regex
               end

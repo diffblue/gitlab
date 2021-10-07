@@ -18,6 +18,7 @@ RSpec.shared_context 'Debian repository shared context' do |container_type, can_
   let_it_be(:private_architecture_all, freeze: true) { create("debian_#{container_type}_architecture", distribution: private_distribution, name: 'all') }
   let_it_be(:private_architecture, freeze: true) { create("debian_#{container_type}_architecture", distribution: private_distribution, name: 'existing-arch') }
   let_it_be(:private_component_file) { create("debian_#{container_type}_component_file", component: private_component, architecture: private_architecture) }
+  let_it_be(:private_component_sources) { create("debian_#{container_type}_component_file", :sources, component: private_component) }
   let_it_be(:private_component_file_di) { create("debian_#{container_type}_component_file", :di_packages, component: private_component, architecture: private_architecture) }
 
   let_it_be(:public_distribution, freeze: true) { create("debian_#{container_type}_distribution", :with_file, container: public_container, codename: 'existing-codename') }
@@ -26,6 +27,7 @@ RSpec.shared_context 'Debian repository shared context' do |container_type, can_
   let_it_be(:public_architecture_all, freeze: true) { create("debian_#{container_type}_architecture", distribution: public_distribution, name: 'all') }
   let_it_be(:public_architecture, freeze: true) { create("debian_#{container_type}_architecture", distribution: public_distribution, name: 'existing-arch') }
   let_it_be(:public_component_file) { create("debian_#{container_type}_component_file", component: public_component, architecture: public_architecture) }
+  let_it_be(:public_component_file_sources) { create("debian_#{container_type}_component_file", :sources, component: public_component) }
   let_it_be(:public_component_file_di) { create("debian_#{container_type}_component_file", :di_packages, component: public_component, architecture: public_architecture) }
 
   if container_type == :group
