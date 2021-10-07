@@ -13,7 +13,9 @@ module EE
 
       with_replicator ::Geo::MergeRequestDiffReplicator
 
-      has_one :merge_request_diff_detail, autosave: true, inverse_of: :merge_request_diff
+      has_one :merge_request_diff_detail, autosave: false, inverse_of: :merge_request_diff
+
+      after_save :save_verification_details
 
       delegate :verification_retry_at, :verification_retry_at=,
                :verified_at, :verified_at=,
@@ -30,9 +32,10 @@ module EE
       scope :with_verification_state, ->(state) { joins(:merge_request_diff_detail).where(merge_request_diff_details: { verification_state: verification_state_value(state) }) }
       scope :checksummed, -> { joins(:merge_request_diff_detail).where.not(merge_request_diff_details: { verification_checksum: nil } ) }
       scope :not_checksummed, -> { joins(:merge_request_diff_detail).where(merge_request_diff_details: { verification_checksum: nil } ) }
+      scope :with_files_stored_locally, -> { where(klass::STORE_COLUMN => ::ObjectStorage::Store::LOCAL) }
 
-      def create_verification_details
-        create_merge_request_diff_detail
+      def verification_state_object
+        merge_request_diff_detail
       end
     end
 

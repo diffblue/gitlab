@@ -16,6 +16,56 @@ RSpec.describe MergeRequestDiff do
     stub_external_diffs_setting(enabled: true)
   end
 
+  include_examples 'a replicable model with a separate table for verification state' do
+    let(:verifiable_model_record) { build(:merge_request_diff, :external, external_diff_store: ::ObjectStorage::Store::LOCAL) }
+    let(:unverifiable_model_record) { build(:merge_request_diff) }
+  end
+
+  describe '#after_save' do
+    let(:mr_diff) { build(:merge_request_diff, :external, external_diff_store: ::ObjectStorage::Store::LOCAL) }
+
+    context 'when diff is stored externally and locally' do
+      it 'does not create verification details when diff is without files' do
+        mr_diff[:state] = :without_files
+
+        expect { mr_diff.save! }.not_to change { MergeRequestDiffDetail.count }
+      end
+
+      it 'does not create verification details when diff is empty' do
+        mr_diff[:state] = :empty
+
+        expect { mr_diff.save! }.not_to change { MergeRequestDiffDetail.count }
+      end
+
+      it 'creates verification details' do
+        mr_diff[:state] = :collected
+
+        expect { mr_diff.save! }.to change { MergeRequestDiffDetail.count }.by(1)
+      end
+
+      context 'for a remote stored diff' do
+        before do
+          allow_next_instance_of(MergeRequestDiff) do |mr_diff|
+            allow(mr_diff).to receive(:update_external_diff_store).and_return(true)
+          end
+        end
+
+        it 'does not create verification details' do
+          mr_diff[:state] = :collected
+          mr_diff[:external_diff_store] = ::ObjectStorage::Store::REMOTE
+
+          expect { mr_diff.save! }.not_to change { MergeRequestDiffDetail.count }
+        end
+      end
+    end
+
+    context 'when diff is not stored externally' do
+      it 'does not create verification details' do
+        expect { create(:merge_request_diff, stored_externally: false) }.not_to change { MergeRequestDiffDetail.count }
+      end
+    end
+  end
+
   describe '.with_files_stored_locally' do
     it 'includes states with local storage' do
       create(:merge_request, source_project: project)

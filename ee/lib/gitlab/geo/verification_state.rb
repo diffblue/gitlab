@@ -92,8 +92,28 @@ module Gitlab
           end
         end
 
-        def create_verification_details
-          raise NotImplementedError
+        def save_verification_details
+          return unless self.class.separate_verification_state_table?
+
+          return unless self.class.available_verifiables.primary_key_in(self).exists?
+
+          # During a transaction, `verification_state_object` could be built before
+          # a value for `verification_state_model_key` exists. So we check for that
+          # before saving the `verification_state_object`
+          unless verification_state_object.persisted?
+            verification_state_object[self.class.verification_state_model_key] = self.id
+          end
+
+          verification_state_object.save!
+        end
+
+        # Implement this method in the class that includes this concern to specify
+        # a different ActiveRecord association name that stores the verification state
+        # See module EE::MergeRequestDiff for example
+        def verification_state_object
+          raise NotImplementedError if self.class.separate_verification_state_table?
+
+          self
         end
 
         private_class_method :start_verification_batch
