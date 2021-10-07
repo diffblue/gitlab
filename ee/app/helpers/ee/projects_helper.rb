@@ -7,7 +7,6 @@ module EE
     override :sidebar_operations_paths
     def sidebar_operations_paths
       super + %w[
-        cluster_agents
         oncall_schedules
       ]
     end
