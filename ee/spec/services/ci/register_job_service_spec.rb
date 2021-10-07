@@ -55,6 +55,12 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
             stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
           end
 
+          around do |example|
+            allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
+              example.run
+            end
+          end
+
           it { is_expected.to be_kind_of(Ci::Build) }
         end
       end
@@ -101,6 +107,12 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
         context 'with ci_queueing_denormalize_ci_minutes_information disabled' do
           before do
             stub_feature_flags(ci_queueing_denormalize_ci_minutes_information: false)
+          end
+
+          around do |example|
+            allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
+              example.run
+            end
           end
 
           it { is_expected.to be_nil }
@@ -307,6 +319,12 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
       stub_feature_flags(ci_pending_builds_queue_source: false)
     end
 
+    around do |example|
+      allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
+        example.run
+      end
+    end
+
     include_examples 'namespace minutes quota'
   end
 
@@ -326,6 +344,12 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
     context 'with ci_queueing_denormalize_shared_runners_information disabled' do
       before do
         stub_feature_flags(ci_queueing_denormalize_shared_runners_information: false)
+      end
+
+      around do |example|
+        allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/332952') do
+          example.run
+        end
       end
 
       include_examples 'namespace minutes quota'
