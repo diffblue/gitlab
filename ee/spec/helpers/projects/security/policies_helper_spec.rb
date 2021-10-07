@@ -49,7 +49,7 @@ RSpec.describe Projects::Security::PoliciesHelper do
         no_environment_svg_path: kind_of(String),
         project_path: project.full_path,
         project_id: project.id,
-        threat_monitoring_path: kind_of(String),
+        policies_path: kind_of(String),
         environment_id: environment&.id,
         policy: policy&.to_json,
         policy_type: policy_type

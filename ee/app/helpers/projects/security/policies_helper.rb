@@ -35,7 +35,7 @@ module Projects::Security::PoliciesHelper
       policy_type: policy_type,
       project_path: project.full_path,
       project_id: project.id,
-      threat_monitoring_path: project_security_policies_path(project)
+      policies_path: project_security_policies_path(project)
     }
   end
 end

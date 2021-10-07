@@ -52,7 +52,7 @@ describe('NetworkPolicyEditor component', () => {
         hasEnvironment: true,
         networkDocumentationPath: 'path/to/docs',
         noEnvironmentSvgPath: 'path/to/svg',
-        threatMonitoringPath: '/threat-monitoring',
+        policiesPath: '/threat-monitoring',
         projectId: '21',
         ...provide,
       },

@@ -6,7 +6,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 describe('PolicyEditorLayout component', () => {
   let wrapper;
   let glTooltipDirectiveMock;
-  const threatMonitoringPath = '/threat-monitoring';
+  const policiesPath = '/threat-monitoring';
 
   const factory = ({ propsData = {} } = {}) => {
     glTooltipDirectiveMock = jest.fn();
@@ -18,7 +18,7 @@ describe('PolicyEditorLayout component', () => {
         ...propsData,
       },
       provide: {
-        threatMonitoringPath,
+        policiesPath,
       },
       stubs: { PolicyYamlEditor: true },
     });
