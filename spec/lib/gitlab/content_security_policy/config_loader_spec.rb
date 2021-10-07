@@ -56,22 +56,22 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
     context 'adds all websocket origins to support Safari' do
       it 'with insecure domain' do
         stub_config_setting(host: 'example.com', https: false)
-        expect(directives['connect_src']).to eq("'self' ws://example.com")
+        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org ws://example.com")
       end
 
       it 'with secure domain' do
         stub_config_setting(host: 'example.com', https: true)
-        expect(directives['connect_src']).to eq("'self' wss://example.com")
+        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org wss://example.com")
       end
 
       it 'with custom port' do
         stub_config_setting(host: 'example.com', port: '1234')
-        expect(directives['connect_src']).to eq("'self' ws://example.com:1234")
+        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org ws://example.com:1234")
       end
 
       it 'with custom port and secure domain' do
         stub_config_setting(host: 'example.com', https: true, port: '1234')
-        expect(directives['connect_src']).to eq("'self' wss://example.com:1234")
+        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org wss://example.com:1234")
       end
     end
 
