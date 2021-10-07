@@ -21350,6 +21350,9 @@ msgstr ""
 msgid "Merge request events"
 msgstr ""
 
+msgid "Merge request reports"
+msgstr ""
+
 msgid "Merge request was scheduled to merge after pipeline succeeds"
 msgstr ""
 
