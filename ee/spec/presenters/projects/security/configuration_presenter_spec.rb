@@ -262,14 +262,25 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
       end
 
       context "while retrieving information about gitlab ci file" do
-        it 'expects the gitlab_ci_presence to be true if the file is present' do
-          expect(subject[:gitlab_ci_present]).to eq(true)
+        context 'when a .gitlab-ci.yml file exists' do
+          before do
+            project.repository.create_file(
+              project.creator,
+              Gitlab::FileDetector::PATTERNS[:gitlab_ci],
+              'contents go here',
+              message: 'test',
+              branch_name: 'master')
+          end
+
+          it 'expects gitlab_ci_present to be true' do
+            expect(subject[:gitlab_ci_present]).to eq(true)
+          end
         end
 
-        it 'expects the gitlab_ci_presence to be false if the file is customized' do
-          allow(project).to receive(:ci_config_path).and_return('.other-gitlab-ci.yml')
-
-          expect(subject[:gitlab_ci_present]).to eq(false)
+        context 'when a .gitlab-ci.yml file does not exist' do
+          it 'expects gitlab_ci_present to be false if the file is not present' do
+            expect(subject[:gitlab_ci_present]).to eq(false)
+          end
         end
       end
 
