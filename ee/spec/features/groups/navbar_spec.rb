@@ -147,7 +147,7 @@ RSpec.describe 'Group navbar' do
         nav_sub_items: [
           _('Security Dashboard'),
           _('Vulnerability Report'),
-          _('Compliance'),
+          _('Compliance report'),
           _('Audit Events')
         ]
       }

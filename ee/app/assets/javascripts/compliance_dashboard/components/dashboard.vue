@@ -73,7 +73,7 @@ export default {
     },
   },
   strings: {
-    heading: __('Compliance Dashboard'),
+    heading: __('Compliance report'),
     subheading: __('Here you will find recent merge request activity'),
     mergeRequestsTabLabel: __('Merge Requests'),
   },

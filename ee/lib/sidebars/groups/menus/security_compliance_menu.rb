@@ -78,7 +78,7 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Compliance'),
+            title: _('Compliance report'),
             link: group_security_compliance_dashboard_path(context.group),
             active_routes: { path: 'compliance_dashboards#show' },
             item_id: :compliance
