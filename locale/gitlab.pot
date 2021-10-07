@@ -8460,13 +8460,10 @@ msgstr ""
 msgid "Completed"
 msgstr ""
 
-msgid "Compliance"
-msgstr ""
-
-msgid "Compliance Dashboard"
-msgstr ""
-
 msgid "Compliance framework"
+msgstr ""
+
+msgid "Compliance report"
 msgstr ""
 
 msgid "ComplianceDashboard|created by:"

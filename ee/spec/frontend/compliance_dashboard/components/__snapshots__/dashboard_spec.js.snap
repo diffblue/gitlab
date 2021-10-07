@@ -11,7 +11,7 @@ exports[`ComplianceDashboard component when there are merge requests and the sho
       <h4
         class="gl-flex-grow-1 gl-my-0"
       >
-        Compliance Dashboard
+        Compliance report
       </h4>
        
       <merge-commits-export-button-stub
@@ -62,7 +62,7 @@ exports[`ComplianceDashboard component when there are merge requests matches the
       <h4
         class="gl-flex-grow-1 gl-my-0"
       >
-        Compliance Dashboard
+        Compliance report
       </h4>
        
       <merge-commits-export-button-stub
