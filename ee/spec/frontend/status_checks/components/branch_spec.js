@@ -20,13 +20,13 @@ describe('Status checks branch', () => {
     createWrapper();
 
     expect(findBranch().text()).toBe('All branches');
-    expect(findBranch().classes('monospace')).toBe(true);
+    expect(findBranch().classes('monospace')).toBe(false);
   });
 
   it('renders the first branch name when branches are given', () => {
     createWrapper({ branches: [{ name: 'Foo' }, { name: 'Bar' }] });
 
     expect(findBranch().text()).toBe('Foo');
-    expect(findBranch().classes('monospace')).toBe(false);
+    expect(findBranch().classes('monospace')).toBe(true);
   });
 });

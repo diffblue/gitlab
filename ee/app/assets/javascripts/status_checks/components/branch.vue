@@ -21,5 +21,5 @@ export default {
 </script>
 
 <template>
-  <span :class="{ monospace: isAllBranches }">{{ branchName }}</span>
+  <span :class="{ monospace: !isAllBranches }">{{ branchName }}</span>
 </template>
