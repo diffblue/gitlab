@@ -20,6 +20,7 @@ module QA
       end
 
       before do
+        Runtime::Feature.enable(:paginatable_namespace_drop_down_for_project_creation)
         sign_in
       end
 
