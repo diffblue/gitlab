@@ -1,0 +1,86 @@
+# frozen_string_literal: true
+
+# This module adds PG full-text search capabilities to a model.
+# A `search_data` association with a `search_vector` column is required.
+#
+# Declare the fields that will be part of the search vector with their
+# corresponding weights. Possible values for weight are A, B, C, or D.
+# For example:
+#
+# include PgFullTextSearchable
+# pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
+#
+# This module sets up an after_commit hook that updates the search data
+# when the searchable columns are changed.
+#
+# This also adds a `full_text_search` scope so you can do:
+#
+# Model.full_text_search("some search term")
+
+module PgFullTextSearchable
+  extend ActiveSupport::Concern
+
+  LONG_WORDS_REGEX = %r([A-Za-z0-9+/]{50,}).freeze
+  TSVECTOR_MAX_LENGTH = 1.megabyte.freeze
+  TEXT_SEARCH_DICTIONARY = 'english'
+
+  def update_search_data!
+    tsvector_sql_nodes = self.class.pg_full_text_searchable_columns.map do |column, weight|
+      tsvector_arel_node(column, weight)&.to_sql
+    end
+
+    association = self.class.reflect_on_association(:search_data)
+    association.klass.upsert({ association.foreign_key => id, search_vector: Arel.sql(tsvector_sql_nodes.compact.join(' || ')) })
+  rescue ActiveRecord::StatementInvalid => e
+    raise unless e.cause.is_a?(PG::ProgramLimitExceeded) && e.message.include?('string is too long for tsvector')
+
+    Gitlab::AppJsonLogger.error(
+      message: 'Error updating search data: string is too long for tsvector',
+      class: self.class.name,
+      model_id: self.id
+    )
+  end
+
+  private
+
+  def tsvector_arel_node(column, weight)
+    return if self[column].blank?
+
+    column_text = self[column].gsub(LONG_WORDS_REGEX, ' ')
+    column_text = column_text[0..(TSVECTOR_MAX_LENGTH - 1)]
+    column_text = ActiveSupport::Inflector.transliterate(column_text)
+
+    Arel::Nodes::NamedFunction.new(
+      'setweight',
+      [
+        Arel::Nodes::NamedFunction.new(
+          'to_tsvector',
+          [Arel::Nodes.build_quoted(TEXT_SEARCH_DICTIONARY), Arel::Nodes.build_quoted(column_text)]
+        ),
+        Arel::Nodes.build_quoted(weight)
+      ]
+    )
+  end
+
+  included do
+    cattr_reader :pg_full_text_searchable_columns do
+      {}
+    end
+  end
+
+  class_methods do
+    def pg_full_text_searchable(columns:)
+      raise 'Full text search columns already defined!' if pg_full_text_searchable_columns.present?
+
+      columns.each do |column|
+        pg_full_text_searchable_columns[column[:name]] = column[:weight]
+      end
+
+      after_save_commit do
+        next unless pg_full_text_searchable_columns.keys.any? { |f| saved_changes.has_key?(f) }
+
+        update_search_data!
+      end
+    end
+  end
+end

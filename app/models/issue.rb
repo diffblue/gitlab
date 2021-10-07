@@ -24,6 +24,7 @@ class Issue < ApplicationRecord
   include Todoable
   include FromUnion
   include EachBatch
+  include PgFullTextSearchable
 
   extend ::Gitlab::Utils::Override
 
@@ -77,6 +78,7 @@ class Issue < ApplicationRecord
     end
   end
 
+  has_one :search_data, class_name: 'Issues::SearchData'
   has_one :issuable_severity
   has_one :sentry_issue
   has_one :alert_management_alert, class_name: 'AlertManagement::Alert'
@@ -101,6 +103,8 @@ class Issue < ApplicationRecord
   alias_method :issuing_parent, :project
 
   alias_attribute :external_author, :service_desk_reply_to
+
+  pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
 
   scope :in_projects, ->(project_ids) { where(project_id: project_ids) }
   scope :not_in_projects, ->(project_ids) { where.not(project_id: project_ids) }
