@@ -19,7 +19,7 @@ module SecurityHelper
   end
 
   def can_view_false_positive?
-    (::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && ::License.feature_available?(:sast_fp_reduction)).to_s
+    ::License.feature_available?(:sast_fp_reduction).to_s
   end
 
   def security_dashboard_unavailable_view_data

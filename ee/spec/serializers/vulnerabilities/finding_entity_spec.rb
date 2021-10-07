@@ -77,12 +77,6 @@ RSpec.describe Vulnerabilities::FindingEntity do
         expect(subject[:false_positive]).to be(true)
       end
 
-      it 'does not contain false_positive field if feature_flag is disabled' do
-        stub_feature_flags(vulnerability_flags: false)
-
-        expect(subject).not_to include(:false_positive)
-      end
-
       it 'does not contain false_positive field if license is not available' do
         stub_licensed_features(sast_fp_reduction: false)
 

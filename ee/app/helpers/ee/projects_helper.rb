@@ -203,7 +203,7 @@ module EE
     end
 
     def can_view_false_positive?
-      (::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)).to_s
+      project.licensed_feature_available?(:sast_fp_reduction).to_s
     end
 
     def can_update_security_orchestration_policy_project?(project)

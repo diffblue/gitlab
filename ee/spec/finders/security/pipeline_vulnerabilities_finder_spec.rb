@@ -154,16 +154,6 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
             expect(subject.findings).to all(have_attributes(vulnerability_flags: be_empty))
           end
-
-          context 'with vulnerability_flags FF disabled' do
-            before do
-              stub_feature_flags(vulnerability_flags: false)
-            end
-
-            it 'does not include findings with false-positive' do
-              expect(subject.findings).to all(have_attributes(vulnerability_flags: be_empty))
-            end
-          end
         end
       end
 

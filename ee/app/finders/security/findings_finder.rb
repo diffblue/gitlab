@@ -82,7 +82,7 @@ module Security
     end
 
     def calculate_false_positive?
-      ::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
+      project.licensed_feature_available?(:sast_fp_reduction)
     end
 
     def existing_vulnerabilities

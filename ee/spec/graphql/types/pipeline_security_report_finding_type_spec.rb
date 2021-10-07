@@ -86,17 +86,5 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
         expect(vulnerabilities.first['falsePositive']).to be_nil
       end
     end
-
-    context 'when vulnerability_flags FF has been disabled' do
-      before do
-        stub_feature_flags(vulnerability_flags: false)
-      end
-
-      it 'returns nil for false-positive field' do
-        vulnerabilities = subject.dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
-
-        expect(vulnerabilities.first['falsePositive']).to be_nil
-      end
-    end
   end
 end

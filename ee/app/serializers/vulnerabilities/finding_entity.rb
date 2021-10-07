@@ -62,7 +62,7 @@ class Vulnerabilities::FindingEntity < Grape::Entity
 
   def expose_false_positive?
     project = occurrence.project
-    ::Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && project.licensed_feature_available?(:sast_fp_reduction)
+    project.licensed_feature_available?(:sast_fp_reduction)
   end
 end
 
