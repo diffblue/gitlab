@@ -3,6 +3,7 @@ import axios from '~/lib/utils/axios_utils';
 
 const SUBSCRIPTIONS_PATH = '/api/:version/subscriptions';
 const EXTEND_REACTIVATE_TRIAL_PATH = '/-/trials/extend_reactivate';
+const CREATE_HAND_RAISE_LEAD_PATH = '/-/trials/create_hand_raise_lead';
 
 const TRIAL_EXTENSION_TYPE = Object.freeze({
   extended: 1,
@@ -40,4 +41,21 @@ export const extendTrial = async (namespaceId) => {
 
 export const reactivateTrial = async (namespaceId) => {
   return updateTrial(namespaceId, TRIAL_EXTENSION_TYPE.reactivated);
+};
+
+export const sendHandRaiseLead = async (params) => {
+  const url = buildApiUrl(CREATE_HAND_RAISE_LEAD_PATH);
+  const formParams = {
+    namespace_id: params.namespaceId,
+    company_name: params.companyName,
+    company_size: params.companySize,
+    first_name: params.firstName,
+    last_name: params.lastName,
+    phone_number: params.phoneNumber,
+    country: params.country,
+    state: params.state,
+    comment: params.comment,
+  };
+
+  return axios.post(url, formParams);
 };
