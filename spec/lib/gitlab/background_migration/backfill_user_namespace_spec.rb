@@ -14,7 +14,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillUserNamespace do
     namespaces.create!(id: 11, name: 'test11', path: 'test11', type: nil)
   end
 
-  it 'backfills `type_new` for the selected records' do
+  it 'backfills `type` for the selected records' do
     queries = ActiveRecord::QueryRecorder.new do
       migration.perform(1, 10)
     end
