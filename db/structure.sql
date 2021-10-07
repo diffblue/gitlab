@@ -15655,6 +15655,13 @@ CREATE SEQUENCE issue_metrics_id_seq
 
 ALTER SEQUENCE issue_metrics_id_seq OWNED BY issue_metrics.id;
 
+CREATE TABLE issue_search_data (
+    issue_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    search_vector tsvector
+);
+
 CREATE TABLE issue_tracker_data (
     id bigint NOT NULL,
     service_id integer NOT NULL,
@@ -23711,6 +23718,9 @@ ALTER TABLE ONLY issue_links
 ALTER TABLE ONLY issue_metrics
     ADD CONSTRAINT issue_metrics_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY issue_search_data
+    ADD CONSTRAINT issue_search_data_pkey PRIMARY KEY (issue_id);
+
 ALTER TABLE ONLY issue_tracker_data
     ADD CONSTRAINT issue_tracker_data_pkey PRIMARY KEY (id);
 
@@ -26692,6 +26702,8 @@ CREATE INDEX index_issue_links_on_target_id ON issue_links USING btree (target_i
 CREATE INDEX index_issue_metrics_on_issue_id_and_timestamps ON issue_metrics USING btree (issue_id, first_mentioned_in_commit_at, first_associated_with_milestone_at, first_added_to_board_at);
 
 CREATE INDEX index_issue_on_project_id_state_id_and_blocking_issues_count ON issues USING btree (project_id, state_id, blocking_issues_count);
+
+CREATE INDEX index_issue_search_data_on_search_vector ON issue_search_data USING gin (search_vector);
 
 CREATE INDEX index_issue_tracker_data_on_service_id ON issue_tracker_data USING btree (service_id);
 
@@ -31430,6 +31442,9 @@ ALTER TABLE ONLY operations_strategies_user_lists
 
 ALTER TABLE ONLY issue_tracker_data
     ADD CONSTRAINT fk_rails_ccc0840427 FOREIGN KEY (service_id) REFERENCES integrations(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY issue_search_data
+    ADD CONSTRAINT fk_rails_ce5f26b01c FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY resource_milestone_events
     ADD CONSTRAINT fk_rails_cedf8cce4d FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
