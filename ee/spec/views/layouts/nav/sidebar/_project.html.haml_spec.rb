@@ -188,7 +188,7 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
       end
 
       it 'security on demand scans link is visible' do
-        expect(rendered).to have_link('On-demand Scans', href: new_project_on_demand_scan_path(project))
+        expect(rendered).to have_link('On-demand Scans', href: project_on_demand_scans_path(project))
       end
 
       it 'dependency list link is visible' do
@@ -213,6 +213,22 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
 
       it 'audit events link is visible' do
         expect(rendered).to have_link('Audit Events', href: project_audit_events_path(project))
+      end
+    end
+
+    context 'when dast_view_scans feature flag is disabled' do
+      before do
+        allow(view).to receive(:current_user).and_return(user)
+        stub_feature_flags(dast_view_scans: false)
+        stub_licensed_features(
+          security_on_demand_scans: true
+        )
+
+        render
+      end
+
+      it 'links to on-demand scans form instead of index page' do
+        expect(rendered).to have_link('On-demand Scans', href: new_project_on_demand_scan_path(project))
       end
     end
   end

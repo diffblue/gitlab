@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptyState renders properly 1`] = `
+<section
+  class="row empty-state text-center"
+>
+  <div
+    class="col-12"
+  >
+    <div
+      class="svg-250 svg-content"
+    >
+      <img
+        alt=""
+        class="gl-max-w-full"
+        role="img"
+        src="/empty/state/svg/path"
+      />
+    </div>
+  </div>
+   
+  <div
+    class="col-12"
+  >
+    <div
+      class="text-content gl-mx-auto gl-my-0 gl-p-5"
+    >
+      <h1
+        class="h4"
+      >
+        On-demand scans
+      </h1>
+       
+      <p>
+        On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. 
+        <a
+          class="gl-link"
+          href="/help/page/path"
+        >
+          Lean more
+        </a>
+        .
+      </p>
+       
+      <div
+        class="gl-display-flex gl-flex-wrap gl-justify-content-center"
+      >
+        <a
+          class="btn gl-mb-3 btn-confirm btn-md gl-button gl-mx-2"
+          href="/on_demand_scans/new"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            New DAST scan
+          </span>
+        </a>
+         
+        <!---->
+      </div>
+    </div>
+  </div>
+</section>
+`;
