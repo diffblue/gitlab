@@ -1,3 +1,4 @@
+import { GlToast } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
@@ -10,6 +11,7 @@ import Iterations from './components/iterations.vue';
 import { Namespace } from './constants';
 import createRouter from './router';
 
+Vue.use(GlToast);
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
