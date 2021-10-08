@@ -161,6 +161,7 @@ RSpec.describe 'Every Sidekiq worker' do
         'Ci::DropPipelineWorker' => 3,
         'Ci::InitialPipelineProcessWorker' => 3,
         'Ci::MergeRequests::AddTodoWhenBuildFailsWorker' => 3,
+        'Ci::Minutes::UpdateProjectAndNamespaceUsageWorker' => 3,
         'Ci::PipelineArtifacts::CoverageReportWorker' => 3,
         'Ci::PipelineArtifacts::CreateQualityReportWorker' => 3,
         'Ci::PipelineBridgeStatusWorker' => 3,
