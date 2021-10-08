@@ -14,10 +14,12 @@ const newAssignedPolicyProject = {
   branch: { rootRef: 'main' },
 };
 const projectPath = 'path/to/current-project';
-const yamlEditorValue = 'some yaml';
+const policyName = 'policy-01';
+const yamlEditorValue = `\nname: ${policyName}\ndescription: some yaml`;
 const createSavePolicyInput = (assignedPolicyProject = defaultAssignedPolicyProject, action) => ({
   action,
   assignedPolicyProject,
+  name: policyName,
   projectPath,
   yamlEditorValue,
 });

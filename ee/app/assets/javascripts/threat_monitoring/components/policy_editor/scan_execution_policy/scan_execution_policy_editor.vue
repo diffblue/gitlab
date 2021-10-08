@@ -64,6 +64,11 @@ export default {
       yamlEditorValue,
     };
   },
+  computed: {
+    originalName() {
+      return this.existingPolicy?.name;
+    },
+  },
   methods: {
     handleError(error) {
       if (error.message.toLowerCase().includes('graphql')) {
@@ -86,6 +91,7 @@ export default {
         const { mergeRequest, policyProject } = await modifyPolicy({
           action,
           assignedPolicyProject: this.assignedPolicyProject,
+          name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
           projectPath: this.projectPath,
           yamlEditorValue: this.yamlEditorValue,
         });

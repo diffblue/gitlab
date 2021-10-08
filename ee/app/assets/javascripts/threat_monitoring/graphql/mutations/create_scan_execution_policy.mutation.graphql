@@ -1,10 +1,11 @@
 mutation updatePolicy(
   $projectPath: ID!
   $mode: MutationOperationMode = APPEND
+  $name: String
   $policyYaml: String!
 ) {
   scanExecutionPolicyCommit(
-    input: { projectPath: $projectPath, operationMode: $mode, policyYaml: $policyYaml }
+    input: { name: $name, projectPath: $projectPath, operationMode: $mode, policyYaml: $policyYaml }
   ) {
     branch
     errors

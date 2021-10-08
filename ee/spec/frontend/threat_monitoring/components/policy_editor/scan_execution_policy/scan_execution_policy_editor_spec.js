@@ -3,6 +3,7 @@ import { GlEmptyState } from '@gitlab/ui';
 import PolicyEditorLayout from 'ee/threat_monitoring/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
+  fromYaml,
   modifyPolicy,
   SECURITY_POLICY_ACTIONS,
 } from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/lib';
@@ -100,6 +101,10 @@ describe('ScanExecutionPolicyEditor', () => {
         expect(modifyPolicy).toHaveBeenCalledWith({
           action,
           assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
+          name:
+            action === SECURITY_POLICY_ACTIONS.APPEND
+              ? fromYaml(yamlEditorValue).name
+              : mockDastScanExecutionObject.name,
           projectPath: defaultProjectPath,
           yamlEditorValue,
         });
