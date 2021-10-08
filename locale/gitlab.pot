@@ -26303,6 +26303,9 @@ msgstr ""
 msgid "Profiles|You don't have access to delete this user."
 msgstr ""
 
+msgid "Profiles|You must accept the Terms of Service in order to perform this action."
+msgstr ""
+
 msgid "Profiles|You must transfer ownership or delete groups you are an owner of before you can delete your account"
 msgstr ""
 
