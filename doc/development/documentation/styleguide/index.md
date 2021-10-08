@@ -1374,6 +1374,7 @@ Alert boxes are generated when one of these words is followed by a line break:
 - `FLAG:`
 - `NOTE:`
 - `WARNING:`
+- `INFO:` (Marketing only)
 
 For example:
 
@@ -1429,6 +1430,21 @@ It renders on the GitLab documentation site as:
 
 WARNING:
 This is something to be warned about.
+
+### Info
+
+The Marketing team uses the `INFO` alert to add information relating
+to sales and marketing efforts.
+
+```markdown
+INFO:
+This info is important.
+```
+
+It renders on the GitLab documentation site as:
+
+INFO:
+This info is important.
 
 ## Blockquotes
 
