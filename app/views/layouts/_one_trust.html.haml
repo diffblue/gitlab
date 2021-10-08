@@ -1,7 +1,14 @@
 - if one_trust_enabled?
   <!-- OneTrust -->
   = javascript_include_tag "https://cdn.cookielaw.org/consent/#{extra_config.one_trust_id}/OtAutoBlock.js"
-  %script{ :src => "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", :charset => "UTF-8", :"data-domain-script" => extra_config.one_trust_id, :defer => true, :nonce => content_security_policy_nonce }
   = javascript_tag nonce: content_security_policy_nonce do
     :plain
+      const oneTrustScript = document.createElement('script');
+      oneTrustScript.src = 'https://cdn.cookielaw.org/scripttemplates/otSDKStub.js';
+      oneTrustScript.dataset.domainScript = '#{extra_config.one_trust_id}';
+      oneTrustScript.nonce = '#{content_security_policy_nonce}'
+      oneTrustScript.charset = 'UTF-8';
+      oneTrustScript.defer = true;
+      document.head.appendChild(oneTrustScript);
+
       function OptanonWrapper() { }
