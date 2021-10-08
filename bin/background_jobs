@@ -38,8 +38,7 @@ restart()
     stop
   fi
 
-  warn "Sidekiq output will be written to $sidekiq_logfile"
-  start_sidekiq "$@" >> $sidekiq_logfile 2>&1
+  start_sidekiq "$@"
 }
 
 start_sidekiq()
@@ -57,7 +56,7 @@ start_sidekiq()
     processes_args+=("${sidekiq_queues}")
   done
 
-  ${cmd} bin/sidekiq-cluster "${processes_args[@]}" -P $sidekiq_pidfile -e $RAILS_ENV "$@"
+  ${cmd} bin/sidekiq-cluster "${processes_args[@]}" -P $sidekiq_pidfile -e $RAILS_ENV "$@" 2>&1 | tee -a $sidekiq_logfile
 }
 
 action="$1"
