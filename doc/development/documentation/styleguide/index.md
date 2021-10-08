@@ -1447,6 +1447,40 @@ It renders on the GitLab documentation site as:
 INFO:
 This information is important.
 
+The text always renders in a floating text box to the right of the text around it.
+To view the rendered GitLab docs site, check the review app in the MR. You might need to move the text up or down
+in the surrounding text, depending on where you'd like to floating box to appear.
+
+For example, if your page has text like this:
+
+```markdown
+This is an introductory paragraph. GitLab uses the SSH protocol to securely communicate with Git.
+When you use SSH keys to authenticate to the GitLab remote server,
+you don't need to supply your username and password each time.
+
+INFO:
+Here is some information. This information is an important addition to how you
+work with GitLab and you might want to consider it.
+
+And here is another paragraph. GitLab uses the SSH protocol to securely communicate with Git.
+When you use SSH keys to authenticate to the GitLab remote server,
+you don't need to supply your username and password each time.
+```
+
+It renders on the GitLab documentation site as:
+
+This is an introductory paragraph. GitLab uses the SSH protocol to securely communicate with Git.
+When you use SSH keys to authenticate to the GitLab remote server,
+you don't need to supply your username and password each time.
+
+INFO:
+Here is some information. This information is an important addition to how you
+work with GitLab and you might want to consider it.
+
+And here is another paragraph. GitLab uses the SSH protocol to securely communicate with Git.
+When you use SSH keys to authenticate to the GitLab remote server,
+you don't need to supply your username and password each time.
+
 ### Disclaimer
 
 Use to describe future functionality only.
