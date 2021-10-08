@@ -15,7 +15,7 @@ module Gitlab
         directives = {
           'default_src' => "'self'",
           'base_uri' => "'self'",
-          'connect_src' => "'self' https://cdn.cookielaw.org",
+          'connect_src' => "'self'",
           'font_src' => "'self'",
           'form_action' => "'self' https: http:",
           'frame_ancestors' => "'self'",
@@ -23,7 +23,7 @@ module Gitlab
           'img_src' => "'self' data: blob: http: https:",
           'manifest_src' => "'self'",
           'media_src' => "'self'",
-          'script_src' => "'strict-dynamic' 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.recaptcha.net https://apis.google.com https://cdn.cookielaw.org",
+          'script_src' => "'strict-dynamic' 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.recaptcha.net https://apis.google.com",
           'style_src' => "'self' 'unsafe-inline'",
           'worker_src' => "'self' blob: data:",
           'object_src' => "'none'",

@@ -56,22 +56,22 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
     context 'adds all websocket origins to support Safari' do
       it 'with insecure domain' do
         stub_config_setting(host: 'example.com', https: false)
-        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org ws://example.com")
+        expect(directives['connect_src']).to eq("'self' ws://example.com")
       end
 
       it 'with secure domain' do
         stub_config_setting(host: 'example.com', https: true)
-        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org wss://example.com")
+        expect(directives['connect_src']).to eq("'self' wss://example.com")
       end
 
       it 'with custom port' do
         stub_config_setting(host: 'example.com', port: '1234')
-        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org ws://example.com:1234")
+        expect(directives['connect_src']).to eq("'self' ws://example.com:1234")
       end
 
       it 'with custom port and secure domain' do
         stub_config_setting(host: 'example.com', https: true, port: '1234')
-        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org wss://example.com:1234")
+        expect(directives['connect_src']).to eq("'self' wss://example.com:1234")
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
       end
 
       it 'adds CDN host to CSP' do
-        expect(directives['script_src']).to eq("'strict-dynamic' 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.recaptcha.net https://apis.google.com https://cdn.cookielaw.org https://example.com")
+        expect(directives['script_src']).to eq("'strict-dynamic' 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com/recaptcha/ https://www.recaptcha.net https://apis.google.com https://example.com")
         expect(directives['style_src']).to eq("'self' 'unsafe-inline' https://example.com")
         expect(directives['font_src']).to eq("'self' https://example.com")
       end
@@ -94,7 +94,7 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
       end
 
       it 'adds sentry path to CSP without user' do
-        expect(directives['connect_src']).to eq("'self' https://cdn.cookielaw.org ws://example.com dummy://example.com/43")
+        expect(directives['connect_src']).to eq("'self' ws://example.com dummy://example.com/43")
       end
     end
 

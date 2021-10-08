@@ -55,6 +55,16 @@ class SessionsController < Devise::SessionsController
   CAPTCHA_HEADER = 'X-GitLab-Show-Login-Captcha'
   MAX_FAILED_LOGIN_ATTEMPTS = 5
 
+  content_security_policy do |policy|
+    next if policy.directives.blank?
+
+    script_src_values = Array.wrap(policy.directives['script-src']) | ['https://cdn.cookielaw.org https://*.onetrust.com']
+    policy.script_src(*script_src_values)
+
+    connect_src_values = Array.wrap(policy.directives['connect-src']) | ['https://cdn.cookielaw.org']
+    policy.connect_src(*connect_src_values)
+  end
+
   def new
     set_minimum_password_length
 

@@ -12,6 +12,16 @@ class TrialRegistrationsController < RegistrationsController
   before_action :check_if_gl_com_or_dev
   before_action :set_redirect_url, only: [:new]
 
+  content_security_policy do |policy|
+    next if policy.directives.blank?
+
+    script_src_values = Array.wrap(policy.directives['script-src']) | ['https://cdn.cookielaw.org https://*.onetrust.com']
+    policy.script_src(*script_src_values)
+
+    connect_src_values = Array.wrap(policy.directives['connect-src']) | ['https://cdn.cookielaw.org']
+    policy.connect_src(*connect_src_values)
+  end
+
   def new
   end
 

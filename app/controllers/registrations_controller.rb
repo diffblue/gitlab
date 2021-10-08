@@ -15,6 +15,16 @@ class RegistrationsController < Devise::RegistrationsController
 
   feature_category :authentication_and_authorization
 
+  content_security_policy do |policy|
+    next if policy.directives.blank?
+
+    script_src_values = Array.wrap(policy.directives['script-src']) | ['https://cdn.cookielaw.org https://*.onetrust.com']
+    policy.script_src(*script_src_values)
+
+    connect_src_values = Array.wrap(policy.directives['connect-src']) | ['https://cdn.cookielaw.org']
+    policy.connect_src(*connect_src_values)
+  end
+
   def new
     @resource = build_resource
   end
