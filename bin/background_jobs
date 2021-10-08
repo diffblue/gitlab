@@ -3,6 +3,7 @@
 cd $(dirname $0)/..
 app_root=$(pwd)
 sidekiq_workers=${SIDEKIQ_WORKERS:-1}
+sidekiq_queues=${SIDEKIQ_QUEUES:-*} # Queues to listen to; default to `*` (all)
 sidekiq_pidfile="$app_root/tmp/pids/sidekiq-cluster.pid"
 sidekiq_logfile="$app_root/log/sidekiq.log"
 gitlab_user=$(ls -l config.ru | awk '{print $3}')
@@ -50,10 +51,10 @@ start_sidekiq()
     cmd="${cmd} ${chpst} -P"
   fi
 
-  # sidekiq-cluster expects '*' '*' arguments (one wildcard for each process).
+  # sidekiq-cluster expects an argument per process.
   for (( i=1; i<=$sidekiq_workers; i++ ))
   do
-    processes_args+=("*")
+    processes_args+=("${sidekiq_queues}")
   done
 
   ${cmd} bin/sidekiq-cluster "${processes_args[@]}" -P $sidekiq_pidfile -e $RAILS_ENV "$@"
