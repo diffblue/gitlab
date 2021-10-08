@@ -6,7 +6,7 @@ export const planTags = {
   STORAGE_PLAN: 'STORAGE_PLAN',
 };
 /* eslint-enable @gitlab/require-i18n-strings */
-export const CUSTOMER_CLIENT = 'customerClient';
+export const CUSTOMERSDOT_CLIENT = 'customersDotClient';
 export const GITLAB_CLIENT = 'gitlabClient';
 
 export const CI_MINUTES_PER_PACK = 1000;

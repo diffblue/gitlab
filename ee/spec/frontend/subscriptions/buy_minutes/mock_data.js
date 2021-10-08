@@ -1,5 +1,7 @@
 import { STEPS } from 'ee/subscriptions/constants';
 
+export const accountId = '111111111111';
+
 export const mockCiMinutesPlans = [
   {
     id: 'ciMinutesPackPlanId',
@@ -9,16 +11,18 @@ export const mockCiMinutesPlans = [
     __typename: 'Plan',
   },
 ];
-export const mockNamespaces =
-  '[{"id":132,"name":"Gitlab Org","users":3},{"id":483,"name":"Gnuwget","users":12}]';
 
-export const mockParsedNamespaces = [
-  { __typename: 'Namespace', id: 132, name: 'Gitlab Org', users: 3 },
-  { __typename: 'Namespace', id: 483, name: 'Gnuwget', users: 12 },
-];
+export const mockNamespaces = `
+  [{"id":132,"accountId":"${accountId}","name":"Gitlab Org","users":3},
+  {"id":483,"accountId":null,"name":"Gnuwget","users":12}]
+`;
+
+export const mockParsedNamespaces = JSON.parse(mockNamespaces).map((namespace) => ({
+  ...namespace,
+  __typename: 'Namespace',
+}));
 
 export const mockNewUser = 'false';
-export const mockFullName = 'John Admin';
 export const mockSetupForCompany = 'true';
 
 export const mockDefaultCache = {
@@ -28,13 +32,13 @@ export const mockDefaultCache = {
 };
 
 export const stateData = {
-  namespaces: [],
+  eligibleNamespaces: [],
   subscription: {
     quantity: 1,
-    namespaceId: null,
     __typename: 'Subscription',
   },
   redirectAfterSuccess: '/path/to/redirect/',
+  selectedNamespaceId: null,
   selectedPlanId: null,
   paymentMethod: {
     id: null,

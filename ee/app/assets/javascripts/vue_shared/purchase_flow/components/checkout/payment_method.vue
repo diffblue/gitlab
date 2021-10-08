@@ -1,5 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
+import find from 'lodash/find';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
@@ -17,8 +18,18 @@ export default {
       query: stateQuery,
       update: (data) => data.paymentMethod,
     },
+    selectedNamespace: {
+      query: stateQuery,
+      update: ({ eligibleNamespaces, selectedNamespaceId }) => {
+        const id = Number(selectedNamespaceId);
+        return find(eligibleNamespaces, { id });
+      },
+    },
   },
   computed: {
+    accountId() {
+      return this.selectedNamespace?.accountId || '';
+    },
     isValid() {
       return Boolean(this.paymentMethod.id);
     },
@@ -40,10 +51,10 @@ export default {
 <template>
   <step :step-id="$options.stepId" :title="$options.i18n.stepTitle" :is-valid="isValid">
     <template #body="{ active }">
-      <zuora :active="active" />
+      <zuora :active="active" :account-id="accountId" />
     </template>
     <template #summary>
-      <div class="js-summary-line-1">
+      <div data-testid="card-details">
         <gl-sprintf :message="$options.i18n.paymentMethod">
           <template #cardType>
             {{ paymentMethod.creditCardType }}
@@ -53,7 +64,7 @@ export default {
           </template>
         </gl-sprintf>
       </div>
-      <div class="js-summary-line-2">
+      <div data-testid="card-expiration">
         {{ expirationDate }}
       </div>
     </template>

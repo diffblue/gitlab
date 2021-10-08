@@ -61,7 +61,7 @@ describe('Billing Address', () => {
   });
 
   describe('validations', () => {
-    const isStepValid = () => wrapper.find(Step).props('isValid');
+    const isStepValid = () => wrapper.findComponent(Step).props('isValid');
     const customerData = {
       country: 'US',
       address1: 'address line 1',

@@ -17,7 +17,7 @@ describe('Checkout', () => {
     });
   };
 
-  const findProgressBar = () => wrapper.find(ProgressBar);
+  const findProgressBar = () => wrapper.findComponent(ProgressBar);
 
   beforeEach(() => {
     store = createStore();

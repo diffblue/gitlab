@@ -1,5 +1,6 @@
 <script>
 import { GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/ui';
+import find from 'lodash/find';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import { TAX_RATE } from 'ee/subscriptions/new/constants';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
@@ -35,24 +36,22 @@ export default {
       query: stateQuery,
       manual: true,
       result({ data }) {
-        this.namespaces = data.namespaces;
+        const id = Number(data.selectedNamespaceId);
+        this.selectedNamespace = find(data.eligibleNamespaces, { id });
         this.subscription = data.subscription;
       },
     },
   },
   data() {
     return {
-      subscription: {},
-      namespaces: [],
       isBottomSummaryVisible: false,
+      selectedNamespace: {},
+      subscription: {},
     };
   },
   computed: {
     selectedPlanPrice() {
       return this.plan.pricePerYear;
-    },
-    selectedGroup() {
-      return this.namespaces.find((group) => group.id === Number(this.subscription.namespaceId));
     },
     totalExVat() {
       return this.subscription.quantity * this.selectedPlanPrice;
@@ -67,7 +66,7 @@ export default {
       return this.subscription.quantity > 0;
     },
     namespaceName() {
-      return this.selectedGroup.name;
+      return this.selectedNamespace.name;
     },
     titleWithName() {
       return sprintf(this.title, { name: this.namespaceName });

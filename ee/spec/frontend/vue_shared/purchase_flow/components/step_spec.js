@@ -171,14 +171,14 @@ describe('Step', () => {
       const mockApollo = createMockApolloProvider(STEPS, 1);
       wrapper = createComponent({ apolloProvider: mockApollo });
 
-      expect(wrapper.find(GlButton).attributes('disabled')).toBeUndefined();
+      expect(wrapper.findComponent(GlButton).attributes('disabled')).toBeUndefined();
     });
 
     it('displays an error if navigating too far', async () => {
       const mockApollo = createMockApolloProvider(STEPS, 2);
       wrapper = createComponent({ propsData: { stepId: STEPS[2].id }, apolloProvider: mockApollo });
 
-      wrapper.find(GlButton).vm.$emit('click');
+      wrapper.findComponent(GlButton).vm.$emit('click');
       await waitForPromises();
 
       expect(flash.mock.calls).toHaveLength(1);

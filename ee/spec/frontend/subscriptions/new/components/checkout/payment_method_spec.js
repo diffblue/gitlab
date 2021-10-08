@@ -44,7 +44,7 @@ describe('Payment Method', () => {
   });
 
   describe('validations', () => {
-    const isStepValid = () => wrapper.find(Step).props('isValid');
+    const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 
     it('should be valid when paymentMethodId is defined', () => {
       expect(isStepValid()).toBe(true);

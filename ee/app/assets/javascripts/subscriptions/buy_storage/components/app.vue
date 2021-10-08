@@ -20,7 +20,7 @@ import {
   I18N_STORAGE_PRICE_PRE_UNIT,
   I18N_STORAGE_TOOLTIP_NOTE,
   planTags,
-  CUSTOMER_CLIENT,
+  CUSTOMERSDOT_CLIENT,
   STORAGE_PER_PACK,
 } from '../../buy_addons_shared/constants';
 import plansQuery from '../../graphql/queries/plans.customer.query.graphql';
@@ -94,7 +94,7 @@ export default {
   },
   apollo: {
     plans: {
-      client: CUSTOMER_CLIENT,
+      client: CUSTOMERSDOT_CLIENT,
       query: plansQuery,
       variables: {
         tags: [planTags.STORAGE_PLAN],

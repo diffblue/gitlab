@@ -23,11 +23,16 @@ export default {
       type: Boolean,
       required: true,
     },
+    accountId: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
       isLoading: false,
-      paymentFormParams: null,
+      paymentFormParams: {},
       zuoraLoaded: false,
       zuoraScriptEl: null,
     };
@@ -35,6 +40,14 @@ export default {
   computed: {
     shouldShowZuoraFrame() {
       return this.active && this.zuoraLoaded && !this.isLoading;
+    },
+    renderParams() {
+      return {
+        ...this.paymentFormParams,
+        ...ZUORA_IFRAME_OVERRIDE_PARAMS,
+        // @TODO: should the component handle re-rendering the form in case this changes?
+        field_accountId: this.accountId,
+      };
     },
   },
   mounted() {
@@ -94,9 +107,8 @@ export default {
         });
     },
     renderZuoraIframe() {
-      const params = { ...this.paymentFormParams, ...ZUORA_IFRAME_OVERRIDE_PARAMS };
       window.Z.runAfterRender(this.zuoraIframeRendered);
-      window.Z.render(params, {}, this.paymentFormSubmitted);
+      window.Z.render(this.renderParams, {}, this.paymentFormSubmitted);
     },
     activateNextStep() {
       return this.$apollo

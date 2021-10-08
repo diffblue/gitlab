@@ -11,20 +11,19 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import flash from '~/flash';
 import * as UrlUtility from '~/lib/utils/url_utility';
+import flushPromises from 'helpers/flush_promises';
 
 jest.mock('~/lib/utils/url_utility');
 jest.mock('~/flash');
 jest.mock('ee/api.js');
-
-const flushPromises = () => new Promise(setImmediate);
 
 describe('Confirm Order', () => {
   let mockApolloProvider;
   let wrapper;
 
   const findRootElement = () => wrapper.findByTestId('confirm-order-root');
-  const findConfirmButton = () => wrapper.find(GlButton);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findConfirmButton = () => wrapper.findComponent(GlButton);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const localVue = createLocalVue();
   localVue.use(VueApollo);
@@ -77,7 +76,7 @@ describe('Confirm Order', () => {
         expect(Api.confirmOrder).toHaveBeenCalledTimes(1);
         expect(Api.confirmOrder.mock.calls[0][0]).toMatchObject({
           setup_for_company: true,
-          selected_group: null,
+          selected_group: undefined,
           new_user: false,
           redirect_after_success: '/path/to/redirect/',
           customer: {

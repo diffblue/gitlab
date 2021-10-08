@@ -1,7 +1,7 @@
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 import { writeInitialDataToApolloCache } from 'ee/subscriptions/buy_addons_shared/utils';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
-import { mockNamespaces, mockParsedNamespaces } from './mock_data';
+import { mockNamespaces, mockParsedNamespaces } from '../buy_minutes/mock_data';
 
 const DEFAULT_DATA = {
   groupData: mockNamespaces,
@@ -26,7 +26,7 @@ describe('utils', () => {
         ${''}             | ${{}}                   | ${true}
         ${mockNamespaces} | ${mockParsedNamespaces} | ${false}
       `('parameter decoding', ({ namespaces, parsedNamespaces, throws }) => {
-        it(`decodes ${namespaces} to ${parsedNamespaces}`, async () => {
+        it(`decodes $namespaces to $parsedNamespaces`, async () => {
           if (throws) {
             expect(() => {
               writeInitialDataToApolloCache(apolloProvider, { groupData: namespaces });
@@ -39,7 +39,7 @@ describe('utils', () => {
             const sourceData = await apolloProvider.clients.defaultClient.query({
               query: stateQuery,
             });
-            expect(sourceData.data.namespaces).toStrictEqual(parsedNamespaces);
+            expect(sourceData.data.eligibleNamespaces).toStrictEqual(parsedNamespaces);
           }
         });
       });

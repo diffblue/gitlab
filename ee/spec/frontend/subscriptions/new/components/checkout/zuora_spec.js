@@ -39,7 +39,7 @@ describe('Zuora', () => {
     });
   };
 
-  const findLoading = () => wrapper.find(GlLoadingIcon);
+  const findLoading = () => wrapper.findComponent(GlLoadingIcon);
   const findZuoraPayment = () => wrapper.find('#zuora_payment');
 
   beforeEach(() => {
