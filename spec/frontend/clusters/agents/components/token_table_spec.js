@@ -1,6 +1,6 @@
 import { GlEmptyState, GlLink, GlTooltip, GlTruncate } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import TokenTable from 'ee/clusters/agents/components/token_table.vue';
+import TokenTable from '~/clusters/agents/components/token_table.vue';
 import { useFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 

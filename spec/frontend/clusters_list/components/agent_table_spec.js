@@ -1,6 +1,6 @@
 import { GlButton, GlLink, GlIcon } from '@gitlab/ui';
-import AgentTable from 'ee/clusters_list/components/agent_table.vue';
-import { ACTIVE_CONNECTION_TIME } from 'ee/clusters_list/constants';
+import AgentTable from '~/clusters_list/components/agent_table.vue';
+import { ACTIVE_CONNECTION_TIME } from '~/clusters_list/constants';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 

@@ -1,11 +1,11 @@
 import { GlAlert, GlKeysetPagination, GlLoadingIcon } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import AgentEmptyState from 'ee/clusters_list/components/agent_empty_state.vue';
-import AgentTable from 'ee/clusters_list/components/agent_table.vue';
-import Agents from 'ee/clusters_list/components/agents.vue';
-import { ACTIVE_CONNECTION_TIME } from 'ee/clusters_list/constants';
-import getAgentsQuery from 'ee/clusters_list/graphql/queries/get_agents.query.graphql';
+import AgentEmptyState from '~/clusters_list/components/agent_empty_state.vue';
+import AgentTable from '~/clusters_list/components/agent_table.vue';
+import Agents from '~/clusters_list/components/agents.vue';
+import { ACTIVE_CONNECTION_TIME } from '~/clusters_list/constants';
+import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
 const localVue = createLocalVue();
