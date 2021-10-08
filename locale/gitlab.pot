@@ -39712,6 +39712,9 @@ msgstr ""
 msgid "ciReport|%{linkStartTag}Learn more about codequality reports %{linkEndTag}"
 msgstr ""
 
+msgid "ciReport|%{prefix} %{strongStart}%{score}%{strongEnd} %{delta} %{deltaPercent} in %{path}"
+msgstr ""
+
 msgid "ciReport|%{remainingPackagesCount} more"
 msgstr ""
 
@@ -39750,6 +39753,11 @@ msgstr ""
 
 msgid "ciReport|Browser performance test metrics: "
 msgstr ""
+
+msgid "ciReport|Browser performance test metrics: %{strongStart}%{changesFound}%{strongEnd} change"
+msgid_plural "ciReport|Browser performance test metrics: %{strongStart}%{changesFound}%{strongEnd} changes"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "ciReport|Browser performance test metrics: No changes"
 msgstr ""
