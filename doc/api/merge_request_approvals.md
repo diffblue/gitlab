@@ -297,7 +297,7 @@ POST /projects/:id/approval_rules
 | `rule_type`            | string  | no       | The type of rule. `any_approver` is a pre-configured default rule with `approvals_required` at `0`. Other rules are `regular`.
 | `user_ids`             | Array   | no       | The ids of users as approvers                                    |
 | `group_ids`            | Array   | no       | The ids of groups as approvers                                   |
-| `protected_branch_ids` | Array   | no       | **(PREMIUM)** The ids of protected branches to scope the rule by |
+| `protected_branch_ids` | Array   | no       | **(PREMIUM)** The ids of protected branches to scope the rule by. To identify the ID, [use the API](protected_branches.md#list-protected-branches). |
 
 ```json
 {
@@ -420,7 +420,7 @@ PUT /projects/:id/approval_rules/:approval_rule_id
 | `approvals_required`   | integer | yes      | The number of required approvals for this rule                   |
 | `user_ids`             | Array   | no       | The ids of users as approvers                                    |
 | `group_ids`            | Array   | no       | The ids of groups as approvers                                   |
-| `protected_branch_ids` | Array   | no       | **(PREMIUM)** The ids of protected branches to scope the rule by |
+| `protected_branch_ids` | Array   | no       | **(PREMIUM)** The ids of protected branches to scope the rule by. To identify the ID, [use the API](protected_branches.md#list-protected-branches). |
 
 ```json
 {
