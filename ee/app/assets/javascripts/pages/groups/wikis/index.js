@@ -1,7 +1,3 @@
-import initClonePanel from '~/clone_panel';
-import { initDiffStatsDropdown } from '~/init_diff_stats_dropdown';
-import initWikis from '~/pages/shared/wikis';
+import Wikis from '~/pages/shared/wikis/wikis';
 
-initWikis();
-initClonePanel();
-initDiffStatsDropdown();
+export default new Wikis();
