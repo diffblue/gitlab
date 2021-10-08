@@ -1,3 +1,5 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+
 query getCodeQualityViolations($projectPath: ID!, $iid: ID!, $first: Int, $after: String) {
   project(fullPath: $projectPath) {
     pipeline(iid: $iid) {
@@ -13,9 +15,7 @@ query getCodeQualityViolations($projectPath: ID!, $iid: ID!, $first: Int, $after
           }
         }
         pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
+          ...PageInfo
         }
       }
     }

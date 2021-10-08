@@ -40214,6 +40214,9 @@ msgstr ""
 msgid "ciReport|Failed to load %{reportName} report"
 msgstr ""
 
+msgid "ciReport|Failed to load Code Quality report"
+msgstr ""
+
 msgid "ciReport|Fixed"
 msgstr ""
 
@@ -40244,6 +40247,9 @@ msgid "ciReport|Load performance test metrics: No changes"
 msgstr ""
 
 msgid "ciReport|Loading %{reportName} report"
+msgstr ""
+
+msgid "ciReport|Loading Code Quality report"
 msgstr ""
 
 msgid "ciReport|Manage licenses"
@@ -40280,6 +40286,9 @@ msgid "ciReport|Security scanning"
 msgstr ""
 
 msgid "ciReport|Security scanning failed loading any results"
+msgstr ""
+
+msgid "ciReport|Showing %{fetchedItems} of %{totalItems} items"
 msgstr ""
 
 msgid "ciReport|Solution"
