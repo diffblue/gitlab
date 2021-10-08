@@ -1,6 +1,7 @@
 query State {
-  namespaces @client {
+  eligibleNamespaces @client {
     id
+    accountId
     name
     users
   }
@@ -8,6 +9,7 @@ query State {
   fullName @client
   isSetupForCompany @client
   selectedPlanId @client
+  selectedNamespaceId @client
   redirectAfterSuccess @client
   customer @client {
     country
@@ -27,7 +29,6 @@ query State {
   }
   subscription @client {
     quantity
-    namespaceId
   }
   activeStep @client {
     id

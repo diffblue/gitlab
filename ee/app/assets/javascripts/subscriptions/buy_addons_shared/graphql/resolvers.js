@@ -39,11 +39,9 @@ export const resolvers = {
     },
     updateState: (_, { input }, { cache }) => {
       const oldState = cache.readQuery({ query: stateQuery });
-
       const state = produce(oldState, (draftState) => {
         merge(draftState, input);
       });
-
       cache.writeQuery({ query: stateQuery, data: state });
     },
   },

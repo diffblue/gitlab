@@ -17,6 +17,7 @@ export default (el) => {
 
   return new Vue({
     el,
+    name: 'BuyCIMinutes',
     apolloProvider,
     render(createElement) {
       return createElement(extendedApp);

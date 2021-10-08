@@ -51,7 +51,7 @@ RSpec.describe SubscriptionsHelper do
     it { is_expected.to include(plan_id: 'bronze_id') }
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(source: 'some_source') }
-    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":2,"guests":1}]}) }
+    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"account_id":null,"name":"My Namespace","users":2,"guests":1}]}) }
 
     describe 'new_user' do
       where(:referer, :expected_result) do
@@ -150,7 +150,7 @@ RSpec.describe SubscriptionsHelper do
 
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(source: 'some_source') }
-    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"name":"My Namespace","users":1,"guests":0}]}) }
+    it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"account_id":null,"name":"My Namespace","users":1,"guests":0}]}) }
     it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product)) }
   end
 end

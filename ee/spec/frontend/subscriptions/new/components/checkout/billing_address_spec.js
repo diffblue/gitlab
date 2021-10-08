@@ -85,7 +85,7 @@ describe('Billing Address', () => {
   });
 
   describe('validations', () => {
-    const isStepValid = () => wrapper.find(Step).props('isValid');
+    const isStepValid = () => wrapper.findComponent(Step).props('isValid');
 
     beforeEach(() => {
       store.commit(types.UPDATE_COUNTRY, 'country');

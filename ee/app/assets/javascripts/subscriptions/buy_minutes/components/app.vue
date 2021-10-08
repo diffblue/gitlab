@@ -20,14 +20,13 @@ import {
   I18N_CI_MINUTES_PRICE_PRE_UNIT,
   I18N_CI_MINUTES_TITLE,
   planTags,
-  CUSTOMER_CLIENT,
+  CUSTOMERSDOT_CLIENT,
   CI_MINUTES_PER_PACK,
 } from '../../buy_addons_shared/constants';
 
 import plansQuery from '../../graphql/queries/plans.customer.query.graphql';
 
 export default {
-  name: 'BuyCIMinutesApp',
   components: {
     Checkout,
     GlEmptyState,
@@ -93,7 +92,7 @@ export default {
   },
   apollo: {
     plans: {
-      client: CUSTOMER_CLIENT,
+      client: CUSTOMERSDOT_CLIENT,
       query: plansQuery,
       variables: {
         tags: [planTags.CI_1000_MINUTES_PLAN],

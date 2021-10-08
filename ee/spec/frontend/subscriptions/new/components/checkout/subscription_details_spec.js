@@ -263,7 +263,7 @@ describe('Subscription Details', () => {
   });
 
   describe('validations', () => {
-    const isStepValid = () => wrapper.find(Step).props('isValid');
+    const isStepValid = () => wrapper.findComponent(Step).props('isValid');
     let store;
 
     beforeEach(() => {

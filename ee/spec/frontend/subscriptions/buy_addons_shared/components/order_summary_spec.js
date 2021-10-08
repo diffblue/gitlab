@@ -1,6 +1,7 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import subscriptionsResolvers from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
@@ -17,32 +18,30 @@ localVue.use(VueApollo);
 
 describe('Order Summary', () => {
   const resolvers = { ...purchaseFlowResolvers, ...subscriptionsResolvers };
+  const selectedNamespaceId = mockParsedNamespaces[0].id;
   const initialStateData = {
-    selectedPlanId: 'ciMinutesPackPlanId',
-    namespaces: [mockParsedNamespaces[0]],
-    subscription: {
-      namespaceId: mockParsedNamespaces[0].id,
-    },
+    eligibleNamespaces: mockParsedNamespaces,
+    selectedNamespaceId,
+    subscription: {},
   };
   let wrapper;
 
+  const findAmount = () => wrapper.findByTestId('amount');
+  const findTitle = () => wrapper.findByTestId('title');
+
   const createMockApolloProvider = (stateData = {}) => {
     const mockApollo = createMockApollo([], resolvers);
-
     const data = merge({}, mockStateData, initialStateData, stateData);
-
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: stateQuery,
       data,
     });
-
     return mockApollo;
   };
 
   const createComponent = (stateData) => {
     const apolloProvider = createMockApolloProvider(stateData);
-
-    wrapper = shallowMount(OrderSummary, {
+    wrapper = shallowMountExtended(OrderSummary, {
       localVue,
       apolloProvider,
       propsData: {
@@ -65,9 +64,7 @@ describe('Order Summary', () => {
     });
 
     it('displays the title', () => {
-      expect(wrapper.find('[data-testid="title"]').text()).toMatchInterpolatedText(
-        "Gitlab Org's CI minutes",
-      );
+      expect(findTitle().text()).toMatchInterpolatedText("Gitlab Org's CI minutes");
     });
   });
 
@@ -79,7 +76,7 @@ describe('Order Summary', () => {
     });
 
     it('renders amount', () => {
-      expect(wrapper.find('[data-testid="amount"]').text()).toBe('$30');
+      expect(findAmount().text()).toBe('$30');
     });
   });
 
@@ -91,7 +88,7 @@ describe('Order Summary', () => {
     });
 
     it('does not render amount', () => {
-      expect(wrapper.find('[data-testid="amount"]').text()).toBe('-');
+      expect(findAmount().text()).toBe('-');
     });
   });
 });

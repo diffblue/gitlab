@@ -10,6 +10,7 @@ import Zuora from 'ee/vue_shared/purchase_flow/components/checkout/zuora.vue';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import axios from '~/lib/utils/axios_utils';
+import flushPromises from 'helpers/flush_promises';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -39,7 +40,7 @@ describe('Zuora', () => {
     });
   };
 
-  const findLoading = () => wrapper.find(GlLoadingIcon);
+  const findLoading = () => wrapper.findComponent(GlLoadingIcon);
   const findZuoraPayment = () => wrapper.find('#zuora_payment');
 
   beforeEach(() => {
@@ -47,7 +48,7 @@ describe('Zuora', () => {
       runAfterRender(fn) {
         return Promise.resolve().then(fn);
       },
-      render() {},
+      render: jest.fn(),
     };
 
     axiosMock = new AxiosMockAdapter(axios);
@@ -95,6 +96,27 @@ describe('Zuora', () => {
 
     it('the zuora_payment selector should not be visible', () => {
       expect(findZuoraPayment().isVisible()).toBe(false);
+    });
+  });
+
+  describe.each(['', '111111'])('when rendering the iframe with account id: %s', (id) => {
+    beforeEach(() => {
+      wrapper = createComponent({ accountId: id }, { isLoading: false });
+      wrapper.vm.zuoraScriptEl.onload();
+      return flushPromises();
+    });
+
+    it(`calls render with ${id}`, () => {
+      expect(window.Z.render).toHaveBeenCalledWith(
+        {
+          field_accountId: id,
+          retainValues: 'true',
+          style: 'inline',
+          submitEnabled: 'true',
+        },
+        {},
+        expect.any(Function),
+      );
     });
   });
 });

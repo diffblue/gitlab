@@ -31,8 +31,8 @@ describe('Confirm Order', () => {
     });
   }
 
-  const findConfirmButton = () => wrapper.find(GlButton);
-  const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
+  const findConfirmButton = () => wrapper.findComponent(GlButton);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   afterEach(() => {
     wrapper.destroy();

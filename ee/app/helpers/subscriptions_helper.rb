@@ -60,6 +60,7 @@ module SubscriptionsHelper
   def present_group(namespace)
     {
       id: namespace.id,
+      account_id: nil,
       name: namespace.name,
       users: namespace.member_count,
       guests: namespace.guest_count
