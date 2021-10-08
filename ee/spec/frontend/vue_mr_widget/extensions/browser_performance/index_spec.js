@@ -40,6 +40,17 @@ describe('Browser performance extension', () => {
   });
 
   describe('summary', () => {
+    it('should render loading text', async () => {
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
+      mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
+
+      registerExtension(browserPerformanceExtension);
+
+      await nextTick();
+
+      expect(wrapper.text()).toContain('Browser performance test metrics results are being parsed');
+    });
+
     it('should render info', async () => {
       mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
       mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);

@@ -6,6 +6,10 @@ import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 export default {
   name: 'WidgetBrowserPerformance',
   props: ['browserPerformance'],
+  i18n: {
+    label: s__('ciReport|Browser Performance'),
+    loading: s__('ciReport|Browser performance test metrics results are being parsed'),
+  },
   computed: {
     summary() {
       const { improved, degraded, same } = this.collapsedData;

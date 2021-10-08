@@ -39847,6 +39847,12 @@ msgstr ""
 msgid "ciReport|Base pipeline codequality artifact not found"
 msgstr ""
 
+msgid "ciReport|Browser Performance"
+msgstr ""
+
+msgid "ciReport|Browser performance test metrics results are being parsed"
+msgstr ""
+
 msgid "ciReport|Browser performance test metrics: "
 msgstr ""
 
@@ -39937,6 +39943,9 @@ msgid "ciReport|Load performance test metrics detected %{strongStart}%{changesFo
 msgid_plural "ciReport|Load performance test metrics detected %{strongStart}%{changesFound}%{strongEnd} changes"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "ciReport|Load performance test metrics results are being parsed"
+msgstr ""
 
 msgid "ciReport|Load performance test metrics: "
 msgstr ""
