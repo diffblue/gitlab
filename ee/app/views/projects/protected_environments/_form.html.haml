@@ -11,7 +11,7 @@
         = render partial: 'projects/protected_environments/environments_dropdown', locals: { f: f, project: @project }
 
       .form-group
-        %label#allowed-users-label.label-bold
+        %label#allowed-users-label.label-bold.gl-display-block
           = s_('ProtectedEnvironment|Allowed to deploy')
         .js-allowed-to-deploy-dropdown
 

@@ -5,7 +5,7 @@ import AccessorUtilities from '~/lib/utils/accessor';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import { initAccessDropdown } from '~/projects/settings/init_access_dropdown';
-import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
+import { ACCESS_LEVELS } from './constants';
 
 const PROTECTED_ENVIRONMENT_INPUT = 'input[name="protected_environment[name]"]';
 
@@ -84,29 +84,7 @@ export default class ProtectedEnvironmentCreate {
         name: this.$form.find(PROTECTED_ENVIRONMENT_INPUT).val(),
       },
     };
-
-    Object.keys(ACCESS_LEVELS).forEach((level) => {
-      const accessLevel = ACCESS_LEVELS[level];
-      const levelAttributes = [];
-
-      this.selected.forEach((item) => {
-        if (item.type === LEVEL_TYPES.USER) {
-          levelAttributes.push({
-            user_id: item.id,
-          });
-        } else if (item.type === LEVEL_TYPES.ROLE) {
-          levelAttributes.push({
-            access_level: item.id,
-          });
-        } else if (item.type === LEVEL_TYPES.GROUP) {
-          levelAttributes.push({
-            group_id: item.id,
-          });
-        }
-      });
-
-      formData.protected_environment[`${accessLevel}_attributes`] = levelAttributes;
-    });
+    formData.protected_environment[`${ACCESS_LEVELS.DEPLOY}_attributes`] = this.selected;
 
     return formData;
   }

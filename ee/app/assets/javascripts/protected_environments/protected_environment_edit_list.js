@@ -1,19 +1,42 @@
-/* eslint-disable no-new */
+import * as Sentry from '@sentry/browser';
+import Vue from 'vue';
+import { GlToast } from '@gitlab/ui';
+import ProtectedEnvironmentEdit from './protected_environment_edit.vue';
 
-import $ from 'jquery';
-import ProtectedEnvironmentEdit from './protected_environment_edit';
+Vue.use(GlToast);
 
-export default class ProtectedEnvironmentEditList {
-  constructor() {
-    this.$wrap = $('.protected-branches-list');
-    this.initEditForm();
-  }
+export const initProtectedEnvironmentEditList = () => {
+  const parentContainer = document.querySelector('.js-protected-environments-list');
+  const envEditFormEls = parentContainer.querySelectorAll('.js-protected-environment-edit-form');
 
-  initEditForm() {
-    this.$wrap.find('.js-protected-environment-edit-form').each((i, el) => {
-      new ProtectedEnvironmentEdit({
-        $wrap: $(el),
-      });
+  envEditFormEls.forEach((el) => {
+    const accessDropdownEl = el.querySelector('.js-allowed-to-deploy');
+    if (!accessDropdownEl) {
+      return false;
+    }
+
+    const { url } = el.dataset;
+    const { label, disabled, preselectedItems } = accessDropdownEl.dataset;
+
+    let preselected = [];
+    try {
+      preselected = JSON.parse(preselectedItems);
+    } catch (e) {
+      Sentry.captureException(e);
+    }
+    return new Vue({
+      el: accessDropdownEl,
+      render(createElement) {
+        return createElement(ProtectedEnvironmentEdit, {
+          props: {
+            parentContainer,
+            preselectedItems: preselected,
+            url,
+            label,
+            disabled,
+          },
+        });
+      },
     });
-  }
-}
+  });
+};

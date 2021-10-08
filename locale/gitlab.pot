@@ -32804,6 +32804,9 @@ msgstr ""
 msgid "Successfully updated %{last_updated_timeago}."
 msgstr ""
 
+msgid "Successfully updated the environment."
+msgstr ""
+
 msgid "Suggest code changes which can be immediately applied in one click. Try it out!"
 msgstr ""
 
