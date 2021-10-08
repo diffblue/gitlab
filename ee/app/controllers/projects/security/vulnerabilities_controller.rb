@@ -19,7 +19,7 @@ module Projects
       feature_category :vulnerability_management
 
       def show
-        pipeline = vulnerability.finding.pipelines.first
+        pipeline = vulnerability.finding.first_finding_pipeline
         @pipeline = pipeline if Ability.allowed?(current_user, :read_pipeline, pipeline)
         @gfm_form = true
       end

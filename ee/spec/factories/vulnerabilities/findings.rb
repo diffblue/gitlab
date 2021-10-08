@@ -235,8 +235,7 @@ FactoryBot.define do
     trait :with_pipeline do
       after(:create) do |finding|
         pipeline = create(:ci_pipeline, project: finding.project)
-
-        finding.pipelines = [pipeline]
+        create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline)
       end
     end
 
