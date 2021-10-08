@@ -8887,10 +8887,10 @@ msgstr ""
 msgid "ContainerRegistry|Delete selected tags"
 msgstr ""
 
-msgid "ContainerRegistry|Deleting the image repository will delete all images and tags inside. This action cannot be undone. Please type the following to confirm: %{code}"
+msgid "ContainerRegistry|Delete tag"
 msgstr ""
 
-msgid "ContainerRegistry|Deletion disabled due to missing or insufficient permissions."
+msgid "ContainerRegistry|Deleting the image repository will delete all images and tags inside. This action cannot be undone. Please type the following to confirm: %{code}"
 msgstr ""
 
 msgid "ContainerRegistry|Digest: %{imageId}"
