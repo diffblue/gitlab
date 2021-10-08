@@ -3611,6 +3611,9 @@ msgstr ""
 msgid "An error occurred while fetching codequality mr diff reports."
 msgstr ""
 
+msgid "An error occurred while fetching commit data."
+msgstr ""
+
 msgid "An error occurred while fetching commits.  Retry the search."
 msgstr ""
 
