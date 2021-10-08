@@ -3,6 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
+  shared_examples 'not enforced' do
+    it 'is not enforced' do
+      expect(enforced?).to be false
+    end
+  end
+
   describe '#access_restricted' do
     let_it_be(:saml_provider) { create(:saml_provider, enforced_sso: true) }
     let_it_be(:user) { create(:user) }
@@ -10,7 +16,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
 
     let(:root_group) { saml_provider.group }
 
-    subject { described_class.new(user, root_group).access_restricted? }
+    subject(:enforced?) { described_class.new(user, root_group).access_restricted? }
 
     before do
       stub_licensed_features(group_saml: true)
@@ -35,20 +41,26 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           end
         end
 
-        it { is_expected.to be_falsey }
+        it_behaves_like 'not enforced'
 
         context 'with sub-group' do
-          let(:group) { create(:group, parent: root_group) }
+          before do
+            allow(group).to receive(:root_ancestor).and_return(root_group)
+          end
 
-          subject { described_class.new(user, group).access_restricted? }
+          let(:group) { create(:group) }
 
-          it { is_expected.to be_falsey }
+          subject(:enforced?) { described_class.new(user, group).access_restricted? }
+
+          it_behaves_like 'not enforced'
         end
 
         context 'with expired session' do
           let(:session_time) { 2.days.ago }
 
-          it { is_expected.to be_truthy }
+          it 'returns true' do
+            expect(enforced?).to eq(true)
+          end
         end
 
         context 'with two active sessions', :clean_gitlab_redis_shared_state do
@@ -64,7 +76,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             end
           end
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with two active sessions for the same provider and one pre-sso', :clean_gitlab_redis_shared_state do
@@ -82,7 +94,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             end
           end
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'without enforced_sso_expiry feature flag' do
@@ -92,31 +104,31 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             stub_feature_flags(enforced_sso_expiry: false)
           end
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'without group' do
           let(:root_group) { nil }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'without saml_provider' do
           let(:root_group) { create(:group) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with admin', :enable_admin_mode do
           let(:user) { create(:user, :admin) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with auditor' do
           let(:user) { create(:user, :auditor) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with group owner' do
@@ -124,23 +136,25 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             root_group.add_owner(user)
           end
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
       end
 
       context 'without any session' do
-        it { is_expected.to be_truthy }
+        it 'returns true' do
+          expect(enforced?).to eq(true)
+        end
 
         context 'with admin', :enable_admin_mode do
           let(:user) { create(:user, :admin) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with auditor' do
           let(:user) { create(:user, :auditor) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
 
         context 'with group owner' do
@@ -148,13 +162,27 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
             root_group.add_owner(user)
           end
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
+
+          context 'when group is a subgroup' do
+            before do
+              allow(group).to receive(:root_ancestor).and_return(root_group)
+            end
+
+            let(:group) { create(:group) }
+
+            subject(:enforced?) { described_class.new(user, group).access_restricted? }
+
+            it 'returns true' do
+              expect(enforced?).to eq(true)
+            end
+          end
         end
 
         context 'with project bot' do
           let(:user) { create(:user, :project_bot) }
 
-          it { is_expected.to be_falsey }
+          it_behaves_like 'not enforced'
         end
       end
     end
@@ -177,11 +205,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           end
         end
 
-        it { is_expected.to be_falsey }
+        it_behaves_like 'not enforced'
       end
 
       context 'without any session' do
-        it { is_expected.to be_falsey }
+        it_behaves_like 'not enforced'
       end
     end
   end
