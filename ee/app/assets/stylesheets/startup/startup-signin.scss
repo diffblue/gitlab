@@ -258,15 +258,6 @@ fieldset:disabled a.btn {
   align-items: center;
   justify-content: space-between;
 }
-.d-block {
-  display: block !important;
-}
-.d-flex {
-  display: flex !important;
-}
-.align-items-center {
-  align-items: center !important;
-}
 .fixed-top {
   position: fixed;
   top: 0;
@@ -764,6 +755,9 @@ svg {
 .gl-display-block {
   display: block;
 }
+.gl-align-items-center {
+  align-items: center;
+}
 .gl-flex-wrap {
   flex-wrap: wrap;
 }
@@ -786,6 +780,9 @@ svg {
   .gl-sm-mt-0 {
     margin-top: 0;
   }
+}
+.gl-font-weight-bold {
+  font-weight: 600;
 }
 
 @import "startup/cloaking";
