@@ -86,6 +86,7 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       end
 
       it 'displays the in-app hand raise lead' do
+        skip "not supported for #{plan.name}" if plan.name == 'bronze'
         page.within('.content') do
           expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
         end
