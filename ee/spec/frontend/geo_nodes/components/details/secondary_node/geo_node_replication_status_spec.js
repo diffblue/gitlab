@@ -27,7 +27,6 @@ describe('GeoNodeReplicationStatus', () => {
     wrapper.destroy();
   });
 
-  const findReplicationStatusIcon = () => wrapper.findByTestId('replication-status-icon');
   const findReplicationStatusText = () => wrapper.findByTestId('replication-status-text');
   const findQuestionIcon = () => wrapper.find({ ref: 'replicationStatus' });
   const findGlPopover = () => wrapper.findComponent(GlPopover);
@@ -37,10 +36,6 @@ describe('GeoNodeReplicationStatus', () => {
     describe('always', () => {
       beforeEach(() => {
         createComponent();
-      });
-
-      it('renders the replication status icon', () => {
-        expect(findReplicationStatusIcon().exists()).toBe(true);
       });
 
       it('renders the replication status text', () => {
@@ -72,11 +67,6 @@ describe('GeoNodeReplicationStatus', () => {
       });
 
       describe(`when enabled is ${enabled}`, () => {
-        it(`renders the replication status icon correctly`, () => {
-          expect(findReplicationStatusIcon().classes(uiData.color)).toBe(true);
-          expect(findReplicationStatusIcon().attributes('name')).toBe(uiData.icon);
-        });
-
         it(`renders the replication status text correctly`, () => {
           expect(findReplicationStatusText().classes(uiData.color)).toBe(true);
           expect(findReplicationStatusText().text()).toBe(uiData.text);
