@@ -324,9 +324,9 @@ RSpec.describe AuthHelper do
 
     subject(:one_trust_enabled?) { helper.one_trust_enabled? }
 
-    context 'with ecomm_instrumentation_google_analytics_cookies feature flag enabled' do
+    context 'with ecomm_instrumentation feature flag enabled' do
       before do
-        stub_feature_flags(ecomm_instrumentation_google_analytics_cookies: true)
+        stub_feature_flags(ecomm_instrumentation: true)
       end
 
       context 'when current user is set' do

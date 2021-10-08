@@ -1,5 +1,5 @@
 ---
-name: ecomm_instrumentation_google_analytics_cookies
+name: ecomm_instrumentation
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71243
 rollout_issue_url:
 milestone: '14.4'
