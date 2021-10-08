@@ -1,6 +1,6 @@
 import DropdownUtils from '~/filtered_search/dropdown_utils';
 import FilteredSearchDropdown from '~/filtered_search/filtered_search_dropdown';
-import CustomNumber from '../droplab/plugins/custom_number';
+import CustomNumber from './droplab/plugins/custom_number';
 
 export default class DropdownWeight extends FilteredSearchDropdown {
   constructor(options = {}) {
