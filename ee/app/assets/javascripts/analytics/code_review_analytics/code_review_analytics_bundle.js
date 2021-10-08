@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { urlQueryToFilter } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
+import { extractFilterQueryParameters } from '~/analytics/shared/utils';
 import CodeAnalyticsApp from './components/app.vue';
 import store from './store';
 
@@ -20,11 +20,11 @@ export default () => {
     labelsEndpoint: labelsPath,
     projectEndpoint: projectPath,
   });
-  const { milestone_title = null, label_name = [] } = urlQueryToFilter(window.location.search);
-  store.dispatch('filters/initialize', {
-    selectedMilestone: milestone_title,
-    selectedLabelList: label_name,
-  });
+
+  const { selectedMilestone, selectedLabelList } = extractFilterQueryParameters(
+    window.location.search,
+  );
+  store.dispatch('filters/initialize', { selectedMilestone, selectedLabelList });
 
   // eslint-disable-next-line no-new
   new Vue({
