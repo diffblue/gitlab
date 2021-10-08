@@ -2,6 +2,7 @@ import { GlButton, GlCard, GlIcon, GlCollapse } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import OnCallSchedule, { i18n } from 'ee/oncall_schedules/components/oncall_schedule.vue';
 import RotationsListSection from 'ee/oncall_schedules/components/schedule/components/rotations_list_section.vue';
 import ScheduleTimelineSection from 'ee/oncall_schedules/components/schedule/components/schedule_timeline_section.vue';
@@ -14,8 +15,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import * as dateTimeUtility from '~/lib/utils/datetime/date_calculation_utility';
 import { getOncallSchedulesQueryResponse } from './mocks/apollo_mock';
-
-const mockTimezones = getJSONFixture('timezones/full.json');
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);

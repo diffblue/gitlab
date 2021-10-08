@@ -2,6 +2,7 @@ import { GlModal, GlAlert } from '@gitlab/ui';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import AddEditScheduleForm from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
 import AddEditScheduleModal, {
   i18n,
@@ -18,8 +19,6 @@ import {
   updateScheduleResponse,
   updateScheduleResponseWithErrors,
 } from './mocks/apollo_mock';
-
-const mockTimezones = getJSONFixture('timezones/full.json');
 
 describe('AddScheduleModal', () => {
   let wrapper;

@@ -1,8 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import DastScanSchedule from 'ee/security_configuration/dast_profiles/components/dast_scan_schedule.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-
-const mockTimezones = getJSONFixture('timezones/full.json');
 
 describe('EE - DastScanSchedule', () => {
   let wrapper;
