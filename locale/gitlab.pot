@@ -31565,6 +31565,9 @@ msgstr ""
 msgid "Smartcard authentication failed: client certificate header is missing."
 msgstr ""
 
+msgid "Snippet"
+msgstr ""
+
 msgid "Snippets"
 msgstr ""
 
@@ -31589,6 +31592,9 @@ msgstr ""
 msgid "SnippetsEmptyState|There are no snippets to show."
 msgstr ""
 
+msgid "Snippets|%{spammable_titlecase} was submitted to Akismet successfully."
+msgstr ""
+
 msgid "Snippets|Add another file %{num}/%{total}"
 msgstr ""
 
@@ -31596,6 +31602,9 @@ msgid "Snippets|Delete file"
 msgstr ""
 
 msgid "Snippets|Description (optional)"
+msgstr ""
+
+msgid "Snippets|Error with Akismet. Please check the logs for more info."
 msgstr ""
 
 msgid "Snippets|Files"
