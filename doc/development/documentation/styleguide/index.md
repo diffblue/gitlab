@@ -1375,6 +1375,7 @@ Alert boxes are generated when one of these words is followed by a line break:
 - `NOTE:`
 - `WARNING:`
 - `INFO:` (Marketing only)
+- `DISCLAIMER:`
 
 For example:
 
@@ -1438,13 +1439,18 @@ to sales and marketing efforts.
 
 ```markdown
 INFO:
-This info is important.
+This information is important.
 ```
 
 It renders on the GitLab documentation site as:
 
 INFO:
-This info is important.
+This information is important.
+
+### Disclaimer
+
+Use to describe future functionality only.
+For more information, see [Legal disclaimer for future features](#legal-disclaimer-for-future-features).
 
 ## Blockquotes
 
@@ -1638,6 +1644,24 @@ For example:
 - You cannot do this thing, but `[an issue exists](LINK)` to change this behavior.
 
 You can say that we plan to remove a feature.
+
+#### Legal disclaimer for future features
+
+If you **must** write about features we have not yet delivered, put this exact disclaimer near the content it applies to.
+
+```markdown
+DISCLAIMER:
+This page contains information related to upcoming products, features, and functionality.
+It is important to note that the information presented is for informational purposes only.
+Please do not rely on this information for purchasing or planning purposes.
+As with all projects, the items mentioned on this page are subject to change or delay.
+The development, release, and timing of any products, features, or functionality remain at the
+sole discretion of GitLab Inc.
+```
+
+If all of the content on the page is not available, use the disclaimer once at the top of the page.
+
+If the content in a topic is not ready, use the disclaimer in the topic.
 
 ### Removing versions after each major release
 
