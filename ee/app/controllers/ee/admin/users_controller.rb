@@ -17,6 +17,18 @@ module EE
         end
       end
 
+      def card_match
+        return render_404 unless ::Gitlab.com?
+
+        credit_card_validation = user.credit_card_validation
+
+        if credit_card_validation&.holder_name
+          @similar_credit_card_validations = credit_card_validation.similar_records.page(params[:page]).per(100)
+        else
+          redirect_to [:admin, @user], notice: _('No credit card data for matching')
+        end
+      end
+
       private
 
       override :users_with_included_associations

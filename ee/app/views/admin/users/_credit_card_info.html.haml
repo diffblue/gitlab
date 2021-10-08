@@ -1,10 +1,37 @@
-- return unless Gitlab.com?
-%li#credit-card-status
-  - if user.credit_card_validated_at
-    %span.light= _('Credit card validated at:')
-    %strong
-      = user.credit_card_validated_at.to_s(:medium)
-  - else
-    %span.light= _('Credit card validated:')
-    %strong
-      = _('No')
+- return if !Gitlab.com?
+- credit_card_validation = user.credit_card_validation
+.card
+  .card-header
+    = _('Credit card:')
+    - if local_assigns[:link_to_match_page] && credit_card_validation&.holder_name
+      .gl-float-right.small
+        = link_to card_match_admin_user_path(@user) do
+          = _('other card matches')
+  %ul.content-list
+    - if credit_card_validation.nil?
+      %li#credit-card-status
+        %span.light= _('Validated:')
+        %strong= _('No')
+    - else
+      %li
+        - if credit_card_validation.holder_name
+          %span.light= _('Holder name:')
+          %strong
+            = credit_card_validation.holder_name
+
+      %li#credit-card-status
+        %span.light= _('Validated at:')
+        %strong
+          = credit_card_validation.credit_card_validated_at.to_s(:medium)
+
+      %li
+        - if credit_card_validation.last_digits
+          %span.light= _('Card number:')
+          %strong
+            = credit_card_validation.last_digits.to_s.rjust(4, '0')
+
+      %li
+        - if credit_card_validation.expiration_date
+          %span.light= _('Expiration date:')
+          %strong
+            = credit_card_validation.expiration_date

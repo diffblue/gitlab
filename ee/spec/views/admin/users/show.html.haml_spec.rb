@@ -27,7 +27,7 @@ RSpec.describe 'admin/users/show.html.haml' do
     it 'includes credit card validation status' do
       render
 
-      expect(status).to match /Credit card validated:\s+No/
+      expect(status).to match /Validated:\s+No/
     end
 
     context 'when user is validated' do
@@ -36,7 +36,7 @@ RSpec.describe 'admin/users/show.html.haml' do
       it 'includes credit card validation status' do
         render
 
-        expect(status).to include 'Credit card validated at:'
+        expect(status).to include 'Validated at:'
       end
     end
   end

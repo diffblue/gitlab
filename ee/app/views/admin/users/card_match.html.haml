@@ -1,0 +1,49 @@
+- add_to_breadcrumbs _('Users'), admin_users_path
+- add_to_breadcrumbs @user.name, admin_user_path(@user)
+- breadcrumb_title _('All users with matching cards')
+- page_title @user.name, _('All users with matching cards')
+- stripe_time_zone = 'America/Los_Angeles'
+- stripe_time_format = '%b %-d, %-I:%M%P %Z'
+
+.gl-display-flex.gl-flex-wrap.gl-justify-content-space-between.gl-align-items-center.gl-py-3.gl-mb-5.gl-border-b-solid.gl-border-gray-100.gl-border-b-1
+  .gl-my-3
+    %h3.page-title.gl-m-0
+      = @user.name
+      \-
+      = _("All users with matching cards") % { name: @user.name }
+
+.row
+  - if @similar_credit_card_validations.present?
+    .col-md-12
+      %table.table
+        %thead
+          %th= _('ID')
+          %th= _('User')
+          %th.gl-text-right= _('Validated at')
+          %th.gl-text-right= _('User created at')
+          %th.gl-text-right= _('Current sign-in ip')
+        - @similar_credit_card_validations.each do |credit_card_validation|
+          - user = credit_card_validation.user
+          - validated_at = user.credit_card_validated_at
+          %tr
+            %td
+              = user.id
+            %td
+              = link_to(user.username, admin_user_path(user))
+              - if user == @user
+                = _('(target)')
+            %td.gl-text-right
+              = validated_at.to_s(:medium)
+              \/
+              = validated_at.in_time_zone(stripe_time_zone).strftime(stripe_time_format)
+            %td.gl-text-right= user.created_at.to_s(:medium)
+            %td.gl-text-right
+              - if user.current_sign_in_ip
+                = user.current_sign_in_ip
+                = link_to sprite_icon('earth'), "https://api.hostip.info/country.php?ip=#{user.current_sign_in_ip}", target: '_blank', rel: 'noreferrer'
+      * All times are in UTC unless specified
+      = paginate @similar_credit_card_validations, theme: 'gitlab'
+
+.gl-float-right
+  = render 'admin/users/credit_card_info', user: @user
+
