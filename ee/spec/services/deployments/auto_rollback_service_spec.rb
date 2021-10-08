@@ -97,6 +97,16 @@ RSpec.describe Deployments::AutoRollbackService, :clean_gitlab_redis_rate_limiti
       end
     end
 
+    context "when rollback target's deployable is not available" do
+      before do
+        environment.all_deployments.first.deployable.destroy!
+      end
+
+      it_behaves_like 'rollback failure' do
+        let(:message) { 'Failed to find a rollback target.' }
+      end
+    end
+
     context "when rollback target's deployable is not retryable" do
       before do
         environment.all_deployments.first.deployable.degenerate!
