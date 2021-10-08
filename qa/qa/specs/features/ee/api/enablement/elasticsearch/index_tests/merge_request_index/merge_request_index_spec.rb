@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'airborne'
-require 'securerandom'
 
 module QA
   RSpec.describe 'Enablement:Search' do
