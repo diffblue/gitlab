@@ -10,6 +10,7 @@ import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_a
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
 import loadPerformanceExtension from './extensions/load_performance';
+import browserPerformanceExtension from './extensions/browser_performance';
 
 export default {
   components: {
@@ -181,6 +182,7 @@ export default {
   watch: {
     hasBrowserPerformancePaths(newVal) {
       if (newVal) {
+        this.registerBrowserPerformance();
         this.fetchBrowserPerformance();
       }
     },
@@ -190,15 +192,22 @@ export default {
         this.fetchLoadPerformance();
       }
     },
+    shouldShowExtension() {
+      return (
+        window.gon.features.refactorMrWidgetsExtensions ||
+        window.gon.features.refactorMrWidgetsExtensionsUser
+      );
+    },
   },
   methods: {
     registerLoadPerformance() {
-      const shouldShowExtension =
-        window.gon.features.refactorMrWidgetsExtensions ||
-        window.gon.features.refactorMrWidgetsExtensionsUser;
-
-      if (shouldShowExtension) {
+      if (this.shouldShowExtension) {
         registerExtension(loadPerformanceExtension);
+      }
+    },
+    registerBrowserPerformance() {
+      if (this.shouldShowExtension) {
+        registerExtension(browserPerformanceExtension);
       }
     },
     getServiceEndpoints(store) {
