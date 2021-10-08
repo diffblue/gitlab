@@ -40,6 +40,17 @@ describe('Load performance extension', () => {
   });
 
   describe('summary', () => {
+    it('should render loading text', async () => {
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
+      mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
+
+      registerExtension(loadPerformanceExtension);
+
+      await nextTick();
+
+      expect(wrapper.text()).toContain('Load performance test metrics results are being parsed');
+    });
+
     it('should render info about all issues', async () => {
       mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
       mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
