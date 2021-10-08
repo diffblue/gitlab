@@ -365,7 +365,6 @@ RSpec.describe Namespace do
     subject(:update_namespace) { namespace.update!(attributes) }
 
     before do
-      stub_feature_flags(sync_namespace_name_with_cdot: true)
       allow(Gitlab).to receive(:com?).and_return(true)
     end
 
@@ -385,14 +384,6 @@ RSpec.describe Namespace do
 
     context 'when the name is updated' do
       let(:attributes) { { name: 'Foo' } }
-
-      context 'with :sync_namespace_name_with_cdot feature flag disabled' do
-        before do
-          stub_feature_flags(sync_namespace_name_with_cdot: false)
-        end
-
-        include_examples 'no sync'
-      end
 
       context 'when not on Gitlab.com?' do
         before do

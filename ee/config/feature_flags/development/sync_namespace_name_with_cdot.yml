@@ -1,8 +1,0 @@
----
-name: sync_namespace_name_with_cdot
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69896
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/341056
-milestone: '14.3'
-type: development
-group: group::license
-default_enabled: false
