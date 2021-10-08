@@ -5,6 +5,7 @@ import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 
 export default {
   name: 'WidgetLoadPerformance',
+  label: s__('ciReport|Load Performance'),
   props: ['loadPerformance'],
   computed: {
     summary() {
