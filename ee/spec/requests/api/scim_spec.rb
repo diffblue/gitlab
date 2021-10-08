@@ -237,7 +237,7 @@ RSpec.describe API::Scim do
         end
       end
 
-      it_behaves_like 'storing arguments in the application context' do
+      it_behaves_like 'storing arguments in the application context for the API' do
         let(:expected_params) { { root_namespace: group.full_path_components.first } }
 
         subject { post scim_api("scim/v2/groups/#{group.full_path}/Users?params=#{post_params}") }
