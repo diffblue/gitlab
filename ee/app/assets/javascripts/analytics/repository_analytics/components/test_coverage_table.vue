@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      allProjectsSelected: false,
+      allProjectsSelected: true,
       allCoverageData: [], // All data we have ever received whether selected or not
       hasError: false,
       isLoading: false,
