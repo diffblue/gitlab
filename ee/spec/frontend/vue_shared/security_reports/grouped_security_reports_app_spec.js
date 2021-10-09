@@ -15,6 +15,7 @@ import axios from '~/lib/utils/axios_utils';
 import { mrStates } from '~/mr_popover/constants';
 import GroupedIssuesList from '~/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/reports/components/report_section.vue';
+import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';
 
 import {
   sastDiffSuccessMock,
@@ -606,11 +607,9 @@ describe('Grouped security reports app', () => {
       );
 
       return waitForMutation(wrapper.vm.$store, types.RECEIVE_DAST_DIFF_SUCCESS).then(() => {
-        const findDownloadLink = wrapper.find('[data-testid="download-link"]');
+        const findDownloadDropdown = wrapper.findComponent(MergeRequestArtifactDownload);
 
-        expect(findDownloadLink.find('[data-testid="download-icon"]').exists()).toBe(true);
-        expect(findDownloadLink.exists()).toBe(true);
-        expect(findDownloadLink.attributes('href')).toBe('http://test');
+        expect(findDownloadDropdown.exists()).toBe(true);
       });
     });
   });

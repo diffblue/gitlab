@@ -12,9 +12,13 @@ import { getFormattedSummary } from 'ee/security_dashboard/helpers';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
 import { extractSecurityReportArtifacts } from '~/vue_shared/security_reports/utils';
+import {
+  SECURITY_REPORT_TYPE_ENUM_DAST,
+  REPORT_TYPE_DAST,
+} from 'ee/vue_shared/security_reports/constants';
 
 export default {
   name: 'SecurityReportsSummary',
@@ -77,12 +81,27 @@ export default {
     hasScannedResources(scanSummary) {
       return scanSummary.scannedResources?.nodes?.length > 0;
     },
+    hasDastArtifactDownload(scanSummary) {
+      return (
+        Boolean(scanSummary.scannedResourcesCsvPath) ||
+        this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST).length > 0
+      );
+    },
     downloadLink(scanSummary) {
       return scanSummary.scannedResourcesCsvPath || '';
     },
     findArtifacts(scanType) {
       const snakeCase = convertToSnakeCase(scanType.toLowerCase());
       return extractSecurityReportArtifacts([snakeCase], this.jobs);
+    },
+    buildDastArtifacts(scanSummary) {
+      const csvArtifact = {
+        name: s__('SecurityReports|scanned resources'),
+        path: this.downloadLink(scanSummary),
+        reportType: REPORT_TYPE_DAST,
+      };
+
+      return [...this.findArtifacts(SECURITY_REPORT_TYPE_ENUM_DAST), csvArtifact];
     },
   },
 };
@@ -145,16 +164,12 @@ export default {
             />
           </template>
 
-          <template v-else-if="scanSummary.scannedResourcesCsvPath">
-            <gl-button
-              icon="download"
-              size="small"
-              :href="downloadLink(scanSummary)"
-              class="gl-ml-1"
+          <template v-else-if="hasDastArtifactDownload(scanSummary)">
+            <security-report-download-dropdown
+              :text="s__('SecurityReports|Download results')"
+              :artifacts="buildDastArtifacts(scanSummary)"
               data-testid="download-link"
-            >
-              {{ s__('SecurityReports|Download scanned URLs') }}
-            </gl-button>
+            />
           </template>
 
           <security-report-download-dropdown

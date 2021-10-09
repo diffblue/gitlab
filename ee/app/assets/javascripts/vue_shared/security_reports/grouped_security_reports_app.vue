@@ -8,6 +8,7 @@ import {
   GlModalDirective,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { componentNames } from 'ee/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
 import { mrStates } from '~/mr_popover/constants';
@@ -18,9 +19,13 @@ import { LOADING } from '~/reports/constants';
 import Tracking from '~/tracking';
 import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';
 import SecuritySummary from '~/vue_shared/security_reports/components/security_summary.vue';
+import {
+  REPORT_TYPE_DAST,
+  securityReportTypeEnumToReportType,
+} from 'ee/vue_shared/security_reports/constants';
 import DastModal from './components/dast_modal.vue';
 import IssueModal from './components/modal.vue';
-import { securityReportTypeEnumToReportType } from './constants';
+
 import securityReportSummaryQuery from './graphql/mr_security_report_summary.graphql';
 import securityReportsMixin from './mixins/security_report_mixin';
 import { vulnerabilityModalMixin } from './mixins/vulnerability_modal_mixin';
@@ -348,6 +353,15 @@ export default {
     shouldShowDownloadGuidance() {
       return this.targetProjectFullPath && this.mrIid && this.summaryStatus !== LOADING;
     },
+    dastCsvArtifacts() {
+      return [
+        {
+          name: s__('SecurityReports|scanned resources'),
+          path: this.dastDownloadLink,
+          reportType: REPORT_TYPE_DAST,
+        },
+      ];
+    },
   },
 
   created() {
@@ -454,6 +468,7 @@ export default {
   reportTypes: {
     API_FUZZING: [securityReportTypeEnumToReportType.API_FUZZING],
     COVERAGE_FUZZING: [securityReportTypeEnumToReportType.COVERAGE_FUZZING],
+    DAST: [securityReportTypeEnumToReportType.DAST],
   },
 };
 </script>
@@ -614,14 +629,12 @@ export default {
               />
             </template>
             <template v-else-if="dastDownloadLink">
-              <gl-button
-                v-gl-tooltip
-                :title="s__('SecurityReports|Download scanned resources')"
-                download
-                size="small"
-                icon="download"
-                :href="dastDownloadLink"
-                class="gl-ml-1"
+              <merge-request-artifact-download
+                v-if="shouldShowDownloadGuidance"
+                :report-types="$options.reportTypes.DAST"
+                :target-project-full-path="targetProjectFullPath"
+                :mr-iid="mrIid"
+                :injected-artifacts="dastCsvArtifacts"
                 data-testid="download-link"
               />
             </template>

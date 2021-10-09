@@ -30,7 +30,7 @@ describe('Security reports summary component', () => {
 
   const findToggleButton = () => wrapper.find('[data-testid="collapse-button"]');
   const findModalButton = () => wrapper.find('[data-testid="modal-button"]');
-  const findDownloadLink = () => wrapper.find('[data-testid="download-link"]');
+  const findDownloadDropdown = () => wrapper.findComponent(SecurityReportDownloadDropdown);
 
   beforeEach(() => {
     jest.spyOn(AccessorUtilities, 'canUseLocalStorage').mockReturnValue(true);
@@ -113,7 +113,7 @@ describe('Security reports summary component', () => {
         },
       });
 
-      expect(wrapper.findComponent(SecurityReportDownloadDropdown).exists()).toBe(hasDropdown);
+      expect(findDownloadDropdown().exists()).toBe(hasDropdown);
     },
   );
 
@@ -248,8 +248,8 @@ describe('Security reports summary component', () => {
       });
     });
 
-    it('should contain a download link', () => {
-      expect(findDownloadLink().attributes('href')).toBe('/download/path');
+    it('should contain a artifact download dropdown', () => {
+      expect(findDownloadDropdown().exists()).toBe(true);
     });
   });
 });
