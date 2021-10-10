@@ -151,7 +151,7 @@ export default {
       this.firstName = '';
       this.lastName = '';
       this.companyName = '';
-      this.companySize = '';
+      this.companySize = null;
       this.phoneNumber = '';
       this.country = null;
       this.state = null;
