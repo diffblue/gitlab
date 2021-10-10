@@ -22,9 +22,9 @@ Our goal is to reach feature parity between SaaS and self-managed installations,
 NOTE:
 Workspace is currently in development.
 
-## Demo introducing new hierarchy concept for groups and projects for epics
+## Demo: New hierarchy concept for groups and projects for epics
 
-A demo that introduces the new hierarchy concept for groups and projects for epics.
+The following demo introduces the new hierarchy concept for groups and projects for epics.
 
 <div class="video-fallback">
   See the video: <a href="https://www.youtube.com/embed/fE74lsG_8yM">Consolidating groups and projects update (2021-08-23)</a>.
