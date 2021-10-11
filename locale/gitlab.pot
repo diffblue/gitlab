@@ -24104,7 +24104,7 @@ msgstr ""
 msgid "PQL|Submit information"
 msgstr ""
 
-msgid "PQL|Thank you for reaching out! Our sales team will bet back to you soon."
+msgid "PQL|Thank you for reaching out! Our sales team will get back to you soon."
 msgstr ""
 
 msgid "Package Registry"

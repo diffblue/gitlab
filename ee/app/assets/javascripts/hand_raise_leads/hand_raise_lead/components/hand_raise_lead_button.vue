@@ -204,7 +204,7 @@ export default {
       @primary="submit"
     >
       {{ modalHeaderText }}
-      <div class="combined d-flex">
+      <div class="combined d-flex gl-mt-5">
         <gl-form-group
           :label="$options.i18n.firstNameLabel"
           label-size="sm"
