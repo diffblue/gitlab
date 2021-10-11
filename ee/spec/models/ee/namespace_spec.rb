@@ -20,7 +20,6 @@ RSpec.describe Namespace do
   it { is_expected.to have_one :upcoming_reconciliation }
   it { is_expected.to have_many(:ci_minutes_additional_packs) }
 
-  it { is_expected.to delegate_method(:shared_runners_seconds).to(:namespace_statistics) }
   it { is_expected.to delegate_method(:shared_runners_seconds_last_reset).to(:namespace_statistics) }
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }
@@ -681,6 +680,22 @@ RSpec.describe Namespace do
       end
 
       it_behaves_like '#any_project_with_shared_runners_enabled? examples'
+    end
+  end
+
+  describe '#new_monthly_ci_minutes_enabled?' do
+    subject { namespace.new_monthly_ci_minutes_enabled? }
+
+    context 'when feature flag ci_use_new_monthly_minutes is enabled' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when feature flag ci_use_new_monthly_minutes is disabled' do
+      before do
+        stub_feature_flags(ci_use_new_monthly_minutes: false)
+      end
+
+      it { is_expected.to be_falsy }
     end
   end
 

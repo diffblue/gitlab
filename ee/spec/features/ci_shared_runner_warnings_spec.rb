@@ -35,7 +35,7 @@ RSpec.describe 'CI shared runner limits' do
 
         before do
           group.update!(shared_runners_minutes_limit: minutes_limit)
-          allow_any_instance_of(EE::Namespace).to receive(:shared_runners_seconds).and_return(minutes_used.minutes)
+          allow_any_instance_of(::Ci::Minutes::Quota).to receive(:total_minutes_used).and_return(minutes_used)
         end
 
         it 'displays a warning message on pipelines page' do
@@ -126,7 +126,7 @@ RSpec.describe 'CI shared runner limits' do
 
         before do
           group.update!(shared_runners_minutes_limit: minutes_limit)
-          allow_any_instance_of(EE::Namespace).to receive(:shared_runners_seconds).and_return(minutes_used.minutes)
+          allow_any_instance_of(::Ci::Minutes::Quota).to receive(:total_minutes_used).and_return(minutes_used)
         end
 
         it 'displays a warning message on group information page' do

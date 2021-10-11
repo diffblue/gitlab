@@ -2,26 +2,17 @@
 require 'spec_helper'
 
 RSpec.describe EE::NamespacesHelper do
-  let!(:admin) { create(:admin) }
-  let!(:admin_project_creation_level) { nil }
-  let!(:admin_group) do
-    create(:group,
-           :private,
-           project_creation_level: admin_project_creation_level)
-  end
-
   let!(:user) { create(:user) }
   let!(:user_project_creation_level) { nil }
-  let!(:user_group) do
-    create(:group,
-           :private,
-           project_creation_level: user_project_creation_level)
+
+  let(:user_group) do
+    create(:namespace, :with_ci_minutes,
+           project_creation_level: user_project_creation_level,
+           owner: user,
+           ci_minutes_used: ci_minutes_used)
   end
 
-  before do
-    admin_group.add_owner(admin)
-    user_group.add_owner(user)
-  end
+  let(:ci_minutes_used) { 100 }
 
   describe '#ci_minutes_progress_bar' do
     it 'shows a green bar if percent is 0' do
@@ -58,7 +49,7 @@ RSpec.describe EE::NamespacesHelper do
 
       context "when ci minutes quota is not enabled" do
         before do
-          allow(user_group).to receive(:shared_runners_minutes_limit_enabled?).and_return(false)
+          allow(quota).to receive(:namespace_unlimited_minutes?).and_return(true)
         end
 
         context 'and the namespace is eligible for unlimited' do
@@ -68,13 +59,7 @@ RSpec.describe EE::NamespacesHelper do
           end
 
           it 'returns Unlimited for the limit section' do
-            expect(helper.ci_minutes_report(report)).to match(%r{0 / Unlimited})
-          end
-
-          it 'returns the proper value for the used section' do
-            allow(user_group).to receive(:shared_runners_seconds).and_return(100 * 60)
-
-            expect(helper.ci_minutes_report(report)).to match(%r{100 / Unlimited})
+            expect(helper.ci_minutes_report(report)).to match(%r{\b100 / Unlimited})
           end
         end
 
@@ -84,7 +69,7 @@ RSpec.describe EE::NamespacesHelper do
           end
 
           it 'returns Not supported for the limit section' do
-            expect(helper.ci_minutes_report(report)).to match(%r{0 / Not supported})
+            expect(helper.ci_minutes_report(report)).to match(%r{\b100 / Not supported})
           end
         end
       end
@@ -92,13 +77,12 @@ RSpec.describe EE::NamespacesHelper do
       context "when it's limited" do
         before do
           allow(user_group).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
-          allow(user_group).to receive(:shared_runners_seconds).and_return(100 * 60)
 
           user_group.update!(shared_runners_minutes_limit: 500)
         end
 
         it 'returns the proper values for used and limit sections' do
-          expect(helper.ci_minutes_report(report)).to match(%r{100 / 500})
+          expect(helper.ci_minutes_report(report)).to match(%r{\b100 / 500\b})
         end
       end
     end
@@ -107,17 +91,30 @@ RSpec.describe EE::NamespacesHelper do
       let(:report) { Ci::Minutes::QuotaPresenter.new(quota).purchased_minutes_report }
 
       context 'when extra minutes are assigned' do
-        it 'returns the proper values for used and limit sections' do
-          allow(user_group).to receive(:shared_runners_seconds).and_return(50 * 60)
+        before do
           user_group.update!(extra_shared_runners_minutes_limit: 100)
+        end
 
-          expect(helper.ci_minutes_report(report)).to match(%r{50 / 100})
+        context 'when minutes used is higher than monthly minutes limit' do
+          let(:ci_minutes_used) { 550 }
+
+          it 'returns the proper values for used and limit sections' do
+            expect(helper.ci_minutes_report(report)).to match(%r{\b50 / 100\b})
+          end
+        end
+
+        context 'when minutes used is lower than monthly minutes limit' do
+          let(:ci_minutes_used) { 400 }
+
+          it 'returns the proper values for used and limit sections' do
+            expect(helper.ci_minutes_report(report)).to match(%r{\b0 / 100\b})
+          end
         end
       end
 
       context 'when extra minutes are not assigned' do
         it 'returns the proper values for used and limit sections' do
-          expect(helper.ci_minutes_report(report)).to match(%r{0 / 0})
+          expect(helper.ci_minutes_report(report)).to match(%r{\b0 / 0\b})
         end
       end
     end

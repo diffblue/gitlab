@@ -2,22 +2,40 @@
 
 FactoryBot.modify do
   factory :namespace do
-    trait :with_build_minutes do
-      namespace_statistics factory: :namespace_statistics, shared_runners_seconds: 400.minutes.to_i
-    end
+    trait :with_ci_minutes do
+      transient do
+        ci_minutes_limit { 500 }
+        ci_minutes_used { 400 }
+      end
 
-    trait :with_build_minutes_limit do
-      shared_runners_minutes_limit { 500 }
+      after(:build) do |namespace, evaluator|
+        namespace.shared_runners_minutes_limit = evaluator.ci_minutes_limit
+      end
+
+      after(:create) do |namespace, evaluator|
+        if evaluator.ci_minutes_used
+          create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: evaluator.ci_minutes_used)
+          create(:namespace_statistics, namespace: namespace, shared_runners_seconds: evaluator.ci_minutes_used.minutes)
+        end
+      end
     end
 
     trait :with_not_used_build_minutes_limit do
       namespace_statistics factory: :namespace_statistics, shared_runners_seconds: 300.minutes.to_i
       shared_runners_minutes_limit { 500 }
+
+      after(:create) do |namespace, evaluator|
+        create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 300)
+      end
     end
 
     trait :with_used_build_minutes_limit do
       namespace_statistics factory: :namespace_statistics, shared_runners_seconds: 1000.minutes.to_i
       shared_runners_minutes_limit { 500 }
+
+      after(:create) do |namespace, evaluator|
+        create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 1000)
+      end
     end
   end
 end

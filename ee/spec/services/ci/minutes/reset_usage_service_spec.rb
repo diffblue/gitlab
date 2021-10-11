@@ -11,10 +11,10 @@ RSpec.describe Ci::Minutes::ResetUsageService do
     context 'when project has namespace_statistics' do
       let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
 
-      let_it_be(:namespace_usage) do
-        create(:ci_namespace_monthly_usage, :with_warning_notification_level,
-          namespace: namespace,
-          amount_used: 100)
+      let(:namespace_usage) do
+        Ci::Minutes::NamespaceMonthlyUsage.current_month.find_by(namespace_id: namespace).tap do |usage|
+          usage.update!(notification_level: 100)
+        end
       end
 
       it 'clears the amount used and notification levels', :aggregate_failures do
