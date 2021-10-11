@@ -150,6 +150,11 @@ describe('HandRaiseLeadButton', () => {
         comment: 'comment',
         ...formData,
       });
+
+      ['firstName', 'lastName', 'companyName', 'phoneNumber'].forEach((f) =>
+        expect(wrapper.vm[f]).toBe(''),
+      );
+      ['companySize', 'country', 'state'].forEach((f) => expect(wrapper.vm[f]).toBe(null));
     });
   });
 });
