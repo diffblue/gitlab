@@ -41,11 +41,7 @@ describe('Pipeline Security Dashboard component', () => {
   const findVulnerabilityReport = () => wrapper.findComponent(VulnerabilityReport);
   const findScanErrorsAlert = () => wrapper.findComponent(ScanErrorsAlert);
 
-  const factory = ({ stubs, provide, requestHandlers } = {}) => {
-    if (requestHandlers) {
-      localVue.use(VueApollo);
-    }
-
+  const factory = ({ stubs, provide, apolloProvider } = {}) => {
     store = new Vuex.Store({
       modules: {
         vulnerabilities: {
@@ -67,7 +63,7 @@ describe('Pipeline Security Dashboard component', () => {
 
     wrapper = shallowMount(PipelineSecurityDashboard, {
       localVue,
-      ...(requestHandlers && { apolloProvider: createMockApollo(requestHandlers) }),
+      apolloProvider,
       store,
       provide: {
         projectId,
@@ -86,6 +82,12 @@ describe('Pipeline Security Dashboard component', () => {
       },
       stubs,
     });
+  };
+
+  const factoryWithApollo = ({ requestHandlers }) => {
+    localVue.use(VueApollo);
+
+    factory({ apolloProvider: createMockApollo(requestHandlers) });
   };
 
   afterEach(() => {
@@ -160,7 +162,7 @@ describe('Pipeline Security Dashboard component', () => {
   describe('scans error alert', () => {
     describe('with errors', () => {
       beforeEach(() => {
-        factory({
+        factoryWithApollo({
           requestHandlers: [
             [
               pipelineSecurityReportSummaryQuery,
@@ -177,7 +179,7 @@ describe('Pipeline Security Dashboard component', () => {
 
     describe('without errors', () => {
       beforeEach(() => {
-        factory({
+        factoryWithApollo({
           requestHandlers: [
             [
               pipelineSecurityReportSummaryQuery,
@@ -201,7 +203,7 @@ describe('Pipeline Security Dashboard component', () => {
     `(
       'shows the summary is "$shouldShowReportSummary"',
       async ({ response, shouldShowReportSummary }) => {
-        factory({
+        factoryWithApollo({
           requestHandlers: [
             [pipelineSecurityReportSummaryQuery, jest.fn().mockResolvedValueOnce(response)],
           ],
