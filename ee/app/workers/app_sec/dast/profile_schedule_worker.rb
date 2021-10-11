@@ -18,13 +18,10 @@ module AppSec
 
         dast_runnable_schedules.find_in_batches do |schedules|
           schedules.each do |schedule|
-            with_context(project: schedule.project, user: schedule.owner) do
-              schedule.schedule_next_run!
-
-              response = service(schedule).execute
-              if response.error?
-                logger.info(structured_payload(message: response.message))
-              end
+            if schedule.owner_valid?
+              execute_schedule(schedule)
+            else
+              schedule.deactivate!
             end
           end
         end
@@ -45,6 +42,17 @@ module AppSec
             dast_scanner_profile: schedule.dast_profile.dast_scanner_profile
           }
         )
+      end
+
+      def execute_schedule(schedule)
+        with_context(project: schedule.project, user: schedule.owner) do
+          schedule.schedule_next_run!
+
+          response = service(schedule).execute
+          if response.error?
+            logger.info(structured_payload(message: response.message))
+          end
+        end
       end
     end
   end
