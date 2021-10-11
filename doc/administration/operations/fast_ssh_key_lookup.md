@@ -132,6 +132,19 @@ This is a brief overview. Please refer to the above instructions for more contex
 1. Remove the `AuthorizedKeysCommand` lines from `/etc/ssh/sshd_config` or from `/assets/sshd_config` if you are using Omnibus Docker.
 1. Reload `sshd`: `sudo service sshd reload`.
 
+## Use`gitlab-sshd` as a `sshd` replacement from OpenSSH
+
+NOTE:
+`gitlab-sshd` component is only available for [Cloud Native Helm Charts](https://docs.gitlab.com/charts/) deployments.
+
+NOTE:
+`gitlab-sshd` supports PROXY protocol it can run behind proxy servers that rely on it (for example, HAProxy).
+
+NOTE:
+`gitlab-sshd` does not share a SSH port with the system administrator's OpenSSH and requires a bind to port 22.
+
+Set `gitlab-shell` charts `sshDaemon` option to [`gitlab-sshd`](https://docs.gitlab.com/charts/charts/gitlab/gitlab-shell/index.html#installation-command-line-options).
+
 ## Compiling a custom version of OpenSSH for CentOS 6
 
 Building a custom version of OpenSSH is not necessary for Ubuntu 16.04 users,
