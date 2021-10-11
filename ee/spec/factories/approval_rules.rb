@@ -79,5 +79,11 @@ FactoryBot.define do
       rule_type { :report_approver }
       report_type { :code_coverage }
     end
+
+    trait :scan_finding do
+      sequence(:name) { |n| "Scan finding #{n}" }
+      rule_type { :report_approver }
+      report_type { :scan_finding }
+    end
   end
 end

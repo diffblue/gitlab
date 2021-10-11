@@ -510,7 +510,7 @@ module EE
     def visible_approval_rules(target_branch: nil)
       rules = strong_memoize(:visible_approval_rules) do
         Hash.new do |h, key|
-          h[key] = visible_user_defined_rules(branch: key) + approval_rules.report_approver
+          h[key] = visible_user_defined_rules(branch: key) + approval_rules.report_approver_without_scan_finding
         end
       end
 

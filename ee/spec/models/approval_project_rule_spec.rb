@@ -125,9 +125,10 @@ RSpec.describe ApprovalProjectRule do
     end
 
     where(:default_name, :report_type) do
-      'Vulnerability-Check' | :vulnerability
-      'License-Check'       | :license_scanning
-      'Coverage-Check'      | :code_coverage
+      'Vulnerability-Check'  | :vulnerability
+      'License-Check'        | :license_scanning
+      'Coverage-Check'       | :code_coverage
+      'Scan finding example' | :scan_finding
     end
 
     context "when there is a project rule for each report type" do
