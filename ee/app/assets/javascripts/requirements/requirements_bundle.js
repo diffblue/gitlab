@@ -1,9 +1,10 @@
 import { GlToast } from '@gitlab/ui';
-import { defaultDataIdFromObject } from 'apollo-cache-inmemory';
+import { defaultDataIdFromObject, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import introspectionQueryResultData from './queries/fragmentTypes.json';
 
 import RequirementsRoot from './components/requirements_root.vue';
 
@@ -11,6 +12,10 @@ import { FilterState } from './constants';
 
 Vue.use(VueApollo);
 Vue.use(GlToast);
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData,
+});
 
 export default () => {
   const el = document.getElementById('js-requirements-app');
@@ -27,7 +32,9 @@ export default () => {
           dataIdFromObject: (object) =>
             // eslint-disable-next-line no-underscore-dangle, @gitlab/require-i18n-strings
             object.__typename === 'Requirement' ? object.iid : defaultDataIdFromObject(object),
+          fragmentMatcher,
         },
+        assumeImmutableResults: true,
       },
     ),
   });
