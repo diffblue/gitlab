@@ -143,10 +143,8 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
       it 'does not create nested transactions', :delete do
         expect(ApplicationRecord.connection.transaction_open?).to be false
 
-        service = described_class.new(project.id, namespace.id)
-
         queries = ActiveRecord::QueryRecorder.new do
-          service
+          subject
         end
 
         savepoints = queries.occurrences.keys.flatten.select do |query|
@@ -193,20 +191,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
               .and_call_original
 
             subject
-          end
-
-          context 'when feature flag idempotent_ci_minutes_consumption is disabled' do
-            before do
-              stub_feature_flags(idempotent_ci_minutes_consumption: false)
-            end
-
-            it_behaves_like 'updates monthly consumption'
-          end
-
-          context 'when build_id is not provided as parameter' do
-            let(:service) { described_class.new(project.id, namespace.id) }
-
-            it_behaves_like 'updates monthly consumption' # not idempotent / temporary backwards compatibility
           end
         end
       end
