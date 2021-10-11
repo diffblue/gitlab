@@ -55,11 +55,11 @@ class Dast::ProfileSchedule < ApplicationRecord
     Ability.allowed?(owner, :create_on_demand_dast_scan, project)
   end
 
-  private
-
   def deactivate!
     update!(active: false)
   end
+
+  private
 
   def cron_timezone
     Time.zone.name
