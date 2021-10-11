@@ -127,48 +127,29 @@ module Geo
         pending_resources.empty?
       end
 
-      # rubocop: disable CodeReuse/ActiveRecord
+      # Takes elements from the front of each array one-by-one, until they are
+      # empty. Order is preserved. A limit can be specified, and it defaults to
+      # `db_retrieve_batch_size`. The given arrays are mutated.
+      #
+      # @return [Array] an array composed of elements from the given arrays
       def take_batch(*arrays, batch_size: db_retrieve_batch_size)
-        interleave(*arrays).uniq.compact.take(batch_size)
-      end
-      # rubocop: enable CodeReuse/ActiveRecord
+        result = []
+        total = arrays.sum(&:length)
+        iterations = [total, batch_size].min
 
-      # Combines the elements of multiple, arbitrary-length arrays into a single array.
-      #
-      # Each array is spread evenly over the resultant array.
-      # The order of the original arrays is preserved within the resultant array.
-      # In the case of ties between elements, the element from the first array goes first.
-      # From https://stackoverflow.com/questions/15628936/ruby-equally-distribute-elements-and-interleave-merge-multiple-arrays/15639147#15639147
-      #
-      # For examples, see the specs in file_download_dispatch_worker_spec.rb
-      def interleave(*arrays)
-        elements = []
-        coefficients = []
-        arrays.each_with_index do |e, index|
-          elements += e
-          coefficients += interleave_coefficients(e, index)
+        iterations.times do
+          arrays.size.times do
+            if arrays.first.any?
+              result << arrays.first.shift
+              arrays.rotate! # round-robin
+              break
+            end
+
+            arrays.shift # remove empty array
+          end
         end
 
-        combined = elements.zip(coefficients)
-        combined.sort_by { |zipped| zipped[1] }.map { |zipped| zipped[0] }
-      end
-
-      # Assigns a position to each element in order to spread out arrays evenly.
-      #
-      # `array_index` is used to resolve ties between arrays of equal length.
-      #
-      # Examples:
-      #
-      # irb(main):006:0> interleave_coefficients(['a', 'b'], 0)
-      # => [0.2499998750000625, 0.7499996250001875]
-      # irb(main):027:0> interleave_coefficients(['a', 'b', 'c'], 0)
-      # => [0.16666661111112963, 0.4999998333333889, 0.8333330555556481]
-      # irb(main):007:0> interleave_coefficients(['a', 'b', 'c'], 1)
-      # => [0.16699994433335189, 0.5003331665556111, 0.8336663887778704]
-      def interleave_coefficients(array, array_index)
-        (1..array.size).map do |i|
-          (i - 0.5 + array_index / 1000.0) / (array.size + 1e-6)
-        end
+        result.compact.uniq
       end
 
       def update_jobs_in_progress
