@@ -4,7 +4,7 @@ require 'spec_helper'
 RSpec.describe BuildDetailsEntity do
   let_it_be(:user) { create(:user) }
 
-  let(:namespace) { create(:namespace) }
+  let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_used: 800) }
   let(:project) { create(:project, namespace: namespace) }
   let(:request) { double('request', project: project) }
   let(:build) { create(:ci_build, project: project) }
@@ -17,7 +17,6 @@ RSpec.describe BuildDetailsEntity do
 
   before do
     allow(request).to receive(:current_user).and_return(user)
-    allow(namespace).to receive(:shared_runners_seconds).and_return(800.minutes)
   end
 
   context 'when namespace has CI minutes limit enabled' do

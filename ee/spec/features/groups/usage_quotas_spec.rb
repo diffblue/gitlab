@@ -61,7 +61,7 @@ RSpec.describe 'Groups > Usage Quotas' do
   end
 
   context 'with no quota' do
-    let(:group) { create(:group, :with_build_minutes) }
+    let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
     include_examples 'linked in group settings dropdown'
 
@@ -96,7 +96,7 @@ RSpec.describe 'Groups > Usage Quotas' do
   end
 
   context 'when successfully purchasing CI Minutes' do
-    let(:group) { create(:group, :with_build_minutes) }
+    let(:group) { create(:group, :with_ci_minutes) }
     let!(:project) { create(:project, namespace: group, shared_runners_enabled: true) }
 
     it 'does show a banner' do

@@ -24,7 +24,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when minutes are not yet set' do
-        let(:group) { create(:group, :with_build_minutes_limit) }
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
         it { is_expected.to be_falsey }
       end
@@ -38,9 +38,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when at the warning level' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(16.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 16) }
 
         describe '#show?' do
           it 'has warning notification' do
@@ -70,9 +68,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when at the danger level' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(19.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 19) }
 
         describe '#show?' do
           it 'has danger notification' do
@@ -102,9 +98,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when right at the limit for notification' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(14.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 14) }
 
         describe '#show?' do
           it 'has warning notification' do

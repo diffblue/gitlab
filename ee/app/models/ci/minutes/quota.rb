@@ -41,7 +41,9 @@ module Ci
 
       def total_minutes_used
         strong_memoize(:total_minutes_used) do
-          namespace.shared_runners_seconds.to_i / 60
+          # TODO: use namespace.new_monthly_ci_minutes_enabled? to switch to
+          # ::Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace.id).amount_used.to_i
+          namespace.namespace_statistics&.shared_runners_seconds.to_i / 60
         end
       end
 
@@ -104,7 +106,6 @@ module Ci
         purchased_minutes > 0
       end
 
-      # === private to model ===
       def total_minutes_remaining
         [current_balance, 0].max
       end
