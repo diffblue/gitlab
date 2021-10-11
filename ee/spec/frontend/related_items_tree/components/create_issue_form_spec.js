@@ -11,6 +11,8 @@ import {
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 
+// eslint-disable-next-line import/no-deprecated
+import { getJSONFixture } from 'helpers/fixtures';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
 import createDefaultStore from 'ee/related_items_tree/store';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
@@ -22,6 +24,7 @@ import {
   mockMixedFrequentlyUsedProjects,
 } from '../mock_data';
 
+// eslint-disable-next-line import/no-deprecated
 const mockProjects = getJSONFixture('static/projects.json');
 
 const localVue = createLocalVue();
