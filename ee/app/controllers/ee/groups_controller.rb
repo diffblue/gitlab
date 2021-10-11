@@ -71,7 +71,8 @@ module EE
     def group_params_ee
       [
         :membership_lock,
-        :repository_size_limit
+        :repository_size_limit,
+        :new_user_signups_cap
       ].tap do |params_ee|
         params_ee << { insight_attributes: [:id, :project_id, :_destroy] } if current_group&.insights_available?
         params_ee << :file_template_project_id if current_group&.feature_available?(:custom_file_templates_for_namespace)
