@@ -537,6 +537,12 @@ all [custom variables](../../../ci/variables/index.md#custom-cicd-variables) are
 to the underlying SAST analyzer images if
 [the SAST vendored template](#configuration) is used.
 
+NOTE:
+In [GitLab 13.3 and earlier](https://gitlab.com/gitlab-org/gitlab/-/issues/220540),
+variables whose names started with the following prefixes are **not** propagated to either the
+analyzer containers or SAST Docker container: `DOCKER_`, `CI`, `GITLAB_`, `FF_`, `HOME`, `PWD`,
+`OLDPWD`, `PATH`, `SHLVL`, `HOSTNAME`.
+
 ### Experimental features
 
 You can receive early access to experimental features. Experimental features might be added,
