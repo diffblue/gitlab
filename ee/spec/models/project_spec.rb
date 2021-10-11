@@ -3313,4 +3313,12 @@ RSpec.describe Project do
       it { is_expected.to eql(vuln_rule) }
     end
   end
+
+  describe '#visible_approval_rules' do
+    let(:scan_finding_rule) { create(:approval_project_rule, project: project, report_type: :scan_finding) }
+
+    subject { project.visible_approval_rules }
+
+    it { is_expected.not_to include(scan_finding_rule) }
+  end
 end

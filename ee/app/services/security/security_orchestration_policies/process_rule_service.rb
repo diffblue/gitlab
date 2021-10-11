@@ -12,7 +12,6 @@ module Security
       def execute
         policy_configuration.delete_all_schedules
         create_new_schedule_rules
-        policy_configuration.update!(configured_at: Time.current)
       end
 
       private

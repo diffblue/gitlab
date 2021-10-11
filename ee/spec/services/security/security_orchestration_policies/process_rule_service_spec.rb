@@ -32,7 +32,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
         service.execute
 
         new_schedule = Security::OrchestrationPolicyRuleSchedule.first
-        expect(policy_configuration.configured_at).not_to be_nil
         expect(Security::OrchestrationPolicyRuleSchedule.count).to eq(1)
         expect(new_schedule.id).not_to eq(schedule.id)
         expect(new_schedule.rule_index).to eq(1)
@@ -45,7 +44,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessRuleService do
 
       it 'deletes schedules' do
         expect { service.execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
-        expect(policy_configuration.configured_at).not_to be_nil
       end
     end
   end
