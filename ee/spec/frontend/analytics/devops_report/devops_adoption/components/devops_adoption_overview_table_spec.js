@@ -1,18 +1,16 @@
 import { GlButton, GlIcon, GlBadge, GlProgressBar } from '@gitlab/ui';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
 import DevopsAdoptionOverviewTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_table.vue';
-import {
-  TABLE_TEST_IDS_NAMESPACE,
-  TABLE_TEST_IDS_ACTIONS,
-  TABLE_TEST_IDS_HEADERS,
-  DEVOPS_ADOPTION_TABLE_CONFIGURATION,
-} from 'ee/analytics/devops_report/devops_adoption/constants';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { devopsAdoptionNamespaceData } from '../mock_data';
 
 const DELETE_MODAL_ID = 'delete-modal-test-unique-id';
+const TABLE_TEST_IDS_HEADERS = 'headers';
+const TABLE_TEST_IDS_NAMESPACE = 'namespace';
+const TABLE_TEST_IDS_ACTIONS = 'actions';
 
 jest.mock('lodash/uniqueId', () => (x) => `${x}test-unique-id`);
 

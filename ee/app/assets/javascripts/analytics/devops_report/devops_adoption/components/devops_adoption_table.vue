@@ -10,11 +10,6 @@ import {
 import { uniqueId } from 'lodash';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import {
-  TABLE_TEST_IDS_HEADERS,
-  TABLE_TEST_IDS_NAMESPACE,
-  TABLE_TEST_IDS_ACTIONS,
-  TABLE_TEST_IDS_LOCAL_STORAGE_SORT_BY,
-  TABLE_TEST_IDS_LOCAL_STORAGE_SORT_DESC,
   TABLE_SORT_BY_STORAGE_KEY,
   TABLE_SORT_DESC_STORAGE_KEY,
   I18N_TABLE_REMOVE_BUTTON,
@@ -44,7 +39,7 @@ const thClass = ['gl-bg-white!', 'gl-text-gray-400'];
 
 const fieldOptions = {
   thClass,
-  thAttr: { 'data-testid': TABLE_TEST_IDS_HEADERS },
+  thAttr: { 'data-testid': 'headers' },
   formatter,
   sortable: true,
   sortByFormatted: true,
@@ -73,12 +68,6 @@ export default {
   i18n: {
     removeButtonDisabled: I18N_TABLE_REMOVE_BUTTON_DISABLED,
     removeButton: I18N_TABLE_REMOVE_BUTTON,
-  },
-  testids: {
-    NAMESPACE: TABLE_TEST_IDS_NAMESPACE,
-    ACTIONS: TABLE_TEST_IDS_ACTIONS,
-    LOCAL_STORAGE_SORT_BY: TABLE_TEST_IDS_LOCAL_STORAGE_SORT_BY,
-    LOCAL_STORAGE_SORT_DESC: TABLE_TEST_IDS_LOCAL_STORAGE_SORT_DESC,
   },
   sortByStorageKey: TABLE_SORT_BY_STORAGE_KEY,
   sortDescStorageKey: TABLE_SORT_DESC_STORAGE_KEY,
@@ -145,18 +134,8 @@ export default {
 </script>
 <template>
   <div>
-    <local-storage-sync
-      v-model="sortBy"
-      :storage-key="$options.sortByStorageKey"
-      :data-testid="$options.testids.LOCAL_STORAGE_SORT_BY"
-      as-json
-    />
-    <local-storage-sync
-      v-model="sortDesc"
-      :storage-key="$options.sortDescStorageKey"
-      :data-testid="$options.testids.LOCAL_STORAGE_SORT_DESC"
-      as-json
-    />
+    <local-storage-sync v-model="sortBy" :storage-key="$options.sortByStorageKey" as-json />
+    <local-storage-sync v-model="sortDesc" :storage-key="$options.sortDescStorageKey" as-json />
     <gl-table
       :fields="tableHeaderFields"
       :items="enabledNamespaces"
@@ -179,7 +158,7 @@ export default {
       </template>
 
       <template #cell(name)="{ item }">
-        <div :data-testid="$options.testids.NAMESPACE">
+        <div data-testid="namespace">
           <strong v-if="item.latestSnapshot">{{ item.namespace.fullName }}</strong>
           <template v-else>
             <span class="gl-text-gray-400">{{ item.namespace.fullName }}</span>
@@ -201,10 +180,7 @@ export default {
       </template>
 
       <template #cell(actions)="{ item }">
-        <span
-          v-gl-tooltip.hover="getDeleteButtonTooltipText(item)"
-          :data-testid="$options.testids.ACTIONS"
-        >
+        <span v-gl-tooltip.hover="getDeleteButtonTooltipText(item)" data-testid="actions">
           <gl-button
             v-gl-modal="deleteModalId"
             :disabled="isCurrentGroup(item)"

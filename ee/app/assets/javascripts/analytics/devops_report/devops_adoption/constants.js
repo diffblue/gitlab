@@ -7,11 +7,6 @@ export const PROGRESS_BAR_HEIGHT = '8px';
 export const DATE_TIME_FORMAT = 'yyyy-mm-dd HH:MM';
 
 export const OVERVIEW_TABLE_NAME_KEY = 'name';
-export const TABLE_TEST_IDS_HEADERS = 'header';
-export const TABLE_TEST_IDS_NAMESPACE = 'namespaceCol';
-export const TABLE_TEST_IDS_ACTIONS = 'actionsCol';
-export const TABLE_TEST_IDS_LOCAL_STORAGE_SORT_BY = 'localStorageSortBy';
-export const TABLE_TEST_IDS_LOCAL_STORAGE_SORT_DESC = 'localStorageSortDesc';
 
 export const TABLE_SORT_BY_STORAGE_KEY = 'devops_adoption_table_sort_by';
 export const TABLE_SORT_DESC_STORAGE_KEY = 'devops_adoption_table_sort_desc';
