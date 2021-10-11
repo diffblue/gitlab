@@ -24,7 +24,7 @@ export const i18n = Object.freeze({
   ),
   handRaiseActionError: s__('PQL|An error occurred while sending hand raise lead.'),
   handRaiseActionSuccess: s__(
-    'PQL|Thank you for reaching out! Our sales team will bet back to you soon.',
+    'PQL|Thank you for reaching out! Our sales team will get back to you soon.',
   ),
 });
 
