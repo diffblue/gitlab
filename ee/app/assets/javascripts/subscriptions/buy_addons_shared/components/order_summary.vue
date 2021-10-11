@@ -65,6 +65,9 @@ export default {
     quantityPresent() {
       return this.subscription.quantity > 0;
     },
+    quantity() {
+      return this.subscription.quantity || 0;
+    },
     namespaceName() {
       return this.selectedNamespace.name;
     },
@@ -104,7 +107,7 @@ export default {
           :selected-plan-text="plan.name"
           :selected-plan-price="selectedPlanPrice"
           :total-amount="totalAmount"
-          :quantity="subscription.quantity"
+          :quantity="quantity"
           :tax-rate="$options.taxRate"
           :purchase-has-expiration="purchaseHasExpiration"
         >
@@ -128,7 +131,7 @@ export default {
         :selected-plan-text="plan.name"
         :selected-plan-price="selectedPlanPrice"
         :total-amount="totalAmount"
-        :quantity="subscription.quantity"
+        :quantity="quantity"
         :tax-rate="$options.taxRate"
         :purchase-has-expiration="purchaseHasExpiration"
       >
