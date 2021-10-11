@@ -7,10 +7,6 @@ module Vulnerabilities
 
     self.table_name = 'vulnerability_finding_signatures'
 
-    # This is necessary to prevent updating the
-    # created_at attribute with upsert queries.
-    attr_readonly(:created_at)
-
     belongs_to :finding, foreign_key: 'finding_id', inverse_of: :signatures, class_name: 'Vulnerabilities::Finding'
     enum algorithm_type: VulnerabilityFindingSignatureHelpers::ALGORITHM_TYPES, _prefix: :algorithm
     validates :finding, presence: true

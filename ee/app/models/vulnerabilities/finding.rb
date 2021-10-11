@@ -11,10 +11,6 @@ module Vulnerabilities
     # https://gitlab.com/gitlab-org/gitlab/-/issues/214563#note_370782508 is why the table names are not renamed
     self.table_name = "vulnerability_occurrences"
 
-    # This is necessary to prevent updating the
-    # created_at attribute with upsert queries.
-    attr_readonly(:created_at)
-
     FINDINGS_PER_PAGE = 20
     MAX_NUMBER_OF_IDENTIFIERS = 20
     REPORT_TYPES_WITH_LOCATION_IMAGE = %w[container_scanning cluster_image_scanning].freeze
