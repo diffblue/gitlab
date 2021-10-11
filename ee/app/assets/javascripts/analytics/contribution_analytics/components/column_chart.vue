@@ -1,6 +1,7 @@
 <script>
 import { GlResizeObserverDirective } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
+import { getDataZoomOption } from '~/analytics/shared/utils';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { truncateWidth } from '~/lib/utils/text_utility';
 
@@ -42,14 +43,26 @@ export default {
     };
   },
   computed: {
-    dataZoomConfig() {
-      const handleIcon = this.svgs['scroll-handle'];
+    handleIcon() {
+      return this.svgs['scroll-handle'] ? { handleIcon: this.svgs['scroll-handle'] } : {};
+    },
+    dataZoomOption() {
+      const dataZoom = [
+        {
+          type: 'slider',
+          bottom: 10,
+          start: 0,
+          ...this.handleIcon,
+        },
+      ];
 
-      return handleIcon ? { handleIcon } : {};
+      return {
+        dataZoom: getDataZoomOption({ totalItems: this.chartData.length, dataZoom }),
+      };
     },
     chartOptions() {
       return {
-        dataZoom: [this.dataZoomConfig],
+        ...this.dataZoomOption,
         height: INNER_CHART_HEIGHT,
         xAxis: {
           axisLabel: {
