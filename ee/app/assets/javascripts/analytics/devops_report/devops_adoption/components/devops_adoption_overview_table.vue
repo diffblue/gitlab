@@ -12,14 +12,11 @@ import { uniqueId } from 'lodash';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { formatNumber } from '~/locale';
 import {
-  TABLE_TEST_IDS_HEADERS,
   I18N_GROUP_COL_LABEL,
   I18N_TABLE_REMOVE_BUTTON_DISABLED,
   I18N_TABLE_REMOVE_BUTTON,
   I18N_OVERVIEW_TABLE_HEADER_GROUP,
   I18N_OVERVIEW_TABLE_HEADER_SUBGROUP,
-  TABLE_TEST_IDS_ACTIONS,
-  TABLE_TEST_IDS_NAMESPACE,
   DEVOPS_ADOPTION_TABLE_CONFIGURATION,
   OVERVIEW_TABLE_SORT_BY_STORAGE_KEY,
   OVERVIEW_TABLE_SORT_DESC_STORAGE_KEY,
@@ -39,7 +36,7 @@ const formatter = (value, key, item) => {
 
 const fieldOptions = {
   thClass,
-  thAttr: { 'data-testid': TABLE_TEST_IDS_HEADERS },
+  thAttr: { 'data-testid': 'headers' },
   sortable: true,
   sortByFormatted: true,
   formatter,
@@ -64,10 +61,6 @@ export default {
     groupGid: {
       default: null,
     },
-  },
-  testids: {
-    ACTIONS: TABLE_TEST_IDS_ACTIONS,
-    NAMESPACE: TABLE_TEST_IDS_NAMESPACE,
   },
   cols: DEVOPS_ADOPTION_TABLE_CONFIGURATION,
   sortByStorageKey: OVERVIEW_TABLE_SORT_BY_STORAGE_KEY,
@@ -174,7 +167,7 @@ export default {
       </template>
 
       <template #cell(name)="{ item }">
-        <div :data-testid="$options.testids.NAMESPACE">
+        <div data-testid="namespace">
           <span v-if="item.group.latestSnapshot" class="gl-font-weight-bold">{{
             item.group.namespace.fullName
           }}</span>
@@ -206,10 +199,7 @@ export default {
       </template>
 
       <template #cell(actions)="{ item }">
-        <span
-          v-gl-tooltip.hover="getDeleteButtonTooltipText(item.group)"
-          :data-testid="$options.testids.ACTIONS"
-        >
+        <span v-gl-tooltip.hover="getDeleteButtonTooltipText(item.group)" data-testid="actions">
           <gl-button
             v-gl-modal="deleteModalId"
             :disabled="isCurrentGroup(item.group)"
