@@ -24,8 +24,8 @@ RSpec.describe Epic do
   end
 
   describe 'scopes' do
-    let_it_be(:confidential_epic) { create(:epic, confidential: true, group: group) }
-    let_it_be(:public_epic) { create(:epic, group: group) }
+    let_it_be(:confidential_epic) { create(:epic, confidential: true, group: group, title: 'Foo 1') }
+    let_it_be(:public_epic) { create(:epic, group: group, title: 'Foo 2') }
 
     describe '.public_only' do
       it 'only returns public epics' do
