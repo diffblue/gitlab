@@ -7,7 +7,11 @@ import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import createFlash from '~/flash';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
-import { I18N_DETAILS_STEP_TITLE, I18N_DETAILS_NEXT_STEP_BUTTON_TEXT } from '../../constants';
+import {
+  I18N_DETAILS_STEP_TITLE,
+  I18N_DETAILS_NEXT_STEP_BUTTON_TEXT,
+  I18N_DETAILS_INVALID_QUANTITY_MESSAGE,
+} from '../../constants';
 
 export default {
   name: 'AddonPurchaseDetails',
@@ -49,7 +53,7 @@ export default {
   computed: {
     quantityModel: {
       get() {
-        return this.quantity || 1;
+        return this.quantity || 0;
       },
       set(quantity) {
         this.updateQuantity(quantity);
@@ -63,7 +67,7 @@ export default {
     },
   },
   methods: {
-    updateQuantity(quantity = 1) {
+    updateQuantity(quantity = 0) {
       this.$apollo
         .mutate({
           mutation: updateState,
@@ -79,6 +83,7 @@ export default {
   i18n: {
     stepTitle: I18N_DETAILS_STEP_TITLE,
     nextStepButtonText: I18N_DETAILS_NEXT_STEP_BUTTON_TEXT,
+    invalidQuantityErrorMessage: I18N_DETAILS_INVALID_QUANTITY_MESSAGE,
   },
   stepId: STEPS[0].id,
 };
@@ -89,6 +94,7 @@ export default {
     :step-id="$options.stepId"
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
+    :error-message="$options.i18n.invalidQuantityErrorMessage"
     :next-step-button-text="$options.i18n.nextStepButtonText"
   >
     <template #body>
@@ -98,7 +104,12 @@ export default {
       <label class="gl-mt-3" for="quantity" data-testid="product-label">
         {{ productLabel }}
       </label>
-      <div class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-mb-6">
+      <div
+        :class="[
+          { 'gl-mb-6': isValid },
+          'gl-display-flex gl-flex-direction-row gl-align-items-center',
+        ]"
+      >
         <gl-form-input
           ref="quantity"
           v-model.number="quantityModel"

@@ -1,4 +1,4 @@
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlFormGroup } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
@@ -113,6 +113,16 @@ describe('Step', () => {
       wrapper = createComponent({ propsData: { isValid: false }, apolloProvider: mockApollo });
 
       expect(wrapper.findComponent(StepSummary).exists()).toBe(false);
+    });
+
+    it('should pass correct props to form component', () => {
+      wrapper = createComponent({
+        propsData: { errorMessage: 'Input value is invalid!' },
+      });
+
+      expect(wrapper.findComponent(GlFormGroup).attributes('invalid-feedback')).toBe(
+        'Input value is invalid!',
+      );
     });
   });
 
