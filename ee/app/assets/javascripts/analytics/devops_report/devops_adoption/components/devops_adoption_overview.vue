@@ -7,14 +7,21 @@ import {
   I18N_TABLE_HEADER_TEXT,
 } from '../constants';
 import DevopsAdoptionOverviewCard from './devops_adoption_overview_card.vue';
+import DevopsAdoptionOverviewChart from './devops_adoption_overview_chart.vue';
 import DevopsAdoptionOverviewTable from './devops_adoption_overview_table.vue';
 
 export default {
   name: 'DevopsAdoptionOverview',
   components: {
     DevopsAdoptionOverviewCard,
+    DevopsAdoptionOverviewChart,
     DevopsAdoptionOverviewTable,
     GlLoadingIcon,
+  },
+  inject: {
+    groupGid: {
+      default: null,
+    },
   },
   props: {
     loading: {
@@ -81,6 +88,7 @@ export default {
         :display-meta="item.displayMeta"
       />
     </div>
+    <devops-adoption-overview-chart v-if="groupGid" class="gl-mb-7" />
     <devops-adoption-overview-table :data="data" v-on="$listeners" />
   </div>
 </template>

@@ -76,6 +76,20 @@ export const I18N_CELL_FLAG_FALSE_TEXT = s__('DevopsAdoption|Not adopted');
 
 export const I18N_GROUP_COL_LABEL = __('Group');
 
+export const I18N_OVERVIEW_CHART_TITLE = s__('DevopsAdoption|Adoption over time');
+export const I18N_OVERVIEW_CHART_Y_AXIS_TITLE = s__(
+  'DevopsAdoption|Total number of features adopted',
+);
+export const I18N_NO_FEATURE_META = s__('DevopsAdoption|No tracked features');
+
+export const OVERVIEW_CHART_X_AXIS_TYPE = 'category';
+export const OVERVIEW_CHART_Y_AXIS_TYPE = 'value';
+
+export const OVERVIEW_CHART_PRESENTATION = 'tiled';
+
+// $data-viz-orange-600, $data-viz-aqua-500, $data-viz-green-600
+export const CUSTOM_PALETTE = ['#b24800', '#0094b6', '#487900'];
+
 export const DEVOPS_ADOPTION_OVERALL_CONFIGURATION = {
   title: s__('DevopsAdoption|Overall adoption'),
   icon: 'tanuki',

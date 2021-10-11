@@ -1,4 +1,5 @@
 import { GlLoadingIcon } from '@gitlab/ui';
+import DevopsAdoptionOverviewChart from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_chart.vue';
 import DevopsAdoptionOverview from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview.vue';
 import DevopsAdoptionOverviewCard from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_card.vue';
 import DevopsAdoptionOverviewTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_table.vue';
@@ -8,13 +9,14 @@ import { devopsAdoptionNamespaceData, overallAdoptionData } from '../mock_data';
 describe('DevopsAdoptionOverview', () => {
   let wrapper;
 
-  const createComponent = (props) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(DevopsAdoptionOverview, {
       propsData: {
         timestamp: '2020-10-31 23:59',
         data: devopsAdoptionNamespaceData,
         ...props,
       },
+      provide,
     });
   };
 
@@ -50,12 +52,16 @@ describe('DevopsAdoptionOverview', () => {
       it('displays the overview table', () => {
         expect(wrapper.findComponent(DevopsAdoptionOverviewTable).exists()).toBe(true);
       });
+
+      it('does not display the overview chart', () => {
+        expect(wrapper.findComponent(DevopsAdoptionOverviewChart).exists()).toBe(false);
+      });
     });
   });
 
   describe('loading', () => {
     beforeEach(() => {
-      createComponent({ loading: true });
+      createComponent({ props: { loading: true } });
     });
 
     it('displays a loading icon', () => {
@@ -64,6 +70,16 @@ describe('DevopsAdoptionOverview', () => {
 
     it('does not display the overview container', () => {
       expect(wrapper.findByTestId('overview-container').exists()).toBe(false);
+    });
+  });
+
+  describe('group level', () => {
+    beforeEach(() => {
+      createComponent({ provide: { groupGid: 'gid:123' } });
+    });
+
+    it('displays the overview chart', () => {
+      expect(wrapper.findComponent(DevopsAdoptionOverviewChart).exists()).toBe(true);
     });
   });
 });

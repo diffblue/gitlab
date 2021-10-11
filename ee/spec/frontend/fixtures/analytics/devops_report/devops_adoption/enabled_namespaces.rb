@@ -25,8 +25,8 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
       Analytics::DevopsAdoption::Snapshot::BOOLEAN_METRICS.each.with_index do |m, i|
         result[m] = i.odd?
       end
-      Analytics::DevopsAdoption::Snapshot::NUMERIC_METRICS.each do |m|
-        result[m] = rand(10)
+      Analytics::DevopsAdoption::Snapshot::NUMERIC_METRICS.each.with_index do |m, i|
+        result[m] = i
       end
       result[:total_projects_count] += 10
       result
@@ -48,6 +48,18 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
 
       travel_to(DateTime.parse('2021-02-02')) do
         post_graphql(query, current_user: current_user, variables: { displayNamespaceId: group.to_gid.to_s })
+      end
+
+      expect_graphql_errors_to_be_empty
+    end
+
+    query_path = 'analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql'
+
+    it "graphql/#{query_path}.json" do
+      query = get_graphql_query_as_string(query_path, ee: true)
+
+      travel_to(DateTime.parse('2021-02-02')) do
+        post_graphql(query, current_user: current_user, variables: { displayNamespaceId: group.to_gid.to_s, startDate: '2020-06-31', endDate: '2021-03-31' } )
       end
 
       expect_graphql_errors_to_be_empty

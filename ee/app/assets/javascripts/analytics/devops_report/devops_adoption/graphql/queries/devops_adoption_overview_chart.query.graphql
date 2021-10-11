@@ -1,0 +1,28 @@
+query devopsAdoptionEnabledNamespaces(
+  $displayNamespaceId: NamespaceID
+  $startDate: Time!
+  $endDate: Time!
+) {
+  devopsAdoptionEnabledNamespaces(displayNamespaceId: $displayNamespaceId) {
+    nodes {
+      id
+      snapshots(endTimeBefore: $endDate, endTimeAfter: $startDate) {
+        nodes {
+          endTime
+          issueOpened
+          mergeRequestOpened
+          mergeRequestApproved
+          runnerConfigured
+          pipelineSucceeded
+          deploySucceeded
+          recordedAt
+          codeOwnersUsedCount
+          sastEnabledCount
+          dastEnabledCount
+          coverageFuzzingEnabledCount
+          dependencyScanningEnabledCount
+        }
+      }
+    }
+  }
+}

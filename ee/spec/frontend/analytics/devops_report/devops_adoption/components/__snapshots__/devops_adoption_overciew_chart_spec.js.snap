@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip information correctly 1`] = `
+<div>
+  <h4>
+    Adoption over time
+  </h4>
+   
+  <div
+    bars="[object Object],[object Object],[object Object]"
+    custom-palette="#b24800,#0094b6,#487900"
+    group-by="January"
+    option="[object Object]"
+    presentation="tiled"
+    x-axis-title=""
+    x-axis-type="category"
+    y-axis-title="Total number of features adopted"
+  >
+    
+      Jan
+     
+    <div
+      class="gl-mb-3"
+    >
+      <div
+        class="gl-font-weight-bold"
+      >
+        Dev
+      </div>
+       
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          variant="warning"
+        />
+        
+              Approvals
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          variant="warning"
+        />
+        
+              Code owners
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          variant="warning"
+        />
+        
+              Issues
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="warning"
+        />
+        
+              MRs
+            
+      </div>
+    </div>
+    <div
+      class="gl-mb-3"
+    >
+      <div
+        class="gl-font-weight-bold"
+      >
+        Sec
+      </div>
+       
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="info"
+        />
+        
+              DAST
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="info"
+        />
+        
+              Dependency Scanning
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="info"
+        />
+        
+              Fuzz Testing
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="info"
+        />
+        
+              SAST
+            
+      </div>
+    </div>
+    <div
+      class=""
+    >
+      <div
+        class="gl-font-weight-bold"
+      >
+        Ops
+      </div>
+       
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="success"
+        />
+        
+              Deploys
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          variant="success"
+        />
+        
+              Pipelines
+            
+      </div>
+      <div>
+        <devops-adoption-table-cell-flag-stub
+          class="gl-mr-3"
+          enabled="true"
+          variant="success"
+        />
+        
+              Runners
+            
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`DevopsAdoptionOverviewChart default state computes the correct series data 1`] = `
+Array [
+  Object {
+    "data": Array [
+      1,
+    ],
+    "name": "Dev",
+  },
+  Object {
+    "data": Array [
+      4,
+    ],
+    "name": "Sec",
+  },
+  Object {
+    "data": Array [
+      2,
+    ],
+    "name": "Ops",
+  },
+]
+`;
