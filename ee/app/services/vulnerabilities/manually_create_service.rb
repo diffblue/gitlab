@@ -66,11 +66,14 @@ module Vulnerabilities
 
     # rubocop: disable CodeReuse/ActiveRecord
     def initialize_scanner(scanner_hash)
-      name = scanner_hash[:name]
-
-      Vulnerabilities::Scanner.find_or_initialize_by(name: name) do |s|
+      # In database Vulnerabilities::Scanner#id is autoincrementing primary key
+      # In the GraphQL mutation mutation arguments we want to respect the security scanner schema:
+      # https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/src/security-report-format.json#L339
+      # So the id provided to the mutation is actually external_id in our database
+      Vulnerabilities::Scanner.find_or_initialize_by(external_id: scanner_hash[:id]) do |s|
+        s.name = scanner_hash[:name]
+        s.vendor = scanner_hash.dig(:vendor, :name).to_s
         s.project = @project
-        s.external_id = Gitlab::Utils.slugify(name)
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
