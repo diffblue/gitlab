@@ -11704,6 +11704,9 @@ msgstr ""
 msgid "DevopsAdoption|Adoption by subgroup"
 msgstr ""
 
+msgid "DevopsAdoption|Adoption over time"
+msgstr ""
+
 msgid "DevopsAdoption|An error occurred while removing the group. Please try again."
 msgstr ""
 
@@ -11782,6 +11785,9 @@ msgstr ""
 msgid "DevopsAdoption|No results…"
 msgstr ""
 
+msgid "DevopsAdoption|No tracked features"
+msgstr ""
+
 msgid "DevopsAdoption|Not adopted"
 msgstr ""
 
@@ -11825,6 +11831,9 @@ msgid "DevopsAdoption|There was an error fetching Groups. Please refresh the pag
 msgstr ""
 
 msgid "DevopsAdoption|This group has no subgroups"
+msgstr ""
+
+msgid "DevopsAdoption|Total number of features adopted"
 msgstr ""
 
 msgid "DevopsAdoption|You cannot remove the group you are currently in."

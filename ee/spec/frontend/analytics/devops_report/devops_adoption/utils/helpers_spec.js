@@ -1,5 +1,9 @@
-import { shouldPollTableData } from 'ee/analytics/devops_report/devops_adoption/utils/helpers';
-import { devopsAdoptionNamespaceData } from '../mock_data';
+import {
+  shouldPollTableData,
+  getAdoptedCountsByCols,
+} from 'ee/analytics/devops_report/devops_adoption/utils/helpers';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+import { devopsAdoptionNamespaceData, namespaceWithSnapotsData } from '../mock_data';
 
 describe('shouldPollTableData', () => {
   const { nodes: pendingData } = devopsAdoptionNamespaceData;
@@ -14,4 +18,28 @@ describe('shouldPollTableData', () => {
   `('returns $expected when $scenario', ({ enabledNamespaces, timestamp, openModal, expected }) => {
     expect(shouldPollTableData({ enabledNamespaces, timestamp, openModal })).toBe(expected);
   });
+});
+
+describe('getAdoptedCountsByCols', () => {
+  const {
+    snapshots: { nodes },
+  } = namespaceWithSnapotsData.data.devopsAdoptionEnabledNamespaces.nodes[0];
+
+  it.each`
+    snapshots               | cols                                           | expected
+    ${nodes}                | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols} | ${[1]}
+    ${[...nodes, ...nodes]} | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols} | ${[1, 1]}
+    ${nodes}                | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[1].cols} | ${[4]}
+    ${[...nodes, ...nodes]} | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[1].cols} | ${[4, 4]}
+    ${nodes}                | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[2].cols} | ${[2]}
+    ${[...nodes, ...nodes]} | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[2].cols} | ${[2, 2]}
+    ${[]}                   | ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[1].cols} | ${[]}
+    ${nodes}                | ${[]}                                          | ${[0]}
+    ${[]}                   | ${[]}                                          | ${[]}
+  `(
+    'returns the correct data set based on the snapshots and cols',
+    ({ snapshots, cols, expected }) => {
+      expect(getAdoptedCountsByCols(snapshots, cols)).toStrictEqual(expected);
+    },
+  );
 });

@@ -18,3 +18,22 @@ export const shouldPollTableData = ({ enabledNamespaces, openModal }) => {
 
   return anyPendingEnabledNamespaces;
 };
+
+/**
+ * A helper function which extracts the total feature adoption count for a group
+ * of snapshot data, filtered out by specific features / columns
+ *
+ * @param { Array } snapshots the snapshot data for a given group node
+ * @param { Array } cols the columns which need to be used for the calculation
+ *
+ * @return { Array } an array containing the adopted counts for the given columns
+ */
+export const getAdoptedCountsByCols = (snapshots, cols) => {
+  return snapshots.reduce((acc, snapshot) => {
+    const adoptedCount = cols.reduce((adopted, col) => {
+      return snapshot[col.key] ? adopted + 1 : adopted;
+    }, 0);
+
+    return [...acc, adoptedCount];
+  }, []);
+};
