@@ -24,7 +24,8 @@ class SamlProvider < ApplicationRecord
   def settings
     defaults.to_h.merge(
       idp_cert_fingerprint: certificate_fingerprint,
-      idp_sso_target_url: sso_url
+      idp_sso_target_url: sso_url,
+      attribute_statements: { nickname: %w(username nickname) }
     )
   end
 
