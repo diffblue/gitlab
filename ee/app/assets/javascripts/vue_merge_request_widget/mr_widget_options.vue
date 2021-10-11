@@ -192,12 +192,6 @@ export default {
         this.fetchLoadPerformance();
       }
     },
-    shouldShowExtension() {
-      return (
-        window.gon.features.refactorMrWidgetsExtensions ||
-        window.gon.features.refactorMrWidgetsExtensionsUser
-      );
-    },
   },
   methods: {
     registerLoadPerformance() {
