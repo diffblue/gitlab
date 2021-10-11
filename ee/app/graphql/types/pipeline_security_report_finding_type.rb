@@ -94,7 +94,7 @@ module Types
     private
 
     def expose_false_positive?
-      Feature.enabled?(:vulnerability_flags, default_enabled: :yaml) && object.project.licensed_feature_available?(:sast_fp_reduction)
+      object.project.licensed_feature_available?(:sast_fp_reduction)
     end
   end
   # rubocop: enable Graphql/AuthorizeTypes

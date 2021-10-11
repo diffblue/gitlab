@@ -81,22 +81,6 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
                 )
               end
             end
-
-            context 'with vulnerability_flags disabled' do
-              before do
-                stub_feature_flags(vulnerability_flags: false)
-              end
-
-              it 'does not insert any vulnerability flag' do
-                expect { subject }.to change { Vulnerabilities::Flag.count }.by(0)
-              end
-
-              it 'does not track a snowplow event' do
-                subject
-
-                expect_no_snowplow_event
-              end
-            end
           end
 
           it 'inserts all finding links' do
