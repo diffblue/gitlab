@@ -53,7 +53,6 @@ export default {
         :href="mergeTrainWhenPipelineSucceedsDocsPath"
         target="_blank"
         rel="noopener noreferrer"
-        data-testid="merge-train-helper-link"
       >
         {{ $options.i18n.learnMore }}
       </gl-link>
