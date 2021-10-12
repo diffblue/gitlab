@@ -92,7 +92,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         click_on("Create merge request")
         wait_for_all_requests
 
-        expect(page).to have_content("Requires approval.")
+        expect(page).to have_content("Requires 1 approval from eligible users.")
         expect(page).to have_selector("img[alt='#{other_user.name}']")
       end
 
@@ -165,7 +165,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
           click_on("Save changes")
           wait_for_all_requests
 
-          expect(page).to have_content("Requires approval.")
+          expect(page).to have_content("Requires 1 approval from eligible users.")
           expect(page).to have_selector("img[alt='#{other_user.name}']")
         end
       end
@@ -193,7 +193,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         click_on("Save changes")
         wait_for_all_requests
 
-        expect(page).to have_content("Requires approval.")
+        expect(page).to have_content("Requires 1 approval from eligible users.")
         expect(page).to have_selector("img[alt='#{user.name}']")
         expect(page).to have_selector("img[alt='#{other_user.name}']")
       end
@@ -225,7 +225,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
 
         expect(page).not_to have_selector(".js-approvers img[alt='#{other_user.name}']")
         expect(page).to have_selector(".js-approvers img[alt='#{approver.name}']")
-        expect(page).to have_content("Requires approval.")
+        expect(page).to have_content("Requires 1 approval from eligible users.")
       end
 
       it 'allows changing approvals number' do
@@ -237,7 +237,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         wait_for_requests
 
         # project setting in the beginning on the show MR page
-        expect(page).to have_content("Requires 2 more approvals")
+        expect(page).to have_content("Requires 2 approvals from eligible users")
 
         find('.merge-request').click_on 'Edit'
         open_modal
@@ -253,7 +253,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         wait_for_all_requests
 
         # new MR setting on the show MR page
-        expect(page).to have_content("Requires 3 more approvals")
+        expect(page).to have_content("Requires 3 approvals from eligible users")
 
         # new MR setting on the edit MR page
         find('.merge-request').click_on 'Edit'

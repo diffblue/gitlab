@@ -46,6 +46,6 @@ RSpec.describe 'Merge Requests > User resets approvers', :js do
 
     wait_for_requests
 
-    expect(page).to have_content 'Requires approval'
+    expect(page).to have_content 'Requires 1 approval'
   end
 end

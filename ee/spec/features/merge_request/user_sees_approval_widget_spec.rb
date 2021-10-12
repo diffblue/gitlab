@@ -42,7 +42,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js do
       it 'the renders the number of required approvals' do
         wait_for_requests
 
-        expect(page).to have_content('Requires 3 more approvals.')
+        expect(page).to have_content('Requires 3 approvals from eligible users.')
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js do
         visit project_merge_request_path(project, merge_request)
 
         wait_for_requests
-        expect(page).to have_content("Requires approval from #{rule.name}")
+        expect(page).to have_content("Requires 1 approval from #{rule.name}")
 
         click_on 'View eligible approvers'
         wait_for_requests
@@ -94,7 +94,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js do
           visit project_merge_request_path(project, merge_request)
 
           wait_for_requests
-          expect(page).to have_content("Requires approval from #{rule.name}.")
+          expect(page).to have_content("Requires 1 approval from #{rule.name}.")
 
           click_on 'View eligible approvers'
           wait_for_requests
@@ -118,7 +118,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js do
             visit project_merge_request_path(project, merge_request)
             wait_for_requests
 
-            expect(page).to have_content("Requires 2 more approvals from #{rule.name} and Code Owners")
+            expect(page).to have_content("Requires 2 approvals from #{rule.name} and Code Owners")
 
             click_on 'View eligible approvers'
             wait_for_requests
