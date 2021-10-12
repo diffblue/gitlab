@@ -25,16 +25,15 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
     sign_in(user)
   end
 
-  it 'shows Start merge train when pipeline succeeds button and helper texts' do
+  it 'shows Start merge train when pipeline succeeds button and helper icon' do
     visit project_merge_request_path(project, merge_request)
 
     expect(page).to have_button('Start merge train when pipeline succeeds')
 
-    within('.js-merge-train-helper-text') do
-      expect(page).to have_content("This action will start a merge train when pipeline ##{pipeline.id} succeeds.")
-      expect(page).to have_link('More information',
-        href: MergeRequestPresenter.new(merge_request).merge_train_when_pipeline_succeeds_docs_path)
-    end
+    find('[data-testid="merge-train-helper-icon"]').hover
+
+    expect(page).to have_selector('[data-testid="merge-train-helper-content"]')
+    expect(page).to have_link('Learn more', href: help_page_path('ci/pipelines/merge_trains.md', anchor: 'add-a-merge-request-to-a-merge-train'))
   end
 
   context 'when merge_trains EEP license is not available' do
@@ -46,6 +45,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
       visit project_merge_request_path(project, merge_request)
 
       expect(page).not_to have_button('Start merge train when pipeline succeeds')
+      expect(page).not_to have_selector('[data-testid="merge-train-helper-icon"]')
     end
   end
 
