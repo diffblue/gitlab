@@ -75,8 +75,8 @@ module QA
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
           expected_minutes = ci_product[:minutes] * purchase_quantity
 
-          expect(usage_quota.purchase_successful_alert?).to be true
-          expect { usage_quota.additional_minutes_exist? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+          expect { usage_quota.purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60)
+          expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
           expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
         end
       end
