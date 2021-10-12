@@ -9816,6 +9816,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="epicissuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
 | <a id="epicissuecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the issue was created. |
+| <a id="epicissuecustomerrelationscontacts"></a>`customerRelationsContacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Customer relations contacts of the issue. (see [Connections](#connections)) |
 | <a id="epicissuedescription"></a>`description` | [`String`](#string) | Description of the issue. |
 | <a id="epicissuedescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="epicissuedesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with this issue. |
@@ -10979,6 +10980,7 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="issueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="issuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
 | <a id="issuecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the issue was created. |
+| <a id="issuecustomerrelationscontacts"></a>`customerRelationsContacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Customer relations contacts of the issue. (see [Connections](#connections)) |
 | <a id="issuedescription"></a>`description` | [`String`](#string) | Description of the issue. |
 | <a id="issuedescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="issuedesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with this issue. |
