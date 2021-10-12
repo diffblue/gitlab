@@ -6,6 +6,9 @@ query devopsAdoptionEnabledNamespaces(
   devopsAdoptionEnabledNamespaces(displayNamespaceId: $displayNamespaceId) {
     nodes {
       id
+      namespace {
+        id
+      }
       snapshots(endTimeBefore: $endDate, endTimeAfter: $startDate) {
         nodes {
           endTime

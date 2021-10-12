@@ -25,7 +25,8 @@ describe('DevopsAdoptionOverviewChart', () => {
     wrapper = shallowMount(DevopsAdoptionOverviewChart, {
       localVue,
       provide: {
-        groupGid: 'gid:123',
+        groupGid:
+          namespaceWithSnapotsData.data.devopsAdoptionEnabledNamespaces.nodes[0].namespace.id,
       },
       apolloProvider: createMockApollo(handlers),
       data() {
