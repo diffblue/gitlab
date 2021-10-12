@@ -23,13 +23,23 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         stub_feature_flags(create_vulnerabilities_via_api: false)
       end
 
-      let(:scanner_params) do
+      let(:scanner_attributes) do
         {
-          name: "My manual scanner"
+          id: "my-custom-scanner",
+          name: "My Custom Scanner",
+          url: "https://superscanner.com",
+          vendor: vendor_attributes,
+          version: "21.37.00"
         }
       end
 
-      let(:identifier_params) do
+      let(:vendor_attributes) do
+        {
+          name: "Custom Scanner Vendor"
+        }
+      end
+
+      let(:identifier_attributes) do
         {
           name: "Test identifier 1",
           url: "https://test.com"
@@ -39,12 +49,12 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
       let(:params) do
         {
           vulnerability: {
-            title: "Test vulnerability",
+            name: "Test vulnerability",
             state: "detected",
             severity: "unknown",
             confidence: "unknown",
-            identifiers: [identifier_params],
-            scanner: scanner_params
+            identifiers: [identifier_attributes],
+            scanner: scanner_attributes
           }
         }
       end
@@ -62,33 +72,69 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
       end
 
       context 'with valid parameters' do
-        let(:scanner_params) do
+        let(:scanner_attributes) do
           {
-            name: "My manual scanner"
+            id: "my-custom-scanner",
+            name: "My Custom Scanner",
+            url: "https://superscanner.com",
+            vendor: vendor_attributes,
+            version: "21.37.00"
           }
         end
 
-        let(:identifier_params) do
+        let(:vendor_attributes) do
+          {
+            name: "Custom Scanner Vendor"
+          }
+        end
+
+        let(:identifier_attributes) do
           {
             name: "Test identifier 1",
             url: "https://test.com"
           }
         end
 
+        let(:identifier_fingerprint) do
+          Digest::SHA1.hexdigest("other:#{identifier_attributes[:name]}")
+        end
+
         let(:params) do
           {
             vulnerability: {
-              title: "Test vulnerability",
+              name: "Test vulnerability",
               state: "detected",
               severity: "unknown",
               confidence: "unknown",
-              identifiers: [identifier_params],
-              scanner: scanner_params
+              identifiers: [identifier_attributes],
+              scanner: scanner_attributes
             }
           }
         end
 
         let(:vulnerability) { subject.payload[:vulnerability] }
+
+        context 'with custom external_type and external_id' do
+          let(:identifier_attributes) do
+            {
+              name: "Test identifier 1",
+              url: "https://test.com",
+              external_id: "my external id",
+              external_type: "my external type"
+            }
+          end
+
+          let(:identifier_fingerprint) do
+            Digest::SHA1.hexdigest("#{identifier_attributes[:external_type]}:#{identifier_attributes[:external_id]}")
+          end
+
+          it 'uses them to create a Vulnerabilities::Identifier' do
+            primary_identifier = vulnerability.finding.primary_identifier
+            expect(primary_identifier.external_id).to eq(identifier_attributes.dig(:external_id))
+            expect(primary_identifier.external_type).to eq(identifier_attributes.dig(:external_type))
+            expect(primary_identifier.fingerprint).to eq(identifier_fingerprint)
+          end
+        end
 
         it 'does not exceed query limit' do
           expect { subject }.not_to exceed_query_limit(20)
@@ -112,7 +158,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         end
 
         context 'when Scanner already exists' do
-          let!(:scanner) { create(:vulnerabilities_scanner, name: scanner_params[:name]) }
+          let!(:scanner) { create(:vulnerabilities_scanner, external_id: scanner_attributes[:id]) }
 
           it 'does not create a new Scanner' do
             expect { subject }.to change(Vulnerabilities::Scanner, :count).by(0)
@@ -120,7 +166,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         end
 
         context 'when Identifier already exists' do
-          let!(:identifier) { create(:vulnerabilities_identifier, name: identifier_params[:name]) }
+          let!(:identifier) { create(:vulnerabilities_identifier, name: identifier_attributes[:name]) }
 
           it 'does not create a new Identifier' do
             expect { subject }.not_to change(Vulnerabilities::Identifier, :count)
@@ -128,7 +174,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         end
 
         it 'creates all objects with correct attributes' do
-          expect(vulnerability.title).to eq(params.dig(:vulnerability, :title))
+          expect(vulnerability.title).to eq(params.dig(:vulnerability, :name))
           expect(vulnerability.report_type).to eq("generic")
           expect(vulnerability.state).to eq(params.dig(:vulnerability, :state))
           expect(vulnerability.severity).to eq(params.dig(:vulnerability, :severity))
@@ -146,19 +192,23 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
 
           primary_identifier = finding.primary_identifier
           expect(primary_identifier.name).to eq(params.dig(:vulnerability, :identifiers, 0, :name))
+          expect(primary_identifier.url).to eq(params.dig(:vulnerability, :identifiers, 0, :url))
+          expect(primary_identifier.external_id).to eq(params.dig(:vulnerability, :identifiers, 0, :name))
+          expect(primary_identifier.external_type).to eq("other")
+          expect(primary_identifier.fingerprint).to eq(identifier_fingerprint)
         end
 
         context "when state fields match state" do
           let(:params) do
             {
               vulnerability: {
-                title: "Test vulnerability",
+                name: "Test vulnerability",
                 state: "confirmed",
                 severity: "unknown",
                 confidence: "unknown",
                 confirmed_at: Time.now.iso8601,
-                identifiers: [identifier_params],
-                scanner: scanner_params
+                identifiers: [identifier_attributes],
+                scanner: scanner_attributes
               }
             }
           end
@@ -176,13 +226,13 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
           let(:params) do
             {
               vulnerability: {
-                title: "Test vulnerability",
+                name: "Test vulnerability",
                 state: "detected",
                 severity: "unknown",
                 confidence: "unknown",
                 confirmed_at: Time.now.iso8601,
-                identifiers: [identifier_params],
-                scanner: scanner_params
+                identifiers: [identifier_attributes],
+                scanner: scanner_attributes
               }
             }
           end

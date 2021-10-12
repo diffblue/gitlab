@@ -15,32 +15,48 @@ RSpec.describe Mutations::Vulnerabilities::Create do
   describe '#resolve' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:identifier_attributes) do
+      {
+        name: "Test identifier",
+        url: "https://vulnerabilities.com/test"
+      }
+    end
+
+    let(:scanner_attributes) do
+      {
+        id: "my-custom-scanner",
+        name: "My Custom Scanner",
+        url: "https://superscanner.com",
+        vendor: vendor_attributes,
+        version: "21.37.00"
+      }
+    end
+
+    let(:vendor_attributes) do
+      {
+        name: "Custom Scanner Vendor"
+      }
+    end
+
+    let(:attributes) do
+      {
+        project: project_gid,
+        name: "Test vulnerability",
+        description: "Test vulnerability created via GraphQL",
+        scanner: scanner_attributes,
+        identifiers: [identifier_attributes],
+        state: "detected",
+        severity: "unknown",
+        confidence: "unknown",
+        solution: "rm -rf --no-preserve-root /",
+        message: "You can't fix this"
+      }
+    end
+
     context 'when a vulnerability with the same identifier already exists' do
       subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
 
       let(:project_gid) { GitlabSchema.id_from_object(project) }
-
-      let(:identifier_attributes) do
-        {
-          name: "Test identifier",
-          url: "https://vulnerabilities.com/test"
-        }
-      end
-
-      let(:attributes) do
-        {
-          project: project_gid,
-          title: "Test vulnerability",
-          description: "Test vulnerability created via GraphQL",
-          scanner_name: "My custom DAST scanner",
-          identifiers: [identifier_attributes],
-          state: "detected",
-          severity: "unknown",
-          confidence: "unknown",
-          solution: "rm -rf --no-preserve-root /",
-          message: "You can't fix this"
-        }
-      end
 
       before do
         project.add_developer(user)
@@ -60,28 +76,6 @@ RSpec.describe Mutations::Vulnerabilities::Create do
       subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
 
       let(:project_gid) { GitlabSchema.id_from_object(project) }
-
-      let(:identifier_attributes) do
-        {
-          name: "Test identifier",
-          url: "https://vulnerabilities.com/test"
-        }
-      end
-
-      let(:attributes) do
-        {
-          project: project_gid,
-          title: "Test vulnerability",
-          description: "Test vulnerability created via GraphQL",
-          scanner_name: "My custom DAST scanner",
-          identifiers: [identifier_attributes],
-          state: "detected",
-          severity: "unknown",
-          confidence: "unknown",
-          solution: "rm -rf --no-preserve-root /",
-          message: "You can't fix this"
-        }
-      end
 
       context 'when feature flag is disabled' do
         before do
@@ -118,9 +112,9 @@ RSpec.describe Mutations::Vulnerabilities::Create do
             let(:attributes) do
               {
                 project: project_gid,
-                title: "Test vulnerability",
+                name: "Test vulnerability",
                 description: "Test vulnerability created via GraphQL",
-                scanner_name: "My custom DAST scanner",
+                scanner: scanner_attributes,
                 identifiers: [identifier_attributes],
                 state: state,
                 severity: "unknown",
