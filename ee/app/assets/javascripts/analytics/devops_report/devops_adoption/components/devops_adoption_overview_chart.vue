@@ -81,7 +81,11 @@ export default {
       };
     },
     sortedNodes() {
-      return [...this.devopsAdoptionEnabledNamespaces?.nodes[0].snapshots?.nodes].reverse();
+      const correctNode = this.devopsAdoptionEnabledNamespaces?.nodes.find(
+        (node) => node.namespace?.id === this.groupGid,
+      );
+
+      return [...correctNode?.snapshots?.nodes].reverse();
     },
     groupBy() {
       return this.sortedNodes.map((snapshot) => dateFormat(snapshot.endTime, dateFormats.month));
