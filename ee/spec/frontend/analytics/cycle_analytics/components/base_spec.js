@@ -14,6 +14,7 @@ import {
   createdBefore,
   createdAfter,
   selectedProjects,
+  initialPaginationQuery,
 } from 'jest/cycle_analytics/mock_data';
 import { toYmd } from '~/analytics/shared/utils';
 import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
@@ -33,7 +34,6 @@ import httpStatusCodes from '~/lib/utils/http_status';
 import * as urlUtils from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import {
-  initialPaginationQuery,
   valueStreams,
   endpoints,
   customizableStagesAndEvents,

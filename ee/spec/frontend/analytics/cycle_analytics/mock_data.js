@@ -1,5 +1,5 @@
-import tasksByType from 'test_fixtures/analytics/charts/type_of_work/tasks_by_type.json';
 import { uniq } from 'lodash';
+import tasksByType from 'test_fixtures/analytics/charts/type_of_work/tasks_by_type.json';
 import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
@@ -20,11 +20,6 @@ import {
   deepCamelCase,
 } from 'jest/cycle_analytics/mock_data';
 import { toYmd } from '~/analytics/shared/utils';
-import {
-  PAGINATION_TYPE,
-  PAGINATION_SORT_DIRECTION_DESC,
-  PAGINATION_SORT_FIELD_END_EVENT,
-} from '~/cycle_analytics/constants';
 import { transformStagesForPathNavigation, formatMedianValues } from '~/cycle_analytics/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
@@ -270,22 +265,3 @@ export const rawDurationMedianData = [
 ];
 
 export const pathNavIssueMetric = 172800;
-
-export const initialPaginationQuery = {
-  page: 15,
-  sort: PAGINATION_SORT_FIELD_END_EVENT,
-  direction: PAGINATION_SORT_DIRECTION_DESC,
-};
-
-export const initialPaginationState = {
-  ...initialPaginationQuery,
-  page: null,
-  hasNextPage: false,
-};
-
-export const basePaginationResult = {
-  pagination: PAGINATION_TYPE,
-  sort: PAGINATION_SORT_FIELD_END_EVENT,
-  direction: PAGINATION_SORT_DIRECTION_DESC,
-  page: null,
-};
