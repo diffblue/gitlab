@@ -1,7 +1,9 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { mapActions } from 'vuex';
 
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import createDefaultClient from '~/lib/graphql';
 import { visitUrl, mergeUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
@@ -28,6 +30,12 @@ export default () => {
     return false;
   }
 
+  Vue.use(VueApollo);
+  const defaultClient = createDefaultClient({}, { assumeImmutableResults: true });
+  const apolloProvider = new VueApollo({
+    defaultClient,
+  });
+
   // This event handler is to be removed in 11.1 once
   // we allow user to save selected preset in db
   if (presetButtonsContainer) {
@@ -43,7 +51,7 @@ export default () => {
 
   return new Vue({
     el,
-    apolloProvider: {},
+    apolloProvider,
     store: createStore(),
     components: {
       roadmapApp,

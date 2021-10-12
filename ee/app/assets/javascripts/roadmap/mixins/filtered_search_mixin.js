@@ -2,7 +2,6 @@ import { GlFilteredSearchToken } from '@gitlab/ui';
 
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import { joinPaths } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 
 import {
@@ -150,29 +149,13 @@ export default {
           icon: 'epic',
           title: __('Epic'),
           unique: true,
+          idProperty: 'iid',
+          useIdValue: true,
           symbol: '&',
           token: EpicToken,
           operators: OPERATOR_IS_ONLY,
-          defaultEpics: [],
-          fetchEpics: ({ epicPath = '', search = '' }) => {
-            const epicId = Number(search) || null;
-
-            // No search criteria or path has been provided, fetch all epics.
-            if (!epicPath && !search) {
-              return axios.get(this.listEpicsPath);
-            } else if (epicPath) {
-              // Just epicPath has been provided, fetch a specific epic.
-              return axios.get(epicPath).then(({ data }) => [data]);
-            } else if (!epicPath && epicId) {
-              // Exact epic ID provided, fetch the epic.
-              return axios
-                .get(joinPaths(this.listEpicsPath, String(epicId)))
-                .then(({ data }) => [data]);
-            }
-
-            // Search for an epic.
-            return axios.get(this.listEpicsPath, { params: { search } });
-          },
+          recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-epic_iid`,
+          fullPath: this.groupFullPath,
         });
       }
 

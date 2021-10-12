@@ -147,7 +147,7 @@ RSpec.describe EE::IssuesHelper do
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
           has_multiple_issue_assignees_feature: 'true',
-          group_epics_path: group_epics_path(project.group, format: :json)
+          group_path: project.group.full_path
         }
 
         expect(helper.project_issues_list_data(project, current_user, finder)).to include(expected)
@@ -156,8 +156,8 @@ RSpec.describe EE::IssuesHelper do
       context 'when project does not have group' do
         let(:project_with_no_group) { create :project }
 
-        it 'does not return group_epics_path' do
-          expect(helper.project_issues_list_data(project_with_no_group, current_user, finder)).not_to include(:group_epics_path)
+        it 'does not return group_path' do
+          expect(helper.project_issues_list_data(project_with_no_group, current_user, finder)).not_to include(:group_path)
         end
       end
     end
@@ -179,7 +179,7 @@ RSpec.describe EE::IssuesHelper do
         result = helper.project_issues_list_data(project, current_user, finder)
 
         expect(result).to include(expected)
-        expect(result).not_to include(:group_epics_path)
+        expect(result).not_to include(:group_path)
       end
     end
   end
@@ -208,7 +208,7 @@ RSpec.describe EE::IssuesHelper do
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
           has_multiple_issue_assignees_feature: 'true',
-          group_epics_path: group_epics_path(project.group, format: :json)
+          group_path: project.group.full_path
         }
 
         expect(helper.group_issues_list_data(group, current_user, issues, projects)).to include(expected)
@@ -233,7 +233,7 @@ RSpec.describe EE::IssuesHelper do
         result = helper.group_issues_list_data(group, current_user, issues, projects)
 
         expect(result).to include(expected)
-        expect(result).not_to include(:group_epics_path)
+        expect(result).not_to include(:group_path)
       end
     end
   end
