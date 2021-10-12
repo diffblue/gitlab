@@ -1,5 +1,8 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import { COMPLIANCE_DRAWER_CONTAINER_CLASS } from '../constants';
+import { getContentWrapperHeight } from '../../threat_monitoring/utils';
 import BranchPath from './drawer_sections/branch_path.vue';
 import Committers from './drawer_sections/committers.vue';
 import MergedBy from './drawer_sections/merged_by.vue';
@@ -32,28 +35,18 @@ export default {
     hasBranchDetails() {
       return this.mergeRequest.source_branch && this.mergeRequest.target_branch;
     },
-  },
-  methods: {
-    getDrawerHeaderHeight() {
-      const wrapperEl = document.querySelector('.content-wrapper');
-
-      if (wrapperEl) {
-        return `${wrapperEl.offsetTop}px`;
-      }
-
-      return '';
+    drawerHeaderHeight() {
+      return getContentWrapperHeight(COMPLIANCE_DRAWER_CONTAINER_CLASS);
     },
   },
-  // We set the drawer's z-index to 252 to clear flash messages that might be displayed in the page
-  // and that have a z-index of 251.
-  Z_INDEX: 252,
+  DRAWER_Z_INDEX,
 };
 </script>
 <template>
   <gl-drawer
     :open="showDrawer"
-    :header-height="getDrawerHeaderHeight()"
-    :z-index="$options.Z_INDEX"
+    :header-height="drawerHeaderHeight"
+    :z-index="$options.DRAWER_Z_INDEX"
     @close="$emit('close')"
   >
     <template #title>

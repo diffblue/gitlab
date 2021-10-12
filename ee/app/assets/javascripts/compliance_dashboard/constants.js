@@ -9,3 +9,5 @@ export const CUSTODY_REPORT_PARAMETER = 'commit_sha';
 export const DRAWER_AVATAR_SIZE = 24;
 
 export const DRAWER_MAXIMUM_AVATARS = 20;
+
+export const COMPLIANCE_DRAWER_CONTAINER_CLASS = '.content-wrapper';
