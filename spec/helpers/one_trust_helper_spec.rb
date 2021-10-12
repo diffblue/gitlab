@@ -7,7 +7,7 @@ RSpec.describe OneTrustHelper do
     let(:user) { nil }
 
     before do
-      stub_config(extra: { one_trust_id: 'id' })
+      stub_config(extra: { one_trust_id: SecureRandom.uuid })
       allow(helper).to receive(:current_user).and_return(user)
     end
 
