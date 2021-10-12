@@ -57,11 +57,11 @@ describe('Vulnerabilities helpers', () => {
           id: 'gid://gitlab/Vulnerability/54',
         }),
       ).toEqual({
-        confirmedById: '16',
-        resolvedById: '16',
-        dismissedById: '16',
+        confirmedById: 16,
+        resolvedById: 16,
+        dismissedById: 16,
         state: 'dismissed',
-        id: '54',
+        id: 54,
       });
     });
   });

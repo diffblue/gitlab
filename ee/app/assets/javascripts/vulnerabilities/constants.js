@@ -6,9 +6,6 @@ import {
 
 const falsePositiveMessage = s__('VulnerabilityManagement|Will not fix or a false-positive');
 
-export const gidPrefix = 'gid://gitlab/Vulnerability/';
-export const uidPrefix = 'gid://gitlab/User/';
-
 export const VULNERABILITY_STATE_OBJECTS = {
   detected: {
     action: 'revert',
