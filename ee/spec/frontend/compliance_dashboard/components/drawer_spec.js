@@ -10,6 +10,10 @@ import { complianceFramework } from 'ee_jest/vue_shared/components/compliance_fr
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createApprovers, createMergeRequests } from '../mock_data';
 
+jest.mock('ee/threat_monitoring/utils', () => ({
+  getContentWrapperHeight: jest.fn().mockReturnValue('50px'),
+}));
+
 describe('MergeRequestDrawer component', () => {
   let wrapper;
   const mergeRequest = createMergeRequests({
@@ -42,6 +46,19 @@ describe('MergeRequestDrawer component', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('default behaviour', () => {
+    beforeEach(() => {
+      wrapper = createComponent();
+    });
+
+    it('configures the drawer with header height and z-index', () => {
+      expect(findDrawer().props()).toMatchObject({
+        headerHeight: '50px',
+        zIndex: 252,
+      });
+    });
   });
 
   describe('when closed', () => {

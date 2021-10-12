@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlDrawer } from '@gitlab/ui';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import CiliumNetworkPolicy from './cilium_network_policy.vue';
@@ -54,9 +55,7 @@ export default {
       return getContentWrapperHeight(this.containerClass);
     },
   },
-  // We set the drawer's z-index to 252 to clear flash messages that might be displayed in the page
-  // and that have a z-index of 251.
-  DRAWER_Z_INDEX: 252,
+  DRAWER_Z_INDEX,
 };
 </script>
 
