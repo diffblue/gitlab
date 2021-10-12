@@ -88,14 +88,15 @@ module Security
       end
 
       vulnerability_params = finding.to_hash.except(:compare_key, :identifiers, :location, :scanner, :scan, :links, :signatures, :flags)
-      entity_params = Gitlab::Json.parse(vulnerability_params&.dig(:raw_metadata)).slice('description', 'message', 'solution', 'cve', 'location')
+      entity_params = Gitlab::Json.parse(vulnerability_params&.dig(:raw_metadata)).slice('description', 'message', 'solution', 'cve', 'location').symbolize_keys
+
       # Vulnerabilities::Finding (`vulnerability_occurrences`)
       vulnerability_finding = vulnerability_findings_by_uuid[finding.uuid] ||
         find_or_create_vulnerability_finding(finding, vulnerability_params.merge(entity_params))
 
       vulnerability_finding_to_finding_map[vulnerability_finding] = finding
 
-      update_vulnerability_finding(vulnerability_finding, vulnerability_params)
+      update_vulnerability_finding(vulnerability_finding, vulnerability_params.merge(location: entity_params[:location]))
       reset_remediations_for(vulnerability_finding, finding)
 
       if project.licensed_feature_available?(:vulnerability_finding_signatures)

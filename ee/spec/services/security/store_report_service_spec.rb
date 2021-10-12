@@ -749,4 +749,21 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
         .and change { Vulnerabilities::Finding.last.location['end_line'] }.from(29).to(30)
     end
   end
+
+  context 'for container scanning' do
+    let(:trait) { :container_scanning }
+
+    before do
+      stub_licensed_features(container_scanning: true, security_dashboard: true)
+
+      allow(pipeline).to receive(:user).and_return(project.owner)
+    end
+
+    it 'populates finding location' do
+      subject
+
+      last_finding = Vulnerabilities::Finding.last
+      expect(last_finding.read_attribute(:location)).to eq(last_finding.location)
+    end
+  end
 end
