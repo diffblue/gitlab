@@ -142,6 +142,18 @@ describe('RelatedItemsTree', () => {
         });
       });
 
+      describe('isBlocked', () => {
+        it('returns true when `item.blocked` value is `true`', () => {
+          wrapper.setProps({
+            item: { ...mockItem, blocked: true },
+          });
+
+          return wrapper.vm.$nextTick(() => {
+            expect(wrapper.vm.isBlocked).toBe(true);
+          });
+        });
+      });
+
       describe('isClosed', () => {
         it('returns true when `item.state` value is `closed`', () => {
           wrapper.setProps({
@@ -196,6 +208,16 @@ describe('RelatedItemsTree', () => {
 
           return wrapper.vm.$nextTick(() => {
             expect(wrapper.vm.stateIconClass).toBe('issue-token-state-icon-open gl-text-green-500');
+          });
+        });
+
+        it('return string `gl-text-red-500` when `item.blocked` value is `true`', () => {
+          wrapper.setProps({
+            item: { ...mockItem, blocked: true },
+          });
+
+          return wrapper.vm.$nextTick(() => {
+            expect(wrapper.vm.stateIconClass).toBe('gl-text-red-500');
           });
         });
 
