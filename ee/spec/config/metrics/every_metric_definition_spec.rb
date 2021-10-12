@@ -27,7 +27,6 @@ RSpec.describe 'Every metric definition' do
       mock_ci
       mock_monitoring
       user_auth_by_provider
-      promoted_issues
       groups_gitlab_slack_application_active
       projects_gitlab_slack_application_active
       instances_gitlab_slack_application_active
