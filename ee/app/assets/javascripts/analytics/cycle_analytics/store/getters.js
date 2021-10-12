@@ -1,8 +1,11 @@
 import dateFormat from 'dateformat';
 import { isNumber } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
-import { OVERVIEW_STAGE_ID, PAGINATION_TYPE } from '~/cycle_analytics/constants';
-import { pathNavigationData as basePathNavigationData } from '~/cycle_analytics/store/getters';
+import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
+import {
+  pathNavigationData as basePathNavigationData,
+  paginationParams as basePaginationParams,
+} from '~/cycle_analytics/store/getters';
 import { filterStagesByHiddenStatus } from '~/cycle_analytics/utils';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import httpStatus from '~/lib/utils/http_status';
@@ -46,12 +49,7 @@ export const cycleAnalyticsRequestParams = (state, getters) => {
   };
 };
 
-export const paginationParams = ({ pagination: { page, sort, direction } }) => ({
-  pagination: PAGINATION_TYPE,
-  sort,
-  direction,
-  page,
-});
+export const paginationParams = basePaginationParams;
 
 export const hiddenStages = ({ stages }) => filterStagesByHiddenStatus(stages);
 export const activeStages = ({ stages }) => filterStagesByHiddenStatus(stages, false);
