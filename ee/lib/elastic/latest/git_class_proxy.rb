@@ -201,6 +201,24 @@ module Elastic
           }
         end
 
+        if type == 'blob' && !options[:count_only] && ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user], default_enabled: :yaml)
+          query_hash[:aggs] = {
+            language: {
+              composite: {
+                sources: [
+                  {
+                    language: {
+                      terms: {
+                        field: 'blob.language'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        end
+
         # inject the `id` part of repository as project id
         repository_ids = [options[:repository_id]].flatten
         options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if type == 'wiki_blob' && repository_ids.any?
