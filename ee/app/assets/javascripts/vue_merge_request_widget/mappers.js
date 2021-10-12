@@ -4,6 +4,7 @@ import {
   RULE_TYPE_FALLBACK,
   RULE_TYPE_CODE_OWNER,
   RULE_TYPE_REPORT_APPROVER,
+  RULE_TYPE_ANY_APPROVER,
 } from 'ee/approvals/constants';
 import { __ } from '~/locale';
 
@@ -33,6 +34,8 @@ function getApprovalRuleNamesLeft(data) {
 
   const rulesLeft = groupBy(data.approval_rules_left, (x) => x.rule_type);
 
+  const anyApprover = rulesLeft[RULE_TYPE_ANY_APPROVER] ? [__('eligible users')] : [];
+
   // Filter out empty names (fallback rule has no name) because the empties would look weird.
   const regularRules = (rulesLeft[RULE_TYPE_REGULAR] || []).map((x) => x.name).filter((x) => x);
 
@@ -43,7 +46,7 @@ function getApprovalRuleNamesLeft(data) {
   // As the names of code owner rules are patterns that don't mean much out of context.
   const codeOwnerRules = rulesLeft[RULE_TYPE_CODE_OWNER] ? [__('Code Owners')] : [];
 
-  return [...regularRules, ...reportApprovalRules, ...codeOwnerRules];
+  return [...anyApprover, ...regularRules, ...reportApprovalRules, ...codeOwnerRules];
 }
 
 /**

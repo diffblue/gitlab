@@ -316,6 +316,22 @@ RSpec.describe ApprovalState do
         expect(subject.approvals_left).to eq(12)
       end
 
+      context 'with any approval rule' do
+        it 'sums approvals_left from regular rules' do
+          create_rule(rule_type: :any_approver, approvals_required: 20)
+
+          expect(subject.approvals_left).to eq(20)
+        end
+      end
+
+      context 'with report approver rule' do
+        it 'sums code_owner_rules_left from report approver rules' do
+          create_rule(rule_type: :report_approver, approvals_required: 20)
+
+          expect(subject.approvals_left).to eq(32)
+        end
+      end
+
       context 'when approval feature is unavailable' do
         it 'returns 0' do
           disable_feature
@@ -605,7 +621,7 @@ RSpec.describe ApprovalState do
           end
 
           it 'is not approved' do
-            expect(subject.approvals_left).to eq(2)
+            expect(subject.approvals_left).to eq(1)
             expect(subject.approved?).to eq(false)
           end
         end

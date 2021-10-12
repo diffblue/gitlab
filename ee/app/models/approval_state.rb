@@ -77,12 +77,42 @@ class ApprovalState
   # considered approved.
   def approvals_left
     strong_memoize(:approvals_left) do
-      wrapped_approval_rules.sum(&:approvals_left)
+      [regular_rules_left + code_owner_rules_left + report_approver_rules_left, any_approver_rules_left].max
+    end
+  end
+
+  def code_owner_rules_left
+    strong_memoize(:code_owner_rules_left) do
+      code_owner_rules.sum(&:approvals_left)
+    end
+  end
+
+  def report_approver_rules_left
+    strong_memoize(:report_approver_rules_left) do
+      report_approver_rules.sum(&:approvals_left)
+    end
+  end
+
+  def regular_rules_left
+    strong_memoize(:regular_rules_left) do
+      regular_approval_rules.sum(&:approvals_left)
+    end
+  end
+
+  def any_approver_rules_left
+    strong_memoize(:any_approver_rules_left) do
+      any_approver_approval_rules.sum(&:approvals_left)
     end
   end
 
   def approval_rules_left
-    wrapped_approval_rules.reject(&:approved?)
+    rules = if any_approver_rules_left <= regular_rules_left + code_owner_rules_left + report_approver_rules_left
+              wrapped_approval_rules.reject(&:any_approver?)
+            else
+              wrapped_approval_rules
+            end
+
+    rules.reject(&:approved?)
   end
 
   def approvers
@@ -200,6 +230,18 @@ class ApprovalState
   def report_approver_rules
     strong_memoize(:report_approver_rules) do
       wrapped_rules.select(&:report_approver?)
+    end
+  end
+
+  def regular_approval_rules
+    strong_memoize(:regular_approval_rules) do
+      wrapped_approval_rules.select(&:regular?)
+    end
+  end
+
+  def any_approver_approval_rules
+    strong_memoize(:any_approver_approval_rules) do
+      wrapped_approval_rules.select(&:any_approver?)
     end
   end
 
