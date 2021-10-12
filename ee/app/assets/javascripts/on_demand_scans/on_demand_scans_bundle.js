@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { createRouter } from './router';
 import OnDemandScans from './components/on_demand_scans.vue';
 
 export default () => {
@@ -11,6 +12,7 @@ export default () => {
 
   return new Vue({
     el,
+    router: createRouter(),
     provide: {
       newDastScanPath,
       helpPagePath,
