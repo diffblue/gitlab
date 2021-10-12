@@ -838,8 +838,10 @@ export const mockEpicTokenConfig = {
   symbol: '&',
   token: EpicToken,
   operators: OPERATOR_IS_ONLY,
-  defaultEpics: [],
-  fetchEpics: expect.any(Function),
+  idProperty: 'iid',
+  useIdValue: true,
+  recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-epic_iid',
+  fullPath: 'gitlab-org',
 };
 
 export const mockReactionEmojiTokenConfig = {

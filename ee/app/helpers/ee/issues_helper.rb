@@ -57,7 +57,7 @@ module EE
     def project_issues_list_data(project, current_user, finder)
       super.tap do |data|
         if project.feature_available?(:epics) && project.group
-          data[:group_epics_path] = group_epics_path(project.group, format: :json)
+          data[:group_path] = project.group.full_path
         end
       end
     end
@@ -68,7 +68,7 @@ module EE
         data[:can_bulk_update] = (can?(current_user, :admin_issue, group) && group.feature_available?(:group_bulk_edit)).to_s
 
         if group.feature_available?(:epics)
-          data[:group_epics_path] = group_epics_path(group, format: :json)
+          data[:group_path] = group.full_path
         end
       end
     end
