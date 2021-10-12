@@ -29,10 +29,6 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     freeze_time { example.run }
   end
 
-  before(:all) do
-    clean_frontend_fixtures('analytics/metrics')
-  end
-
   describe Groups::Analytics::CycleAnalytics::SummaryController, type: :controller do
     render_views
 

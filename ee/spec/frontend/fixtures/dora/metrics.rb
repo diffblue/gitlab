@@ -44,10 +44,6 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
       }
     end
 
-    before(:all) do
-      clean_frontend_fixtures('api/dora/metrics')
-    end
-
     def make_request(additional_query_params:)
       params = shared_params.merge(additional_query_params)
       get api("/projects/#{project.id}/dora/metrics?#{params.to_query}", reporter)

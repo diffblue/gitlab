@@ -37,7 +37,6 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
     end
 
     before do
-      clean_frontend_fixtures('graphql/analytics/devops_report/devops_adoption/')
       stub_licensed_features(instance_level_devops_adoption: true, group_level_devops_adoption: true)
     end
 
