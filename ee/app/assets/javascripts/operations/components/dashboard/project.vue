@@ -1,11 +1,12 @@
 <script>
 import { isEmpty } from 'lodash';
 import { mapActions } from 'vuex';
+import { GlSprintf } from '@gitlab/ui';
 import Alerts from 'ee/vue_shared/dashboards/components/alerts.vue';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
 import TimeAgo from 'ee/vue_shared/dashboards/components/time_ago.vue';
 import { STATUS_FAILED, STATUS_RUNNING } from 'ee/vue_shared/dashboards/constants';
-import { __, sprintf } from '~/locale';
+import { __ } from '~/locale';
 import Commit from '~/vue_shared/components/commit.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
@@ -19,6 +20,7 @@ export default {
     Alerts,
     ProjectPipeline,
     TimeAgo,
+    GlSprintf,
   },
   mixins: [timeagoMixin],
   props: {
@@ -31,29 +33,15 @@ export default {
     timeAgo: __('Finished'),
     triggerer: __('Triggerer'),
   },
+  unlicensedMessages: {
+    canUpgrade: __(
+      "To see this project's operational details, %{linkStart}upgrade its group plan to Premium%{linkEnd}. You can also remove the project from the dashboard.",
+    ),
+    cannotUpgrade: __(
+      "To see this project's operational details, contact an owner of group %{groupName} to upgrade the plan. You can also remove the project from the dashboard.",
+    ),
+  },
   computed: {
-    unlicensedMessage() {
-      if (this.project.upgrade_path) {
-        return sprintf(
-          __(
-            "To see this project's operational details, %{linkStart}upgrade its group plan to Premium%{linkEnd}. You can also remove the project from the dashboard.",
-          ),
-          {
-            linkStart: `<a href="${this.project.upgrade_path}" target="_blank" rel="noopener noreferrer">`,
-            linkEnd: '</a>',
-          },
-          false,
-        );
-      }
-      return sprintf(
-        __(
-          "To see this project's operational details, contact an owner of group %{groupName} to upgrade the plan. You can also remove the project from the dashboard.",
-        ),
-        {
-          groupName: this.project.namespace.name,
-        },
-      );
-    },
     hasPipelineFailed() {
       return (
         this.lastPipeline &&
@@ -126,9 +114,21 @@ export default {
 
     <div
       v-if="project.upgrade_required"
+      data-testid="dashboard-card-body"
       class="dashboard-card-body card-body bg-secondary"
-      v-html="unlicensedMessage /* eslint-disable-line vue/no-v-html */"
-    ></div>
+    >
+      <gl-sprintf v-if="project.upgrade_path" :message="$options.unlicensedMessages.canUpgrade">
+        <template #link="{ content }">
+          <gl-link :href="project.upgrade_path" target="_blank">
+            {{ content }}
+          </gl-link>
+        </template>
+      </gl-sprintf>
+
+      <gl-sprintf v-else :message="$options.unlicensedMessages.cannotUpgrade">
+        <template #groupName>{{ project.namespace.name }}</template>
+      </gl-sprintf>
+    </div>
 
     <div v-else :class="cardClasses" class="dashboard-card-body card-body">
       <div v-if="lastPipeline" class="row">
