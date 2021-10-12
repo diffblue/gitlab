@@ -37,7 +37,7 @@ exports[`EmptyState renders properly 1`] = `
           class="gl-link"
           href="/help/page/path"
         >
-          Lean more
+          Learn more
         </a>
         .
       </p>

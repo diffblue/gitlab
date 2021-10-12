@@ -68,7 +68,7 @@ export default {
     title: s__('OnDemandScans|On-demand scans'),
     newScanButtonLabel: s__('OnDemandScans|New DAST scan'),
     description: s__(
-      'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Lean more%{learnMoreLinkEnd}.',
+      'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
     ),
   },
 };
