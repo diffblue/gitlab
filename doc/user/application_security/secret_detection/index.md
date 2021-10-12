@@ -289,16 +289,16 @@ sequenceDiagram
 
 GitLab 12.11 introduced support for scanning the full history of a repository. This new functionality
 is particularly useful when you are enabling Secret Detection in a repository for the first time and you
-want to perform a full secret detection. Running a secret detection on the full history can take a long time,
+want to perform a full secret detection scan. Running a secret detection scan on the full history can take a long time,
 especially for larger repositories with lengthy Git histories. We recommend not setting this CI/CD variable
 as part of your normal job definition.
 
 A new configuration variable ([`SECRET_DETECTION_HISTORIC_SCAN`](#available-cicd-variables))
 can be set to change the behavior of the GitLab Secret Detection scan to run on the entire Git history of a repository.
 
-We have created a [short video walkthrough](https://youtu.be/wDtc_K00Y0A) showcasing how you can perform a full history secret detection.
+We have created a [short video walkthrough](https://youtu.be/wDtc_K00Y0A) showcasing how you can perform a full history secret detection scan.
 <div class="video-fallback">
-  See the video: <a href="https://www.youtube.com/watch?v=wDtc_K00Y0A">Walkthrough of historical secret detection</a>.
+  See the video: <a href="https://www.youtube.com/watch?v=wDtc_K00Y0A">Walkthrough of historical secret detection scan</a>.
 </div>
 <figure class="video-container">
   <iframe src="https://www.youtube.com/embed/wDtc_K00Y0A" frameborder="0" allowfullscreen="true"> </iframe>
