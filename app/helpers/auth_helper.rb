@@ -169,13 +169,6 @@ module AuthHelper
       !current_user
   end
 
-  def one_trust_enabled?
-    Feature.enabled?(:ecomm_instrumentation, nil, type: :ops) &&
-      extra_config.has_key?('one_trust_id') &&
-      extra_config.one_trust_id.present? &&
-      !current_user
-  end
-
   def auth_app_owner_text(owner)
     return unless owner
 
