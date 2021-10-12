@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::Notification do
+  include ::Ci::MinutesHelpers
+
   let_it_be(:user) { create(:user) }
   let(:shared_runners_enabled) { true }
   let!(:project) { create(:project, :repository, namespace: group, shared_runners_enabled: shared_runners_enabled) }
@@ -162,7 +164,7 @@ RSpec.describe Ci::Minutes::Notification do
   shared_examples 'not eligible to see notifications' do
     before do
       group.shared_runners_minutes_limit = 10
-      allow(group).to receive(:shared_runners_seconds).and_return(8.minutes)
+      set_ci_minutes_used(group, 8)
     end
 
     context 'when not permitted to see notifications' do

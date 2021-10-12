@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
+  include ::Ci::MinutesHelpers
+
   let(:namespace) { create(:namespace, shared_runners_minutes_limit: 100) }
   let(:project) { create(:project, :private, namespace: namespace) }
   let(:pipeline) { create(:ci_pipeline, project: project) }
@@ -120,9 +122,9 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
         let(:usage_in_minutes) { (100.to_f / 60).round(2) }
 
         before do
+          set_ci_minutes_used(namespace, usage_in_minutes)
+
           project.statistics.update!(shared_runners_seconds: usage_in_seconds)
-          namespace.create_namespace_statistics(shared_runners_seconds: usage_in_seconds)
-          create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: usage_in_minutes)
           create(:ci_project_monthly_usage, project: project, amount_used: usage_in_minutes)
         end
 

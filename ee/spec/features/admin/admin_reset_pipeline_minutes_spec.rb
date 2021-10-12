@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Reset namespace pipeline minutes', :js do
+  include ::Ci::MinutesHelpers
+
   let(:admin) { create(:admin) }
 
   before do
@@ -13,7 +15,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
   shared_examples 'resetting pipeline minutes' do
     context 'when namespace has namespace statistics' do
       before do
-        namespace.create_namespace_statistics(shared_runners_seconds: 100)
+        set_ci_minutes_used(namespace, 100)
       end
 
       it 'resets pipeline minutes' do
@@ -26,7 +28,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
         expect(page).to have_selector('.gl-toast')
         expect(current_path).to include(namespace.path)
 
-        expect(namespace.namespace_statistics.reload.shared_runners_seconds).to eq(0)
+        expect(namespace.reload.ci_minutes_quota.total_minutes_used).to eq(0)
         expect(namespace.namespace_statistics.reload.shared_runners_seconds_last_reset).to be_like_time(time)
       end
     end

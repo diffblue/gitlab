@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
+  include ::Ci::MinutesHelpers
+
   let(:project) { create(:project, :private) }
   let(:namespace) { project.namespace }
   let(:build) { create(:ci_build) }
@@ -135,9 +137,9 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
 
       before do
         project.statistics.update!(shared_runners_seconds: existing_usage_in_seconds)
-        namespace.create_namespace_statistics(shared_runners_seconds: existing_usage_in_seconds)
-        create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: existing_usage_in_minutes)
         create(:ci_project_monthly_usage, project: project, amount_used: existing_usage_in_minutes)
+
+        set_ci_minutes_used(namespace, existing_usage_in_minutes)
       end
 
       it 'does not create nested transactions', :delete do

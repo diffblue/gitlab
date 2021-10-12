@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::BatchResetService do
+  include ::Ci::MinutesHelpers
+
   let(:service) { described_class.new }
 
   describe '#execute!' do
@@ -18,7 +20,7 @@ RSpec.describe Ci::Minutes::BatchResetService do
         last_ci_minutes_notification_at: Time.current,
         last_ci_minutes_usage_notification_level: 30)
 
-      create(:namespace_statistics, namespace: namespace, shared_runners_seconds: seconds_used)
+      set_ci_minutes_used(namespace, seconds_used.to_f / 60)
 
       create(:project, namespace: namespace).tap do |project|
         create(:project_statistics,
