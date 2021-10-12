@@ -13,7 +13,7 @@ module Gitlab
         private
 
         def redis_instance_class_name
-          Gitlab::Redis.const_get(redis_instance_name.camelize , false)
+          Gitlab::Redis.const_get(redis_instance_name.camelize, false)
         end
 
         def metric_prefix
