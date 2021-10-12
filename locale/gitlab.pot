@@ -20889,6 +20889,9 @@ msgstr ""
 msgid "Marked For Deletion At - %{deletion_time}"
 msgstr ""
 
+msgid "Marked as draft. Can only be merged when marked as ready."
+msgstr ""
+
 msgid "Marked as ready. Merging is now allowed."
 msgstr ""
 
