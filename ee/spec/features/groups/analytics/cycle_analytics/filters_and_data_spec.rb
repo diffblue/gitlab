@@ -49,7 +49,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
   end
 
   before do
-    stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true)
+    stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true)
 
     group.add_owner(user)
     project.add_maintainer(user)
@@ -83,7 +83,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     it 'displays the recent activity' do
-      deploys_count = page.all(card_metric_selector)[3]
+      deploys_count = page.all(card_metric_selector)[4]
 
       expect(deploys_count).to have_content(n_('Deploy', 'Deploys', 0))
       expect(deploys_count).to have_content('-')
@@ -93,7 +93,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       expect(deployment_frequency).to have_content(_('Deployment Frequency'))
       expect(deployment_frequency).to have_content('-')
 
-      issue_count = page.all(card_metric_selector)[2]
+      issue_count = page.all(card_metric_selector)[3]
 
       expect(issue_count).to have_content(n_('New Issue', 'New Issues', 3))
       expect(issue_count).to have_content(new_issues_count)
@@ -109,6 +109,11 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
 
       expect(cycle_time).to have_content(_('Cycle Time'))
       expect(cycle_time).to have_content('-')
+
+      median_lead_time_for_changes = page.all(card_metric_selector)[2]
+
+      expect(median_lead_time_for_changes).to have_content(s_('CycleAnalytics|Lead Time for Changes'))
+      expect(median_lead_time_for_changes).to have_content('-')
     end
   end
 

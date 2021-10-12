@@ -27,7 +27,7 @@ RSpec.describe Dora::AggregateMetricsService do
         let(:extra_params) { { start_date: 1.year.ago.to_date } }
 
         it_behaves_like 'request failure' do
-          let(:message) { "Date range must be shorter than #{described_class::MAX_RANGE} days." }
+          let(:message) { "Date range must be shorter than #{described_class::MAX_RANGE.in_days.to_i} days." }
           let(:http_status) { :bad_request }
         end
       end

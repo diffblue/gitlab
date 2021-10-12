@@ -163,7 +163,7 @@ RSpec.describe Resolvers::DoraMetricsResolver do
         let(:args) { { metric: 'deployment_frequency', start_date: '2020-01-01'.to_datetime, end_date: '2021-05-01'.to_datetime } }
 
         it 'raises an error' do
-          expect { resolve_metrics }.to raise_error('Date range must be shorter than 92 days.')
+          expect { resolve_metrics }.to raise_error('Date range must be shorter than 180 days.')
         end
       end
 
