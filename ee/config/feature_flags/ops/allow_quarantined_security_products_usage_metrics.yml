@@ -1,5 +1,5 @@
 ---
-name: quarantine_security_products_usage_metrics
+name: allow_quarantined_security_products_usage_metrics
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71722
 rollout_issue_url:
 milestone: '14.4'
