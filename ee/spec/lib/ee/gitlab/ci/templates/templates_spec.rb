@@ -8,14 +8,6 @@ RSpec.describe "CI YML Templates" do
 
   let(:all_templates) { Gitlab::Template::GitlabCiYmlTemplate.all.map(&:full_name) }
 
-  before do
-    stub_feature_flags(
-      redirect_to_latest_template_terraform: false,
-      redirect_to_latest_template_security_dast: false,
-      redirect_to_latest_template_security_api_fuzzing: false,
-      redirect_to_latest_template_jobs_browser_performance_testing: false)
-  end
-
   shared_examples 'require default stages to be included' do
     it 'require default stages to be included' do
       expect(subject.stages).to include(*Gitlab::Ci::Config::Entry::Stages.default)
