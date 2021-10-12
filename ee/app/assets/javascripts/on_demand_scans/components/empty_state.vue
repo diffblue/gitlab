@@ -9,25 +9,50 @@ export default {
     GlLink,
   },
   inject: ['newDastScanPath', 'helpPagePath', 'emptyStateSvgPath'],
+  props: {
+    title: {
+      type: String,
+      required: false,
+      default: s__('OnDemandScans|On-demand scans'),
+    },
+    text: {
+      type: String,
+      required: false,
+      default: s__(
+        'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Lean more%{learnMoreLinkEnd}.',
+      ),
+    },
+    noPrimaryButton: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  computed: {
+    emptyStateProps() {
+      const props = {
+        title: this.title,
+        svgPath: this.emptyStateSvgPath,
+      };
+
+      if (!this.noPrimaryButton) {
+        props.primaryButtonText = this.$options.i18n.primaryButtonText;
+        props.primaryButtonLink = this.newDastScanPath;
+      }
+
+      return props;
+    },
+  },
   i18n: {
-    title: s__('OnDemandScans|On-demand scans'),
     primaryButtonText: s__('OnDemandScans|New DAST scan'),
-    text: s__(
-      'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Lean more%{learnMoreLinkEnd}.',
-    ),
   },
 };
 </script>
 
 <template>
-  <gl-empty-state
-    :title="$options.i18n.title"
-    :svg-path="emptyStateSvgPath"
-    :primary-button-text="$options.i18n.primaryButtonText"
-    :primary-button-link="newDastScanPath"
-  >
+  <gl-empty-state v-bind="emptyStateProps">
     <template #description>
-      <gl-sprintf :message="$options.i18n.text">
+      <gl-sprintf :message="text">
         <template #learnMoreLink="{ content }">
           <gl-link :href="helpPagePath">{{ content }}</gl-link>
         </template>
