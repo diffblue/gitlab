@@ -99,6 +99,9 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Formatters::DependencyList do
       'maven'    | 'Java (Maven)'
       'composer' | 'PHP (Composer)'
       'conan'    | 'C/C++ (Conan)'
+      'sbt'      | 'Scala (Sbt)'
+      'nuget'    | 'C# (Nuget)'
+      'go'       | 'Go (Go modules)'
       ''         | ''
     end
 
