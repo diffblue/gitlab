@@ -7,7 +7,7 @@ FactoryBot.define do
     dast_site { association :dast_site, project: project }
 
     sequence :name do |i|
-      "#{FFaker::Product.product_name.truncate(200)} - #{i}"
+      "#{FFaker::Product.product_name.truncate(192)} #{SecureRandom.hex(4)} - #{i}"
     end
 
     auth_enabled { true }
