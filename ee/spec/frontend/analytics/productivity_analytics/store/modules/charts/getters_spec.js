@@ -2,13 +2,11 @@ import {
   metricTypes,
   chartKeys,
   columnHighlightStyle,
-  maxColumnChartItemsPerPage,
   scatterPlotAddonQueryDays,
 } from 'ee/analytics/productivity_analytics/constants';
 import * as getters from 'ee/analytics/productivity_analytics/store/modules/charts/getters';
 import createState from 'ee/analytics/productivity_analytics/store/modules/charts/state';
 import { getScatterPlotData, getMedianLineData } from 'ee/analytics/productivity_analytics/utils';
-import { mockHistogramData } from '../../../mock_data';
 
 jest.mock('ee/analytics/productivity_analytics/utils');
 
@@ -191,39 +189,6 @@ describe('Productivity analytics chart getters', () => {
             expected,
           );
         });
-      });
-    });
-  });
-
-  describe('getColumnChartDatazoomOption', () => {
-    const chartKey = chartKeys.main;
-
-    describe(`data exceeds threshold of ${maxColumnChartItemsPerPage[chartKey]} items`, () => {
-      it('returns a dataZoom property and computes the end interval correctly', () => {
-        state.charts[chartKey].data = mockHistogramData;
-
-        const intervalEnd = 98;
-
-        const expected = {
-          dataZoom: [
-            {
-              type: 'slider',
-              bottom: 10,
-              start: 0,
-              end: intervalEnd,
-            },
-          ],
-        };
-
-        expect(getters.getColumnChartDatazoomOption(state)(chartKeys.main)).toEqual(expected);
-      });
-    });
-
-    describe(`does not exceed threshold of ${maxColumnChartItemsPerPage[chartKey]} items`, () => {
-      it('returns an empty dataZoom property', () => {
-        state.charts[chartKey].data = { 1: 1, 2: 2, 3: 3 };
-
-        expect(getters.getColumnChartDatazoomOption(state)(chartKeys.main)).toEqual({});
       });
     });
   });
