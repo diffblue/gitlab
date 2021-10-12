@@ -1,3 +1,4 @@
+import { GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import Project from 'ee/operations/components/dashboard/project.vue';
@@ -21,8 +22,14 @@ describe('project component', () => {
         project: mockOneProject,
         ...props,
       },
+      stubs: {
+        GlSprintf,
+        GlLink,
+      },
     });
   };
+
+  const findDashboardCard = () => wrapper.find('[data-testid="dashboard-card-body"]');
 
   afterEach(() => {
     wrapper.destroy();
@@ -53,8 +60,8 @@ describe('project component', () => {
       });
 
       it('shows upgrade license text', () => {
-        expect(wrapper.find('.dashboard-card-body').html()).toContain(wrapper.vm.unlicensedMessage);
-        expect(wrapper.vm.unlicensedMessage).toContain('upgrade its group plan to Premium');
+        expect(findDashboardCard().text()).toContain('upgrade its group plan to Premium');
+        expect(findDashboardCard().find(GlLink).attributes('href')).toBe(project.upgrade_path);
       });
 
       it('hides commit info', () => {
@@ -74,9 +81,8 @@ describe('project component', () => {
       });
 
       it('shows upgrade license text', () => {
-        expect(wrapper.find('.dashboard-card-body').html()).toContain(wrapper.vm.unlicensedMessage);
-        expect(wrapper.vm.unlicensedMessage).not.toContain('upgrade its group plan to Premium');
-        expect(wrapper.vm.unlicensedMessage).toContain(
+        expect(findDashboardCard().text()).not.toContain('upgrade its group plan to Premium');
+        expect(findDashboardCard().text()).toContain(
           `contact an owner of group ${project.namespace.name}`,
         );
       });
