@@ -24,31 +24,36 @@ export default {
     moreInfo: s__('mrWidget|More information'),
     learnMore: s__('mrWidget|Learn more'),
   },
+  popoverConstants: {
+    target: 'merge-train-help',
+    container: 'merge-train-help-container',
+  },
 };
 </script>
 
 <template>
-  <div id="merge-train-help-container" data-testid="merge-train-helper-icon">
+  <div :id="$options.popoverConstants.container">
     <gl-icon
-      id="merge-train-help"
+      :id="$options.popoverConstants.target"
       name="question-o"
       class="gl-text-blue-600"
       :aria-label="$options.i18n.moreInfo"
+      data-testid="merge-train-helper-icon"
     />
     <gl-popover
-      target="merge-train-help"
-      container="merge-train-help-container"
+      :target="$options.popoverConstants.target"
+      :container="$options.popoverConstants.container"
       placement="top"
       :title="$options.i18n.popoverTitle"
       triggers="hover focus"
     >
-      <p>{{ $options.i18n.popoverContent }}</p>
+      <p data-testid="merge-train-helper-content">{{ $options.i18n.popoverContent }}</p>
       <gl-link
         class="gl-mt-3"
         :href="mergeTrainWhenPipelineSucceedsDocsPath"
         target="_blank"
         rel="noopener noreferrer"
-        data-testid="documentation-link"
+        data-testid="merge-train-helper-link"
       >
         {{ $options.i18n.learnMore }}
       </gl-link>
