@@ -53,6 +53,16 @@ module EE
 
       protected
 
+      override :invited_members
+      def invited_members
+        super.or(group_members.awaiting)
+      end
+
+      override :non_invited_members
+      def non_invited_members
+        super.non_awaiting
+      end
+
       def authorize_update_group_member!
         unless can?(current_user, :admin_group_member, group) || can?(current_user, :override_group_member, group)
           render_403

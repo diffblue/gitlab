@@ -25,6 +25,8 @@ module EE
         state :awaiting, value: STATE_AWAITING
         state :active, value: STATE_ACTIVE
       end
+      scope :awaiting, -> {where(state: STATE_AWAITING)}
+      scope :non_awaiting, -> {where.not(state: STATE_AWAITING)}
 
       before_create :set_membership_activation
 
