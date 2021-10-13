@@ -15,7 +15,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { preventDefault, stopPropagation } from '../../test_helpers';
+import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
 import {
   activateLicenseMutationResponse,
   fakeActivationCodeTrimmed,
