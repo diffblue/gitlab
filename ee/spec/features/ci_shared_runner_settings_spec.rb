@@ -6,7 +6,7 @@ RSpec.describe 'CI shared runner settings' do
   include StubENV
 
   let(:admin) { create(:admin) }
-  let(:group) { create(:group, :with_build_minutes) }
+  let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
   let!(:project) { create(:project, namespace: group, shared_runners_enabled: true) }
 
   before do

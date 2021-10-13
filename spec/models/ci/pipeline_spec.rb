@@ -2790,9 +2790,8 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
 
         extra_update_queries = 4 # transition ... => :canceled, queue pop
         extra_generic_commit_status_validation_queries = 2 # name_uniqueness_across_types
-        extra_load_balancer_queries = 3
 
-        expect(control2.count).to eq(control1.count + extra_update_queries + extra_generic_commit_status_validation_queries + extra_load_balancer_queries)
+        expect(control2.count).to eq(control1.count + extra_update_queries + extra_generic_commit_status_validation_queries)
       end
     end
 

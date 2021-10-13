@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe BillingPlansHelper do
   include Devise::Test::ControllerHelpers
 
+  before do
+    stub_feature_flags(new_customersdot_staging_url: false)
+  end
+
   describe '#subscription_plan_data_attributes' do
     let(:group) { build(:group) }
     let(:customer_portal_url) { EE::SUBSCRIPTIONS_MANAGE_URL }

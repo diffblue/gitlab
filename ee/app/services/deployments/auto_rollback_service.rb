@@ -39,10 +39,10 @@ module Deployments
       return unless previous_commit_ids
 
       rollback_target = environment.successful_deployments
-        .with_deployable
         .latest_for_sha(previous_commit_ids)
 
-      return unless rollback_target && rollback_target.deployable.retryable?
+      # Safely navigate deployable because of https://gitlab.com/gitlab-org/gitlab/-/issues/218659
+      return unless rollback_target && rollback_target.deployable&.retryable?
 
       rollback_target
     end

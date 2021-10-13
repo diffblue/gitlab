@@ -11,17 +11,17 @@ module Mutations
         required: true,
         description: 'ID of the project to attach the vulnerability to.'
 
-      argument :title, GraphQL::Types::String,
+      argument :name, GraphQL::Types::String,
         required: true,
-        description: 'Title of the vulnerability.'
+        description: 'Name of the vulnerability.'
 
       argument :description, GraphQL::Types::String,
         required: true,
         description: 'Description of the vulnerability.'
 
-      argument :scanner_name, GraphQL::Types::String,
+      argument :scanner, Types::VulnerabilityScannerInputType,
         required: true,
-        description: 'Name of the security scanner used to discover the vulnerability.'
+        description: 'Information about the scanner used to discover the vulnerability.'
 
       argument :identifiers, [Types::VulnerabilityIdentifierInputType],
         required: true,
@@ -100,7 +100,7 @@ module Mutations
 
       def build_vulnerability_params(params)
         vulnerability_params = params.slice(*%i[
-          title
+          name
           state
           severity
           confidence
@@ -111,15 +111,11 @@ module Mutations
           resolved_at
           dismissed_at
           identifiers
+          scanner
         ])
-
-        scanner_params = {
-          name: params.fetch(:scanner_name)
-        }
 
         {
           vulnerability: vulnerability_params
-            .merge(scanner: scanner_params)
         }
       end
     end

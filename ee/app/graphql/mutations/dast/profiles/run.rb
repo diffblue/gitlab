@@ -26,7 +26,6 @@ module Mutations
 
         def resolve(full_path:, id:)
           project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project)
 
           # TODO: remove this line once the compatibility layer is removed
           # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
@@ -43,10 +42,6 @@ module Mutations
         end
 
         private
-
-        def allowed?(project)
-          project.feature_available?(:security_on_demand_scans)
-        end
 
         def find_dast_profile(project, id)
           ::Dast::ProfilesFinder.new(project_id: project.id, id: id)

@@ -4,15 +4,14 @@ import { nextTick } from 'vue';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
 import DevopsAdoptionTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table.vue';
 import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table_cell_flag.vue';
-import {
-  TABLE_TEST_IDS_NAMESPACE,
-  TABLE_TEST_IDS_ACTIONS,
-  TABLE_TEST_IDS_HEADERS,
-  DEVOPS_ADOPTION_TABLE_CONFIGURATION,
-} from 'ee/analytics/devops_report/devops_adoption/constants';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { devopsAdoptionNamespaceData, devopsAdoptionTableHeaders } from '../mock_data';
+
+const TABLE_TEST_IDS_HEADERS = 'headers';
+const TABLE_TEST_IDS_NAMESPACE = 'namespace';
+const TABLE_TEST_IDS_ACTIONS = 'actions';
 
 describe('DevopsAdoptionTable', () => {
   let wrapper;

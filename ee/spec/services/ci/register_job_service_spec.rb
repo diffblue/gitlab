@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::RegisterJobService, '#execute' do
+  include ::Ci::MinutesHelpers
+
   let_it_be_with_refind(:shared_runner) { create(:ci_runner, :instance) }
 
   let!(:project) { create(:project, shared_runners_enabled: true) }
@@ -15,8 +17,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
 
       shared_examples 'returns a build' do |runners_minutes_used|
         before do
-          project.namespace.create_namespace_statistics(
-            shared_runners_seconds: runners_minutes_used * 60)
+          set_ci_minutes_used(project.namespace, runners_minutes_used)
         end
 
         context 'with traversal_ids enabled' do
@@ -67,8 +68,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
 
       shared_examples 'does not return a build' do |runners_minutes_used|
         before do
-          project.namespace.create_namespace_statistics(
-            shared_runners_seconds: runners_minutes_used * 60)
+          set_ci_minutes_used(project.namespace, runners_minutes_used)
           pending_build.reload
           pending_build.create_queuing_entry!
         end
@@ -241,8 +241,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
             group.update_columns(shared_runners_minutes_limit: 20)
 
             root_ancestor.update!(shared_runners_minutes_limit: 10)
-            root_ancestor.create_namespace_statistics(
-              shared_runners_seconds: 60 * 11)
+            set_ci_minutes_used(root_ancestor, 11)
           end
 
           it_behaves_like 'does not return a build', 11

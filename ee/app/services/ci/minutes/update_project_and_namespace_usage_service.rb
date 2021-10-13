@@ -7,7 +7,7 @@ module Ci
 
       IDEMPOTENCY_CACHE_TTL = 12.hours
 
-      def initialize(project_id, namespace_id, build_id = nil)
+      def initialize(project_id, namespace_id, build_id)
         @project_id = project_id
         @namespace_id = namespace_id
         @build_id = build_id
@@ -19,14 +19,7 @@ module Ci
       def execute(consumption)
         legacy_track_usage_of_monthly_minutes(consumption)
 
-        # TODO: fix this condition after the next deployment when `build_id`
-        # is made a mandatory argument.
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/331785
-        if @build_id && idempotent_consumption_enabled?
-          ensure_idempotency { track_usage_of_monthly_minutes(consumption) }
-        else
-          track_usage_of_monthly_minutes(consumption)
-        end
+        ensure_idempotency { track_usage_of_monthly_minutes(consumption) }
 
         send_minutes_email_notification
       end
@@ -133,15 +126,6 @@ module Ci
         Gitlab::Redis::SharedState.with do |redis|
           redis.exists(idempotency_cache_key)
         end
-      end
-
-      # When running this worker the project might have been deleted.
-      # In this case we consider the feature flag disabled for backward
-      # compatibility.
-      def idempotent_consumption_enabled?
-        return false unless @project
-
-        Feature.enabled?(:idempotent_ci_minutes_consumption, @project, default_enabled: :yaml)
       end
     end
   end

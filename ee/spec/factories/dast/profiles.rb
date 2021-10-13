@@ -8,7 +8,7 @@ FactoryBot.define do
     dast_scanner_profile { association :dast_scanner_profile, project: project }
 
     sequence :name do |i|
-      "#{FFaker::Product.product_name.truncate(200)} - #{i}"
+      "#{FFaker::Product.product_name.truncate(192)} #{SecureRandom.hex(4)} - #{i}"
     end
 
     description { FFaker::Product.product_name }

@@ -246,7 +246,7 @@ module Ci
 
       begin
         transaction do
-          self.projects << project
+          self.runner_projects << ::Ci::RunnerProject.new(project: project, runner: self)
           self.save!
         end
       rescue ActiveRecord::RecordInvalid => e
@@ -280,9 +280,7 @@ module Ci
     end
 
     def belongs_to_more_than_one_project?
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/338659') do
-        self.projects.limit(2).count(:all) > 1
-      end
+      runner_projects.limit(2).count(:all) > 1
     end
 
     def assigned_to_group?
@@ -348,7 +346,7 @@ module Ci
       # intention here is not to execute `Ci::RegisterJobService#execute` on
       # the primary database.
       #
-      ::Gitlab::Database::LoadBalancing::Sticking.stick(:runner, id)
+      ::Ci::Runner.sticking.stick(:runner, id)
 
       SecureRandom.hex.tap do |new_update|
         ::Gitlab::Workhorse.set_key_and_notify(runner_queue_key, new_update,
@@ -432,10 +430,8 @@ module Ci
     end
 
     def no_projects
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/338659') do
-        if projects.any?
-          errors.add(:runner, 'cannot have projects assigned')
-        end
+      if runner_projects.any?
+        errors.add(:runner, 'cannot have projects assigned')
       end
     end
 
@@ -448,10 +444,8 @@ module Ci
     end
 
     def any_project
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/338659') do
-        unless projects.any?
-          errors.add(:runner, 'needs to be assigned to at least one project')
-        end
+      unless runner_projects.any?
+        errors.add(:runner, 'needs to be assigned to at least one project')
       end
     end
 

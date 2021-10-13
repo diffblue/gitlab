@@ -188,8 +188,10 @@ RSpec.describe API::Namespaces do
   end
 
   describe 'PUT /namespaces/:id' do
-    let!(:namespace_statistics) do
-      create(:namespace_statistics, namespace: group1, shared_runners_seconds: 1600 * 60)
+    let(:group1) { create(:group, :with_ci_minutes, ci_minutes_used: 1600) }
+
+    let(:usage) do
+      ::Ci::Minutes::NamespaceMonthlyUsage.current_month.find_by(namespace_id: group1)
     end
 
     let(:params) do
@@ -201,6 +203,7 @@ RSpec.describe API::Namespaces do
     end
 
     before do
+      usage.update!(notification_level: 30)
       allow(Gitlab).to receive(:com?).and_return(true)
       group1.update!(shared_runners_minutes_limit: 1000, extra_shared_runners_minutes_limit: 500)
     end
@@ -235,8 +238,6 @@ RSpec.describe API::Namespaces do
       end
 
       context 'when current CI minutes notification level is set' do
-        let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
-
         it 'resets the current CI minutes notification level' do
           expect do
             put api("/namespaces/#{group1.id}", admin), params: params
@@ -277,8 +278,6 @@ RSpec.describe API::Namespaces do
         end
 
         context 'when current CI minutes notification level is set' do
-          let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
-
           it 'resets the current CI minutes notification level' do
             expect do
               put api("/namespaces/#{group1.id}", admin), params: params
@@ -297,8 +296,6 @@ RSpec.describe API::Namespaces do
         end
 
         context 'when current CI minutes notification level is set' do
-          let!(:usage) { create(:ci_namespace_monthly_usage, :with_warning_notification_level, namespace: group1) }
-
           it 'does not reset the current CI minutes notification level' do
             params.delete(:shared_runners_minutes_limit)
 

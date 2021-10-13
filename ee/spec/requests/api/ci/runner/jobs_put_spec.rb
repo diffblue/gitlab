@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
-  let_it_be(:group) { create(:group, shared_runners_minutes_limit: 100) }
+  let_it_be(:minutes_used) { 95 + Ci::Minutes::TrackLiveConsumptionService::CONSUMPTION_THRESHOLD.abs }
+  let_it_be(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: 100, ci_minutes_used: minutes_used) }
   let_it_be(:project) { create(:project, :private, namespace: group, shared_runners_enabled: true) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project, ref: 'master') }
   let_it_be(:runner) { create(:ci_runner, :instance) }
@@ -22,16 +23,6 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
         user: user,
         runner: runner,
         pipeline: pipeline)
-    end
-
-    let(:minutes_already_consumed) do
-      95 + Ci::Minutes::TrackLiveConsumptionService::CONSUMPTION_THRESHOLD.abs
-    end
-
-    let!(:statistics) do
-      create(:namespace_statistics,
-        namespace: group,
-        shared_runners_seconds: minutes_already_consumed.minutes)
     end
 
     it 'tracks CI minutes usage of running job' do

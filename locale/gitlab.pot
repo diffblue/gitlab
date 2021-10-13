@@ -2108,6 +2108,9 @@ msgstr ""
 msgid "Add to tree"
 msgstr ""
 
+msgid "Add topics to projects to help users find them."
+msgstr ""
+
 msgid "Add trigger"
 msgstr ""
 
@@ -6691,6 +6694,9 @@ msgstr ""
 msgid "Checkout|Edit"
 msgstr ""
 
+msgid "Checkout|Enter a number greater than 0"
+msgstr ""
+
 msgid "Checkout|Exp %{expirationMonth}/%{expirationYear}"
 msgstr ""
 
@@ -9108,7 +9114,7 @@ msgstr ""
 msgid "ContainerRegistry|To widen your search, change or remove the filters above."
 msgstr ""
 
-msgid "ContainerRegistry|We are having trouble connecting to the Registry, which could be due to an issue with your project name or path. %{docLinkStart}More information%{docLinkEnd}"
+msgid "ContainerRegistry|We are having trouble connecting to the Container Registry. Please try refreshing the page. If this error persists, please review  %{docLinkStart}the troubleshooting documentation%{docLinkEnd}."
 msgstr ""
 
 msgid "ContainerRegistry|With the Container Registry, every project can have its own space to store its Docker images. %{docLinkStart}More Information%{docLinkEnd}"
@@ -9703,6 +9709,9 @@ msgid "Create snippet"
 msgstr ""
 
 msgid "Create tag %{tagName}"
+msgstr ""
+
+msgid "Create topic"
 msgstr ""
 
 msgid "Create user"
@@ -11701,6 +11710,9 @@ msgstr ""
 msgid "DevopsAdoption|Adoption by subgroup"
 msgstr ""
 
+msgid "DevopsAdoption|Adoption over time"
+msgstr ""
+
 msgid "DevopsAdoption|An error occurred while removing the group. Please try again."
 msgstr ""
 
@@ -11779,6 +11791,9 @@ msgstr ""
 msgid "DevopsAdoption|No results…"
 msgstr ""
 
+msgid "DevopsAdoption|No tracked features"
+msgstr ""
+
 msgid "DevopsAdoption|Not adopted"
 msgstr ""
 
@@ -11822,6 +11837,9 @@ msgid "DevopsAdoption|There was an error fetching Groups. Please refresh the pag
 msgstr ""
 
 msgid "DevopsAdoption|This group has no subgroups"
+msgstr ""
+
+msgid "DevopsAdoption|Total number of features adopted"
 msgstr ""
 
 msgid "DevopsAdoption|You cannot remove the group you are currently in."
@@ -12355,6 +12373,9 @@ msgid "Edit this release"
 msgstr ""
 
 msgid "Edit title and description"
+msgstr ""
+
+msgid "Edit topic: %{topic_name}"
 msgstr ""
 
 msgid "Edit user: %{user_name}"
@@ -12972,7 +12993,7 @@ msgstr ""
 msgid "Environments|Are you sure you want to stop this environment?"
 msgstr ""
 
-msgid "Environments|Auto stop in"
+msgid "Environments|Auto stop"
 msgstr ""
 
 msgid "Environments|Auto stops %{autoStopAt}"
@@ -14592,9 +14613,6 @@ msgid "Filter by milestone name"
 msgstr ""
 
 msgid "Filter by name"
-msgstr ""
-
-msgid "Filter by name..."
 msgstr ""
 
 msgid "Filter by test cases that are currently archived."
@@ -20883,6 +20901,9 @@ msgstr ""
 msgid "Marked For Deletion At - %{deletion_time}"
 msgstr ""
 
+msgid "Marked as draft. Can only be merged when marked as ready."
+msgstr ""
+
 msgid "Marked as ready. Merging is now allowed."
 msgstr ""
 
@@ -22381,6 +22402,9 @@ msgstr ""
 msgid "My company or team"
 msgstr ""
 
+msgid "My topic"
+msgstr ""
+
 msgid "My-Reaction"
 msgstr ""
 
@@ -22874,6 +22898,9 @@ msgstr ""
 msgid "New test case"
 msgstr ""
 
+msgid "New topic"
+msgstr ""
+
 msgid "New users set to external"
 msgstr ""
 
@@ -22988,7 +23015,7 @@ msgstr ""
 msgid "No compliance frameworks are in use. Create one from the %{link} section in Group Settings."
 msgstr ""
 
-msgid "No confirmation email received? Please check your spam folder or"
+msgid "No confirmation email received? Check your spam folder or %{request_link_start}request new confirmation email%{request_link_end}."
 msgstr ""
 
 msgid "No connection could be made to a Gitaly Server, please check your logs!"
@@ -23718,6 +23745,9 @@ msgstr ""
 msgid "OnCallSchedules|Your schedule has been successfully created. To add individual users to this schedule, use the Add a rotation button. To enable notifications for this schedule, you must also create an %{linkStart}escalation policy%{linkEnd}."
 msgstr ""
 
+msgid "OnDemandScans|%{learnMoreLinkStart}Lean more about on-demand scans%{learnMoreLinkEnd}."
+msgstr ""
+
 msgid "OnDemandScans|Could not fetch scanner profiles. Please refresh the page, or try again later."
 msgstr ""
 
@@ -23800,6 +23830,15 @@ msgid "OnDemandScans|Site profile"
 msgstr ""
 
 msgid "OnDemandScans|Start time"
+msgstr ""
+
+msgid "OnDemandScans|There are no finished scans."
+msgstr ""
+
+msgid "OnDemandScans|There are no running scans."
+msgstr ""
+
+msgid "OnDemandScans|There are no scheduled scans."
 msgstr ""
 
 msgid "OnDemandScans|Use existing scanner profile"
@@ -24107,7 +24146,7 @@ msgstr ""
 msgid "PQL|Submit information"
 msgstr ""
 
-msgid "PQL|Thank you for reaching out! Our sales team will bet back to you soon."
+msgid "PQL|Thank you for reaching out! Our sales team will get back to you soon."
 msgstr ""
 
 msgid "Package Registry"
@@ -24810,9 +24849,6 @@ msgid "Permissions Help"
 msgstr ""
 
 msgid "Permissions, LFS, 2FA"
-msgstr ""
-
-msgid "Personal"
 msgstr ""
 
 msgid "Personal Access Token"
@@ -25551,6 +25587,9 @@ msgid "Please enter or upload a valid license."
 msgstr ""
 
 msgid "Please fill in a descriptive name for your group."
+msgstr ""
+
+msgid "Please fill in a name for your topic."
 msgstr ""
 
 msgid "Please fill out this field."
@@ -26307,6 +26346,9 @@ msgid "Profiles|You can upload your avatar here or change it at %{gravatar_link}
 msgstr ""
 
 msgid "Profiles|You don't have access to delete this user."
+msgstr ""
+
+msgid "Profiles|You must accept the Terms of Service in order to perform this action."
 msgstr ""
 
 msgid "Profiles|You must transfer ownership or delete groups you are an owner of before you can delete your account"
@@ -28892,9 +28934,6 @@ msgstr ""
 msgid "Request details"
 msgstr ""
 
-msgid "Request new confirmation email"
-msgstr ""
-
 msgid "Request parameter %{param} is missing."
 msgstr ""
 
@@ -28973,13 +29012,13 @@ msgstr ""
 msgid "Requirements can be based on users, stakeholders, system, software, or anything else you find important to capture."
 msgstr ""
 
-msgid "Requires approval from %{names}."
-msgid_plural "Requires %{count} more approvals from %{names}."
+msgid "Requires %d approval from eligible users."
+msgid_plural "Requires %d approvals from eligible users."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Requires approval."
-msgid_plural "Requires %d more approvals."
+msgid "Requires %{count} approval from %{names}."
+msgid_plural "Requires %{count} approvals from %{names}."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -35824,6 +35863,18 @@ msgstr ""
 msgid "TopNav|Go back"
 msgstr ""
 
+msgid "Topic %{topic_name} was successfully created."
+msgstr ""
+
+msgid "Topic avatar"
+msgstr ""
+
+msgid "Topic name"
+msgstr ""
+
+msgid "Topic was successfully updated."
+msgstr ""
+
 msgid "Topics"
 msgstr ""
 
@@ -38693,6 +38744,9 @@ msgstr ""
 msgid "Write a description or drag your files here…"
 msgstr ""
 
+msgid "Write a description…"
+msgstr ""
+
 msgid "Write milestone description..."
 msgstr ""
 
@@ -38853,9 +38907,6 @@ msgid "You can always change your URL later"
 msgstr ""
 
 msgid "You can always edit this later"
-msgstr ""
-
-msgid "You can apply topics to projects to categorize them."
 msgstr ""
 
 msgid "You can create a new %{link}."
@@ -39607,9 +39658,6 @@ msgid_plural "Your subscription will expire in %{remaining_days} days."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Your topics"
-msgstr ""
-
 msgid "Your username is %{username}."
 msgstr ""
 
@@ -40221,6 +40269,9 @@ msgstr ""
 msgid "element is not a hierarchy"
 msgstr ""
 
+msgid "eligible users"
+msgstr ""
+
 msgid "email '%{email}' is not a verified email."
 msgstr ""
 
@@ -40613,6 +40664,9 @@ msgstr ""
 msgid "mrWidget|%{prefixToLinkStart}No pipeline%{prefixToLinkEnd} %{addPipelineLinkStart}Add the .gitlab-ci.yml file%{addPipelineLinkEnd} to create one."
 msgstr ""
 
+msgid "mrWidget|A merge train is a queued list of merge requests waiting to be merged into the target branch. The changes in each merge request are combined with the changes in earlier merge requests and tested before merge."
+msgstr ""
+
 msgid "mrWidget|A new merge train has started and this merge request is the first of the queue."
 msgstr ""
 
@@ -40706,6 +40760,9 @@ msgid "mrWidget|If the last pipeline ran in the fork project, it may be inaccura
 msgstr ""
 
 msgid "mrWidget|Jump to first unresolved thread"
+msgstr ""
+
+msgid "mrWidget|Learn more"
 msgstr ""
 
 msgid "mrWidget|Loading deployment statistics"
@@ -40857,12 +40914,6 @@ msgstr ""
 msgid "mrWidget|There are merge conflicts"
 msgstr ""
 
-msgid "mrWidget|This action will add the merge request to the merge train when pipeline %{pipelineLink} succeeds."
-msgstr ""
-
-msgid "mrWidget|This action will start a merge train when pipeline %{pipelineLink} succeeds."
-msgstr ""
-
 msgid "mrWidget|This merge request failed to be merged automatically"
 msgstr ""
 
@@ -40876,6 +40927,9 @@ msgid "mrWidget|To merge, a Jira issue key must be mentioned in the title or des
 msgstr ""
 
 msgid "mrWidget|Use %{linkStart}CI pipelines to test your code%{linkEnd} by simply adding a GitLab CI configuration file to your project. It only takes a minute to make your code more secure and robust."
+msgstr ""
+
+msgid "mrWidget|What is a merge train?"
 msgstr ""
 
 msgid "mrWidget|You can merge after removing denied licenses"

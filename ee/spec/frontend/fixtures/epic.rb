@@ -34,10 +34,6 @@ RSpec.describe 'Epics (JavaScript fixtures)' do
     ]
   end
 
-  before(:all) do
-    clean_frontend_fixtures('epic/')
-  end
-
   describe EpicPresenter, '(JavaScript fixtures)', type: :presenter do
     let(:response) { @json_data.to_json }
 

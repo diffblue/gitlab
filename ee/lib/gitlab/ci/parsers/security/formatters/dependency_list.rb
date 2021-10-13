@@ -48,6 +48,12 @@ module Gitlab
                 'PHP (Composer)'
               when 'conan'
                 'C/C++ (Conan)'
+              when 'sbt'
+                'Scala (Sbt)'
+              when 'nuget'
+                'C# (Nuget)'
+              when 'go'
+                'Go (Go modules)'
               else
                 package_manager
               end

@@ -75,10 +75,11 @@ You can also [view our language roadmap](https://about.gitlab.com/direction/secu
 | .NET Core                                                                                                                                         | [Security Code Scan](https://security-code-scan.github.io)                                                    | 11.0                                                                                    |
 | .NET Framework                                                                                                                                    | [Security Code Scan](https://security-code-scan.github.io)                                                    | 13.0                                                                                    |
 | Apex (Salesforce)                                                                                                                                 | [PMD](https://pmd.github.io/pmd/index.html)                                                                   | 12.1                                                                                    |
-| C                                                                                                                                            | [Semgrep](https://semgrep.dev)                                                                                | 14.2                                                                                    |
+| C                                                                                                                                                 | [Semgrep](https://semgrep.dev)                                                                                | 14.2                                                                                    |
 | C/C++                                                                                                                                             | [Flawfinder](https://github.com/david-a-wheeler/flawfinder)                                                   | 10.7                                                                                    |
 | Elixir (Phoenix)                                                                                                                                  | [Sobelow](https://github.com/nccgroup/sobelow)                                                                | 11.1                                                                                    |
 | Go                                                                                                                                                | [Gosec](https://github.com/securego/gosec)                                                                    | 10.7                                                                                    |
+| Go                                                                                                                                                | [Semgrep](https://semgrep.dev)                                                                                | 14.4                                                                                    |
 | Groovy ([Ant](https://ant.apache.org/), [Gradle](https://gradle.org/), [Maven](https://maven.apache.org/), and [SBT](https://www.scala-sbt.org/)) | [SpotBugs](https://spotbugs.github.io/) with the     [find-sec-bugs](https://find-sec-bugs.github.io/) plugin | 11.3 (Gradle) & 11.9 (Ant, Maven, SBT)                                                  |
 | Helm Charts                                                                                                                                       | [Kubesec](https://github.com/controlplaneio/kubesec)                                                          | 13.1                                                                                    |
 | Java ([Ant](https://ant.apache.org/), [Gradle](https://gradle.org/), [Maven](https://maven.apache.org/), and [SBT](https://www.scala-sbt.org/))   | [SpotBugs](https://spotbugs.github.io/) with the [find-sec-bugs](https://find-sec-bugs.github.io/) plugin     | 10.6 (Maven), 10.8 (Gradle) & 11.9 (Ant, SBT)                                           |
@@ -254,11 +255,15 @@ versions are pulled, there are certain cases where it can be beneficial to pin
 an analyzer to a specific release. To do so, override the `SAST_ANALYZER_IMAGE_TAG` CI/CD variable
 in the job template directly.
 
-In the example below, we are pinning to a specific patch version of the `spotbugs` analyzer:
+In the example below, we pin to a specific patch version of the `spotbugs` analyzer and minor version of the `semgrep` analyzer:
 
 ```yaml
 include:
   - template: Security/SAST.gitlab-ci.yml
+
+semgrep-sast:
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: "2.12"
 
 spotbugs-sast:
   variables:

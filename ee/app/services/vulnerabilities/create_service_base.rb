@@ -44,7 +44,12 @@ module Vulnerabilities
         .merge(
           project: @project,
           author: @author,
-          title: vulnerability_hash[:title]&.truncate(::Issuable::TITLE_LENGTH_MAX),
+          # Our security report schema has name
+          # https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/src/security-report-format.json#L369
+          # Our database has title
+          # https://gitlab.com/gitlab-org/gitlab/blob/master/db/structure.sql#L20164
+          # We want the GraphQL mutation arguments to reflect the security scanner schema
+          title: vulnerability_hash[:name]&.truncate(::Issuable::TITLE_LENGTH_MAX),
           report_type: report_type
         )
 
@@ -61,8 +66,8 @@ module Vulnerabilities
     def initialize_identifiers(identifier_hashes)
       identifier_hashes.map do |identifier|
         name = identifier[:name]
-        external_type = map_external_type_from_name(name)
-        external_id = name
+        external_type = identifier[:external_type] || map_external_type_from_name(name)
+        external_id = identifier[:external_id] || name
         fingerprint = Digest::SHA1.hexdigest("#{external_type}:#{external_id}")
         url = identifier[:url]
 

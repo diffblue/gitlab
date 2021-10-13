@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::QuotaPresenter do
+  include ::Ci::MinutesHelpers
+
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:namespace) do
@@ -48,7 +50,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when minutes are used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 20.minutes
+            set_ci_minutes_used(namespace, 20)
           end
 
           it 'returns unlimited report with usage' do
@@ -71,7 +73,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
       context 'when minutes are not all used' do
         before do
-          namespace.namespace_statistics.shared_runners_seconds = 30.minutes
+          set_ci_minutes_used(namespace, 30)
         end
 
         it 'returns report with under quota' do
@@ -85,7 +87,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
       context 'when minutes are all used' do
         before do
-          namespace.namespace_statistics.shared_runners_seconds = 101.minutes
+          set_ci_minutes_used(namespace, 101)
         end
 
         it 'returns report with over quota' do
@@ -113,7 +115,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when all monthly minutes are used and some puarchased minutes are used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 250.minutes
+            set_ci_minutes_used(namespace, 250)
           end
 
           it 'returns report with under quota' do
@@ -127,7 +129,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when all monthly and all puarchased minutes have been used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 301.minutes
+            set_ci_minutes_used(namespace, 301)
           end
 
           it 'returns report with over quota' do
@@ -141,7 +143,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when not all monthly minutes have been used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 190.minutes
+            set_ci_minutes_used(namespace, 190)
           end
 
           it 'returns report with no usage' do
@@ -161,7 +163,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when all monthly minutes have been used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 201.minutes
+            set_ci_minutes_used(namespace, 201)
           end
 
           it 'returns report without usage' do
@@ -175,7 +177,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
 
         context 'when not all monthly minutes have been used' do
           before do
-            namespace.namespace_statistics.shared_runners_seconds = 190.minutes
+            set_ci_minutes_used(namespace, 190)
           end
 
           it 'returns report with no usage' do
@@ -212,7 +214,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
         allow(namespace).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
         namespace.shared_runners_minutes_limit = monthly_limit
         namespace.extra_shared_runners_minutes_limit = purchased_limit
-        namespace.namespace_statistics.shared_runners_seconds = minutes_used.minutes
+        set_ci_minutes_used(namespace, minutes_used)
       end
 
       it 'returns the percentage' do
@@ -242,7 +244,7 @@ RSpec.describe Ci::Minutes::QuotaPresenter do
         allow(quota).to receive(:enabled?).and_return(limit_enabled)
         namespace.shared_runners_minutes_limit = monthly_limit
         namespace.extra_shared_runners_minutes_limit = purchased_limit
-        namespace.namespace_statistics.shared_runners_seconds = minutes_used.minutes
+        set_ci_minutes_used(namespace, minutes_used)
       end
 
       it 'returns the percentage' do

@@ -36,6 +36,19 @@ in [Removed Items](../removed_items.md).
 
 The `Query` type contains the API's top-level entry points for all executable queries.
 
+### `Query.boardList`
+
+Find an issue board list.
+
+Returns [`BoardList`](#boardlist).
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryboardlistid"></a>`id` | [`ListID!`](#listid) | Global ID of the list. |
+| <a id="queryboardlistissuefilters"></a>`issueFilters` | [`BoardIssueInput`](#boardissueinput) | Filters applied when getting issue metadata in the board list. |
+
 ### `Query.ciApplicationSettings`
 
 CI related settings that apply to the entire instance.
@@ -1425,7 +1438,7 @@ Input type: `CustomerRelationsContactCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationcustomerrelationscontactcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcustomerrelationscontactcreatedescription"></a>`description` | [`String`](#string) | Description or notes for the contact. |
+| <a id="mutationcustomerrelationscontactcreatedescription"></a>`description` | [`String`](#string) | Description of or notes for the contact. |
 | <a id="mutationcustomerrelationscontactcreateemail"></a>`email` | [`String`](#string) | Email address of the contact. |
 | <a id="mutationcustomerrelationscontactcreatefirstname"></a>`firstName` | [`String!`](#string) | First name of the contact. |
 | <a id="mutationcustomerrelationscontactcreategroupid"></a>`groupId` | [`GroupID!`](#groupid) | Group for the contact. |
@@ -1441,6 +1454,31 @@ Input type: `CustomerRelationsContactCreateInput`
 | <a id="mutationcustomerrelationscontactcreatecontact"></a>`contact` | [`CustomerRelationsContact`](#customerrelationscontact) | Contact after the mutation. |
 | <a id="mutationcustomerrelationscontactcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.customerRelationsContactUpdate`
+
+Input type: `CustomerRelationsContactUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationcustomerrelationscontactupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcustomerrelationscontactupdatedescription"></a>`description` | [`String`](#string) | Description of or notes for the contact. |
+| <a id="mutationcustomerrelationscontactupdateemail"></a>`email` | [`String`](#string) | Email address of the contact. |
+| <a id="mutationcustomerrelationscontactupdatefirstname"></a>`firstName` | [`String`](#string) | First name of the contact. |
+| <a id="mutationcustomerrelationscontactupdateid"></a>`id` | [`CustomerRelationsContactID!`](#customerrelationscontactid) | Global ID of the contact. |
+| <a id="mutationcustomerrelationscontactupdatelastname"></a>`lastName` | [`String`](#string) | Last name of the contact. |
+| <a id="mutationcustomerrelationscontactupdateorganizationid"></a>`organizationId` | [`CustomerRelationsOrganizationID`](#customerrelationsorganizationid) | Organization of the contact. |
+| <a id="mutationcustomerrelationscontactupdatephone"></a>`phone` | [`String`](#string) | Phone number of the contact. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationcustomerrelationscontactupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcustomerrelationscontactupdatecontact"></a>`contact` | [`CustomerRelationsContact`](#customerrelationscontact) | Contact after the mutation. |
+| <a id="mutationcustomerrelationscontactupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.customerRelationsOrganizationCreate`
 
 Input type: `CustomerRelationsOrganizationCreateInput`
@@ -1451,7 +1489,7 @@ Input type: `CustomerRelationsOrganizationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcustomerrelationsorganizationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcustomerrelationsorganizationcreatedefaultrate"></a>`defaultRate` | [`Float`](#float) | Standard billing rate for the organization. |
-| <a id="mutationcustomerrelationsorganizationcreatedescription"></a>`description` | [`String`](#string) | Description or notes for the organization. |
+| <a id="mutationcustomerrelationsorganizationcreatedescription"></a>`description` | [`String`](#string) | Description of or notes for the organization. |
 | <a id="mutationcustomerrelationsorganizationcreategroupid"></a>`groupId` | [`GroupID!`](#groupid) | Group for the organization. |
 | <a id="mutationcustomerrelationsorganizationcreatename"></a>`name` | [`String!`](#string) | Name of the organization. |
 
@@ -1473,7 +1511,7 @@ Input type: `CustomerRelationsOrganizationUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcustomerrelationsorganizationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcustomerrelationsorganizationupdatedefaultrate"></a>`defaultRate` | [`Float`](#float) | Standard billing rate for the organization. |
-| <a id="mutationcustomerrelationsorganizationupdatedescription"></a>`description` | [`String`](#string) | Description or notes for the organization. |
+| <a id="mutationcustomerrelationsorganizationupdatedescription"></a>`description` | [`String`](#string) | Description of or notes for the organization. |
 | <a id="mutationcustomerrelationsorganizationupdateid"></a>`id` | [`CustomerRelationsOrganizationID!`](#customerrelationsorganizationid) | Global ID of the organization. |
 | <a id="mutationcustomerrelationsorganizationupdatename"></a>`name` | [`String`](#string) | Name of the organization. |
 
@@ -4677,13 +4715,13 @@ Input type: `VulnerabilityCreateInput`
 | <a id="mutationvulnerabilitycreatedismissedat"></a>`dismissedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to dismissed (defaults to creation time if status is `dismissed`). |
 | <a id="mutationvulnerabilitycreateidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifierInput!]!`](#vulnerabilityidentifierinput) | Array of CVE or CWE identifiers for the vulnerability. |
 | <a id="mutationvulnerabilitycreatemessage"></a>`message` | [`String`](#string) | Additional information about the vulnerability. |
+| <a id="mutationvulnerabilitycreatename"></a>`name` | [`String!`](#string) | Name of the vulnerability. |
 | <a id="mutationvulnerabilitycreateproject"></a>`project` | [`ProjectID!`](#projectid) | ID of the project to attach the vulnerability to. |
 | <a id="mutationvulnerabilitycreateresolvedat"></a>`resolvedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to resolved (defaults to creation time if status is `resolved`). |
-| <a id="mutationvulnerabilitycreatescannername"></a>`scannerName` | [`String!`](#string) | Name of the security scanner used to discover the vulnerability. |
+| <a id="mutationvulnerabilitycreatescanner"></a>`scanner` | [`VulnerabilityScannerInput!`](#vulnerabilityscannerinput) | Information about the scanner used to discover the vulnerability. |
 | <a id="mutationvulnerabilitycreateseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability (defaults to `unknown`). |
 | <a id="mutationvulnerabilitycreatesolution"></a>`solution` | [`String`](#string) | How to fix this vulnerability. |
 | <a id="mutationvulnerabilitycreatestate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | State of the vulnerability (defaults to `detected`). |
-| <a id="mutationvulnerabilitycreatetitle"></a>`title` | [`String!`](#string) | Title of the vulnerability. |
 
 #### Fields
 
@@ -8881,7 +8919,7 @@ A custom emoji uploaded by user.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="customerrelationscontactcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the contact was created. |
-| <a id="customerrelationscontactdescription"></a>`description` | [`String`](#string) | Description or notes for the contact. |
+| <a id="customerrelationscontactdescription"></a>`description` | [`String`](#string) | Description of or notes for the contact. |
 | <a id="customerrelationscontactemail"></a>`email` | [`String`](#string) | Email address of the contact. |
 | <a id="customerrelationscontactfirstname"></a>`firstName` | [`String!`](#string) | First name of the contact. |
 | <a id="customerrelationscontactid"></a>`id` | [`ID!`](#id) | Internal ID of the contact. |
@@ -8898,7 +8936,7 @@ A custom emoji uploaded by user.
 | ---- | ---- | ----------- |
 | <a id="customerrelationsorganizationcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the organization was created. |
 | <a id="customerrelationsorganizationdefaultrate"></a>`defaultRate` | [`Float`](#float) | Standard billing rate for the organization. |
-| <a id="customerrelationsorganizationdescription"></a>`description` | [`String`](#string) | Description or notes for the organization. |
+| <a id="customerrelationsorganizationdescription"></a>`description` | [`String`](#string) | Description of or notes for the organization. |
 | <a id="customerrelationsorganizationid"></a>`id` | [`ID!`](#id) | Internal ID of the organization. |
 | <a id="customerrelationsorganizationname"></a>`name` | [`String!`](#string) | Name of the organization. |
 | <a id="customerrelationsorganizationupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the organization was last updated. |
@@ -9778,6 +9816,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="epicissuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
 | <a id="epicissuecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the issue was created. |
+| <a id="epicissuecustomerrelationscontacts"></a>`customerRelationsContacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Customer relations contacts of the issue. (see [Connections](#connections)) |
 | <a id="epicissuedescription"></a>`description` | [`String`](#string) | Description of the issue. |
 | <a id="epicissuedescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="epicissuedesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with this issue. |
@@ -10941,6 +10980,7 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="issueconfidential"></a>`confidential` | [`Boolean!`](#boolean) | Indicates the issue is confidential. |
 | <a id="issuecreatenoteemail"></a>`createNoteEmail` | [`String`](#string) | User specific email address for the issue. |
 | <a id="issuecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the issue was created. |
+| <a id="issuecustomerrelationscontacts"></a>`customerRelationsContacts` | [`CustomerRelationsContactConnection`](#customerrelationscontactconnection) | Customer relations contacts of the issue. (see [Connections](#connections)) |
 | <a id="issuedescription"></a>`description` | [`String`](#string) | Description of the issue. |
 | <a id="issuedescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="issuedesigncollection"></a>`designCollection` | [`DesignCollection`](#designcollection) | Collection of design images associated with this issue. |
@@ -12145,6 +12185,7 @@ Represents a package in the Package Registry. Note that this type is in beta and
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packagecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
 | <a id="packagecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
 | <a id="packageid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
 | <a id="packagemetadata"></a>`metadata` | [`PackageMetadata`](#packagemetadata) | Package metadata. |
@@ -12204,6 +12245,7 @@ Represents a package details in the Package Registry. Note that this type is in 
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packagedetailstypecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
 | <a id="packagedetailstypecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
 | <a id="packagedetailstypedependencylinks"></a>`dependencyLinks` | [`PackageDependencyLinkConnection`](#packagedependencylinkconnection) | Dependency link. (see [Connections](#connections)) |
 | <a id="packagedetailstypeid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
@@ -16939,6 +16981,12 @@ A `CustomEmojiID` is a global ID. It is encoded as a string.
 
 An example `CustomEmojiID` is: `"gid://gitlab/CustomEmoji/1"`.
 
+### `CustomerRelationsContactID`
+
+A `CustomerRelationsContactID` is a global ID. It is encoded as a string.
+
+An example `CustomerRelationsContactID` is: `"gid://gitlab/CustomerRelations::Contact/1"`.
+
 ### `CustomerRelationsOrganizationID`
 
 A `CustomerRelationsOrganizationID` is a global ID. It is encoded as a string.
@@ -18265,3 +18313,23 @@ A time-frame defined as a closed inclusive range of two dates.
 | <a id="vulnerabilityidentifierinputexternaltype"></a>`externalType` | [`String`](#string) | External type of the vulnerability identifier. |
 | <a id="vulnerabilityidentifierinputname"></a>`name` | [`String!`](#string) | Name of the vulnerability identifier. |
 | <a id="vulnerabilityidentifierinputurl"></a>`url` | [`String!`](#string) | URL of the vulnerability identifier. |
+
+### `VulnerabilityScannerInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="vulnerabilityscannerinputid"></a>`id` | [`String!`](#string) | Unique ID that identifies the scanner. |
+| <a id="vulnerabilityscannerinputname"></a>`name` | [`String!`](#string) | Human readable value that identifies the analyzer, not required to be unique. |
+| <a id="vulnerabilityscannerinputurl"></a>`url` | [`String!`](#string) | Link to more information about the analyzer. |
+| <a id="vulnerabilityscannerinputvendor"></a>`vendor` | [`VulnerabilityScannerVendorInput`](#vulnerabilityscannervendorinput) | Information about vendor/maintainer of the scanner. |
+| <a id="vulnerabilityscannerinputversion"></a>`version` | [`String!`](#string) | Version of the scanner. |
+
+### `VulnerabilityScannerVendorInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="vulnerabilityscannervendorinputname"></a>`name` | [`String!`](#string) | Name of the vendor/maintainer. |

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::Notification do
+  include ::Ci::MinutesHelpers
+
   let_it_be(:user) { create(:user) }
   let(:shared_runners_enabled) { true }
   let!(:project) { create(:project, :repository, namespace: group, shared_runners_enabled: shared_runners_enabled) }
@@ -24,7 +26,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when minutes are not yet set' do
-        let(:group) { create(:group, :with_build_minutes_limit) }
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
         it { is_expected.to be_falsey }
       end
@@ -38,9 +40,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when at the warning level' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(16.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 16) }
 
         describe '#show?' do
           it 'has warning notification' do
@@ -70,9 +70,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when at the danger level' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(19.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 19) }
 
         describe '#show?' do
           it 'has danger notification' do
@@ -102,9 +100,7 @@ RSpec.describe Ci::Minutes::Notification do
       end
 
       context 'when right at the limit for notification' do
-        before do
-          allow(group).to receive(:shared_runners_seconds).and_return(14.minutes)
-        end
+        let(:group) { create(:group, :with_ci_minutes, ci_minutes_used: 14) }
 
         describe '#show?' do
           it 'has warning notification' do
@@ -168,7 +164,7 @@ RSpec.describe Ci::Minutes::Notification do
   shared_examples 'not eligible to see notifications' do
     before do
       group.shared_runners_minutes_limit = 10
-      allow(group).to receive(:shared_runners_seconds).and_return(8.minutes)
+      set_ci_minutes_used(group, 8)
     end
 
     context 'when not permitted to see notifications' do

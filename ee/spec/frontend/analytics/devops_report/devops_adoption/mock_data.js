@@ -2,6 +2,10 @@ import json from 'test_fixtures/graphql/analytics/devops_report/devops_adoption/
 import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
+export const namespaceWithSnapotsData = getJSONFixture(
+  'graphql/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql.json',
+);
+
 export const devopsAdoptionNamespaceData = json.data.devopsAdoptionEnabledNamespaces;
 
 export const groupData = devopsAdoptionNamespaceData.nodes.map((node) => {

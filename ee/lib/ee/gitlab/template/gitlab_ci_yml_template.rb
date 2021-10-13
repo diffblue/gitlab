@@ -6,9 +6,7 @@ module EE
       module GitlabCiYmlTemplate
         extend ActiveSupport::Concern
 
-        EE_TEMPLATES_WITH_LATEST_VERSION = {
-          'Verify/Browser-Performance' => true
-        }.freeze
+        EE_TEMPLATES_WITH_LATEST_VERSION = {}.freeze
 
         class_methods do
           extend ::Gitlab::Utils::Override

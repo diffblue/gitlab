@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
+  include ::Ci::MinutesHelpers
+
   let(:project) { create(:project, :private) }
   let(:namespace) { project.namespace }
   let(:build) { create(:ci_build) }
@@ -135,18 +137,16 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
 
       before do
         project.statistics.update!(shared_runners_seconds: existing_usage_in_seconds)
-        namespace.create_namespace_statistics(shared_runners_seconds: existing_usage_in_seconds)
-        create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: existing_usage_in_minutes)
         create(:ci_project_monthly_usage, project: project, amount_used: existing_usage_in_minutes)
+
+        set_ci_minutes_used(namespace, existing_usage_in_minutes)
       end
 
       it 'does not create nested transactions', :delete do
         expect(ApplicationRecord.connection.transaction_open?).to be false
 
-        service = described_class.new(project.id, namespace.id)
-
         queries = ActiveRecord::QueryRecorder.new do
-          service
+          subject
         end
 
         savepoints = queries.occurrences.keys.flatten.select do |query|
@@ -193,20 +193,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
               .and_call_original
 
             subject
-          end
-
-          context 'when feature flag idempotent_ci_minutes_consumption is disabled' do
-            before do
-              stub_feature_flags(idempotent_ci_minutes_consumption: false)
-            end
-
-            it_behaves_like 'updates monthly consumption'
-          end
-
-          context 'when build_id is not provided as parameter' do
-            let(:service) { described_class.new(project.id, namespace.id) }
-
-            it_behaves_like 'updates monthly consumption' # not idempotent / temporary backwards compatibility
           end
         end
       end

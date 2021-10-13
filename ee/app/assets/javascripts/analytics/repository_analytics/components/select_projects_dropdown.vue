@@ -61,7 +61,7 @@ export default {
       groupProjects: [],
       projectsPageInfo: {},
       projectSearchTerm: '',
-      selectAllProjects: false,
+      selectAllProjects: true,
     };
   },
   computed: {

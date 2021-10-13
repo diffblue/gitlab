@@ -271,7 +271,7 @@ RSpec.describe Ci::Runner do
         expect(subject).to be_truthy
 
         expect(runner).to be_project_type
-        expect(runner.projects).to eq([project])
+        expect(runner.runner_projects.pluck(:project_id)).to match_array([project.id])
         expect(runner.only_for?(project)).to be_truthy
       end
     end
@@ -397,7 +397,7 @@ RSpec.describe Ci::Runner do
     it 'sticks the runner to the primary and calls the original method' do
       runner = create(:ci_runner)
 
-      expect(Gitlab::Database::LoadBalancing::Sticking).to receive(:stick)
+      expect(ApplicationRecord.sticking).to receive(:stick)
         .with(:runner, runner.id)
 
       expect(Gitlab::Workhorse).to receive(:set_key_and_notify)
@@ -735,7 +735,7 @@ RSpec.describe Ci::Runner do
 
       context 'with invalid runner' do
         before do
-          runner.projects = []
+          runner.runner_projects.delete_all
         end
 
         it 'still updates redis cache and database' do

@@ -1,61 +1,29 @@
 # frozen_string_literal: true
 
-# Projects::TopicsFinder
-#
-# Used to filter Topics (ActsAsTaggableOn::Tag) by a set of params
+# Used to filter project topics by a set of params
 #
 # Arguments:
-#   current_user - which user is requesting groups
 #   params:
-#     personal: boolean (defaults to false)
 #     search: string
-#     sort: string
 module Projects
   class TopicsFinder
-    attr_reader :current_user, :params
-
-    def initialize(current_user: nil, params: {})
-      @current_user = current_user
+    def initialize(params: {})
       @params = params
     end
 
     def execute
-      projects_relation.tag_counts_on(:topics, options)
+      topics = Projects::Topic.order_by_total_projects_count
+      by_search(topics)
     end
 
     private
 
-    def projects_relation
-      if current_user && personal?
-        current_user.authorized_projects
-      else
-        Project.public_or_visible_to_user(current_user)
-      end
-    end
+    attr_reader :current_user, :params
 
-    def personal?
-      params.fetch(:personal, false)
-    end
+    def by_search(topics)
+      return topics unless params[:search].present?
 
-    def options
-      {
-        conditions: filter_by_name,
-        order: sort_by_attribute
-      }
-    end
-
-    def filter_by_name
-      ActsAsTaggableOn::Tag.arel_table[:name].matches("%#{params[:search]}%") if params[:search].present?
-    end
-
-    def sort_by_attribute
-      case params[:sort]
-      when 'name_asc'        then 'tags.name asc'
-      when 'name_desc'       then 'tags.name desc'
-      when 'popularity_desc' then 'count desc, tags.name asc'
-      else
-        'count desc, tags.name asc'
-      end
+      topics.search(params[:search]).reorder_by_similarity(params[:search])
     end
   end
 end

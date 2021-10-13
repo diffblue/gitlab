@@ -185,6 +185,7 @@ RSpec.describe '[EE] Private Project Access' do
     before do
       stub_container_registry_tags(repository: :any, tags: ['latest'])
       stub_container_registry_config(enabled: true)
+      stub_container_registry_info
       project.container_repositories << container_repository
     end
 

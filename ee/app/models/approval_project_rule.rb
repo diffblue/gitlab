@@ -20,6 +20,8 @@ class ApprovalProjectRule < ApplicationRecord
     any_approver: 3
   }
 
+  scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: :scan_finding) }
+
   alias_method :code_owner, :code_owner?
   validate :validate_default_license_report_name, on: :update, if: :report_approver?
 
@@ -50,11 +52,8 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def apply_report_approver_rules_to(merge_request)
-    rule = merge_request
-      .approval_rules
-      .report_approver
-      .find_or_initialize_by(report_type: report_type)
-    rule.update!(attributes_to_apply_for(report_type))
+    rule = merge_request_report_approver_rule(merge_request)
+    rule.update!(report_approver_attributes)
     rule
   end
 
@@ -68,7 +67,7 @@ class ApprovalProjectRule < ApplicationRecord
 
   private
 
-  def attributes_to_apply_for(report_type)
+  def report_approver_attributes
     attributes
       .slice('approvals_required', 'name')
       .merge(
@@ -85,5 +84,21 @@ class ApprovalProjectRule < ApplicationRecord
     return unless name_was == ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT
 
     errors.add(:name, _("cannot be modified"))
+  end
+
+  def merge_request_report_approver_rule(merge_request)
+    if scan_finding?
+      merge_request
+        .approval_rules
+        .report_approver
+        .joins(:approval_merge_request_rule_source)
+        .where(approval_merge_request_rule_source: { approval_project_rule_id: self.id })
+        .first_or_initialize
+    else
+      merge_request
+        .approval_rules
+        .report_approver
+        .find_or_initialize_by(report_type: report_type)
+    end
   end
 end

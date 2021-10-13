@@ -9,10 +9,6 @@ RSpec.describe Groups::SamlProvidersController, '(JavaScript fixtures)', type: :
 
   render_views
 
-  before(:all) do
-    clean_frontend_fixtures('groups/saml_providers/')
-  end
-
   before do
     sign_in(user)
     group.add_owner(user)

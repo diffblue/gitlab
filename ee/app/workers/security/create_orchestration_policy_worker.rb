@@ -25,6 +25,17 @@ module Security
               .new(policy_configuration: configuration, policy_index: policy_index, policy: policy)
               .execute
           end
+
+          configuration.transaction do
+            configuration.approval_rules.scan_finding.delete_all
+            configuration.active_scan_result_policies.each do |policy|
+              Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
+                .new(policy_configuration: configuration, policy: policy)
+                .execute
+            end
+          end
+
+          configuration.update!(configured_at: Time.current)
         end
       end
     end

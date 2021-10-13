@@ -35,6 +35,11 @@ export default {
       required: false,
       default: '',
     },
+    errorMessage: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -113,11 +118,15 @@ export default {
     <div :class="['card', snakeCasedStep]">
       <div v-show="isActive" @keyup.enter="nextStep">
         <slot name="body" :active="isActive"></slot>
-        <gl-form-group v-if="nextStepButtonText" class="gl-mt-3 gl-mb-0">
-          <gl-button variant="success" category="primary" :disabled="!isValid" @click="nextStep">
-            {{ nextStepButtonText }}
-          </gl-button>
-        </gl-form-group>
+        <gl-form-group
+          v-if="nextStepButtonText"
+          :invalid-feedback="errorMessage"
+          :state="isValid"
+          :class="[!isValid && errorMessage ? 'gl-mb-5' : 'gl-mb-0', 'gl-mt-3']"
+        />
+        <gl-button variant="success" category="primary" :disabled="!isValid" @click="nextStep">
+          {{ nextStepButtonText }}
+        </gl-button>
       </div>
       <step-summary v-if="isFinished" :is-editable="isEditable" :edit="edit">
         <slot name="summary"></slot>

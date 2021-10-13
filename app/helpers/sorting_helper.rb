@@ -177,14 +177,6 @@ module SortingHelper
     }
   end
 
-  def topics_sort_options_hash
-    {
-      sort_value_name              => sort_title_name_asc,
-      sort_value_name_desc         => sort_title_name_desc,
-      sort_value_most_popular      => sort_title_popularity
-    }
-  end
-
   def sortable_item(item, path, sorted_by)
     link_to item, path, class: sorted_by == item ? 'is-active' : ''
   end

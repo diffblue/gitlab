@@ -3,12 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Explore Topics' do
-  let(:user) { create(:user) }
-  let(:project_private_user) { create(:project, :private, namespace: user.namespace) }
-  let(:project_private) { create(:project, :private) }
-  let(:project_internal) { create(:project, :internal) }
-  let(:project_public) { create(:project, :public) }
-
   context 'when no topics exist' do
     it 'renders empty message', :aggregate_failures do
       visit topics_explore_projects_path
@@ -19,49 +13,13 @@ RSpec.describe 'Explore Topics' do
   end
 
   context 'when topics exist' do
-    before do
-      project_private_user.update!(topic_list: 'topic1')
-      project_private.update!(topic_list: 'topic2')
-      project_internal.update!(topic_list: 'topic3')
-      project_public.update!(topic_list: 'topic4')
-    end
+    let!(:topic) { create(:topic, name: 'topic1') }
 
-    context 'as logged-in user' do
-      before do
-        sign_in(user)
-      end
+    it 'renders topic list' do
+      visit topics_explore_projects_path
 
-      it 'renders all topics correcty', :aggregate_failures do
-        visit topics_explore_projects_path
-
-        expect(current_path).to eq topics_explore_projects_path
-        expect(page).to have_content('topic1')
-        expect(page).not_to have_content('topic2')
-        expect(page).to have_content('topic3')
-        expect(page).to have_content('topic4')
-      end
-
-      it 'renders personal topics correcty', :aggregate_failures do
-        visit topics_explore_projects_path(personal: true)
-
-        expect(current_path).to eq topics_explore_projects_path
-        expect(page).to have_content('topic1')
-        expect(page).not_to have_content('topic2')
-        expect(page).not_to have_content('topic3')
-        expect(page).not_to have_content('topic4')
-      end
-    end
-
-    context 'as anonymous user' do
-      it 'renders all topics correcty', :aggregate_failures do
-        visit topics_explore_projects_path
-
-        expect(current_path).to eq topics_explore_projects_path
-        expect(page).not_to have_content('topic1')
-        expect(page).not_to have_content('topic2')
-        expect(page).not_to have_content('topic3')
-        expect(page).to have_content('topic4')
-      end
+      expect(current_path).to eq topics_explore_projects_path
+      expect(page).to have_content('topic1')
     end
   end
 end
