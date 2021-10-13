@@ -21,7 +21,8 @@ module Ci
 
         ensure_idempotency { track_monthly_usage(consumption, duration.to_i) }
 
-        send_minutes_email_notification
+        # No need to check notification if consumption hasn't changed
+        send_minutes_email_notification if consumption > 0
       end
 
       def idempotency_cache_key
@@ -47,6 +48,8 @@ module Ci
       end
 
       def legacy_track_usage_of_monthly_minutes(consumption)
+        return unless consumption > 0
+
         consumption_in_seconds = consumption.minutes.to_i
 
         update_legacy_project_minutes(consumption_in_seconds)

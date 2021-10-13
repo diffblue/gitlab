@@ -16,7 +16,7 @@ module Ci
       def perform(consumption, project_id, namespace_id, build_id, params = {})
         ::Ci::Minutes::UpdateProjectAndNamespaceUsageService
           .new(project_id, namespace_id, build_id)
-          .execute(consumption, params[:duration].to_i)
+          .execute(consumption, params['duration'].to_i)
       end
     end
   end

@@ -5,34 +5,23 @@ require 'spec_helper'
 RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
   include ::Ci::MinutesHelpers
 
-  let(:namespace) { create(:namespace, shared_runners_minutes_limit: 100) }
+  let(:namespace) { create(:group, shared_runners_minutes_limit: 100) }
   let(:project) { create(:project, :private, namespace: namespace) }
   let(:pipeline) { create(:ci_pipeline, project: project) }
 
   let(:build) do
+    build_created_at = 2.hours.ago
     create(:ci_build, :success,
       runner: runner, pipeline: pipeline,
-      started_at: 2.hours.ago, finished_at: 1.hour.ago)
+      started_at: build_created_at, finished_at: build_created_at + 1.hour)
   end
 
-  let(:namespace_amount_used) { Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id).amount_used }
-  let(:project_amount_used) { Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: project.id).amount_used }
+  let(:namespace_usage) { Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id) }
+  let(:project_usage) { Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: project.id) }
 
   subject { described_class.new(project, nil).execute(build) }
 
   describe '#execute', :sidekiq_inline do
-    shared_examples 'new tracking matches legacy tracking' do
-      it 'stores the same information in both legacy and new tracking' do
-        subject
-
-        expect(namespace_amount_used)
-          .to eq((namespace.reload.namespace_statistics.shared_runners_seconds.to_f / 60).round(2))
-
-        expect(project_amount_used)
-          .to eq((project.statistics.reload.shared_runners_seconds.to_f / 60).round(2))
-      end
-    end
-
     shared_examples 'does nothing' do
       it 'does not update legacy statistics' do
         subject
@@ -48,13 +37,37 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
       it 'does not update project monthly usage' do
         expect { subject }.not_to change { Ci::Minutes::ProjectMonthlyUsage.count }
       end
+    end
 
-      it 'does not send an email' do
-        allow(Gitlab).to receive(:com?).and_return(true)
-
-        expect(Ci::Minutes::EmailNotificationService).not_to receive(:new)
-
+    shared_examples 'updates usage' do |expected_ci_minutes, expected_shared_runners_duration|
+      it 'updates legacy statistics', :aggregate_failures do
         subject
+
+        expect(project.statistics.reload.shared_runners_seconds)
+          .to eq(expected_ci_minutes * 60)
+
+        expect(namespace.namespace_statistics.reload.shared_runners_seconds)
+          .to eq(expected_ci_minutes * 60)
+      end
+
+      it 'stores the same information in both legacy and new tracking' do
+        subject
+
+        expect(namespace_usage.amount_used.to_f)
+          .to eq((namespace.reload.namespace_statistics.shared_runners_seconds.to_f / 60).round(2))
+
+        expect(project_usage.amount_used.to_f)
+          .to eq((project.statistics.reload.shared_runners_seconds.to_f / 60).round(2))
+      end
+
+      it 'tracks the usage on a monthly basis', :aggregate_failures do
+        subject
+
+        expect(namespace_usage.amount_used.to_f).to eq(expected_ci_minutes)
+        expect(namespace_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
+
+        expect(project_usage.amount_used.to_f).to eq(expected_ci_minutes)
+        expect(project_usage.shared_runners_duration).to eq(expected_shared_runners_duration)
       end
     end
 
@@ -62,30 +75,9 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
       let(:cost_factor) { 2.0 }
       let(:runner) { create(:ci_runner, :instance, private_projects_minutes_cost_factor: cost_factor) }
 
-      it 'creates a statistics and sets duration with applied cost factor' do
-        subject
+      it_behaves_like 'updates usage', 120, 1.hour
 
-        expect(project.statistics.reload.shared_runners_seconds)
-          .to eq(build.duration.to_i * 2)
-
-        expect(namespace.namespace_statistics.reload.shared_runners_seconds)
-          .to eq(build.duration.to_i * 2)
-      end
-
-      it 'tracks the usage on a monthly basis' do
-        subject
-
-        expect(namespace_amount_used).to eq((60 * 2).to_f)
-        expect(project_amount_used).to eq((60 * 2).to_f)
-      end
-
-      it_behaves_like 'new tracking matches legacy tracking'
-
-      context 'when on .com' do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(true)
-        end
-
+      context 'when on .com', :saas do
         it 'sends an email' do
           expect_next_instance_of(Ci::Minutes::EmailNotificationService) do |service|
             expect(service).to receive(:execute)
@@ -107,95 +99,68 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
         end
       end
 
-      context 'when consumption is 0' do
-        let(:build) do
-          create(:ci_build, :success,
-            runner: runner, pipeline: pipeline,
-            started_at: Time.current, finished_at: Time.current)
+      context 'when consumption is 0', :saas do
+        before do
+          allow_next_instance_of(::Gitlab::Ci::Minutes::BuildConsumption) do |consumption|
+            allow(consumption).to receive(:amount).and_return(0)
+          end
         end
 
-        it_behaves_like 'does nothing'
+        it 'does not update legacy statistics' do
+          subject
+
+          expect(project.statistics.reload.shared_runners_seconds).to eq(0)
+          expect(namespace.namespace_statistics).to be_nil
+        end
+
+        it 'updates only the shared runners duration' do
+          expect { subject }.to change { Ci::Minutes::NamespaceMonthlyUsage.count }
+
+          expect(namespace_usage.amount_used).to eq(0)
+          expect(namespace_usage.shared_runners_duration).to eq(build.duration)
+
+          expect(project_usage.amount_used).to eq(0)
+          expect(project_usage.shared_runners_duration).to eq(build.duration)
+        end
+
+        it 'does not send an email' do
+          expect(Ci::Minutes::EmailNotificationService).not_to receive(:new)
+
+          subject
+        end
+
+        context 'when feature flag ci_always_track_shared_runners_usage is disabled' do
+          before do
+            stub_feature_flags(ci_always_track_shared_runners_usage: false)
+          end
+
+          it_behaves_like 'does nothing'
+        end
       end
 
       context 'when statistics and usage have existing amounts' do
-        let(:usage_in_seconds) { 100 }
-        let(:usage_in_minutes) { (100.to_f / 60).round(2) }
+        let(:existing_ci_minutes) { 100 }
+        let(:existing_shared_runners_duration) { 200 }
 
         before do
-          set_ci_minutes_used(namespace, usage_in_minutes)
+          set_ci_minutes_used(namespace, existing_ci_minutes, existing_shared_runners_duration)
 
-          project.statistics.update!(shared_runners_seconds: usage_in_seconds)
-          create(:ci_project_monthly_usage, project: project, amount_used: usage_in_minutes)
+          project.statistics.update!(shared_runners_seconds: existing_ci_minutes * 60)
+
+          create(:ci_project_monthly_usage,
+            project: project,
+            amount_used: existing_ci_minutes,
+            shared_runners_duration: existing_shared_runners_duration)
         end
 
-        it 'updates statistics and adds duration with applied cost factor' do
-          subject
-
-          expect(project.statistics.reload.shared_runners_seconds)
-            .to eq(usage_in_seconds + build.duration.to_i * 2)
-
-          expect(namespace.namespace_statistics.reload.shared_runners_seconds)
-            .to eq(usage_in_seconds + build.duration.to_i * 2)
-        end
-
-        it 'tracks the usage on a monthly basis' do
-          subject
-
-          expect(namespace_amount_used).to eq(usage_in_minutes + 60 * 2)
-          expect(project_amount_used).to eq(usage_in_minutes + 60 * 2)
-        end
-
-        it_behaves_like 'new tracking matches legacy tracking'
+        it_behaves_like 'updates usage', 220, 200 + 1.hour
       end
 
       context 'when group is subgroup' do
-        let(:root_ancestor) { create(:group, shared_runners_minutes_limit: 100) }
-        let(:namespace) { create(:group, parent: root_ancestor) }
+        let(:subgroup) { create(:group, parent: namespace) }
+        let(:project) { create(:project, :private, group: subgroup) }
 
-        let(:namespace_amount_used) { Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: root_ancestor.id).amount_used }
-
-        it 'creates a statistics in root group' do
-          subject
-
-          expect(root_ancestor.namespace_statistics.reload.shared_runners_seconds)
-            .to eq(build.duration.to_i * 2)
-        end
-
-        it 'tracks the usage on a monthly basis' do
-          subject
-
-          expect(namespace_amount_used).to eq(60 * 2)
-          expect(project_amount_used).to eq(60 * 2)
-        end
-
-        it 'stores the same information in both legacy and new tracking' do
-          subject
-
-          expect(namespace_amount_used)
-            .to eq((root_ancestor.namespace_statistics.reload.shared_runners_seconds.to_f / 60).round(2))
-
-          expect(project_amount_used)
-            .to eq((project.statistics.reload.shared_runners_seconds.to_f / 60).round(2))
-        end
-      end
-
-      context 'when live tracking exists for the build', :redis do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(true)
-
-          build.update!(status: :running)
-
-          freeze_time do
-            ::Ci::Minutes::TrackLiveConsumptionService.new(build).tap do |service|
-              service.time_last_tracked_consumption!((build.duration.to_i - 5.minutes).ago)
-              service.execute
-            end
-          end
-
-          build.update!(status: :success)
-        end
-
-        it_behaves_like 'new tracking matches legacy tracking'
+        it_behaves_like 'updates usage', 120, 1.hour
       end
     end
 
