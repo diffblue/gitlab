@@ -15,7 +15,6 @@ describe('OnDemandScans', () => {
 
   // Props
   const newDastScanPath = '/on_demand_scans/new';
-  const helpPagePath = '/help/page/path';
 
   // Finders
   const findNewScanLink = () => wrapper.findByTestId('new-scan-link');
@@ -32,7 +31,6 @@ describe('OnDemandScans', () => {
       router,
       provide: {
         newDastScanPath,
-        helpPagePath,
       },
       stubs: {
         ConfigurationPageLayout,
@@ -65,7 +63,9 @@ describe('OnDemandScans', () => {
       const link = findHelpPageLink();
 
       expect(link.exists()).toBe(true);
-      expect(link.attributes('href')).toBe(helpPagePath);
+      expect(link.attributes('href')).toBe(
+        '/help/user/application_security/dast/index#on-demand-scans',
+      );
     });
 
     it('renders a link to create a new scan', () => {

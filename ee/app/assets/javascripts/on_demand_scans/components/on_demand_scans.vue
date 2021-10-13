@@ -2,6 +2,7 @@
 import { GlButton, GlLink, GlSprintf, GlTabs } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
+import { HELP_PAGE_PATH } from '../constants';
 import AllTab from './tabs/all.vue';
 import RunningTab from './tabs/running.vue';
 import FinishedTab from './tabs/finished.vue';
@@ -25,6 +26,7 @@ const TABS = {
 
 export default {
   TABS,
+  HELP_PAGE_PATH,
   components: {
     GlButton,
     GlLink,
@@ -37,7 +39,7 @@ export default {
     ScheduledTab,
     EmptyState,
   },
-  inject: ['newDastScanPath', 'helpPagePath'],
+  inject: ['newDastScanPath'],
   data() {
     return {
       activeTabIndex: 0,
@@ -87,7 +89,9 @@ export default {
     <template #description>
       <gl-sprintf :message="$options.i18n.description">
         <template #learnMoreLink="{ content }">
-          <gl-link :href="helpPagePath" data-testid="help-page-link">{{ content }}</gl-link>
+          <gl-link :href="$options.HELP_PAGE_PATH" data-testid="help-page-link">{{
+            content
+          }}</gl-link>
         </template>
       </gl-sprintf>
     </template>

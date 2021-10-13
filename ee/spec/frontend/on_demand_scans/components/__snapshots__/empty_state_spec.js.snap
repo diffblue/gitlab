@@ -35,7 +35,7 @@ exports[`EmptyState renders properly 1`] = `
         On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. 
         <a
           class="gl-link"
-          href="/help/page/path"
+          href="/help/user/application_security/dast/index#on-demand-scans"
         >
           Learn more
         </a>
