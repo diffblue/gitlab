@@ -5,6 +5,8 @@
 class TrialRegistrationsController < RegistrationsController
   extend ::Gitlab::Utils::Override
 
+  include OneTrustCSP
+
   layout 'minimal'
 
   skip_before_action :require_no_authentication
