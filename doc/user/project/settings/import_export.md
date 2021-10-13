@@ -233,7 +233,7 @@ does not match between the exported project, and the project import, the project
 Review [issue 276930](https://gitlab.com/gitlab-org/gitlab/-/issues/276930), and either:
 
 - Ensure shared runners are enabled in both the source and destination projects.
-- Disable shared runners when you import the project. 
+- Disable shared runners on the parent group when you import the project. 
 
 ### Import workaround for large repositories
 
