@@ -190,8 +190,7 @@ module EE
           .order(excess_arel.desc)
       end
 
-      delegate :shared_runners_seconds, :shared_runners_seconds_last_reset,
-        to: :statistics, allow_nil: true
+      delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_quota, to: :shared_runners_limit_namespace
 

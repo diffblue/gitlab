@@ -189,7 +189,7 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
-  describe 'purchased_minutes_used_up?' do
+  describe '#purchased_minutes_used_up?' do
     subject { quota.purchased_minutes_used_up? }
 
     context 'when quota is enabled' do
@@ -232,6 +232,22 @@ RSpec.describe Ci::Minutes::Quota do
       end
 
       it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#reset_date' do
+    subject(:reset_date) { quota.reset_date }
+
+    let(:reset_time) { Date.new(2021, 10, 14) }
+
+    let(:namespace) do
+      travel_to(reset_time) do
+        create(:namespace, :with_ci_minutes)
+      end
+    end
+
+    it 'corresponds to the reset time' do
+      expect(reset_date).to eq(reset_time)
     end
   end
 end

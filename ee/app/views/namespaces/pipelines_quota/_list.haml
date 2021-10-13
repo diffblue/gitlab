@@ -16,7 +16,7 @@
   .row
     .col-sm-6
       %strong
-        - last_reset = namespace.shared_runners_seconds_last_reset
+        - last_reset = minutes_quota.reset_date
         - if last_reset
           = s_('UsageQuota|Usage since')
           = last_reset.strftime('%b %d, %Y')
