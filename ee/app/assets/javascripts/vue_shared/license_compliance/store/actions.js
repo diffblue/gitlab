@@ -96,9 +96,6 @@ export const fetchParsedLicenseReport = ({ dispatch, state }) => {
     });
 };
 
-export const requestSetLicenseApproval = ({ commit }) => {
-  commit(types.REQUEST_SET_LICENSE_APPROVAL);
-};
 export const receiveSetLicenseApproval = ({ commit, dispatch, state }, id) => {
   commit(types.RECEIVE_SET_LICENSE_APPROVAL);
   // If we have the licenses API endpoint, fetch from there. This corresponds
@@ -173,7 +170,6 @@ export const setLicenseApproval = ({ dispatch, state }, payload) => {
   const { license, newStatus } = payload;
   const { id, name } = license;
 
-  dispatch('requestSetLicenseApproval');
   dispatch('addPendingLicense', id);
 
   let request;

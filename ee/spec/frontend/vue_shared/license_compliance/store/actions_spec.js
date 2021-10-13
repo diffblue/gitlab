@@ -177,20 +177,6 @@ describe('License store actions', () => {
     });
   });
 
-  describe('requestSetLicenseApproval', () => {
-    it('commits REQUEST_SET_LICENSE_APPROVAL', (done) => {
-      testAction(
-        actions.requestSetLicenseApproval,
-        null,
-        state,
-        [{ type: mutationTypes.REQUEST_SET_LICENSE_APPROVAL }],
-        [],
-      )
-        .then(done)
-        .catch(done.fail);
-    });
-  });
-
   describe('receiveSetLicenseApproval', () => {
     describe('given the licensesApiPath is provided', () => {
       it('commits RECEIVE_SET_LICENSE_APPROVAL and dispatches fetchParsedLicenseReport', (done) => {
@@ -244,7 +230,7 @@ describe('License store actions', () => {
         putEndpointMock = axiosMock.onPost(apiUrlManageLicenses);
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense and receiveSetLicenseApproval for successful response', () => {
+      it('dispatches addPendingLicense and receiveSetLicenseApproval for successful response', () => {
         putEndpointMock.replyOnce((req) => {
           const { approval_status, name } = JSON.parse(req.data);
 
@@ -255,20 +241,18 @@ describe('License store actions', () => {
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
-          expectDispatched('requestSetLicenseApproval');
           expectDispatched('addPendingLicense', undefined);
           expectDispatched('receiveSetLicenseApproval', undefined);
         });
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
+      it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         putEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(apiUrlManageLicenses);
           return [500, ''];
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
-          expectDispatched('requestSetLicenseApproval');
           expectDispatched('addPendingLicense', undefined);
           expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
           expectDispatched('removePendingLicense', undefined);
@@ -285,7 +269,7 @@ describe('License store actions', () => {
         patchEndpointMock = axiosMock.onPatch(licenseUrl);
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense and receiveSetLicenseApproval for successful response', () => {
+      it('dispatches addPendingLicense and receiveSetLicenseApproval for successful response', () => {
         patchEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(licenseUrl);
           const { approval_status, name } = JSON.parse(req.data);
@@ -298,13 +282,12 @@ describe('License store actions', () => {
         return actions
           .setLicenseApproval(store, { license: approvedLicense, newStatus })
           .then(() => {
-            expectDispatched('requestSetLicenseApproval');
             expectDispatched('addPendingLicense', approvedLicense.id);
             expectDispatched('receiveSetLicenseApproval', approvedLicense.id);
           });
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
+      it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         patchEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(licenseUrl);
           return [500, ''];
@@ -313,7 +296,6 @@ describe('License store actions', () => {
         return actions
           .setLicenseApproval(store, { license: approvedLicense, newStatus })
           .then(() => {
-            expectDispatched('requestSetLicenseApproval');
             expectDispatched('addPendingLicense', approvedLicense.id);
             expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
             expectDispatched('removePendingLicense', approvedLicense.id);

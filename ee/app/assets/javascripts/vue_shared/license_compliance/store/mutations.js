@@ -77,20 +77,13 @@ export default {
       currentLicenseInModal: null,
     });
   },
-  [types.REQUEST_SET_LICENSE_APPROVAL](state) {
-    Object.assign(state, {
-      isSaving: true,
-    });
-  },
   [types.RECEIVE_SET_LICENSE_APPROVAL](state) {
     Object.assign(state, {
-      isSaving: false,
       currentLicenseInModal: null,
     });
   },
   [types.RECEIVE_SET_LICENSE_APPROVAL_ERROR](state) {
     Object.assign(state, {
-      isSaving: false,
       currentLicenseInModal: null,
     });
   },

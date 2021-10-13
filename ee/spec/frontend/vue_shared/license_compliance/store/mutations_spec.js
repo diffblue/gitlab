@@ -99,49 +99,32 @@ describe('License store mutations', () => {
   });
 
   describe('RECEIVE_SET_LICENSE_APPROVAL', () => {
-    it('sets isSaving to false and closes the modal', () => {
+    it('closes the modal', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
-          isSaving: true,
+          currentLicenseInModal: approvedLicense,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_SET_LICENSE_APPROVAL}`);
 
-      expect(store.state.licenseManagement.isSaving).toBe(false);
+      expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
     });
   });
 
   describe('RECEIVE_SET_LICENSE_APPROVAL_ERROR', () => {
-    it('sets isSaving to false and closes the modal', () => {
+    it('closes the modal', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
-          isSaving: true,
           currentLicenseInModal: approvedLicense,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_SET_LICENSE_APPROVAL_ERROR}`);
 
-      expect(store.state.licenseManagement.isSaving).toBe(false);
       expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
-    });
-  });
-
-  describe('REQUEST_SET_LICENSE_APPROVAL', () => {
-    it('sets isSaving to true', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isSaving: false,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.REQUEST_SET_LICENSE_APPROVAL}`);
-
-      expect(store.state.licenseManagement.isSaving).toBe(true);
     });
   });
 
