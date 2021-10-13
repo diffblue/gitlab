@@ -16,7 +16,6 @@ export default () => {
     siteProfilesLibraryPath,
     newSiteProfilePath,
     newScannerProfilePath,
-    helpPagePath,
   } = el.dataset;
   const dastScan = el.dataset.dastScan ? JSON.parse(el.dataset.dastScan) : null;
   const timezones = JSON.parse(el.dataset.timezones);
@@ -26,7 +25,6 @@ export default () => {
     apolloProvider,
     provide: {
       projectPath,
-      helpPagePath,
       profilesLibraryPath,
       scannerProfilesLibraryPath,
       siteProfilesLibraryPath,

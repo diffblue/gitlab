@@ -11,8 +11,4 @@ RSpec.describe "projects/on_demand_scans/index", type: :view do
   it 'renders Vue app root' do
     expect(rendered).to have_selector('#js-on-demand-scans')
   end
-
-  it 'passes on-demand scans docs page URL' do
-    expect(rendered).to include '/help/user/application_security/dast/index#on-demand-scans'
-  end
 end

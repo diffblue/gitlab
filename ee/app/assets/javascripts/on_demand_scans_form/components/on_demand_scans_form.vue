@@ -37,6 +37,7 @@ import {
   SCANNER_PROFILES_QUERY,
   SITE_PROFILES_QUERY,
 } from '../settings';
+import { HELP_PAGE_PATH } from '../../on_demand_scans/constants';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
@@ -68,6 +69,7 @@ export default {
   enabledRefTypes: [REF_TYPE_BRANCHES],
   saveAndRunScanBtnId: 'scan-submit-button',
   saveScanBtnId: 'scan-save-button',
+  helpPagePath: HELP_PAGE_PATH,
   components: {
     RefSelector,
     ProfileConflictAlert,
@@ -104,7 +106,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'helpPagePath', 'profilesLibraryPath'],
+  inject: ['projectPath', 'profilesLibraryPath'],
   props: {
     defaultBranch: {
       type: String,
@@ -346,7 +348,7 @@ export default {
           "
         >
           <template #learnMoreLink="{ content }">
-            <gl-link :href="helpPagePath">
+            <gl-link :href="$options.helpPagePath" data-testid="help-page-link">
               {{ content }}
             </gl-link>
           </template>
