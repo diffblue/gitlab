@@ -69,19 +69,12 @@ export default {
 
   [types.RECEIVE_DELETE_LICENSE](state) {
     Object.assign(state, {
-      isDeleting: false,
       currentLicenseInModal: null,
     });
   },
   [types.RECEIVE_DELETE_LICENSE_ERROR](state) {
     Object.assign(state, {
-      isDeleting: false,
       currentLicenseInModal: null,
-    });
-  },
-  [types.REQUEST_DELETE_LICENSE](state) {
-    Object.assign(state, {
-      isDeleting: true,
     });
   },
   [types.REQUEST_SET_LICENSE_APPROVAL](state) {

@@ -5,7 +5,6 @@ export default () => ({
   canManageLicenses: false,
   currentLicenseInModal: null,
   isAdmin: false,
-  isDeleting: false,
   isLoadingLicenseReport: false,
   isLoadingManagedLicenses: false,
   pendingLicenses: [],

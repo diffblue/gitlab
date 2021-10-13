@@ -25,9 +25,6 @@ export const resetLicenseInModal = ({ commit }) => {
   commit(types.RESET_LICENSE_IN_MODAL);
 };
 
-export const requestDeleteLicense = ({ commit }) => {
-  commit(types.REQUEST_DELETE_LICENSE);
-};
 export const receiveDeleteLicense = ({ commit, dispatch }, id) => {
   commit(types.RECEIVE_DELETE_LICENSE);
   return dispatch('fetchManagedLicenses').then(() => {
@@ -39,7 +36,6 @@ export const receiveDeleteLicenseError = ({ commit }, error) => {
 };
 export const deleteLicense = ({ dispatch, state }) => {
   const licenseId = state.currentLicenseInModal.id;
-  dispatch('requestDeleteLicense');
   dispatch('addPendingLicense', licenseId);
   const endpoint = `${state.apiUrlManageLicenses}/${licenseId}`;
   return axios

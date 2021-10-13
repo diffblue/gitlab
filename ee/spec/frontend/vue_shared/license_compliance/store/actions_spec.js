@@ -117,20 +117,6 @@ describe('License store actions', () => {
     });
   });
 
-  describe('requestDeleteLicense', () => {
-    it('commits REQUEST_DELETE_LICENSE', (done) => {
-      testAction(
-        actions.requestDeleteLicense,
-        null,
-        state,
-        [{ type: mutationTypes.REQUEST_DELETE_LICENSE }],
-        [],
-      )
-        .then(done)
-        .catch(done.fail);
-    });
-  });
-
   describe('receiveDeleteLicense', () => {
     it('commits RECEIVE_DELETE_LICENSE and dispatches fetchManagedLicenses and removePendingLicense', () => {
       return actions.receiveDeleteLicense(store, licenseId).then(() => {
@@ -165,27 +151,25 @@ describe('License store actions', () => {
       endpointMock = axiosMock.onDelete(deleteUrl);
     });
 
-    it('dispatches requestDeleteLicense, addPendingLicense and receiveDeleteLicense for successful response', () => {
+    it('dispatches addPendingLicense and receiveDeleteLicense for successful response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
         return [200, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
-        expectDispatched('requestDeleteLicense');
         expectDispatched('addPendingLicense', licenseId);
         expectDispatched('receiveDeleteLicense', licenseId);
       });
     });
 
-    it('dispatches requestDeleteLicense, addPendingLicense, receiveDeleteLicenseError and removePendingLicense for error response', () => {
+    it('dispatches addPendingLicense, receiveDeleteLicenseError and removePendingLicense for error response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
         return [500, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
-        expectDispatched('requestDeleteLicense');
         expectDispatched('addPendingLicense', licenseId);
         expectDispatched('receiveDeleteLicenseError', expect.any(Error));
         expectDispatched('removePendingLicense', licenseId);

@@ -69,49 +69,32 @@ describe('License store mutations', () => {
   });
 
   describe('RECEIVE_DELETE_LICENSE', () => {
-    it('sets isDeleting to false and closes the modal', () => {
+    it('closes the modal', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
-          isDeleting: true,
+          currentLicenseInModal: approvedLicense,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_DELETE_LICENSE}`);
 
-      expect(store.state.licenseManagement.isDeleting).toBe(false);
+      expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
     });
   });
 
   describe('RECEIVE_DELETE_LICENSE_ERROR', () => {
-    it('sets isDeleting to false and closes the modal', () => {
+    it('closes the modal', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
-          isDeleting: true,
           currentLicenseInModal: approvedLicense,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_DELETE_LICENSE_ERROR}`);
 
-      expect(store.state.licenseManagement.isDeleting).toBe(false);
       expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
-    });
-  });
-
-  describe('REQUEST_DELETE_LICENSE', () => {
-    it('sets isDeleting to true', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isDeleting: false,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.REQUEST_DELETE_LICENSE}`);
-
-      expect(store.state.licenseManagement.isDeleting).toBe(true);
     });
   });
 
