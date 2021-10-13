@@ -35,7 +35,7 @@ module QA
         end
 
         context 'when adding and removing a group member' do
-          it 'consumes a seat on the license', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2268' do
+          it 'consumes a seat on the license', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2268', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342675', type: :investigating } do
             Flow::Login.sign_in_as_admin
 
             # Save the number of users as stated by the license
