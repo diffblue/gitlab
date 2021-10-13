@@ -128,38 +128,7 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data[:epic_issues]).to eq(2)
     end
 
-    context 'with quarantine_security_products_usage_metrics turned on' do
-      it 'returns fallback value for quarantined security products usage data' do
-        expect(count_data[:container_scanning_jobs]).to eq(-1)
-        expect(count_data[:dast_jobs]).to eq(-1)
-        expect(count_data[:dependency_scanning_jobs]).to eq(-1)
-        expect(count_data[:license_management_jobs]).to eq(-1)
-        expect(count_data[:sast_jobs]).to eq(-1)
-        expect(count_data[:secret_detection_jobs]).to eq(-1)
-        expect(count_data[:coverage_fuzzing_jobs]).to eq(-1)
-        expect(count_data[:api_fuzzing_jobs]).to eq(-1)
-        expect(count_data[:api_fuzzing_dnd_jobs]).to eq(-1)
-        expect(count_data[:dast_on_demand_pipelines]).to eq(1)
-      end
-
-      it 'avoid counting metrics' do
-        expect(described_class).not_to receive(:count)
-
-        described_class.security_products_usage
-      end
-    end
-
-    context 'with quarantine_security_products_usage_metrics turned off' do
-      before do
-        stub_feature_flags(quarantine_security_products_usage_metrics: false)
-      end
-
-      it 'counts metrics data' do
-        expect(described_class).to receive(:count).exactly(10).times
-
-        described_class.security_products_usage
-      end
-
+    context 'with allow_quarantined_security_products_usage_metrics turned on' do
       it 'gathers security products usage data' do
         expect(count_data[:container_scanning_jobs]).to eq(1)
         expect(count_data[:dast_jobs]).to eq(1)
@@ -170,6 +139,37 @@ RSpec.describe Gitlab::UsageData do
         expect(count_data[:coverage_fuzzing_jobs]).to eq(1)
         expect(count_data[:api_fuzzing_jobs]).to eq(1)
         expect(count_data[:api_fuzzing_dnd_jobs]).to eq(1)
+        expect(count_data[:dast_on_demand_pipelines]).to eq(1)
+      end
+
+      it 'counts metrics data' do
+        expect(described_class).to receive(:count).exactly(10).times
+
+        described_class.security_products_usage
+      end
+    end
+
+    context 'with allow_quarantined_security_products_usage_metrics turned off' do
+      before do
+        stub_feature_flags(allow_quarantined_security_products_usage_metrics: false)
+      end
+
+      it 'avoid counting metrics' do
+        expect(described_class).not_to receive(:count)
+
+        described_class.security_products_usage
+      end
+
+      it 'returns fallback value for quarantined security products usage data' do
+        expect(count_data[:container_scanning_jobs]).to eq(-1)
+        expect(count_data[:dast_jobs]).to eq(-1)
+        expect(count_data[:dependency_scanning_jobs]).to eq(-1)
+        expect(count_data[:license_management_jobs]).to eq(-1)
+        expect(count_data[:sast_jobs]).to eq(-1)
+        expect(count_data[:secret_detection_jobs]).to eq(-1)
+        expect(count_data[:coverage_fuzzing_jobs]).to eq(-1)
+        expect(count_data[:api_fuzzing_jobs]).to eq(-1)
+        expect(count_data[:api_fuzzing_dnd_jobs]).to eq(-1)
         expect(count_data[:dast_on_demand_pipelines]).to eq(1)
       end
     end
