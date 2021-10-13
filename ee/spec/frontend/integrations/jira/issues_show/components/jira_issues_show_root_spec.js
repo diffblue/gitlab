@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as JiraIssuesShowApi from 'ee/integrations/jira/issues_show/api';
 import JiraIssuesShow from 'ee/integrations/jira/issues_show/components/jira_issues_show_root.vue';
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
-import { issueStates } from 'ee/integrations/jira/issues_show/constants';
+import { issueStates } from 'ee/external_issues_show/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';

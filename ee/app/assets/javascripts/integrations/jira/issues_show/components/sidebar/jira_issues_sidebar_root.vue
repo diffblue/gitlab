@@ -2,7 +2,8 @@
 import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
-import { labelsFilterParam } from 'ee/integrations/jira/issues_show/constants';
+import { labelsFilterParam } from 'ee/external_issues_show/constants';
+
 import { __, s__ } from '~/locale';
 import CopyableField from '~/vue_shared/components/sidebar/copyable_field.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';

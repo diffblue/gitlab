@@ -4,7 +4,7 @@ import { __ } from '~/locale';
 import AssigneeTitle from '~/sidebar/components/assignees/assignee_title.vue';
 
 export default {
-  name: 'JiraIssuesSidebarAssignee',
+  name: 'ExternalIssuesSidebarAssignee',
   components: {
     GlAvatarLabeled,
     GlAvatarLink,
