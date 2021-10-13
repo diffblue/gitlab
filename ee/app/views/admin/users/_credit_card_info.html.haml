@@ -17,19 +17,25 @@
         %strong
           = credit_card_validation.credit_card_validated_at.to_s(:medium)
 
-    - if credit_card_validation.holder_name
+    - if credit_card_validation&.holder_name
       %li
         %span.light= _('Holder name:')
         %strong
           = credit_card_validation.holder_name
 
-    - if credit_card_validation.last_digits
+    - if credit_card_validation&.network
+      %li
+        %span.light= _('Network:')
+        %strong
+          = credit_card_validation.network.camelcase
+
+    - if credit_card_validation&.last_digits
       %li
         %span.light= _('Card number:')
         %strong
           = credit_card_validation.last_digits.to_s.rjust(4, '0')
 
-    - if credit_card_validation.expiration_date
+    - if credit_card_validation&.expiration_date
       %li
         %span.light= _('Expiration date:')
         %strong
