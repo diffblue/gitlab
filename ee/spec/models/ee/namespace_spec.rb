@@ -20,7 +20,6 @@ RSpec.describe Namespace do
   it { is_expected.to have_one :upcoming_reconciliation }
   it { is_expected.to have_many(:ci_minutes_additional_packs) }
 
-  it { is_expected.to delegate_method(:shared_runners_seconds_last_reset).to(:namespace_statistics) }
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_starts_on).to(:gitlab_subscription) }
