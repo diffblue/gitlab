@@ -23,24 +23,6 @@ RSpec.describe Gitlab::Database::Connection do
     end
   end
 
-  describe '#pool_size' do
-    context 'when no explicit size is configured' do
-      it 'returns the default pool size' do
-        expect(connection).to receive(:config).and_return({ pool: nil })
-
-        expect(connection.pool_size).to eq(Gitlab::Database.default_pool_size)
-      end
-    end
-
-    context 'when an explicit pool size is set' do
-      it 'returns the pool size' do
-        expect(connection).to receive(:config).and_return({ pool: 4 })
-
-        expect(connection.pool_size).to eq(4)
-      end
-    end
-  end
-
   describe '#username' do
     context 'when a username is set' do
       it 'returns the username' do

@@ -31,10 +31,6 @@ module Gitlab
         scope.connection_db_config.configuration_hash.with_indifferent_access
       end
 
-      def pool_size
-        config[:pool] || Database.default_pool_size
-      end
-
       def username
         config[:username] || ENV['USER']
       end
