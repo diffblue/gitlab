@@ -67,6 +67,22 @@ RSpec.describe Projects::CommitsController do
         end
       end
 
+      context "with an invalid limit" do
+        before do
+          get(:show,
+              params: {
+                namespace_id: project.namespace,
+                project_id: project,
+                id: id,
+                limit: "foo"
+            })
+        end
+
+        let(:id) { 'master/README.md' }
+
+        it { is_expected.to respond_with(:success) }
+      end
+
       context "when the ref name ends in .atom" do
         context "when the ref does not exist with the suffix" do
           before do
