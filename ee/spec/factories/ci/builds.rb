@@ -140,6 +140,12 @@ FactoryBot.define do
       end
     end
 
+    trait :license_scanning_custom_license do
+      after :build do |build|
+        build.job_artifacts << build(:ee_ci_job_artifact, :license_scanning_custom_license, job: build)
+      end
+    end
+
     trait :requirements_report do
       after(:build) do |build|
         build.job_artifacts << create(:ee_ci_job_artifact, :all_passing_requirements, job: build)

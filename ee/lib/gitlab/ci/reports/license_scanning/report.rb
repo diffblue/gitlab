@@ -34,7 +34,7 @@ module Gitlab
           end
 
           def by_license_name(name)
-            licenses.find { |license| license.name == name }
+            licenses.find { |license| license.name.casecmp?(name) }
           end
 
           def apply_details_from!(dependency_list_report)
