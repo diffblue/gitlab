@@ -23,11 +23,19 @@ module EE
             security_scans.id BETWEEN %<start_id>d AND %<end_id>d
         SQL
 
+        class SecurityScan < ActiveRecord::Base
+          include EachBatch
+
+          scope :in_range, -> (start_id, end_id) { where(id: (start_id..end_id)) }
+        end
+
         def perform(start_id, end_id)
           log_info('Migration has been started', start_id: start_id, end_id: end_id)
 
-          (start_id..end_id).step(UPDATE_BATCH_SIZE).each do |batch_start|
-            update_batch(batch_start)
+          SecurityScan.in_range(start_id, end_id).each_batch(of: UPDATE_BATCH_SIZE) do |relation|
+            batch_start, batch_end = relation.pluck("MIN(id), MAX(id)").first
+
+            update_batch(batch_start, batch_end)
           end
 
           log_info('Migration has been finished', start_id: start_id, end_id: end_id)
@@ -38,8 +46,8 @@ module EE
         delegate :connection, to: ActiveRecord::Base, private: true
         delegate :execute, :quote, to: :connection, private: true
 
-        def update_batch(batch_start)
-          sql = format(UPDATE_SQL, start_id: quote(batch_start), end_id: quote(batch_start + UPDATE_BATCH_SIZE - 1))
+        def update_batch(batch_start, batch_end)
+          sql = format(UPDATE_SQL, start_id: quote(batch_start), end_id: quote(batch_end))
 
           result = ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340017') do
             execute(sql)
