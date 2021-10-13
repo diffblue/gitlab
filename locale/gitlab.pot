@@ -7939,6 +7939,9 @@ msgstr ""
 msgid "ClusterIntegration|See and edit the details for your Kubernetes cluster"
 msgstr ""
 
+msgid "ClusterIntegration|Select a VPC"
+msgstr ""
+
 msgid "ClusterIntegration|Select a VPC to choose a security group"
 msgstr ""
 
@@ -7946,6 +7949,9 @@ msgid "ClusterIntegration|Select a VPC to choose a subnet"
 msgstr ""
 
 msgid "ClusterIntegration|Select a VPC to use for your EKS Cluster resources. To use a new VPC, first create one on %{linkStart}Amazon Web Services %{linkEnd}."
+msgstr ""
+
+msgid "ClusterIntegration|Select a network"
 msgstr ""
 
 msgid "ClusterIntegration|Select a network to choose a subnetwork"
@@ -7957,7 +7963,22 @@ msgstr ""
 msgid "ClusterIntegration|Select a region to choose a VPC"
 msgstr ""
 
+msgid "ClusterIntegration|Select a security group"
+msgstr ""
+
+msgid "ClusterIntegration|Select a subnet"
+msgstr ""
+
+msgid "ClusterIntegration|Select a subnetwork"
+msgstr ""
+
 msgid "ClusterIntegration|Select a zone to choose a network"
+msgstr ""
+
+msgid "ClusterIntegration|Select an instance type"
+msgstr ""
+
+msgid "ClusterIntegration|Select key pair"
 msgstr ""
 
 msgid "ClusterIntegration|Select machine type"
@@ -7970,6 +7991,9 @@ msgid "ClusterIntegration|Select project and zone to choose machine type"
 msgstr ""
 
 msgid "ClusterIntegration|Select project to choose zone"
+msgstr ""
+
+msgid "ClusterIntegration|Select service role"
 msgstr ""
 
 msgid "ClusterIntegration|Select the key pair name that will be used to create EC2 nodes. To use a new key pair name, first create one on %{linkStart}Amazon Web Services%{linkEnd}."
@@ -8120,30 +8144,6 @@ msgid "ClusterIntegration|meets the requirements"
 msgstr ""
 
 msgid "ClusterIntegration|sign up"
-msgstr ""
-
-msgid "ClusterIntergation|Select a VPC"
-msgstr ""
-
-msgid "ClusterIntergation|Select a network"
-msgstr ""
-
-msgid "ClusterIntergation|Select a security group"
-msgstr ""
-
-msgid "ClusterIntergation|Select a subnet"
-msgstr ""
-
-msgid "ClusterIntergation|Select a subnetwork"
-msgstr ""
-
-msgid "ClusterIntergation|Select an instance type"
-msgstr ""
-
-msgid "ClusterIntergation|Select key pair"
-msgstr ""
-
-msgid "ClusterIntergation|Select service role"
 msgstr ""
 
 msgid "Clusters|An error occurred while loading clusters"
