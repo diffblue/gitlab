@@ -31,6 +31,7 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
+    'iid',
     'groupPath',
     'groupEpicsPath',
     'labelsFetchPath',
@@ -189,6 +190,8 @@ export default {
         <labels-select-widget
           v-if="glFeatures.labelsWidget"
           class="block labels js-labels-block"
+          :iid="iid"
+          :full-path="groupPath"
           :allow-label-create="true"
           :allow-multiselect="true"
           :allow-scoped-labels="false"

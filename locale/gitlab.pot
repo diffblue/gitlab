@@ -9546,6 +9546,9 @@ msgstr ""
 msgid "Create %{type}"
 msgstr ""
 
+msgid "Create %{workspace} label"
+msgstr ""
+
 msgid "Create New Directory"
 msgstr ""
 
@@ -20767,6 +20770,9 @@ msgid "Make sure you save it - you won't be able to access it again."
 msgstr ""
 
 msgid "Makes this issue confidential."
+msgstr ""
+
+msgid "Manage %{workspace} labels"
 msgstr ""
 
 msgid "Manage Web IDE features."
