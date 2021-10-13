@@ -159,6 +159,16 @@ FactoryBot.define do
       end
     end
 
+    trait :license_scanning_custom_license do
+      file_type { :license_scanning }
+      file_format { :raw }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/license_compliance/gl-license-scanning-report-custom-license.json'), 'application/json')
+      end
+    end
+
     trait :performance do
       file_format { :raw }
       file_type { :performance }
@@ -338,7 +348,7 @@ FactoryBot.define do
       trait :"v#{version}" do
         after(:build) do |artifact, _|
           filename = "gl-#{artifact.file_type.dasherize}-report-v#{version.sub(/_/, '.')}.json"
-          path = Rails.root.join("ee/spec/fixtures/security_reports/#{filename}")
+          path = Rails.root.join("ee/spec/fixtures/security_reports/license_compliance/#{filename}")
           artifact.file = fixture_file_upload(path, "application/json")
         end
       end

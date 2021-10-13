@@ -38,24 +38,24 @@ module SCA
     end
 
     def report_for(policy)
-      build_policy(license_scan_report[policy.software_license.canonical_id], policy)
+      build_policy(reported_license_by_license_model(policy.software_license), policy)
     end
 
     def diff_with(other)
-      license_scan_report
-        .diff_with(other.license_scan_report)
+      license_scanning_report
+        .diff_with(other.license_scanning_report)
         .transform_values do |reported_licenses|
           reported_licenses.map do |reported_license|
             matching_license_policy =
-              known_policies[reported_license.canonical_id] ||
+              known_policies[reported_license.id] ||
               known_policies[reported_license&.name&.downcase]
             build_policy(reported_license, matching_license_policy)
           end
         end
     end
 
-    def license_scan_report
-      strong_memoize(:license_scan_report) do
+    def license_scanning_report
+      strong_memoize(:license_scanning_report) do
         pipeline.blank? ? empty_report : pipeline.license_scanning_report
       end
     end
@@ -74,9 +74,16 @@ module SCA
       end
     end
 
+    # When the license found in the report doesn't match any license
+    # of the SPDX License List, we need to find it by name explicitly.
+    def reported_license_by_license_model(software_license)
+      license_scanning_report[software_license.canonical_id] ||
+        license_scanning_report.by_license_name(software_license.name&.downcase)
+    end
+
     def unclassified_policies
-      license_scan_report.licenses.map do |reported_license|
-        next if known_policies[reported_license.canonical_id]
+      license_scanning_report.licenses.map do |reported_license|
+        next if known_policies[reported_license.id] || known_policies[reported_license&.name&.downcase]
 
         [reported_license.canonical_id, build_policy(reported_license, nil)]
       end.compact.to_h
