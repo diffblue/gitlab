@@ -414,7 +414,7 @@ describe('License store actions', () => {
         actions.receiveManagedLicensesError,
         error,
         state,
-        [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_ERROR, payload: error }],
+        [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_ERROR }],
         [],
       )
         .then(done)
@@ -452,10 +452,7 @@ describe('License store actions', () => {
         null,
         state,
         [],
-        [
-          { type: 'requestManagedLicenses' },
-          { type: 'receiveManagedLicensesError', payload: expect.any(Error) },
-        ],
+        [{ type: 'requestManagedLicenses' }, { type: 'receiveManagedLicensesError' }],
       )
         .then(done)
         .catch(done.fail);

@@ -177,13 +177,12 @@ describe('License store mutations', () => {
   });
 
   describe('RECEIVE_MANAGED_LICENSES_SUCCESS', () => {
-    it('sets isLoadingManagedLicenses and loadManagedLicensesError to false and saves managed licenses', () => {
+    it('sets isLoadingManagedLicenses to false and saves managed licenses', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
           managedLicenses: false,
           isLoadingManagedLicenses: true,
-          loadManagedLicensesError: true,
         },
       });
 
@@ -196,7 +195,6 @@ describe('License store mutations', () => {
       ]);
 
       expect(store.state.licenseManagement.isLoadingManagedLicenses).toBe(false);
-      expect(store.state.licenseManagement.loadManagedLicensesError).toBe(false);
     });
   });
 
@@ -207,14 +205,12 @@ describe('License store mutations', () => {
         ...store.state,
         licenseManagement: {
           isLoadingManagedLicenses: true,
-          loadManagedLicensesError: false,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_MANAGED_LICENSES_ERROR}`, error);
 
       expect(store.state.licenseManagement.isLoadingManagedLicenses).toBe(false);
-      expect(store.state.licenseManagement.loadManagedLicensesError).toBe(error);
     });
   });
 

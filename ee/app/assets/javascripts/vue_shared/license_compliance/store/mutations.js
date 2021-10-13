@@ -31,14 +31,12 @@ export default {
     Object.assign(state, {
       managedLicenses,
       isLoadingManagedLicenses: false,
-      loadManagedLicensesError: false,
     });
   },
-  [types.RECEIVE_MANAGED_LICENSES_ERROR](state, error) {
+  [types.RECEIVE_MANAGED_LICENSES_ERROR](state) {
     Object.assign(state, {
       managedLicenses: [],
       isLoadingManagedLicenses: false,
-      loadManagedLicensesError: error,
     });
   },
   [types.REQUEST_MANAGED_LICENSES](state) {

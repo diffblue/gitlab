@@ -55,8 +55,8 @@ export const requestManagedLicenses = ({ commit }) => {
 export const receiveManagedLicensesSuccess = ({ commit }, licenses) => {
   commit(types.RECEIVE_MANAGED_LICENSES_SUCCESS, licenses);
 };
-export const receiveManagedLicensesError = ({ commit }, error) => {
-  commit(types.RECEIVE_MANAGED_LICENSES_ERROR, error);
+export const receiveManagedLicensesError = ({ commit }) => {
+  commit(types.RECEIVE_MANAGED_LICENSES_ERROR);
 };
 export const fetchManagedLicenses = ({ dispatch, state }) => {
   dispatch('requestManagedLicenses');
@@ -68,8 +68,8 @@ export const fetchManagedLicenses = ({ dispatch, state }) => {
     .then(({ data }) => {
       dispatch('receiveManagedLicensesSuccess', data);
     })
-    .catch((error) => {
-      dispatch('receiveManagedLicensesError', error);
+    .catch(() => {
+      dispatch('receiveManagedLicensesError');
     });
 };
 
