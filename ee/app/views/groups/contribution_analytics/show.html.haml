@@ -5,24 +5,9 @@
     %h3
       = _('Contribution Analytics')
 
-  .sub-header-block
-    .float-right
-      .dropdown.inline
-        %button.gl-button.dropdown-toggle.btn.gl-text-gray-500{ type: 'button', 'data-toggle' => 'dropdown' }
-          = sprite_icon('calendar')
-          %b.caret
-        %ul.dropdown-menu.dropdown-menu-right
-          %li
-            = link_to group_contribution_analytics_path(@group, start_date: Date.today - 1.week) do
-              = s_('ContributionAnalytics|Last week')
-          %li
-            = link_to group_contribution_analytics_path(@group, start_date: Date.today - 1.month) do
-              = s_('ContributionAnalytics|Last month')
-          %li
-            = link_to group_contribution_analytics_path(@group, start_date: Date.today - 3.months) do
-              = s_('ContributionAnalytics|Last 3 months')
-    .oneline
-      = s_('ContributionAnalytics|Contribution analytics for issues, merge requests and push events since %{start_date}') % { start_date: @start_date }
+  .sub-header-block.gl-display-flex.gl-justify-content-space-between.gl-align-items-center
+    = s_('ContributionAnalytics|Contribution analytics for issues, merge requests and push events since %{start_date}') % { start_date: @start_date }
+    .js-contribution-analytics-date-selector{ data: { path: group_contribution_analytics_path } }
 
   %div{ data: { qa_selector: 'push_content' } }
     %h3= _('Pushes')
