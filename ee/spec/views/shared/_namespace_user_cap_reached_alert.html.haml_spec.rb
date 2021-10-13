@@ -3,11 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe 'shared/namespace_user_cap_reached_alert' do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group, refind: true) { create(:group, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1)) }
   let_it_be(:subgroup) { create(:group, parent: group) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:other_group) { create(:group, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1)) }
+  let_it_be(:project, refind: true) { create(:project, namespace: other_group) }
+  let_it_be(:owner) { create(:user) }
 
   let(:partial) { 'shared/namespace_user_cap_reached_alert' }
+
+  before_all do
+    group.add_owner(owner)
+    other_group.add_owner(owner)
+  end
+
+  before do
+    allow(view).to receive(:current_user).and_return(owner)
+  end
 
   it 'renders a link to pending user approvals' do
     assign(:group, group)
