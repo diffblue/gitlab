@@ -1856,6 +1856,9 @@ msgstr ""
 msgid "Activate Service Desk"
 msgstr ""
 
+msgid "Activated on"
+msgstr ""
+
 msgid "Active"
 msgstr ""
 
@@ -13877,6 +13880,9 @@ msgstr ""
 msgid "Expires in %{expires_at}"
 msgstr ""
 
+msgid "Expires on"
+msgstr ""
+
 msgid "Expires:"
 msgstr ""
 
@@ -19981,6 +19987,9 @@ msgstr ""
 msgid "Last Seen"
 msgstr ""
 
+msgid "Last Sync"
+msgstr ""
+
 msgid "Last Used"
 msgstr ""
 
@@ -25490,6 +25499,9 @@ msgstr ""
 msgid "Plain-text response to send to clients that hit a rate limit"
 msgstr ""
 
+msgid "Plan"
+msgstr ""
+
 msgid "Plan:"
 msgstr ""
 
@@ -28599,6 +28611,9 @@ msgstr ""
 msgid "Renew subscription"
 msgstr ""
 
+msgid "Renews"
+msgstr ""
+
 msgid "Reopen"
 msgstr ""
 
@@ -30048,6 +30063,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Searching by both author and message is currently not supported."
+msgstr ""
+
+msgid "Seats"
 msgstr ""
 
 msgid "Seats usage data as of %{last_enqueue_time} (Updated daily)"
@@ -33033,16 +33051,10 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-msgid "SuperSonics|Activate"
-msgstr ""
-
 msgid "SuperSonics|Activate cloud license"
 msgstr ""
 
 msgid "SuperSonics|Activate subscription"
-msgstr ""
-
-msgid "SuperSonics|Activated on"
 msgstr ""
 
 msgid "SuperSonics|Activation code"
@@ -33066,9 +33078,6 @@ msgstr ""
 msgid "SuperSonics|Cloud licensing is now available. It's an easier way to activate instances and manage subscriptions. Read more about it in our %{blogPostLinkStart}blog post%{blogPostLinkEnd}. Activation codes are available in the %{portalLinkStart}Customers Portal%{portalLinkEnd}."
 msgstr ""
 
-msgid "SuperSonics|Expires on"
-msgstr ""
-
 msgid "SuperSonics|Export license usage file"
 msgstr ""
 
@@ -33079,12 +33088,6 @@ msgid "SuperSonics|Get help for the most common connectivity issues by %{linkSta
 msgstr ""
 
 msgid "SuperSonics|I agree that my use of the GitLab Software is subject to the Subscription Agreement located at the %{linkStart}Terms of Service%{linkEnd}, unless otherwise agreed to in writing with GitLab."
-msgstr ""
-
-msgid "SuperSonics|ID"
-msgstr ""
-
-msgid "SuperSonics|Last Sync"
 msgstr ""
 
 msgid "SuperSonics|Learn how to %{linkStart}activate your subscription%{linkEnd}."
@@ -33102,28 +33105,13 @@ msgstr ""
 msgid "SuperSonics|Paste your activation code"
 msgstr ""
 
-msgid "SuperSonics|Plan"
-msgstr ""
-
 msgid "SuperSonics|Please agree to the Subscription Agreement"
 msgstr ""
 
 msgid "SuperSonics|Ready to get started? A GitLab plan is ideal for scaling organizations and for multi team usage."
 msgstr ""
 
-msgid "SuperSonics|Renews"
-msgstr ""
-
-msgid "SuperSonics|Seats"
-msgstr ""
-
 msgid "SuperSonics|Start free trial"
-msgstr ""
-
-msgid "SuperSonics|Started"
-msgstr ""
-
-msgid "SuperSonics|Subscription"
 msgstr ""
 
 msgid "SuperSonics|Subscription details"
@@ -33153,9 +33141,6 @@ msgstr ""
 msgid "SuperSonics|To activate your subscription, connect to GitLab servers through the %{linkStart}Cloud Licensing%{linkEnd} service, a hassle-free way to manage your subscription."
 msgstr ""
 
-msgid "SuperSonics|Type"
-msgstr ""
-
 msgid "SuperSonics|Upload a license file"
 msgstr ""
 
@@ -33166,9 +33151,6 @@ msgid "SuperSonics|Users over subscription"
 msgstr ""
 
 msgid "SuperSonics|Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license."
-msgstr ""
-
-msgid "SuperSonics|Valid From"
 msgstr ""
 
 msgid "SuperSonics|You can learn more about %{activationLinkStart}activating your subscription%{activationLinkEnd}. If you need further assistance, please %{supportLinkStart}contact GitLab Support%{supportLinkEnd}."
@@ -37486,6 +37468,9 @@ msgid "Using required encryption strategy when encrypted field is missing!"
 msgstr ""
 
 msgid "Using the %{codeStart}needs%{codeEnd} keyword makes jobs run before their stage is reached. Jobs run as soon as their %{codeStart}needs%{codeEnd} relationships are met, which speeds up your pipelines."
+msgstr ""
+
+msgid "Valid From"
 msgstr ""
 
 msgid "Validate"
