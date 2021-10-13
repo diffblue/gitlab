@@ -17,7 +17,7 @@ module Vulnerabilities
     end
 
     def execute
-      unless Feature.enabled?(:create_vulnerabilities_via_api, @project)
+      unless Feature.enabled?(:create_vulnerabilities_via_api, @project, default_enabled: :yaml)
         return ServiceResponse.error(message: "create_vulnerabilities_via_api feature flag is not enabled for this project")
       end
 

@@ -73,7 +73,7 @@ module Mutations
       def resolve(**attributes)
         project = authorized_find!(id: attributes.fetch(:project))
 
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless Feature.enabled?(:create_vulnerabilities_via_api, project)
+        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless Feature.enabled?(:create_vulnerabilities_via_api, project, default_enabled: :yaml)
 
         params = build_vulnerability_params(attributes)
 
