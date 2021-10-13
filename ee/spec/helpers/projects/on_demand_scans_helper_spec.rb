@@ -9,7 +9,6 @@ RSpec.describe Projects::OnDemandScansHelper do
     it 'returns proper data' do
       expect(helper.on_demand_scans_data(project)).to match(
         'new-dast-scan-path' => "/#{project.full_path}/-/on_demand_scans/new",
-        'help-page-path' => "/help/user/application_security/dast/index#on-demand-scans",
         'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg')
       )
     end
@@ -26,7 +25,6 @@ RSpec.describe Projects::OnDemandScansHelper do
 
     it 'returns proper data' do
       expect(helper.on_demand_scans_form_data(project)).to match(
-        'help-page-path' => "/help/user/application_security/dast/index#on-demand-scans",
         'default-branch' => "default-branch",
         'project-path' => "foo/bar",
         'profiles-library-path' => "/#{project.full_path}/-/security/configuration/dast_scans",

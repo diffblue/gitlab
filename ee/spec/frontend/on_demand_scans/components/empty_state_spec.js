@@ -15,7 +15,6 @@ describe('EmptyState', () => {
     wrapper = mount(EmptyState, {
       provide: {
         newDastScanPath: '/on_demand_scans/new',
-        helpPagePath: '/help/page/path',
         emptyStateSvgPath: '/empty/state/svg/path',
       },
       propsData,

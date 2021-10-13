@@ -21,7 +21,6 @@ import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import * as responses from '../mocks/apollo_mocks';
 import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
 
-const helpPagePath = '/application_security/dast/index#on-demand-scans';
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
 const defaultBranch = 'main';
@@ -68,6 +67,7 @@ describe('OnDemandScansForm', () => {
 
   const findForm = () => wrapper.find(GlForm);
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
+  const findHelpPageLink = () => findByTestId('help-page-link');
   const findNameInput = () => findByTestId('dast-scan-name-input');
   const findBranchInput = () => findByTestId('dast-scan-branch-input');
   const findDescriptionInput = () => findByTestId('dast-scan-description-input');
@@ -156,7 +156,6 @@ describe('OnDemandScansForm', () => {
           mocks: defaultMocks,
           provide: {
             projectPath,
-            helpPagePath,
             profilesLibraryPath,
             scannerProfilesLibraryPath,
             siteProfilesLibraryPath,
@@ -208,6 +207,16 @@ describe('OnDemandScansForm', () => {
 
       expect(wrapper.text()).toContain('New on-demand DAST scan');
       expect(wrapper.findComponent(ScanSchedule).exists()).toBe(true);
+    });
+
+    it('renders a link to the docs', () => {
+      createComponent();
+      const link = findHelpPageLink();
+
+      expect(link.exists()).toBe(true);
+      expect(link.attributes('href')).toBe(
+        '/help/user/application_security/dast/index#on-demand-scans',
+      );
     });
 
     it('populates the branch input with the default branch', () => {

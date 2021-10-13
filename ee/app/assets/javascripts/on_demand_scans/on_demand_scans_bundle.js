@@ -8,14 +8,13 @@ export default () => {
     return null;
   }
 
-  const { newDastScanPath, helpPagePath, emptyStateSvgPath } = el.dataset;
+  const { newDastScanPath, emptyStateSvgPath } = el.dataset;
 
   return new Vue({
     el,
     router: createRouter(),
     provide: {
       newDastScanPath,
-      helpPagePath,
       emptyStateSvgPath,
     },
     render(h) {
