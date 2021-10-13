@@ -7,15 +7,11 @@ class SchedulePopulateStatusColumnOfSecurityScans < Gitlab::Database::Migration[
 
   disable_ddl_transaction!
 
-  class SecurityScan < ActiveRecord::Base
-    include EachBatch
-  end
-
   def up
     return unless Gitlab.ee?
 
     queue_background_migration_jobs_by_range_at_intervals(
-      SecurityScan,
+      define_batchable_model('security_scans'),
       MIGRATION,
       DELAY_INTERVAL,
       batch_size: BATCH_SIZE
