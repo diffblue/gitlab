@@ -40089,10 +40089,10 @@ msgstr ""
 msgid "ciReport|Secret Detection"
 msgstr ""
 
-msgid "ciReport|Secret scanning"
+msgid "ciReport|Secret Detection detects secrets and credentials vulnerabilities in your source code."
 msgstr ""
 
-msgid "ciReport|Secret scanning detects secrets and credentials vulnerabilities in your source code."
+msgid "ciReport|Secret detection"
 msgstr ""
 
 msgid "ciReport|Security scanning"

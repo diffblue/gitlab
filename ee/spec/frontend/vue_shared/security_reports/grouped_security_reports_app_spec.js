@@ -21,7 +21,7 @@ import {
   dastDiffSuccessMock,
   containerScanningDiffSuccessMock,
   dependencyScanningDiffSuccessMock,
-  secretScanningDiffSuccessMock,
+  secretDetectionDiffSuccessMock,
   coverageFuzzingDiffSuccessMock,
   apiFuzzingDiffSuccessMock,
   mockFindings,
@@ -44,7 +44,7 @@ describe('Grouped security reports app', () => {
   const findReportSummary = () => wrapper.find('[data-testid="report-section-code-text"]');
   const findCollapseButton = () => wrapper.find('.js-collapse-btn');
   const findSpinner = () => wrapper.find('.gl-spinner');
-  const findSecretScanReport = () => wrapper.find('[data-testid="secret-scan-report"]');
+  const findSecretDetectionReport = () => wrapper.find('[data-testid="secret-detection-report"]');
   const findViewFullReportButton = () => wrapper.find('.report-btn');
   const findDastJobLink = () => wrapper.find('[data-testid="dast-ci-job-link"]');
 
@@ -55,7 +55,7 @@ describe('Grouped security reports app', () => {
     containerScanningHelpPath: 'path',
     dastHelpPath: 'path',
     dependencyScanningHelpPath: 'path',
-    secretScanningHelpPath: 'path',
+    secretDetectionHelpPath: 'path',
     canReadVulnerabilityFeedbackPath: true,
     vulnerabilityFeedbackPath: 'vulnerability_feedback_path.json',
     coverageFuzzingHelpPath: 'path',
@@ -71,7 +71,7 @@ describe('Grouped security reports app', () => {
     dastComparisonPath: DAST_DIFF_ENDPOINT,
     dependencyScanningComparisonPath: DEPENDENCY_SCANNING_DIFF_ENDPOINT,
     sastComparisonPath: SAST_DIFF_ENDPOINT,
-    secretScanningComparisonPath: SECRET_DETECTION_DIFF_ENDPOINT,
+    secretDetectionComparisonPath: SECRET_DETECTION_DIFF_ENDPOINT,
   };
 
   const defaultDastSummary = {
@@ -180,7 +180,7 @@ describe('Grouped security reports app', () => {
 
         expect(wrapperText).toContain('DAST: Loading resulted in an error');
 
-        expect(wrapperText).toContain('Secret scanning: Loading resulted in an error');
+        expect(wrapperText).toContain('Secret detection: Loading resulted in an error');
       });
     });
 
@@ -278,7 +278,7 @@ describe('Grouped security reports app', () => {
         mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
         mock.onGet(DAST_DIFF_ENDPOINT).reply(200, dastDiffSuccessMock);
         mock.onGet(SAST_DIFF_ENDPOINT).reply(200, sastDiffSuccessMock);
-        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretScanningDiffSuccessMock);
+        mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
         mock.onGet(COVERAGE_FUZZING_DIFF_ENDPOINT).reply(200, coverageFuzzingDiffSuccessMock);
         mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
 
@@ -363,7 +363,7 @@ describe('Grouped security reports app', () => {
         ${'dependency-scanning'} | ${dependencyScanningDiffSuccessMock.fixed} | ${dependencyScanningDiffSuccessMock.added}
         ${'container-scanning'}  | ${containerScanningDiffSuccessMock.fixed}  | ${containerScanningDiffSuccessMock.added}
         ${'dast'}                | ${dastDiffSuccessMock.fixed}               | ${dastDiffSuccessMock.added}
-        ${'secret-scanning'}     | ${secretScanningDiffSuccessMock.fixed}     | ${secretScanningDiffSuccessMock.added}
+        ${'secret-detection'}    | ${secretDetectionDiffSuccessMock.fixed}    | ${secretDetectionDiffSuccessMock.added}
         ${'coverage-fuzzing'}    | ${coverageFuzzingDiffSuccessMock.fixed}    | ${coverageFuzzingDiffSuccessMock.added}
         ${'api-fuzzing'}         | ${apiFuzzingDiffSuccessMock.fixed}         | ${apiFuzzingDiffSuccessMock.added}
       `(
@@ -615,9 +615,9 @@ describe('Grouped security reports app', () => {
     });
   });
 
-  describe('secret scanning reports', () => {
-    const initSecretScan = (isEnabled = true) => {
-      mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretScanningDiffSuccessMock);
+  describe('secret Detection reports', () => {
+    const initSecretDetection = (isEnabled = true) => {
+      mock.onGet(SECRET_DETECTION_DIFF_ENDPOINT).reply(200, secretDetectionDiffSuccessMock);
 
       createWrapper({
         ...props,
@@ -634,11 +634,11 @@ describe('Grouped security reports app', () => {
 
     describe('enabled', () => {
       beforeEach(() => {
-        return initSecretScan();
+        return initSecretDetection();
       });
 
       it('should render the component', () => {
-        expect(findSecretScanReport().exists()).toBe(true);
+        expect(findSecretDetectionReport().exists()).toBe(true);
       });
 
       it('should set diffEndpoint', () => {
@@ -649,18 +649,18 @@ describe('Grouped security reports app', () => {
 
       it('should display the correct numbers of vulnerabilities', () => {
         expect(trimText(wrapper.text())).toContain(
-          'Secret scanning detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
+          'Secret detection detected 2 potential vulnerabilities 1 Critical 1 High and 0 Others',
         );
       });
     });
 
     describe('disabled', () => {
       beforeEach(() => {
-        initSecretScan(false);
+        initSecretDetection(false);
       });
 
       it('should not render the component', () => {
-        expect(findSecretScanReport().exists()).toBe(false);
+        expect(findSecretDetectionReport().exists()).toBe(false);
       });
     });
   });

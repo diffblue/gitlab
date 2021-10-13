@@ -75,7 +75,7 @@ describe('MergeRequestStore', () => {
       'dependency_scanning_comparison_path',
       'sast_comparison_path',
       'dast_comparison_path',
-      'secret_scanning_comparison_path',
+      'secret_detection_comparison_path',
       'api_fuzzing_comparison_path',
       'coverage_fuzzing_comparison_path',
     ])('should set %s path', (property) => {

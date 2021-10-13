@@ -1,7 +1,7 @@
 <script>
 /**
  * Renders Security Issues (SAST, DAST, Container
- * Scanning, Secret Scanning) body text
+ * Scanning, Secret Detection) body text
  * [severity-badge] [name] in [link]:[line]
  */
 import { GlBadge } from '@gitlab/ui';

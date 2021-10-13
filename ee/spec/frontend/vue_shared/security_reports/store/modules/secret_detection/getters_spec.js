@@ -12,14 +12,14 @@ describe('groupedSecretDetectionText', () => {
     const report = createReport({ hasError: true });
     const result = getters.groupedSecretDetectionText(report);
 
-    expect(result).toStrictEqual({ message: messages.SECRET_SCANNING_HAS_ERROR });
+    expect(result).toStrictEqual({ message: messages.SECRET_DETECTION_HAS_ERROR });
   });
 
   it("should return the loading message if it's still loading", () => {
     const report = createReport({ isLoading: true });
     const result = getters.groupedSecretDetectionText(report);
 
-    expect(result).toStrictEqual({ message: messages.SECRET_SCANNING_IS_LOADING });
+    expect(result).toStrictEqual({ message: messages.SECRET_DETECTION_IS_LOADING });
   });
 
   it('should call groupedTextBuilder if everything is fine', () => {
@@ -30,7 +30,7 @@ describe('groupedSecretDetectionText', () => {
       countMessage: '',
       critical: 0,
       high: 0,
-      message: 'Secret scanning detected %{totalStart}no%{totalEnd} vulnerabilities.',
+      message: 'Secret detection detected %{totalStart}no%{totalEnd} vulnerabilities.',
       other: 0,
       status: '',
       total: 0,
