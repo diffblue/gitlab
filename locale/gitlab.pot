@@ -3827,6 +3827,11 @@ msgstr ""
 msgid "An error occurred while saving changes: %{error}"
 msgstr ""
 
+msgid "An error occurred while saving the setting"
+msgid_plural "An error occurred while saving the settings"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "An error occurred while subscribing to notifications."
 msgstr ""
 
@@ -11217,7 +11222,7 @@ msgstr ""
 msgid "DependencyProxy|Dependency Proxy"
 msgstr ""
 
-msgid "DependencyProxy|Toggle Dependency Proxy"
+msgid "DependencyProxy|Enable Proxy"
 msgstr ""
 
 msgid "Depends on %d merge request being merged"
@@ -12712,9 +12717,6 @@ msgid "Enable or disable version check and Service Ping."
 msgstr ""
 
 msgid "Enable protected paths rate limit"
-msgstr ""
-
-msgid "Enable proxy"
 msgstr ""
 
 msgid "Enable reCAPTCHA"
@@ -24230,9 +24232,6 @@ msgstr ""
 msgid "PackageRegistry|Allow duplicates"
 msgstr ""
 
-msgid "PackageRegistry|An error occurred while saving the settings"
-msgstr ""
-
 msgid "PackageRegistry|App group: %{group}"
 msgstr ""
 
@@ -24462,9 +24461,6 @@ msgid "PackageRegistry|Settings for Generic packages"
 msgstr ""
 
 msgid "PackageRegistry|Settings for Maven packages"
-msgstr ""
-
-msgid "PackageRegistry|Settings saved successfully"
 msgstr ""
 
 msgid "PackageRegistry|Show Composer commands"
@@ -31324,6 +31320,11 @@ msgstr ""
 
 msgid "Setting enforced"
 msgstr ""
+
+msgid "Setting saved successfully"
+msgid_plural "Settings saved successfully"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Setting this to 0 means using the system default timeout value."
 msgstr ""
