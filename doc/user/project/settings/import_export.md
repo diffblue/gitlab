@@ -203,9 +203,6 @@ NOTE:
 The maximum import file size can be set by the Administrator, default is `0` (unlimited).
 As an administrator, you can modify the maximum import file size. To do so, use the `max_import_size` option in the [Application settings API](../../../api/settings.md#change-application-settings) or the [Admin Area UI](../../admin_area/settings/account_and_limit_settings.md). Default [modified](https://gitlab.com/gitlab-org/gitlab/-/issues/251106) from 50MB to 0 in GitLab 13.8.
 
-NOTE:
-There is currently an [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/276930) where project fails to import if [shared runners enablement](https://docs.gitlab.com/ee/ci/runners/runners_scope.html#enable-shared-runners) does not match between project exported and project import. Ensure either both project have share runners enabled, or disable when importing project.
-
 ### Project import status
 
 You can query an import through the [Project import/export API](../../../api/project_import_export.md#import-status).
@@ -228,6 +225,15 @@ To help avoid abuse, by default, users are rate limited to:
 GitLab.com may have [different settings](../../gitlab_com/index.md#importexport) from the defaults.
 
 ## Troubleshooting
+
+### Project fails to import due to mismatch
+
+If the [shared runners enablement](../../../ci/runners/runners_scope.md#enable-shared-runners)
+does not match between the exported project, and the project import, the project fails to import.
+Review [issue 276930](https://gitlab.com/gitlab-org/gitlab/-/issues/276930), and either:
+
+- Ensure shared runners are enabled in both the source and destination projects.
+- Disable shared runners when you import the project. 
 
 ### Import workaround for large repositories
 
