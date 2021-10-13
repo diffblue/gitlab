@@ -66,29 +66,13 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
   end
 
   describe '.increase_usage' do
-    subject { described_class.increase_usage(usage, amount) }
-
-    let(:usage) { create(:ci_project_monthly_usage, project: project, amount_used: 100.0) }
-
-    context 'when amount is greater than 0' do
-      let(:amount) { 10.5 }
-
-      it 'updates the current month usage' do
-        subject
-
-        expect(usage.reload.amount_used).to eq(110.5)
-      end
+    let_it_be_with_refind(:current_usage) do
+      create(:ci_project_monthly_usage,
+        project: project,
+        amount_used: 100)
     end
 
-    context 'when amount is less or equal to 0' do
-      let(:amount) { -2.0 }
-
-      it 'does not update the current month usage' do
-        subject
-
-        expect(usage.reload.amount_used).to eq(100.0)
-      end
-    end
+    it_behaves_like 'CI minutes increase usage'
   end
 
   describe '.for_namespace_monthly_usage' do
