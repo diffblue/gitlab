@@ -180,12 +180,11 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
             context 'when the owner was removed from the project' do
               before do
-                stub_feature_flags(member_destroy_async_auth_refresh: false)
                 project.team.truncate
                 project.add_developer(user)
               end
 
-              it 'updates the schedule owner' do
+              it 'updates the schedule owner', :sidekiq_inline do
                 subject
 
                 expect(dast_profile_schedule.user_id).to eq(user.id)
