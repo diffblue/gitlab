@@ -1,5 +1,7 @@
+- return unless current_user
 - namespace = @project&.namespace || @group
 - return unless namespace.present?
+- return unless display_namespace_user_cap_reached_alert?(namespace)
 
 - root_namespace = namespace.root_ancestor
 - pending_users_link = usage_quotas_path(root_namespace, anchor: 'seats-quota-tab')
