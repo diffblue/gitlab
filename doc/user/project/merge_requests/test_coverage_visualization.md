@@ -235,7 +235,8 @@ run tests:
   image: python:3
   script:
     - pip install pytest pytest-cov
-    - pytest --cov=src/ tests.py
+    - coverage run -m pytest 
+    - coverage report
     - coverage xml
   artifacts:
     reports:
