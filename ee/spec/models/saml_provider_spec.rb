@@ -155,6 +155,10 @@ RSpec.describe SamlProvider do
       expect(settings[:idp_sso_target_url]).to eq saml_provider.sso_url
     end
 
+    it 'includes nickname attribute statements' do
+      expect(settings[:attribute_statements][:nickname]).to match_array(%w(nickname username))
+    end
+
     context 'when saml_message_max_byte_size present in gitlab settings ' do
       before do
         stub_omniauth_setting(saml_message_max_byte_size: 1_000_000)
