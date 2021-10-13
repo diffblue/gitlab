@@ -11,7 +11,7 @@ import {
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   subscriptionActivationInsertCode,
 } from 'ee/admin/subscriptions/show/constants';
-import { preventDefault } from '../../test_helpers';
+import { preventDefault } from 'ee_jest/admin/test_helpers';
 import { activateLicenseMutationResponse } from '../mock_data';
 
 const modalId = 'fake-modal-id';
