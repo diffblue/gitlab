@@ -9,6 +9,7 @@
 require 'securerandom'
 require 'socket'
 require 'logger'
+require 'bundler'
 
 module GitalySetup
   LOGGER = begin
@@ -66,10 +67,12 @@ module GitalySetup
     system('bundle config set --local jobs 4', chdir: gemfile_dir)
     system('bundle config set --local retry 3', chdir: gemfile_dir)
 
+    bundle_path = File.expand_path(Bundler.configured_bundle_path.base_path)
     if ENV['CI']
       bundle_path = File.expand_path('../../../vendor/gitaly-ruby', __dir__)
-      system('bundle', 'config', 'set', '--local', 'path', bundle_path, chdir: gemfile_dir)
     end
+
+    system('bundle', 'config', 'set', '--local', 'path', bundle_path, chdir: gemfile_dir)
   end
   # rubocop:enable GitlabSecurity/SystemCommandInjection
 
