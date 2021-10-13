@@ -31,7 +31,7 @@ RSpec.describe 'Delete Epic', :js do
     end
 
     it 'deletes the issue and redirect to epic list' do
-      find('.qa-delete-button').click # rubocop:disable QA/SelectorUsage
+      click_button 'Delete epic'
       wait_for_requests
 
       find('.js-modal-action-primary').click
