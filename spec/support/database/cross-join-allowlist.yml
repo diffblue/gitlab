@@ -13,7 +13,6 @@
 - "./ee/spec/lib/ee/gitlab/background_migration/migrate_security_scans_spec.rb"
 - "./ee/spec/lib/ee/gitlab/background_migration/populate_latest_pipeline_ids_spec.rb"
 - "./ee/spec/lib/ee/gitlab/background_migration/populate_resolved_on_default_branch_column_spec.rb"
-- "./ee/spec/lib/ee/gitlab/background_migration/populate_status_column_of_security_scans_spec.rb"
 - "./ee/spec/lib/ee/gitlab/background_migration/populate_uuids_for_security_findings_spec.rb"
 - "./ee/spec/lib/ee/gitlab/background_migration/populate_vulnerability_feedback_pipeline_id_spec.rb"
 - "./ee/spec/lib/ee/gitlab/usage_data_spec.rb"

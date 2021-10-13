@@ -40,7 +40,10 @@ module EE
 
         def update_batch(batch_start)
           sql = format(UPDATE_SQL, start_id: quote(batch_start), end_id: quote(batch_start + UPDATE_BATCH_SIZE - 1))
-          result = execute(sql)
+
+          result = ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340017') do
+            execute(sql)
+          end
 
           log_info('Records have been updated', count: result.cmd_tuples)
         end
