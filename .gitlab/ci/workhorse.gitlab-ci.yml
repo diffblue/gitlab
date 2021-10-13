@@ -10,7 +10,7 @@ workhorse:verify:
 .workhorse:test:
   extends: .workhorse:rules:workhorse
   services:
-    - name: registry.gitlab.com/gitlab-org/build/cng/gitaly:latest
+    - name: registry.gitlab.com/gitlab-org/build/cng/gitaly:master-ubi8
       # Disable the hooks so we don't have to stub the GitLab API
       command: ["/usr/bin/env", "GITALY_TESTING_NO_GIT_HOOKS=1", "/scripts/process-wrapper"]
       alias: gitaly
