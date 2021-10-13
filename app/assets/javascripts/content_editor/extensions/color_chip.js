@@ -1,9 +1,9 @@
 import { Node } from '@tiptap/core';
 import { Plugin, PluginKey } from 'prosemirror-state';
 import { Decoration, DecorationSet } from 'prosemirror-view';
+import { isValidColorExpression } from '~/lib/utils/color_utils';
 import { PARSE_HTML_PRIORITY_HIGHEST } from '../constants';
 
-const colorValidatorEl = document.createElement('div');
 const colorExpressionTypes = ['#', 'hsl', 'rgb'];
 
 const isValidColor = (color) => {
@@ -11,10 +11,7 @@ const isValidColor = (color) => {
     return false;
   }
 
-  colorValidatorEl.style.color = '';
-  colorValidatorEl.style.color = color;
-
-  return colorValidatorEl.style.color.length > 0;
+  return isValidColorExpression(color);
 };
 
 const highlightColors = (doc) => {

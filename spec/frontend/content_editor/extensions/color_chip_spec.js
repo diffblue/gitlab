@@ -18,6 +18,7 @@ describe('content_editor/extensions/color_chip', () => {
     ${'F00'}              | ${false}
     ${'gba(0,0,0,0)'}     | ${false}
     ${'hls(540,70%,50%)'} | ${false}
+    ${'red'}              | ${false}
   `(
     'when a code span with $colorExpression color expression is found',
     ({ colorExpression, decorated }) => {
