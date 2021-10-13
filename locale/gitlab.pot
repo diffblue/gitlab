@@ -12822,9 +12822,6 @@ msgstr ""
 msgid "Enter an integer number between 0 and 100"
 msgstr ""
 
-msgid "Enter an integer number number between 0 and 100"
-msgstr ""
-
 msgid "Enter any color or choose one of the suggested colors below."
 msgstr ""
 
