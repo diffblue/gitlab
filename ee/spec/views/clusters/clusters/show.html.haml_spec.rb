@@ -20,8 +20,7 @@ RSpec.describe 'clusters/clusters/show' do
     it 'displays the Cluster health section' do
       render
 
-      expect(rendered).to have_selector('#cluster-health-tab')
-      expect(rendered).to have_content('Health')
+      expect(rendered).to have_selector('[data-testid="cluster-health-tab"]', text: 'Health')
     end
   end
 
