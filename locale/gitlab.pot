@@ -24743,6 +24743,9 @@ msgstr ""
 msgid "Pending comments"
 msgstr ""
 
+msgid "Pending owner approval"
+msgstr ""
+
 msgid "Pending sync…"
 msgstr ""
 

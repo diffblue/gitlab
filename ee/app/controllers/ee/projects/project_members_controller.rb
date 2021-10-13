@@ -18,7 +18,7 @@ module EE
 
       override :invited_members
       def invited_members
-        super.or(members.awaiting)
+        super.or(members.awaiting.with_invited_user_state)
       end
 
       override :non_invited_members
