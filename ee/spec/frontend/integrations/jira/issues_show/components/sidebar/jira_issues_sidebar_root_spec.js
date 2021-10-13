@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+
 import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';

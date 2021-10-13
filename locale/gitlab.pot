@@ -39658,6 +39658,21 @@ msgstr[1] ""
 msgid "Your username is %{username}."
 msgstr ""
 
+msgid "ZenTaoIntegration|Failed to load ZenTao issue. View the issue in ZenTao, or reload the page."
+msgstr ""
+
+msgid "ZenTaoIntegration|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}ZenTao%{linkEnd}."
+msgstr ""
+
+msgid "ZenTaoIntegration|This is a ZenTao user."
+msgstr ""
+
+msgid "ZenTaoIntegration|This issue is synchronized with ZenTao"
+msgstr ""
+
+msgid "ZenTaoIntegration|ZenTao user"
+msgstr ""
+
 msgid "ZentaoIntegration|Base URL of the Zentao instance."
 msgstr ""
 
