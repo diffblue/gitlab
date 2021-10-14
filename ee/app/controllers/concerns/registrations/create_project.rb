@@ -4,20 +4,13 @@ module Registrations::CreateProject
   extend ActiveSupport::Concern
   include LearnGitlabHelper
 
-  LEARN_GITLAB_TEMPLATE = 'learn_gitlab.tar.gz'
   LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate_trial.tar.gz'
 
   included do
     private
 
     def learn_gitlab_template_path
-      file = if helpers.in_trial_onboarding_flow?
-               LEARN_GITLAB_ULTIMATE_TEMPLATE
-             else
-               LEARN_GITLAB_TEMPLATE
-             end
-
-      Rails.root.join('vendor', 'project_templates', file)
+      Rails.root.join('vendor', 'project_templates', LEARN_GITLAB_ULTIMATE_TEMPLATE)
     end
 
     def create_learn_gitlab_project

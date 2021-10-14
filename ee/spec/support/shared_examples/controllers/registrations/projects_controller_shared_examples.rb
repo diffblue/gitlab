@@ -43,7 +43,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
       using RSpec::Parameterized::TableSyntax
 
       where(:trial, :project_name, :template) do
-        false | 'Learn GitLab' | described_class::LEARN_GITLAB_TEMPLATE
+        false | 'Learn GitLab' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
         true  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
       end
 
