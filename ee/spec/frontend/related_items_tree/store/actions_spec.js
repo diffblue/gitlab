@@ -1,4 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
+
+// eslint-disable-next-line import/no-deprecated
+import { getJSONFixture } from 'helpers/fixtures';
 import { ChildType, ChildState } from 'ee/related_items_tree/constants';
 import * as actions from 'ee/related_items_tree/store/actions';
 import * as types from 'ee/related_items_tree/store/mutation_types';
@@ -28,6 +31,7 @@ import {
   mockEpic1,
 } from '../mock_data';
 
+// eslint-disable-next-line import/no-deprecated
 const mockProjects = getJSONFixture('static/projects.json');
 
 jest.mock('~/flash');

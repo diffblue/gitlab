@@ -1,3 +1,5 @@
+/* eslint-disable import/no-deprecated */
+
 import { uniq } from 'lodash';
 import tasksByType from 'test_fixtures/analytics/charts/type_of_work/tasks_by_type.json';
 import {
