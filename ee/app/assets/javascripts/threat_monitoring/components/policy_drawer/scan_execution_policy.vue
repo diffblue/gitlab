@@ -42,7 +42,7 @@ export default {
   <base-policy :policy="policy">
     <template #type>{{ s__('SecurityOrchestration|Scan execution') }}</template>
 
-    <template #default="{ enforcementStatusLabel }">
+    <template #default="{ statusLabel }">
       <div v-if="parsedYaml">
         <policy-info-row
           v-if="parsedYaml.description"
@@ -60,8 +60,8 @@ export default {
           <p v-for="action in humanizedActions" :key="action">{{ action }}</p>
         </policy-info-row>
 
-        <policy-info-row :label="s__('SecurityOrchestration|Enforcement Status')">
-          {{ enforcementStatusLabel }}
+        <policy-info-row :label="__('Status')">
+          {{ statusLabel }}
         </policy-info-row>
 
         <policy-info-row

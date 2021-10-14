@@ -48,7 +48,7 @@ export default {
   <base-policy :policy="policy">
     <template #type>{{ s__('NetworkPolicies|Network') }}</template>
 
-    <template #default="{ enforcementStatusLabel }">
+    <template #default="{ statusLabel }">
       <div v-if="parsedYaml">
         <policy-info-row
           v-if="parsedYaml.description"
@@ -57,9 +57,7 @@ export default {
           >{{ parsedYaml.description }}</policy-info-row
         >
 
-        <policy-info-row :label="s__('NetworkPolicies|Enforcement status')">{{
-          enforcementStatusLabel
-        }}</policy-info-row>
+        <policy-info-row :label="__('Status')">{{ statusLabel }}</policy-info-row>
 
         <policy-info-row
           v-if="environments.length"

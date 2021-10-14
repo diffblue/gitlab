@@ -22591,9 +22591,6 @@ msgstr ""
 msgid "NetworkPolicies|Edit policy"
 msgstr ""
 
-msgid "NetworkPolicies|Enforcement status"
-msgstr ""
-
 msgid "NetworkPolicies|Environment does not have deployment platform"
 msgstr ""
 
@@ -30249,9 +30246,6 @@ msgid "SecurityOrchestration|Edit policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|Enforce security for this project. %{linkStart}More information.%{linkEnd}"
-msgstr ""
-
-msgid "SecurityOrchestration|Enforcement Status"
 msgstr ""
 
 msgid "SecurityOrchestration|Executes a %{scanType} scan"

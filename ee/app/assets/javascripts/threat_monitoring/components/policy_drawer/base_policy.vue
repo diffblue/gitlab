@@ -10,7 +10,7 @@ export default {
     },
   },
   computed: {
-    enforcementStatusLabel() {
+    statusLabel() {
       return this.policy?.enabled ? __('Enabled') : __('Disabled');
     },
   },
@@ -23,6 +23,6 @@ export default {
     <p data-testid="policy-type">
       <slot name="type"></slot>
     </p>
-    <slot v-bind="{ enforcementStatusLabel }"></slot>
+    <slot v-bind="{ statusLabel }"></slot>
   </div>
 </template>

@@ -5,7 +5,7 @@ describe('BasePolicy component', () => {
   let wrapper;
 
   const findPolicyType = () => wrapper.findByTestId('policy-type');
-  const findEnforcementStatusLabel = () => wrapper.findByTestId('enforcement-status-label');
+  const findStatusLabel = () => wrapper.findByTestId('status-label');
 
   const factory = (propsData = {}) => {
     wrapper = shallowMountExtended(BasePolicy, {
@@ -14,8 +14,7 @@ describe('BasePolicy component', () => {
         type: 'Policy type',
       },
       scopedSlots: {
-        default:
-          '<span data-testid="enforcement-status-label">{{ props.enforcementStatusLabel }}</span>',
+        default: '<span data-testid="status-label">{{ props.statusLabel }}</span>',
       },
     });
   };
@@ -34,16 +33,13 @@ describe('BasePolicy component', () => {
     description   | enabled  | expectedLabel
     ${'enabled'}  | ${true}  | ${'Enabled'}
     ${'disabled'} | ${false} | ${'Disabled'}
-  `(
-    'renders the enforcement status label when policy is $description',
-    ({ enabled, expectedLabel }) => {
-      factory({
-        policy: {
-          enabled,
-        },
-      });
+  `('renders the status label when policy is $description', ({ enabled, expectedLabel }) => {
+    factory({
+      policy: {
+        enabled,
+      },
+    });
 
-      expect(findEnforcementStatusLabel().text()).toBe(expectedLabel);
-    },
-  );
+    expect(findStatusLabel().text()).toBe(expectedLabel);
+  });
 });

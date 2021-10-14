@@ -23,7 +23,7 @@ exports[`CiliumNetworkPolicy component supported YAML renders policy preview tab
     </policy-info-row-stub>
      
     <policy-info-row-stub
-      label="Enforcement status"
+      label="Status"
     >
       Disabled
     </policy-info-row-stub>
