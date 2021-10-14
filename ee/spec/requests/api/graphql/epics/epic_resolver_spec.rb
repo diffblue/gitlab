@@ -13,30 +13,6 @@ RSpec.describe 'getting epics information' do
     stub_licensed_features(epics: true)
   end
 
-  context 'when performance_roadmap flag is disabled' do
-    let_it_be(:epic1) { create(:epic, group: group, state: 'opened') }
-    let_it_be(:epic2) { create(:epic, group: group, state: 'opened') }
-
-    def epics_count
-      graphql_data_at(:group, :epics, :nodes).count
-    end
-
-    it 'returns epics within timeframe' do
-      stub_const('SetsMaxPageSize::DEPRECATED_MAX_PAGE_SIZE', 1)
-
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(2)
-
-      stub_feature_flags(performance_roadmap: false)
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(1)
-
-      stub_feature_flags(performance_roadmap: true)
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(2)
-    end
-  end
-
   describe 'query for epics which start with an iid' do
     let_it_be(:epic1) { create(:epic, group: group, iid: 11) }
     let_it_be(:epic2) { create(:epic, group: group, iid: 22) }

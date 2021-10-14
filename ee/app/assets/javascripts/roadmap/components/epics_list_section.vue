@@ -182,7 +182,7 @@ export default {
         <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
       </span>
     </div>
-    <gl-intersection-observer v-if="glFeatures.performanceRoadmap" @appear="handleScrolledToEnd">
+    <gl-intersection-observer @appear="handleScrolledToEnd">
       <div
         v-if="epicsFetchForNextPageInProgress"
         class="gl-text-center gl-py-3"

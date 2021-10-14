@@ -1,17 +1,13 @@
 import createFlash from '~/flash';
 import { s__ } from '~/locale';
 
-import { EXTEND_AS, ROADMAP_PAGE_SIZE } from '../constants';
+import { ROADMAP_PAGE_SIZE } from '../constants';
 import epicChildEpics from '../queries/epicChildEpics.query.graphql';
 import groupEpics from '../queries/groupEpics.query.graphql';
 import groupMilestones from '../queries/groupMilestones.query.graphql';
 import * as epicUtils from '../utils/epic_utils';
 import * as roadmapItemUtils from '../utils/roadmap_item_utils';
-import {
-  getEpicsTimeframeRange,
-  sortEpics,
-  extendTimeframeForPreset,
-} from '../utils/roadmap_utils';
+import { getEpicsTimeframeRange, sortEpics } from '../utils/roadmap_utils';
 
 import * as types from './mutation_types';
 
@@ -185,44 +181,6 @@ export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
     .catch(() => dispatch('receiveEpicsFailure'));
 };
 
-export const fetchEpicsForTimeframe = ({ state, commit, dispatch }, { timeframe }) => {
-  commit(types.REQUEST_EPICS_FOR_TIMEFRAME);
-
-  return fetchGroupEpics(state, { timeframe })
-    .then(({ rawEpics, pageInfo }) => {
-      dispatch('receiveEpicsSuccess', {
-        rawEpics,
-        pageInfo,
-        newEpic: true,
-        timeframeExtended: true,
-      });
-    })
-    .catch(() => dispatch('receiveEpicsFailure'));
-};
-
-/**
- * Adds more EpicItemTimeline cells to the start or end of the roadmap.
- *
- * @param extendAs An EXTEND_AS enum value
- */
-export const extendTimeframe = ({ commit, state }, { extendAs }) => {
-  const isExtendTypePrepend = extendAs === EXTEND_AS.PREPEND;
-  const { presetType, timeframe } = state;
-  const timeframeToExtend = extendTimeframeForPreset({
-    extendAs,
-    presetType,
-    initialDate: isExtendTypePrepend
-      ? roadmapItemUtils.timeframeStartDate(presetType, timeframe)
-      : roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-  });
-
-  if (isExtendTypePrepend) {
-    commit(types.PREPEND_TIMEFRAME, timeframeToExtend);
-  } else {
-    commit(types.APPEND_TIMEFRAME, timeframeToExtend);
-  }
-};
-
 export const initItemChildrenFlags = ({ commit }, data) =>
   commit(types.INIT_EPIC_CHILDREN_FLAGS, data);
 
@@ -254,34 +212,6 @@ export const toggleEpic = ({ state, dispatch }, { parentItem }) => {
       parentItemId,
     });
   }
-};
-
-/**
- * For epics that have no start or end date, this function updates their start and end dates
- * so that the epic bars get longer to appear infinitely scrolling.
- */
-export const refreshEpicDates = ({ commit, state }) => {
-  const { presetType, timeframe } = state;
-
-  const epics = state.epics.map((epic) => {
-    // Update child epic dates too
-    if (epic.children?.edges?.length > 0) {
-      epic.children.edges.map((childEpic) =>
-        roadmapItemUtils.processRoadmapItemDates(
-          childEpic,
-          roadmapItemUtils.timeframeStartDate(presetType, timeframe),
-          roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-        ),
-      );
-    }
-    return roadmapItemUtils.processRoadmapItemDates(
-      epic,
-      roadmapItemUtils.timeframeStartDate(presetType, timeframe),
-      roadmapItemUtils.timeframeEndDate(presetType, timeframe),
-    );
-  });
-
-  commit(types.SET_EPICS, epics);
 };
 
 export const fetchGroupMilestones = (
