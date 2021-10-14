@@ -49,7 +49,7 @@ module Gitlab
 
         def build_variables(image)
           image[:variables].to_a.map do |key, value|
-            { key: key.to_s, value: value.to_s }
+            { key: key, value: value.to_s }
           end
         end
       end

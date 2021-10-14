@@ -222,7 +222,7 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
                                                      { 'name' => 'docker:stable-dind', 'entrypoint' => '/bin/sh',
                                                        'alias' => 'docker', 'command' => 'sleep 30', 'ports' => [], 'variables' => [] },
                                                      { 'name' => 'mysql:latest', 'entrypoint' => nil,
-                                                       'alias' => nil, 'command' => nil, 'ports' => [], 'variables' => [{ key: 'MYSQL_ROOT_PASSWORD', value: 'root123.' }.as_json] }])
+                                                       'alias' => nil, 'command' => nil, 'ports' => [], 'variables' => [{ 'key' => 'MYSQL_ROOT_PASSWORD', 'value' => 'root123.' }] }])
             expect(json_response['steps']).to eq(expected_steps)
             expect(json_response['artifacts']).to eq(expected_artifacts)
             expect(json_response['cache']).to eq(expected_cache)
