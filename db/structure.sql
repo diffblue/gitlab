@@ -19845,8 +19845,6 @@ CREATE TABLE user_details (
     user_id bigint NOT NULL,
     job_title character varying(200) DEFAULT ''::character varying NOT NULL,
     bio character varying(255) DEFAULT ''::character varying NOT NULL,
-    bio_html text,
-    cached_markdown_version integer,
     webauthn_xid text,
     other_role text,
     provisioned_by_group_id bigint,
