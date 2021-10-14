@@ -1,0 +1,20 @@
+---
+key_path: user_cap_feature_enabled
+description: Whether User Cap feature is enabled
+product_section: fulfillment
+product_stage: fulfillment
+product_group: group::utilization
+product_category: utilization
+value_type: number
+status: active
+milestone: "14.4"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71786
+instrumentation_class: UserCapSettingEnabledMetric
+time_frame: none
+data_source: database
+data_category: optional
+distribution:
+- ee
+tier:
+- premium
+- ultimate
