@@ -3,21 +3,17 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 
+import mockProjects from 'test_fixtures_static/projects.json';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
 import AddIssuableForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import RelatedItemsTreeApp from 'ee/related_items_tree/components/related_items_tree_app.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
 import createDefaultStore from 'ee/related_items_tree/store';
-// eslint-disable-next-line import/no-deprecated
-import { getJSONFixture } from 'helpers/fixtures';
 import axios from '~/lib/utils/axios_utils';
 import { issuableTypesMap } from '~/related_issues/constants';
 
 import { mockInitialConfig, mockParentItem, mockEpics, mockIssues } from '../mock_data';
-
-// eslint-disable-next-line import/no-deprecated
-const mockProjects = getJSONFixture('static/projects.json');
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
