@@ -53,7 +53,7 @@ describe('Codequality report app', () => {
     });
 
     it('shows a loading state', () => {
-      expect(findStatus().text()).toBe('Loading codeclimate report');
+      expect(findStatus().text()).toBe('Loading Code Quality report');
       expect(findSkeletonLoader().exists()).toBe(true);
     });
   });
@@ -65,7 +65,7 @@ describe('Codequality report app', () => {
 
     it('shows a warning icon and error message', () => {
       expect(findWarningIcon().exists()).toBe(true);
-      expect(findStatus().text()).toBe('Failed to load codeclimate report');
+      expect(findStatus().text()).toBe('Failed to load Code Quality report');
     });
   });
 
