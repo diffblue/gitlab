@@ -119,6 +119,7 @@
   - ".gitlab/ci/frontend.gitlab-ci.yml"
   - ".gitlab/ci/build-images.gitlab-ci.yml"
   - ".gitlab/ci/review.gitlab-ci.yml"
+  - ".gitlab/ci/review-apps/**/*"
   - "scripts/review_apps/base-config.yaml"
   - "scripts/review_apps/review-apps.sh"
   - "scripts/trigger-build"
@@ -1391,7 +1392,7 @@
 ################
 # Review rules #
 ################
-.review:rules:review-build-cng:
+.review:rules:review-app-pipeline:
   rules:
     - <<: *if-not-ee
       when: never
@@ -1402,6 +1403,22 @@
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *code-patterns
       when: manual
+      allow_failure: true
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *qa-patterns
+      allow_failure: true
+    - <<: *if-dot-com-gitlab-org-schedule
+
+.review:rules:review-build-cng:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *ci-review-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *frontend-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *code-patterns
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *qa-patterns
