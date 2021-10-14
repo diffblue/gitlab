@@ -30,6 +30,6 @@ module RedisHelpers
 
   # Usage: session state
   def redis_sessions_cleanup!
-    Gitlab::Redis::Session.with(&:flushdb)
+    Gitlab::Redis::Sessions.with(&:flushdb)
   end
 end

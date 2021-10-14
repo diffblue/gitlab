@@ -5,10 +5,10 @@ require 'spec_helper'
 RSpec.shared_examples "redis_new_instance_shared_examples" do |name, fallback_class|
   let(:instance_specific_config_file) { "config/redis.#{name}.yml" }
   let(:environment_config_file_name) { "GITLAB_REDIS_#{name.upcase}_CONFIG_FILE" }
-  let(:shared_state_config_file) { nil }
+  let(:fallback_config_file) { nil }
 
   before do
-    allow(fallback_class).to receive(:config_file_name).and_return(shared_state_config_file)
+    allow(fallback_class).to receive(:config_file_name).and_return(fallback_config_file)
   end
 
   include_examples "redis_shared_examples"
@@ -44,10 +44,10 @@ RSpec.shared_examples "redis_new_instance_shared_examples" do |name, fallback_cl
 
         it { expect(subject).to eq('global override') }
 
-        context 'and SharedState has a different config file' do
-          let(:shared_state_config_file) { 'shared state config file' }
+        context "and #{fallback_class.name.demodulize} has a different config file" do
+          let(:fallback_config_file) { 'fallback config file' }
 
-          it { expect(subject).to eq('shared state config file') }
+          it { expect(subject).to eq('fallback config file') }
         end
       end
     end
