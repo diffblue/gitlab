@@ -1,4 +1,4 @@
-import { GlIcon, GlLink } from '@gitlab/ui';
+import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import IssueLink from 'ee/vulnerabilities/components/issue_link.vue';
 import { getBinding, createMockDirective } from 'helpers/vue_mock_directive';
@@ -21,6 +21,8 @@ describe('IssueLink component', () => {
         directives: {
           GlTooltip: createMockDirective(),
         },
+        // this allows us to retrieve the rendered text
+        stubs: { GlSprintf },
       }),
     );
   };
@@ -53,16 +55,22 @@ describe('IssueLink component', () => {
 
   describe('internal issues', () => {
     describe.each`
-      state       | icon
-      ${'opened'} | ${'issue-open-m'}
-      ${'closed'} | ${'issue-close'}
-    `('with state "$state"', ({ state, icon }) => {
+      state       | icon              | shouldContainClosedText
+      ${'opened'} | ${'issues'}       | ${false}
+      ${'closed'} | ${'issue-closed'} | ${true}
+    `('with state "$state"', ({ state, icon, shouldContainClosedText }) => {
       beforeEach(() => {
         wrapper = createWrapper({ propsData: { issue: createIssue({ state }) } });
       });
 
       it('should contain the correct issue icon', () => {
         expect(findIcon().attributes('name')).toBe(icon);
+      });
+
+      it(`${
+        shouldContainClosedText ? 'should' : 'should not'
+      } contain a text that marks it as closed`, () => {
+        expect(findIssueLink().text().includes('closed')).toBe(shouldContainClosedText);
       });
     });
   });

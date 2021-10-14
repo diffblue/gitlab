@@ -1,11 +1,12 @@
 <script>
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
-import { GlIcon, GlLink, GlTooltipDirective, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlIcon, GlLink, GlTooltipDirective, GlSafeHtmlDirective, GlSprintf } from '@gitlab/ui';
 
 export default {
   components: {
     GlIcon,
     GlLink,
+    GlSprintf,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -23,11 +24,13 @@ export default {
   },
   computed: {
     iconName() {
-      return this.issue.state === this.$options.STATE_OPENED ? 'issue-open-m' : 'issue-close';
+      return this.issueIsClosed ? 'issue-closed' : 'issues';
+    },
+    issueIsClosed() {
+      return this.issue.state === 'closed';
     },
   },
   jiraLogo,
-  STATE_OPENED: 'opened',
 };
 </script>
 <template>
@@ -45,11 +48,14 @@ export default {
     ></span>
     <gl-icon
       v-else
-      class="gl-mr-1"
-      :class="{ 'gl-text-green-600': issue.state === $options.STATE_OPENED }"
+      class="gl-mr-2"
+      :class="{ 'gl-text-green-600': !issueIsClosed }"
       :name="iconName"
     />
-    #{{ issue.iid }}
+    <gl-sprintf v-if="issueIsClosed" :message="__('#%{issueIid} (closed)')">
+      <template #issueIid>{{ issue.iid }}</template>
+    </gl-sprintf>
+    <span v-else>#{{ issue.iid }}</span>
     <gl-icon v-if="isJira" :size="12" name="external-link" class="gl-ml-1" />
   </gl-link>
 </template>
