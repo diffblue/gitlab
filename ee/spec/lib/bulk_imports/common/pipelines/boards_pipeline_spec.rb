@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Groups::Pipelines::BoardsPipeline do
+RSpec.describe BulkImports::Common::Pipelines::BoardsPipeline do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:bulk_import) { create(:bulk_import, user: user) }
-  let_it_be(:filepath) { 'spec/fixtures/bulk_imports/gz/boards.ndjson.gz' }
+  let_it_be(:filepath) { 'ee/spec/fixtures/bulk_imports/gz/boards.ndjson.gz' }
+
   let_it_be(:entity) do
     create(
       :bulk_import_entity,
@@ -24,6 +25,7 @@ RSpec.describe BulkImports::Groups::Pipelines::BoardsPipeline do
   let(:tmpdir) { Dir.mktmpdir }
 
   before do
+    stub_licensed_features(board_assignee_lists: true, board_milestone_lists: true)
     FileUtils.copy_file(filepath, File.join(tmpdir, 'boards.ndjson.gz'))
     group.add_owner(user)
   end
@@ -37,13 +39,15 @@ RSpec.describe BulkImports::Groups::Pipelines::BoardsPipeline do
         allow(service).to receive(:execute)
       end
 
-      expect { subject.run }.to change(Board, :count).by(1)
+      expect { subject.run }.to change(Board, :count).by(2)
 
       lists = group.boards.find_by(name: 'first board').lists
+      board_one = group.boards.find_by(name: 'first board')
+      board_two = group.boards.find_by(name: 'second board')
 
-      expect(lists.count).to eq(3)
-      expect(lists.first.label.title).to eq('TSL')
-      expect(lists.second.label.title).to eq('Sosync')
+      expect(lists.map(&:list_type)).to contain_exactly('assignee', 'milestone')
+      expect(board_one.milestone).to be_nil
+      expect(board_two.milestone.title).to eq 'v4.0'
     end
   end
 end

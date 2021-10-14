@@ -14,7 +14,7 @@ RSpec.describe BulkImports::Groups::Stage do
       [1, BulkImports::Groups::Pipelines::BadgesPipeline],
       [1, BulkImports::Groups::Pipelines::IterationsPipeline],
       [1, BulkImports::Groups::Pipelines::ProjectEntitiesPipeline],
-      [2, BulkImports::Groups::Pipelines::BoardsPipeline],
+      [2, BulkImports::Common::Pipelines::BoardsPipeline],
       [2, BulkImports::Groups::Pipelines::EpicsPipeline],
       [4, BulkImports::Common::Pipelines::EntityFinisher]
     ]
