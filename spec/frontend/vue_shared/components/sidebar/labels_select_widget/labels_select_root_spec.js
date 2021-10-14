@@ -41,6 +41,7 @@ describe('LabelsSelectRoot', () => {
       propsData: {
         ...config,
         issuableType: IssuableType.Issue,
+        labelType: 'ProjectLabel',
       },
       stubs: {
         SidebarEditableItem,

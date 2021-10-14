@@ -1,8 +1,10 @@
 <script>
+import { MutationOperationMode } from '~/graphql_shared/utils';
 import createFlash from '~/flash';
+import { IssuableType } from '~/issue_show/constants';
 import { __ } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
-import { labelsQueries } from '~/sidebar/constants';
+import { labelsQueries, labelsMutations } from '~/sidebar/constants';
 import { DropdownVariant } from './constants';
 import DropdownContents from './dropdown_contents.vue';
 import DropdownValue from './dropdown_value.vue';
@@ -50,16 +52,6 @@ export default {
       required: false,
       default: DropdownVariant.Sidebar,
     },
-    selectedLabels: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    labelsSelectInProgress: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     labelsFilterBasePath: {
       type: String,
       required: false,
@@ -106,14 +98,18 @@ export default {
     },
     attrWorkspacePath: {
       type: String,
-      required: false,
-      default: undefined,
+      required: true,
+    },
+    labelType: {
+      type: String,
+      required: true,
     },
   },
   data() {
     return {
       contentIsOnViewport: true,
       issuableLabels: [],
+      labelsSelectInProgress: false,
     };
   },
   computed: {
@@ -136,7 +132,9 @@ export default {
         };
       },
       update(data) {
-        return data.workspace?.issuable?.labels.nodes || [];
+        const labels = data.workspace?.issuable?.labels.nodes || [];
+        this.selected = labels;
+        return labels;
       },
       error() {
         createFlash({ message: __('Error fetching labels.') });
@@ -145,6 +143,10 @@ export default {
   },
   methods: {
     handleDropdownClose(labels) {
+      if (this.iid !== '') {
+        this.updateSelectedLabels(this.getUpdateVariables(labels));
+      }
+
       this.$emit('updateSelectedLabels', labels);
       this.collapseEditableItem();
     },
@@ -153,6 +155,72 @@ export default {
     },
     handleCollapsedValueClick() {
       this.$emit('toggleCollapse');
+    },
+    getUpdateVariables(labels) {
+      let labelIds = [];
+
+      labelIds = labels.map(({ id }) => id);
+
+      switch (this.issuableType) {
+        case IssuableType.Issue:
+          return {
+            iid: this.iid,
+            projectPath: this.fullPath,
+            labelIds,
+          };
+        case IssuableType.MergeRequest:
+          return {
+            iid: this.iid,
+            labelIds,
+            operationMode: MutationOperationMode.Replace,
+            projectPath: this.fullPath,
+          };
+        default:
+          return {};
+      }
+    },
+    updateSelectedLabels(inputVariables) {
+      this.labelsSelectInProgress = true;
+
+      this.$apollo
+        .mutate({
+          mutation: labelsMutations[this.issuableType].mutation,
+          variables: { input: inputVariables },
+        })
+        .then(({ data }) => {
+          const { mutationName } = labelsMutations[this.issuableType];
+
+          if (data[mutationName]?.errors?.length) {
+            throw new Error();
+          }
+        })
+        .catch(() => createFlash({ message: __('An error occurred while updating labels.') }))
+        .finally(() => {
+          this.labelsSelectInProgress = false;
+        });
+    },
+    getRemoveVariables(labelId) {
+      switch (this.issuableType) {
+        case IssuableType.Issue:
+          return {
+            iid: this.iid,
+            projectPath: this.fullPath,
+            removeLabelIds: [labelId],
+          };
+        case IssuableType.MergeRequest:
+          return {
+            iid: this.iid,
+            labelIds: [labelId],
+            operationMode: MutationOperationMode.Remove,
+            projectPath: this.fullPath,
+          };
+        default:
+          return {};
+      }
+    },
+    handleLabelRemove(labelId) {
+      this.updateSelectedLabels(this.getRemoveVariables(labelId));
+      this.$emit('onLabelRemove', labelId);
     },
     isDropdownVariantSidebar,
     isDropdownVariantStandalone,
@@ -188,7 +256,7 @@ export default {
             :allow-label-remove="allowLabelRemove"
             :labels-filter-base-path="labelsFilterBasePath"
             :labels-filter-param="labelsFilterParam"
-            @onLabelRemove="$emit('onLabelRemove', $event)"
+            @onLabelRemove="handleLabelRemove"
           >
             <slot></slot>
           </dropdown-value>
@@ -201,7 +269,7 @@ export default {
             :labels-filter-base-path="labelsFilterBasePath"
             :labels-filter-param="labelsFilterParam"
             class="gl-mb-2"
-            @onLabelRemove="$emit('onLabelRemove', $event)"
+            @onLabelRemove="handleLabelRemove"
           >
             <slot></slot>
           </dropdown-value>
@@ -212,12 +280,13 @@ export default {
             :footer-create-label-title="footerCreateLabelTitle"
             :footer-manage-label-title="footerManageLabelTitle"
             :labels-create-title="labelsCreateTitle"
-            :selected-labels="selectedLabels"
+            :selected-labels="issuableLabels"
             :variant="variant"
             :issuable-type="issuableType"
             :is-visible="edit"
             :full-path="fullPath"
             :attr-workspace-path="attrWorkspacePath"
+            :label-type="labelType"
             @setLabels="handleDropdownClose"
             @closeDropdown="collapseEditableItem"
           />
@@ -233,10 +302,12 @@ export default {
       :footer-create-label-title="footerCreateLabelTitle"
       :footer-manage-label-title="footerManageLabelTitle"
       :labels-create-title="labelsCreateTitle"
-      :selected-labels="selectedLabels"
+      :selected-labels="issuableLabels"
       :variant="variant"
       :issuable-type="issuableType"
       :full-path="fullPath"
+      :attr-workspace-path="attrWorkspacePath"
+      :label-type="labelType"
       @setLabels="handleDropdownClose"
     />
   </div>

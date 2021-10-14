@@ -68,8 +68,11 @@ export default {
     },
     attrWorkspacePath: {
       type: String,
-      required: false,
-      default: undefined,
+      required: true,
+    },
+    labelType: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -193,11 +196,11 @@ export default {
         :is="dropdownContentsView"
         v-model="localSelectedLabels"
         :search-key="searchKey"
-        :selected-labels="selectedLabels"
         :allow-multiselect="allowMultiselect"
         :issuable-type="issuableType"
         :full-path="fullPath"
         :attr-workspace-path="attrWorkspacePath"
+        :label-type="labelType"
         @hideCreateView="toggleDropdownContentsCreateView"
       />
     </template>

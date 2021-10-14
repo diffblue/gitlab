@@ -1572,12 +1572,13 @@ describe('setActiveIssueLabels', () => {
   const getters = { activeBoardItem: mockIssue };
   const testLabelIds = labels.map((label) => label.id);
   const input = {
-    addLabelIds: testLabelIds,
+    labelsIds: testLabelIds,
     removeLabelIds: [],
     projectPath: 'h/b',
+    labels,
   };
 
-  it('should assign labels on success, and sets loading state for labels', (done) => {
+  it('should assign labels on success', (done) => {
     jest
       .spyOn(gqlClient, 'mutate')
       .mockResolvedValue({ data: { updateIssue: { issue: { labels: { nodes: labels } } } } });
@@ -1593,14 +1594,6 @@ describe('setActiveIssueLabels', () => {
       input,
       { ...state, ...getters },
       [
-        {
-          type: types.SET_LABELS_LOADING,
-          payload: true,
-        },
-        {
-          type: types.SET_LABELS_LOADING,
-          payload: false,
-        },
         {
           type: types.UPDATE_BOARD_ITEM_BY_ID,
           payload,

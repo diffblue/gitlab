@@ -19,10 +19,6 @@ export default {
     prop: 'localSelectedLabels',
   },
   props: {
-    selectedLabels: {
-      type: Array,
-      required: true,
-    },
     allowMultiselect: {
       type: Boolean,
       required: true,

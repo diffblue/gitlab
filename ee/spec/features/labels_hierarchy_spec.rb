@@ -11,12 +11,11 @@ RSpec.describe 'Labels Hierarchy', :js do
 
   let!(:grandparent_group_label) { create(:group_label, group: grandparent, title: 'Label_1') }
   let!(:parent_group_label) { create(:group_label, group: parent, title: 'Label_2') }
-  let!(:child_group_label) { create(:group_label, group: child, title: 'Label_3') }
-  let!(:project_label_1) { create(:label, project: project_1, title: 'Label_4') }
+  let!(:project_label_1) { create(:label, project: project_1, title: 'Label_3') }
 
-  let!(:labeled_issue_1) { create(:labeled_issue, project: project_1, labels: [grandparent_group_label, parent_group_label, child_group_label]) }
+  let!(:labeled_issue_1) { create(:labeled_issue, project: project_1, labels: [grandparent_group_label, parent_group_label]) }
   let!(:labeled_issue_2) { create(:labeled_issue, project: project_1, labels: [grandparent_group_label, parent_group_label]) }
-  let!(:labeled_issue_3) { create(:labeled_issue, project: project_1, labels: [grandparent_group_label, parent_group_label, child_group_label, project_label_1]) }
+  let!(:labeled_issue_3) { create(:labeled_issue, project: project_1, labels: [grandparent_group_label, parent_group_label, project_label_1]) }
   let!(:not_labeled) { create(:issue, project: project_1) }
 
   before do
@@ -26,8 +25,8 @@ RSpec.describe 'Labels Hierarchy', :js do
   end
 
   shared_examples 'filter for scoped boards' do |project = false|
-    it 'scopes board to ancestor and descendant labels' do
-      labels = [grandparent_group_label, parent_group_label, child_group_label]
+    it 'scopes board to ancestor and current group labels' do
+      labels = [grandparent_group_label, parent_group_label]
       labels.push(project_label_1) if project
 
       labels.each do |label|

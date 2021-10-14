@@ -14,6 +14,7 @@ import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/createEpic.mutation.graphql';
 
@@ -31,7 +32,6 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
-    'iid',
     'groupPath',
     'groupEpicsPath',
     'labelsFetchPath',
@@ -48,6 +48,7 @@ export default {
       startDateFixed: null,
       dueDateFixed: null,
       loading: false,
+      LabelType,
     };
   },
   computed: {
@@ -190,13 +191,13 @@ export default {
         <labels-select-widget
           v-if="glFeatures.labelsWidget"
           class="block labels js-labels-block"
-          :iid="iid"
           :full-path="groupPath"
           :allow-label-create="true"
           :allow-multiselect="true"
           :allow-scoped-labels="false"
           :labels-filter-base-path="groupEpicsPath"
-          :selected-labels="labels"
+          :attr-workspace-path="groupPath"
+          :label-type="LabelType.group"
           issuable-type="epic"
           variant="embedded"
           data-qa-selector="labels_block"
