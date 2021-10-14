@@ -9,15 +9,11 @@ workhorse:verify:
 
 .workhorse:test:
   extends: .workhorse:rules:workhorse
-  services:
-    - name: registry.gitlab.com/gitlab-org/build/cng/gitaly:master-ubi8
-      # Disable the hooks so we don't have to stub the GitLab API
-      command: ["/usr/bin/env", "GITALY_TESTING_NO_GIT_HOOKS=1", "/scripts/process-wrapper"]
-      alias: gitaly
   variables:
-    GITALY_ADDRESS: "tcp://gitaly:8075"
+    GITALY_ADDRESS: "tcp://127.0.0.1:8075"
   stage: test
-  needs: []
+  needs:
+    - setup-test-env
   script:
     - go version
     - apt-get update && apt-get -y install libimage-exiftool-perl
