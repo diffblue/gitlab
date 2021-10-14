@@ -6,7 +6,7 @@ module IncidentManagement
       include ::IncidentManagement::BasePendingEscalation
       include IgnorableColumns
 
-      ignore_columns :schedule_id, :status, remove_with: '14.4', remove_after: '2021-09-22'
+      ignore_columns :schedule_id, :status, remove_with: '14.5', remove_after: '2021-10-22'
 
       self.table_name = 'incident_management_pending_alert_escalations'
 

@@ -110,11 +110,9 @@ CREATE TABLE incident_management_pending_alert_escalations (
     id bigint NOT NULL,
     rule_id bigint NOT NULL,
     alert_id bigint NOT NULL,
-    schedule_id bigint,
     process_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    status smallint
+    updated_at timestamp with time zone NOT NULL
 )
 PARTITION BY RANGE (process_at);
 
@@ -25444,8 +25442,6 @@ CREATE INDEX index_incident_management_pending_alert_escalations_on_alert_id ON 
 
 CREATE INDEX index_incident_management_pending_alert_escalations_on_rule_id ON ONLY incident_management_pending_alert_escalations USING btree (rule_id);
 
-CREATE INDEX index_incident_management_pending_alert_escalations_on_schedule ON ONLY incident_management_pending_alert_escalations USING btree (schedule_id);
-
 CREATE INDEX index_incident_management_pending_issue_escalations_on_issue_id ON ONLY incident_management_pending_issue_escalations USING btree (issue_id);
 
 CREATE INDEX index_incident_management_pending_issue_escalations_on_rule_id ON ONLY incident_management_pending_issue_escalations USING btree (rule_id);
@@ -29976,9 +29972,6 @@ ALTER TABLE ONLY ci_job_variables
 
 ALTER TABLE ONLY packages_nuget_metadata
     ADD CONSTRAINT fk_rails_fc0c19f5b4 FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
-
-ALTER TABLE incident_management_pending_alert_escalations
-    ADD CONSTRAINT fk_rails_fcbfd9338b FOREIGN KEY (schedule_id) REFERENCES incident_management_oncall_schedules(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY customer_relations_contacts
     ADD CONSTRAINT fk_rails_fd3f2e7572 FOREIGN KEY (organization_id) REFERENCES customer_relations_organizations(id) ON DELETE CASCADE;
