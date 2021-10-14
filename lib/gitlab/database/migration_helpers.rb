@@ -1272,8 +1272,8 @@ module Gitlab
 
       def check_trigger_permissions!(table)
         unless Grant.create_and_execute_trigger?(table)
-          dbname = Database.main.database_name
-          user = Database.main.username
+          dbname = ApplicationRecord.database.database_name
+          user = ApplicationRecord.database.username
 
           raise <<-EOF
 Your database user is not allowed to create, drop, or execute triggers on the
@@ -1595,8 +1595,8 @@ into similar problems in the future (e.g. when new tables are created).
       def create_extension(extension)
         execute('CREATE EXTENSION IF NOT EXISTS %s' % extension)
       rescue ActiveRecord::StatementInvalid => e
-        dbname = Database.main.database_name
-        user = Database.main.username
+        dbname = ApplicationRecord.database.database_name
+        user = ApplicationRecord.database.username
 
         warn(<<~MSG) if e.to_s =~ /permission denied/
           GitLab requires the PostgreSQL extension '#{extension}' installed in database '#{dbname}', but
@@ -1623,8 +1623,8 @@ into similar problems in the future (e.g. when new tables are created).
       def drop_extension(extension)
         execute('DROP EXTENSION IF EXISTS %s' % extension)
       rescue ActiveRecord::StatementInvalid => e
-        dbname = Database.main.database_name
-        user = Database.main.username
+        dbname = ApplicationRecord.database.database_name
+        user = ApplicationRecord.database.username
 
         warn(<<~MSG) if e.to_s =~ /permission denied/
           This migration attempts to drop the PostgreSQL extension '#{extension}'
