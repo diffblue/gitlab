@@ -10,6 +10,9 @@
 .if-not-foss: &if-not-foss
   if: '$CI_PROJECT_NAME != "gitlab-foss" && $CI_PROJECT_NAME != "gitlab-ce" && $CI_PROJECT_NAME != "gitlabhq"'
 
+.if-jh: &if-jh
+  if: '$CI_PROJECT_PATH == "gitlab-jh/gitlab"'
+
 .if-default-refs: &if-default-refs
   if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH || $CI_COMMIT_REF_NAME =~ /^[\d-]+-stable(-ee)?$/ || $CI_COMMIT_REF_NAME =~ /^\d+-\d+-auto-deploy-\d+$/ || $CI_COMMIT_REF_NAME =~ /^security\// || $CI_MERGE_REQUEST_IID || $CI_COMMIT_TAG || $FORCE_GITLAB_CI'
 
@@ -503,6 +506,8 @@
   rules:
     - <<: *if-not-ee
       when: never
+    - <<: *if-jh
+      when: never
     - <<: *if-merge-request-labels-as-if-jh
     - <<: *if-merge-request-labels-run-all-rspec
     - changes: *code-backstage-qa-patterns
@@ -517,6 +522,8 @@
   rules:
     - <<: *if-not-ee
       when: never
+    - <<: *if-jh
+      when: never
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
     - <<: *if-merge-request-labels-as-if-foss
@@ -529,6 +536,8 @@
 .frontend:rules:default-frontend-jobs-as-if-jh:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-jh
       when: never
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
@@ -578,6 +587,8 @@
 .frontend:rules:eslint-as-if-foss:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-jh
       when: never
     # We already have `static-analysis as-if-foss` which already runs `lint:eslint:all` if the `pipeline:run-as-if-foss` label is set.
     - <<: *if-merge-request-labels-as-if-foss
@@ -647,6 +658,8 @@
 .qa:rules:as-if-foss:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-jh
       when: never
     - <<: *if-security-merge-request
       changes: *code-qa-patterns
@@ -1596,6 +1609,8 @@
 .setup:rules:add-jh-folder:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-jh
       when: never
     - <<: *if-merge-request-labels-as-if-jh
     - <<: *if-merge-request-labels-run-all-rspec
