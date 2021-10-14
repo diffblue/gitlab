@@ -7,7 +7,8 @@
     %button.btn.gl-button.js-settings-toggle{ type: 'button' }
       = expanded ? _('Collapse') : _('Expand')
     %p
-      = _('Select a project to read Insights configuration file')
+      = s_('GroupSettings|Select the project that contains your custom Insights file.')
+      = link_to _('Learn more.'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     = form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
@@ -19,8 +20,7 @@
             = insight_form.hidden_field :id
             = insight_form.label :project_id, class: 'label-light' do
               .form-text.text-muted
-                = _('Select a repository')
-                = link_to sprite_icon('question-o'), help_page_path('user/group/insights/index.md'), target: '_blank'
+                = html_escape(s_('GroupSettings|Select a project with the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
             = project_select_tag('group[insight_attributes][project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
               placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true }, value: insight.project_id)
       = form.submit _('Save changes'), class: "btn gl-button btn-success"
