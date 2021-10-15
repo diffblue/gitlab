@@ -47,6 +47,17 @@ module GitalySetup
     File.join(tmp_tests_gitlab_shell_dir, '.gitlab_shell_secret')
   end
 
+  # Return the path of the vendored gems in <gdk>/gitaly, if exists
+  def gdk_gitaly_ruby_gem_path
+    gitaly_ruby_path = File.expand_path('../../../../gitaly/ruby/', __dir__)
+    bundle_config_path = File.join(gitaly_ruby_path, '.bundle')
+    bundle_path = Bundler::Settings.new(bundle_config_path).path
+
+    return if bundle_path.use_system_gems?
+
+    File.expand_path(bundle_path.explicit_path, gitaly_ruby_path)
+  end
+
   def env
     {
       'HOME' => File.expand_path('tmp/tests'),
@@ -68,7 +79,7 @@ module GitalySetup
     if ENV['CI']
       File.expand_path('../../../vendor/gitaly-ruby', __dir__)
     else
-      File.expand_path(Bundler.configured_bundle_path.base_path)
+      gdk_gitaly_ruby_gem_path || File.expand_path(Bundler.configured_bundle_path.base_path)
     end
   end
 
