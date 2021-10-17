@@ -18266,9 +18266,6 @@ msgstr ""
 msgid "Include description in commit message"
 msgstr ""
 
-msgid "Include merge request description"
-msgstr ""
-
 msgid "Include new features from all tiers."
 msgstr ""
 
@@ -41386,6 +41383,9 @@ msgid "mrWidget|This project is archived, write access has been disabled"
 msgstr ""
 
 msgid "mrWidget|To approve this merge request, please enter your password. This project requires all approvals to be authenticated."
+msgstr ""
+
+msgid "mrWidget|To change this default message, edit the template for merge commit messages. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "mrWidget|To merge, a Jira issue key must be mentioned in the title or description."
