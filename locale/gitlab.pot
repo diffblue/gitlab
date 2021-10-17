@@ -27144,10 +27144,16 @@ msgstr ""
 msgid "ProjectSettings|Manages large files such as audio, video, and graphics files."
 msgstr ""
 
+msgid "ProjectSettings|Maximum 500 characters."
+msgstr ""
+
 msgid "ProjectSettings|Merge checks"
 msgstr ""
 
 msgid "ProjectSettings|Merge commit"
+msgstr ""
+
+msgid "ProjectSettings|Merge commit message template"
 msgstr ""
 
 msgid "ProjectSettings|Merge commit with semi-linear history"
@@ -27265,6 +27271,9 @@ msgid "ProjectSettings|Target project"
 msgstr ""
 
 msgid "ProjectSettings|The commit message used when applying merge request suggestions. %{link_start}Learn more about suggestions.%{link_end}"
+msgstr ""
+
+msgid "ProjectSettings|The commit message used when merging, if the merge method creates a merge commit. %{link_start}Learn more about syntax and variables.%{link_end}"
 msgstr ""
 
 msgid "ProjectSettings|The default target project for merge requests created in this fork project."
