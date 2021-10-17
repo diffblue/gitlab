@@ -14,6 +14,7 @@ module EE
           params do
             requires :tag_name, type: String, desc: 'The name of the tag', as: :tag
           end
+          route_setting :authentication, job_token_allowed: true
           post ':id/releases/:tag_name/evidence', requirements: ::API::Releases::RELEASE_ENDPOINT_REQUIREMENTS do
             authorize_create_evidence!
 
