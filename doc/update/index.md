@@ -163,12 +163,10 @@ To address the above two scenario's, it is advised to do the following prior to 
 
 ## Checking for pending Advanced Search migrations
 
-This section is only applicable if you have enabled the [Elasticsearch
-integration](../integration/elasticsearch.md).
+This section is only applicable if you have enabled the [Elasticsearch integration](../integration/elasticsearch.md).
 
-Major releases require all [Advanced Search
-migrations](../integration/elasticsearch.md#advanced-search-migrations) to
-be finished from the most recent minor release in your current version
+Major releases require all [Advanced Search migrations](../integration/elasticsearch.md#advanced-search-migrations)
+to be finished from the most recent minor release in your current version
 before the major version upgrade. You can find pending migrations by
 running the following command:
 
@@ -187,8 +185,7 @@ sudo -u git -H bundle exec rake gitlab:elastic:list_pending_migrations
 
 ### What do I do if my Advanced Search migrations are stuck?
 
-See [how to retry a halted
-migration](../integration/elasticsearch.md#retry-a-halted-migration).
+See [how to retry a halted migration](../integration/elasticsearch.md#retry-a-halted-migration).
 
 ## Upgrade paths
 
@@ -234,12 +231,11 @@ It's also important to ensure that any background migrations have been fully com
 before upgrading to a new major version. To see the current size of the `background_migration` queue,
 [Check for background migrations before upgrading](#checking-for-background-migrations-before-upgrading).
 
-If you have enabled the [Elasticsearch
-integration](../integration/elasticsearch.md), then ensure
+If you have enabled the [Elasticsearch integration](../integration/elasticsearch.md), then ensure
 all Advanced Search migrations are completed in the last minor version within
-your current version. Be sure to [check for pending Advanced Search
-migrations](#checking-for-pending-advanced-search-migrations) before proceeding
-with the major version upgrade.
+your current version. Be sure to
+[check for pending Advanced Search migrations](#checking-for-pending-advanced-search-migrations)
+before proceeding with the major version upgrade.
 
 If your GitLab instance has any runners associated with it, it is very
 important to upgrade GitLab Runner to match the GitLab minor version that was
