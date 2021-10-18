@@ -7,8 +7,6 @@ module Clusters
     end
 
     def execute
-      return [] unless feature_available?
-
       # closest, most-specific authorization for a given agent wins
       (project_authorizations + implicit_authorizations + group_authorizations)
         .uniq(&:agent_id)
@@ -17,10 +15,6 @@ module Clusters
     private
 
     attr_reader :project
-
-    def feature_available?
-      project.licensed_feature_available?(:cluster_agents)
-    end
 
     def implicit_authorizations
       project.cluster_agents.map do |agent|

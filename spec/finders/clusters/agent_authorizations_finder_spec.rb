@@ -15,19 +15,7 @@ RSpec.describe Clusters::AgentAuthorizationsFinder do
     let_it_be(:staging_agent) { create(:cluster_agent, project: agent_configuration_project) }
     let_it_be(:production_agent) { create(:cluster_agent, project: agent_configuration_project) }
 
-    let(:feature_available) { true }
-
     subject { described_class.new(requesting_project).execute }
-
-    before do
-      stub_licensed_features(cluster_agents: feature_available)
-    end
-
-    context 'feature is not available' do
-      let(:feature_available) { false }
-
-      it { is_expected.to be_empty }
-    end
 
     describe 'project authorizations' do
       context 'agent configuration project does not share a root namespace with the given project' do
