@@ -10,6 +10,10 @@ status: active
 time_frame: none
 data_source: license
 data_category: subscription
+instrumentation_class: LicenseMetric
+options:
+  attribute:
+    - starts_at
 distribution:
 - ee
 tier:

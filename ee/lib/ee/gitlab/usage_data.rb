@@ -72,7 +72,7 @@ module EE
         def features_usage_data_ee
           {
             elasticsearch_enabled: alt_usage_data(fallback: nil) { ::Gitlab::CurrentSettings.elasticsearch_search? },
-            license_trial_ends_on: alt_usage_data(fallback: nil) { License.trial_ends_on },
+            license_trial_ends_on: alt_usage_data(fallback: nil) { add_metric("LicenseMetric", options: { attribute: :trial_ends_on }) },
             geo_enabled: alt_usage_data(fallback: nil) { ::Gitlab::Geo.enabled? },
             user_cap_feature_enabled: add_metric('UserCapSettingEnabledMetric', time_frame: 'none')
           }
