@@ -9,10 +9,6 @@ module Geo
       ::Upload
     end
 
-    def self.replication_enabled_by_default?
-      false
-    end
-
     def carrierwave_uploader
       model_record.retrieve_uploader
     end
