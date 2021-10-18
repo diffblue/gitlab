@@ -14012,7 +14012,7 @@ Returns [`[String!]`](#string).
 
 ##### `Repository.paginatedTree`
 
-Paginated tree of the repository. Available only when feature flag `paginated_tree_graphql_query` is enabled. This flag is enabled by default.
+Paginated tree of the repository.
 
 Returns [`TreeConnection`](#treeconnection).
 
