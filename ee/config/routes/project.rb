@@ -119,6 +119,10 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
               end
             end
           end
+
+          namespace :zentao do
+            resources :issues, only: [:index, :show]
+          end
         end
 
         # Added for backward compatibility with https://gitlab.com/gitlab-org/gitlab/-/merge_requests/39543
