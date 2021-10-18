@@ -25,7 +25,7 @@ remotes to prevent conflicts caused by rewriting history.
 
 Bidirectional mirroring also creates a race condition where commits made close together to the same
 branch causes conflicts. The race condition can be mitigated by reducing the mirroring delay by using
-a [Push event webhook](../../integrations/webhooks.md#push-events) to trigger an immediate
+a [Push event webhook](../../integrations/webhook_events.md#push-events) to trigger an immediate
 pull to GitLab. Push mirroring from GitLab is rate limited to once per minute when only push mirroring
 protected branches.
 
@@ -33,7 +33,7 @@ protected branches.
 
 Assuming you have already configured the [push](push.md#set-up-a-push-mirror-to-another-gitlab-instance-with-2fa-activated)
 and [pull](pull.md#pull-from-a-remote-repository) mirrors in the upstream GitLab instance, to trigger an
-immediate pull as suggested above, you must configure a [Push Event Web Hook](../../integrations/webhooks.md#push-events)
+immediate pull as suggested above, you must configure a [Push Event Web Hook](../../integrations/webhook_events.md#push-events)
 in the downstream instance.
 
 To do this:
