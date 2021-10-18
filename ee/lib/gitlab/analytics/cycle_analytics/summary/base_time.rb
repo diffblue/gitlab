@@ -29,6 +29,10 @@ module Gitlab
             raise NotImplementedError, "Expected #{self.name} to implement end_event_identifier"
           end
 
+          def links
+            []
+          end
+
           private
 
           def assign_event_identifiers

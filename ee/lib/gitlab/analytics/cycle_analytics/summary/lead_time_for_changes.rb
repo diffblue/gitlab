@@ -25,6 +25,10 @@ module Gitlab
             n_('day', 'days', value)
           end
 
+          def links
+            []
+          end
+
           private
 
           attr_reader :stage, :current_user, :options, :from, :to
