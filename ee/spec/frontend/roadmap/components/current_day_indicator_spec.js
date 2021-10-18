@@ -1,18 +1,26 @@
 import { shallowMount } from '@vue/test-utils';
 
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import {
-  getTimeframeForQuartersView,
-  getTimeframeForMonthsView,
-  getTimeframeForWeeksView,
-} from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
-const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
+const mockTimeframeQuarters = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.QUARTERS,
+  initialDate: mockTimeframeInitialDate,
+});
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
+const mockTimeframeWeeks = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  presetType: PRESET_TYPES.WEEKS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = () =>
   shallowMount(CurrentDayIndicator, {

@@ -1,13 +1,18 @@
 import Vue from 'vue';
 
 import QuartersHeaderItemComponent from 'ee/roadmap/components/preset_quarters/quarters_header_item.vue';
-import { getTimeframeForQuartersView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 
 import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
 const mockTimeframeIndex = 0;
-const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
+const mockTimeframeQuarters = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.QUARTERS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   timeframeIndex = mockTimeframeIndex,
@@ -56,7 +61,7 @@ describe('QuartersHeaderItemComponent', () => {
       it('returns string containing Year and Quarter for current timeline header item', () => {
         vm = createComponent({});
 
-        expect(vm.timelineHeaderLabel).toBe('2017 Q3');
+        expect(vm.$el.innerText.trim()).toContain('2016 Q3');
       });
 
       it('returns string containing only Quarter for current timeline header item when previous header contained Year', () => {
@@ -65,7 +70,7 @@ describe('QuartersHeaderItemComponent', () => {
           timeframeItem: mockTimeframeQuarters[mockTimeframeIndex + 2],
         });
 
-        expect(vm.timelineHeaderLabel).toBe('2018 Q1');
+        expect(vm.$el.innerText.trim()).toContain('2017 Q1');
       });
     });
 
@@ -118,7 +123,7 @@ describe('QuartersHeaderItemComponent', () => {
       const itemLabelEl = vm.$el.querySelector('.item-label');
 
       expect(itemLabelEl).not.toBeNull();
-      expect(itemLabelEl.innerText.trim()).toBe('2017 Q3');
+      expect(itemLabelEl.innerText.trim()).toBe('2016 Q3');
     });
   });
 });

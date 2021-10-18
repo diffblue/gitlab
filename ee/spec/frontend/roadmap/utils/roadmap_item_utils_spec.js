@@ -161,11 +161,11 @@ describe('timeframeEndDate', () => {
   /*
     Note: there are inconsistencies in how timeframes are generated.
 
-    A monthly timeframe generated with roadmap_util's getTimeframeForMonthsView function -
+    A monthly timeframe generated with roadmap_util's getTimeframeForRangeType function -
       will always set its last item to the ending date for that month.
       E.g., [ Oct 1, Nov 1, Dec 31 ]
 
-      The same is true of quarterly timeframes generated with getTimeframeForQuarterlyView
+      The same is true of quarterly timeframes generated with getTimeframeForRangeType
       E.g., [ ..., { range: [ Oct 1, Nov 1, Dec 31 ] }]
 
     In comparison, a weekly timeframe won't have its last item set to the ending date for the week.
@@ -176,9 +176,9 @@ describe('timeframeEndDate', () => {
    */
   it.each`
     presetType               | endDate                          | timeframe
-    ${PRESET_TYPES.QUARTERS} | ${dateFromString('Dec 31 2021')} | ${mockQuarterly.timeframe}
-    ${PRESET_TYPES.MONTHS}   | ${dateFromString('May 31 2021')} | ${mockMonthly.timeframe}
-    ${PRESET_TYPES.WEEKS}    | ${dateFromString('Nov 15 2020')} | ${mockWeekly.timeframe}
+    ${PRESET_TYPES.QUARTERS} | ${dateFromString('May 31 2022')} | ${mockQuarterly.timeframe}
+    ${PRESET_TYPES.MONTHS}   | ${dateFromString('Dec 31 2020')} | ${mockMonthly.timeframe}
+    ${PRESET_TYPES.WEEKS}    | ${dateFromString('Jan 03 2021')} | ${mockWeekly.timeframe}
   `(
     `should return ending date for the timeframe range array when preset type is $presetType`,
     ({ presetType, endDate, timeframe }) => {

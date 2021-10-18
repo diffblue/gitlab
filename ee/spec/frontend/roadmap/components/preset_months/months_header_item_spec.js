@@ -1,12 +1,17 @@
 import Vue from 'vue';
 
 import MonthsHeaderItemComponent from 'ee/roadmap/components/preset_months/months_header_item.vue';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 
 import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 const mockTimeframeIndex = 0;
 
 const createComponent = ({
@@ -46,7 +51,7 @@ describe('MonthsHeaderItemComponent', () => {
       it('returns string containing Year and Month for current timeline header item', () => {
         vm = createComponent({});
 
-        expect(vm.timelineHeaderLabel).toBe('2017 Nov');
+        expect(vm.$el.innerText.trim()).toContain('2018 Jan');
       });
 
       it('returns string containing only Month for current timeline header item when previous header contained Year', () => {
@@ -55,7 +60,7 @@ describe('MonthsHeaderItemComponent', () => {
           timeframeItem: mockTimeframeMonths[mockTimeframeIndex + 1],
         });
 
-        expect(vm.timelineHeaderLabel).toBe('Dec');
+        expect(vm.$el.innerText.trim()).toContain('Feb');
       });
     });
 
@@ -107,7 +112,7 @@ describe('MonthsHeaderItemComponent', () => {
       const itemLabelEl = vm.$el.querySelector('.item-label');
 
       expect(itemLabelEl).not.toBeNull();
-      expect(itemLabelEl.innerText.trim()).toBe('2017 Nov');
+      expect(itemLabelEl.innerText.trim()).toBe('2018 Jan');
     });
   });
 });

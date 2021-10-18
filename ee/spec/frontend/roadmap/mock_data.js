@@ -1,9 +1,6 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
-import {
-  getTimeframeForWeeksView,
-  getTimeframeForMonthsView,
-  getTimeframeForQuartersView,
-} from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 
 import { dateFromString } from 'helpers/datetime_helpers';
 import {
@@ -137,7 +134,11 @@ export const mockWeekly = {
                   Oct 18 2020, Oct 25 2020, Nov  1 2020,
                   Nov  8 2020 ]
   */
-  timeframe: getTimeframeForWeeksView(OCT_11_2020),
+  timeframe: getTimeframeForRangeType({
+    timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+    presetType: PRESET_TYPES.WEEKS,
+    initialDate: OCT_11_2020,
+  }),
 };
 
 const DEC_1_2020 = dateFromString('Dec 1 2020');
@@ -150,7 +151,11 @@ export const mockMonthly = {
                   Jan 1 2021, Feb 1 2021, Mar 1 2021,
                   Apr 1 2021, May 31 2021 ]
   */
-  timeframe: getTimeframeForMonthsView(DEC_1_2020),
+  timeframe: getTimeframeForRangeType({
+    timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+    presetType: PRESET_TYPES.MONTHS,
+    initialDate: DEC_1_2020,
+  }),
 };
 
 const DEC_25_2020 = dateFromString('Dec 25 2020');
@@ -170,7 +175,11 @@ export const mockQuarterly = {
                   { 2021 Q1 }, { 2021 Q2 }, { 2021 Q3 },
                   { 2021 Q4 } ]
   */
-  timeframe: getTimeframeForQuartersView(DEC_25_2020),
+  timeframe: getTimeframeForRangeType({
+    timeframeRangeType: DATE_RANGES.THREE_YEARS,
+    presetType: PRESET_TYPES.QUARTERS,
+    initialDate: DEC_25_2020,
+  }),
 };
 
 export const mockEpic = {
@@ -269,7 +278,7 @@ export const mockFormattedChildEpic2 = {
 
 export const mockFormattedEpic = {
   ...mockRawEpic,
-  startDate: new Date(2017, 10, 1),
+  startDate: new Date(2018, 0, 1),
   originalStartDate: new Date(2017, 5, 26),
   endDate: new Date(2018, 2, 10),
   originalEndDate: new Date(2018, 2, 10),
@@ -283,9 +292,9 @@ export const mockFormattedEpic2 = {
   ...mockRawEpic2,
   isChildEpic: false,
   newEpic: undefined,
-  startDateOutOfRange: false,
+  startDateOutOfRange: true,
   endDateOutOfRange: false,
-  startDate: new Date(2017, 11, 31),
+  startDate: new Date(2018, 0, 1),
   originalStartDate: new Date(2017, 11, 31),
   endDate: new Date(2018, 1, 15),
   originalEndDate: new Date(2018, 1, 15),

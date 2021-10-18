@@ -4,6 +4,7 @@ import { createLocalVue } from '@vue/test-utils';
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
 import {
+  DATE_RANGES,
   PRESET_TYPES,
   EPIC_DETAILS_CELL_WIDTH,
   TIMELINE_CELL_MIN_WIDTH,
@@ -11,7 +12,7 @@ import {
 import createStore from 'ee/roadmap/store';
 import { REQUEST_EPICS_FOR_NEXT_PAGE } from 'ee/roadmap/store/mutation_types';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockFormattedChildEpic1,
   mockFormattedChildEpic2,
@@ -30,7 +31,11 @@ jest.mock('ee/roadmap/utils/epic_utils', () => ({
   scrollToCurrentDay: jest.fn(),
 }));
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 const store = createStore();
 store.dispatch('setInitialData', {
   currentGroupId: mockGroupId,

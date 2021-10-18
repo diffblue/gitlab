@@ -1,13 +1,17 @@
 import Vue from 'vue';
 
 import MonthsHeaderSubItemComponent from 'ee/roadmap/components/preset_months/months_header_sub_item.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   currentDate = mockTimeframeMonths[0],

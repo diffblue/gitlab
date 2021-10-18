@@ -1,12 +1,12 @@
 import MockAdapter from 'axios-mock-adapter';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
 import defaultState from 'ee/roadmap/store/state';
 import * as epicUtils from 'ee/roadmap/utils/epic_utils';
 import * as roadmapItemUtils from 'ee/roadmap/utils/roadmap_item_utils';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -33,7 +33,11 @@ import {
 
 jest.mock('~/flash');
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('Roadmap Vuex Actions', () => {
   const timeframeStartDate = mockTimeframeMonths[0];
@@ -458,8 +462,8 @@ describe('Roadmap Vuex Actions', () => {
         fullPath: 'gitlab-org',
         state: mockState.milestonessState,
         timeframe: {
-          start: '2017-11-01',
-          end: '2018-06-30',
+          start: '2018-01-01',
+          end: '2018-12-31',
         },
         includeDescendants: true,
       };
@@ -551,9 +555,9 @@ describe('Roadmap Vuex Actions', () => {
             payload: [
               {
                 ...mockFormattedMilestone,
-                startDateOutOfRange: false,
+                startDateOutOfRange: true,
                 endDateOutOfRange: false,
-                startDate: new Date(2017, 11, 31),
+                startDate: new Date(2018, 0, 1),
                 originalStartDate: new Date(2017, 11, 31),
                 endDate: new Date(2018, 1, 15),
                 originalEndDate: new Date(2018, 1, 15),

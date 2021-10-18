@@ -15,7 +15,6 @@ export default () => ({
   currentGroupId: -1,
   fullPath: '',
   timeframe: [],
-  extendedTimeframe: [],
   presetType: '',
   timeframeRangeType: '',
   sortedBy: '',

@@ -1,13 +1,17 @@
 import Vue from 'vue';
 
 import QuartersHeaderSubItemComponent from 'ee/roadmap/components/preset_quarters/quarters_header_sub_item.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForQuartersView } from 'ee/roadmap/utils/roadmap_utils';
+import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
-const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
+const mockTimeframeQuarters = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.QUARTERS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   currentDate = mockTimeframeQuarters[0].range[1],
