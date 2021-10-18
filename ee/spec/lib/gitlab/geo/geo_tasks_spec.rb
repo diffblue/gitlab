@@ -35,7 +35,7 @@ RSpec.describe Gitlab::Geo::GeoTasks do
     it 'aborts if the primary node is not set' do
       primary.update_column(:primary, false)
 
-      expect(subject).to receive(:abort).with('The primary is not set').and_raise('aborted')
+      expect(subject).to receive(:abort).with('The primary Geo site is not set').and_raise('aborted')
 
       expect { subject.set_secondary_as_primary }.to raise_error('aborted')
     end
@@ -48,19 +48,21 @@ RSpec.describe Gitlab::Geo::GeoTasks do
       expect { subject.set_secondary_as_primary }.to raise_error('aborted')
     end
 
-    it 'aborts if run on a node that is not a secondary' do
+    it 'does nothing if run on a node that is not a secondary' do
       primary.update_column(:primary, false)
       secondary.update!(primary: true)
 
-      expect(subject).to receive(:abort).with('This is not a secondary node').and_raise('aborted')
+      expect(subject).not_to receive(:abort)
 
-      expect { subject.set_secondary_as_primary }.to raise_error('aborted')
+      expect { subject.set_secondary_as_primary }.to output(/#{secondary.url} is already the primary Geo site/).to_stdout
+      expect(secondary.reload).to be_primary
+      expect(primary.reload).to be_secondary
     end
 
     it 'sets the secondary as the primary node' do
       expect(subject).not_to receive(:abort)
 
-      expect { subject.set_secondary_as_primary }.to output(/#{secondary.url} is now the primary Geo node/).to_stdout
+      expect { subject.set_secondary_as_primary }.to output(/#{secondary.url} is now the primary Geo site/).to_stdout
       expect(secondary.reload).to be_primary
     end
 
@@ -69,7 +71,7 @@ RSpec.describe Gitlab::Geo::GeoTasks do
 
       expect(subject).not_to receive(:abort)
 
-      expect { subject.set_secondary_as_primary }.to output(/#{secondary.url} is now the primary Geo node/).to_stdout
+      expect { subject.set_secondary_as_primary }.to output(/#{secondary.url} is now the primary Geo site/).to_stdout
       expect(secondary.reload).to be_primary
       expect(secondary.reload).to be_enabled
     end
