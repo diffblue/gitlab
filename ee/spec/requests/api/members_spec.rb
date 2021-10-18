@@ -498,7 +498,7 @@ RSpec.describe API::Members do
         end
 
         context 'when members have no public_email' do
-          it { is_expected.to include(a_hash_including('email' => '')) }
+          it { is_expected.to include(a_hash_including('email' => nil)) }
         end
       end
     end
