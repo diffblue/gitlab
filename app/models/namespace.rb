@@ -52,7 +52,7 @@ class Namespace < ApplicationRecord
   belongs_to :owner, class_name: "User"
 
   belongs_to :parent, class_name: "Namespace"
-  has_many :children, class_name: "Namespace", foreign_key: :parent_id
+  has_many :children, -> { where(type: Group.sti_name) }, class_name: "Namespace", foreign_key: :parent_id
   has_many :custom_emoji, inverse_of: :namespace
   has_one :chat_team, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_one :root_storage_statistics, class_name: 'Namespace::RootStorageStatistics'

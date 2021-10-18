@@ -28,6 +28,16 @@ RSpec.describe Namespace do
     it { is_expected.to have_one :onboarding_progress }
     it { is_expected.to have_one :admin_note }
     it { is_expected.to have_many :pending_builds }
+
+    describe '#children' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:subgroup) { create(:group, parent: group) }
+      let_it_be(:project_namespace) { create(:project_namespace, parent: group) }
+
+      it 'excludes project namespaces' do
+        expect(group.children).to match_array([subgroup])
+      end
+    end
   end
 
   describe 'validations' do
@@ -273,8 +283,8 @@ RSpec.describe Namespace do
 
     describe '.by_parent' do
       it 'includes correct namespaces' do
-        expect(described_class.by_parent(namespace1.id)).to eq([namespace1sub])
-        expect(described_class.by_parent(namespace2.id)).to eq([namespace2sub])
+        expect(described_class.by_parent(namespace1.id)).to match_array([namespace1sub])
+        expect(described_class.by_parent(namespace2.id)).to match_array([namespace2sub])
         expect(described_class.by_parent(nil)).to match_array([namespace, namespace1, namespace2])
       end
     end
