@@ -627,58 +627,32 @@ RSpec.describe Namespace do
   describe '#any_project_with_shared_runners_enabled?' do
     subject { namespace.any_project_with_shared_runners_enabled? }
 
-    shared_examples '#any_project_with_shared_runners_enabled? examples' do
-      context 'without projects' do
-        it { is_expected.to be_falsey }
-      end
-
-      context 'group with shared runners enabled project' do
-        let!(:project) { create(:project, namespace: namespace, shared_runners_enabled: true) }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'subgroup with shared runners enabled project' do
-        let(:namespace) { create(:group) }
-        let(:subgroup) { create(:group, parent: namespace) }
-        let!(:subproject) { create(:project, namespace: subgroup, shared_runners_enabled: true) }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'with project and disabled shared runners' do
-        let!(:project) do
-          create(:project,
-                 namespace: namespace,
-                 shared_runners_enabled: false)
-        end
-
-        it { is_expected.to be_falsey }
-      end
+    context 'without projects' do
+      it { is_expected.to be_falsey }
     end
 
-    context 'when use_cte_for_any_project_with_shared_runners_enabled is enabled' do
-      before do
-        stub_feature_flags(use_cte_for_any_project_with_shared_runners_enabled: true)
-      end
+    context 'group with shared runners enabled project' do
+      let!(:project) { create(:project, namespace: namespace, shared_runners_enabled: true) }
 
-      it_behaves_like '#any_project_with_shared_runners_enabled? examples' do
-        it 'creates a CTE' do
-          group = create(:group)
-
-          expect(Gitlab::SQL::CTE).to receive(:new).and_call_original
-
-          group.any_project_with_shared_runners_enabled?
-        end
-      end
+      it { is_expected.to be_truthy }
     end
 
-    context 'when use_cte_for_any_project_with_shared_runners_enabled is disabled' do
-      before do
-        stub_feature_flags(use_cte_for_any_project_with_shared_runners_enabled: false)
+    context 'subgroup with shared runners enabled project' do
+      let(:namespace) { create(:group) }
+      let(:subgroup) { create(:group, parent: namespace) }
+      let!(:subproject) { create(:project, namespace: subgroup, shared_runners_enabled: true) }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'with project and disabled shared runners' do
+      let!(:project) do
+        create(:project,
+               namespace: namespace,
+               shared_runners_enabled: false)
       end
 
-      it_behaves_like '#any_project_with_shared_runners_enabled? examples'
+      it { is_expected.to be_falsey }
     end
   end
 
