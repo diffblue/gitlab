@@ -50,6 +50,7 @@ export default {
             'not[types]': this.filterParams.not.types,
             'not[milestone_title]': this.filterParams.not.milestoneTitle,
             'not[weight]': this.filterParams.not.weight,
+            'not[epic_id]': this.filterParams.not.epicId,
           },
           undefined,
         );
@@ -141,7 +142,7 @@ export default {
       if (epicId) {
         filteredSearchValue.push({
           type: 'epic_id',
-          value: { data: epicId },
+          value: { data: epicId, operator: '=' },
         });
       }
 
@@ -186,6 +187,13 @@ export default {
         filteredSearchValue.push({
           type: 'types',
           value: { data: this.filterParams['not[types]'], operator: '!=' },
+        });
+      }
+
+      if (this.filterParams['not[epicId]']) {
+        filteredSearchValue.push({
+          type: 'epic_id',
+          value: { data: this.filterParams['not[epicId]'], operator: '!=' },
         });
       }
 
