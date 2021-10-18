@@ -385,14 +385,9 @@ module EE
 
     def elasticsearch_limited_project_exists?(project)
       project_namespaces = ::Namespace.where(id: project.namespace_id)
-      indexed_namespaces = if ::Feature.enabled?(:linear_application_setting_ancestor_scopes, default_enabled: :yaml)
-                             project_namespaces.self_and_ancestors
-                           else
-                             ::Gitlab::ObjectHierarchy.new(project_namespaces).base_and_ancestors
-                           end
+      self_and_ancestors_namespaces = project_namespaces.self_and_ancestors.joins(:elasticsearch_indexed_namespace)
 
-      indexed_namespaces = indexed_namespaces.joins(:elasticsearch_indexed_namespace)
-      indexed_namespaces = ::Project.where('EXISTS (?)', indexed_namespaces)
+      indexed_namespaces = ::Project.where('EXISTS (?)', self_and_ancestors_namespaces)
       indexed_projects = ::Project.where('EXISTS (?)', ElasticsearchIndexedProject.where(project_id: project.id))
 
       ::Project
