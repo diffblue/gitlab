@@ -95,7 +95,7 @@ module EE
             # rubocop: disable UsageData/LargeTable
             usage_data[:historical_max_users] = license.historical_max
             # rubocop: enable UsageData/LargeTable
-            usage_data[:licensee] = license.licensee
+            usage_data[:licensee] = add_metric("LicenseeMetrics")
             usage_data[:license_user_count] = license.restricted_user_count
             usage_data[:license_billable_users] = alt_usage_data { license.daily_billable_users_count }
             usage_data[:license_starts_at] = license.starts_at
