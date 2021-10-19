@@ -90,7 +90,7 @@ export default {
 };
 </script>
 <template>
-  <figure class="file-holder snippet-file-content">
+  <figure class="file-holder snippet-file-content" aria-label="Code snippet">
     <blob-header
       :blob="blob"
       :active-viewer-type="viewer.type"
