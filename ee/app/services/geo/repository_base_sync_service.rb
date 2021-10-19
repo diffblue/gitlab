@@ -60,8 +60,11 @@ module Geo
         fetch_geo_mirror(repository)
       else
         ensure_repository
-        fetch_geo_mirror(repository)
+        # Because we ensure a repository exists by this point, we need to
+        # mark it as new, even if fetching the mirror fails, we should run
+        # housekeeping to enable object deduplication to run
         @new_repository = true
+        fetch_geo_mirror(repository)
       end
 
       update_root_ref
