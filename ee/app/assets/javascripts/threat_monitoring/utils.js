@@ -50,4 +50,9 @@ export const removeUnnecessaryDashes = (manifest) => {
 /**
  * Create GraphQL Client for threat monitoring
  */
-export const gqClient = createGqClient();
+export const gqClient = createGqClient(
+  {},
+  {
+    assumeImmutableResults: true,
+  },
+);
