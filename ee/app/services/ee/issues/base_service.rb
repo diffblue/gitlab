@@ -185,6 +185,58 @@ module EE
 
         params[:iteration] = iteration if iteration
       end
+
+      attr_accessor :requirement_to_sync
+
+      def assign_requirement_to_be_synced_for(issue)
+        # This is part of the migration from Requirement (the first class object)
+        # to Issue/Work Item (of type Requirement).
+        # We can't wrap the change in a Transaction (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64929#note_647123684)
+        # so we'll check if both are valid before saving
+
+        # Don't bother syncing if it's possibly spam
+        return if issue.spam?
+        return unless issue.requirement?
+
+        # Keep requirement objects in sync: gitlab-org/gitlab#323779
+        self.requirement_to_sync = assign_requirement_attributes(issue)
+
+        return unless requirement_to_sync
+
+        # This prevents the issue from being saveable
+        issue.requirement ||= requirement_to_sync
+        issue.requirement_sync_error! unless requirement_to_sync.valid?
+      end
+
+      def save_requirement
+        return unless requirement_to_sync
+
+        unless requirement_to_sync.save
+          # We checked that it was valid earlier but it still did not save. Uh oh.
+          # This requires a manual re-sync and an investigation as to why this happened.
+          log_params = params.slice(*RequirementsManagement::Requirement.sync_params)
+
+          ::Gitlab::AppLogger.info(
+            message: "Requirement-Issue Sync: Associated requirement could not be saved",
+            project_id: project.id,
+            user_id: current_user.id,
+            params: log_params
+          )
+        end
+      end
+
+      def assign_requirement_attributes(issue)
+        sync_params = RequirementsManagement::Requirement.sync_params
+        sync_attrs = issue.attributes.with_indifferent_access.slice(*sync_params)
+
+        # Update or create the requirement manually rather than through RequirementsManagement::Requirement::UpdateService,
+        # so the sync happens even if the Requirements feature is no longer available via the license.
+        requirement = issue.requirement || RequirementsManagement::Requirement.new
+
+        requirement.assign_attributes(sync_attrs)
+
+        requirement if requirement.changed?
+      end
     end
   end
 end

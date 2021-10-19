@@ -164,7 +164,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
                 end
 
                 allow(requirement).to receive(:requirement_issue).and_return(requirement_issue)
-                allow(requirement_issue).to receive(:invalid?).and_return(true).at_least(:once)
+                allow(requirement_issue).to receive(:valid?).and_return(false).at_least(:once)
               end
 
               it_behaves_like 'keeps requirement and its requirement_issue in sync'

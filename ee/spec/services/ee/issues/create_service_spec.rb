@@ -214,6 +214,57 @@ RSpec.describe Issues::CreateService do
           end
         end
       end
+
+      context 'when issue is of requirement_type' do
+        let(:params) { { title: 'Requirement Issue', description: 'Should sync', issue_type: 'requirement' } }
+
+        before_all do
+          project.add_reporter(user)
+        end
+
+        before do
+          stub_licensed_features(requirements: true)
+        end
+
+        it 'creates one requirement and one requirement issue' do
+          expect { service.execute }. to change { Issue.count }.by(1)
+            .and change { RequirementsManagement::Requirement.count }.by(1)
+        end
+
+        it 'creates a requirement object with same parameters' do
+          issue = service.execute
+
+          requirement = issue.reload.requirement
+          expect(requirement.title).to eq(issue.title)
+          expect(requirement.description).to eq(issue.description)
+          expect(requirement.state).to eq(issue.state)
+          expect(requirement.project).to eq(issue.project)
+          expect(requirement.author).to eq(issue.author)
+          expect(issue.requirement?).to eq(true)
+        end
+
+        context 'when creation of requirement fails' do
+          it 'does not create issue' do
+            allow_next_instance_of(RequirementsManagement::Requirement) do |instance|
+              allow(instance).to receive(:valid?).and_return(false)
+            end
+
+            expect { service.execute }. to change { Issue.count }.by(0)
+              .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+        end
+
+        context 'when creation of issue fails' do
+          it 'does not create requirement' do
+            allow_next_instance_of(Issue) do |instance|
+              allow(instance).to receive(:valid?).and_return(false)
+            end
+
+            expect { service.execute }. to change { Issue.count }.by(0)
+              .and change { RequirementsManagement::Requirement.count }.by(0)
+          end
+        end
+      end
     end
 
     it_behaves_like 'new issuable with scoped labels' do
