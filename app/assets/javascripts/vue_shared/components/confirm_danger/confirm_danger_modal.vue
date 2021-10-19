@@ -38,13 +38,14 @@ export default {
   },
   computed: {
     isValid() {
-      return this.phrase.length && this.equalString(this.confirmationPhrase, this.phrase);
+      return (
+        this.confirmationPhrase.length && this.equalString(this.confirmationPhrase, this.phrase)
+      );
     },
     actionPrimary() {
-      console.log('this.$options.i18n', this.$options.i18n);
       return {
-        text: this.$options.i18n.CONFIRM_DANGER_MODAL_BUTTON,
-        attributes: [{ variant: 'danger', disabled: this.isValid }],
+        text: this.confirmButtonText,
+        attributes: [{ variant: 'danger', disabled: !this.isValid }],
       };
     },
   },
@@ -71,17 +72,19 @@ export default {
     :action-primary="actionPrimary"
     @primary="$emit('confirm')"
   >
-    <p class="text-danger js-confirm-text">{{ confirmDangerMessage }}</p>
-    <p>
-      <span class="js-warning-text">{{ $options.i18n.CONFIRM_DANGER_MODAL_WARNING }}</span>
+    <p v-if="confirmDangerMessage" class="text-danger" data-testid="confirm-danger-message">
+      {{ confirmDangerMessage }}
+    </p>
+    <p data-testid="confirm-danger-warning">{{ $options.i18n.CONFIRM_DANGER_WARNING }}</p>
+    <p data-testid="confirm-danger-phrase">
       <gl-sprintf :message="$options.i18n.CONFIRM_DANGER_PHRASE_TEXT">
         <template #code>
-          <code class="js-confirm-danger-match">{{ phrase }}</code>
+          <code>{{ phrase }}</code>
         </template>
       </gl-sprintf>
     </p>
-    <gl-form-group class="'form-control js-confirm-danger-input qa-confirm-input'" :state="isValid">
-      <gl-form-input v-model="confirmationPhrase" type="text" />
+    <gl-form-group class="'form-control qa-confirm-input'" :state="isValid">
+      <gl-form-input v-model="confirmationPhrase" data-testid="confirm-danger-input" type="text" />
     </gl-form-group>
   </gl-modal>
 </template>
