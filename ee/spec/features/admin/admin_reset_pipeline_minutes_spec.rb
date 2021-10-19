@@ -29,7 +29,8 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
         expect(current_path).to include(namespace.path)
 
         expect(namespace.reload.ci_minutes_quota.total_minutes_used).to eq(0)
-        expect(namespace.ci_minutes_quota.reset_date).to be_like_time(time)
+        expect(namespace.ci_minutes_quota.reset_date.month).to eq(time.month)
+        expect(namespace.ci_minutes_quota.reset_date.year).to eq(time.year)
       end
     end
   end
