@@ -15735,6 +15735,9 @@ msgstr ""
 msgid "GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here."
 msgstr ""
 
+msgid "GithubIntegration|Enable static status check names"
+msgstr ""
+
 msgid "GithubIntegration|Obtain statuses for commits and pull requests."
 msgstr ""
 
