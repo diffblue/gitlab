@@ -33876,6 +33876,9 @@ msgstr ""
 msgid "The connection will time out after %{timeout}. For repositories that take longer, use a clone/push combination."
 msgstr ""
 
+msgid "The contact does not belong to the same group as the issue."
+msgstr ""
+
 msgid "The content of this page is not encoded in UTF-8. Edits can only be made via the Git repository."
 msgstr ""
 
