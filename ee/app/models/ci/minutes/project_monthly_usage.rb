@@ -15,7 +15,7 @@ module Ci
         where(
           date: namespace_monthly_usage.date,
           project: namespace_monthly_usage.namespace.projects
-        )
+        ).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343301')
       end
 
       def self.beginning_of_month(time = Time.current)
