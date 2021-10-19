@@ -9,8 +9,10 @@ export default function mountApprovalInput(el) {
     return null;
   }
 
+  const targetBranchTitle = document.querySelector('#js-target-branch-title');
   const targetBranch =
-    document.querySelector('#js-target-branch-title')?.textContent ||
+    targetBranchTitle?.dataset?.branchName ||
+    targetBranchTitle?.textContent ||
     document.querySelector('#merge_request_target_branch')?.value;
 
   const store = createStore(
