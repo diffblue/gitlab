@@ -46,6 +46,7 @@ describe('JiraIssuesSidebar', () => {
     const assignee = findAssignee();
 
     expect(assignee.props('assignee')).toBe(mockJiraIssue.assignees[0]);
+    expect(assignee.props('avatarSubLabel')).toBe('Jira user');
   });
 
   it('renders IssueDueDate', () => {
