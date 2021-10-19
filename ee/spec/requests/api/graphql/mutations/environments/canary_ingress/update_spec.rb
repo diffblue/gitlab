@@ -42,7 +42,7 @@ RSpec.describe 'Update Environment Canary Ingress', :clean_gitlab_redis_cache do
       post_graphql_mutation(mutation, current_user: actor)
 
       expect(graphql_errors.first)
-        .to include('message' => "The resource that you are attempting to access does not exist or you don't have permission to perform this action")
+        .to include('message' => Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR)
     end
   end
 end

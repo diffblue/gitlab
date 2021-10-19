@@ -66,7 +66,7 @@ RSpec.describe 'creating escalation policy' do
       it 'raises an error' do
         resolve
 
-        expect_graphql_errors_to_include("The resource that you are attempting to access does not exist or you don't have permission to perform this action")
+        expect_graphql_errors_to_include(Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR)
       end
     end
 

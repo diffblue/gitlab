@@ -27,7 +27,7 @@ RSpec.describe 'Delete a compliance framework' do
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: ["The resource that you are attempting to access does not exist or you don't have permission to perform this action"]
+                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'when licensed' do
@@ -57,7 +57,7 @@ RSpec.describe 'Delete a compliance framework' do
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ["The resource that you are attempting to access does not exist or you don't have permission to perform this action"]
+                      errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
     end
   end
 end
