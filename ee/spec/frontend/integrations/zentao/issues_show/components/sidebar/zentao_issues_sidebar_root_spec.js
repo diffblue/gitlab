@@ -44,6 +44,7 @@ describe('ZentaoIssuesSidebar', () => {
     const assignee = findAssignee();
 
     expect(assignee.props('assignee')).toBe(mockZentaoIssue.assignees[0]);
+    expect(assignee.props('avatarSubLabel')).toBe('Zentao user');
   });
 
   it('renders IssueDueDate', () => {

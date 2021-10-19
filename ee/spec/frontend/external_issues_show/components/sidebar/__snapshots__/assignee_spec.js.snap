@@ -21,7 +21,6 @@ exports[`ExternalIssuesSidebarAssignee with assignee template renders avatar com
         labellink=""
         size="32"
         src="http://127.0.0.1:3000/uploads/-/system/user/avatar/1/avatar.png?width=90"
-        sublabel="Jira user"
         sublabellink=""
       />
     </gl-avatar-link-stub>

@@ -83,6 +83,7 @@ export default {
     statusDropdownEmpty: s__('JiraService|No available statuses'),
     statusDropdownTitle: __('Change status'),
     referenceName: __('Reference'),
+    avatarSubLabel: __('Jira user'),
   },
   mounted() {
     this.sidebarEl = document.querySelector('aside.right-sidebar');
@@ -131,7 +132,7 @@ export default {
 
 <template>
   <div>
-    <assignee class="block" :assignee="assignee" />
+    <assignee class="block" :assignee="assignee" :avatar-sub-label="$options.i18n.avatarSubLabel" />
     <issue-due-date :due-date="issue.dueDate" />
     <issue-field
       icon="progress"

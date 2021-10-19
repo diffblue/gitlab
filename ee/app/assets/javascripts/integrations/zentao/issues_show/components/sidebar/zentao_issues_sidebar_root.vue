@@ -31,13 +31,14 @@ export default {
   i18n: {
     statusTitle: __('Status'),
     referenceName: __('Reference'),
+    avatarSubLabel: __('Zentao user'),
   },
 };
 </script>
 
 <template>
   <div>
-    <assignee class="block" :assignee="assignee" />
+    <assignee class="block" :assignee="assignee" :avatar-sub-label="$options.i18n.avatarSubLabel" />
     <issue-due-date :due-date="issue.dueDate" />
     <issue-field icon="progress" :title="$options.i18n.statusTitle" :value="issue.status" />
     <labels-select
