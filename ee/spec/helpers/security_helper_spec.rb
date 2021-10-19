@@ -15,6 +15,8 @@ RSpec.describe SecurityHelper do
         no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
         empty_dashboard_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
         empty_state_svg_path: image_path('illustrations/operations-dashboard_empty.svg'),
+        operational_empty_state_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+        operational_help_path: help_page_path('user/application_security/policies/index'),
         survey_request_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
         project_add_endpoint: security_projects_path,
         project_list_endpoint: security_projects_path,

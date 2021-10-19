@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reports not configured empty state matches the snapshot for groups 1`] = `
+<gl-empty-state-stub
+  description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in any project in this group."
+  primarybuttonlink="/operational-configuration"
+  primarybuttontext=""
+  secondarybuttonlink="/operational-help"
+  secondarybuttontext="Learn more"
+  svgpath="/operational-placeholder.svg"
+  title="Monitor vulnerabilities across clusters"
+/>
+`;
+
+exports[`reports not configured empty state matches the snapshot for instances 1`] = `
+<gl-empty-state-stub
+  description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in any project in this instance."
+  primarybuttonlink="/operational-configuration"
+  primarybuttontext=""
+  secondarybuttonlink="/operational-help"
+  secondarybuttontext="Learn more"
+  svgpath="/operational-placeholder.svg"
+  title="Monitor vulnerabilities across clusters"
+/>
+`;
+
+exports[`reports not configured empty state matches the snapshot for projects 1`] = `
+<gl-empty-state-stub
+  description="Manage and track vulnerabilities identified in your Kubernetes clusters. Vulnerabilities appear here after you create a scan execution policy in this project."
+  primarybuttonlink="/operational-configuration"
+  primarybuttontext="Create policy"
+  secondarybuttonlink="/operational-help"
+  secondarybuttontext="Learn more"
+  svgpath="/operational-placeholder.svg"
+  title="Monitor vulnerabilities across clusters"
+/>
+`;
