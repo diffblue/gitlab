@@ -52,13 +52,5 @@ RSpec.describe Gitlab::GroupPlansPreloader, :saas do
     end
 
     it_behaves_like 'preloading cases'
-
-    context 'when feature flag :linear_group_plans_preloaded_ancestor_scopes is disabled' do
-      before do
-        stub_feature_flags(linear_group_plans_preloaded_ancestor_scopes: false)
-      end
-
-      it_behaves_like 'preloading cases'
-    end
   end
 end

@@ -5,10 +5,21 @@ require 'spec_helper'
 RSpec.describe 'Reposition and move issue within board lists' do
   include GraphqlHelpers
 
-  let_it_be(:group) { create(:group, :private) }
-  let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:board) { create(:board, group: group) }
   let_it_be(:user) { create(:user) }
+
+  let_it_be(:group) do
+    create(:group, :private).tap do |g|
+      g.add_guest(user)
+    end
+  end
+
+  let_it_be(:project) do
+    create(:project, group: group).tap do |p|
+      p.add_reporter(user)
+    end
+  end
+
+  let_it_be(:board) { create(:board, group: group) }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:existing_issue1) { create(:labeled_issue, project: project, relative_position: 10) }
   let_it_be(:existing_issue2) { create(:labeled_issue, project: project, relative_position: 50) }
@@ -36,15 +47,7 @@ RSpec.describe 'Reposition and move issue within board lists' do
   end
 
   context 'when user can admin issue' do
-    before do
-      project.add_reporter(user)
-    end
-
     context 'when user can read epic' do
-      before do
-        group.add_guest(user)
-      end
-
       it 'updates issue position and epic' do
         post_graphql_mutation(mutation(params), current_user: user)
 
