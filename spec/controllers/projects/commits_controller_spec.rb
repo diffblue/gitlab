@@ -68,7 +68,16 @@ RSpec.describe Projects::CommitsController do
       end
 
       context "with an invalid limit" do
-        before do
+        let(:id) { "master/README.md" }
+
+        it "uses the default limit" do
+          expect_any_instance_of(Repository).to receive(:commits).with(
+            "master",
+            path: "README.md",
+            limit: described_class::COMMITS_DEFAULT_LIMIT,
+            offset: 0
+          ).and_call_original
+
           get(:show,
               params: {
                 namespace_id: project.namespace,
@@ -76,11 +85,9 @@ RSpec.describe Projects::CommitsController do
                 id: id,
                 limit: "foo"
             })
+
+          expect(response).to be_successful
         end
-
-        let(:id) { 'master/README.md' }
-
-        it { is_expected.to respond_with(:success) }
       end
 
       context "when the ref name ends in .atom" do
