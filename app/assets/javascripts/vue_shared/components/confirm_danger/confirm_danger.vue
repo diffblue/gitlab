@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlModalDirective } from '@gitlab/ui';
+import { CONFIRM_DANGER_MODAL_ID } from './constants';
 import ConfirmDangerModal from './confirm_danger_modal.vue';
 
 export default {
@@ -26,16 +27,17 @@ export default {
       required: true,
     },
   },
-  modalId: 'confirm-danger-modal',
+  modalId: CONFIRM_DANGER_MODAL_ID,
 };
 </script>
 <template>
   <div>
     <gl-button
       v-gl-modal="$options.modalId"
-      class="gl-button btn btn-danger qa-transfer-button"
+      class="gl-button btn btn-danger"
       variant="danger"
       :disabled="disabled"
+      data-testid="confirm-danger-button"
       >{{ buttonText }}</gl-button
     >
     <confirm-danger-modal

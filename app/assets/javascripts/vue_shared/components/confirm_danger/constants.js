@@ -1,5 +1,6 @@
 import { __ } from '~/locale';
 
+export const CONFIRM_DANGER_MODAL_ID = 'confirm-danger-modal';
 export const CONFIRM_DANGER_MODAL_TITLE = __('Confirmation required');
 export const CONFIRM_DANGER_MODAL_BUTTON = __('Confirm');
 export const CONFIRM_DANGER_WARNING = __(
