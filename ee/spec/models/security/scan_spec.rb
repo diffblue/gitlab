@@ -86,12 +86,12 @@ RSpec.describe Security::Scan do
     end
   end
 
-  describe '.latest_successful_by_build' do
-    let!(:first_successful_scan) { create(:security_scan, build: create(:ci_build, :success, :retried)) }
-    let!(:second_successful_scan) { create(:security_scan, build: create(:ci_build, :success)) }
-    let!(:failed_scan) { create(:security_scan, build: create(:ci_build, :failed)) }
+  describe '.latest_successful' do
+    let!(:first_successful_scan) { create(:security_scan, latest: false, status: :succeeded) }
+    let!(:second_successful_scan) { create(:security_scan, latest: true, status: :succeeded) }
+    let!(:failed_scan) { create(:security_scan, latest: true, status: :failed) }
 
-    subject { described_class.latest_successful_by_build }
+    subject { described_class.latest_successful }
 
     it { is_expected.to match_array([second_successful_scan]) }
   end

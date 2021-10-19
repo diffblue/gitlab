@@ -48,7 +48,7 @@ RSpec.describe Security::FindingsFinder do
         report_sast.merge!(report_sast)
 
         { artifact_ds => report_ds, artifact_sast => report_sast }.each do |artifact, report|
-          scan = create(:security_scan, scan_type: artifact.job.name, build: artifact.job)
+          scan = create(:security_scan, :latest_successful, scan_type: artifact.job.name, build: artifact.job)
 
           report.findings.each_with_index do |finding, index|
             create(:security_finding,
@@ -321,7 +321,7 @@ RSpec.describe Security::FindingsFinder do
             Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(retried_content, report)
             report.merge!(report)
 
-            scan = create(:security_scan, scan_type: retried_build.name, build: retried_build)
+            scan = create(:security_scan, scan_type: retried_build.name, build: retried_build, latest: false)
 
             report.findings.each_with_index do |finding, index|
               create(:security_finding,
@@ -344,7 +344,7 @@ RSpec.describe Security::FindingsFinder do
           let(:expected_fingerprints) { secret_detection_report.findings.map(&:project_fingerprint) }
 
           before do
-            scan = create(:security_scan, scan_type: :secret_detection, build: build_2)
+            scan = create(:security_scan, :latest_successful, scan_type: :secret_detection, build: build_2)
             artifact = create(:ee_ci_job_artifact, :secret_detection, job: build_2)
             report_content = File.read(artifact.file.path)
 

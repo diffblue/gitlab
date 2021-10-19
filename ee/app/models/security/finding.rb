@@ -34,9 +34,9 @@ module Security
                 .where('security_scans.id = security_findings.scan_id')
                 .where('vulnerability_feedback.project_fingerprint = security_findings.project_fingerprint'))
     end
-    scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful_by_build).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/341796') }
+    scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful) }
     scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }
-    scope :with_pipeline_entities, -> { includes(build: [:job_artifacts, :pipeline]) }
+    scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
     scope :with_scan, -> { includes(:scan) }
     scope :with_scanner, -> { includes(:scanner) }
     scope :deduplicated, -> { where(deduplicated: true) }
