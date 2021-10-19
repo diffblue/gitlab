@@ -57,7 +57,7 @@ module EE
       end
 
       condition(:group_membership_export_available) do
-        @subject.feature_available?(:export_user_permissions) && ::Feature.enabled?(:ff_group_membership_export, @subject, default_enabled: :yaml)
+        @subject.feature_available?(:export_user_permissions)
       end
 
       condition(:can_owners_manage_ldap, scope: :global) do

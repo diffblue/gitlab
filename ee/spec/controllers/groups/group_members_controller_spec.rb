@@ -276,23 +276,9 @@ RSpec.describe Groups::GroupMembersController do
   end
 
   describe 'GET #export_csv' do
-    context 'when flag is disabled' do
-      before do
-        stub_licensed_features(export_user_permissions: true)
-        stub_feature_flags(ff_group_membership_export: false)
-      end
-
-      it 'responds with :not_found' do
-        get :export_csv, params: { group_id: group.id }
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     context 'when feature is unlicensed' do
       before do
         stub_licensed_features(export_user_permissions: false)
-        stub_feature_flags(ff_group_membership_export: true)
       end
 
       it 'responds with :not_found' do
@@ -302,10 +288,9 @@ RSpec.describe Groups::GroupMembersController do
       end
     end
 
-    context 'when feature is licensed and enabled' do
+    context 'when feature is licensed' do
       before do
         stub_licensed_features(export_user_permissions: true)
-        stub_feature_flags(ff_group_membership_export: true)
       end
 
       it 'enqueues a worker job' do
