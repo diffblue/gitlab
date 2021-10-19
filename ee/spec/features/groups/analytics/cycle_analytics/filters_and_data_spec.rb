@@ -258,6 +258,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
 
     before do
+      stub_feature_flags(use_vsa_aggregated_tables: false)
       issue.update!(created_at: 5.days.ago)
       create_cycle(user, project, issue, mr, milestone, pipeline)
       create(:labeled_issue, created_at: 5.days.ago, project: create(:project, group: group), labels: [group_label1])
