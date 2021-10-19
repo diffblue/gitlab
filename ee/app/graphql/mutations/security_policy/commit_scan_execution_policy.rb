@@ -24,6 +24,10 @@ module Mutations
                required: true,
                description: 'Changes the operation mode.'
 
+      argument :name, GraphQL::Types::String,
+               required: false,
+               description: 'Name of the policy. If the name is null, the `name` field from `policy_yaml` is used.'
+
       field :branch,
             GraphQL::Types::String,
             null: true,
@@ -32,7 +36,7 @@ module Mutations
       def resolve(args)
         project = authorized_find!(args[:project_path])
 
-        result = commit_policy(project, args[:policy_yaml], args[:operation_mode])
+        result = commit_policy(project, args)
         error_message = result[:status] == :error ? result[:message] : nil
 
         {
@@ -43,9 +47,13 @@ module Mutations
 
       private
 
-      def commit_policy(project, policy_yaml, operation_mode)
+      def commit_policy(project, args)
         ::Security::SecurityOrchestrationPolicies::PolicyCommitService
-          .new(project: project, current_user: current_user, params: { policy_yaml: policy_yaml, operation: Types::MutationOperationModeEnum.enum.key(operation_mode).to_sym })
+          .new(project: project, current_user: current_user, params: {
+            name: args[:name],
+            policy_yaml: args[:policy_yaml],
+            operation: Types::MutationOperationModeEnum.enum.key(args[:operation_mode]).to_sym
+          })
           .execute
       end
     end

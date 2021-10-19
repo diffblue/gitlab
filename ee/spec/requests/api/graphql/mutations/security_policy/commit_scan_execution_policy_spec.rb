@@ -7,10 +7,11 @@ RSpec.describe 'Create scan execution policy for a project' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: current_user.namespace) }
-  let_it_be(:policy_yaml) { build(:scan_execution_policy).merge(type: 'scan_execution_policy').to_yaml }
+  let_it_be(:policy_name) { 'Test Policy' }
+  let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy').to_yaml }
 
   def mutation
-    variables = { project_path: project.full_path, policy_yaml: policy_yaml, operation_mode: 'APPEND' }
+    variables = { project_path: project.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: 'APPEND' }
 
     graphql_mutation(:scan_execution_policy_commit, variables) do
       <<-QL.strip_heredoc
