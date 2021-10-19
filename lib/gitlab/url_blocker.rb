@@ -164,15 +164,15 @@ module Gitlab
       end
 
       def parse_url(url)
-        raise Addressable::URI::InvalidURIError if multiline?(url)
-
-        Addressable::URI.parse(url)
+        Addressable::URI.parse(url).tap do |parsed_url|
+          raise Addressable::URI::InvalidURIError if git_multiline?(parsed_url)
+        end
       rescue Addressable::URI::InvalidURIError, URI::InvalidURIError
         raise BlockedUrlError, 'URI is invalid'
       end
 
-      def multiline?(url)
-        CGI.unescape(url.to_s) =~ /\n|\r/
+      def git_multiline?(parsed_url)
+        parsed_url.scheme == 'git' && CGI.unescape(parsed_url.to_s) =~ /\n|\r/
       end
 
       def validate_port(port, ports)

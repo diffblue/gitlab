@@ -14,6 +14,7 @@ RSpec.describe AddressableUrlValidator do
 
   describe 'validations' do
     include_context 'invalid urls'
+    include_context 'valid urls with CRLF'
 
     let(:validator) { described_class.new(attributes: [:link_url]) }
 
@@ -25,6 +26,16 @@ RSpec.describe AddressableUrlValidator do
     it 'returns error when url is empty' do
       expect(validator.validate_each(badge, :link_url, '')).to be_falsey
       expect(badge.errors.added?(:link_url, validator.options.fetch(:message))).to be true
+    end
+
+    it 'allows urls with CR or LF characters in query strings' do
+      aggregate_failures do
+        valid_urls_with_CRLF.each do |url|
+          validator.validate_each(badge, :link_url, url)
+
+          expect(badge.errors).to be_empty
+        end
+      end
     end
 
     it 'does not allow urls with CR or LF characters' do
