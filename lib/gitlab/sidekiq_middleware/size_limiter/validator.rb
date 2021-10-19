@@ -28,7 +28,7 @@ module Gitlab
         #
         # The worker classes aren't constants here, because that would force
         # Application Settings to be loaded earlier causing failures loading
-        # the environmant in rake tasks
+        # the environment in rake tasks
         EXEMPT_WORKER_NAMES = ["BackgroundMigrationWorker", "Database::BatchedBackgroundMigrationWorker"].to_set
         JOB_STATUS_KEY = 'size_limiter'
 
