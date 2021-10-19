@@ -74,11 +74,11 @@ module Spam
       begin
         result, attribs, _error = spamcheck_client.issue_spam?(spam_issue: target, user: user, context: context)
         # @TODO log if error is not nil https://gitlab.com/gitlab-org/gitlab/-/issues/329545
-         
+
         return [nil, attribs] unless result
 
         [result, attribs]
-        
+
       rescue StandardError => e
         Gitlab::ErrorTracking.log_exception(e)
 
