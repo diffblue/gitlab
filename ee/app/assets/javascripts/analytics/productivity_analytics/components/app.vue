@@ -13,11 +13,16 @@ import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import dateFormat from 'dateformat';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
+import { getDataZoomOption } from '~/analytics/shared/utils';
 import { beginOfDayTime, endOfDayTime } from '~/lib/utils/datetime_utility';
 import featureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Scatterplot from '../../shared/components/scatterplot.vue';
 import urlSyncMixin from '../../shared/mixins/url_sync_mixin';
-import { chartKeys } from '../constants';
+import {
+  chartKeys,
+  defaultMaxColumnChartItemsPerPage,
+  maxColumnChartItemsPerPage,
+} from '../constants';
 import MetricChart from './metric_chart.vue';
 import MergeRequestTable from './mr_table.vue';
 
@@ -76,7 +81,6 @@ export default {
       'chartErrorCode',
       'chartHasData',
       'getColumnChartData',
-      'getColumnChartDatazoomOption',
       'getScatterPlotMainData',
       'getScatterPlotMedianData',
       'getMetricLabel',
@@ -131,6 +135,10 @@ export default {
       this.updateSelectedItems({ chartKey: this.chartKeys.main, item: itemValue });
     },
     getColumnChartOption(chartKey) {
+      const totalItems = this.getColumnChartData(chartKey).length;
+      const maxItemsPerPage = maxColumnChartItemsPerPage[chartKey]
+        ? maxColumnChartItemsPerPage[chartKey]
+        : defaultMaxColumnChartItemsPerPage;
       return {
         yAxis: {
           axisLabel: {
@@ -138,7 +146,7 @@ export default {
           },
           minInterval: 1,
         },
-        ...this.getColumnChartDatazoomOption(chartKey),
+        ...getDataZoomOption({ totalItems, maxItemsPerPage }),
       };
     },
   },
