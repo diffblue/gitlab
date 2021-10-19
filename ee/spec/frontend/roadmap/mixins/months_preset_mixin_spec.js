@@ -1,11 +1,15 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockEpic } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('MonthsPresetMixin', () => {
   let wrapper;
@@ -130,28 +134,24 @@ describe('MonthsPresetMixin', () => {
     describe('getTimelineBarWidthForMonths', () => {
       it('returns calculated width value based on Epic.startDate and Epic.endDate', () => {
         wrapper = createComponent({
-          timeframeItem: mockTimeframeMonths[1],
+          timeframeItem: mockTimeframeMonths[0],
           epic: {
             ...mockEpic,
-            startDate: new Date(2017, 11, 15), // Dec 15, 2017
-            endDate: new Date(2018, 1, 15), // Feb 15, 2018
+            startDate: new Date(2018, 0, 1), // Jan 01, 2018
+            endDate: new Date(2018, 2, 15), // Mar 15, 2018
           },
         });
 
         /*
           The epic timeline bar width calculation:
 
-          - The width of the bar should account for 31 - 15 = 16 days from December.
-          - The width of the bar should fully account for all of January (31 days).
-          - The width of the bar should account for only 15 days  
-
-           Dec: 16 days / 31 days  * 180px ~= 92.9px
-         + Jan: 31 days                     = 180px
-         + Feb: 15 days / 28 days  * 180px ~= 96.43px
+           Jan: 31 days                       = 180px
+         + Feb: 28 days                       = 180px
+         + Mar: (180px / 31 days)  * 15 days ~= 87.15px
          ---------------------------------------------------
-                                     Total ~= 369px
+                                     Total   ~= 447px
         */
-        const expectedTimelineBarWidth = 369; // in px.
+        const expectedTimelineBarWidth = 447; // in px.
         expect(Math.floor(wrapper.vm.getTimelineBarWidthForMonths())).toBe(
           expectedTimelineBarWidth,
         );

@@ -1,29 +1,15 @@
 <script>
-import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
-import Cookies from 'js-cookie';
+import { GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import { __, s__ } from '~/locale';
 
-import {
-  EPICS_LIMIT_DISMISSED_COOKIE_NAME,
-  EPICS_LIMIT_DISMISSED_COOKIE_TIMEOUT,
-  DATE_RANGES,
-} from '../constants';
+import { DATE_RANGES } from '../constants';
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
 import RoadmapShell from './roadmap_shell.vue';
 
 export default {
-  i18n: {
-    warningTitle: s__('GroupRoadmap|Some of your epics might not be visible'),
-    warningBody: s__(
-      'GroupRoadmap|Roadmaps can display up to 1,000 epics. These appear in your selected sort order.',
-    ),
-    warningButtonLabel: __('Learn more'),
-  },
   components: {
     EpicsListEmpty,
-    GlAlert,
     GlLoadingIcon,
     RoadmapFilters,
     RoadmapShell,
@@ -42,11 +28,6 @@ export default {
       type: String,
       required: true,
     },
-  },
-  data() {
-    return {
-      isWarningDismissed: Cookies.get(EPICS_LIMIT_DISMISSED_COOKIE_NAME) === 'true',
-    };
   },
   computed: {
     ...mapState([
@@ -85,12 +66,6 @@ export default {
   },
   methods: {
     ...mapActions(['fetchEpics', 'fetchMilestones']),
-    dismissTooManyEpicsWarning() {
-      Cookies.set(EPICS_LIMIT_DISMISSED_COOKIE_NAME, 'true', {
-        expires: EPICS_LIMIT_DISMISSED_COOKIE_TIMEOUT,
-      });
-      this.isWarningDismissed = true;
-    },
   },
 };
 </script>
@@ -101,16 +76,6 @@ export default {
       v-if="showFilteredSearchbar && !epicIid"
       :timeframe-range-type="timeframeRangeType"
     />
-    <gl-alert
-      v-if="isWarningVisible"
-      variant="warning"
-      :title="$options.i18n.warningTitle"
-      :primary-button-text="$options.i18n.warningButtonLabel"
-      primary-button-link="https://docs.gitlab.com/ee/user/group/roadmap/"
-      data-testid="epics_limit_callout"
-      @dismiss="dismissTooManyEpicsWarning"
-      >{{ $options.i18n.warningBody }}</gl-alert
-    >
     <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container">
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-mt-5" size="md" />
       <epics-list-empty

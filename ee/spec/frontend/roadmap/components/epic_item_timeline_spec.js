@@ -1,11 +1,15 @@
 import { GlPopover, GlProgressBar } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import { mockTimeframeInitialDate, mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   epic = mockFormattedEpic,

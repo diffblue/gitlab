@@ -1,11 +1,15 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForWeeksView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockEpic } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
+const mockTimeframeWeeks = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  presetType: PRESET_TYPES.WEEKS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('WeeksPresetMixin', () => {
   let wrapper;
@@ -59,9 +63,9 @@ describe('WeeksPresetMixin', () => {
         wrapper = createComponent();
         const lastDayOfWeek = wrapper.vm.getLastDayOfWeek(mockTimeframeWeeks[0]);
 
-        expect(lastDayOfWeek.getDate()).toBe(23);
-        expect(lastDayOfWeek.getMonth()).toBe(11);
-        expect(lastDayOfWeek.getFullYear()).toBe(2017);
+        expect(lastDayOfWeek.getDate()).toBe(6);
+        expect(lastDayOfWeek.getMonth()).toBe(0);
+        expect(lastDayOfWeek.getFullYear()).toBe(2018);
       });
     });
 
@@ -197,7 +201,7 @@ describe('WeeksPresetMixin', () => {
              approximately 154px                                ^
                                                         ~ approximately 154px
         */
-        const expectedTimelineBarWidth = 848; // in px;
+        const expectedTimelineBarWidth = 488; // in px;
 
         expect(Math.floor(wrapper.vm.getTimelineBarWidthForWeeks())).toBe(expectedTimelineBarWidth);
       });

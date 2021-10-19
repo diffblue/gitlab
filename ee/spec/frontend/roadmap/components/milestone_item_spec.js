@@ -3,18 +3,22 @@ import Vue from 'vue';
 
 import milestoneItemComponent from 'ee/roadmap/components/milestone_item.vue';
 
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockMilestone2 } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   presetType = PRESET_TYPES.MONTHS,
   milestone = mockMilestone2,
   timeframe = mockTimeframeMonths,
-  timeframeItem = mockTimeframeMonths[0],
+  timeframeItem = mockTimeframeMonths[16], // timeframe item where milestone begins
 }) => {
   const Component = Vue.extend(milestoneItemComponent);
 

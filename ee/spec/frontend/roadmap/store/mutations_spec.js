@@ -212,30 +212,6 @@ describe('Roadmap Store Mutations', () => {
     });
   });
 
-  describe('PREPEND_TIMEFRAME', () => {
-    it('Should set extendedTimeframe to provided extendedTimeframe param and prepend it to timeframe array in state', () => {
-      state.timeframe.push('foo');
-      const extendedTimeframe = ['bar'];
-
-      mutations[types.PREPEND_TIMEFRAME](state, extendedTimeframe);
-
-      expect(state.extendedTimeframe).toBe(extendedTimeframe);
-      expect(state.timeframe[0]).toBe(extendedTimeframe[0]);
-    });
-  });
-
-  describe('APPEND_TIMEFRAME', () => {
-    it('Should set extendedTimeframe to provided extendedTimeframe param and append it to timeframe array in state', () => {
-      state.timeframe.push('foo');
-      const extendedTimeframe = ['bar'];
-
-      mutations[types.APPEND_TIMEFRAME](state, extendedTimeframe);
-
-      expect(state.extendedTimeframe).toBe(extendedTimeframe);
-      expect(state.timeframe[1]).toBe(extendedTimeframe[0]);
-    });
-  });
-
   describe('SET_MILESTONES', () => {
     it('Should provided milestones array in state', () => {
       const milestones = [{ id: 1 }, { id: 2 }];

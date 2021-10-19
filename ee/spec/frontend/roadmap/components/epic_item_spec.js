@@ -6,9 +6,9 @@ import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue
 import EpicItemComponent from 'ee/roadmap/components/epic_item.vue';
 import EpicItemContainer from 'ee/roadmap/components/epic_item_container.vue';
 
-import { PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import {
   mockTimeframeInitialDate,
@@ -27,7 +27,11 @@ jest.mock('lodash/delay', () =>
 
 let store;
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   presetType = PRESET_TYPES.MONTHS,

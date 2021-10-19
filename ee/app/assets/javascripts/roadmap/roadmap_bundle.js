@@ -11,11 +11,10 @@ import EpicItem from './components/epic_item.vue';
 import EpicItemContainer from './components/epic_item_container.vue';
 
 import roadmapApp from './components/roadmap_app.vue';
-import { PRESET_TYPES, EPIC_DETAILS_CELL_WIDTH, DATE_RANGES } from './constants';
+import { DATE_RANGES } from './constants';
 
 import createStore from './store';
 import {
-  getTimeframeForPreset,
   getPresetTypeForTimeframeRangeType,
   getTimeframeForRangeType,
 } from './utils/roadmap_utils';
@@ -70,30 +69,16 @@ export default () => {
     },
     data() {
       const { dataset } = this.$options.el;
-      let timeframe;
-      let timeframeRangeType;
-      let presetType;
 
-      if (gon.features.roadmapDaterangeFilter) {
-        timeframeRangeType =
-          Object.keys(DATE_RANGES).indexOf(dataset.timeframeRangeType) > -1
-            ? dataset.timeframeRangeType
-            : DATE_RANGES.CURRENT_QUARTER;
-        presetType = getPresetTypeForTimeframeRangeType(timeframeRangeType, dataset.presetType);
-        timeframe = getTimeframeForRangeType({
-          timeframeRangeType,
-          presetType,
-        });
-      } else {
-        presetType =
-          Object.keys(PRESET_TYPES).indexOf(dataset.presetType) > -1
-            ? dataset.presetType
-            : PRESET_TYPES.MONTHS;
-        timeframe = getTimeframeForPreset(
-          presetType,
-          window.innerWidth - el.offsetLeft - EPIC_DETAILS_CELL_WIDTH,
-        );
-      }
+      const timeframeRangeType =
+        Object.keys(DATE_RANGES).indexOf(dataset.timeframeRangeType) > -1
+          ? dataset.timeframeRangeType
+          : DATE_RANGES.CURRENT_QUARTER;
+      const presetType = getPresetTypeForTimeframeRangeType(timeframeRangeType, dataset.presetType);
+      const timeframe = getTimeframeForRangeType({
+        timeframeRangeType,
+        presetType,
+      });
 
       const rawFilterParams = queryToObject(window.location.search, {
         gatherArrays: true,

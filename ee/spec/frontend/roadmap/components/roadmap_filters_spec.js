@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
 import { PRESET_TYPES, EPICS_STATES, DATE_RANGES } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockSortedBy,
   mockTimeframeInitialDate,
@@ -36,10 +36,13 @@ const createComponent = ({
   groupFullPath = 'gitlab-org',
   listEpicsPath = '/groups/gitlab-org/-/epics',
   groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
-  timeframe = getTimeframeForMonthsView(mockTimeframeInitialDate),
+  timeframe = getTimeframeForRangeType({
+    timeframeRangeType: DATE_RANGES.THREE_YEARS,
+    presetType: PRESET_TYPES.MONTHS,
+    initialDate: mockTimeframeInitialDate,
+  }),
   filterParams = {},
-  roadmapDaterangeFilter = false,
-  timeframeRangeType = DATE_RANGES.CURRENT_QUARTER,
+  timeframeRangeType = DATE_RANGES.THREE_YEARS,
 } = {}) => {
   const localVue = createLocalVue();
   const store = createStore();
@@ -61,9 +64,6 @@ const createComponent = ({
       groupFullPath,
       groupMilestonesPath,
       listEpicsPath,
-      glFeatures: {
-        roadmapDaterangeFilter,
-      },
     },
     props: {
       timeframeRangeType,
@@ -130,16 +130,12 @@ describe('RoadmapFilters', () => {
       updateHistory({ url: TEST_HOST, title: document.title, replace: true });
     });
 
-    it('renders roadmap layout switching buttons', () => {
-      const layoutSwitches = wrapper.find(GlSegmentedControl);
+    it('switching layout using roadmap layout switching buttons causes page to reload with selected layout', async () => {
+      wrapper.setData({ selectedDaterange: DATE_RANGES.THREE_YEARS });
 
-      expect(layoutSwitches.exists()).toBe(true);
-      expect(layoutSwitches.props('checked')).toBe(PRESET_TYPES.MONTHS);
-      expect(layoutSwitches.props('options')).toEqual([quarters, months, weeks]);
-    });
+      await wrapper.vm.$nextTick();
 
-    it('switching layout using roadmap layout switching buttons causes page to reload with selected layout', () => {
-      wrapper.find(GlSegmentedControl).vm.$emit('input', PRESET_TYPES.OPENED);
+      wrapper.findComponent(GlSegmentedControl).vm.$emit('input', PRESET_TYPES.OPENED);
 
       expect(mergeUrlParams).toHaveBeenCalledWith(
         expect.objectContaining({ layout: PRESET_TYPES.OPENED }),
@@ -312,7 +308,7 @@ describe('RoadmapFilters', () => {
       });
     });
 
-    describe('when roadmapDaterangeFilter feature flag is enabled', () => {
+    describe('daterange filtering', () => {
       let wrapperWithDaterangeFilter;
       const availableRanges = [
         { text: 'This quarter', value: DATE_RANGES.CURRENT_QUARTER },
@@ -322,7 +318,6 @@ describe('RoadmapFilters', () => {
 
       beforeEach(async () => {
         wrapperWithDaterangeFilter = createComponent({
-          roadmapDaterangeFilter: true,
           timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
         });
 

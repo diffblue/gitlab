@@ -1,14 +1,18 @@
 import Vue from 'vue';
 
 import roadmapTimelineSectionComponent from 'ee/roadmap/components/roadmap_timeline_section.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import eventHub from 'ee/roadmap/event_hub';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockEpic, mockTimeframeInitialDate } from 'ee_jest/roadmap/mock_data';
 import mountComponent from 'helpers/vue_mount_component_helper';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   presetType = PRESET_TYPES.MONTHS,
@@ -46,7 +50,7 @@ describe('RoadmapTimelineSectionComponent', () => {
       it('returns object containing `width` with value based on epic details cell width, timeline cell width and timeframe length', () => {
         expect(vm.sectionContainerStyles).toEqual(
           expect.objectContaining({
-            width: '1760px',
+            width: '2480px', // We now have fixed columns in timeframe.
           }),
         );
       });

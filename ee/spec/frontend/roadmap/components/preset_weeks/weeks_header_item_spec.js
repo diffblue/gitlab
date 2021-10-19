@@ -1,13 +1,18 @@
 import Vue from 'vue';
 
 import WeeksHeaderItemComponent from 'ee/roadmap/components/preset_weeks/weeks_header_item.vue';
-import { getTimeframeForWeeksView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 
 import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
 const mockTimeframeIndex = 0;
-const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
+const mockTimeframeWeeks = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  presetType: PRESET_TYPES.WEEKS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const createComponent = ({
   timeframeIndex = mockTimeframeIndex,
@@ -42,9 +47,8 @@ describe('WeeksHeaderItemComponent', () => {
   describe('computed', () => {
     describe('lastDayOfCurrentWeek', () => {
       it('returns date object representing last day of the week as set in `timeframeItem`', () => {
-        expect(vm.lastDayOfCurrentWeek.getDate()).toBe(
-          mockTimeframeWeeks[mockTimeframeIndex].getDate() + 7,
-        );
+        vm = createComponent({});
+        expect(vm.lastDayOfCurrentWeek.getDate()).toBe(7);
       });
     });
 
@@ -52,7 +56,7 @@ describe('WeeksHeaderItemComponent', () => {
       it('returns string containing Year, Month and Date for first timeframe item of the entire timeframe', () => {
         vm = createComponent({});
 
-        expect(vm.timelineHeaderLabel).toBe('2017 Dec 17');
+        expect(vm.$el.innerText.trim()).toContain('2017 Dec 31');
       });
 
       it('returns string containing Year, Month and Date for timeframe item when it is first week of the year', () => {
@@ -66,11 +70,11 @@ describe('WeeksHeaderItemComponent', () => {
 
       it('returns string containing only Month and Date timeframe item when it is somewhere in the middle of timeframe', () => {
         vm = createComponent({
-          timeframeIndex: mockTimeframeIndex + 1,
-          timeframeItem: mockTimeframeWeeks[mockTimeframeIndex + 1],
+          timeframeIndex: mockTimeframeIndex + 2,
+          timeframeItem: mockTimeframeWeeks[mockTimeframeIndex + 2],
         });
 
-        expect(vm.timelineHeaderLabel).toBe('Dec 24');
+        expect(vm.timelineHeaderLabel).toBe('Jan 14');
       });
     });
 
@@ -116,7 +120,7 @@ describe('WeeksHeaderItemComponent', () => {
       const itemLabelEl = vm.$el.querySelector('.item-label');
 
       expect(itemLabelEl).not.toBeNull();
-      expect(itemLabelEl.innerText.trim()).toBe('2017 Dec 17');
+      expect(itemLabelEl.innerText.trim()).toBe('2017 Dec 31');
     });
   });
 });
