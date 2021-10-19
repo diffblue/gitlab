@@ -23,7 +23,12 @@ module Security
         policy = Gitlab::Config::Loader::Yaml.new(params[:policy_yaml]).load!
         updated_policy = ProcessPolicyService.new(
           policy_configuration: policy_configuration,
-          params: { operation: params[:operation], policy: policy, type: policy.delete(:type)&.to_sym }
+          params: {
+            operation: params[:operation],
+            name: params[:name],
+            policy: policy,
+            type: policy.delete(:type)&.to_sym
+          }
         ).execute
 
         YAML.dump(updated_policy.deep_stringify_keys)

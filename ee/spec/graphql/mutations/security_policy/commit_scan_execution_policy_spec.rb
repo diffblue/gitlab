@@ -10,9 +10,10 @@ RSpec.describe Mutations::SecurityPolicy::CommitScanExecutionPolicy do
     let_it_be(:policy_management_project) { create(:project, :repository, namespace: user.namespace) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
     let_it_be(:operation_mode) { Types::MutationOperationModeEnum.enum[:append] }
-    let_it_be(:policy_yaml) { build(:scan_execution_policy).merge(type: 'scan_execution_policy').to_yaml }
+    let_it_be(:policy_name) { 'Test Policy' }
+    let_it_be(:policy_yaml) { build(:scan_execution_policy, name: policy_name).merge(type: 'scan_execution_policy').to_yaml }
 
-    subject { mutation.resolve(project_path: project.full_path, policy_yaml: policy_yaml, operation_mode: operation_mode) }
+    subject { mutation.resolve(project_path: project.full_path, name: policy_name, policy_yaml: policy_yaml, operation_mode: operation_mode) }
 
     context 'when permission is set for user' do
       before do

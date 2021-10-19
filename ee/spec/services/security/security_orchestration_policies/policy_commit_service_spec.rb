@@ -3,26 +3,28 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
+  include RepoHelpers
+
   describe '#execute' do
     let_it_be(:project) { create(:project) }
     let_it_be(:current_user) { project.owner }
-    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:policy_management_project) { create(:project, :repository, creator: current_user) }
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
 
     let(:policy_hash) { build(:scan_execution_policy, name: 'Test Policy') }
     let(:input_policy_yaml) { policy_hash.merge(type: 'scan_execution_policy').to_yaml }
     let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy_hash])}
+    let(:policy_name) { policy_hash[:name] }
 
     let(:operation) { :append }
-    let(:params) { { policy_yaml: input_policy_yaml, operation: operation } }
+    let(:params) { { policy_yaml: input_policy_yaml, name: policy_name, operation: operation } }
 
     subject(:service) do
       described_class.new(project: project, current_user: current_user, params: params)
     end
 
-    before do
-      allow_next_instance_of(Repository) do |repository|
-        allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
-      end
+    around do |example|
+      Timecop.scale(60) { example.run }
     end
 
     context 'when policy_yaml is invalid' do
@@ -56,11 +58,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
     context 'when policy already exists in policy project' do
       before do
-        allow_next_instance_of(::Files::UpdateService) do |instance|
-          allow(instance).to receive(:execute).and_return({ status: :success })
-        end
-
+        create_file_in_repo(
+          policy_management_project,
+          policy_management_project.default_branch_or_main,
+          policy_management_project.default_branch_or_main,
+          Security::OrchestrationPolicyConfiguration::POLICY_PATH,
+          policy_yaml
+        )
         policy_configuration.security_policy_management_project.add_developer(current_user)
+        policy_configuration.clear_memoization(:policy_hash)
+        policy_configuration.clear_memoization(:policy_blob)
       end
 
       context 'append' do
@@ -74,23 +81,33 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
 
       context 'replace' do
         let(:operation) { :replace }
+        let(:input_policy_yaml) { build(:scan_execution_policy, name: 'Updated Policy').merge(type: 'scan_execution_policy').to_yaml }
+        let(:policy_name) { 'Test Policy' }
 
-        it 'creates branch' do
+        it 'creates branch with updated policy' do
           response = service.execute
 
           expect(response[:status]).to eq(:success)
           expect(response[:branch]).not_to be_nil
+
+          updated_policy_blob = policy_management_project.repository.blob_data_at(response[:branch], Security::OrchestrationPolicyConfiguration::POLICY_PATH)
+          updated_policy_yaml = Gitlab::Config::Loader::Yaml.new(updated_policy_blob).load!
+          expect(updated_policy_yaml[:scan_execution_policy][0][:name]).to eq('Updated Policy')
         end
       end
 
       context 'remove' do
         let(:operation) { :remove }
 
-        it 'creates branch' do
+        it 'creates branch with removed policy' do
           response = service.execute
 
           expect(response[:status]).to eq(:success)
           expect(response[:branch]).not_to be_nil
+
+          updated_policy_blob = policy_management_project.repository.blob_data_at(response[:branch], Security::OrchestrationPolicyConfiguration::POLICY_PATH)
+          updated_policy_yaml = Gitlab::Config::Loader::Yaml.new(updated_policy_blob).load!
+          expect(updated_policy_yaml[:scan_execution_policy]).to be_empty
         end
       end
     end
