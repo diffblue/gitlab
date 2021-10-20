@@ -28,7 +28,7 @@ RSpec.describe AddressableUrlValidator do
       expect(badge.errors.added?(:link_url, validator.options.fetch(:message))).to be true
     end
 
-    it 'allows urls with CR or LF characters in query strings' do
+    it 'allows urls with encoded CR or LF characters' do
       aggregate_failures do
         valid_urls_with_CRLF.each do |url|
           validator.validate_each(badge, :link_url, url)
@@ -41,6 +41,7 @@ RSpec.describe AddressableUrlValidator do
     it 'does not allow urls with CR or LF characters' do
       aggregate_failures do
         urls_with_CRLF.each do |url|
+          badge = build(:badge, link_url: 'http://www.example.com')
           validator.validate_each(badge, :link_url, url)
 
           expect(badge.errors.added?(:link_url, 'is blocked: URI is invalid')).to be true

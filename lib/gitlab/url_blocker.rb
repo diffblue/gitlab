@@ -165,14 +165,20 @@ module Gitlab
 
       def parse_url(url)
         Addressable::URI.parse(url).tap do |parsed_url|
-          raise Addressable::URI::InvalidURIError if git_multiline?(parsed_url)
+          raise Addressable::URI::InvalidURIError if multiline_blocked?(parsed_url)
         end
       rescue Addressable::URI::InvalidURIError, URI::InvalidURIError
         raise BlockedUrlError, 'URI is invalid'
       end
 
-      def git_multiline?(parsed_url)
-        parsed_url.scheme == 'git' && CGI.unescape(parsed_url.to_s) =~ /\n|\r/
+      def multiline_blocked?(parsed_url)
+        url = parsed_url.to_s
+
+        return true if url =~ /\n|\r/
+        # Google Cloud Storage uses a multi-line, encoded Signature query string
+        return false if %w(http https).include?(parsed_url.scheme&.downcase)
+
+        CGI.unescape(url) =~ /\n|\r/
       end
 
       def validate_port(port, ports)

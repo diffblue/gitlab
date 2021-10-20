@@ -426,7 +426,7 @@ RSpec.describe Project, factory_default: :keep do
       include_context 'invalid urls'
       include_context 'valid urls with CRLF'
 
-      it 'does not allow URLs with CR or LF characters with git:// scheme' do
+      it 'does not allow URLs with unencoded CR or LF characters' do
         project = build(:project)
 
         aggregate_failures do
