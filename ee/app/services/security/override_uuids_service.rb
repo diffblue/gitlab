@@ -34,13 +34,20 @@ module Security
     def existing_finding_by_signature(finding)
       shas = finding.signatures.sort_by(&:priority).map(&:signature_sha)
 
-      existing_signatures.values_at(*shas).first&.finding
+      existing_signatures.values_at(*shas).compact.map(&:finding).find do |existing_finding|
+        existing_finding.primary_identifier&.fingerprint == finding.primary_identifier_fingerprint &&
+          existing_finding.scanner == existing_scanners[finding.scanner.external_id]
+      end
+    end
+
+    def existing_scanners
+      @existing_scanners ||= pipeline.project.vulnerability_scanners.index_by(&:external_id)
     end
 
     def existing_signatures
       @existing_signatures ||= ::Vulnerabilities::FindingSignature.by_signature_sha(finding_signature_shas)
         .by_project(pipeline.project)
-        .eager_load_finding
+        .eager_load_comparison_entities
         .index_by(&:signature_sha)
     end
 
