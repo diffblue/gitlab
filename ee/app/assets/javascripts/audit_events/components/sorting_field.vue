@@ -46,18 +46,16 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-dropdown :text="selectedOption.text" class="w-100 flex-column flex-lg-row gl-mb-5">
-      <gl-dropdown-section-header> {{ $options.SORTING_TITLE }}</gl-dropdown-section-header>
-      <gl-dropdown-item
-        v-for="option in $options.SORTING_OPTIONS"
-        :key="option.key"
-        :is-check-item="true"
-        :is-checked="isChecked(option.key)"
-        @click="onItemClick(option.key)"
-      >
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
-  </div>
+  <gl-dropdown :text="selectedOption.text" class="gl-display-flex gl-mb-5">
+    <gl-dropdown-section-header> {{ $options.SORTING_TITLE }}</gl-dropdown-section-header>
+    <gl-dropdown-item
+      v-for="option in $options.SORTING_OPTIONS"
+      :key="option.key"
+      :is-check-item="true"
+      :is-checked="isChecked(option.key)"
+      @click="onItemClick(option.key)"
+    >
+      {{ option.text }}
+    </gl-dropdown-item>
+  </gl-dropdown>
 </template>

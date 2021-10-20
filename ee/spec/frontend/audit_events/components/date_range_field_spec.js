@@ -19,9 +19,10 @@ describe('DateRangeField component', () => {
   const findDatePicker = () => wrapper.find(GlDaterangePicker);
   const findDateRangeButtons = () => wrapper.find(DateRangeButtons);
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, stubs = {}) => {
     wrapper = shallowMount(DateRangeField, {
       propsData: { ...props },
+      stubs: { ...stubs },
     });
   };
 
@@ -69,6 +70,20 @@ describe('DateRangeField component', () => {
         defaultEndDate: endDate,
       });
     });
+
+    it('sets the tooltip on the date picker with the max date range', () => {
+      createComponent();
+
+      expect(findDatePicker().props('tooltip')).toBe(
+        `Date range limited to ${MAX_DATE_RANGE} days`,
+      );
+    });
+
+    it('does not set the default min date on the date picker', () => {
+      createComponent();
+
+      expect(findDatePicker().props('defaultMinDate')).toBe(null);
+    });
   });
 
   describe('when a only a endDate is picked', () => {
@@ -113,6 +128,20 @@ describe('DateRangeField component', () => {
           endDate,
         },
       ]);
+    });
+  });
+
+  describe('number of days selected', () => {
+    it('renders the number of days selected when there is a date range', () => {
+      createComponent({ startDate, endDate }, { GlDaterangePicker });
+
+      expect(findDatePicker().text()).toContain('2 days selected');
+    });
+
+    it('does not render the number of days selected when the date range is less than one', () => {
+      createComponent({ startDate, endDate: startDate }, { GlDaterangePicker });
+
+      expect(findDatePicker().text()).not.toContain('days selected');
     });
   });
 });
