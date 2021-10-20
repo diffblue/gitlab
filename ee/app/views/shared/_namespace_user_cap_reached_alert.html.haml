@@ -16,7 +16,7 @@
     .gl-alert-title
       %h4.gl-alert-title= s_('NamespaceUserCap|Your group has reached its billable member limit')
 
-    %button.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss'), data: { level: :warning } }
+    %button.js-namespace-user-cap-alert-dismiss.gl-alert-dismiss.gl-cursor-pointer{ type: 'button', 'aria-label' => _('Dismiss'), data: { cookie_id: hide_user_cap_alert_cookie_id(root_namespace), level: :warning, testid: 'namespace_user_cap_alert_dismiss' } }
       = sprite_icon('close', css_class: 'gl-icon')
 
     .gl-alert-body
