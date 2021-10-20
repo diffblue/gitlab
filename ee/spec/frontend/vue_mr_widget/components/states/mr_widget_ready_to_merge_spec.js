@@ -12,7 +12,9 @@ import {
 } from '~/vue_merge_request_widget/constants';
 import {
   MERGE_DISABLED_TEXT,
+  MERGE_DISABLED_SKIPPED_PIPELINE_TEXT,
   PIPELINE_MUST_SUCCEED_CONFLICT_TEXT,
+  PIPELINE_SKIPPED_STATUS,
 } from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
 describe('ReadyToMerge', () => {
@@ -345,18 +347,31 @@ describe('ReadyToMerge', () => {
 
   describe('cannot merge', () => {
     describe('when isMergeAllowed=false', () => {
-      beforeEach(() => {
+      it('should show merge blocked because of skipped pipeline text', () => {
+        factory({
+          isMergeAllowed: false,
+          availableAutoMergeStrategies: [],
+          pipeline: { id: 1, path: 'path/to/pipeline', status: PIPELINE_SKIPPED_STATUS },
+        });
+
+        expect(findResolveItemsMessage().text()).toBe(MERGE_DISABLED_SKIPPED_PIPELINE_TEXT);
+      });
+
+      it('should show cannot merge text', () => {
         factory({
           isMergeAllowed: false,
           availableAutoMergeStrategies: [],
         });
-      });
 
-      it('should show cannot merge text', () => {
         expect(findResolveItemsMessage().text()).toBe(MERGE_DISABLED_TEXT);
       });
 
       it('should show disabled merge button', () => {
+        factory({
+          isMergeAllowed: false,
+          availableAutoMergeStrategies: [],
+        });
+
         const button = findMergeButton();
 
         expect(button.exists()).toBe(true);
