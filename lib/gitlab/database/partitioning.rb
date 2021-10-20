@@ -3,15 +3,44 @@
 module Gitlab
   module Database
     module Partitioning
+      class TableWithoutModel
+        include PartitionedTable::ClassMethods
+
+        attr_reader :table_name
+
+        def initialize(table_name:, partitioned_column:, strategy:)
+          @table_name = table_name
+          partitioned_by(partitioned_column, strategy: strategy)
+        end
+
+        def connection
+          Gitlab::Database::SharedModel.connection
+        end
+      end
+
       def self.register_models(models)
         registered_models.merge(models)
+      end
+
+      def self.register_tables(tables)
+        registered_tables.merge(tables)
       end
 
       def self.registered_models
         @registered_models ||= Set.new
       end
 
-      def self.sync_partitions(models_to_sync = registered_models)
+      def self.registered_tables
+        @registered_tables ||= Set.new
+      end
+
+      def self.registered_for_sync
+        registered_models + registered_tables.map do |table|
+          TableWithoutModel.new(**table)
+        end
+      end
+
+      def self.sync_partitions(models_to_sync = registered_for_sync)
         Gitlab::AppLogger.info(message: 'Syncing dynamic postgres partitions')
 
         Gitlab::Database::EachDatabase.each_model_connection(models_to_sync) do |model|

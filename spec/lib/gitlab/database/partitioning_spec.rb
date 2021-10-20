@@ -45,8 +45,13 @@ RSpec.describe Gitlab::Database::Partitioning do
       let(:model) { double('model') }
 
       it 'manages partitions for each registered model' do
+        registered_for_sync = described_class.registered_for_sync
+
+        allow(described_class).to receive(:registered_for_sync)
+          .and_return(registered_for_sync)
+
         expect(Gitlab::Database::EachDatabase).to receive(:each_model_connection)
-          .with(described_class.registered_models)
+          .with(registered_for_sync)
           .and_yield(model)
 
         expect(partition_manager_class).to receive(:new).with(model).and_return(partition_manager)

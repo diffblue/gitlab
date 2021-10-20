@@ -135,6 +135,19 @@ CREATE TABLE incident_management_pending_issue_escalations (
 )
 PARTITION BY RANGE (process_at);
 
+CREATE TABLE verification_codes (
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    visitor_id_code text NOT NULL,
+    code text NOT NULL,
+    phone text NOT NULL,
+    CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
+    CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
+    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 32))
+)
+PARTITION BY RANGE (created_at);
+
+COMMENT ON TABLE verification_codes IS 'JiHu-specific table';
+
 CREATE TABLE web_hook_logs (
     id bigint NOT NULL,
     web_hook_id integer NOT NULL,
@@ -20184,19 +20197,6 @@ CREATE SEQUENCE users_statistics_id_seq
     CACHE 1;
 
 ALTER SEQUENCE users_statistics_id_seq OWNED BY users_statistics.id;
-
-CREATE TABLE verification_codes (
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    visitor_id_code text NOT NULL,
-    code text NOT NULL,
-    phone text NOT NULL,
-    CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
-    CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
-    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 32))
-)
-PARTITION BY RANGE (created_at);
-
-COMMENT ON TABLE verification_codes IS 'JiHu-specific table';
 
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
