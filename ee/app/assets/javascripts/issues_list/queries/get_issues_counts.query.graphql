@@ -5,9 +5,11 @@ query getIssuesCount(
   $assigneeId: String
   $assigneeUsernames: [String!]
   $authorUsername: String
+  $confidential: Boolean
   $labelName: [String]
   $milestoneTitle: [String]
   $milestoneWildcardId: MilestoneWildcardId
+  $myReactionEmoji: String
   $types: [IssueType!]
   $epicId: String
   $iterationId: [ID]
@@ -17,15 +19,18 @@ query getIssuesCount(
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     openedIssues: issues(
+      includeSubepics: true
       includeSubgroups: true
       state: opened
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -36,15 +41,18 @@ query getIssuesCount(
       count
     }
     closedIssues: issues(
+      includeSubepics: true
       includeSubgroups: true
       state: closed
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -55,15 +63,18 @@ query getIssuesCount(
       count
     }
     allIssues: issues(
+      includeSubepics: true
       includeSubgroups: true
       state: all
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -76,14 +87,17 @@ query getIssuesCount(
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
     openedIssues: issues(
+      includeSubepics: true
       state: opened
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -94,14 +108,17 @@ query getIssuesCount(
       count
     }
     closedIssues: issues(
+      includeSubepics: true
       state: closed
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -112,14 +129,17 @@ query getIssuesCount(
       count
     }
     allIssues: issues(
+      includeSubepics: true
       state: all
       search: $search
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
