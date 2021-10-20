@@ -118,9 +118,10 @@ describe('License store actions', () => {
   });
 
   describe('receiveDeleteLicense', () => {
-    it('commits RECEIVE_DELETE_LICENSE and dispatches fetchManagedLicenses and removePendingLicense', () => {
+    it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses, fetchManagedLicenses and removePendingLicense', () => {
       return actions.receiveDeleteLicense(store, licenseId).then(() => {
-        expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RECEIVE_DELETE_LICENSE);
+        expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RESET_LICENSE_IN_MODAL);
+        expectDispatched('licenseList/fetchLicenses', null, { root: true });
         expectDispatched('fetchManagedLicenses');
         expectDispatched('removePendingLicense', licenseId);
       });

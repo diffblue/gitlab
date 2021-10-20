@@ -27,7 +27,8 @@ export const resetLicenseInModal = ({ commit }) => {
 };
 
 export const receiveDeleteLicense = ({ commit, dispatch }, id) => {
-  commit(types.RECEIVE_DELETE_LICENSE);
+  commit(types.RESET_LICENSE_IN_MODAL);
+  dispatch(`${LICENSE_LIST}/fetchLicenses`, null, { root: true });
   return dispatch('fetchManagedLicenses').then(() => {
     dispatch('removePendingLicense', id);
   });

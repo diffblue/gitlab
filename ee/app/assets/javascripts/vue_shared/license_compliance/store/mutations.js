@@ -64,12 +64,6 @@ export default {
       isLoadingLicenseReport: true,
     });
   },
-
-  [types.RECEIVE_DELETE_LICENSE](state) {
-    Object.assign(state, {
-      currentLicenseInModal: null,
-    });
-  },
   [types.REQUEST_LICENSE_CHECK_APPROVAL_RULE](state) {
     Object.assign(state, {
       isLoadingLicenseCheckApprovalRule: true,
