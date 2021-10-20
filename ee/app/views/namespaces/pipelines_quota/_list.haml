@@ -9,7 +9,8 @@
     .col-sm-6.offset-sm-6
       - if ::Gitlab.com?
         = link_to s_('UsageQuota|Buy additional minutes'),
-        link_to_buy_additional_minutes_path(namespace),
+        buy_additional_minutes_path(namespace),
+        target: buy_additional_minutes_target(namespace),
         class: 'gl-button btn btn-confirm float-right',
         data: { track_action: 'click_buy_ci_minutes', track_label: namespace.actual_plan_name, track_property: 'pipeline_quota_page' }
 

@@ -39,11 +39,20 @@ module EE
       current_user.can?(:admin_namespace, namespace.root_ancestor)
     end
 
-    def link_to_buy_additional_minutes_path(namespace)
-      use_customer_dot_path = namespace.user_namespace? || ::Feature.disabled?(:new_route_ci_minutes_purchase, namespace, default_enabled: :yaml)
-      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customer_dot_path
+    def buy_additional_minutes_path(namespace)
+      return EE::SUBSCRIPTIONS_MORE_MINUTES_URL if use_customers_dot_path?(namespace)
 
       buy_minutes_subscriptions_path(selected_group: namespace.id)
+    end
+
+    def buy_additional_minutes_target(namespace)
+      use_customers_dot_path?(namespace) ? '_blank' : '_self'
+    end
+
+    private
+
+    def use_customers_dot_path?(namespace)
+      namespace.user_namespace? || ::Feature.disabled?(:new_route_ci_minutes_purchase, namespace, default_enabled: :yaml)
     end
   end
 end
