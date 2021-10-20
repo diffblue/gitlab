@@ -61,7 +61,7 @@ module QA
       def fabricate_via_api!
         populate(:upstream, :user)
 
-        # Remove after Issue: 
+        # Remove after Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343396
         Flow::Login.sign_in(as: user) if Specs::Helpers::ContextSelector.dot_com?
 
         @api_client = Runtime::API::Client.new(:gitlab, is_new_session: false, user: user)
@@ -72,7 +72,7 @@ module QA
 
         populate(:project)
 
-        # Remove after Issue: 
+        # Remove after Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343396
         Flow::Login.sign_in if Specs::Helpers::ContextSelector.dot_com?
       end
 
