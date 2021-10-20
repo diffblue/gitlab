@@ -48,7 +48,15 @@ module EE
 
       def epic_param(issue)
         epic_id = params.delete(:epic_id)
-        params.delete(:epic) || find_epic(issue, epic_id)
+        epic = params.delete(:epic) || find_epic(issue, epic_id)
+
+        return unless epic
+
+        unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue, issue)
+          raise ::Gitlab::Access::AccessDeniedError
+        end
+
+        epic
       end
 
       def find_epic(issue, epic_id)

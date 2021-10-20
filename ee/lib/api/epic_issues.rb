@@ -23,6 +23,10 @@ module API
           .with_api_entity_associations
           .sorted_by_epic_position
       end
+
+      def authorize_can_assign_to_epic!(issue)
+        forbidden! unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue, issue)
+      end
     end
 
     params do
@@ -40,7 +44,7 @@ module API
         use :pagination
       end
       put ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
-        authorize!(:admin_issue, link.issue)
+        authorize_can_assign_to_epic!(link.issue)
 
         update_params = {
           move_before_id: params[:move_before_id],
@@ -85,7 +89,7 @@ module API
       # rubocop: disable CodeReuse/ActiveRecord
       post ':id/(-/)epics/:epic_iid/issues/:issue_id' do
         issue = Issue.find(params[:issue_id])
-        authorize!(:admin_issue, issue)
+        authorize_can_assign_to_epic!(issue)
 
         create_params = { target_issuable: issue }
 
@@ -109,7 +113,7 @@ module API
         requires :epic_issue_id, type: Integer, desc: 'The ID of the association'
       end
       delete ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
-        authorize!(:admin_issue, link.issue)
+        authorize_can_assign_to_epic!(link.issue)
         result = ::EpicIssues::DestroyService.new(link, current_user).execute
 
         if result[:status] == :success

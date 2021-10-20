@@ -120,9 +120,23 @@ RSpec.describe API::EpicIssues do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'With user without permissions to admin the issue' do
+        context 'without permissions to admin the issue' do
           before do
             project.add_guest(user)
+          end
+
+          it 'returns 403 forbidden error' do
+            post api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context 'without permissions to read the epic' do
+          let(:epic) { create(:epic, group: create(:group, :private)) }
+
+          before do
+            project.add_developer(user)
           end
 
           it 'returns 403 forbidden error' do

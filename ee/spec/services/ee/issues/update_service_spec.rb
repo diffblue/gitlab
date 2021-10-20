@@ -263,7 +263,7 @@ RSpec.describe Issues::UpdateService do
 
       context 'when a user has permissions to assign an epic' do
         before do
-          group.add_maintainer(user)
+          group.add_reporter(user)
         end
 
         context 'when EpicIssues::CreateService returns failure', :aggregate_failures do

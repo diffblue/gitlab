@@ -34,6 +34,8 @@ module EpicIssues
     end
 
     def linkable_issuables(issues)
+      return [] unless can?(current_user, :read_epic, issuable.group)
+
       @linkable_issues ||= begin
         issues.select do |issue|
           linkable_issue?(issue)
@@ -43,7 +45,6 @@ module EpicIssues
 
     def linkable_issue?(issue)
       issue.supports_epic? &&
-        issue.project.group&.feature_available?(:epics) &&
         issuable_group_descendants.include?(issue.project.group) &&
         !previous_related_issuables.include?(issue)
     end
