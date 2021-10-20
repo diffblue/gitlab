@@ -90,7 +90,7 @@ module EE
             end
 
           if license
-            usage_data[:license_md5] = license.md5
+            usage_data[:license_md5] = add_metric("LicenseMdFiveMetric")
             usage_data[:license_id] = license.license_id
             # rubocop: disable UsageData/LargeTable
             usage_data[:historical_max_users] = add_metric("HistoricalMaxUsersMetric")
