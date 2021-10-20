@@ -14,6 +14,7 @@ RSpec.describe Gitlab::ImportExport::AttributesPermitter do
       :unprotect_access_levels | true
       :deploy_access_levels    | true
       :protected_environments  | true
+      :security_setting        | true
     end
 
     with_them do
