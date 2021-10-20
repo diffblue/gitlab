@@ -17,7 +17,7 @@ class Groups::HooksController < Groups::ApplicationController
   feature_category :integrations
 
   def index
-    @hooks = @group.hooks
+    @hooks = @group.hooks.load
     @hook = GroupHook.new
   end
 

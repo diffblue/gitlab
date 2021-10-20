@@ -15,7 +15,7 @@ class Projects::HooksController < Projects::ApplicationController
   feature_category :integrations
 
   def index
-    @hooks = @project.hooks
+    @hooks = @project.hooks.load
     @hook = ProjectHook.new
   end
 

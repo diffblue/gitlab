@@ -8,7 +8,7 @@ class Admin::HooksController < Admin::ApplicationController
   feature_category :integrations
 
   def index
-    @hooks = SystemHook.all
+    @hooks = SystemHook.all.load
     @hook = SystemHook.new
   end
 
