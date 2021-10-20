@@ -17,7 +17,7 @@ module Registrations
     end
 
     def create
-      @group = Groups::CreateService.new(current_user, group_params).execute
+      @group = Groups::CreateService.new(current_user, group_params.merge(create_event: true)).execute
 
       if @group.persisted?
         experiment(:combined_registration, user: current_user).track(:create_group, namespace: @group)

@@ -131,6 +131,38 @@ RSpec.describe Groups::CreateService, '#execute' do
     end
   end
 
+  context 'when create_event is true' do
+    subject(:execute) { described_class.new(user, group_params.merge(create_event: true)).execute }
+
+    it 'enqueues a create event worker' do
+      expect(Groups::CreateEventWorker).to receive(:perform_async).with(anything, user.id, :created)
+
+      execute
+    end
+
+    context 'when user can not create a group' do
+      before do
+        user.update_attribute(:can_create_group, false)
+      end
+
+      it "doesn't enqueue a create event worker" do
+        expect(Groups::CreateEventWorker).not_to receive(:perform_async)
+
+        execute
+      end
+    end
+  end
+
+  context 'when create_event is NOT true' do
+    subject(:execute) { described_class.new(user, group_params).execute }
+
+    it "doesn't enqueue a create event worker" do
+      expect(Groups::CreateEventWorker).not_to receive(:perform_async)
+
+      execute
+    end
+  end
+
   def create_group(user, opts)
     described_class.new(user, opts).execute
   end

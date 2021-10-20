@@ -32,11 +32,11 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
   end
 
   describe 'POST #create' do
-    subject { post :create, params: params }
+    subject(:post_create) { post :create, params: params }
 
     let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
     let(:extra_params) { {} }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, emails: ['', ''] } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
     let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
     let(:dev_env_or_com) { true }
 
@@ -61,12 +61,18 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(controller).to receive(:record_experiment_user).with(:remove_known_trial_form_fields_welcoming, namespace_id: anything)
             expect(controller).to receive(:record_experiment_conversion_event).with(:remove_known_trial_form_fields_welcoming)
 
-            subject
+            post_create
           end
         end
 
         it 'creates a group' do
-          expect { subject }.to change { Group.count }.by(1)
+          expect { post_create }.to change { Group.count }.by(1)
+        end
+
+        it 'passes create_event: true to the Groups::CreateService' do
+          expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+
+          post_create
         end
 
         it 'tracks create events for the combined_registration experiment' do
@@ -79,7 +85,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
           end
 
-          subject
+          post_create
         end
       end
 
@@ -95,7 +101,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { name: '', path: '' } }
 
         it 'does not create a group', :aggregate_failures do
-          expect { subject }.not_to change { Group.count }
+          expect { post_create }.not_to change { Group.count }
           expect(assigns(:group).errors).not_to be_blank
         end
 
@@ -105,11 +111,11 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(e).not_to receive(:track).with(:create_project)
           end
 
-          subject
+          post_create
         end
 
         it 'the project is not disgarded completely' do
-          subject
+          post_create
 
           expect(assigns(:project).name).to eq('New project')
         end
@@ -122,8 +128,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
 
         it 'does not create a project', :aggregate_failures do
-          expect { subject }.to change { Group.count }
-          expect { subject }.not_to change { Project.count }
+          expect { post_create }.to change { Group.count }
+          expect { post_create }.not_to change { Project.count }
           expect(assigns(:project).errors).not_to be_blank
         end
 
@@ -133,7 +139,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(e).not_to receive(:track).with(:create_project)
           end
 
-          subject
+          post_create
         end
 
         it { is_expected.to have_gitlab_http_status(:ok) }
@@ -148,8 +154,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { id: group.id } }
 
         it 'creates a project and not another group', :aggregate_failures do
-          expect { subject }.to change { Project.count }
-          expect { subject }.not_to change { Group.count }
+          expect { post_create }.to change { Project.count }
+          expect { post_create }.not_to change { Group.count }
         end
 
         it 'selectively tracks events for the combined_registration experiment' do
@@ -162,7 +168,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
           end
 
-          subject
+          post_create
         end
 
         context 'it redirects' do
@@ -193,7 +199,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         allow(controller).to receive(:record_experiment_conversion_event).and_call_original
 
         allow(Groups::CreateService).to receive(:new).and_call_original
-        allow(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params).permit!).and_return(create_service)
+        allow(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_return(create_service)
         allow(create_service).to receive(:execute).and_return(namespace)
       end
     end
@@ -214,10 +220,10 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
   end
 
   describe 'POST #import' do
-    subject { post :import, params: params }
+    subject(:post_import) { post :import, params: params }
 
     let(:params) { { group: group_params, import_url: new_import_github_path } }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, emails: ['', ''] } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
     let(:dev_env_or_com) { true }
 
     context 'with an unauthenticated user' do
@@ -243,7 +249,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         it "doesn't track for the combined_registration experiment" do
           expect(experiment(:combined_registration)).not_to track(:create_group)
 
-          subject
+          post_import
         end
 
         it { is_expected.to render_template(:new) }
@@ -260,14 +266,20 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
       context 'when group can be created' do
         it 'creates a group' do
-          expect { subject }.to change { Group.count }.by(1)
+          expect { post_import }.to change { Group.count }.by(1)
+        end
+
+        it 'passes create_event: true to the Groups::CreateService' do
+          expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+
+          post_import
         end
 
         it 'tracks an event for the combined_registration experiment' do
           expect(experiment(:combined_registration)).to track(:create_group, namespace: an_instance_of(Group))
                                                     .on_next_instance
 
-          subject
+          post_import
         end
 
         it 'redirects to the import url with a namespace_id parameter' do
@@ -275,7 +287,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             allow(service).to receive(:execute).and_return(group)
           end
 
-          expect(subject).to redirect_to(new_import_github_url(namespace_id: group.id))
+          expect(post_import).to redirect_to(new_import_github_url(namespace_id: group.id))
         end
       end
     end

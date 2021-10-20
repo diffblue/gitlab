@@ -24,6 +24,13 @@ module EE
         group.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
       end
 
+      override :after_create_hook
+      def after_create_hook
+        if group.persisted? && create_event
+          ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
+        end
+      end
+
       override :remove_unallowed_params
       def remove_unallowed_params
         unless current_user&.admin?

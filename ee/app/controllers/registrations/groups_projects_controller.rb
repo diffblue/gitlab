@@ -80,12 +80,12 @@ module Registrations
 
     def modified_group_params
       group_name = params.dig(:group, :name)
-
+      modifed_group_params = group_params
       if group_name.present? && params.dig(:group, :path).blank?
-        group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
-      else
-        group_params
+        modifed_group_params = modifed_group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
       end
+
+      modifed_group_params.merge(create_event: true)
     end
   end
 end

@@ -14,7 +14,7 @@ RSpec.describe Registrations::GroupsController do
     let_it_be(:trial_onboarding_flow_params) { {} }
 
     let(:dev_env_or_com) { true }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, emails: ['', ''] } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
     let(:params) do
       { group: group_params }.merge(glm_params).merge(trial_form_params).merge(trial_onboarding_flow_params)
     end
@@ -38,6 +38,12 @@ RSpec.describe Registrations::GroupsController do
         context 'when group can be created' do
           it 'creates a group' do
             expect { post_create }.to change { Group.count }.by(1)
+          end
+
+          it 'passes create_event to Groups::CreateService' do
+            expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+
+            post_create
           end
 
           context 'when in trial onboarding  - apply_trial_for_trial_onboarding_flow' do
