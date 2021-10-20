@@ -10225,6 +10225,9 @@ msgstr ""
 msgid "CycleAnalytics|Display chart filters"
 msgstr ""
 
+msgid "CycleAnalytics|Lead Time for Changes"
+msgstr ""
+
 msgid "CycleAnalytics|No stages selected"
 msgstr ""
 
@@ -37548,6 +37551,9 @@ msgid "ValueStreamAnalytics|&lt;1m"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Average number of deployments to production per day."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Median time between merge request merge and deployment to a production environment for all MRs deployed in the given time period."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Median time from issue created to issue closed."

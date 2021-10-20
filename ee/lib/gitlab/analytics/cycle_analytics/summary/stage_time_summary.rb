@@ -14,7 +14,9 @@ module Gitlab
           end
 
           def data
-            [lead_time, cycle_time]
+            [lead_time, cycle_time].tap do |array|
+              array << serialize(lead_time_for_changes, with_unit: true) if lead_time_for_changes.value.present?
+            end
           end
 
           private
@@ -34,6 +36,14 @@ module Gitlab
                 stage: stage, current_user: current_user, options: options
               ),
               with_unit: true
+            )
+          end
+
+          def lead_time_for_changes
+            @lead_time_for_changes ||= Summary::LeadTimeForChanges.new(
+              stage: stage,
+              current_user: current_user,
+              options: options
             )
           end
 
