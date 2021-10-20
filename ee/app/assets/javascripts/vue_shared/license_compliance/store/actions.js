@@ -31,8 +31,8 @@ export const receiveDeleteLicense = ({ commit, dispatch }, id) => {
     dispatch('removePendingLicense', id);
   });
 };
-export const receiveDeleteLicenseError = ({ commit }, error) => {
-  commit(types.RECEIVE_DELETE_LICENSE_ERROR, error);
+export const receiveDeleteLicenseError = ({ commit }) => {
+  commit(types.RECEIVE_DELETE_LICENSE_ERROR);
 };
 export const deleteLicense = ({ dispatch, state }) => {
   const licenseId = state.currentLicenseInModal.id;
@@ -43,8 +43,8 @@ export const deleteLicense = ({ dispatch, state }) => {
     .then(() => {
       dispatch('receiveDeleteLicense', licenseId);
     })
-    .catch((error) => {
-      dispatch('receiveDeleteLicenseError', error);
+    .catch(() => {
+      dispatch('receiveDeleteLicenseError');
       dispatch('removePendingLicense', licenseId);
     });
 };
@@ -110,8 +110,8 @@ export const receiveSetLicenseApproval = ({ commit, dispatch, state }, id) => {
     dispatch('removePendingLicense', id);
   });
 };
-export const receiveSetLicenseApprovalError = ({ commit }, error) => {
-  commit(types.RECEIVE_SET_LICENSE_APPROVAL_ERROR, error);
+export const receiveSetLicenseApprovalError = ({ commit }) => {
+  commit(types.RECEIVE_SET_LICENSE_APPROVAL_ERROR);
 };
 
 export const fetchLicenseCheckApprovalRule = ({ dispatch, state }) => {
@@ -188,8 +188,8 @@ export const setLicenseApproval = ({ dispatch, state }, payload) => {
     .then(() => {
       dispatch('receiveSetLicenseApproval', id);
     })
-    .catch((error) => {
-      dispatch('receiveSetLicenseApprovalError', error);
+    .catch(() => {
+      dispatch('receiveSetLicenseApprovalError');
       dispatch('removePendingLicense', id);
     });
 };

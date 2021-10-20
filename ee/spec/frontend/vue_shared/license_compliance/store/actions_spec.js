@@ -129,12 +129,11 @@ describe('License store actions', () => {
 
   describe('receiveDeleteLicenseError', () => {
     it('commits RECEIVE_DELETE_LICENSE_ERROR', (done) => {
-      const error = new Error('Test');
       testAction(
         actions.receiveDeleteLicenseError,
-        error,
+        null,
         state,
-        [{ type: mutationTypes.RECEIVE_DELETE_LICENSE_ERROR, payload: error }],
+        [{ type: mutationTypes.RECEIVE_DELETE_LICENSE_ERROR }],
         [],
       )
         .then(done)
@@ -171,7 +170,7 @@ describe('License store actions', () => {
 
       return actions.deleteLicense(store).then(() => {
         expectDispatched('addPendingLicense', licenseId);
-        expectDispatched('receiveDeleteLicenseError', expect.any(Error));
+        expectDispatched('receiveDeleteLicenseError');
         expectDispatched('removePendingLicense', licenseId);
       });
     });
@@ -205,12 +204,11 @@ describe('License store actions', () => {
 
   describe('receiveSetLicenseApprovalError', () => {
     it('commits RECEIVE_SET_LICENSE_APPROVAL_ERROR', (done) => {
-      const error = new Error('Test');
       testAction(
         actions.receiveSetLicenseApprovalError,
-        error,
+        null,
         state,
-        [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL_ERROR, payload: error }],
+        [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL_ERROR }],
         [],
       )
         .then(done)
@@ -254,7 +252,7 @@ describe('License store actions', () => {
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
           expectDispatched('addPendingLicense', undefined);
-          expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
+          expectDispatched('receiveSetLicenseApprovalError');
           expectDispatched('removePendingLicense', undefined);
         });
       });
@@ -297,7 +295,7 @@ describe('License store actions', () => {
           .setLicenseApproval(store, { license: approvedLicense, newStatus })
           .then(() => {
             expectDispatched('addPendingLicense', approvedLicense.id);
-            expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
+            expectDispatched('receiveSetLicenseApprovalError');
             expectDispatched('removePendingLicense', approvedLicense.id);
           });
       });
