@@ -9,7 +9,10 @@ module EE
         include DescriptionDiffActions
 
         before_action only: [:show] do
-          experiment(:security_reports_mr_widget_prompt, namespace: @project.namespace).publish
+          if @project.licensed_feature_available?(:sast) && can?(current_user, :developer_access, @project)
+            experiment(:security_reports_mr_widget_prompt, namespace: @project.namespace).publish
+          end
+
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:missing_mr_security_scan_types, @project)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project, default_enabled: :yaml)
