@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import EnvironmentPicker from 'ee/threat_monitoring/components/environment_picker.vue';
 import {
@@ -15,115 +15,126 @@ const currentEnvironment = mockEnvironments[1];
 describe('EnvironmentPicker component', () => {
   let store;
   let wrapper;
+  let fetchEnvironmentsSpy;
 
-  const factory = (state) => {
+  const factory = (state = {}, propsData = {}) => {
     store = createStore();
-    Object.assign(store.state.threatMonitoring, state);
+    store.replaceState({
+      ...store.state,
+      threatMonitoring: {
+        ...store.state.threatMonitoring,
+        currentEnvironmentId: currentEnvironment.id,
+        environments: mockEnvironments,
+        hasEnvironment: true,
+        nextPage: 'someHash',
+        ...state,
+      },
+    });
+
+    fetchEnvironmentsSpy = jest
+      .spyOn(EnvironmentPicker.methods, 'fetchEnvironments')
+      .mockImplementation(() => {});
 
     jest.spyOn(store, 'dispatch').mockImplementation();
 
     wrapper = shallowMount(EnvironmentPicker, {
+      propsData,
       store,
     });
   };
 
-  const findEnvironmentsDropdown = () => wrapper.findComponent(GlDropdown);
-  const findEnvironmentsDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findLoadMoreButton = () => wrapper.findComponent(GlButton);
 
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
   });
 
-  describe('the environments dropdown', () => {
-    describe('given there are no environments', () => {
-      beforeEach(() => {
-        factory();
-      });
+  describe('when there are environments', () => {
+    beforeEach(() => {
+      factory();
+    });
 
-      it('has no dropdown items', () => {
-        expect(findEnvironmentsDropdownItems()).toHaveLength(0);
+    it('fetches the environments when created', async () => {
+      expect(fetchEnvironmentsSpy).toHaveBeenCalled();
+    });
+
+    it('is not disabled', () => {
+      expect(findDropdown().attributes().disabled).toBe(undefined);
+    });
+
+    it('has text set to the current environment', () => {
+      expect(findDropdown().attributes().text).toBe(currentEnvironment.name);
+    });
+
+    it('has dropdown items for each environment', () => {
+      const dropdownItems = findDropdownItems();
+      mockEnvironments.forEach((environment, i) => {
+        const dropdownItem = dropdownItems.at(i);
+        expect(dropdownItem.text()).toBe(environment.name);
+        dropdownItem.vm.$emit('click');
+        expect(store.dispatch).toHaveBeenCalledWith(
+          'threatMonitoring/setCurrentEnvironmentId',
+          environment.id,
+        );
       });
     });
-    describe('given there are environments', () => {
-      beforeEach(() => {
-        factory({
-          environments: mockEnvironments,
-          currentEnvironmentId: currentEnvironment.id,
-        });
-      });
 
-      it('is not disabled', () => {
-        expect(findEnvironmentsDropdown().attributes().disabled).toBe(undefined);
-      });
-
-      it('has text set to the current environment', () => {
-        expect(findEnvironmentsDropdown().attributes().text).toBe(currentEnvironment.name);
-      });
-
-      it('has dropdown items for each environment', () => {
-        const dropdownItems = findEnvironmentsDropdownItems();
-        mockEnvironments.forEach((environment, i) => {
-          const dropdownItem = dropdownItems.at(i);
-          expect(dropdownItem.text()).toBe(environment.name);
-          dropdownItem.vm.$emit('click');
-          expect(store.dispatch).toHaveBeenCalledWith(
-            'threatMonitoring/setCurrentEnvironmentId',
-            environment.id,
-          );
-        });
-      });
-    });
-    describe('with includeAll enabled', () => {
-      beforeEach(() => {
-        factory({
-          environments: mockEnvironments,
-          currentEnvironmentId: currentEnvironment.id,
-          allEnvironments: true,
-        });
-        wrapper = shallowMount(EnvironmentPicker, {
-          propsData: {
-            includeAll: true,
-          },
-          store,
-        });
-      });
-
-      it('has text set to the all environment option', () => {
-        expect(findEnvironmentsDropdown().attributes().text).toBe(ALL_ENVIRONMENT_NAME);
-      });
+    it('shows the "Load more" button when there are more environments to fetch', () => {
+      expect(findLoadMoreButton().exists()).toBe(true);
     });
   });
 
-  describe.each`
-    context                            | isLoadingEnvironments | isLoadingNetworkPolicyStatistics | environments        | text                                | loadingState
-    ${'environments are loading'}      | ${true}               | ${false}                         | ${mockEnvironments} | ${LOADING_TEXT}                     | ${'true'}
-    ${'NetPol statistics are loading'} | ${false}              | ${true}                          | ${mockEnvironments} | ${INVALID_CURRENT_ENVIRONMENT_NAME} | ${undefined}
-    ${'there are no environments'}     | ${false}              | ${false}                         | ${[]}               | ${INVALID_CURRENT_ENVIRONMENT_NAME} | ${undefined}
-  `(
-    'given $context',
-    ({
-      isLoadingEnvironments,
-      isLoadingNetworkPolicyStatistics,
-      environments,
-      text,
-      loadingState,
-    }) => {
-      beforeEach(() => {
-        factory({
-          environments,
-          isLoadingEnvironments,
-          isLoadingNetworkPolicyStatistics,
-        });
-
-        return wrapper.vm.$nextTick();
+  describe('when there are no environments', () => {
+    beforeEach(() => {
+      factory({
+        environments: [],
+        hasEnvironment: false,
+        isLoadingEnvironments: false,
+        nextPage: '',
       });
+    });
 
-      it('disables the environments dropdown', () => {
-        expect(findEnvironmentsDropdown().attributes('disabled')).toBe('true');
-        expect(findEnvironmentsDropdown().attributes('text')).toBe(text);
-        expect(findEnvironmentsDropdown().attributes('loading')).toBe(loadingState);
-      });
-    },
-  );
+    it('disables the environments dropdown', () => {
+      expect(findDropdown().attributes('disabled')).toBe('true');
+      expect(findDropdown().attributes('text')).toBe(INVALID_CURRENT_ENVIRONMENT_NAME);
+      expect(findDropdown().attributes('loading')).toBe(undefined);
+    });
+
+    it('has no dropdown items', () => {
+      expect(findDropdownItems()).toHaveLength(0);
+    });
+
+    it('does not fetch the environments when created', () => {
+      expect(fetchEnvironmentsSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not show the "Load more" button', () => {
+      expect(findLoadMoreButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when includeAll is enabled', () => {
+    beforeEach(() => {
+      factory({ allEnvironments: true }, { includeAll: true });
+    });
+
+    it('has text set to the all environment option', () => {
+      expect(findDropdown().attributes().text).toBe(ALL_ENVIRONMENT_NAME);
+    });
+  });
+
+  describe('when environments are loading', () => {
+    beforeEach(() => {
+      factory({ environments: [], isLoadingEnvironments: true });
+    });
+
+    it('disables the environments dropdown', () => {
+      expect(findDropdown().attributes('disabled')).toBe('true');
+      expect(findDropdown().attributes('text')).toBe(LOADING_TEXT);
+      expect(findDropdown().attributes('loading')).toBe('true');
+    });
+  });
 });

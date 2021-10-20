@@ -25,7 +25,9 @@ describe('NetworkPolicyEditor component', () => {
   let store;
   let wrapper;
 
-  const defaultStore = { threatMonitoring: { environments: [{ id: 1 }], currentEnvironmentId: 1 } };
+  const defaultStore = {
+    threatMonitoring: { environments: [{ id: 1 }], currentEnvironmentId: 1, hasEnvironment: true },
+  };
 
   const factory = ({ propsData, provide = {}, updatedStore = defaultStore } = {}) => {
     store = createStore();
@@ -49,7 +51,6 @@ describe('NetworkPolicyEditor component', () => {
         ...propsData,
       },
       provide: {
-        hasEnvironment: true,
         networkDocumentationPath: 'path/to/docs',
         noEnvironmentSvgPath: 'path/to/svg',
         policiesPath: '/threat-monitoring',
@@ -358,7 +359,9 @@ describe('NetworkPolicyEditor component', () => {
   describe('when loading environments', () => {
     beforeEach(() => {
       factory({
-        updatedStore: { threatMonitoring: { environments: [], isLoadingEnvironments: true } },
+        updatedStore: {
+          threatMonitoring: { environments: [], hasEnvironment: true, isLoadingEnvironments: true },
+        },
       });
     });
 
@@ -376,10 +379,7 @@ describe('NetworkPolicyEditor component', () => {
 
   describe('when no environments are configured', () => {
     beforeEach(() => {
-      factory({
-        provide: { hasEnvironment: false },
-        updatedStore: { threatMonitoring: { environments: [] } },
-      });
+      factory({ updatedStore: { threatMonitoring: { environments: [], hasEnvironment: false } } });
     });
 
     it.each`

@@ -6,11 +6,9 @@ import NetworkPolicyEditor from 'ee/threat_monitoring/components/policy_editor/n
 import PolicyEditor from 'ee/threat_monitoring/components/policy_editor/policy_editor.vue';
 import ScanExecutionPolicyEditor from 'ee/threat_monitoring/components/policy_editor/scan_execution_policy/scan_execution_policy_editor.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/threat_monitoring/constants';
-import createStore from 'ee/threat_monitoring/store';
 import { mockDastScanExecutionObject, mockL3Manifest } from '../../mocks/mock_data';
 
 describe('PolicyEditor component', () => {
-  let store;
   let wrapper;
 
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -20,10 +18,6 @@ describe('PolicyEditor component', () => {
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
-    store = createStore();
-
-    jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
-
     wrapper = shallowMount(PolicyEditor, {
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
@@ -33,7 +27,6 @@ describe('PolicyEditor component', () => {
         policyType: undefined,
         ...provide,
       },
-      store,
       stubs: { GlFormSelect },
     });
   };

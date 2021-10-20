@@ -8,12 +8,13 @@ export default {
     state.isLoadingEnvironments = true;
     state.errorLoadingEnvironments = false;
   },
-  [types.RECEIVE_ENVIRONMENTS_SUCCESS](state, payload) {
-    state.environments = payload;
+  [types.RECEIVE_ENVIRONMENTS_SUCCESS](state, { environments, nextPage }) {
+    state.environments = environments;
+    state.nextPage = nextPage;
     state.isLoadingEnvironments = false;
     state.errorLoadingEnvironments = false;
-    if (payload.length > 0 && state.currentEnvironmentId === -1)
-      state.currentEnvironmentId = payload[0].id;
+    if (environments.length > 0 && state.currentEnvironmentId === -1)
+      state.currentEnvironmentId = environments[0].id;
   },
   [types.RECEIVE_ENVIRONMENTS_ERROR](state) {
     state.isLoadingEnvironments = false;
@@ -23,10 +24,13 @@ export default {
     state.currentEnvironmentId = payload;
     state.allEnvironments = false;
   },
+  [types.SET_ALL_ENVIRONMENTS](state) {
+    state.allEnvironments = true;
+  },
   [types.SET_CURRENT_TIME_WINDOW](state, payload) {
     state.currentTimeWindow = payload;
   },
-  [types.SET_ALL_ENVIRONMENTS](state) {
-    state.allEnvironments = true;
+  [types.SET_HAS_ENVIRONMENT](state, payload) {
+    state.hasEnvironment = payload;
   },
 };

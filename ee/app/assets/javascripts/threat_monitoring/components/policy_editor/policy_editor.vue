@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
-import { mapActions } from 'vuex';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import EnvironmentPicker from '../environment_picker.vue';
 import NetworkPolicyEditor from './network_policy/network_policy_editor.vue';
@@ -59,11 +58,7 @@ export default {
       return !this.existingPolicy;
     },
   },
-  created() {
-    this.fetchEnvironments();
-  },
   methods: {
-    ...mapActions('threatMonitoring', ['fetchEnvironments']),
     setError(error) {
       this.error = error;
     },

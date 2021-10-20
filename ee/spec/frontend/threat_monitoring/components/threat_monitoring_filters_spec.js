@@ -7,6 +7,7 @@ import { timeRanges, defaultTimeRange } from '~/vue_shared/constants';
 import { mockEnvironmentsResponse } from '../mocks/mock_data';
 
 const mockEnvironments = mockEnvironmentsResponse.environments;
+const currentEnvironment = mockEnvironments[1];
 
 describe('ThreatMonitoringFilters component', () => {
   let store;
@@ -14,7 +15,16 @@ describe('ThreatMonitoringFilters component', () => {
 
   const factory = (state) => {
     store = createStore();
-    Object.assign(store.state.threatMonitoring, state);
+    store.replaceState({
+      ...store.state,
+      threatMonitoring: {
+        ...store.state.threatMonitoring,
+        currentEnvironmentId: currentEnvironment.id,
+        environments: mockEnvironments,
+        hasEnvironment: true,
+        ...state,
+      },
+    });
 
     jest.spyOn(store, 'dispatch').mockImplementation();
 
@@ -30,7 +40,7 @@ describe('ThreatMonitoringFilters component', () => {
     wrapper.destroy();
   });
 
-  describe('the environments picker', () => {
+  describe('has environments', () => {
     beforeEach(() => {
       factory();
     });
@@ -38,20 +48,9 @@ describe('ThreatMonitoringFilters component', () => {
     it('renders EnvironmentPicker', () => {
       expect(findEnvironmentsPicker().exists()).toBe(true);
     });
-  });
 
-  describe('the "show last" dropdown', () => {
-    beforeEach(() => {
-      factory({
-        environments: mockEnvironments,
-      });
-    });
-
-    it('is not disabled', () => {
+    it('renders the "Show last" dropdown correctly', () => {
       expect(findShowLastDropdown().attributes().disabled).toBe(undefined);
-    });
-
-    it('has text set to the current time window name', () => {
       expect(findShowLastDropdown().vm.value.label).toBe(defaultTimeRange.label);
     });
 
@@ -66,26 +65,17 @@ describe('ThreatMonitoringFilters component', () => {
   });
 
   describe.each`
-    context                            | isLoadingEnvironments | isLoadingNetworkPolicyStatistics | environments
-    ${'environments are loading'}      | ${true}               | ${false}                         | ${mockEnvironments}
-    ${'NetPol statistics are loading'} | ${false}              | ${true}                          | ${mockEnvironments}
-    ${'there are no environments'}     | ${false}              | ${false}                         | ${[]}
-  `(
-    'given $context',
-    ({ isLoadingEnvironments, isLoadingNetworkPolicyStatistics, environments }) => {
-      beforeEach(() => {
-        factory({
-          environments,
-          isLoadingEnvironments,
-          isLoadingNetworkPolicyStatistics,
-        });
+    context                                 | status        | isLoadingEnvironments | environments        | disabled
+    ${'environments are initially loading'} | ${'does'}     | ${true}               | ${[]}               | ${'true'}
+    ${'more environments are loading'}      | ${'does not'} | ${true}               | ${mockEnvironments} | ${undefined}
+    ${'there are no environments'}          | ${'does'}     | ${false}              | ${[]}               | ${'true'}
+  `('when $context', ({ isLoadingEnvironments, environments, disabled, status }) => {
+    beforeEach(() => {
+      factory({ environments, isLoadingEnvironments });
+    });
 
-        return wrapper.vm.$nextTick();
-      });
-
-      it('disables the "show last" dropdown', () => {
-        expect(findShowLastDropdown().attributes('disabled')).toBe('true');
-      });
-    },
-  );
+    it(`${status} disable the "Show last" dropdown`, () => {
+      expect(findShowLastDropdown().attributes('disabled')).toBe(disabled);
+    });
+  });
 });
