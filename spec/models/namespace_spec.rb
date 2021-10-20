@@ -50,10 +50,10 @@ RSpec.describe Namespace do
         ref(:project_sti_name)   | ref(:user_sti_name)      | 'project namespace cannot be the parent of another namespace'
         ref(:project_sti_name)   | ref(:group_sti_name)     | 'project namespace cannot be the parent of another namespace'
         ref(:project_sti_name)   | ref(:project_sti_name)   | 'project namespace cannot be the parent of another namespace'
-        ref(:group_sti_name)     | ref(:user_sti_name)      | 'cannot not be used for user namespace'
+        ref(:group_sti_name)     | ref(:user_sti_name)      | 'cannot be used for user namespace'
         ref(:group_sti_name)     | ref(:group_sti_name)     | nil
         ref(:group_sti_name)     | ref(:project_sti_name)   | nil
-        ref(:user_sti_name)      | ref(:user_sti_name)      | 'cannot not be used for user namespace'
+        ref(:user_sti_name)      | ref(:user_sti_name)      | 'cannot be used for user namespace'
         ref(:user_sti_name)      | ref(:group_sti_name)     | 'user namespace cannot be the parent of another namespace'
         ref(:user_sti_name)      | ref(:project_sti_name)   | nil
       end
