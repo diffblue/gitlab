@@ -11,6 +11,54 @@ RSpec.describe Projects::MergeRequestsController do
     login_as(user)
   end
 
+  describe 'GET #show' do
+    before do
+      # To avoid adjusting this controller, we just want to allow these tests to pass. This action wasn't tested before
+      # these were added for the experiment, and already exceeded the threshold.
+      # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343375
+      # More: https://docs.gitlab.com/ee/development/query_count_limits.html#disable-query-limiting
+      stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 103)
+
+      stub_licensed_features(sast: true)
+    end
+
+    def get_show
+      get project_merge_request_path(project, merge_request)
+    end
+
+    context 'when the user has developer access' do
+      it 'publishes the security_reports_mr_widget_prompt experiment' do
+        expect_next_instance_of(SecurityReportsMrWidgetPromptExperiment) do |instance|
+          expect(instance).to receive(:publish)
+        end
+
+        get_show
+      end
+    end
+
+    context 'when the user does not have developer access' do
+      let(:user) { create(:user) }
+
+      it 'does not publish the security_reports_mr_widget_prompt experiment' do
+        expect(SecurityReportsMrWidgetPromptExperiment).not_to receive(:new)
+
+        get_show
+      end
+    end
+
+    context 'when the project is not licensed for sast' do
+      before do
+        expect(License).to receive(:feature_available?).with(:sast).and_return(false)
+      end
+
+      it 'does not publish the security_reports_mr_widget_prompt experiment' do
+        expect(SecurityReportsMrWidgetPromptExperiment).not_to receive(:new)
+
+        get_show
+      end
+    end
+  end
+
   describe 'GET #edit' do
     def get_edit
       get edit_project_merge_request_path(project, merge_request)
