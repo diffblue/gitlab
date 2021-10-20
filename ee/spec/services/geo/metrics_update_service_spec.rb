@@ -36,10 +36,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
       design_repositories_count: 100,
       design_repositories_synced_count: 50,
       design_repositories_failed_count: 12,
-      attachments_count: 30,
-      attachments_synced_count: 30,
-      attachments_failed_count: 25,
-      attachments_synced_missing_on_primary_count: 6,
       last_event_id: 2,
       last_event_date: event_date,
       cursor_last_event_id: 1,
@@ -63,7 +59,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
       projects_count: 10,
       lfs_objects_count: 100,
       job_artifacts_count: 100,
-      attachments_count: 30,
       container_repositories_count: 100,
       last_event_id: 2,
       last_event_date: event_date,
@@ -171,10 +166,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
         expect(metric_value(:geo_job_artifacts_synced)).to eq(50)
         expect(metric_value(:geo_job_artifacts_failed)).to eq(12)
         expect(metric_value(:geo_job_artifacts_synced_missing_on_primary)).to eq(5)
-        expect(metric_value(:geo_attachments)).to eq(30)
-        expect(metric_value(:geo_attachments_synced)).to eq(30)
-        expect(metric_value(:geo_attachments_failed)).to eq(25)
-        expect(metric_value(:geo_attachments_synced_missing_on_primary)).to eq(6)
         expect(metric_value(:geo_last_event_id)).to eq(2)
         expect(metric_value(:geo_last_event_timestamp)).to eq(event_date.to_i)
         expect(metric_value(:geo_cursor_last_event_id)).to eq(1)

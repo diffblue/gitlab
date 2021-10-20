@@ -65,12 +65,8 @@ ALTER SEQUENCE event_log_states_event_id_seq OWNED BY event_log_states.event_id;
 
 CREATE TABLE file_registry (
     id integer NOT NULL,
-    file_type character varying NOT NULL,
     file_id integer NOT NULL,
-    bytes bigint,
-    sha256 character varying,
     created_at timestamp without time zone NOT NULL,
-    success boolean DEFAULT false NOT NULL,
     retry_count integer DEFAULT 0,
     retry_at timestamp without time zone,
     missing_on_primary boolean DEFAULT false NOT NULL,
@@ -510,13 +506,7 @@ CREATE INDEX index_design_registry_on_retry_at ON design_registry USING btree (r
 
 CREATE INDEX index_design_registry_on_state ON design_registry USING btree (state);
 
-CREATE INDEX index_file_registry_on_file_type ON file_registry USING btree (file_type);
-
-CREATE UNIQUE INDEX index_file_registry_on_file_type_and_file_id ON file_registry USING btree (file_type, file_id);
-
 CREATE INDEX index_file_registry_on_retry_at ON file_registry USING btree (retry_at);
-
-CREATE INDEX index_file_registry_on_success ON file_registry USING btree (success);
 
 CREATE UNIQUE INDEX index_g_wiki_repository_registry_on_group_wiki_repository_id ON group_wiki_repository_registry USING btree (group_wiki_repository_id);
 

@@ -84,7 +84,12 @@ RSpec.describe 'Every GitLab uploader' do
 
     def handled_by_ssf?(uploader)
       replicable_name = replicable_name_for(uploader)
-      replicable_names.include?(replicable_name)
+      replicable_names.include?(replicable_name) || uploads?(uploader)
+    end
+
+    def uploads?(uploader)
+      upload_name = uploader.name.delete_suffix('Uploader').underscore
+      Gitlab::Geo::Replication.object_type_from_user_uploads?(upload_name)
     end
 
     def object_types

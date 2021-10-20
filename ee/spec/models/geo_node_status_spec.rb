@@ -144,50 +144,6 @@ RSpec.describe GeoNodeStatus, :geo do
     end
   end
 
-  describe '#attachments_synced_count' do
-    it 'only counts successful syncs' do
-      create_list(:user, 3, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png'))
-      uploads = Upload.pluck(:id)
-
-      create(:geo_upload_registry, :synced, file_id: uploads[0])
-      create(:geo_upload_registry, :synced, file_id: uploads[1])
-      create(:geo_upload_registry, :failed, file_id: uploads[2])
-
-      expect(subject.attachments_synced_count).to eq(2)
-    end
-  end
-
-  describe '#attachments_failed_count' do
-    it 'counts failed avatars, attachment, personal snippets and files' do
-      # These two should be ignored
-      create(:geo_lfs_object_registry, :failed)
-      create(:geo_upload_registry)
-
-      create(:geo_upload_registry, :failed)
-      create(:geo_upload_registry, :failed)
-
-      expect(subject.attachments_failed_count).to eq(2)
-    end
-  end
-
-  describe '#attachments_synced_in_percentage' do
-    it 'returns 0 when no registries are available' do
-      expect(subject.attachments_synced_in_percentage).to eq(0)
-    end
-
-    it 'returns the right percentage' do
-      create_list(:user, 4, avatar: fixture_file_upload('spec/fixtures/dk.png', 'image/png'))
-      uploads = Upload.pluck(:id)
-
-      create(:geo_upload_registry, :synced, file_id: uploads[0])
-      create(:geo_upload_registry, :synced, file_id: uploads[1])
-      create(:geo_upload_registry, :failed, file_id: uploads[2])
-      create(:geo_upload_registry, :started, file_id: uploads[3])
-
-      expect(subject.attachments_synced_in_percentage).to be_within(0.0001).of(50)
-    end
-  end
-
   describe '#db_replication_lag_seconds' do
     it 'returns the set replication lag if secondary' do
       allow(Gitlab::Geo).to receive(:secondary?).and_return(true)
@@ -979,7 +935,6 @@ RSpec.describe GeoNodeStatus, :geo do
       result = described_class.from_json(data)
 
       expect(result.id).to be_nil
-      expect(result.attachments_count).to eq(status.attachments_count)
       expect(result.cursor_last_event_date).to eq(Time.zone.at(status.cursor_last_event_timestamp))
       expect(result.storage_shards.count).to eq(Settings.repositories.storages.count)
     end
@@ -1327,12 +1282,6 @@ RSpec.describe GeoNodeStatus, :geo do
         stub_current_geo_node(primary)
       end
 
-      it 'does not call AttachmentLegacyRegistryFinder#registry_count' do
-        expect_any_instance_of(Geo::AttachmentLegacyRegistryFinder).not_to receive(:registry_count)
-
-        subject
-      end
-
       it 'does not call JobArtifactRegistryFinder#registry_count' do
         expect_any_instance_of(Geo::JobArtifactRegistryFinder).not_to receive(:registry_count)
 
@@ -1341,12 +1290,6 @@ RSpec.describe GeoNodeStatus, :geo do
     end
 
     context 'on the secondary' do
-      it 'calls AttachmentLegacyRegistryFinder#registry_count' do
-        expect_any_instance_of(Geo::AttachmentLegacyRegistryFinder).to receive(:registry_count).twice
-
-        subject
-      end
-
       it 'calls JobArtifactRegistryFinder#registry_count' do
         expect_any_instance_of(Geo::JobArtifactRegistryFinder).to receive(:registry_count).twice
 

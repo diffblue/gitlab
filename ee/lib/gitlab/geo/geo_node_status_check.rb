@@ -28,7 +28,6 @@ module Gitlab
         print_verified_repositories
         print_wikis_status
         print_verified_wikis
-        print_attachments_status
         print_ci_job_artifacts_status
         print_container_repositories_status
         print_design_repositories_status
@@ -49,7 +48,6 @@ module Gitlab
         print_verified_repositories
         print_wikis_status
         print_verified_wikis
-        print_attachments_status
         print_ci_job_artifacts_status
         print_container_repositories_status
         print_design_repositories_status
@@ -74,7 +72,6 @@ module Gitlab
           ["repositories", Gitlab::Geo.repository_verification_enabled?],
           ["wikis", Gitlab::Geo.repository_verification_enabled?],
           ["job_artifacts", false],
-          ["attachments", false],
           ["design_repositories", false]
         ]
 
@@ -250,15 +247,6 @@ module Gitlab
           print "#{current_node_status.wikis_verified_count}/#{current_node_status.projects_count} "
           puts using_percentage(current_node_status.wikis_verified_in_percentage)
         end
-      end
-
-      def print_attachments_status
-        return if ::Geo::UploadReplicator.enabled?
-
-        print 'Attachments: '.rjust(GEO_STATUS_COLUMN_WIDTH)
-        show_failed_value(current_node_status.attachments_failed_count)
-        print "#{current_node_status.attachments_synced_count}/#{current_node_status.attachments_count} "
-        puts using_percentage(current_node_status.attachments_synced_in_percentage)
       end
 
       def print_ci_job_artifacts_status

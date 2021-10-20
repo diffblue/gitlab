@@ -71,13 +71,7 @@ module Geo
     end
 
     def job_finders
-      job_finders = [Geo::FileDownloadDispatchWorker::JobArtifactJobFinder.new(scheduled_file_ids(:job_artifact))]
-
-      if ::Geo::UploadReplicator.disabled?
-        job_finders << Geo::FileDownloadDispatchWorker::AttachmentJobFinder.new(scheduled_file_ids(Gitlab::Geo::Replication::USER_UPLOADS_OBJECT_TYPES))
-      end
-
-      job_finders
+      [Geo::FileDownloadDispatchWorker::JobArtifactJobFinder.new(scheduled_file_ids(:job_artifact))]
     end
 
     def scheduled_file_ids(file_types)

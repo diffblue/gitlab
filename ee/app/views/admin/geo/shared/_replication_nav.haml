@@ -10,11 +10,6 @@
     = link_to admin_geo_projects_path, title: _('Projects') do
       %span
         = _('Projects')
-  - if ::Geo::UploadReplicator.disabled?
-    = nav_link(path: 'admin/geo/uploads#index', html_options: { class: 'gl-pr-2' }) do
-      = link_to admin_geo_uploads_path, title: _('Uploads') do
-        %span
-          = _('Uploads')
   = nav_link(path: 'admin/geo/designs#index', html_options: { class: 'gl-pr-2' }) do
     = link_to admin_geo_designs_path, title: _('Designs') do
       %span

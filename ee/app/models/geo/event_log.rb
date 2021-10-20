@@ -15,7 +15,6 @@ module Geo
                        Geo::HashedStorageMigratedEvent
                        Geo::HashedStorageAttachmentsEvent
                        Geo::JobArtifactDeletedEvent
-                       Geo::UploadDeletedEvent
                        Geo::ContainerRepositoryUpdatedEvent
                        Geo::Event].freeze
 
@@ -54,10 +53,6 @@ module Geo
     belongs_to :job_artifact_deleted_event,
       class_name: 'Geo::JobArtifactDeletedEvent',
       foreign_key: :job_artifact_deleted_event_id
-
-    belongs_to :upload_deleted_event,
-      class_name: 'Geo::UploadDeletedEvent',
-      foreign_key: :upload_deleted_event_id
 
     belongs_to :reset_checksum_event,
       class_name: 'Geo::ResetChecksumEvent',
@@ -101,7 +96,6 @@ module Geo
         hashed_storage_migrated_event ||
         hashed_storage_attachments_event ||
         job_artifact_deleted_event ||
-        upload_deleted_event ||
         reset_checksum_event ||
         cache_invalidation_event ||
         container_repository_updated_event ||

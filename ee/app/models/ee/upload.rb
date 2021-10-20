@@ -14,8 +14,6 @@ module EE
 
       with_replicator ::Geo::UploadReplicator
 
-      after_destroy :log_geo_deleted_event
-
       scope :for_model, ->(model) { where(model_id: model.id, model_type: model.class.name) }
       scope :syncable, -> { with_files_stored_locally }
     end
@@ -76,7 +74,8 @@ module EE
     end
 
     def log_geo_deleted_event
-      ::Geo::UploadDeletedEventStore.new(self).create!
+      # Keep empty for now. Should be addressed in future
+      # by https://gitlab.com/gitlab-org/gitlab/issues/33817
     end
   end
 end

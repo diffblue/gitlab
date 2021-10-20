@@ -55,16 +55,6 @@ RSpec.describe EE::API::Entities::GeoNodeStatus do
     end
   end
 
-  describe '#attachments_synced_in_percentage' do
-    it 'formats as percentage' do
-      geo_node_status.assign_attributes(attachments_count: 329,
-                                        attachments_failed_count: 25,
-                                        attachments_synced_count: 141)
-
-      expect(subject[:attachments_synced_in_percentage]).to eq '42.86%'
-    end
-  end
-
   describe '#job_artifacts_synced_in_percentage' do
     it 'formats as percentage' do
       geo_node_status.assign_attributes(job_artifacts_count: 256,

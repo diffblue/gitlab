@@ -93,12 +93,6 @@ RSpec.describe Upload do
       let_it_be(:primary) { create(:geo_node, :primary) }
       let_it_be(:secondary) { create(:geo_node) }
 
-      it 'logs an event to the Geo event log' do
-        stub_current_geo_node(primary)
-
-        expect { subject.destroy }.to change(Geo::UploadDeletedEvent, :count).by(1)
-      end
-
       it 'logs an event to the Geo event log when bulk removal is used', :sidekiq_inline do
         stub_current_geo_node(primary)
 

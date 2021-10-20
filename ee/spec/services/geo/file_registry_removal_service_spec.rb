@@ -21,42 +21,6 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
       described_class.new(:lfs, 99).execute
     end
 
-    shared_examples 'removes' do
-      subject(:service) { described_class.new(registry.file_type, registry.file_id) }
-
-      before do
-        stub_exclusive_lease("file_registry_removal_service:#{registry.file_type}:#{registry.file_id}",
-          timeout: Geo::FileRegistryRemovalService::LEASE_TIMEOUT)
-      end
-
-      it 'file from disk' do
-        expect do
-          service.execute
-        end.to change { File.exist?(file_path) }.from(true).to(false)
-      end
-
-      it 'deletes registry entry' do
-        expect do
-          service.execute
-        end.to change(Geo::UploadRegistry, :count).by(-1)
-      end
-    end
-
-    shared_examples 'removes registry entry' do
-      subject(:service) { described_class.new(registry.file_type, registry.file_id) }
-
-      before do
-        stub_exclusive_lease("file_registry_removal_service:#{registry.file_type}:#{registry.file_id}",
-          timeout: Geo::FileRegistryRemovalService::LEASE_TIMEOUT)
-      end
-
-      it 'deletes registry entry' do
-        expect do
-          service.execute
-        end.to change(Geo::UploadRegistry, :count).by(-1)
-      end
-    end
-
     shared_examples 'removes artifact' do
       subject(:service) { described_class.new('job_artifact', registry.artifact_id) }
 
@@ -221,158 +185,6 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
       end
     end
 
-    context 'with avatar' do
-      let!(:upload) { create(:user, :with_avatar).avatar.upload }
-      let!(:registry) { create(:geo_upload_legacy_registry, :avatar, file_id: upload.id) }
-      let!(:file_path) { upload.retrieve_uploader.file.path }
-
-      it_behaves_like 'removes'
-
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(AvatarUploader)
-          upload.update_column(:store, AvatarUploader::Store::REMOTE)
-        end
-
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
-
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(AvatarUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
-      end
-    end
-
-    context 'with attachment' do
-      let!(:upload) { create(:note, :with_attachment).attachment.upload }
-      let!(:registry) { create(:geo_upload_legacy_registry, :attachment, file_id: upload.id) }
-      let!(:file_path) { upload.retrieve_uploader.file.path }
-
-      it_behaves_like 'removes'
-
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(AttachmentUploader)
-          upload.update_column(:store, AttachmentUploader::Store::REMOTE)
-        end
-
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
-
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(AttachmentUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
-      end
-    end
-
-    context 'with namespace_file' do
-      let_it_be(:group) { create(:group) }
-
-      let(:file) { fixture_file_upload('spec/fixtures/dk.png', 'image/png') }
-      let!(:upload) do
-        NamespaceFileUploader.new(group).store!(file)
-        Upload.find_by(model: group, uploader: NamespaceFileUploader.name)
-      end
-
-      let!(:registry) { create(:geo_upload_legacy_registry, :namespace_file, file_id: upload.id) }
-      let!(:file_path) { upload.retrieve_uploader.file.path }
-
-      it_behaves_like 'removes'
-
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(NamespaceFileUploader)
-          upload.update_column(:store, NamespaceFileUploader::Store::REMOTE)
-        end
-
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
-
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(NamespaceFileUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
-      end
-    end
-
-    context 'with personal_file' do
-      let(:snippet) { create(:personal_snippet) }
-      let(:file) { fixture_file_upload('spec/fixtures/dk.png', 'image/png') }
-      let!(:upload) do
-        PersonalFileUploader.new(snippet).store!(file)
-        Upload.find_by(model: snippet, uploader: PersonalFileUploader.name)
-      end
-
-      let!(:registry) { create(:geo_upload_legacy_registry, :personal_file, file_id: upload.id) }
-      let!(:file_path) { upload.retrieve_uploader.file.path }
-
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(PersonalFileUploader)
-          upload.update_column(:store, PersonalFileUploader::Store::REMOTE)
-        end
-
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
-
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(PersonalFileUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
-      end
-    end
-
-    context 'with favicon' do
-      let(:appearance) { create(:appearance) }
-      let(:file) { fixture_file_upload('spec/fixtures/dk.png', 'image/png') }
-      let!(:upload) do
-        FaviconUploader.new(appearance).store!(file)
-        Upload.find_by(model: appearance, uploader: FaviconUploader.name)
-      end
-
-      let!(:registry) { create(:geo_upload_legacy_registry, :favicon, file_id: upload.id) }
-      let!(:file_path) { upload.retrieve_uploader.file.path }
-
-      it_behaves_like 'removes'
-
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(FaviconUploader)
-          upload.update_column(:store, FaviconUploader::Store::REMOTE)
-        end
-
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
-
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(FaviconUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
-      end
-    end
-
     context 'with package file' do
       let(:package_file) { create(:package_file_with_file) }
       let!(:registry) { create(:geo_package_file_registry, package_file: package_file) }
@@ -407,30 +219,28 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
       end
     end
 
-    context 'with Uploads(after migrating to SSF)' do
+    context 'with uploads' do
       let!(:upload) { create(:user, :with_avatar).avatar.upload }
       let!(:registry) { create(:geo_upload_registry, file_id: upload.id) }
       let!(:file_path) { upload.retrieve_uploader.file.path }
 
-      it_behaves_like 'removes'
+      subject(:service) { described_class.new('upload', registry.file_id) }
 
-      context 'migrated to object storage' do
-        before do
-          stub_uploads_object_storage(AvatarUploader)
-          upload.update_column(:store, AvatarUploader::Store::REMOTE)
-        end
+      before do
+        stub_exclusive_lease("file_registry_removal_service:upload:#{registry.file_id}",
+          timeout: Geo::FileRegistryRemovalService::LEASE_TIMEOUT)
+      end
 
-        context 'with object storage enabled' do
-          it_behaves_like 'removes'
-        end
+      it 'file from disk' do
+        expect do
+          service.execute
+        end.to change { File.exist?(file_path) }.from(true).to(false)
+      end
 
-        context 'with object storage disabled' do
-          before do
-            stub_uploads_object_storage(AvatarUploader, enabled: false)
-          end
-
-          it_behaves_like 'removes registry entry'
-        end
+      it 'deletes registry entry' do
+        expect do
+          service.execute
+        end.to change(Geo::UploadRegistry, :count).by(-1)
       end
     end
   end

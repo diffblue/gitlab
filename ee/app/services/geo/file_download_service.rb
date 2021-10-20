@@ -2,9 +2,8 @@
 
 module Geo
   # This class is responsible for:
-  #   * Finding the appropriate Downloader class for a UploadRegistry record
   #   * Executing the Downloader
-  #   * Marking the UploadRegistry record as synced or needing retry
+  #   * Marking the Registry record as synced or needing retry
   class FileDownloadService < BaseFileService
     include Gitlab::Utils::StrongMemoize
 
@@ -36,7 +35,6 @@ module Geo
     private
 
     def downloader_klass
-      return Gitlab::Geo::Replication::FileDownloader if user_upload?
       return Gitlab::Geo::Replication::JobArtifactDownloader if job_artifact?
 
       fail_unimplemented_klass!(type: 'Downloader')
@@ -59,11 +57,7 @@ module Geo
     # rubocop: disable CodeReuse/ActiveRecord
     def registry
       strong_memoize(:registry) do
-        if job_artifact?
-          Geo::JobArtifactRegistry.find_or_initialize_by(artifact_id: object_db_id)
-        else
-          Geo::UploadRegistry.find_or_initialize_by(file_type: object_type, file_id: object_db_id)
-        end
+        Geo::JobArtifactRegistry.find_or_initialize_by(artifact_id: object_db_id)
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
