@@ -39684,9 +39684,6 @@ msgstr ""
 msgid "Zentao issues"
 msgstr ""
 
-msgid "Zentao user"
-msgstr ""
-
 msgid "ZentaoIntegration|An error occurred while requesting data from the ZenTao service."
 msgstr ""
 

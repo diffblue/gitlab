@@ -2,7 +2,7 @@
 import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
 export default {
@@ -31,7 +31,7 @@ export default {
   i18n: {
     statusTitle: __('Status'),
     referenceName: __('Reference'),
-    avatarSubLabel: __('Zentao user'),
+    avatarSubLabel: s__('ZenTaoIntegration|ZenTao user'),
   },
 };
 </script>
