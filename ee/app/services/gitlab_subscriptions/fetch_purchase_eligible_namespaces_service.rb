@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-# Filter a list of namespaces by their eligibility to purchase a new plan.
+# Fetch a list of namespaces and filter them by their eligibility to purchase a new subscription
 #
 # - When `plan_id: ID` is supplied the eligibility will be checked for that specific plan ID.
 #   This param should be supplied when checking add on pack eligibility.
 # - When `any_self_service_plan: Boolean` is supplied, the eligibility to have a new self-service plan
 #   (ie Premium/Ultimate) in general is checked.
+# - When present, the account id associated with the namespace will be added.
+#   This is needed in the context of add on purchase, in order to correctly initialise the payment form.
 module GitlabSubscriptions
-  class FilterPurchaseEligibleNamespacesService
+  class FetchPurchaseEligibleNamespacesService
     include ::Gitlab::Utils::StrongMemoize
 
     def initialize(user:, namespaces:, plan_id: nil, any_self_service_plan: nil)
@@ -23,9 +25,12 @@ module GitlabSubscriptions
       return missing_plan_error if plan_id.nil? && any_self_service_plan.nil?
 
       if response[:success] && response[:data]
-        eligible_ids = response[:data].map { |data| data['id'] }.to_set
-
-        data = namespaces.filter { |namespace| eligible_ids.include?(namespace.id) }
+        eligible_namespaces = response[:data].to_h { |data| [data["id"], data["accountId"]] }
+        data = namespaces.each_with_object([]) do |namespace, acc|
+          if eligible_namespaces.include?(namespace.id)
+            acc << { namespace: namespace, account_id: eligible_namespaces[namespace.id] }
+          end
+        end
 
         success(data)
       else

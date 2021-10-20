@@ -40,12 +40,14 @@ RSpec.describe SubscriptionsController do
           group.add_owner(user)
 
           allow_next_instance_of(
-            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
             namespaces: [group],
             any_self_service_plan: true
           ) do |instance|
-            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
+            allow(instance).to receive(:execute).and_return(
+              instance_double(ServiceResponse, success?: true, payload: [{ namespace: group, account_id: nil }])
+            )
           end
         end
 
@@ -59,7 +61,7 @@ RSpec.describe SubscriptionsController do
       context 'when there are no eligible groups for the subscription' do
         it 'assigns eligible groups as an empty array' do
           allow_next_instance_of(
-            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
             namespaces: [],
             any_self_service_plan: true
@@ -77,6 +79,7 @@ RSpec.describe SubscriptionsController do
 
   describe 'GET #buy_minutes' do
     let_it_be(:group) { create(:group) }
+    let_it_be(:plan_id) { 'ci_minutes' }
 
     subject(:buy_minutes) { get :buy_minutes, params: { selected_group: group.id } }
 
@@ -112,12 +115,14 @@ RSpec.describe SubscriptionsController do
             .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
 
           allow_next_instance_of(
-            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
             plan_id: 'ci_minutes',
             namespaces: [group]
           ) do |instance|
-            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
+            allow(instance).to receive(:execute).and_return(
+              instance_double(ServiceResponse, success?: true, payload: [{ namespace: group, account_id: nil }])
+            )
           end
         end
 
@@ -128,28 +133,24 @@ RSpec.describe SubscriptionsController do
           buy_minutes
 
           expect(assigns(:group)).to eq group
+          expect(assigns(:account_id)).to eq nil
+        end
+
+        context 'with :new_route_ci_minutes_purchase disabled' do
+          before do
+            stub_feature_flags(new_route_ci_minutes_purchase: false)
+          end
+
+          it { is_expected.to have_gitlab_http_status(:not_found) }
         end
       end
-    end
-
-    context 'with :new_route_ci_minutes_purchase disabled' do
-      before do
-        allow(Gitlab::SubscriptionPortal::Client)
-          .to receive(:get_plans).with(tags: ['CI_1000_MINUTES_PLAN'])
-          .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
-
-        stub_feature_flags(new_route_ci_minutes_purchase: false)
-        sign_in(user)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
     end
   end
 
   describe 'GET #buy_storage' do
     let_it_be(:group) { create(:group) }
 
-    subject { get :buy_storage, params: { selected_group: group.id } }
+    subject(:buy_storage) { get :buy_storage, params: { selected_group: group.id } }
 
     context 'with authenticated user' do
       before do
@@ -172,7 +173,7 @@ RSpec.describe SubscriptionsController do
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
 
-      context 'with :new_route_storage_purchase enabled' do
+      context 'when there are groups eligible for the addon' do
         let_it_be(:group) { create(:group) }
 
         before do
@@ -183,31 +184,35 @@ RSpec.describe SubscriptionsController do
             .and_return({ success: true, data: [{ 'id' => 'storage' }] })
 
           allow_next_instance_of(
-            GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+            GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
             user: user,
             plan_id: 'storage',
             namespaces: [group]
           ) do |instance|
-            allow(instance).to receive(:execute).and_return(instance_double(ServiceResponse, success?: true, payload: [group]))
+            allow(instance).to receive(:execute).and_return(
+              instance_double(ServiceResponse, success?: true, payload: [{ namespace: group, account_id: nil }])
+            )
           end
         end
 
         it { is_expected.to render_template 'layouts/checkout' }
         it { is_expected.to render_template :buy_storage }
+
+        it 'assigns the group for the addon' do
+          buy_storage
+
+          expect(assigns(:group)).to eq group
+          expect(assigns(:account_id)).to eq nil
+        end
+
+        context 'with :new_route_storage_purchase disabled' do
+          before do
+            stub_feature_flags(new_route_storage_purchase: false)
+          end
+
+          it { is_expected.to have_gitlab_http_status(:not_found) }
+        end
       end
-    end
-
-    context 'with :new_route_storage_purchase disabled' do
-      before do
-        allow(Gitlab::SubscriptionPortal::Client)
-          .to receive(:get_plans).with(tags: ['STORAGE_PLAN'])
-          .and_return({ success: true, data: [{ 'id' => 'ci_minutes' }] })
-
-        stub_feature_flags(new_route_ci_minutes_purchase: false)
-        sign_in(user)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
     end
   end
 
@@ -389,14 +394,16 @@ RSpec.describe SubscriptionsController do
             selected_group.add_owner(user)
 
             allow_next_instance_of(
-              GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+              GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
               user: user,
               plan_id: params[:subscription][:plan_id],
               namespaces: [selected_group]
             ) do |instance|
               allow(instance)
                 .to receive(:execute)
-                .and_return(instance_double(ServiceResponse, success?: true, payload: [selected_group]))
+                .and_return(
+                  instance_double(ServiceResponse, success?: true, payload: [{ namespace: selected_group, account_id: nil }])
+                )
             end
           end
 
@@ -439,7 +446,7 @@ RSpec.describe SubscriptionsController do
             selected_group.add_owner(user)
 
             allow_next_instance_of(
-              GitlabSubscriptions::FilterPurchaseEligibleNamespacesService,
+              GitlabSubscriptions::FetchPurchaseEligibleNamespacesService,
               user: user,
               plan_id: params[:subscription][:plan_id],
               namespaces: [selected_group]
