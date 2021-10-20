@@ -132,9 +132,8 @@ export default {
         };
       },
       update(data) {
-        const labels = data.workspace?.issuable?.labels.nodes || [];
-        this.selected = labels;
-        return labels;
+        this.selected = data.workspace?.issuable?.labels.nodes || [];
+        return this.selected;
       },
       error() {
         createFlash({ message: __('Error fetching labels.') });
@@ -145,9 +144,10 @@ export default {
     handleDropdownClose(labels) {
       if (this.iid !== '') {
         this.updateSelectedLabels(this.getUpdateVariables(labels));
+      } else {
+        this.$emit('updateSelectedLabels', labels);
       }
 
-      this.$emit('updateSelectedLabels', labels);
       this.collapseEditableItem();
     },
     collapseEditableItem() {
@@ -193,6 +193,8 @@ export default {
           if (data[mutationName]?.errors?.length) {
             throw new Error();
           }
+
+          this.$emit('updateSelectedLabels', data[mutationName]?.[this.issuableType].labels?.nodes);
         })
         .catch(() => createFlash({ message: __('An error occurred while updating labels.') }))
         .finally(() => {

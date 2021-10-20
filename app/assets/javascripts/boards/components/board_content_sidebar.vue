@@ -102,19 +102,19 @@ export default {
     handleClose() {
       this.toggleBoardItem({ boardItem: this.activeBoardItem, sidebarType: this.sidebarType });
     },
-    handleUpdateSelectedLabels(input) {
+    handleUpdateSelectedLabels(labels) {
       this.setActiveBoardItemLabels({
         iid: this.activeBoardItem.iid,
         projectPath: this.projectPathForActiveIssue,
-        labelsIds: input.map((label) => getIdFromGraphQLId(label.id)),
-        labels: input,
+        labelIds: labels.map((label) => getIdFromGraphQLId(label.id)),
+        labels,
       });
     },
-    handleLabelRemove(input) {
+    handleLabelRemove(removeLabelId) {
       this.setActiveBoardItemLabels({
         iid: this.activeBoardItem.iid,
         projectPath: this.projectPathForActiveIssue,
-        removeLabelIds: [input],
+        removeLabelIds: [removeLabelId],
       });
     },
   },

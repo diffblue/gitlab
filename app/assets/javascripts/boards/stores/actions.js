@@ -664,7 +664,8 @@ export default {
         variables: {
           input: {
             iid: input.iid || String(activeBoardItem.iid),
-            labelsIds: input.labelsIds ?? [],
+            labelIds: input.labelsId ?? undefined,
+            addLabelIds: input.addLabelIds ?? [],
             removeLabelIds: input.removeLabelIds ?? [],
             projectPath: input.projectPath,
           },
@@ -680,19 +681,21 @@ export default {
         prop: 'labels',
         value: data.updateIssue?.issue?.labels.nodes,
       });
-    } else {
-      let labels = input?.labels || [];
-      if (input.removeLabelIds) {
-        labels = activeBoardItem.labels.filter(
-          (label) => input.removeLabelIds[0] !== getIdFromGraphQLId(label.id),
-        );
-      }
-      commit(types.UPDATE_BOARD_ITEM_BY_ID, {
-        itemId: activeBoardItem.id,
-        prop: 'labels',
-        value: labels,
-      });
+
+      return;
     }
+
+    let labels = input?.labels || [];
+    if (input.removeLabelIds) {
+      labels = activeBoardItem.labels.filter(
+        (label) => input.removeLabelIds[0] !== getIdFromGraphQLId(label.id),
+      );
+    }
+    commit(types.UPDATE_BOARD_ITEM_BY_ID, {
+      itemId: activeBoardItem.id,
+      prop: 'labels',
+      value: labels,
+    });
   },
 
   setActiveItemSubscribed: async ({ commit, getters, state }, input) => {
