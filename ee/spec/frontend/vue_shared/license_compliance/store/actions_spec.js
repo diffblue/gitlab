@@ -178,13 +178,16 @@ describe('License store actions', () => {
 
   describe('receiveSetLicenseApproval', () => {
     describe('given the licensesApiPath is provided', () => {
-      it('commits RECEIVE_SET_LICENSE_APPROVAL and dispatches fetchParsedLicenseReport', (done) => {
+      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses and fetchParsedLicenseReport', (done) => {
         testAction(
           actions.receiveSetLicenseApproval,
           null,
           { ...state, licensesApiPath },
-          [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL }],
-          [{ type: 'fetchParsedLicenseReport' }],
+          [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
+          [
+            { type: `licenseList/fetchLicenses`, payload: null },
+            { type: 'fetchParsedLicenseReport' },
+          ],
         )
           .then(done)
           .catch(done.fail);
@@ -192,9 +195,10 @@ describe('License store actions', () => {
     });
 
     describe('given the licensesApiPath is not provided', () => {
-      it('commits RECEIVE_SET_LICENSE_APPROVAL and dispatches fetchManagedLicenses and removePendingLicense', () => {
+      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses, fetchManagedLicenses and removePendingLicense', () => {
         return actions.receiveSetLicenseApproval(store, licenseId).then(() => {
-          expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RECEIVE_SET_LICENSE_APPROVAL);
+          expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RESET_LICENSE_IN_MODAL);
+          expectDispatched('licenseList/fetchLicenses', null, { root: true });
           expectDispatched('fetchManagedLicenses');
           expectDispatched('removePendingLicense', licenseId);
         });

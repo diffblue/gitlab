@@ -5,7 +5,6 @@ import { LICENSE_LIST } from '../constants';
 export default (store) => {
   store.subscribe(({ type }) => {
     switch (type) {
-      case `${LICENSE_MANAGEMENT}/${licenseMangementMutationTypes.RECEIVE_SET_LICENSE_APPROVAL}`:
       case `${LICENSE_MANAGEMENT}/${licenseMangementMutationTypes.RECEIVE_DELETE_LICENSE}`:
         store.dispatch(`${LICENSE_LIST}/fetchLicenses`);
         break;

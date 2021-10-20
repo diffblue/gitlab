@@ -1,6 +1,7 @@
 import { LICENSE_CHECK_NAME } from 'ee/approvals/constants';
 import axios from '~/lib/utils/axios_utils';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
+import { LICENSE_LIST } from 'ee/license_compliance/store/constants';
 import { LICENSE_APPROVAL_STATUS } from '../constants';
 import * as types from './mutation_types';
 import { convertToOldReportFormat } from './utils';
@@ -97,7 +98,8 @@ export const fetchParsedLicenseReport = ({ dispatch, state }) => {
 };
 
 export const receiveSetLicenseApproval = ({ commit, dispatch, state }, id) => {
-  commit(types.RECEIVE_SET_LICENSE_APPROVAL);
+  commit(types.RESET_LICENSE_IN_MODAL);
+  dispatch(`${LICENSE_LIST}/fetchLicenses`, null, { root: true });
   // If we have the licenses API endpoint, fetch from there. This corresponds
   // to the cases that we're viewing the merge request or pipeline pages.
   // Otherwise, fetch from the managed licenses endpoint, which corresponds to

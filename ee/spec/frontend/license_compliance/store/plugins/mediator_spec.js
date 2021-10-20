@@ -11,13 +11,6 @@ describe('mediator', () => {
     jest.spyOn(store, 'dispatch').mockImplementation();
   });
 
-  it('triggers fetching of detected licenses after a license policy is added or edited', () => {
-    store.commit(
-      `${LICENSE_MANAGEMENT}/${licenseMangementMutationTypes.RECEIVE_SET_LICENSE_APPROVAL}`,
-    );
-    expect(store.dispatch).toHaveBeenCalledWith(`${LICENSE_LIST}/fetchLicenses`);
-  });
-
   it('triggers fetching of detected licenses after a license policy is deleted', () => {
     store.commit(`${LICENSE_MANAGEMENT}/${licenseMangementMutationTypes.RECEIVE_DELETE_LICENSE}`);
     expect(store.dispatch).toHaveBeenCalledWith(`${LICENSE_LIST}/fetchLicenses`);

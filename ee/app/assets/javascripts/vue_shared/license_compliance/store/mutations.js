@@ -70,11 +70,6 @@ export default {
       currentLicenseInModal: null,
     });
   },
-  [types.RECEIVE_SET_LICENSE_APPROVAL](state) {
-    Object.assign(state, {
-      currentLicenseInModal: null,
-    });
-  },
   [types.REQUEST_LICENSE_CHECK_APPROVAL_RULE](state) {
     Object.assign(state, {
       isLoadingLicenseCheckApprovalRule: true,

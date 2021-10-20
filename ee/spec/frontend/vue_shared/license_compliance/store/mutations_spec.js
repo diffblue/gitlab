@@ -83,21 +83,6 @@ describe('License store mutations', () => {
     });
   });
 
-  describe('RECEIVE_SET_LICENSE_APPROVAL', () => {
-    it('closes the modal', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          currentLicenseInModal: approvedLicense,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.RECEIVE_SET_LICENSE_APPROVAL}`);
-
-      expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
-    });
-  });
-
   describe('REQUEST_LICENSE_CHECK_APPROVAL_RULE', () => {
     it('sets isLoadingLicenseCheckApprovalRule to true', () => {
       store.replaceState({
