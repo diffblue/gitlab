@@ -34,7 +34,7 @@ RSpec.describe 'Group information', :js, :aggregate_failures do
 
     let(:user) { create(:user, group_view: :security_dashboard) }
 
-    context 'and Security Dashboard feature is not available for a group' do
+    context 'and Security Dashboard feature is not available for a group', :saas do
       let(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
       it 'displays the "Security Dashboard unavailable" empty state' do
@@ -58,7 +58,7 @@ RSpec.describe 'Group information', :js, :aggregate_failures do
       it_behaves_like 'a hidden qrtly reconciliation alert'
     end
 
-    context 'on dotcom' do
+    context 'on dotcom', :saas do
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
       end

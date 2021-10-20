@@ -675,7 +675,7 @@ RSpec.describe Group do
         is_expected.to be true
       end
 
-      context 'when in need of checking plan' do
+      context 'when in need of checking plan', :saas do
         before do
           allow(Gitlab::CurrentSettings.current_application_settings)
             .to receive(:should_check_namespace_plan?).and_return(true)

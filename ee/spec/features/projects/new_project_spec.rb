@@ -360,7 +360,7 @@ RSpec.describe 'New project', :js do
           end
         end
 
-        context 'when namespace is supposed to be checked' do
+        context 'when namespace is supposed to be checked', :saas do
           context 'when in proper plan' do
             context 'when creating project from top-level group with templates' do
               let(:url) { new_project_path(namespace_id: group1.id) }

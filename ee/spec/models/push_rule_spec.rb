@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PushRule do
+RSpec.describe PushRule, :saas do
   using RSpec::Parameterized::TableSyntax
 
   let(:global_push_rule) { create(:push_rule_sample) }

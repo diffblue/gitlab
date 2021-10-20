@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Build do
+RSpec.describe Ci::Build, :saas do
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
   let(:project) { create(:project, :repository, group: group) }

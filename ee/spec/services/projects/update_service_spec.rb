@@ -9,7 +9,7 @@ RSpec.describe Projects::UpdateService, '#execute' do
   let(:admin) { create(:user, :admin) }
   let(:project) { create(:project, :repository, creator: user, namespace: user.namespace) }
 
-  context 'shared runners' do
+  context 'shared runners', :saas do
     let(:opts) { { shared_runners_enabled: enabled } }
     let(:enabled) { true }
 

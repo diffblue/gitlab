@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Billing', :js do
+RSpec.describe 'Groups > Billing', :js, :saas do
   include StubRequests
   include SubscriptionPortalHelpers
 
@@ -23,7 +23,6 @@ RSpec.describe 'Groups > Billing', :js do
   end
 
   before do
-    allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(check_namespace_plan: true)
 
     sign_in(user)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::CheckFutureRenewalService, :use_clean_rails_memory_store_caching do
+RSpec.describe GitlabSubscriptions::CheckFutureRenewalService, :use_clean_rails_memory_store_caching, :saas do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do

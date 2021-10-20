@@ -37,7 +37,7 @@ RSpec.describe 'Boards licensed features', :js do
       let_it_be(:list) { create(:backlog_list, board: board) }
     end
 
-    context "GitLab SaaS" do
+    context "GitLab SaaS", :saas do
       let_it_be(:plan_license) { :free }
       let_it_be(:global_license) { create(:license) }
 
