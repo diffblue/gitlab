@@ -21397,6 +21397,9 @@ msgstr ""
 msgid "Merge blocked: new changes were just added."
 msgstr ""
 
+msgid "Merge blocked: pipeline must succeed. It's waiting for a manual job to continue."
+msgstr ""
+
 msgid "Merge blocked: the source branch must be rebased onto the target branch."
 msgstr ""
 
