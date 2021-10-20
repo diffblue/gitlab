@@ -258,16 +258,15 @@ class License < ApplicationRecord
 
   validate :valid_license
   validate :check_users_limit, if: :new_record?, unless: [:validate_with_trueup?, :reconciliation_completed?]
-  validate :check_trueup, unless: [:persisted?, :reconciliation_completed?], if: :validate_with_trueup?
+  validate :check_trueup, unless: :reconciliation_completed?, if: [:new_record?, :validate_with_trueup?]
   validate :check_restricted_user_count, if: :reconciliation_completed?
-  validate :not_expired, unless: :persisted?
+  validate :not_expired, if: :new_record?
 
   before_validation :reset_license, if: :data_changed?
 
   after_create :update_trial_setting
   after_commit :reset_current
   after_commit :reset_future_dated, on: [:create, :destroy]
-  after_commit :reset_previous, on: [:create, :destroy]
 
   scope :cloud, -> { where(cloud: true) }
   scope :recent, -> { reorder(id: :desc) }
@@ -331,14 +330,6 @@ class License < ApplicationRecord
       Gitlab::SafeRequestStore.delete(:future_dated_license)
     end
 
-    def previous
-      Gitlab::SafeRequestStore.fetch(:previous_license) { load_previous }
-    end
-
-    def reset_previous
-      Gitlab::SafeRequestStore.delete(:previous_license)
-    end
-
     def global_feature?(feature)
       GLOBAL_FEATURES.include?(feature)
     end
@@ -376,10 +367,6 @@ class License < ApplicationRecord
 
     def load_future_dated
       self.last_hundred.find { |license| license.valid? && license.future_dated? }
-    end
-
-    def load_previous
-      self.last_hundred.find { |license| license.valid? && !license.future_dated? && license != License.current }
     end
   end
 
@@ -641,10 +628,6 @@ class License < ApplicationRecord
     self.class.reset_future_dated
   end
 
-  def reset_previous
-    self.class.reset_previous
-  end
-
   def reset_license
     @license = nil
   end
@@ -655,10 +638,25 @@ class License < ApplicationRecord
     self.errors.add(:base, _('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
   end
 
+  # This method, `previous_started_at` and `previous_expired_at` are
+  # only used in the validation methods `check_users_limit` and check_trueup
+  # which are only used when uploading/creating a new license.
+  # The method will not work in other workflows since it has a dependency to
+  # use the current license as the previous in the system.
   def prior_historical_max
-    @prior_historical_max ||= begin
+    strong_memoize(:prior_historical_max) do
       historical_max(from: previous_started_at, to: previous_expired_at)
     end
+  end
+
+  # See comment for `prior_historical_max`.
+  def previous_started_at
+    (License.current&.starts_at || starts_at - 1.year).beginning_of_day
+  end
+
+  # See comment for `prior_historical_max`.
+  def previous_expired_at
+    (License.current&.expires_at || expires_at && expires_at - 1.year || starts_at).end_of_day
   end
 
   def restricted_user_count_with_threshold
@@ -669,15 +667,19 @@ class License < ApplicationRecord
     return if cloud_license?
     return unless restricted_user_count
 
+    user_count = daily_billable_users_count
+    current_period = true
+
     if previous_user_count && (prior_historical_max <= previous_user_count)
       return if restricted_user_count_with_threshold >= daily_billable_users_count
     else
       return if restricted_user_count_with_threshold >= prior_historical_max
+
+      user_count = prior_historical_max
+      current_period = false
     end
 
-    user_count = prior_historical_max == 0 ? daily_billable_users_count : prior_historical_max
-
-    add_limit_error(current_period: prior_historical_max == 0, user_count: user_count)
+    add_limit_error(current_period: current_period, user_count: user_count)
   end
 
   def check_trueup
@@ -729,14 +731,6 @@ class License < ApplicationRecord
     return unless self.license? && self.expired?
 
     self.errors.add(:base, _('This license has already expired.'))
-  end
-
-  def previous_started_at
-    (License.previous&.starts_at || starts_at - 1.year).beginning_of_day
-  end
-
-  def previous_expired_at
-    (License.previous&.expires_at || starts_at).end_of_day
   end
 
   def starts_at_for_historical_data

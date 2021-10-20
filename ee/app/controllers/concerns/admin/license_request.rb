@@ -8,7 +8,6 @@ module Admin
       @license ||= begin
         License.reset_current
         License.reset_future_dated
-        License.reset_previous
         License.current
       end
     end
