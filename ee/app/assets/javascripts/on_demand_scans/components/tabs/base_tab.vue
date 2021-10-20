@@ -1,9 +1,17 @@
 <script>
-import { GlTab, GlBadge, GlLink, GlTable, GlKeysetPagination } from '@gitlab/ui';
+import {
+  GlTab,
+  GlBadge,
+  GlLink,
+  GlTable,
+  GlKeysetPagination,
+  GlAlert,
+  GlSkeletonLoader,
+} from '@gitlab/ui';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import EmptyState from '../empty_state.vue';
@@ -26,6 +34,8 @@ export default {
     GlLink,
     GlTable,
     GlKeysetPagination,
+    GlAlert,
+    GlSkeletonLoader,
     CiBadgeLink,
     TimeAgoTooltip,
     EmptyState,
@@ -77,6 +87,9 @@ export default {
           this.updateRoute();
         }
         return pipelines;
+      },
+      error() {
+        this.hasError = true;
       },
       pollInterval: PIPELINES_POLL_INTERVAL,
     },
@@ -142,6 +155,9 @@ export default {
   i18n: {
     previousPage: __('Prev'),
     nextPage: __('Next'),
+    errorMessage: s__(
+      'OnDemandScans|Could not fetch on-demand scans. Please refresh the page, or try again later.',
+    ),
   },
 };
 </script>
@@ -152,7 +168,17 @@ export default {
       {{ title }}
       <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
     </template>
-    <template v-if="hasPipelines">
+    <template v-if="$apollo.queries.pipelines.loading">
+      <gl-skeleton-loader v-for="i in 20" :key="i" :width="815" :height="50">
+        <rect width="85" height="20" x="15" y="15" rx="4" />
+        <rect width="155" height="20" x="125" y="15" rx="4" />
+        <rect width="60" height="20" x="350" y="15" rx="4" />
+        <rect width="150" height="20" x="450" y="15" rx="4" />
+        <rect width="70" height="20" x="640" y="15" rx="4" />
+        <rect width="25" height="20" x="740" y="15" rx="4" />
+      </gl-skeleton-loader>
+    </template>
+    <template v-else-if="hasPipelines">
       <gl-table
         thead-class="gl-border-b-solid gl-border-gray-100 gl-border-1"
         :fields="tableFields"
@@ -188,6 +214,11 @@ export default {
           @next="nextPage"
         />
       </div>
+    </template>
+    <template v-else-if="hasError">
+      <gl-alert variant="danger" :dismissible="false" class="gl-my-4" data-testid="error-alert">
+        {{ $options.i18n.errorMessage }}
+      </gl-alert>
     </template>
     <empty-state v-else :title="emptyStateTitle" :text="emptyStateText" no-primary-button />
   </gl-tab>

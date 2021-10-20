@@ -1,4 +1,4 @@
-import { GlTab, GlTable } from '@gitlab/ui';
+import { GlTab, GlTable, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import allPipelinesWithPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.with_pipelines.json';
@@ -32,6 +32,8 @@ describe('BaseTab', () => {
   const findTable = () => wrapper.findComponent(GlTable);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findPagination = () => wrapper.findByTestId('pagination');
+  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findErrorAlert = () => wrapper.findComponent(GlAlert);
 
   // Helpers
   const createMockApolloProvider = () => {
@@ -95,6 +97,14 @@ describe('BaseTab', () => {
       });
     });
 
+    it('shows a loader until the request resolves', async () => {
+      createComponent();
+
+      expect(findSkeletonLoader().exists()).toBe(true);
+      await waitForPromises();
+      expect(findSkeletonLoader().exists()).toBe(false);
+    });
+
     it('resets the route if no pipeline matches the cursor', async () => {
       setWindowLocation('#?after=nothingToSeeHere');
       requestHandler = jest.fn().mockResolvedValue(allPipelinesWithoutPipelinesMock);
@@ -147,7 +157,7 @@ describe('BaseTab', () => {
 
     it('when navigating back to the previous page, the route is updated and pipelines are fetched', async () => {
       findPagination().vm.$emit('next');
-      await wrapper.vm.$nextTick();
+      await waitForPromises();
       findPagination().vm.$emit('prev');
       await wrapper.vm.$nextTick();
 
@@ -165,6 +175,18 @@ describe('BaseTab', () => {
 
     it('renders an empty state', () => {
       expect(findEmptyState().exists()).toBe(true);
+    });
+  });
+
+  describe('when the request errors out', () => {
+    beforeEach(async () => {
+      requestHandler = jest.fn().mockRejectedValue();
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('show an error alert', () => {
+      expect(findErrorAlert().exists()).toBe(true);
     });
   });
 });
