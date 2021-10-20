@@ -16,9 +16,9 @@ module SubscriptionsHelper
     }
   end
 
-  def buy_addon_data(group, anchor, purchased_product)
+  def buy_addon_data(group, account_id, anchor, purchased_product)
     {
-      group_data: [present_group(group)].to_json,
+      group_data: [present_group(group, account_id)].to_json,
       namespace_id: params[:selected_group],
       redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product),
       source: params[:source]
@@ -57,10 +57,10 @@ module SubscriptionsHelper
     groups.map { |namespace| present_group(namespace) }
   end
 
-  def present_group(namespace)
+  def present_group(namespace, account_id = nil)
     {
       id: namespace.id,
-      account_id: nil,
+      account_id: account_id,
       name: namespace.name,
       users: namespace.member_count,
       guests: namespace.guest_count

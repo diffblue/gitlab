@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::FilterPurchaseEligibleNamespacesService do
+RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
   describe '#execute' do
     let_it_be(:user) { build(:user) }
     let_it_be(:namespace_1) { create(:namespace) }
     let_it_be(:namespace_2) { create(:namespace) }
 
     context 'when no namespaces are supplied' do
-      it 'returns an empty array', :aggregate_failures do
+      it 'returns an array with an empty hash', :aggregate_failures do
         result = described_class.new(user: user, plan_id: 'test', namespaces: []).execute
 
         expect(result).to be_success
@@ -71,7 +71,10 @@ RSpec.describe GitlabSubscriptions::FilterPurchaseEligibleNamespacesService do
         allow(Gitlab::SubscriptionPortal::Client)
           .to receive(:filter_purchase_eligible_namespaces)
           .with(user, [namespace_1, namespace_2], plan_id: 'test', any_self_service_plan: nil)
-          .and_return(success: true, data: [{ 'id' => namespace_1.id }, { 'id' => namespace_2.id }])
+          .and_return(success: true, data: [
+            { 'id' => namespace_1.id, 'accountId' => nil },
+            { 'id' => namespace_2.id, 'accountId' => nil }
+          ])
       end
 
       it 'does not filter any namespaces', :aggregate_failures do
@@ -79,16 +82,21 @@ RSpec.describe GitlabSubscriptions::FilterPurchaseEligibleNamespacesService do
         result = described_class.new(user: user, plan_id: 'test', namespaces: namespaces).execute
 
         expect(result).to be_success
-        expect(result.payload).to eq namespaces
+        expect(result.payload).to match_array [
+           namespace_result(namespace_1, nil),
+           namespace_result(namespace_2, nil)
+        ]
       end
     end
 
     context 'when the user has a namespace ineligible' do
+      let(:account_id) { '111111111' }
+
       before do
         allow(Gitlab::SubscriptionPortal::Client)
           .to receive(:filter_purchase_eligible_namespaces)
           .with(user, [namespace_1, namespace_2], plan_id: 'test', any_self_service_plan: nil)
-          .and_return(success: true, data: [{ 'id' => namespace_1.id }])
+          .and_return(success: true, data: [{ 'id' => namespace_1.id, 'accountId' => account_id }])
       end
 
       it 'is filtered from the results', :aggregate_failures do
@@ -96,7 +104,9 @@ RSpec.describe GitlabSubscriptions::FilterPurchaseEligibleNamespacesService do
         result = described_class.new(user: user, plan_id: 'test', namespaces: namespaces).execute
 
         expect(result).to be_success
-        expect(result.payload).to eq [namespace_1]
+        expect(result.payload).to match_array [
+           namespace_result(namespace_1, account_id)
+         ]
       end
     end
 
@@ -113,8 +123,16 @@ RSpec.describe GitlabSubscriptions::FilterPurchaseEligibleNamespacesService do
         result = described_class.new(user: user, namespaces: namespaces, any_self_service_plan: true).execute
 
         expect(result).to be_success
-        expect(result.payload).to eq [namespace_1]
+        expect(result.payload).to match_array [
+          namespace_result(namespace_1, nil)
+        ]
       end
     end
+  end
+
+  private
+
+  def namespace_result(namespace, account_id)
+    { namespace: namespace, account_id: account_id }
   end
 end
