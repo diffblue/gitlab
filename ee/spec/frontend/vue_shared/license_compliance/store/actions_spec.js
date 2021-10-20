@@ -117,24 +117,11 @@ describe('License store actions', () => {
     });
   });
 
-  describe('requestDeleteLicense', () => {
-    it('commits REQUEST_DELETE_LICENSE', (done) => {
-      testAction(
-        actions.requestDeleteLicense,
-        null,
-        state,
-        [{ type: mutationTypes.REQUEST_DELETE_LICENSE }],
-        [],
-      )
-        .then(done)
-        .catch(done.fail);
-    });
-  });
-
   describe('receiveDeleteLicense', () => {
-    it('commits RECEIVE_DELETE_LICENSE and dispatches fetchManagedLicenses and removePendingLicense', () => {
+    it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses, fetchManagedLicenses and removePendingLicense', () => {
       return actions.receiveDeleteLicense(store, licenseId).then(() => {
-        expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RECEIVE_DELETE_LICENSE);
+        expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RESET_LICENSE_IN_MODAL);
+        expectDispatched('licenseList/fetchLicenses', null, { root: true });
         expectDispatched('fetchManagedLicenses');
         expectDispatched('removePendingLicense', licenseId);
       });
@@ -142,13 +129,12 @@ describe('License store actions', () => {
   });
 
   describe('receiveDeleteLicenseError', () => {
-    it('commits RECEIVE_DELETE_LICENSE_ERROR', (done) => {
-      const error = new Error('Test');
+    it('commits RESET_LICENSE_IN_MODAL', (done) => {
       testAction(
         actions.receiveDeleteLicenseError,
-        error,
+        null,
         state,
-        [{ type: mutationTypes.RECEIVE_DELETE_LICENSE_ERROR, payload: error }],
+        [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
       )
         .then(done)
@@ -165,57 +151,44 @@ describe('License store actions', () => {
       endpointMock = axiosMock.onDelete(deleteUrl);
     });
 
-    it('dispatches requestDeleteLicense, addPendingLicense and receiveDeleteLicense for successful response', () => {
+    it('dispatches addPendingLicense and receiveDeleteLicense for successful response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
         return [200, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
-        expectDispatched('requestDeleteLicense');
         expectDispatched('addPendingLicense', licenseId);
         expectDispatched('receiveDeleteLicense', licenseId);
       });
     });
 
-    it('dispatches requestDeleteLicense, addPendingLicense, receiveDeleteLicenseError and removePendingLicense for error response', () => {
+    it('dispatches addPendingLicense, receiveDeleteLicenseError and removePendingLicense for error response', () => {
       endpointMock.replyOnce((req) => {
         expect(req.url).toBe(deleteUrl);
         return [500, ''];
       });
 
       return actions.deleteLicense(store).then(() => {
-        expectDispatched('requestDeleteLicense');
         expectDispatched('addPendingLicense', licenseId);
-        expectDispatched('receiveDeleteLicenseError', expect.any(Error));
+        expectDispatched('receiveDeleteLicenseError');
         expectDispatched('removePendingLicense', licenseId);
       });
     });
   });
 
-  describe('requestSetLicenseApproval', () => {
-    it('commits REQUEST_SET_LICENSE_APPROVAL', (done) => {
-      testAction(
-        actions.requestSetLicenseApproval,
-        null,
-        state,
-        [{ type: mutationTypes.REQUEST_SET_LICENSE_APPROVAL }],
-        [],
-      )
-        .then(done)
-        .catch(done.fail);
-    });
-  });
-
   describe('receiveSetLicenseApproval', () => {
     describe('given the licensesApiPath is provided', () => {
-      it('commits RECEIVE_SET_LICENSE_APPROVAL and dispatches fetchParsedLicenseReport', (done) => {
+      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses and fetchParsedLicenseReport', (done) => {
         testAction(
           actions.receiveSetLicenseApproval,
           null,
           { ...state, licensesApiPath },
-          [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL }],
-          [{ type: 'fetchParsedLicenseReport' }],
+          [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
+          [
+            { type: `licenseList/fetchLicenses`, payload: null },
+            { type: 'fetchParsedLicenseReport' },
+          ],
         )
           .then(done)
           .catch(done.fail);
@@ -223,9 +196,10 @@ describe('License store actions', () => {
     });
 
     describe('given the licensesApiPath is not provided', () => {
-      it('commits RECEIVE_SET_LICENSE_APPROVAL and dispatches fetchManagedLicenses and removePendingLicense', () => {
+      it('commits RESET_LICENSE_IN_MODAL and dispatches licenseList/fetchLicenses, fetchManagedLicenses and removePendingLicense', () => {
         return actions.receiveSetLicenseApproval(store, licenseId).then(() => {
-          expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RECEIVE_SET_LICENSE_APPROVAL);
+          expect(mockCommit).toHaveBeenCalledWith(mutationTypes.RESET_LICENSE_IN_MODAL);
+          expectDispatched('licenseList/fetchLicenses', null, { root: true });
           expectDispatched('fetchManagedLicenses');
           expectDispatched('removePendingLicense', licenseId);
         });
@@ -234,13 +208,12 @@ describe('License store actions', () => {
   });
 
   describe('receiveSetLicenseApprovalError', () => {
-    it('commits RECEIVE_SET_LICENSE_APPROVAL_ERROR', (done) => {
-      const error = new Error('Test');
+    it('commits RESET_LICENSE_IN_MODAL', (done) => {
       testAction(
         actions.receiveSetLicenseApprovalError,
-        error,
+        null,
         state,
-        [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL_ERROR, payload: error }],
+        [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
       )
         .then(done)
@@ -260,7 +233,7 @@ describe('License store actions', () => {
         putEndpointMock = axiosMock.onPost(apiUrlManageLicenses);
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense and receiveSetLicenseApproval for successful response', () => {
+      it('dispatches addPendingLicense and receiveSetLicenseApproval for successful response', () => {
         putEndpointMock.replyOnce((req) => {
           const { approval_status, name } = JSON.parse(req.data);
 
@@ -271,22 +244,20 @@ describe('License store actions', () => {
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
-          expectDispatched('requestSetLicenseApproval');
           expectDispatched('addPendingLicense', undefined);
           expectDispatched('receiveSetLicenseApproval', undefined);
         });
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
+      it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         putEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(apiUrlManageLicenses);
           return [500, ''];
         });
 
         return actions.setLicenseApproval(store, { license: newLicense, newStatus }).then(() => {
-          expectDispatched('requestSetLicenseApproval');
           expectDispatched('addPendingLicense', undefined);
-          expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
+          expectDispatched('receiveSetLicenseApprovalError');
           expectDispatched('removePendingLicense', undefined);
         });
       });
@@ -301,7 +272,7 @@ describe('License store actions', () => {
         patchEndpointMock = axiosMock.onPatch(licenseUrl);
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense and receiveSetLicenseApproval for successful response', () => {
+      it('dispatches addPendingLicense and receiveSetLicenseApproval for successful response', () => {
         patchEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(licenseUrl);
           const { approval_status, name } = JSON.parse(req.data);
@@ -314,13 +285,12 @@ describe('License store actions', () => {
         return actions
           .setLicenseApproval(store, { license: approvedLicense, newStatus })
           .then(() => {
-            expectDispatched('requestSetLicenseApproval');
             expectDispatched('addPendingLicense', approvedLicense.id);
             expectDispatched('receiveSetLicenseApproval', approvedLicense.id);
           });
       });
 
-      it('dispatches requestSetLicenseApproval, addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
+      it('dispatches addPendingLicense, receiveSetLicenseApprovalError and removePendingLicense for error response', () => {
         patchEndpointMock.replyOnce((req) => {
           expect(req.url).toBe(licenseUrl);
           return [500, ''];
@@ -329,9 +299,8 @@ describe('License store actions', () => {
         return actions
           .setLicenseApproval(store, { license: approvedLicense, newStatus })
           .then(() => {
-            expectDispatched('requestSetLicenseApproval');
             expectDispatched('addPendingLicense', approvedLicense.id);
-            expectDispatched('receiveSetLicenseApprovalError', expect.any(Error));
+            expectDispatched('receiveSetLicenseApprovalError');
             expectDispatched('removePendingLicense', approvedLicense.id);
           });
       });
@@ -448,7 +417,7 @@ describe('License store actions', () => {
         actions.receiveManagedLicensesError,
         error,
         state,
-        [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_ERROR, payload: error }],
+        [{ type: mutationTypes.RECEIVE_MANAGED_LICENSES_ERROR }],
         [],
       )
         .then(done)
@@ -486,10 +455,7 @@ describe('License store actions', () => {
         null,
         state,
         [],
-        [
-          { type: 'requestManagedLicenses' },
-          { type: 'receiveManagedLicensesError', payload: expect.any(Error) },
-        ],
+        [{ type: 'requestManagedLicenses' }, { type: 'receiveManagedLicensesError' }],
       )
         .then(done)
         .catch(done.fail);

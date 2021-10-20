@@ -68,100 +68,6 @@ describe('License store mutations', () => {
     });
   });
 
-  describe('RECEIVE_DELETE_LICENSE', () => {
-    it('sets isDeleting to false and closes the modal', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isDeleting: true,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.RECEIVE_DELETE_LICENSE}`);
-
-      expect(store.state.licenseManagement.isDeleting).toBe(false);
-    });
-  });
-
-  describe('RECEIVE_DELETE_LICENSE_ERROR', () => {
-    it('sets isDeleting to false and closes the modal', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isDeleting: true,
-          currentLicenseInModal: approvedLicense,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.RECEIVE_DELETE_LICENSE_ERROR}`);
-
-      expect(store.state.licenseManagement.isDeleting).toBe(false);
-      expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
-    });
-  });
-
-  describe('REQUEST_DELETE_LICENSE', () => {
-    it('sets isDeleting to true', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isDeleting: false,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.REQUEST_DELETE_LICENSE}`);
-
-      expect(store.state.licenseManagement.isDeleting).toBe(true);
-    });
-  });
-
-  describe('RECEIVE_SET_LICENSE_APPROVAL', () => {
-    it('sets isSaving to false and closes the modal', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isSaving: true,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.RECEIVE_SET_LICENSE_APPROVAL}`);
-
-      expect(store.state.licenseManagement.isSaving).toBe(false);
-    });
-  });
-
-  describe('RECEIVE_SET_LICENSE_APPROVAL_ERROR', () => {
-    it('sets isSaving to false and closes the modal', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isSaving: true,
-          currentLicenseInModal: approvedLicense,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.RECEIVE_SET_LICENSE_APPROVAL_ERROR}`);
-
-      expect(store.state.licenseManagement.isSaving).toBe(false);
-      expect(store.state.licenseManagement.currentLicenseInModal).toBeNull();
-    });
-  });
-
-  describe('REQUEST_SET_LICENSE_APPROVAL', () => {
-    it('sets isSaving to true', () => {
-      store.replaceState({
-        ...store.state,
-        licenseManagement: {
-          isSaving: false,
-        },
-      });
-
-      store.commit(`licenseManagement/${types.REQUEST_SET_LICENSE_APPROVAL}`);
-
-      expect(store.state.licenseManagement.isSaving).toBe(true);
-    });
-  });
-
   describe('REQUEST_LICENSE_CHECK_APPROVAL_RULE', () => {
     it('sets isLoadingLicenseCheckApprovalRule to true', () => {
       store.replaceState({
@@ -211,13 +117,12 @@ describe('License store mutations', () => {
   });
 
   describe('RECEIVE_MANAGED_LICENSES_SUCCESS', () => {
-    it('sets isLoadingManagedLicenses and loadManagedLicensesError to false and saves managed licenses', () => {
+    it('sets isLoadingManagedLicenses to false and saves managed licenses', () => {
       store.replaceState({
         ...store.state,
         licenseManagement: {
           managedLicenses: false,
           isLoadingManagedLicenses: true,
-          loadManagedLicensesError: true,
         },
       });
 
@@ -230,7 +135,6 @@ describe('License store mutations', () => {
       ]);
 
       expect(store.state.licenseManagement.isLoadingManagedLicenses).toBe(false);
-      expect(store.state.licenseManagement.loadManagedLicensesError).toBe(false);
     });
   });
 
@@ -241,14 +145,12 @@ describe('License store mutations', () => {
         ...store.state,
         licenseManagement: {
           isLoadingManagedLicenses: true,
-          loadManagedLicensesError: false,
         },
       });
 
       store.commit(`licenseManagement/${types.RECEIVE_MANAGED_LICENSES_ERROR}`, error);
 
       expect(store.state.licenseManagement.isLoadingManagedLicenses).toBe(false);
-      expect(store.state.licenseManagement.loadManagedLicensesError).toBe(error);
     });
   });
 
