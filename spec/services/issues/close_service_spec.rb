@@ -84,7 +84,11 @@ RSpec.describe Issues::CloseService do
     end
 
     it 'does not change escalation status' do
-      expect { service.execute(issue) }.not_to change { IncidentManagement::IssuableEscalationStatus.where(issue: issue).count }
+      resolved = IncidentManagement::Escalatable::STATUSES[:resolved]
+
+      expect { service.execute(issue) }
+        .to not_change { IncidentManagement::IssuableEscalationStatus.where(issue: issue).count }
+        .and not_change { IncidentManagement::IssuableEscalationStatus.where(status: resolved).count }
     end
 
     context 'issue is incident type' do
@@ -96,7 +100,7 @@ RSpec.describe Issues::CloseService do
       it_behaves_like 'an incident management tracked event', :incident_management_incident_closed
 
       it 'creates a new escalation resolved escalation status', :aggregate_failures do
-        expect { service.execute(issue) }.to change { IncidentManagement::IssuableEscalationStatus.where(issue: issue).count }.to(1)
+        expect { service.execute(issue) }.to change { IncidentManagement::IssuableEscalationStatus.where(issue: issue).count }.by(1)
 
         expect(issue.incident_management_issuable_escalation_status).to be_resolved
       end
@@ -108,6 +112,24 @@ RSpec.describe Issues::CloseService do
 
         it 'changes escalations status to resolved' do
           expect { service.execute(issue) }.to change { issue.incident_management_issuable_escalation_status.reload.resolved? }.to(true)
+        end
+
+        it 'adds a system note', :aggregate_failures do
+          expect { service.execute(issue) }.to change { issue.notes.count }.by(1)
+
+          new_note = issue.notes.last
+          expect(new_note.note).to eq('changed the status to **Resolved** by closing the incident')
+          expect(new_note.author).to eq(user)
+        end
+
+        context 'when the escalation status did not change to resolved' do
+          let(:escalation_status) { instance_double('IncidentManagement::IssuableEscalationStatus', resolve: false) }
+
+          it 'does not create a system note' do
+            allow(issue).to receive(:incident_management_issuable_escalation_status).and_return(escalation_status)
+
+            expect { service.execute(issue) }.not_to change { issue.notes.count }
+          end
         end
       end
     end
