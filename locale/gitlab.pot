@@ -10789,6 +10789,9 @@ msgstr ""
 msgid "Date range"
 msgstr ""
 
+msgid "Date range limited to %{number} days"
+msgstr ""
+
 msgid "Date range must be shorter than %{max_range} days."
 msgstr ""
 

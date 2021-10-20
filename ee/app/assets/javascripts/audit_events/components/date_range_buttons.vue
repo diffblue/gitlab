@@ -3,17 +3,17 @@ import { GlButtonGroup, GlButton } from '@gitlab/ui';
 import { datesMatch, dateAtFirstDayOfMonth, getDateInPast } from '~/lib/utils/datetime_utility';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { n__, s__ } from '~/locale';
-import { CURRENT_DATE } from '../constants';
+import { CURRENT_DATE, SAME_DAY_OFFSET } from '../constants';
 
 const DATE_RANGE_OPTIONS = [
   {
     text: n__('Last %d day', 'Last %d days', 7),
-    startDate: getDateInPast(CURRENT_DATE, 7),
+    startDate: getDateInPast(CURRENT_DATE, 7 - SAME_DAY_OFFSET),
     endDate: CURRENT_DATE,
   },
   {
     text: n__('Last %d day', 'Last %d days', 14),
-    startDate: getDateInPast(CURRENT_DATE, 14),
+    startDate: getDateInPast(CURRENT_DATE, 14 - SAME_DAY_OFFSET),
     endDate: CURRENT_DATE,
   },
   {
@@ -55,6 +55,7 @@ export default {
     <gl-button
       v-for="(dateRangeOption, idx) in $options.DATE_RANGE_OPTIONS"
       :key="idx"
+      :data-testid="trackingLabel(dateRangeOption)"
       :selected="isCurrentDateRange(dateRangeOption)"
       data-track-action="click_date_range_button"
       :data-track-label="trackingLabel(dateRangeOption)"
