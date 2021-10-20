@@ -2,11 +2,14 @@
 
 module TasksToBeDone
   class BaseService < ::IssuableBaseService
-    def initialize(project:, current_user:, assignee_ids:)
+    LABEL_PREFIX = 'tasks to be done'
+
+    def initialize(project:, current_user:, assignee_ids: [])
       params = {
         assignee_ids: assignee_ids,
         title: title,
-        description: description
+        description: description,
+        add_labels: label_name
       }
       super(project: project, current_user: current_user, params: params)
     end
@@ -24,7 +27,29 @@ module TasksToBeDone
     private
 
     def existing_task_issue
-      project.issues.opened.where(title: params[:title]).last # rubocop: disable CodeReuse/ActiveRecord
+      IssuesFinder.new(
+        current_user,
+        project_id: project.id,
+        state: 'opened',
+        non_archived: true,
+        label_name: label_name
+      ).execute.last
+    end
+
+    def title
+      raise NotImplementedError
+    end
+
+    def description
+      raise NotImplementedError
+    end
+
+    def label_suffix
+      raise NotImplementedError
+    end
+
+    def label_name
+      "#{LABEL_PREFIX}:#{label_suffix}"
     end
   end
 end

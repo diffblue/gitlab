@@ -14,6 +14,7 @@ module TasksToBeDone
 
         **With GitLab Groups, you can:**
 
+        * Create one or multiple Projects for hosting your codebase (repositories).
         * Assemble related projects together.
         * Grant members access to several projects at once.
 
@@ -23,7 +24,6 @@ module TasksToBeDone
 
         **Within GitLab Projects, you can**
 
-        * Create one or multiple Projects for hosting your codebase (repositories).
         * Use it as an issue tracker.
         * Collaborate on code.
         * Continuously build, test, and deploy your app with built-in GitLab CI/CD.
@@ -43,6 +43,10 @@ module TasksToBeDone
 
         :tada: All done, you can close this issue!
       DESCRIPTION
+    end
+
+    def label_suffix
+      'code'
     end
   end
 end

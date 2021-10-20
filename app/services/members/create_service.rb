@@ -117,11 +117,16 @@ module Members
     end
 
     def create_tasks_to_be_done
-      # Only create task issues for existing users. Tasks for new users are created when they signup.
-      return if self.instance_of?(Members::InviteService)
+      return unless experiment(:invite_members_for_task).enabled?
       return if params[:tasks_to_be_done].blank? || params[:tasks_project_id].blank?
 
-      TasksToBeDone::CreateWorker.perform_async(params[:tasks_project_id], current_user.id, invites.map(&:to_i), params[:tasks_to_be_done])
+      valid_members = members.select { |member| member.valid? && member.member_task.valid? }
+      return unless valid_members.present?
+
+      # We can take the first `member_task` here, since all tasks will have the same attributes needed
+      # for the `TasksToBeDone::CreateWorker`, ie. `project` and `tasks_to_be_done`.
+      member_task = valid_members[0].member_task
+      TasksToBeDone::CreateWorker.perform_async(member_task.id, current_user.id, valid_members.map(&:user_id))
     end
 
     def areas_of_focus

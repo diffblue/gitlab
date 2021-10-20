@@ -77,10 +77,6 @@ module Gitlab
           def progress
             super(current: series + 2, total: 4)
           end
-
-          def invite_members?
-            false
-          end
         end
       end
     end

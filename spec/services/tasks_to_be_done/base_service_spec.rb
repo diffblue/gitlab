@@ -8,6 +8,7 @@ RSpec.describe TasksToBeDone::BaseService do
   let_it_be(:assignee_one) { create(:user) }
   let_it_be(:assignee_two) { create(:user) }
   let_it_be(:assignee_ids) { [assignee_one.id] }
+  let_it_be(:label) { create(:label, title: 'tasks to be done:ci', project: project) }
 
   before do
     project.add_maintainer(current_user)
@@ -28,7 +29,8 @@ RSpec.describe TasksToBeDone::BaseService do
       params = {
         assignee_ids: assignee_ids,
         title: 'Set up CI/CD',
-        description: anything
+        description: anything,
+        add_labels: label.title
       }
 
       expect(Issues::BuildService)
@@ -38,18 +40,20 @@ RSpec.describe TasksToBeDone::BaseService do
 
       expect { service.execute }.to change(Issue, :count).by(1)
 
-      issue = project.issues.last
-      expect(issue.author).to eq(current_user)
-      expect(issue.title).to eq('Set up CI/CD')
-      expect(issue.assignees).to eq([assignee_one])
+      expect(project.issues.last).to have_attributes(
+        author: current_user,
+        title: params[:title],
+        assignees: [assignee_one],
+        labels: [label]
+      )
     end
   end
 
-  context 'an issue with the same title already exists', :aggregate_failures do
+  context 'an open issue with the same label already exists', :aggregate_failures do
     let_it_be(:assignee_ids) { [assignee_two.id] }
 
     it 'assigns the user to the existing issue' do
-      issue = create(:issue, project: project, author: current_user, title: 'Set up CI/CD', assignees: [assignee_one])
+      issue = create(:labeled_issue, project: project, labels: [label], assignees: [assignee_one])
       params = { add_assignee_ids: assignee_ids }
 
       expect(Issues::UpdateService)

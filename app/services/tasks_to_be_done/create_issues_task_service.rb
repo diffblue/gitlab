@@ -35,5 +35,9 @@ module TasksToBeDone
         That's it! You can close this issue.
       DESCRIPTION
     end
+
+    def label_suffix
+      'issues'
+    end
   end
 end

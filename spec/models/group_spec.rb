@@ -723,14 +723,15 @@ RSpec.describe Group do
       let!(:project) { create(:project, group: group) }
 
       before do
-        group.add_users([user], :developer, tasks_to_be_done: %w(ci code), tasks_project_id: project.id)
+        stub_experiments(invite_members_for_task: true)
+        group.add_users([create(:user)], :developer, tasks_to_be_done: %w(ci code), tasks_project_id: project.id)
       end
 
-      it 'updates the attributes', :aggregate_failures do
+      it 'creates a member_task with the correct attributes', :aggregate_failures do
         member = group.group_members.last
 
         expect(member.tasks_to_be_done).to match_array([:ci, :code])
-        expect(member.tasks_project).to eq(project)
+        expect(member.member_task.project).to eq(project)
       end
     end
   end

@@ -36,5 +36,9 @@ module TasksToBeDone
         * [ ] Select **CI / CD** in the left navigation to start setting up CI / CD in your project.
       DESCRIPTION
     end
+
+    def label_suffix
+      'ci'
+    end
   end
 end

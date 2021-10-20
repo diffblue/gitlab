@@ -71,7 +71,9 @@ module Registrations
     end
 
     def show_tasks_to_be_done?
-      current_user.members.last&.tasks_to_be_done.present?
+      return unless experiment(:invite_members_for_task).enabled?
+
+      MemberTask.for_members(current_user.members).exists?
     end
 
     def trial_params

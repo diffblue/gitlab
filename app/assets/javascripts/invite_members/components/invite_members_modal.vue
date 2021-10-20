@@ -51,6 +51,7 @@ export default {
     MembersTokenSelect,
     GroupSelect,
   },
+  inject: ['newProjectPath'],
   props: {
     id: {
       type: String,
@@ -106,10 +107,6 @@ export default {
     },
     tasksToBeDoneOptions: {
       type: Array,
-      required: true,
-    },
-    newProjectPath: {
-      type: String,
       required: true,
     },
     projects: {
@@ -191,10 +188,16 @@ export default {
       return this.$options.labels[this.inviteeType].placeHolder;
     },
     tasksToBeDoneEnabled() {
-      return getParameterValues('open_modal')[0] === 'invite_members_for_task';
+      return (
+        getParameterValues('open_modal')[0] === 'invite_members_for_task' &&
+        this.tasksToBeDoneOptions.length
+      );
     },
     showTasksToBeDone() {
-      return this.tasksToBeDoneEnabled && this.selectedAccessLevel >= 30;
+      return (
+        this.tasksToBeDoneEnabled &&
+        this.selectedAccessLevel >= INVITE_MEMBERS_FOR_TASK.minimum_access_level
+      );
     },
     showTaskProjects() {
       return !this.isProject && this.selectedTasksToBeDone.length;
@@ -395,10 +398,10 @@ export default {
       },
       tasksToBeDone: {
         title: s__(
-          'InviteMembersModal|Create an issue for your new team member to work on (optional)',
+          'InviteMembersModal|Create issues for your new team member to work on (optional)',
         ),
         noProjects: s__(
-          'InviteMembersModal|To assign an issue to a new team member, you need a project for the issue. %{linkStart}Create a project to get started.%{linkEnd}',
+          'InviteMembersModal|To assign issues to a new team member, you need a project for the issues. %{linkStart}Create a project to get started.%{linkEnd}',
         ),
       },
       tasksProject: {
@@ -543,7 +546,7 @@ export default {
           data-testid="area-of-focus-checks"
         />
       </div>
-      <div v-if="showTasksToBeDone" data-testid="tasks-to-be-done">
+      <div v-if="showTasksToBeDone" data-testid="invite-members-modal-tasks-to-be-done">
         <label class="gl-mt-5">
           {{ $options.labels.members.tasksToBeDone.title }}
         </label>
@@ -551,7 +554,7 @@ export default {
           <gl-form-checkbox-group
             v-model="selectedTasksToBeDone"
             :options="tasksToBeDoneOptions"
-            data-testid="tasks"
+            data-testid="invite-members-modal-tasks"
           />
           <template v-if="showTaskProjects">
             <label class="gl-mt-5 gl-display-block">
@@ -560,7 +563,7 @@ export default {
             <gl-dropdown
               class="gl-w-half gl-xs-w-full"
               :text="selectedTaskProject.title"
-              data-testid="project-select"
+              data-testid="invite-members-modal-project-select"
             >
               <template v-for="project in projects">
                 <gl-dropdown-item
@@ -576,7 +579,12 @@ export default {
             </gl-dropdown>
           </template>
         </template>
-        <gl-alert v-else variant="tip" :dismissible="false" data-testid="no-projects-alert">
+        <gl-alert
+          v-else-if="tasksToBeDoneEnabled"
+          variant="tip"
+          :dismissible="false"
+          data-testid="invite-members-modal-no-projects-alert"
+        >
           <gl-sprintf :message="$options.labels.members.tasksToBeDone.noProjects">
             <template #link="{ content }">
               <gl-link :href="newProjectPath" target="_blank" class="gl-label-link">

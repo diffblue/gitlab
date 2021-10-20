@@ -77,6 +77,9 @@ const sharedGroup = { id: '981' };
 
 const createComponent = (data = {}, props = {}) => {
   wrapper = shallowMountExtended(InviteMembersModal, {
+    provide: {
+      newProjectPath,
+    },
     propsData: {
       id,
       name,
@@ -87,7 +90,6 @@ const createComponent = (data = {}, props = {}) => {
       defaultAccessLevel,
       noSelectionAreasOfFocus,
       tasksToBeDoneOptions,
-      newProjectPath,
       projects,
       helpLink,
       ...props,
@@ -152,10 +154,10 @@ describe('InviteMembersModal', () => {
   const membersFormGroupDescription = () => findMembersFormGroup().props('description');
   const findMembersSelect = () => wrapper.findComponent(MembersTokenSelect);
   const findAreaofFocusCheckBoxGroup = () => wrapper.findComponent(GlFormCheckboxGroup);
-  const findTasksToBeDone = () => wrapper.findByTestId('tasks-to-be-done');
-  const findTasks = () => wrapper.findByTestId('tasks');
-  const findProjectSelect = () => wrapper.findByTestId('project-select');
-  const findNoProjectsAlert = () => wrapper.findByTestId('no-projects-alert');
+  const findTasksToBeDone = () => wrapper.findByTestId('invite-members-modal-tasks-to-be-done');
+  const findTasks = () => wrapper.findByTestId('invite-members-modal-tasks');
+  const findProjectSelect = () => wrapper.findByTestId('invite-members-modal-project-select');
+  const findNoProjectsAlert = () => wrapper.findByTestId('invite-members-modal-no-projects-alert');
 
   describe('rendering the modal', () => {
     beforeEach(() => {

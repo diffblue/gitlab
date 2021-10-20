@@ -58,13 +58,7 @@ module Gitlab
           end
 
           def invite_members?
-            return unless user.can?(:admin_group_member, group)
-
-            experiment(:invite_members_for_task, namespace: group) do |e|
-              e.candidate { true }
-              e.record!
-              e.run
-            end
+            false
           end
 
           def invite_text
@@ -166,6 +160,16 @@ module Gitlab
             preference_link = "https://about.gitlab.com/company/preference-center/?#{params.to_query}"
 
             link(s_('InProductMarketing|update your preferences'), preference_link)
+          end
+
+          def invite_members_for_task_experiment_enabled?
+            return unless user.can?(:admin_group_member, group)
+
+            experiment(:invite_members_for_task, namespace: group) do |e|
+              e.candidate { true }
+              e.record!
+              e.run
+            end
           end
         end
       end

@@ -18729,7 +18729,7 @@ msgstr ""
 msgid "InviteMembersModal|Contribute to the codebase"
 msgstr ""
 
-msgid "InviteMembersModal|Create an issue for your new team member to work on (optional)"
+msgid "InviteMembersModal|Create issues for your new team member to work on (optional)"
 msgstr ""
 
 msgid "InviteMembersModal|GitLab member or email address"
@@ -18765,7 +18765,7 @@ msgstr ""
 msgid "InviteMembersModal|Something went wrong"
 msgstr ""
 
-msgid "InviteMembersModal|To assign an issue to a new team member, you need a project for the issue. %{linkStart}Create a project to get started.%{linkEnd}"
+msgid "InviteMembersModal|To assign issues to a new team member, you need a project for the issues. %{linkStart}Create a project to get started.%{linkEnd}"
 msgstr ""
 
 msgid "InviteMembersModal|What would you like new member(s) to focus on? (optional)"
@@ -40587,6 +40587,12 @@ msgid "is not allowed. We do not currently support project-level iterations"
 msgstr ""
 
 msgid "is not in the group enforcing Group Managed Account"
+msgstr ""
+
+msgid "is not in the member group"
+msgstr ""
+
+msgid "is not the member project"
 msgstr ""
 
 msgid "is not valid. The iteration group has to match the iteration cadence group."

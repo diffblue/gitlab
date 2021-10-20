@@ -87,4 +87,38 @@ RSpec.describe Members::CreateService do
       expect(project.users).to include(*project_users)
     end
   end
+
+  context 'when assigning tasks to be done' do
+    let(:params) do
+      {
+        user_ids: project_users.map(&:id).join(','),
+        access_level: Gitlab::Access::DEVELOPER,
+        tasks_to_be_done: %w(ci code),
+        tasks_project_id: project.id,
+        invite_source: '_invite_source_'
+      }
+    end
+
+    before do
+      stub_experiments(invite_members_for_task: true)
+    end
+
+    context 'when passing many user ids' do
+      it 'creates 2 task issues', :aggregate_failures, :sidekiq_inline do
+        expect(TasksToBeDone::CreateWorker)
+          .to receive(:perform_async)
+          .with(anything, user.id, array_including(*project_users.map(&:id)))
+          .once
+          .and_call_original
+
+        expect { subject }.to change { project.issues.reload.count }.by(2)
+
+        expect(project.issues).to all have_attributes(
+          project: project,
+          author: user,
+          assignees: project_users
+        )
+      end
+    end
+  end
 end

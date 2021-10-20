@@ -71,7 +71,7 @@ RSpec.describe MembersHelper do
 
   describe '#localized_tasks_to_be_done_choices' do
     it 'has a translation for all `TASKS_TO_BE_DONE` keys' do
-      expect(localized_tasks_to_be_done_choices).to include(*Member::TASKS_TO_BE_DONE.keys)
+      expect(localized_tasks_to_be_done_choices).to include(*MemberTask::TASKS.keys)
     end
   end
 end

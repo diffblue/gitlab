@@ -61,7 +61,7 @@ module MembersHelper
       code: s_('TasksToBeDone|Create/import code into a project (repository)'),
       ci: s_('TasksToBeDone|Set up CI/CD pipelines to build, test, deploy, and monitor code'),
       issues: s_('TasksToBeDone|Create/import issues (tickets) to collaborate on ideas and plan work')
-    }.with_indifferent_access.freeze
+    }.freeze
   end
 
   private

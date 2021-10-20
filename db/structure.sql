@@ -15671,6 +15671,24 @@ CREATE SEQUENCE lists_id_seq
 
 ALTER SEQUENCE lists_id_seq OWNED BY lists.id;
 
+CREATE TABLE member_tasks (
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    tasks smallint[] DEFAULT '{}'::smallint[] NOT NULL
+);
+
+CREATE SEQUENCE member_tasks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE member_tasks_id_seq OWNED BY member_tasks.id;
+
 CREATE TABLE members (
     id integer NOT NULL,
     access_level integer NOT NULL,
@@ -15690,9 +15708,7 @@ CREATE TABLE members (
     ldap boolean DEFAULT false NOT NULL,
     override boolean DEFAULT false NOT NULL,
     state smallint DEFAULT 0,
-    invite_email_success boolean DEFAULT true NOT NULL,
-    tasks_to_be_done integer[],
-    tasks_project_id bigint
+    invite_email_success boolean DEFAULT true NOT NULL
 );
 
 CREATE SEQUENCE members_id_seq
@@ -21503,6 +21519,8 @@ ALTER TABLE ONLY lists ALTER COLUMN id SET DEFAULT nextval('lists_id_seq'::regcl
 
 ALTER TABLE ONLY loose_foreign_keys_deleted_records ALTER COLUMN id SET DEFAULT nextval('loose_foreign_keys_deleted_records_id_seq'::regclass);
 
+ALTER TABLE ONLY member_tasks ALTER COLUMN id SET DEFAULT nextval('member_tasks_id_seq'::regclass);
+
 ALTER TABLE ONLY members ALTER COLUMN id SET DEFAULT nextval('members_id_seq'::regclass);
 
 ALTER TABLE ONLY merge_request_assignees ALTER COLUMN id SET DEFAULT nextval('merge_request_assignees_id_seq'::regclass);
@@ -23204,6 +23222,9 @@ ALTER TABLE ONLY list_user_preferences
 
 ALTER TABLE ONLY lists
     ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT member_tasks_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY members
     ADD CONSTRAINT members_pkey PRIMARY KEY (id);
@@ -25651,6 +25672,12 @@ CREATE INDEX index_lists_on_milestone_id ON lists USING btree (milestone_id);
 
 CREATE INDEX index_lists_on_user_id ON lists USING btree (user_id);
 
+CREATE INDEX index_member_tasks_on_member_id ON member_tasks USING btree (member_id);
+
+CREATE UNIQUE INDEX index_member_tasks_on_member_id_and_project_id ON member_tasks USING btree (member_id, project_id);
+
+CREATE INDEX index_member_tasks_on_project_id ON member_tasks USING btree (project_id);
+
 CREATE INDEX index_members_on_access_level ON members USING btree (access_level);
 
 CREATE INDEX index_members_on_expires_at ON members USING btree (expires_at);
@@ -25662,8 +25689,6 @@ CREATE UNIQUE INDEX index_members_on_invite_token ON members USING btree (invite
 CREATE INDEX index_members_on_requested_at ON members USING btree (requested_at);
 
 CREATE INDEX index_members_on_source_id_and_source_type ON members USING btree (source_id, source_type);
-
-CREATE INDEX index_members_on_tasks_project_id ON members USING btree (tasks_project_id);
 
 CREATE INDEX index_members_on_user_id_and_access_level_requested_at_is_null ON members USING btree (user_id, access_level) WHERE (requested_at IS NULL);
 
@@ -27576,9 +27601,6 @@ ALTER TABLE ONLY notification_settings
 ALTER TABLE ONLY lists
     ADD CONSTRAINT fk_0d3f677137 FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY members
-    ADD CONSTRAINT fk_0d981b659b FOREIGN KEY (tasks_project_id) REFERENCES projects(id) ON DELETE SET NULL;
-
 ALTER TABLE ONLY ci_unit_test_failures
     ADD CONSTRAINT fk_0f09856e1f FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
 
@@ -27587,6 +27609,9 @@ ALTER TABLE ONLY project_pages_metadata
 
 ALTER TABLE ONLY group_deletion_schedules
     ADD CONSTRAINT fk_11e3ebfcdd FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT fk_12816d4bbb FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_1302949740 FOREIGN KEY (last_edited_by_id) REFERENCES users(id) ON DELETE SET NULL;
@@ -28067,6 +28092,9 @@ ALTER TABLE ONLY identities
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_ab0a250ff6 FOREIGN KEY (iteration_cadence_id) REFERENCES iterations_cadences(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT fk_ab636303dd FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dep_ci_build_trace_sections
     ADD CONSTRAINT fk_ab7c104e26 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
