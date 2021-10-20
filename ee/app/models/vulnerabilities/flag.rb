@@ -4,10 +4,6 @@ module Vulnerabilities
   class Flag < ApplicationRecord
     self.table_name = 'vulnerability_flags'
 
-    # This is necessary to prevent updating the
-    # created_at attribute with upsert queries.
-    attr_readonly(:created_at)
-
     belongs_to :finding, class_name: 'Vulnerabilities::Finding', foreign_key: 'vulnerability_occurrence_id', inverse_of: :vulnerability_flags, optional: false
 
     validates :origin, length: { maximum: 255 }
