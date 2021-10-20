@@ -23,7 +23,10 @@ RSpec.describe Gitlab::Database::LoadBalancing::Setup do
         env_name: 'test',
         name: 'main'
       )
-      model = double(:model, connection_db_config: config)
+      model = double(:model,
+        connection_db_config: config,
+        connection_specification_name: ActiveRecord::Base.connection_specification_name
+      )
 
       expect(ActiveRecord::DatabaseConfigurations::HashConfig)
         .to receive(:new)

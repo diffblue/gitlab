@@ -10,9 +10,9 @@ module Gitlab
         # the primary.
         EXPIRATION = 30
 
-        def initialize(load_balancer)
+        def initialize(load_balancer, model)
           @load_balancer = load_balancer
-          @model = load_balancer.configuration.model
+          @model = model
         end
 
         # Unsticks or continues sticking the current request.

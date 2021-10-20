@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Database::LoadBalancing::Sticking, :redis do
   let(:sticking) do
-    described_class.new(ActiveRecord::Base.connection.load_balancer)
+    described_class.new(ActiveRecord::Base.connection.load_balancer, ActiveRecord::Base)
   end
 
   after do

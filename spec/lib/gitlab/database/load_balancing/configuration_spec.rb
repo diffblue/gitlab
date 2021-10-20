@@ -7,7 +7,10 @@ RSpec.describe Gitlab::Database::LoadBalancing::Configuration do
     config = ActiveRecord::DatabaseConfigurations::HashConfig
       .new('main', 'test', configuration_hash)
 
-    double(:model, connection_db_config: config)
+    double(:model,
+      connection_db_config: config,
+      connection_specification_name: ActiveRecord::Base.connection_specification_name
+    )
   end
 
   describe '.for_model' do

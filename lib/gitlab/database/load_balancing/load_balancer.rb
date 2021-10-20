@@ -27,7 +27,7 @@ module Gitlab
               HostList.new(configuration.hosts.map { |addr| Host.new(addr, self) })
             end
 
-          @name = @configuration.model.connection_db_config.name.to_sym
+          @name = @configuration.connection_db_config.name.to_sym
         end
 
         def primary_only?
@@ -252,7 +252,7 @@ module Gitlab
         # leverage that.
         def pool
           ActiveRecord::Base.connection_handler.retrieve_connection_pool(
-            @configuration.model.connection_specification_name,
+            @configuration.connection_specification_name,
             role: ActiveRecord::Base.writing_role,
             shard: ActiveRecord::Base.default_shard
           ) || raise(::ActiveRecord::ConnectionNotEstablished)

@@ -5,9 +5,11 @@ module Gitlab
     module LoadBalancing
       # Configuration settings for a single LoadBalancer instance.
       class Configuration
+        attr_reader :connection_specification_name, :connection_db_config
+
         attr_accessor :hosts, :max_replication_difference,
                       :max_replication_lag_time, :replica_check_interval,
-                      :service_discovery, :model
+                      :service_discovery
 
         # Creates a configuration object for the given ActiveRecord model.
         def self.for_model(model)
@@ -45,6 +47,8 @@ module Gitlab
         end
 
         def initialize(model, hosts = [])
+          @connection_specification_name = model.connection_specification_name
+          @connection_db_config = model.connection_db_config
           @max_replication_difference = 8.megabytes
           @max_replication_lag_time = 60.0
           @replica_check_interval = 60.0
