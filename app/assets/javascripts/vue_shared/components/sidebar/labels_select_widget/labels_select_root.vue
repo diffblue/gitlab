@@ -87,11 +87,6 @@ export default {
       required: false,
       default: __('Manage group labels'),
     },
-    isEditing: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     issuableType: {
       type: String,
       required: true,
@@ -111,6 +106,7 @@ export default {
       issuableLabels: [],
       labelsSelectInProgress: false,
       oldIid: null,
+      isEditing: false,
     };
   },
   computed: {
@@ -133,8 +129,7 @@ export default {
         };
       },
       update(data) {
-        this.selected = data.workspace?.issuable?.labels.nodes || [];
-        return this.selected;
+        return data.workspace?.issuable?.labels.nodes || [];
       },
       error() {
         createFlash({ message: __('Error fetching labels.') });
@@ -143,7 +138,11 @@ export default {
   },
   watch: {
     iid(_, oldVal) {
-      this.oldIid = oldVal;
+      if (this.isEditing) {
+        this.oldIid = oldVal;
+      } else {
+        this.oldIid = null;
+      }
     },
   },
   methods: {
@@ -260,6 +259,8 @@ export default {
         :title="__('Labels')"
         :loading="isLoading"
         :can-edit="allowLabelEdit"
+        @open="isEditing = true"
+        @close="isEditing = false"
       >
         <template #collapsed>
           <dropdown-value
