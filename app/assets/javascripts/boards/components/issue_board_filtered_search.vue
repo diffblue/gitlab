@@ -9,7 +9,6 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import { DEFAULT_MILESTONES_GRAPHQL } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
@@ -34,7 +33,6 @@ export default {
     isNot: __('is not'),
   },
   components: { BoardFilteredSearch },
-  inject: ['epicFeatureAvailable'],
   props: {
     fullPath: {
       type: String,
@@ -54,9 +52,8 @@ export default {
         ? this.fullPath
         : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
     },
-    tokens() {
+    tokensCE() {
       const {
-        epic,
         label,
         is,
         isNot,
@@ -103,21 +100,6 @@ export default {
           fetchAuthors,
           preloadedAuthors: this.preloadedAuthors(),
         },
-        ...(this.epicFeatureAvailable
-          ? [
-              {
-                type: 'epic_id',
-                title: epic,
-                icon: 'epic',
-                token: EpicToken,
-                unique: true,
-                symbol: '&',
-                idProperty: 'id',
-                useIdValue: true,
-                fullPath: this.epicsGroupPath,
-              },
-            ]
-          : []),
         {
           icon: 'labels',
           title: label,
@@ -161,6 +143,9 @@ export default {
           unique: true,
         },
       ];
+    },
+    tokens() {
+      return this.tokensCE;
     },
   },
   methods: {

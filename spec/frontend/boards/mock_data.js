@@ -4,7 +4,6 @@ import { ListType } from '~/boards/constants';
 import { __ } from '~/locale';
 import { DEFAULT_MILESTONES_GRAPHQL } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
@@ -539,19 +538,7 @@ export const mockMoveData = {
   ...mockMoveIssueParams,
 };
 
-export const mockEpicToken = {
-  type: 'epic_id',
-  icon: 'epic',
-  title: 'Epic',
-  unique: true,
-  symbol: '&',
-  token: EpicToken,
-  idProperty: 'id',
-  useIdValue: true,
-  fullPath: 'gitlab-org',
-};
-
-export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, epics = false) => [
+export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones) => [
   {
     icon: 'user',
     title: __('Assignee'),
@@ -579,7 +566,6 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, epics = f
     fetchAuthors,
     preloadedAuthors: [],
   },
-  ...(epics ? [mockEpicToken] : []),
   {
     icon: 'labels',
     title: __('Label'),
