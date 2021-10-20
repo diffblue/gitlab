@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'compliance_management/compliance_framework/_project_settings.html.haml' do
   let_it_be(:group) { create(:group) }
   let_it_be(:group_owner) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: group) }
+  let_it_be(:project) { create(:project, :with_compliance_framework, namespace: group) }
 
   before do
     allow(view).to receive(:current_user).and_return(group_owner)
