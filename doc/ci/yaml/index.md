@@ -427,6 +427,13 @@ In `include` sections in your `.gitlab-ci.yml` file, you can use:
 
 - `$CI_COMMIT_REF_NAME` [predefined variable](../variables/predefined_variables.md) in GitLab 14.2
   and later.
+  - When used in `include`, the `CI_COMMIT_REF_NAME` variable returns the full
+    ref path, like `refs/heads/branch-name`. In other cases, this variable returns only
+    the branch name, like `branch-name`.
+
+    To use `CI_COMMIT_REF_NAME` in `include:rules`, you might need to use `if: $CI_COMMIT_REF_NAME =~ /main/`
+    (not `== main`). [An issue exists](https://gitlab.com/gitlab-org/gitlab/-/issues/337633)
+    to align `CI_COMMIT_REF_NAME` behavior in all cases.
 - [Project variables](../variables/index.md#add-a-cicd-variable-to-a-project)
 - [Group variables](../variables/index.md#add-a-cicd-variable-to-a-group)
 - [Instance variables](../variables/index.md#add-a-cicd-variable-to-an-instance)
