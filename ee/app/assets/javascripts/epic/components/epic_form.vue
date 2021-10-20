@@ -201,7 +201,7 @@ export default {
           issuable-type="epic"
           variant="embedded"
           data-qa-selector="labels_block"
-          @updateSelectedLabels="handleUpdateSelectedLabels"
+          @updateSelectedLabels="handleUpdateSelectedLabels($event.labels)"
         >
           {{ __('None') }}
         </labels-select-widget>

@@ -110,6 +110,7 @@ export default {
       contentIsOnViewport: true,
       issuableLabels: [],
       labelsSelectInProgress: false,
+      oldIid: null,
     };
   },
   computed: {
@@ -140,12 +141,17 @@ export default {
       },
     },
   },
+  watch: {
+    iid(_, oldVal) {
+      this.oldIid = oldVal;
+    },
+  },
   methods: {
     handleDropdownClose(labels) {
       if (this.iid !== '') {
         this.updateSelectedLabels(this.getUpdateVariables(labels));
       } else {
-        this.$emit('updateSelectedLabels', labels);
+        this.$emit('updateSelectedLabels', { labels });
       }
 
       this.collapseEditableItem();
@@ -160,17 +166,18 @@ export default {
       let labelIds = [];
 
       labelIds = labels.map(({ id }) => id);
+      const currentIid = this.oldIid || this.iid;
 
       switch (this.issuableType) {
         case IssuableType.Issue:
           return {
-            iid: this.iid,
+            iid: currentIid,
             projectPath: this.fullPath,
             labelIds,
           };
         case IssuableType.MergeRequest:
           return {
-            iid: this.iid,
+            iid: currentIid,
             labelIds,
             operationMode: MutationOperationMode.Replace,
             projectPath: this.fullPath,
@@ -194,7 +201,10 @@ export default {
             throw new Error();
           }
 
-          this.$emit('updateSelectedLabels', data[mutationName]?.[this.issuableType].labels?.nodes);
+          this.$emit('updateSelectedLabels', {
+            id: data[mutationName]?.[this.issuableType].id,
+            labels: data[mutationName]?.[this.issuableType].labels?.nodes,
+          });
         })
         .catch(() => createFlash({ message: __('An error occurred while updating labels.') }))
         .finally(() => {

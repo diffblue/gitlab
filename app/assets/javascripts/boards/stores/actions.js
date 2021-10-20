@@ -692,7 +692,7 @@ export default {
       );
     }
     commit(types.UPDATE_BOARD_ITEM_BY_ID, {
-      itemId: activeBoardItem.id,
+      itemId: input.id || activeBoardItem.id,
       prop: 'labels',
       value: labels,
     });

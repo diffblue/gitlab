@@ -102,9 +102,9 @@ export default {
     handleClose() {
       this.toggleBoardItem({ boardItem: this.activeBoardItem, sidebarType: this.sidebarType });
     },
-    handleUpdateSelectedLabels(labels) {
+    handleUpdateSelectedLabels({ labels, id }) {
       this.setActiveBoardItemLabels({
-        iid: this.activeBoardItem.iid,
+        id,
         projectPath: this.projectPathForActiveIssue,
         labelIds: labels.map((label) => getIdFromGraphQLId(label.id)),
         labels,
