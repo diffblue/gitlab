@@ -32,7 +32,7 @@ export const receiveDeleteLicense = ({ commit, dispatch }, id) => {
   });
 };
 export const receiveDeleteLicenseError = ({ commit }) => {
-  commit(types.RECEIVE_DELETE_LICENSE_ERROR);
+  commit(types.RESET_LICENSE_IN_MODAL);
 };
 export const deleteLicense = ({ dispatch, state }) => {
   const licenseId = state.currentLicenseInModal.id;
@@ -111,7 +111,7 @@ export const receiveSetLicenseApproval = ({ commit, dispatch, state }, id) => {
   });
 };
 export const receiveSetLicenseApprovalError = ({ commit }) => {
-  commit(types.RECEIVE_SET_LICENSE_APPROVAL_ERROR);
+  commit(types.RESET_LICENSE_IN_MODAL);
 };
 
 export const fetchLicenseCheckApprovalRule = ({ dispatch, state }) => {

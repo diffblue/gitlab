@@ -70,17 +70,7 @@ export default {
       currentLicenseInModal: null,
     });
   },
-  [types.RECEIVE_DELETE_LICENSE_ERROR](state) {
-    Object.assign(state, {
-      currentLicenseInModal: null,
-    });
-  },
   [types.RECEIVE_SET_LICENSE_APPROVAL](state) {
-    Object.assign(state, {
-      currentLicenseInModal: null,
-    });
-  },
-  [types.RECEIVE_SET_LICENSE_APPROVAL_ERROR](state) {
     Object.assign(state, {
       currentLicenseInModal: null,
     });

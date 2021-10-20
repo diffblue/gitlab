@@ -128,12 +128,12 @@ describe('License store actions', () => {
   });
 
   describe('receiveDeleteLicenseError', () => {
-    it('commits RECEIVE_DELETE_LICENSE_ERROR', (done) => {
+    it('commits RESET_LICENSE_IN_MODAL', (done) => {
       testAction(
         actions.receiveDeleteLicenseError,
         null,
         state,
-        [{ type: mutationTypes.RECEIVE_DELETE_LICENSE_ERROR }],
+        [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
       )
         .then(done)
@@ -203,12 +203,12 @@ describe('License store actions', () => {
   });
 
   describe('receiveSetLicenseApprovalError', () => {
-    it('commits RECEIVE_SET_LICENSE_APPROVAL_ERROR', (done) => {
+    it('commits RESET_LICENSE_IN_MODAL', (done) => {
       testAction(
         actions.receiveSetLicenseApprovalError,
         null,
         state,
-        [{ type: mutationTypes.RECEIVE_SET_LICENSE_APPROVAL_ERROR }],
+        [{ type: mutationTypes.RESET_LICENSE_IN_MODAL }],
         [],
       )
         .then(done)
