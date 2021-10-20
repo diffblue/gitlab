@@ -1111,8 +1111,11 @@ to the contents of the `script`:
 
 Use `rules` to include or exclude jobs in pipelines.
 
-Rules are evaluated *in order* until the first match. When a match is found, the job
-is either included or excluded from the pipeline, depending on the configuration.
+Rules are evaluated when the pipeline is created, and evaluated *in order*
+until the first match. When a match is found, the job is either included or excluded from the pipeline,
+depending on the configuration.
+
+You cannot use dotenv variables created in job scripts in rules, because rules are evaluated before any jobs run.
 
 `rules` replaces [`only/except`](#only--except) and they can't be used together
 in the same job. If you configure one job to use both keywords, the GitLab returns
