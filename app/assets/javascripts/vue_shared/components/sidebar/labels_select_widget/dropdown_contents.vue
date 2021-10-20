@@ -122,13 +122,16 @@ export default {
       if (newVal) {
         this.$refs.dropdown.show();
         this.isDirty = false;
+        this.localSelectedLabels = this.selectedLabels;
       } else {
         this.$refs.dropdown.hide();
         this.setLabels();
       }
     },
     selectedLabels(newVal) {
-      this.localSelectedLabels = newVal;
+      if (!this.isDirty) {
+        this.localSelectedLabels = newVal;
+      }
     },
   },
   created() {

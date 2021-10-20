@@ -106,7 +106,6 @@ export default {
       issuableLabels: [],
       labelsSelectInProgress: false,
       oldIid: null,
-      isEditing: false,
     };
   },
   computed: {
@@ -138,11 +137,7 @@ export default {
   },
   watch: {
     iid(_, oldVal) {
-      if (this.isEditing) {
-        this.oldIid = oldVal;
-      } else {
-        this.oldIid = null;
-      }
+      this.oldIid = oldVal;
     },
   },
   methods: {
@@ -259,8 +254,7 @@ export default {
         :title="__('Labels')"
         :loading="isLoading"
         :can-edit="allowLabelEdit"
-        @open="isEditing = true"
-        @close="isEditing = false"
+        @open="oldIid = null"
       >
         <template #collapsed>
           <dropdown-value
