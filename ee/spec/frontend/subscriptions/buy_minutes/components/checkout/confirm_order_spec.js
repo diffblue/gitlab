@@ -76,7 +76,7 @@ describe('Confirm Order', () => {
         expect(Api.confirmOrder).toHaveBeenCalledTimes(1);
         expect(Api.confirmOrder.mock.calls[0][0]).toMatchObject({
           setup_for_company: true,
-          selected_group: undefined,
+          selected_group: '30',
           new_user: false,
           redirect_after_success: '/path/to/redirect/',
           customer: {
