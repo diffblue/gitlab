@@ -408,6 +408,52 @@ RSpec.describe 'Edit group settings' do
     end
   end
 
+  describe 'user caps settings' do
+    context 'when :saas_user_caps feature flag is off' do
+      before do
+        stub_feature_flags(saas_user_caps: false)
+        visit edit_group_path(group)
+      end
+
+      it 'is not visible' do
+        expect(page).not_to have_content('User cap')
+      end
+    end
+
+    context 'when :saas_user_caps feature flag is on', :js do
+      let(:user_caps_selector) { '[name="group[new_user_signups_cap]"]' }
+
+      before do
+        stub_feature_flags(saas_user_caps: true)
+        visit edit_group_path(group)
+      end
+
+      it 'is visible' do
+        expect(page).to have_content('User cap')
+      end
+
+      it 'will save positive numbers' do
+        find(user_caps_selector).set(5)
+
+        click_button 'Save changes'
+        wait_for_requests
+
+        expect(page).to have_content("Group 'Foo bar' was successfully updated.")
+      end
+
+      it 'will not allow negative number' do
+        find(user_caps_selector).set(-5)
+
+        click_button 'Save changes'
+        expect(page).to have_content('This field is required.')
+
+        wait_for_requests
+
+        expect(page).not_to have_content("Group 'Foo bar' was successfully updated.")
+      end
+    end
+  end
+
   def save_permissions_group
     page.within('.gs-permissions') do
       click_button 'Save changes'

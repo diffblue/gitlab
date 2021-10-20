@@ -615,5 +615,38 @@ RSpec.describe GroupsController do
         end
       end
     end
+
+    context 'when `new_user_signups_cap` is specified' do
+      subject { put :update, params: params }
+
+      shared_examples_for 'updates the attribute' do
+        it 'updates the attribute' do
+          subject
+
+          expect(response).to have_gitlab_http_status(status)
+          expect(group.reload.new_user_signups_cap).to eq(result)
+        end
+      end
+
+      context 'authenticated as group owner' do
+        where(:new_user_signups_cap, :result, :status) do
+          nil | nil   | :found
+          10  | 10    | :found
+        end
+
+        with_them do
+          let(:params) do
+            { id: group.to_param, group: { new_user_signups_cap: new_user_signups_cap } }
+          end
+
+          before do
+            group.add_owner(user)
+            sign_in(user)
+          end
+
+          it_behaves_like 'updates the attribute'
+        end
+      end
+    end
   end
 end

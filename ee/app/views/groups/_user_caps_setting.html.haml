@@ -1,0 +1,8 @@
+- return unless Feature.enabled?(:saas_user_caps, group.root_ancestor)
+- user_cap_docs_link_url = help_page_path("/user/admin_area/settings/sign_up_restrictions", anchor: "user-cap")
+- user_cap_docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: user_cap_docs_link_url }
+.form-group
+  = f.label :new_user_signups_cap, _('User cap'), class: 'gl-font-weight-bold'
+  .form-text.text-muted= html_escape(_('When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don\'t want to enforce approvals.')) % { user_cap_docs_link_start: user_cap_docs_link_start, user_cap_docs_link_end: '</a>'.html_safe }
+  = f.number_field :new_user_signups_cap, min: 1, class: 'form-control form-control-sm gl-form-input gl-w-full gl-mt-3'
+
