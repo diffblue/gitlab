@@ -31058,9 +31058,6 @@ msgstr ""
 msgid "ServiceDesk|For help setting up the Service Desk for your instance, please contact an administrator."
 msgstr ""
 
-msgid "ServiceDesk|Issues created from Service Desk emails appear here. Each comment becomes part of the email conversation."
-msgstr ""
-
 msgid "ServiceDesk|Issues created from Service Desk emails will appear here. Each comment becomes part of the email conversation."
 msgstr ""
 
