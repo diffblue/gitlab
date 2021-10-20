@@ -566,7 +566,7 @@ class Namespace < ApplicationRecord
     end
 
     if user_namespace?
-      errors.add(:parent_id, _('cannot not be used for user namespace'))
+      errors.add(:parent_id, _('cannot be used for user namespace'))
     elsif group_namespace?
       errors.add(:parent_id, _('user namespace cannot be the parent of another namespace')) if parent.user_namespace?
     end
