@@ -78,7 +78,7 @@ export default {
     <p data-testid="confirm-danger-warning">{{ $options.i18n.CONFIRM_DANGER_WARNING }}</p>
     <p data-testid="confirm-danger-phrase">
       <gl-sprintf :message="$options.i18n.CONFIRM_DANGER_PHRASE_TEXT">
-        <template #code>
+        <template #phrase_code>
           <code>{{ phrase }}</code>
         </template>
       </gl-sprintf>

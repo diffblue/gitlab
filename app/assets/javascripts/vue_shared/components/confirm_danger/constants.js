@@ -7,5 +7,5 @@ export const CONFIRM_DANGER_WARNING = __(
   'This action can lead to data loss. To prevent accidental actions we ask you to confirm your intention.',
 );
 export const CONFIRM_DANGER_PHRASE_TEXT = __(
-  'Please type %{code} to proceed or close this modal to cancel.',
+  'Please type %{phrase_code} to proceed or close this modal to cancel.',
 );
