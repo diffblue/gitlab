@@ -9,7 +9,7 @@ module Mutations
                required: true,
                description: 'Project the site profile belongs to.'
 
-      argument :id, ::Types::GlobalIDType[::DastSiteProfile],
+      argument :id, Mutations::AppSec::Dast::SiteProfiles::SharedArguments::SiteProfileID,
                required: true,
                description: 'ID of the site profile to be deleted.'
 

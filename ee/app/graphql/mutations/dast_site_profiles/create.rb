@@ -4,42 +4,18 @@ module Mutations
   module DastSiteProfiles
     class Create < BaseMutation
       include FindsProject
+      include Mutations::AppSec::Dast::SiteProfiles::SharedArguments
 
       graphql_name 'DastSiteProfileCreate'
 
-      field :id, ::Types::GlobalIDType[::DastSiteProfile],
+      field :id, SiteProfileID,
             null: true,
             description: 'ID of the site profile.'
-
-      argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site profile belongs to.'
-
-      argument :profile_name, GraphQL::Types::String,
-               required: true,
-               description: 'Name of the site profile.'
-
-      argument :target_url, GraphQL::Types::String,
-               required: false,
-               description: 'URL of the target to be scanned.'
-
-      argument :target_type, Types::DastTargetTypeEnum,
-               required: false,
-               description: 'Type of target to be scanned.'
 
       argument :excluded_urls, [GraphQL::Types::String],
                required: false,
                default_value: [],
                description: 'URLs to skip during an authenticated scan. Defaults to `[]`.'
-
-      argument :request_headers, GraphQL::Types::String,
-               required: false,
-               description: 'Comma-separated list of request header names and values to be ' \
-                            'added to every request made by DAST.'
-
-      argument :auth, ::Types::Dast::SiteProfileAuthInputType,
-               required: false,
-               description: 'Parameters for authentication.'
 
       authorize :create_on_demand_dast_scan
 
