@@ -21,25 +21,14 @@ RSpec.describe Groups::Memberships::ExportService do
     context 'when unlicensed' do
       before do
         stub_licensed_features(export_user_permissions: false)
-        stub_feature_flags(ff_group_membership_export: true)
       end
 
       it_behaves_like 'not available'
     end
 
-    context 'when disabled' do
+    context 'when licensed' do
       before do
         stub_licensed_features(export_user_permissions: true)
-        stub_feature_flags(ff_group_membership_export: false)
-      end
-
-      it_behaves_like 'not available'
-    end
-
-    context 'when licensed and enabled' do
-      before do
-        stub_licensed_features(export_user_permissions: true)
-        stub_feature_flags(ff_group_membership_export: true)
         group.add_user(current_user, Gitlab::Access::OWNER)
       end
 

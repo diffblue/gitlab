@@ -229,18 +229,9 @@ RSpec.describe GroupPolicy do
     context 'when exporting user permissions is available' do
       before do
         stub_licensed_features(export_user_permissions: true)
-        stub_feature_flags(ff_group_membership_export: true)
       end
 
       it { is_expected.to be_allowed(:export_group_memberships) }
-    end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(ff_group_membership_export: false)
-      end
-
-      it { is_expected.not_to be_allowed(:export_group_memberships) }
     end
   end
 
