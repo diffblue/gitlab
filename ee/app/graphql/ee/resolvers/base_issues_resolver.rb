@@ -2,7 +2,7 @@
 
 module EE
   module Resolvers
-    module IssuesResolver
+    module BaseIssuesResolver
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
