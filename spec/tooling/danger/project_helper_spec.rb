@@ -86,7 +86,7 @@ RSpec.describe Tooling::Danger::ProjectHelper do
       'rubocop/foo'                | [:backend]
       '.rubocop.yml'               | [:backend]
       '.rubocop_todo.yml'          | [:backend]
-      '.rubocop_manual_todo.yml'   | [:backend]
+      '.rubocop_todo/cop/name.yml' | [:backend]
       'spec/foo'                   | [:backend]
       'spec/foo/bar'               | [:backend]
 
