@@ -12,7 +12,7 @@ RSpec.describe SamlGroupLink do
     it { is_expected.to validate_presence_of(:access_level) }
     it { is_expected.to validate_presence_of(:saml_group_name) }
     it { is_expected.to validate_length_of(:saml_group_name).is_at_most(255) }
-    it { is_expected.to define_enum_for(:access_level).with_values(Gitlab::Access.options_with_owner) }
+    it { is_expected.to define_enum_for(:access_level).with_values(Gitlab::Access.options_with_minimal_access) }
 
     context 'group name uniqueness' do
       before do
@@ -28,6 +28,27 @@ RSpec.describe SamlGroupLink do
         saml_group_link.valid?
 
         expect(saml_group_link.saml_group_name).to eq('group')
+      end
+    end
+
+    context 'minimal access role' do
+      let_it_be(:top_level_group) { create(:group) }
+      let_it_be(:subgroup) { create(:group, parent: top_level_group) }
+
+      def saml_group_link(group:)
+        build(:saml_group_link, group: group, access_level: 'Minimal Access')
+      end
+
+      before do
+        stub_licensed_features(minimal_access_role: true)
+      end
+
+      it 'allows the role at the top level group' do
+        expect(saml_group_link(group: top_level_group)).to be_valid
+      end
+
+      it 'does not allow the role for subgroups' do
+        expect(saml_group_link(group: subgroup)).not_to be_valid
       end
     end
   end
