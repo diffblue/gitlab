@@ -12,6 +12,10 @@ module Mutations
             null: true,
             description: 'ID of the site profile.'
 
+      argument :full_path, GraphQL::Types::ID,
+               required: true,
+               description: 'Project the site profile belongs to.'
+
       argument :excluded_urls, [GraphQL::Types::String],
                required: false,
                default_value: [],

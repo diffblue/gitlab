@@ -8,7 +8,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
   let_it_be(:user) { create(:user) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
 
-  let(:full_path) { project.full_path }
   let(:new_profile_name) { SecureRandom.hex }
   let(:new_target_url) { generate(:url) }
   let(:new_excluded_urls) { ["#{new_target_url}/signout"] }
@@ -37,7 +36,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
   describe '#resolve' do
     subject do
       mutation.resolve(
-        full_path: full_path,
         id: dast_site_profile.to_global_id,
         profile_name: new_profile_name,
         target_url: new_target_url,
@@ -49,14 +47,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
     end
 
     context 'when on demand scan feature is enabled' do
-      context 'when the project does not exist' do
-        let(:full_path) { SecureRandom.hex }
-
-        it 'raises an exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
-
       context 'when the user can run a dast scan' do
         before do
           project.add_developer(user)
@@ -67,7 +57,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
           result = ServiceResponse.error(message: '')
 
           service_params = {
-            id: dast_site_profile.id.to_s,
+            id: dast_site_profile.id,
             name: new_profile_name,
             target_url: new_target_url,
             target_type: new_target_type,
@@ -112,7 +102,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
           context 'when the arguments are omitted' do
             subject do
               mutation.resolve(
-                full_path: full_path,
                 id: dast_site_profile.to_global_id,
                 profile_name: new_profile_name
               )
@@ -128,7 +117,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
           context 'when the arguments are empty strings' do
             subject do
               mutation.resolve(
-                full_path: full_path,
                 id: dast_site_profile.to_global_id,
                 profile_name: new_profile_name,
                 request_headers: '',

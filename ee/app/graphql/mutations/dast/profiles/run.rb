@@ -15,7 +15,8 @@ module Mutations
               description: 'URL of the pipeline that was created.'
 
         argument :full_path, GraphQL::Types::ID,
-                 required: true,
+                 required: false,
+                 deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
                  description: 'Full path for the project the scanner profile belongs to.'
 
         argument :id, ProfileID,
@@ -24,17 +25,10 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, id:)
-          project = authorized_find!(full_path)
+        def resolve(id:, full_path: nil)
+          dast_profile = authorized_find!(id)
 
-          # TODO: remove this line once the compatibility layer is removed
-          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          id = ProfileID.coerce_isolated_input(id).model_id
-
-          dast_profile = find_dast_profile(project, id)
-          return { errors: ['Profile not found for given parameters'] } unless dast_profile
-
-          response = create_on_demand_dast_scan(project, dast_profile)
+          response = create_on_demand_dast_scan(dast_profile)
 
           return { errors: response.errors } if response.error?
 
@@ -43,15 +37,17 @@ module Mutations
 
         private
 
-        def find_dast_profile(project, id)
-          ::Dast::ProfilesFinder.new(project_id: project.id, id: id)
-            .execute
-            .first
+        def find_object(id)
+          # TODO: remove this line when the compatibility layer is removed
+          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
+          id = ProfileID.coerce_isolated_input(id)
+
+          GitlabSchema.find_by_gid(id)
         end
 
-        def create_on_demand_dast_scan(project, dast_profile)
+        def create_on_demand_dast_scan(dast_profile)
           ::AppSec::Dast::Scans::CreateService.new(
-            container: project,
+            container: dast_profile.project,
             current_user: current_user,
             params: { dast_profile: dast_profile }
           ).execute

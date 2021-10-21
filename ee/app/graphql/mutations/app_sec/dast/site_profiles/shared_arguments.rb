@@ -10,10 +10,6 @@ module Mutations
           SiteProfileID = ::Types::GlobalIDType[::DastSiteProfile]
 
           included do
-            argument :full_path, GraphQL::Types::ID,
-                     required: true,
-                     description: 'Project the site profile belongs to.'
-
             argument :profile_name, GraphQL::Types::String,
                      required: true,
                      description: 'Name of the site profile.'
