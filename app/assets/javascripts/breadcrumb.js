@@ -20,6 +20,7 @@ export default () => {
       .map((el) => el.querySelector('a'))
       .filter((el) => el);
     const $expander = $('.js-breadcrumbs-collapsed-expander');
+    const $expanderInline = $('.js-breadcrumbs-collapsed-expander.inline-list');
 
     topLevelLinks.forEach((el) => addTooltipToEl(el));
 
@@ -29,6 +30,21 @@ export default () => {
       $el.toggleClass('open');
 
       hide($el);
+    });
+
+    $expanderInline.on('click', () => {
+      const detailItems = $('.breadcrumbs-detail-item');
+      const hiddenClass = 'gl-display-none!';
+
+      $.each(detailItems, (_key, item) => {
+        $(item).toggleClass(hiddenClass);
+      });
+
+      // remove the ellipsis
+      $('li.expander').remove();
+
+      // set focus on first breadcrumb item
+      $('.breadcrumb-item-text').first().focus();
     });
   }
 };

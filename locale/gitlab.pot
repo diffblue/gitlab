@@ -31593,6 +31593,9 @@ msgstr ""
 msgid "Show all activity"
 msgstr ""
 
+msgid "Show all breadcrumbs"
+msgstr ""
+
 msgid "Show all issues."
 msgstr ""
 
@@ -31648,9 +31651,6 @@ msgid "Show one file at a time"
 msgstr ""
 
 msgid "Show parent pages"
-msgstr ""
-
-msgid "Show parent subgroups"
 msgstr ""
 
 msgid "Show the Closed list"
