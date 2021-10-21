@@ -9,12 +9,18 @@ module Resolvers
              description: 'Include epics from ancestor groups.',
              default_value: true
 
+    def resolve_with_lookahead(**args)
+      items = super
+
+      offset_pagination(items)
+    end
+
     private
 
     def relative_param
       return {} unless parent
 
-      { child_id: parent.id }
+      { child_id: parent.id, hierarchy_order: :desc }
     end
   end
 end
