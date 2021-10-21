@@ -19,7 +19,9 @@ exports[`CiliumNetworkPolicy component supported YAML renders policy preview tab
       data-testid="description"
       label="Description"
     >
-      test description
+      
+        test description
+      
     </policy-info-row-stub>
      
     <policy-info-row-stub
