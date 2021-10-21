@@ -15,6 +15,7 @@ RSpec.describe 'Group navbar' do
   before do
     group.add_maintainer(user)
     stub_feature_flags(group_iterations: false)
+    stub_feature_flags(customer_relations: false)
     stub_group_wikis(false)
     sign_in(user)
 
@@ -184,6 +185,18 @@ RSpec.describe 'Group navbar' do
           within: _('Packages & Registries'),
           new_sub_nav_item_name: _('Container Registry')
         )
+
+        visit group_path(group)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
+
+    context 'when customer_relations feature flag is enabled' do
+      before do
+        stub_feature_flags(customer_relations: true)
+
+        insert_customer_relations_nav(_('Analytics'))
 
         visit group_path(group)
       end
