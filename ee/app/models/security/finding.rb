@@ -14,7 +14,7 @@ module Security
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
 
-    has_one :build, through: :scan
+    has_one :build, through: :scan, disable_joins: -> { ::Feature.enabled?(:security_finding_build_disable_joins, default_enabled: :yaml) }
 
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
@@ -36,7 +36,7 @@ module Security
     end
     scope :latest, -> { joins(:scan).merge(Security::Scan.latest_successful_by_build).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/341796') }
     scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }
-    scope :with_pipeline_entities, -> { includes(build: [:job_artifacts, :pipeline]) }
+    scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
     scope :with_scan, -> { includes(:scan) }
     scope :with_scanner, -> { includes(:scanner) }
     scope :deduplicated, -> { where(deduplicated: true) }
