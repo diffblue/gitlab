@@ -37,7 +37,7 @@ export default {
         const { customer } = data;
         return {
           setup_for_company: data.isSetupForCompany,
-          selected_group: data.subscription.namespaceId,
+          selected_group: data.selectedNamespaceId,
           new_user: data.isNewUser,
           redirect_after_success: data.redirectAfterSuccess,
           customer: {
