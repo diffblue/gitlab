@@ -127,6 +127,6 @@ describe('LabelsSelectRoot', () => {
     createComponent({ config: { ...mockConfig, iid: undefined } });
 
     findDropdownContents().vm.$emit('setLabels', [label]);
-    expect(wrapper.emitted('updateSelectedLabels')).toEqual([[[label]]]);
+    expect(wrapper.emitted('updateSelectedLabels')).toEqual([[{ labels: [label] }]]);
   });
 });
