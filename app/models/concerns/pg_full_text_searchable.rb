@@ -13,9 +13,9 @@
 # This module sets up an after_commit hook that updates the search data
 # when the searchable columns are changed.
 #
-# This also adds a `full_text_search` scope so you can do:
+# This also adds a `pg_full_text_search` scope so you can do:
 #
-# Model.full_text_search("some search term")
+# Model.pg_full_text_search("some search term")
 
 module PgFullTextSearchable
   extend ActiveSupport::Concern
@@ -81,6 +81,21 @@ module PgFullTextSearchable
 
         update_search_data!
       end
+    end
+
+    def pg_full_text_search(search_term)
+      search_data_table = reflect_on_association(:search_data).klass.arel_table
+
+      joins(:search_data).where(
+        Arel::Nodes::InfixOperation.new(
+          '@@',
+          search_data_table[:search_vector],
+          Arel::Nodes::NamedFunction.new(
+            'websearch_to_tsquery',
+            [Arel::Nodes.build_quoted(TEXT_SEARCH_DICTIONARY), Arel::Nodes.build_quoted(search_term)]
+          )
+        )
+      )
     end
   end
 end

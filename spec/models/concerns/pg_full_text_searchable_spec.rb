@@ -55,6 +55,34 @@ RSpec.describe PgFullTextSearchable do
     end
   end
 
+  describe '.pg_full_text_search' do
+    let(:english) { model_class.create!(title: 'title', description: 'something english') }
+    let(:with_accent) { model_class.create!(title: 'Jürgen', description: 'Ærøskøbing') }
+    let(:japanese) { model_class.create!(title: '日本語 title', description: 'another english description') }
+
+    before do
+      model_class.pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
+
+      [english, with_accent, japanese].each(&:update_search_data!)
+    end
+
+    it 'searches across all fields' do
+      expect(model_class.pg_full_text_search('title english')).to contain_exactly(english, japanese)
+    end
+
+    it 'searches for exact term with quotes' do
+      expect(model_class.pg_full_text_search('"something english"')).to contain_exactly(english)
+    end
+
+    it 'ignores accents' do
+      expect(model_class.pg_full_text_search('jurgen')).to contain_exactly(with_accent)
+    end
+
+    it 'does not support searching by non-Latin characters' do
+      expect(model_class.pg_full_text_search('日本')).to be_empty
+    end
+  end
+
   describe '#update_search_data!' do
     let(:model) { model_class.create!(title: 'title', description: 'description') }
 
