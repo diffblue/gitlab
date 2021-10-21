@@ -41,6 +41,8 @@ describe('DropdownContent', () => {
         variant: 'sidebar',
         issuableType: 'issue',
         fullPath: 'test',
+        labelType: 'ProjectLabel',
+        attrWorkspacePath: 'path',
         ...props,
       },
       data() {

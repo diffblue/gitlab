@@ -68,8 +68,11 @@ export default {
     },
     attrWorkspacePath: {
       type: String,
-      required: false,
-      default: undefined,
+      required: true,
+    },
+    labelType: {
+      type: String,
+      required: true,
     },
   },
   data() {
@@ -119,13 +122,16 @@ export default {
       if (newVal) {
         this.$refs.dropdown.show();
         this.isDirty = false;
+        this.localSelectedLabels = this.selectedLabels;
       } else {
         this.$refs.dropdown.hide();
         this.setLabels();
       }
     },
     selectedLabels(newVal) {
-      this.localSelectedLabels = newVal;
+      if (!this.isDirty) {
+        this.localSelectedLabels = newVal;
+      }
     },
   },
   created() {
@@ -193,11 +199,11 @@ export default {
         :is="dropdownContentsView"
         v-model="localSelectedLabels"
         :search-key="searchKey"
-        :selected-labels="selectedLabels"
         :allow-multiselect="allowMultiselect"
         :issuable-type="issuableType"
         :full-path="fullPath"
         :attr-workspace-path="attrWorkspacePath"
+        :label-type="labelType"
         @hideCreateView="toggleDropdownContentsCreateView"
       />
     </template>
