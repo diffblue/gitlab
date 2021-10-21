@@ -12,7 +12,7 @@ import { getFormattedSummary } from 'ee/security_dashboard/helpers';
 import Modal from 'ee/vue_shared/security_reports/components/dast_modal.vue';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { s__, __ } from '~/locale';
+import { s__, __, n__ } from '~/locale';
 import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
 import { extractSecurityReportArtifacts } from '~/vue_shared/security_reports/utils';
 import {
@@ -45,6 +45,16 @@ export default {
       default: () => [],
     },
   },
+  i18n: {
+    scannedResources: s__('SecurityReports|scanned resources'),
+    scanDetails: s__('SecurityReports|Scan details'),
+    downloadUrls: s__('SecurityReports|Download scanned URLs'),
+    downloadResults: s__('SecurityReports|Download results'),
+    hideDetails: __('Hide details'),
+    showDetails: __('Show details'),
+    vulnerabilities: (count) => n__('%d vulnerability', '%d vulnerabilities', count),
+    scannedUrls: (count) => n__('%d URL scanned', '%d URLs scanned', count),
+  },
   data() {
     return {
       isVisible: true,
@@ -52,7 +62,7 @@ export default {
   },
   computed: {
     collapseButtonLabel() {
-      return this.isVisible ? __('Hide details') : __('Show details');
+      return this.isVisible ? this.$options.i18n.hideDetails : this.$options.i18n.showDetails;
     },
     formattedSummary() {
       return getFormattedSummary(this.summary);
@@ -96,7 +106,7 @@ export default {
     },
     buildDastArtifacts(scanSummary) {
       const csvArtifact = {
-        name: s__('SecurityReports|scanned resources'),
+        name: this.$options.i18n.scannedResources,
         path: this.downloadLink(scanSummary),
         reportType: REPORT_TYPE_DAST,
       };
@@ -112,7 +122,7 @@ export default {
     <template #header>
       <div class="row">
         <div class="col-7">
-          <strong>{{ s__('SecurityReports|Scan details') }}</strong>
+          <strong>{{ $options.i18n.scanDetails }}</strong>
         </div>
         <div v-if="localStorageUsable" class="col-5 gl-text-right">
           <gl-button
@@ -130,11 +140,7 @@ export default {
           {{ scanType }}
         </div>
         <div class="col-4">
-          <gl-sprintf
-            :message="
-              n__('%d vulnerability', '%d vulnerabilities', scanSummary.vulnerabilitiesCount)
-            "
-          />
+          <gl-sprintf :message="$options.i18n.vulnerabilities(scanSummary.vulnerabilitiesCount)" />
         </div>
         <div class="col-4">
           <template v-if="scanSummary.scannedResourcesCount !== undefined">
@@ -145,14 +151,12 @@ export default {
               size="small"
               data-testid="modal-button"
             >
-              {{ s__('SecurityReports|Download scanned URLs') }}
+              {{ $options.i18n.downloadUrls }}
             </gl-button>
 
             <template v-else>
               (<gl-sprintf
-                :message="
-                  n__('%d URL scanned', '%d URLs scanned', scanSummary.scannedResourcesCount)
-                "
+                :message="$options.i18n.scannedUrls(scanSummary.scannedResourcesCount)"
               />)
             </template>
 
@@ -166,7 +170,7 @@ export default {
 
           <template v-else-if="hasDastArtifactDownload(scanSummary)">
             <security-report-download-dropdown
-              :text="s__('SecurityReports|Download results')"
+              :text="$options.i18n.downloadResults"
               :artifacts="buildDastArtifacts(scanSummary)"
               data-testid="download-link"
             />
@@ -174,7 +178,7 @@ export default {
 
           <security-report-download-dropdown
             v-else
-            :text="s__('SecurityReports|Download results')"
+            :text="$options.i18n.downloadResults"
             :artifacts="findArtifacts(scanType)"
           />
         </div>

@@ -8,7 +8,7 @@ import {
   GlModalDirective,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { s__, n__, __ } from '~/locale';
 import { componentNames } from 'ee/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
 import { mrStates } from '~/mr_popover/constants';
@@ -249,6 +249,18 @@ export default {
       required: true,
     },
   },
+  i18n: {
+    scannedResources: s__('SecurityReports|scanned resources'),
+    viewReport: s__('ciReport|View full report'),
+    divergedFromTargetBranch: __(
+      'Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})',
+    ),
+    baseSecurityReportOutOfDate: __(
+      'Security report is out of date. Run %{newPipelineLinkStart}a new pipeline%{newPipelineLinkEnd} for the target branch (%{targetBranchName})',
+    ),
+    viewDetails: __('View details'),
+    scannedUrls: (count) => n__('%d URL scanned', '%d URLs scanned', count),
+  },
   componentNames,
   computed: {
     ...mapState([
@@ -356,7 +368,7 @@ export default {
     dastCsvArtifacts() {
       return [
         {
-          name: s__('SecurityReports|scanned resources'),
+          name: this.$options.i18n.scannedResources,
           path: this.dastDownloadLink,
           reportType: REPORT_TYPE_DAST,
         },
@@ -493,7 +505,7 @@ export default {
         icon="external-link"
         class="gl-mr-3 report-btn"
       >
-        {{ s__('ciReport|View full report') }}
+        {{ $options.i18n.viewReport }}
       </gl-button>
     </template>
 
@@ -501,11 +513,7 @@ export default {
       <div class="gl-text-gray-700 gl-font-sm">
         <gl-sprintf
           v-if="hasDivergedFromTargetBranch"
-          :message="
-            __(
-              'Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})',
-            )
-          "
+          :message="$options.i18n.divergedFromTargetBranch"
         >
           <template #targetBranchName>
             <gl-link class="gl-font-sm" :href="targetBranchTreePath">{{ targetBranch }}</gl-link>
@@ -514,11 +522,7 @@ export default {
 
         <gl-sprintf
           v-else-if="isBaseSecurityReportOutOfDate"
-          :message="
-            __(
-              'Security report is out of date. Run %{newPipelineLinkStart}a new pipeline%{newPipelineLinkEnd} for the target branch (%{targetBranchName})',
-            )
-          "
+          :message="$options.i18n.baseSecurityReportOutOfDate"
         >
           <template #newPipelineLink="{ content }">
             <gl-link class="gl-font-sm" :href="`${newPipelinePath}?ref=${targetBranch}`">{{
@@ -617,10 +621,10 @@ export default {
 
             <template v-if="hasDastScannedResources">
               <div class="text-nowrap">
-                {{ n__('%d URL scanned', '%d URLs scanned', dastSummary.scannedResourcesCount) }}
+                {{ $options.i18n.scannedUrls(dastSummary.scannedResourcesCount) }}
               </div>
               <gl-link v-gl-modal.dastUrl class="ml-2" data-testid="dast-ci-job-link">
-                {{ __('View details') }}
+                {{ $options.i18n.viewDetails }}
               </gl-link>
               <dast-modal
                 :scanned-urls="dastSummary.scannedResources.nodes"
