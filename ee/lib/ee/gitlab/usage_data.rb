@@ -344,8 +344,10 @@ module EE
         # Omitted because no user, creator or author associated: `environments`, `feature_flags`, `in_review_folder`, `pages_domains`
         override :usage_activity_by_stage_release
         def usage_activity_by_stage_release(time_period)
+          time_frame = metric_time_period(time_period)
           super.merge({
-            projects_mirrored_with_pipelines_enabled: distinct_count(::Project.mirrored_with_enabled_pipelines.where(time_period), :creator_id)
+            projects_mirrored_with_pipelines_enabled: distinct_count(::Project.mirrored_with_enabled_pipelines.where(time_period), :creator_id),
+            releases_with_group_milestones: add_metric('CountUsersAssociatingGroupMilestonesToReleasesMetric', time_frame: time_frame)
           })
         end
 
