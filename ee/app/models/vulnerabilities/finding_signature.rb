@@ -13,7 +13,7 @@ module Vulnerabilities
 
     scope :by_project, -> (project) { joins(:finding).where(vulnerability_occurrences: { project_id: project.id }) }
     scope :by_signature_sha, -> (shas) { where(signature_sha: shas) }
-    scope :eager_load_finding, -> { includes(:finding) }
+    scope :eager_load_comparison_entities, -> { includes(finding: [:scanner, :primary_identifier]) }
 
     def signature_hex
       signature_sha.unpack1("H*")
