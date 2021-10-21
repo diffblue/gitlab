@@ -542,15 +542,23 @@ RSpec.describe Gitlab::UsageData do
 
   describe 'usage_activity_by_stage_release' do
     it 'includes accurate usage_activity_by_stage data' do
+      stub_licensed_features(group_milestone_project_releases: true)
+      group_milestone = create(:milestone, :on_group)
+      project = create(:project, group: group_milestone.group)
+
       for_defined_days_back do
         create(:project, :mirror, mirror_trigger_builds: true)
+
+        create(:release, created_at: 3.days.ago, project: project, milestones: [group_milestone])
       end
 
       expect(described_class.usage_activity_by_stage_release({})).to include(
-        projects_mirrored_with_pipelines_enabled: 2
+        projects_mirrored_with_pipelines_enabled: 2,
+        releases_with_group_milestones: 2
       )
       expect(described_class.usage_activity_by_stage_release(described_class.monthly_time_range_db_params)).to include(
-        projects_mirrored_with_pipelines_enabled: 1
+        projects_mirrored_with_pipelines_enabled: 1,
+        releases_with_group_milestones: 1
       )
     end
   end
