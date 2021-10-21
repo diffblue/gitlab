@@ -7,6 +7,7 @@ export const i18n = Object.freeze({
   companySizeLabel: __('Number of employees'),
   companySizeSelectPrompt: __('- Select -'),
   phoneNumberLabel: __('Telephone number'),
+  phoneNumberDescription: __('Provide a number our sales team can use to call you.'),
   countryLabel: __('Country'),
   countrySelectPrompt: __('Please select a country'),
   stateLabel: __('State/Province/City'),

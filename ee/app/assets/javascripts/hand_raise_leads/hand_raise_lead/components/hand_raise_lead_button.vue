@@ -268,6 +268,7 @@ export default {
       <gl-form-group
         :label="$options.i18n.phoneNumberLabel"
         label-size="sm"
+        :description="$options.i18n.phoneNumberDescription"
         label-for="phoneNumber"
       >
         <gl-form-input
