@@ -61,10 +61,6 @@ module Gitlab
             {}
           end
 
-          def variables
-            value[:variables]
-          end
-
           def with_image_ports?
             opt(:with_image_ports)
           end
