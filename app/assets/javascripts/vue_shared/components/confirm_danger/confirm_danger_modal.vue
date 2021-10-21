@@ -65,7 +65,6 @@ export default {
 <template>
   <gl-modal
     ref="modal"
-    class="qa-confirm-modal"
     :modal-id="modalId"
     :data-testid="modalId"
     :title="$options.i18n.CONFIRM_DANGER_MODAL_TITLE"
@@ -83,7 +82,7 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <gl-form-group class="'form-control qa-confirm-input'" :state="isValid">
+    <gl-form-group class="form-control" :state="isValid">
       <gl-form-input v-model="confirmationPhrase" data-testid="confirm-danger-input" type="text" />
     </gl-form-group>
   </gl-modal>

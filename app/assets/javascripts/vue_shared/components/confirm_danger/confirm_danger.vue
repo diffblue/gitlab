@@ -34,7 +34,7 @@ export default {
   <div>
     <gl-button
       v-gl-modal="$options.modalId"
-      class="gl-button btn btn-danger"
+      class="gl-button"
       variant="danger"
       :disabled="disabled"
       data-testid="confirm-danger-button"
