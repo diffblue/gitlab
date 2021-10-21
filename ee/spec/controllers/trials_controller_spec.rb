@@ -171,7 +171,9 @@ RSpec.describe TrialsController, :saas do
           last_name: user.last_name,
           phone_number: '1111111111',
           number_of_users: '20',
-          country: 'IN'
+          country: 'IN',
+          glm_content: 'free-billing',
+          glm_source: 'about.gitlab.com'
         }
       end
 
@@ -188,12 +190,29 @@ RSpec.describe TrialsController, :saas do
       end
 
       let(:expected_params) do
-        ActionController::Parameters.new(post_params).merge(extra_params).permit!
+        {
+          company_name: 'Gitlab',
+          company_size: '1-99',
+          first_name: user.first_name,
+          last_name: user.last_name,
+          phone_number: '1111111111',
+          number_of_users: '20',
+          country: 'IN',
+          glm_content: 'free-billing',
+          glm_source: 'about.gitlab.com',
+          work_email: user.email,
+          uid: user.id,
+          setup_for_company: nil,
+          skip_email_confirmation: true,
+          gitlab_com_trial: true,
+          provider: 'gitlab',
+          newsletter_segment: user.email_opted_in
+        }
       end
 
       it 'sends appropriate request params' do
         expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |lead_service|
-          expect(lead_service).to receive(:execute).with({ trial_user: expected_params }).and_return({ success: true })
+          expect(lead_service).to receive(:execute).with({ trial_user: ActionController::Parameters.new(expected_params).permit! }).and_return({ success: true })
         end
 
         post_create_lead
@@ -211,7 +230,9 @@ RSpec.describe TrialsController, :saas do
         work_email: user.email,
         uid: user.id,
         provider: 'gitlab',
-        setup_for_company: user.setup_for_company
+        setup_for_company: user.setup_for_company,
+        glm_content: 'group-billing',
+        glm_source: 'gitlab.com'
       }
     end
 
