@@ -42,7 +42,7 @@ RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantService do
     # Create an historial shift (other participant)
     let!(:historical_shift) { create(:incident_management_oncall_shift, rotation: rotation, participant: other_participant, starts_at: rotation.starts_at, ends_at: ends_at(rotation.starts_at)) }
 
-    context 'with historial and current shift' do
+    context 'with historial and current shift', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343506' do
       # Create a current shift (particpant being removed)
       let!(:current_shift) { create(:incident_management_oncall_shift, rotation: rotation, participant: participant, starts_at: historical_shift.ends_at, ends_at: ends_at(historical_shift.ends_at)) }
 
@@ -63,7 +63,7 @@ RSpec.describe IncidentManagement::OncallRotations::RemoveParticipantService do
       end
     end
 
-    context 'when current shift has not been created' do
+    context 'when current shift has not been created', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343506' do
       it 'creates the current shift and cuts it short' do
         expect { execute }.to change { rotation.shifts.count }.from(1).to(3)
 
