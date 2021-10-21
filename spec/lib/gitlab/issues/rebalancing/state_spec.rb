@@ -94,7 +94,7 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
       context 'when tracking new rebalance' do
         it 'returns as expired for non existent key' do
           ::Gitlab::Redis::SharedState.with do |redis|
-            expect(redis.ttl(rebalance_caching.send(:concurrent_running_rebalances_key))).to be < 0
+            expect(redis.ttl(Gitlab::Issues::Rebalancing::State::CONCURRENT_RUNNING_REBALANCES_KEY)).to be < 0
           end
         end
 
@@ -102,7 +102,7 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
           rebalance_caching.track_new_running_rebalance
 
           ::Gitlab::Redis::SharedState.with do |redis|
-            expect(redis.ttl(rebalance_caching.send(:concurrent_running_rebalances_key))).to be_between(0, described_class::REDIS_EXPIRY_TIME.ago.to_i)
+            expect(redis.ttl(Gitlab::Issues::Rebalancing::State::CONCURRENT_RUNNING_REBALANCES_KEY)).to be_between(0, described_class::REDIS_EXPIRY_TIME.ago.to_i)
           end
         end
       end
@@ -169,7 +169,7 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
 
         rebalance_caching.cleanup_cache
 
-        expect(check_existing_keys).to eq(0)
+        expect(check_existing_keys).to eq(1)
       end
     end
   end
@@ -212,11 +212,14 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
 
   def check_existing_keys
     index = 0
+    # spec only, we do not actually scan keys in the code
+    recently_finished_keys_count = Gitlab::Redis::SharedState.with { |redis| redis.scan(0, match: "#{described_class::RECENTLY_FINISHED_REBALANCE_PREFIX}:*") }.last.count
 
     index += 1 if rebalance_caching.get_current_index > 0
     index += 1 if rebalance_caching.get_current_project_id.present?
     index += 1 if rebalance_caching.get_cached_issue_ids(0, 100).present?
     index += 1 if rebalance_caching.rebalance_in_progress?
+    index += 1 if recently_finished_keys_count > 0
 
     index
   end
