@@ -930,9 +930,13 @@ module EE
       end
     end
 
-    # Return the group's setting for delayed deletion, false for user namespace projects
+    # Return the group's setting for delayed deletion, false for user namespace
+    #   projects
+    #
     def group_deletion_mode_configured?
-      group && group.namespace_settings.delayed_project_removal?
+      return false unless group&.namespace_settings
+
+      group.namespace_settings.delayed_project_removal?
     end
 
     def latest_ingested_security_pipeline
