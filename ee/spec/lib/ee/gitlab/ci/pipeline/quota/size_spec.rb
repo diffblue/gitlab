@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::Ci::Pipeline::Quota::Size do
+RSpec.describe EE::Gitlab::Ci::Pipeline::Quota::Size, :saas do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
   let_it_be(:project, reload: true) { create(:project, :repository, namespace: namespace) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::TrackLiveConsumptionService do
+RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas do
   let(:project) { create(:project, :private, shared_runners_enabled: true, namespace: namespace) }
   let(:namespace) { create(:namespace, shared_runners_minutes_limit: 100) }
   let(:user) { create(:user) }
