@@ -9,9 +9,9 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
     it 'enables the Select parent group dropdown and does not show an alert for a group' do
       render 'groups/settings/transfer', group: group
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]' # rubocop:disable QA/SelectorUsage
-      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
-      expect(rendered).not_to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
+      expect(rendered).to have_button 'Select parent group'
+      expect(rendered).not_to have_button 'Select parent group', disabled: true
+      expect(rendered).not_to have_text "This group can't be transfered because it is linked to a subscription."
     end
 
     it 'disables the Select parent group dropdown and shows an alert for a group with a paid gitlab.com plan', :saas do
@@ -19,8 +19,8 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
 
       render 'groups/settings/transfer', group: group
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
-      expect(rendered).to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
+      expect(rendered).to have_button 'Select parent group', disabled: true
+      expect(rendered).to have_text "This group can't be transfered because it is linked to a subscription."
     end
 
     it 'enables the Select parent group dropdown and does not show an alert for a subgroup', :saas do
@@ -29,9 +29,9 @@ RSpec.describe 'groups/settings/_transfer.html.haml' do
 
       render 'groups/settings/transfer', group: subgroup
 
-      expect(rendered).to have_selector '[data-qa-selector="select_group_dropdown"]' # rubocop:disable QA/SelectorUsage
-      expect(rendered).not_to have_selector '[data-qa-selector="select_group_dropdown"][disabled]' # rubocop:disable QA/SelectorUsage
-      expect(rendered).not_to have_selector '[data-testid="group-to-transfer-has-linked-subscription-alert"]'
+      expect(rendered).to have_button 'Select parent group'
+      expect(rendered).not_to have_button 'Select parent group', disabled: true
+      expect(rendered).not_to have_text "This group can't be transfered because it is linked to a subscription."
     end
   end
 end
