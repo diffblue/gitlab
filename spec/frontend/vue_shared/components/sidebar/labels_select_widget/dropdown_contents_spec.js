@@ -130,14 +130,14 @@ describe('DropdownContent', () => {
     expect(findDropdownHeader().exists()).toBe(true);
   });
 
-  it('sets searchKey on input event from header', async () => {
+  it('sets searchKey for labels view on input event from header', async () => {
     createComponent();
 
     expect(wrapper.vm.searchKey).toEqual('');
     findDropdownHeader().vm.$emit('input', '123');
     await nextTick();
 
-    expect(wrapper.vm.searchKey).toEqual('123');
+    expect(findLabelsView().props('searchKey')).toEqual('123');
   });
 
   describe('Create view', () => {

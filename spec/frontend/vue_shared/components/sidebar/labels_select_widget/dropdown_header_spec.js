@@ -1,5 +1,6 @@
 import { GlSearchBoxByType } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import DropdownHeader from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_header.vue';
 
 describe('DropdownHeader', () => {
@@ -9,18 +10,20 @@ describe('DropdownHeader', () => {
     showDropdownContentsCreateView = false,
     labelsFetchInProgress = false,
   } = {}) => {
-    wrapper = shallowMount(DropdownHeader, {
-      propsData: {
-        showDropdownContentsCreateView,
-        labelsFetchInProgress,
-        labelsCreateTitle: 'Create label',
-        labelsListTitle: 'Select label',
-        searchKey: '',
-      },
-      stubs: {
-        GlSearchBoxByType,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(DropdownHeader, {
+        propsData: {
+          showDropdownContentsCreateView,
+          labelsFetchInProgress,
+          labelsCreateTitle: 'Create label',
+          labelsListTitle: 'Select label',
+          searchKey: '',
+        },
+        stubs: {
+          GlSearchBoxByType,
+        },
+      }),
+    );
   };
 
   afterEach(() => {
@@ -28,7 +31,7 @@ describe('DropdownHeader', () => {
   });
 
   const findSearchInput = () => wrapper.findComponent(GlSearchBoxByType);
-  const findGoBackButton = () => wrapper.find('[data-testid="go-back-button"]');
+  const findGoBackButton = () => wrapper.findByTestId('go-back-button');
 
   beforeEach(() => {
     createComponent();
@@ -57,13 +60,16 @@ describe('DropdownHeader', () => {
       expect(findGoBackButton().exists()).toBe(false);
     });
 
-    it('when loading labels - renders disabled search input field', async () => {
-      createComponent({ labelsFetchInProgress: true });
-      expect(findSearchInput().props('disabled')).toBe(true);
-    });
-
-    it('when labels are loaded - renders enabled search input field', async () => {
-      expect(findSearchInput().props('disabled')).toBe(false);
-    });
+    it.each`
+      labelsFetchInProgress | disabled
+      ${true}               | ${true}
+      ${false}              | ${false}
+    `(
+      'when labelsFetchInProgress is $labelsFetchInProgress, renders search input with disabled prop to $disabled',
+      ({ labelsFetchInProgress, disabled }) => {
+        createComponent({ labelsFetchInProgress });
+        expect(findSearchInput().props('disabled')).toBe(disabled);
+      },
+    );
   });
 });
