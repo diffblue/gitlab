@@ -33,7 +33,7 @@ module QA
           end
         end
 
-        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
+        it 'can navigate to Policy Editor page', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2294' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform(&:click_new_policy_button)
