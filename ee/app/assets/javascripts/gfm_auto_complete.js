@@ -8,7 +8,7 @@ import GfmAutoComplete from '~/gfm_auto_complete';
  * Some modules import `defaultAutocompleteConfig` or `membersBeforeSave`
  * which will be undefined if not exported from here in EE.
  */
-export { defaultAutocompleteConfig, membersBeforeSave } from '~/gfm_auto_complete';
+export { defaultAutocompleteConfig, membersBeforeSave, highlighter } from '~/gfm_auto_complete';
 
 class GfmAutoCompleteEE extends GfmAutoComplete {
   setupAtWho($input) {
