@@ -162,20 +162,18 @@ export default {
       labelIds = labels.map(({ id }) => id);
       const currentIid = this.oldIid || this.iid;
 
+      const updateVariables = {
+        iid: currentIid,
+        projectPath: this.fullPath,
+        labelIds,
+      };
+
       switch (this.issuableType) {
         case IssuableType.Issue:
-          return {
-            iid: currentIid,
-            projectPath: this.fullPath,
-            labelIds,
-          };
+          return updateVariables;
         case IssuableType.MergeRequest:
-          return {
-            iid: currentIid,
-            labelIds,
-            operationMode: MutationOperationMode.Replace,
-            projectPath: this.fullPath,
-          };
+          updateVariables.operationMode = MutationOperationMode.Replace;
+          return updateVariables;
         default:
           return {};
       }
@@ -200,25 +198,34 @@ export default {
             labels: data[mutationName]?.[this.issuableType].labels?.nodes,
           });
         })
-        .catch(() => createFlash({ message: __('An error occurred while updating labels.') }))
+        .catch((error) =>
+          createFlash({
+            message: __('An error occurred while updating labels.'),
+            captureError: true,
+            error,
+          }),
+        )
         .finally(() => {
           this.labelsSelectInProgress = false;
         });
     },
     getRemoveVariables(labelId) {
+      const removeVariables = {
+        iid: this.iid,
+        projectPath: this.fullPath,
+      };
+
       switch (this.issuableType) {
         case IssuableType.Issue:
           return {
-            iid: this.iid,
-            projectPath: this.fullPath,
+            ...removeVariables,
             removeLabelIds: [labelId],
           };
         case IssuableType.MergeRequest:
           return {
-            iid: this.iid,
+            ...removeVariables,
             labelIds: [labelId],
             operationMode: MutationOperationMode.Remove,
-            projectPath: this.fullPath,
           };
         default:
           return {};
