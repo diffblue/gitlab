@@ -338,6 +338,30 @@ RSpec.describe Security::FindingsFinder do
           it { is_expected.to match_array(expected_fingerprints) }
         end
 
+        context 'when the `security_findings` records have `overridden_uuid`s' do
+          let(:security_findings) { Security::Finding.by_build_ids(build_1) }
+          let(:expected_fingerprints) do
+            %w[
+              4ae096451135db224b9e16818baaca8096896522
+              0bfcfbb70b15a7cecef9a1ea39df15ecfd88949f
+              157f362acf654c60e224400f59a088e1c01b369f
+              b9c0d1cdc7cb9c180ebb6981abbddc2df0172509
+              baf3e36cda35331daed7a3e80155533d552844fa
+              3204893d5894c74aaee86ce5bc28427f9f14e512
+              98366a28fa80b23a1dafe2b36e239a04909495c4
+              9a644ee1b89ac29d6175dc1170914f47b0531635
+            ]
+          end
+
+          before do
+            security_findings.each do |security_finding|
+              security_finding.update!(overridden_uuid: security_finding.uuid, uuid: SecureRandom.uuid)
+            end
+          end
+
+          it { is_expected.to match_array(expected_fingerprints) }
+        end
+
         context 'when a build has more than one security report artifacts' do
           let(:report_types) { :secret_detection }
           let(:secret_detection_report) { create(:ci_reports_security_report, pipeline: pipeline, type: :secret_detection) }
