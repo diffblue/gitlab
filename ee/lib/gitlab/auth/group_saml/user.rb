@@ -18,6 +18,7 @@ module Gitlab
         override :find_and_update!
         def find_and_update!
           add_or_update_user_identities
+          set_provisioned_user_attributes!(gl_user)
 
           save("GroupSaml Provider ##{@saml_provider.id}")
           # Do not return un-persisted user so user is prompted
@@ -61,14 +62,6 @@ module Gitlab
           super.tap do |user|
             user.provisioned_by_group_id = saml_provider.group_id
             user.skip_confirmation_notification!
-
-            # rubocop:disable GitlabSecurity/PublicSend
-            AuthHash::ALLOWED_USER_ATTRIBUTES.each do |attribute|
-              next unless value = auth_hash.public_send(attribute)
-
-              user.public_send("#{attribute}=", value)
-            end
-            # rubocop:enable GitlabSecurity/PublicSend
           end
         end
 
@@ -97,6 +90,12 @@ module Gitlab
 
         def update_group_membership
           MembershipUpdater.new(gl_user, saml_provider, auth_hash).execute
+        end
+
+        def set_provisioned_user_attributes!(user)
+          return unless user.provisioned_by_group_id == saml_provider.group_id
+
+          user.assign_attributes(auth_hash.user_attributes.compact)
         end
 
         override :block_after_signup?
