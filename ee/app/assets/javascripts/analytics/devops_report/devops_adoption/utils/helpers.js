@@ -1,3 +1,6 @@
+import { sprintf } from '~/locale';
+import { GROUP_DEVOPS_PATH } from '../constants';
+
 /**
  * A helper function which accepts the enabledNamespaces,
  *
@@ -36,4 +39,16 @@ export const getAdoptedCountsByCols = (snapshots, cols) => {
 
     return [...acc, adoptedCount];
   }, []);
+};
+
+/**
+ * A helper function which computes the DevOps Adoption feature path
+ * given a specific group path
+ *
+ * @param { String } fullPath the full path for the group
+ *
+ * @return { String } the path for the group level DevOps Adoption feature
+ */
+export const getGroupAdoptionPath = (fullPath) => {
+  return fullPath ? sprintf(GROUP_DEVOPS_PATH, { fullPath }) : null;
 };

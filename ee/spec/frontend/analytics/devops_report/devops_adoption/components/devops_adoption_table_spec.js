@@ -1,4 +1,4 @@
-import { GlTable, GlButton, GlIcon, GlBadge } from '@gitlab/ui';
+import { GlTable, GlButton, GlIcon, GlBadge, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
@@ -102,15 +102,22 @@ describe('DevopsAdoptionTable', () => {
 
   describe('table fields', () => {
     describe('enabled namespace name', () => {
-      beforeEach(() => {
-        createComponent();
-      });
-
       it('displays the correct name', () => {
         createComponent();
 
         expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
           devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
+        );
+      });
+
+      it('includes a link to the group DevOps page', () => {
+        createComponent();
+
+        const link = findColSubComponent(TABLE_TEST_IDS_NAMESPACE, GlLink);
+
+        expect(link.exists()).toBe(true);
+        expect(link.attributes('href')).toBe(
+          `/groups/${devopsAdoptionNamespaceData.nodes[0].namespace.fullPath}/-/analytics/devops_adoption`,
         );
       });
 
@@ -140,6 +147,12 @@ describe('DevopsAdoptionTable', () => {
           const name = findColRowChild(TABLE_TEST_IDS_NAMESPACE, 1, 'span');
 
           expect(name.classes()).toStrictEqual(['gl-text-gray-400']);
+        });
+
+        it('does not include a link to the group DevOps page', () => {
+          const link = findColRowChild(TABLE_TEST_IDS_NAMESPACE, 1, GlLink);
+
+          expect(link.exists()).toBe(false);
         });
 
         describe('hourglass icon', () => {

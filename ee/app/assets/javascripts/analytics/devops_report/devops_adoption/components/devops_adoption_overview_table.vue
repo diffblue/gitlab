@@ -7,6 +7,7 @@ import {
   GlIcon,
   GlBadge,
   GlProgressBar,
+  GlLink,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
@@ -22,6 +23,7 @@ import {
   OVERVIEW_TABLE_SORT_DESC_STORAGE_KEY,
   OVERVIEW_TABLE_NAME_KEY,
 } from '../constants';
+import { getGroupAdoptionPath } from '../utils/helpers';
 import DevopsAdoptionDeleteModal from './devops_adoption_delete_modal.vue';
 
 const thClass = ['gl-bg-white!', 'gl-text-gray-400'];
@@ -52,6 +54,7 @@ export default {
     GlProgressBar,
     DevopsAdoptionDeleteModal,
     LocalStorageSync,
+    GlLink,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -146,6 +149,9 @@ export default {
     cellSlotName(key) {
       return `cell(${key})`;
     },
+    getGroupAdoptionPath(fullPath) {
+      return getGroupAdoptionPath(fullPath);
+    },
   },
 };
 </script>
@@ -168,16 +174,25 @@ export default {
 
       <template #cell(name)="{ item }">
         <div data-testid="namespace">
-          <span v-if="item.group.latestSnapshot" class="gl-font-weight-bold">{{
-            item.group.namespace.fullName
-          }}</span>
+          <template v-if="item.group.latestSnapshot">
+            <template v-if="isCurrentGroup(item.group)">
+              <span class="gl-text-gray-500 gl-font-weight-bold">{{
+                item.group.namespace.fullName
+              }}</span>
+              <gl-badge class="gl-ml-1" variant="info">{{ __('This group') }}</gl-badge>
+            </template>
+            <gl-link
+              v-else
+              :href="getGroupAdoptionPath(item.group.namespace.fullPath)"
+              class="gl-text-gray-500 gl-font-weight-bold"
+            >
+              {{ item.group.namespace.fullName }}
+            </gl-link>
+          </template>
           <template v-else>
             <span class="gl-text-gray-400">{{ item.group.namespace.fullName }}</span>
             <gl-icon name="hourglass" class="gl-text-gray-400" />
           </template>
-          <gl-badge v-if="isCurrentGroup(item.group)" class="gl-ml-1" variant="info">{{
-            __('This group')
-          }}</gl-badge>
         </div>
       </template>
 
