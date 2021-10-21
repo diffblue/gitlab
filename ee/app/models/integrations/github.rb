@@ -51,6 +51,8 @@ module Integrations
           name: "token",
           required: true,
           placeholder: "8d3f016698e...",
+          non_empty_password_title: s_('ProjectService|Enter new token'),
+          non_empty_password_help: s_('ProjectService|Leave blank to use your current token.'),
           help: token_field_help },
         { type: 'text',
           name: "repository_url",
