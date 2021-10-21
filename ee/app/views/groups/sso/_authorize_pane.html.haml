@@ -14,5 +14,5 @@
           = _("Only proceed if you trust %{idp_url} to control your GitLab account sign in.") % { idp_url: @unauthenticated_group.saml_provider.sso_url }
 
       .submit-container
-        = button_to _("Transfer ownership"), '#', class: 'gl-button btn btn-danger js-confirm-danger', data: { 'confirm-danger-message' => transfer_ownership_message(@group_name), qa_selector: 'transfer_ownership_button' }
+        = button_to _("Transfer ownership"), '#', class: 'gl-button btn btn-danger js-legacy-confirm-danger', data: { 'confirm-danger-message' => transfer_ownership_message(@group_name), qa_selector: 'transfer_ownership_button' }
 = render 'shared/confirm_modal', phrase: current_user.username
