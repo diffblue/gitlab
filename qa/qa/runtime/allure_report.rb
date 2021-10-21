@@ -80,7 +80,7 @@ module QA
             config.append_after do |example|
               Allure.add_attachment(
                 name: 'browser.log',
-                source: page.driver.browser.logs.get(:browser).map(&:to_s).join("\n\n"),
+                source: Capybara.current_session.driver.browser.logs.get(:browser).map(&:to_s).join("\n\n"),
                 type: Allure::ContentType::TXT,
                 test_case: true
               )
