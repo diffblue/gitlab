@@ -16,17 +16,27 @@ describe('ThroughputStats', () => {
     });
   };
 
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
   describe('default behaviour', () => {
     beforeEach(() => {
       wrapper = createWrapper();
     });
 
     it('displays a GlSingleStat component for each stat entry', () => {
-      expect(wrapper.findAll(GlSingleStat)).toHaveLength(stats.length);
+      const components = wrapper.findAllComponents(GlSingleStat);
+
+      expect(components).toHaveLength(stats.length);
+
+      stats.forEach((stat, index) => {
+        expect(components.at(index).isVisible()).toBe(true);
+      });
     });
 
     it('passes the GlSingleStat the correct props', () => {
-      const component = wrapper.findAll(GlSingleStat).at(0);
+      const component = wrapper.findAllComponents(GlSingleStat).at(0);
       const { title, unit, value } = stats[0];
 
       expect(component.props('title')).toBe(title);
@@ -35,7 +45,7 @@ describe('ThroughputStats', () => {
     });
 
     it('does not display any GlSkeletonLoader components', () => {
-      expect(wrapper.findAll(GlSkeletonLoader)).toHaveLength(0);
+      expect(wrapper.findAllComponents(GlSkeletonLoader)).toHaveLength(0);
     });
   });
 
@@ -45,11 +55,17 @@ describe('ThroughputStats', () => {
     });
 
     it('displays a GlSkeletonLoader component for each stat entry', () => {
-      expect(wrapper.findAll(GlSkeletonLoader)).toHaveLength(stats.length);
+      expect(wrapper.findAllComponents(GlSkeletonLoader)).toHaveLength(stats.length);
     });
 
-    it('does not display any GlSingleStat components', () => {
-      expect(wrapper.findAll(GlSingleStat)).toHaveLength(0);
+    it('hides all GlSingleStat components', () => {
+      const components = wrapper.findAllComponents(GlSingleStat);
+
+      expect(components).toHaveLength(stats.length);
+
+      stats.forEach((stat, index) => {
+        expect(components.at(index).isVisible()).toBe(false);
+      });
     });
   });
 });

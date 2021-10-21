@@ -28,7 +28,7 @@ export default {
     <div v-for="stat in stats" :key="stat.title">
       <gl-skeleton-loader v-if="isLoading" :height="$options.loaderHeight" />
       <gl-single-stat
-        v-else
+        v-show="!isLoading"
         :value="stat.value"
         :title="stat.title"
         :unit="stat.unit"
