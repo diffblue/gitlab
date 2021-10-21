@@ -95,6 +95,21 @@ module EE
       def combined_registration_experiment
         experiment(:combined_registration, user: current_user)
       end
+
+      override :update_success_path
+      def update_success_path
+        if params[:joining_project] == 'true'
+          bypass_registration_event(:joining_project)
+          path_for_signed_in_user(current_user)
+        else
+          bypass_registration_event(:creating_project)
+          experiment(:combined_registration, user: current_user).redirect_path(trial_params)
+        end
+      end
+
+      def bypass_registration_event(event_name)
+        experiment(:bypass_registration, user: current_user).track(event_name, user: current_user)
+      end
     end
   end
 end

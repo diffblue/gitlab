@@ -12,13 +12,16 @@ RSpec.describe 'registrations/welcome/show' do
     allow(Gitlab).to receive(:com?).and_return(true)
   end
 
-  describe 'forms and progress bar' do
+  describe 'forms and progress bar', :experiments do
     let_it_be(:user_other_role_details_enabled) { false }
+
+    let(:experiments) { {} }
 
     before do
       allow(view).to receive(:redirect_path).and_return(redirect_path)
       allow(view).to receive(:signup_onboarding_enabled?).and_return(signup_onboarding_enabled)
       stub_feature_flags(user_other_role_details: user_other_role_details_enabled)
+      stub_experiments(experiments)
 
       render
     end
@@ -50,6 +53,16 @@ RSpec.describe 'registrations/welcome/show' do
       end
 
       it { is_expected_to_have_progress_bar(status: show_progress_bar) }
+
+      context 'bypass_registration experiment' do
+        it { is_expected.not_to have_selector('#joining_project_true') }
+
+        context 'when in the candidate variant' do
+          let(:experiments) { { bypass_registration: :candidate } }
+
+          it { is_expected.to have_selector('#joining_project_true') }
+        end
+      end
 
       context 'feature flag other_role_details is enabled' do
         let_it_be(:user_other_role_details_enabled) { true }

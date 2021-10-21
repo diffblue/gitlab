@@ -17,12 +17,6 @@ RSpec.describe 'Combined registration flow', :js do
 
     expect(page).to have_content('Welcome to GitLab')
 
-    page.within('.bar') do
-      expect(page).to have_content('Your profile')
-      expect(page).to have_content('Your first project')
-      expect(page).not_to have_content('Your GitLab group')
-    end
-
     choose 'My company or team'
     click_on 'Continue'
   end
@@ -31,8 +25,6 @@ RSpec.describe 'Combined registration flow', :js do
     let(:experiments) { { combined_registration: :candidate } }
 
     it 'A user can create a group and project' do
-      expect(page).to have_content('Your first project')
-
       page.within '.js-group-path-display' do
         expect(page).to have_content('{group}')
       end
@@ -59,8 +51,6 @@ RSpec.describe 'Combined registration flow', :js do
     end
 
     it 'a user can create a group and import a project' do
-      expect(page).to have_content('Your first project')
-
       click_on 'Import'
 
       page.within '.js-import-group-path-display' do
