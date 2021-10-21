@@ -14,7 +14,6 @@ RSpec.describe 'Updating a DAST Profile' do
   let(:mutation) do
     graphql_mutation(
       mutation_name,
-      full_path: project.full_path,
       id: global_id_of(dast_profile),
       name: 'updated dast_profiles.name',
       branch_name: project.default_branch,

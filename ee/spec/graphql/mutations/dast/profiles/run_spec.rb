@@ -8,7 +8,6 @@ RSpec.describe Mutations::Dast::Profiles::Run do
   let_it_be(:user) { create(:user) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project, branch_name: project.default_branch) }
 
-  let(:full_path) { project.full_path }
   let(:dast_profile_id) { dast_profile.to_global_id }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
@@ -17,10 +16,7 @@ RSpec.describe Mutations::Dast::Profiles::Run do
 
   describe '#resolve' do
     subject do
-      mutation.resolve(
-        full_path: full_path,
-        id: dast_profile_id
-      )
+      mutation.resolve(id: dast_profile_id)
     end
 
     context 'when on demand scan licensed feature is not available' do
@@ -33,14 +29,6 @@ RSpec.describe Mutations::Dast::Profiles::Run do
     context 'when the feature is enabled' do
       before do
         stub_licensed_features(security_on_demand_scans: true)
-      end
-
-      context 'when the project does not exist' do
-        let(:full_path) { SecureRandom.hex }
-
-        it 'raises an exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
       end
 
       context 'when the user can run a dast scan' do
@@ -74,8 +62,8 @@ RSpec.describe Mutations::Dast::Profiles::Run do
         context 'when the dast_profile does not exist' do
           let(:dast_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'Dast::Profile', id: 'does_not_exist') }
 
-          it 'communicates failure' do
-            expect(subject[:errors]).to include('Profile not found for given parameters')
+          it 'raises an exception' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
 

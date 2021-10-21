@@ -38,7 +38,7 @@ RSpec.describe Mutations::Dast::Profiles::Update do
   specify { expect(described_class).to require_graphql_authorizations(:create_on_demand_dast_scan) }
 
   describe '#resolve' do
-    subject { mutation.resolve(**params.merge(full_path: project.full_path)) }
+    subject { mutation.resolve(**params) }
 
     shared_examples 'an unrecoverable failure' do |parameter|
       it 'raises an exception' do
@@ -93,10 +93,7 @@ RSpec.describe Mutations::Dast::Profiles::Update do
             let(:new_dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
 
             subject do
-              mutation.resolve(**params.merge(
-                full_path: project.full_path,
-                dast_profile_schedule: new_dast_profile_schedule
-              ))
+              mutation.resolve(**params.merge(dast_profile_schedule: new_dast_profile_schedule))
             end
 
             context 'when dast_on_demand_scans_scheduler feature is enabled' do
