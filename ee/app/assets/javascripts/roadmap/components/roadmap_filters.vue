@@ -150,9 +150,11 @@ export default {
       this.setEpicsState(epicsState);
       this.fetchEpics();
     },
-    handleFilterEpics(filters) {
-      this.setFilterParams(this.getFilterParams(filters));
-      this.fetchEpics();
+    handleFilterEpics(filters, cleared) {
+      if (filters.length || cleared) {
+        this.setFilterParams(this.getFilterParams(filters));
+        this.fetchEpics();
+      }
     },
     handleSortEpics(sortedBy) {
       this.setSortedBy(sortedBy);
