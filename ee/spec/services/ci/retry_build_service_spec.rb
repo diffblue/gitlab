@@ -20,8 +20,6 @@ RSpec.describe Ci::RetryBuildService do
   describe '#clone!' do
     context 'when user has ability to execute build' do
       let_it_be(:namespace) { create(:namespace) }
-      let_it_be(:ultimate_plan) { create(:ultimate_plan) }
-      let_it_be(:plan_limits) { create(:plan_limits, plan: ultimate_plan) }
 
       let(:project) { create(:project, namespace: namespace, creator: user) }
 
@@ -68,10 +66,6 @@ RSpec.describe Ci::RetryBuildService do
       end
 
       describe 'credit card requirement' do
-        before do
-          create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
-        end
-
         shared_examples 'creates a retried build' do
           it 'creates a retried build' do
             build
@@ -85,10 +79,16 @@ RSpec.describe Ci::RetryBuildService do
           end
         end
 
-        context 'when credit card is required' do
+        context 'when credit card is required', :saas do
+          let_it_be(:ultimate_plan) { create(:ultimate_plan) }
+          let_it_be(:plan_limits) { create(:plan_limits, plan: ultimate_plan) }
+
+          before do
+            create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
+          end
+
           context 'when project is on free plan' do
             before do
-              allow(::Gitlab).to receive(:com?).and_return(true)
               namespace.gitlab_subscription.update!(hosted_plan: create(:free_plan))
               user.created_at = ::Users::CreditCardValidation::RELEASE_DAY
             end
