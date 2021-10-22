@@ -8491,6 +8491,9 @@ msgstr ""
 msgid "Completed"
 msgstr ""
 
+msgid "Completed in %{duration_seconds} seconds (%{relative_time})"
+msgstr ""
+
 msgid "Compliance framework"
 msgstr ""
 
@@ -13476,6 +13479,9 @@ msgstr ""
 msgid "Error: %{error_message}"
 msgstr ""
 
+msgid "Error: %{error}"
+msgstr ""
+
 msgid "Error: Couldn't load some or all of the changes."
 msgstr ""
 
@@ -16757,6 +16763,9 @@ msgstr ""
 msgid "Header must be associated with a request or response"
 msgstr ""
 
+msgid "Headers"
+msgstr ""
+
 msgid "Heading 1"
 msgstr ""
 
@@ -18504,6 +18513,9 @@ msgid "Internal - The project can be accessed by any logged in user except exter
 msgstr ""
 
 msgid "Internal URL (optional)"
+msgstr ""
+
+msgid "Internal error occured while delivering this webhook."
 msgstr ""
 
 msgid "Internal users"
@@ -28901,6 +28913,9 @@ msgid "Repository: %{counter_repositories} / Wikis: %{counter_wikis} / Build Art
 msgstr ""
 
 msgid "RepositorySettingsAccessLevel|Select"
+msgstr ""
+
+msgid "Request"
 msgstr ""
 
 msgid "Request Access"
