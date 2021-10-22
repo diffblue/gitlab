@@ -26,7 +26,7 @@ RSpec.shared_examples 'a service that handles Jira API errors' do
 
       expect(subject).to be_a(ServiceResponse)
       expect(subject).to be_error
-      expect(subject.message).to include(expected_message)
+      expect(subject.message).to start_with(expected_message)
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.shared_examples 'a service that handles Jira API errors' do
       let(:error) { '{"errorMessages":' }
 
       it 'returns the default error message' do
-        expect(subject.message).to eq('An error occurred while requesting data from Jira. Check your Jira integration configuration and try again.')
+        expect(subject.message).to start_with('An error occurred while requesting data from Jira.')
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.shared_examples 'a service that handles Jira API errors' do
       let(:error) { '{"errorMessages":["<script>alert(true)</script>foo"]}' }
 
       it 'sanitizes it' do
-        expect(subject.message).to eq('An error occurred while requesting data from Jira: foo. Check your Jira integration configuration and try again.')
+        expect(subject.message).to start_with('An error occurred while requesting data from Jira: foo')
       end
     end
   end

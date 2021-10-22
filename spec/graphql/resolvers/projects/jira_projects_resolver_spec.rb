@@ -90,7 +90,7 @@ RSpec.describe Resolvers::Projects::JiraProjectsResolver do
           end
 
           it 'raises failure error' do
-            expect { resolve_jira_projects }.to raise_error('An error occurred while requesting data from Jira: Some failure. Check your Jira integration configuration and try again.')
+            expect { resolve_jira_projects }.to raise_error(/^An error occurred while requesting data from Jira: Some failure\..*/)
           end
         end
       end

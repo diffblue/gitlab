@@ -319,9 +319,11 @@ describe('ExternalIssuesListRoot', () => {
 
     describe('when request fails', () => {
       it.each`
-        APIErrors        | expectedRenderedErrorMessage
-        ${['API error']} | ${'API error'}
-        ${undefined}     | ${i18n.errorFetchingIssues}
+        APIErrors                                         | expectedRenderedErrorMessage
+        ${['API error']}                                  | ${'API error'}
+        ${['API <a href="gitlab.com">error</a>']}         | ${'API error'}
+        ${['API <script src="hax0r.xyz">error</script>']} | ${'API'}
+        ${undefined}                                      | ${i18n.errorFetchingIssues}
       `(
         'displays error alert with "$expectedRenderedErrorMessage" when API responds with "$APIErrors"',
         async ({ APIErrors, expectedRenderedErrorMessage }) => {
