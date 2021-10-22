@@ -2953,7 +2953,7 @@ RSpec.describe Project do
       end
 
       it 'deletes immediately' do
-        expect(user_project.adjourned_deletion?).to be nil
+        expect(user_project.adjourned_deletion?).to be_falsey
       end
     end
   end
