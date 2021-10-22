@@ -1495,6 +1495,9 @@ msgstr ""
 msgid "A project boilerplate for Salesforce App development with Salesforce Developer tools"
 msgstr ""
 
+msgid "A project boilerplate for Tencent Serverless Framework that uses Next.js SSR"
+msgstr ""
+
 msgid "A project containing issues for each audit inquiry in the HIPAA Audit Protocol published by the U.S. Department of Health & Human Services"
 msgstr ""
 
@@ -27140,6 +27143,9 @@ msgid "ProjectTemplates|Spring"
 msgstr ""
 
 msgid "ProjectTemplates|Static Site Editor/Middleman"
+msgstr ""
+
+msgid "ProjectTemplates|Tencent Serverless Framework/NextjsSSR"
 msgstr ""
 
 msgid "ProjectTemplates|iOS (Swift)"
