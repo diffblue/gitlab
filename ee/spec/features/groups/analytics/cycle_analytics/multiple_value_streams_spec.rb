@@ -101,7 +101,7 @@ RSpec.describe 'Multiple value streams', :js do
       page.all("[data-testid*='stage-action-move-down-']").first.click
       page.all("[data-testid*='stage-action-move-up-']").last.click
 
-      page.find_button(_('Save Value Stream')).click
+      click_save_value_stream_button
       wait_for_requests
 
       expect(path_nav_stage_names_without_median).to eq(["Overview", "Plan", "Issue", "Code", "Test", "Review", "Cool custom stage - name 7", "Staging"])
@@ -114,14 +114,14 @@ RSpec.describe 'Multiple value streams', :js do
 
       it 'includes additional form fields' do
         expect(page).to have_selector(extended_form_fields_selector)
-        expect(page).to have_button("Save Value Stream")
+        expect(page).to have_button("Save value stream")
       end
 
       it 'can update the value stream name' do
         edited_name = "Edit new value stream"
         fill_in 'create-value-stream-name', with: edited_name
 
-        page.find_button(_('Save Value Stream')).click
+        click_save_value_stream_button
         wait_for_requests
 
         expect(page).to have_text(_("'%{name}' Value Stream saved") % { name: edited_name })
@@ -131,7 +131,7 @@ RSpec.describe 'Multiple value streams', :js do
         add_custom_stage_to_form
         add_custom_label_stage_to_form
 
-        page.find_button(_('Save Value Stream')).click
+        click_save_value_stream_button
         wait_for_requests
 
         expect(path_nav_elem).to have_text("Cool custom stage - name")
@@ -146,7 +146,7 @@ RSpec.describe 'Multiple value streams', :js do
         page.all("[data-testid*='stage-action-move-down-']").first.click
         page.all("[data-testid*='stage-action-move-up-']").last.click
 
-        page.find_button(_('Save Value Stream')).click
+        click_save_value_stream_button
         wait_for_requests
 
         expect(path_nav_elem).not_to have_text("Cool custom stage - name")
@@ -157,7 +157,7 @@ RSpec.describe 'Multiple value streams', :js do
         click_action_button('hide', 4)
         click_action_button('hide', 3)
 
-        click_button(_('Save Value Stream'))
+        click_save_value_stream_button
         wait_for_requests
 
         expect(page).to have_text(_("'%{name}' Value Stream saved") % { name: custom_value_stream_name })
@@ -168,7 +168,7 @@ RSpec.describe 'Multiple value streams', :js do
         click_button(_('Edit'))
         click_action_button('restore', 0)
 
-        click_button(_('Save Value Stream'))
+        click_save_value_stream_button
         wait_for_requests
 
         expect(page).to have_text(_("'%{name}' Value Stream saved") % { name: custom_value_stream_name })
