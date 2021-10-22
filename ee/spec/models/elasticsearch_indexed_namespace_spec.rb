@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticsearchIndexedNamespace do
+RSpec.describe ElasticsearchIndexedNamespace, :saas do
   before do
     stub_ee_application_setting(elasticsearch_indexing: true)
   end
@@ -47,6 +47,8 @@ RSpec.describe ElasticsearchIndexedNamespace do
 
     before do
       stub_ee_application_setting(elasticsearch_indexing: false)
+
+      described_class.delete_all # reset index status
     end
 
     def get_indexed_namespaces

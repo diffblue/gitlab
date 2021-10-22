@@ -35,7 +35,7 @@ RSpec.describe GroupsHelper do
       end
     end
 
-    context 'on .com' do
+    context 'on .com', :saas do
       before do
         allow(::Gitlab).to receive(:com?).and_return(true)
         stub_ee_application_setting(should_check_namespace_plan: true)

@@ -249,7 +249,7 @@ RSpec.describe 'Edit group settings' do
       end
     end
 
-    context 'namespace plan is checked' do
+    context 'namespace plan is checked', :saas do
       before do
         create(:gitlab_subscription, namespace: group, hosted_plan: plan)
         stub_licensed_features(group_project_templates: true)

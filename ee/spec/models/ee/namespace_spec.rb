@@ -58,7 +58,7 @@ RSpec.describe Namespace do
   end
 
   described_class::PLANS.each do |namespace_plan|
-    describe "#{namespace_plan}_plan?" do
+    describe "#{namespace_plan}_plan?", :saas do
       it_behaves_like 'plan helper', namespace_plan
     end
   end
@@ -165,7 +165,7 @@ RSpec.describe Namespace do
   end
 
   context 'scopes' do
-    describe '.with_feature_available_in_plan' do
+    describe '.with_feature_available_in_plan', :saas do
       let!(:namespace) { create(:namespace) }
 
       context 'plan is nil' do
@@ -184,7 +184,7 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.join_gitlab_subscription' do
+    describe '.join_gitlab_subscription', :saas do
       let!(:namespace) { create(:namespace) }
 
       subject { described_class.join_gitlab_subscription.select('gitlab_subscriptions.hosted_plan_id').first.hosted_plan_id }
@@ -204,7 +204,7 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.in_active_trial' do
+    describe '.in_active_trial', :saas do
       let_it_be(:namespaces) do
         [
           create(:namespace),
@@ -222,7 +222,7 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.not_in_active_trial' do
+    describe '.not_in_active_trial', :saas do
       let_it_be(:namespaces) do
         [
           create(:namespace),
@@ -240,7 +240,7 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.in_default_plan' do
+    describe '.in_default_plan', :saas do
       subject { described_class.in_default_plan.ids }
 
       where(:plan_name, :expect_in_default_plan) do
@@ -268,7 +268,7 @@ RSpec.describe Namespace do
       end
     end
 
-    describe '.eligible_for_trial' do
+    describe '.eligible_for_trial', :saas do
       let_it_be(:namespace) { create :namespace }
 
       subject { described_class.eligible_for_trial.first }
@@ -509,13 +509,13 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#feature_available?' do
+  describe '#feature_available?', :saas do
     subject { group.licensed_feature_available?(feature) }
 
     it_behaves_like 'feature available'
   end
 
-  describe '#feature_available_non_trial?' do
+  describe '#feature_available_non_trial?', :saas do
     subject { group.feature_available_non_trial?(feature) }
 
     it_behaves_like 'feature available'
@@ -582,7 +582,7 @@ RSpec.describe Namespace do
         it { is_expected.to eq(default_limits) }
       end
 
-      context 'when "free" plan is defined in the system' do
+      context 'when "free" plan is defined in the system', :saas do
         let!(:free_plan) { create(:free_plan) }
 
         context 'when no limits are set' do
@@ -814,7 +814,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#paid?' do
+  describe '#paid?', :saas do
     it 'returns true for a root namespace with a paid plan' do
       create(:gitlab_subscription, :ultimate, namespace: namespace)
 
@@ -893,7 +893,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#billed_user_ids' do
+  describe '#billed_user_ids', :saas do
     context 'with a user namespace' do
       let(:user) { create(:user) }
 
@@ -1170,7 +1170,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#billable_members_count' do
+  describe '#billable_members_count', :saas do
     context 'with a user namespace' do
       let(:user) { create(:user) }
 
@@ -1782,7 +1782,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#closest_gitlab_subscription' do
+  describe '#closest_gitlab_subscription', :saas do
     subject { group.closest_gitlab_subscription }
 
     context 'when there is a root ancestor' do

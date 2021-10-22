@@ -2,10 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticNamespaceRolloutWorker do
+RSpec.describe ElasticNamespaceRolloutWorker, :saas do
   before do
     stub_const('ROLLOUT', described_class::ROLLOUT)
     stub_const('ROLLBACK', described_class::ROLLBACK)
+
+    ElasticsearchIndexedNamespace.delete_all # reset index
   end
 
   Plan::PAID_HOSTED_PLANS.each do |plan|

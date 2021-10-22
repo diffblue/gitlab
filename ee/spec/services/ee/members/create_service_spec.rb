@@ -29,7 +29,7 @@ RSpec.describe Members::CreateService do
     create(:group_member, :invited, group: subgroup)
   end
 
-  context 'with group plan' do
+  context 'with group plan', :saas do
     let(:plan_limits) { create(:plan_limits, daily_invites: daily_invites) }
     let(:plan) { create(:plan, limits: plan_limits) }
     let!(:subscription) do

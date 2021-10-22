@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Tracking::StandardContext do
         end
       end
 
-      context 'when namespace is available' do
+      context 'when namespace is available', :saas do
         subject { described_class.new(namespace: create(:namespace_with_plan, plan: plan)) }
 
         it 'contains plan name' do

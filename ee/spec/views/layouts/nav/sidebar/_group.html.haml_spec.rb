@@ -137,7 +137,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
   end
 
-  describe 'Security & Compliance menu' do
+  describe 'Security & Compliance menu', :saas do
     let(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     before do
@@ -263,7 +263,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
       end
     end
 
-    context 'when security dashboard feature is disabled' do
+    context 'when security dashboard feature is disabled', :saas do
       let(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
       it 'is not visible' do
