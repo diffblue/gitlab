@@ -11,6 +11,9 @@ RSpec.describe API::Namespaces do
   let_it_be(:group1, reload: true) { create(:group, name: 'test.test-group.2') }
   let_it_be(:group2) { create(:group, :nested) }
   let_it_be(:ultimate_plan) { create(:ultimate_plan) }
+  let_it_be(:project) { create(:project, namespace: group2) }
+  let_it_be(:project) { create(:project, namespace: group2, name: group2.name, path: group2.path) }
+  let_it_be(:project_namespace) { create(:project_namespace, project: project) }
 
   describe "GET /namespaces" do
     context "when authenticated as admin" do
@@ -324,6 +327,15 @@ RSpec.describe API::Namespaces do
       end
     end
 
+    context 'when project namespace is passed' do
+      it 'returns 404' do
+        put api("/namespaces/#{project_namespace.id}", admin), params: params
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response).to eq('message' => '404 Namespace Not Found')
+      end
+    end
+
     context 'when invalid params' do
       where(:attr) do
         [
@@ -485,6 +497,28 @@ RSpec.describe API::Namespaces do
           expect(group1.gitlab_subscription).to be_present
         end
       end
+
+      context 'when namespace does not exist' do
+        it 'creates a subscription using full_path when the namespace path contains dots' do
+          post api("/namespaces/#{non_existing_record_id}/gitlab_subscription", admin), params: params
+
+          aggregate_failures do
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(json_response).to eq('message' => '404 Namespace Not Found')
+          end
+        end
+      end
+
+      context 'when creating subscription for project namespace' do
+        it 'creates a subscription using full_path when the namespace path contains dots' do
+          post api("/namespaces/#{project_namespace.id}/gitlab_subscription", admin), params: params
+
+          aggregate_failures do
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(json_response).to eq('message' => '404 Namespace Not Found')
+          end
+        end
+      end
     end
   end
 
@@ -538,6 +572,15 @@ RSpec.describe API::Namespaces do
         expect(json_response['billing'].keys).to match_array(%w[subscription_start_date subscription_end_date trial_ends_on])
       end
     end
+
+    context 'when namespace is a project namespace' do
+      it 'returns a 404 error' do
+        get api("/namespaces/#{project_namespace.id}/gitlab_subscription", admin)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response).to eq('message' => '404 Namespace Not Found')
+      end
+    end
   end
 
   describe 'PUT :id/gitlab_subscription' do
@@ -582,6 +625,15 @@ RSpec.describe API::Namespaces do
           do_put(namespace_2.id, admin, params)
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'when namespace is a project namespace' do
+        it 'returns a 404 error' do
+          do_put(project_namespace.id, admin, params)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response).to eq('message' => '404 Namespace Not Found')
         end
       end
 
