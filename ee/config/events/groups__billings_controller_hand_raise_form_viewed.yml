@@ -1,0 +1,23 @@
+---
+description: Hand raise form viewed
+category: default
+action: hand_raise_form_viewed
+label_description: hand_raise_lead_form
+property_description:
+value_description:
+extra_properties:
+identifiers:
+#- project
+#- user
+#- namespace
+product_section: dev
+product_stage: fulfillment
+product_group: group::conversion
+product_category: billing
+milestone: "14.5"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/72725
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

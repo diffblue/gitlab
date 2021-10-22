@@ -11,6 +11,7 @@ import {
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import createFlash, { FLASH_TYPES } from '~/flash';
 import { sprintf } from '~/locale';
+import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
@@ -30,6 +31,7 @@ export default {
     GlModal: GlModalDirective,
     autofocusonshow,
   },
+  mixins: [Tracking.mixin()],
   props: {
     namespaceId: {
       type: Number,
@@ -102,6 +104,11 @@ export default {
         text: this.$options.i18n.modalCancel,
       };
     },
+    tracking() {
+      return {
+        label: 'hand_raise_lead_form',
+      };
+    },
     showState() {
       return !this.$apollo.loading.states && this.states && this.country && this.mustEnterState;
     },
@@ -167,6 +174,7 @@ export default {
             type: FLASH_TYPES.SUCCESS,
           });
           this.clearForm();
+          this.track('hand_raise_submit_form_succeeded');
         })
         .catch((error) => {
           createFlash({
@@ -174,6 +182,7 @@ export default {
             captureError: true,
             error,
           });
+          this.track('hand_raise_submit_form_failed');
         })
         .finally(() => {
           this.isLoading = false;
@@ -202,6 +211,8 @@ export default {
       :action-primary="actionPrimary"
       :action-cancel="actionCancel"
       @primary="submit"
+      @cancel="track('hand_raise_form_canceled')"
+      @change="track('hand_raise_form_viewed')"
     >
       {{ modalHeaderText }}
       <div class="combined d-flex gl-mt-5">
