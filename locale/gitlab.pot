@@ -29376,6 +29376,9 @@ msgstr ""
 msgid "Runners|Copy instructions"
 msgstr ""
 
+msgid "Runners|Copy registration token"
+msgstr ""
+
 msgid "Runners|Deploy GitLab Runner in AWS"
 msgstr ""
 
@@ -29451,6 +29454,24 @@ msgstr ""
 msgid "Runners|Protected"
 msgstr ""
 
+msgid "Runners|Register a group runner"
+msgstr ""
+
+msgid "Runners|Register a project runner"
+msgstr ""
+
+msgid "Runners|Register a runner"
+msgstr ""
+
+msgid "Runners|Register an instance runner"
+msgstr ""
+
+msgid "Runners|Registration token"
+msgstr ""
+
+msgid "Runners|Registration token copied!"
+msgstr ""
+
 msgid "Runners|Revision"
 msgstr ""
 
@@ -29488,6 +29509,9 @@ msgid "Runners|Shared runners are available to every project in a GitLab instanc
 msgstr ""
 
 msgid "Runners|Show Runner installation instructions"
+msgstr ""
+
+msgid "Runners|Show runner installation and registration instructions"
 msgstr ""
 
 msgid "Runners|Something went wrong while fetching runner data."
@@ -31190,9 +31214,6 @@ msgid "Set up Jira Integration"
 msgstr ""
 
 msgid "Set up a %{type} Runner for a project"
-msgstr ""
-
-msgid "Set up a %{type} runner manually"
 msgstr ""
 
 msgid "Set up a hardware device as a second factor to sign in."
