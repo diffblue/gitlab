@@ -394,6 +394,20 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
+  describe "#hand_raise_props" do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    it 'builds correct hash' do
+      props = helper.hand_raise_props(namespace)
+      expect(props).to eq(namespace_id: namespace.id, user_name: 'Joe', first_name: 'Joe', last_name: 'Doe', company_name: 'ACME')
+    end
+  end
+
   describe '#upgrade_button_text' do
     using RSpec::Parameterized::TableSyntax
 
