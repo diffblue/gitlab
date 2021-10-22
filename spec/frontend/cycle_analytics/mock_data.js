@@ -1,5 +1,4 @@
 import valueStreamAnalyticsStages from 'test_fixtures/projects/analytics/value_stream_analytics/stages.json';
-import valueStreamAnalyticsSummary from 'test_fixtures/projects/analytics/value_stream_analytics/summary.json';
 import issueStageFixtures from 'test_fixtures/projects/analytics/value_stream_analytics/events/issue.json';
 import planStageFixtures from 'test_fixtures/projects/analytics/value_stream_analytics/events/plan.json';
 import reviewStageFixtures from 'test_fixtures/projects/analytics/value_stream_analytics/events/review.json';
@@ -25,10 +24,6 @@ export const deepCamelCase = (obj) => convertObjectPropsToCamelCase(obj, { deep:
 
 export const getStageByTitle = (stages, title) =>
   stages.find((stage) => stage.title && stage.title.toLowerCase().trim() === title) || {};
-
-export const metricsData = valueStreamAnalyticsSummary;
-
-export const customizableStagesAndEvents = valueStreamAnalyticsStages;
 
 export const defaultStages = ['issue', 'plan', 'review', 'code', 'test', 'staging'];
 
@@ -258,7 +253,7 @@ export const selectedProjects = [
   },
 ];
 
-export const rawValueStreamStages = customizableStagesAndEvents.stages;
+export const rawValueStreamStages = valueStreamAnalyticsStages.stages;
 
 export const valueStreamStages = rawValueStreamStages.map((s) =>
   convertObjectPropsToCamelCase(s, { deep: true }),
