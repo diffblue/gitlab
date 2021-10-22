@@ -47,8 +47,8 @@ export default {
       <div @click="toggleCollapse">
         <h4 class="d-flex justify-content-between gl-font-lg" :class="{ 'gl-mb-7': !collapsed }">
           <div class="d-flex">
-            <gl-icon v-if="collapsed" name="chevron-right" :size="18" use-deprecated-sizes />
-            <gl-icon v-else name="chevron-down" :size="18" use-deprecated-sizes />
+            <gl-icon v-if="collapsed" name="chevron-right" />
+            <gl-icon v-else name="chevron-down" />
             <div>{{ titleWithName }}</div>
           </div>
           <div class="gl-ml-3">{{ formatAmount(totalAmount, usersPresent) }}</div>
