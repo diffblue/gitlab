@@ -70,14 +70,36 @@ RSpec.describe ProjectsHelper do
   end
 
   describe '#show_compliance_framework_badge?' do
-    it 'returns false if compliance framework setting is not present' do
-      expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+    context 'when feature is licensed' do
+      before do
+        stub_licensed_features(custom_compliance_frameworks: true)
+      end
+
+      it 'returns false if compliance framework setting is not present' do
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
+
+      it 'returns true if compliance framework setting is present' do
+        project = build_stubbed(:project, :with_compliance_framework)
+
+        expect(helper.show_compliance_framework_badge?(project)).to be_truthy
+      end
     end
 
-    it 'returns true if compliance framework setting is present' do
-      project = build_stubbed(:project, :with_compliance_framework)
+    context 'when feature is unlicensed' do
+      before do
+        stub_licensed_features(custom_compliance_frameworks: false)
+      end
 
-      expect(helper.show_compliance_framework_badge?(project)).to be_truthy
+      it 'returns false if compliance framework setting is not present' do
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
+
+      it 'returns false if compliance framework setting is present' do
+        project = build_stubbed(:project, :with_compliance_framework)
+
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
     end
   end
 

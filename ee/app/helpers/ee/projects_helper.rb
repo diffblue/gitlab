@@ -247,7 +247,7 @@ module EE
     end
 
     def show_compliance_framework_badge?(project)
-      project&.compliance_framework_setting&.compliance_management_framework.present?
+      project&.licensed_feature_available?(:custom_compliance_frameworks) && project&.compliance_framework_setting&.compliance_management_framework.present?
     end
 
     def scheduled_for_deletion?(project)
