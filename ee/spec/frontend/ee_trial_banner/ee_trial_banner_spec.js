@@ -7,6 +7,11 @@ describe('EE gitlab license banner dismiss', () => {
     button.click();
   };
 
+  const dismissOnChildElement = () => {
+    const childElement = document.querySelector('.child-element');
+    childElement.click();
+  };
+
   const renew = () => {
     const button = document.querySelector('.gl-button');
     button.click();
@@ -18,7 +23,7 @@ describe('EE gitlab license banner dismiss', () => {
   beforeEach(() => {
     setFixtures(`
     <div class="js-gitlab-ee-license-banner">
-      <button class="js-close"></button>
+      <button class="js-close"><span class="child-element">X</span></button>
       <a href="#" class="btn gl-button btn-confirm"></a>
     </div>
     `);
@@ -26,10 +31,22 @@ describe('EE gitlab license banner dismiss', () => {
     initEETrialBanner();
   });
 
+  afterEach(() => {
+    Cookies.remove('show_ee_trial_banner');
+  });
+
   it('should remove the license banner when a close button is clicked', () => {
     expect(isHidden()).toBeFalsy();
 
     dismiss();
+
+    expect(isHidden()).toBeTruthy();
+  });
+
+  it('should remove the license banner when an element inside close button is clicked', () => {
+    expect(isHidden()).toBeFalsy();
+
+    dismissOnChildElement();
 
     expect(isHidden()).toBeTruthy();
   });

@@ -4,8 +4,8 @@
 - if message.present? && subscribable.present?
   .container-fluid.container-limited.pt-3
     .gl-alert.gitlab-ee-license-banner.hidden.js-gitlab-ee-license-banner.gl-pb-7.gl-border-1.gl-border-solid.gl-border-gray-100.gl-rounded-base{ role: 'alert', data: { license_expiry: subscribable.expires_at } }
-      %button.gl-alert-dismiss{ type: 'button', 'aria-label' => 'Dismiss', data: { track_action: 'click_button', track_label: 'dismiss_subscribable_banner' } }
-        = sprite_icon('close', css_class: 'gl-icon js-close')
+      %button.gl-alert-dismiss.js-close{ type: 'button', 'aria-label' => 'Dismiss', data: { track_action: 'click_button', track_label: 'dismiss_subscribable_banner' } }
+        = sprite_icon('close', css_class: 'gl-icon')
       .gl-display-flex.gl-flex-direction-row.gl-align-items-center
         .gl-pr-6.gl-pl-5.gl-pt-3.gl-display-none.gl-sm-display-block
           - if subscribable.block_changes?

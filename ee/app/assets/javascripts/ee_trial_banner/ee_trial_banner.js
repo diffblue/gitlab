@@ -94,8 +94,8 @@ export default class EETrialBanner {
   }
 
   handleTrialBannerDismiss(element) {
-    // Check if a close button was clicked inside the parent element
-    if (!element.classList.contains('js-close')) {
+    // Check if a close button or an element inside it was clicked inside the parent alert component
+    if (!element.closest('.js-close')) {
       return;
     }
 
