@@ -35924,7 +35924,7 @@ msgstr ""
 msgid "TransferGroup|Group is already associated to the parent group."
 msgstr ""
 
-msgid "TransferGroup|The parent group already has a subgroup with the same path."
+msgid "TransferGroup|The parent group already has a subgroup or a project with the same path."
 msgstr ""
 
 msgid "TransferGroup|Transfer failed: %{error_message}"
