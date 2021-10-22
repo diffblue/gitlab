@@ -91,7 +91,12 @@ export default {
       </gl-sprintf>
     </template>
     <gl-tabs v-model="activeTab">
-      <component :is="tab.component" v-for="(tab, key) in tabs" :key="key" :item-count="tab.itemsCount" />
+      <component
+        :is="tab.component"
+        v-for="(tab, key) in tabs"
+        :key="key"
+        :items-count="tab.itemsCount"
+      />
     </gl-tabs>
   </configuration-page-layout>
   <empty-state v-else />

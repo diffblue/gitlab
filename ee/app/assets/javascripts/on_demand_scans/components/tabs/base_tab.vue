@@ -13,7 +13,7 @@ export default {
       type: String,
       required: true,
     },
-    itemCount: {
+    itemsCount: {
       type: Number,
       required: true,
     },
@@ -35,7 +35,7 @@ export default {
   <gl-tab v-bind="$attrs">
     <template #title>
       {{ title }}
-      <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemCount }}</gl-badge>
+      <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
     </template>
     <empty-state :title="emptyStateTitle" :text="emptyStateText" no-primary-button />
   </gl-tab>
