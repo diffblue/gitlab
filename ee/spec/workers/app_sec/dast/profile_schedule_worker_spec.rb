@@ -34,9 +34,11 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
 
       it 'does not call runnable_schedules' do
         expect(::Dast::ProfileSchedule).not_to receive(:runnable_schedules)
+
         subject
       end
     end
+
     context 'when feature is licensed' do
       before do
         stub_licensed_features(security_on_demand_scans: true)
@@ -83,9 +85,11 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
             end
           end
 
-          it 'sets active to false' do
+          it 'sets active to false', :aggregate_failures do
             expect(service).to receive(:execute)
+
             subject
+
             expect(Dast::ProfileSchedule.where(active: false).count).to eq(2)
           end
         end
@@ -96,12 +100,18 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
           schedule.update_column(:next_run_at, 1.minute.ago)
         end
 
-        it 'executes the rule schedule service' do
+        it 'executes the service that creates dast scans', :aggregate_failures do
           expect_next_found_instance_of(::Dast::ProfileSchedule) do |schedule|
             expect(schedule).to receive(:schedule_next_run!)
           end
 
           expect(service).to receive(:execute)
+
+          subject
+        end
+
+        it 'calls the service that creates dast scans with the correct parameters' do
+          expect(::AppSec::Dast::Scans::CreateService).to receive(:new).with(container: project, current_user: owner, params: { dast_profile: schedule.dast_profile })
 
           subject
         end
@@ -140,19 +150,19 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
           schedule.update_column(:next_run_at, 1.minute.from_now)
         end
 
-        it 'executes the rule schedule service' do
+        it 'does not execute the service that creates dast scans' do
           expect(::AppSec::Dast::Scans::CreateService).not_to receive(:new)
 
           subject
         end
       end
 
-      context 'when single run schedule exists' do
+      context 'when a schedule that does not repeat exists' do
         before do
           schedule.update_columns(next_run_at: 1.minute.ago, cadence: {})
         end
 
-        it 'executes the rule schedule service and deactivate the schedule', :aggregate_failures do
+        it 'sets active to false', :aggregate_failures do
           expect(schedule.repeat?).to be(false)
 
           subject

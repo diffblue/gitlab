@@ -37,10 +37,7 @@ module AppSec
         ::AppSec::Dast::Scans::CreateService.new(
           container: schedule.project,
           current_user: schedule.owner,
-          params: {
-            dast_site_profile: schedule.dast_profile.dast_site_profile,
-            dast_scanner_profile: schedule.dast_profile.dast_scanner_profile
-          }
+          params: { dast_profile: schedule.dast_profile }
         )
       end
 
