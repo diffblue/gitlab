@@ -4,23 +4,11 @@ import { s__ } from '~/locale';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import { HELP_PAGE_PATH } from '../constants';
 import AllTab from './tabs/all.vue';
-import RunningTab from './tabs/running.vue';
-import FinishedTab from './tabs/finished.vue';
-import ScheduledTab from './tabs/scheduled.vue';
 import EmptyState from './empty_state.vue';
 
 const TABS = {
   all: {
     component: AllTab,
-  },
-  running: {
-    component: RunningTab,
-  },
-  finished: {
-    component: FinishedTab,
-  },
-  scheduled: {
-    component: ScheduledTab,
   },
 };
 
@@ -34,9 +22,6 @@ export default {
     GlTabs,
     ConfigurationPageLayout,
     AllTab,
-    RunningTab,
-    FinishedTab,
-    ScheduledTab,
     EmptyState,
   },
   inject: ['newDastScanPath'],
