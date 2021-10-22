@@ -7,11 +7,12 @@ import Project from 'ee/compliance_dashboard/components/drawer_sections/project.
 import Reference from 'ee/compliance_dashboard/components/drawer_sections/reference.vue';
 import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
 import { complianceFramework } from 'ee_jest/vue_shared/components/compliance_framework_label/mock_data';
+import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createApprovers, createMergeRequests } from '../mock_data';
 
 jest.mock('ee/threat_monitoring/utils', () => ({
-  getContentWrapperHeight: jest.fn().mockReturnValue('50px'),
+  getContentWrapperHeight: jest.fn(),
 }));
 
 describe('MergeRequestDrawer component', () => {
@@ -49,13 +50,16 @@ describe('MergeRequestDrawer component', () => {
   });
 
   describe('default behaviour', () => {
+    const mockHeaderHeight = '50px';
+
     beforeEach(() => {
+      getContentWrapperHeight.mockReturnValue(mockHeaderHeight);
       wrapper = createComponent();
     });
 
     it('configures the drawer with header height and z-index', () => {
       expect(findDrawer().props()).toMatchObject({
-        headerHeight: '50px',
+        headerHeight: mockHeaderHeight,
         zIndex: 252,
       });
     });
