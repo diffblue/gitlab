@@ -18,7 +18,7 @@ describe('HandRaiseLeadButton', () => {
   let fakeApollo;
   let trackingSpy;
 
-  const createComponent = (props = {}) => {
+  const createComponent = () => {
     const mockResolvers = {
       Query: {
         countries() {
@@ -34,16 +34,21 @@ describe('HandRaiseLeadButton', () => {
     return shallowMountExtended(HandRaiseLeadButton, {
       localVue,
       apolloProvider: fakeApollo,
-      propsData: {
-        namespaceId: 1,
-        userName: 'Joe',
-        ...props,
+      provide: {
+        user: {
+          namespaceId: '1',
+          userName: 'joe',
+          firstName: 'Joe',
+          lastName: 'Doe',
+          companyName: 'ACME',
+        },
       },
     });
   };
 
   const findButton = () => wrapper.findComponent(GlButton);
   const findModal = () => wrapper.findComponent(GlModal);
+  const findFormInput = (testId) => wrapper.findByTestId(testId);
 
   afterEach(() => {
     wrapper.destroy();
@@ -65,6 +70,23 @@ describe('HandRaiseLeadButton', () => {
       expect(findButton().text()).toBe(i18n.buttonText);
     });
 
+    it('has the default injected values', async () => {
+      const formInputValues = [
+        { id: 'first-name', value: 'Joe' },
+        { id: 'last-name', value: 'Doe' },
+        { id: 'company-name', value: 'ACME' },
+        { id: 'phone-number', value: '' },
+        { id: 'company-size', value: undefined },
+        { id: 'country', value: undefined },
+      ];
+
+      formInputValues.forEach(({ id, value }) => {
+        expect(findFormInput(id).attributes('value')).toBe(value);
+      });
+
+      expect(findFormInput('state').exists()).toBe(false);
+    });
+
     it('has the correct form input in the form content', () => {
       const visibleFields = [
         'first-name',
@@ -81,7 +103,7 @@ describe('HandRaiseLeadButton', () => {
     });
 
     it('has the correct text in the modal content', () => {
-      expect(findModal().text()).toContain(sprintf(i18n.modalHeaderText, { userName: 'Joe' }));
+      expect(findModal().text()).toContain(sprintf(i18n.modalHeaderText, { userName: 'joe' }));
       expect(findModal().text()).toContain(i18n.modalFooterText);
     });
 

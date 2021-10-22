@@ -32,22 +32,13 @@ export default {
     autofocusonshow,
   },
   mixins: [Tracking.mixin()],
-  props: {
-    namespaceId: {
-      type: Number,
-      required: true,
-    },
-    userName: {
-      type: String,
-      required: true,
-    },
-  },
+  inject: ['user'],
   data() {
     return {
       isLoading: false,
-      firstName: '',
-      lastName: '',
-      companyName: '',
+      firstName: this.user.firstName,
+      lastName: this.user.lastName,
+      companyName: this.user.companyName,
       companySize: null,
       phoneNumber: '',
       country: null,
@@ -76,7 +67,7 @@ export default {
   computed: {
     modalHeaderText() {
       return sprintf(this.$options.i18n.modalHeaderText, {
-        userName: this.userName,
+        userName: this.user.userName,
       });
     },
     mustEnterState() {
@@ -141,11 +132,11 @@ export default {
     },
     formParams() {
       return {
-        namespaceId: this.namespaceId,
-        companyName: this.companyName,
-        companySize: this.companySize,
+        namespaceId: Number(this.user.namespaceId),
         firstName: this.firstName,
         lastName: this.lastName,
+        companyName: this.companyName,
+        companySize: this.companySize,
         phoneNumber: this.phoneNumber,
         country: this.country,
         state: this.mustEnterState ? this.state : null,
@@ -154,7 +145,7 @@ export default {
     },
   },
   methods: {
-    clearForm() {
+    resetForm() {
       this.firstName = '';
       this.lastName = '';
       this.companyName = '';
@@ -173,7 +164,7 @@ export default {
             message: this.$options.i18n.handRaiseActionSuccess,
             type: FLASH_TYPES.SUCCESS,
           });
-          this.clearForm();
+          this.resetForm();
           this.track('hand_raise_submit_form_succeeded');
         })
         .catch((error) => {
