@@ -78,7 +78,7 @@ describe('OnDemandScans', () => {
       expect(link.attributes('href')).toBe(newDastScanPath);
     });
 
-    it('renders the tabs if there is data', async () => {
+    it('renders the tabs', () => {
       expect(findAllTab().exists()).toBe(true);
     });
   });
