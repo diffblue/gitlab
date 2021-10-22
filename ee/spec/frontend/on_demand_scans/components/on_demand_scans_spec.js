@@ -1,4 +1,4 @@
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlTabs } from '@gitlab/ui';
 import { merge } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import OnDemandScans from 'ee/on_demand_scans/components/on_demand_scans.vue';
@@ -17,6 +17,7 @@ describe('OnDemandScans', () => {
   // Finders
   const findNewScanLink = () => wrapper.findByTestId('new-scan-link');
   const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
+  const findTabs = () => wrapper.findComponent(GlTabs);
   const findAllTab = () => wrapper.findComponent(AllTab);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
 
@@ -32,6 +33,7 @@ describe('OnDemandScans', () => {
           stubs: {
             ConfigurationPageLayout,
             GlSprintf,
+            GlTabs,
           },
         },
         options,
@@ -80,6 +82,11 @@ describe('OnDemandScans', () => {
 
     it('renders the tabs', () => {
       expect(findAllTab().exists()).toBe(true);
+    });
+
+    it('sets the initial route to /all', () => {
+      expect(findTabs().props('value')).toBe(0);
+      expect(router.currentRoute.path).toBe('/all');
     });
   });
 });
