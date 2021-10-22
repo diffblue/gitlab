@@ -130,8 +130,12 @@ Sidebar.prototype.openDropdown = function (blockOrName) {
   // Wait for the sidebar to trigger('click') open
   // so it doesn't cause our dropdown to close preemptively
   setTimeout(() => {
-    $block.find('.js-sidebar-dropdown-toggle').trigger('click');
-  });
+    if (gon.features?.labelsWidget) {
+      $block.find('.shortcut-sidebar-dropdown-toggle').trigger('click');
+    } else {
+      $block.find('.js-sidebar-dropdown-toggle').trigger('click');
+    }
+  }, 200);
 };
 
 Sidebar.prototype.setCollapseAfterUpdate = function ($block) {

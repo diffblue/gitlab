@@ -1,0 +1,16 @@
+mutation updateEpic($input: UpdateEpicInput!) {
+  updateEpic(input: $input) {
+    epic {
+      id
+      labels {
+        nodes {
+          id
+          title
+          color
+          description
+        }
+      }
+    }
+    errors
+  }
+}

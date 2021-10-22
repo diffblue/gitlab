@@ -7,6 +7,6 @@ export const DropdownVariant = {
 };
 
 export const LabelType = {
-  group: 'GroupLabel',
-  project: 'ProjectLabel',
+  group: 'group',
+  project: 'project',
 };

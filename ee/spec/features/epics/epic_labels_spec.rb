@@ -51,13 +51,14 @@ RSpec.describe 'Assign labels to an epic', :js do
 
     it 'opens labels dropdown' do
       page.within('aside.right-sidebar') do
-        expect(page).to have_css('.js-labels-block .labels-select-dropdown-contents')
+        expect(page).to have_css('.js-labels-block [data-testid="labels-select-dropdown-contents"]')
       end
     end
 
     it 'collapses sidebar when clicked outside' do
+      wait_for_requests
       page.within('.content-wrapper') do
-        find('.content').click
+        find('.epic-page-container').click
 
         expect(page).to have_css('.right-sidebar-collapsed')
       end

@@ -228,8 +228,8 @@ RSpec.describe 'Epic show', :js do
 
     describe 'Labels select' do
       it 'opens dropdown when `Edit` is clicked' do
-        page.within('aside.right-sidebar') do
-          find('.js-sidebar-dropdown-toggle').click
+        page.within('aside.right-sidebar [data-testid="labels-select"]') do
+          click_button 'Edit'
         end
 
         wait_for_requests
@@ -239,20 +239,20 @@ RSpec.describe 'Epic show', :js do
 
       context 'when dropdown is open' do
         before do
-          page.within('aside.right-sidebar') do
-            find('.js-sidebar-dropdown-toggle').click
+          page.within('aside.right-sidebar [data-testid="labels-select"]') do
+            click_button 'Edit'
           end
           wait_for_requests
         end
 
         it 'shows labels within the label dropdown' do
-          page.within('.js-labels-list .dropdown-content') do
+          page.within('.js-labels-list [data-testid="dropdown-content"]') do
             expect(page).to have_selector('li', count: 3)
           end
         end
 
         it 'shows checkmark next to label when label is clicked' do
-          page.within('.js-labels-list .dropdown-content') do
+          page.within('.js-labels-list [data-testid="dropdown-content"]') do
             find('li', text: label1.title).click
 
             expect(find('li', text: label1.title)).to have_selector('.gl-icon', visible: true)
@@ -261,7 +261,7 @@ RSpec.describe 'Epic show', :js do
 
         it 'shows label create view when `Create group label` is clicked' do
           page.within('.js-labels-block') do
-            find('a', text: 'Create group label').click
+            click_on 'Create group label'
 
             expect(page).to have_selector('.js-labels-create')
           end
@@ -269,7 +269,7 @@ RSpec.describe 'Epic show', :js do
 
         it 'creates new label using create view' do
           page.within('.js-labels-block') do
-            find('a', text: 'Create group label').click
+            click_on 'Create group label'
 
             find('.dropdown-input .gl-form-input').set('Test label')
             find('.suggest-colors-dropdown a', match: :first).click
@@ -278,7 +278,7 @@ RSpec.describe 'Epic show', :js do
             wait_for_requests
           end
 
-          page.within('.js-labels-list .dropdown-content') do
+          page.within('.js-labels-list [data-testid="dropdown-content"]') do
             expect(page).to have_selector('li', count: 4)
             expect(page).to have_content('Test label')
           end
@@ -286,7 +286,7 @@ RSpec.describe 'Epic show', :js do
 
         it 'shows labels list view when `Cancel` button is clicked from create view' do
           page.within('.js-labels-block') do
-            find('a', text: 'Create group label').click
+            click_on 'Create group label'
 
             find('.js-btn-cancel-create').click
             wait_for_requests
@@ -297,7 +297,7 @@ RSpec.describe 'Epic show', :js do
 
         it 'shows labels list view when back button is clicked from create view' do
           page.within('.js-labels-block') do
-            find('a', text: 'Create group label').click
+            click_on 'Create group label'
 
             find('.js-btn-back').click
             wait_for_requests
