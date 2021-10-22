@@ -232,3 +232,24 @@ get 'client/features', urgency: :low do
   # endpoint logic
 end
 ```
+
+### Error budget attribution and ownership
+
+This SLI is used for service level monitoring and will feed into
+the [error budget for stage
+groups](../stage_group_dashboards.md#error-budget) when opting in (see [this
+project](https://gitlab.com/groups/gitlab-com/gl-infra/-/epics/525)). The
+endpoints for the SLI feed into a group's error budget based on the [feature
+category declared on it](../feature_categorization/index.md).
+
+To know which endpoints are included for your group, you can see the
+request rates on the [group
+dashboard for your
+group](https://dashboards.gitlab.net/dashboards/f/stage-groups/stage-groups). The
+"Puma apdex" log-link in the "Budget Attribution" row will show you
+how many requests are not meeting a 1s or 5s target.
+
+Learn more about the content of the dashboard in [the
+documentation](../stage_group_dashboards.md). We intend on iterating
+on the exploration of the error budget itself in [this
+issue](https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/1365).
