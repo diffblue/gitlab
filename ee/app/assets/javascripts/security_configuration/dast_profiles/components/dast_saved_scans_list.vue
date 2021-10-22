@@ -20,10 +20,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
-    fullPath: {
-      type: String,
-      required: true,
-    },
     errorMessage: {
       type: String,
       required: false,
@@ -72,7 +68,6 @@ export default {
           mutation: dastProfileRunMutation,
           variables: {
             input: {
-              fullPath: this.fullPath,
               id,
             },
           },
@@ -101,7 +96,6 @@ export default {
 
 <template>
   <profiles-list
-    :full-path="fullPath"
     :error-message="error.errorMessage"
     :error-details="error.errorDetails"
     v-bind="$attrs"

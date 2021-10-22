@@ -428,7 +428,6 @@ describe('OnDemandScansForm', () => {
                   description: 'Tests for SQL injections',
                   dastScannerProfileId: passiveScannerProfile.id,
                   dastSiteProfileId: nonValidatedSiteProfile.id,
-                  fullPath: projectPath,
                   runAfterUpdate: runAfter,
                 },
               },
