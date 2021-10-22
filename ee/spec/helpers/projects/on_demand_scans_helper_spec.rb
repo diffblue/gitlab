@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Projects::OnDemandScansHelper do
-  include Devise::Test::ControllerHelpers
-
   let_it_be(:project) { create(:project) }
 
   before do
@@ -13,7 +11,7 @@ RSpec.describe Projects::OnDemandScansHelper do
 
   describe '#on_demand_scans_data' do
     before do
-      allow(helper).to receive(:run_graphql!).and_return(12)
+      create_list(:ci_pipeline, 12, project: project, ref: 'master', source: :ondemand_dast_scan)
     end
 
     it 'returns proper data' do
