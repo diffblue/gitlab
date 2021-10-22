@@ -11,7 +11,7 @@ module Boards
 
       def execute
         return ServiceResponse.error(message: 'This feature is not available') unless available?
-        return ServiceResponse.error(message: "The resource that you are attempting to access does not exist or you don't have permission to perform this action") unless allowed?
+        return ServiceResponse.error(message: Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR) unless allowed?
 
         error = check_arguments
         if error

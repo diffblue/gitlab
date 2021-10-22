@@ -43,7 +43,7 @@ RSpec.describe 'Reposition and move epic between board lists' do
       it 'raises resource not available error' do
         subject
 
-        message = "The resource that you are attempting to access does not exist or you don't have permission to perform this action"
+        message = Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR
         expect(graphql_errors).to include(a_hash_including('message' => message))
       end
     end
