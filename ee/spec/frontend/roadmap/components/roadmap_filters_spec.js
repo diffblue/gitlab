@@ -277,6 +277,18 @@ describe('RoadmapFilters', () => {
         expect(wrapper.vm.fetchEpics).toHaveBeenCalled();
       });
 
+      it('does not set filters params or fetch epics when onFilter event is triggered with empty filters array and cleared param set to false', async () => {
+        jest.spyOn(wrapper.vm, 'setFilterParams');
+        jest.spyOn(wrapper.vm, 'fetchEpics');
+
+        filteredSearchBar.vm.$emit('onFilter', [], false);
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.vm.setFilterParams).not.toHaveBeenCalled();
+        expect(wrapper.vm.fetchEpics).not.toHaveBeenCalled();
+      });
+
       describe('when user is logged in', () => {
         beforeAll(() => {
           gon.current_user_id = 1;
