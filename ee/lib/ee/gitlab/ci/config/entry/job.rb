@@ -22,9 +22,20 @@ module EE
                 metadata: { composable_class: ::Gitlab::Ci::Config::Entry::Secret }
             end
 
+            EE_ALLOWED_KEYS = %i[dast_configuration secrets].freeze
+
             override :value
             def value
               super.merge({ dast_configuration: dast_configuration_value, secrets: secrets_value }.compact)
+            end
+
+            class_methods do
+              extend ::Gitlab::Utils::Override
+
+              override :allowed_keys
+              def allowed_keys
+                super + EE_ALLOWED_KEYS
+              end
             end
           end
         end
