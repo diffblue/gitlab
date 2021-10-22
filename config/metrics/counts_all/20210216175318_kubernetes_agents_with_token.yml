@@ -1,20 +1,21 @@
 ---
 data_category: optional
-key_path: counts.kubernetes_agent_k8s_api_proxy_request
-description: Count of Kubernetes API proxy requests
+key_path: counts.kubernetes_agents_with_token
+description: Count of Kubernetes agents with at least one token
 product_section: ops
 product_stage: configure
 product_group: group::configure
 product_category: kubernetes_management
 value_type: number
 status: active
-milestone: '13.12'
-introduced_by_url: 
 time_frame: all
-data_source: redis
+data_source: database
 distribution:
+- ce
 - ee
 tier:
+- free
 - premium
 - ultimate
 performance_indicator_type: []
+milestone: "<13.9"
