@@ -9829,7 +9829,7 @@ msgstr ""
 msgid "CreateValueStreamForm|Restore stage"
 msgstr ""
 
-msgid "CreateValueStreamForm|Save Value Stream"
+msgid "CreateValueStreamForm|Save value stream"
 msgstr ""
 
 msgid "CreateValueStreamForm|Select end event"
@@ -29680,9 +29680,6 @@ msgid "Save %{name} size limits"
 msgstr ""
 
 msgid "Save Changes"
-msgstr ""
-
-msgid "Save Value Stream"
 msgstr ""
 
 msgid "Save application"

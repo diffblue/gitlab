@@ -64,7 +64,7 @@ RSpec.describe 'Value stream analytics charts', :js do
     def hide_vsa_stage(index = 0)
       page.find_button(_('Edit')).click
       page.find("[data-testid='stage-action-hide-#{index}']").click
-      page.find_button(_('Save Value Stream')).click
+      click_save_value_stream_button
 
       wait_for_requests
     end
