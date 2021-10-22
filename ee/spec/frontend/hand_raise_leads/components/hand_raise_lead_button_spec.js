@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { i18n } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
@@ -15,6 +16,7 @@ localVue.use(VueApollo);
 describe('HandRaiseLeadButton', () => {
   let wrapper;
   let fakeApollo;
+  let trackingSpy;
 
   const createComponent = (props = {}) => {
     const mockResolvers = {
@@ -52,6 +54,7 @@ describe('HandRaiseLeadButton', () => {
   describe('rendering', () => {
     beforeEach(() => {
       wrapper = createComponent();
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
     });
 
     it('does not have loading icon', () => {
@@ -89,6 +92,14 @@ describe('HandRaiseLeadButton', () => {
       });
       expect(findModal().props('actionCancel')).toStrictEqual({
         text: i18n.modalCancel,
+      });
+    });
+
+    it('tracks modal view', async () => {
+      await findModal().vm.$emit('change');
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_viewed', {
+        label: 'hand_raise_lead_form',
       });
     });
   });
@@ -129,32 +140,72 @@ describe('HandRaiseLeadButton', () => {
     });
   });
 
-  describe('form submission', () => {
-    beforeEach(() => {
+  describe('form', () => {
+    beforeEach(async () => {
       wrapper = createComponent();
-    });
-
-    it('primary submits the valid form', async () => {
-      jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue(1);
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
 
       wrapper.setData({ countries, states, country: 'US', ...formData, comment: 'comment' });
+    });
 
-      await wrapper.vm.$nextTick();
+    describe('successful submission', () => {
+      beforeEach(async () => {
+        jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue();
 
-      findModal().vm.$emit('primary');
-
-      await wrapper.vm.$nextTick();
-
-      expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith({
-        namespaceId: 1,
-        comment: 'comment',
-        ...formData,
+        findModal().vm.$emit('primary');
       });
 
-      ['firstName', 'lastName', 'companyName', 'phoneNumber'].forEach((f) =>
-        expect(wrapper.vm[f]).toBe(''),
-      );
-      ['companySize', 'country', 'state'].forEach((f) => expect(wrapper.vm[f]).toBe(null));
+      it('primary submits the valid form', async () => {
+        expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith({
+          namespaceId: 1,
+          comment: 'comment',
+          ...formData,
+        });
+      });
+
+      it('clears the form after submission', async () => {
+        ['first-name', 'last-name', 'company-name', 'phone-number'].forEach((f) =>
+          expect(wrapper.findByTestId(f).attributes('value')).toBe(''),
+        );
+
+        ['company-size', 'country'].forEach((f) =>
+          expect(wrapper.findByTestId(f).attributes('value')).toBe(undefined),
+        );
+
+        expect(wrapper.findByTestId('state').exists()).toBe(false);
+      });
+
+      it('tracks successful submission', async () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_succeeded', {
+          label: 'hand_raise_lead_form',
+        });
+      });
+    });
+
+    describe('failed submission', () => {
+      beforeEach(async () => {
+        jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockRejectedValue();
+
+        findModal().vm.$emit('primary');
+      });
+
+      it('tracks failed submission', async () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_failed', {
+          label: 'hand_raise_lead_form',
+        });
+      });
+    });
+
+    describe('form cancel', () => {
+      beforeEach(async () => {
+        findModal().vm.$emit('cancel');
+      });
+
+      it('tracks failed submission', async () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_canceled', {
+          label: 'hand_raise_lead_form',
+        });
+      });
     });
   });
 });
