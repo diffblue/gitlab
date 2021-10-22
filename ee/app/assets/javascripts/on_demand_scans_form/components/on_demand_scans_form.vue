@@ -247,14 +247,13 @@ export default {
       const mutation = this.isEdit ? dastProfileUpdateMutation : dastProfileCreateMutation;
       const responseType = this.isEdit ? 'dastProfileUpdate' : 'dastProfileCreate';
       const input = {
-        fullPath: this.projectPath,
         dastScannerProfileId: this.selectedScannerProfile.id,
         dastSiteProfileId: this.selectedSiteProfile.id,
         branchName: this.selectedBranch,
         ...(this.glFeatures.dastOnDemandScansScheduler
           ? { dastProfileSchedule: this.profileSchedule }
           : {}),
-        ...(this.isEdit ? { id: this.dastScan.id } : {}),
+        ...(this.isEdit ? { id: this.dastScan.id } : { fullPath: this.projectPath }),
         ...serializeFormObject(this.form.fields),
         [this.isEdit ? 'runAfterUpdate' : 'runAfterCreate']: runAfter,
       };

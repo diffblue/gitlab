@@ -141,8 +141,7 @@ export default {
       } = serializeFormObject(this.form.fields);
 
       return {
-        fullPath: this.projectFullPath,
-        ...(this.isEdit ? { id: this.profile.id } : {}),
+        ...(this.isEdit ? { id: this.profile.id } : { fullPath: this.projectFullPath }),
         profileName,
         targetUrl,
         targetType,

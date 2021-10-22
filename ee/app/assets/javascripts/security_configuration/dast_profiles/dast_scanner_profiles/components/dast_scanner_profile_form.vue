@@ -118,8 +118,7 @@ export default {
     },
     mutationVariables() {
       return {
-        fullPath: this.projectFullPath,
-        ...(this.isEdit ? { id: this.profile.id } : {}),
+        ...(this.isEdit ? { id: this.profile.id } : { fullPath: this.projectFullPath }),
         ...serializeFormObject(this.form.fields),
       };
     },
