@@ -49,4 +49,6 @@ distribution:
 tier:
 - premium
 - ultimate
-performance_indicator_type: []
+performance_indicator_type:
+- gmau
+- paid_gmau
