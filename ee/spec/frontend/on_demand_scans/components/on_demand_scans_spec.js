@@ -1,4 +1,5 @@
 import { GlSprintf } from '@gitlab/ui';
+import { merge } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import OnDemandScans from 'ee/on_demand_scans/components/on_demand_scans.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
@@ -19,17 +20,23 @@ describe('OnDemandScans', () => {
   const findAllTab = () => wrapper.findComponent(AllTab);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
 
-  const createComponent = () => {
-    wrapper = shallowMountExtended(OnDemandScans, {
-      router,
-      provide: {
-        newDastScanPath,
-      },
-      stubs: {
-        ConfigurationPageLayout,
-        GlSprintf,
-      },
-    });
+  const createComponent = (options = {}) => {
+    wrapper = shallowMountExtended(
+      OnDemandScans,
+      merge(
+        {
+          router,
+          provide: {
+            newDastScanPath,
+          },
+          stubs: {
+            ConfigurationPageLayout,
+            GlSprintf,
+          },
+        },
+        options,
+      ),
+    );
   };
 
   beforeEach(() => {
@@ -48,8 +55,11 @@ describe('OnDemandScans', () => {
 
   describe('when there is data', () => {
     beforeEach(() => {
-      createComponent();
-      wrapper.setData({ hasData: true });
+      createComponent({
+        propsData: {
+          pipelinesCount: 12,
+        },
+      });
     });
 
     it('renders a link to the docs', () => {

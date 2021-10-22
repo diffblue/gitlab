@@ -3,13 +3,25 @@
 require 'spec_helper'
 
 RSpec.describe Projects::OnDemandScansHelper do
+  include Devise::Test::ControllerHelpers
+
   let_it_be(:project) { create(:project) }
 
+  before do
+    allow(project).to receive(:path_with_namespace).and_return("foo/bar")
+  end
+
   describe '#on_demand_scans_data' do
+    before do
+      allow(helper).to receive(:run_graphql!).and_return(12)
+    end
+
     it 'returns proper data' do
       expect(helper.on_demand_scans_data(project)).to match(
+        'project-path' => "foo/bar",
         'new-dast-scan-path' => "/#{project.full_path}/-/on_demand_scans/new",
-        'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg')
+        'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg'),
+        'pipelines-count' => 12
       )
     end
   end
@@ -17,11 +29,12 @@ RSpec.describe Projects::OnDemandScansHelper do
   describe '#on_demand_scans_form_data' do
     let_it_be(:timezones) { [{ identifier: "Europe/Paris" }] }
 
+    # rubocop: disable CodeReuse/ActiveRecord
     before do
       allow(project).to receive(:default_branch).and_return("default-branch")
-      allow(project).to receive(:path_with_namespace).and_return("foo/bar")
       allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
     end
+    # rubocop: enable CodeReuse/ActiveRecord
 
     it 'returns proper data' do
       expect(helper.on_demand_scans_form_data(project)).to match(

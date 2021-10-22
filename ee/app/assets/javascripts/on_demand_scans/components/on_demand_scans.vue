@@ -6,14 +6,7 @@ import { HELP_PAGE_PATH } from '../constants';
 import AllTab from './tabs/all.vue';
 import EmptyState from './empty_state.vue';
 
-const TABS = {
-  all: {
-    component: AllTab,
-  },
-};
-
 export default {
-  TABS,
   HELP_PAGE_PATH,
   components: {
     GlButton,
@@ -25,16 +18,33 @@ export default {
     EmptyState,
   },
   inject: ['newDastScanPath'],
+  props: {
+    pipelinesCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
   data() {
     return {
       activeTabIndex: 0,
-      hasData: false,
     };
   },
   computed: {
+    hasData() {
+      return this.pipelinesCount > 0;
+    },
+    tabs() {
+      return {
+        all: {
+          component: AllTab,
+          itemsCount: this.pipelinesCount,
+        },
+      };
+    },
     activeTab: {
       set(newTabIndex) {
-        const newTabId = Object.keys(TABS)[newTabIndex];
+        const newTabId = Object.keys(this.tabs)[newTabIndex];
         if (this.$route.params.tabId !== newTabId) {
           this.$router.push(`/${newTabId}`);
         }
@@ -46,7 +56,7 @@ export default {
     },
   },
   created() {
-    const tabIndex = Object.keys(TABS).findIndex((tab) => tab === this.$route.params.tabId);
+    const tabIndex = Object.keys(this.tabs).findIndex((tab) => tab === this.$route.params.tabId);
     if (tabIndex !== -1) {
       this.activeTabIndex = tabIndex;
     }
@@ -81,12 +91,7 @@ export default {
       </gl-sprintf>
     </template>
     <gl-tabs v-model="activeTab">
-      <component
-        :is="tab.component"
-        v-for="(tab, key) in $options.TABS"
-        :key="key"
-        :item-count="0"
-      />
+      <component :is="tab.component" v-for="(tab, key) in tabs" :key="key" :item-count="tab.itemsCount" />
     </gl-tabs>
   </configuration-page-layout>
   <empty-state v-else />
