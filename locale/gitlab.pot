@@ -33154,6 +33154,9 @@ msgstr ""
 msgid "Survey Response"
 msgstr ""
 
+msgid "Switch Branches"
+msgstr ""
+
 msgid "Switch branch"
 msgstr ""
 
@@ -36376,6 +36379,9 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
+msgid "Uncommitted changes will be lost if you change branches. Do you want to continue?"
+msgstr ""
+
 msgid "Undo"
 msgstr ""
 
@@ -39163,6 +39169,9 @@ msgid "You have successfully purchased %{product}. You'll receive a receipt by e
 msgstr ""
 
 msgid "You have successfully purchased a %{plan} plan subscription for %{seats}. You’ll receive a receipt via email."
+msgstr ""
+
+msgid "You have unsaved changes"
 msgstr ""
 
 msgid "You left the \"%{membershipable_human_name}\" %{source_type}."
