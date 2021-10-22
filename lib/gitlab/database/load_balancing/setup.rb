@@ -42,7 +42,7 @@ module Gitlab
           @model.class_attribute(:sticking)
 
           @model.connection = ConnectionProxy.new(lb)
-          @model.sticking = Sticking.new(lb, @model)
+          @model.sticking = Sticking.new(lb)
         end
 
         def setup_service_discovery

@@ -10,9 +10,8 @@ module Gitlab
         # the primary.
         EXPIRATION = 30
 
-        def initialize(load_balancer, model)
+        def initialize(load_balancer)
           @load_balancer = load_balancer
-          @model = model
         end
 
         # Unsticks or continues sticking the current request.
@@ -28,7 +27,7 @@ module Gitlab
           unstick_or_continue_sticking(namespace, id)
 
           env[RackMiddleware::STICK_OBJECT] ||= Set.new
-          env[RackMiddleware::STICK_OBJECT] << [@model, namespace, id]
+          env[RackMiddleware::STICK_OBJECT] << [self, namespace, id]
         end
 
         # Sticks to the primary if a write was performed.

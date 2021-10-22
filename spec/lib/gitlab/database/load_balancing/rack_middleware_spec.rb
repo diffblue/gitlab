@@ -6,12 +6,12 @@ RSpec.describe Gitlab::Database::LoadBalancing::RackMiddleware, :redis do
   let(:app) { double(:app) }
   let(:middleware) { described_class.new(app) }
   let(:warden_user) { double(:warden, user: double(:user, id: 42)) }
-  let(:single_sticking_object) { Set.new([[ActiveRecord::Base, :user, 42]]) }
+  let(:single_sticking_object) { Set.new([[ActiveRecord::Base.sticking, :user, 42]]) }
   let(:multiple_sticking_objects) do
     Set.new([
-      [ActiveRecord::Base, :user, 42],
-      [ActiveRecord::Base, :runner, '123456789'],
-      [ActiveRecord::Base, :runner, '1234']
+      [ActiveRecord::Base.sticking, :user, 42],
+      [ActiveRecord::Base.sticking, :runner, '123456789'],
+      [ActiveRecord::Base.sticking, :runner, '1234']
     ])
   end
 
