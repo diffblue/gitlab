@@ -20,7 +20,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-responsive-table-row lh-100" role="row">
+  <div class="gl-responsive-table-row gl-line-height-normal" role="row">
     <div class="table-section section-wrap section-70 text-truncate pl-2 ml-3" role="gridcell">
       <div class="table-mobile-header" role="rowheader"></div>
       <div class="table-mobile-content ml-1">{{ name }}</div>
