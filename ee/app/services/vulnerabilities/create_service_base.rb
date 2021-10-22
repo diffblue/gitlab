@@ -33,6 +33,7 @@ module Vulnerabilities
     def initialize_vulnerability(vulnerability_hash)
       attributes = vulnerability_hash
         .slice(*%i[
+          description
           state
           severity
           confidence
