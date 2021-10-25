@@ -1,6 +1,8 @@
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
+import { PAGE_SIZE } from 'ee/threat_monitoring/constants';
 import * as types from './mutation_types';
 
 export const setEnvironmentEndpoint = ({ commit }, endpoint) => {
@@ -29,12 +31,12 @@ const getEnvironments = async (url, page = 1) => {
   try {
     const { data, headers } = await axios.get(url, {
       params: {
-        per_page: 20,
+        per_page: PAGE_SIZE,
         page,
       },
     });
 
-    const nextPage = headers && headers['x-next-page'];
+    const { nextPage } = parseIntPagination(normalizeHeaders(headers));
     return { environments: data.environments, nextPage };
   } catch {
     throw new Error();

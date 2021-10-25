@@ -13,7 +13,7 @@ jest.mock('~/flash');
 
 const environmentsEndpoint = 'environmentsEndpoint';
 const networkPolicyStatisticsEndpoint = 'networkPolicyStatisticsEndpoint';
-const nextPage = 'someHash';
+const nextPage = 2;
 
 describe('Threat Monitoring actions', () => {
   let state;
