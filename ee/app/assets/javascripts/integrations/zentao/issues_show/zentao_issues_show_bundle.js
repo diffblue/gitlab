@@ -16,6 +16,8 @@ export default function initZentaoIssueShow({ mountPointSelector }) {
     provide: {
       issuesShowPath,
       issuesListPath,
+      isClassicSidebar: true,
+      canUpdate: false,
     },
     render: (createElement) => createElement(ZentaoIssuesShowApp),
   });

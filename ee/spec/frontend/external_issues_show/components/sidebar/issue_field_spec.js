@@ -24,6 +24,9 @@ describe('IssueField', () => {
       stubs: {
         SidebarEditableItem,
       },
+      provide: {
+        canUpdate: true,
+      },
     });
   };
 
@@ -94,10 +97,10 @@ describe('IssueField', () => {
     });
   });
 
-  describe('with canUpdate = true', () => {
+  describe('with canEdit = true', () => {
     beforeEach(() => {
       createComponent({
-        props: { canUpdate: true },
+        props: { canEdit: true },
       });
     });
 

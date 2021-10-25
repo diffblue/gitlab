@@ -136,7 +136,7 @@ export default {
     <issue-due-date :due-date="issue.dueDate" />
     <issue-field
       icon="progress"
-      :can-update="canUpdateStatus"
+      :can-edit="canUpdateStatus"
       :dropdown-title="$options.i18n.statusDropdownTitle"
       :dropdown-empty="$options.i18n.statusDropdownEmpty"
       :items="statuses"

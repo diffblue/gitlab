@@ -13,14 +13,8 @@ export default {
     IssueFieldDropdown,
     SidebarEditableItem,
   },
-  provide() {
-    return {
-      isClassicSidebar: true,
-      canUpdate: this.canUpdate,
-    };
-  },
   props: {
-    canUpdate: {
+    canEdit: {
       type: Boolean,
       required: false,
       default: false,
@@ -105,6 +99,7 @@ export default {
       ref="editableItem"
       :loading="updating"
       :title="title"
+      :can-edit="canEdit"
       @open="showDropdown"
     >
       <template #collapsed>
@@ -126,7 +121,7 @@ export default {
 
       <template #default>
         <issue-field-dropdown
-          v-if="canUpdate"
+          v-if="canEdit"
           ref="dropdown"
           :empty-text="dropdownEmpty"
           :items="items"
