@@ -81,14 +81,22 @@ RSpec.describe API::Members do
         expect(json_response.map { |u| u['id'] }).to match_array [maintainer.id, developer.id]
       end
 
-      it 'finds members with query string' do
-        get api(members_url, developer), params: { query: maintainer.username }
+      context 'with cross db check disabled' do
+        around do |example|
+          allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343305') do
+            example.run
+          end
+        end
 
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(response).to include_pagination_headers
-        expect(json_response).to be_an Array
-        expect(json_response.count).to eq(1)
-        expect(json_response.first['username']).to eq(maintainer.username)
+        it 'finds members with query string' do
+          get api(members_url, developer), params: { query: maintainer.username }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to include_pagination_headers
+          expect(json_response).to be_an Array
+          expect(json_response.count).to eq(1)
+          expect(json_response.first['username']).to eq(maintainer.username)
+        end
       end
 
       it 'finds members with the given user_ids' do

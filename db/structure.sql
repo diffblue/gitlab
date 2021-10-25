@@ -15837,10 +15837,6 @@ CREATE TABLE merge_request_diff_commits (
     merge_request_diff_id integer NOT NULL,
     relative_order integer NOT NULL,
     sha bytea NOT NULL,
-    author_name text,
-    author_email text,
-    committer_name text,
-    committer_email text,
     message text,
     trailers jsonb DEFAULT '{}'::jsonb NOT NULL,
     commit_author_id bigint,
@@ -25900,6 +25896,8 @@ CREATE UNIQUE INDEX index_namespaces_on_runners_token_encrypted ON namespaces US
 CREATE INDEX index_namespaces_on_shared_and_extra_runners_minutes_limit ON namespaces USING btree (shared_runners_minutes_limit, extra_shared_runners_minutes_limit);
 
 CREATE INDEX index_namespaces_on_traversal_ids ON namespaces USING gin (traversal_ids);
+
+CREATE INDEX index_namespaces_on_traversal_ids_for_groups ON namespaces USING gin (traversal_ids) WHERE ((type)::text = 'Group'::text);
 
 CREATE INDEX index_namespaces_on_type_and_id ON namespaces USING btree (type, id);
 
