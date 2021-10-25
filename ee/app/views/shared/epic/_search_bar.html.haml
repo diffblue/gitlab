@@ -1,27 +1,9 @@
 - type = local_assigns.fetch(:type)
 - hide_sort_dropdown = local_assigns.fetch(:hide_sort_dropdown, false)
-- show_roadmap_presets = local_assigns.fetch(:show_roadmap_presets, false)
 - hide_extra_sort_options = local_assigns.fetch(:hide_extra_sort_options, false)
-- preset_layout = roadmap_layout
-- is_quarters = preset_layout == "QUARTERS"
-- is_months = preset_layout == "MONTHS"
-- is_weeks = preset_layout == "WEEKS"
 
-.epics-filters{ class: "#{'epics-roadmap-filters' if show_roadmap_presets}" }
+.epics-filters
   .epics-details-filters.filtered-search-block.d-flex.flex-column.flex-md-row.row-content-block.second-block
-    - if show_roadmap_presets
-      .btn-group.btn-group-toggle.gl-mr-3.js-btn-roadmap-presets{ data: { toggle: 'buttons' } }
-        %label.btn.gl-button.btn-secondary.btn-roadmap-preset{ class: ("active" if is_quarters) }
-          %input{ type: 'radio', name: 'presetType', autocomplete: 'off', checked: ("checked" if is_quarters), value: 'QUARTERS' }
-            = _('Quarters')
-        %label.btn.gl-button.btn-secondary.btn-roadmap-preset{ class: ("active" if is_months) }
-          %input{ type: 'radio', name: 'presetType', autocomplete: 'off', checked: ("checked" if is_months), value: 'MONTHS' }
-            = _('Months')
-        %label.btn.gl-button.btn-secondary.btn-roadmap-preset{ class: ("active" if is_weeks) }
-          %input{ type: 'radio', name: 'presetType', autocomplete: 'off', checked: ("checked" if is_weeks), value: 'WEEKS' }
-            = _('Weeks')
-      .filter-dropdown-container.gl-mr-3
-        = render 'shared/epic/state_dropdown'
     = form_tag page_filter_path, method: :get, class: 'flex-fill filter-form js-filter-form' do
       - if params[:search].present?
         = hidden_field_tag :search, params[:search]
