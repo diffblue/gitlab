@@ -889,6 +889,7 @@ fail-pipeline-early:
 rspec rspec-pg12-rerun-previous-failed-tests:
   extends:
     - .rspec-base-pg12
+    - .rails:rules:rerun-previous-failed-tests
   stage: test
   needs: ["setup-test-env", "compile-test-assets", "detect-previous-failed-tests"]
   script:
