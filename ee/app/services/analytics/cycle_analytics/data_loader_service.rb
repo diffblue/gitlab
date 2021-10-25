@@ -126,6 +126,7 @@ module Analytics
               project_id: record['project_id'],
               author_id: record['author_id'],
               milestone_id: record['milestone_id'],
+              state_id: record['state_id'],
               start_event_timestamp: record[event_column_name(stage.start_event)],
               end_event_timestamp: record[event_column_name(stage.end_event)]
             }
@@ -146,6 +147,7 @@ module Analytics
           model.arel_table[project_column].as('project_id'),
           model.arel_table[:milestone_id],
           model.arel_table[:author_id],
+          model.arel_table[:state_id],
           Project.arel_table[:parent_id].as('group_id')
         ]
       end
