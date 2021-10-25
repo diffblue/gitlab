@@ -119,7 +119,7 @@ describe('Actions Notes Store', () => {
         actions.setInitialNotes,
         [individualNote],
         { notes: [] },
-        [{ type: 'SET_INITIAL_DISCUSSIONS', payload: [individualNote] }],
+        [{ type: 'ADD_OR_UPDATE_DISCUSSIONS', payload: [individualNote] }],
         [],
         done,
       );
