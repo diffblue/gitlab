@@ -10,7 +10,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
   end
 
   describe '.uncached_data' do
-    it 'does not make DB calls' do
+    it 'does make instrumentations_class DB calls' do
       recorder = ActiveRecord::QueryRecorder.new do
         described_class.uncached_data
       end
