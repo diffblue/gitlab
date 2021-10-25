@@ -27,7 +27,7 @@ module Dast
     validates :masked, inclusion: { in: [true] }
     validates :variable_type, inclusion: { in: ['env_var'] }
 
-    validates :key, uniqueness: { scope: :dast_site_profile_id, message: "(%{value}) has already been taken" }
+    validates :key, uniqueness: { scope: :dast_site_profile_id, message: _('(%{value}) has already been taken') }
 
     # Since user input is base64 encoded before being encrypted, we must validate against the encoded length
     MAX_VALUE_LENGTH = 10_000
@@ -35,7 +35,7 @@ module Dast
 
     validates :value, length: {
       maximum: MAX_ENCODED_VALUE_LENGTH, # encoded user input length
-      too_long: -> (object, data) { "exceeds the #{MAX_VALUE_LENGTH} character limit" } # user input length
+      too_long: -> (object, data) { _('exceeds the %{max_value_length} character limit') % { max_value_length: MAX_VALUE_LENGTH } } # user input length
     }
 
     # User input is base64 encoded before being encrypted in order to allow it to be masked by default
