@@ -6,7 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     override :add_users
-    def add_users(users, access_level, current_user: nil, expires_at: nil)
+    def add_users(users, access_level, current_user: nil, expires_at: nil, tasks_to_be_done: [], tasks_project_id: nil)
       return false if group_member_lock
 
       super
