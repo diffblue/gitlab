@@ -45,6 +45,7 @@ module EE
         field :vulnerabilities,
               ::Types::VulnerabilityType.connection_type,
               null: true,
+              extras: [:lookahead],
               description: 'Vulnerabilities reported on the projects in the group and its subgroups.',
               resolver: ::Resolvers::VulnerabilitiesResolver
 
