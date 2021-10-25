@@ -7,5 +7,6 @@ FactoryBot.modify do
     expiration_date { 1.year.from_now.end_of_month }
     last_digits { 10 }
     holder_name { 'John Smith' }
+    network { 'AmericanExpress' }
   end
 end
