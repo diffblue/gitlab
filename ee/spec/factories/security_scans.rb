@@ -10,5 +10,10 @@ FactoryBot.define do
     trait :with_error do
       info { { errors: [{ type: 'ParsingError', message: 'Unknown error happened' }] } }
     end
+
+    trait :latest_successful do
+      latest { true }
+      status { :succeeded }
+    end
   end
 end
