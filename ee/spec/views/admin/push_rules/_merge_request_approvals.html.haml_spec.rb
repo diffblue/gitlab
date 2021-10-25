@@ -15,6 +15,6 @@ RSpec.describe 'admin/push_rules/_merge_request_approvals' do
     render
 
     expect(rendered).to have_content(_('Merge request approvals'))
-    expect(rendered).to have_content(_('Configure approvals by authors and committers on all projects.'))
+    expect(rendered).to have_content('Enforce separation of duties for all projects. Learn more.')
   end
 end
