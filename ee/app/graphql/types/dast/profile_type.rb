@@ -24,8 +24,7 @@ module Types
             description: 'Associated scanner profile.'
 
       field :dast_profile_schedule, ::Types::Dast::ProfileScheduleType, null: true,
-            description: 'Associated profile schedule. Will always return `null` ' \
-                         'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+            description: 'Associated profile schedule.'
 
       field :branch, Dast::ProfileBranchType, null: true,
             description: 'Associated branch.',
@@ -39,8 +38,6 @@ module Types
       end
 
       def dast_profile_schedule
-        return unless Feature.enabled?(:dast_on_demand_scans_scheduler, object.project, default_enabled: :yaml)
-
         object.dast_profile_schedule
       end
     end

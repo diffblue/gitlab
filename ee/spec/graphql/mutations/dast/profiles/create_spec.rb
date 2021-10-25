@@ -13,7 +13,9 @@ RSpec.describe Mutations::Dast::Profiles::Create do
   let(:name) { SecureRandom.hex }
   let(:run_after_create) { false }
 
+  # rubocop: disable CodeReuse/ActiveRecord
   let(:dast_profile) { Dast::Profile.find_by(project: project, name: name) }
+  # rubocop: enable CodeReuse/ActiveRecord
   let(:dast_profile_schedule) { nil }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: developer }, field: nil) }
@@ -40,8 +42,14 @@ RSpec.describe Mutations::Dast::Profiles::Create do
 
     context 'when the feature is licensed' do
       context 'when the user can run a dast scan' do
+        let(:dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
+
         it 'returns the dast_profile' do
           expect(subject[:dast_profile]).to eq(dast_profile)
+        end
+
+        it 'returns the dast_profile_schedule' do
+          expect(subject[:dast_profile_schedule]).to eq(dast_profile.dast_profile_schedule)
         end
 
         context 'when run_after_create=true' do
@@ -52,30 +60,6 @@ RSpec.describe Mutations::Dast::Profiles::Create do
 
           it_behaves_like 'it delegates scan creation to another service' do
             let(:delegated_params) { hash_including(dast_profile: instance_of(Dast::Profile)) }
-          end
-        end
-
-        context 'when dast_on_demand_scans_scheduler feature is enabled' do
-          let(:dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
-
-          before do
-            stub_feature_flags(dast_on_demand_scans_scheduler: true)
-          end
-
-          it 'returns the dast_profile_schedule' do
-            expect(subject[:dast_profile_schedule]).to eq(dast_profile.dast_profile_schedule)
-          end
-        end
-
-        context 'when dast_on_demand_scans_scheduler feature is disabled' do
-          let(:dast_profile_schedule) { attributes_for(:dast_profile_schedule) }
-
-          before do
-            stub_feature_flags(dast_on_demand_scans_scheduler: false)
-          end
-
-          it 'returns the dast_profile_schedule' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
       end

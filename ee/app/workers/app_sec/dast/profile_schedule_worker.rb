@@ -14,8 +14,6 @@ module AppSec
       data_consistency :always
 
       def perform
-        return unless Feature.enabled?(:dast_on_demand_scans_scheduler, default_enabled: :yaml)
-
         dast_runnable_schedules.find_in_batches do |schedules|
           schedules.each do |schedule|
             if schedule.owner_valid?

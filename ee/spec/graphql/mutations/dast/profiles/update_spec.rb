@@ -96,42 +96,26 @@ RSpec.describe Mutations::Dast::Profiles::Update do
               mutation.resolve(**params.merge(dast_profile_schedule: new_dast_profile_schedule))
             end
 
-            context 'when dast_on_demand_scans_scheduler feature is enabled' do
-              it 'updates the profile schedule' do
-                subject
+            it 'updates the profile schedule' do
+              subject
 
-                updated_schedule = dast_profile.reload.dast_profile_schedule
+              updated_schedule = dast_profile.reload.dast_profile_schedule
 
-                aggregate_failures do
-                  expect(updated_schedule.timezone).to eq(new_dast_profile_schedule[:timezone])
-                  expect(updated_schedule.starts_at.to_i).to eq(new_dast_profile_schedule[:starts_at].to_i)
-                  expect(updated_schedule.cadence).to eq(new_dast_profile_schedule[:cadence].stringify_keys)
-                end
-              end
-            end
-
-            context 'when dast_on_demand_scans_scheduler feature is disabled' do
-              let(:dast_profile_schedule_attrs) { attributes_for(:dast_profile_schedule) }
-
-              before do
-                stub_feature_flags(dast_on_demand_scans_scheduler: false)
-              end
-
-              it 'returns the dast_profile_schedule' do
-                expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+              aggregate_failures do
+                expect(updated_schedule.timezone).to eq(new_dast_profile_schedule[:timezone])
+                expect(updated_schedule.starts_at.to_i).to eq(new_dast_profile_schedule[:starts_at].to_i)
+                expect(updated_schedule.cadence).to eq(new_dast_profile_schedule[:cadence].stringify_keys)
               end
             end
           end
 
           context 'when dast_profile_schedule param is not passed' do
-            context 'when dast_on_demand_scans_scheduler feature is enabled' do
-              it 'does not updates the profile schedule' do
-                schedule_before_update = dast_profile.dast_profile_schedule
+            it 'does not updates the profile schedule' do
+              schedule_before_update = dast_profile.dast_profile_schedule
 
-                subject
+              subject
 
-                expect(schedule_before_update).to eq(dast_profile.dast_profile_schedule.reload)
-              end
+              expect(schedule_before_update).to eq(dast_profile.dast_profile_schedule.reload)
             end
           end
         end

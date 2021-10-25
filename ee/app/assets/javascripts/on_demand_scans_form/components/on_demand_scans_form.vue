@@ -26,7 +26,6 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -93,7 +92,6 @@ export default {
     GlTooltip: GlTooltipDirective,
     validation: validation(),
   },
-  mixins: [glFeatureFlagMixin()],
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
@@ -250,9 +248,7 @@ export default {
         dastScannerProfileId: this.selectedScannerProfile.id,
         dastSiteProfileId: this.selectedSiteProfile.id,
         branchName: this.selectedBranch,
-        ...(this.glFeatures.dastOnDemandScansScheduler
-          ? { dastProfileSchedule: this.profileSchedule }
-          : {}),
+        dastProfileSchedule: this.profileSchedule,
         ...(this.isEdit ? { id: this.dastScan.id } : { fullPath: this.projectPath }),
         ...serializeFormObject(this.form.fields),
         [this.isEdit ? 'runAfterUpdate' : 'runAfterCreate']: runAfter,
@@ -456,11 +452,7 @@ export default {
         :has-conflict="hasProfilesConflict"
       />
 
-      <scan-schedule
-        v-if="glFeatures.dastOnDemandScansScheduler"
-        v-model="profileSchedule"
-        class="gl-mb-5"
-      />
+      <scan-schedule v-model="profileSchedule" class="gl-mb-5" />
 
       <profile-conflict-alert
         v-if="hasProfilesConflict"
