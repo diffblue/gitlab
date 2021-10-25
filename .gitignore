@@ -74,7 +74,6 @@ eslint-report.html
 /.gitlab_kas_secret
 /webpack-report/
 /crystalball/
-/test_results/
 /deprecations/
 /knapsack/
 /rspec_flaky/
