@@ -391,6 +391,12 @@ RSpec.describe Namespace do
         include_examples 'no sync'
       end
 
+      context 'when project namespace' do
+        let(:namespace) { create(:project_namespace) }
+
+        include_examples 'no sync'
+      end
+
       it 'triggers a name sync with CustomersDot' do
         expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async)
           .with(namespace.id).once

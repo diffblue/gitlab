@@ -105,7 +105,7 @@ module EE
       # Changing the plan or other details may invalidate this cache
       before_save :clear_feature_available_cache
 
-      after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? }
+      after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? && !project_namespace? }
     end
 
     # Only groups can be marked for deletion
