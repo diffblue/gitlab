@@ -143,7 +143,8 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
             let_it_be(:project_with_repo_but_not_synced) { create(:project, :repository, :private) }
             let_it_be(:project) { project_with_repo_but_not_synced }
 
-            let(:redirect_url) { "#{primary_url}/#{project_with_repo_but_not_synced.full_path}.git/info/refs?service=git-upload-pack" }
+            let(:endpoint_path) { "/#{project_with_repo_but_not_synced.full_path}.git/info/refs?service=git-upload-pack" }
+            let(:redirect_url) { redirected_primary_url }
 
             before do
               create(:geo_project_registry, :synced, project: project_with_repo_but_not_synced, last_repository_successful_sync_at: nil)
@@ -180,7 +181,8 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
         context 'when the repository does not exist' do
           let_it_be(:project) { project_no_repo }
 
-          let(:redirect_url) { "#{primary_url}/#{project.full_path}.git/info/refs?service=git-upload-pack" }
+          let(:endpoint_path) { "/#{project.full_path}.git/info/refs?service=git-upload-pack" }
+          let(:redirect_url) { redirected_primary_url }
 
           it_behaves_like 'a Geo 302 redirect to Primary'
 
@@ -262,7 +264,8 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
       context 'when the repository does not exist' do
         let_it_be(:project) { project_no_repo }
 
-        let(:redirect_url) { "#{primary_url}/#{project.full_path}.git/git-upload-pack" }
+        let(:endpoint_path) { "/#{project.full_path}.git/git-upload-pack" }
+        let(:redirect_url) { redirected_primary_url }
 
         it_behaves_like 'a Geo 302 redirect to Primary'
 

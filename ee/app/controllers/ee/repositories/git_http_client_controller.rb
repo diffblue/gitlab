@@ -212,13 +212,7 @@ module EE
       end
 
       def geo_primary_full_url
-        path = if geo_route_helper.not_yet_replicated_redirect?
-                 # git clone/pull
-                 geo_request_fullpath_for_primary
-               else
-                 # git push
-                 File.join(geo_secondary_referrer_path_prefix, geo_request_fullpath_for_primary)
-               end
+        path = File.join(geo_secondary_referrer_path_prefix, geo_request_fullpath_for_primary)
 
         ::Gitlab::Utils.append_path(::Gitlab::Geo.primary_node.url, path)
       end
