@@ -563,6 +563,25 @@ RSpec.describe Group do
           it { expect(group.ancestors.to_sql).not_to include 'traversal_ids <@' }
         end
       end
+
+      context 'when project namespace exists in the group' do
+        let!(:project) { create(:project, group: group) }
+        let!(:project_namespace) { create(:project_namespace, project: project) }
+
+        it 'filters out project namespace' do
+          expect(group.descendants.find_by_id(project_namespace.id)).to be_nil
+        end
+
+        context 'when include_sti_condition is disabled' do
+          before do
+            stub_feature_flags(include_sti_condition: false)
+          end
+
+          it 'raises an exception' do
+            expect { group.descendants.find_by_id(project_namespace.id)}.to raise_error(ActiveRecord::SubclassNotFound)
+          end
+        end
+      end
     end
   end
 
