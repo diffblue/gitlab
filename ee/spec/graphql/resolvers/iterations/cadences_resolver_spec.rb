@@ -34,16 +34,6 @@ RSpec.describe Resolvers::Iterations::CadencesResolver do
             expect(resolve_group_iteration_cadences({ id: active_group_iteration_cadence.to_global_id }, parent, { current_user: current_user })).to contain_exactly(active_group_iteration_cadence)
           end
         end
-
-        context 'when iteration cadences feature is disabled' do
-          before do
-            stub_feature_flags(iteration_cadences: false)
-          end
-
-          it 'returns no results' do
-            expect(resolve_group_iteration_cadences).to be_empty
-          end
-        end
       end
     end
 
