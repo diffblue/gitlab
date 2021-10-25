@@ -34,7 +34,7 @@ module Projects
         private
 
         def query_params
-          params.permit(:id, :page, :limit, :search, :sort, :state, :labels)
+          params.permit(:id, :page, :limit, :search, :sort, :state, labels: [])
         end
 
         def query
@@ -53,8 +53,6 @@ module Projects
         end
 
         def check_feature_enabled!
-          return render_404 unless ::Integrations::Zentao.feature_flag_enabled?(project)
-
           return render_404 unless ::Integrations::Zentao.issues_license_available?(project) && project.zentao_integration&.active?
         end
 
