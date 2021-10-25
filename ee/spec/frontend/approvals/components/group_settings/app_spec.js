@@ -10,6 +10,7 @@ import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from 'ee/approvals/constants';
 import { mergeRequestApprovalSettingsMappers } from 'ee/approvals/mappers';
 import { createStoreOptions } from 'ee/approvals/stores';
 import approvalSettingsModule from 'ee/approvals/stores/modules/approval_settings';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
 
 const localVue = createLocalVue();
@@ -24,20 +25,22 @@ describe('EE Approvals Group Settings App', () => {
   const approvalSettingsPath = 'groups/22/merge_request_approval_settings';
 
   const createWrapper = () => {
-    wrapper = shallowMount(GroupSettingsApp, {
-      localVue,
-      store: new Vuex.Store(store),
-      propsData: {
-        defaultExpanded,
-        approvalSettingsPath,
-      },
-      stubs: {
-        ApprovalSettings,
-        GlLink,
-        GlSprintf,
-        SettingsBlock,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(GroupSettingsApp, {
+        localVue,
+        store: new Vuex.Store(store),
+        propsData: {
+          defaultExpanded,
+          approvalSettingsPath,
+        },
+        stubs: {
+          ApprovalSettings,
+          GlLink,
+          GlSprintf,
+          SettingsBlock,
+        },
+      }),
+    );
   };
 
   beforeEach(() => {
@@ -55,7 +58,8 @@ describe('EE Approvals Group Settings App', () => {
   });
 
   const findSettingsBlock = () => wrapper.find(SettingsBlock);
-  const findLink = () => wrapper.find(GlLink);
+  const findDescriptionLink = () => wrapper.findByTestId('group-settings-description');
+  const findLearnMoreLink = () => wrapper.findByTestId('group-settings-learn-more');
   const findApprovalSettings = () => wrapper.find(ApprovalSettings);
 
   it('renders a settings block', () => {
@@ -65,14 +69,15 @@ describe('EE Approvals Group Settings App', () => {
     expect(findSettingsBlock().props('defaultExpanded')).toBe(true);
   });
 
-  it('has the correct link', () => {
+  it.each`
+    findComponent          | text                      | href
+    ${findDescriptionLink} | ${'separation of duties'} | ${'/help/user/compliance/compliance_report/index#approval-status-and-separation-of-duties'}
+    ${findLearnMoreLink}   | ${'Learn more.'}          | ${'/help/user/project/merge_requests/approvals/index.md'}
+  `('has the correct link for $text', ({ findComponent, text, href }) => {
     createWrapper();
 
-    expect(findLink().attributes()).toMatchObject({
-      href: '/help/user/project/merge_requests/merge_request_approvals',
-      target: '_blank',
-    });
-    expect(findLink().text()).toBe('Learn more.');
+    expect(findComponent().attributes()).toMatchObject({ href, target: '_blank' });
+    expect(findComponent().text()).toBe(text);
   });
 
   it('renders an approval settings component', () => {
