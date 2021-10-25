@@ -27,12 +27,10 @@ RSpec.describe Projects::OnDemandScansHelper do
   describe '#on_demand_scans_form_data' do
     let_it_be(:timezones) { [{ identifier: "Europe/Paris" }] }
 
-    # rubocop: disable CodeReuse/ActiveRecord
     before do
       allow(project).to receive(:default_branch).and_return("default-branch")
       allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     it 'returns proper data' do
       expect(helper.on_demand_scans_form_data(project)).to match(
