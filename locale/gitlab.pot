@@ -39888,10 +39888,16 @@ msgstr ""
 msgid "can only have one escalation policy"
 msgstr ""
 
+msgid "can't be nil"
+msgstr ""
+
 msgid "can't be the same as the source project"
 msgstr ""
 
 msgid "can't include: %{invalid_storages}"
+msgstr ""
+
+msgid "can't reference a branch that does not exist"
 msgstr ""
 
 msgid "cannot be a date in the past"
@@ -40269,6 +40275,12 @@ msgstr ""
 msgid "container_name cannot be larger than %{max_length} chars"
 msgstr ""
 
+msgid "contains URLs that exceed the 1024 character limit (%{urls})"
+msgstr ""
+
+msgid "contains invalid URLs (%{urls})"
+msgstr ""
+
 msgid "contribute to this project."
 msgstr ""
 
@@ -40337,6 +40349,12 @@ msgstr ""
 msgid "does not have a supported extension. Only %{extension_list} are supported"
 msgstr ""
 
+msgid "does not match dast_site.project"
+msgstr ""
+
+msgid "does not match dast_site_validation.project"
+msgstr ""
+
 msgid "download it"
 msgstr ""
 
@@ -40388,6 +40406,9 @@ msgid "estimateCommand|%{slash_command} overwrites the total estimated time."
 msgstr ""
 
 msgid "example.com"
+msgstr ""
+
+msgid "exceeds the %{max_value_length} character limit"
 msgstr ""
 
 msgid "exceeds the limit of %{bytes} bytes"
@@ -41066,6 +41087,12 @@ msgid "must be set for a project namespace"
 msgstr ""
 
 msgid "must be unique by status and elapsed time within a policy"
+msgstr ""
+
+msgid "must have a repository"
+msgstr ""
+
+msgid "must match %{association}.project_id"
 msgstr ""
 
 msgid "my-awesome-group"

@@ -23,7 +23,7 @@ class DastSite < ApplicationRecord
     return unless dast_site_validation_id
 
     if project_id != dast_site_validation.project.id
-      errors.add(:project_id, 'does not match dast_site_validation.project')
+      errors.add(:project_id, _('does not match dast_site_validation.project'))
     end
   end
 end

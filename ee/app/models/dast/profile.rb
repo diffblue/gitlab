@@ -48,24 +48,24 @@ module Dast
       return unless branch_name
 
       unless project.repository.exists?
-        errors.add(:project, 'must have a repository')
+        errors.add(:project, _('must have a repository'))
         return
       end
 
       unless project.repository.branch_exists?(branch_name)
-        errors.add(:branch_name, 'can\'t reference a branch that does not exist')
+        errors.add(:branch_name, _('can\'t reference a branch that does not exist'))
       end
     end
 
     def description_not_nil
-      errors.add(:description, 'can\'t be nil') if description.nil?
+      errors.add(:description, _('can\'t be nil')) if description.nil?
     end
 
     def association_project_id_matches(association)
       return if association.nil?
 
       unless project_id == association.project_id
-        errors.add(:project_id, "must match #{association.class.underscore}.project_id")
+        errors.add(:project_id, _('must match %{association}.project_id') % { association: association.class.underscore })
       end
     end
   end
