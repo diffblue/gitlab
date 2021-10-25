@@ -33,9 +33,9 @@ module Vulnerabilities
         vulnerability: vulnerability,
         identifiers: identifiers,
         scanner: scanner,
-        message: @params[:message],
-        description: @params[:description],
-        solution: @params[:solution]
+        message: @params[:vulnerability][:message],
+        description: @params[:vulnerability][:description],
+        solution: @params[:vulnerability][:solution]
       )
 
       Vulnerability.transaction do
