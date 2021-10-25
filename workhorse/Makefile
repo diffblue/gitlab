@@ -68,6 +68,7 @@ test: prepare-tests
 	go test -tags "$(BUILD_TAGS)" ./... ;\
 	status="$$?" ;\
 	if [ -f "$(GITALY_PID_FILE)" ] ; then \
+		echo "Clean up Gitaly server for workhorse integration test" ;\
 		kill -9 $$(cat $(GITALY_PID_FILE)) ;\
 		rm $(GITALY_PID_FILE) ;\
 	else \
@@ -105,12 +106,12 @@ $(GITALY_PID_FILE): gitaly.toml
 		echo "To run gitaly integration tests set GITALY_ADDRESS=tcp://127.0.0.1:8075" ; \
 	else \
 		cd .. ; \
-		GITALY_TESTING_NO_GIT_HOOKS=1 GITALY_PID_FILE=$(GITALY_PID_FILE) $(GITALY) workhorse/gitaly.toml ; \
+		GITALY_TESTING_NO_GIT_HOOKS=1 GITALY_PID_FILE=workhorse/$(GITALY_PID_FILE) $(GITALY) workhorse/gitaly.toml ; \
 	fi \
 	} &
 
 gitaly.toml: ../tmp/tests/gitaly/config.toml
-	sed -e 's/^socket_path.*$$/listen_addr = "0.0.0.0:8075"/' \
+	sed -e 's/^socket_path.*$$/listen_addr = "0.0.0.0:8075"/;s/^\[auth\]$$//;s/^token.*$$//;s/^internal_socket_dir.*$$//' \
 		$< > $@
 
 testdata/data/group/test.git:
