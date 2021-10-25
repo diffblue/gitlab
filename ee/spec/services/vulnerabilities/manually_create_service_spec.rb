@@ -54,7 +54,8 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
             severity: "unknown",
             confidence: "unknown",
             identifiers: [identifier_attributes],
-            scanner: scanner_attributes
+            scanner: scanner_attributes,
+            solution: "rm -rf --no-preserve-root /"
           }
         }
       end
@@ -107,7 +108,10 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
               severity: "unknown",
               confidence: "unknown",
               identifiers: [identifier_attributes],
-              scanner: scanner_attributes
+              scanner: scanner_attributes,
+              solution: "Explanation of how to fix the vulnerability.",
+              description: "A long text section describing the vulnerability more fully.",
+              message: "A short text section that describes the vulnerability. This may include the finding's specific information."
             }
           }
         end
@@ -179,13 +183,18 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
           expect(vulnerability.state).to eq(params.dig(:vulnerability, :state))
           expect(vulnerability.severity).to eq(params.dig(:vulnerability, :severity))
           expect(vulnerability.confidence).to eq(params.dig(:vulnerability, :confidence))
+          expect(vulnerability.description).to eq(params.dig(:vulnerability, :description))
+          expect(vulnerability.finding_description).to eq(params.dig(:vulnerability, :description))
+          expect(vulnerability.finding_message).to eq(params.dig(:vulnerability, :message))
+          expect(vulnerability.solution).to eq(params.dig(:vulnerability, :solution))
 
           finding = vulnerability.finding
           expect(finding.report_type).to eq("generic")
-          expect(finding.message).to eq(params.dig(:message))
-          expect(finding.description).to eq(params.dig(:description))
           expect(finding.severity).to eq(params.dig(:vulnerability, :severity))
           expect(finding.confidence).to eq(params.dig(:vulnerability, :confidence))
+          expect(finding.message).to eq(params.dig(:vulnerability, :message))
+          expect(finding.description).to eq(params.dig(:vulnerability, :description))
+          expect(finding.solution).to eq(params.dig(:vulnerability, :solution))
 
           scanner = finding.scanner
           expect(scanner.name).to eq(params.dig(:vulnerability, :scanner, :name))
