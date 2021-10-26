@@ -6,7 +6,7 @@ import { IssuableType } from '~/issue_show/constants';
 import { __ } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { issuableLabelsQueries } from '~/sidebar/constants';
-import { DropdownVariant } from './constants';
+import { DEBOUNCE_DROPDOWN_DELAY, DropdownVariant } from './constants';
 import DropdownContents from './dropdown_contents.vue';
 import DropdownValue from './dropdown_value.vue';
 import DropdownValueCollapsed from './dropdown_value_collapsed.vue';
@@ -181,7 +181,7 @@ export default {
       debounce(() => {
         this.$refs.editable.toggle();
         this.$refs.dropdownContents.showDropdown();
-      }, 200)();
+      }, DEBOUNCE_DROPDOWN_DELAY)();
     },
     getUpdateVariables(labels) {
       let labelIds = [];
