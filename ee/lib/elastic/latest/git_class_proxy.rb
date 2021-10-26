@@ -36,6 +36,12 @@ module Elastic
         end
       end
 
+      def blob_aggregations
+        return @aggregations if defined?(@aggregations) # rubocop:disable Gitlab/ModuleWithInstanceVariables
+
+        []
+      end
+
       private
 
       def options_filter_context(type, options)
@@ -201,7 +207,7 @@ module Elastic
           }
         end
 
-        if type == 'blob' && !options[:count_only] && ::Feature.enabled?(:search_blobs_language_aggregation, options[:current_user], default_enabled: :yaml)
+        if include_aggregations?(type, options[:count_only], options[:current_user])
           query_hash[:aggs] = {
             language: {
               composite: {
@@ -242,6 +248,9 @@ module Elastic
           per: per,
           options: options
         )[type.pluralize.to_sym][:results]
+
+        # Retrieve aggregations for blob type queries
+        @aggregations ||= ::Gitlab::Search::AggregationParser.call(response.response.aggregations) if include_aggregations?(type, options[:count_only], options[:current_user]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         items, total_count = yield_each_search_result(response, type, preload_method, &blk)
 
@@ -300,6 +309,10 @@ module Elastic
             expr[:must] = simple_query_string
           end
         end
+      end
+
+      def include_aggregations?(type, count_only, current_user)
+        type == 'blob' && !count_only && ::Feature.enabled?(:search_blobs_language_aggregation, current_user, default_enabled: :yaml)
       end
     end
   end

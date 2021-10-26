@@ -18,8 +18,8 @@ module Gitlab
       private
 
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
-        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
         return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
+        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
 
         strong_memoize(memoize_key(:blobs, count_only: count_only)) do
           project.repository.__elasticsearch__.elastic_search_as_found_blob(
@@ -33,8 +33,8 @@ module Gitlab
       end
 
       def wiki_blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false)
-        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :read_wiki, project)
         return Kaminari.paginate_array([]) unless project.wiki_enabled? && !project.wiki.empty? && query.present?
+        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :read_wiki, project)
 
         strong_memoize(memoize_key(:wiki_blobs, count_only: count_only)) do
           project.wiki.__elasticsearch__.elastic_search_as_wiki_page(
@@ -60,8 +60,8 @@ module Gitlab
       end
 
       def commits(page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil, count_only: false)
-        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
         return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
+        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
 
         strong_memoize(memoize_key(:commits, count_only: count_only)) do
           project.repository.find_commits_by_message_with_elastic(
@@ -71,6 +71,15 @@ module Gitlab
             preload_method: preload_method,
             options: { count_only: count_only }
           )
+        end
+      end
+
+      def blob_aggregations
+        return [] if project.empty_repo? || query.blank?
+        return [] unless Ability.allowed?(@current_user, :download_code, project)
+
+        strong_memoize(:blob_aggregations) do
+          project.repository.__elasticsearch__.blob_aggregations
         end
       end
     end

@@ -63,6 +63,34 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic, :clean_gitlab_redis_sha
     end
   end
 
+  describe '#aggregations' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { described_class.new(user, query, limit_project_ids).aggregations(scope) }
+
+    where(:scope, :expected) do
+      'projects'       | []
+      'milestones'     | []
+      'notes'          | []
+      'issues'         | []
+      'merge_requests' | []
+      'wiki_blobs'     | []
+      'commits'        | []
+      'users'          | []
+      'epics'          | []
+      'unknown'        | []
+      'blobs'          | [::Gitlab::Search::Aggregation.new('language', nil)]
+    end
+
+    with_them do
+      before do
+        allow(Repository.__elasticsearch__).to receive(:blob_aggregations).and_return(expected) if scope == 'blobs'
+      end
+
+      it_behaves_like 'loads aggregations'
+    end
+  end
+
   shared_examples_for 'a paginated object' do |object_type|
     let(:results) { described_class.new(user, 'hello world', limit_project_ids) }
 
