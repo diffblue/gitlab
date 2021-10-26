@@ -14,6 +14,7 @@ import { __, sprintf } from '~/locale';
 import { CLUSTER_TYPES, STATUSES } from '../constants';
 import AncestorNotice from './ancestor_notice.vue';
 import NodeErrorHelpText from './node_error_help_text.vue';
+import ClustersEmptyState from './clusters_empty_state.vue';
 
 export default {
   nodeMemoryText: __('%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)'),
@@ -28,6 +29,7 @@ export default {
     GlSprintf,
     GlTable,
     NodeErrorHelpText,
+    ClustersEmptyState,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -40,7 +42,7 @@ export default {
       'loadingNodes',
       'page',
       'providers',
-      'totalCulsters',
+      'totalClusters',
     ]),
     contentAlignClasses() {
       return 'gl-display-flex gl-align-items-center gl-justify-content-end gl-justify-content-md-start';
@@ -83,8 +85,11 @@ export default {
         },
       ];
     },
-    hasClusters() {
+    hasClustersPerPage() {
       return this.clustersPerPage > 0;
+    },
+    hasClusters() {
+      return this.totalClusters > 0;
     },
   },
   mounted() {
@@ -202,6 +207,7 @@ export default {
     <ancestor-notice />
 
     <gl-table
+      v-if="hasClusters"
       :items="clusters"
       :fields="fields"
       stacked="md"
@@ -298,11 +304,13 @@ export default {
       </template>
     </gl-table>
 
+    <ClustersEmptyState v-else />
+
     <gl-pagination
-      v-if="hasClusters"
+      v-if="hasClustersPerPage"
       v-model="currentPage"
       :per-page="clustersPerPage"
-      :total-items="totalCulsters"
+      :total-items="totalClusters"
       :prev-text="__('Prev')"
       :next-text="__('Next')"
       align="center"

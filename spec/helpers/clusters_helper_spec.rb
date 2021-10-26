@@ -89,10 +89,14 @@ RSpec.describe ClustersHelper do
   end
 
   describe '#js_clusters_list_data' do
-    subject { helper.js_clusters_list_data('/path') }
+    let_it_be(:current_user) { create(:user) }
+    let_it_be(:project) { build(:project) }
+    let_it_be(:clusterable) { ClusterablePresenter.fabricate(project, current_user: current_user) }
+
+    subject { helper.js_clusters_list_data(clusterable) }
 
     it 'displays endpoint path' do
-      expect(subject[:endpoint]).to eq('/path')
+      expect(subject[:endpoint]).to eq(clusterable.index_path(format: :json))
     end
 
     it 'generates svg image data', :aggregate_failures do
@@ -107,6 +111,22 @@ RSpec.describe ClustersHelper do
 
     it 'displays and ancestor_help_path' do
       expect(subject[:ancestor_help_path]).to eq(help_page_path('user/group/clusters/index', anchor: 'cluster-precedence'))
+    end
+
+    it 'displays empty image path' do
+      expect(subject[:clusters_empty_state_image]).to match(%r(/illustrations/logos/clusters_empty|svg))
+    end
+
+    it 'displays empty state help text' do
+      expect(subject[:empty_state_help_text]).to match(clusterable.empty_state_help_text)
+    end
+
+    it 'displays create cluster using certificate path' do
+      expect(subject[:new_cluster_path]).to match(clusterable.new_path(tab: 'create'))
+    end
+
+    it 'displays whether the user can add cluster' do
+      expect(subject[:can_add_cluster]).to match(clusterable.can_add_cluster?.to_s)
     end
   end
 
