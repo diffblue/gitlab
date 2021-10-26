@@ -4,28 +4,9 @@ import { s__ } from '~/locale';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import { HELP_PAGE_PATH } from '../constants';
 import AllTab from './tabs/all.vue';
-import RunningTab from './tabs/running.vue';
-import FinishedTab from './tabs/finished.vue';
-import ScheduledTab from './tabs/scheduled.vue';
 import EmptyState from './empty_state.vue';
 
-const TABS = {
-  all: {
-    component: AllTab,
-  },
-  running: {
-    component: RunningTab,
-  },
-  finished: {
-    component: FinishedTab,
-  },
-  scheduled: {
-    component: ScheduledTab,
-  },
-};
-
 export default {
-  TABS,
   HELP_PAGE_PATH,
   components: {
     GlButton,
@@ -34,22 +15,36 @@ export default {
     GlTabs,
     ConfigurationPageLayout,
     AllTab,
-    RunningTab,
-    FinishedTab,
-    ScheduledTab,
     EmptyState,
   },
   inject: ['newDastScanPath'],
+  props: {
+    pipelinesCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
   data() {
     return {
       activeTabIndex: 0,
-      hasData: false,
     };
   },
   computed: {
+    hasData() {
+      return this.pipelinesCount > 0;
+    },
+    tabs() {
+      return {
+        all: {
+          component: AllTab,
+          itemsCount: this.pipelinesCount,
+        },
+      };
+    },
     activeTab: {
       set(newTabIndex) {
-        const newTabId = Object.keys(TABS)[newTabIndex];
+        const newTabId = Object.keys(this.tabs)[newTabIndex];
         if (this.$route.params.tabId !== newTabId) {
           this.$router.push(`/${newTabId}`);
         }
@@ -61,7 +56,7 @@ export default {
     },
   },
   created() {
-    const tabIndex = Object.keys(TABS).findIndex((tab) => tab === this.$route.params.tabId);
+    const tabIndex = Object.keys(this.tabs).findIndex((tab) => tab === this.$route.params.tabId);
     if (tabIndex !== -1) {
       this.activeTabIndex = tabIndex;
     }
@@ -98,9 +93,9 @@ export default {
     <gl-tabs v-model="activeTab">
       <component
         :is="tab.component"
-        v-for="(tab, key) in $options.TABS"
+        v-for="(tab, key) in tabs"
         :key="key"
-        :item-count="0"
+        :items-count="tab.itemsCount"
       />
     </gl-tabs>
   </configuration-page-layout>

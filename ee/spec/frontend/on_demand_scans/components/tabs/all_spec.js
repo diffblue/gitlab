@@ -16,12 +16,12 @@ describe('AllTab', () => {
 
   beforeEach(() => {
     createComponent({
-      itemCount: 12,
+      itemsCount: 12,
     });
   });
 
   it('renders the base tab with the correct props', () => {
     expect(findBaseTab().props('title')).toBe('All');
-    expect(findBaseTab().props('itemCount')).toBe(12);
+    expect(findBaseTab().props('itemsCount')).toBe(12);
   });
 });
