@@ -64,8 +64,7 @@ RSpec.describe Projects::IssuesController do
         render_views
 
         context 'when a vulnerability_id is provided' do
-          let(:pipeline) { create(:ci_pipeline, project: project) }
-          let(:finding) { create(:vulnerabilities_finding, pipelines: [pipeline]) }
+          let(:finding) { create(:vulnerabilities_finding, :with_pipeline) }
           let(:vulnerability) { create(:vulnerability, project: project, findings: [finding]) }
           let(:vulnerability_field) { "<input type=\"hidden\" name=\"vulnerability_id\" id=\"vulnerability_id\" value=\"#{vulnerability.id}\" />" }
 
@@ -98,8 +97,7 @@ RSpec.describe Projects::IssuesController do
         end
 
         context 'when created from a vulnerability' do
-          let(:pipeline) { create(:ci_pipeline, project: project) }
-          let(:finding) { create(:vulnerabilities_finding, pipelines: [pipeline]) }
+          let(:finding) { create(:vulnerabilities_finding, :with_pipeline) }
           let(:vulnerability) { create(:vulnerability, project: project, findings: [finding]) }
 
           before do
@@ -188,8 +186,7 @@ RSpec.describe Projects::IssuesController do
         render_views
 
         context 'when a vulnerability_id is provided' do
-          let(:pipeline) { create(:ci_pipeline, project: project) }
-          let(:finding) { create(:vulnerabilities_finding, pipelines: [pipeline]) }
+          let(:finding) { create(:vulnerabilities_finding, :with_pipeline) }
           let(:vulnerability) { create(:vulnerability, project: project, findings: [finding]) }
           let(:vulnerability_field) { "<input type=\"hidden\" name=\"vulnerability_id\" id=\"vulnerability_id\" value=\"#{vulnerability.id}\" />" }
 

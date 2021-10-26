@@ -202,9 +202,9 @@ RSpec.describe 'Query.vulnerabilities.location' do
     let_it_be(:finding) do
       create(
         :vulnerabilities_finding,
+        :with_pipeline,
         vulnerability: vulnerability,
-        raw_metadata: metadata.to_json,
-        pipelines: [pipeline]
+        raw_metadata: metadata.to_json
       )
     end
 
@@ -241,9 +241,9 @@ RSpec.describe 'Query.vulnerabilities.location' do
     let_it_be(:finding) do
       create(
         :vulnerabilities_finding,
+        :with_pipeline,
         vulnerability: vulnerability,
-        raw_metadata: metadata.to_json,
-        pipelines: [pipeline]
+        raw_metadata: metadata.to_json
       )
     end
 
@@ -281,9 +281,9 @@ RSpec.describe 'Query.vulnerabilities.location' do
     let_it_be(:finding) do
       create(
         :vulnerabilities_finding,
+        :with_pipeline,
         vulnerability: vulnerability,
-        raw_metadata: metadata.to_json,
-        pipelines: [pipeline]
+        raw_metadata: metadata.to_json
       )
     end
 

@@ -34,7 +34,6 @@ module Vulnerabilities
     has_many :remediations, through: :finding_remediations
 
     has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :finding, foreign_key: 'occurrence_id'
-    has_many :pipelines, through: :finding_pipelines, class_name: 'Ci::Pipeline', disable_joins: -> { ::Feature.enabled?(:finding_ci_pipeline_disable_joins, default_enabled: :yaml) }
 
     has_many :signatures, class_name: 'Vulnerabilities::FindingSignature', inverse_of: :finding
 

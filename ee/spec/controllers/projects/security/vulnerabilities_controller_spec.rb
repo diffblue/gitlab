@@ -26,7 +26,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
     end
 
     context "when there's an attached pipeline" do
-      let_it_be(:finding) { create(:vulnerabilities_finding, vulnerability: vulnerability, pipelines: [pipeline]) }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_pipeline, vulnerability: vulnerability) }
 
       it 'renders the vulnerability page' do
         show_vulnerability

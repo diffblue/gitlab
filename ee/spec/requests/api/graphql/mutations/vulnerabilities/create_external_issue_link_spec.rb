@@ -8,7 +8,7 @@ RSpec.describe 'Creating an External Issue Link' do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success, project: project) }
-  let_it_be(:finding) { create(:vulnerabilities_finding, pipelines: [pipeline], project: project, severity: :high) }
+  let_it_be(:finding) { create(:vulnerabilities_finding, :with_pipeline, project: project, severity: :high) }
   let_it_be(:vulnerability) { create(:vulnerability, title: 'My vulnerability', project: project, findings: [finding]) }
   let_it_be(:external_provider) { 'jira' }
 
