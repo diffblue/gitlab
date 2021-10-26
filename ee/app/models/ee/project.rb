@@ -124,6 +124,7 @@ module EE
 
       scope :with_code_coverage, -> do
         joins(:daily_build_group_report_results).merge(::Ci::DailyBuildGroupReportResult.with_coverage.with_default_branch).group(:id)
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339974')
       end
 
       scope :with_coverage_feature_usage, ->(default_branch: nil) do

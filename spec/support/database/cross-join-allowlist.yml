@@ -1,6 +1,3 @@
-- "./ee/spec/finders/ee/namespaces/projects_finder_spec.rb"
-- "./ee/spec/graphql/ee/resolvers/namespace_projects_resolver_spec.rb"
-- "./ee/spec/models/project_spec.rb"
 - "./ee/spec/requests/api/ci/minutes_spec.rb"
 - "./ee/spec/services/ci/minutes/additional_packs/change_namespace_service_spec.rb"
 - "./ee/spec/services/ci/minutes/additional_packs/create_service_spec.rb"
