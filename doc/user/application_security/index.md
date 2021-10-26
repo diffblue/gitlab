@@ -187,17 +187,22 @@ By default, the vulnerability report does not show vulnerabilities of `dismissed
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/9928) in GitLab 12.2.
 
-You can implement merge request approvals to require approval by selected users or a group when a
-merge request would introduce one of the following security issues:
+You can enforce an additional approval for merge requests that would introduce one of the following
+security issues:
 
-- A security vulnerability
-- A software license compliance violation
+- A security vulnerability. For more details, read
+  [Vulnerability-Check rule](#vulnerability-check-rule).
+- A software license compliance violation. For more details, read
+  [Enabling license approvals within a project](../compliance/license_compliance/index.md#enabling-license-approvals-within-a-project).
 
-When the Vulnerability-Check merge request rule is enabled, additional merge request approval
-is required when the latest security report in a merge request:
+### Vulnerability-Check rule
 
-- Contains vulnerabilities that are not present in the
-  target branch. Note that approval is still required for dismissed vulnerabilities.
+To prevent a merge request introducing a security vulnerability in a project, enable the
+Vulnerability-Check rule. While this rule is enabled, an additional merge request approval is
+required when the latest security report in a merge request:
+
+- Contains vulnerabilities that are not present in the target branch. Note that approval is still
+  required for dismissed vulnerabilities.
 - Contains vulnerabilities with severity levels (for example, `high`, `critical`, or `unknown`)
   matching the rule's severity levels.
 - Contains a vulnerability count higher than the rule allows.
@@ -210,36 +215,22 @@ An approval is optional when the security report:
   the rule's severity levels.
 - Contains a vulnerability count equal to or less than what the rule allows.
 
-When the License-Check merge request rule is enabled, additional approval is required if a merge
-request contains a denied license. For more details, see [Enabling license approvals within a project](../compliance/license_compliance/index.md#enabling-license-approvals-within-a-project).
-
-### Enable the Vulnerability-Check rule
+#### Enable the Vulnerability-Check rule
 
 Prerequisites:
 
 - Maintainer or Owner [role](../permissions.md#project-members-permissions).
 
-For this approval group, you must set the number of approvals required to greater than zero.
-
-Follow these steps to enable `Vulnerability-Check`:
+To enable the `Vulnerability-Check` rule:
 
 1. On the top bar, select **Menu > Projects** and find your project.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Merge request approvals**.
 1. Select **Enable** or **Edit**.
-1. Set the **Security scanners** that the rule applies to.
-1. Select the **Target branch**.
-1. Set the **Vulnerabilities allowed** to the number of vulnerabilities allowed before the rule is
-   triggered.
-1. Set the **Severity levels** to the severity levels that the rule applies to.
-1. Set the **Approvals required** to the number of approvals that the rule requires.
-1. Select the users or groups to provide approval.
+1. Complete the fields. **Approvals required** must be at least 1.
 1. Select **Add approval rule**.
 
-Once this group is added to your project, the approval rule is enabled for all merge requests.
-Any code changes cause the approvals required to reset.
-
-![Vulnerability Check Approver Rule](img/vulnerability-check_v14_2.png)
+The approval rule is enabled for all merge requests. Any code changes reset the approvals required.
 
 ## Using private Maven repositories
 
