@@ -13,7 +13,7 @@ module Gitlab
           #   attribute: md5
           # end
 
-          ALLOWED_ATTRIBUTES = %i(md5
+          ALLOWED_ATTRIBUTES = %w(md5
                                   id
                                   plan
                                   trial
@@ -27,17 +27,22 @@ module Gitlab
             super
 
             raise ArgumentError, "License options attribute are required" unless license_attribute.present?
-            raise ArgumentError, "attribute should one allowed" unless license_attribute.in?(ALLOWED_ATTRIBUTES)
-          end
-
-          def license_attribute
-            options[:attribute]
+            raise ArgumentError, "Attribute: #{license_attribute} it not allowed" unless license_attribute.in?(ALLOWED_ATTRIBUTES)
           end
 
           def value
-            alt_usage_data(fallback: -1) do
-              ::Licese.current.send(license_attribute)
+            return ::License.trial_ends_on if license_attribute == "trial_ends_on"
+
+            alt_usage_data(fallback: nil) do
+              # license_attribute is checked in the constructor, so it's safe
+              ::License.current.send(license_attribute)  # rubocop: disable GitlabSecurity/PublicSend
             end
+          end
+
+          private
+
+          def license_attribute
+            options[:attribute]
           end
         end
       end

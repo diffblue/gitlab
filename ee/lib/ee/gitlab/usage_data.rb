@@ -72,7 +72,7 @@ module EE
         def features_usage_data_ee
           {
             elasticsearch_enabled: alt_usage_data(fallback: nil) { ::Gitlab::CurrentSettings.elasticsearch_search? },
-            license_trial_ends_on: alt_usage_data(fallback: nil) { add_metric("LicenseMetric", options: { attribute: :trial_ends_on }) },
+            license_trial_ends_on: add_metric("LicenseMetric", options: { attribute: "trial_ends_on" }),
             geo_enabled: alt_usage_data(fallback: nil) { ::Gitlab::Geo.enabled? },
             user_cap_feature_enabled: add_metric('UserCapSettingEnabledMetric', time_frame: 'none')
           }
@@ -90,7 +90,7 @@ module EE
             end
 
           if license
-            usage_data[:license_md5] = add_metric("LicenseMdFiveMetric")
+            usage_data[:license_md5] = add_metric("LicenseMetric", options: { attribute: 'md5' })
             usage_data[:license_id] = license.license_id
             # rubocop: disable UsageData/LargeTable
             usage_data[:historical_max_users] = add_metric("HistoricalMaxUsersMetric")
@@ -103,7 +103,7 @@ module EE
             usage_data[:license_plan] = license.plan
             usage_data[:license_add_ons] = license.add_ons
             usage_data[:license_trial] = license.trial?
-            usage_data[:license_subscription_id] = alt_usage_data(fallback: nil) { license.subscription_id }
+            usage_data[:license_subscription_id] = license.subscription_id
           end
 
           usage_data

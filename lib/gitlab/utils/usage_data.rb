@@ -49,6 +49,7 @@ module Gitlab
         # Results of this method should be overwritten by instrumentation class values
         # -100 indicates the metric was not properly merged.
         return INSTRUMENTATION_CLASS_FALLBACK if Feature.enabled?(:usage_data_instrumentation)
+
         metric_class = "Gitlab::Usage::Metrics::Instrumentations::#{metric}".constantize
 
         metric_class.new(time_frame: time_frame, options: options).value
