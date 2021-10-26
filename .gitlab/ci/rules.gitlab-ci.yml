@@ -1188,7 +1188,6 @@
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
     - <<: *if-merge-request-labels-as-if-jh
-    - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *ci-patterns
 
