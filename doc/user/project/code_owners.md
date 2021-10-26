@@ -85,7 +85,7 @@ If you do not invite **Subgroup Y** to **Project A**, but make them Code Owners,
 of the merge request becomes optional.
 
 Inviting **Subgroup Y** to a parent group of **Project A**
-[is supported](https://gitlab.com/gitlab-org/gitlab/-/issues/288851). To set **Subgroup Y** as
+[is not supported](https://gitlab.com/gitlab-org/gitlab/-/issues/288851). To set **Subgroup Y** as
 Code Owners, add this group directly to the project itself.
 
 ### Add a group as a Code Owner
