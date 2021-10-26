@@ -9,7 +9,10 @@ class GitlabSubscription < ApplicationRecord
   enum trial_extension_type: { extended: 1, reactivated: 2 }
 
   default_value_for(:start_date) { Date.today }
+
   before_update :log_previous_state_for_update
+  before_update :reset_seats_for_new_term
+
   after_commit :index_namespace, on: [:create, :update]
   after_destroy_commit :log_previous_state_for_destroy
 
@@ -68,9 +71,9 @@ class GitlabSubscription < ApplicationRecord
   end
 
   # Refresh seat related attribute (without persisting them)
-  def refresh_seat_attributes!
+  def refresh_seat_attributes!(new_term_reset: false)
     self.seats_in_use = calculate_seats_in_use
-    self.max_seats_used = [max_seats_used, seats_in_use].max
+    self.max_seats_used = new_term_reset ? seats_in_use : [max_seats_used, seats_in_use].max
     self.seats_owed = calculate_seats_owed
   end
 
@@ -174,5 +177,18 @@ class GitlabSubscription < ApplicationRecord
     return unless automatically_index_in_elasticsearch?
 
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: namespace_id)
+  end
+
+  # If the subscription starts a new term, the dates will change. We reset seat counts
+  # so that we don't carry over max_seats_used/owed from the previous term
+  def reset_seats_for_new_term
+    return unless new_term?
+
+    refresh_seat_attributes!(new_term_reset: true)
+  end
+
+  def new_term?
+    persisted? && start_date_changed? && end_date_changed? &&
+      (end_date_was.nil? || start_date >= end_date_was)
   end
 end
