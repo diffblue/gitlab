@@ -11428,7 +11428,8 @@ CREATE TABLE ci_builds_metadata (
     secrets jsonb DEFAULT '{}'::jsonb NOT NULL,
     build_id bigint NOT NULL,
     id bigint NOT NULL,
-    runner_features jsonb DEFAULT '{}'::jsonb NOT NULL
+    runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
+    runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE SEQUENCE ci_builds_metadata_id_seq
