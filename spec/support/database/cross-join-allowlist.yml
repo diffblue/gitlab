@@ -5,7 +5,6 @@
 - "./spec/features/groups/packages_spec.rb"
 - "./spec/features/projects/infrastructure_registry_spec.rb"
 - "./spec/features/projects/packages_spec.rb"
-- "./spec/finders/ci/pipelines_for_merge_request_finder_spec.rb"
 - "./spec/lib/api/entities/package_spec.rb"
 - "./spec/lib/gitlab/background_migration/copy_ci_builds_columns_to_security_scans_spec.rb"
 - "./spec/lib/gitlab/background_migration/migrate_pages_metadata_spec.rb"
