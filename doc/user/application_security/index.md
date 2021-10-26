@@ -304,9 +304,9 @@ sast:
   stage: security-scan
 ```
 
-## Interacting with findings and vulnerabilities
+## Interact with findings and vulnerabilities
 
-There are a variety of locations and ways to interact with the results of the security scanning tools:
+You can interact with the results of the security scanning tools in several locations:
 
 - [Scan information in merge requests](#view-security-scan-information-in-merge-requests)
 - [Project Security Dashboard](security_dashboard/#project-security-dashboard)
@@ -317,7 +317,11 @@ There are a variety of locations and ways to interact with the results of the se
 - [Vulnerability Pages](vulnerabilities/index.md)
 - [Dependency List](dependency_list/index.md)
 
-For more details about which findings or vulnerabilities you can view in each of those locations, select the respective link. Each page details the ways in which you can interact with the findings and vulnerabilities. As an example, in most cases findings start out as _detected_ status. You have the option to:
+For more details about which findings or vulnerabilities you can view in each of those locations,
+select the respective link. Each page details the ways in which you can interact with the findings
+and vulnerabilities. As an example, in most cases findings start out as _detected_ status.
+
+You have the option to:
 
 - Change the status.
 - Create an issue.
@@ -354,8 +358,8 @@ variables:
 
 ### Outdated security reports
 
-When a security report generated for a merge request becomes outdated, the merge request shows a warning
-message in the security widget and prompts you to take an appropriate action.
+When a security report generated for a merge request becomes outdated, the merge request shows a
+warning message in the security widget and prompts you to take an appropriate action.
 
 This can happen in two scenarios:
 
@@ -364,18 +368,18 @@ This can happen in two scenarios:
 
 #### Source branch is behind the target branch
 
-This means the most recent common ancestor commit between the target branch and the source branch is
-not the most recent commit on the target branch. This is by far the most common situation.
+A security report can be out of date when the most recent common ancestor commit between the
+target branch and the source branch is not the most recent commit on the target branch.
 
-In this case you must rebase or merge to incorporate the changes from the target branch.
+To fix this issue, rebase or merge to incorporate the changes from the target branch.
 
 ![Incorporate target branch changes](img/outdated_report_branch_v12_9.png)
 
 #### Target branch security report is out of date
 
-This can happen for many reasons, including failed jobs or new advisories. When the merge request shows that a
-security report is out of date, you must run a new pipeline on the target branch.
-You can do it quickly by following the hyperlink given to run a new pipeline.
+This can happen for many reasons, including failed jobs or new advisories. When the merge request
+shows that a security report is out of date, you must run a new pipeline on the target branch.
+Select **new pipeline** to run a new pipeline.
 
 ![Run a new pipeline](img/outdated_report_pipeline_v12_9.png)
 
@@ -392,6 +396,7 @@ Found errors in your .gitlab-ci.yml:
 ```
 
 This error appears when the included job's stage (named `test`) isn't declared in `.gitlab-ci.yml`.
+
 To fix this issue, you can either:
 
 - Add a `test` stage in your `.gitlab-ci.yml`.
@@ -425,12 +430,11 @@ All the security scanning tools define their stage, so this error can occur with
 
 ### Getting warning messages `… report.json: no matching files`
 
-This is often followed by the [error `No files to upload`](../../ci/pipelines/job_artifacts.md#error-message-no-files-to-upload),
-and preceded by other errors or warnings that indicate why the JSON report wasn't generated. Please
-check the entire job log for such messages. If you don't find these messages, retry the failed job
-after setting `SECURE_LOG_LEVEL: "debug"` as a
-[custom CI/CD variable](../../ci/variables/index.md#custom-cicd-variables).
-This provides useful information to investigate further.
+This message is often followed by the [error `No files to upload`](../../ci/pipelines/job_artifacts.md#error-message-no-files-to-upload),
+and preceded by other errors or warnings that indicate why the JSON report wasn't generated. Check
+the entire job log for such messages. If you don't find these messages, retry the failed job after
+setting `SECURE_LOG_LEVEL: "debug"` as a [custom CI/CD variable](../../ci/variables/index.md#custom-cicd-variables).
+This provides extra information to investigate further.
 
 ### Getting error message `sast job: config key may not be used with 'rules': only/except`
 
@@ -528,23 +532,24 @@ involve pinning to the previous template versions, for example:
   ```
 
 Additionally, we provide a dedicated project containing the versioned legacy templates.
-This can be useful for offline setups or anyone wishing to use [Auto DevOps](../../topics/autodevops/index.md).
+This can be used for offline setups or anyone wishing to use [Auto DevOps](../../topics/autodevops/index.md).
 
 Instructions are available in the [legacy template project](https://gitlab.com/gitlab-org/auto-devops-v12-10).
 
 #### Vulnerabilities are found, but the job succeeds. How can I have a pipeline fail instead?
 
-This is the current default behavior, because the job's status indicates success or failure of the analyzer itself.
-Analyzer results are displayed in the [job logs](../../ci/jobs/index.md#expand-and-collapse-job-log-sections),
-[Merge Request widget](#view-security-scan-information-in-merge-requests)
-or [Security Dashboard](security_dashboard/index.md).
+In these circumstances, that the job succeeds is the default behavior. The job's status indicates
+success or failure of the analyzer itself. Analyzer results are displayed in the
+[job logs](../../ci/jobs/index.md#expand-and-collapse-job-log-sections),
+[Merge Request widget](#view-security-scan-information-in-merge-requests) or
+[Security Dashboard](security_dashboard/index.md).
 
 ### Error: job `is used for configuration only, and its script should not be executed`
 
 [Changes made in GitLab 13.4](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/41260)
 to the `Security/Dependency-Scanning.gitlab-ci.yml` and `Security/SAST.gitlab-ci.yml`
 templates mean that if you enable the `sast` or `dependency_scanning` jobs by setting the `rules` attribute,
-they will fail with the error `(job) is used for configuration only, and its script should not be executed`.
+they fail with the error `(job) is used for configuration only, and its script should not be executed`.
 
 The `sast` or `dependency_scanning` stanzas can be used to make changes to all SAST or Dependency Scanning,
 such as changing `variables` or the `stage`, but they cannot be used to define shared `rules`.
