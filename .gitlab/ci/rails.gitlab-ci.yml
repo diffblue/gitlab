@@ -594,6 +594,31 @@ rspec system pg12-as-if-foss decomposed:
     - .decomposed-database-rspec
     - .rails:rules:decomposed-databases
 
+rspec migration pg12-as-if-jh:
+  extends:
+    - .rspec-base-pg12-as-if-jh
+    - .rspec-base-migration
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-migration-parallel
+
+rspec unit pg12-as-if-jh:
+  extends:
+    - .rspec-base-pg12-as-if-jh
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-unit-parallel
+
+rspec integration pg12-as-if-jh:
+  extends:
+    - .rspec-base-pg12-as-if-jh
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-integration-parallel
+
+rspec system pg12-as-if-jh:
+  extends:
+    - .rspec-base-pg12-as-if-jh
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-system-parallel
+
 rspec-ee migration pg12:
   extends:
     - .rspec-ee-base-pg12
