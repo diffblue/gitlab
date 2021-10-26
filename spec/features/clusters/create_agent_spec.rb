@@ -7,8 +7,6 @@ RSpec.describe 'Cluster agent registration', :js do
   let_it_be(:current_user) { create(:user, maintainer_projects: [project]) }
 
   before do
-    stub_licensed_features(cluster_agents: true)
-
     allow(Gitlab::Kas).to receive(:enabled?).and_return(true)
     allow(Gitlab::Kas).to receive(:internal_url).and_return('kas.example.internal')
 
