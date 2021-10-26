@@ -808,7 +808,9 @@ module EE
 
     override :predefined_variables
     def predefined_variables
-      super.concat(requirements_ci_variables)
+      strong_memoize(:ee_predefined_variables) do
+        super.concat(requirements_ci_variables)
+      end
     end
 
     def add_template_export_job(current_user:, after_export_strategy: nil, params: {})
