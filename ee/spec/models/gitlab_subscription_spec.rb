@@ -476,8 +476,8 @@ RSpec.describe GitlabSubscription do
     let_it_be(:not_expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today + 2) }
     let_it_be(:not_expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today + 100) }
     let_it_be(:recently_expired_subscription) { create(:gitlab_subscription, :bronze, end_date: Date.today - 4) }
-    let_it_be(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 8) }
-    let_it_be(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 10) }
+    let_it_be(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 31) }
+    let_it_be(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 40) }
 
     before do
       allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)

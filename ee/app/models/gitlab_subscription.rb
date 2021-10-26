@@ -31,9 +31,9 @@ class GitlabSubscription < ApplicationRecord
 
   scope :preload_for_refresh_seat, -> { preload([{ namespace: :route }, :hosted_plan]) }
 
-  DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 7
+  DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 30
 
-  # We set a 7 days as the threshold for expiration before removing them from
+  # We set a threshold for expiration before removing them from
   # the index
   def self.yield_long_expired_indexed_namespaces(&blk)
     # Since the gitlab_subscriptions table will keep growing in size and the
