@@ -18344,6 +18344,9 @@ msgstr ""
 msgid "Integrations|An error occurred while loading projects using custom settings."
 msgstr ""
 
+msgid "Integrations|Branches for which notifications are to be sent"
+msgstr ""
+
 msgid "Integrations|Browser limitations"
 msgstr ""
 
