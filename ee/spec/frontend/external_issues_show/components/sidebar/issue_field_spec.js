@@ -15,7 +15,7 @@ describe('IssueField', () => {
     title: 'Field Title',
   };
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(IssueField, {
       directives: {
         GlTooltip: createMockDirective(),
@@ -26,6 +26,7 @@ describe('IssueField', () => {
       },
       provide: {
         canUpdate: true,
+        ...provide,
       },
     });
   };
@@ -40,6 +41,7 @@ describe('IssueField', () => {
   const findFieldCollapsedTooltip = () => getBinding(findFieldCollapsed().element, 'gl-tooltip');
   const findFieldValue = () => wrapper.findByTestId('field-value');
   const findGlIcon = () => wrapper.findComponent(GlIcon);
+  const findEditableItemDropdown = () => wrapper.findComponent({ ref: 'dropdown' });
 
   describe('template', () => {
     beforeEach(() => {
@@ -97,24 +99,45 @@ describe('IssueField', () => {
     });
   });
 
-  describe('with canEdit = true', () => {
-    beforeEach(() => {
-      createComponent({
-        props: { canEdit: true },
+  describe.each`
+    canUpdate | canEditField | expectEditButton
+    ${false}  | ${false}     | ${false}
+    ${false}  | ${true}      | ${false}
+    ${true}   | ${false}     | ${false}
+    ${true}   | ${true}      | ${true}
+  `(
+    'when `canUpdate` is `$canUpdate` and `canEditField` is `$canEditField`',
+    ({ canUpdate, canEditField, expectEditButton }) => {
+      beforeEach(() => {
+        createComponent({
+          props: { canEditField },
+          provide: {
+            canUpdate,
+          },
+        });
       });
-    });
 
-    it('renders "Edit" button', () => {
-      expect(findEditButton().text()).toBe('Edit');
-    });
+      it('renders "Edit" button correctly', () => {
+        expect(findEditButton().exists()).toBe(expectEditButton);
+      });
 
-    it('emits "issue-field-fetch" when dropdown is opened', () => {
-      wrapper.vm.$refs.dropdown.showDropdown = jest.fn();
+      it('renders dropdown in sidebar-editable-item', () => {
+        expect(findEditableItemDropdown().exists()).toBe(expectEditButton);
+      });
 
-      findEditableItem().vm.$emit('open');
+      if (expectEditButton) {
+        describe('when sidebar-editable-item emits "open" event', () => {
+          it('emits "issue-field-fetch" event', () => {
+            const dropdown = findEditableItemDropdown();
+            dropdown.vm.showDropdown = jest.fn();
 
-      expect(wrapper.vm.$refs.dropdown.showDropdown).toHaveBeenCalled();
-      expect(wrapper.emitted('issue-field-fetch')).toHaveLength(1);
-    });
-  });
+            findEditableItem().vm.$emit('open');
+
+            expect(dropdown.vm.showDropdown).toHaveBeenCalled();
+            expect(wrapper.emitted('issue-field-fetch')).toHaveLength(1);
+          });
+        });
+      }
+    },
+  );
 });

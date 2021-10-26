@@ -13,8 +13,18 @@ export default {
     IssueFieldDropdown,
     SidebarEditableItem,
   },
+  inject: {
+    // In this context, `canUpdate` means: "can a user update any part of the sidebar?"
+    // `canUpdate` is also injected into `sidebar-editable-item`. Here, it's used, in
+    // conjunction with with its `canEdit` prop, to conditionally display the
+    // "edit" button.
+    canUpdate: {
+      default: false,
+    },
+  },
   props: {
-    canEdit: {
+    // In this context, `canEditField` means: "can a user edit this specific field?"
+    canEditField: {
       type: Boolean,
       required: false,
       default: false,
@@ -99,7 +109,7 @@ export default {
       ref="editableItem"
       :loading="updating"
       :title="title"
-      :can-edit="canEdit"
+      :can-edit="canEditField"
       @open="showDropdown"
     >
       <template #collapsed>
@@ -121,7 +131,7 @@ export default {
 
       <template #default>
         <issue-field-dropdown
-          v-if="canEdit"
+          v-if="canEditField && canUpdate"
           ref="dropdown"
           :empty-text="dropdownEmpty"
           :items="items"
