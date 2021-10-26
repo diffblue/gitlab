@@ -24,6 +24,10 @@ export default class ShortcutsEpic extends ShortcutsIssuable {
   }
 
   static openSidebarDropdown($block) {
+    if (gon.features?.labelsWidget) {
+      document.dispatchEvent(new Event('toggleSidebarRevealLabelsDropdown'));
+      return;
+    }
     if (parseBoolean(Cookies.get('collapsed_gutter'))) {
       document.dispatchEvent(new Event('toggleSidebarRevealLabelsDropdown'));
     } else {

@@ -14,6 +14,9 @@ import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sideb
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';
 import SidebarDatePickerCollapsed from '~/vue_shared/components/sidebar/collapsed_grouped_date_picker.vue';
+import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { dateTypes } from '../constants';
 import epicUtils from '../utils/epic_utils';
@@ -34,11 +37,14 @@ export default {
     SidebarSubscriptionsWidget,
     SidebarReferenceWidget,
     SidebarTodoWidget,
+    LabelsSelectWidget,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['iid'],
   data() {
     return {
       sidebarExpandedOnClick: false,
+      LabelType,
     };
   },
   computed: {
@@ -60,6 +66,7 @@ export default {
       'epicDueDateSaveInProgress',
       'fullPath',
       'epicId',
+      'epicsWebUrl',
     ]),
     ...mapGetters([
       'isUserSignedIn',
@@ -231,7 +238,26 @@ export default {
         :max-date="dueDateForCollapsedSidebar"
         @toggleCollapse="toggleSidebar({ sidebarCollapsed })"
       />
+      <labels-select-widget
+        v-if="glFeatures.labelsWidget"
+        class="block labels js-labels-block"
+        :iid="String(iid)"
+        :full-path="fullPath"
+        :allow-label-remove="canUpdate"
+        :allow-multiselect="true"
+        :labels-filter-base-path="epicsWebUrl"
+        variant="sidebar"
+        issuable-type="epic"
+        workspace-type="group"
+        :attr-workspace-path="fullPath"
+        :label-create-type="LabelType.group"
+        data-testid="labels-select"
+        @toggleCollapse="handleSidebarToggle"
+      >
+        {{ __('None') }}
+      </labels-select-widget>
       <sidebar-labels
+        v-else
         :can-update="canUpdate"
         :sidebar-collapsed="sidebarCollapsed"
         data-testid="labels-select"
