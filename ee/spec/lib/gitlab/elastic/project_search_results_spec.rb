@@ -124,4 +124,58 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, :clean_gitlab_re
     include_examples 'does not hit Elasticsearch twice for objects and counts', %w[notes blobs wiki_blobs commits issues merge_requests milestones]
     include_examples 'does not load results for count only queries', %w[notes blobs wiki_blobs commits issues merge_requests milestones]
   end
+
+  describe '#aggregations' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { described_class.new(user, query, project: project).aggregations(scope) }
+
+    where(:scope, :expected) do
+      'milestones'     | []
+      'notes'          | []
+      'issues'         | []
+      'merge_requests' | []
+      'wiki_blobs'     | []
+      'commits'        | []
+      'users'          | []
+      'unknown'        | []
+      'blobs'          | [::Gitlab::Search::Aggregation.new('language', nil)]
+    end
+
+    with_them do
+      before do
+        allow(project.repository.__elasticsearch__).to receive(:blob_aggregations).and_return(expected) if scope == 'blobs'
+      end
+
+      it_behaves_like 'loads aggregations'
+    end
+
+    context 'project search specific gates for blob scope' do
+      let(:scope) { 'blobs' }
+
+      context 'when query is blank' do
+        let(:query) { nil }
+
+        it 'returns the an empty array' do
+          expect(subject).to match_array([])
+        end
+      end
+
+      context 'when project has an empty repository' do
+        it 'returns an empty array' do
+          allow(project).to receive(:empty_repo?).and_return(true)
+
+          expect(subject).to match_array([])
+        end
+      end
+
+      context 'when user does not have download_code permission on project' do
+        it 'returns an empty array' do
+          allow(Ability).to receive(:allowed?).with(user, :download_code, project).and_return(false)
+
+          expect(subject).to match_array([])
+        end
+      end
+    end
+  end
 end
