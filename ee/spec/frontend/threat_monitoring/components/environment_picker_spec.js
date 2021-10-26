@@ -101,7 +101,6 @@ describe('EnvironmentPicker component', () => {
       expect(findDropdown().attributes()).toMatchObject({
         disabled: 'true',
         text: INVALID_CURRENT_ENVIRONMENT_NAME,
-        loading: undefined,
       });
     });
 
