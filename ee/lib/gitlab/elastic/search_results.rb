@@ -214,6 +214,15 @@ module Gitlab
         )
       end
 
+      def aggregations(scope)
+        case scope
+        when 'blobs'
+          blob_aggregations
+        else
+          []
+        end
+      end
+
       private
 
       # Apply some eager loading to the `records` of an ES result object without
@@ -349,6 +358,14 @@ module Gitlab
           number_with_delimiter(ELASTIC_COUNT_LIMIT) + '+'
         else
           number_with_delimiter(count)
+        end
+      end
+
+      def blob_aggregations
+        return [] if query.blank?
+
+        strong_memoize(:blob_aggregations) do
+          Repository.__elasticsearch__.blob_aggregations
         end
       end
     end

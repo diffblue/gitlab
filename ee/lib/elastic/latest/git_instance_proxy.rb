@@ -28,6 +28,10 @@ module Elastic
         self.class.elastic_search_as_found_blob(query, page: page, per: per, options: options, preload_method: preload_method)
       end
 
+      def blob_aggregations
+        self.class.blob_aggregations
+      end
+
       def delete_index_for_commits_and_blobs(wiki: false)
         types =
           if wiki
