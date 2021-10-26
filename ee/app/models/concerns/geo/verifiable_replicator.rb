@@ -51,7 +51,7 @@ module Geo
 
         ::Geo::ReverificationBatchWorker.perform_with_capacity(replicable_name)
 
-        if Feature.enabled?(:verification_state_backfill_worker, default_enabled: :yaml) && verification_query_class.separate_verification_state_table?
+        if verification_query_class.separate_verification_state_table?
           ::Geo::VerificationStateBackfillWorker.perform_async(replicable_name)
         end
       end

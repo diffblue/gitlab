@@ -8,17 +8,22 @@ export default () => {
     return null;
   }
 
-  const { newDastScanPath, emptyStateSvgPath } = el.dataset;
+  const { pipelinesCount, projectPath, newDastScanPath, emptyStateSvgPath } = el.dataset;
 
   return new Vue({
     el,
     router: createRouter(),
     provide: {
+      projectPath,
       newDastScanPath,
       emptyStateSvgPath,
     },
     render(h) {
-      return h(OnDemandScans);
+      return h(OnDemandScans, {
+        props: {
+          pipelinesCount: Number(pipelinesCount),
+        },
+      });
     },
   });
 };

@@ -1,12 +1,10 @@
-import { GlTabs, GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlTabs } from '@gitlab/ui';
+import { merge } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import OnDemandScans from 'ee/on_demand_scans/components/on_demand_scans.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import { createRouter } from 'ee/on_demand_scans/router';
 import AllTab from 'ee/on_demand_scans/components/tabs/all.vue';
-import RunningTab from 'ee/on_demand_scans/components/tabs/running.vue';
-import FinishedTab from 'ee/on_demand_scans/components/tabs/finished.vue';
-import ScheduledTab from 'ee/on_demand_scans/components/tabs/scheduled.vue';
 import EmptyState from 'ee/on_demand_scans/components/empty_state.vue';
 
 describe('OnDemandScans', () => {
@@ -21,22 +19,26 @@ describe('OnDemandScans', () => {
   const findHelpPageLink = () => wrapper.findByTestId('help-page-link');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findAllTab = () => wrapper.findComponent(AllTab);
-  const findRunningTab = () => wrapper.findComponent(RunningTab);
-  const findFinishedTab = () => wrapper.findComponent(FinishedTab);
-  const findScheduledTab = () => wrapper.findComponent(ScheduledTab);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
 
-  const createComponent = () => {
-    wrapper = shallowMountExtended(OnDemandScans, {
-      router,
-      provide: {
-        newDastScanPath,
-      },
-      stubs: {
-        ConfigurationPageLayout,
-        GlSprintf,
-      },
-    });
+  const createComponent = (options = {}) => {
+    wrapper = shallowMountExtended(
+      OnDemandScans,
+      merge(
+        {
+          router,
+          provide: {
+            newDastScanPath,
+          },
+          stubs: {
+            ConfigurationPageLayout,
+            GlSprintf,
+            GlTabs,
+          },
+        },
+        options,
+      ),
+    );
   };
 
   beforeEach(() => {
@@ -55,8 +57,11 @@ describe('OnDemandScans', () => {
 
   describe('when there is data', () => {
     beforeEach(() => {
-      createComponent();
-      wrapper.setData({ hasData: true });
+      createComponent({
+        propsData: {
+          pipelinesCount: 12,
+        },
+      });
     });
 
     it('renders a link to the docs', () => {
@@ -75,19 +80,13 @@ describe('OnDemandScans', () => {
       expect(link.attributes('href')).toBe(newDastScanPath);
     });
 
-    it('renders the tabs if there is data', async () => {
+    it('renders the tabs', () => {
       expect(findAllTab().exists()).toBe(true);
-      expect(findRunningTab().exists()).toBe(true);
-      expect(findFinishedTab().exists()).toBe(true);
-      expect(findScheduledTab().exists()).toBe(true);
     });
 
-    it('updates the route when the active tab changes', async () => {
-      const finishedTabIndex = 2;
-      findTabs().vm.$emit('input', finishedTabIndex);
-      await wrapper.vm.$nextTick();
-
-      expect(router.currentRoute.path).toBe('/finished');
+    it('sets the initial route to /all', () => {
+      expect(findTabs().props('value')).toBe(0);
+      expect(router.currentRoute.path).toBe('/all');
     });
   });
 });

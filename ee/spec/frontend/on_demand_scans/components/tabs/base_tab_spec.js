@@ -32,7 +32,7 @@ describe('BaseTab', () => {
   beforeEach(() => {
     createComponent({
       title: 'All',
-      itemCount: 12,
+      itemsCount: 12,
     });
   });
 
