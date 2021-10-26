@@ -1,3 +1,4 @@
+# rubocop:disable Naming/FileName
 # frozen_string_literal: true
 
 module Elastic
@@ -5,3 +6,5 @@ module Elastic
     RepositoryClassProxy = Elastic::Latest::RepositoryClassProxy
   end
 end
+
+# rubocop:enable Naming/FileName
