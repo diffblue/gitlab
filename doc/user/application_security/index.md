@@ -304,9 +304,9 @@ sast:
   stage: security-scan
 ```
 
-## Interacting with findings and vulnerabilities
+## Interact with findings and vulnerabilities
 
-There are a variety of locations and ways to interact with the results of the security scanning tools:
+You can interact with the results of the security scanning tools in several locations:
 
 - [Scan information in merge requests](#view-security-scan-information-in-merge-requests)
 - [Project Security Dashboard](security_dashboard/#project-security-dashboard)
@@ -317,7 +317,11 @@ There are a variety of locations and ways to interact with the results of the se
 - [Vulnerability Pages](vulnerabilities/index.md)
 - [Dependency List](dependency_list/index.md)
 
-For more details about which findings or vulnerabilities you can view in each of those locations, select the respective link. Each page details the ways in which you can interact with the findings and vulnerabilities. As an example, in most cases findings start out as _detected_ status. You have the option to:
+For more details about which findings or vulnerabilities you can view in each of those locations,
+select the respective link. Each page details the ways in which you can interact with the findings
+and vulnerabilities. As an example, in most cases findings start out as _detected_ status.
+
+You have the option to:
 
 - Change the status.
 - Create an issue.
