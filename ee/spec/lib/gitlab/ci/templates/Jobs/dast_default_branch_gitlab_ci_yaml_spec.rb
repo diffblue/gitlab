@@ -22,7 +22,7 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
   end
 
   describe 'the created pipeline' do
-    let_it_be(:project) do
+    let_it_be_with_refind(:project) do
       create(:project, :repository, variables: [
         build(:ci_variable, key: 'CI_KUBERNETES_ACTIVE', value: 'true')
       ])
