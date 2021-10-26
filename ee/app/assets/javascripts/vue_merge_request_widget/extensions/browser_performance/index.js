@@ -10,6 +10,7 @@ export default {
     label: s__('ciReport|Browser Performance'),
     loading: s__('ciReport|Browser performance test metrics results are being parsed'),
   },
+  expandEvent: 'i_testing_web_performance_widget_total',
   computed: {
     summary() {
       const { improved, degraded, same } = this.collapsedData;

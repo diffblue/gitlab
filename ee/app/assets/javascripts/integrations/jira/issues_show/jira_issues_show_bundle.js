@@ -17,6 +17,8 @@ export default function initJiraIssueShow({ mountPointSelector }) {
       issueLabelsPath,
       issuesShowPath,
       issuesListPath,
+      isClassicSidebar: true,
+      canUpdate: false,
     },
     render: (createElement) => createElement(JiraIssuesShowApp),
   });
