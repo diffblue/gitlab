@@ -43,7 +43,7 @@ module QA
         Runtime::Feature.disable(:top_level_group_creation_enabled)
       end
 
-      it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343195', type: :bug } do
+      it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
         Page::Group::Menu.perform(&:go_to_usage_quotas)
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
           usage_quota.pipeline_tab
