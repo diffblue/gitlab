@@ -22,11 +22,7 @@ const FIXTURE = 'services/edit_service.html';
 describe('IntegrationSettingsForm', () => {
   let integrationSettingsForm;
 
-  const mockVuexDispatch = () => {
-    const dispatchSpy = jest.fn();
-    integrationSettingsForm.vue.$store = { dispatch: dispatchSpy };
-    return dispatchSpy;
-  };
+  const mockStoreDispatch = () => jest.spyOn(integrationSettingsForm.vue.$store, 'dispatch');
 
   beforeEach(() => {
     loadFixtures(FIXTURE);
@@ -130,7 +126,7 @@ describe('IntegrationSettingsForm', () => {
         });
 
         it('should always dispatch `setIsTesting` with `false` once request is completed', async () => {
-          const dispatchSpy = mockVuexDispatch();
+          const dispatchSpy = mockStoreDispatch();
           mockAxios.onPut(integrationSettingsForm.testEndPoint).networkError();
 
           eventHub.$emit(TEST_INTEGRATION_EVENT);
@@ -147,7 +143,7 @@ describe('IntegrationSettingsForm', () => {
         });
 
         it('should dispatch `setIsTesting` with `false` and not call `testSettings`', async () => {
-          const dispatchSpy = mockVuexDispatch();
+          const dispatchSpy = mockStoreDispatch();
 
           eventHub.$emit(TEST_INTEGRATION_EVENT);
           await waitForPromises();
@@ -160,7 +156,7 @@ describe('IntegrationSettingsForm', () => {
 
     describe('when event hub receives `GET_JIRA_ISSUE_TYPES_EVENT`', () => {
       it('should always dispatch `requestJiraIssueTypes`', () => {
-        const dispatchSpy = mockVuexDispatch();
+        const dispatchSpy = mockStoreDispatch();
         mockAxios.onPut(integrationSettingsForm.testEndPoint).networkError();
 
         eventHub.$emit(GET_JIRA_ISSUE_TYPES_EVENT);
@@ -178,7 +174,7 @@ describe('IntegrationSettingsForm', () => {
       });
 
       it('should dispatch `receiveJiraIssueTypesSuccess` with the correct payload if ajax request is successful', async () => {
-        const dispatchSpy = mockVuexDispatch();
+        const dispatchSpy = mockStoreDispatch();
         const mockData = ['ISSUE', 'EPIC'];
         mockAxios.onPut(integrationSettingsForm.testEndPoint).reply(200, {
           error: false,
@@ -194,7 +190,7 @@ describe('IntegrationSettingsForm', () => {
       it.each(['Custom error message here', undefined])(
         'should dispatch "receiveJiraIssueTypesError" with a message if the backend responds with error',
         async (responseErrorMessage) => {
-          const dispatchSpy = mockVuexDispatch();
+          const dispatchSpy = mockStoreDispatch();
 
           const expectedErrorMessage =
             responseErrorMessage || I18N_FETCH_TEST_SETTINGS_DEFAULT_ERROR_MESSAGE;
@@ -237,7 +233,7 @@ describe('IntegrationSettingsForm', () => {
         });
 
         it('should dispatch `setIsSaving` with `false` and not submit form', async () => {
-          const dispatchSpy = mockVuexDispatch();
+          const dispatchSpy = mockStoreDispatch();
 
           eventHub.$emit(SAVE_INTEGRATION_EVENT);
 
