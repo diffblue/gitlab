@@ -1,3 +1,4 @@
+# rubocop:disable Naming/FileName
 # frozen_string_literal: true
 
 module Elastic
@@ -6,3 +7,5 @@ module Elastic
     IssueConfig = Elastic::Latest::IssueConfig
   end
 end
+
+# rubocop:enable Naming/FileName
