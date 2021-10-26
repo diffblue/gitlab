@@ -270,44 +270,39 @@ If you don't want scans running in your normal DevOps process you can use on-dem
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/321918) in GitLab 13.11.
 > - Schema validation message [added](https://gitlab.com/gitlab-org/gitlab/-/issues/321730) in GitLab 14.0.
 
-You can optionally enable validation of the security report artifacts based on the
-[report schemas](https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/tree/master/dist).
-If you enable validation, GitLab validates the report artifacts before ingesting the vulnerabilities.
-This prevents ingestion of broken vulnerability data into the database.
+You can enforce validation of the security report artifacts before ingesting the vulnerabilities.
+This prevents ingestion of broken vulnerability data into the database. GitLab validates the
+artifacts based on the [report schemas](https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/tree/master/dist).
 
-In GitLab 14.0 and later, the pipeline's **Security** tab lists any report artifacts
-that failed validation. Security report validation must first be enabled.
+In GitLab 14.0 and later, when artifact validation is enabled, the pipeline's **Security** tab lists
+any report artifacts that failed validation.
 
 ### Enable security report validation
 
-To enable report artifacts validation, set the `VALIDATE_SCHEMA` environment variable to `"true"` for the jobs in the `.gitlab-ci.yml` file.
+To enable report artifacts validation, set the `VALIDATE_SCHEMA` environment variable to `"true"`
+for the desired jobs in the `.gitlab-ci.yml` file.
 
-For example, the configuration below enables validation for only the `sast` job:
+For example, to enable validation for only the `sast` job:
 
-  ```yaml
-  include:
-    - template: Security/Dependency-Scanning.gitlab-ci.yml
-    - template: Security/License-Scanning.gitlab-ci.yml
-    - template: Security/SAST.gitlab-ci.yml
-    - template: Security/Secret-Detection.gitlab-ci.yml
-
-  stages:
-    - security-scan
-
-  dependency_scanning:
-    stage: security-scan
-
-  license_scanning:
-    stage: security-scan
-
-  sast:
-    stage: security-scan
-    variables:
-      VALIDATE_SCHEMA: "true"
-
-  .secret-analyzer:
-    stage: security-scan
-  ```
+```yaml
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+stages:
+  - security-scan
+dependency_scanning:
+  stage: security-scan
+license_scanning:
+  stage: security-scan
+sast:
+  stage: security-scan
+  variables:
+    VALIDATE_SCHEMA: "true"
+.secret-analyzer:
+  stage: security-scan
+```
 
 ## Interacting with findings and vulnerabilities
 
