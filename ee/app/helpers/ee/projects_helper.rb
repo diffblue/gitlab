@@ -75,7 +75,7 @@ module EE
         license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
       }.tap do |data|
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
           data[:approvals_path] = expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id))
           data[:group_name] = project.root_ancestor.name
         end

@@ -539,7 +539,7 @@ module EE
     end
 
     def reset_approvals_on_push
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor)
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor, default_enabled: :yaml)
         !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
                                                                     .retain_approvals_on_push
                                                                     .value && feature_available?(:merge_request_approvers)
@@ -573,7 +573,7 @@ module EE
     end
 
     def require_password_to_approve
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor)
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor, default_enabled: :yaml)
         ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
                                                                     .require_password_to_approve
                                                                     .value && password_authentication_enabled_for_web?
@@ -736,7 +736,7 @@ module EE
 
     def disable_overriding_approvers_per_merge_request
       strong_memoize(:disable_overriding_approvers_per_merge_request) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
@@ -756,7 +756,7 @@ module EE
 
     def merge_requests_author_approval
       strong_memoize(:merge_requests_author_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
@@ -777,7 +777,7 @@ module EE
 
     def merge_requests_disable_committers_approval
       strong_memoize(:merge_requests_disable_committers_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
