@@ -701,6 +701,47 @@ rspec-ee system pg12 geo minimal:
     - .minimal-rspec-tests
     - .rails:rules:ee-only-system:minimal
 
+rspec-ee migration pg12-as-if-jh:
+  extends:
+    - .rspec-jh-base-pg12
+    - .rspec-base-migration
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-ee-migration-parallel
+
+rspec-ee unit pg12-as-if-jh:
+  extends:
+    - .rspec-jh-base-pg12
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-ee-unit-parallel
+
+rspec-ee integration pg12-as-if-jh:
+  extends:
+    - .rspec-jh-base-pg12
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-ee-integration-parallel
+
+rspec-ee system pg12-as-if-jh:
+  extends:
+    - .rspec-jh-base-pg12
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-ee-system-parallel
+
+rspec-ee unit pg12-as-if-jh geo:
+  extends:
+    - .rspec-jh-base-geo-pg12
+    - .rails:rules:as-if-jh-rspec
+    - .rspec-ee-unit-geo-parallel
+
+rspec-ee integration pg12-as-if-jh geo:
+  extends:
+    - .rspec-jh-base-geo-pg12
+    - .rails:rules:as-if-jh-rspec
+
+rspec-ee system pg12-as-if-jh geo:
+  extends:
+    - .rspec-jh-base-geo-pg12
+    - .rails:rules:as-if-jh-rspec
+
 rspec-jh migration pg12-as-if-jh:
   extends:
     - .rspec-jh-base-pg12
