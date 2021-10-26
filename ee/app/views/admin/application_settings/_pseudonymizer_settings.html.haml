@@ -7,5 +7,6 @@
         = expanded ? _('Collapse') : _('Expand')
       %p
         = _('Enable or disable the Pseudonymizer data collection.')
+        = link_to _('Learn more.'), help_page_path('administration/pseudonymizer.md'), target: '_blank', rel: 'noopener noreferrer'
     .settings-content
       = render 'pseudonymizer'
