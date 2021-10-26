@@ -144,17 +144,11 @@ RSpec.shared_examples 'a verifiable replicator' do
         described_class.trigger_background_verification
       end
 
-      context 'when verification_state_backfill_worker feature flag is enabled' do
-        before do
-          stub_feature_flags(verification_state_backfill_worker: true)
-          expect(described_class.model).to receive(:separate_verification_state_table?).and_return(true)
-        end
+      it 'enqueues VerificationStateBackfillWorker' do
+        expect(described_class.model).to receive(:separate_verification_state_table?).and_return(true)
+        expect(::Geo::VerificationStateBackfillWorker).to receive(:perform_async).with(described_class.replicable_name)
 
-        it 'enqueues VerificationStateBackfillWorker' do
-          expect(::Geo::VerificationStateBackfillWorker).to receive(:perform_async).with(described_class.replicable_name)
-
-          described_class.trigger_background_verification
-        end
+        described_class.trigger_background_verification
       end
 
       context 'for a Geo secondary' do
