@@ -17,6 +17,7 @@ module Security
         store_reports
         mark_project_as_vulnerable!
         set_latest_pipeline!
+        schedule_auto_fix
       end
 
       private
@@ -31,7 +32,7 @@ module Security
       end
 
       def latest_security_scans
-        pipeline.security_scans.without_errors.latest
+        @latest_security_scans ||= pipeline.security_scans.without_errors.latest
       end
 
       def ingest(security_scan)
@@ -54,6 +55,22 @@ module Security
 
       def set_latest_pipeline!
         Vulnerabilities::Statistic.set_latest_pipeline_with(pipeline)
+      end
+
+      def schedule_auto_fix
+        ::Security::AutoFixWorker.perform_async(pipeline.id) if auto_fix_enabled?
+      end
+
+      def auto_fix_enabled?
+        project.security_setting&.auto_fix_enabled? && has_auto_fixable_report_type?
+      end
+
+      def has_auto_fixable_report_type?
+        (project.security_setting.auto_fix_enabled_types & report_types).any?
+      end
+
+      def report_types
+        latest_security_scans.map(&:scan_type).map(&:to_sym)
       end
     end
   end
