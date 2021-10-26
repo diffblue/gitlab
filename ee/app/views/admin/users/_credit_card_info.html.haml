@@ -8,30 +8,35 @@
         = link_to card_match_admin_user_path(@user) do
           = _('other card matches')
   %ul.content-list
-    - if credit_card_validation.nil?
-      %li#credit-card-status
+    %li#credit-card-status
+      - if credit_card_validation.nil?
         %span.light= _('Validated:')
         %strong= _('No')
-    - else
-      %li
-        - if credit_card_validation.holder_name
-          %span.light= _('Holder name:')
-          %strong
-            = credit_card_validation.holder_name
-
-      %li#credit-card-status
+      - else
         %span.light= _('Validated at:')
         %strong
           = credit_card_validation.credit_card_validated_at.to_s(:medium)
 
+    - if credit_card_validation&.holder_name
       %li
-        - if credit_card_validation.last_digits
-          %span.light= _('Card number:')
-          %strong
-            = credit_card_validation.last_digits.to_s.rjust(4, '0')
+        %span.light= _('Holder name:')
+        %strong
+          = credit_card_validation.holder_name
 
+    - if credit_card_validation&.network
       %li
-        - if credit_card_validation.expiration_date
-          %span.light= _('Expiration date:')
-          %strong
-            = credit_card_validation.expiration_date
+        %span.light= _('Network:')
+        %strong
+          = credit_card_validation.network.camelcase
+
+    - if credit_card_validation&.last_digits
+      %li
+        %span.light= _('Card number:')
+        %strong
+          = credit_card_validation.last_digits.to_s.rjust(4, '0')
+
+    - if credit_card_validation&.expiration_date
+      %li
+        %span.light= _('Expiration date:')
+        %strong
+          = credit_card_validation.expiration_date

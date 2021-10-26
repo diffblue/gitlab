@@ -19,6 +19,7 @@
         %thead
           %th= _('ID')
           %th= _('User')
+          %th= _('Card holder name')
           %th.gl-text-right= _('Validated at')
           %th.gl-text-right= _('User created at')
           %th.gl-text-right= _('Current sign-in ip')
@@ -31,7 +32,9 @@
             %td
               = link_to(user.username, admin_user_path(user))
               - if user == @user
-                = _('(target)')
+                = _('(this user)')
+            %td
+              = credit_card_validation.holder_name
             %td.gl-text-right
               = validated_at.to_s(:medium)
               \/
@@ -41,7 +44,7 @@
               - if user.current_sign_in_ip
                 = user.current_sign_in_ip
                 = link_to sprite_icon('earth'), "https://api.hostip.info/country.php?ip=#{user.current_sign_in_ip}", target: '_blank', rel: 'noreferrer'
-      * All times are in UTC unless specified
+      = _('* All times are in UTC unless specified')
       = paginate @similar_credit_card_validations, theme: 'gitlab'
 
 .gl-float-right
