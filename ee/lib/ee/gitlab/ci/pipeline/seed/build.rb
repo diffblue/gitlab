@@ -9,7 +9,7 @@ module EE
             extend ::Gitlab::Utils::Override
 
             override :attributes
-            def initialize(context, attributes, previous_stages, current_stage = nil)
+            def initialize(context, attributes, stages_for_needs_lookup)
               super
 
               @dast_configuration = attributes.dig(:options, :dast_configuration)
