@@ -12,10 +12,7 @@ RSpec.describe Mutations::Dast::Profiles::Create do
   let(:description) { SecureRandom.hex }
   let(:name) { SecureRandom.hex }
   let(:run_after_create) { false }
-
-  # rubocop: disable CodeReuse/ActiveRecord
   let(:dast_profile) { Dast::Profile.find_by(project: project, name: name) }
-  # rubocop: enable CodeReuse/ActiveRecord
   let(:dast_profile_schedule) { nil }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: developer }, field: nil) }
