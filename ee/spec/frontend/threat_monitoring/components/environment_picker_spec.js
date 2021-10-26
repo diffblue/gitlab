@@ -98,9 +98,11 @@ describe('EnvironmentPicker component', () => {
     });
 
     it('disables the environments dropdown', () => {
-      expect(findDropdown().attributes('disabled')).toBe('true');
-      expect(findDropdown().attributes('text')).toBe(INVALID_CURRENT_ENVIRONMENT_NAME);
-      expect(findDropdown().attributes('loading')).toBe(undefined);
+      expect(findDropdown().attributes()).toMatchObject({
+        disabled: 'true',
+        text: INVALID_CURRENT_ENVIRONMENT_NAME,
+        loading: undefined,
+      });
     });
 
     it('has no dropdown items', () => {
@@ -132,9 +134,11 @@ describe('EnvironmentPicker component', () => {
     });
 
     it('disables the environments dropdown', () => {
-      expect(findDropdown().attributes('disabled')).toBe('true');
-      expect(findDropdown().attributes('text')).toBe(LOADING_TEXT);
-      expect(findDropdown().attributes('loading')).toBe('true');
+      expect(findDropdown().attributes()).toMatchObject({
+        disabled: 'true',
+        text: LOADING_TEXT,
+        loading: 'true',
+      });
     });
   });
 });
