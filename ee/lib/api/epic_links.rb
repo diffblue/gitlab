@@ -4,7 +4,7 @@ module API
   class EpicLinks < ::API::Base
     include ::Gitlab::Utils::StrongMemoize
 
-    feature_category :epics
+    feature_category :portfolio_management
 
     before do
       authenticate!

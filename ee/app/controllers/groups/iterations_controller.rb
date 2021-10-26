@@ -5,7 +5,7 @@ class Groups::IterationsController < Groups::ApplicationController
   before_action :authorize_show_iteration!, only: [:index, :show]
   before_action :authorize_create_iteration!, only: [:new, :edit]
 
-  feature_category :issue_tracking
+  feature_category :team_planning
 
   def index; end
 

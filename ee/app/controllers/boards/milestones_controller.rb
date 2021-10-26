@@ -5,7 +5,7 @@ module Boards
     include BoardsResponses
 
     before_action :authorize_read_milestone, only: [:index]
-    feature_category :boards
+    feature_category :team_planning
 
     def index
       milestones_finder = Boards::MilestonesFinder.new(board, current_user)

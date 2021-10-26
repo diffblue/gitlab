@@ -8,7 +8,7 @@ class NewEpicWorker # rubocop:disable Scalability/IdempotentWorker
   sidekiq_options retry: 3
   include NewIssuable
 
-  feature_category :epics
+  feature_category :portfolio_management
   worker_resource_boundary :cpu
   weight 2
 

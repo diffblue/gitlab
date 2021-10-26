@@ -9,7 +9,7 @@ module Epics
     sidekiq_options retry: 3
 
     queue_namespace :epics
-    feature_category :epics
+    feature_category :portfolio_management
 
     def perform(epic_ids)
       return if epic_ids.blank?

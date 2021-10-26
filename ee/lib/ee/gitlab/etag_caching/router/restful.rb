@@ -11,7 +11,7 @@ module EE
             [
               %r(^/groups/#{::Gitlab::PathRegex.full_namespace_route_regex}/-/epics/\d+/notes\z),
               'epic_notes',
-              'epics'
+              'portfolio_management'
             ]
           ].freeze
 

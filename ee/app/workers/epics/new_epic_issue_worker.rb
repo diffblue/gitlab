@@ -6,7 +6,7 @@ module Epics
 
     data_consistency :always
 
-    feature_category :epics
+    feature_category :portfolio_management
 
     def perform(params)
       @params = params

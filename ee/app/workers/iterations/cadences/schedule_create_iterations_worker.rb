@@ -13,7 +13,7 @@ module Iterations
       deduplicate :until_executed, including_scheduled: true
 
       queue_namespace :cronjob
-      feature_category :issue_tracking
+      feature_category :team_planning
 
       def perform
         Iterations::Cadence.for_automated_iterations.each_batch(of: BATCH_SIZE) do |cadences|
