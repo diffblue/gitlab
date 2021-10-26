@@ -772,31 +772,26 @@ rspec-jh migration pg12-as-if-jh:
     - .rspec-jh-base-pg12
     - .rspec-base-migration
     - .rails:rules:as-if-jh-rspec
-    - .rspec-ee-migration-parallel
 
 rspec-jh unit pg12-as-if-jh:
   extends:
     - .rspec-jh-base-pg12
     - .rails:rules:as-if-jh-rspec
-    - .rspec-ee-unit-parallel
 
 rspec-jh integration pg12-as-if-jh:
   extends:
     - .rspec-jh-base-pg12
     - .rails:rules:as-if-jh-rspec
-    - .rspec-ee-integration-parallel
 
 rspec-jh system pg12-as-if-jh:
   extends:
     - .rspec-jh-base-pg12
     - .rails:rules:as-if-jh-rspec
-    - .rspec-ee-system-parallel
 
 rspec-jh unit pg12-as-if-jh geo:
   extends:
     - .rspec-jh-base-geo-pg12
     - .rails:rules:as-if-jh-rspec
-    - .rspec-ee-unit-geo-parallel
 
 rspec-jh integration pg12-as-if-jh geo:
   extends:
