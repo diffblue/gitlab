@@ -19,6 +19,7 @@ export default {
 
 <template>
   <gl-empty-state
+    class="gl-mt-0"
     :title="$options.i18n.title"
     :svg-path="emptyStateSvgPath"
     :primary-button-link="dashboardDocumentation"
