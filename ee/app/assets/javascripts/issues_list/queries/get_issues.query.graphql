@@ -16,6 +16,8 @@ query getIssues(
   $milestoneTitle: [String]
   $milestoneWildcardId: MilestoneWildcardId
   $myReactionEmoji: String
+  $releaseTag: [String!]
+  $releaseTagWildcardId: ReleaseTagWildcardId
   $types: [IssueType!]
   $epicId: String
   $iterationId: [ID]
@@ -79,6 +81,8 @@ query getIssues(
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
       myReactionEmoji: $myReactionEmoji
+      releaseTag: $releaseTag
+      releaseTagWildcardId: $releaseTagWildcardId
       types: $types
       epicId: $epicId
       iterationId: $iterationId
