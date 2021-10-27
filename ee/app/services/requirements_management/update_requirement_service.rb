@@ -38,6 +38,9 @@ module RequirementsManagement
     def perform_sync(requirement, attributes)
       requirement_issue = requirement.requirement_issue
 
+      state_change = attributes.delete(:state)
+      update_requirement_issue_state(requirement_issue, state_change)
+
       ::Issues::UpdateService.new(project: project, current_user: current_user, params: attributes)
         .execute(requirement_issue)
     end
