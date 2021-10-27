@@ -31,11 +31,6 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-align-items-center">
-    <gl-icon
-      :name="replicationStatusUi.icon"
-      :class="replicationStatusUi.color"
-      data-testid="replication-status-icon"
-    />
     <span
       class="gl-font-weight-bold"
       :class="replicationStatusUi.color"

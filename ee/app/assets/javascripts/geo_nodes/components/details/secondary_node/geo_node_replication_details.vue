@@ -73,7 +73,7 @@ export default {
       class="gl-display-flex gl-align-items-center gl-cursor-pointer gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
     >
       <gl-button
-        class="gl-mr-3 gl-p-0!"
+        class="gl-mr-1 gl-p-0!"
         category="tertiary"
         variant="confirm"
         :icon="chevronIcon"
