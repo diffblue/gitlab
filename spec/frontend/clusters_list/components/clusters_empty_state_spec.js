@@ -62,7 +62,6 @@ describe('ClustersEmptyStateComponent', () => {
     });
 
     it('should show the empty state text', () => {
-      expect(findEmptyStateText().exists()).toBe(true);
       expect(findEmptyStateText().text()).toBe(emptyStateHelpText);
     });
   });

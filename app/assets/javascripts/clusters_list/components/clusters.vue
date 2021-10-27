@@ -247,7 +247,7 @@ export default {
 
         <gl-skeleton-loading v-else-if="loadingNodes" :lines="1" :class="contentAlignClasses" />
 
-        <NodeErrorHelpText
+        <node-error-help-text
           v-else-if="item.kubernetes_errors"
           :class="contentAlignClasses"
           :error-type="item.kubernetes_errors.connection_error"
@@ -268,7 +268,7 @@ export default {
 
         <gl-skeleton-loading v-else-if="loadingNodes" :lines="1" :class="contentAlignClasses" />
 
-        <NodeErrorHelpText
+        <node-error-help-text
           v-else-if="item.kubernetes_errors"
           :class="contentAlignClasses"
           :error-type="item.kubernetes_errors.node_connection_error"
@@ -289,7 +289,7 @@ export default {
 
         <gl-skeleton-loading v-else-if="loadingNodes" :lines="1" :class="contentAlignClasses" />
 
-        <NodeErrorHelpText
+        <node-error-help-text
           v-else-if="item.kubernetes_errors"
           :class="contentAlignClasses"
           :error-type="item.kubernetes_errors.metrics_connection_error"
@@ -304,7 +304,7 @@ export default {
       </template>
     </gl-table>
 
-    <ClustersEmptyState v-else />
+    <clusters-empty-state v-else />
 
     <gl-pagination
       v-if="hasClustersPerPage"

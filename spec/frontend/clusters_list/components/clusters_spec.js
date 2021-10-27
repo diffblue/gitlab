@@ -95,21 +95,6 @@ describe('Clusters', () => {
       it('displays a table component', () => {
         expect(findTable().exists()).toBe(true);
       });
-
-      it('renders the correct table headers', () => {
-        const tableHeaders = wrapper.vm.fields;
-        const headers = findTable().findAll('th');
-
-        expect(headers.length).toBe(tableHeaders.length);
-
-        tableHeaders.forEach((headerText, i) =>
-          expect(headers.at(i).text()).toEqual(headerText.label),
-        );
-      });
-
-      it('should stack on smaller devices', () => {
-        expect(findTable().classes()).toContain('b-table-stacked-md');
-      });
     });
 
     describe('when there are no clusters', () => {

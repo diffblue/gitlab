@@ -23,7 +23,7 @@ export default {
     :title="s__('ClusterIntegration|Integrate Kubernetes with a cluster certificate')"
   >
     <template #description>
-      <p class="mw-460 gl-mx-auto gl-text-left">
+      <p class="gl-text-left">
         {{
           s__(
             'ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way.',
@@ -31,15 +31,11 @@ export default {
         }}
       </p>
 
-      <p
-        v-if="emptyStateHelpText"
-        class="mw-460 gl-mx-auto gl-text-left"
-        data-testid="clusters-empty-state-text"
-      >
+      <p v-if="emptyStateHelpText" class="gl-text-left" data-testid="clusters-empty-state-text">
         {{ emptyStateHelpText }}
       </p>
 
-      <p class="mw-460 gl-mx-auto">
+      <p>
         <gl-link :href="$options.learnMoreHelpUrl" target="_blank" data-testid="clusters-docs-link">
           {{ s__('ClusterIntegration|Learn more about Kubernetes') }}
         </gl-link>
