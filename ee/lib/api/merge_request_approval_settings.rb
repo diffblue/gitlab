@@ -39,7 +39,7 @@ module API
           success EE::API::Entities::MergeRequestApprovalSettings
         end
         get do
-          not_found! unless ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, user_project.root_ancestor)
+          not_found! unless ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, user_project.root_ancestor, default_enabled: :yaml)
 
           group = user_project.group.present? ? user_project.root_ancestor : nil
           setting = ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: user_project).execute
@@ -77,7 +77,7 @@ module API
     end
     resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
-        not_found! unless ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, user_group)
+        not_found! unless ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, user_group, default_enabled: :yaml)
 
         authorize! :admin_merge_request_approval_settings, user_group
       end

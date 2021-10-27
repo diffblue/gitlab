@@ -15,7 +15,7 @@ module EE
       end
 
       before_action only: :edit do
-        push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor)
+        push_frontend_feature_flag(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
       end
 
       feature_category :projects, [:restore]
