@@ -8,7 +8,7 @@ module AppSec
 
         def execute
           return unauthorized unless allowed?
-          return error('Profile parameter missing') unless dast_profile
+          return error(_('Profile parameter missing')) unless dast_profile
 
           build_auditors!
 
@@ -79,7 +79,7 @@ module AppSec
         end
 
         def unauthorized
-          error('You are not authorized to update this profile', http_status: 403)
+          error(_('You are not authorized to update this profile'), http_status: 403)
         end
 
         def dast_profile

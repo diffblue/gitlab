@@ -10304,6 +10304,9 @@ msgstr ""
 msgid "DAST Scans"
 msgstr ""
 
+msgid "DAST profile not found: %{name}"
+msgstr ""
+
 msgid "DNS"
 msgstr ""
 
@@ -18308,6 +18311,9 @@ msgstr ""
 msgid "Insufficient permissions"
 msgstr ""
 
+msgid "Insufficient permissions for dast_configuration keyword"
+msgstr ""
+
 msgid "Integration"
 msgstr ""
 
@@ -26080,10 +26086,16 @@ msgstr ""
 msgid "Profile Settings"
 msgstr ""
 
+msgid "Profile failed to delete"
+msgstr ""
+
 msgid "Profile image guideline"
 msgstr ""
 
 msgid "Profile page:"
+msgstr ""
+
+msgid "Profile parameter missing"
 msgstr ""
 
 msgid "ProfileSession|on"
@@ -38929,6 +38941,9 @@ msgid "You are not authorized to delete this site profile"
 msgstr ""
 
 msgid "You are not authorized to perform this action"
+msgstr ""
+
+msgid "You are not authorized to update this profile"
 msgstr ""
 
 msgid "You are not authorized to update this scanner profile"
