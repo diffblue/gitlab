@@ -716,6 +716,7 @@
 .rails:rules:decomposed-databases:
   rules:
     - <<: *if-merge-request-labels-run-decomposed
+    - <<: *if-default-branch-schedule-nightly
 
 .rails:rules:ee-and-foss-migration:
   rules:
