@@ -5,7 +5,7 @@ module AppSec
     module Profiles
       class CreateService < BaseContainerService
         def execute
-          return ServiceResponse.error(message: 'Insufficient permissions') unless allowed?
+          return ServiceResponse.error(message: _('Insufficient permissions')) unless allowed?
 
           ApplicationRecord.transaction do
             @dast_profile = create_profile
@@ -89,7 +89,7 @@ module AppSec
             author: current_user,
             scope: container,
             target: dast_profile,
-            message: "Added DAST profile"
+            message: 'Added DAST profile'
           )
 
           if schedule

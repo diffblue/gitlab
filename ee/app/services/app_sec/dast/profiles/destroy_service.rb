@@ -6,8 +6,8 @@ module AppSec
       class DestroyService < BaseContainerService
         def execute
           return unauthorized unless allowed?
-          return ServiceResponse.error(message: 'Profile parameter missing') unless dast_profile
-          return ServiceResponse.error(message: 'Profile failed to delete') unless dast_profile.destroy
+          return ServiceResponse.error(message: _('Profile parameter missing')) unless dast_profile
+          return ServiceResponse.error(message: _('Profile failed to delete')) unless dast_profile.destroy
 
           create_audit_event
 
@@ -22,7 +22,7 @@ module AppSec
 
         def unauthorized
           ServiceResponse.error(
-            message: 'You are not authorized to update this profile',
+            message: _('You are not authorized to update this profile'),
             http_status: 403
           )
         end
@@ -37,7 +37,7 @@ module AppSec
             author: current_user,
             scope: container,
             target: dast_profile,
-            message: "Removed DAST profile"
+            message: 'Removed DAST profile'
           )
         end
       end
