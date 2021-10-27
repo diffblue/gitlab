@@ -7,22 +7,22 @@ import createStore from 'ee/threat_monitoring/store';
 import { TEST_HOST } from 'helpers/test_constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-const defaultEnvironmentId = 3;
 const documentationPath = '/docs';
 const newPolicyPath = '/policy/new';
-const emptyStateSvgPath = '/svgs';
 const networkPolicyNoDataSvgPath = '/network-policy-no-data-svg';
 const environmentsEndpoint = `${TEST_HOST}/environments`;
+const hasEnvironment = true;
 const networkPolicyStatisticsEndpoint = `${TEST_HOST}/network_policy`;
 
 describe('ThreatMonitoringApp component', () => {
   let store;
   let wrapper;
 
-  const factory = ({ propsData, provide = {}, state, stubs = {} } = {}) => {
+  const factory = ({ propsData, state, stubs = {} } = {}) => {
     store = createStore();
     Object.assign(store.state.threatMonitoring, {
       environmentsEndpoint,
+      hasEnvironment,
       networkPolicyStatisticsEndpoint,
       ...state,
     });
@@ -32,15 +32,12 @@ describe('ThreatMonitoringApp component', () => {
     wrapper = extendedWrapper(
       shallowMount(ThreatMonitoringApp, {
         propsData: {
-          defaultEnvironmentId,
-          emptyStateSvgPath,
           networkPolicyNoDataSvgPath,
           newPolicyPath,
           ...propsData,
         },
         provide: {
           documentationPath,
-          ...provide,
         },
         store,
         stubs,
@@ -60,55 +57,39 @@ describe('ThreatMonitoringApp component', () => {
     wrapper = null;
   });
 
-  describe.each([-1, NaN, Math.PI])(
-    'given an invalid default environment id of %p',
-    (invalidEnvironmentId) => {
-      beforeEach(() => {
-        factory({
-          propsData: {
-            defaultEnvironmentId: invalidEnvironmentId,
-          },
-          stubs: { GlTabs: false },
-        });
-      });
-
-      it('dispatches no actions', () => {
-        expect(store.dispatch).not.toHaveBeenCalled();
-      });
-
-      it('shows the "no environment" empty state', () => {
-        expect(findNoEnvironmentEmptyState().exists()).toBe(true);
-      });
-
-      it('shows the tabs', () => {
-        expect(findAlertTab().exists()).toBe(true);
-        expect(findStatisticsTab().exists()).toBe(true);
-      });
-
-      it('does not show the threat monitoring section', () => {
-        expect(findStatisticsSection().exists()).toBe(false);
-      });
-    },
-  );
-
-  describe('given there is a default environment with data', () => {
+  describe('given there are environments present', () => {
     beforeEach(() => {
       factory();
     });
 
-    it('dispatches the setCurrentEnvironmentId and fetchEnvironments actions', () => {
-      expect(store.dispatch.mock.calls).toEqual([
-        ['threatMonitoring/setCurrentEnvironmentId', defaultEnvironmentId],
-        ['threatMonitoring/fetchEnvironments', undefined],
-      ]);
+    it.each`
+      component                         | status                | findComponent                  | state
+      ${'"no environment" empty state'} | ${'does not display'} | ${findNoEnvironmentEmptyState} | ${false}
+      ${'alert tab'}                    | ${'does display'}     | ${findAlertTab}                | ${true}
+      ${'statistics tab'}               | ${'does display'}     | ${findStatisticsTab}           | ${true}
+      ${'statistics filter section'}    | ${'does display'}     | ${findFilters}                 | ${true}
+      ${'statistics section'}           | ${'does display'}     | ${findStatisticsSection}       | ${true}
+    `('$status the $component', async ({ findComponent, state }) => {
+      expect(findComponent().exists()).toBe(state);
     });
 
-    it('shows the filter bar', () => {
-      expect(findFilters().exists()).toBe(true);
-    });
-
-    it('renders the statistics section', () => {
+    it('passes the statistics section the correct information', () => {
       expect(findStatisticsSection().element).toMatchSnapshot();
+    });
+  });
+
+  describe('given there are no environments present', () => {
+    beforeEach(() => {
+      factory({ state: { hasEnvironment: false }, stubs: { GlTabs: false } });
+    });
+
+    it.each`
+      component                         | status                | findComponent                  | state
+      ${'"no environment" empty state'} | ${'does display'}     | ${findNoEnvironmentEmptyState} | ${true}
+      ${'statistics filter section'}    | ${'does not display'} | ${findFilters}                 | ${false}
+      ${'statistics section'}           | ${'does not display'} | ${findStatisticsSection}       | ${false}
+    `('$status the $component', async ({ findComponent, state }) => {
+      expect(findComponent().exists()).toBe(state);
     });
   });
 

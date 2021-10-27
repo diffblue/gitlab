@@ -55,6 +55,7 @@ describe('PoliciesList component', () => {
       threatMonitoring: {
         ...store.state.threatMonitoring,
         environments,
+        hasEnvironment: true,
         currentEnvironmentId: environments[0].id,
         ...state.threatMonitoring,
       },
@@ -73,7 +74,6 @@ describe('PoliciesList component', () => {
         {
           propsData: {
             documentationPath: 'documentation_path',
-            hasEnvironment: true,
             newPolicyPath: '/policies/new',
           },
           store,
@@ -323,11 +323,7 @@ describe('PoliciesList component', () => {
 
   describe('given no environments', () => {
     beforeEach(() => {
-      mountWrapper({
-        propsData: {
-          hasEnvironment: false,
-        },
-      });
+      mountWrapper({ state: { threatMonitoring: { hasEnvironment: false } } });
     });
 
     it('does not make a request for network policies', () => {

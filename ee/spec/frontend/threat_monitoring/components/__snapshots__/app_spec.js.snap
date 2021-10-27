@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ThreatMonitoringApp component given there is a default environment with data renders the statistics section 1`] = `
+exports[`ThreatMonitoringApp component given there are environments present passes the statistics section the correct information 1`] = `
 <threat-monitoring-section-stub
   anomaloustitle="Dropped Packets"
   chartemptystatesvgpath="/network-policy-no-data-svg"

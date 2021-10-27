@@ -8,8 +8,4 @@ export const currentEnvironmentName = (state, getters) =>
 
 export const currentEnvironmentGid = (state, getters) => getters.currentEnvironment?.global_id;
 
-export const canChangeEnvironment = ({
-  isLoadingEnvironments,
-  isLoadingNetworkPolicyStatistics,
-  environments,
-}) => !isLoadingEnvironments && !isLoadingNetworkPolicyStatistics && environments.length > 0;
+export const canChangeEnvironment = ({ environments }) => Boolean(environments.length);

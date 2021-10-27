@@ -66,13 +66,7 @@ export default {
     PolicyEditorLayout,
     DimDisableContainer,
   },
-  inject: [
-    'hasEnvironment',
-    'networkDocumentationPath',
-    'noEnvironmentSvgPath',
-    'projectId',
-    'policiesPath',
-  ],
+  inject: ['networkDocumentationPath', 'noEnvironmentSvgPath', 'projectId', 'policiesPath'],
   props: {
     existingPolicy: {
       type: Object,
@@ -124,6 +118,7 @@ export default {
       'currentEnvironmentId',
       'environments',
       'isLoadingEnvironments',
+      'hasEnvironment',
     ]),
     ...mapState('networkPolicies', [
       'isUpdatingPolicy',
