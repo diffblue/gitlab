@@ -63,7 +63,7 @@ RSpec.describe Snippet, :elastic do
     expect(snippet.__elasticsearch__.as_indexed_json).to eq(expected_hash)
   end
 
-  it 'uses same index for Snippet subclasses' do
+  it 'uses same index for Snippet subclasses', :eager_load do
     Snippet.subclasses.each do |snippet_class|
       expect(snippet_class.index_name).to eq(Snippet.index_name)
       expect(snippet_class.document_type).to eq(Snippet.document_type)

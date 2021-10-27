@@ -192,7 +192,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state do
     note.update!(note: 'some other text here')
   end
 
-  it 'uses same index for Note subclasses' do
+  it 'uses same index for Note subclasses', :eager_load do
     Note.subclasses.each do |note_class|
       expect(note_class.index_name).to eq(Note.index_name)
       expect(note_class.document_type).to eq(Note.document_type)
