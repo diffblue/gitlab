@@ -229,6 +229,13 @@ module EE
 
     private
 
+    override :stream_event_to_external_destinations
+    def stream_event_to_external_destinations(event)
+      return if event.is_a?(AuthenticationEvent)
+
+      event.stream_to_external_destinations if event.entity_is_group_or_project?
+    end
+
     override :base_payload
     def base_payload
       super.tap do |payload|

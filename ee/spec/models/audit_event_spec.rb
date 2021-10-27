@@ -78,6 +78,46 @@ RSpec.describe AuditEvent, type: :model do
     end
   end
 
+  describe '#stream_to_external_destinations' do
+    let_it_be(:event) { create(:audit_event, :group_event) }
+
+    context 'feature is licensed' do
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
+
+      it 'enqueues one worker' do
+        expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+
+        event.stream_to_external_destinations
+      end
+
+      context 'feature is disabled' do
+        before do
+          stub_feature_flags(ff_external_audit_events_namespace: false)
+        end
+
+        it 'enqueues no workers' do
+          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+          event.stream_to_external_destinations
+        end
+      end
+    end
+
+    context 'feature is unlicensed' do
+      before do
+        stub_licensed_features(external_audit_events: false)
+      end
+
+      it 'enqueues no workers' do
+        expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+        event.stream_to_external_destinations
+      end
+    end
+  end
+
   describe '.by_entity' do
     let_it_be(:project_event_1) { create(:project_audit_event) }
     let_it_be(:project_event_2) { create(:project_audit_event) }
@@ -283,6 +323,28 @@ RSpec.describe AuditEvent, type: :model do
       it 'is a deleted user' do
         expect(subject).to be_a(Gitlab::Audit::DeletedAuthor)
       end
+    end
+  end
+
+  describe 'entity_is_group_or_project?' do
+    subject { event.entity_is_group_or_project? }
+
+    context 'when entity is a Group' do
+      let_it_be(:event) { create(:group_audit_event) }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when entity is a Project' do
+      let_it_be(:event) { create(:project_audit_event) }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when entity is an Epic' do
+      let_it_be(:event) { create(:audit_event, target_type: 'Epic') }
+
+      it { is_expected.to be false }
     end
   end
 end

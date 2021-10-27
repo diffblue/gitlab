@@ -54,6 +54,18 @@ module EE
         end
     end
 
+    def stream_to_external_destinations
+      return if entity.nil?
+      return unless ::Feature.enabled?(:ff_external_audit_events_namespace, entity)
+      return unless entity.licensed_feature_available?(:external_audit_events)
+
+      AuditEvents::AuditEventStreamingWorker.perform_async(id)
+    end
+
+    def entity_is_group_or_project?
+      %w(Group Project).include?(entity_type)
+    end
+
     private
 
     def truncate_fields
