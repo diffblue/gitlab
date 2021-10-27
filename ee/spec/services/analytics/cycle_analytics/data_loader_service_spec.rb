@@ -103,7 +103,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             mr.project.parent_id,
             mr.project_id,
             mr.created_at,
-            mr.metrics.merged_at
+            mr.metrics.merged_at,
+            mr.state_id
           ]
         end
 
@@ -116,7 +117,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             event.group_id,
             event.project_id,
             event.start_event_timestamp,
-            event.end_event_timestamp
+            event.end_event_timestamp,
+            Analytics::CycleAnalytics::MergeRequestStageEvent.states[event.state_id]
           ]
         end
 
@@ -191,7 +193,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             issue.project.parent_id,
             issue.project_id,
             issue.created_at,
-            issue.closed_at
+            issue.closed_at,
+            issue.state_id
           ]
         end
 
@@ -204,7 +207,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             event.group_id,
             event.project_id,
             event.start_event_timestamp,
-            event.end_event_timestamp
+            event.end_event_timestamp,
+            Analytics::CycleAnalytics::IssueStageEvent.states[event.state_id]
           ]
         end
 
