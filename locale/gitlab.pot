@@ -8198,9 +8198,6 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
-msgid "Code Coverage: %{coveragePercentage}"
-msgstr ""
-
 msgid "Code Coverage: %{coveragePercentage}%{percentSymbol}"
 msgstr ""
 
@@ -28912,6 +28909,9 @@ msgstr ""
 msgid "RepositoriesAnalytics|Average test coverage last 30 days"
 msgstr ""
 
+msgid "RepositoriesAnalytics|Code Coverage: %{averageCoverage}"
+msgstr ""
+
 msgid "RepositoriesAnalytics|Coverage"
 msgstr ""
 
@@ -28933,6 +28933,9 @@ msgstr ""
 msgid "RepositoriesAnalytics|Jobs with Coverage"
 msgstr ""
 
+msgid "RepositoriesAnalytics|Jobs with Coverage: %{coverageCount}"
+msgstr ""
+
 msgid "RepositoriesAnalytics|Last Update"
 msgstr ""
 
@@ -28949,6 +28952,9 @@ msgid "RepositoriesAnalytics|Please select projects to display."
 msgstr ""
 
 msgid "RepositoriesAnalytics|Projects with Coverage"
+msgstr ""
+
+msgid "RepositoriesAnalytics|Projects with Coverage: %{projectCount}"
 msgstr ""
 
 msgid "RepositoriesAnalytics|Test Code Coverage"

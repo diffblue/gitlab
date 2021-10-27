@@ -55,7 +55,12 @@ export default {
         this.groupCoverageChartData = [
           {
             name: this.$options.i18n.graphName,
-            data: groupCoverage.map((coverage) => [coverage.date, coverage.averageCoverage]),
+            data: groupCoverage.map((coverage) => [
+              coverage.date,
+              coverage.averageCoverage,
+              coverage.projectCount,
+              coverage.coverageCount,
+            ]),
           },
         ];
       },
@@ -137,8 +142,12 @@ export default {
   },
   methods: {
     formatTooltipText(params) {
+      const [, averageCoverage, projectCount, coverageCount] = params.seriesData?.[0]?.data;
+
       this.tooltipTitle = formatDate(params.value, 'mmm dd');
-      this.coveragePercentage = formatPercent(params.seriesData?.[0]?.data?.[1], 2);
+      this.tooltipAverageCoverage = formatPercent(averageCoverage, 2);
+      this.tooltipProjectCount = projectCount;
+      this.tooltipCoverageCount = coverageCount;
     },
   },
   i18n: {
@@ -147,7 +156,11 @@ export default {
     yAxisName: __('Coverage'),
     xAxisName: __('Date'),
     graphName: s__('RepositoriesAnalytics|Average coverage'),
-    graphTooltipMessage: __('Code Coverage: %{coveragePercentage}'),
+    graphTooltip: {
+      averageCoverage: s__('RepositoriesAnalytics|Code Coverage: %{averageCoverage}'),
+      projectCount: s__('RepositoriesAnalytics|Projects with Coverage: %{projectCount}'),
+      coverageCount: s__('RepositoriesAnalytics|Jobs with Coverage: %{coverageCount}'),
+    },
     metrics: {
       projectCountLabel: s__('RepositoriesAnalytics|Projects with Coverage'),
       averageCoverageLabel: s__('RepositoriesAnalytics|Average Coverage by Job'),
@@ -207,10 +220,16 @@ export default {
           {{ tooltipTitle }}
         </template>
         <template #tooltip-content>
-          <gl-sprintf :message="$options.i18n.graphTooltipMessage">
-            <template #coveragePercentage>
-              {{ coveragePercentage }}
-            </template>
+          <gl-sprintf :message="$options.i18n.graphTooltip.averageCoverage">
+            <template #averageCoverage> {{ tooltipAverageCoverage }}</template>
+          </gl-sprintf>
+          <br />
+          <gl-sprintf :message="$options.i18n.graphTooltip.projectCount">
+            <template #projectCount> {{ tooltipProjectCount }} </template>
+          </gl-sprintf>
+          <br />
+          <gl-sprintf :message="$options.i18n.graphTooltip.coverageCount">
+            <template #coverageCount> {{ tooltipCoverageCount }} </template>
           </gl-sprintf>
         </template>
       </gl-area-chart>
