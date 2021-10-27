@@ -207,7 +207,7 @@ export default {
           return {
             iid: currentIid,
             groupPath: this.fullPath,
-            addLabelIds: labelIds,
+            addLabelIds: labelIds.map((id) => getIdFromGraphQLId(id)),
             removeLabelIds: this.issuableLabelIds
               .filter((id) => !labelIds.includes(id))
               .map((id) => getIdFromGraphQLId(id)),
@@ -232,8 +232,8 @@ export default {
           }
 
           this.$emit('updateSelectedLabels', {
-            id: data[mutationName]?.[this.issuableType].id,
-            labels: data[mutationName]?.[this.issuableType].labels?.nodes,
+            id: data[mutationName]?.[this.issuableType]?.id,
+            labels: data[mutationName]?.[this.issuableType]?.labels?.nodes,
           });
         })
         .catch((error) =>
@@ -268,7 +268,7 @@ export default {
         case IssuableType.Epic:
           return {
             iid: this.iid,
-            removeLabelIds: [labelId],
+            removeLabelIds: [getIdFromGraphQLId(labelId)],
             groupPath: this.fullPath,
           };
         default:

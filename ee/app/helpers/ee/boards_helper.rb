@@ -71,6 +71,13 @@ module EE
       super
     end
 
+    override :build_issue_link_base
+    def build_issue_link_base
+      return group_epics_path(@group) if board.is_a?(::Boards::EpicBoard)
+
+      super
+    end
+
     override :board_base_url
     def board_base_url
       return group_epic_boards_url(@group) if board.is_a?(::Boards::EpicBoard)

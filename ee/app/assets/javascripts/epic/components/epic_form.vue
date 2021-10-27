@@ -8,6 +8,7 @@ import {
   GlFormInput,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -113,7 +114,7 @@ export default {
     },
     handleUpdateSelectedLabels(labels) {
       if (this.glFeatures.labelsWidget) {
-        this.labels = labels;
+        this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
         return;
       }
 

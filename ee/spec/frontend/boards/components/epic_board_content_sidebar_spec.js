@@ -45,6 +45,7 @@ describe('EpicBoardContentSidebar', () => {
         canUpdate: true,
         rootPath: '/',
         groupId: 1,
+        labelsFilterBasePath: '',
       },
       store,
       stubs: {

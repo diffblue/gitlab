@@ -97,6 +97,9 @@ function mountBoardApp(el) {
       iterationListsAvailable: false,
       issuableType: issuableTypes.epic,
       emailsDisabled: parseBoolean(el.dataset.emailsDisabled),
+      allowLabelCreate: parseBoolean(el.dataset.canUpdate),
+      allowLabelEdit: parseBoolean(el.dataset.canUpdate),
+      allowScopedLabels: parseBoolean(el.dataset.scopedLabels),
     },
     render: (createComponent) => createComponent(BoardApp),
   });
