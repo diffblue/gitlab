@@ -27,18 +27,6 @@ RSpec.describe AppSec::Dast::ProfileScheduleWorker do
   describe '#perform' do
     subject { worker.perform }
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(dast_on_demand_scans_scheduler: false)
-      end
-
-      it 'does not call runnable_schedules' do
-        expect(::Dast::ProfileSchedule).not_to receive(:runnable_schedules)
-
-        subject
-      end
-    end
-
     context 'when feature is licensed' do
       before do
         stub_licensed_features(security_on_demand_scans: true)
