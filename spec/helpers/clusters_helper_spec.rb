@@ -96,7 +96,7 @@ RSpec.describe ClustersHelper do
     subject { helper.js_clusters_list_data(clusterable) }
 
     it 'displays endpoint path' do
-      expect(subject[:endpoint]).to eq(clusterable.index_path(format: :json))
+      expect(subject[:endpoint]).to eq("#{project_path(project)}/-/clusters.json")
     end
 
     it 'generates svg image data', :aggregate_failures do
@@ -117,16 +117,39 @@ RSpec.describe ClustersHelper do
       expect(subject[:clusters_empty_state_image]).to match(%r(/illustrations/logos/clusters_empty|svg))
     end
 
-    it 'displays empty state help text' do
-      expect(subject[:empty_state_help_text]).to eq(clusterable.empty_state_help_text)
-    end
-
     it 'displays create cluster using certificate path' do
-      expect(subject[:new_cluster_path]).to eq(clusterable.new_path(tab: 'create'))
+      expect(subject[:new_cluster_path]).to eq("#{project_path(project)}/-/clusters/new?tab=create")
     end
 
-    it 'displays whether the user can add cluster' do
-      expect(subject[:can_add_cluster]).to eq(clusterable.can_add_cluster?.to_s)
+    context 'user has no permissions to create a cluster' do
+      it 'displays that user can\t add cluster' do
+        expect(subject[:can_add_cluster]).to eq("false")
+      end
+    end
+
+    context 'user is a maintainer' do
+      before do
+        project.add_maintainer(current_user)
+      end
+
+      it 'displays that the user can add cluster' do
+        expect(subject[:can_add_cluster]).to eq("true")
+      end
+    end
+
+    context 'project cluster' do
+      it 'doesn\'t display empty state help text' do
+        expect(subject[:empty_state_help_text]).to be_nil
+      end
+    end
+
+    context 'group cluster' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:clusterable) { ClusterablePresenter.fabricate(group, current_user: current_user) }
+
+      it 'displays empty state help text' do
+        expect(subject[:empty_state_help_text]).to eq(s_('ClusterIntegration|Adding an integration to your group will share the cluster across all your projects.'))
+      end
     end
   end
 
