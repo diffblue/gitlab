@@ -3,6 +3,8 @@
 class Groups::WikisController < Groups::ApplicationController
   include WikiActions
 
+  urgency :low
+
   alias_method :container, :group
 
   feature_category :wiki
