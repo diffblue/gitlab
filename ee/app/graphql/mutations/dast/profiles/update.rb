@@ -33,7 +33,7 @@ module Mutations
 
         argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
                  required: false,
-                 description: 'Represents a DAST profile schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+                 description: 'Represents a DAST profile schedule.'
 
         argument :name, GraphQL::Types::String,
                  required: false,
@@ -65,7 +65,6 @@ module Mutations
 
         def resolve(id:, name:, description:, full_path: nil, branch_name: nil, dast_scanner_profile_id: nil, run_after_update: false, **args)
           dast_profile = authorized_find!(id)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(args[:dast_profile_schedule], dast_profile.project)
 
           params = {
             dast_profile: dast_profile,
@@ -88,16 +87,6 @@ module Mutations
         end
 
         private
-
-        def allowed?(dast_profile_schedule, project)
-          scheduler_flag_enabled?(dast_profile_schedule, project)
-        end
-
-        def scheduler_flag_enabled?(dast_profile_schedule, project)
-          return true unless dast_profile_schedule
-
-          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
-        end
 
         def as_model_id(klass, value)
           return unless value

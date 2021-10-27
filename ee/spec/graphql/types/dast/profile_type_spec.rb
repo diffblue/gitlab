@@ -37,20 +37,8 @@ RSpec.describe GitlabSchema.types['DastProfile'] do
   end
 
   describe 'dastProfileSchedule field' do
-    context 'when the feature flag is enabled' do
-      it 'correctly resolves the field' do
-        expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to eq(object.dast_profile_schedule)
-      end
-    end
-
-    context 'when the feature flag is not enabled' do
-      before do
-        stub_feature_flags(dast_on_demand_scans_scheduler: false)
-      end
-
-      it 'is nil' do
-        expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to be_nil
-      end
+    it 'correctly resolves the field' do
+      expect(resolve_field(:dast_profile_schedule, object, current_user: user)).to eq(object.dast_profile_schedule)
     end
   end
 end

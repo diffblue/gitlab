@@ -6,5 +6,5 @@
     - if group.marked_for_deletion?
       = _("This group, its subgroups and projects has been scheduled for removal on %{date}.") % { date: permanent_deletion_date(group_pending_deletion.marked_for_deletion_on) }
     - else
-      = _("This group, its subgroups and projects will be removed on %{date} since its parent group '%{parent_group_name}'' has been scheduled for removal.") % { date: permanent_deletion_date(group_pending_deletion.marked_for_deletion_on), parent_group_name: group_pending_deletion.name }
+      = _("This group, its subgroups and projects will be removed on %{date} since its parent group '%{parent_group_name}' has been scheduled for removal.") % { date: permanent_deletion_date(group_pending_deletion.marked_for_deletion_on), parent_group_name: group_pending_deletion.name }
 

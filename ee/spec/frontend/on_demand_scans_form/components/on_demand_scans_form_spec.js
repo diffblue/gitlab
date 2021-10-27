@@ -162,9 +162,6 @@ describe('OnDemandScansForm', () => {
             newScannerProfilePath,
             newSiteProfilePath,
             dastSiteValidationDocsPath,
-            glFeatures: {
-              dastOnDemandScansScheduler: true,
-            },
           },
           stubs: {
             GlFormInput: GlFormInputStub,
@@ -671,17 +668,5 @@ describe('OnDemandScansForm', () => {
         'You must create a repository within your project to run an on-demand scan.',
       );
     });
-  });
-
-  it('does not render scan schedule when the feature flag is disabled', () => {
-    createComponent({
-      provide: {
-        glFeatures: {
-          dastOnDemandScansScheduler: false,
-        },
-      },
-    });
-
-    expect(wrapper.findComponent(ScanSchedule).exists()).toBe(false);
   });
 });
