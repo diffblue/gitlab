@@ -7,23 +7,15 @@ module Gitlab
     class BackfillUserNamespace
       include Gitlab::Database::DynamicModelHelpers
 
-      def perform(start_id, end_id, batch_table, batch_column, sub_batch_size)
+      def perform(start_id, end_id, batch_table, batch_column, sub_batch_size, pause_ms)
         parent_batch_relation = relation_scoped_to_range(batch_table, batch_column, start_id, end_id)
-
-        parent_batch_relation.each_batch(column: batch_column, of: sub_batch_size) do |sub_batch|
+        parent_batch_relation.each_batch(column: batch_column, of: sub_batch_size, order_hint: :type) do |sub_batch|
           batch_metrics.time_operation(:update_all) do
             sub_batch.update_all(type: 'User')
           end
-
           pause_ms = 0 if pause_ms < 0
           sleep(pause_ms * 0.001)
         end
-
-        # ActiveRecord::Base.connection.execute(<<~SQL)
-        #   UPDATE namespaces SET type = 'User'
-        #   WHERE id BETWEEN #{start_id} AND #{end_id}
-        #     AND type IS NULL
-        # SQL
       end
 
       def batch_metrics
