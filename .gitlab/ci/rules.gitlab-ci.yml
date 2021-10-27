@@ -1512,9 +1512,10 @@
       changes: *ci-review-patterns
     - <<: *if-dot-com-gitlab-org-merge-request
       changes: *frontend-patterns
-      allow_failure: true
     - <<: *if-dot-com-gitlab-org-merge-request
-      changes: *code-qa-patterns
+      changes: *qa-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes: *code-patterns
       allow_failure: true
     - <<: *if-dot-com-ee-schedule-child-pipeline
       allow_failure: true
