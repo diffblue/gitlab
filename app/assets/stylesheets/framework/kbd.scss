@@ -12,4 +12,20 @@ kbd {
   border-image: none;
   border-radius: 3px;
   box-shadow: 0 -1px 0 var(--gray-200, $gray-200) inset;
+
+  &.flat {
+    color: $code-color;
+    background-color: $gray-50;
+    border: none;
+    box-shadow: none;
+    border-radius: $border-radius-default;
+    font-family: $monospace-font;
+    font-size: $gl-font-size-small;
+    line-height: 12px;
+    white-space: pre-wrap;
+    // Safari
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+  }
 }
