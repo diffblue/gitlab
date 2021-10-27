@@ -67,7 +67,6 @@ class License < ApplicationRecord
     board_milestone_lists
     ci_cd_projects
     ci_secrets_management
-    cluster_agents
     cluster_agents_gitops
     cluster_deployments
     code_owner_approval_required
