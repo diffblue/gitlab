@@ -118,15 +118,15 @@ RSpec.describe ClustersHelper do
     end
 
     it 'displays empty state help text' do
-      expect(subject[:empty_state_help_text]).to match(clusterable.empty_state_help_text)
+      expect(subject[:empty_state_help_text]).to eq(clusterable.empty_state_help_text)
     end
 
     it 'displays create cluster using certificate path' do
-      expect(subject[:new_cluster_path]).to match(clusterable.new_path(tab: 'create'))
+      expect(subject[:new_cluster_path]).to eq(clusterable.new_path(tab: 'create'))
     end
 
     it 'displays whether the user can add cluster' do
-      expect(subject[:can_add_cluster]).to match(clusterable.can_add_cluster?.to_s)
+      expect(subject[:can_add_cluster]).to eq(clusterable.can_add_cluster?.to_s)
     end
   end
 
