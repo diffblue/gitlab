@@ -26446,8 +26446,6 @@ CREATE UNIQUE INDEX index_release_links_on_release_id_and_name ON release_links 
 
 CREATE UNIQUE INDEX index_release_links_on_release_id_and_url ON release_links USING btree (release_id, url);
 
-CREATE INDEX index_releases_on_author_id ON releases USING btree (author_id);
-
 CREATE INDEX index_releases_on_author_id_id_created_at ON releases USING btree (author_id, id, created_at);
 
 CREATE INDEX index_releases_on_project_id_and_tag ON releases USING btree (project_id, tag);
