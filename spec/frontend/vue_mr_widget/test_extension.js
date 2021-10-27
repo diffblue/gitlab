@@ -30,6 +30,7 @@ export default {
             href: 'https://gitlab.com',
             text: 'GitLab.com',
           },
+          actions: [{ text: 'Full report', href: 'https://gitlab.com', target: '_blank' }],
         },
       ]);
     },
