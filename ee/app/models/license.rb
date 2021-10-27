@@ -184,6 +184,7 @@ class License < ApplicationRecord
     report_approver_rules
     requirements
     sast
+    sast_iac
     sast_custom_rulesets
     sast_fp_reduction
     secret_detection

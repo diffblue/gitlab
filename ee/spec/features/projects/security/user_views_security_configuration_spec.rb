@@ -84,7 +84,7 @@ RSpec.describe 'User sees Security Configuration table', :js do
   end
 
   def within_dast_card
-    within '[data-testid="security-testing-card"]:nth-of-type(2)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(3)' do
       yield
     end
   end

@@ -15,6 +15,8 @@ module EE
           gon.subscriptions_url = ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
           gon.payment_form_url  = ::Gitlab::SubscriptionPortal::PAYMENT_FORM_URL
         end
+
+        push_frontend_feature_flag(:configure_iac_scanning_via_mr, current_user, default_enabled: :yaml)
       end
 
       # Exposes if a licensed feature is available.

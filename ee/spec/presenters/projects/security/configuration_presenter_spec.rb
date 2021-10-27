@@ -83,6 +83,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
         expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
           security_scan(:dast, configured: true),
           security_scan(:sast, configured: true),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -113,6 +114,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
         expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
           security_scan(:dast, configured: false),
           security_scan(:sast, configured: false),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -143,6 +145,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
         expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
           security_scan(:dast, configured: false),
           security_scan(:sast, configured: false),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -169,6 +172,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
         expect(Gitlab::Json.parse(subject[:features])).to contain_exactly(
           security_scan(:dast, configured: false),
           security_scan(:sast, configured: false),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -203,6 +207,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:dast, configured: true),
           security_scan(:dast_profiles, configured: true),
           security_scan(:sast, configured: true),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -228,6 +233,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:dast, configured: false),
           security_scan(:dast_profiles, configured: true),
           security_scan(:sast, configured: true),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
@@ -246,6 +252,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
           security_scan(:dast, configured: true),
           security_scan(:dast_profiles, configured: true),
           security_scan(:sast, configured: true),
+          security_scan(:sast_iac, configured: false),
           security_scan(:container_scanning, configured: false),
           security_scan(:cluster_image_scanning, configured: false),
           security_scan(:dependency_scanning, configured: false),
