@@ -129,6 +129,13 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
               allow_next_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
                 allow(instance).to receive(:violates?).and_raise('heck')
               end
+
+              expect(Gitlab::AppLogger).to receive(:error).with(
+                hash_including(pipeline: anything,
+                               'exception.class' => anything,
+                               'exception.message' => anything,
+                               'exception.backtrace' => anything,
+                               source: anything)).and_call_original
             end
 
             specify { expect(subject[:status]).to be(:error) }
