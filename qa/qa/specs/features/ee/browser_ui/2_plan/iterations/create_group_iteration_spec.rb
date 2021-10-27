@@ -24,6 +24,15 @@ module QA
       end
 
       it 'creates a group iteration', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1623' do
+        # TODO: Remove this retry when the `Runtime::Feature.enable` method call is removed
+        Support::Retrier.retry_on_exception(max_attempts: 5) do
+          group.visit!
+          QA::Page::Group::Menu.perform(&:go_to_group_iterations)
+          QA::EE::Page::Group::Iteration::Cadence::Index.perform do |cadence|
+            cadence.find_element(:create_new_cadence_button)
+          end
+        end
+
         EE::Resource::GroupIteration.fabricate_via_browser_ui! do |iteration|
           iteration.title = title
           iteration.description = description
