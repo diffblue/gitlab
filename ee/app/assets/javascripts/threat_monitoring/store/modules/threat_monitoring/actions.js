@@ -1,10 +1,16 @@
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
+import { PAGE_SIZE } from 'ee/threat_monitoring/constants';
 import * as types from './mutation_types';
 
 export const setEnvironmentEndpoint = ({ commit }, endpoint) => {
   commit(types.SET_ENDPOINT, endpoint);
+};
+
+export const setHasEnvironment = ({ commit }, data) => {
+  commit(types.SET_HAS_ENVIRONMENT, data);
 };
 
 export const setStatisticsEndpoint = ({ commit }, endpoint) => {
@@ -12,8 +18,8 @@ export const setStatisticsEndpoint = ({ commit }, endpoint) => {
 };
 
 export const requestEnvironments = ({ commit }) => commit(types.REQUEST_ENVIRONMENTS);
-export const receiveEnvironmentsSuccess = ({ commit }, environments) =>
-  commit(types.RECEIVE_ENVIRONMENTS_SUCCESS, environments);
+export const receiveEnvironmentsSuccess = ({ commit }, data) =>
+  commit(types.RECEIVE_ENVIRONMENTS_SUCCESS, data);
 export const receiveEnvironmentsError = ({ commit }) => {
   commit(types.RECEIVE_ENVIRONMENTS_ERROR);
   createFlash({
@@ -21,35 +27,39 @@ export const receiveEnvironmentsError = ({ commit }) => {
   });
 };
 
-const getAllEnvironments = (url, page = 1) =>
-  axios
-    .get(url, {
+const getEnvironments = async (url, page = 1) => {
+  try {
+    const { data, headers } = await axios.get(url, {
       params: {
-        per_page: 100,
+        per_page: PAGE_SIZE,
         page,
       },
-    })
-    .then(({ headers, data }) => {
-      const nextPage = headers && headers['x-next-page'];
-      return nextPage
-        ? // eslint-disable-next-line promise/no-nesting
-          getAllEnvironments(url, nextPage).then((environments) => [
-            ...data.environments,
-            ...environments,
-          ])
-        : data.environments;
     });
 
-export const fetchEnvironments = ({ state, dispatch }) => {
+    const { nextPage } = parseIntPagination(normalizeHeaders(headers));
+    return { environments: data.environments, nextPage };
+  } catch {
+    throw new Error();
+  }
+};
+
+export const fetchEnvironments = async ({ state, dispatch }) => {
   if (!state.environmentsEndpoint) {
     return dispatch('receiveEnvironmentsError');
   }
 
   dispatch('requestEnvironments');
 
-  return getAllEnvironments(state.environmentsEndpoint)
-    .then((environments) => dispatch('receiveEnvironmentsSuccess', environments))
-    .catch(() => dispatch('receiveEnvironmentsError'));
+  try {
+    const data = await getEnvironments(state.environmentsEndpoint, state.nextPage);
+
+    return dispatch('receiveEnvironmentsSuccess', {
+      environments: [...state.environments, ...data.environments],
+      nextPage: data.nextPage,
+    });
+  } catch {
+    return dispatch('receiveEnvironmentsError');
+  }
 };
 
 export const setCurrentEnvironmentId = ({ commit }, environmentId) => {

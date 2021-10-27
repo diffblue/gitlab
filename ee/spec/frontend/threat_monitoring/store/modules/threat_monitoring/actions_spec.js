@@ -13,6 +13,7 @@ jest.mock('~/flash');
 
 const environmentsEndpoint = 'environmentsEndpoint';
 const networkPolicyStatisticsEndpoint = 'networkPolicyStatisticsEndpoint';
+const nextPage = 2;
 
 describe('Threat Monitoring actions', () => {
   let state;
@@ -121,7 +122,9 @@ describe('Threat Monitoring actions', () => {
 
     describe('on success', () => {
       beforeEach(() => {
-        mock.onGet(environmentsEndpoint).replyOnce(httpStatus.OK, mockEnvironmentsResponse);
+        mock
+          .onGet(environmentsEndpoint)
+          .replyOnce(httpStatus.OK, mockEnvironmentsResponse, { 'x-next-page': nextPage });
       });
 
       it('should dispatch the request and success actions', () =>
@@ -134,37 +137,7 @@ describe('Threat Monitoring actions', () => {
             { type: 'requestEnvironments' },
             {
               type: 'receiveEnvironmentsSuccess',
-              payload: mockEnvironmentsResponse.environments,
-            },
-          ],
-        ));
-    });
-
-    describe('given more than one page of environments', () => {
-      beforeEach(() => {
-        const oneEnvironmentPerPage = ({ totalPages }) => (config) => {
-          const { page } = config.params;
-          const response = [httpStatus.OK, { environments: [{ id: page }] }];
-          if (page < totalPages) {
-            response.push({ 'x-next-page': page + 1 });
-          }
-          return response;
-        };
-
-        mock.onGet(environmentsEndpoint).reply(oneEnvironmentPerPage({ totalPages: 3 }));
-      });
-
-      it('should fetch all pages and dispatch the request and success actions', () =>
-        testAction(
-          actions.fetchEnvironments,
-          undefined,
-          state,
-          [],
-          [
-            { type: 'requestEnvironments' },
-            {
-              type: 'receiveEnvironmentsSuccess',
-              payload: [{ id: 1 }, { id: 2 }, { id: 3 }],
+              payload: { environments: mockEnvironmentsResponse.environments, nextPage },
             },
           ],
         ));

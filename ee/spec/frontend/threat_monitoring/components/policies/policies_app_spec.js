@@ -1,36 +1,16 @@
 import PoliciesApp from 'ee/threat_monitoring/components/policies/policies_app.vue';
 import PoliciesHeader from 'ee/threat_monitoring/components/policies/policies_header.vue';
 import PoliciesList from 'ee/threat_monitoring/components/policies/policies_list.vue';
-import createStore from 'ee/threat_monitoring/store';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('Policies App', () => {
   let wrapper;
-  let store;
-  let setCurrentEnvironmentIdSpy;
-  let fetchEnvironmentsSpy;
 
   const findPoliciesHeader = () => wrapper.findComponent(PoliciesHeader);
   const findPoliciesList = () => wrapper.findComponent(PoliciesList);
 
-  const createWrapper = ({ provide } = {}) => {
-    store = createStore();
-
-    setCurrentEnvironmentIdSpy = jest
-      .spyOn(PoliciesApp.methods, 'setCurrentEnvironmentId')
-      .mockImplementation(() => {});
-
-    fetchEnvironmentsSpy = jest
-      .spyOn(PoliciesApp.methods, 'fetchEnvironments')
-      .mockImplementation(() => {});
-
-    wrapper = shallowMountExtended(PoliciesApp, {
-      store,
-      provide: {
-        defaultEnvironmentId: -1,
-        ...provide,
-      },
-    });
+  const createWrapper = () => {
+    wrapper = shallowMountExtended(PoliciesApp, {});
   };
 
   afterEach(() => {
@@ -39,21 +19,11 @@ describe('Policies App', () => {
 
   describe('when does have an environment enabled', () => {
     beforeEach(() => {
-      createWrapper({ provide: { defaultEnvironmentId: 22 } });
+      createWrapper();
     });
 
     it('mounts the policies header component', () => {
       expect(findPoliciesHeader().exists()).toBe(true);
-    });
-
-    it('mounts the policies list component', () => {
-      const policiesList = findPoliciesList();
-      expect(policiesList.props('hasEnvironment')).toBe(true);
-    });
-
-    it('fetches the environments when created', async () => {
-      expect(setCurrentEnvironmentIdSpy).toHaveBeenCalled();
-      expect(fetchEnvironmentsSpy).toHaveBeenCalled();
     });
 
     it.each`
@@ -69,21 +39,5 @@ describe('Policies App', () => {
         expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(true);
       },
     );
-  });
-
-  describe('when does not have an environment enabled', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it('mounts the policies list component', () => {
-      const policiesList = findPoliciesList();
-      expect(policiesList.props('hasEnvironment')).toBe(false);
-    });
-
-    it('does not fetch the environments when created', () => {
-      expect(setCurrentEnvironmentIdSpy).not.toHaveBeenCalled();
-      expect(fetchEnvironmentsSpy).not.toHaveBeenCalled();
-    });
   });
 });

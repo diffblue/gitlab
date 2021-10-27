@@ -59,11 +59,6 @@ export default {
   },
   inject: ['documentationPath', 'projectPath', 'newPolicyPath'],
   props: {
-    hasEnvironment: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     shouldUpdatePolicyList: {
       type: Boolean,
       required: false,
@@ -115,7 +110,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('threatMonitoring', ['currentEnvironmentId', 'allEnvironments']),
+    ...mapState('threatMonitoring', ['allEnvironments', 'currentEnvironmentId', 'hasEnvironment']),
     ...mapGetters('threatMonitoring', ['currentEnvironmentGid']),
     allPolicyTypes() {
       return {

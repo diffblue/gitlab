@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlLink, GlPopover, GlTabs, GlTab } from '@gitlab/ui';
-import { mapActions } from 'vuex';
+import { mapState } from 'vuex';
 import { s__ } from '~/locale';
 import Alerts from './alerts/alerts.vue';
 import NoEnvironmentEmptyState from './no_environment_empty_state.vue';
@@ -22,10 +22,6 @@ export default {
   },
   inject: ['documentationPath'],
   props: {
-    defaultEnvironmentId: {
-      type: Number,
-      required: true,
-    },
     networkPolicyNoDataSvgPath: {
       type: String,
       required: true,
@@ -35,26 +31,8 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      // We require the project to have at least one available environment.
-      // An invalid default environment id means there there are no available
-      // environments, therefore infrastructure cannot be set up. A valid default
-      // environment id only means that infrastructure *might* be set up.
-      isSetUpMaybe: this.isValidEnvironmentId(this.defaultEnvironmentId),
-    };
-  },
-  created() {
-    if (this.isSetUpMaybe) {
-      this.setCurrentEnvironmentId(this.defaultEnvironmentId);
-      this.fetchEnvironments();
-    }
-  },
-  methods: {
-    ...mapActions('threatMonitoring', ['fetchEnvironments', 'setCurrentEnvironmentId']),
-    isValidEnvironmentId(id) {
-      return Number.isInteger(id) && id >= 0;
-    },
+  computed: {
+    ...mapState('threatMonitoring', ['hasEnvironment']),
   },
   networkPolicyChartEmptyStateDescription: s__(
     `ThreatMonitoring|Container Network Policies are not installed or have been disabled. To view
@@ -96,7 +74,7 @@ export default {
         :title="s__('ThreatMonitoring|Statistics')"
         data-testid="threat-monitoring-statistics-tab"
       >
-        <no-environment-empty-state v-if="!isSetUpMaybe" />
+        <no-environment-empty-state v-if="!hasEnvironment" />
         <template v-else>
           <threat-monitoring-filters />
 

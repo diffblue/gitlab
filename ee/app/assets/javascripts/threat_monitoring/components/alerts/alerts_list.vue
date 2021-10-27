@@ -17,18 +17,11 @@ import getAlertsQuery from '~/graphql_shared/queries/get_alerts.query.graphql';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { joinPaths } from '~/lib/utils/url_utility';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
+import { PAGE_SIZE } from 'ee/threat_monitoring/constants';
 import AlertDrawer from './alert_drawer.vue';
 import AlertFilters from './alert_filters.vue';
 import AlertStatus from './alert_status.vue';
-import {
-  DEFAULT_FILTERS,
-  FIELDS,
-  MESSAGES,
-  PAGE_SIZE,
-  STATUSES,
-  DOMAIN,
-  CLOSED,
-} from './constants';
+import { DEFAULT_FILTERS, FIELDS, MESSAGES, STATUSES, DOMAIN, CLOSED } from './constants';
 
 export default {
   PAGE_SIZE,
