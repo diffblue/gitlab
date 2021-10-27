@@ -472,7 +472,7 @@
   }
 
   .show.dropdown .dropdown-menu {
-    width: 100%;
+    @include gl-w-full;
   }
 }
 
