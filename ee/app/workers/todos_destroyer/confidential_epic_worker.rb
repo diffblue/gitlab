@@ -9,7 +9,7 @@ module TodosDestroyer
     sidekiq_options retry: 3
 
     queue_namespace :todos_destroyer
-    feature_category :epics
+    feature_category :portfolio_management
 
     def perform(epic_id)
       return unless epic_id

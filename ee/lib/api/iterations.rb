@@ -4,7 +4,7 @@ module API
   class Iterations < ::API::Base
     include PaginationParams
 
-    feature_category :issue_tracking
+    feature_category :team_planning
 
     helpers do
       params :list_params do

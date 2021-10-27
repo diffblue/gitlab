@@ -6,7 +6,7 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        feature_category :epics, [:epics]
+        feature_category :portfolio_management, [:epics]
         feature_category :vulnerability_management, [:vulnerabilities]
       end
 

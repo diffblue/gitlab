@@ -4,7 +4,7 @@ module API
   class EpicIssues < ::API::Base
     include PaginationParams
 
-    feature_category :epics
+    feature_category :portfolio_management
 
     before do
       authenticate!

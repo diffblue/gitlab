@@ -7,7 +7,7 @@ class AdminEmailsWorker # rubocop:disable Scalability/IdempotentWorker
 
   sidekiq_options retry: 3
 
-  feature_category :issue_tracking
+  feature_category :team_planning
 
   # rubocop: disable CodeReuse/ActiveRecord
   def perform(recipient_id, subject, body)

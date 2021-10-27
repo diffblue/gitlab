@@ -4,7 +4,7 @@ class Projects::IterationsController < Projects::ApplicationController
   before_action :check_iterations_available!
   before_action :authorize_show_iteration!
 
-  feature_category :issue_tracking
+  feature_category :team_planning
 
   def index; end
 
