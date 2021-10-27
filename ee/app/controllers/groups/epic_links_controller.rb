@@ -6,7 +6,7 @@ class Groups::EpicLinksController < Groups::ApplicationController
   before_action :check_epics_available!, only: [:index, :destroy]
   before_action :check_subepics_available!, only: [:create, :update]
 
-  feature_category :epics
+  feature_category :portfolio_management
 
   def update
     result = EpicLinks::UpdateService.new(child_epic, current_user, params[:epic]).execute

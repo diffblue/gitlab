@@ -11,7 +11,7 @@ module Iterations
       deduplicate :until_executed, including_scheduled: true
 
       queue_namespace :cronjob
-      feature_category :issue_tracking
+      feature_category :team_planning
 
       def perform(cadence_id)
         cadence = ::Iterations::Cadence.find_by_id(cadence_id)

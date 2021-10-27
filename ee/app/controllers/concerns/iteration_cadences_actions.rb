@@ -7,7 +7,7 @@ module IterationCadencesActions
     before_action :check_cadences_available!
     before_action :authorize_show_cadence!, only: [:index]
 
-    feature_category :issue_tracking
+    feature_category :team_planning
   end
 
   def index; end

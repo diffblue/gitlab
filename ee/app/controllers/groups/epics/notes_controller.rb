@@ -10,7 +10,7 @@ class Groups::Epics::NotesController < Groups::ApplicationController
   before_action :epic
   before_action :authorize_create_note!, only: [:create]
 
-  feature_category :epics
+  feature_category :portfolio_management
 
   private
 

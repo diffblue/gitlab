@@ -6,7 +6,7 @@ class Groups::TodosController < Groups::ApplicationController
 
   before_action :authenticate_user!, only: [:create]
 
-  feature_category :epics
+  feature_category :portfolio_management
 
   private
 

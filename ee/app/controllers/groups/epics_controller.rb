@@ -26,7 +26,7 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:labels_widget, @group, default_enabled: :yaml)
   end
 
-  feature_category :epics
+  feature_category :portfolio_management
 
   def new
     @noteable = Epic.new

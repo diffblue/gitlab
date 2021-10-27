@@ -11,7 +11,7 @@ module EE
 
           override :feature_category_per_noteable_type
           def feature_category_per_noteable_type
-            super.merge!(::Epic => :issue_tracking)
+            super.merge!(::Epic => :team_planning)
           end
         end
       end

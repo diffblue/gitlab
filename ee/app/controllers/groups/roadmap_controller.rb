@@ -8,7 +8,7 @@ module Groups
     before_action :check_epics_available!
     before_action :persist_roadmap_layout, only: [:show]
 
-    feature_category :roadmaps
+    feature_category :portfolio_management
 
     # show roadmap for a group
     def show

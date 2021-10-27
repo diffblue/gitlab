@@ -1,8 +1,8 @@
 <script>
 import { GlLink, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { mapState } from 'vuex';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { createCveIdRequestIssueBody } from '~/helpers/cve_id_request_helper';
-import { joinPaths } from '~/lib/utils/url_utility';
 import { CVE_ID_REQUEST_SIDEBAR_I18N } from '../../constants';
 
 export default {
@@ -39,10 +39,7 @@ export default {
   computed: {
     ...mapState({ confidential: (state) => state.noteableData.confidential }),
     helpHref() {
-      return joinPaths(
-        gon.relative_url_root || '',
-        '/help/user/application_security/cve_id_request.md',
-      );
+      return helpPagePath('user/application_security/cve_id_request');
     },
     showHelpState() {
       return Boolean(this.showHelp);
@@ -76,7 +73,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="confidential" class="cve-id-request gl-display-block gl-pb-0 gl-border-b-0">
+  <div v-if="confidential" class="sidebar-contained-width cve-id-request gl-pb-0 gl-border-b-0">
     <div
       v-gl-tooltip.viewport.left
       :title="tooltipTitle"
