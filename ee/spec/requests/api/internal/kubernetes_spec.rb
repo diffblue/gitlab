@@ -232,8 +232,8 @@ RSpec.describe API::Internal::Kubernetes do
         {
           vulnerability: {
             name: 'CVE-123-4567 in libc',
-            severity: 'high',
-            confidence: 'unknown',
+            severity: 'High',
+            confidence: 'Unknown',
             location: {
               image: 'index.docker.io/library/nginx:latest',
               kubernetes_resource: {

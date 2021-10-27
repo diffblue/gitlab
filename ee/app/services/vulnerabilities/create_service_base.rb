@@ -30,26 +30,18 @@ module Vulnerabilities
       GENERIC_REPORT_TYPE
     end
 
-    def sanitize_enums(vulnerability_hash)
-      vulnerability_hash
+    def initialize_vulnerability(vulnerability_hash)
+      attributes = vulnerability_hash
         .slice(*%i[
           description
           state
           severity
           confidence
-        ])
-        .transform_values(&:downcase)
-    end
-
-    def initialize_vulnerability(vulnerability_hash)
-      attributes = vulnerability_hash
-        .slice(*%i[
           detected_at
           confirmed_at
           resolved_at
           dismissed_at
         ])
-        .merge(sanitize_enums(vulnerability_hash))
         .merge(
           project: @project,
           author: @author,
