@@ -62,5 +62,9 @@ FactoryBot.modify do
         project.project_setting.save!
       end
     end
+
+    trait :with_security_orchestration_policy_configuration do
+      association :security_orchestration_policy_configuration, factory: :security_orchestration_policy_configuration
+    end
   end
 end
