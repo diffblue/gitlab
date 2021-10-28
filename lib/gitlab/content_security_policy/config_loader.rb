@@ -144,7 +144,7 @@ module Gitlab
         # We need the version without trailing / for the sidekiq page itself
         # and we also need the version with trailing / for "deeper" pages
         # like /admin/sidekiq/busy
-        ['/admin/sidekiq', '/admin/sidekiq/', '/-/speedscope/index.html'].map do |path|
+        ['/admin/', '/assets/', '/-/speedscope/index.html'].map do |path|
           append_to_directive(directives, 'frame_src', Gitlab::Utils.append_path(Gitlab.config.gitlab.url, path))
         end
       end
