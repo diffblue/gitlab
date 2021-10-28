@@ -12,6 +12,7 @@ module EE
         expose :scanners, override: true
         expose :vulnerabilities_allowed, override: true
         expose :severity_levels, override: true
+        expose :vulnerability_states, override: true
       end
     end
   end

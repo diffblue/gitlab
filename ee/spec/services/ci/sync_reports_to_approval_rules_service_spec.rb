@@ -22,9 +22,10 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
     let(:scanners) { %w[dependency_scanning] }
     let(:vulnerabilities_allowed) { 0 }
     let(:severity_levels) { %w[high unknown] }
+    let(:vulnerability_states) { %w(newly_detected) }
 
     before do
-      create(:approval_project_rule, :vulnerability, project: project, approvals_required: 2, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels)
+      create(:approval_project_rule, :vulnerability, project: project, approvals_required: 2, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels, vulnerability_states: vulnerability_states)
     end
 
     context 'when there are security reports' do
@@ -72,6 +73,15 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
 
           context 'without any findings related to the severity levels' do
             let(:severity_levels) { %w[info] }
+
+            it 'lowers approvals_required count to zero' do
+              expect { subject }
+                .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
+            end
+          end
+
+          context 'without any vulnerability state related to the security reports' do
+            let(:vulnerability_states) { %w(resolved) }
 
             it 'lowers approvals_required count to zero' do
               expect { subject }
