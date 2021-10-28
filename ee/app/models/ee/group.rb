@@ -490,6 +490,10 @@ module EE
       user_cap <= root_ancestor.billable_members_count(requested_hosted_plan)
     end
 
+    def namespace_user_cap_reached_cache_key
+      "namespace_user_cap_reached:#{root_ancestor.id}"
+    end
+
     private
 
     override :post_create_hook
