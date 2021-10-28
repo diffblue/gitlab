@@ -9178,9 +9178,6 @@ msgstr ""
 msgid "ContainerRegistry|You can add an image to this registry with the following commands:"
 msgstr ""
 
-msgid "Contains %{count} blobs of images (%{size})"
-msgstr ""
-
 msgid "Content parsed with %{link}."
 msgstr ""
 
@@ -9368,9 +9365,6 @@ msgid "Copy link"
 msgstr ""
 
 msgid "Copy link to chart"
-msgstr ""
-
-msgid "Copy prefix"
 msgstr ""
 
 msgid "Copy reference"
@@ -11230,16 +11224,16 @@ msgstr ""
 msgid "Dependency Proxy"
 msgstr ""
 
-msgid "Dependency Proxy disabled. To enable it, contact the group owner."
-msgstr ""
-
-msgid "Dependency Proxy feature is limited to public groups for now."
-msgstr ""
-
-msgid "Dependency Proxy image prefix"
-msgstr ""
-
 msgid "Dependency Scanning"
+msgstr ""
+
+msgid "DependencyProxy|Cached %{time}"
+msgstr ""
+
+msgid "DependencyProxy|Contains %{count} blobs of images (%{size})"
+msgstr ""
+
+msgid "DependencyProxy|Copy prefix"
 msgstr ""
 
 msgid "DependencyProxy|Create a local proxy for storing frequently used upstream images. %{docLinkStart}Learn more%{docLinkEnd} about dependency proxies."
@@ -11248,7 +11242,19 @@ msgstr ""
 msgid "DependencyProxy|Dependency Proxy"
 msgstr ""
 
+msgid "DependencyProxy|Dependency Proxy disabled. To enable it, contact the group owner."
+msgstr ""
+
+msgid "DependencyProxy|Dependency Proxy feature is limited to public groups for now."
+msgstr ""
+
+msgid "DependencyProxy|Dependency Proxy image prefix"
+msgstr ""
+
 msgid "DependencyProxy|Enable Proxy"
+msgstr ""
+
+msgid "DependencyProxy|Manifest list"
 msgstr ""
 
 msgid "Depends on %d merge request being merged"
