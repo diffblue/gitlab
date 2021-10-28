@@ -118,6 +118,12 @@ export const APPROVAL_DIALOG_I18N = {
     vulnerabilitiesAllowedDescription: s__(
       'ApprovalRule|Number of vulnerabilities allowed before approval rule is triggered.',
     ),
+    vulnerabilityStatesLabel: s__('ApprovalRule|Vulnerability states'),
+    vulnerabilityStatesDescription: s__(
+      'ApprovalRule|Apply this approval rule to consider only the selected vulnerability states.',
+    ),
+    vulnerabilityStatesSelectLabel: s__('ApprovalRule|Select vulnerability states'),
+    allVulnerabilityStatesSelectedLabel: s__('ApprovalRule|All vulnerability states'),
     severityLevelsLabel: s__('ApprovalRule|Severity levels'),
     severityLevelsDescription: s__(
       'ApprovalRule|Apply this approval rule to consider only the selected severity levels.',
@@ -140,5 +146,14 @@ export const APPROVAL_DIALOG_I18N = {
       'ApprovalRule|Please enter a number equal or greater than zero',
     ),
     severityLevelsRequired: s__('ApprovalRule|Please select at least one severity level'),
+    vulnerabilityStatesRequired: s__('ApprovalRule|Please select at least one vulnerability state'),
   },
+};
+
+export const APPROVAL_VULNERABILITY_STATES = {
+  newly_detected: s__('ApprovalRule|Newly detected'),
+  detected: s__('ApprovalRule|Previously detected'),
+  confirmed: s__('ApprovalRule|Confirmed'),
+  dismissed: s__('ApprovalRule|Dismissed'),
+  resolved: s__('ApprovalRule|Resolved'),
 };

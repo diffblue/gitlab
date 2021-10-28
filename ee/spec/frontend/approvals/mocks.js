@@ -93,3 +93,28 @@ export const createGroupApprovalsState = (locked = null) => ({
     },
   },
 });
+
+export const TEST_PROTECTED_BRANCHES = [{ id: 2 }, { id: 3 }, { id: 4 }];
+
+export const TEST_RULE = {
+  id: 10,
+  name: 'QA',
+  approvalsRequired: 2,
+  users: [{ id: 1 }, { id: 2 }, { id: 3 }],
+  groups: [{ id: 1 }, { id: 2 }],
+};
+
+export const TEST_RULE_VULNERABILITY_CHECK = {
+  ...TEST_RULE,
+  id: null,
+  name: 'Vulnerability-Check',
+  scanners: ['sast', 'dast'],
+  vulnerabilitiesAllowed: 0,
+  severityLevels: ['high'],
+  vulnerabilityStates: ['newly_detected'],
+};
+
+export const TEST_RULE_WITH_PROTECTED_BRANCHES = {
+  ...TEST_RULE,
+  protectedBranches: TEST_PROTECTED_BRANCHES,
+};
