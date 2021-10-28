@@ -1,7 +1,9 @@
+- remove_form_id = local_assigns.fetch(:remove_form_id, nil)
+
 - if group.marked_for_deletion?
   .sub-section
     %h4.gl-text-red-500= _('Permanently remove group')
-    = form_tag(group, method: :delete) do
+    = form_tag(group, method: :delete, id: remove_form_id) do
       %p
         %strong= _('Removing this group also removes all child projects, including archived projects, and their resources.')
       %p= immediately_remove_group_message(group)
@@ -10,4 +12,4 @@
 
       = hidden_field_tag(:permanently_remove, true)
 
-      = render 'groups/settings/remove_button', group: group
+      = render 'groups/settings/remove_button', group: group, remove_form_id: remove_form_id

@@ -6,7 +6,14 @@ export default () => {
   const el = document.querySelector('.js-confirm-danger');
   if (!el) return null;
 
-  const { phrase, buttonText, confirmDangerMessage, testId = null, disabled = false } = el.dataset;
+  const {
+    removeFormId = null,
+    phrase,
+    buttonText,
+    confirmDangerMessage,
+    testId = null,
+    disabled = false,
+  } = el.dataset;
   return new Vue({
     el,
     provide: {
@@ -19,6 +26,11 @@ export default () => {
           buttonText,
           testId,
           disabled: parseBoolean(disabled),
+        },
+        on: {
+          confirm: () => {
+            if (removeFormId) document.getElementById(removeFormId).submit();
+          },
         },
       }),
   });

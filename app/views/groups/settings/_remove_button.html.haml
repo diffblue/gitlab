@@ -1,4 +1,5 @@
-- confirm_modal_data = { "disabled" => group.paid?, "button-text" => _('Remove group'), "confirm-danger-message" => remove_group_message(group), phrase: group.full_path, 'testid' => 'remove-group-button' }
+- remove_form_id = local_assigns.fetch(:remove_form_id, nil)
+- confirm_modal_data = { "remove_form_id" => remove_form_id, "disabled" => group.paid?, "button-text" => _('Remove group'), "confirm-danger-message" => remove_group_message(group), phrase: group.full_path, 'testid' => 'remove-group-button' }
 
 - if group.paid?
   .gl-alert.gl-alert-info.gl-mb-5{ data: { testid: 'group-has-linked-subscription-alert' } }
