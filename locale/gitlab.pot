@@ -26971,6 +26971,9 @@ msgstr ""
 msgid "ProjectSettings|LFS objects from this repository are available to forks. %{linkStart}How do I remove them?%{linkEnd}"
 msgstr ""
 
+msgid "ProjectSettings|Manage who can see the project in the public access directory."
+msgstr ""
+
 msgid "ProjectSettings|Manages large files such as audio, video, and graphics files."
 msgstr ""
 

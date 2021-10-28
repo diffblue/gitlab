@@ -400,6 +400,9 @@ export default {
         ref="project-visibility-settings"
         :help-path="visibilityHelpPath"
         :label="s__('ProjectSettings|Project visibility')"
+        :help-text="
+          s__('ProjectSettings|Manage who can see the project in the public access directory.')
+        "
       >
         <div class="project-feature-controls gl-display-flex gl-align-items-center gl-my-3 gl-mx-0">
           <div class="select-wrapper gl-flex-grow-1">
