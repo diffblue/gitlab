@@ -14,13 +14,13 @@ module Ci
       sync_coverage_rules
       success
     rescue StandardError => error
-      log_error(
+      payload = {
         pipeline: pipeline&.to_param,
-        error: error.class.name,
-        message: error.message,
-        source: "#{__FILE__}:#{__LINE__}",
-        backtrace: error.backtrace
-      )
+        source: "#{__FILE__}:#{__LINE__}"
+      }
+
+      Gitlab::ExceptionLogFormatter.format!(error, payload)
+      log_error(payload)
       error("Failed to update approval rules")
     ensure
       [:project_rule_vulnerabilities_allowed, :project_rule_scanners, :project_rule_severity_levels, :project_vulnerability_report, :reports].each do |memoization|
