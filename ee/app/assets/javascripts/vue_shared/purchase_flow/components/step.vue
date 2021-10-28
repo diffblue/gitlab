@@ -124,7 +124,13 @@ export default {
           :state="isValid"
           :class="[!isValid && errorMessage ? 'gl-mb-5' : 'gl-mb-0', 'gl-mt-3']"
         />
-        <gl-button variant="success" category="primary" :disabled="!isValid" @click="nextStep">
+        <gl-button
+          v-if="nextStepButtonText"
+          variant="success"
+          category="primary"
+          :disabled="!isValid"
+          @click="nextStep"
+        >
           {{ nextStepButtonText }}
         </gl-button>
       </div>
