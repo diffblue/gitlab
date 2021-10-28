@@ -23,7 +23,7 @@ export default {
     :title="s__('ClusterIntegration|Integrate Kubernetes with a cluster certificate')"
   >
     <template #description>
-      <p class="gl-text-left">
+      <p>
         {{
           s__(
             'ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way.',
@@ -31,7 +31,7 @@ export default {
         }}
       </p>
 
-      <p v-if="emptyStateHelpText" class="gl-text-left" data-testid="clusters-empty-state-text">
+      <p v-if="emptyStateHelpText" data-testid="clusters-empty-state-text">
         {{ emptyStateHelpText }}
       </p>
 
