@@ -356,7 +356,7 @@
   :tags: []
 - :name: cronjob:issues_reschedule_stuck_issue_rebalances
   :worker_name: Issues::RescheduleStuckIssueRebalancesWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown

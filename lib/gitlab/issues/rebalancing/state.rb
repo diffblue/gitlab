@@ -36,14 +36,12 @@ module Gitlab
         end
 
         def rebalance_in_progress?
-          all_rebalancing_containers = with_redis { |redis| redis.smembers(CONCURRENT_RUNNING_REBALANCES_KEY) }
-
           is_running = case rebalanced_container_type
                        when NAMESPACE
-                         namespace_ids = all_rebalancing_containers.map {|string| string.split("#{NAMESPACE}/").second.to_i }.compact
+                         namespace_ids = self.class.current_rebalancing_containers.map {|string| string.split("#{NAMESPACE}/").second.to_i }.compact
                          namespace_ids.include?(root_namespace.id)
                        when PROJECT
-                         project_ids = all_rebalancing_containers.map {|string| string.split("#{PROJECT}/").second.to_i }.compact
+                         project_ids = self.class.current_rebalancing_containers.map {|string| string.split("#{PROJECT}/").second.to_i }.compact
                          project_ids.include?(projects.take.id) # rubocop:disable CodeReuse/ActiveRecord
                        else
                          false
@@ -131,7 +129,28 @@ module Gitlab
           Gitlab::Redis::SharedState.with { |redis| redis.get(recently_finished_key(container_type, container_id)) }
         end
 
+        def self.fetch_rebalancing_groups_and_projects
+          namespace_ids = []
+          project_ids = []
+
+          current_rebalancing_containers.each do |string|
+            container_type, container_id = string.split('/', 2).map(&:to_i)
+
+            if container_type == NAMESPACE
+              namespace_ids << container_id
+            elsif container_type == PROJECT
+              project_ids << container_id
+            end
+          end
+
+          [namespace_ids, project_ids]
+        end
+
         private
+
+        def self.current_rebalancing_containers
+          Gitlab::Redis::SharedState.with { |redis| redis.smembers(CONCURRENT_RUNNING_REBALANCES_KEY) }
+        end
 
         attr_accessor :root_namespace, :projects, :rebalanced_container_type, :rebalanced_container_id
 
