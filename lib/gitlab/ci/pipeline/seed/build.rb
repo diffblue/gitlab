@@ -90,7 +90,7 @@ module Gitlab
               ::Ci::Bridge.new(attributes)
             else
               ::Ci::Build.new(attributes).tap do |build|
-                build.assign_attributes(self.class.environment_attributes_for(build))
+                build.assign_attributes(self.class.deployment_attributes_for(build))
               end
             end
           end
@@ -101,10 +101,10 @@ module Gitlab
                                               .to_resource
           end
 
-          def self.environment_attributes_for(build)
+          def self.deployment_attributes_for(build, environment = nil)
             return {} unless build.has_environment?
 
-            environment = Seed::Environment.new(build).to_resource
+            environment = Seed::Environment.new(build).to_resource if environment.nil?
 
             unless environment.persisted?
               if Feature.enabled?(:surface_environment_creation_failure, build.project, default_enabled: :yaml) &&
