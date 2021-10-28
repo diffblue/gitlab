@@ -345,10 +345,13 @@ db:migrate:reset:
 
 db:check-schema:
   extends:
-    - .db-job-base
+    - db:migrate-from-previous-major-version
     - .rails:rules:ee-mr-and-default-branch-only
+  variables:
+    TAG_TO_CHECKOUT: "v14.4.0"
   script:
-    - source scripts/schema_changed.sh
+    - run_timed_command "bundle exec rake db:migrate"
+    - scripts/schema_changed.sh
     - scripts/validate_migration_timestamps
 
 db:check-migrations:
@@ -367,7 +370,8 @@ db:migrate-from-previous-major-version:
     SETUP_DB: "false"
     PROJECT_TO_CHECKOUT: "gitlab-foss"
     TAG_TO_CHECKOUT: "v13.12.9"
-  script:
+  before_script:
+    - !reference [.default-before_script, before_script]
     - '[[ -d "ee/" ]] || export PROJECT_TO_CHECKOUT="gitlab"'
     - '[[ -d "ee/" ]] || export TAG_TO_CHECKOUT="${TAG_TO_CHECKOUT}-ee"'
     - retry 'git fetch https://gitlab.com/gitlab-org/$PROJECT_TO_CHECKOUT.git $TAG_TO_CHECKOUT'
@@ -376,6 +380,7 @@ db:migrate-from-previous-major-version:
     - run_timed_command "bundle exec rake db:drop db:create db:structure:load db:migrate db:seed_fu"
     - git checkout -f $CI_COMMIT_SHA
     - SETUP_DB=false USE_BUNDLE_INSTALL=true bash scripts/prepare_build.sh
+  script:
     - run_timed_command "bundle exec rake db:migrate"
 
 db:rollback:
