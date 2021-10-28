@@ -367,7 +367,7 @@ RSpec.describe Epic do
     let_it_be(:epic1) { create(:epic, group: group) }
 
     before do
-      epic2.update(parent_id: epic1.id)
+      epic2.update!(parent_id: epic1.id)
     end
 
     describe '#ancestors' do
@@ -714,8 +714,7 @@ RSpec.describe Epic do
     end
 
     before do
-      epic.description = ref_text
-      epic.save
+      epic.update!(description: ref_text)
     end
 
     it 'creates new system notes for cross references' do
