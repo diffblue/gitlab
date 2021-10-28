@@ -104,7 +104,7 @@ export default function createRouter({ base, permissions = {} }) {
                     },
                     {
                       name: 'editIteration',
-                      path: 'edit',
+                      path: '/:cadenceId/iterations/:iterationId/edit',
                       component: IterationForm,
                       beforeEnter: checkPermission(permissions.canEditIteration),
                       meta: {
