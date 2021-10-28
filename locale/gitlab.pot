@@ -1471,7 +1471,7 @@ msgstr ""
 msgid "A merge request hasn't yet been merged"
 msgstr ""
 
-msgid "A new Auto DevOps pipeline has been created, go to Pipelines page for details"
+msgid "A new Auto DevOps pipeline has been created, go to the Pipelines page for details"
 msgstr ""
 
 msgid "A new Release %{tag} for %{name} was published. Visit the %{release_link_start}Releases page%{release_link_end} to read more about it."

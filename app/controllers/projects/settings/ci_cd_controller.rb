@@ -104,7 +104,7 @@ module Projects
         CreatePipelineWorker.perform_async(project.id, current_user.id, project.default_branch, :web, ignore_skip_ci: true, save_on_errors: false)
         # rubocop:enable CodeReuse/Worker
 
-        flash[:toast] = _("A new Auto DevOps pipeline has been created, go to Pipelines page for details")
+        flash[:toast] = _("A new Auto DevOps pipeline has been created, go to the Pipelines page for details")
       end
 
       def define_variables
