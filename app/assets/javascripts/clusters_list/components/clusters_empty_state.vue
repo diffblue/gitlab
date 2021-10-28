@@ -1,9 +1,18 @@
 <script>
 import { GlEmptyState, GlButton, GlLink } from '@gitlab/ui';
 import { mapState } from 'vuex';
+import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
+  i18n: {
+    title: s__('ClusterIntegration|Integrate Kubernetes with a cluster certificate'),
+    description: s__(
+      'ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way.',
+    ),
+    learnMoreLinkText: s__('ClusterIntegration|Learn more about Kubernetes'),
+    buttonText: s__('ClusterIntegration|Integrate with a cluster certificate'),
+  },
   components: {
     GlEmptyState,
     GlButton,
@@ -18,17 +27,10 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state
-    :svg-path="clustersEmptyStateImage"
-    :title="s__('ClusterIntegration|Integrate Kubernetes with a cluster certificate')"
-  >
+  <gl-empty-state :svg-path="clustersEmptyStateImage" :title="$options.i18n.title">
     <template #description>
       <p>
-        {{
-          s__(
-            'ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way.',
-          )
-        }}
+        {{ $options.i18n.description }}
       </p>
 
       <p v-if="emptyStateHelpText" data-testid="clusters-empty-state-text">
@@ -37,7 +39,7 @@ export default {
 
       <p>
         <gl-link :href="$options.learnMoreHelpUrl" target="_blank" data-testid="clusters-docs-link">
-          {{ s__('ClusterIntegration|Learn more about Kubernetes') }}
+          {{ $options.i18n.learnMoreLinkText }}
         </gl-link>
       </p>
     </template>
@@ -51,7 +53,7 @@ export default {
         :disabled="!canAddCluster"
         :href="newClusterPath"
       >
-        {{ s__('ClusterIntegration|Integrate with a cluster certificate') }}
+        {{ $options.i18n.buttonText }}
       </gl-button>
     </template>
   </gl-empty-state>
