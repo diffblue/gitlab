@@ -888,6 +888,20 @@ module EE
       end
     end
 
+    # Manually preloads saml_providers, which cannot be done in AR, since the
+    # relationship is on the root ancestor.
+    # This is required since the `:read_group` ability depends on `Group.saml_provider`
+    override :project_group_links_with_preload
+    def project_group_links_with_preload
+      links = super.to_a
+      saml_providers = SamlProvider.where(group: links.map { _1.group.root_ancestor }).index_by(&:group_id)
+      links.each do |link|
+        link.group.root_saml_provider = saml_providers[link.group.root_ancestor.id]
+      end
+
+      links
+    end
+
     def github_integration_enabled?
       feature_available?(:github_project_service_integration)
     end

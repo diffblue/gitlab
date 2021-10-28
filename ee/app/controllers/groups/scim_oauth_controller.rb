@@ -10,20 +10,6 @@ class Groups::ScimOauthController < Groups::ApplicationController
 
   feature_category :authentication_and_authorization
 
-  def show
-    scim_token = ScimOauthAccessToken.find_by_group_id(@group.id)
-
-    respond_to do |format|
-      format.json do
-        if scim_token
-          render json: scim_token.as_entity_json
-        else
-          render json: {}
-        end
-      end
-    end
-  end
-
   # rubocop: disable CodeReuse/ActiveRecord
   def create
     scim_token = ScimOauthAccessToken.find_or_initialize_by(group: @group)
