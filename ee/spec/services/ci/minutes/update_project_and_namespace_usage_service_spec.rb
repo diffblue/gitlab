@@ -9,13 +9,14 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
   let(:namespace) { project.namespace }
   let(:build) { create(:ci_build) }
   let(:consumption_minutes) { 120 }
+  let(:duration) { 1_000 }
   let(:consumption_seconds) { consumption_minutes * 60 }
   let(:namespace_amount_used) { Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id).amount_used }
   let(:project_amount_used) { Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: project.id).amount_used }
   let(:service) { described_class.new(project.id, namespace.id, build.id) }
 
   describe '#execute', :clean_gitlab_redis_shared_state do
-    subject { service.execute(consumption_minutes) }
+    subject { service.execute(consumption_minutes, duration) }
 
     shared_examples 'updates legacy consumption' do
       it 'updates legacy statistics with consumption seconds' do
@@ -26,10 +27,20 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService do
     end
 
     shared_examples 'updates monthly consumption' do
-      it 'updates monthly usage with consumption minutes' do
+      it 'updates monthly usage for namespace' do
+        current_usage = Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
+
         expect { subject }
-          .to change { Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id).amount_used }.by(consumption_minutes)
-          .and change { Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: project.id).amount_used }.by(consumption_minutes)
+          .to change { current_usage.reload.amount_used }.by(consumption_minutes)
+          .and change { current_usage.reload.shared_runners_duration }.by(duration)
+      end
+
+      it 'updates monthly usage for project' do
+        current_usage = Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: project.id)
+
+        expect { subject }
+          .to change { current_usage.reload.amount_used }.by(consumption_minutes)
+          .and change { current_usage.reload.shared_runners_duration }.by(duration)
       end
     end
 
