@@ -361,13 +361,22 @@ RSpec.describe Epic do
   end
 
   context 'hierarchy' do
-    let(:epic1) { create(:epic, group: group) }
-    let(:epic2) { create(:epic, group: group, parent: epic1) }
-    let(:epic3) { create(:epic, group: group, parent: epic2) }
+    let_it_be(:epic2, reload: true) { create(:epic, group: group) }
+    let_it_be(:epic3) { create(:epic, group: group, parent: epic2) }
+    let_it_be(:epic4) { create(:epic, group: group, parent: epic3) }
+    let_it_be(:epic1) { create(:epic, group: group) }
+
+    before do
+      epic2.update!(parent_id: epic1.id)
+    end
 
     describe '#ancestors' do
-      it 'returns all ancestors for an epic' do
-        expect(epic3.ancestors).to eq [epic2, epic1]
+      it 'returns all ancestors for an epic ordered correctly' do
+        expect(epic4.ancestors).to eq([epic3, epic2, epic1])
+      end
+
+      it 'returns all ancestors for an epic ordered correctly with the hierarchy_order param' do
+        expect(epic4.ancestors(hierarchy_order: :desc)).to eq([epic1, epic2, epic3])
       end
 
       it 'returns an empty array if an epic does not have any parent' do
@@ -377,11 +386,11 @@ RSpec.describe Epic do
 
     describe '#descendants' do
       it 'returns all descendants for an epic' do
-        expect(epic1.descendants).to match_array([epic2, epic3])
+        expect(epic1.descendants).to match_array([epic2, epic3, epic4])
       end
 
       it 'returns an empty array if an epic does not have any descendants' do
-        expect(epic3.descendants).to be_empty
+        expect(epic4.descendants).to be_empty
       end
     end
   end
@@ -705,8 +714,7 @@ RSpec.describe Epic do
     end
 
     before do
-      epic.description = ref_text
-      epic.save
+      epic.update!(description: ref_text)
     end
 
     it 'creates new system notes for cross references' do

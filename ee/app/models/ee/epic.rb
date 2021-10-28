@@ -425,10 +425,10 @@ module EE
       end
     end
 
-    def ancestors
+    def ancestors(hierarchy_order: :asc)
       return self.class.none unless parent_id
 
-      hierarchy.ancestors(hierarchy_order: :asc)
+      hierarchy.ancestors(hierarchy_order: hierarchy_order)
     end
 
     def max_hierarchy_depth_achieved?
