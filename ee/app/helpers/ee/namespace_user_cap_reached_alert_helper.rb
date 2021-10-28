@@ -24,7 +24,7 @@ module EE
     end
 
     def user_cap_reached?(root_namespace)
-      Rails.cache.fetch("namespace_user_cap_reached:#{root_namespace.id}", expires_in: 2.hours) do
+      Rails.cache.fetch(root_namespace.namespace_user_cap_reached_cache_key, expires_in: 2.hours) do
         root_namespace.user_cap_reached?
       end
     end
