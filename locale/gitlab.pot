@@ -5431,6 +5431,9 @@ msgstr ""
 msgid "Blog"
 msgstr ""
 
+msgid "Board scope affects which epics are displayed for anyone who visits this board"
+msgstr ""
+
 msgid "Board scope affects which issues are displayed for anyone who visits this board"
 msgstr ""
 
