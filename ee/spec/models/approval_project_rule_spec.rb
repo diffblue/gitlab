@@ -15,6 +15,12 @@ RSpec.describe ApprovalProjectRule do
         expect(::Enums::Vulnerability.severity_levels.keys).to include(*described_class::DEFAULT_SEVERITIES)
       end
     end
+
+    context 'APPROVAL_VULNERABILITY_STATES' do
+      it 'contains all vulnerability states' do
+        expect(described_class::APPROVAL_VULNERABILITY_STATES).to include(*::Enums::Vulnerability.vulnerability_states.keys)
+      end
+    end
   end
 
   describe 'associations' do
@@ -177,20 +183,21 @@ RSpec.describe ApprovalProjectRule do
       context "with a `Vulnerability-Check` rule" do
         using RSpec::Parameterized::TableSyntax
 
-        where(:is_valid, :scanners, :vulnerabilities_allowed, :severity_levels) do
-          true  | []                                     | 0     | []
-          true  | %w(dast)                               | 1     | %w(critical high medium)
-          true  | %w(dast sast)                          | 10    | %w(critical high)
-          true  | %w(dast dast)                          | 100   | %w(critical)
-          false | %w(dast dast)                          | 100   | %w(unknown_severity)
-          false | %w(dast unknown_scanner)               | 100   | %w(critical)
-          false | [described_class::UNSUPPORTED_SCANNER] | 100   | %w(critical)
-          false | %w(dast sast)                          | 1.1   | %w(critical)
-          false | %w(dast sast)                          | 'one' | %w(critical)
+        where(:is_valid, :scanners, :vulnerabilities_allowed, :severity_levels, :vulnerability_states) do
+          true  | []                                     | 0     | []                       | %w(newly_detected)
+          true  | %w(dast)                               | 1     | %w(critical high medium) | %w(newly_detected resolved)
+          true  | %w(dast sast)                          | 10    | %w(critical high)        | %w(resolved detected)
+          true  | %w(dast dast)                          | 100   | %w(critical)             | %w(detected dismissed)
+          false | %w(dast dast)                          | 100   | %w(critical)             | %w(dismissed unknown)
+          false | %w(dast dast)                          | 100   | %w(unknown_severity)     | %w(detected dismissed)
+          false | %w(dast unknown_scanner)               | 100   | %w(critical)             | %w(detected dismissed)
+          false | [described_class::UNSUPPORTED_SCANNER] | 100   | %w(critical)             | %w(detected dismissed)
+          false | %w(dast sast)                          | 1.1   | %w(critical)             | %w(detected dismissed)
+          false | %w(dast sast)                          | 'one' | %w(critical)             | %w(detected dismissed)
         end
 
         with_them do
-          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels) }
+          let(:vulnerability_check_rule) { build(:approval_project_rule, :vulnerability, scanners: scanners, vulnerabilities_allowed: vulnerabilities_allowed, severity_levels: severity_levels, vulnerability_states: vulnerability_states) }
 
           specify { expect(vulnerability_check_rule.valid?).to be(is_valid) }
         end
@@ -272,6 +279,28 @@ RSpec.describe ApprovalProjectRule do
       let(:message) { 'Removed Group Justice League from approval group on Vulnerability rule' }
 
       it_behaves_like 'auditable'
+    end
+
+    describe '#vulnerability_states_for_branch' do
+      let(:project) { create(:project, :repository) }
+      let(:branch_name) { project.default_branch }
+      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w(newly_detected resolved)) }
+
+      context 'with protected branch set to any' do
+        let(:protected_branches) { [] }
+
+        it 'returns all content of vulnerability states' do
+          expect(rule.vulnerability_states_for_branch).to contain_exactly('newly_detected', 'resolved')
+        end
+      end
+
+      context 'with protected branch set to a custom branch' do
+        let(:protected_branches) { [create(:protected_branch, project: project, name: 'custom_branch')] }
+
+        it 'returns only the content of vulnerability states' do
+          expect(rule.vulnerability_states_for_branch).to contain_exactly('newly_detected')
+        end
+      end
     end
   end
 end

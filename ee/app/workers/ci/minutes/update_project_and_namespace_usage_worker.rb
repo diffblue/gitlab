@@ -13,10 +13,10 @@ module Ci
       # used by the service object.
       sidekiq_options retry: 3
 
-      def perform(consumption, project_id, namespace_id, build_id)
+      def perform(consumption, project_id, namespace_id, build_id, params = {})
         ::Ci::Minutes::UpdateProjectAndNamespaceUsageService
           .new(project_id, namespace_id, build_id)
-          .execute(consumption)
+          .execute(consumption, params[:duration].to_i)
       end
     end
   end

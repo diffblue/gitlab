@@ -12,6 +12,7 @@ class ProjectImportScheduleWorker
   feature_category :source_code_management
   sidekiq_options retry: false
   loggable_arguments 1 # For the job waiter key
+  log_bulk_perform_async!
 
   # UpdateAllMirrorsWorker depends on the queue size of this worker:
   # https://gitlab.com/gitlab-org/gitlab/-/issues/340630

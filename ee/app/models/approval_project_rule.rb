@@ -7,6 +7,9 @@ class ApprovalProjectRule < ApplicationRecord
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
   DEFAULT_SEVERITIES = %w[unknown high critical].freeze
+  NEWLY_DETECTED = 'newly_detected'
+  NEWLY_DETECTED_STATE = { NEWLY_DETECTED.to_sym => 0 }.freeze
+  APPROVAL_VULNERABILITY_STATES = ::Enums::Vulnerability.vulnerability_states.merge(NEWLY_DETECTED_STATE).freeze
 
   belongs_to :project
   has_and_belongs_to_many :protected_branches
@@ -37,6 +40,8 @@ class ApprovalProjectRule < ApplicationRecord
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
   default_value_for :severity_levels, allows_nil: false, value: DEFAULT_SEVERITIES
 
+  validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
+
   def applies_to_branch?(branch)
     return true if protected_branches.empty?
 
@@ -63,6 +68,14 @@ class ApprovalProjectRule < ApplicationRecord
 
   def audit_remove(model)
     push_audit_event("Removed #{model.class.name} #{model.name} from approval group on #{self.name} rule")
+  end
+
+  def vulnerability_states_for_branch(branch = project.default_branch)
+    if applies_to_branch?(branch)
+      self.vulnerability_states
+    else
+      self.vulnerability_states.select { |state| NEWLY_DETECTED == state }
+    end
   end
 
   private

@@ -1,4 +1,7 @@
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import {
+  convertObjectPropsToCamelCase,
+  convertObjectPropsToSnakeCase,
+} from '~/lib/utils/common_utils';
 import {
   RULE_TYPE_REGULAR,
   RULE_TYPE_ANY_APPROVER,
@@ -39,15 +42,7 @@ function reportTypeFromName(ruleName) {
 }
 
 export const mapApprovalRuleRequest = (req) => ({
-  name: req.name,
-  approvals_required: req.approvalsRequired,
-  users: req.users,
-  groups: req.groups,
-  remove_hidden_groups: req.removeHiddenGroups,
-  protected_branch_ids: req.protectedBranchIds,
-  scanners: req.scanners,
-  vulnerabilities_allowed: req.vulnerabilitiesAllowed,
-  severity_levels: req.severityLevels,
+  ...convertObjectPropsToSnakeCase(req),
   report_type: reportTypeFromName(req.name),
   rule_type: ruleTypeFromName(req.name),
 });
@@ -57,21 +52,9 @@ export const mapApprovalFallbackRuleRequest = (req) => ({
 });
 
 export const mapApprovalRuleResponse = (res) => ({
-  id: res.id,
+  ...convertObjectPropsToCamelCase(res),
   hasSource: Boolean(res.source_rule),
-  name: res.name,
-  approvalsRequired: res.approvals_required,
   minApprovalsRequired: 0,
-  approvers: res.approvers,
-  containsHiddenGroups: res.contains_hidden_groups,
-  users: res.users,
-  groups: res.groups,
-  ruleType: res.rule_type,
-  protectedBranches: res.protected_branches,
-  overridden: res.overridden,
-  scanners: res.scanners,
-  vulnerabilitiesAllowed: res.vulnerabilities_allowed,
-  severityLevels: res.severity_levels,
 });
 
 export const mapApprovalSettingsResponse = (res) => ({
