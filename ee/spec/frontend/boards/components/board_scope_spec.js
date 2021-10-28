@@ -11,16 +11,17 @@ describe('BoardScope', () => {
   let wrapper;
   let store;
 
-  const createStore = () => {
+  const createStore = ({ isIssueBoard }) => {
     return new Vuex.Store({
       getters: {
-        isIssueBoard: () => true,
-        isEpicBoard: () => false,
+        isIssueBoard: () => isIssueBoard,
+        isEpicBoard: () => !isIssueBoard,
       },
     });
   };
 
-  function mountComponent() {
+  function mountComponent({ isIssueBoard = true } = []) {
+    store = createStore({ isIssueBoard });
     wrapper = mount(BoardScope, {
       store,
       propsData: {
@@ -41,7 +42,6 @@ describe('BoardScope', () => {
   }
 
   beforeEach(() => {
-    store = createStore();
     mountComponent();
   });
 
@@ -51,7 +51,7 @@ describe('BoardScope', () => {
 
   const findLabelSelect = () => wrapper.findComponent(LabelsSelect);
 
-  describe('ee/app/assets/javascripts/boards/components/board_scope.vue', () => {
+  describe('BoardScope', () => {
     it('emits selected labels to be added and removed from the board', async () => {
       const labels = [{ id: '1', set: true, color: '#BADA55', text_color: '#FFFFFF' }];
       expect(findLabelSelect().exists()).toBe(true);
@@ -61,5 +61,14 @@ describe('BoardScope', () => {
       await nextTick();
       expect(wrapper.emitted('set-board-labels')).toEqual([[labels]]);
     });
+  });
+
+  it.each`
+    isIssueBoard | text
+    ${true}      | ${'Board scope affects which issues are displayed for anyone who visits this board'}
+    ${false}     | ${'Board scope affects which epics are displayed for anyone who visits this board'}
+  `('displays $text when isIssueBoard is $isIssueBoard', ({ isIssueBoard, text }) => {
+    mountComponent({ isIssueBoard });
+    expect(wrapper.find('p.text-secondary').text()).toEqual(text);
   });
 });

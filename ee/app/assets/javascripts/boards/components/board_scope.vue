@@ -69,6 +69,11 @@ export default {
     expandButtonText() {
       return this.expanded ? __('Collapse') : __('Expand');
     },
+    scopeText() {
+      return this.isIssueBoard
+        ? __('Board scope affects which issues are displayed for anyone who visits this board')
+        : __('Board scope affects which epics are displayed for anyone who visits this board');
+    },
   },
 
   methods: {
@@ -92,7 +97,7 @@ export default {
       </button>
     </div>
     <p class="text-secondary gl-mb-3">
-      {{ __('Board scope affects which issues are displayed for anyone who visits this board') }}
+      {{ scopeText }}
     </p>
     <div v-if="!collapseScope || expanded">
       <board-milestone-select
