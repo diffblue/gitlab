@@ -39,7 +39,7 @@ module API
           optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this'
           optional :branch_name_regex, type: String, desc: 'All branches names must match this'
           optional :author_email_regex, type: String, desc: 'All commit author emails must match this'
-          optional :file_name_regex, type: String, desc: 'All commited filenames must not match this'
+          optional :file_name_regex, type: String, desc: 'All committed filenames must not match this'
           optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)'
           optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
           optional :reject_unsigned_commits, type: Boolean, desc: 'Only GPG signed commits can be pushed to this project'
