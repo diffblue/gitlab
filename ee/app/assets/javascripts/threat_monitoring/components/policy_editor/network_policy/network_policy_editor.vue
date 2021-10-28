@@ -66,7 +66,12 @@ export default {
     PolicyEditorLayout,
     DimDisableContainer,
   },
-  inject: ['networkDocumentationPath', 'noEnvironmentSvgPath', 'projectId', 'policiesPath'],
+  inject: [
+    'networkDocumentationPath',
+    'policyEditorEmptyStateSvgPath',
+    'projectId',
+    'policiesPath',
+  ],
   props: {
     existingPolicy: {
       type: Object,
@@ -303,7 +308,7 @@ export default {
     :description="$options.i18n.noEnvironmentDescription"
     :primary-button-link="networkDocumentationPath"
     :primary-button-text="$options.i18n.noEnvironmentButton"
-    :svg-path="noEnvironmentSvgPath"
+    :svg-path="policyEditorEmptyStateSvgPath"
     title=""
   />
 </template>

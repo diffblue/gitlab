@@ -18,7 +18,7 @@ class Groups::HooksController < Groups::ApplicationController
   urgency :low, [:test]
 
   def index
-    @hooks = @group.hooks
+    @hooks = @group.hooks.load
     @hook = GroupHook.new
   end
 

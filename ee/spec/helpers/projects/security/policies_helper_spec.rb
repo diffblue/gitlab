@@ -46,13 +46,14 @@ RSpec.describe Projects::Security::PoliciesHelper do
         create_agent_help_path: kind_of(String),
         environments_endpoint: kind_of(String),
         network_documentation_path: kind_of(String),
-        no_environment_svg_path: kind_of(String),
+        policy_editor_empty_state_svg_path: kind_of(String),
         project_path: project.full_path,
         project_id: project.id,
         policies_path: kind_of(String),
         environment_id: environment&.id,
         policy: policy&.to_json,
-        policy_type: policy_type
+        policy_type: policy_type,
+        scan_execution_documentation_path: kind_of(String)
       }
     end
 
