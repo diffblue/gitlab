@@ -538,21 +538,23 @@ class Namespace < ApplicationRecord
       # Until we compare the inconsistency rates of the new specialized worker and
       # the old approach, we still run AuthorizedProjectsWorker
       # but with some delay and lower urgency as a safety net.
-      Group
-        .joins(project_group_links: :project)
-        .where(projects: { namespace_id: id })
-        .distinct
-        .find_each do |group|
-        group.refresh_members_authorized_projects(
-          blocking: false,
-          priority: UserProjectAccessChangedService::LOW_PRIORITY
-        )
-      end
+      enqueue_jobs_for_groups_requiring_authorizations_refresh(priority: UserProjectAccessChangedService::LOW_PRIORITY)
     else
-      Group
-        .joins(project_group_links: :project)
-        .where(projects: { namespace_id: id })
-        .find_each(&:refresh_members_authorized_projects)
+      enqueue_jobs_for_groups_requiring_authorizations_refresh(priority: UserProjectAccessChangedService::HIGH_PRIORITY)
+    end
+  end
+
+  def enqueue_jobs_for_groups_requiring_authorizations_refresh(priority:)
+    groups_requiring_authorizations_refresh = Group
+                                              .joins(project_group_links: :project)
+                                              .where(projects: { namespace_id: id })
+                                              .distinct
+
+    groups_requiring_authorizations_refresh.find_each do |group|
+      group.refresh_members_authorized_projects(
+        blocking: false,
+        priority: priority
+      )
     end
   end
 
