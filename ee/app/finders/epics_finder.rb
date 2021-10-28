@@ -27,6 +27,7 @@
 #   include_descendant_groups: boolean
 #   starts_with_iid: string (containing a number)
 #   confidential: boolean
+#   hierarchy_order: :desc or :acs, default :acs when searched by child_id
 
 class EpicsFinder < IssuableFinder
   include TimeFrameFilter
@@ -198,8 +199,10 @@ class EpicsFinder < IssuableFinder
   def by_child(items)
     return items unless child_id?
 
-    ancestor_ids = Epic.find(params[:child_id]).ancestors.reselect(:id)
-    items.where(id: ancestor_ids)
+    hierarchy_order = params[:hierarchy_order] || :asc
+
+    ancestors = Epic.find(params[:child_id]).ancestors(hierarchy_order: hierarchy_order)
+    ancestors.where(id: items.select(:id))
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
@@ -271,5 +274,12 @@ class EpicsFinder < IssuableFinder
   override :feature_flag_scope
   def feature_flag_scope
     params.group
+  end
+
+  override :sort
+  def sort(items)
+    return items if params[:hierarchy_order]
+
+    super
   end
 end
