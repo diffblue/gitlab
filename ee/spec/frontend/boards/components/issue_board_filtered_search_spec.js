@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import BoardFilteredSearch from '~/boards/components/board_filtered_search.vue';
+import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import IssueBoardFilteredSpec from 'ee/boards/components/issue_board_filtered_search.vue';
 import issueBoardFilters from '~/boards/issue_board_filters';
 import { mockTokens } from '../mock_data';
