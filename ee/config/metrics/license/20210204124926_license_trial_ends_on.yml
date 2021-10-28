@@ -10,6 +10,9 @@ status: active
 time_frame: none
 data_source: database
 data_category: subscription
+instrumentation_class: LicenseMetric
+options:
+  attribute: trial_ends_on
 distribution:
 - ee
 tier:

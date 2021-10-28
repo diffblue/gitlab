@@ -187,6 +187,10 @@ RSpec.describe Gitlab::UsageData do
   describe '.features_usage_data_ee' do
     subject { described_class.features_usage_data_ee }
 
+    before do
+      stub_feature_flags(usage_data_instrumentation: false)
+    end
+
     it 'gathers feature usage data of EE' do
       expect(subject[:elasticsearch_enabled]).to eq(Gitlab::CurrentSettings.elasticsearch_search?)
       expect(subject[:geo_enabled]).to eq(Gitlab::Geo.enabled?)
