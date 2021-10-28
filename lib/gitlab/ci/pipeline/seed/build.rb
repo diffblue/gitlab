@@ -11,11 +11,11 @@ module Gitlab
 
           delegate :dig, to: :@seed_attributes
 
-          def initialize(context, attributes, previous_stages, current_stage)
+          def initialize(context, attributes, stages_for_needs_lookup = [])
             @context = context
             @pipeline = context.pipeline
             @seed_attributes = attributes
-            @stages_for_needs_lookup = (previous_stages + [current_stage]).compact
+            @stages_for_needs_lookup = stages_for_needs_lookup.compact
             @needs_attributes = dig(:needs_attributes)
             @resource_group_key = attributes.delete(:resource_group_key)
             @job_variables = @seed_attributes.delete(:job_variables)

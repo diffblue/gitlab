@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Seed::Build do
   let(:previous_stages) { [] }
   let(:current_stage) { double(seeds_names: [attributes[:name]]) }
 
-  let(:seed_build) { described_class.new(seed_context, attributes, previous_stages, current_stage) }
+  let(:seed_build) { described_class.new(seed_context, attributes, previous_stages + [current_stage]) }
 
   describe '#attributes' do
     subject { seed_build.attributes }
