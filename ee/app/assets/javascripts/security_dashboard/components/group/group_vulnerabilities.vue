@@ -2,7 +2,6 @@
 import { GlAlert, GlLoadingIcon, GlIntersectionObserver } from '@gitlab/ui';
 import produce from 'immer';
 import vulnerabilitiesQuery from 'ee/security_dashboard/graphql/queries/group_vulnerabilities.query.graphql';
-import { preparePageInfo } from 'ee/security_dashboard/helpers';
 import { VULNERABILITIES_PER_PAGE } from 'ee/security_dashboard/store/constants';
 import VulnerabilityList from '../shared/vulnerability_list.vue';
 
@@ -49,7 +48,7 @@ export default {
       },
       update: ({ group }) => group.vulnerabilities.nodes,
       result({ data }) {
-        this.pageInfo = preparePageInfo(data?.group?.vulnerabilities?.pageInfo);
+        this.pageInfo = data?.group?.vulnerabilities?.pageInfo;
       },
       error() {
         this.errorLoadingVulnerabilities = true;
