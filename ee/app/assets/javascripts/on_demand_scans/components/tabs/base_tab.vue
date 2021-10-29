@@ -112,8 +112,14 @@ export default {
     };
   },
   computed: {
+    pipelineNodes() {
+      return this.pipelines?.nodes ?? [];
+    },
     hasPipelines() {
-      return Boolean(this.pipelines?.nodes?.length);
+      return this.pipelineNodes.length > 0;
+    },
+    pageInfo() {
+      return this.pipelines?.pageInfo;
     },
     tableFields() {
       return this.fields.map(({ key, label }) => ({
@@ -122,6 +128,13 @@ export default {
         class: ['gl-text-black-normal'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
       }));
+    },
+  },
+  watch: {
+    hasPipelines(hasPipelines) {
+      if (this.hasError && hasPipelines) {
+        this.hasError = false;
+      }
     },
   },
   methods: {
@@ -168,23 +181,24 @@ export default {
       {{ title }}
       <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
     </template>
-    <template v-if="$apollo.queries.pipelines.loading">
-      <gl-skeleton-loader v-for="i in 20" :key="i" :width="815" :height="50">
-        <rect width="85" height="20" x="15" y="15" rx="4" />
-        <rect width="155" height="20" x="125" y="15" rx="4" />
-        <rect width="60" height="20" x="350" y="15" rx="4" />
-        <rect width="150" height="20" x="450" y="15" rx="4" />
-        <rect width="70" height="20" x="640" y="15" rx="4" />
-        <rect width="25" height="20" x="740" y="15" rx="4" />
-      </gl-skeleton-loader>
-    </template>
-    <template v-else-if="hasPipelines">
+    <template v-if="$apollo.queries.pipelines.loading || hasPipelines">
       <gl-table
         thead-class="gl-border-b-solid gl-border-gray-100 gl-border-1"
         :fields="tableFields"
-        :items="pipelines.nodes"
+        :items="pipelineNodes"
+        :busy="$apollo.queries.pipelines.loading"
         stacked="md"
       >
+        <template #table-busy>
+          <gl-skeleton-loader v-for="i in 20" :key="i" :width="1000" :height="45">
+            <rect width="85" height="20" x="0" y="5" rx="4" />
+            <rect width="100" height="20" x="150" y="5" rx="4" />
+            <rect width="150" height="20" x="300" y="5" rx="4" />
+            <rect width="100" height="20" x="500" y="5" rx="4" />
+            <rect width="150" height="20" x="655" y="5" rx="4" />
+            <rect width="70" height="20" x="855" y="5" rx="4" />
+          </gl-skeleton-loader>
+        </template>
         <template #cell(detailedStatus)="{ item }">
           <div class="gl-my-3">
             <ci-badge-link :status="item.detailedStatus" />
@@ -207,7 +221,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-center">
         <gl-keyset-pagination
           data-testid="pagination"
-          v-bind="pipelines.pageInfo"
+          v-bind="pageInfo"
           :prev-text="$options.i18n.previousPage"
           :next-text="$options.i18n.nextPage"
           @prev="prevPage"
@@ -215,11 +229,15 @@ export default {
         />
       </div>
     </template>
-    <template v-else-if="hasError">
-      <gl-alert variant="danger" :dismissible="false" class="gl-my-4" data-testid="error-alert">
-        {{ $options.i18n.errorMessage }}
-      </gl-alert>
-    </template>
+    <gl-alert
+      v-else-if="hasError"
+      variant="danger"
+      :dismissible="false"
+      class="gl-my-4"
+      data-testid="error-alert"
+    >
+      {{ $options.i18n.errorMessage }}
+    </gl-alert>
     <empty-state v-else :title="emptyStateTitle" :text="emptyStateText" no-primary-button />
   </gl-tab>
 </template>
