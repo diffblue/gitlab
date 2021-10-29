@@ -8,7 +8,3 @@ export const STEPS = {
 };
 
 export const SUBSCRIPTON_FLOW_STEPS = [STEPS.yourProfile, STEPS.checkout, STEPS.yourGroup];
-
-export const SIGNUP_ONBOARDING_FLOW_STEPS = [STEPS.yourProfile, STEPS.yourGroup, STEPS.yourProject];
-
-export const COMBINED_SIGNUP_FLOW_STEPS = [STEPS.yourProfile, STEPS.yourProject];

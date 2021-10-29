@@ -14,15 +14,11 @@ RSpec.describe 'User sees new onboarding flow', :js do
     visit users_sign_up_welcome_path
 
     expect(page).to have_content('Welcome to GitLab')
-    expect(page).to have_content('Your profile Your GitLab group Your first project')
-    expect(page).to have_css('li.current', text: 'Your profile')
 
     choose 'Just me'
     click_on 'Continue'
 
     expect(page).to have_content('Create your group')
-    expect(page).to have_content('Your profile Your GitLab group Your first project')
-    expect(page).to have_css('li.current', text: 'Your GitLab group')
 
     fill_in 'group_name', with: 'test'
 
@@ -31,8 +27,6 @@ RSpec.describe 'User sees new onboarding flow', :js do
     click_on 'Create group'
 
     expect(page).to have_content('Create/import your first project')
-    expect(page).to have_content('Your profile Your GitLab group Your first project')
-    expect(page).to have_css('li.current', text: 'Your first project')
 
     fill_in 'project_name', with: 'test'
 
