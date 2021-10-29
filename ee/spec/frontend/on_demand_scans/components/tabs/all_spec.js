@@ -23,5 +23,6 @@ describe('AllTab', () => {
   it('renders the base tab with the correct props', () => {
     expect(findBaseTab().props('title')).toBe('All');
     expect(findBaseTab().props('itemsCount')).toBe(12);
+    expect(findBaseTab().props('fields')).toMatchSnapshot();
   });
 });
