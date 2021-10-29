@@ -1,6 +1,6 @@
 <script>
-import { GlButton, GlTooltipDirective } from '@gitlab/ui';
-import Avatar from '~/vue_shared/components/deprecated_project_avatar/default.vue';
+import { GlButton, GlTooltipDirective, GlAvatarLabeled } from '@gitlab/ui';
+import { __ } from '~/locale';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from '../constants';
 import HiddenGroupsItem from './hidden_groups_item.vue';
 
@@ -9,7 +9,7 @@ const types = [TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS];
 export default {
   components: {
     GlButton,
-    Avatar,
+    GlAvatarLabeled,
     HiddenGroupsItem,
   },
   directives: {
@@ -19,7 +19,7 @@ export default {
     approver: {
       type: Object,
       required: true,
-      validator: ({ type }) => type && types.indexOf(type) >= 0,
+      validator: ({ type }) => type && types.includes(type),
     },
   },
   computed: {
@@ -32,23 +32,36 @@ export default {
     displayName() {
       return this.isGroup ? this.approver.full_path : this.approver.name;
     },
+    avatarShape() {
+      return this.isGroup ? 'rect' : 'circle';
+    },
+  },
+  i18n: {
+    removeApproverText: __('Remove'),
   },
 };
 </script>
 
 <template>
   <transition name="fade">
-    <li class="d-flex align-items-center px-3">
+    <li class="gl-display-flex! gl-align-items-center gl-px-5!">
       <hidden-groups-item v-if="isHiddenGroups" />
-      <template v-else>
-        <avatar :project="approver" :size="24" /><span>{{ displayName }}</span>
-      </template>
+      <gl-avatar-labeled
+        v-else
+        :shape="avatarShape"
+        :entity-name="approver.name"
+        :label="displayName"
+        :src="approver.avatar_url"
+        :alt="approver.name"
+        :size="24"
+      />
+
       <gl-button
         v-gl-tooltip
-        class="ml-auto"
+        class="gl-ml-auto"
         icon="remove"
-        :aria-label="__('Remove')"
-        :title="__('Remove')"
+        :aria-label="$options.i18n.removeApproverText"
+        :title="$options.i18n.removeApproverText"
         @click="$emit('remove', approver)"
       />
     </li>
