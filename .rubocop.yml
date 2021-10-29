@@ -171,6 +171,7 @@ Naming/FileName:
     - ED25519
     - GitLab
     - JavaScript
+    - VSCode
     # default ones:
     - CLI
     - DSL
