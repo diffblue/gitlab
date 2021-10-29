@@ -183,6 +183,16 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
     it { expect(rebalance_caching.send(:rebalanced_container_type)).to eq(described_class::NAMESPACE) }
 
     it_behaves_like 'issues rebalance caching'
+
+    describe '.fetch_rebalancing_groups_and_projects' do
+      before do
+        rebalance_caching.track_new_running_rebalance
+      end
+
+      it 'caches recently finished rebalance key' do
+        expect(described_class.fetch_rebalancing_groups_and_projects).to eq([[group.id], []])
+      end
+    end
   end
 
   context 'rebalancing issues in a project' do
@@ -193,6 +203,16 @@ RSpec.describe Gitlab::Issues::Rebalancing::State, :clean_gitlab_redis_shared_st
     it { expect(rebalance_caching.send(:rebalanced_container_type)).to eq(described_class::PROJECT) }
 
     it_behaves_like 'issues rebalance caching'
+
+    describe '.fetch_rebalancing_groups_and_projects' do
+      before do
+        rebalance_caching.track_new_running_rebalance
+      end
+
+      it 'caches recently finished rebalance key' do
+        expect(described_class.fetch_rebalancing_groups_and_projects).to eq([[], [project.id]])
+      end
+    end
   end
 
   # count - how many issue ids to generate, issue ids will start at 1
