@@ -212,7 +212,7 @@ describe('Group Security Dashboard Vulnerabilities Component', () => {
         group: {
           vulnerabilities: {
             nodes: [],
-            pageInfo: { startCursor: '', endCursor: '' },
+            pageInfo: { endCursor: '', hasNextPage: '' },
           },
         },
       },

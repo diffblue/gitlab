@@ -80,7 +80,8 @@ RSpec.describe Groups::SecurityFeaturesHelper do
         vulnerabilities_export_endpoint: "/api/v4/security/groups/#{group.id}/vulnerability_exports",
         scanners: '[]',
         can_admin_vulnerability: 'true',
-        can_view_false_positive: 'false'
+        can_view_false_positive: 'false',
+        has_projects: 'false'
       }
     end
 

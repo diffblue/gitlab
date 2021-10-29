@@ -30,7 +30,8 @@ module Groups::SecurityFeaturesHelper
       scanners: VulnerabilityScanners::ListService.new(group).execute.to_json,
       can_admin_vulnerability: can?(current_user, :admin_vulnerability, group).to_s,
       false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
-      can_view_false_positive: group.licensed_feature_available?(:sast_fp_reduction).to_s
+      can_view_false_positive: group.licensed_feature_available?(:sast_fp_reduction).to_s,
+      has_projects: group.projects.any?.to_s
     }
   end
 end
