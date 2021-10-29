@@ -248,28 +248,35 @@ RSpec.describe Groups::TransferService, :sidekiq_inline do
         let_it_be(:membership) { create(:group_member, :owner, group: new_parent_group, user: user) }
         let_it_be(:project) { create(:project, path: 'foo', namespace: new_parent_group) }
 
-        before do
-          group.update_attribute(:path, 'foo')
-        end
-
-        it 'returns false' do
-          expect(transfer_service.execute(new_parent_group)).to be_falsy
-        end
-
         it 'adds an error on group' do
-          transfer_service.execute(new_parent_group)
-          expect(transfer_service.error).to eq('Transfer failed: Validation failed: Group URL has already been taken')
+          expect(transfer_service.execute(new_parent_group)).to be_falsy
+          expect(transfer_service.error).to eq('Transfer failed: The parent group already has a subgroup or a project with the same path.')
         end
 
-        context 'when projects have project namespaces' do
+        context 'with project namespace' do
           before do
-            transfer_service.execute(new_parent_group)
+            project_namespace = project.project_namespace
+            project.update!(project_namespace_id: nil)
+            project_namespace.destroy!
           end
 
-          it_behaves_like 'project namespace path is in sync with project path' do
-            let(:group_full_path) { "#{new_parent_group.full_path}" }
-            let(:projects_with_project_namespace) { [project] }
+          it 'adds an error on group' do
+            expect(transfer_service.execute(new_parent_group)).to be_falsy
+            expect(transfer_service.error).to eq('Transfer failed: Validation failed: Group URL has already been taken')
           end
+        end
+      end
+
+      context 'when projects have project namespaces' do
+        let_it_be(:project) { create(:project, path: 'foo', namespace: new_parent_group) }
+
+        before do
+          transfer_service.execute(new_parent_group)
+        end
+
+        it_behaves_like 'project namespace path is in sync with project path' do
+          let(:group_full_path) { "#{new_parent_group.full_path}" }
+          let(:projects_with_project_namespace) { [project] }
         end
       end
 
