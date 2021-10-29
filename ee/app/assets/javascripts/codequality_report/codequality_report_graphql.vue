@@ -36,15 +36,12 @@ export default {
       },
       update({
         project: {
-          pipeline: { codeQualityReports: { edges = [], pageInfo = {}, count = 0 } = {} } = {},
+          pipeline: { codeQualityReports: { nodes = [], pageInfo = {}, count = 0 } = {} } = {},
         } = {},
       }) {
         return {
-          edges,
-          parsedList: parseCodeclimateMetrics(
-            edges.map((edge) => edge.node),
-            this.blobPath,
-          ),
+          nodes,
+          parsedList: parseCodeclimateMetrics(nodes, this.blobPath),
           count,
           pageInfo,
         };
@@ -62,7 +59,7 @@ export default {
   data() {
     return {
       codequalityViolations: {
-        edges: [],
+        nodes: [],
         parsedList: [],
         count: 0,
         pageInfo: {},
@@ -116,9 +113,9 @@ export default {
           },
           updateQuery: (previousResult, { fetchMoreResult }) => {
             return produce(fetchMoreResult, (draftData) => {
-              draftData.project.pipeline.codeQualityReports.edges = [
-                ...previousResult.project.pipeline.codeQualityReports.edges,
-                ...draftData.project.pipeline.codeQualityReports.edges,
+              draftData.project.pipeline.codeQualityReports.nodes = [
+                ...previousResult.project.pipeline.codeQualityReports.nodes,
+                ...draftData.project.pipeline.codeQualityReports.nodes,
               ];
             });
           },

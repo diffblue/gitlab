@@ -114,7 +114,7 @@ describe('Codequality report app', () => {
             pipeline: {
               codeQualityReports: {
                 ...codeQualityViolations,
-                edges: [],
+                nodes: [],
                 count: 0,
               },
             },

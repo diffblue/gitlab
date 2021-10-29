@@ -5,14 +5,12 @@ query getCodeQualityViolations($projectPath: ID!, $iid: ID!, $first: Int, $after
     pipeline(iid: $iid) {
       codeQualityReports(first: $first, after: $after) {
         count
-        edges {
-          node {
-            line
-            description
-            path
-            fingerprint
-            severity
-          }
+        nodes {
+          line
+          description
+          path
+          fingerprint
+          severity
         }
         pageInfo {
           ...PageInfo
