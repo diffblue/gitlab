@@ -9,6 +9,8 @@ class ProjectImportScheduleWorker
   prepend WaitableWorker
 
   idempotent!
+  deduplicate :until_executing, ttl: 5.minutes
+
   feature_category :source_code_management
   sidekiq_options retry: false
   loggable_arguments 1 # For the job waiter key
