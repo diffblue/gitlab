@@ -31650,9 +31650,6 @@ msgstr ""
 msgid "Show one file at a time"
 msgstr ""
 
-msgid "Show parent pages"
-msgstr ""
-
 msgid "Show the Closed list"
 msgstr ""
 
