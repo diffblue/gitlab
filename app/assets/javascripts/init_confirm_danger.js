@@ -11,9 +11,10 @@ export default () => {
     phrase,
     buttonText,
     confirmDangerMessage,
-    testId = null,
+    testid = null,
     disabled = false,
   } = el.dataset;
+
   return new Vue({
     el,
     provide: {
@@ -24,7 +25,7 @@ export default () => {
         props: {
           phrase,
           buttonText,
-          testId,
+          testid,
           disabled: parseBoolean(disabled),
         },
         on: {

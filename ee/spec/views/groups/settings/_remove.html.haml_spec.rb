@@ -10,7 +10,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       render 'groups/settings/remove', group: group
 
       expect(rendered).to have_selector '[data-testid="remove-group-button"]'
-      expect(rendered).not_to have_selector '[data-testid="remove-group-button"].disabled'
+      expect(rendered).not_to match 'data-disabled="true"'
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
@@ -19,7 +19,8 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
       render 'groups/settings/remove', group: group
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"].disabled'
+      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to match 'data-disabled="true"'
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
@@ -28,7 +29,8 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
       render 'groups/settings/remove', group: group
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"].disabled'
+      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to match 'data-disabled="true"'
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
@@ -39,7 +41,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       render 'groups/settings/remove', group: subgroup
 
       expect(rendered).to have_selector '[data-testid="remove-group-button"]'
-      expect(rendered).not_to have_selector '[data-testid="remove-group-button"].disabled'
+      expect(rendered).not_to match 'data-disabled="true"'
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
@@ -52,7 +54,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
         render 'groups/settings/remove', group: group
 
         expect(rendered).to have_selector '[data-testid="remove-group-button"]'
-        expect(rendered).not_to have_selector '[data-testid="remove-group-button"].disabled'
+        expect(rendered).not_to match 'data-disabled="true"'
         expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
 
@@ -61,7 +63,8 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
         render 'groups/settings/remove', group: group
 
-        expect(rendered).to have_selector '[data-testid="remove-group-button"].disabled'
+        expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+        expect(rendered).to match 'data-disabled="true"'
         expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
 
@@ -72,7 +75,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
         render 'groups/settings/remove', group: subgroup
 
         expect(rendered).to have_selector '[data-testid="remove-group-button"]'
-        expect(rendered).not_to have_selector '[data-testid="remove-group-button"].disabled'
+        expect(rendered).not_to match 'data-disabled="true"'
         expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
     end
