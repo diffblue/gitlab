@@ -25,7 +25,7 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
           subject
         end
 
-        it 'updates monthly usage but not shared_runners_duration' do
+        it 'updates monthly usage but not shared_runners_duration', :aggregate_failures do
           subject
 
           namespace_usage = Ci::Minutes::NamespaceMonthlyUsage.find_by(namespace: namespace)
@@ -38,7 +38,7 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
         end
       end
 
-      it 'does not behave idempotently for legacy statistics update' do
+      it 'does not behave idempotently for legacy statistics update', :aggregate_failures do
         expect(::Ci::Minutes::UpdateProjectAndNamespaceUsageService).to receive(:new).twice.and_call_original
 
         subject
@@ -49,7 +49,7 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
     end
 
     context 'when duration param is passed in' do
-      subject { perform_multiple([consumption, project.id, namespace.id, build.id, { duration: duration }]) }
+      subject { perform_multiple([consumption, project.id, namespace.id, build.id, { 'duration' => duration }]) }
 
       context 'behaves idempotently for monthly usage update' do
         it 'executes UpdateProjectAndNamespaceUsageService' do
@@ -60,7 +60,7 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
           subject
         end
 
-        it 'updates monthly usage and shared_runners_duration' do
+        it 'updates monthly usage and shared_runners_duration', :aggregate_failures do
           subject
 
           namespace_usage = Ci::Minutes::NamespaceMonthlyUsage.find_by(namespace: namespace)
@@ -73,7 +73,7 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker do
         end
       end
 
-      it 'does not behave idempotently for legacy statistics update' do
+      it 'does not behave idempotently for legacy statistics update', :aggregate_failures do
         expect(::Ci::Minutes::UpdateProjectAndNamespaceUsageService).to receive(:new).twice.and_call_original
 
         subject
