@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { createRouter } from './router';
 import OnDemandScans from './components/on_demand_scans.vue';
+import apolloProvider from './graphql/provider';
 
 export default () => {
   const el = document.querySelector('#js-on-demand-scans');
@@ -13,6 +14,7 @@ export default () => {
   return new Vue({
     el,
     router: createRouter(),
+    apolloProvider,
     provide: {
       projectPath,
       newDastScanPath,

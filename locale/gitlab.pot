@@ -23880,6 +23880,9 @@ msgstr ""
 msgid "OnDemandScans|Scan name"
 msgstr ""
 
+msgid "OnDemandScans|Scan type"
+msgstr ""
+
 msgid "OnDemandScans|Scanner profile"
 msgstr ""
 
@@ -23893,6 +23896,9 @@ msgid "OnDemandScans|Site profile"
 msgstr ""
 
 msgid "OnDemandScans|Start time"
+msgstr ""
+
+msgid "OnDemandScans|Target"
 msgstr ""
 
 msgid "OnDemandScans|Use existing scanner profile"
