@@ -12,7 +12,10 @@ module EE
             job = jobs.fetch(name.to_sym, {})
 
             super.deep_merge(
-              options: { dast_configuration: job[:dast_configuration] }.compact
+              {
+                options: { dast_configuration: job[:dast_configuration] }.compact,
+                secrets: job[:secrets]
+              }.compact
             )
           end
         end
