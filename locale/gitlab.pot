@@ -24512,6 +24512,9 @@ msgstr ""
 msgid "PackageRegistry|Package Registry"
 msgstr ""
 
+msgid "PackageRegistry|Package deleted successfully"
+msgstr ""
+
 msgid "PackageRegistry|Package file deleted successfully"
 msgstr ""
 
