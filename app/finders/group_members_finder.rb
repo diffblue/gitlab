@@ -9,7 +9,7 @@ class GroupMembersFinder < UnionFinder
     direct: 'Members in the group itself',
     inherited: "Members in the group's ancestor groups",
     descendants: "Members in the group's subgroups",
-    shared_with_groups: "Invited group's members"
+    shared_from_groups: "Invited group's members"
   }.freeze
 
   include CreatedAtFilter
@@ -29,8 +29,6 @@ class GroupMembersFinder < UnionFinder
   end
 
   def execute(include_relations: DEFAULT_RELATIONS)
-    return filter_members(group_members_list) if include_relations == [:direct]
-
     groups = groups_by_relations(include_relations)
     return GroupMember.none unless groups
 
@@ -46,24 +44,14 @@ class GroupMembersFinder < UnionFinder
   def groups_by_relations(include_relations)
     check_relation_arguments!(include_relations)
 
-    case include_relations.sort
-    when [:inherited]
-      group.ancestors
-    when [:descendants]
-      group.descendants
-    when [:direct, :inherited]
-      group.self_and_ancestors
-    when [:descendants, :direct]
-      group.self_and_descendants
-    when [:descendants, :inherited]
-      find_union([group.ancestors, group.descendants], Group)
-    when [:descendants, :direct, :inherited]
-      group.self_and_hierarchy
-    when [:direct, :inherited, :shared_with_groups]
-      find_union([group.self_and_ancestors, group.shared_with_groups.public_or_visible_to_user(user)], Group)
-    else
-      nil
-    end
+    members = []
+
+    members << Group.where(id: group.id) if include_relations.include?(:direct)
+    members << group.ancestors if include_relations.include?(:inherited)
+    members << group.descendants if include_relations.include?(:descendants)
+    members << group.shared_with_groups.public_or_visible_to_user(user) if include_relations.include?(:shared_from_groups)
+
+    find_union(members, Group)
   end
 
   def filter_members(members)
