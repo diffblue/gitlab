@@ -53,8 +53,6 @@ A dropdown menu lets you show only open or closed epics. By default, all epics a
 
 You can sort epics in the Roadmap view by:
 
-- Created date
-- Last updated
 - Start date
 - Due date
 
