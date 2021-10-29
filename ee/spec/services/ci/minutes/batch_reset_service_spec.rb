@@ -53,19 +53,43 @@ RSpec.describe Ci::Minutes::BatchResetService do
         subject
       end
 
-      it 'resets CI minutes and recalculates purchased minutes for the namespace exceeding the monthly minutes' do
-        subject
+      context 'when feature flag ci_reset_purchased_minutes_lazily is enabled' do
+        it 'resets CI minutes but does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
+          subject
 
-        namespaces_exceeding_minutes.each do |namespace|
-          namespace.reset
+          namespaces_exceeding_minutes.each do |namespace|
+            namespace.reset
 
-          expect(namespace.extra_shared_runners_minutes_limit).to eq 30
-          expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
-          expect(namespace.namespace_statistics.shared_runners_seconds_last_reset).to be_present
-          expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds).to eq 0
-          expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds_last_reset).to be_present
-          expect(namespace.last_ci_minutes_notification_at).to be_nil
-          expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
+            expect(namespace.extra_shared_runners_minutes_limit).to eq 50
+            expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
+            expect(namespace.namespace_statistics.shared_runners_seconds_last_reset).to be_present
+            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds).to eq 0
+            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds_last_reset).to be_present
+            expect(namespace.last_ci_minutes_notification_at).to be_nil
+            expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
+          end
+        end
+      end
+
+      context 'when feature flag ci_reset_purchased_minutes_lazily is disabled' do
+        before do
+          stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
+        end
+
+        it 'resets CI minutes and recalculates purchased minutes for the namespace exceeding the monthly minutes' do
+          subject
+
+          namespaces_exceeding_minutes.each do |namespace|
+            namespace.reset
+
+            expect(namespace.extra_shared_runners_minutes_limit).to eq 30
+            expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
+            expect(namespace.namespace_statistics.shared_runners_seconds_last_reset).to be_present
+            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds).to eq 0
+            expect(ProjectStatistics.find_by(namespace: namespace).shared_runners_seconds_last_reset).to be_present
+            expect(namespace.last_ci_minutes_notification_at).to be_nil
+            expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
+          end
         end
       end
 
@@ -129,6 +153,7 @@ RSpec.describe Ci::Minutes::BatchResetService do
 
         before do
           allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(global_limit)
+          stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
         end
 
         it 'does not recalculate purchased minutes for any namespaces' do

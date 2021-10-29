@@ -12,19 +12,30 @@ module Ci
       scope :current_month, -> { where(date: beginning_of_month) }
       scope :for_namespace, -> (namespace) { where(namespace: namespace) }
 
+      def self.previous_usage(namespace)
+        for_namespace(namespace).where("#{quoted_table_name}.date < :date", date: beginning_of_month).order(:date).last
+      end
+
       def self.beginning_of_month(time = Time.current)
         time.utc.beginning_of_month
       end
 
-      # We should pretty much always use this method to access data for the current month
+      # We should always use this method to access data for the current month
       # since this will lazily create an entry if it doesn't exist.
       # For example, on the 1st of each month, when we update the usage for a namespace,
       # we will automatically generate new records and reset usage for the current month.
-      #
-      # Here we will also do any recalculation of additional minutes based on the
-      # previous month usage.
+      # This also recalculates any additional minutes based on the previous month usage.
       def self.find_or_create_current(namespace_id:)
-        current_month.safe_find_or_create_by(namespace_id: namespace_id)
+        current_usage = unsafe_find_current(namespace_id)
+        return current_usage if current_usage
+
+        current_month.for_namespace(namespace_id).create!.tap do
+          Namespace.find_by_id(namespace_id).try do |namespace|
+            Ci::Minutes::Limit.new(namespace).recalculate_remaining_purchased_minutes!
+          end
+        end
+      rescue ActiveRecord::RecordNotUnique
+        unsafe_find_current(namespace_id)
       end
 
       def self.increase_usage(usage, increments)
@@ -49,6 +60,13 @@ module Ci
         current_month.for_namespace(namespace).update_all(attributes)
       end
       private_class_method :update_current
+
+      # This is unsafe to use publicly because it would read the data
+      # without creating a new record if doesn't exist.
+      def self.unsafe_find_current(namespace)
+        current_month.for_namespace(namespace).take
+      end
+      private_class_method :unsafe_find_current
 
       def total_usage_notified?
         usage_notified?(Notification::PERCENTAGES.fetch(:exceeded))

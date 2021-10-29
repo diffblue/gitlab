@@ -1,0 +1,8 @@
+---
+name: ci_reset_purchased_minutes_lazily
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73338
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/344821
+milestone: '14.5'
+type: development
+group: group::pipeline execution
+default_enabled: false

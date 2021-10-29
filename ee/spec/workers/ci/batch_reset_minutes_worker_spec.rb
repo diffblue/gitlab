@@ -66,16 +66,30 @@ RSpec.describe Ci::BatchResetMinutesWorker do
         let(:namespace) { last_namespace }
       end
 
-      it 'recalculates purchased minutes for the namespace exceeding the monthly minutes' do
-        subject
+      context 'when ci_reset_purchased_minutes_lazily is enabled' do
+        it 'does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
+          subject
 
-        expect(first_namespace.reset.extra_shared_runners_minutes_limit).to eq 30
+          expect(first_namespace.reset.extra_shared_runners_minutes_limit).to eq 50
+        end
       end
 
-      it 'does not recalculate purchased minutes for the namespace not exceeding the monthly minutes' do
-        subject
+      context 'when ci_reset_purchased_minutes_lazily is disabled' do
+        before do
+          stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
+        end
 
-        expect(last_namespace.reset.extra_shared_runners_minutes_limit).to eq 50
+        it 'recalculates purchased minutes for the namespace exceeding the monthly minutes' do
+          subject
+
+          expect(first_namespace.reset.extra_shared_runners_minutes_limit).to eq 30
+        end
+
+        it 'does not recalculate purchased minutes for the namespace not exceeding the monthly minutes' do
+          subject
+
+          expect(last_namespace.reset.extra_shared_runners_minutes_limit).to eq 50
+        end
       end
     end
   end
