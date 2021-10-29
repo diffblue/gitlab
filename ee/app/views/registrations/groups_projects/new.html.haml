@@ -68,7 +68,7 @@
               %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
                 = _('You can always change your URL later')
 
-              = submit_tag _('Create project'), class: 'btn gl-button btn-success btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
+              = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?
