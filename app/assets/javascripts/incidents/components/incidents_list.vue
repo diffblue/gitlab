@@ -125,6 +125,7 @@ export default {
     'authorUsernameQuery',
     'assigneeUsernameQuery',
     'slaFeatureAvailable',
+    'canCreateIncident',
   ],
   apollo: {
     incidents: {
@@ -244,6 +245,9 @@ export default {
         btnText: createIncidentBtnLabel,
       };
     },
+    isHeaderButtonVisible() {
+      return this.canCreateIncident && (!this.isEmpty || this.activeClosedTabHasNoIncidents);
+    },
   },
   methods: {
     hasAssignees(assignees) {
@@ -311,7 +315,7 @@ export default {
     >
       <template #header-actions>
         <gl-button
-          v-if="!isEmpty || activeClosedTabHasNoIncidents"
+          v-if="isHeaderButtonVisible"
           class="gl-my-3 gl-mr-5 create-incident-button"
           data-testid="createIncidentBtn"
           data-qa-selector="create_incident_button"
