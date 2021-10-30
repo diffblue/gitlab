@@ -4,7 +4,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import createFlash, { FLASH_TYPES } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import { IssuableType } from '~/issuable_show/constants';
-import { IssuableStatus, IssueStateEvent } from '~/issue_show/constants';
+import { IssuableStatus, IssueStateEvent, IncidentType } from '~/issue_show/constants';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
@@ -36,6 +36,9 @@ export default {
   },
   inject: {
     canCreateIssue: {
+      default: false,
+    },
+    canCreateIncident: {
       default: false,
     },
     canPromoteToEpic: {
@@ -82,6 +85,12 @@ export default {
       return this.isClosed
         ? sprintf(__('Reopen %{issueType}'), { issueType: this.issueType })
         : sprintf(__('Close %{issueType}'), { issueType: this.issueType });
+    },
+    canCreateNewIssueType() {
+      if (this.issueType === IncidentType && !this.canCreateIncident) {
+        return false;
+      }
+      return this.canCreateIssue;
     },
     qaSelector() {
       return this.isClosed ? 'reopen_issue_button' : 'close_issue_button';
@@ -202,7 +211,7 @@ export default {
       >
         {{ buttonText }}
       </gl-dropdown-item>
-      <gl-dropdown-item v-if="canCreateIssue" :href="newIssuePath">
+      <gl-dropdown-item v-if="canCreateNewIssueType" :href="newIssuePath">
         {{ newIssueTypeText }}
       </gl-dropdown-item>
       <gl-dropdown-item v-if="canPromoteToEpic" @click="promoteToEpic">
@@ -240,7 +249,7 @@ export default {
       no-caret
       right
     >
-      <gl-dropdown-item v-if="canCreateIssue" :href="newIssuePath">
+      <gl-dropdown-item v-if="canCreateNewIssueType" :href="newIssuePath">
         {{ newIssueTypeText }}
       </gl-dropdown-item>
       <gl-dropdown-item
