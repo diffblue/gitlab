@@ -231,12 +231,15 @@ export default {
     },
     emptyStateData() {
       const {
-        emptyState: { title, emptyClosedTabTitle, description },
+        emptyState: { title, emptyClosedTabTitle, description, cannotCreateIncidentDescription },
         createIncidentBtnLabel,
       } = this.$options.i18n;
 
       if (this.activeClosedTabHasNoIncidents) {
         return { title: emptyClosedTabTitle };
+      }
+      if (!this.canCreateIncident) {
+        return { title, description: cannotCreateIncidentDescription };
       }
       return {
         title,
