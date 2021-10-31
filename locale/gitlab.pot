@@ -10032,6 +10032,9 @@ msgstr ""
 msgid "Critical vulnerabilities present"
 msgstr ""
 
+msgid "Crm|No contacts found"
+msgstr ""
+
 msgid "Cron Timezone"
 msgstr ""
 
