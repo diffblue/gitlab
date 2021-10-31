@@ -1,10 +1,11 @@
 <script>
 import { GlButton, GlTooltipDirective, GlAvatarLabeled } from '@gitlab/ui';
 import { __ } from '~/locale';
+import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from '../constants';
 import HiddenGroupsItem from './hidden_groups_item.vue';
 
-const types = [TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS];
+const VALID_APPROVER_TYPES = [TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS];
 
 export default {
   components: {
@@ -19,7 +20,7 @@ export default {
     approver: {
       type: Object,
       required: true,
-      validator: ({ type }) => type && types.includes(type),
+      validator: ({ type }) => type && VALID_APPROVER_TYPES.includes(type),
     },
   },
   computed: {
@@ -33,7 +34,7 @@ export default {
       return this.isGroup ? this.approver.full_path : this.approver.name;
     },
     avatarShape() {
-      return this.isGroup ? 'rect' : 'circle';
+      return this.isGroup ? AVATAR_SHAPE_OPTION_RECT : AVATAR_SHAPE_OPTION_CIRCLE;
     },
   },
   i18n: {
