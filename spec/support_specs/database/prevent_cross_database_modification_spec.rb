@@ -57,35 +57,39 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
     include_examples 'successful examples'
   end
 
-  describe 'with_cross_database_modification_prevented block' do
-    it 'raises error when CI and other data is modified' do
-      expect do
-        with_cross_database_modification_prevented do
-          Project.transaction do
-            project.touch
-            pipeline.touch
-          end
-        end
-      end.to raise_error /Cross-database data modification/
+  context 'when both CI and other data is modified' do
+    def run_queries
+      project.touch
+      pipeline.touch
     end
 
-    it 'raises an error when an undefined gitlab_schema table is modified with another table' do
-      expect do
-        with_cross_database_modification_prevented do
-          Project.transaction do
+    context 'outside transaction' do
+      it { expect { run_queries }.not_to raise_error }
+    end
+
+    context 'when data modification happens in a transaction' do
+      it 'raises error' do
+        Project.transaction do
+          expect { run_queries }.to raise_error /Cross-database data modification/
+        end
+      end
+
+      context 'when data modification happens in nested transactions' do
+        it 'raises error' do
+          Project.transaction(requires_new: true) do
             project.touch
-            project.connection.execute('UPDATE foo_bars_undefined_table SET a=1 WHERE id = -1')
+            Project.transaction(requires_new: true) do
+              expect { pipeline.touch }.to raise_error /Cross-database data modification/
+            end
           end
         end
-      end.to raise_error /Cross-database data modification.*The gitlab_schema was undefined/
+      end
     end
-  end
 
-  context 'when running tests with prevent_cross_database_modification', :prevent_cross_database_modification do
-    context 'when both CI and other data is modified' do
+    context 'when executing a SELECT FOR UPDATE query' do
       def run_queries
         project.touch
-        pipeline.touch
+        pipeline.lock!
       end
 
       context 'outside transaction' do
@@ -99,41 +103,11 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
           end
         end
 
-        context 'when data modification happens in nested transactions' do
-          it 'raises error' do
-            Project.transaction(requires_new: true) do
-              project.touch
-              Project.transaction(requires_new: true) do
-                expect { pipeline.touch }.to raise_error /Cross-database data modification/
-              end
-            end
-          end
-        end
-      end
+        context 'when the modification is inside a factory save! call' do
+          let(:runner) { create(:ci_runner, :project, projects: [build(:project)]) }
 
-      context 'when executing a SELECT FOR UPDATE query' do
-        def run_queries
-          project.touch
-          pipeline.lock!
-        end
-
-        context 'outside transaction' do
-          it { expect { run_queries }.not_to raise_error }
-        end
-
-        context 'when data modification happens in a transaction' do
-          it 'raises error' do
-            Project.transaction do
-              expect { run_queries }.to raise_error /Cross-database data modification/
-            end
-          end
-
-          context 'when the modification is inside a factory save! call' do
-            let(:runner) { create(:ci_runner, :project, projects: [build(:project)]) }
-
-            it 'does not raise an error' do
-              runner
-            end
+          it 'does not raise an error' do
+            runner
           end
         end
       end
@@ -169,6 +143,17 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
           end
         end.not_to raise_error
       end
+    end
+  end
+
+  context 'when some table with a defined schema and another table with undefined gitlab_schema is modified' do
+    it 'raises an error including including message about undefined schema' do
+      expect do
+        Project.transaction do
+          project.touch
+          project.connection.execute('UPDATE foo_bars_undefined_table SET a=1 WHERE id = -1')
+        end
+      end.to raise_error /Cross-database data modification.*The gitlab_schema was undefined/
     end
   end
 end
