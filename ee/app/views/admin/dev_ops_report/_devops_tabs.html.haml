@@ -1,7 +1,7 @@
 - service_ping_enabled = Gitlab::CurrentSettings.usage_ping_enabled
 
 %h2
-  = _('DevOps Report')
+  = _('DevOps Reports')
 
 - if !service_ping_enabled
   #js-devops-service-ping-disabled{ data: { is_admin: current_user&.admin.to_s, empty_state_svg_path: image_path('illustrations/convdev/convdev_no_index.svg'), enable_service_ping_path: metrics_and_profiling_admin_application_settings_path(anchor: 'js-usage-settings') } }
