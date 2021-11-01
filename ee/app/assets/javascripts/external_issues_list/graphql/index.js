@@ -11,7 +11,7 @@ export default (externalIssuesQueryResolver) => {
     },
   };
 
-  const defaultClient = createDefaultClient(resolvers, { assumeImmutableResults: true });
+  const defaultClient = createDefaultClient(resolvers);
 
   return new VueApollo({
     defaultClient,

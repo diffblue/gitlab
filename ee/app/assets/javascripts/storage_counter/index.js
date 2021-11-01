@@ -15,7 +15,7 @@ export default () => {
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+    defaultClient: createDefaultClient(),
   });
 
   return new Vue({

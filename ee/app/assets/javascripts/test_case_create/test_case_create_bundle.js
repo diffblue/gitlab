@@ -15,7 +15,7 @@ export function initTestCaseCreate({ mountPointSelector }) {
   }
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+    defaultClient: createDefaultClient(),
   });
 
   return new Vue({

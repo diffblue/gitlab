@@ -9,7 +9,7 @@ import EditForm from './components/edit_form.vue';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+  defaultClient: createDefaultClient(),
 });
 
 const createComplianceFrameworksFormApp = (el) => {

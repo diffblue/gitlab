@@ -32,7 +32,6 @@ const apolloProvider = new VueApollo({
       cacheConfig: {
         fragmentMatcher,
       },
-      assumeImmutableResults: true,
     },
   ),
 });

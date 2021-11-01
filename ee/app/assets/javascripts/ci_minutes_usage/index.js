@@ -7,7 +7,7 @@ import CiMinutesUsageApp from './components/app.vue';
 const mountCiMinutesUsageApp = (el) => {
   Vue.use(VueApollo);
 
-  const defaultClient = createDefaultClient({}, { assumeImmutableResults: true });
+  const defaultClient = createDefaultClient();
   const apolloProvider = new VueApollo({
     defaultClient,
   });

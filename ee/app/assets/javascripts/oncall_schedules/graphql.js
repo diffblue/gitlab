@@ -19,8 +19,5 @@ const resolvers = {
 };
 
 export default new VueApollo({
-  defaultClient: createDefaultClient(resolvers, {
-    cacheConfig: {},
-    assumeImmutableResults: true,
-  }),
+  defaultClient: createDefaultClient(resolvers),
 });
