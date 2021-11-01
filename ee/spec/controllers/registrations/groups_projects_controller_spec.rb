@@ -211,8 +211,10 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     context 'when the user is setup_for_company: true it redirects to the new_trial_path' do
       it_behaves_like "Registrations::ProjectsController POST #create" do
         let_it_be(:user) { create(:user, setup_for_company: true) }
+        let_it_be(:first_project) { create(:project) }
 
         let(:success_path) { new_trial_path }
+        let(:stored_location_for) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: first_project.id) }
 
         include_context 'groups_projects projects concern'
       end

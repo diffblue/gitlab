@@ -6,11 +6,13 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
   subject { post :create, params: { project: params }.merge(trial_onboarding_flow_params).merge(extra_params) }
 
   let_it_be(:trial_onboarding_flow_params) { {} }
+  let_it_be(:first_project) { create(:project) }
 
   let(:params) { { namespace_id: namespace.id, name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
   let(:dev_env_or_com) { true }
   let(:extra_params) { {} }
   let(:success_path) { nil }
+  let(:stored_location_for) { nil }
 
   context 'with an unauthenticated user' do
     it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -18,8 +20,6 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
   end
 
   context 'with an authenticated user', :sidekiq_inline do
-    let_it_be(:first_project) { create(:project) }
-
     before do
       namespace.add_owner(user)
       sign_in(user)
@@ -37,6 +37,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
 
       expect(subject).to have_gitlab_http_status(:redirect)
       expect(subject).to redirect_to(success_path || continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: first_project.id))
+      expect(controller.stored_location_for(:user)).to eq(stored_location_for)
     end
 
     context 'learn gitlab project' do

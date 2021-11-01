@@ -1,9 +1,9 @@
 .gl-mt-6{ class: 'gl-md-mt-11!' }
   - if params[:glm_source] == 'gitlab.com'
-    = link_to s_('Trials|Go back to GitLab'), dashboard_projects_path, class: 'block center py-2'
+    = link_to s_('Trials|Go back to GitLab'), skip_trials_path, class: 'block center py-2'
     .label
       = s_("Trials|You can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'")
   - else
-    = link_to s_('Trials|Skip Trial'), dashboard_projects_path, class: 'block center py-2'
+    = link_to s_('Trials|Skip Trial'), skip_trials_path, class: 'block center py-2'
     .label
       = s_("Trials|You won't get a free trial right now but you can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'")

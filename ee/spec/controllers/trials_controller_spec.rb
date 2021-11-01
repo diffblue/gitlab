@@ -145,6 +145,30 @@ RSpec.describe TrialsController, :saas do
             post_create_lead
           end
 
+          context 'when the user is `setup_for_company: true`' do
+            let(:user) { create(:user, setup_for_company: true) }
+
+            context 'when there is a stored_location_for(:user) set' do
+              let(:stored_location_for) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: 311) }
+
+              before do
+                controller.store_location_for(:user, stored_location_for)
+              end
+
+              context 'when the user is receiving the combined_registration candidate', :experiment do
+                before do
+                  stub_experiments(combined_registration: :candidate)
+                end
+
+                it { is_expected.to redirect_to(stored_location_for) }
+              end
+
+              it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+            end
+
+            it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+          end
+
           it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
         end
 
@@ -623,6 +647,36 @@ RSpec.describe TrialsController, :saas do
       let(:user) { create(:user, confirmed_at: nil) }
 
       it { is_expected.not_to set_confirm_warning_for(user.email) }
+    end
+  end
+
+  describe '#skip' do
+    subject(:get_skip) { get :skip }
+
+    context 'when the user is `setup_for_company: true`' do
+      let(:user) { create(:user, setup_for_company: true) }
+
+      it { is_expected.to redirect_to(dashboard_projects_path) }
+
+      context 'and has a stored_location_for set' do
+        before do
+          controller.store_location_for(:user, new_trial_path)
+        end
+
+        it { is_expected.to redirect_to(dashboard_projects_path) }
+
+        context 'when the user is receiving the combined_registration candidate', :experiment do
+          before do
+            stub_experiments(combined_registration: :candidate)
+          end
+
+          it { is_expected.to redirect_to(new_trial_path) }
+        end
+      end
+    end
+
+    context 'when the user is `setup_for_company: false`' do
+      it { is_expected.to redirect_to(dashboard_projects_path) }
     end
   end
 end
