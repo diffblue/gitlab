@@ -6,7 +6,7 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
   let_it_be(:pipeline, refind: true) { create(:ci_pipeline) }
   let_it_be(:project, refind: true) { create(:project) }
 
-  shared_examples 'succeessful examples' do
+  shared_examples 'successful examples' do
     context 'outside transaction' do
       it { expect { run_queries }.not_to raise_error }
     end
@@ -36,7 +36,7 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
       project.reload
     end
 
-    include_examples 'succeessful examples'
+    include_examples 'successful examples'
   end
 
   context 'when only CI data is modified' do
@@ -45,7 +45,7 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
       project.reload
     end
 
-    include_examples 'succeessful examples'
+    include_examples 'successful examples'
   end
 
   context 'when other data is modified' do
@@ -54,7 +54,7 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
       project.touch
     end
 
-    include_examples 'succeessful examples'
+    include_examples 'successful examples'
   end
 
   describe 'with_cross_database_modification_prevented block' do
@@ -145,7 +145,7 @@ RSpec.describe 'Database::PreventCrossDatabaseModification' do
         project.save!
       end
 
-      include_examples 'succeessful examples'
+      include_examples 'successful examples'
     end
 
     describe '#allow_cross_database_modification_within_transaction' do
