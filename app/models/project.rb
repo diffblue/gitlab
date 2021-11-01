@@ -147,7 +147,7 @@ class Project < ApplicationRecord
   belongs_to :namespace
   # Sync deletion via DB Trigger to ensure we do not have
   # a project without a project_namespace (or vice-versa)
-  belongs_to :project_namespace, autosave: true, class_name: 'Namespaces::ProjectNamespace', foreign_key: 'project_namespace_id', inverse_of: :project
+  belongs_to :project_namespace, autosave: true, class_name: 'Namespaces::ProjectNamespace', foreign_key: 'project_namespace_id'
   alias_method :parent, :namespace
   alias_attribute :parent_id, :namespace_id
 
@@ -476,7 +476,7 @@ class Project < ApplicationRecord
   validates :project_feature, presence: true
 
   validates :namespace, presence: true
-  validates :project_namespace, presence: true, on: :create, if: -> { self.namespace.blank? || self.root_namespace.project_namespace_creation_enabled? }
+  validates :project_namespace, presence: true, if: -> { self.namespace && self.root_namespace.project_namespace_creation_enabled? }
   validates :name, uniqueness: { scope: :namespace_id }
   validates :import_url, public_url: { schemes: ->(project) { project.persisted? ? VALID_MIRROR_PROTOCOLS : VALID_IMPORT_PROTOCOLS },
                                        ports: ->(project) { project.persisted? ? VALID_MIRROR_PORTS : VALID_IMPORT_PORTS },
@@ -2919,23 +2919,19 @@ class Project < ApplicationRecord
     @online_runners_with_tags ||= active_runners.with_tags.online
   end
 
-  def create_project_namespace
-    project_namespace = Namespaces::ProjectNamespace.new(project: self)
-    sync_attributes(project_namespace)
-
-    self.project_namespace = project_namespace
-  end
-
   def ensure_project_namespace_in_sync
-    if new_record? && !project_namespace
-      create_project_namespace if !self.namespace || self.root_namespace.project_namespace_creation_enabled?
-    else
+    if self.namespace && self.root_namespace.project_namespace_creation_enabled?
+      if new_record? && !project_namespace
+        build_project_namespace
+        sync_attributes(project_namespace)
+      end
+
       sync_attributes(project_namespace) if sync_project_namespace?
     end
   end
 
   def sync_project_namespace?
-    changes.keys & [:name, :path, :namespace_id, :namespace, :visibility_level] && project_namespace.present?
+    (changes.keys & %w(name path namespace_id namespace visibility_level)).any? && project_namespace.present?
   end
 
   def sync_attributes(project_namespace)
