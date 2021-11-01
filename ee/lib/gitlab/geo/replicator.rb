@@ -193,6 +193,20 @@ module Gitlab
         false
       end
 
+      def self.bulk_create_events(events)
+        ::Geo::EventLog.transaction do
+          results = ::Geo::Event.insert_all!(events)
+
+          break if results.rows.empty?
+
+          ids = results.map { |result| { geo_event_id: result['id'], created_at: Time.current } }
+          ::Geo::EventLog.insert_all!(ids)
+        end
+
+      rescue ActiveRecord::RecordInvalid, NoMethodError => e
+        log_error('Geo::EventLog could not be created in bulk', e)
+      end
+
       # @param [ActiveRecord::Base] model_record
       # @param [Integer] model_record_id
       def initialize(model_record: nil, model_record_id: nil)
@@ -222,7 +236,6 @@ module Gitlab
         raise ArgumentError, "Unsupported event: '#{event_name}'" unless self.class.event_supported?(event_name)
 
         create_event_with(
-          class_name: ::Geo::Event,
           replicable_name: self.class.replicable_name,
           event_name: event_name,
           payload: event_data
@@ -310,16 +323,15 @@ module Gitlab
       # Store an event on the database
       #
       # @example Create an event
-      #   create_event_with(class_name: Geo::CacheInvalidationEvent, key: key)
+      #   create_event_with(key: key)
       #
-      # @param [Class] class_name a ActiveRecord class that's used to store an event for Geo
       # @param [Hash] **params context information that will be stored in the event table
       # @return [ApplicationRecord] event instance that was just persisted
-      def create_event_with(class_name:, **params)
+      def create_event_with(**params)
         return unless Gitlab::Geo.primary?
         return unless Gitlab::Geo.secondary_nodes.any?
 
-        event = class_name.create!(**params)
+        event = ::Geo::Event.create!(**params)
 
         # Only works with the new geo_events at the moment because we need to
         # know which foreign key to use
@@ -327,7 +339,7 @@ module Gitlab
 
         event
       rescue ActiveRecord::RecordInvalid, NoMethodError => e
-        log_error("#{class_name} could not be created", e, params)
+        log_error("::Geo::Event could not be created", e, params)
       end
 
       def current_node

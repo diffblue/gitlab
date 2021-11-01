@@ -98,14 +98,18 @@ module Geo
       carrierwave_uploader.file.exists?
     end
 
+    def deleted_params
+      {
+        model_record_id: model_record.id,
+        uploader_class: carrierwave_uploader.class.to_s,
+        blob_path: carrierwave_uploader.relative_path
+      }
+    end
+
     private
 
     def download
       ::Geo::BlobDownloadService.new(replicator: self).execute
-    end
-
-    def deleted_params
-      { model_record_id: model_record.id, uploader_class: carrierwave_uploader.class.to_s, blob_path: carrierwave_uploader.relative_path }
     end
 
     # Return whether it's capable of generating a checksum of itself
