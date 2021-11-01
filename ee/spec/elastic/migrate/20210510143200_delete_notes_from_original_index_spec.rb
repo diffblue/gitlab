@@ -41,7 +41,7 @@ RSpec.describe DeleteNotesFromOriginalIndex, :elastic, :sidekiq_inline do
     it 'removes notes from the index' do
       # initiate the task in Elasticsearch
       migration.migrate
-      expect(migration.migration_state).to match(retry_attempt: 0, task_id: anything)
+      expect(migration.migration_state).to match(task_id: anything)
       task_id = migration.migration_state[:task_id]
 
       # the migration might not complete after the initial task is created
@@ -54,7 +54,7 @@ RSpec.describe DeleteNotesFromOriginalIndex, :elastic, :sidekiq_inline do
       end
 
       # verify clean up of the task from Elasticsearch
-      expect(migration.migration_state).to match(retry_attempt: 0, task_id: nil)
+      expect(migration.migration_state).to match(task_id: nil)
       expect { helper.client.get(index: '.tasks', type: 'task', id: task_id) }.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
     end
   end
@@ -72,25 +72,11 @@ RSpec.describe DeleteNotesFromOriginalIndex, :elastic, :sidekiq_inline do
         allow(client).to receive(:delete_by_query).and_raise(StandardError)
       end
 
-      it 'increases retry_attempt' do
-        migration.set_migration_state(retry_attempt: 1)
+      it 'resets task_id' do
+        migration.set_migration_state(task_id: 'task_1')
 
         expect { migration.migrate }.to raise_error(StandardError)
-        expect(migration.migration_state).to match(retry_attempt: 2, task_id: nil)
-      end
-
-      it 'fails the migration after too many attempts' do
-        stub_const('DeleteNotesFromOriginalIndex::MAX_ATTEMPTS', 2)
-
-        # run migration up to the set MAX_ATTEMPTS set in the migration
-        DeleteNotesFromOriginalIndex::MAX_ATTEMPTS.times do
-          expect { migration.migrate }.to raise_error(StandardError)
-        end
-
-        migration.migrate
-
-        expect(migration.migration_state).to match(retry_attempt: 2, task_id: nil, halted: true, halted_indexing_unpaused: false)
-        expect(client).not_to receive(:delete_by_query)
+        expect(migration.migration_state).to match(task_id: nil)
       end
     end
 
@@ -105,9 +91,9 @@ RSpec.describe DeleteNotesFromOriginalIndex, :elastic, :sidekiq_inline do
           migration.migrate
         end
 
-        it 'raises an error and increases retry attempt' do
+        it 'resets task_id' do
           expect { migration.migrate }.to raise_error(/Failed to delete notes/)
-          expect(migration.migration_state).to match(retry_attempt: 1, task_id: nil)
+          expect(migration.migration_state).to match(task_id: nil)
         end
       end
 
@@ -116,9 +102,9 @@ RSpec.describe DeleteNotesFromOriginalIndex, :elastic, :sidekiq_inline do
           allow(client).to receive(:delete_by_query).and_return('failures' => ['failed'])
         end
 
-        it 'raises an error and increases retry attempt' do
+        it 'resets task_id' do
           expect { migration.migrate }.to raise_error(/Failed to delete notes/)
-          expect(migration.migration_state).to match(retry_attempt: 1, task_id: nil)
+          expect(migration.migration_state).to match(task_id: nil)
         end
       end
     end

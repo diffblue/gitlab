@@ -7,6 +7,7 @@ module Elastic
 
     DEFAULT_THROTTLE_DELAY = 5.minutes
     DEFAULT_BATCH_SIZE = 1000
+    DEFAULT_MAX_ATTEMPTS = 30
 
     def batched?
       self.class.get_batched
@@ -26,6 +27,14 @@ module Elastic
 
     def space_requirements?
       self.class.get_space_requirements
+    end
+
+    def retry_on_failure?
+      max_attempts.present?
+    end
+
+    def max_attempts
+      self.class.get_max_attempts
     end
 
     class_methods do
@@ -67,6 +76,14 @@ module Elastic
 
       def get_batch_size
         class_attributes[:batch_size] || DEFAULT_BATCH_SIZE
+      end
+
+      def retry_on_failure(max_attempts: DEFAULT_MAX_ATTEMPTS)
+        class_attributes[:max_attempts] = max_attempts
+      end
+
+      def get_max_attempts
+        class_attributes[:max_attempts]
       end
     end
   end
