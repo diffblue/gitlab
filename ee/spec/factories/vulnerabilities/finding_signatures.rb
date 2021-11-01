@@ -5,5 +5,9 @@ FactoryBot.define do
     finding factory: :vulnerabilities_finding
     algorithm_type { ::Vulnerabilities::FindingSignature.algorithm_types[:hash] }
     signature_sha { ::Digest::SHA1.digest(SecureRandom.hex(50)) }
+
+    trait :location do
+      algorithm_type { :location }
+    end
   end
 end
