@@ -1,0 +1,14 @@
+query projectTestCaseTaskList($projectPath: ID!, $testCaseId: String) {
+  project(fullPath: $projectPath) {
+    __typename
+    issue(iid: $testCaseId) {
+      __typename
+      id
+      taskCompletionStatus {
+        __typename
+        count
+        completedCount
+      }
+    }
+  }
+}

@@ -50,6 +50,7 @@ export default {
   data() {
     return {
       testCase: {},
+      taskCompletionStatus: {},
       editTestCaseFormVisible: false,
       testCaseSaveInProgress: false,
       testCaseStateChangeInProgress: false,
@@ -102,6 +103,9 @@ export default {
         .finally(() => {
           this.testCaseStateChangeInProgress = false;
         });
+    },
+    handleTaskListUpdateSuccess() {
+      this.$apollo.queries.taskCompletionStatus.refetch();
     },
     handleTaskListUpdateFailure() {
       this.taskListUpdateFailed = true;
@@ -159,10 +163,11 @@ export default {
       :edit-form-visible="editTestCaseFormVisible"
       :description-preview-path="descriptionPreviewPath"
       :description-help-path="descriptionHelpPath"
-      :task-completion-status="testCase.taskCompletionStatus"
+      :task-completion-status="taskCompletionStatus"
       :task-list-update-path="updatePath"
       :task-list-lock-version="lockVersion"
       @edit-issuable="handleEditTestCase"
+      @task-list-update-success="handleTaskListUpdateSuccess"
       @task-list-update-failure="handleTaskListUpdateFailure"
     >
       <template #status-badge>

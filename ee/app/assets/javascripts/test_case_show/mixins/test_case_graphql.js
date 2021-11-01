@@ -6,6 +6,7 @@ import { s__ } from '~/locale';
 import markTestCaseTodoDone from '../queries/mark_test_case_todo_done.mutation.graphql';
 import moveTestCase from '../queries/move_test_case.mutation.graphql';
 import projectTestCase from '../queries/project_test_case.query.graphql';
+import projectTestCaseTaskList from '../queries/test_case_tasklist.query.graphql';
 import updateTestCase from '../queries/update_test_case.mutation.graphql';
 
 export default {
@@ -28,6 +29,26 @@ export default {
         this.testCaseLoadFailed = true;
         createFlash({
           message: s__('TestCases|Something went wrong while fetching test case.'),
+          captureError: true,
+          error,
+        });
+        throw error;
+      },
+    },
+    taskCompletionStatus: {
+      query: projectTestCaseTaskList,
+      variables() {
+        return {
+          projectPath: this.projectFullPath,
+          testCaseId: this.testCaseId,
+        };
+      },
+      update(data) {
+        return data.project?.issue?.taskCompletionStatus;
+      },
+      error(error) {
+        createFlash({
+          message: s__('TestCases|Something went wrong while updating the test case.'),
           captureError: true,
           error,
         });
