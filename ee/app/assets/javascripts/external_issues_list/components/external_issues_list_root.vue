@@ -156,7 +156,6 @@ export default {
         },
       ];
     },
-
     getFilteredSearchValue() {
       const { labels, search } = this.filterParams || {};
       const filteredSearchValue = [];
@@ -228,12 +227,13 @@ export default {
       this.filterParams = filterParams;
     },
   },
+  alertSafeHtmlConfig: { ALLOW_TAGS: ['a'] },
 };
 </script>
 
 <template>
   <gl-alert v-if="errorMessage" class="gl-mt-3" variant="danger" :dismissible="false">
-    {{ errorMessage }}
+    <span v-safe-html:[$options.alertSafeHtmlConfig]="errorMessage"></span>
   </gl-alert>
   <issuable-list
     v-else
