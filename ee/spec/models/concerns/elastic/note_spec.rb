@@ -58,8 +58,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries("doc:is_a:note",
-                         "note:match:search_terms",
+    assert_named_queries("note:match:search_terms",
                          "note:authorized")
   end
 

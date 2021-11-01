@@ -6,6 +6,9 @@ module Elastic
       include StateFilter
 
       def elastic_search(query, options: {})
+        options[:features] = 'merge_requests'
+        options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:add_new_data_to_merge_requests_documents)
+
         query_hash =
           if query =~ /\!(\d+)\z/
             iid_query_hash(Regexp.last_match(1))
@@ -14,11 +17,9 @@ module Elastic
             # pardon format errors, like integer out of range.
             fields = %w[iid^3 title^2 description]
 
-            basic_query_hash(fields, query, count_only: options[:count_only])
+            basic_query_hash(fields, query, options)
           end
 
-        options[:features] = 'merge_requests'
-        options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:add_new_data_to_merge_requests_documents)
         context.name(:merge_request) do
           query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }

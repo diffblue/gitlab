@@ -6,7 +6,7 @@ module Elastic
       def elastic_search(query, options: {})
         options[:in] = %w[name^10 name_with_namespace^2 path_with_namespace path^9 description]
 
-        query_hash = basic_query_hash(options[:in], query, count_only: options[:count_only])
+        query_hash = basic_query_hash(options[:in], query, options)
 
         filters = [{ terms: { _name: context.name(:doc, :is_a, es_type), type: [es_type] } }]
 
