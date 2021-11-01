@@ -11,7 +11,6 @@ import { s__, __, sprintf } from '~/locale';
 import { VALID_CORPUS_MIMETYPE } from '../constants';
 import resetCorpus from '../graphql/mutations/reset_corpus.mutation.graphql';
 import uploadCorpus from '../graphql/mutations/upload_corpus.mutation.graphql';
-import getCorpusesQuery from '../graphql/queries/get_corpuses.query.graphql';
 
 export default {
   components: {
@@ -23,28 +22,18 @@ export default {
     GlButton,
   },
   inject: ['projectFullPath'],
+  props: {
+    states: {
+      type: Object,
+      required: true,
+    },
+  },
   i18n: {
     corpusName: s__('CorpusManagement|Corpus name'),
     uploadButtonText: __('Choose File...'),
     uploadMessage: s__(
       'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 10GB',
     ),
-  },
-  apollo: {
-    states: {
-      query: getCorpusesQuery,
-      variables() {
-        return {
-          projectPath: this.projectFullPath,
-        };
-      },
-      update(data) {
-        return data;
-      },
-      error() {
-        this.states = null;
-      },
-    },
   },
   data() {
     return {
@@ -68,7 +57,7 @@ export default {
       return this.states?.uploadState.isUploading;
     },
     isUploaded() {
-      return this.states?.uploadState.progress === 100;
+      return this.progress === 100;
     },
     showUploadButton() {
       return this.hasAttachment && !this.isUploading && !this.isUploaded;
@@ -107,7 +96,6 @@ export default {
       this.$refs.fileUpload.click();
     },
     beginFileUpload() {
-      // const component = this;
       // Simulate incrementing file upload progress
       return this.$apollo
         .mutate({
@@ -162,7 +150,7 @@ export default {
         :disabled="isUploading"
         @click="openFileUpload"
       >
-        {{ this.$options.i18n.uploadButtonText }}
+        {{ $options.i18n.uploadButtonText }}
       </gl-button>
 
       <span v-if="isShowingAttachmentName" class="gl-ml-3">
@@ -186,7 +174,7 @@ export default {
       />
     </gl-form-group>
 
-    <span>{{ this.$options.i18n.uploadMessage }}</span>
+    <span>{{ $options.i18n.uploadMessage }}</span>
 
     <gl-button
       v-if="showUploadButton"
