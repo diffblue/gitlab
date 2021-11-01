@@ -71,6 +71,7 @@ module Geo
       class_name: 'Geo::Event',
       foreign_key: :geo_event_id,
       inverse_of: :geo_event_log
+
     def self.latest_event
       order(id: :desc).first
     end

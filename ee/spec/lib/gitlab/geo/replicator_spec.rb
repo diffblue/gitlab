@@ -133,6 +133,27 @@ RSpec.describe Gitlab::Geo::Replicator do
     end
   end
 
+  describe '.bulk_create_events' do
+    let(:event) do
+      {
+        replicable_name: 'upload',
+        event_name: 'created',
+        payload: {
+          data: "some payload"
+        },
+        created_at: Time.current
+      }
+    end
+
+    let(:events) { [event] }
+
+    it 'creates events' do
+      expect { Gitlab::Geo::Replicator.bulk_create_events(events) }.to change { ::Geo::EventLog.count }.from(0).to(1)
+
+      expect(::Geo::EventLog.last.event).to be_present
+    end
+  end
+
   describe '#initialize' do
     subject(:replicator) { Geo::DummyReplicator.new(**args) }
 

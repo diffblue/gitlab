@@ -87,7 +87,7 @@ RSpec.describe Upload do
   end
 
   describe '#destroy' do
-    subject { create(:upload, checksum: '8710d2c16809c79fee211a9693b64038a8aae99561bc86ce98a9b46b45677fe4') }
+    subject { create(:upload, :namespace_upload, checksum: '8710d2c16809c79fee211a9693b64038a8aae99561bc86ce98a9b46b45677fe4') }
 
     context 'when running in a Geo primary node' do
       let_it_be(:primary) { create(:geo_node, :primary) }
@@ -97,6 +97,18 @@ RSpec.describe Upload do
         stub_current_geo_node(primary)
 
         expect { subject.destroy }.to change(Geo::UploadDeletedEvent, :count).by(1)
+      end
+
+      it 'logs an event to the Geo event log when bulk removal is used', :sidekiq_inline do
+        stub_current_geo_node(primary)
+
+        expect { subject.model.destroy }.to change(Geo::Event.where(replicable_name: :upload, event_name: :deleted), :count).by(1)
+
+        payload = Geo::Event.where(replicable_name: :upload, event_name: :deleted).last.payload
+
+        expect(payload['model_record_id']).to eq(subject.id)
+        expect(payload['blob_path']).to eq(subject.relative_path)
+        expect(payload['uploader_class']).to eq('NamespaceFileUploader')
       end
     end
   end
