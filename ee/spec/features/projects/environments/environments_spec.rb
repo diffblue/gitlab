@@ -8,6 +8,7 @@ RSpec.describe 'Environments page', :js do
   let(:user) { create(:user) }
 
   before do
+    stub_feature_flags(new_environments_table: false)
     allow(License).to receive(:feature_available?).and_call_original
     allow(License).to receive(:feature_available?).with(:protected_environments).and_return(true)
     project.add_maintainer(user)
