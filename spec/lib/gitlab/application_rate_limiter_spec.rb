@@ -49,30 +49,32 @@ RSpec.describe Gitlab::ApplicationRateLimiter do
     end
   end
 
-  context 'when the key is an array of only ActiveRecord models' do
-    let(:scope) { [user, project] }
+  describe '.throttled?' do
+    context 'when the key is an array of only ActiveRecord models' do
+      let(:scope) { [user, project] }
 
-    let(:cache_key) do
-      "application_rate_limiter:test_action:user:#{user.id}:project:#{project.id}"
+      let(:cache_key) do
+        "application_rate_limiter:test_action:user:#{user.id}:project:#{project.id}"
+      end
+
+      it_behaves_like 'action rate limiter'
     end
 
-    it_behaves_like 'action rate limiter'
-  end
+    context 'when they key a combination of ActiveRecord models and strings' do
+      let(:project) { create(:project, :public, :repository) }
+      let(:commit) { project.repository.commit }
+      let(:path) { 'app/controllers/groups_controller.rb' }
+      let(:scope) { [project, commit, path] }
 
-  context 'when they key a combination of ActiveRecord models and strings' do
-    let(:project) { create(:project, :public, :repository) }
-    let(:commit) { project.repository.commit }
-    let(:path) { 'app/controllers/groups_controller.rb' }
-    let(:scope) { [project, commit, path] }
+      let(:cache_key) do
+        "application_rate_limiter:test_action:project:#{project.id}:commit:#{commit.sha}:#{path}"
+      end
 
-    let(:cache_key) do
-      "application_rate_limiter:test_action:project:#{project.id}:commit:#{commit.sha}:#{path}"
+      it_behaves_like 'action rate limiter'
     end
-
-    it_behaves_like 'action rate limiter'
   end
 
-  describe '#log_request' do
+  describe '.log_request' do
     let(:file_path) { 'master/README.md' }
     let(:type) { :raw_blob_request_limit }
     let(:fullpath) { "/#{project.full_path}/raw/#{file_path}" }
