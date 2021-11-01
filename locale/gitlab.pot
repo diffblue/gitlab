@@ -39143,6 +39143,9 @@ msgstr ""
 msgid "VersionCheck|Update available"
 msgstr ""
 
+msgid "VersionCheck|Your GitLab Version"
+msgstr ""
+
 msgid "View Documentation"
 msgstr ""
 
