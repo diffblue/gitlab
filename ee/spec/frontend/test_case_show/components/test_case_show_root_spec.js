@@ -28,6 +28,9 @@ const createComponent = ({ testCase, testCaseQueryLoading = false } = {}) =>
             loading: testCaseQueryLoading,
             refetch: jest.fn(),
           },
+          taskCompletionStatus: {
+            refetch: jest.fn(),
+          },
         },
       },
     },
@@ -303,10 +306,16 @@ describe('TestCaseShowRoot', () => {
         issuable: mockTestCase,
         enableEdit: canEditTestCase,
         editFormVisible: editTestCaseFormVisible,
-        taskCompletionStatus: mockTestCase.taskCompletionStatus,
+        taskCompletionStatus: {},
         taskListUpdatePath: updatePath,
         taskListLockVersion: lockVersion,
       });
+    });
+
+    it('refetches taskCompletionStatus when issuable-show emits `task-list-update-success` event', async () => {
+      await wrapper.find(IssuableShow).vm.$emit('task-list-update-success');
+
+      expect(wrapper.vm.$apollo.queries.taskCompletionStatus.refetch).toHaveBeenCalled();
     });
 
     it('does not render issuable-show when `testCaseLoading` prop is false and `testCaseLoadFailed` prop is true', async () => {
