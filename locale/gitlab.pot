@@ -25486,6 +25486,9 @@ msgstr ""
 msgid "Pipeline|Created"
 msgstr ""
 
+msgid "Pipeline|Creating pipeline."
+msgstr ""
+
 msgid "Pipeline|Date"
 msgstr ""
 
