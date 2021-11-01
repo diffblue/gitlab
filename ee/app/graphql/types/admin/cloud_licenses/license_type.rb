@@ -33,6 +33,9 @@ module Types
           field :starts_at, ::Types::DateType, null: true,
                 description: 'Date when the license started.'
 
+          field :created_at, ::Types::DateType, null: true,
+                description: 'Date when the license was added.'
+
           field :expires_at, ::Types::DateType, null: true,
                 description: 'Date when the license expires.'
 

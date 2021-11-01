@@ -110,6 +110,12 @@ RSpec.shared_examples_for 'license type fields' do |keys|
 
         it { is_expected.to eq(25) }
       end
+
+      describe 'created_at' do
+        let(:field_name) { :created_at }
+
+        it { is_expected.to eq(license.created_at) }
+      end
     end
   end
 end
