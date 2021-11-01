@@ -50,6 +50,36 @@ RSpec.describe Gitlab::ApplicationRateLimiter do
   end
 
   describe '.throttled?' do
+    context 'when the key is invalid' do
+      context 'is provided as a Symbol' do
+        context 'but is not defined in the rate_limits Hash' do
+          it 'raises an InvalidKeyError exception' do
+            key = :key_not_in_rate_limits_hash
+
+            expect { subject.throttled?(key) }.to raise_error(Gitlab::ApplicationRateLimiter::InvalidKeyError)
+          end
+        end
+      end
+
+      context 'is provided as a String' do
+        context 'and is a String representation of an existing key in rate_limits Hash' do
+          it 'raises an InvalidKeyError exception' do
+            key = rate_limits.keys[0].to_s
+
+            expect { subject.throttled?(key) }.to raise_error(Gitlab::ApplicationRateLimiter::InvalidKeyError)
+          end
+        end
+
+        context 'but is not defined in any form the rate_limits Hash' do
+          it 'raises an InvalidKeyError exception' do
+            key = 'key_not_in_rate_limits_hash'
+
+            expect { subject.throttled?(key) }.to raise_error(Gitlab::ApplicationRateLimiter::InvalidKeyError)
+          end
+        end
+      end
+    end
+
     context 'when the key is an array of only ActiveRecord models' do
       let(:scope) { [user, project] }
 
