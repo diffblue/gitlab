@@ -78,8 +78,7 @@ RSpec.describe Issue, :elastic do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('doc:is_a:issue',
-                         'issue:match:search_terms',
+    assert_named_queries('issue:match:search_terms',
                          'issue:authorized:project')
   end
 

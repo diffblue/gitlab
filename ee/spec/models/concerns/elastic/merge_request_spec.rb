@@ -43,8 +43,7 @@ RSpec.describe MergeRequest, :elastic do
   it "names elasticsearch queries" do
     described_class.elastic_search('*').total_count
 
-    assert_named_queries('doc:is_a:merge_request',
-                         'merge_request:match:search_terms',
+    assert_named_queries('merge_request:match:search_terms',
                          'merge_request:authorized:project')
   end
 

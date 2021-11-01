@@ -65,10 +65,10 @@ module Elastic
         }
       end
 
-      def basic_query_hash(fields, query, count_only: false)
+      def basic_query_hash(fields, query, options = {})
         fields = CustomLanguageAnalyzers.add_custom_analyzers_fields(fields)
 
-        fields = remove_fields_boost(fields) if count_only
+        fields = remove_fields_boost(fields) if options[:count_only]
 
         query_hash =
           if query.present?
@@ -82,31 +82,7 @@ module Elastic
               }
             }
 
-            must = []
-
-            filter = [{
-              term: {
-                type: {
-                  _name: context.name(:doc, :is_a, self.es_type),
-                  value: self.es_type
-                }
-              }
-            }]
-
-            if count_only
-              filter << simple_query_string
-            else
-              must << simple_query_string
-            end
-
-            {
-              query: {
-                bool: {
-                  must: must,
-                  filter: filter
-                }
-              }
-            }
+            build_query_filter(simple_query_string, options)
           else
             {
               query: {
@@ -118,13 +94,47 @@ module Elastic
             }
           end
 
-        if count_only
+        if options[:count_only]
           query_hash[:size] = 0
         else
           query_hash[:highlight] = highlight_options(fields)
         end
 
         query_hash
+      end
+
+      def build_query_filter(simple_query_string, options)
+        must = []
+
+        filter = if options[:no_join_project]
+                   []
+                 else
+                   [
+                     {
+                       term: {
+                         type: {
+                           _name: context.name(:doc, :is_a, self.es_type),
+                           value: self.es_type
+                         }
+                       }
+                     }
+                   ]
+                 end
+
+        if options[:count_only]
+          filter << simple_query_string
+        else
+          must << simple_query_string
+        end
+
+        {
+          query: {
+            bool: {
+              must: must,
+              filter: filter
+            }
+          }
+        }
       end
 
       def iid_query_hash(iid)
