@@ -238,16 +238,16 @@ RSpec.describe Ci::Minutes::Quota do
   describe '#reset_date' do
     subject(:reset_date) { quota.reset_date }
 
-    let(:current_time) { Date.new(2021, 10, 14) }
+    around do |example|
+      travel_to(Date.new(2021, 07, 14)) { example.run }
+    end
 
     let(:namespace) do
-      travel_to(current_time) do
-        create(:namespace, :with_ci_minutes)
-      end
+      create(:namespace, :with_ci_minutes)
     end
 
     it 'corresponds to the beginning of the current month' do
-      expect(reset_date).to eq(Date.new(2021, 10, 1))
+      expect(reset_date).to eq(Date.new(2021, 07, 1))
     end
 
     context 'when feature flag ci_use_new_monthly_minutes is disabled' do
@@ -256,7 +256,7 @@ RSpec.describe Ci::Minutes::Quota do
       end
 
       it 'corresponds to the current time' do
-        expect(reset_date).to eq(current_time)
+        expect(reset_date).to eq(Date.new(2021, 07, 14))
       end
     end
   end
