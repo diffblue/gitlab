@@ -61,6 +61,12 @@ should always be in English are noted in the glossary when using
 This helps maintain a logical connection and consistency between tools (for example, a Git client)
 and GitLab.
 
+To find the list of technical terms:
+
+1. Go to [`translate.gitlab.com`](https://translate.gitlab.com).
+1. Select the language to translate.
+1. Select **Glossary**.
+
 ### Formality
 
 The level of formality used in software varies by language:
