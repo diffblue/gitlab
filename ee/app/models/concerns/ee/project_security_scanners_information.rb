@@ -3,7 +3,7 @@
 module EE
   module ProjectSecurityScannersInformation
     include ::Gitlab::Utils::StrongMemoize
-    include LatestPipelineInformation
+    include ::Security::LatestPipelineInformation
 
     def available_scanners
       all_security_scanners.map { |scanner| scanner.upcase.to_s if feature_available?(scanner) }.compact
