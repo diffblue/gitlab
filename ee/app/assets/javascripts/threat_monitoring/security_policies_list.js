@@ -9,7 +9,7 @@ import createStore from './store';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+  defaultClient: createDefaultClient(),
 });
 
 export default () => {

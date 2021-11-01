@@ -12,7 +12,6 @@ const apolloProvider = new VueApollo({
   defaultClient: createDefaultClient(
     {},
     {
-      assumeImmutableResults: true,
       cacheConfig: {
         dataIdFromObject: (object) => {
           // eslint-disable-next-line no-underscore-dangle

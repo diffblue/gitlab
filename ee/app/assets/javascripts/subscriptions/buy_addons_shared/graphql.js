@@ -11,14 +11,13 @@ Vue.use(VueApollo);
 
 const gitlabClient = createClient(merge({}, resolvers, purchaseFlowResolvers), {
   typeDefs,
-  assumeImmutableResults: true,
 });
+
 const customersDotClient = createClient(
   {},
   {
     path: '/-/customers_dot/proxy/graphql',
     useGet: true,
-    assumeImmutableResults: true,
   },
 );
 

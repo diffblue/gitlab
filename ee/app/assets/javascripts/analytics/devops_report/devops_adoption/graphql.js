@@ -34,5 +34,5 @@ export const createResolvers = (groupId) => ({
 
 export const createApolloProvider = (groupId) =>
   new VueApollo({
-    defaultClient: createDefaultClient(createResolvers(groupId), { assumeImmutableResults: true }),
+    defaultClient: createDefaultClient(createResolvers(groupId)),
   });

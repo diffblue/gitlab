@@ -15,7 +15,7 @@ export default function initIterationsDropdownBundle() {
   }
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+    defaultClient: createDefaultClient(),
   });
 
   const { fullPath } = el.dataset;

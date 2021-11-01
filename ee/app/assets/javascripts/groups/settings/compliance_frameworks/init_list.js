@@ -7,7 +7,7 @@ import Form from './components/list.vue';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient({}, { assumeImmutableResults: true }),
+  defaultClient: createDefaultClient(),
 });
 
 const createComplianceFrameworksListApp = (el) => {

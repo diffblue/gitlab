@@ -8,7 +8,6 @@ import { STEPS } from '../constants';
 function createClient(stepList) {
   const client = createDefaultClient(resolvers, {
     typeDefs,
-    assumeImmutableResults: true,
   });
 
   client.cache.writeQuery({
