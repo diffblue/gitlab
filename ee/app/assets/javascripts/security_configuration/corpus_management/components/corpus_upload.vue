@@ -22,14 +22,13 @@ export default {
     newUpload: s__('CorpusManagement|New upload'),
     newCorpus: s__('CorpusMnagement|New corpus'),
   },
-  inject: ['projectFullPath', 'corpusHelpPath'],
+  inject: ['projectFullPath'],
   apollo: {
     states: {
       query: getCorpusesQuery,
       variables() {
         return {
           projectPath: this.projectFullPath,
-          ...this.cursor,
         };
       },
       update(data) {
@@ -99,7 +98,7 @@ export default {
     </div>
 
     <gl-button v-gl-modal-directive="$options.modal.modalId" class="gl-mr-5" variant="confirm">
-      {{ this.$options.i18n.newCorpus }}
+      {{ $options.i18n.newCorpus }}
     </gl-button>
 
     <gl-modal
@@ -111,7 +110,7 @@ export default {
       @primary="addCorpus"
       @canceled="resetCorpus"
     >
-      <corpus-upload-form />
+      <corpus-upload-form :states="states" />
     </gl-modal>
   </div>
 </template>

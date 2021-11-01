@@ -2,38 +2,11 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import CorpusUploadForm from 'ee/security_configuration/corpus_management/components/corpus_upload_form.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
-
-let mockTotalSize;
-let mockData;
-let mockIsUploading;
-let mockProgress;
-
-const mockResolver = {
-  Query: {
-    /* eslint-disable no-unused-vars */
-    mockedPackages(_, { projectPath }) {
-      return {
-        totalSize: mockTotalSize(),
-        data: mockData(),
-        __typename: 'MockedPackages',
-      };
-    },
-    /* eslint-disable no-unused-vars */
-    uploadState(_, { projectPath }) {
-      return {
-        isUploading: mockIsUploading(),
-        progress: mockProgress(),
-        __typename: 'UploadState',
-      };
-    },
-  },
-};
 
 describe('Corpus upload modal', () => {
   let wrapper;
@@ -43,27 +16,17 @@ describe('Corpus upload modal', () => {
   const findUploadCorpus = () => wrapper.find('[data-testid="upload-corpus"]');
   const findUploadStatus = () => wrapper.find('[data-testid="upload-status"]');
 
-  const createMockApolloProvider = (resolverMock) => {
-    return createMockApollo([], resolverMock);
-  };
-
-  const createComponent = (resolverMock, options = {}) => {
+  const createComponent = (propsData, options = {}) => {
     wrapper = mount(CorpusUploadForm, {
       localVue,
-      apolloProvider: createMockApolloProvider(resolverMock),
+      propsData,
+      apolloProvider: createMockApollo(),
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
       },
       ...options,
     });
   };
-
-  beforeEach(() => {
-    mockTotalSize = jest.fn();
-    mockData = jest.fn();
-    mockIsUploading = jest.fn();
-    mockProgress = jest.fn();
-  });
 
   afterEach(() => {
     wrapper.destroy();
@@ -81,12 +44,20 @@ describe('Corpus upload modal', () => {
           };
         };
 
-        mockTotalSize.mockResolvedValue(0);
-        mockData.mockResolvedValue([]);
-        mockIsUploading.mockResolvedValue(false);
-        mockProgress.mockResolvedValue(0);
+        const props = {
+          states: {
+            mockedPackages: {
+              totalSize: 0,
+              data: [],
+            },
+            uploadState: {
+              isUploading: false,
+              progress: 0,
+            },
+          },
+        };
 
-        createComponent(mockResolver, { data });
+        createComponent(props, { data });
       });
 
       it('shows empty name field', () => {
@@ -120,12 +91,20 @@ describe('Corpus upload modal', () => {
           };
         };
 
-        mockTotalSize.mockResolvedValue(0);
-        mockData.mockResolvedValue([]);
-        mockIsUploading.mockResolvedValue(false);
-        mockProgress.mockResolvedValue(0);
+        const props = {
+          states: {
+            mockedPackages: {
+              totalSize: 0,
+              data: [],
+            },
+            uploadState: {
+              isUploading: false,
+              progress: 0,
+            },
+          },
+        };
 
-        createComponent(mockResolver, { data });
+        createComponent(props, { data });
       });
 
       it('shows name field', () => {
@@ -149,7 +128,7 @@ describe('Corpus upload modal', () => {
       const attachmentName = 'corpus.zip';
       const corpusName = 'User entered name';
 
-      beforeEach(async () => {
+      beforeEach(() => {
         const data = () => {
           return {
             attachmentName,
@@ -159,14 +138,20 @@ describe('Corpus upload modal', () => {
           };
         };
 
-        mockTotalSize.mockResolvedValue(0);
-        mockData.mockResolvedValue([]);
-        mockIsUploading.mockResolvedValue(true);
-        mockProgress.mockResolvedValue(25);
+        const props = {
+          states: {
+            mockedPackages: {
+              totalSize: 0,
+              data: [],
+            },
+            uploadState: {
+              isUploading: true,
+              progress: 25,
+            },
+          },
+        };
 
-        createComponent(mockResolver, { data });
-
-        await waitForPromises();
+        createComponent(props, { data });
       });
 
       it('shows name field', () => {
@@ -192,7 +177,7 @@ describe('Corpus upload modal', () => {
       const attachmentName = 'corpus.zip';
       const corpusName = 'User entered name';
 
-      beforeEach(async () => {
+      beforeEach(() => {
         const data = () => {
           return {
             attachmentName,
@@ -202,14 +187,20 @@ describe('Corpus upload modal', () => {
           };
         };
 
-        mockTotalSize.mockResolvedValue(0);
-        mockData.mockResolvedValue([]);
-        mockIsUploading.mockResolvedValue(false);
-        mockProgress.mockResolvedValue(100);
+        const props = {
+          states: {
+            mockedPackages: {
+              totalSize: 0,
+              data: [],
+            },
+            uploadState: {
+              isUploading: false,
+              progress: 100,
+            },
+          },
+        };
 
-        createComponent(mockResolver, { data });
-
-        await waitForPromises();
+        createComponent(props, { data });
       });
 
       it('shows name field', () => {
