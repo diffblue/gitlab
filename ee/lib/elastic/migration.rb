@@ -41,10 +41,10 @@ module Elastic
       Elastic::DataMigrationService[version]
     end
 
-    def fail_migration_halt_error!(retry_attempt: 0)
-      log "Halting migration on retry_attempt #{retry_attempt}"
+    def fail_migration_halt_error!(options = {})
+      log "Halting migration with #{options}"
 
-      migration_record.halt!(retry_attempt: retry_attempt)
+      migration_record.fail(options)
     end
 
     def log(message)

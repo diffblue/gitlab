@@ -57,19 +57,27 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
     end
   end
 
-  describe '#halt!' do
+  describe '#halt' do
     it 'sets state for halted and halted_indexing_unpaused' do
-      record.halt!
+      record.halt
 
       expect(record.load_from_index.dig('_source', 'state', 'halted')).to be_truthy
       expect(record.load_from_index.dig('_source', 'state', 'halted_indexing_unpaused')).to be_falsey
     end
 
     it 'sets state with additional options if passed' do
-      record.halt!(hello: 'world', good: 'bye')
+      record.halt(hello: 'world', good: 'bye')
 
       expect(record.load_from_index.dig('_source', 'state', 'hello')).to eq('world')
       expect(record.load_from_index.dig('_source', 'state', 'good')).to eq('bye')
+    end
+  end
+
+  describe '#fail' do
+    it 'calls halt with failed: true' do
+      expect(record).to receive(:halt).with(failed: true, foo: :bar)
+
+      record.fail(foo: :bar)
     end
   end
 

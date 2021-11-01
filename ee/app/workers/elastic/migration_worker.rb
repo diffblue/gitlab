@@ -50,7 +50,7 @@ module Elastic
           if free_size_bytes < space_required_bytes
             logger.warn "MigrationWorker: migration[#{migration.name}] You should have at least #{number_to_human_size(space_required_bytes)} of free space in the cluster to run this migration. Please increase the storage in your Elasticsearch cluster."
             logger.info "MigrationWorker: migration[#{migration.name}] updating with halted: true"
-            migration.halt!
+            migration.halt
 
             break false
           end
@@ -73,7 +73,7 @@ module Elastic
     private
 
     def execute_migration(migration)
-      if migration.started? && !migration.batched?
+      if migration.started? && !migration.batched? && !migration.retry_on_failure?
         logger.info "MigrationWorker: migration[#{migration.name}] did not execute migrate method since it was already executed. Waiting for migration to complete"
 
         return
@@ -87,6 +87,22 @@ module Elastic
       if migration.batched? && !migration.completed?
         logger.info "MigrationWorker: migration[#{migration.name}] kicking off next migration batch"
         Elastic::MigrationWorker.perform_in(migration.throttle_delay)
+      end
+    rescue StandardError => e
+      retry_migration(migration, e) if migration.retry_on_failure?
+
+      raise e
+    end
+
+    def retry_migration(migration, exception)
+      if migration.current_attempt >= migration.max_attempts
+        message = "MigrationWorker: migration has failed with #{exception.class}:#{exception.message}, no retries left"
+        logger.error message
+
+        migration.fail(message: message)
+      else
+        logger.info "MigrationWorker: increasing previous_attempts to #{migration.current_attempt}"
+        migration.save_state!(previous_attempts: migration.current_attempt)
       end
     end
 
