@@ -63,15 +63,18 @@ module QA
 
           downstream_project.visit!
 
-          # Wait for upstream new tag pipeline to succeed
-          # And downstream project to have 2 pipelines
-          Support::Waiter.wait_until do
+          Support::Waiter.wait_until(sleep_interval: 3) do
+            QA::Runtime::Logger.info 'Waiting for upstream pipeline to succeed.'
             new_pipeline = upstream_project.pipelines.find { |pipeline| pipeline[:ref] == tag_name }
-            new_pipeline[:status] == 'success' && downstream_project.pipelines.size == 2
+            new_pipeline&.dig(:status) == 'success'
           end
 
-          # expect new downstream pipeline to also succeed
           Page::Project::Menu.perform(&:click_ci_cd_pipelines)
+
+          # Downstream project must have 2 pipelines at this time
+          expect(downstream_project.pipelines.size).to eq(2), "There are currently #{downstream_project.pipelines.size} pipelines in downstream project."
+
+          # expect new downstream pipeline to also succeed
           Page::Project::Pipeline::Index.perform do |index|
             expect(index.wait_for_latest_pipeline_succeeded).to be_truthy, 'Downstream pipeline did not succeed as expected.'
           end
