@@ -23,8 +23,8 @@ describe('ProjectsSkeletonLoader', () => {
   });
 
   describe('desktop loader', () => {
-    it('produces 20 rows', () => {
-      expect(findDesktopLoader().findAll('rect[width="1000"]')).toHaveLength(20);
+    it('produces 5 rows', () => {
+      expect(findDesktopLoader().findAll('rect[width="1000"]')).toHaveLength(5);
     });
 
     it('has the correct classes', () => {
@@ -38,7 +38,7 @@ describe('ProjectsSkeletonLoader', () => {
 
   describe('mobile loader', () => {
     it('produces 5 rows', () => {
-      expect(findMobileLoader().findAll('rect[height="172"]')).toHaveLength(5);
+      expect(findMobileLoader().findAll('rect[height="110"]')).toHaveLength(5);
     });
 
     it('has the correct classes', () => {
