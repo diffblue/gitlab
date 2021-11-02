@@ -947,4 +947,105 @@ RSpec.describe API::Members do
       end
     end
   end
+
+  context 'group with pending members' do
+    let_it_be(:owner) { create(:user, username: 'owner_user') }
+    let_it_be(:developer) { create(:user) }
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:not_an_owner) { create(:user) }
+
+    let(:url) { "/groups/#{group.id}/members/#{developer.id}/approve" }
+
+    before do
+      group.add_owner(owner)
+    end
+
+    describe 'PUT /groups/:id/members/:user_id/approve' do
+      context 'with invalid params' do
+        context 'when a subgroup is used' do
+          let(:url) { "/groups/#{subgroup.id}/members/#{developer.id}/approve" }
+
+          it 'returns a bad request response' do
+            put api(url, not_an_owner)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+
+        context 'when no group is found' do
+          let(:url) { "/groups/#{non_existing_record_id}/members/#{developer.id}/approve" }
+
+          it 'returns a not found response' do
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+      end
+
+      context 'when the current user does not have the :admin_group_member ability' do
+        it 'returns a bad request response' do
+          put api(url, not_an_owner)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when the current user has permission to approve' do
+        context 'when the user is not found' do
+          let(:url) { "/groups/#{group.id}/members/#{non_existing_record_id}/approve" }
+
+          it 'returns not found response' do
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+
+        context 'when the activation fails due to no members to activate' do
+          it 'returns a bad request response' do
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+
+        context 'when the user is a pending member of a root group' do
+          it 'activates the member' do
+            pending_member = create(:group_member, :awaiting, group: group, user: developer)
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(pending_member.reload.active?).to be true
+          end
+        end
+
+        context 'when the user is a pending member of a subgroup' do
+          it 'activates the member' do
+            pending_member = create(:group_member, :awaiting, group: subgroup, user: developer)
+
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(pending_member.reload.active?).to be true
+          end
+        end
+
+        context 'when the user is a pending member of a project' do
+          let(:developer) { create(:user) }
+
+          it 'activates the member' do
+            pending_member = create(:project_member, :awaiting, project: project, user: developer)
+
+            put api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(pending_member.reload.active?).to be true
+          end
+        end
+      end
+    end
+  end
 end
