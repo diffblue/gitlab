@@ -3,7 +3,21 @@
 module Gitlab
   module Redis
     class MultiStore
+      class MultiReadError < StandardError
+        def message
+          'Value not found, falling back to read from the redis secondary store.'
+        end
+      end
+      class MethodMissingError < StandardError
+        def message
+          'Method missing. Falling back to execute method on the redis secondary_store.'
+        end
+      end
+
       attr_reader :primary_store, :secondary_store
+
+      FAILED_TO_READ_ERROR_MESSAGE = 'Failed to read from the redis primary_store.'
+      FAILED_TO_WRITE_ERROR_MESSAGE = 'Failed to write to the redis primary_store.'
 
       READ_COMMANDS = %i(
         get
@@ -12,6 +26,7 @@ module Gitlab
       ).freeze
 
       WRITE_COMMANDS = %i(
+        set
         setnx
         setex
         sadd
@@ -35,60 +50,88 @@ module Gitlab
         super(klass)
       end
 
-      # TODO: Add Feature flags, by default read only from the secondary store,
-      # by enabling the FF, read from the primary, and fallback to read from the secondary.
       READ_COMMANDS.each do |name|
-        define_method(name) do |*args, **kwargs, &block|
-          if @instance
-            send_command(@instance, name, *args, **kwargs, &block)
-          else
-            value = send_command(primary_store, name, *args, **kwargs, &block)
-            # TODO: Add logger to detect for which key we fallback to shared_steate_store
-            value ||= send_command(secondary_store, name, *args, **kwargs, &block)
-
-            value
-          end
+        define_method(name) do |*args, &block|
+          read_command(name, *args, &block)
         end
       end
 
-      # TODO: Add proper error handling if primary store fails, ensuring that we execute at least on secondary store
-      # TODO: Add Feature flags, by default write only on the secondary store (SharedState), by enabling the FF, write to the primary as well.
       WRITE_COMMANDS.each do |name|
-        define_method(name) do |*args, **kwargs, &block|
-          if @instance
-            send_command(@instance, name, *args, **kwargs, &block)
-          else
-            send_command(primary_store, name, *args, **kwargs, &block)
-            send_command(secondary_store, name, *args, **kwargs, &block)
-          end
-        end
-      end
-
-      # TEST: try to avoid Deprecation Toolkit issues
-      # See the pipelines of the POC for the example
-      # We call set there https://github.com/redis-store/redis-rack/blob/v2.1.3/lib/rack/session/redis.rb#L49
-      # With the meta-definition like there, we have hash <-> kwargs Ruby 2.7 issues as the downstream is defined like:
-      # https://github.com/redis/redis-rb/blob/master/lib/redis.rb#L846
-      def set(...)
-        if @instance
-          send_command(@instance, :set, ...)
-        else
-          send_command(primary_store, :set, ...)
-          send_command(secondary_store, :set, ...)
+        define_method(name) do |*args, &block|
+          write_command(name, *args, &block)
         end
       end
 
       private
 
-      def send_command(redis_instance, name, *args, **kwargs, &block)
+      def read_command(command_name, *args, &block)
+        instance = check_redis_store_instance
+
+        if instance
+          send_command(instance, command_name, *args, &block)
+        else
+          read_one_with_fallback(command_name, *args, &block)
+        end
+      end
+
+      def write_command(command_name, *args, &block)
+        instance = check_redis_store_instance
+
+        if instance
+          send_command(instance, command_name, *args, &block)
+        else
+          write_both(command_name, *args, &block)
+        end
+      end
+
+      def check_redis_store_instance
+        if multi_store_enabled?
+          @instance
+        else
+          secondary_store # default
+        end
+      end
+
+      def read_one_with_fallback(command_name, *args, &block)
+        value = send_command(primary_store, command_name, *args, &block)
+      rescue StandardError => e
+        log_error(e, command_name,
+          multi_store_error_message: FAILED_TO_READ_ERROR_MESSAGE)
+      ensure
+        unless value
+          log_error(MultiReadError.new, command_name)
+          increment_read_fallback_count(command_name)
+          value = send_command(secondary_store, command_name, *args, &block)
+        end
+
+        value
+      end
+
+      def write_both(command_name, *args, &block)
+        send_command(primary_store, command_name, *args, &block)
+      rescue StandardError => e
+        log_error(e, command_name,
+          multi_store_error_message: FAILED_TO_WRITE_ERROR_MESSAGE)
+      ensure
+        send_command(secondary_store, command_name, *args, &block)
+      end
+
+      def multi_store_enabled?
+        Feature.enabled?(:use_multi_store, default_enabled: :yaml)
+      end
+
+      # rubocop:disable GitlabSecurity/PublicSend
+      def send_command(redis_instance, command_name, *args, &block)
         if block_given?
-          redis_instance.send(name, *args, **kwargs) do |*args| # rubocop:disable GitlabSecurity/PublicSend
+          # Make sure that block is wrapped and executed only on the redis instance that is executing the block
+          redis_instance.send(command_name, *args) do |*args|
             with_instance(redis_instance, *args, &block)
           end
         else
-          redis_instance.send(name, *args, **kwargs) # rubocop:disable GitlabSecurity/PublicSend
+          redis_instance.send(command_name, *args)
         end
       end
+      # rubocop:enable GitlabSecurity/PublicSend
 
       def with_instance(instance, *args)
         @instance = instance
@@ -97,12 +140,31 @@ module Gitlab
         @instance = nil
       end
 
-      def method_missing(...)
-        # TODO: Add logger here to log for which key and command we did fallback to the shared_state_store
-        secondary_store.send(...) # rubocop:disable GitlabSecurity/PublicSend
+      def increment_read_fallback_count(command_name)
+        @read_fallback_counter ||= Gitlab::Metrics.counter(:gitlab_redis_multi_store_read_fallback_total, 'Client side Redis MultiStore reading fallback')
+        @read_fallback_counter.increment(command: command_name)
       end
 
-      def respond_to_missing?(method_name, include_private = false)
+      def increment_method_missing_count(command_name)
+        @method_missing_counter ||= Gitlab::Metrics.counter(:gitlab_redis_multi_store_method_missing_total, 'Client side Redis MultiStore method missing')
+        @method_missing_counter.increment(command: command_name)
+      end
+
+      def log_error(exception, command_name, extra = {})
+        Gitlab::ErrorTracking.log_exception(
+          exception,
+          command_name: command_name,
+          extra: extra)
+      end
+
+      def method_missing(command_name, *args, &block)
+        log_error(MethodMissingError.new, command_name)
+        increment_method_missing_count(command_name)
+
+        secondary_store.send(command_name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
+      end
+
+      def respond_to_missing?(command_name, include_private = false)
         true
       end
     end
