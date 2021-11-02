@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :corpus, class: 'AppSec::Fuzzing::Coverage::Corpus' do
     user
-    package
     project
+    package { association :package, project: project }
   end
 end
