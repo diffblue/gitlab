@@ -116,7 +116,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
           page.within('.labels') do
             click_button 'Edit'
-            page.within('.labels-select-contents-list') do
+            page.within('[data-testid="labels-select-contents-list"]') do
               expect(page).to have_content(group_label.title)
               expect(page).not_to have_content(project_label.title)
             end
@@ -381,7 +381,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
             page.within('.labels') do
               click_button 'Edit'
-              page.within('.labels-select-contents-list') do
+              page.within('[data-testid="labels-select-contents-list"]') do
                 expect(page).to have_content(group_label.title)
                 expect(page).not_to have_content(project_label.title)
               end
@@ -581,7 +581,7 @@ RSpec.describe 'Scoped issue boards', :js do
         click_button 'Edit'
 
         if value.is_a?(Array)
-          value.each { |value| click_link value }
+          value.each { |value| click_on value }
         elsif filter == 'weight'
           page.within(".dropdown-menu") do
             click_button value

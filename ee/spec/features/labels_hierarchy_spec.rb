@@ -39,7 +39,7 @@ RSpec.describe 'Labels Hierarchy', :js do
 
           wait_for_requests
 
-          click_link label.title
+          click_on label.title
         end
 
         click_button 'Save changes'

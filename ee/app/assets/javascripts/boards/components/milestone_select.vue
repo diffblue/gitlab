@@ -23,16 +23,6 @@ export default {
       type: Object,
       required: true,
     },
-    groupId: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    projectId: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
     canEdit: {
       type: Boolean,
       required: false,

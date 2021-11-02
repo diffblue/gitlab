@@ -29,16 +29,6 @@ export default {
       required: false,
       default: false,
     },
-    groupId: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    projectId: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
   },
   data() {
     return {
