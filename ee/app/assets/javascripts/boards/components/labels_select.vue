@@ -183,6 +183,7 @@ export default {
         category="tertiary"
         size="small"
         class="edit-link float-right"
+        data-qa-selector="labels_edit_button"
         @click="toggleEdit"
       >
         {{ $options.i18n.edit }}
