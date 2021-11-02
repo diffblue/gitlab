@@ -11,7 +11,7 @@ RSpec.describe Groups::InsightsController do
 
   let(:query_params) { { type: 'bar', query: { issuable_type: 'issue', collection_labels: ['bug'] }, projects: projects_params } }
   let(:projects_params) { { only: [project.id, project.full_path] } }
-  let(:params) { { trailing_slash: true } }
+  let(:params) { { group_id: parent_group } }
 
   before do
     stub_licensed_features(insights: true)

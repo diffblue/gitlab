@@ -10,7 +10,7 @@ RSpec.describe Projects::InsightsController do
 
   let(:query_params) { { type: 'bar', query: { issuable_type: 'issue', collection_labels: ['bug'] }, projects: projects_params } }
   let(:projects_params) { { only: [project.id, project.full_path] } }
-  let(:params) { { trailing_slash: true, project_id: project, namespace_id: group } }
+  let(:params) { { project_id: project, namespace_id: group } }
 
   before do
     stub_licensed_features(insights: true)
