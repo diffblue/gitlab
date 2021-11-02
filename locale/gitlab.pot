@@ -5624,6 +5624,9 @@ msgstr ""
 msgid "Boards|Failed to fetch blocking %{issuableType}s"
 msgstr ""
 
+msgid "Boards|New board"
+msgstr ""
+
 msgid "Boards|New epic"
 msgstr ""
 
