@@ -3,7 +3,7 @@
 class Projects::RequirementsManagement::RequirementsController < Projects::ApplicationController
   include WorkhorseAuthorization
 
-  EXTENSION_WHITELIST = %w[csv].map(&:downcase).freeze
+  EXTENSION_ALLOWLIST = %w[csv].map(&:downcase).freeze
 
   before_action :authorize_read_requirement!
   before_action :authorize_import_access!, only: [:import_csv, :authorize]
@@ -44,7 +44,7 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
   end
 
   def invalid_file_message
-    supported_file_extensions = ".#{EXTENSION_WHITELIST.join(', .')}"
+    supported_file_extensions = ".#{EXTENSION_ALLOWLIST.join(', .')}"
     _("The uploaded file was invalid. Supported file extensions are %{extensions}.") % { extensions: supported_file_extensions }
   end
 
@@ -56,7 +56,7 @@ class Projects::RequirementsManagement::RequirementsController < Projects::Appli
     Gitlab::CurrentSettings.max_attachment_size.megabytes
   end
 
-  def file_extension_whitelist
-    EXTENSION_WHITELIST
+  def file_extension_allowlist
+    EXTENSION_ALLOWLIST
   end
 end
