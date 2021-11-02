@@ -121,6 +121,19 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
   end
 
   def transformed_blob_data
-    @transformed_blob ||= ( blob.path.ends_with?('.ipynb') && IpynbDiff.transform(blob.data, options: { include_metadata: false, cell_decorator: :percent }) ) || blob.data
+    @transformed_blob ||= if blob.path.ends_with?('.ipynb')
+                            begin
+                              new_blob = IpynbDiff.transform(blob.data,
+                                                             raise_errors: true,
+                                                             options: { include_metadata: false, cell_decorator: :percent })
+                            rescue IpynbDiff::InvalidNotebookError => e
+                              Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e, issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344676')
+                              return blob.data
+                            end
+
+                            return Gitlab::AppLogger.info('IPYNBDIFF_BLOB_NIL') && blob.data unless new_blob
+
+                            Gitlab::AppLogger.info('IPYNBDIFF_BLOB_GENERATED') && new_blob
+                          end
   end
 end

@@ -456,11 +456,21 @@ module Gitlab
         from = old_blob_lazy&.data
         to = new_blob_lazy&.data
 
-        new_diff = IpynbDiff.diff(from, to,
-                                  diff_opts: { context: 5, include_diff_info: true },
-                                  transform_options: { cell_decorator: :percent } )
+        begin
+          new_diff = IpynbDiff.diff(from, to,
+                                    diff_opts: { context: 5, include_diff_info: true },
+                                    transform_options: { cell_decorator: :percent },
+                                    raise_if_invalid_notebook: true)
 
-        diff.diff = new_diff.scan(/.*\n/)[2..-1].join('') if new_diff
+          if new_diff
+            diff.diff = new_diff.scan(/.*\n/)[2..-1].join('')
+            Gitlab::AppLogger.info("IPYNB_DIFF_GENERATED")
+          else
+            Gitlab::AppLogger.info("IPYNB_DIFF_NIL")
+          end
+        rescue IpynbDiff::InvalidNotebookError => e
+          Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e, issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344676')
+        end
       end
 
       def alternate_viewer_class
