@@ -70,7 +70,7 @@ RSpec.describe Gitlab::ApplicationRateLimiter do
           end
         end
 
-        context 'but is not defined in any form the rate_limits Hash' do
+        context 'but is not defined in any form in the rate_limits Hash' do
           it 'raises an InvalidKeyError exception' do
             key = 'key_not_in_rate_limits_hash'
 
