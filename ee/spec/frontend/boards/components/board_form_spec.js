@@ -8,7 +8,6 @@ import createEpicBoardMutation from 'ee/boards/graphql/epic_board_create.mutatio
 import destroyEpicBoardMutation from 'ee/boards/graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from 'ee/boards/graphql/epic_board_update.mutation.graphql';
 
-import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { formType } from '~/boards/constants';
@@ -37,8 +36,6 @@ const currentBoard = {
 
 const defaultProps = {
   canAdminBoard: false,
-  labelsPath: `${TEST_HOST}/labels/path`,
-  labelsWebUrl: `${TEST_HOST}/-/labels`,
   currentBoard,
   currentPage: '',
 };

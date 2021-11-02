@@ -351,7 +351,7 @@ RSpec.describe 'epic boards', :js do
       if value.is_a?(Array)
         value.each { |value| click_link value }
       else
-        click_link value
+        click_on value
       end
     end
   end

@@ -35,6 +35,9 @@ describe('Assignee select component', () => {
   const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
     store = new Vuex.Store({
       ...defaultStore,
+      actions: {
+        setError: jest.fn(),
+      },
       getters: {
         isGroupBoard: () => isGroupBoard,
         isProjectBoard: () => isProjectBoard,
