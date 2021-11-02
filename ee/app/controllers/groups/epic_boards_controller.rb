@@ -8,6 +8,9 @@ class Groups::EpicBoardsController < Groups::ApplicationController
 
   before_action :redirect_to_recent_board, only: [:index]
   before_action :assign_endpoint_vars
+  before_action do
+    push_frontend_feature_flag(:labels_widget, group, default_enabled: :yaml)
+  end
 
   track_redis_hll_event :index, :show, name: 'g_project_management_users_viewing_epic_boards'
 

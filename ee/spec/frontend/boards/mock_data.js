@@ -122,6 +122,12 @@ export const labels = [
     color: '#34ebec',
     description: null,
   },
+  {
+    id: 'gid://gitlab/GroupLabel/6',
+    title: 'Brock',
+    color: '#e082b6',
+    description: null,
+  },
 ];
 
 export const rawIssue = {

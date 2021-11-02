@@ -15,6 +15,8 @@ describe('ee/BoardContent', () => {
       provide: {
         timeTrackingLimitToHours: false,
         canAdminList: false,
+        canUpdate: false,
+        labelsFilterBasePath: '',
       },
       propsData: {
         lists: [],
