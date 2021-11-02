@@ -33,6 +33,11 @@ module EE
             'oauth/tokens' => %w{create}
           }.freeze
 
+          ALLOWLISTED_SSO_SIGN_IN_CONTROLLERS = [
+            'omniauth_callbacks',
+            'ldap/omniauth_callbacks'
+          ].freeze
+
           private
 
           override :allowlisted_routes
@@ -115,10 +120,14 @@ module EE
           end
 
           def sign_in_route?
-            return unless request.post? && request.path.start_with?('/users/sign_in', '/oauth/token',
-              '/users/auth/geo/sign_in')
+            return unless request.post?
 
-            ALLOWLISTED_SIGN_IN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+            is_regular_sign_in_route = request.path.start_with?('/users/sign_in', '/oauth/token', '/users/auth/geo/sign_in') &&
+                                       ALLOWLISTED_SIGN_IN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+            is_sso_callback_route = request.path.start_with?('/users/auth/') &&
+                                    ALLOWLISTED_SSO_SIGN_IN_CONTROLLERS.include?(route_hash[:controller])
+
+            is_regular_sign_in_route || is_sso_callback_route
           end
 
           def lfs_locks_route?

@@ -30,10 +30,29 @@ RSpec.shared_examples 'write access for a read-only GitLab (EE) instance in main
   end
 
   shared_examples_for 'sign in/out and OAuth are allowed' do
+    include LdapHelpers
+    include LoginHelpers
+
+    before do
+      stub_ldap_setting({ enabled: true })
+      Rails.application.reload_routes!
+
+      # SAML draws a custom route, LDAP doesn't, so the reload needs to happen before this
+      # to prevent overwriting the SAML route.
+      stub_omniauth_saml_config(enabled: true, auto_link_saml_user: true, allow_single_sign_on: ['saml'])
+    end
+
+    after(:all) do
+      Rails.application.reload_routes!
+    end
+
     where(:description, :path) do
-      'sign in route'     | '/users/sign_in'
-      'sign out route'    | '/users/sign_out'
-      'oauth token route' | '/oauth/token'
+      'sign in route'       | '/users/sign_in'
+      'sign out route'      | '/users/sign_out'
+      'oauth token route'   | '/oauth/token'
+      'SSO callback route'  | '/users/auth/gitlab/callback'
+      'LDAP callback route' | '/users/auth/ldapmain/callback'
+      'SAML regular route'  | '/users/auth/saml'
     end
 
     with_them do
