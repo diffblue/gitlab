@@ -1,9 +1,17 @@
 <script>
-import { GlTab, GlBadge, GlLink, GlTable, GlKeysetPagination } from '@gitlab/ui';
+import {
+  GlTab,
+  GlBadge,
+  GlLink,
+  GlTable,
+  GlKeysetPagination,
+  GlAlert,
+  GlSkeletonLoader,
+} from '@gitlab/ui';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import EmptyState from '../empty_state.vue';
@@ -26,6 +34,8 @@ export default {
     GlLink,
     GlTable,
     GlKeysetPagination,
+    GlAlert,
+    GlSkeletonLoader,
     CiBadgeLink,
     TimeAgoTooltip,
     EmptyState,
@@ -78,6 +88,9 @@ export default {
         }
         return pipelines;
       },
+      error() {
+        this.hasError = true;
+      },
       pollInterval: PIPELINES_POLL_INTERVAL,
     },
   },
@@ -99,8 +112,14 @@ export default {
     };
   },
   computed: {
+    pipelineNodes() {
+      return this.pipelines?.nodes ?? [];
+    },
     hasPipelines() {
-      return Boolean(this.pipelines?.nodes?.length);
+      return this.pipelineNodes.length > 0;
+    },
+    pageInfo() {
+      return this.pipelines?.pageInfo;
     },
     tableFields() {
       return this.fields.map(({ key, label }) => ({
@@ -109,6 +128,13 @@ export default {
         class: ['gl-text-black-normal'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
       }));
+    },
+  },
+  watch: {
+    hasPipelines(hasPipelines) {
+      if (this.hasError && hasPipelines) {
+        this.hasError = false;
+      }
     },
   },
   methods: {
@@ -142,6 +168,9 @@ export default {
   i18n: {
     previousPage: __('Prev'),
     nextPage: __('Next'),
+    errorMessage: s__(
+      'OnDemandScans|Could not fetch on-demand scans. Please refresh the page, or try again later.',
+    ),
   },
 };
 </script>
@@ -152,13 +181,24 @@ export default {
       {{ title }}
       <gl-badge size="sm" class="gl-tab-counter-badge">{{ itemsCount }}</gl-badge>
     </template>
-    <template v-if="hasPipelines">
+    <template v-if="$apollo.queries.pipelines.loading || hasPipelines">
       <gl-table
         thead-class="gl-border-b-solid gl-border-gray-100 gl-border-1"
         :fields="tableFields"
-        :items="pipelines.nodes"
+        :items="pipelineNodes"
+        :busy="$apollo.queries.pipelines.loading"
         stacked="md"
       >
+        <template #table-busy>
+          <gl-skeleton-loader v-for="i in 20" :key="i" :width="1000" :height="45">
+            <rect width="85" height="20" x="0" y="5" rx="4" />
+            <rect width="100" height="20" x="150" y="5" rx="4" />
+            <rect width="150" height="20" x="300" y="5" rx="4" />
+            <rect width="100" height="20" x="500" y="5" rx="4" />
+            <rect width="150" height="20" x="655" y="5" rx="4" />
+            <rect width="70" height="20" x="855" y="5" rx="4" />
+          </gl-skeleton-loader>
+        </template>
         <template #cell(detailedStatus)="{ item }">
           <div class="gl-my-3">
             <ci-badge-link :status="item.detailedStatus" />
@@ -181,7 +221,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-center">
         <gl-keyset-pagination
           data-testid="pagination"
-          v-bind="pipelines.pageInfo"
+          v-bind="pageInfo"
           :prev-text="$options.i18n.previousPage"
           :next-text="$options.i18n.nextPage"
           @prev="prevPage"
@@ -189,6 +229,15 @@ export default {
         />
       </div>
     </template>
+    <gl-alert
+      v-else-if="hasError"
+      variant="danger"
+      :dismissible="false"
+      class="gl-my-4"
+      data-testid="error-alert"
+    >
+      {{ $options.i18n.errorMessage }}
+    </gl-alert>
     <empty-state v-else :title="emptyStateTitle" :text="emptyStateText" no-primary-button />
   </gl-tab>
 </template>

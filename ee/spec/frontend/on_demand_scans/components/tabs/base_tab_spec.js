@@ -1,4 +1,4 @@
-import { GlTab, GlTable } from '@gitlab/ui';
+import { GlTab, GlTable, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import allPipelinesWithPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.with_pipelines.json';
@@ -32,10 +32,16 @@ describe('BaseTab', () => {
   const findTable = () => wrapper.findComponent(GlTable);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
   const findPagination = () => wrapper.findByTestId('pagination');
+  const findErrorAlert = () => wrapper.findComponent(GlAlert);
 
   // Helpers
   const createMockApolloProvider = () => {
     return createMockApollo([[onDemandScansQuery, requestHandler]]);
+  };
+
+  const navigateToPage = (direction) => {
+    findPagination().vm.$emit(direction);
+    return wrapper.vm.$nextTick();
   };
 
   const createComponent = (propsData) => {
@@ -66,7 +72,7 @@ describe('BaseTab', () => {
           `,
         }),
         GlTable: stubComponent(GlTable, {
-          props: ['items'],
+          props: ['items', 'busy'],
         }),
       },
     });
@@ -93,6 +99,16 @@ describe('BaseTab', () => {
         fullPath: projectPath,
         last: null,
       });
+    });
+
+    it('puts the table in the busy state until the request resolves', async () => {
+      createComponent();
+
+      expect(findTable().props('busy')).toBe(true);
+
+      await waitForPromises();
+
+      expect(findTable().props('busy')).toBe(false);
     });
 
     it('resets the route if no pipeline matches the cursor', async () => {
@@ -128,8 +144,8 @@ describe('BaseTab', () => {
       );
     });
 
-    it('when navigating to another page, scrolls back to the top', () => {
-      findPagination().vm.$emit('next');
+    it('when navigating to another page, scrolls back to the top', async () => {
+      await navigateToPage('next');
 
       expect(scrollToElement).toHaveBeenCalledWith(wrapper.vm.$el);
     });
@@ -138,18 +154,16 @@ describe('BaseTab', () => {
       expect(Object.keys(router.currentRoute.query)).not.toContain('after');
       expect(requestHandler).toHaveBeenCalledTimes(1);
 
-      findPagination().vm.$emit('next');
-      await wrapper.vm.$nextTick();
+      await navigateToPage('next');
 
       expect(Object.keys(router.currentRoute.query)).toContain('after');
       expect(requestHandler).toHaveBeenCalledTimes(2);
     });
 
     it('when navigating back to the previous page, the route is updated and pipelines are fetched', async () => {
-      findPagination().vm.$emit('next');
-      await wrapper.vm.$nextTick();
-      findPagination().vm.$emit('prev');
-      await wrapper.vm.$nextTick();
+      await navigateToPage('next');
+      await waitForPromises();
+      await navigateToPage('prev');
 
       expect(Object.keys(router.currentRoute.query)).not.toContain('after');
       expect(Object.keys(router.currentRoute.query)).toContain('before');
@@ -165,6 +179,36 @@ describe('BaseTab', () => {
 
     it('renders an empty state', () => {
       expect(findEmptyState().exists()).toBe(true);
+    });
+  });
+
+  describe('when the request errors out', () => {
+    let respondWithError;
+
+    beforeEach(async () => {
+      respondWithError = true;
+      requestHandler = () => {
+        const response = respondWithError
+          ? Promise.reject()
+          : Promise.resolve(allPipelinesWithPipelinesMock);
+        respondWithError = false;
+        return response;
+      };
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('shows an error alert', () => {
+      expect(findErrorAlert().exists()).toBe(true);
+    });
+
+    it('removes the alert if the next request succeeds', async () => {
+      expect(findErrorAlert().exists()).toBe(true);
+
+      wrapper.vm.$apollo.queries.pipelines.refetch();
+      await waitForPromises();
+
+      expect(findErrorAlert().exists()).toBe(false);
     });
   });
 });
