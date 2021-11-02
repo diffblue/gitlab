@@ -55,6 +55,6 @@ GitLab to send the notifications:
 1. Select the branches you want to send notifications for.
 1. Click **Save changes**.
 
-## Resources
+## Related topics
 
 - [Setting up an incoming webhook on Microsoft Teams](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/connectors-using#setting-up-a-custom-incoming-webhook).
