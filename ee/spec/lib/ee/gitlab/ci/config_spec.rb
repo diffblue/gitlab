@@ -40,14 +40,16 @@ RSpec.describe Gitlab::Ci::Config do
   describe 'with security orchestration policy' do
     let(:source) { 'push' }
 
-    let_it_be(:ref) { 'refs/heads/master' }
+    let_it_be(:ref) { 'master' }
     let_it_be_with_refind(:project) { create(:project, :repository) }
 
     let_it_be(:policies_repository) { create(:project, :repository) }
     let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
     let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)]) }
 
-    subject(:config) { described_class.new(ci_yml, source_ref_path: ref, project: project, source: source) }
+    let(:pipeline) { build(:ci_pipeline, project: project, ref: ref) }
+
+    subject(:config) { described_class.new(ci_yml, pipeline: pipeline, project: project, source: source) }
 
     before do
       allow_next_instance_of(Repository) do |repository|
@@ -74,7 +76,7 @@ RSpec.describe Gitlab::Ci::Config do
       end
 
       context 'when policy is not applicable on branch from the pipeline' do
-        let_it_be(:ref) { 'refs/heads/production' }
+        let_it_be(:ref) { 'production' }
 
         context 'when DAST profiles are not found' do
           it 'adds a job with error message' do
