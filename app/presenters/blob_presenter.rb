@@ -131,9 +131,13 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
                               return blob.data
                             end
 
-                            return Gitlab::AppLogger.info('IPYNBDIFF_BLOB_NIL') && blob.data unless new_blob
-
-                            Gitlab::AppLogger.info('IPYNBDIFF_BLOB_GENERATED') && new_blob
+                            if new_blob
+                              Gitlab::AppLogger.info('IPYNBDIFF_BLOB_GENERATED')
+                              new_blob
+                            else
+                              Gitlab::AppLogger.info('IPYNBDIFF_BLOB_NIL')
+                              blob.data
+                            end
                           end
   end
 end
