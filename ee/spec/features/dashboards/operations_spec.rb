@@ -21,7 +21,7 @@ RSpec.describe 'Dashboard operations', :js do
     expect(page).to have_text(pipeline.status)
   end
 
-  context 'when opened on gitlab.com', :sass do
+  context 'when opened on gitlab.com', :saas do
     before do
       stub_application_setting(check_namespace_plan: true)
       stub_licensed_features(operations_dashboard: true)

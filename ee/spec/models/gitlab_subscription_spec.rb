@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscription do
+RSpec.describe GitlabSubscription, :saas do
   using RSpec::Parameterized::TableSyntax
 
   %i[free_plan bronze_plan premium_plan ultimate_plan].each do |plan|

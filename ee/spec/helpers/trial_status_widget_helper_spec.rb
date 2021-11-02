@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialStatusWidgetHelper do
+RSpec.describe TrialStatusWidgetHelper, :saas do
   describe 'data attributes for mounting Vue components' do
     let(:trial_length) { 30 } # days
     let(:today_for_specs) { Date.parse('2021-01-15') }

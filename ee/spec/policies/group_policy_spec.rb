@@ -1411,36 +1411,38 @@ RSpec.describe GroupPolicy do
     end
   end
 
-  it_behaves_like 'model with wiki policies', :saas do
-    let_it_be_with_refind(:container) { create(:group_with_plan, plan: :premium_plan) }
-    let_it_be(:user) { owner }
+  context 'under .com', :saas do
+    it_behaves_like 'model with wiki policies' do
+      let_it_be_with_refind(:container) { create(:group_with_plan, plan: :premium_plan) }
+      let_it_be(:user) { owner }
 
-    before_all do
-      create(:license, plan: License::PREMIUM_PLAN)
-    end
-
-    before do
-      enable_namespace_license_check!
-    end
-
-    # We don't have feature toggles on groups yet, so we currently simulate
-    # this by stubbing the license check instead.
-    def set_access_level(access_level)
-      case access_level
-      when ProjectFeature::ENABLED
-        stub_licensed_features(group_wikis: true)
-      when ProjectFeature::DISABLED
-        stub_licensed_features(group_wikis: false)
-      when ProjectFeature::PRIVATE
-        skip('Access level private is not supported yet for group wikis, see https://gitlab.com/gitlab-org/gitlab/-/issues/208412')
+      before_all do
+        create(:license, plan: License::PREMIUM_PLAN)
       end
-    end
 
-    context 'when the feature is not licensed on this group' do
-      let_it_be(:container) { create(:group_with_plan, plan: :bronze_plan) }
+      before do
+        enable_namespace_license_check!
+      end
 
-      it 'does not include the wiki permissions' do
-        expect_disallowed(*wiki_permissions[:all])
+      # We don't have feature toggles on groups yet, so we currently simulate
+      # this by stubbing the license check instead.
+      def set_access_level(access_level)
+        case access_level
+        when ProjectFeature::ENABLED
+          stub_licensed_features(group_wikis: true)
+        when ProjectFeature::DISABLED
+          stub_licensed_features(group_wikis: false)
+        when ProjectFeature::PRIVATE
+          skip('Access level private is not supported yet for group wikis, see https://gitlab.com/gitlab-org/gitlab/-/issues/208412')
+        end
+      end
+
+      context 'when the feature is not licensed on this group' do
+        let_it_be(:container) { create(:group_with_plan, plan: :bronze_plan) }
+
+        it 'does not include the wiki permissions' do
+          expect_disallowed(*wiki_permissions[:all])
+        end
       end
     end
   end

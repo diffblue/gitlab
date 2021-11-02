@@ -520,7 +520,7 @@ RSpec.describe User do
           end
         end
 
-        context 'when namespace plan is checked' do
+        context 'when namespace plan is checked', :saas do
           before do
             create(:gitlab_subscription, namespace: group_1, hosted_plan: create(:bronze_plan))
             create(:gitlab_subscription, namespace: group_2, hosted_plan: create(:ultimate_plan))
@@ -1252,7 +1252,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#manageable_groups_eligible_for_trial' do
+  describe '#manageable_groups_eligible_for_trial', :saas do
     let_it_be(:user) { create :user }
     let_it_be(:non_trialed_group_z) { create :group_with_plan, name: 'Zeta', plan: :free_plan }
     let_it_be(:non_trialed_group_a) { create :group_with_plan, name: 'Alpha', plan: :free_plan }
@@ -1355,7 +1355,7 @@ RSpec.describe User do
         end
       end
 
-      context 'feature available for specific groups only' do
+      context 'feature available for specific groups only', :saas do
         before do
           allow(Gitlab::CurrentSettings)
             .to receive(:should_check_namespace_plan?)
@@ -1392,7 +1392,7 @@ RSpec.describe User do
     end
   end
 
-  context 'paid namespaces' do
+  context 'paid namespaces', :saas do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
@@ -1436,7 +1436,7 @@ RSpec.describe User do
         end
       end
 
-      describe '#owns_paid_namespace?' do
+      describe '#owns_paid_namespace?', :saas do
         context 'when the user is an owner of at least one paid group' do
           it 'returns true' do
             ultimate_group.add_owner(user)
@@ -1663,7 +1663,7 @@ RSpec.describe User do
     end
   end
 
-  describe '#owns_upgradeable_namespace?' do
+  describe '#owns_upgradeable_namespace?', :saas do
     let_it_be(:user) { create(:user) }
 
     subject { user.owns_upgradeable_namespace? }
@@ -1891,7 +1891,7 @@ RSpec.describe User do
       is_expected.to be(false)
     end
 
-    it 'returns false if owns a group with a plan on a trial with an end date' do
+    it 'returns false if owns a group with a plan on a trial with an end date', :saas do
       group_with_plan = create(:group_with_plan, name: 'trial group', plan: :premium_plan, trial_ends_on: 1.year.from_now)
       group_with_plan.add_owner(user)
 

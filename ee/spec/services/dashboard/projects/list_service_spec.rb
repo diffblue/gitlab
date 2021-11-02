@@ -57,7 +57,7 @@ RSpec.describe Dashboard::Projects::ListService do
       it_behaves_like 'project not found'
     end
 
-    describe 'checking license' do
+    describe 'checking license', :saas do
       let(:projects) { [project] }
 
       using RSpec::Parameterized::TableSyntax

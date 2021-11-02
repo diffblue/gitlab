@@ -73,7 +73,7 @@ FactoryBot.define do
 
   factory :group_with_plan, parent: :group do
     transient do
-      plan { :default_plan }
+      plan { :free_plan }
       trial_ends_on { nil }
     end
 

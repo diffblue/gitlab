@@ -132,7 +132,7 @@ RSpec.describe EE::UserCalloutsHelper do
     end
   end
 
-  describe '#render_dashboard_ultimate_trial' do
+  describe '#render_dashboard_ultimate_trial', :saas do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:ultimate_plan) { create(:ultimate_plan) }
 

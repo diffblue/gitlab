@@ -290,7 +290,7 @@ RSpec.describe EpicsFinder do
             expect { epics.to_a }.not_to exceed_all_query_limit(5)
           end
 
-          it 'does not execute more than 6 SQL queries when checking namespace plans' do
+          it 'does not execute more than 6 SQL queries when checking namespace plans', :saas do
             allow(Gitlab::CurrentSettings)
               .to receive(:should_check_namespace_plan?)
               .and_return(true)

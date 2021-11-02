@@ -23,11 +23,7 @@ RSpec.describe Member, type: :model do
   end
 
   describe '#is_using_seat', :aggregate_failures do
-    context 'when hosted on GL.com' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return true
-      end
-
+    context 'when hosted on GL.com', :saas do
       it 'calls users check for using the gitlab_com seat method' do
         expect(user).to receive(:using_gitlab_com_seat?).with(group).once.and_return true
         expect(user).not_to receive(:using_license_seat?)
@@ -162,7 +158,7 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  context 'check if user cap has been reached' do
+  context 'check if user cap has been reached', :saas do
     let_it_be(:group, refind: true) do
       create(:group_with_plan, plan: :ultimate_plan,
              namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
