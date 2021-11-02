@@ -214,18 +214,33 @@ RSpec.describe 'Pipeline', :js do
         context 'with code quality artifact' do
           before do
             create(:ee_ci_build, :codequality, pipeline: pipeline)
-            visit codequality_report_project_pipeline_path(project, pipeline)
           end
 
-          it 'shows code quality tab pane as active, quality issue with link to file, and events for data tracking' do
-            expect(page).to have_content('Code Quality')
-            expect(page).to have_css('#js-tab-codequality')
+          context 'when navigating directly to the code quality tab' do
+            before do
+              visit codequality_report_project_pipeline_path(project, pipeline)
+            end
 
-            expect(page).to have_content('Method `new_array` has 12 arguments (exceeds 4 allowed). Consider refactoring.')
-            expect(find_link('foo.rb:10')[:href]).to end_with(project_blob_path(project, File.join(pipeline.commit.id, 'foo.rb')) + '#L10')
+            it_behaves_like 'an active code quality tab'
+          end
 
-            expect(page).to have_selector('[data-track-action="click_button"]')
-            expect(page).to have_selector('[data-track-label="get_codequality_report"]')
+          context 'when starting from the pipeline tab' do
+            before do
+              visit project_pipeline_path(project, pipeline)
+            end
+
+            it 'shows the code quality tab as inactive' do
+              expect(page).to have_content('Code Quality')
+              expect(page).not_to have_css('#js-tab-codequality')
+            end
+
+            context 'when the code quality tab is clicked' do
+              before do
+                click_link 'Code Quality'
+              end
+
+              it_behaves_like 'an active code quality tab'
+            end
           end
         end
 
@@ -257,6 +272,19 @@ RSpec.describe 'Pipeline', :js do
       end
     end
 
+    shared_examples_for 'an active code quality tab' do
+      it 'shows code quality tab pane as active, quality issue with link to file, and events for data tracking' do
+        expect(page).to have_content('Code Quality')
+        expect(page).to have_css('#js-tab-codequality')
+
+        expect(page).to have_content('Method `new_array` has 12 arguments (exceeds 4 allowed). Consider refactoring.')
+        expect(find_link('foo.rb:10')[:href]).to end_with(project_blob_path(project, File.join(pipeline.commit.id, 'foo.rb')) + '#L10')
+
+        expect(page).to have_selector('[data-track-action="click_button"]')
+        expect(page).to have_selector('[data-track-label="get_codequality_report"]')
+      end
+    end
+
     context 'for a branch pipeline' do
       let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
 
@@ -275,6 +303,14 @@ RSpec.describe 'Pipeline', :js do
       let(:pipeline) do
         merge_request.all_pipelines.last
       end
+
+      it_behaves_like 'full codequality report'
+    end
+
+    context 'with graphql feature flag disabled' do
+      let(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
+
+      stub_feature_flags(graphql_code_quality_full_report: false)
 
       it_behaves_like 'full codequality report'
     end

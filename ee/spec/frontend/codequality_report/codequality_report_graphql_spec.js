@@ -1,14 +1,11 @@
 import { GlInfiniteScroll } from '@gitlab/ui';
 import { mount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import codeQualityViolationsQueryResponse from 'test_fixtures/graphql/codequality_report/graphql/queries/get_code_quality_violations.query.graphql.json';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report_graphql.vue';
 import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
-
-const codeQualityViolations =
-  codeQualityViolationsQueryResponse.data.project.pipeline.codeQualityReports;
+import { mockGetCodeQualityViolationsResponse, codeQualityViolations } from './mock_data';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -17,7 +14,7 @@ describe('Codequality report app', () => {
   let wrapper;
 
   const createComponent = (
-    mockReturnValue = jest.fn().mockResolvedValue(codeQualityViolationsQueryResponse),
+    mockReturnValue = jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse),
     mountFn = mount,
   ) => {
     const apolloProvider = createMockApollo([[getCodeQualityViolations, mockReturnValue]]);
@@ -65,7 +62,7 @@ describe('Codequality report app', () => {
 
   describe('when there are codequality issues', () => {
     beforeEach(() => {
-      createComponent(jest.fn().mockResolvedValue(codeQualityViolationsQueryResponse));
+      createComponent(jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse));
     });
 
     it('renders the codequality issues', () => {
