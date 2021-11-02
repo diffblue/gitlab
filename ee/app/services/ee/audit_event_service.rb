@@ -13,7 +13,8 @@ module EE
     def for_member(member)
       action = @details[:action]
       old_access_level = @details[:old_access_level]
-      user_id = member.id
+      user_id = member.user_id
+      member_id = member.id
       user_name = member.user ? member.user.name : 'Deleted User'
       target_type = 'User'
 
@@ -24,6 +25,7 @@ module EE
             remove: "user_access",
             author_name: @author.name,
             target_id: user_id,
+            member_id: member_id,
             target_type: target_type,
             target_details: user_name
           }
@@ -32,6 +34,7 @@ module EE
             remove: "user_access",
             author_name: member.created_by ? member.created_by.name : 'Deleted User',
             target_id: user_id,
+            member_id: member_id,
             target_type: target_type,
             target_details: user_name,
             system_event: true,
@@ -43,6 +46,7 @@ module EE
             as: ::Gitlab::Access.options_with_owner.key(member.access_level.to_i),
             author_name: @author.name,
             target_id: user_id,
+            member_id: member_id,
             target_type: target_type,
             target_details: user_name
           }
@@ -55,6 +59,7 @@ module EE
             expiry_to: member.expires_at,
             author_name: @author.name,
             target_id: user_id,
+            member_id: member_id,
             target_type: target_type,
             target_details: user_name
           }
