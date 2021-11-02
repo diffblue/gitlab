@@ -20,7 +20,6 @@ RSpec.describe 'Session initializer for GitLab' do
 
         load_session_store
       end
-
     end
 
     context 'when the GITLAB_REDIS_STORE_WITH_SESSION_STORE env is disabled' do

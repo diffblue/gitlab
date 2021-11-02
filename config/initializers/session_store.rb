@@ -47,5 +47,3 @@ else
     path: Rails.application.config.relative_url_root.presence || '/'
   )
 end
-
-
