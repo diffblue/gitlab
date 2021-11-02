@@ -203,7 +203,7 @@ export default {
         v-if="!isLoadingHistory"
         :days="$options.days"
         :active-day="vulnerabilitiesHistoryDayRange"
-        @click="setVulnerabilitiesHistoryDayRange"
+        @days-selected="setVulnerabilitiesHistoryDayRange"
       />
     </div>
 

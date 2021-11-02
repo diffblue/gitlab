@@ -1,11 +1,11 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import { GlSegmentedControl } from '@gitlab/ui';
 import { n__ } from '~/locale';
 
 export default {
   name: 'VulnerabilityChartButtons',
   components: {
-    GlButton,
+    GlSegmentedControl,
   },
   props: {
     days: {
@@ -18,28 +18,23 @@ export default {
     },
   },
   computed: {
-    buttonContent() {
-      return (days) => n__('1 Day', '%d Days', days);
+    controlOptions() {
+      return this.days.map((day) => ({ text: n__('1 Day', '%d Days', day), value: day }));
     },
   },
   methods: {
-    clickHandler(days) {
-      this.$emit('click', days);
+    inputHandler(days) {
+      this.$emit('days-selected', days);
     },
   },
 };
 </script>
 
 <template>
-  <div class="btn-group w-100">
-    <gl-button
-      v-for="day in days"
-      :key="day"
-      :class="{ selected: activeDay === day }"
-      :data-days="day"
-      @click="clickHandler(day)"
-    >
-      {{ buttonContent(day) }}
-    </gl-button>
-  </div>
+  <gl-segmented-control
+    :options="controlOptions"
+    :checked="activeDay"
+    class="gl-display-flex"
+    @input="inputHandler"
+  />
 </template>
