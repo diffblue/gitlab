@@ -12,6 +12,7 @@ import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -583,26 +584,43 @@ export default {
 
   setActiveEpicLabels: async ({ commit, getters, state }, input) => {
     const { activeBoardItem } = getters;
-    const { data } = await gqlClient.mutate({
-      mutation: updateEpicLabelsMutation,
-      variables: {
-        input: {
-          iid: String(activeBoardItem.iid),
-          addLabelIds: input.addLabelIds ?? [],
-          removeLabelIds: input.removeLabelIds ?? [],
-          groupPath: state.fullPath,
-        },
-      },
-    });
 
-    if (data.updateEpic?.errors?.length > 0) {
-      throw new Error(data.updateEpic.errors);
+    if (!gon.features?.labelsWidget) {
+      const { data } = await gqlClient.mutate({
+        mutation: updateEpicLabelsMutation,
+        variables: {
+          input: {
+            iid: String(activeBoardItem.iid),
+            addLabelIds: input.addLabelIds ?? [],
+            removeLabelIds: input.removeLabelIds ?? [],
+            groupPath: state.fullPath,
+          },
+        },
+      });
+
+      if (data.updateEpic?.errors?.length > 0) {
+        throw new Error(data.updateEpic.errors);
+      }
+
+      commit(typesCE.UPDATE_BOARD_ITEM_BY_ID, {
+        itemId: activeBoardItem.id,
+        prop: 'labels',
+        value: data.updateEpic.epic.labels.nodes,
+      });
+
+      return;
     }
 
-    commit(typesCE.UPDATE_BOARD_ITEM_BY_ID, {
-      itemId: activeBoardItem.id,
+    let labels = input?.labels || [];
+    if (input.removeLabelIds) {
+      labels = activeBoardItem.labels.filter(
+        (label) => input.removeLabelIds[0] !== getIdFromGraphQLId(label.id),
+      );
+    }
+    commit(types.UPDATE_BOARD_ITEM_BY_ID, {
+      itemId: input.id || activeBoardItem.id,
       prop: 'labels',
-      value: data.updateEpic.epic.labels.nodes,
+      value: labels,
     });
   },
 };
