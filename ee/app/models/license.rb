@@ -68,6 +68,7 @@ class License < ApplicationRecord
     ci_cd_projects
     ci_secrets_management
     cluster_agents_gitops
+    cluster_agents_ci_impersonation
     cluster_deployments
     code_owner_approval_required
     commit_committer_check
