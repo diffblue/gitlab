@@ -1,6 +1,10 @@
 .clusters-container {
-  .empty-state .svg-content img {
-    width: 145px;
+  .empty-state .svg-content {
+    @include gl-pb-0;
+
+    img {
+      width: 100px;
+    }
   }
 
   .empty-state--agent {

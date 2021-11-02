@@ -1,22 +1,25 @@
 <script>
-import { GlEmptyState, GlButton, GlLink } from '@gitlab/ui';
+import { GlEmptyState, GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import { mapState } from 'vuex';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
   i18n: {
-    title: s__('ClusterIntegration|Integrate Kubernetes with a cluster certificate'),
     description: s__(
-      'ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way.',
+      'ClusterIntegration|Use certificates to integrate with your clusters to deploy your applications, run your pipelines, use review apps and much more in an easy way.',
     ),
-    learnMoreLinkText: s__('ClusterIntegration|Learn more about Kubernetes'),
+    multipleClustersText: s__(
+      'ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{linkStart}read about using multiple Kubernetes clusters first.%{linkEnd}',
+    ),
+    learnMoreLinkText: s__('ClusterIntegration|Learn more about the GitLab managed clusters'),
     buttonText: s__('ClusterIntegration|Integrate with a cluster certificate'),
   },
   components: {
     GlEmptyState,
     GlButton,
     GlLink,
+    GlSprintf,
   },
   inject: ['emptyStateHelpText', 'clustersEmptyStateImage', 'newClusterPath'],
   learnMoreHelpUrl: helpPagePath('user/project/clusters/index'),
@@ -27,10 +30,23 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :svg-path="clustersEmptyStateImage" :title="$options.i18n.title">
+  <gl-empty-state :svg-path="clustersEmptyStateImage" title="">
     <template #description>
-      <p>
+      <p class="gl-text-left">
         {{ $options.i18n.description }}
+      </p>
+      <p class="gl-text-left">
+        <gl-sprintf :message="$options.i18n.multipleClustersText">
+          <template #link="{ content }">
+            <gl-link
+              :href="$options.multipleClustersHelpUrl"
+              target="_blank"
+              data-testid="multiple-clusters-docs-link"
+            >
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
       </p>
 
       <p v-if="emptyStateHelpText" data-testid="clusters-empty-state-text">
