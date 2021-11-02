@@ -88,6 +88,13 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
           expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
         end
 
+        it 'does not assign any remediation to the finding if there exists no related remediation' do
+          finding = report.findings.find { |x| x.compare_key == 'yarn/yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98' }
+
+          expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to be_nil
+          expect(finding.remediations).to match([])
+        end
+
         it 'does not find remediation with different id' do
           fix_with_id = {
             "fixes": [
