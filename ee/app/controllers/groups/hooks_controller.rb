@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Groups::HooksController < Groups::ApplicationController
-  include HooksExecution
+  include ::Integrations::HooksExecution
 
   # Authorize
   before_action :group
