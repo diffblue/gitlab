@@ -27391,6 +27391,9 @@ msgstr ""
 msgid "Projects with no vulnerabilities and security scanning enabled"
 msgstr ""
 
+msgid "Projects with this topic"
+msgstr ""
+
 msgid "Projects with write access"
 msgstr ""
 
