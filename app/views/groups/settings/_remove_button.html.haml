@@ -1,5 +1,4 @@
 - remove_form_id = local_assigns.fetch(:remove_form_id, nil)
-- confirm_modal_data = { "remove_form_id" => remove_form_id, "disabled" => group.paid?.to_s, "button-text" => _('Remove group'), "confirm-danger-message" => remove_group_message(group), phrase: group.full_path, 'testid' => 'remove-group-button' }
 
 - if group.paid?
   .gl-alert.gl-alert-info.gl-mb-5{ data: { testid: 'group-has-linked-subscription-alert' } }
@@ -7,4 +6,4 @@
     .gl-alert-body
       = html_escape(_("This group can't be removed because it is linked to a subscription. To remove this group, %{linkStart}link the subscription%{linkEnd} with a different group.")) % { linkStart: "<a href=\"#{help_page_path('subscriptions/index', anchor: 'change-the-linked-namespace')}\">".html_safe, linkEnd: '</a>'.html_safe }
 
-.js-confirm-danger{ data: confirm_modal_data }
+.js-confirm-danger{ data: group_settings_confirm_modal_data(group, remove_form_id) }
