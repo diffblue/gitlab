@@ -126,5 +126,3 @@ if changes.any?
   unknown = changes.fetch(:unknown, [])
   markdown(UNKNOWN_FILES_MESSAGE + helper.markdown_list(unknown)) unless unknown.empty?
 end
-
-
