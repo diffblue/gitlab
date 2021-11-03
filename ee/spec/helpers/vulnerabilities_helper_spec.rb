@@ -225,12 +225,6 @@ RSpec.describe VulnerabilitiesHelper do
         JIRA
       end
 
-      it 'renders description using dedicated template' do
-        expect(ApplicationController).to receive(:render).with(template: 'vulnerabilities/jira_issue_description.md.erb', locals: { vulnerability: an_instance_of(VulnerabilityPresenter) })
-
-        subject
-      end
-
       it 'delegates rendering URL to Integrations::Jira' do
         expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.title}", expected_jira_issue_description)
 
@@ -247,8 +241,9 @@ RSpec.describe VulnerabilitiesHelper do
         end
 
         it 'renders description using dedicated template without raising error' do
-          expect(ApplicationController).to receive(:render).with(template: 'vulnerabilities/jira_issue_description.md.erb', locals: { vulnerability: an_instance_of(VulnerabilityPresenter) })
-          expect {subject}.not_to raise_error
+          expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.title}", expected_jira_issue_description)
+
+          subject
         end
       end
     end
