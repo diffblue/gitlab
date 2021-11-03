@@ -1,14 +1,8 @@
 <script>
-import {
-  GlAlert,
-  GlSprintf,
-  GlLink,
-  GlLoadingIcon,
-  GlBadge,
-  GlTooltipDirective as GlTooltip,
-} from '@gitlab/ui';
+import { GlAlert, GlBadge, GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 
 import Note from 'ee/external_issues_show/components/note.vue';
+import ExternalIssueAlert from 'ee/external_issues_show/components/external_issue_alert.vue';
 import { fetchIssue } from 'ee/integrations/zentao/issues_show/api';
 import ZentaoIssueSidebar from 'ee/integrations/zentao/issues_show/components/sidebar/zentao_issues_sidebar_root.vue';
 import { IssuableStatus, IssuableStatusText } from '~/issue_show/constants';
@@ -21,10 +15,9 @@ export default {
   name: 'ZenTaoIssuesShow',
   components: {
     GlAlert,
-    GlSprintf,
-    GlLink,
     GlBadge,
     GlLoadingIcon,
+    ExternalIssueAlert,
     IssuableShow,
     ZentaoIssueSidebar,
     Note,
@@ -96,24 +89,7 @@ export default {
       {{ errorMessage }}
     </gl-alert>
     <template v-else>
-      <gl-alert
-        variant="info"
-        :dismissible="false"
-        :title="s__('ZenTaoIntegration|This issue is synchronized with ZenTao')"
-        class="gl-mb-2"
-      >
-        <gl-sprintf
-          :message="
-            s__(
-              `ZenTaoIntegration|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}ZenTao%{linkEnd}.`,
-            )
-          "
-        >
-          <template #link="{ content }">
-            <gl-link :href="issue.webUrl" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
+      <external-issue-alert issue-tracker-name="ZenTao" :issue-url="issue.webUrl" />
 
       <issuable-show
         :issuable="issue"

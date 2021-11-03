@@ -1,13 +1,8 @@
 <script>
-import {
-  GlAlert,
-  GlSprintf,
-  GlLink,
-  GlLoadingIcon,
-  GlBadge,
-  GlTooltipDirective as GlTooltip,
-} from '@gitlab/ui';
+import { GlAlert, GlBadge, GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
+
 import Note from 'ee/external_issues_show/components/note.vue';
+import ExternalIssueAlert from 'ee/external_issues_show/components/external_issue_alert.vue';
 import { fetchIssue, fetchIssueStatuses, updateIssue } from 'ee/integrations/jira/issues_show/api';
 
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
@@ -21,10 +16,9 @@ export default {
   name: 'JiraIssuesShow',
   components: {
     GlAlert,
-    GlSprintf,
-    GlLink,
     GlBadge,
     GlLoadingIcon,
+    ExternalIssueAlert,
     IssuableShow,
     JiraIssueSidebar,
     Note,
@@ -147,24 +141,7 @@ export default {
       {{ errorMessage }}
     </gl-alert>
     <template v-else>
-      <gl-alert
-        variant="info"
-        :dismissible="false"
-        :title="s__('JiraService|This issue is synchronized with Jira')"
-        class="gl-mb-2"
-      >
-        <gl-sprintf
-          :message="
-            s__(
-              `JiraService|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}Jira%{linkEnd}.`,
-            )
-          "
-        >
-          <template #link="{ content }">
-            <gl-link :href="issue.webUrl" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </gl-alert>
+      <external-issue-alert issue-tracker-name="Jira" :issue-url="issue.webUrl" />
 
       <issuable-show
         :issuable="issue"
