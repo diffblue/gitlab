@@ -19607,9 +19607,6 @@ msgstr ""
 msgid "JiraService|Failed to load Jira issue. View the issue in Jira, or reload the page."
 msgstr ""
 
-msgid "JiraService|Failed to update Jira issue labels. View the issue in Jira, or reload the page."
-msgstr ""
-
 msgid "JiraService|Failed to update Jira issue status. View the issue in Jira, or reload the page."
 msgstr ""
 
