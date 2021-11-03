@@ -37027,6 +37027,9 @@ msgstr ""
 msgid "UsageQuota|Learn more about usage quotas"
 msgstr ""
 
+msgid "UsageQuota|No CI minutes usage data available."
+msgstr ""
+
 msgid "UsageQuota|Packages"
 msgstr ""
 

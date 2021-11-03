@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
 import { __ } from '~/locale';
@@ -8,6 +8,7 @@ import {
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
+  NO_CI_MINUTES_MSG,
 } from '../constants';
 
 export default {
@@ -15,6 +16,7 @@ export default {
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
+  NO_CI_MINUTES_MSG,
   i18n: {
     january: __('January'),
     february: __('February'),
@@ -30,6 +32,7 @@ export default {
     december: __('December'),
   },
   components: {
+    GlAlert,
     GlColumnChart,
     GlDropdown,
     GlDropdownItem,
@@ -94,8 +97,9 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-my-3">
+    <div class="gl-display-flex gl-mt-3" :class="{ 'gl-mb-3': !isDataEmpty }">
       <h5 class="gl-flex-grow-1">{{ $options.USAGE_BY_PROJECT }}</h5>
+
       <gl-dropdown v-if="!isDataEmpty" :text="selectedMonth" data-testid="project-month-dropdown">
         <gl-dropdown-item
           v-for="(monthName, index) in months"
@@ -117,5 +121,8 @@ export default {
       :x-axis-title="$options.X_AXIS_PROJECT_LABEL"
       :x-axis-type="$options.X_AXIS_CATEGORY"
     />
+    <gl-alert v-else class="gl-mb-5" :dismissible="false">
+      {{ $options.NO_CI_MINUTES_MSG }}
+    </gl-alert>
   </div>
 </template>
