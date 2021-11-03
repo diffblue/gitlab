@@ -155,5 +155,16 @@ export const I18N_AGENTS_EMPTY_STATE = {
   ),
   readMoreText: s__('ClusterAgents|Read more about getting started'),
   repositoryButtonText: s__('ClusterAgents|Go to the repository'),
-  primaryButtonText: s__('ClusterAgents|Integrate with the GitLab Agent'),
+  primaryButtonText: s__('ClusterAgents|Connect with a GitLab Agent'),
+};
+
+export const I18N_CLUSTERS_EMPTY_STATE = {
+  description: s__(
+    'ClusterIntegration|Use certificates to integrate with your clusters to deploy your applications, run your pipelines, use review apps and much more in an easy way.',
+  ),
+  multipleClustersText: s__(
+    'ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{linkStart}read about using multiple Kubernetes clusters first.%{linkEnd}',
+  ),
+  learnMoreLinkText: s__('ClusterIntegration|Learn more about the GitLab managed clusters'),
+  buttonText: s__('ClusterIntegration|Connect with a certificate'),
 };

@@ -7,7 +7,7 @@
     }
   }
 
-  .empty-state--agent {
+  .agents-empty-state {
     .text-content {
       @include gl-max-w-full;
       @include media-breakpoint-up(lg) {

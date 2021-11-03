@@ -7328,6 +7328,9 @@ msgstr ""
 msgid "ClusterAgents|Configuration"
 msgstr ""
 
+msgid "ClusterAgents|Connect with a GitLab Agent"
+msgstr ""
+
 msgid "ClusterAgents|Connected"
 msgstr ""
 
@@ -7365,9 +7368,6 @@ msgid "ClusterAgents|Install a new GitLab Agent"
 msgstr ""
 
 msgid "ClusterAgents|Install new Agent"
-msgstr ""
-
-msgid "ClusterAgents|Integrate with the GitLab Agent"
 msgstr ""
 
 msgid "ClusterAgents|Last connected %{timeAgo}."
@@ -7595,6 +7595,9 @@ msgstr ""
 msgid "ClusterIntegration|Connect existing cluster"
 msgstr ""
 
+msgid "ClusterIntegration|Connect with a certificate"
+msgstr ""
+
 msgid "ClusterIntegration|Connection Error"
 msgstr ""
 
@@ -7770,9 +7773,6 @@ msgid "ClusterIntegration|Instance cluster"
 msgstr ""
 
 msgid "ClusterIntegration|Instance type"
-msgstr ""
-
-msgid "ClusterIntegration|Integrate with a cluster certificate"
 msgstr ""
 
 msgid "ClusterIntegration|Integration disabled"

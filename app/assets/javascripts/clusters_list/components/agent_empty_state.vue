@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :svg-path="emptyStateImage" title="" class="empty-state--agent">
+  <gl-empty-state :svg-path="emptyStateImage" title="" class="agents-empty-state">
     <template #description>
       <p class="mw-460 gl-mx-auto gl-text-left">
         {{ $options.i18n.introText }}
