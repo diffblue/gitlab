@@ -111,6 +111,7 @@ describe('Iteration cadence form', () => {
   ];
 
   const findSaveButton = () => wrapper.findByTestId('save-cadence');
+  const findSaveAndStartButton = () => wrapper.findByTestId('save-cadence-create-iteration');
   const findCancelButton = () => wrapper.findByTestId('cancel-create-cadence');
   const clickSave = () => findSaveButton().vm.$emit('click');
   const clickCancel = () => findCancelButton().vm.$emit('click');
@@ -135,13 +136,15 @@ describe('Iteration cadence form', () => {
       const durationInWeeks = 2;
       const iterationsInAdvance = 6;
 
-      it('triggers mutation with form data', () => {
+      it('triggers mutation with form data', async () => {
         setTitle(title);
         setStartDate(startDate);
         setDuration(durationInWeeks);
         setFutureIterations(iterationsInAdvance);
 
         clickSave();
+
+        await nextTick();
 
         expect(findError().exists()).toBe(false);
         expect(resolverMock).toHaveBeenCalledWith({
@@ -196,14 +199,18 @@ describe('Iteration cadence form', () => {
 
         expect(findSaveButton().props('loading')).toBe(false);
       });
+
+      it('does not show the Create cadence and start iteration button', async () => {
+        expect(findSaveAndStartButton().exists()).toBe(false);
+      });
     });
 
     describe('automated scheduling disabled', () => {
-      it('disables future iterations and duration in weeks', async () => {
+      beforeEach(() => {
         setAutomaticValue(false);
+      });
 
-        await nextTick();
-
+      it('disables future iterations and duration in weeks', () => {
         expect(findFutureIterations().attributes('disabled')).toBe('disabled');
         expect(findFutureIterations().attributes('required')).toBeUndefined();
         expect(findDuration().attributes('disabled')).toBe('disabled');
@@ -226,6 +233,8 @@ describe('Iteration cadence form', () => {
 
         clickSave();
 
+        await nextTick();
+
         expect(resolverMock).toHaveBeenCalledWith({
           input: {
             groupPath,
@@ -238,6 +247,10 @@ describe('Iteration cadence form', () => {
             active: true,
           },
         });
+      });
+
+      it('shows the Create cadence and start iteration button', () => {
+        expect(findSaveAndStartButton().exists()).toBe(true);
       });
     });
   });
@@ -287,6 +300,14 @@ describe('Iteration cadence form', () => {
       expect(findFutureIterations().element.value).toBe(iterationCadence.iterationsInAdvance);
       expect(findDuration().element.value).toBe(iterationCadence.durationInWeeks);
       expect(findDescription().element.value).toBe(iterationCadence.description);
+    });
+
+    it('does not show the Create cadence and start iteration button', async () => {
+      setAutomaticValue(false);
+
+      await nextTick();
+
+      expect(findSaveAndStartButton().exists()).toBe(false);
     });
   });
 });

@@ -286,6 +286,7 @@ RSpec.describe 'Scoped issue boards', :js do
               update_board_scope('current_iteration', true)
 
               expect(page).to have_selector('.board-card', count: 0)
+
               expect(page).not_to have_selector('.gl-alert-body')
             end
           end
