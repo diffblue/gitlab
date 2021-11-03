@@ -9,6 +9,7 @@
 require 'securerandom'
 require 'socket'
 require 'logger'
+require 'bundler'
 
 module GitalySetup
   LOGGER = begin
@@ -55,6 +56,7 @@ module GitalySetup
       'HOME' => expand_path('tmp/tests'),
       'GEM_PATH' => Gem.path.join(':'),
       'BUNDLE_INSTALL_FLAGS' => nil,
+      'BUNDLE_IGNORE_CONFIG' => '1',
       'BUNDLE_PATH' => bundle_path,
       'BUNDLE_GEMFILE' => gemfile,
       'BUNDLE_JOBS' => '4',
@@ -70,6 +72,12 @@ module GitalySetup
   def bundle_path
     if ENV['CI']
       expand_path('vendor/gitaly-ruby')
+    else
+      explicit_path = Bundler.configured_bundle_path.explicit_path
+
+      return unless explicit_path
+
+      expand_path(explicit_path)
     end
   end
 
