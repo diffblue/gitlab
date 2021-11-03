@@ -56,6 +56,7 @@ const i18n = Object.freeze({
     title: s__('Iterations|New iteration cadence'),
     save: s__('Iterations|Create cadence'),
   },
+  createAndStartIteration: s__('Iterations|Create cadence and start iteration'),
   cancel: __('Cancel'),
   requiredField: __('This field is required.'),
 });
@@ -122,6 +123,9 @@ export default {
     },
     page() {
       return this.isEdit ? 'edit' : 'new';
+    },
+    showStartIteration() {
+      return !this.isEdit && !this.automatic;
     },
     mutation() {
       return this.isEdit ? updateCadence : createCadence;
@@ -222,20 +226,49 @@ export default {
         this.durationInWeeks = 0;
       }
     },
+    saveAndCreateIteration() {
+      return this.save()
+        .then((cadenceId) => {
+          this.$router.push({ name: 'newIteration', params: { cadenceId } });
+        })
+        .catch((error) => {
+          this.errorMessage = error ?? s__('Iterations|Unable to save cadence. Please try again.');
+        });
+    },
+    saveAndViewList() {
+      return this.save()
+        .then((cadenceId) => {
+          this.$router.push({
+            name: 'index',
+            query: { createdCadenceId: getIdFromGraphQLId(cadenceId) },
+          });
+        })
+        .catch((error) => {
+          this.errorMessage = error ?? s__('Iterations|Unable to save cadence. Please try again.');
+        });
+    },
     save() {
-      this.validateAllFields();
+      return new Promise((resolve, reject) => {
+        this.validateAllFields();
 
-      if (!this.valid) {
-        return null;
-      }
+        if (!this.valid) {
+          return reject(new Error(s__('Iterations|Cadence configuration is invalid.')));
+        }
 
-      this.loading = true;
-      return this.createCadence();
+        return resolve();
+      })
+        .then(() => {
+          this.loading = true;
+          return this.saveCadence();
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     cancel() {
       this.$router.push({ name: 'index' });
     },
-    createCadence() {
+    saveCadence() {
       return this.$apollo
         .mutate({
           mutation: this.mutation,
@@ -244,27 +277,17 @@ export default {
         .then(({ data, errors: topLevelErrors = [] } = {}) => {
           if (topLevelErrors.length > 0) {
             this.errorMessage = topLevelErrors[0].message;
-            return;
+            return null;
           }
 
           const { iterationCadence, errors } = data?.result || {};
 
           if (errors?.length > 0) {
             [this.errorMessage] = errors;
-            return;
+            return null;
           }
 
-          this.$router.push({
-            name: 'index',
-            query: { createdCadenceId: getIdFromGraphQLId(iterationCadence.id) },
-          });
-        })
-        .catch((e) => {
-          this.errorMessage = __('Unable to save cadence. Please try again');
-          throw e;
-        })
-        .finally(() => {
-          this.loading = false;
+          return getIdFromGraphQLId(iterationCadence.id);
         });
     },
   },
@@ -414,15 +437,27 @@ export default {
         />
       </gl-form-group>
 
-      <div class="form-actions gl-display-flex">
+      <div class="form-actions gl-display-flex gl-flex-wrap">
         <gl-button
           :loading="loading"
           data-testid="save-cadence"
           variant="confirm"
           data-qa-selector="save_iteration_cadence_button"
-          @click="save"
+          @click="saveAndViewList"
         >
           {{ i18n[page].save }}
+        </gl-button>
+        <gl-button
+          v-if="showStartIteration"
+          :loading="loading"
+          class="gl-ml-3"
+          data-testid="save-cadence-create-iteration"
+          variant="confirm"
+          category="secondary"
+          data-qa-selector="save_cadence_start_iteration_button"
+          @click="saveAndCreateIteration"
+        >
+          {{ i18n.createAndStartIteration }}
         </gl-button>
         <gl-button class="gl-ml-3" data-testid="cancel-create-cadence" @click="cancel">
           {{ i18n.cancel }}

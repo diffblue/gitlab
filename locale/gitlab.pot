@@ -19307,6 +19307,9 @@ msgstr ""
 msgid "Iterations|Automated scheduling"
 msgstr ""
 
+msgid "Iterations|Cadence configuration is invalid."
+msgstr ""
+
 msgid "Iterations|Cadence name"
 msgstr ""
 
@@ -19314,6 +19317,9 @@ msgid "Iterations|Couldn't find iteration cadence"
 msgstr ""
 
 msgid "Iterations|Create cadence"
+msgstr ""
+
+msgid "Iterations|Create cadence and start iteration"
 msgstr ""
 
 msgid "Iterations|Create iteration"
@@ -19413,6 +19419,9 @@ msgid "Iterations|Title"
 msgstr ""
 
 msgid "Iterations|Unable to find iteration."
+msgstr ""
+
+msgid "Iterations|Unable to save cadence. Please try again."
 msgstr ""
 
 msgid "Iteration|Dates cannot overlap with other existing Iterations within this group"
@@ -36536,9 +36545,6 @@ msgid "Unable to load the diff. %{button_try_again}"
 msgstr ""
 
 msgid "Unable to load the merge request widget. Try reloading the page."
-msgstr ""
-
-msgid "Unable to save cadence. Please try again"
 msgstr ""
 
 msgid "Unable to save iteration. Please try again"
