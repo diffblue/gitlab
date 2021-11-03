@@ -813,16 +813,19 @@ RSpec.describe Issue do
       end
 
       context 'when a user is a project member' do
-        it 'returns false' do
-          project.add_developer(user)
-
-          expect(subject).to be_truthy
+        before do
+          project.add_reporter(user)
         end
-      end
 
-      context 'when a user is not a group member' do
-        it 'returns false' do
-          expect(subject).to be_falsey
+        it { is_expected.to be_truthy }
+
+        context 'when a user can not read epic' do
+          before do
+            allow(Ability).to receive(:allowed?).with(user, :read_epic, group).and_return(false)
+            allow(Ability).to receive(:allowed?).with(user, :admin_issue, project).and_call_original
+          end
+
+          it { is_expected.to be_falsey }
         end
       end
     end

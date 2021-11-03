@@ -90,7 +90,8 @@ RSpec.describe EpicIssues::CreateService do
       subject { assign_issue([valid_reference]) }
 
       before do
-        group.add_developer(user)
+        group.add_guest(user)
+        project.add_reporter(user)
       end
 
       include_examples 'returns an error'
@@ -103,7 +104,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when user has permissions to link the issue' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
         end
 
         context 'when the reference list is empty' do
@@ -150,7 +152,7 @@ RSpec.describe EpicIssues::CreateService do
               project = create(:project, group: group)
               issues = create_list(:issue, 5, project: project)
               epic = create(:epic, group: group)
-              group.add_developer(user)
+              group.add_reporter(user)
 
               allow(extractor).to receive(:issues).and_return(issues)
               params = { issuable_references: issues.map { |i| i.to_reference(full: true) } }
@@ -160,7 +162,7 @@ RSpec.describe EpicIssues::CreateService do
               # and we insert 5 issues instead of 1 which we do for control count
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(30)
+                .with_threshold(29)
             end
           end
 
@@ -262,7 +264,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when assigning issue(s) to the same epic' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
           assign_issue([valid_reference])
           epic.reload
         end
@@ -292,7 +295,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when an issue is already assigned to another epic', :sidekiq_inline do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
           create(:epic_issue, epic: epic, issue: issue)
           issue.reload
         end
@@ -365,8 +369,8 @@ RSpec.describe EpicIssues::CreateService do
         let_it_be(:another_issue) { create :issue }
 
         before do
-          group.add_developer(user)
-          another_issue.project.add_developer(user)
+          group.add_guest(user)
+          another_issue.project.add_reporter(user)
         end
 
         include_examples 'returns an error'

@@ -34,9 +34,9 @@ module EpicIssues
     end
 
     def linkable_issuables(issues)
-      return [] unless can?(current_user, :read_epic, issuable.group)
-
       @linkable_issues ||= begin
+        return [] unless can?(current_user, :read_epic, issuable.group)
+
         issues.select do |issue|
           linkable_issue?(issue)
         end

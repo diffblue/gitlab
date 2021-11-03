@@ -37,8 +37,8 @@ RSpec.describe 'Reposition and move issue within board lists' do
 
   context 'when user can admin issue' do
     before do
-      project.add_maintainer(user)
-      group.add_maintainer(user)
+      project.add_reporter(user)
+      group.add_guest(user)
     end
 
     it 'updates issue position and epic' do
@@ -72,6 +72,18 @@ RSpec.describe 'Reposition and move issue within board lists' do
         expect(response_issue['iid']).to eq(issue1.iid.to_s)
         expect(response_issue['relativePosition']).to be > existing_issue1.relative_position
         expect(response_issue['relativePosition']).to be < existing_issue2.relative_position
+        expect(response_issue['epic']).to be_nil
+      end
+    end
+
+    context 'when user can not read epic' do
+      let(:confidential_epic) { create(:epic, :confidential, group: group) }
+
+      it 'does not set epic' do
+        params[:epic_id] = confidential_epic.to_global_id.to_s
+        post_graphql_mutation(mutation(params), current_user: user)
+
+        response_issue = graphql_mutation_response(:issue_move_list)['issue']
         expect(response_issue['epic']).to be_nil
       end
     end

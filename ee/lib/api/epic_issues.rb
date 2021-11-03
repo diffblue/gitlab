@@ -88,8 +88,9 @@ module API
       end
       # rubocop: disable CodeReuse/ActiveRecord
       post ':id/(-/)epics/:epic_iid/issues/:issue_id' do
+        authorize_can_read!
         issue = Issue.find(params[:issue_id])
-        authorize_can_assign_to_epic!(issue)
+        authorize!(:admin_issue, issue)
 
         create_params = { target_issuable: issue }
 

@@ -17,7 +17,7 @@ module EE
 
         def resolve(**args)
           super
-        rescue ::Gitlab::Access::AccessDeniedError, ::Issues::BaseService::EpicAssignmentError
+        rescue ::Gitlab::Access::AccessDeniedError
           raise_resource_not_available_error!
         end
       end

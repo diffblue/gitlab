@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::Issues::SetEpic do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:issue) { create(:issue, project: project) }
@@ -12,6 +12,7 @@ RSpec.describe Mutations::Issues::SetEpic do
 
   describe '#resolve' do
     let_it_be_with_reload(:epic) { create(:epic, group: group) }
+    let_it_be_with_reload(:confidential_epic) { create(:epic, group: group, confidential: true) }
 
     let(:mutated_issue) { subject[:issue] }
 
@@ -22,18 +23,11 @@ RSpec.describe Mutations::Issues::SetEpic do
     context 'when the user can update the issue' do
       before do
         stub_licensed_features(epics: true)
-        project.add_guest(user)
+        project.add_reporter(user)
+        group.add_guest(user)
       end
 
-      it 'raises an error if the epic is not accessible to the user' do
-        expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-
-      context 'when user can admin epic' do
-        before do
-          group.add_owner(user)
-        end
-
+      context 'when user can read epic' do
         it 'returns the issue with the epic' do
           expect(mutated_issue).to eq(issue)
           expect(mutated_issue.epic).to eq(epic)
@@ -61,11 +55,31 @@ RSpec.describe Mutations::Issues::SetEpic do
         end
 
         context 'when epic is confidential but issue is public' do
-          let(:epic) { create(:epic, group: group, confidential: true) }
+          let(:epic) { confidential_epic }
 
           it 'returns an error with appropriate message' do
+            group.add_reporter(user)
+
             expect(subject[:errors].first).to include("Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again")
           end
+        end
+
+        context 'with assigning epic error' do
+          let(:mock_service) { double('service', execute: { status: :error, message: 'failed to assign epic' }) }
+
+          it 'returns an error with appropriate message' do
+            expect(EpicIssues::CreateService).to receive(:new).and_return(mock_service)
+
+            expect(subject[:errors].first).to include('failed to assign epic')
+          end
+        end
+      end
+
+      context 'when user can not read epic' do
+        let(:epic) { confidential_epic }
+
+        it 'raises an error' do
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
         end
       end
     end

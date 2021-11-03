@@ -16,11 +16,13 @@ module Mutations
         issue = authorized_find!(project_path: project_path, iid: iid)
         project = issue.project
 
-        authorize_access!(issue, epic)
+        authorize_read_rights!(epic)
 
         begin
           ::Issues::UpdateService.new(project: project, current_user: current_user, params: { epic: epic })
             .execute(issue)
+        rescue ::Gitlab::Access::AccessDeniedError
+          raise_resource_not_available_error!
         rescue EE::Issues::BaseService::EpicAssignmentError => error
           issue.errors.add(:base, error.message)
         end
@@ -33,11 +35,10 @@ module Mutations
 
       private
 
-      def authorize_access!(issue, epic)
-        return unless issue.present? && epic.present?
+      def authorize_read_rights!(epic)
+        return unless epic.present?
 
-        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_issue, issue) &&
-          Ability.allowed?(current_user, :read_epic, epic.group)
+        raise_resource_not_available_error! unless Ability.allowed?(current_user, :read_epic, epic.group)
       end
     end
   end
