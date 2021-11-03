@@ -19244,6 +19244,9 @@ msgstr ""
 msgid "Issues and merge requests"
 msgstr ""
 
+msgid "Issues are being rebalanced at the moment, so manual reordering is disabled."
+msgstr ""
+
 msgid "Issues assigned to me"
 msgstr ""
 
@@ -19251,9 +19254,6 @@ msgid "Issues can be bugs, tasks or ideas to be discussed. Also, issues are sear
 msgstr ""
 
 msgid "Issues closed"
-msgstr ""
-
-msgid "Issues manual ordering is temporarily disabled for technical reasons."
 msgstr ""
 
 msgid "Issues must match this scope to appear in this list."
