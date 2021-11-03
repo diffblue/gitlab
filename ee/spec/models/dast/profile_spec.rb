@@ -102,6 +102,33 @@ RSpec.describe Dast::Profile, type: :model do
         end
       end
     end
+
+    describe 'with_schedule' do
+      let_it_be(:another_dast_profile) { create(:dast_profile) }
+      let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: another_dast_profile) }
+
+      context 'when has_dast_profile_schedule is true' do
+        it 'includes the dast_profile with schedule' do
+          result = described_class.with_schedule(true)
+
+          aggregate_failures do
+            expect(result).to include(another_dast_profile)
+            expect(result).not_to include(subject)
+          end
+        end
+      end
+
+      context 'when has_dast_profile_schedule is false' do
+        it 'includes the dast_profile without schedule' do
+          result = described_class.with_schedule(false)
+
+          aggregate_failures do
+            expect(result).to include(subject)
+            expect(result).not_to include(another_dast_profile)
+          end
+        end
+      end
+    end
   end
 
   describe 'instance methods' do

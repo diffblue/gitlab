@@ -11,6 +11,14 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
   let_it_be(:dast_profile2) { create(:dast_profile, project: project) }
   let_it_be(:dast_profile3) { create(:dast_profile, project: project) }
   let_it_be(:dast_profile4) { create(:dast_profile, project: project) }
+  let_it_be(:dast_profile5) { create(:dast_profile, project: project) }
+  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile5)}
+
+  let(:all_records) do
+    [dast_profile5, dast_profile4, dast_profile3, dast_profile2, dast_profile1].map { |validation| global_id_of(validation) }
+  end
+
+  let(:query_args) { {} }
 
   let(:query) do
     fields = all_graphql_fields_for('DastProfile')
@@ -18,7 +26,7 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
     graphql_query_for(
       :project,
       { full_path: project.full_path },
-      query_nodes(:dast_profiles, fields)
+      query_nodes(:dast_profiles, fields, args: query_args)
     )
   end
 
@@ -65,13 +73,18 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
       dast_profiles.map { |dast_profile| dast_profile['id'] }
     end
 
+    shared_examples 'returns all dastProfiles' do
+      it 'returns all dastProfiles', :aggregate_failures do
+        subject
+
+        expect(graphql_data_at(:project, :dast_profiles, :nodes).count).to eq(5)
+        expect(graphql_data_at(:project, :dast_profiles, :nodes, :id)).to contain_exactly(*all_records)
+      end
+    end
+
     it_behaves_like 'sorted paginated query' do
       let(:sort_param) { nil }
       let(:first_param) { 3 }
-
-      let(:all_records) do
-        [dast_profile4, dast_profile3, dast_profile2, dast_profile1].map { |validation| global_id_of(validation)}
-      end
     end
 
     it 'includes branch information' do
@@ -94,6 +107,36 @@ RSpec.describe 'Query.project(fullPath).dastProfiles' do
       create_list(:dast_profile, 2, project: project)
 
       expect { subject }.not_to exceed_query_limit(control)
+    end
+
+    context 'when `dast_view_scans` feature flag is disabled' do
+      before do
+        stub_feature_flags(dast_view_scans: false)
+      end
+
+      context 'when hasDastProfileSchedule is false' do
+        let(:query_args) { { hasDastProfileSchedule: false } }
+
+        include_examples 'returns all dastProfiles'
+      end
+
+      context 'when hasDastProfileSchedule is true' do
+        let(:query_args) { { hasDastProfileSchedule: true } }
+
+        include_examples 'returns all dastProfiles'
+      end
+    end
+
+    context 'when `dast_view_scans` feature flag is enabled' do
+      context 'when hasDastProfileSchedule is true' do
+        let(:query_args) { { hasDastProfileSchedule: true } }
+
+        it 'returns all dastProfiles with a schedule' do
+          subject
+
+          expect(graphql_data_at(:project, :dast_profiles, :nodes, :id)).to contain_exactly(dast_profile5.to_global_id.to_s)
+        end
+      end
     end
   end
 
