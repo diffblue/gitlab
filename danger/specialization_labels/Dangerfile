@@ -6,7 +6,7 @@ SPECIALIZATIONS = {
   database: 'database',
   backend: 'backend',
   frontend: 'frontend',
-  ux: 'UX'
+  UX: 'UX',
   docs: 'documentation',
   qa: 'QA',
   tooling: 'type::tooling',
