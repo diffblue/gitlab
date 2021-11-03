@@ -12,6 +12,8 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
 
   before do
     stub_current_geo_node(primary)
+
+    allow(primary_singleworker).to receive(:with_status).and_return(primary_singleworker)
   end
 
   describe '#perform' do

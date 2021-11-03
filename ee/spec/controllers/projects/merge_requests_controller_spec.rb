@@ -323,6 +323,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
 
     def expect_rebase_worker_for(user)
+      allow(RebaseWorker).to receive(:with_status).and_return(RebaseWorker)
       expect(RebaseWorker).to receive(:perform_async).with(merge_request.id, user.id, false)
     end
 

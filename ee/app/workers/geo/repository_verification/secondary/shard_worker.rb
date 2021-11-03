@@ -61,7 +61,7 @@ module Geo
         # rubocop:disable CodeReuse/ActiveRecord
         def schedule_job(project_id)
           registry_id = Geo::ProjectRegistry.where(project_id: project_id).pick(:id)
-          job_id = Geo::RepositoryVerification::Secondary::SingleWorker.perform_async(registry_id)
+          job_id = Geo::RepositoryVerification::Secondary::SingleWorker.with_status.perform_async(registry_id)
 
           { project_id: project_id, job_id: job_id } if job_id
         end

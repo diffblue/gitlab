@@ -16,6 +16,8 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
     allow_next_instance_of(described_class) do |instance|
       allow(instance).to receive(:over_time?).and_return(false)
     end
+
+    allow(::Geo::EventWorker).to receive(:with_status).and_return(::Geo::EventWorker)
   end
 
   it 'does not schedule anything when tracking database is not configured' do

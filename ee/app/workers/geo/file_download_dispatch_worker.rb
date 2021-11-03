@@ -26,7 +26,7 @@ module Geo
     end
 
     def schedule_job(object_type, object_db_id)
-      job_id = FileDownloadWorker.perform_async(object_type.to_s, object_db_id)
+      job_id = FileDownloadWorker.with_status.perform_async(object_type.to_s, object_db_id)
 
       { id: object_db_id, type: object_type, job_id: job_id } if job_id
     end

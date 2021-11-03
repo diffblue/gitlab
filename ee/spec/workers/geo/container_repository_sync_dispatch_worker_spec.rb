@@ -17,6 +17,8 @@ RSpec.describe Geo::ContainerRepositorySyncDispatchWorker, :geo, :use_sql_query_
     allow_next_instance_of(described_class) do |instance|
       allow(instance).to receive(:over_time?).and_return(false)
     end
+
+    allow(Geo::ContainerRepositorySyncWorker).to receive(:with_status).and_return(Geo::ContainerRepositorySyncWorker)
   end
 
   it 'does not schedule anything when tracking database is not configured' do

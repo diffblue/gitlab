@@ -23,7 +23,7 @@ module Geo
     end
 
     def schedule_job(repository_id)
-      job_id = Geo::ContainerRepositorySyncWorker.perform_async(repository_id)
+      job_id = Geo::ContainerRepositorySyncWorker.with_status.perform_async(repository_id)
 
       { id: repository_id, job_id: job_id } if job_id
     end
