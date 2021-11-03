@@ -15,7 +15,7 @@ describe('Codequality report mutations', () => {
 
   describe('set page', () => {
     it('should set page', () => {
-      mutations[types.SET_PAGE](state, { page: 4 });
+      mutations[types.SET_PAGE](state, 4);
       expect(state.pageInfo.page).toBe(4);
     });
   });
@@ -27,17 +27,7 @@ describe('Codequality report mutations', () => {
     });
   });
 
-  describe('receive report success with graphql', () => {
-    it('should set issue info and clear the loading flag', () => {
-      mutations[types.RECEIVE_REPORT_SUCCESS_GRAPHQL](state, { data: { count: 42 }, parsedIssues });
-
-      expect(state.isLoadingCodequality).toBe(false);
-      expect(state.codequalityIssues).toBe(parsedIssues);
-      expect(state.pageInfo.count).toBe(42);
-    });
-  });
-
-  describe('receive report success without graphql', () => {
+  describe('receive report success', () => {
     it('should set issue info and clear the loading flag', () => {
       mutations[types.RECEIVE_REPORT_SUCCESS](state, parsedIssues);
 
@@ -72,10 +62,8 @@ describe('Codequality report mutations', () => {
       expect(state.isLoadingCodequality).toBe(false);
       expect(state.loadingCodequalityFailed).toBe(true);
       expect(state.allCodequalityIssues).toEqual([]);
-      expect(state.codequalityIssues).toEqual([]);
       expect(state.codeQualityError).toEqual(new Error());
       expect(state.pageInfo.total).toBe(0);
-      expect(state.pageInfo.count).toBe(0);
     });
   });
 });
