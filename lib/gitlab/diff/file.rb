@@ -468,7 +468,7 @@ module Gitlab
                                  lib_version: Gem.loaded_specs["ipynbdiff"].version.version })
 
       rescue IpynbDiff::InvalidNotebookError => e
-        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e, issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344676')
+        Gitlab::ErrorTracking.track_exception(e, issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344676')
       end
 
       def alternate_viewer_class
