@@ -3,9 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe TrialStatusWidgetHelper, :saas do
-  describe 'data attributes for mounting Vue components' do
+  describe 'data attributes for mounting Vue components', :freeze_time do
     let(:trial_length) { 30 } # days
-    let(:today_for_specs) { Date.parse('2021-01-15') }
     let(:trial_days_remaining) { 18 }
     let(:trial_end_date) { Date.current.advance(days: trial_days_remaining) }
     let(:trial_start_date) { Date.current.advance(days: trial_days_remaining - trial_length) }
@@ -23,7 +22,6 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
     end
 
     before do
-      travel_to today_for_specs
       build(:gitlab_subscription, :active_trial,
         namespace: group,
         trial_starts_on: trial_start_date,
@@ -35,10 +33,6 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
           { 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }
         ])
       end
-    end
-
-    after do
-      travel_back
     end
 
     describe '#trial_status_popover_data_attrs' do

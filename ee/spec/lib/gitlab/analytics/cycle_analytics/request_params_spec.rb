@@ -41,10 +41,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams do
         params[:created_before] = nil
       end
 
-      it 'is valid' do
-        travel_to '2019-03-01' do
-          expect(subject).to be_valid
-        end
+      it 'is valid', time_travel_to: '2019-03-01' do
+        expect(subject).to be_valid
       end
     end
 
