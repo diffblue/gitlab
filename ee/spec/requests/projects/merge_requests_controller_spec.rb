@@ -13,12 +13,6 @@ RSpec.describe Projects::MergeRequestsController do
 
   describe 'GET #show' do
     before do
-      # To avoid adjusting this controller, we just want to allow these tests to pass. This action wasn't tested before
-      # these were added for the experiment, and already exceeded the threshold.
-      # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343375
-      # More: https://docs.gitlab.com/ee/development/query_count_limits.html#disable-query-limiting
-      stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 103)
-
       stub_licensed_features(sast: true)
     end
 
@@ -28,6 +22,10 @@ RSpec.describe Projects::MergeRequestsController do
 
     context 'when the user has developer access' do
       it 'publishes the security_reports_mr_widget_prompt experiment' do
+        # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343375
+        # More: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73034#note_720186839
+        #       https://docs.gitlab.com/ee/development/query_count_limits.html#disable-query-limiting
+        stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 110)
         expect_next_instance_of(SecurityReportsMrWidgetPromptExperiment) do |instance|
           expect(instance).to receive(:publish)
         end
@@ -48,10 +46,34 @@ RSpec.describe Projects::MergeRequestsController do
 
     context 'when the project is not licensed for sast' do
       before do
-        expect(License).to receive(:feature_available?).with(:sast).and_return(false)
+        stub_licensed_features(sast: false)
       end
 
       it 'does not publish the security_reports_mr_widget_prompt experiment' do
+        expect(SecurityReportsMrWidgetPromptExperiment).not_to receive(:new)
+
+        get_show
+      end
+    end
+
+    context 'when the project has disabled the security and compliance features' do
+      before do
+        project.project_feature.update_column(:security_and_compliance_access_level, Featurable::DISABLED)
+      end
+
+      it 'does not publish the security_reports_mr_widget_prompt experiment' do
+        expect(SecurityReportsMrWidgetPromptExperiment).not_to receive(:new)
+
+        get_show
+      end
+    end
+
+    context 'when the the user is a guest' do
+      let(:user) { create(:user) }
+
+      it 'does not publish the security_reports_mr_widget_prompt experiment' do
+        project.add_guest(user)
+
         expect(SecurityReportsMrWidgetPromptExperiment).not_to receive(:new)
 
         get_show

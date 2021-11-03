@@ -9,7 +9,7 @@ module EE
         include DescriptionDiffActions
 
         before_action only: [:show] do
-          if @project.licensed_feature_available?(:sast) && can?(current_user, :developer_access, @project)
+          if can_run_sast_experiments_on?(@project)
             experiment(:security_reports_mr_widget_prompt, namespace: @project.namespace).publish
           end
 
@@ -31,6 +31,11 @@ module EE
         feature_category :metrics, [:metrics_reports]
         feature_category :license_compliance, [:license_scanning_reports]
         feature_category :code_review, [:delete_description_version, :description_diff]
+      end
+
+      def can_run_sast_experiments_on?(project)
+        project.licensed_feature_available?(:sast) &&
+          project.feature_available?(:security_and_compliance, current_user)
       end
 
       def license_scanning_reports
