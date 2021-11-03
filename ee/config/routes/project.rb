@@ -112,11 +112,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         namespace :integrations do
           namespace :jira do
-            resources :issues, only: [:index, :show] do
-              member do
-                get :labels
-              end
-            end
+            resources :issues, only: [:index, :show]
           end
 
           namespace :zentao do

@@ -53,7 +53,6 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
       status: 'To Do',
       labels: [
         {
-          id: 'backend',
           title: 'backend',
           name: 'backend',
           color: '#0052CC',

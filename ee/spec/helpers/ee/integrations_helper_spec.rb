@@ -102,7 +102,6 @@ RSpec.describe EE::IntegrationsHelper do
 
     it 'includes Jira issues show data' do
       is_expected.to include(
-        issue_labels_path: "/#{project.full_path}/-/integrations/jira/issues/FE-1/labels",
         issues_show_path: "/#{project.full_path}/-/integrations/jira/issues/FE-1.json",
         issues_list_path: "/#{project.full_path}/-/integrations/jira/issues"
       )
