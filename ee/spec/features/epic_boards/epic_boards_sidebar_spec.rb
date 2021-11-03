@@ -204,7 +204,7 @@ RSpec.describe 'Epic boards sidebar', :js do
       click_card(card)
 
       page.within('.subscriptions') do
-        expect(page).to have_button('Notifications')
+        expect(page).to have_selector('[data-testid="subscription-toggle"]')
         expect(page).not_to have_content('Disabled by group owner')
       end
     end
@@ -214,17 +214,19 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       wait_for_requests
 
-      click_button 'Notifications'
+      subscription_button = find('[data-testid="subscription-toggle"]')
+
+      subscription_button.click
 
       wait_for_requests
 
-      expect(page).to have_button('Notifications', class: 'is-checked')
+      expect(subscription_button).to have_css("button.is-checked")
 
-      click_button 'Notifications'
+      subscription_button.click
 
       wait_for_requests
 
-      expect(page).not_to have_button('Notifications', class: 'is-checked')
+      expect(subscription_button).to have_css("button:not(.is-checked)")
     end
 
     context 'when notifications have been disabled' do
@@ -236,7 +238,7 @@ RSpec.describe 'Epic boards sidebar', :js do
 
       it 'displays a message that notifications have been disabled' do
         page.within('.subscriptions') do
-          expect(page).to have_button('Notifications', class: 'is-disabled')
+          expect(page).to have_selector('[data-testid="subscription-toggle"]', class: 'is-disabled')
           expect(page).to have_content('Disabled by group owner')
         end
       end
