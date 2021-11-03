@@ -14072,6 +14072,12 @@ msgstr ""
 msgid "ExternalAuthorizationService|When no classification label is set the default label `%{default_label}` will be used."
 msgstr ""
 
+msgid "ExternalIssueIntegration|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}%{trackerName}%{linkEnd}."
+msgstr ""
+
+msgid "ExternalIssueIntegration|This issue is synchronized with %{trackerName}"
+msgstr ""
+
 msgid "ExternalWikiService|External wiki"
 msgstr ""
 
@@ -19652,9 +19658,6 @@ msgstr ""
 msgid "JiraService|No available statuses"
 msgstr ""
 
-msgid "JiraService|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}Jira%{linkEnd}."
-msgstr ""
-
 msgid "JiraService|Open Jira"
 msgstr ""
 
@@ -19683,9 +19686,6 @@ msgid "JiraService|This is a Premium feature"
 msgstr ""
 
 msgid "JiraService|This is an Ultimate feature"
-msgstr ""
-
-msgid "JiraService|This issue is synchronized with Jira"
 msgstr ""
 
 msgid "JiraService|Transition Jira issues to their final state:"
@@ -39923,13 +39923,7 @@ msgstr ""
 msgid "ZenTaoIntegration|Failed to load ZenTao issue. View the issue in ZenTao, or reload the page."
 msgstr ""
 
-msgid "ZenTaoIntegration|Not all data may be displayed here. To view more details or make changes to this issue, go to %{linkStart}ZenTao%{linkEnd}."
-msgstr ""
-
 msgid "ZenTaoIntegration|This is a ZenTao user."
-msgstr ""
-
-msgid "ZenTaoIntegration|This issue is synchronized with ZenTao"
 msgstr ""
 
 msgid "ZenTaoIntegration|ZenTao user"
