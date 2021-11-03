@@ -4,7 +4,7 @@ import { mapActions } from 'vuex';
 
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
-import { visitUrl, mergeUrlParams, queryToObject } from '~/lib/utils/url_utility';
+import { queryToObject } from '~/lib/utils/url_utility';
 import Translate from '~/vue_shared/translate';
 
 import EpicItem from './components/epic_item.vue';
@@ -23,7 +23,6 @@ Vue.use(Translate);
 
 export default () => {
   const el = document.getElementById('js-roadmap');
-  const presetButtonsContainer = document.querySelector('.js-btn-roadmap-presets');
 
   if (!el) {
     return false;
@@ -34,16 +33,6 @@ export default () => {
   const apolloProvider = new VueApollo({
     defaultClient,
   });
-
-  // This event handler is to be removed in 11.1 once
-  // we allow user to save selected preset in db
-  if (presetButtonsContainer) {
-    presetButtonsContainer.addEventListener('click', (e) => {
-      const presetType = e.target.querySelector('input[name="presetType"]').value;
-
-      visitUrl(mergeUrlParams({ layout: presetType }, window.location.href));
-    });
-  }
 
   Vue.component('EpicItem', EpicItem);
   Vue.component('EpicItemContainer', EpicItemContainer);
