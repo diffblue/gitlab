@@ -26,6 +26,7 @@
 
         .gl-alert-body
           = payload[:explanation_message]
+          = link_to _('Learn more.'), help_page_path('user/usage_quotas'), target: '_blank', rel: 'noopener noreferrer'
 
         - if show_storage_banner_actions
           .gl-alert-actions
