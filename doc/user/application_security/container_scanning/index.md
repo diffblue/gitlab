@@ -134,6 +134,7 @@ You can [configure](#customizing-the-container-scanning-settings) analyzers by u
 | `CI_APPLICATION_REPOSITORY`    | `$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG` | Docker repository URL for the image to be scanned. | All |
 | `CI_APPLICATION_TAG`           | `$CI_COMMIT_SHA` | Docker repository tag for the image to be scanned. | All |
 | `CS_ANALYZER_IMAGE`            | `registry.gitlab.com/security-products/container-scanning:4` | Docker image of the analyzer. | All |
+| `CS_DEFAULT_BRANCH_IMAGE`      | `$CI_REGISTRY_IMAGE/$CI_DEFAULT_BRANCH:$CI_APPLICATION_TAG"` | The name of the `DOCKER_IMAGE` on the default branch. Used to determine if a vulnerability discovered on a non-default branch exists on the default branch. Should not be changed once set. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/338877) in GitLab 14.5. | All |
 | `CS_DOCKER_INSECURE`           | `"false"`     | Allow access to secure Docker registries using HTTPS without validating the certificates. | All |
 | `CS_REGISTRY_INSECURE`         | `"false"`     | Allow access to insecure registries (HTTP only). Should only be set to `true` when testing the image locally. Works with all scanners, but the registry must listen on port `80/tcp` for Trivy to work. | All |
 | `CS_SEVERITY_THRESHOLD`        | `UNKNOWN`     | Severity level threshold. The scanner outputs vulnerabilities with severity level higher than or equal to this threshold. Supported levels are Unknown, Low, Medium, High, and Critical. | Trivy |
@@ -500,7 +501,7 @@ Here's an example container scanning report:
 
 ```json-doc
 {
-  "version": "3.0.0",
+  "version": "14.0.0",
   "vulnerabilities": [
     {
       "id": "df52bc8ce9a2ae56bbcb0c4ecda62123fbd6f69b",
@@ -522,7 +523,8 @@ Here's an example container scanning report:
           "version": "1.4.8"
         },
         "operating_system": "debian:9.4",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
