@@ -123,6 +123,8 @@ RSpec.describe Projects::UpdateService, '#execute' do
   end
 
   context 'audit events' do
+    let_it_be(:user) { create(:user) }
+
     let(:audit_event_params) do
       {
         author_id: user.id,

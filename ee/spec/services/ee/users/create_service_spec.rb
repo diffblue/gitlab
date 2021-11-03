@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Users::CreateService do
-  let(:current_user) { create(:admin) }
+  let_it_be(:current_user) { create(:admin) }
+
   let(:params) do
     {
       name: 'John Doe',

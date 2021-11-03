@@ -96,7 +96,7 @@ RSpec.describe SessionsController, :geo do
 
       context 'when OTP authentication fails' do
         it_behaves_like 'an auditable failed authentication' do
-          let(:user) { create(:user, :two_factor) }
+          let_it_be(:user) { create(:user, :two_factor) }
           let(:operation) { authenticate_2fa(otp_attempt: 'invalid', otp_user_id: user.id) }
           let(:method) { 'OTP' }
         end
@@ -108,7 +108,7 @@ RSpec.describe SessionsController, :geo do
         end
 
         it_behaves_like 'an auditable failed authentication' do
-          let(:user) { create(:user, :two_factor_via_u2f) }
+          let_it_be(:user) { create(:user, :two_factor_via_u2f) }
           let(:operation) { authenticate_2fa(device_response: 'invalid', otp_user_id: user.id) }
           let(:method) { 'U2F' }
         end
@@ -122,7 +122,7 @@ RSpec.describe SessionsController, :geo do
         end
 
         it_behaves_like 'an auditable failed authentication' do
-          let(:user) { create(:user, :two_factor_via_webauthn) }
+          let_it_be(:user) { create(:user, :two_factor_via_webauthn) }
           let(:operation) { authenticate_2fa(device_response: 'invalid', otp_user_id: user.id) }
           let(:method) { 'WebAuthn' }
         end

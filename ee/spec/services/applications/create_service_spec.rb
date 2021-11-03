@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe ::Applications::CreateService do
   include TestRequestHelpers
 
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
+
   let(:group) { create(:group) }
   let(:params) { attributes_for(:application) }
 

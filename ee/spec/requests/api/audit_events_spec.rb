@@ -52,7 +52,7 @@ RSpec.describe API::AuditEvents do
     end
 
     context 'when authenticated, as an admin' do
-      let(:admin) { create(:admin) }
+      let_it_be(:admin) { create(:admin) }
 
       context 'audit events feature is not available' do
         it_behaves_like '403 response' do

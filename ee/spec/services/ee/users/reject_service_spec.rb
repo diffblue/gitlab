@@ -32,7 +32,7 @@ RSpec.describe Users::RejectService do
         end
 
         context 'when user does not have permission to reject another user' do
-          let(:current_user) { create(:user) }
+          let_it_be(:current_user) { create(:user) }
 
           it 'does not log any audit event' do
             expect { reject_user }.not_to change { AuditEvent.count }

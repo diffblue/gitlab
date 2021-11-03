@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Users::DestroyService do
-  let(:current_user) { create(:admin) }
+  let_it_be(:current_user) { create(:admin) }
 
   subject(:service) { described_class.new(current_user) }
 
   describe '#execute' do
-    let(:user) { create(:user) }
+    let!(:user) { create(:user) }
 
     subject(:operation) { service.execute(user) }
 

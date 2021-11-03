@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe EE::Audit::ProjectChangesAuditor do
   describe '.audit_changes' do
-    let(:user) { create(:user) }
+    let_it_be(:user) { create(:user) }
+
     let(:project) do
       create(
         :project,
