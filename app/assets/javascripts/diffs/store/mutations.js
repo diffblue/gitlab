@@ -254,7 +254,7 @@ export default {
   [types.SET_SHOW_TREE_LIST](state, showTreeList) {
     state.showTreeList = showTreeList;
   },
-  [types.VIEW_DIFF_FILE](state, fileId) {
+  [types.SET_CURRENT_DIFF_FILE](state, fileId) {
     state.currentDiffFileId = fileId;
   },
   [types.SET_DIFF_FILE_VIEWED](state, { id, seen }) {
