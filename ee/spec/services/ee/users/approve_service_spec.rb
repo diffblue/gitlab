@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Users::ApproveService do
-  let(:current_user) { create(:admin) }
+  let_it_be(:current_user) { create(:admin) }
 
   subject(:service) { described_class.new(current_user) }
 
   describe '#execute', :enable_admin_mode do
-    let(:user) { create(:user, :blocked_pending_approval) }
+    let!(:user) { create(:user, :blocked_pending_approval) }
 
     subject(:operation) { service.execute(user) }
 

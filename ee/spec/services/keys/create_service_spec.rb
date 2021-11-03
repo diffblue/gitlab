@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Keys::CreateService do
-  let(:admin) { create(:admin) }
-  let(:user) { create(:user) }
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:user) { create(:user) }
+
   let(:params) { attributes_for(:key).merge(user: user) }
 
   subject { described_class.new(admin, params) }

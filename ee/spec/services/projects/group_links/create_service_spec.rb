@@ -17,6 +17,8 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
 
   context 'audit events' do
     include_examples 'audit event logging' do
+      let_it_be(:user) { create :user }
+      let_it_be(:project) { create :project }
       let(:operation) { create_group_link(user, project, group, opts) }
       let(:fail_condition!) do
         create(:project_group_link, project: project, group: group)

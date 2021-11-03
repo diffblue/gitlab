@@ -7,7 +7,7 @@ RSpec.describe Audit::Changes do
 
   describe '.audit_changes' do
     let(:current_user) { create(:user, name: 'Mickey Mouse') }
-    let(:user) { create(:user, name: 'Donald Duck') }
+    let!(:user) { create(:user, name: 'Donald Duck') }
     let(:options) { { model: user } }
 
     subject(:audit!) { foo_instance.audit_changes(:name, options) }

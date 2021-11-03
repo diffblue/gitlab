@@ -28,7 +28,7 @@ RSpec.describe API::Repositories do
 
     context 'when unauthenticated', 'and project is public' do
       it_behaves_like 'an auditable and successful request' do
-        let(:project) { create(:project, :public, :repository) }
+        let_it_be(:project) { create(:project, :public, :repository) }
         let(:current_user) { nil }
       end
     end

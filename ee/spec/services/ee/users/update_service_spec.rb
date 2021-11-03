@@ -97,12 +97,14 @@ RSpec.describe Users::UpdateService do
 
     context 'audit events' do
       context 'licensed' do
+        let_it_be_with_reload(:user) { create(:user) }
+
         before do
           stub_licensed_features(admin_audit_log: true)
         end
 
         context 'updating administrator status' do
-          let_it_be(:admin_user) { create(:admin) }
+          let_it_be_with_reload(:admin_user) { create(:admin) }
 
           it 'logs making a user an administrator' do
             expect do
@@ -113,8 +115,9 @@ RSpec.describe Users::UpdateService do
           end
 
           it 'logs making an administrator a user' do
+            admin = create(:admin)
             expect do
-              update_user_as(admin_user, create(:admin), admin: false)
+              update_user_as(admin_user, admin, admin: false)
             end.to change { AuditEvent.count }.by(1)
 
             expect(AuditEvent.last.present.action).to eq('Changed admin status from true to false')
@@ -170,7 +173,8 @@ RSpec.describe Users::UpdateService do
     end
 
     context 'with an admin user' do
-      let!(:admin_user) { create(:admin) }
+      let_it_be_with_reload(:admin_user) { create(:admin) }
+
       let(:service) { described_class.new(admin_user, ActionController::Parameters.new(params).permit!) }
       let(:params) do
         { name: 'John Doe', username: 'jduser', email: 'jd@example.com', password: 'mydummypass' }

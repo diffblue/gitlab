@@ -9,7 +9,7 @@ RSpec.describe PasswordsController do
       stub_licensed_features(extended_audit_events: true)
     end
 
-    let(:user) { create(:user) }
+    let_it_be(:user) { create(:user) }
 
     subject { post :create, params: { user: { email: user.email } } }
 

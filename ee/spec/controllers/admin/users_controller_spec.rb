@@ -102,6 +102,8 @@ RSpec.describe Admin::UsersController do
   end
 
   describe "POST #impersonate" do
+    let_it_be(:user) { create(:user) }
+
     before do
       stub_licensed_features(extended_audit_events: true)
     end

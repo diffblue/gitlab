@@ -164,9 +164,14 @@ RSpec.describe SmartcardController, type: :request do
         end
 
         it 'logs audit event' do
-          audit_event_service = instance_double(AuditEventService)
+          audit_event_service = instance_double(::AuditEventService)
 
-          expect(AuditEventService).to(
+          # Creating a confirmed user also creates an email corresponding to the user primary email
+          expect(::AuditEventService).to(
+            receive(:new)
+              .with(instance_of(User), instance_of(User), action: :create).and_call_original)
+
+          expect(::AuditEventService).to(
             receive(:new)
               .with(instance_of(User), instance_of(User), with: auth_method, ip_address: '127.0.0.1')
               .and_return(audit_event_service))

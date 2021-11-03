@@ -62,6 +62,9 @@ RSpec.describe API::Users do
   end
 
   context 'extended audit events' do
+    let_it_be(:user)  { create(:user) }
+    let_it_be(:admin) { create(:admin) }
+
     before do
       stub_licensed_features(extended_audit_events: true)
     end

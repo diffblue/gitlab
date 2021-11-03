@@ -335,6 +335,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
   context 'audit events' do
     include_examples 'audit event logging' do
+      let_it_be(:user) { create(:user) }
       let(:operation) { create_project(user, opts) }
       let(:fail_condition!) do
         allow(Gitlab::VisibilityLevel).to receive(:allowed_for?).and_return(false)
