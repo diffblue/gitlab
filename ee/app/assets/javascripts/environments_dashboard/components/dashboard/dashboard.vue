@@ -11,7 +11,7 @@ import {
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'vuex';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import Environment from './environment.vue';
 import ProjectHeader from './project_header.vue';
@@ -30,7 +30,7 @@ export default {
     "EnvironmentsDashboard|The environments dashboard provides a summary of each project's environments' status, including pipeline and alert statuses.",
   ),
 
-  viewDocumentationButton: s__('View documentation'),
+  viewDocumentationButton: __('View documentation'),
 
   components: {
     Environment,

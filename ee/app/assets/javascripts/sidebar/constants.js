@@ -60,7 +60,7 @@ export const I18N_DROPDOWN = {
   dropdownHeaderText: s__('Sidebar|Assign health status'),
   noStatusText: s__('Sidebar|No status'),
   noneText: s__('Sidebar|None'),
-  selectPlaceholderText: s__('Select health status'),
+  selectPlaceholderText: __('Select health status'),
 };
 
 export const CVE_ID_REQUEST_SIDEBAR_I18N = {

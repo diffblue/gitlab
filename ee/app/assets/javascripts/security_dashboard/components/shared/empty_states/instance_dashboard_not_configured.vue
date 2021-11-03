@@ -12,7 +12,7 @@ export default {
     description: s__(
       'SecurityReports|Manage and track vulnerabilities identified in your selected projects. Vulnerabilities for selected projects with security testing configured are shown here.',
     ),
-    primaryButtonText: s__('Add projects'),
+    primaryButtonText: __('Add projects'),
     secondaryButtonText: __('Learn more'),
   },
 };

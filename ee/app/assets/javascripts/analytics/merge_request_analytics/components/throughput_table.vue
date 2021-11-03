@@ -15,7 +15,7 @@ import dateFormat from 'dateformat';
 import { mapState } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
 import { approximateDuration, differenceInSeconds } from '~/lib/utils/datetime_utility';
-import { s__, n__ } from '~/locale';
+import { __, s__, n__ } from '~/locale';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import {
   THROUGHPUT_TABLE_STRINGS,
@@ -83,7 +83,7 @@ export default {
     },
     {
       key: 'commits',
-      label: s__('Commits'),
+      label: __('Commits'),
       tdClass: 'merge-request-analytics-td',
       thAttr: TH_TEST_ID,
     },

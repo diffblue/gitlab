@@ -8,7 +8,7 @@ import {
   GlDropdown,
   GlDropdownDivider,
 } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import Tracking from '~/tracking';
 import { healthStatusTextMap, I18N_DROPDOWN } from '../../constants';
 
@@ -82,7 +82,7 @@ export default {
     },
     editTooltip() {
       const tooltipText = !this.isOpen
-        ? s__('Health status cannot be edited because this issue is closed')
+        ? __('Health status cannot be edited because this issue is closed')
         : '';
 
       return {

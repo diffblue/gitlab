@@ -139,8 +139,8 @@ export default {
       cover all languages across your project, and only run if the language is
       detected in the Merge Request.`,
     ),
-    analyzersTipHeading: s__('We recommend leaving all SAST analyzers enabled'),
-    analyzersTipBody: s__(
+    analyzersTipHeading: __('We recommend leaving all SAST analyzers enabled'),
+    analyzersTipBody: __(
       'Keeping all SAST analyzers enabled future-proofs the project in case new languages are added later on. Determining which analyzers apply is a process that consumes minimal resources and adds minimal time to the pipeline. Leaving all SAST analyzers enabled ensures maximum coverage.',
     ),
   },

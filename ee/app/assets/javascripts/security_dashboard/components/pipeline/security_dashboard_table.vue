@@ -113,9 +113,9 @@ export default {
 
       <slot v-if="showEmptyState" name="empty-state">
         <gl-empty-state
-          :title="s__(`We've found no vulnerabilities`)"
+          :title="__(`We've found no vulnerabilities`)"
           :description="
-            s__(
+            __(
               `While it's rare to have no vulnerabilities, it can happen. In any event, we ask that you please double check your settings to make sure you've set up your dashboard correctly.`,
             )
           "

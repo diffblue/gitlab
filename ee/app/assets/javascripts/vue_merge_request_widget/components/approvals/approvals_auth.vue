@@ -48,7 +48,7 @@ export default {
   <gl-modal
     :modal-id="modalId"
     :ok-disabled="isApproving"
-    :title="s__('Enter your password to approve')"
+    :title="__('Enter your password to approve')"
     ok-variant="success"
     modal-class="js-mr-approvals-modal"
     @ok="approve"
@@ -74,7 +74,7 @@ export default {
             class="form-control"
             :class="{ 'is-invalid': hasError }"
             autocomplete="new-password"
-            :placeholder="s__('Password')"
+            :placeholder="__('Password')"
           />
         </div>
       </div>
@@ -83,11 +83,11 @@ export default {
       </div>
     </form>
 
-    <template #modal-cancel>{{ s__('Cancel') }}</template>
+    <template #modal-cancel>{{ __('Cancel') }}</template>
 
     <template #modal-ok>
       <gl-loading-icon v-if="isApproving" size="sm" inline />
-      {{ s__('Approve') }}
+      {{ __('Approve') }}
     </template>
   </gl-modal>
 </template>
