@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::DoraMetricsResolver do
+RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
   include GraphqlHelpers
 
   let_it_be(:guest) { create(:user) }
@@ -14,12 +14,6 @@ RSpec.describe Resolvers::DoraMetricsResolver do
 
   let(:current_user) { reporter }
   let(:args) { { metric: 'deployment_frequency' } }
-
-  around do |example|
-    travel_to '2021-05-01'.to_time do
-      example.run
-    end
-  end
 
   before_all do
     group.add_guest(guest)
