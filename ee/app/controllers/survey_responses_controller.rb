@@ -2,10 +2,11 @@
 
 class SurveyResponsesController < ApplicationController
   SURVEY_RESPONSE_SCHEMA_URL = 'iglu:com.gitlab/survey_response/jsonschema/1-0-1'
-  CALENDLY_INVITE_LINK = 'https://calendly.com/mkarampalas/gitlab-user-onboarding-research'
+  CALENDLY_INVITE_LINK = 'https://calendly.com/d/n9wd-sy2b/gitlab-user-onboarding-research'
 
   before_action :track_response, only: :index
   before_action :set_invite_link, only: :index
+  before_action :set_show_incentive, only: :index
 
   skip_before_action :authenticate_user!
 
@@ -46,5 +47,11 @@ class SurveyResponsesController < ApplicationController
     return unless Feature.enabled?(:calendly_invite_link)
 
     @invite_link = CALENDLY_INVITE_LINK
+  end
+
+  def set_show_incentive
+    return unless @invite_link
+
+    @show_incentive = Gitlab::Utils.to_boolean(params[:show_incentive])
   end
 end

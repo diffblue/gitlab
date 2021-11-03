@@ -16841,6 +16841,12 @@ msgstr ""
 msgid "Hashed storage can't be disabled anymore for new projects"
 msgstr ""
 
+msgid "Have a quick chat with us about your experience."
+msgstr ""
+
+msgid "Have more to say about GitLab?"
+msgstr ""
+
 msgid "Header cannot be associated with both a request and a response"
 msgstr ""
 
@@ -28273,6 +28279,12 @@ msgstr ""
 msgid "Recaptcha verified?"
 msgstr ""
 
+msgid "Receive a $50 gift card as a thank you for your time."
+msgstr ""
+
+msgid "Receive a %{strongOpen}$50 gift card%{strongClose} as a thank you for your time."
+msgstr ""
+
 msgid "Receive alerts from manually configured Prometheus servers."
 msgstr ""
 
@@ -38348,9 +38360,6 @@ msgid "We have found the following errors:"
 msgstr ""
 
 msgid "We heard back from your device. You have been authenticated."
-msgstr ""
-
-msgid "We love speaking to our users. Got more to say about your GitLab experiences?"
 msgstr ""
 
 msgid "We recommend cloud-based mobile authenticator apps such as Authy, Duo Mobile, and LastPass. They can restore access if you lose your hardware device."
