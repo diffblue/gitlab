@@ -11,10 +11,10 @@
         = f.label :sentry_enabled, _('Enable Sentry error tracking'), class: 'form-check-label'
     .form-group
       = f.label :sentry_dsn, _('DSN'), class: 'label-light'
-      = f.text_field :sentry_dsn, class: 'form-control gl-form-input', placeholder: 'DSN example'
+      = f.text_field :sentry_dsn, class: 'form-control gl-form-input', placeholder: 'https://public@sentry.example.com/1'
     .form-group
       = f.label :sentry_clientside_dsn, _('Clientside DSN'), class: 'label-light'
-      = f.text_field :sentry_clientside_dsn, class: 'form-control gl-form-input', placeholder: 'Clientside DSN'
+      = f.text_field :sentry_clientside_dsn, class: 'form-control gl-form-input', placeholder: 'https://public@sentry.example.com/2'
     .form-group
       = f.label :sentry_environment, _('Environment'), class: 'label-light'
       = f.text_field :sentry_environment, class: 'form-control gl-form-input', placeholder: 'production'
