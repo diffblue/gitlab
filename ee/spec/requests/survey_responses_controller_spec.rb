@@ -10,17 +10,20 @@ RSpec.describe SurveyResponsesController do
 
     subject(:request) { get survey_responses_path(params) }
 
-    let(:ondotcom) { false }
-    let(:params) do
+    let(:default_params) do
       {
         survey_id: '123',
         instance_id: 'foo',
         response: 'response text',
         bla: 'bar',
         show_invite_link: 'true',
+        show_incentive: 'true',
         onboarding_progress: '4'
       }
     end
+
+    let(:ondotcom) { false }
+    let(:params) { default_params }
 
     describe 'tracking a snowplow event', :snowplow do
       it 'does not track a survey_response event' do
@@ -83,6 +86,30 @@ RSpec.describe SurveyResponsesController do
         let(:params) { }
 
         it { expect(assigns(:invite_link)).to be_nil }
+      end
+    end
+
+    describe 'show incentive' do
+      let(:ondotcom) { true }
+      let(:feature_flag_enabled) { true }
+
+      before do
+        stub_feature_flags(calendly_invite_link: feature_flag_enabled)
+        request
+      end
+
+      it { expect(assigns(:show_incentive)).to be true }
+
+      context "when 'show_incentive' parameter is not present in the URL" do
+        let(:params) { default_params.except(:show_incentive) }
+
+        it { expect(assigns(:show_incentive)).to be nil }
+      end
+
+      context 'when invite link is not set' do
+        let(:ondotcom) { false }
+
+        it { expect(assigns(:show_incentive)).to be nil }
       end
     end
   end
