@@ -18,7 +18,6 @@ RSpec.describe Vulnerabilities::Finding do
       it { is_expected.to belong_to(:primary_identifier).class_name('Vulnerabilities::Identifier') }
       it { is_expected.to belong_to(:scanner).class_name('Vulnerabilities::Scanner') }
       it { is_expected.to belong_to(:vulnerability).inverse_of(:findings) }
-      it { is_expected.to have_many(:pipelines).class_name('Ci::Pipeline') }
       it { is_expected.to have_many(:finding_pipelines).class_name('Vulnerabilities::FindingPipeline').with_foreign_key('occurrence_id') }
       it { is_expected.to have_many(:identifiers).class_name('Vulnerabilities::Identifier') }
       it { is_expected.to have_many(:finding_identifiers).class_name('Vulnerabilities::FindingIdentifier').with_foreign_key('occurrence_id') }

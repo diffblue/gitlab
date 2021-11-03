@@ -41,9 +41,12 @@ RSpec.describe Security::AutoFixService do
       let!(:vulnerability) do
         create(:vulnerabilities_finding_with_remediation, :yarn_remediation, :identifier,
                project: project,
-               pipelines: [pipeline],
                report_type: :dependency_scanning,
                summary: 'Test remediation')
+      end
+
+      before do
+        create(:vulnerabilities_finding_pipeline, finding: vulnerability, pipeline: pipeline)
       end
 
       it 'creates MR' do
@@ -109,7 +112,7 @@ RSpec.describe Security::AutoFixService do
 
     context 'without remediations' do
       before do
-        create(:vulnerabilities_finding, report_type: :dependency_scanning, pipelines: [pipeline], project: project)
+        create(:vulnerabilities_finding, :with_pipeline, report_type: :dependency_scanning, project: project)
       end
 
       it 'does not create merge request' do
