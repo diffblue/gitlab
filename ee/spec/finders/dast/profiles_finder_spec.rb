@@ -8,6 +8,7 @@ RSpec.describe Dast::ProfilesFinder do
   let_it_be(:dast_profile1) { create(:dast_profile, project: project1) }
   let_it_be(:dast_profile2) { create(:dast_profile, project: project2) }
   let_it_be(:dast_profile3) { create(:dast_profile, project: project1) }
+  let_it_be(:dast_profile_schedule) { create(:dast_profile_schedule, project: project1, dast_profile: dast_profile3)}
 
   let(:params) { {} }
 
@@ -37,6 +38,24 @@ RSpec.describe Dast::ProfilesFinder do
 
       it 'returns the matching dast_profiles' do
         expect(subject).to contain_exactly(dast_profile3, dast_profile1)
+      end
+    end
+
+    context 'filtering by has_schedule?' do
+      let(:params) { { has_dast_profile_schedule: true } }
+
+      context 'when has_dast_profile_schedule is true' do
+        it 'returns the dast_profiles with schedule' do
+          expect(subject).to contain_exactly(dast_profile3)
+        end
+      end
+    end
+
+    context 'filtering by *' do
+      let(:params) { { id: dast_profile3.id, project_id: project1.id, has_dast_profile_schedule: true } }
+
+      it 'returns the matching dast_profile' do
+        expect(subject).to contain_exactly(dast_profile3)
       end
     end
 

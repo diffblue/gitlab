@@ -27,6 +27,10 @@ module Dast
       where(project_id: project_id)
     end
 
+    scope :with_schedule, -> (has_dast_profile_schedule) do
+      has_dast_profile_schedule ? joins(:dast_profile_schedule) : where.missing(:dast_profile_schedule)
+    end
+
     delegate :secret_ci_variables, to: :dast_site_profile
 
     sanitizes! :name, :description

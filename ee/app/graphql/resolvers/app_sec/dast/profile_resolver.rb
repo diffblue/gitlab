@@ -10,6 +10,10 @@ module Resolvers
 
         type ::Types::Dast::ProfileType.connection_type, null: true
 
+        argument :has_dast_profile_schedule, ::GraphQL::Types::Boolean,
+                 required: false,
+                 description: 'Filter DAST Profiles by whether or not they have a schedule. Will be ignored if `dast_view_scans` feature flag is disabled.'
+
         when_single do
           argument :id, ::Types::GlobalIDType[::Dast::Profile],
                    required: true,
@@ -17,6 +21,7 @@ module Resolvers
         end
 
         def resolve_with_lookahead(**args)
+          args.delete(:has_dast_profile_schedule) unless Feature.enabled?(:dast_view_scans, project, default_enabled: :yaml)
           apply_lookahead(find_dast_profiles(args))
         end
 
@@ -40,6 +45,8 @@ module Resolvers
             # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
             params[:id] = ::Types::GlobalIDType[::Dast::Profile].coerce_isolated_input(args[:id]).model_id
           end
+
+          params[:has_dast_profile_schedule] = args[:has_dast_profile_schedule] if args.has_key?(:has_dast_profile_schedule)
 
           ::Dast::ProfilesFinder.new(params).execute
         end
