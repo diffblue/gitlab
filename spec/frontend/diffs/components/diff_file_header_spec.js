@@ -59,7 +59,7 @@ describe('DiffFileHeader component', () => {
           toggleFileDiscussions: jest.fn(),
           toggleFileDiscussionWrappers: jest.fn(),
           toggleFullDiff: jest.fn(),
-          toggleActiveFileByHash: jest.fn(),
+          setCurrentFileHash: jest.fn(),
           setFileCollapsedByUser: jest.fn(),
           reviewFile: jest.fn(),
         },

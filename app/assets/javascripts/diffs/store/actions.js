@@ -520,7 +520,7 @@ export const toggleTreeOpen = ({ commit }, path) => {
   commit(types.TOGGLE_FOLDER_OPEN, path);
 };
 
-export const toggleActiveFileByHash = ({ commit }, hash) => {
+export const setCurrentFileHash = ({ commit }, hash) => {
   commit(types.SET_CURRENT_DIFF_FILE, hash);
 };
 
