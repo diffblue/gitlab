@@ -39935,6 +39935,9 @@ msgstr ""
 msgid "ZentaoIntegration|Base URL of the ZenTao instance."
 msgstr ""
 
+msgid "ZentaoIntegration|Before you enable this integration, you must configure ZenTao. For more details, read the %{link_start}ZenTao integration documentation%{link_end}."
+msgstr ""
+
 msgid "ZentaoIntegration|Enter new ZenTao API token"
 msgstr ""
 
