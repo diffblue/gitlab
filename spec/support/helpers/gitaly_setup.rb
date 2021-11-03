@@ -154,7 +154,7 @@ module GitalySetup
 
     LOGGER.debug "Checking gitaly-ruby bundle...\n"
     out = ENV['CI'] ? $stdout : '/dev/null'
-    abort 'bundle check failed' unless system(env, 'bundle', 'check', out: out, chdir: File.dirname(gemfile))
+    abort 'bundle check failed' unless system(env, 'bundle', 'check', out: out, chdir: gemfile_dir)
   end
 
   def read_socket_path(service)
