@@ -58,6 +58,25 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
         expect(find_and_update.provisioned_by_group).to be_nil
       end
 
+      context 'when user attributes are present but the user is not provisioned' do
+        before do
+          identity.user.update!(can_create_group: false, projects_limit: 10)
+
+          auth_hash[:extra][:raw_info] =
+            OneLogin::RubySaml::Attributes.new(
+              'can_create_group' => %w(true), 'projects_limit' => %w(20)
+            )
+        end
+
+        it 'does not update the user can_create_group attribute' do
+          expect(find_and_update.can_create_group).to eq(false)
+        end
+
+        it 'does not update the user projects_limit attribute' do
+          expect(find_and_update.projects_limit).to eq(10)
+        end
+      end
+
       context 'when the user has multiple group saml identities' do
         let(:saml_provider2) { create(:saml_provider) }
 
@@ -140,8 +159,27 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
             expect(find_and_update).to eq user
           end
 
-          it 'updates idenitity' do
+          it 'updates identity' do
             expect { find_and_update }.to change { user.group_saml_identities.count }.by(1)
+          end
+
+          context 'when user attributes are present' do
+            before do
+              user.update!(can_create_group: false, projects_limit: 10)
+
+              auth_hash[:extra][:raw_info] =
+                OneLogin::RubySaml::Attributes.new(
+                  'can_create_group' => %w(true), 'projects_limit' => %w(20)
+                )
+            end
+
+            it 'updates the user with correct can_create_group attribute' do
+              expect(find_and_update.can_create_group).to eq(true)
+            end
+
+            it 'updates the user with correct projects_limit attribute' do
+              expect(find_and_update.projects_limit).to eq(20)
+            end
           end
 
           context 'without feature flag turned on' do
