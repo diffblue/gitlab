@@ -154,7 +154,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
       post '/restore' => '/projects#restore', as: :restore
 
-      resource :insights, only: [:show], trailing_slash: true do
+      resource :insights, only: [:show], defaults: { trailing_slash: true } do
         collection do
           post :query
         end
