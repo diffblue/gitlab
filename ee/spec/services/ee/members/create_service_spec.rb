@@ -116,7 +116,7 @@ RSpec.describe Members::CreateService do
         expect(project.issues).to all have_attributes(
           project: project,
           author: user,
-          assignees: project_users
+          assignees: match_array(project_users)
         )
       end
     end
