@@ -51,7 +51,7 @@ module EE
     def stub_dummy_replicator_class
       stub_const('Geo::DummyReplicator', Class.new(::Gitlab::Geo::Replicator))
 
-      Geo::DummyReplicator.class_eval do
+      ::Geo::DummyReplicator.class_eval do
         event :test
         event :another_test
 

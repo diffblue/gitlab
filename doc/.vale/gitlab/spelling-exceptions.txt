@@ -45,8 +45,8 @@ autoscales
 autoscaling
 awardable
 awardables
-Ayoa
 Axios
+Ayoa
 Azure
 B-tree
 backfilling
@@ -93,9 +93,9 @@ canonicalized
 captcha
 CentOS
 Certbot
+chai
 changeset
 changesets
-chai
 ChaosKube
 chatbot
 chatbots
@@ -150,6 +150,7 @@ denormalized
 denormalizes
 denormalizing
 denylist
+denylisted
 denylisting
 denylists
 deployer
@@ -683,8 +684,8 @@ triaged
 triages
 triaging
 Trivy
-truthy
 Truststore
+truthy
 Twilio
 Twitter
 TypeScript

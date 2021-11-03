@@ -19,7 +19,6 @@ const apolloProvider = new VueApollo({
     {},
     {
       batchMax: 1,
-      assumeImmutableResults: true,
     },
   ),
 });
@@ -100,7 +99,7 @@ export function initIterationReport({ namespaceType, initiallyEditing } = {}) {
   });
 }
 
-function injectVueRouterIntoBreadcrumbs(router) {
+function injectVueRouterIntoBreadcrumbs(router, groupPath) {
   const breadCrumbEls = document.querySelectorAll('nav .js-breadcrumbs-list li');
   const breadCrumbEl = breadCrumbEls[breadCrumbEls.length - 1];
   const crumbs = [breadCrumbEl.querySelector('h2')];
@@ -112,6 +111,9 @@ function injectVueRouterIntoBreadcrumbs(router) {
     apolloProvider,
     components: {
       IterationBreadcrumb,
+    },
+    provide: {
+      groupPath,
     },
     render(createElement) {
       // workaround pending https://gitlab.com/gitlab-org/gitlab/-/merge_requests/48115
@@ -135,6 +137,7 @@ export function initCadenceApp({ namespaceType }) {
 
   const {
     fullPath,
+    groupPath,
     cadencesListPath,
     canCreateCadence,
     canEditCadence,
@@ -155,7 +158,7 @@ export function initCadenceApp({ namespaceType }) {
     },
   });
 
-  injectVueRouterIntoBreadcrumbs(router);
+  injectVueRouterIntoBreadcrumbs(router, groupPath);
 
   return new Vue({
     el,

@@ -87,18 +87,18 @@ class DastSiteProfile < ApplicationRecord
 
   def dast_site_project_id_fk
     unless project_id == dast_site&.project_id
-      errors.add(:project_id, 'does not match dast_site.project')
+      errors.add(:project_id, _('does not match dast_site.project'))
     end
   end
 
   def excluded_urls_contains_valid_urls
-    validate_excluded_urls_with("contains invalid URLs (%{urls})") do |excluded_url|
+    validate_excluded_urls_with(_("contains invalid URLs (%{urls})")) do |excluded_url|
       !Gitlab::UrlSanitizer.valid?(excluded_url)
     end
   end
 
   def excluded_urls_contains_valid_strings
-    validate_excluded_urls_with("contains URLs that exceed the 1024 character limit (%{urls})") do |excluded_url|
+    validate_excluded_urls_with(_("contains URLs that exceed the 1024 character limit (%{urls})")) do |excluded_url|
       excluded_url.length > 1024
     end
   end

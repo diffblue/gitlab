@@ -3,6 +3,7 @@
 module Resolvers
   class VulnerabilitiesResolver < VulnerabilitiesBaseResolver
     include Gitlab::Utils::StrongMemoize
+    include LooksAhead
 
     type Types::VulnerabilityType, null: true
 
@@ -49,7 +50,7 @@ module Resolvers
                           "the response only matches entries for a `reportType` "\
                           "that includes #{::Vulnerabilities::Finding::REPORT_TYPES_WITH_LOCATION_IMAGE.map { |type| "`#{type}`" }.join(', ')}."
 
-    def resolve(**args)
+    def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
 
       args[:scanner_id] = resolve_gids(args[:scanner_id], ::Vulnerabilities::Scanner) if args[:scanner_id]
@@ -59,10 +60,20 @@ module Resolvers
         .with_created_issue_links_and_issues
     end
 
+    def unconditional_includes
+      [:findings]
+    end
+
+    def preloads
+      {
+        has_solutions: [{ findings: [:remediations] }]
+      }
+    end
+
     private
 
     def vulnerabilities(params)
-      Security::VulnerabilitiesFinder.new(vulnerable, params).execute
+      apply_lookahead(Security::VulnerabilitiesFinder.new(vulnerable, params).execute)
     end
   end
 end

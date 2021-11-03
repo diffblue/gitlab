@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Groups::HooksController < Groups::ApplicationController
-  include HooksExecution
+  include ::Integrations::HooksExecution
 
   # Authorize
   before_action :group
@@ -15,9 +15,10 @@ class Groups::HooksController < Groups::ApplicationController
   layout 'group_settings'
 
   feature_category :integrations
+  urgency :low, [:test]
 
   def index
-    @hooks = @group.hooks
+    @hooks = @group.hooks.load
     @hook = GroupHook.new
   end
 

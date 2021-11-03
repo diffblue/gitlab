@@ -179,7 +179,7 @@ RSpec.describe BulkImports::Entity, type: :model do
         entity = create(:bulk_import_entity, :group_entity)
         entity.create_pipeline_trackers!
 
-        expect(entity.trackers.count).to eq(BulkImports::Groups::Stage.pipelines.count)
+        expect(entity.trackers.count).to eq(BulkImports::Groups::Stage.new(entity.bulk_import).pipelines.count)
         expect(entity.trackers.map(&:pipeline_name)).to include(BulkImports::Groups::Pipelines::GroupPipeline.to_s)
       end
     end
@@ -189,7 +189,7 @@ RSpec.describe BulkImports::Entity, type: :model do
         entity = create(:bulk_import_entity, :project_entity)
         entity.create_pipeline_trackers!
 
-        expect(entity.trackers.count).to eq(BulkImports::Projects::Stage.pipelines.count)
+        expect(entity.trackers.count).to eq(BulkImports::Projects::Stage.new(entity.bulk_import).pipelines.count)
         expect(entity.trackers.map(&:pipeline_name)).to include(BulkImports::Projects::Pipelines::ProjectPipeline.to_s)
       end
     end
@@ -241,6 +241,15 @@ RSpec.describe BulkImports::Entity, type: :model do
 
         expect(entity.export_relations_url_path).to eq("/projects/#{entity.encoded_source_full_path}/export_relations")
       end
+    end
+  end
+
+  describe '#relation_download_url_path' do
+    it 'returns export relations url with download query string' do
+      entity = build(:bulk_import_entity)
+
+      expect(entity.relation_download_url_path('test'))
+        .to eq("/groups/#{entity.encoded_source_full_path}/export_relations/download?relation=test")
     end
   end
 end

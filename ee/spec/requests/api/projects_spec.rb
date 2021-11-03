@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::Projects do
   include ExternalAuthorizationServiceHelpers
+  include StubRequests
 
   let(:user) { create(:user) }
   let_it_be(:another_user) { create(:user) }
@@ -627,6 +628,15 @@ RSpec.describe API::Projects do
         }
       end
 
+      before do
+        git_response = {
+          status: 200,
+          body: '001e# service=git-upload-pack',
+          headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' }
+        }
+        stub_full_request("#{import_url}/info/refs?service=git-upload-pack", method: :get).to_return(git_response)
+      end
+
       it 'creates new project with pull mirroring set up' do
         post api('/projects', user), params: mirror_params
 
@@ -1097,6 +1107,19 @@ RSpec.describe API::Projects do
         }
       end
 
+      let(:git_response) do
+        {
+          status: 200,
+          body: '001e# service=git-upload-pack',
+          headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' }
+        }
+      end
+
+      before do
+        endpoint_url = "#{import_url}/info/refs?service=git-upload-pack"
+        stub_full_request(endpoint_url, method: :get).to_return(git_response)
+      end
+
       context 'when pull mirroring is not available' do
         before do
           stub_ee_application_setting(mirror_available: false)
@@ -1129,6 +1152,23 @@ RSpec.describe API::Projects do
             only_mirror_protected_branches: true,
             mirror_overwrites_diverged_branches: true
           )
+        end
+      end
+
+      context 'when import_url is not a valid git endpoint' do
+        let(:git_response) do
+          {
+            status: 301,
+            body: '',
+            headers: nil
+          }
+        end
+
+        it 'disallows creating a project with an import_url that is not reachable', :aggregate_failures do
+          subject
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq("#{import_url} is not a valid HTTP Git repository")
         end
       end
 

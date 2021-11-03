@@ -1,11 +1,15 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForQuartersView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockEpic } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
+const mockTimeframeQuarters = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.QUARTERS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('QuartersPresetMixin', () => {
   let wrapper;

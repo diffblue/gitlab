@@ -4,10 +4,6 @@ module Elastic
   class MigrationRecord
     attr_reader :version, :name, :filename
 
-    delegate :migrate, :skip_migration?, :completed?, :batched?, :throttle_delay, :pause_indexing?,
-      :space_requirements?, :space_required_bytes, :obsolete?, :batch_size,
-      to: :migration
-
     ELASTICSEARCH_SIZE = 25
 
     def initialize(version:, name:, filename:)
@@ -50,9 +46,25 @@ module Elastic
       !!load_state&.dig('halted')
     end
 
-    def halt!(additional_options = {})
+    def failed?
+      !!load_state&.dig('failed')
+    end
+
+    def previous_attempts
+      load_state[:previous_attempts].to_i
+    end
+
+    def current_attempt
+      previous_attempts + 1
+    end
+
+    def halt(additional_options = {})
       state = { halted: true, halted_indexing_unpaused: false }.merge(additional_options)
       save_state!(state)
+    end
+
+    def fail(additional_options = {})
+      halt(additional_options.merge(failed: true))
     end
 
     def name_for_key
@@ -65,6 +77,14 @@ module Elastic
 
     def stopped?
       halted? || completed?
+    end
+
+    def method_missing(method, *args, &block)
+      if migration.respond_to?(method)
+        migration.public_send(method, *args, &block) # rubocop: disable GitlabSecurity/PublicSend
+      else
+        super
+      end
     end
 
     def self.load_versions(completed:)

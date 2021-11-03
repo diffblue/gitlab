@@ -120,9 +120,9 @@ describe('DastScannerProfileForm', () => {
   });
 
   describe.each`
-    title                     | profile           | mutation                            | mutationVars                 | mutationKind
-    ${'New scanner profile'}  | ${{}}             | ${dastScannerProfileCreateMutation} | ${{}}                        | ${'dastScannerProfileCreate'}
-    ${'Edit scanner profile'} | ${defaultProfile} | ${dastScannerProfileUpdateMutation} | ${{ id: defaultProfile.id }} | ${'dastScannerProfileUpdate'}
+    title                     | profile           | mutation                            | mutationVars                     | mutationKind
+    ${'New scanner profile'}  | ${{}}             | ${dastScannerProfileCreateMutation} | ${{ fullPath: projectFullPath }} | ${'dastScannerProfileCreate'}
+    ${'Edit scanner profile'} | ${defaultProfile} | ${dastScannerProfileUpdateMutation} | ${{ id: defaultProfile.id }}     | ${'dastScannerProfileUpdate'}
   `('$title', ({ profile, title, mutation, mutationVars, mutationKind }) => {
     beforeEach(() => {
       createComponent({
@@ -155,7 +155,6 @@ describe('DastScannerProfileForm', () => {
         profileName,
         spiderTimeout,
         targetTimeout,
-        fullPath: projectFullPath,
         scanType,
         useAjaxSpider,
         showDebugMessages,

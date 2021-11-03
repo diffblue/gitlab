@@ -17,11 +17,13 @@ RSpec.describe Gitlab::Metrics::RailsSlis do
       possible_labels = [
         {
           endpoint_id: "GET /api/:version/version",
-          feature_category: :not_owned
+          feature_category: :not_owned,
+          request_urgency: :default
         },
         {
           endpoint_id: "ProjectsController#show",
-          feature_category: :projects
+          feature_category: :projects,
+          request_urgency: :default
         }
       ]
 
@@ -34,15 +36,6 @@ RSpec.describe Gitlab::Metrics::RailsSlis do
     it 'does not initialize the SLI if they were initialized already' do
       expect(Gitlab::Metrics::Sli).to receive(:initialized?).with(:rails_request_apdex) { true }
       expect(Gitlab::Metrics::Sli).not_to receive(:initialize_sli)
-
-      described_class.initialize_request_slis_if_needed!
-    end
-
-    it 'does not initialize anything if the feature flag is disabled' do
-      stub_feature_flags(request_apdex_counters: false)
-
-      expect(Gitlab::Metrics::Sli).not_to receive(:initialize_sli)
-      expect(Gitlab::Metrics::Sli).not_to receive(:initialized?)
 
       described_class.initialize_request_slis_if_needed!
     end

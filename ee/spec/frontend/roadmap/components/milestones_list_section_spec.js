@@ -3,13 +3,14 @@ import { shallowMount, createLocalVue } from '@vue/test-utils';
 import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
 import {
+  DATE_RANGES,
   PRESET_TYPES,
   EPIC_DETAILS_CELL_WIDTH,
   TIMELINE_CELL_MIN_WIDTH,
 } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockTimeframeInitialDate,
   mockGroupId,
@@ -37,7 +38,11 @@ describe('MilestonesListSectionComponent', () => {
   let wrapper;
   let store;
 
-  const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+  const mockTimeframeMonths = getTimeframeForRangeType({
+    timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+    presetType: PRESET_TYPES.MONTHS,
+    initialDate: mockTimeframeInitialDate,
+  });
   const findMilestoneCount = () => wrapper.find('[data-testid="count"]');
   const findMilestoneCountTooltip = () => getBinding(findMilestoneCount().element, 'gl-tooltip');
   const findExpandButtonContainer = () => wrapper.find('[data-testid="expandButton"]');

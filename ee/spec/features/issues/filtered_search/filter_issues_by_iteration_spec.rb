@@ -8,8 +8,12 @@ RSpec.describe 'Filter issues by iteration', :js do
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
 
-  let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.today) }
-  let_it_be(:iteration_2) { create(:iteration, group: group) }
+  let_it_be(:cadence_1) { create(:iterations_cadence, group: group) }
+  let_it_be(:cadence_2) { create(:iterations_cadence, group: group) }
+
+  let_it_be(:iteration_1) { create(:iteration, group: group, iterations_cadence: cadence_1, start_date: Date.today) }
+  let_it_be(:iteration_2) { create(:iteration, group: group, iterations_cadence: cadence_2) }
+  let_it_be(:iteration_3) { create(:iteration, group: group, iterations_cadence: cadence_1) }
 
   let_it_be(:iteration_1_issue) { create(:issue, project: project, iteration: iteration_1) }
   let_it_be(:iteration_2_issue) { create(:issue, project: project, iteration: iteration_2) }
@@ -107,11 +111,39 @@ RSpec.describe 'Filter issues by iteration', :js do
     end
   end
 
+  shared_examples 'shows iterations when using iteration token' do
+    context 'when viewing list of iterations' do
+      before do
+        stub_feature_flags(vue_issues_list: true)
+
+        visit page_path
+
+        find_field('Search or filter results...').click
+        click_link 'Iteration'
+        click_link '= is'
+      end
+
+      it 'shows cadence titles and iteration titles', :aggregate_failures do
+        within '.gl-filtered-search-suggestion-list' do
+          # cadence 1 grouping
+          expect(page).to have_css('li:nth-child(5)', text: cadence_1.title)
+          expect(page).to have_css('li:nth-child(6)', text: iteration_1.title)
+          expect(page).to have_css('li:nth-child(7)', text: iteration_3.title)
+          # cadence 2 grouping
+          expect(page).to have_css('li:nth-child(9)', text: cadence_2.title)
+          expect(page).to have_css('li:nth-child(10)', text: iteration_2.title)
+        end
+      end
+    end
+  end
+
   context 'project issues list' do
     let(:page_path) { project_issues_path(project) }
     let(:issue_title_selector) { '.issue .title' }
 
     it_behaves_like 'filters by iteration'
+
+    it_behaves_like 'shows iterations when using iteration token'
 
     context 'when vue_issuables_list is disabled' do
       before do
@@ -127,6 +159,8 @@ RSpec.describe 'Filter issues by iteration', :js do
     let(:issue_title_selector) { '.issue .title' }
 
     it_behaves_like 'filters by iteration'
+
+    it_behaves_like 'shows iterations when using iteration token'
 
     context 'when vue_issuables_list is disabled' do
       before do

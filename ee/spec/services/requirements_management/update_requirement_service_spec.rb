@@ -117,23 +117,32 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
 
           context 'when updating state' do
             context 'to archived' do
-              let(:params) do
-                { state: 'archived' }
-              end
+              let(:params) { { state: 'archived' } }
 
-              it_behaves_like 'keeps requirement and its requirement_issue in sync'
+              it 'closes issue' do
+                expect_next_instance_of(::Issues::CloseService) do |service|
+                  expect(service).to receive(:execute).with(requirement_issue, any_args).and_call_original
+                end
+
+                expect { subject }.to change { requirement.requirement_issue.reload.state }.from('opened').to('closed')
+              end
             end
 
             context 'to opened' do
-              let(:params) do
-                { state: 'opened' }
-              end
+              let(:params) { { state: 'opened' } }
 
               before do
+                requirement_issue.close
                 requirement.update!(state: 'archived')
               end
 
-              it_behaves_like 'keeps requirement and its requirement_issue in sync'
+              it 'reopens issue' do
+                expect_next_instance_of(::Issues::ReopenService) do |service|
+                  expect(service).to receive(:execute).with(requirement_issue, any_args).and_call_original
+                end
+
+                expect { subject }.to change { requirement.requirement_issue.reload.state }.from('closed').to('opened')
+              end
             end
           end
 
@@ -164,7 +173,7 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
                 end
 
                 allow(requirement).to receive(:requirement_issue).and_return(requirement_issue)
-                allow(requirement_issue).to receive(:invalid?).and_return(true).at_least(:once)
+                allow(requirement_issue).to receive(:valid?).and_return(false).at_least(:once)
               end
 
               it_behaves_like 'keeps requirement and its requirement_issue in sync'

@@ -71,7 +71,7 @@ module Ci
     has_many :trigger_requests, dependent: :destroy, foreign_key: :commit_id # rubocop:disable Cop/ActiveRecordDependent
     has_many :variables, class_name: 'Ci::PipelineVariable'
     has_many :deployments, through: :builds
-    has_many :environments, -> { distinct }, through: :deployments
+    has_many :environments, -> { distinct.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/338658') }, through: :deployments
     has_many :latest_builds, -> { latest.with_project_and_metadata }, foreign_key: :commit_id, inverse_of: :pipeline, class_name: 'Ci::Build'
     has_many :downloadable_artifacts, -> do
       not_expired.or(where_exists(::Ci::Pipeline.artifacts_locked.where('ci_pipelines.id = ci_builds.commit_id'))).downloadable.with_job
@@ -684,7 +684,9 @@ module Ci
     end
 
     def freeze_period?
-      Ci::FreezePeriodStatus.new(project: project).execute
+      strong_memoize(:freeze_period) do
+        Ci::FreezePeriodStatus.new(project: project).execute
+      end
     end
 
     def has_warnings?
@@ -780,6 +782,10 @@ module Ci
       strong_memoize(:legacy_trigger) { trigger_requests.first }
     end
 
+    def variables_builder
+      @variables_builder ||= ::Gitlab::Ci::Variables::Builder.new(self)
+    end
+
     def persisted_variables
       Gitlab::Ci::Variables::Collection.new.tap do |variables|
         break variables unless persisted?
@@ -796,20 +802,7 @@ module Ci
         variables.append(key: 'CI_PIPELINE_CREATED_AT', value: created_at&.iso8601)
 
         variables.concat(predefined_commit_variables)
-
-        if merge_request?
-          variables.append(key: 'CI_MERGE_REQUEST_EVENT_TYPE', value: merge_request_event_type.to_s)
-          variables.append(key: 'CI_MERGE_REQUEST_SOURCE_BRANCH_SHA', value: source_sha.to_s)
-          variables.append(key: 'CI_MERGE_REQUEST_TARGET_BRANCH_SHA', value: target_sha.to_s)
-
-          diff = self.merge_request_diff
-          if diff.present?
-            variables.append(key: 'CI_MERGE_REQUEST_DIFF_ID', value: diff.id.to_s)
-            variables.append(key: 'CI_MERGE_REQUEST_DIFF_BASE_SHA', value: diff.base_commit_sha)
-          end
-
-          variables.concat(merge_request.predefined_variables)
-        end
+        variables.concat(predefined_merge_request_variables)
 
         if open_merge_requests_refs.any?
           variables.append(key: 'CI_OPEN_MERGE_REQUESTS', value: open_merge_requests_refs.join(','))
@@ -825,27 +818,49 @@ module Ci
     end
 
     def predefined_commit_variables
-      Gitlab::Ci::Variables::Collection.new.tap do |variables|
-        variables.append(key: 'CI_COMMIT_SHA', value: sha)
-        variables.append(key: 'CI_COMMIT_SHORT_SHA', value: short_sha)
-        variables.append(key: 'CI_COMMIT_BEFORE_SHA', value: before_sha)
-        variables.append(key: 'CI_COMMIT_REF_NAME', value: source_ref)
-        variables.append(key: 'CI_COMMIT_REF_SLUG', value: source_ref_slug)
-        variables.append(key: 'CI_COMMIT_BRANCH', value: ref) if branch?
-        variables.append(key: 'CI_COMMIT_TAG', value: ref) if tag?
-        variables.append(key: 'CI_COMMIT_MESSAGE', value: git_commit_message.to_s)
-        variables.append(key: 'CI_COMMIT_TITLE', value: git_commit_full_title.to_s)
-        variables.append(key: 'CI_COMMIT_DESCRIPTION', value: git_commit_description.to_s)
-        variables.append(key: 'CI_COMMIT_REF_PROTECTED', value: (!!protected_ref?).to_s)
-        variables.append(key: 'CI_COMMIT_TIMESTAMP', value: git_commit_timestamp.to_s)
-        variables.append(key: 'CI_COMMIT_AUTHOR', value: git_author_full_text.to_s)
+      strong_memoize(:predefined_commit_variables) do
+        Gitlab::Ci::Variables::Collection.new.tap do |variables|
+          variables.append(key: 'CI_COMMIT_SHA', value: sha)
+          variables.append(key: 'CI_COMMIT_SHORT_SHA', value: short_sha)
+          variables.append(key: 'CI_COMMIT_BEFORE_SHA', value: before_sha)
+          variables.append(key: 'CI_COMMIT_REF_NAME', value: source_ref)
+          variables.append(key: 'CI_COMMIT_REF_SLUG', value: source_ref_slug)
+          variables.append(key: 'CI_COMMIT_BRANCH', value: ref) if branch?
+          variables.append(key: 'CI_COMMIT_TAG', value: ref) if tag?
+          variables.append(key: 'CI_COMMIT_MESSAGE', value: git_commit_message.to_s)
+          variables.append(key: 'CI_COMMIT_TITLE', value: git_commit_full_title.to_s)
+          variables.append(key: 'CI_COMMIT_DESCRIPTION', value: git_commit_description.to_s)
+          variables.append(key: 'CI_COMMIT_REF_PROTECTED', value: (!!protected_ref?).to_s)
+          variables.append(key: 'CI_COMMIT_TIMESTAMP', value: git_commit_timestamp.to_s)
+          variables.append(key: 'CI_COMMIT_AUTHOR', value: git_author_full_text.to_s)
 
-        # legacy variables
-        variables.append(key: 'CI_BUILD_REF', value: sha)
-        variables.append(key: 'CI_BUILD_BEFORE_SHA', value: before_sha)
-        variables.append(key: 'CI_BUILD_REF_NAME', value: source_ref)
-        variables.append(key: 'CI_BUILD_REF_SLUG', value: source_ref_slug)
-        variables.append(key: 'CI_BUILD_TAG', value: ref) if tag?
+          # legacy variables
+          variables.append(key: 'CI_BUILD_REF', value: sha)
+          variables.append(key: 'CI_BUILD_BEFORE_SHA', value: before_sha)
+          variables.append(key: 'CI_BUILD_REF_NAME', value: source_ref)
+          variables.append(key: 'CI_BUILD_REF_SLUG', value: source_ref_slug)
+          variables.append(key: 'CI_BUILD_TAG', value: ref) if tag?
+        end
+      end
+    end
+
+    def predefined_merge_request_variables
+      strong_memoize(:predefined_merge_request_variables) do
+        Gitlab::Ci::Variables::Collection.new.tap do |variables|
+          next variables unless merge_request?
+
+          variables.append(key: 'CI_MERGE_REQUEST_EVENT_TYPE', value: merge_request_event_type.to_s)
+          variables.append(key: 'CI_MERGE_REQUEST_SOURCE_BRANCH_SHA', value: source_sha.to_s)
+          variables.append(key: 'CI_MERGE_REQUEST_TARGET_BRANCH_SHA', value: target_sha.to_s)
+
+          diff = self.merge_request_diff
+          if diff.present?
+            variables.append(key: 'CI_MERGE_REQUEST_DIFF_ID', value: diff.id.to_s)
+            variables.append(key: 'CI_MERGE_REQUEST_DIFF_BASE_SHA', value: diff.base_commit_sha)
+          end
+
+          variables.concat(merge_request.predefined_variables)
+        end
       end
     end
 
@@ -925,9 +940,22 @@ module Ci
     end
 
     def environments_in_self_and_descendants
-      environment_ids = self_and_descendants.joins(:deployments).select(:'deployments.environment_id')
+      if ::Feature.enabled?(:avoid_cross_joins_environments_in_self_and_descendants, default_enabled: :yaml)
+        # We limit to 100 unique environments for application safety.
+        # See: https://gitlab.com/gitlab-org/gitlab/-/issues/340781#note_699114700
+        expanded_environment_names =
+          builds_in_self_and_descendants.joins(:metadata)
+                                        .where.not('ci_builds_metadata.expanded_environment_name' => nil)
+                                        .distinct('ci_builds_metadata.expanded_environment_name')
+                                        .limit(100)
+                                        .pluck(:expanded_environment_name)
 
-      Environment.where(id: environment_ids)
+        Environment.where(project: project, name: expanded_environment_names)
+      else
+        environment_ids = self_and_descendants.joins(:deployments).select(:'deployments.environment_id')
+
+        Environment.where(id: environment_ids)
+      end
     end
 
     # With multi-project and parent-child pipelines
@@ -1239,6 +1267,18 @@ module Ci
 
     def build_matchers
       self.builds.latest.build_matchers(project)
+    end
+
+    def predefined_vars_in_builder_enabled?
+      strong_memoize(:predefined_vars_in_builder_enabled) do
+        Feature.enabled?(:ci_predefined_vars_in_builder, project, default_enabled: :yaml)
+      end
+    end
+
+    def authorized_cluster_agents
+      strong_memoize(:authorized_cluster_agents) do
+        ::Clusters::AgentAuthorizationsFinder.new(project).execute.map(&:agent)
+      end
     end
 
     private

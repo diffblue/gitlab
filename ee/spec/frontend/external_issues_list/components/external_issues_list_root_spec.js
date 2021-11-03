@@ -63,6 +63,7 @@ describe('ExternalIssuesListRoot', () => {
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findAlertMessage = () => findAlert().find('span');
   const createLabelFilterEvent = (data) => ({ type: 'labels', value: { data } });
   const createSearchFilterEvent = (data) => ({ type: 'filtered-search-term', value: { data } });
 
@@ -319,12 +320,14 @@ describe('ExternalIssuesListRoot', () => {
 
     describe('when request fails', () => {
       it.each`
-        APIErrors        | expectedRenderedErrorMessage
-        ${['API error']} | ${'API error'}
-        ${undefined}     | ${i18n.errorFetchingIssues}
+        APIErrors                                         | expectedRenderedErrorText
+        ${['API error']}                                  | ${'API error'}
+        ${['API <a href="gitlab.com">error</a>']}         | ${'API error'}
+        ${['API <script src="hax0r.xyz">error</script>']} | ${'API'}
+        ${undefined}                                      | ${i18n.errorFetchingIssues}
       `(
-        'displays error alert with "$expectedRenderedErrorMessage" when API responds with "$APIErrors"',
-        async ({ APIErrors, expectedRenderedErrorMessage }) => {
+        'displays error alert with "$expectedRenderedErrorText" when API responds with "$APIErrors"',
+        async ({ APIErrors, expectedRenderedErrorText }) => {
           jest.spyOn(axios, 'get');
           mock
             .onGet(mockProvide.issuesFetchPath)
@@ -333,7 +336,8 @@ describe('ExternalIssuesListRoot', () => {
           createComponent();
           await waitForPromises();
 
-          expectErrorHandling(expectedRenderedErrorMessage);
+          expectErrorHandling(expectedRenderedErrorText);
+          expect(findAlertMessage().html()).toMatchSnapshot();
         },
       );
     });

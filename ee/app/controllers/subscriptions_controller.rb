@@ -34,7 +34,12 @@ class SubscriptionsController < ApplicationController
   def buy_minutes
     return render_404 unless ci_minutes_plan_data.present?
 
-    @group = find_group(plan_id: ci_minutes_plan_data["id"])
+    # At the moment of this comment the account id is directly available to the view.
+    # This might change in the future  given the intention to associate the account id to the namespace.
+    # See: https://gitlab.com/gitlab-org/gitlab/-/issues/338546#note_684762160
+    result = find_group(plan_id: ci_minutes_plan_data["id"])
+    @group = result[:namespace]
+    @account_id = result[:account_id]
 
     return render_404 if @group.nil?
 
@@ -44,7 +49,12 @@ class SubscriptionsController < ApplicationController
   def buy_storage
     return render_404 unless storage_plan_data.present?
 
-    @group = find_group(plan_id: storage_plan_data["id"])
+    # At the moment of this comment the account id is directly available to the view.
+    # This might change in the future  given the intention to associate the account id to the namespace.
+    # See: https://gitlab.com/gitlab-org/gitlab/-/issues/338546#note_684762160
+    result = find_group(plan_id: storage_plan_data["id"])
+    @group = result[:namespace]
+    @account_id = result[:account_id]
 
     return render_404 if @group.nil?
 
@@ -63,7 +73,7 @@ class SubscriptionsController < ApplicationController
 
   def create
     current_user.update(setup_for_company: true) if params[:setup_for_company]
-    group = params[:selected_group] ? find_group(plan_id: subscription_params[:plan_id]) : create_group
+    group = params[:selected_group] ? current_group : create_group
 
     return not_found if group.nil?
     return render json: group.errors.to_json unless group.persisted?
@@ -105,11 +115,17 @@ class SubscriptionsController < ApplicationController
   def find_group(plan_id:)
     selected_group = current_user.manageable_groups.top_most.find(params[:selected_group])
 
-    result = GitlabSubscriptions::FilterPurchaseEligibleNamespacesService
+    result = GitlabSubscriptions::FetchPurchaseEligibleNamespacesService
       .new(user: current_user, plan_id: plan_id, namespaces: Array(selected_group))
       .execute
 
-    result.success? ? result.payload.first : nil
+    return {} unless result.success?
+
+    result.payload.first || {}
+  end
+
+  def current_group
+    find_group(plan_id: subscription_params[:plan_id]).dig(:namespace)
   end
 
   def create_group
@@ -149,12 +165,17 @@ class SubscriptionsController < ApplicationController
   def load_eligible_groups
     return @eligible_groups = [] unless current_user
 
+    @eligible_groups = fetch_eligible_groups
+  end
+
+  def fetch_eligible_groups
     candidate_groups = current_user.manageable_groups.top_most.with_counts(archived: false)
+    result = GitlabSubscriptions::FetchPurchaseEligibleNamespacesService
+               .new(user: current_user, namespaces: candidate_groups, any_self_service_plan: true)
+               .execute
 
-    result = GitlabSubscriptions::FilterPurchaseEligibleNamespacesService
-      .new(user: current_user, namespaces: candidate_groups, any_self_service_plan: true)
-      .execute
+    return [] unless result.success?
 
-    @eligible_groups = result.success? ? result.payload : []
+    (result.payload || []).map { |h| h.dig(:namespace) }
   end
 end

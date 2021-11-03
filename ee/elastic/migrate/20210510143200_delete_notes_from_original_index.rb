@@ -3,8 +3,7 @@
 class DeleteNotesFromOriginalIndex < Elastic::Migration
   batched!
   throttle_delay 3.minutes
-
-  MAX_ATTEMPTS = 30
+  retry_on_failure
 
   QUERY_BODY = {
     query: {
@@ -15,13 +14,7 @@ class DeleteNotesFromOriginalIndex < Elastic::Migration
   }.freeze
 
   def migrate
-    retry_attempt = migration_state[:retry_attempt].to_i
     task_id = migration_state[:task_id]
-
-    if retry_attempt >= MAX_ATTEMPTS
-      fail_migration_halt_error!(retry_attempt: retry_attempt)
-      return
-    end
 
     if task_id
       response = helper.task_status(task_id: task_id)
@@ -29,10 +22,7 @@ class DeleteNotesFromOriginalIndex < Elastic::Migration
       if response['completed']
         log "Removing notes from the original index is completed for task_id:#{task_id}"
 
-        set_migration_state(
-          retry_attempt: retry_attempt,
-          task_id: nil
-        )
+        set_migration_state(task_id: nil)
 
         # since delete_by_query is using wait_for_completion = false, the task must be cleaned up
         # in Elasticsearch system .tasks index
@@ -60,16 +50,10 @@ class DeleteNotesFromOriginalIndex < Elastic::Migration
     log "Removing notes from the original index is started with task_id:#{task_id}"
 
     set_migration_state(
-      retry_attempt: retry_attempt,
       task_id: task_id
     )
   rescue StandardError => e
-    log "migrate failed, increasing migration_state retry_attempt: #{retry_attempt} error:#{e.class}:#{e.message}"
-
-    set_migration_state(
-      retry_attempt: retry_attempt + 1,
-      task_id: nil
-    )
+    set_migration_state(task_id: nil)
 
     raise e
   end

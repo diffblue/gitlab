@@ -34,7 +34,6 @@ export default () => {
             object.__typename === 'Requirement' ? object.iid : defaultDataIdFromObject(object),
           fragmentMatcher,
         },
-        assumeImmutableResults: true,
       },
     ),
   });

@@ -12,8 +12,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 WARNING:
 The Composer package registry for GitLab is under development and isn't ready for production use due to
-limited functionality. This [epic](https://gitlab.com/groups/gitlab-org/-/epics/6817) details the remaining 
-work and timelines to make it production ready. 
+limited functionality. This [epic](https://gitlab.com/groups/gitlab-org/-/epics/6817) details the remaining
+work and timelines to make it production ready.
 
 Publish [Composer](https://getcomposer.org/) packages in your project's Package Registry.
 Then, install the packages whenever you need to use them as a dependency.
@@ -138,7 +138,7 @@ To view the published package, go to **Packages & Registries > Package Registry*
 A more detailed Composer CI/CD file is also available as a `.gitlab-ci.yml` template:
 
 1. On the left sidebar, select **Project information**.
-1. Above the file list, click **Set up CI/CD**. If this button is not available, select **CI/CD Configuration** and then **Edit**.
+1. Above the file list, select **Set up CI/CD**. If this button is not available, select **CI/CD Configuration** and then **Edit**.
 1. From the **Apply a template** list, select **Composer**.
 
 WARNING:

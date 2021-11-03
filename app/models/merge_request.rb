@@ -1409,7 +1409,15 @@ class MergeRequest < ApplicationRecord
   def environments
     return Environment.none unless actual_head_pipeline&.merge_request?
 
-    actual_head_pipeline.environments
+    build_for_actual_head_pipeline = Ci::Build.latest.where(pipeline: actual_head_pipeline)
+
+    environments = build_for_actual_head_pipeline.joins(:metadata)
+                                                .where.not('ci_builds_metadata.expanded_environment_name' => nil)
+                                                .distinct('ci_builds_metadata.expanded_environment_name')
+                                                .limit(100)
+                                                .pluck(:expanded_environment_name)
+
+    Environment.where(project: project, name: environments)
   end
 
   def fetch_ref!
@@ -1905,6 +1913,10 @@ class MergeRequest < ApplicationRecord
 
   def supports_assignee?
     true
+  end
+
+  def find_assignee(user)
+    merge_request_assignees.find_by(user_id: user.id)
   end
 
   def find_reviewer(user)

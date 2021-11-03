@@ -174,9 +174,9 @@ module API
     # rubocop: disable CodeReuse/ActiveRecord
     def find_namespace(id)
       if id.to_s =~ /^\d+$/
-        Namespace.find_by(id: id)
+        Namespace.without_project_namespaces.find_by(id: id)
       else
-        Namespace.find_by_full_path(id)
+        find_namespace_by_path(id)
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
@@ -186,7 +186,7 @@ module API
     end
 
     def find_namespace_by_path(path)
-      Namespace.find_by_full_path(path)
+      Namespace.without_project_namespaces.find_by_full_path(path)
     end
 
     def find_namespace_by_path!(path)
@@ -488,7 +488,7 @@ module API
     def handle_api_exception(exception)
       if report_exception?(exception)
         define_params_for_grape_middleware
-        Gitlab::ApplicationContext.push(user: current_user)
+        Gitlab::ApplicationContext.push(user: current_user, remote_ip: request.ip)
         Gitlab::ErrorTracking.track_exception(exception)
       end
 

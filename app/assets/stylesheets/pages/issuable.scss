@@ -179,6 +179,7 @@
   }
 
   .block,
+  .sidebar-contained-width,
   .issuable-sidebar-header {
     @include clearfix;
     padding: $gl-padding 0;
@@ -317,6 +318,7 @@
     padding: 0;
 
     .block,
+    .sidebar-contained-width,
     .issuable-sidebar-header {
       width: $gutter-collapsed-width - 2px;
       padding: 0;
@@ -875,22 +877,6 @@
 
 .issuable-suggestions svg {
   vertical-align: sub;
-}
-
-.suggestion-confidential {
-  color: $orange-500;
-}
-
-.suggestion-state-open {
-  color: $green-500;
-}
-
-.suggestion-state-closed {
-  color: $blue-500;
-}
-
-.suggestion-help-hover {
-  cursor: help;
 }
 
 .suggestion-footer {

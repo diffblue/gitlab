@@ -70,14 +70,36 @@ RSpec.describe ProjectsHelper do
   end
 
   describe '#show_compliance_framework_badge?' do
-    it 'returns false if compliance framework setting is not present' do
-      expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+    context 'when feature is licensed' do
+      before do
+        stub_licensed_features(custom_compliance_frameworks: true)
+      end
+
+      it 'returns false if compliance framework setting is not present' do
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
+
+      it 'returns true if compliance framework setting is present' do
+        project = build_stubbed(:project, :with_compliance_framework)
+
+        expect(helper.show_compliance_framework_badge?(project)).to be_truthy
+      end
     end
 
-    it 'returns true if compliance framework setting is present' do
-      project = build_stubbed(:project, :with_compliance_framework)
+    context 'when feature is unlicensed' do
+      before do
+        stub_licensed_features(custom_compliance_frameworks: false)
+      end
 
-      expect(helper.show_compliance_framework_badge?(project)).to be_truthy
+      it 'returns false if compliance framework setting is not present' do
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
+
+      it 'returns false if compliance framework setting is present' do
+        project = build_stubbed(:project, :with_compliance_framework)
+
+        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+      end
     end
   end
 
@@ -167,6 +189,9 @@ RSpec.describe ProjectsHelper do
           has_vulnerabilities: 'false',
           has_jira_vulnerabilities_integration_enabled: 'true',
           empty_state_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
+          operational_configuration_path: new_project_security_policy_path(project),
+          operational_empty_state_svg_path: kind_of(String),
+          operational_help_path: kind_of(String),
           survey_request_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
           security_dashboard_help_path: '/help/user/application_security/security_dashboard/index',
           project_full_path: project.full_path,
@@ -188,6 +213,9 @@ RSpec.describe ProjectsHelper do
           vulnerabilities_export_endpoint: "/api/v4/security/projects/#{project.id}/vulnerability_exports",
           no_vulnerabilities_svg_path: start_with('/assets/illustrations/issues-'),
           empty_state_svg_path: start_with('/assets/illustrations/security-dashboard-empty-state'),
+          operational_configuration_path: new_project_security_policy_path(project),
+          operational_empty_state_svg_path: kind_of(String),
+          operational_help_path: kind_of(String),
           survey_request_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
           dashboard_documentation: '/help/user/application_security/security_dashboard/index',
           false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),

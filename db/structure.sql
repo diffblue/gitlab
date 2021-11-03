@@ -46,6 +46,15 @@ RETURN NULL;
 END
 $$;
 
+CREATE FUNCTION next_traversal_ids_sibling(traversal_ids integer[]) RETURNS integer[]
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $$
+BEGIN
+  return traversal_ids[1:array_length(traversal_ids, 1)-1] ||
+  ARRAY[traversal_ids[array_length(traversal_ids, 1)]+1];
+END;
+$$;
+
 CREATE FUNCTION set_has_external_issue_tracker() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -110,11 +119,9 @@ CREATE TABLE incident_management_pending_alert_escalations (
     id bigint NOT NULL,
     rule_id bigint NOT NULL,
     alert_id bigint NOT NULL,
-    schedule_id bigint,
     process_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    status smallint
+    updated_at timestamp with time zone NOT NULL
 )
 PARTITION BY RANGE (process_at);
 
@@ -127,6 +134,19 @@ CREATE TABLE incident_management_pending_issue_escalations (
     updated_at timestamp with time zone NOT NULL
 )
 PARTITION BY RANGE (process_at);
+
+CREATE TABLE verification_codes (
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    visitor_id_code text NOT NULL,
+    code text NOT NULL,
+    phone text NOT NULL,
+    CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
+    CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
+    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 32))
+)
+PARTITION BY RANGE (created_at);
+
+COMMENT ON TABLE verification_codes IS 'JiHu-specific table';
 
 CREATE TABLE web_hook_logs (
     id bigint NOT NULL,
@@ -153,7 +173,8 @@ CREATE TABLE analytics_cycle_analytics_issue_stage_events (
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 )
 PARTITION BY HASH (stage_event_hash_id);
 
@@ -165,7 +186,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_00 FOR VALUES WITH (modulus 32, remainder 0);
 
@@ -177,7 +199,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_01 FOR VALUES WITH (modulus 32, remainder 1);
 
@@ -189,7 +212,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_02 FOR VALUES WITH (modulus 32, remainder 2);
 
@@ -201,7 +225,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_03 FOR VALUES WITH (modulus 32, remainder 3);
 
@@ -213,7 +238,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_04 FOR VALUES WITH (modulus 32, remainder 4);
 
@@ -225,7 +251,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_05 FOR VALUES WITH (modulus 32, remainder 5);
 
@@ -237,7 +264,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_06 FOR VALUES WITH (modulus 32, remainder 6);
 
@@ -249,7 +277,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_07 FOR VALUES WITH (modulus 32, remainder 7);
 
@@ -261,7 +290,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_08 FOR VALUES WITH (modulus 32, remainder 8);
 
@@ -273,7 +303,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_09 FOR VALUES WITH (modulus 32, remainder 9);
 
@@ -285,7 +316,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_10 FOR VALUES WITH (modulus 32, remainder 10);
 
@@ -297,7 +329,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_11 FOR VALUES WITH (modulus 32, remainder 11);
 
@@ -309,7 +342,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_12 FOR VALUES WITH (modulus 32, remainder 12);
 
@@ -321,7 +355,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_13 FOR VALUES WITH (modulus 32, remainder 13);
 
@@ -333,7 +368,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_14 FOR VALUES WITH (modulus 32, remainder 14);
 
@@ -345,7 +381,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_15 FOR VALUES WITH (modulus 32, remainder 15);
 
@@ -357,7 +394,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_16 FOR VALUES WITH (modulus 32, remainder 16);
 
@@ -369,7 +407,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_17 FOR VALUES WITH (modulus 32, remainder 17);
 
@@ -381,7 +420,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_18 FOR VALUES WITH (modulus 32, remainder 18);
 
@@ -393,7 +433,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_19 FOR VALUES WITH (modulus 32, remainder 19);
 
@@ -405,7 +446,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_20 FOR VALUES WITH (modulus 32, remainder 20);
 
@@ -417,7 +459,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_21 FOR VALUES WITH (modulus 32, remainder 21);
 
@@ -429,7 +472,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_22 FOR VALUES WITH (modulus 32, remainder 22);
 
@@ -441,7 +485,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_23 FOR VALUES WITH (modulus 32, remainder 23);
 
@@ -453,7 +498,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_24 FOR VALUES WITH (modulus 32, remainder 24);
 
@@ -465,7 +511,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_25 FOR VALUES WITH (modulus 32, remainder 25);
 
@@ -477,7 +524,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_26 FOR VALUES WITH (modulus 32, remainder 26);
 
@@ -489,7 +537,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_27 FOR VALUES WITH (modulus 32, remainder 27);
 
@@ -501,7 +550,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_28 FOR VALUES WITH (modulus 32, remainder 28);
 
@@ -513,7 +563,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_29 FOR VALUES WITH (modulus 32, remainder 29);
 
@@ -525,7 +576,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_30 FOR VALUES WITH (modulus 32, remainder 30);
 
@@ -537,7 +589,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_issue_stage_even
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_issue_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_issue_stage_events_31 FOR VALUES WITH (modulus 32, remainder 31);
 
@@ -549,7 +602,8 @@ CREATE TABLE analytics_cycle_analytics_merge_request_stage_events (
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 )
 PARTITION BY HASH (stage_event_hash_id);
 
@@ -561,7 +615,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_00 FOR VALUES WITH (modulus 32, remainder 0);
 
@@ -573,7 +628,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_01 FOR VALUES WITH (modulus 32, remainder 1);
 
@@ -585,7 +641,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_02 FOR VALUES WITH (modulus 32, remainder 2);
 
@@ -597,7 +654,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_03 FOR VALUES WITH (modulus 32, remainder 3);
 
@@ -609,7 +667,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_04 FOR VALUES WITH (modulus 32, remainder 4);
 
@@ -621,7 +680,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_05 FOR VALUES WITH (modulus 32, remainder 5);
 
@@ -633,7 +693,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_06 FOR VALUES WITH (modulus 32, remainder 6);
 
@@ -645,7 +706,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_07 FOR VALUES WITH (modulus 32, remainder 7);
 
@@ -657,7 +719,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_08 FOR VALUES WITH (modulus 32, remainder 8);
 
@@ -669,7 +732,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_09 FOR VALUES WITH (modulus 32, remainder 9);
 
@@ -681,7 +745,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_10 FOR VALUES WITH (modulus 32, remainder 10);
 
@@ -693,7 +758,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_11 FOR VALUES WITH (modulus 32, remainder 11);
 
@@ -705,7 +771,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_12 FOR VALUES WITH (modulus 32, remainder 12);
 
@@ -717,7 +784,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_13 FOR VALUES WITH (modulus 32, remainder 13);
 
@@ -729,7 +797,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_14 FOR VALUES WITH (modulus 32, remainder 14);
 
@@ -741,7 +810,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_15 FOR VALUES WITH (modulus 32, remainder 15);
 
@@ -753,7 +823,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_16 FOR VALUES WITH (modulus 32, remainder 16);
 
@@ -765,7 +836,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_17 FOR VALUES WITH (modulus 32, remainder 17);
 
@@ -777,7 +849,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_18 FOR VALUES WITH (modulus 32, remainder 18);
 
@@ -789,7 +862,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_19 FOR VALUES WITH (modulus 32, remainder 19);
 
@@ -801,7 +875,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_20 FOR VALUES WITH (modulus 32, remainder 20);
 
@@ -813,7 +888,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_21 FOR VALUES WITH (modulus 32, remainder 21);
 
@@ -825,7 +901,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_22 FOR VALUES WITH (modulus 32, remainder 22);
 
@@ -837,7 +914,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_23 FOR VALUES WITH (modulus 32, remainder 23);
 
@@ -849,7 +927,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_24 FOR VALUES WITH (modulus 32, remainder 24);
 
@@ -861,7 +940,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_25 FOR VALUES WITH (modulus 32, remainder 25);
 
@@ -873,7 +953,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_26 FOR VALUES WITH (modulus 32, remainder 26);
 
@@ -885,7 +966,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_27 FOR VALUES WITH (modulus 32, remainder 27);
 
@@ -897,7 +979,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_28 FOR VALUES WITH (modulus 32, remainder 28);
 
@@ -909,7 +992,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_29 FOR VALUES WITH (modulus 32, remainder 29);
 
@@ -921,7 +1005,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_30 FOR VALUES WITH (modulus 32, remainder 30);
 
@@ -933,7 +1018,8 @@ CREATE TABLE gitlab_partitions_static.analytics_cycle_analytics_merge_request_st
     milestone_id bigint,
     author_id bigint,
     start_event_timestamp timestamp with time zone NOT NULL,
-    end_event_timestamp timestamp with time zone
+    end_event_timestamp timestamp with time zone,
+    state_id smallint DEFAULT 1 NOT NULL
 );
 ALTER TABLE ONLY analytics_cycle_analytics_merge_request_stage_events ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31 FOR VALUES WITH (modulus 32, remainder 31);
 
@@ -9912,7 +9998,6 @@ ALTER SEQUENCE analytics_devops_adoption_segments_id_seq OWNED BY analytics_devo
 
 CREATE TABLE analytics_devops_adoption_snapshots (
     id bigint NOT NULL,
-    segment_id bigint,
     recorded_at timestamp with time zone NOT NULL,
     issue_opened boolean NOT NULL,
     merge_request_opened boolean NOT NULL,
@@ -10494,7 +10579,8 @@ CREATE TABLE approval_project_rules (
     scanners text[],
     vulnerabilities_allowed smallint DEFAULT 0 NOT NULL,
     severity_levels text[] DEFAULT '{}'::text[] NOT NULL,
-    report_type smallint
+    report_type smallint,
+    vulnerability_states text[] DEFAULT '{newly_detected}'::text[] NOT NULL
 );
 
 CREATE TABLE approval_project_rules_groups (
@@ -11216,7 +11302,9 @@ CREATE TABLE bulk_imports (
     source_type smallint NOT NULL,
     status smallint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    source_version text,
+    CONSTRAINT check_ea4e58775a CHECK ((char_length(source_version) <= 63))
 );
 
 CREATE SEQUENCE bulk_imports_id_seq
@@ -11420,7 +11508,8 @@ CREATE TABLE ci_builds_metadata (
     secrets jsonb DEFAULT '{}'::jsonb NOT NULL,
     build_id bigint NOT NULL,
     id bigint NOT NULL,
-    runner_features jsonb DEFAULT '{}'::jsonb NOT NULL
+    runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
+    runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE SEQUENCE ci_builds_metadata_id_seq
@@ -12620,7 +12709,8 @@ CREATE TABLE clusters_integration_prometheus (
     cluster_id bigint NOT NULL,
     enabled boolean DEFAULT false NOT NULL,
     encrypted_alert_manager_token text,
-    encrypted_alert_manager_token_iv text
+    encrypted_alert_manager_token_iv text,
+    health_status smallint DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE clusters_kubernetes_namespaces (
@@ -15662,6 +15752,24 @@ CREATE SEQUENCE lists_id_seq
 
 ALTER SEQUENCE lists_id_seq OWNED BY lists.id;
 
+CREATE TABLE member_tasks (
+    id bigint NOT NULL,
+    member_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    tasks smallint[] DEFAULT '{}'::smallint[] NOT NULL
+);
+
+CREATE SEQUENCE member_tasks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE member_tasks_id_seq OWNED BY member_tasks.id;
+
 CREATE TABLE members (
     id integer NOT NULL,
     access_level integer NOT NULL,
@@ -15697,7 +15805,8 @@ CREATE TABLE merge_request_assignees (
     id bigint NOT NULL,
     user_id integer NOT NULL,
     merge_request_id integer NOT NULL,
-    created_at timestamp with time zone
+    created_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE merge_request_assignees_id_seq
@@ -15809,10 +15918,6 @@ CREATE TABLE merge_request_diff_commits (
     merge_request_diff_id integer NOT NULL,
     relative_order integer NOT NULL,
     sha bytea NOT NULL,
-    author_name text,
-    author_email text,
-    committer_name text,
-    committer_email text,
     message text,
     trailers jsonb DEFAULT '{}'::jsonb NOT NULL,
     commit_author_id bigint,
@@ -17062,7 +17167,7 @@ CREATE TABLE packages_helm_file_metadata (
     package_file_id bigint NOT NULL,
     channel text NOT NULL,
     metadata jsonb,
-    CONSTRAINT check_c34067922d CHECK ((char_length(channel) <= 63))
+    CONSTRAINT check_06e8d100af CHECK ((char_length(channel) <= 255))
 );
 
 CREATE TABLE packages_maven_metadata (
@@ -17661,7 +17766,7 @@ CREATE VIEW postgres_indexes AS
    FROM ((((pg_index
      JOIN pg_class i ON ((i.oid = pg_index.indexrelid)))
      JOIN pg_namespace ON ((i.relnamespace = pg_namespace.oid)))
-     JOIN pg_indexes ON ((i.relname = pg_indexes.indexname)))
+     JOIN pg_indexes ON (((i.relname = pg_indexes.indexname) AND (pg_namespace.nspname = pg_indexes.schemaname))))
      JOIN pg_am a ON ((i.relam = a.oid)))
   WHERE ((pg_namespace.nspname <> 'pg_catalog'::name) AND (pg_namespace.nspname = ANY (ARRAY["current_schema"(), 'gitlab_partitions_dynamic'::name, 'gitlab_partitions_static'::name])));
 
@@ -18157,6 +18262,7 @@ CREATE TABLE project_settings (
     cve_id_request_enabled boolean DEFAULT true NOT NULL,
     mr_default_target_self boolean DEFAULT false NOT NULL,
     previous_default_branch text,
+    warn_about_potentially_unwanted_characters boolean DEFAULT true NOT NULL,
     CONSTRAINT check_3a03e7557a CHECK ((char_length(previous_default_branch) <= 4096)),
     CONSTRAINT check_bde223416c CHECK ((show_default_award_emojis IS NOT NULL))
 );
@@ -19052,7 +19158,8 @@ CREATE TABLE security_scans (
     info jsonb DEFAULT '{}'::jsonb NOT NULL,
     project_id bigint,
     pipeline_id bigint,
-    latest boolean DEFAULT true NOT NULL
+    latest boolean DEFAULT true NOT NULL,
+    status smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE security_scans_id_seq
@@ -19818,6 +19925,8 @@ CREATE TABLE user_credit_card_validations (
     expiration_date date,
     last_digits smallint,
     holder_name text,
+    network text,
+    CONSTRAINT check_1765e2b30f CHECK ((char_length(network) <= 32)),
     CONSTRAINT check_3eea080c91 CHECK (((last_digits >= 0) AND (last_digits <= 9999))),
     CONSTRAINT check_eafe45d88b CHECK ((char_length(holder_name) <= 26))
 );
@@ -19844,8 +19953,6 @@ CREATE TABLE user_details (
     user_id bigint NOT NULL,
     job_title character varying(200) DEFAULT ''::character varying NOT NULL,
     bio character varying(255) DEFAULT ''::character varying NOT NULL,
-    bio_html text,
-    cached_markdown_version integer,
     webauthn_xid text,
     other_role text,
     provisioned_by_group_id bigint,
@@ -20154,19 +20261,6 @@ CREATE SEQUENCE users_statistics_id_seq
     CACHE 1;
 
 ALTER SEQUENCE users_statistics_id_seq OWNED BY users_statistics.id;
-
-CREATE TABLE verification_codes (
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    visitor_id_code text NOT NULL,
-    code text NOT NULL,
-    phone text NOT NULL,
-    CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
-    CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
-    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 32))
-)
-PARTITION BY RANGE (created_at);
-
-COMMENT ON TABLE verification_codes IS 'JiHu-specific table';
 
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
@@ -21492,6 +21586,8 @@ ALTER TABLE ONLY list_user_preferences ALTER COLUMN id SET DEFAULT nextval('list
 ALTER TABLE ONLY lists ALTER COLUMN id SET DEFAULT nextval('lists_id_seq'::regclass);
 
 ALTER TABLE ONLY loose_foreign_keys_deleted_records ALTER COLUMN id SET DEFAULT nextval('loose_foreign_keys_deleted_records_id_seq'::regclass);
+
+ALTER TABLE ONLY member_tasks ALTER COLUMN id SET DEFAULT nextval('member_tasks_id_seq'::regclass);
 
 ALTER TABLE ONLY members ALTER COLUMN id SET DEFAULT nextval('members_id_seq'::regclass);
 
@@ -23195,6 +23291,9 @@ ALTER TABLE ONLY list_user_preferences
 ALTER TABLE ONLY lists
     ADD CONSTRAINT lists_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT member_tasks_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY members
     ADD CONSTRAINT members_pkey PRIMARY KEY (id);
 
@@ -23939,6 +24038,10 @@ ALTER TABLE ONLY zentao_tracker_data
 ALTER TABLE ONLY zoom_meetings
     ADD CONSTRAINT zoom_meetings_pkey PRIMARY KEY (id);
 
+CREATE INDEX index_loose_foreign_keys_deleted_records_for_loading_records ON ONLY loose_foreign_keys_deleted_records USING btree (fully_qualified_table_name, id, primary_key_value, partition) WHERE (status = 1);
+
+CREATE INDEX index_8be8640437 ON gitlab_partitions_static.loose_foreign_keys_deleted_records_1 USING btree (fully_qualified_table_name, id, primary_key_value, partition) WHERE (status = 1);
+
 CREATE INDEX index_product_analytics_events_experimental_project_and_time ON ONLY product_analytics_events_experimental USING btree (project_id, collector_tstamp);
 
 CREATE INDEX product_analytics_events_expe_project_id_collector_tstamp_idx10 ON gitlab_partitions_static.product_analytics_events_experimental_10 USING btree (project_id, collector_tstamp);
@@ -24512,6 +24615,8 @@ CREATE INDEX index_boards_on_milestone_id ON boards USING btree (milestone_id);
 CREATE INDEX index_boards_on_project_id ON boards USING btree (project_id);
 
 CREATE INDEX index_broadcast_message_on_ends_at_and_broadcast_type_and_id ON broadcast_messages USING btree (ends_at, broadcast_type, id);
+
+CREATE INDEX index_btree_namespaces_traversal_ids ON namespaces USING btree (traversal_ids);
 
 CREATE INDEX index_bulk_import_configurations_on_bulk_import_id ON bulk_import_configurations USING btree (bulk_import_id);
 
@@ -25441,8 +25546,6 @@ CREATE INDEX index_incident_management_pending_alert_escalations_on_alert_id ON 
 
 CREATE INDEX index_incident_management_pending_alert_escalations_on_rule_id ON ONLY incident_management_pending_alert_escalations USING btree (rule_id);
 
-CREATE INDEX index_incident_management_pending_alert_escalations_on_schedule ON ONLY incident_management_pending_alert_escalations USING btree (schedule_id);
-
 CREATE INDEX index_incident_management_pending_issue_escalations_on_issue_id ON ONLY incident_management_pending_issue_escalations USING btree (issue_id);
 
 CREATE INDEX index_incident_management_pending_issue_escalations_on_rule_id ON ONLY incident_management_pending_issue_escalations USING btree (rule_id);
@@ -25640,6 +25743,12 @@ CREATE INDEX index_lists_on_list_type ON lists USING btree (list_type);
 CREATE INDEX index_lists_on_milestone_id ON lists USING btree (milestone_id);
 
 CREATE INDEX index_lists_on_user_id ON lists USING btree (user_id);
+
+CREATE INDEX index_member_tasks_on_member_id ON member_tasks USING btree (member_id);
+
+CREATE UNIQUE INDEX index_member_tasks_on_member_id_and_project_id ON member_tasks USING btree (member_id, project_id);
+
+CREATE INDEX index_member_tasks_on_project_id ON member_tasks USING btree (project_id);
 
 CREATE INDEX index_members_on_access_level ON members USING btree (access_level);
 
@@ -25859,6 +25968,8 @@ CREATE INDEX index_namespaces_on_shared_and_extra_runners_minutes_limit ON names
 
 CREATE INDEX index_namespaces_on_traversal_ids ON namespaces USING gin (traversal_ids);
 
+CREATE INDEX index_namespaces_on_traversal_ids_for_groups ON namespaces USING gin (traversal_ids) WHERE ((type)::text = 'Group'::text);
+
 CREATE INDEX index_namespaces_on_type_and_id ON namespaces USING btree (type, id);
 
 CREATE INDEX index_namespaces_public_groups_name_id ON namespaces USING btree (name, id) WHERE (((type)::text = 'Group'::text) AND (visibility_level = 20));
@@ -25936,10 +26047,6 @@ CREATE UNIQUE INDEX index_on_project_id_escalation_policy_name_unique ON inciden
 CREATE INDEX index_on_projects_lower_path ON projects USING btree (lower((path)::text));
 
 CREATE INDEX index_on_routes_lower_path ON routes USING btree (lower((path)::text));
-
-CREATE INDEX index_on_snapshots_segment_id_end_time ON analytics_devops_adoption_snapshots USING btree (segment_id, end_time);
-
-CREATE INDEX index_on_snapshots_segment_id_recorded_at ON analytics_devops_adoption_snapshots USING btree (segment_id, recorded_at);
 
 CREATE INDEX index_on_users_lower_email ON users USING btree (lower((email)::text));
 
@@ -26403,8 +26510,6 @@ CREATE UNIQUE INDEX index_release_links_on_release_id_and_name ON release_links 
 
 CREATE UNIQUE INDEX index_release_links_on_release_id_and_url ON release_links USING btree (release_id, url);
 
-CREATE INDEX index_releases_on_author_id ON releases USING btree (author_id);
-
 CREATE INDEX index_releases_on_author_id_id_created_at ON releases USING btree (author_id, id, created_at);
 
 CREATE INDEX index_releases_on_project_id_and_tag ON releases USING btree (project_id, tag);
@@ -26785,6 +26890,8 @@ CREATE UNIQUE INDEX index_user_canonical_emails_on_user_id_and_canonical_email O
 
 CREATE INDEX index_user_credit_card_validations_meta_data_full_match ON user_credit_card_validations USING btree (holder_name, expiration_date, last_digits, credit_card_validated_at);
 
+CREATE INDEX index_user_credit_card_validations_meta_data_partial_match ON user_credit_card_validations USING btree (expiration_date, last_digits, network, credit_card_validated_at);
+
 CREATE INDEX index_user_custom_attributes_on_key_and_value ON user_custom_attributes USING btree (key, value);
 
 CREATE UNIQUE INDEX index_user_custom_attributes_on_user_id_and_key ON user_custom_attributes USING btree (user_id, key);
@@ -26831,7 +26938,7 @@ CREATE INDEX index_users_on_feed_token ON users USING btree (feed_token);
 
 CREATE INDEX index_users_on_group_view ON users USING btree (group_view);
 
-CREATE INDEX index_users_on_id_and_last_activity_on_for_non_internal_active ON users USING btree (id, last_activity_on) WHERE (((state)::text = 'active'::text) AND ((user_type IS NULL) OR (user_type = ANY (ARRAY[NULL::integer, 6, 4]))));
+CREATE INDEX index_users_on_id_and_last_activity_on_for_active_human_service ON users USING btree (id, last_activity_on) WHERE (((state)::text = 'active'::text) AND ((user_type IS NULL) OR (user_type = 4)));
 
 CREATE INDEX index_users_on_incoming_email_token ON users USING btree (incoming_email_token);
 
@@ -26951,11 +27058,15 @@ CREATE INDEX index_vulnerability_occurrence_identifiers_on_identifier_id ON vuln
 
 CREATE UNIQUE INDEX index_vulnerability_occurrence_identifiers_on_unique_keys ON vulnerability_occurrence_identifiers USING btree (occurrence_id, identifier_id);
 
+CREATE INDEX index_vulnerability_occurrence_pipelines_occurrence_id_and_id ON vulnerability_occurrence_pipelines USING btree (occurrence_id, id DESC);
+
 CREATE INDEX index_vulnerability_occurrence_pipelines_on_pipeline_id ON vulnerability_occurrence_pipelines USING btree (pipeline_id);
 
 CREATE INDEX index_vulnerability_occurrences_deduplication ON vulnerability_occurrences USING btree (project_id, report_type, project_fingerprint);
 
 CREATE INDEX index_vulnerability_occurrences_for_issue_links_migration ON vulnerability_occurrences USING btree (project_id, report_type, encode(project_fingerprint, 'hex'::text));
+
+CREATE INDEX index_vulnerability_occurrences_on_location_cluster_id ON vulnerability_occurrences USING gin (((location -> 'cluster_id'::text))) WHERE (report_type = 7);
 
 CREATE INDEX index_vulnerability_occurrences_on_location_image ON vulnerability_occurrences USING gin (((location -> 'image'::text))) WHERE (report_type = ANY (ARRAY[2, 7]));
 
@@ -27245,6 +27356,8 @@ ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PAR
 
 ALTER INDEX analytics_cycle_analytics_merge_request_stage_events_pkey ATTACH PARTITION gitlab_partitions_static.analytics_cycle_analytics_merge_request_stage_events_31_pkey;
 
+ALTER INDEX index_loose_foreign_keys_deleted_records_for_loading_records ATTACH PARTITION gitlab_partitions_static.index_8be8640437;
+
 ALTER INDEX loose_foreign_keys_deleted_records_pkey ATTACH PARTITION gitlab_partitions_static.loose_foreign_keys_deleted_records_1_pkey;
 
 ALTER INDEX index_product_analytics_events_experimental_project_and_time ATTACH PARTITION gitlab_partitions_static.product_analytics_events_expe_project_id_collector_tstamp_idx10;
@@ -27503,6 +27616,10 @@ ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_p
 
 ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_partitions_static.product_analytics_events_experimental_63_pkey;
 
+CREATE TRIGGER chat_names_loose_fk_trigger AFTER DELETE ON chat_names REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
+CREATE TRIGGER ci_runners_loose_fk_trigger AFTER DELETE ON ci_runners REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
 CREATE TRIGGER trigger_91dc388a5fe6 BEFORE INSERT OR UPDATE ON dep_ci_build_trace_sections FOR EACH ROW EXECUTE FUNCTION trigger_91dc388a5fe6();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
@@ -27576,6 +27693,9 @@ ALTER TABLE ONLY project_pages_metadata
 
 ALTER TABLE ONLY group_deletion_schedules
     ADD CONSTRAINT fk_11e3ebfcdd FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT fk_12816d4bbb FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_1302949740 FOREIGN KEY (last_edited_by_id) REFERENCES users(id) ON DELETE SET NULL;
@@ -28056,6 +28176,9 @@ ALTER TABLE ONLY identities
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_ab0a250ff6 FOREIGN KEY (iteration_cadence_id) REFERENCES iterations_cadences(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY member_tasks
+    ADD CONSTRAINT fk_ab636303dd FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dep_ci_build_trace_sections
     ADD CONSTRAINT fk_ab7c104e26 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -28638,9 +28761,6 @@ ALTER TABLE ONLY incident_management_oncall_rotations
 
 ALTER TABLE ONLY ci_unit_test_failures
     ADD CONSTRAINT fk_rails_259da3e79c FOREIGN KEY (unit_test_id) REFERENCES ci_unit_tests(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY analytics_devops_adoption_snapshots
-    ADD CONSTRAINT fk_rails_25da9a92c0 FOREIGN KEY (segment_id) REFERENCES analytics_devops_adoption_segments(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY cluster_agents
     ADD CONSTRAINT fk_rails_25e9fc2d5d FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -29973,9 +30093,6 @@ ALTER TABLE ONLY ci_job_variables
 
 ALTER TABLE ONLY packages_nuget_metadata
     ADD CONSTRAINT fk_rails_fc0c19f5b4 FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
-
-ALTER TABLE incident_management_pending_alert_escalations
-    ADD CONSTRAINT fk_rails_fcbfd9338b FOREIGN KEY (schedule_id) REFERENCES incident_management_oncall_schedules(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY customer_relations_contacts
     ADD CONSTRAINT fk_rails_fd3f2e7572 FOREIGN KEY (organization_id) REFERENCES customer_relations_organizations(id) ON DELETE CASCADE;

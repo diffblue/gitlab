@@ -1,7 +1,7 @@
 ---
 stage: Enablement
 group: Distribution
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
 # GitLab Mattermost
@@ -229,7 +229,7 @@ sudo gitlab-ctl start mattermost
 ### Mattermost Command Line Tools (CLI)
 
 NOTE:
-This CLI will be replaced in a future release with the new [`mmctl` Command Line Tool](https://docs.mattermost.com/administration/mmctl-cli-tool.html).
+This CLI will be replaced in a future release with the new [`mmctl` Command Line Tool](https://docs.mattermost.com/manage/mmctl-command-line-tool.html).
 
 To use the [Mattermost Command Line Tools (CLI)](https://docs.mattermost.com/administration/command-line-tools.html), ensure that you are in the `/opt/gitlab/embedded/service/mattermost` directory when you run the CLI commands and that you specify the location of the configuration file. The executable is `/opt/gitlab/embedded/bin/mattermost`.
 
@@ -428,7 +428,7 @@ mattermost['env'] = {
 
 Refer to the [Mattermost Configuration Settings
 documentation](https://docs.mattermost.com/administration/config-settings.html)
-for details about categories, configuration values, etc.
+for details about categories and configuration values.
 
 There are a few exceptions to this rule:
 

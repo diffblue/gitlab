@@ -11,9 +11,13 @@ query getIssues(
   $assigneeId: String
   $assigneeUsernames: [String!]
   $authorUsername: String
+  $confidential: Boolean
   $labelName: [String]
   $milestoneTitle: [String]
   $milestoneWildcardId: MilestoneWildcardId
+  $myReactionEmoji: String
+  $releaseTag: [String!]
+  $releaseTagWildcardId: ReleaseTagWildcardId
   $types: [IssueType!]
   $epicId: String
   $iterationId: [ID]
@@ -27,6 +31,7 @@ query getIssues(
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     issues(
+      includeSubepics: true
       includeSubgroups: true
       search: $search
       sort: $sort
@@ -34,9 +39,11 @@ query getIssues(
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
       types: $types
       epicId: $epicId
       iterationId: $iterationId
@@ -62,15 +69,20 @@ query getIssues(
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
     issues(
+      includeSubepics: true
       search: $search
       sort: $sort
       state: $state
       assigneeId: $assigneeId
       assigneeUsernames: $assigneeUsernames
       authorUsername: $authorUsername
+      confidential: $confidential
       labelName: $labelName
       milestoneTitle: $milestoneTitle
       milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
+      releaseTag: $releaseTag
+      releaseTagWildcardId: $releaseTagWildcardId
       types: $types
       epicId: $epicId
       iterationId: $iterationId

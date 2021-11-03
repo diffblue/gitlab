@@ -25,9 +25,8 @@ module Ci
         @failed_batches = []
       end
 
-      def execute!(ids_range: nil, batch_size: BATCH_SIZE)
-        relation = Namespace
-        relation = relation.id_in(ids_range) if ids_range
+      def execute!(ids_range:, batch_size: BATCH_SIZE)
+        relation = Namespace.without_project_namespaces.id_in(ids_range)
         relation.each_batch(of: batch_size) do |namespaces|
           reset_ci_minutes!(namespaces)
         end

@@ -309,7 +309,6 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       let!(:finding) do
         created_finding = create(:vulnerabilities_finding,
-          pipelines: [pipeline],
           identifiers: [identifier],
           primary_identifier: identifier,
           scanner: scanner,
@@ -340,7 +339,6 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       let!(:finding_with_uuidv5) do
         create(:vulnerabilities_finding,
-               pipelines: [pipeline],
                identifiers: [different_identifier],
                primary_identifier: different_identifier,
                scanner: scanner,
@@ -356,7 +354,6 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       let!(:finding_with_wrong_uuidv5) do
         create(:vulnerabilities_finding,
-               pipelines: [pipeline],
                identifiers: [identifier_of_corrupted_finding],
                primary_identifier: identifier_of_corrupted_finding,
                scanner: scanner,
@@ -463,7 +460,7 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
 
       context 'when the existing vulnerability requires manual resolution' do
         let(:trait) { :secret_detection }
-        let!(:finding) { create(:vulnerabilities_finding, :with_secret_detection, project: project, pipelines: [pipeline]) }
+        let!(:finding) { create(:vulnerabilities_finding, :with_secret_detection, project: project) }
 
         it 'wont mark the vulnerability as resolved on default branch' do
           expect { subject }.not_to change { finding.vulnerability.reload.resolved_on_default_branch }
@@ -569,7 +566,8 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
     end
 
     context 'with existing data from same pipeline' do
-      let!(:finding) { create(:vulnerabilities_finding, project: project, pipelines: [pipeline]) }
+      let(:finding) { create(:vulnerabilities_finding, :with_pipeline, project: project) }
+      let!(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
       let(:trait) { :sast }
 
       it 'skips report' do
@@ -747,6 +745,23 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
         .and change { Vulnerabilities::FindingSignature.count }.by(0)
         .and change { Vulnerabilities::Finding.last.location['start_line'] }.from(29).to(30)
         .and change { Vulnerabilities::Finding.last.location['end_line'] }.from(29).to(30)
+    end
+  end
+
+  context 'for container scanning' do
+    let(:trait) { :container_scanning }
+
+    before do
+      stub_licensed_features(container_scanning: true, security_dashboard: true)
+
+      allow(pipeline).to receive(:user).and_return(project.owner)
+    end
+
+    it 'populates finding location' do
+      subject
+
+      last_finding = Vulnerabilities::Finding.last
+      expect(last_finding.read_attribute(:location)).to eq(last_finding.location)
     end
   end
 end

@@ -1,17 +1,26 @@
-query getDependencyProxyDetails($fullPath: ID!) {
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+
+query getDependencyProxyDetails(
+  $fullPath: ID!
+  $first: Int
+  $last: Int
+  $after: String
+  $before: String
+) {
   group(fullPath: $fullPath) {
-    name
     dependencyProxyBlobCount
     dependencyProxyTotalSize
     dependencyProxyImagePrefix
-    dependencyProxyManifests {
-      nodes {
-        digest
-      }
+    dependencyProxySetting {
+      enabled
     }
-    dependencyProxyBlobs {
+    dependencyProxyManifests(after: $after, before: $before, first: $first, last: $last) {
       nodes {
-        fileName
+        createdAt
+        imageName
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

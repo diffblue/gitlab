@@ -1,6 +1,6 @@
 <script>
-import { GlPagination, GlSkeletonLoader } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { GlPagination, GlSkeletonLoader } from '@gitlab/ui';
 import { componentNames } from 'ee/reports/components/issue_body';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { n__, s__, sprintf } from '~/locale';
@@ -71,8 +71,8 @@ export default {
     <report-section
       always-open
       :status="codequalityStatus"
-      :loading-text="translateText('codeclimate').loading"
-      :error-text="translateText('codeclimate').error"
+      :loading-text="translateText('Code Quality').loading"
+      :error-text="translateText('Code Quality').error"
       :success-text="codequalityText"
       :unresolved-issues="codequalityIssues"
       :resolved-issues="[]"

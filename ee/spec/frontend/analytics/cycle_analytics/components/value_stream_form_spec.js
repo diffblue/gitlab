@@ -247,8 +247,8 @@ describe('ValueStreamForm', () => {
         expect(findPresetSelector().exists()).toBe(false);
       });
 
-      it('sets the submit action text to "Save Value Stream"', () => {
-        expect(findBtn('actionPrimary').text).toBe('Save Value Stream');
+      it('sets the submit action text to "Save value stream"', () => {
+        expect(findBtn('actionPrimary').text).toBe('Save value stream');
       });
 
       it('does not display any hidden stages', () => {

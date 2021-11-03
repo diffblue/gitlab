@@ -1,4 +1,4 @@
-import { GlButton, GlIcon, GlBadge, GlProgressBar } from '@gitlab/ui';
+import { GlButton, GlIcon, GlBadge, GlProgressBar, GlLink } from '@gitlab/ui';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
 import DevopsAdoptionOverviewTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_table.vue';
 import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
@@ -78,6 +78,17 @@ describe('DevopsAdoptionOverviewTable', () => {
         );
       });
 
+      it('includes a link to the group DevOps page', () => {
+        createComponent();
+
+        const link = findColSubComponent(TABLE_TEST_IDS_NAMESPACE, GlLink);
+
+        expect(link.exists()).toBe(true);
+        expect(link.attributes('href')).toBe(
+          `/groups/${devopsAdoptionNamespaceData.nodes[0].namespace.fullPath}/-/analytics/devops_adoption`,
+        );
+      });
+
       describe('"This group" badge', () => {
         const thisGroupGid = devopsAdoptionNamespaceData.nodes[0].namespace.id;
 
@@ -104,6 +115,12 @@ describe('DevopsAdoptionOverviewTable', () => {
           const name = findColRowChild(TABLE_TEST_IDS_NAMESPACE, 1, 'span');
 
           expect(name.classes()).toStrictEqual(['gl-text-gray-400']);
+        });
+
+        it('does not include a link to the group DevOps page', () => {
+          const link = findColRowChild(TABLE_TEST_IDS_NAMESPACE, 1, GlLink);
+
+          expect(link.exists()).toBe(false);
         });
 
         describe('hourglass icon', () => {

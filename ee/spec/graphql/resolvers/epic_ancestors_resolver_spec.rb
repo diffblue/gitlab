@@ -54,8 +54,8 @@ RSpec.describe Resolvers::EpicAncestorsResolver do
           sub_group.add_developer(current_user)
         end
 
-        it 'returns all ancestors' do
-          expect(resolve_ancestors(epic4, args)).to contain_exactly(epic1, epic2, epic3)
+        it 'returns all ancestors in the correct order' do
+          expect(resolve_ancestors(epic4, args)).to eq([epic1, epic2, epic3])
         end
 
         it 'does not return parent group epics when include_ancestor_groups is false' do

@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "Name": {
+      "type": "string",
+      "description": "Name on the GitLab license"
+    },
+    "Email": {
+      "type": "string",
+      "description": "Email on the GitLab license"
+    },
+    "Company": {
+      "type": "string",
+      "description": "Company on the GitLab license"
+    }
+  }
+}

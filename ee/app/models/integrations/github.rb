@@ -39,7 +39,7 @@ module Integrations
     end
 
     def fields
-      learn_more_link_url = help_page_path('user/project/integrations/github', anchor: 'static--dynamic-status-check-name')
+      learn_more_link_url = help_page_path('user/project/integrations/github', anchor: 'static-or-dynamic-status-check-names')
       learn_more_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: learn_more_link_url }
       static_context_field_help = s_('GithubIntegration|Select this if you want GitHub to mark status checks as "Required". %{learn_more_link_start}Learn more%{learn_more_link_end}.').html_safe % { learn_more_link_start: learn_more_link_start, learn_more_link_end: '</a>'.html_safe }
 
@@ -51,6 +51,8 @@ module Integrations
           name: "token",
           required: true,
           placeholder: "8d3f016698e...",
+          non_empty_password_title: s_('ProjectService|Enter new token'),
+          non_empty_password_help: s_('ProjectService|Leave blank to use your current token.'),
           help: token_field_help },
         { type: 'text',
           name: "repository_url",
@@ -60,6 +62,7 @@ module Integrations
         { type: 'checkbox',
           name: "static_context",
           title: s_('GithubIntegration|Static status check names (optional)'),
+          checkbox_label: s_('GithubIntegration|Enable static status check names'),
           help: static_context_field_help }
       ]
     end

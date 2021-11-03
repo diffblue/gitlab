@@ -124,6 +124,7 @@ module EE
 
       scope :with_code_coverage, -> do
         joins(:daily_build_group_report_results).merge(::Ci::DailyBuildGroupReportResult.with_coverage.with_default_branch).group(:id)
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339974')
       end
 
       scope :with_coverage_feature_usage, ->(default_branch: nil) do
@@ -190,8 +191,7 @@ module EE
           .order(excess_arel.desc)
       end
 
-      delegate :shared_runners_seconds, :shared_runners_seconds_last_reset,
-        to: :statistics, allow_nil: true
+      delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_quota, to: :shared_runners_limit_namespace
 
@@ -405,10 +405,6 @@ module EE
       feature_available?(:jira_issues_integration)
     end
 
-    def zentao_issues_integration_available?
-      feature_available?(:zentao_issues_integration)
-    end
-
     def multiple_approval_rules_available?
       feature_available?(:multiple_approval_rules)
     end
@@ -544,7 +540,7 @@ module EE
     end
 
     def reset_approvals_on_push
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor)
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self.group&.root_ancestor, default_enabled: :yaml)
         !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
                                                                     .retain_approvals_on_push
                                                                     .value && feature_available?(:merge_request_approvers)
@@ -578,7 +574,7 @@ module EE
     end
 
     def require_password_to_approve
-      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor)
+      if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self&.group&.root_ancestor, default_enabled: :yaml)
         ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
                                                                     .require_password_to_approve
                                                                     .value && password_authentication_enabled_for_web?
@@ -741,7 +737,7 @@ module EE
 
     def disable_overriding_approvers_per_merge_request
       strong_memoize(:disable_overriding_approvers_per_merge_request) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
@@ -761,7 +757,7 @@ module EE
 
     def merge_requests_author_approval
       strong_memoize(:merge_requests_author_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
@@ -782,7 +778,7 @@ module EE
 
     def merge_requests_disable_committers_approval
       strong_memoize(:merge_requests_disable_committers_approval) do
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, self, default_enabled: :yaml)
           super unless feature_available?(:admin_merge_request_approvers_rules)
 
           !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
@@ -813,7 +809,9 @@ module EE
 
     override :predefined_variables
     def predefined_variables
-      super.concat(requirements_ci_variables)
+      strong_memoize(:ee_predefined_variables) do
+        super.concat(requirements_ci_variables)
+      end
     end
 
     def add_template_export_job(current_user:, after_export_strategy: nil, params: {})
@@ -890,6 +888,20 @@ module EE
       end
     end
 
+    # Manually preloads saml_providers, which cannot be done in AR, since the
+    # relationship is on the root ancestor.
+    # This is required since the `:read_group` ability depends on `Group.saml_provider`
+    override :project_group_links_with_preload
+    def project_group_links_with_preload
+      links = super.to_a
+      saml_providers = SamlProvider.where(group: links.map { _1.group.root_ancestor }).index_by(&:group_id)
+      links.each do |link|
+        link.group.root_saml_provider = saml_providers[link.group.root_ancestor.id]
+      end
+
+      links
+    end
+
     def github_integration_enabled?
       feature_available?(:github_project_service_integration)
     end
@@ -935,9 +947,13 @@ module EE
       end
     end
 
-    # Return the group's setting for delayed deletion, false for user namespace projects
+    # Return the group's setting for delayed deletion, false for user namespace
+    #   projects
+    #
     def group_deletion_mode_configured?
-      group && group.namespace_settings.delayed_project_removal?
+      return false unless group&.namespace_settings
+
+      group.namespace_settings.delayed_project_removal?
     end
 
     def latest_ingested_security_pipeline

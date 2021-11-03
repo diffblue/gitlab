@@ -5,6 +5,7 @@ export const PER_PAGE = 20;
 export const DEBOUNCE_DELAY = 500;
 export const PROGRESS_BAR_HEIGHT = '8px';
 export const DATE_TIME_FORMAT = 'yyyy-mm-dd HH:MM';
+export const GROUP_DEVOPS_PATH = '/groups/%{fullPath}/-/analytics/devops_adoption';
 
 export const OVERVIEW_TABLE_NAME_KEY = 'name';
 

@@ -88,7 +88,7 @@ RSpec.describe DeleteMergeRequestsFromOriginalIndex, :elastic, :sidekiq_inline d
 
         migration.migrate
 
-        expect(migration.migration_state).to match(retry_attempt: 2, task_id: nil, halted: true, halted_indexing_unpaused: false)
+        expect(migration.migration_state).to match(retry_attempt: 2, task_id: nil, halted: true, failed: true, halted_indexing_unpaused: false)
       end
     end
 

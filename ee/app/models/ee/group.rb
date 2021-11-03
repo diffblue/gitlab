@@ -176,6 +176,12 @@ module EE
       end
     end
 
+    attr_writer :root_saml_provider
+
+    def root_saml_provider
+      strong_memoize(:root_saml_provider) { root_ancestor.saml_provider }
+    end
+
     def ip_restriction_ranges
       return unless ip_restrictions.present?
 
@@ -484,6 +490,10 @@ module EE
       user_cap <= root_ancestor.billable_members_count(requested_hosted_plan)
     end
 
+    def namespace_user_cap_reached_cache_key
+      "namespace_user_cap_reached:#{root_ancestor.id}"
+    end
+
     private
 
     override :post_create_hook
@@ -614,7 +624,13 @@ module EE
     end
 
     def invited_or_shared_group_members(groups)
-      ::GroupMember.active_without_invites_and_requests.where(source_id: ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors)
+      groups_and_ancestors = if ::Feature.enabled?(:linear_ee_group_ancestor_scopes, self, default_enabled: :yaml)
+                               groups.self_and_ancestors
+                             else
+                               ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors
+                             end
+
+      ::GroupMember.active_without_invites_and_requests.where(source_id: groups_and_ancestors)
     end
 
     override :_safe_read_repository_read_only_column

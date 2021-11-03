@@ -7,7 +7,6 @@ module EE
     override :sidebar_operations_paths
     def sidebar_operations_paths
       super + %w[
-        cluster_agents
         oncall_schedules
       ]
     end
@@ -75,7 +74,7 @@ module EE
         license_check_help_page_path: help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'),
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule')
       }.tap do |data|
-        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor)
+        if ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, project.root_ancestor, default_enabled: :yaml)
           data[:approvals_path] = expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id))
           data[:group_name] = project.root_ancestor.name
         end
@@ -172,6 +171,9 @@ module EE
           has_vulnerabilities: 'false',
           has_jira_vulnerabilities_integration_enabled: project.configured_to_create_issues_from_vulnerabilities?.to_s,
           empty_state_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+          operational_configuration_path: new_project_security_policy_path(@project),
+          operational_empty_state_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+          operational_help_path: help_page_path('user/application_security/policies/index'),
           survey_request_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
           security_dashboard_help_path: help_page_path('user/application_security/security_dashboard/index'),
           no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
@@ -191,6 +193,9 @@ module EE
           dashboard_documentation: help_page_path('user/application_security/security_dashboard/index'),
           not_enabled_scanners_help_path: help_page_path('user/application_security/index', anchor: 'quick-start'),
           no_pipeline_run_scanners_help_path: new_project_pipeline_path(project),
+          operational_configuration_path: new_project_security_policy_path(@project),
+          operational_empty_state_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+          operational_help_path: help_page_path('user/application_security/policies/index'),
           security_dashboard_help_path: help_page_path('user/application_security/security_dashboard/index'),
           auto_fix_documentation: help_page_path('user/application_security/index', anchor: 'auto-fix-merge-requests'),
           auto_fix_mrs_path: project_merge_requests_path(@project, label_name: 'GitLab-auto-fix'),
@@ -241,7 +246,7 @@ module EE
     end
 
     def show_compliance_framework_badge?(project)
-      project&.compliance_framework_setting&.compliance_management_framework.present?
+      project&.licensed_feature_available?(:custom_compliance_frameworks) && project&.compliance_framework_setting&.compliance_management_framework.present?
     end
 
     def scheduled_for_deletion?(project)

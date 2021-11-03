@@ -125,7 +125,7 @@ RSpec.describe 'Epic in issue sidebar', :js do
 
     it_behaves_like 'epic in issue sidebar'
 
-    context 'with namespaced plans' do
+    context 'with namespaced plans', :saas do
       before do
         stub_application_setting(check_namespace_plan: true)
       end

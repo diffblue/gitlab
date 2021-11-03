@@ -60,6 +60,10 @@ maximum of two directory levels from the repository's root. For example, the
 `gemnasium-dependency_scanning` job is enabled if a repository contains either `Gemfile`,
 `api/Gemfile`, or `api/client/Gemfile`, but not if the only supported dependency file is `api/v1/client/Gemfile`.
 
+<!-- markdownlint-disable MD044 -->
+<!-- MD044/proper-names test disabled after this line to make page compatible with markdownlint-cli 0.29.0. -->
+<!-- See https://docs.gitlab.com/ee/development/documentation/testing.html#disable-markdownlint-tests -->
+
 The following languages and dependency managers are supported:
 
 <style>
@@ -246,6 +250,8 @@ table.supported-languages ul {
   </tbody>
 </table>
 
+<!-- markdownlint-enable MD044 -->
+
 ### Notes regarding supported languages and package managers
 
 1. Although Gradle with Java 8 is supported, there are other issues such that Android project builds are not supported at this time. Please see the backlog issue [Android support for Dependency Scanning (gemnasium-maven)](https://gitlab.com/gitlab-org/gitlab/-/issues/336866) for more details.
@@ -321,14 +327,15 @@ We execute both analyzers because they use different sources of vulnerability da
 
 The analyzer for these languages supports multiple lockfiles.
 
-### Future support for additional languages
+### Support for additional languages
 
-Plans are underway for supporting the following languages, dependency managers, and dependency files. For details, see the issue link for each.
-For workarounds, see the [Troubleshooting section](#troubleshooting)
+Support for additional languages, dependency managers, and dependency files are tracked in the following issues:
 
 | Package Managers    | Languages | Supported files | Scan tools | Issue |
 | ------------------- | --------- | --------------- | ---------- | ----- |
 | [Poetry](https://python-poetry.org/) | Python | `poetry.lock` | [Gemnasium](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium) | [GitLab#7006](https://gitlab.com/gitlab-org/gitlab/-/issues/7006) |
+
+For workarounds, see the [Troubleshooting section](#troubleshooting).
 
 ## Contribute your scanner
 
@@ -359,8 +366,8 @@ always take the latest dependency scanning artifact available.
 
 ### Enable Dependency Scanning via an automatic merge request
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/4908) in GitLab 14.1.
-> - [Enabled with `sec_dependency_scanning_ui_enable` flag](https://gitlab.com/gitlab-org/gitlab/-/issues/282533) for self-managed GitLab in GitLab 14.1 and is ready for production use.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/4908) in GitLab 14.1 [with a flag](../../../administration/feature_flags.md) named `sec_dependency_scanning_ui_enable`. Enabled by default.
+> - [Enabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/282533) in GitLab 14.1.
 > - [Feature flag sec_dependency_scanning_ui_enable removed](https://gitlab.com/gitlab-org/gitlab/-/issues/326005) in GitLab 14.2.
 
 To enable Dependency Scanning in a project, you can create a merge request
@@ -927,3 +934,37 @@ gemnasium-maven-dependency_scanning:
     - for i in `ls cert*`; do keytool -v -importcert -alias "custom-cert-$i" -file $i -trustcacerts -noprompt -storepass changeit -keystore /opt/asdf/installs/java/adoptopenjdk-11.0.7+10.1/lib/security/cacerts 1>/dev/null 2>&1 || true; done # import each certificate using keytool (note the keystore location is related to the Java version being used and should be changed accordingly for other versions)
     - unset ADDITIONAL_CA_CERT_BUNDLE # unset the variable so that the analyzer doesn't duplicate the import
 ```
+
+### Dependency Scanning job fails with message `strconv.ParseUint: parsing "0.0": invalid syntax`
+
+Invoking Docker-in-Docker is the likely cause of this error. Docker-in-Docker is:
+
+- Disabled by default in GitLab 13.0 and later.
+- Unsupported from GitLab 13.4 and later.
+
+To fix this error, disable Docker-in-Docker for dependency scanning. Individual
+`<analyzer-name>-dependency_scanning` jobs are created for each analyzer that runs in your CI/CD
+pipeline.
+
+```yaml
+include:
+  - template: Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  DS_DISABLE_DIND: "true"
+```
+
+### Message `<file> does not exist in <commit SHA>`
+
+When the `Location` of a dependency in a file is shown, the path in the link goes to a specific Git
+SHA.
+
+If the lock file that our dependency scanning tools reviewed was cached, however, selecting that
+link redirects you to the repository root, with the message:
+`<file> does not exist in <commit SHA>`.
+
+The lock file is cached during the build phase and passed to the dependency scanning job before the
+scan occurs. Because the cache is downloaded before the analyzer run occurs, the existence of a lock
+file in the `CI_BUILDS_DIR` directory triggers the dependency scanning job.
+
+We recommend committing the lock files, which prevents this warning.

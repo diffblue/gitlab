@@ -21,7 +21,7 @@ GitLab:
 
 If you have a deployment service like [Kubernetes](../../user/infrastructure/clusters/index.md)
 associated with your project, you can use it to assist with your deployments.
-You can even access a [web terminal](#web-terminals) for your environment from within GitLab.
+You can even access a [web terminal](#web-terminals-deprecated) for your environment from within GitLab.
 
 ## View environments and deployments
 
@@ -171,9 +171,13 @@ The `when: manual` action:
 
 You can find the play button in the pipelines, environments, deployments, and jobs views.
 
-## Configure Kubernetes deployments
+## Configure Kubernetes deployments (DEPRECATED)
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/27630) in GitLab 12.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/27630) in GitLab 12.6.
+> - [Deprecated](https://gitlab.com/groups/gitlab-org/configure/-/epics/8) in GitLab 14.5.
+
+WARNING:
+This feature was [deprecated](https://gitlab.com/groups/gitlab-org/configure/-/epics/8) in GitLab 14.5.
 
 If you are deploying to a [Kubernetes cluster](../../user/infrastructure/clusters/index.md)
 associated with your project, you can configure these deployments from your
@@ -307,6 +311,31 @@ Note the following:
   `GIT_STRATEGY: none`, configure [pipelines for merge requests](../../ci/pipelines/merge_request_pipelines.md)
   for these jobs. This ensures that runners can fetch the repository even after a feature branch is
   deleted. For more information, see [Ref Specs for Runners](../pipelines/index.md#ref-specs-for-runners).
+
+## Track newly included merge requests per deployment
+
+GitLab can track newly included merge requests per deployment.
+When a deployment succeeded, the system calculates commit-diffs between the latest deployment and the previous deployment.
+This tracking information can be fetched via the [Deployment API](../../api/deployments.md#list-of-merge-requests-associated-with-a-deployment)
+and displayed at a post-merge pipeline in [merge request pages](../../user/project/merge_requests/index.md).
+
+To activate this tracking, your environment must be configured in the following:
+
+- [Environment name](../yaml/index.md#environmentname) is not foldered with `/` (that is, top-level/long-lived environments), _OR_
+- [Environment tier](#deployment-tier-of-environments) is either `production` or `staging`.
+
+Here are the example setups of [`environment` keyword](../yaml/index.md#environment) in `.gitlab-ci.yml`:
+
+```yaml
+# Trackable
+environment: production
+environment: production/aws
+environment: development
+
+# Non Trackable
+environment: review/$CI_COMMIT_REF_SLUG
+environment: testing/aws
+```
 
 ## Working with environments
 
@@ -631,7 +660,12 @@ It may take a minute or two for data to appear after initial deployment.
 
 Metric charts can be embedded in GitLab Flavored Markdown. See [Embedding Metrics in GitLab Flavored Markdown](../../operations/metrics/embed.md) for more details.
 
-### Web terminals
+### Web terminals (DEPRECATED)
+
+> [Deprecated](https://gitlab.com/groups/gitlab-org/configure/-/epics/8) in GitLab 14.5.
+
+WARNING:
+This feature was [deprecated](https://gitlab.com/groups/gitlab-org/configure/-/epics/8) in GitLab 14.5.
 
 If you deploy to your environments with the help of a deployment service (for example,
 the [Kubernetes integration](../../user/infrastructure/clusters/index.md)), GitLab can open
@@ -822,11 +856,34 @@ To ensure the `action: stop` can always run when needed, you can:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/21182) in GitLab 14.4.
 
 FLAG:
-On self-managed GitLab, by default this bug fix is not available. To make it available per project or for your entire instance, ask an administrator to [enable the `surface_environment_creation_failure` flag](../../administration/feature_flags.md). On GitLab.com, this bug fix is not available, but will be rolled out shortly.
+On self-managed GitLab, by default this bug fix is available. To hide the bug fix per project,
+ask an administrator to [disable the feature flag](../../administration/feature_flags.md) named `surface_environment_creation_failure`.
+On GitLab.com, this bug fix is available.
 
 If your project is configured to [create a dynamic environment](#create-a-dynamic-environment),
-such as a [Review App](../review_apps/index.md), you might encounter this error
-because the dynamically generated parameter is invalid for the system.
+you might encounter this error because the dynamically generated parameter can't be used for creating an environment.
+
+For example, your project has the following `.gitlab-ci.yml`:
+
+```yaml
+deploy:
+  script: echo
+  environment: production/$ENVIRONMENT
+```
+
+Since `$ENVIRONMENT` variable does not exist in the pipeline, GitLab tries to
+create an environment with a name `production/`, which is invalid in
+[the environment name constraint](../yaml/index.md).
+
+To fix this, use one of the following solutions:
+
+- Remove `environment` keyword from the deployment job. GitLab has already been
+  ignoring the invalid keyword, therefore your deployment pipelines stay intact
+  even after the keyword removal.
+- Ensure the variable exists in the pipeline. Please note that there is
+  [a limitation on supported variables](../variables/where_variables_can_be_used.md#gitlab-ciyml-file).
+
+#### If you get this error on Review Apps
 
 For example, if you have the following in your `.gitlab-ci.yml`:
 
@@ -841,7 +898,7 @@ the `review` job tries to create an environment with `review/bug-fix!`.
 However, the `!` is an invalid character for environments, so the
 deployment job fails since it was about to run without an environment.
 
-To fix this, you can:
+To fix this, use one of the following solutions:
 
 - Re-create your feature branch without the invalid characters,
   such as `bug-fix`.

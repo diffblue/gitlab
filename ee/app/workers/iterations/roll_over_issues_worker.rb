@@ -11,7 +11,7 @@ module Iterations
     idempotent!
 
     queue_namespace :iterations
-    feature_category :issue_tracking
+    feature_category :team_planning
 
     def perform(iteration_ids)
       Iteration.closed.id_in(iteration_ids).each_batch(of: BATCH_SIZE) do |iterations_batch|

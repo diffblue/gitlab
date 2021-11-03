@@ -1,16 +1,16 @@
 <script>
 import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import AssigneeSelect from './assignee_select.vue';
 import BoardScopeCurrentIteration from './board_scope_current_iteration.vue';
+import BoardLabelsSelect from './labels_select.vue';
 import BoardMilestoneSelect from './milestone_select.vue';
 import BoardWeightSelect from './weight_select.vue';
 
 export default {
   components: {
     AssigneeSelect,
-    LabelsSelect,
+    BoardLabelsSelect,
     BoardMilestoneSelect,
     BoardScopeCurrentIteration,
     BoardWeightSelect,
@@ -27,29 +27,6 @@ export default {
     board: {
       type: Object,
       required: true,
-    },
-    labelsPath: {
-      type: String,
-      required: true,
-    },
-    labelsWebUrl: {
-      type: String,
-      required: true,
-    },
-    enableScopedLabels: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    projectId: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    groupId: {
-      type: Number,
-      required: false,
-      default: 0,
     },
     weights: {
       type: Array,
@@ -68,6 +45,11 @@ export default {
     ...mapGetters(['isIssueBoard']),
     expandButtonText() {
       return this.expanded ? __('Collapse') : __('Expand');
+    },
+    scopeText() {
+      return this.isIssueBoard
+        ? __('Board scope affects which issues are displayed for anyone who visits this board')
+        : __('Board scope affects which epics are displayed for anyone who visits this board');
     },
   },
 
@@ -92,14 +74,12 @@ export default {
       </button>
     </div>
     <p class="text-secondary gl-mb-3">
-      {{ __('Board scope affects which issues are displayed for anyone who visits this board') }}
+      {{ scopeText }}
     </p>
     <div v-if="!collapseScope || expanded">
       <board-milestone-select
         v-if="isIssueBoard"
         :board="board"
-        :group-id="groupId"
-        :project-id="projectId"
         :can-edit="canAdminBoard"
         @set-milestone="$emit('set-milestone', $event)"
       />
@@ -111,33 +91,17 @@ export default {
         @set-iteration="$emit('set-iteration', $event)"
       />
 
-      <labels-select
-        :allow-label-edit="canAdminBoard"
-        :allow-label-create="canAdminBoard"
-        :allow-label-remove="canAdminBoard"
-        :allow-multiselect="true"
-        :allow-scoped-labels="enableScopedLabels"
-        :selected-labels="board.labels"
-        :hide-collapsed-view="true"
-        :labels-fetch-path="labelsPath"
-        :labels-manage-path="labelsWebUrl"
-        :labels-filter-base-path="labelsWebUrl"
-        :labels-list-title="__('Select labels')"
-        :dropdown-button-text="__('Choose labels')"
-        variant="sidebar"
-        class="block labels"
+      <board-labels-select
+        :board="board"
+        :can-edit="canAdminBoard"
         @onLabelRemove="handleLabelRemove"
-        @updateSelectedLabels="handleLabelClick"
-      >
-        {{ __('Any label') }}
-      </labels-select>
+        @set-labels="handleLabelClick"
+      />
 
       <assignee-select
         v-if="isIssueBoard"
         :board="board"
         :can-edit="canAdminBoard"
-        :project-id="projectId"
-        :group-id="groupId"
         @set-assignee="$emit('set-assignee', $event)"
       />
 

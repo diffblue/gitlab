@@ -78,9 +78,11 @@ module EE
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Update
         mount_mutation ::Mutations::IncidentManagement::EscalationPolicy::Destroy
         mount_mutation ::Mutations::AppSec::Fuzzing::API::CiConfiguration::Create
+        mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create, feature_flag: :corpus_management
         mount_mutation ::Mutations::Projects::SetComplianceFramework
         mount_mutation ::Mutations::SecurityPolicy::CommitScanExecutionPolicy
         mount_mutation ::Mutations::SecurityPolicy::AssignSecurityPolicyProject
+        mount_mutation ::Mutations::SecurityPolicy::UnassignSecurityPolicyProject
         mount_mutation ::Mutations::SecurityPolicy::CreateSecurityPolicyProject
         mount_mutation ::Mutations::Security::CiConfiguration::ConfigureDependencyScanning
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Create

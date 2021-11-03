@@ -35,8 +35,4 @@ fragment TestCase on Issue {
       state
     }
   }
-  taskCompletionStatus {
-    count
-    completedCount
-  }
 }

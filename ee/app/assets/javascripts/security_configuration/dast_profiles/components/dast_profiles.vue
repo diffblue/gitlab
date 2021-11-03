@@ -152,7 +152,6 @@ export default {
     },
     deleteProfile(profileType, profileId) {
       const {
-        projectFullPath,
         handleError,
         profileSettings: {
           [profileType]: {
@@ -174,7 +173,6 @@ export default {
           mutation: deletion.mutation,
           variables: {
             input: {
-              ...(profileType !== 'dastProfiles' ? { fullPath: projectFullPath } : {}),
               id: profileId,
             },
           },

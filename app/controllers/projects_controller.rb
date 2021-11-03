@@ -49,7 +49,7 @@ class ProjectsController < Projects::ApplicationController
                    ]
 
   feature_category :source_code_management, [:remove_fork, :housekeeping, :refs]
-  feature_category :issue_tracking, [:preview_markdown, :new_issuable_address]
+  feature_category :team_planning, [:preview_markdown, :new_issuable_address]
   feature_category :importers, [:export, :remove_export, :generate_new_export, :download_export]
   feature_category :code_review, [:unfoldered_environment_names]
 
@@ -336,11 +336,6 @@ class ProjectsController < Projects::ApplicationController
     if can?(current_user, :download_code, @project)
       return render 'projects/no_repo' unless @project.repository_exists?
 
-      if @project.can_current_user_push_to_default_branch?
-        property = @project.empty_repo? ? 'empty' : 'nonempty'
-        experiment(:empty_repo_upload, project: @project).track(:view_project_show, property: property)
-      end
-
       render 'projects/empty' if @project.empty_repo?
     else
       if can?(current_user, :read_wiki, @project)
@@ -409,6 +404,7 @@ class ProjectsController < Projects::ApplicationController
       show_default_award_emojis
       squash_option
       mr_default_target_self
+      warn_about_potentially_unwanted_characters
     ]
   end
 

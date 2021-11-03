@@ -1,3 +1,4 @@
+- return unless @project.feature_available?(:custom_compliance_frameworks)
 - user_has_edit_permissions = current_user.can?(:admin_compliance_framework, @project)
 - compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/settings/index.md', anchor: 'compliance-frameworks') }
 

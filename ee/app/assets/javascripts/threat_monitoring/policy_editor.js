@@ -21,24 +21,31 @@ export default () => {
     environmentsEndpoint,
     configureAgentHelpPath,
     createAgentHelpPath,
-    networkDocumentationPath,
     networkPoliciesEndpoint,
-    noEnvironmentSvgPath,
+    networkDocumentationPath,
     policiesPath,
     policy,
+    policyEditorEmptyStateSvgPath,
     policyType,
     projectPath,
     projectId,
     environmentId,
+    scanExecutionDocumentationPath,
   } = el.dataset;
+
+  // We require the project to have at least one available environment.
+  // An invalid default environment id means there there are no available
+  // environments, therefore infrastructure cannot be set up. A valid default
+  // environment id only means that infrastructure *might* be set up.
+  const hasEnvironment = isValidEnvironmentId(parseInt(defaultEnvironmentId, 10));
 
   const store = createStore();
   store.dispatch('threatMonitoring/setEnvironmentEndpoint', environmentsEndpoint);
   store.dispatch('networkPolicies/setEndpoints', {
     networkPoliciesEndpoint,
   });
-
-  if (environmentId !== undefined) {
+  store.dispatch('threatMonitoring/setHasEnvironment', hasEnvironment);
+  if (hasEnvironment && environmentId !== undefined) {
     store.dispatch('threatMonitoring/setCurrentEnvironmentId', parseInt(environmentId, 10));
   }
 
@@ -60,13 +67,13 @@ export default () => {
       configureAgentHelpPath,
       createAgentHelpPath,
       disableScanExecutionUpdate: parseBoolean(disableScanExecutionUpdate),
-      policyType,
       networkDocumentationPath,
-      noEnvironmentSvgPath,
+      policyEditorEmptyStateSvgPath,
+      policyType,
       projectId,
       projectPath,
-      hasEnvironment: isValidEnvironmentId(parseInt(defaultEnvironmentId, 10)),
       policiesPath,
+      scanExecutionDocumentationPath,
     },
     store,
     render(createElement) {

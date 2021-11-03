@@ -1,7 +1,8 @@
 <script>
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
+
 import SettingsBlock from '~/vue_shared/components/settings/settings_block.vue';
 import { GROUP_APPROVAL_SETTINGS_LABELS_I18N } from '../../constants';
 import ApprovalSettings from '../approval_settings.vue';
@@ -25,11 +26,16 @@ export default {
     },
   },
   links: {
-    groupSettingsDocsPath: helpPagePath('user/project/merge_requests/merge_request_approvals'),
+    groupSettingsDocsPath: helpPagePath('user/project/merge_requests/approvals/index.md'),
+    separationOfDutiesDocsPath: helpPagePath('user/compliance/compliance_report/index', {
+      anchor: 'approval-status-and-separation-of-duties',
+    }),
   },
   i18n: {
     groupSettingsHeader: __('Merge request approvals'),
-    groupSettingsDescription: __('Define approval rules. %{linkStart}Learn more.%{linkEnd}'),
+    groupSettingsDescription: s__(
+      'MergeRequestApprovals|Enforce %{separationLinkStart}separation of duties%{separationLinkEnd} for all projects. %{learnLinkStart}Learn more.%{learnLinkEnd}',
+    ),
   },
   labels: GROUP_APPROVAL_SETTINGS_LABELS_I18N,
 };
@@ -40,10 +46,21 @@ export default {
     <template #title> {{ $options.i18n.groupSettingsHeader }}</template>
     <template #description>
       <gl-sprintf :message="$options.i18n.groupSettingsDescription">
-        <template #link="{ content }">
-          <gl-link :href="$options.links.groupSettingsDocsPath" target="_blank">{{
-            content
-          }}</gl-link>
+        <template #separationLink="{ content }">
+          <gl-link
+            data-testid="group-settings-description"
+            :href="$options.links.separationOfDutiesDocsPath"
+            target="_blank"
+            >{{ content }}</gl-link
+          >
+        </template>
+        <template #learnLink="{ content }">
+          <gl-link
+            data-testid="group-settings-learn-more"
+            :href="$options.links.groupSettingsDocsPath"
+            target="_blank"
+            >{{ content }}</gl-link
+          >
         </template>
       </gl-sprintf>
     </template>

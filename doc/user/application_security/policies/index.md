@@ -1,14 +1,14 @@
 ---
 stage: Protect
 group: Container Security
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
 # Policies **(ULTIMATE)**
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5329) in GitLab Ultimate 13.10 with a [feature flag](../../../administration/feature_flags.md) named `security_orchestration_policies_configuration`. Disabled by default.
-> - [Enabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/321258) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 14.3.
-> - [Feature flag `security_orchestration_policies_configuration` removed](https://gitlab.com/gitlab-org/gitlab/-/issues/321258) in GitLab 14.4.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5329) in GitLab 13.10 with a flag named `security_orchestration_policies_configuration`. Disabled by default.
+> - [Enabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/321258) in GitLab 14.3.
+> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/321258) in GitLab 14.4.
 
 Policies in GitLab provide security teams a way to require scans of their choice to be run
 whenever a project pipeline runs according to the configuration specified. Security teams can
@@ -24,8 +24,8 @@ GitLab supports the following security policies:
 
 The Policies page displays deployed
 policies for all available environments. You can check a
-policy's information (for example description, enforcement
-status, etc.), and create and edit deployed policies:
+policy's information (for example, description or enforcement
+status), and create and edit deployed policies:
 
 1. On the top bar, select **Menu > Projects** and find your project.
 1. On the left sidebar, select **Security & Compliance > Policies**.
@@ -49,7 +49,7 @@ users must make changes by following the
 
 ## Policy editor
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3403) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.4.
+> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3403) in GitLab 13.4.
 
 You can use the policy editor to create, edit, and delete policies:
 
@@ -79,7 +79,7 @@ mode to fix your policy before Rule mode is available again.
 
 ## Container Network Policy
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32365) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 12.9.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/32365) in GitLab 12.9.
 
 The **Container Network Policy** section provides packet flow metrics for
 your application's Kubernetes namespace. This section has the following
@@ -118,9 +118,9 @@ examining the Cilium logs:
 kubectl -n gitlab-managed-apps logs -l k8s-app=cilium -c cilium-monitor
 ```
 
-### Change the enforcement status
+### Change the status
 
-To change a network policy's enforcement status:
+To change a network policy's status:
 
 - Select the network policy you want to update.
 - Select **Edit policy**.
@@ -154,12 +154,12 @@ at the bottom of the editor.
 
 ### Configure a Network Policy Alert
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3438) and [enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/287676) in [GitLab Ultimate](https://about.gitlab.com/pricing/) 13.9.
+> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3438) and [enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/287676) in GitLab 13.9.
 > - The feature flag was removed and the Threat Monitoring Alerts Project was [made generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/287676) in GitLab 14.0.
 
 You can use policy alerts to track your policy's impact. Alerts are only available if you've
 [installed](../../clusters/agent/repository.md)
-and [configured](../../clusters/agent/index.md#create-an-agent-record-in-gitlab)
+and [configured](../../clusters/agent/install/index.md#create-an-agent-record-in-gitlab)
 a Kubernetes Agent for this project.
 
 There are two ways to create policy alerts:
@@ -325,7 +325,7 @@ Note the following:
 - For a secret detection scan, only rules with the default ruleset are supported. [Custom rulesets](../secret_detection/index.md#custom-rulesets)
   are not supported.
 - A secret detection scan runs in `normal` mode when executed as part of a pipeline, and in
-  [`historic`](../secret_detection/index.md#full-history-secret-scan)
+  [`historic`](../secret_detection/index.md#full-history-secret-detection)
   mode when executed as part of a scheduled scan.
 - A container scanning and cluster image scanning scans configured for the `pipeline` rule type will ignore the cluster defined in the `clusters` object.
   They will use predefined CI/CD variables defined for your project. Cluster selection with the `clusters` object is supported for the `schedule` rule type.

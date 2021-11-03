@@ -6,7 +6,6 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:full_path) { project.full_path }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, target_timeout: 200, spider_timeout: 5000) }
 
   let_it_be(:new_profile_name) { SecureRandom.hex }
@@ -27,7 +26,6 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
   describe '#resolve' do
     subject do
       mutation.resolve(
-        full_path: full_path,
         id: scanner_profile_id,
         profile_name: new_profile_name,
         target_timeout: new_target_timeout,
@@ -41,14 +39,6 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
     let(:scanner_profile_id) { dast_scanner_profile.to_global_id }
 
     context 'when on demand scan feature is enabled' do
-      context 'when the project does not exist' do
-        let(:full_path) { SecureRandom.hex }
-
-        it 'raises an exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
-
       context 'when the user can run a DAST scan' do
         before do
           project.add_developer(user)
@@ -57,7 +47,6 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
         context 'when the user omits unrequired elements' do
           subject do
             mutation.resolve(
-              full_path: full_path,
               id: scanner_profile_id,
               profile_name: new_profile_name,
               target_timeout: new_target_timeout,
@@ -93,7 +82,7 @@ RSpec.describe Mutations::DastScannerProfiles::Update do
           let(:scanner_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'DastScannerProfile', id: 'does_not_exist') }
 
           it 'raises an exception' do
-            expect(subject[:errors]).to include('Scanner profile not found for given parameters')
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
           end
         end
       end

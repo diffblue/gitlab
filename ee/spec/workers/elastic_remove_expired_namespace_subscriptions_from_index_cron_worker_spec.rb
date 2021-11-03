@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker do
+RSpec.describe ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker, :saas do
   subject { described_class.new }
 
   let(:not_expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today + 2) }
   let(:not_expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today + 100) }
   let(:recently_expired_subscription) { create(:gitlab_subscription, :bronze, end_date: Date.today - 4) }
-  let(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 8) }
-  let(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 10) }
+  let(:expired_subscription1) { create(:gitlab_subscription, :bronze, end_date: Date.today - 31) }
+  let(:expired_subscription2) { create(:gitlab_subscription, :bronze, end_date: Date.today - 35) }
 
   before do
     allow(::Gitlab).to receive(:dev_env_or_com?).and_return(true)

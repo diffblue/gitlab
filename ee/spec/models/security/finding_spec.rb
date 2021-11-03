@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::Finding do
-  let_it_be(:scan_1) { create(:security_scan, scan_type: :sast) }
-  let_it_be(:scan_2) { create(:security_scan, scan_type: :dast) }
+  let_it_be(:scan_1) { create(:security_scan, :latest_successful, scan_type: :sast) }
+  let_it_be(:scan_2) { create(:security_scan, :latest_successful, scan_type: :dast) }
   let_it_be(:finding_1) { create(:security_finding, scan: scan_1) }
   let_it_be(:finding_2) { create(:security_finding, scan: scan_2) }
 
@@ -150,7 +150,7 @@ RSpec.describe Security::Finding do
     let(:expected_findings) { [finding_2] }
 
     before do
-      finding_1.build.update!(retried: true)
+      scan_1.update!(latest: false)
     end
 
     it { is_expected.to eq(expected_findings) }

@@ -59,33 +59,6 @@ module Gitlab
         adapter_name.casecmp('postgresql') == 0
       end
 
-      def db_config_with_default_pool_size
-        db_config_object = scope.connection_db_config
-        config = db_config_object
-          .configuration_hash
-          .merge(pool: Database.default_pool_size)
-
-        ActiveRecord::DatabaseConfigurations::HashConfig.new(
-          db_config_object.env_name,
-          db_config_object.name,
-          config
-        )
-      end
-
-      # Disables prepared statements for the current database connection.
-      def disable_prepared_statements
-        db_config_object = scope.connection_db_config
-        config = db_config_object.configuration_hash.merge(prepared_statements: false)
-
-        hash_config = ActiveRecord::DatabaseConfigurations::HashConfig.new(
-          db_config_object.env_name,
-          db_config_object.name,
-          config
-        )
-
-        scope.establish_connection(hash_config)
-      end
-
       # Check whether the underlying database is in read-only mode
       def db_read_only?
         pg_is_in_recovery =
@@ -198,33 +171,6 @@ module Gitlab
 
         row = connection.select_all(query).first
         row['result'] if row
-      end
-
-      # @param [ActiveRecord::Connection] ar_connection
-      # @return [String]
-      def get_write_location(ar_connection)
-        use_new_load_balancer_query = Gitlab::Utils
-          .to_boolean(ENV['USE_NEW_LOAD_BALANCER_QUERY'], default: true)
-
-        sql =
-          if use_new_load_balancer_query
-            <<~NEWSQL
-              SELECT CASE
-                  WHEN pg_is_in_recovery() = true AND EXISTS (SELECT 1 FROM pg_stat_get_wal_senders())
-                    THEN pg_last_wal_replay_lsn()::text
-                  WHEN pg_is_in_recovery() = false
-                    THEN pg_current_wal_insert_lsn()::text
-                    ELSE NULL
-                  END AS location;
-            NEWSQL
-          else
-            <<~SQL
-              SELECT pg_current_wal_insert_lsn()::text AS location
-            SQL
-          end
-
-        row = ar_connection.select_all(sql).first
-        row['location'] if row
       end
 
       # inside_transaction? will return true if the caller is running within a

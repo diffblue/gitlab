@@ -39,10 +39,11 @@ These shortcuts are available in most areas of GitLab:
 | <kbd>Shift</kbd> + <kbd>s</kbd> | Go to your Snippets page. |
 | <kbd>s</kbd> / <kbd>/</kbd>     | Put cursor in the search bar. |
 | <kbd>Shift</kbd> + <kbd>i</kbd> | Go to your Issues page. |
-| <kbd>Shift</kbd> + <kbd>m</kbd> | Go to your Merge requests page.|
+| <kbd>Shift</kbd> + <kbd>m</kbd> | Go to your [Merge requests](project/merge_requests/index.md) page. |
 | <kbd>Shift</kbd> + <kbd>t</kbd> | Go to your To-Do List page. |
 | <kbd>p</kbd> + <kbd>b</kbd>     | Show or hide the Performance Bar. |
 | <kbd>g</kbd> + <kbd>x</kbd>     | Toggle between [GitLab](https://gitlab.com/) and [GitLab Next](https://next.gitlab.com/) (GitLab SaaS only). |
+| <kbd>.</kbd>     | Open the [Web IDE](project/web_ide/index.md). |
 
 Additionally, the following shortcuts are available when editing text in text
 fields (for example, comments, replies, issue descriptions, and merge request
@@ -77,17 +78,17 @@ relatively quickly to work, and they take you to another page in the project.
 | <kbd>g</kbd> + <kbd>i</kbd> | Go to the project issues list (**Issues > List**). |
 | <kbd>i</kbd>                | Go to the New Issue page (**Issues**, select **New Issue** ). |
 | <kbd>g</kbd> + <kbd>b</kbd> | Go to the project issue boards list (**Issues > Boards**). |
-| <kbd>g</kbd> + <kbd>m</kbd> | Go to the project merge requests list (**Merge Requests**). |
+| <kbd>g</kbd> + <kbd>m</kbd> | Go to the project [merge requests](project/merge_requests/index.md) list (**Merge Requests**). |
 | <kbd>g</kbd> + <kbd>j</kbd> | Go to the CI/CD jobs list (**CI/CD > Jobs**). |
 | <kbd>g</kbd> + <kbd>l</kbd> | Go to the project metrics (**Monitor > Metrics**). |
 | <kbd>g</kbd> + <kbd>e</kbd> | Go to the project environments (**Deployments > Environments**). |
 | <kbd>g</kbd> + <kbd>k</kbd> | Go to the project Kubernetes cluster integration page (**Infrastructure > Kubernetes clusters**). Note that you must have at least [`maintainer` permissions](permissions.md) to access this page. |
 | <kbd>g</kbd> + <kbd>s</kbd> | Go to the project snippets list (**Snippets**). |
-| <kbd>g</kbd> + <kbd>w</kbd> | Go to the project wiki (**Wiki**), if enabled. |
+| <kbd>g</kbd> + <kbd>w</kbd> | Go to the [project wiki](project/wiki/index.md) (**Wiki**), if enabled. |
 
 ### Issues and merge requests
 
-These shortcuts are available when viewing issues and merge requests:
+These shortcuts are available when viewing issues and [merge requests](project/merge_requests/index.md):
 
 | Keyboard shortcut            | Description |
 |------------------------------|-------------|
@@ -101,6 +102,7 @@ These shortcuts are available when viewing issues and merge requests:
 | <kbd>]</kbd> or <kbd>j</kbd> | Move to next file (merge requests only). |
 | <kbd>[</kbd> or <kbd>k</kbd> | Move to previous file (merge requests only). |
 | <kbd>b</kbd>                 | Copy source branch name (merge requests only). |
+| <kbd>.</kbd>     | Open the [Web IDE](project/web_ide/index.md). |
 
 ### Project files
 
@@ -114,6 +116,7 @@ These shortcuts are available when browsing the files in a project (go to
 | <kbd>enter</kbd>  | Open selection. |
 | <kbd>Escape</kbd> | Go back to file list screen (only while searching for files, **Repository > Files**, then select **Find File**). |
 | <kbd>y</kbd>      | Go to file permalink (only while viewing a file). |
+| <kbd>.</kbd>     | Open the [Web IDE](project/web_ide/index.md). |
 
 ### Web IDE
 

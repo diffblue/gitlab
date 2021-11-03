@@ -167,7 +167,7 @@ describe('Step', () => {
         apolloProvider: mockApollo,
       });
 
-      expect(wrapper.text()).toBe('');
+      expect(wrapper.findComponent(GlButton).exists()).toBe(false);
     });
 
     it('is disabled when this step is not valid', () => {

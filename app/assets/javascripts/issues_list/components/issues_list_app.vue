@@ -36,6 +36,7 @@ import {
   TOKEN_TYPE_LABEL,
   TOKEN_TYPE_MILESTONE,
   TOKEN_TYPE_MY_REACTION,
+  TOKEN_TYPE_RELEASE,
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_WEIGHT,
   UPDATED_DESC,
@@ -65,16 +66,10 @@ import {
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
   TOKEN_TITLE_MY_REACTION,
+  TOKEN_TITLE_RELEASE,
   TOKEN_TITLE_TYPE,
   TOKEN_TITLE_WEIGHT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
-import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
-import IterationToken from '~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
-import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
-import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
-import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 import eventHub from '../eventhub';
 import reorderIssuesMutation from '../queries/reorder_issues.mutation.graphql';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
@@ -83,6 +78,22 @@ import searchMilestonesQuery from '../queries/search_milestones.query.graphql';
 import searchUsersQuery from '../queries/search_users.query.graphql';
 import IssueCardTimeInfo from './issue_card_time_info.vue';
 import NewIssueDropdown from './new_issue_dropdown.vue';
+
+const AuthorToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/author_token.vue');
+const EmojiToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue');
+const EpicToken = () => import('~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue');
+const IterationToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue');
+const LabelToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/label_token.vue');
+const MilestoneToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue');
+const ReleaseToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/release_token.vue');
+const WeightToken = () =>
+  import('~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue');
 
 export default {
   i18n,
@@ -156,6 +167,9 @@ export default {
       default: '',
     },
     newIssuePath: {
+      default: '',
+    },
+    releasesPath: {
       default: '',
     },
     rssPath: {
@@ -281,6 +295,7 @@ export default {
           avatar_url: gon.current_user_avatar_url,
         });
       }
+
       const tokens = [
         {
           type: TOKEN_TYPE_AUTHOR,
@@ -290,7 +305,6 @@ export default {
           dataType: 'user',
           unique: true,
           defaultAuthors: [],
-          operators: OPERATOR_IS_ONLY,
           fetchAuthors: this.fetchUsers,
           preloadedAuthors,
         },
@@ -310,7 +324,6 @@ export default {
           title: TOKEN_TITLE_MILESTONE,
           icon: 'clock',
           token: MilestoneToken,
-          unique: true,
           fetchMilestones: this.fetchMilestones,
         },
         {
@@ -326,7 +339,6 @@ export default {
           title: TOKEN_TITLE_TYPE,
           icon: 'issues',
           token: GlFilteredSearchToken,
-          operators: OPERATOR_IS_ONLY,
           options: [
             { icon: 'issue-type-issue', title: 'issue', value: 'issue' },
             { icon: 'issue-type-incident', title: 'incident', value: 'incident' },
@@ -335,6 +347,16 @@ export default {
         },
       ];
 
+      if (this.isProject) {
+        tokens.push({
+          type: TOKEN_TYPE_RELEASE,
+          title: TOKEN_TITLE_RELEASE,
+          icon: 'rocket',
+          token: ReleaseToken,
+          fetchReleases: this.fetchReleases,
+        });
+      }
+
       if (this.isSignedIn) {
         tokens.push({
           type: TOKEN_TYPE_MY_REACTION,
@@ -342,7 +364,6 @@ export default {
           icon: 'thumb-up',
           token: EmojiToken,
           unique: true,
-          operators: OPERATOR_IS_ONLY,
           fetchEmojis: this.fetchEmojis,
         });
 
@@ -366,7 +387,6 @@ export default {
           title: TOKEN_TITLE_ITERATION,
           icon: 'iteration',
           token: IterationToken,
-          unique: true,
           fetchIterations: this.fetchIterations,
         });
       }
@@ -451,6 +471,9 @@ export default {
     },
     fetchEmojis(search) {
       return this.fetchWithCache(this.autocompleteAwardEmojisPath, 'emojis', 'name', search);
+    },
+    fetchReleases(search) {
+      return this.fetchWithCache(this.releasesPath, 'releases', 'tag', search);
     },
     fetchLabels(search) {
       return this.$apollo

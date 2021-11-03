@@ -1,0 +1,34 @@
+#import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
+
+query allPipelinesCount($fullPath: ID!, $first: Int, $last: Int, $after: String, $before: String) {
+  project(fullPath: $fullPath) {
+    pipelines(
+      source: "ondemand_dast_scan"
+      first: $first
+      last: $last
+      after: $after
+      before: $before
+    ) {
+      pageInfo {
+        ...PageInfo
+      }
+      nodes {
+        id
+        path
+        createdAt
+        detailedStatus {
+          detailsPath
+          text
+          group
+          icon
+        }
+        dastProfile {
+          name
+          dastSiteProfile {
+            targetUrl
+          }
+        }
+      }
+    }
+  }
+}

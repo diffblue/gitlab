@@ -270,6 +270,14 @@ RSpec.describe API::Releases do
       expect(response).to have_gitlab_http_status(:accepted)
     end
 
+    it 'accepts the request when using JOB-TOKEN auth' do
+      job = create(:ci_build, :running, project: project, user: maintainer)
+
+      post api("/projects/#{project.id}/releases/#{tag_name}/evidence"), params: { job_token: job.token }
+
+      expect(response).to have_gitlab_http_status(:accepted)
+    end
+
     it 'creates the Evidence', :sidekiq_inline do
       expect do
         post api("/projects/#{project.id}/releases/#{tag_name}/evidence", maintainer)

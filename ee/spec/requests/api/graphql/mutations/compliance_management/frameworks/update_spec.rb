@@ -31,7 +31,7 @@ RSpec.describe 'Update a compliance framework' do
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: ["The resource that you are attempting to access does not exist or you don't have permission to perform this action"]
+                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'feature is licensed but disabled' do
@@ -40,7 +40,7 @@ RSpec.describe 'Update a compliance framework' do
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: ["The resource that you are attempting to access does not exist or you don't have permission to perform this action"]
+                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'feature is licensed' do
@@ -97,7 +97,7 @@ RSpec.describe 'Update a compliance framework' do
         let_it_be(:current_user) { create(:user) }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ["The resource that you are attempting to access does not exist or you don't have permission to perform this action"]
+                        errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 

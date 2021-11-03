@@ -9,7 +9,8 @@ RSpec.describe StoreSecurityReportsWorker do
 
   describe '#secret_detection_vulnerability_found?' do
     before do
-      create(:vulnerabilities_finding, :with_secret_detection, pipelines: [secret_detection_pipeline], project: secret_detection_pipeline.project)
+      finding = create(:vulnerabilities_finding, :with_secret_detection, project: secret_detection_pipeline.project)
+      create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: secret_detection_pipeline)
     end
 
     specify { expect(described_class.new.send(:secret_detection_vulnerability_found?, secret_detection_pipeline)).to be(true) }

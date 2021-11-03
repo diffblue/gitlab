@@ -11,7 +11,7 @@ class IterationsUpdateStatusWorker
   idempotent!
 
   queue_namespace :cronjob
-  feature_category :issue_tracking
+  feature_category :team_planning
 
   def perform
     set_current_iterations

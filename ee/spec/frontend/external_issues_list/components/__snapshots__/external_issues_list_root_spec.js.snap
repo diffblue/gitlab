@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ExternalIssuesListRoot error handling when request fails displays error alert with "API error" when API responds with "["API <a href=\\"gitlab.com\\">error</a>"]" 1`] = `"<span>API <a href=\\"gitlab.com\\">error</a></span>"`;
+
+exports[`ExternalIssuesListRoot error handling when request fails displays error alert with "API error" when API responds with "["API error"]" 1`] = `"<span>API error</span>"`;
+
+exports[`ExternalIssuesListRoot error handling when request fails displays error alert with "API" when API responds with "["API <script src=\\"hax0r.xyz\\">error</script>"]" 1`] = `"<span>API </span>"`;
+
+exports[`ExternalIssuesListRoot error handling when request fails displays error alert with "An error occurred while loading issues" when API responds with "undefined" 1`] = `"<span>An error occurred while loading issues</span>"`;
+
 exports[`ExternalIssuesListRoot when request succeeds renders issuable-list component with correct props 1`] = `
 Object {
   "currentPage": 1,

@@ -2,7 +2,8 @@
 import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
-import { labelsFilterParam } from 'ee/integrations/jira/issues_show/constants';
+import { labelsFilterParam } from 'ee/external_issues_show/constants';
+
 import { __, s__ } from '~/locale';
 import CopyableField from '~/vue_shared/components/sidebar/copyable_field.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
@@ -82,6 +83,7 @@ export default {
     statusDropdownEmpty: s__('JiraService|No available statuses'),
     statusDropdownTitle: __('Change status'),
     referenceName: __('Reference'),
+    avatarSubLabel: __('Jira user'),
   },
   mounted() {
     this.sidebarEl = document.querySelector('aside.right-sidebar');
@@ -130,11 +132,11 @@ export default {
 
 <template>
   <div>
-    <assignee class="block" :assignee="assignee" />
+    <assignee class="block" :assignee="assignee" :avatar-sub-label="$options.i18n.avatarSubLabel" />
     <issue-due-date :due-date="issue.dueDate" />
     <issue-field
       icon="progress"
-      :can-update="canUpdateStatus"
+      :can-edit-field="canUpdateStatus"
       :dropdown-title="$options.i18n.statusDropdownTitle"
       :dropdown-empty="$options.i18n.statusDropdownEmpty"
       :items="statuses"

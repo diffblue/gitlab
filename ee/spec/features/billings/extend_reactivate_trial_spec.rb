@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Billings > Extend / Reactivate Trial', :js do
+RSpec.describe 'Billings > Extend / Reactivate Trial', :js, :saas do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }

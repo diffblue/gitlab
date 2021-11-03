@@ -14,27 +14,24 @@ describe('ExternalIssuesSidebarAssignee', () => {
 
   const findNoAssigneeText = () => wrapper.findByTestId('no-assignee-text');
   const findNoAssigneeIcon = () => wrapper.findByTestId('no-assignee-text');
-  const findAvatar = () => wrapper.find(GlAvatar);
-  const findAvatarLabeled = () => wrapper.find(GlAvatarLabeled);
-  const findAvatarLink = () => wrapper.find(GlAvatarLink);
+  const findAvatar = () => wrapper.findComponent(GlAvatar);
+  const findAvatarLabeled = () => wrapper.findComponent(GlAvatarLabeled);
+  const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);
   const findSidebarCollapsedIconWrapper = () =>
     wrapper.findByTestId('sidebar-collapsed-icon-wrapper');
 
-  const createComponent = ({ assignee } = {}) => {
+  const createComponent = (props) => {
     wrapper = extendedWrapper(
       shallowMount(Assignee, {
         propsData: {
-          assignee,
+          ...props,
         },
       }),
     );
   };
 
   afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
+    wrapper.destroy();
   });
 
   describe('with assignee', () => {
@@ -99,6 +96,18 @@ describe('ExternalIssuesSidebarAssignee', () => {
         const iconWrapper = findSidebarCollapsedIconWrapper();
         expect(iconWrapper.attributes('title')).toBe(mockAssignee.name);
       });
+    });
+  });
+
+  describe('with assignee and avatarSubLabel', () => {
+    it('renders avatar with sub-label', () => {
+      const mockSubLabel = 'Another Sub Label';
+      createComponent({
+        assignee: mockAssignee,
+        avatarSubLabel: mockSubLabel,
+      });
+
+      expect(findAvatarLabeled().props('subLabel')).toBe(mockSubLabel);
     });
   });
 

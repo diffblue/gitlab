@@ -41,9 +41,21 @@ module Ci
 
       def total_minutes_used
         strong_memoize(:total_minutes_used) do
-          # TODO: use namespace.new_monthly_ci_minutes_enabled? to switch to
-          # ::Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace.id).amount_used.to_i
-          namespace.namespace_statistics&.shared_runners_seconds.to_i / 60
+          if namespace.new_monthly_ci_minutes_enabled?
+            current_usage.amount_used.to_i
+          else
+            namespace.namespace_statistics&.shared_runners_seconds.to_i / 60
+          end
+        end
+      end
+
+      def reset_date
+        strong_memoize(:reset_date) do
+          if namespace.new_monthly_ci_minutes_enabled?
+            current_usage.date
+          else
+            namespace.namespace_statistics&.shared_runners_seconds_last_reset
+          end
         end
       end
 
@@ -93,6 +105,10 @@ module Ci
       end
 
       private
+
+      def current_usage
+        @current_usage ||= ::Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
+      end
 
       def monthly_minutes_available?
         total_minutes_used <= monthly_minutes

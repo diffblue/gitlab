@@ -1,3 +1,12 @@
+import { GlFilteredSearchToken } from '@gitlab/ui';
+import { __ } from '~/locale';
+import { DEFAULT_MILESTONES_GRAPHQL } from '~/vue_shared/components/filtered_search_bar/constants';
+import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
+import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
+import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
+
 export const mockLabel = {
   id: 'gid://gitlab/GroupLabel/121',
   title: 'To Do',
@@ -111,6 +120,12 @@ export const labels = [
     id: 'gid://gitlab/GroupLabel/5',
     title: 'Cosync',
     color: '#34ebec',
+    description: null,
+  },
+  {
+    id: 'gid://gitlab/GroupLabel/6',
+    title: 'Brock',
+    color: '#e082b6',
     description: null,
   },
 ];
@@ -365,3 +380,86 @@ export const mockGroup2 = {
 };
 
 export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
+
+export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones) => [
+  {
+    icon: 'user',
+    title: __('Assignee'),
+    type: 'assignee_username',
+    operators: [
+      { value: '=', description: 'is' },
+      { value: '!=', description: 'is not' },
+    ],
+    token: AuthorToken,
+    unique: true,
+    fetchAuthors,
+    preloadedAuthors: [],
+  },
+  {
+    icon: 'pencil',
+    title: __('Author'),
+    type: 'author_username',
+    operators: [
+      { value: '=', description: 'is' },
+      { value: '!=', description: 'is not' },
+    ],
+    symbol: '@',
+    token: AuthorToken,
+    unique: true,
+    fetchAuthors,
+    preloadedAuthors: [],
+  },
+  {
+    icon: 'labels',
+    title: __('Label'),
+    type: 'label_name',
+    operators: [
+      { value: '=', description: 'is' },
+      { value: '!=', description: 'is not' },
+    ],
+    token: LabelToken,
+    unique: false,
+    symbol: '~',
+    fetchLabels,
+  },
+  {
+    icon: 'clock',
+    title: __('Milestone'),
+    symbol: '%',
+    type: 'milestone_title',
+    token: MilestoneToken,
+    unique: true,
+    defaultMilestones: DEFAULT_MILESTONES_GRAPHQL,
+    fetchMilestones,
+  },
+  {
+    icon: 'issues',
+    title: __('Type'),
+    type: 'types',
+    operators: [{ value: '=', description: 'is' }],
+    token: GlFilteredSearchToken,
+    unique: true,
+    options: [
+      { icon: 'issue-type-issue', value: 'ISSUE', title: 'Issue' },
+      { icon: 'issue-type-incident', value: 'INCIDENT', title: 'Incident' },
+    ],
+  },
+  {
+    icon: 'weight',
+    title: __('Weight'),
+    type: 'weight',
+    token: WeightToken,
+    unique: true,
+  },
+  {
+    type: 'epic_id',
+    icon: 'epic',
+    title: 'Epic',
+    unique: true,
+    symbol: '&',
+    token: EpicToken,
+    idProperty: 'id',
+    useIdValue: true,
+    fullPath: 'gitlab-org',
+  },
+];

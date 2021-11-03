@@ -10,7 +10,6 @@ import { licenseManagementModule } from 'ee/vue_shared/license_compliance/store/
 import modalModule from '~/vuex_shared/modules/modal';
 import { LICENSE_LIST } from './constants';
 import listModule from './modules/list';
-import mediator from './plugins/mediator';
 import createState from './state';
 
 Vue.use(Vuex);
@@ -24,5 +23,4 @@ export default (settings = {}) =>
       [APPROVALS]: approvalsModule(),
       [APPROVALS_MODAL]: modalModule(),
     },
-    plugins: [mediator],
   });

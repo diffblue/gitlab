@@ -147,7 +147,7 @@ as well as these:
 | Variable | Description |
 |-|-|
 | `QA_SCENARIO` | The scenario to run (default `Test::Instance::Image`) |
-| `QA_TESTS` | The test(s) to run (no default, which means run all the tests in the scenario). Use file paths as you would when running tests via RSpec, e.g., `qa/specs/features/ee/browser_ui` would include all the `EE` UI tests. |
+| `QA_TESTS` | The test(s) to run (no default, which means run all the tests in the scenario). Use file paths as you would when running tests via RSpec, for example, `qa/specs/features/ee/browser_ui` would include all the `EE` UI tests. |
 | `QA_RSPEC_TAGS` | The RSpec tags to add (no default) |
 
 For now [manual jobs with custom variables don't use the same variable
@@ -184,7 +184,7 @@ in the pipeline:
 - Fetches these source files from all test jobs.
 - Generates and uploads the report to the `GCS` bucket `gitlab-qa-allure-report` under the project `gitlab-qa-resources`.
 
-A common CI template for report uploading is stored in 
+A common CI template for report uploading is stored in
 [`allure-report.yml`](https://gitlab.com/gitlab-org/quality/pipeline-common/-/blob/master/ci/allure-report.yml).
 
 #### Merge requests

@@ -317,13 +317,15 @@ class Group < Namespace
     owners.include?(user)
   end
 
-  def add_users(users, access_level, current_user: nil, expires_at: nil)
+  def add_users(users, access_level, current_user: nil, expires_at: nil, tasks_to_be_done: [], tasks_project_id: nil)
     Members::Groups::BulkCreatorService.add_users( # rubocop:disable CodeReuse/ServiceClass
       self,
       users,
       access_level,
       current_user: current_user,
-      expires_at: expires_at
+      expires_at: expires_at,
+      tasks_to_be_done: tasks_to_be_done,
+      tasks_project_id: tasks_project_id
     )
   end
 
@@ -707,9 +709,9 @@ class Group < Namespace
     raise ArgumentError unless SHARED_RUNNERS_SETTINGS.include?(state)
 
     case state
-    when 'disabled_and_unoverridable' then disable_shared_runners! # also disallows override
-    when 'disabled_with_override' then disable_shared_runners_and_allow_override!
-    when 'enabled' then enable_shared_runners! # set both to true
+    when SR_DISABLED_AND_UNOVERRIDABLE then disable_shared_runners! # also disallows override
+    when SR_DISABLED_WITH_OVERRIDE then disable_shared_runners_and_allow_override!
+    when SR_ENABLED then enable_shared_runners! # set both to true
     end
   end
 
@@ -758,10 +760,6 @@ class Group < Namespace
 
   def timelogs
     Timelog.in_group(self)
-  end
-
-  def cached_issues_state_count_enabled?
-    Feature.enabled?(:cached_issues_state_count, self, default_enabled: :yaml)
   end
 
   def organizations

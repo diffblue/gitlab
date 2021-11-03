@@ -72,8 +72,9 @@ module EE
         def features_usage_data_ee
           {
             elasticsearch_enabled: alt_usage_data(fallback: nil) { ::Gitlab::CurrentSettings.elasticsearch_search? },
-            license_trial_ends_on: alt_usage_data(fallback: nil) { License.trial_ends_on },
-            geo_enabled: alt_usage_data(fallback: nil) { ::Gitlab::Geo.enabled? }
+            license_trial_ends_on: add_metric("LicenseMetric", options: { attribute: "trial_ends_on" }),
+            geo_enabled: alt_usage_data(fallback: nil) { ::Gitlab::Geo.enabled? },
+            user_cap_feature_enabled: add_metric('UserCapSettingEnabledMetric', time_frame: 'none')
           }
         end
 
@@ -89,12 +90,12 @@ module EE
             end
 
           if license
-            usage_data[:license_md5] = license.md5
+            usage_data[:license_md5] = add_metric("LicenseMetric", options: { attribute: 'md5' })
             usage_data[:license_id] = license.license_id
             # rubocop: disable UsageData/LargeTable
-            usage_data[:historical_max_users] = license.historical_max
+            usage_data[:historical_max_users] = add_metric("HistoricalMaxUsersMetric")
             # rubocop: enable UsageData/LargeTable
-            usage_data[:licensee] = license.licensee
+            usage_data[:licensee] = add_metric("LicenseeMetrics")
             usage_data[:license_user_count] = license.restricted_user_count
             usage_data[:license_billable_users] = alt_usage_data { license.daily_billable_users_count }
             usage_data[:license_starts_at] = license.starts_at
@@ -102,7 +103,7 @@ module EE
             usage_data[:license_plan] = license.plan
             usage_data[:license_add_ons] = license.add_ons
             usage_data[:license_trial] = license.trial?
-            usage_data[:license_subscription_id] = alt_usage_data(fallback: nil) { license.subscription_id }
+            usage_data[:license_subscription_id] = license.subscription_id
           end
 
           usage_data
@@ -143,11 +144,7 @@ module EE
 
         def security_products_usage
           results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
-            response[attribs[:name]] = if ::Feature.enabled?(:quarantine_security_products_usage_metrics, type: :ops, default_enabled: :yaml)
-                                         ::Gitlab::Database::BatchCounter::FALLBACK
-                                       else
-                                         count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
-                                       end
+            response[attribs[:name]] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
           end
 
           # handle license rename https://gitlab.com/gitlab-org/gitlab/issues/8911
@@ -343,8 +340,10 @@ module EE
         # Omitted because no user, creator or author associated: `environments`, `feature_flags`, `in_review_folder`, `pages_domains`
         override :usage_activity_by_stage_release
         def usage_activity_by_stage_release(time_period)
+          time_frame = metric_time_period(time_period)
           super.merge({
-            projects_mirrored_with_pipelines_enabled: distinct_count(::Project.mirrored_with_enabled_pipelines.where(time_period), :creator_id)
+            projects_mirrored_with_pipelines_enabled: distinct_count(::Project.mirrored_with_enabled_pipelines.where(time_period), :creator_id),
+            releases_with_group_milestones: add_metric('CountUsersAssociatingGroupMilestonesToReleasesMetric', time_frame: time_frame)
           })
         end
 

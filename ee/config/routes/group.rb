@@ -175,7 +175,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       delete :unlink, to: 'sso#unlink'
     end
 
-    resource :scim_oauth, only: [:show, :create], controller: :scim_oauth
+    resource :scim_oauth, only: [:create], controller: :scim_oauth
 
     get :sign_up, to: 'sso#sign_up_form'
     post :sign_up, to: 'sso#sign_up'

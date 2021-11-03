@@ -3,7 +3,7 @@
 # EE:SaaS
 # TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 class TrialRegistrationsController < RegistrationsController
-  extend ::Gitlab::Utils::Override
+  include OneTrustCSP
 
   layout 'minimal'
 
@@ -39,7 +39,6 @@ class TrialRegistrationsController < RegistrationsController
     end
   end
 
-  override :sign_up_params
   def sign_up_params
     if params[:user]
       params.require(:user).permit(:first_name, :last_name, :username, :email, :password, :skip_confirmation, :email_opted_in)

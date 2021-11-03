@@ -43,9 +43,13 @@ export default () => {
     components: { EpicApp },
     provide: {
       canUpdate: epicData.canUpdate,
+      allowLabelCreate: parseBoolean(epicData.canUpdate),
+      allowLabelEdit: parseBoolean(epicData.canUpdate),
       fullPath: epicData.fullPath,
       iid: epicMeta.epicIid,
       isClassicSidebar: true,
+      allowScopedLabels: epicMeta.scopedLabels,
+      labelsManagePath: epicMeta.labelsWebUrl,
     },
     created() {
       this.setEpicMeta({

@@ -8,7 +8,6 @@ RSpec.describe Groups::ExportMembershipsWorker do
 
   before do
     stub_licensed_features(export_user_permissions: true)
-    stub_feature_flags(ff_group_membership_export: true)
     group.add_owner(user)
   end
 

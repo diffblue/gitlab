@@ -52,7 +52,7 @@ in your SAML IdP:
 
    sudo -u git -H editor config/gitlab.yml
    ```
-   
+
 1. See [Initial OmniAuth Configuration](omniauth.md#initial-omniauth-configuration) for initial settings.
 1. To allow your users to use SAML to sign up without having to manually create
    an account first, add the following values to your configuration:
@@ -197,15 +197,13 @@ For example configurations, see the [notes on specific providers](#providers).
 | Field           | Supported keys |
 |-----------------|----------------|
 | Email (required)| `email`, `mail` |
-| Username        | `username`, `nickname` |
 | Full Name       | `name` |
 | First Name      | `first_name`, `firstname`, `firstName` |
 | Last Name       | `last_name`, `lastname`, `lastName` |
 
-If a username is not specified, the email address is used to generate the GitLab username.
-
-See [`attribute_statements`](#attribute_statements) for examples on how the
-assertions are configured.
+See [`attribute_statements`](#attribute_statements) for examples on how custom
+assertions are configured. This section also describes how to configure custom
+username attributes.
 
 Please refer to [the OmniAuth SAML gem](https://github.com/omniauth/omniauth-saml/blob/master/lib/omniauth/strategies/saml.rb)
 for a full list of supported assertions.
@@ -271,7 +269,7 @@ Example:
           idp_cert_fingerprint: '43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8',
           idp_sso_target_url: 'https://login.example.com/idp',
           issuer: 'https://gitlab.example.com',
-          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
   } }
 ```
 
@@ -313,7 +311,7 @@ The requirements are the same as the previous settings:
           idp_cert_fingerprint: '43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8',
           idp_sso_target_url: 'https://login.example.com/idp',
           issuer: 'https://gitlab.example.com',
-          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
   } }
 ```
 
@@ -337,7 +335,7 @@ The requirements are the same as the previous settings:
           idp_cert_fingerprint: '43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8',
           idp_sso_target_url: 'https://login.example.com/idp',
           issuer: 'https://gitlab.example.com',
-          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient'
+          name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
   } }
 ```
 
@@ -444,7 +442,7 @@ SAML users has an administrator role.
 You may also bypass the auto sign-in feature by browsing to
 `https://gitlab.example.com/users/sign_in?auto_sign_in=false`.
 
-### `attribute_statements`
+### `attribute_statements` **(FREE SELF)**
 
 NOTE:
 This setting should be used only to map attributes that are part of the OmniAuth
@@ -476,11 +474,10 @@ args: {
 
 #### Set a username
 
-By default, the email in the SAML response is used to automatically generate the
-user's GitLab username. 
+By default, the local part of the email address in the SAML response is used to
+generate the user's GitLab username.
 
-If you'd like to set another attribute as the username, assign it to the `nickname` OmniAuth `info`
-hash attribute, and add the following setting to your configuration file:
+Configure `nickname` in `attribute_statements` to specify one or more attributes that contain a user's desired username:
 
 ```yaml
 args: {
@@ -721,8 +718,8 @@ documentation on how to use SAML to sign in to GitLab.
 Examples:
 
 - [ADFS (Active Directory Federation Services)](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/operations/create-a-relying-party-trust)
-- [Auth0](https://auth0.com/docs/protocols/saml-protocol/configure-auth0-as-saml-identity-provider)
-- [PingOne by Ping Identity](https://docs.pingidentity.com/bundle/pingone/page/xsh1564020480660-1.html)
+- [Auth0](https://auth0.com/docs/configure/saml-configuration/configure-auth0-saml-identity-provider)
+- [PingOne by Ping Identity](http://docs.pingidentity.com/bundle/pingoneforenterprise/page/xsh1564020480660-1.html)
 
 GitLab provides the following setup notes for guidance only.
 If you have any questions on configuring the SAML app, please contact your provider's support.
@@ -804,11 +801,12 @@ If you only require a SAML provider for testing, a [quick start guide to start a
 ### 500 error after login
 
 If you see a "500 error" in GitLab when you are redirected back from the SAML
-sign-in page, this likely indicates that GitLab couldn't get the email address
-for the SAML user.
+sign-in page, this could indicate that:
 
-Ensure the IdP provides a claim containing the user's email address, using the
-claim name `email` or `mail`.
+- GitLab couldn't get the email address for the SAML user. Ensure the IdP provides a claim containing the user's
+  email address using the claim name `email` or `mail`.
+- The certificate set your `gitlab.rb` file for `idp_cert_fingerprint` or `idp_cert` file is incorrect.
+- Your `gitlab.rb` file is set to enable `idp_cert_fingerprint`, and `idp_cert` is being provided, or the reverse.
 
 ### 422 error after login
 

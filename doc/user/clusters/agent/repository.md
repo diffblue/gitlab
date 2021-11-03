@@ -4,12 +4,13 @@ group: Configure
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#designated-technical-writers
 ---
 
-# Kubernetes Agent configuration repository **(PREMIUM)**
+# Kubernetes Agent configuration repository **(FREE)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/259669) in [GitLab Premium](https://about.gitlab.com/pricing/) 13.7.
 > - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3834) in GitLab 13.11, the Kubernetes Agent became available on GitLab.com.
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/332227) in GitLab 14.0, the `resource_inclusions` and `resource_exclusions` attributes were removed and `reconcile_timeout`, `dry_run_strategy`, `prune`, `prune_timeout`, `prune_propagation_policy`, and `inventory_policy` attributes were added.
 > - The `ci_access` attribute was [introduced](https://gitlab.com/groups/gitlab-org/-/epics/5784) in GitLab 14.3.
+> - The GitLab Kubernetes Agent was [moved](https://gitlab.com/groups/gitlab-org/-/epics/6290) to GitLab Free in 14.5.
 
 WARNING:
 This feature might not be available to you. Check the **version history** note above for details.
@@ -32,7 +33,7 @@ of your Agent:
           |- config.yaml
 ```
 
-## Synchronize manifest projects
+## Synchronize manifest projects **(PREMIUM)**
 
 Your `config.yaml` file contains a `gitops` section, which contains a `manifest_projects`
 section. Each `id` in the `manifest_projects` section is the path to a Git repository
@@ -132,7 +133,7 @@ INCORRECT - both globs match `*.yaml` files in the root directory:
 ```yaml
 gitops:
   manifest_projects:
-  - id: project1    
+  - id: project1
     paths:
     - glob: '/**/*.yaml'
     - glob: '/*.yaml'
@@ -143,7 +144,7 @@ CORRECT - single globs matches all `*.yaml` files recursively:
 ```yaml
 gitops:
   manifest_projects:
-  - id: project1    
+  - id: project1
     paths:
     - glob: '/**/*.yaml'
 ```
@@ -151,11 +152,6 @@ gitops:
 ## Authorize groups to use an Agent
 
 > [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/5784) in GitLab 14.3.
-
-FLAG:
-On self-managed GitLab, by default this feature is not available. To make it available,
-ask an administrator to [enable the `group_authorized_agents` flag](../../../administration/feature_flags.md).
-On GitLab.com, this feature is available.
 
 If you use the same cluster across multiple projects, you can set up the CI/CD Tunnel
 to grant the Agent access to one or more groups. This way, all the projects that belong
@@ -187,7 +183,7 @@ ci_access:
   - id: group/subgroup
 ```
 
-## Surface network security alerts from cluster to GitLab
+## Surface network security alerts from cluster to GitLab **(ULTIMATE)**
 
 The GitLab Agent provides an [integration with Cilium](index.md#kubernetes-network-security-alerts).
 To integrate, add a top-level `cilium` section to your `config.yml` file. Currently, the
@@ -206,6 +202,90 @@ you can use `hubble-relay.gitlab-managed-apps.svc.cluster.local:80` as the addre
 cilium:
   hubble_relay_address: "hubble-relay.gitlab-managed-apps.svc.cluster.local:80"
 ```
+
+## Scan your container images for vulnerabilities
+
+You can use [cluster image scanning](../../application_security/cluster_image_scanning/index.md)
+to scan container images in your cluster for security vulnerabilities.
+
+To begin scanning all resources in your cluster, add a `starboard`
+configuration block to your agent's `config.yaml` with no `filters`:
+
+```yaml
+starboard:
+  vulnerability_reports:
+    filters: []
+```
+
+The namespaces that are able to be scanned depend on the [Starboard Operator install mode](https://aquasecurity.github.io/starboard/latest/operator/configuration/#install-modes).
+By default, the Starboard Operator only scans resources in the `default` namespace. To change this
+behavior, edit the `STARBOARD_OPERATOR` environment variable in the `starboard-operator` deployment
+definition.
+
+By adding filters, you can limit scans by:
+
+- Resource name
+- Kind
+- Container name
+- Namespace
+
+```yaml
+starboard:
+  vulnerability_reports:
+    filters:
+      - namespaces:
+        - staging
+        - production
+        kinds:
+        - Deployment
+        - DaemonSet
+        containers:
+        - ruby
+        - postgres
+        - nginx
+        resources:
+        - my-app-name
+        - postgres
+        - ingress-nginx
+```
+
+A resource is scanned if the resource matches any of the given names and all of the given filter
+types (`namespaces`, `kinds`, `containers`, `resources`). If a filter type is omitted, then all
+names are scanned. In this example, a resource isn't scanned unless it has a container named `ruby`,
+`postgres`, or `nginx`, and it's a `Deployment`:
+
+```yaml
+starboard:
+  vulnerability_reports:
+    filters:
+      - kinds:
+        - Deployment
+        containers:
+        - ruby
+        - postgres
+        - nginx
+```
+
+There is also a global `namespaces` field that applies to all filters:
+
+```yaml
+starboard:
+  vulnerability_reports:
+    namespaces:
+    - production
+    filters:
+    - kinds:
+      - Deployment
+    - kinds:
+      - DaemonSet
+      resources:
+      - log-collector
+```
+
+In this example, the following resources are scanned:
+
+- All deployments (`Deployment`) in the `production` namespace
+- All daemon sets (`DaemonSet`) named `log-collector` in the `production` namespace
 
 ## Debugging
 

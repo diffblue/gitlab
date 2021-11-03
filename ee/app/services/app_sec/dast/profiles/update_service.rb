@@ -8,7 +8,7 @@ module AppSec
 
         def execute
           return unauthorized unless allowed?
-          return error('Profile parameter missing') unless dast_profile
+          return error(_('Profile parameter missing')) unless dast_profile
 
           build_auditors!
 
@@ -52,9 +52,7 @@ module AppSec
 
         def update_or_create_schedule!
           if schedule
-            attributes = schedule_input_params
-            attributes = attributes.merge(user_id: current_user.id) unless schedule.owner_valid?
-            schedule.update!(attributes)
+            schedule.update!(schedule_input_params)
           else
             ::Dast::ProfileSchedule.new(
               dast_profile: dast_profile,
@@ -81,7 +79,7 @@ module AppSec
         end
 
         def unauthorized
-          error('You are not authorized to update this profile', http_status: 403)
+          error(_('You are not authorized to update this profile'), http_status: 403)
         end
 
         def dast_profile
@@ -93,9 +91,17 @@ module AppSec
         end
 
         def schedule_input_params
+          @schedule_input_params ||= build_schedule_input_params
+        end
+
+        def build_schedule_input_params
+          return unless params[:dast_profile_schedule]
+
           # params[:dast_profile_schedule] is `Types::Dast::ProfileScheduleInputType` object.
           # Using to_h method to convert object into equivalent hash.
-          @schedule_input_params ||= params[:dast_profile_schedule]&.to_h
+          dast_profile_schedule_params = params[:dast_profile_schedule]
+          dast_profile_schedule_params[:user_id] = current_user.id unless schedule&.owner_valid?
+          dast_profile_schedule_params&.to_h
         end
 
         def build_auditors!

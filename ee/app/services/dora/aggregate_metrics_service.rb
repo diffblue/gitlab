@@ -2,7 +2,8 @@
 
 module Dora
   class AggregateMetricsService < ::BaseContainerService
-    MAX_RANGE = 92 # the maximum number of days in 3 months
+    MAX_RANGE = Gitlab::Analytics::CycleAnalytics::RequestParams::MAX_RANGE_DAYS # same range as Value Stream Analytics
+
     DEFAULT_ENVIRONMENT_TIER = 'production'
     DEFAULT_INTERVAL = Dora::DailyMetrics::INTERVAL_DAILY
 
@@ -52,8 +53,8 @@ module Dora
     end
 
     def validate
-      unless (end_date - start_date) <= MAX_RANGE
-        return error(_("Date range must be shorter than %{max_range} days.") % { max_range: MAX_RANGE },
+      unless (end_date - start_date).days <= MAX_RANGE
+        return error(_("Date range must be shorter than %{max_range} days.") % { max_range: MAX_RANGE.in_days.to_i },
                      :bad_request)
       end
 

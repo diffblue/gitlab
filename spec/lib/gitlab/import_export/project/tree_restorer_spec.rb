@@ -23,7 +23,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
         ]
 
         RSpec::Mocks.with_temporary_scope do
-          @project = create(:project, :builds_enabled, :issues_disabled, name: 'project', path: 'project')
+          @project = create(:project, :repository, :builds_enabled, :issues_disabled, name: 'project', path: 'project')
           @shared = @project.import_export_shared
 
           stub_all_feature_flags
@@ -36,7 +36,6 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
           allow_any_instance_of(Gitlab::Git::Repository).to receive(:branch_exists?).and_return(false)
 
           expect(@shared).not_to receive(:error)
-          expect_any_instance_of(Gitlab::Git::Repository).to receive(:create_branch).with('feature', 'DCBA')
           allow_any_instance_of(Gitlab::Git::Repository).to receive(:create_branch)
 
           project_tree_restorer = described_class.new(user: @user, shared: @shared, project: @project)
@@ -376,7 +375,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
             expect(pipeline_schedule.ref).to eq('master')
             expect(pipeline_schedule.cron).to eq('0 4 * * 0')
             expect(pipeline_schedule.cron_timezone).to eq('UTC')
-            expect(pipeline_schedule.active).to eq(true)
+            expect(pipeline_schedule.active).to eq(false)
           end
         end
 

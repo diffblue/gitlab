@@ -255,6 +255,11 @@ module Ci
 end
 ```
 
+Also, you can pass `if_deduplicated: :reschedule_once` option to re-run a job once after
+the currently running job finished and deduplication happened at least once.
+This ensures that the latest result is always produced even if a race condition
+happened. See [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/342123) for more information.
+
 #### Scheduling jobs in the future
 
 GitLab doesn't skip jobs scheduled in the future, as we assume that
@@ -279,13 +284,43 @@ module AuthorizedProjectUpdate
 end
 ```
 
+### Setting the deduplication time-to-live (TTL)
+
+Deduplication depends on an idempotency key that is stored in Redis. This is normally
+cleared by the configured deduplication strategy.
+
+However, the key can remain until its TTL in certain cases like:
+
+1. `until_executing` is used but the job was never enqueued or executed after the Sidekiq
+   client middleware was run.
+
+1. `until_executed` is used but the job fails to finish due to retry exhaustion, gets
+   interrupted the maximum number of times, or gets lost.
+
+The default value is 6 hours. During this time, jobs won't be enqueued even if the first
+job never executed or finished.
+
+The TTL can be configured with:
+
+```ruby
+class ProjectImportScheduleWorker
+  include ApplicationWorker
+
+  idempotent!
+  deduplicate :until_executing, ttl: 5.minutes
+end
+```
+
+Duplicate jobs can happen when the TTL is reached, so make sure you lower this only for jobs
+that can tolerate some duplication.
+
 ### Deduplication with load balancing
 
 > [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6763) in GitLab 14.4.
 
-Jobs that declare either `:sticky` or `:delayed` data consistency 
-are eligible for database load-balancing. 
-In both cases, jobs are [scheduled in the future](#scheduling-jobs-in-the-future) with a short delay (1 second). 
+Jobs that declare either `:sticky` or `:delayed` data consistency
+are eligible for database load-balancing.
+In both cases, jobs are [scheduled in the future](#scheduling-jobs-in-the-future) with a short delay (1 second).
 This minimizes the chance of replication lag after a write.
 
 If you really want to deduplicate jobs eligible for load balancing,
@@ -308,22 +343,22 @@ end
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69372) in GitLab 14.3.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/338350) in GitLab 14.4.
 
-The deduplication always take into account the latest binary replication pointer, not the first one. 
-This happens because we drop the same job scheduled for the second time and the Write-Ahead Log (WAL) is lost. 
+The deduplication always take into account the latest binary replication pointer, not the first one.
+This happens because we drop the same job scheduled for the second time and the Write-Ahead Log (WAL) is lost.
 This could lead to comparing the old WAL location and reading from a stale replica.
 
-To support both deduplication and maintaining data consistency with load balancing, 
-we are preserving the latest WAL location for idempotent jobs in Redis. 
-This way we are always comparing the latest binary replication pointer, 
+To support both deduplication and maintaining data consistency with load balancing,
+we are preserving the latest WAL location for idempotent jobs in Redis.
+This way we are always comparing the latest binary replication pointer,
 making sure that we read from the replica that is fully caught up.
 
 FLAG:
-On self-managed GitLab, by default this feature is not available. 
-To make it available, 
+On self-managed GitLab, by default this feature is not available.
+To make it available,
 ask an administrator to [enable the preserve_latest_wal_locations_for_idempotent_jobs flag](../administration/feature_flags.md).
 FLAG:
-On self-managed GitLab, by default this feature is not available. 
-To make it available, 
+On self-managed GitLab, by default this feature is not available.
+To make it available,
 ask an administrator to [enable the `preserve_latest_wal_locations_for_idempotent_jobs` flag](../administration/feature_flags.md).
 This feature flag is related to GitLab development and is not intended to be used by GitLab administrators, though.
 On GitLab.com, this feature is available but can be configured by GitLab.com administrators only.
@@ -624,7 +659,7 @@ end
 ### Data consistency with idempotent jobs
 
 For [idempotent jobs](#idempotent-jobs) that declare either `:sticky` or `:delayed` data consistency, we are
-[preserving the latest WAL location](#preserve-the-latest-wal-location-for-idempotent-jobs) while deduplicating, 
+[preserving the latest WAL location](#preserve-the-latest-wal-location-for-idempotent-jobs) while deduplicating,
 ensuring that we read from the replica that is fully caught up.
 
 ## Jobs with External Dependencies
@@ -740,8 +775,7 @@ We use the following approach to determine whether a worker is CPU-bound:
 
 ## Feature category
 
-All Sidekiq workers must define a known [feature
-category](feature_categorization/index.md#sidekiq-workers).
+All Sidekiq workers must define a known [feature category](feature_categorization/index.md#sidekiq-workers).
 
 ## Job weights
 

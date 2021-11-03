@@ -17,7 +17,7 @@ module Vulnerabilities
     end
 
     def execute
-      unless Feature.enabled?(:create_vulnerabilities_via_api, @project)
+      unless Feature.enabled?(:create_vulnerabilities_via_api, @project, default_enabled: :yaml)
         return ServiceResponse.error(message: "create_vulnerabilities_via_api feature flag is not enabled for this project")
       end
 
@@ -33,9 +33,9 @@ module Vulnerabilities
         vulnerability: vulnerability,
         identifiers: identifiers,
         scanner: scanner,
-        message: @params[:message],
-        description: @params[:description],
-        solution: @params[:solution]
+        message: @params[:vulnerability][:message],
+        description: @params[:vulnerability][:description],
+        solution: @params[:vulnerability][:solution]
       )
 
       Vulnerability.transaction do

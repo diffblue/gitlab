@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import $ from 'jquery';
+import mockProjects from 'test_fixtures_static/projects.json';
 import initDeprecatedJQueryDropdown from '~/deprecated_jquery_dropdown';
 import '~/lib/utils/common_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -66,7 +67,7 @@ describe('deprecatedJQueryDropdown', () => {
     loadFixtures('static/deprecated_jquery_dropdown.html');
     test.dropdownContainerElement = $('.dropdown.inline');
     test.$dropdownMenuElement = $('.dropdown-menu', test.dropdownContainerElement);
-    test.projectsData = getJSONFixture('static/projects.json');
+    test.projectsData = JSON.parse(JSON.stringify(mockProjects));
   });
 
   afterEach(() => {

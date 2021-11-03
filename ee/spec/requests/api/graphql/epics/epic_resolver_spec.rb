@@ -13,30 +13,6 @@ RSpec.describe 'getting epics information' do
     stub_licensed_features(epics: true)
   end
 
-  context 'when performance_roadmap flag is disabled' do
-    let_it_be(:epic1) { create(:epic, group: group, state: 'opened') }
-    let_it_be(:epic2) { create(:epic, group: group, state: 'opened') }
-
-    def epics_count
-      graphql_data_at(:group, :epics, :nodes).count
-    end
-
-    it 'returns epics within timeframe' do
-      stub_const('SetsMaxPageSize::DEPRECATED_MAX_PAGE_SIZE', 1)
-
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(2)
-
-      stub_feature_flags(performance_roadmap: false)
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(1)
-
-      stub_feature_flags(performance_roadmap: true)
-      post_graphql(epics_query_by_hash(group), current_user: user)
-      expect(epics_count).to eq(2)
-    end
-  end
-
   describe 'query for epics which start with an iid' do
     let_it_be(:epic1) { create(:epic, group: group, iid: 11) }
     let_it_be(:epic2) { create(:epic, group: group, iid: 22) }
@@ -130,6 +106,21 @@ RSpec.describe 'getting epics information' do
     end
   end
 
+  context 'query for epics with ancestors' do
+    let_it_be(:parent_epic) { create(:epic, group: group) }
+    let_it_be(:epic) { create(:epic, group: group, parent: parent_epic) }
+
+    it 'returns the ancestors' do
+      query_epic_with_ancestors(epic.iid)
+
+      ancestors = graphql_data['group']['epic']['ancestors']['nodes']
+
+      expect(ancestors.count).to eq(1)
+      expect(ancestors.first['id']).to eq(parent_epic.to_global_id.to_s)
+      expect(graphql_errors).to be_nil
+    end
+  end
+
   describe 'N+1 query checks' do
     let_it_be(:epic_a) { create(:epic, group: group) }
     let_it_be(:epic_b) { create(:epic, group: group) }
@@ -170,6 +161,24 @@ RSpec.describe 'getting epics information' do
             nodes {
               id
             }
+          }
+        }
+      }
+    NODE
+
+    post_graphql(
+      graphql_query_for('group', { 'fullPath' => group.full_path }, epics_field),
+      current_user: user
+    )
+  end
+
+  def query_epic_with_ancestors(epic_iid)
+    epics_field = <<~NODE
+      epic(iid: #{epic_iid}) {
+        id
+        ancestors {
+          nodes {
+            id
           }
         }
       }

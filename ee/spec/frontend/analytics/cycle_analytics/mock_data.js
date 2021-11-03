@@ -1,5 +1,24 @@
 import { uniq } from 'lodash';
+import valueStreamAnalyticsStages from 'test_fixtures/analytics/value_stream_analytics/stages.json';
+import valueStreamAnalyticsSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/summary.json';
+import valueStreamAnalyticsTimeSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/time_summary.json';
 import tasksByType from 'test_fixtures/analytics/charts/type_of_work/tasks_by_type.json';
+import apiGroupLabels from 'test_fixtures/api/group_labels.json';
+
+import issueStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/issue/records.json';
+import planStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/plan/records.json';
+import reviewStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/review/records.json';
+import codeStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/code/records.json';
+import testStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/test/records.json';
+import stagingStageFixtures from 'test_fixtures/analytics/value_stream_analytics/stages/staging/records.json';
+
+import issueCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/issue/count.json';
+import planCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/plan/count.json';
+import reviewCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/review/count.json';
+import codeCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/code/count.json';
+import testCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/test/count.json';
+import stagingCountFixture from 'test_fixtures/analytics/value_stream_analytics/stages/staging/count.json';
+
 import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
@@ -10,10 +29,8 @@ import {
   getTasksByTypeData,
   transformRawTasksByTypeData,
 } from 'ee/analytics/cycle_analytics/utils';
-import { getJSONFixture } from 'helpers/fixtures';
 import {
   getStageByTitle,
-  defaultStages,
   rawStageMedians,
   createdBefore,
   createdAfter,
@@ -23,16 +40,6 @@ import { toYmd } from '~/analytics/shared/utils';
 import { transformStagesForPathNavigation, formatMedianValues } from '~/cycle_analytics/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
-
-const fixtureEndpoints = {
-  customizableCycleAnalyticsStagesAndEvents: 'analytics/value_stream_analytics/stages.json', // customizable stages and events endpoint
-  stageEvents: (stage) => `analytics/value_stream_analytics/stages/${stage}/records.json`,
-  stageMedian: (stage) => `analytics/value_stream_analytics/stages/${stage}/median.json`,
-  stageCount: (stage) => `analytics/value_stream_analytics/stages/${stage}/count.json`,
-  recentActivityData: 'analytics/metrics/value_stream_analytics/summary.json',
-  timeMetricsData: 'analytics/metrics/value_stream_analytics/time_summary.json',
-  groupLabels: 'api/group_labels.json',
-};
 
 export const endpoints = {
   groupLabels: /groups\/[A-Z|a-z|\d|\-|_]+\/-\/labels.json/,
@@ -53,16 +60,13 @@ export const valueStreams = [
   { id: 2, name: 'Value stream 2' },
 ];
 
-export const groupLabels = getJSONFixture(fixtureEndpoints.groupLabels).map(
-  convertObjectPropsToCamelCase,
-);
+export const groupLabels = apiGroupLabels.map(convertObjectPropsToCamelCase);
 
-export const recentActivityData = getJSONFixture(fixtureEndpoints.recentActivityData);
-export const timeMetricsData = getJSONFixture(fixtureEndpoints.timeMetricsData);
+export const recentActivityData = valueStreamAnalyticsSummary;
 
-export const customizableStagesAndEvents = getJSONFixture(
-  fixtureEndpoints.customizableCycleAnalyticsStagesAndEvents,
-);
+export const timeMetricsData = valueStreamAnalyticsTimeSummary;
+
+export const customizableStagesAndEvents = valueStreamAnalyticsStages;
 
 const dummyState = {};
 
@@ -102,13 +106,14 @@ export const stagingStage = getStageByTitle(dummyState.stages, 'staging');
 
 export const allowedStages = [issueStage, planStage, codeStage];
 
-const stageFixtures = defaultStages.reduce((acc, stage) => {
-  const events = getJSONFixture(fixtureEndpoints.stageEvents(stage));
-  return {
-    ...acc,
-    [stage]: events,
-  };
-}, {});
+const stageFixtures = {
+  issue: issueStageFixtures,
+  plan: planStageFixtures,
+  review: reviewStageFixtures,
+  code: codeStageFixtures,
+  test: testStageFixtures,
+  staging: stagingStageFixtures,
+};
 
 const getStageId = (name) => {
   const { id } = getStageByTitle(dummyState.stages, name);
@@ -122,10 +127,32 @@ export const stageMediansWithNumericIds = formatMedianValues(
   }),
 );
 
-export const rawStageCounts = defaultStages.map((id) => ({
-  id,
-  ...getJSONFixture(fixtureEndpoints.stageCount(id)),
-}));
+export const rawStageCounts = [
+  {
+    id: 'issue',
+    ...issueCountFixture,
+  },
+  {
+    id: 'plan',
+    ...planCountFixture,
+  },
+  {
+    id: 'review',
+    ...reviewCountFixture,
+  },
+  {
+    id: 'code',
+    ...codeCountFixture,
+  },
+  {
+    id: 'test',
+    ...testCountFixture,
+  },
+  {
+    id: 'staging',
+    ...stagingCountFixture,
+  },
+];
 
 export const stageCounts = rawStageCounts.reduce((acc, { id: name, count }) => {
   const id = getStageId(name);

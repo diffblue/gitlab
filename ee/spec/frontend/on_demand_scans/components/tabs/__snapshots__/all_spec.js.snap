@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AllTab renders the base tab with the correct props 1`] = `
+Array [
+  Object {
+    "key": "detailedStatus",
+    "label": "Status",
+  },
+  Object {
+    "key": "dastProfile.name",
+    "label": "Name",
+  },
+  Object {
+    "key": "scanType",
+    "label": "Scan type",
+  },
+  Object {
+    "key": "dastProfile.dastSiteProfile.targetUrl",
+    "label": "Target",
+  },
+  Object {
+    "key": "createdAt",
+    "label": "Start date",
+  },
+  Object {
+    "key": "id",
+    "label": "Pipeline",
+  },
+]
+`;

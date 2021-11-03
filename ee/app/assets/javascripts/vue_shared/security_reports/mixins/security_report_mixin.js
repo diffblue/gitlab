@@ -71,15 +71,15 @@ export default {
         ),
       };
     },
-    secretScanningPopover() {
+    secretDetectionPopover() {
       return {
         title: s__(
-          'ciReport|Secret scanning detects secrets and credentials vulnerabilities in your source code.',
+          'ciReport|Secret Detection detects secrets and credentials vulnerabilities in your source code.',
         ),
         content: sprintf(
           s__('ciReport|%{linkStartTag}Learn more about Secret Detection %{linkEndTag}'),
           {
-            linkStartTag: getLinkStartTag(this.secretScanningHelpPath),
+            linkStartTag: getLinkStartTag(this.secretDetectionHelpPath),
             linkEndTag,
           },
           false,

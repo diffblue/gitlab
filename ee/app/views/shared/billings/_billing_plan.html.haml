@@ -67,7 +67,7 @@
       .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
         - if show_contact_sales_button?(purchase_link.action, plan_offer_type)
           - if Feature.enabled?(:in_app_hand_raise_pql, namespace)
-            .js-hand-raise-lead-button{ data: { namespace_id: namespace.id, user_name: current_user.username } }
+            .js-hand-raise-lead-button{ data: hand_raise_props(namespace) }
           - else
             = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-success-secondary" : "btn-success"], data: { 'track-action': 'click_button', 'track-label': 'contact_sales', 'track-property': plan.code }
         - if show_upgrade_button

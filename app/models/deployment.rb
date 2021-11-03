@@ -8,7 +8,6 @@ class Deployment < ApplicationRecord
   include Importable
   include Gitlab::Utils::StrongMemoize
   include FastDestroyAll
-  include IgnorableColumns
 
   StatusUpdateError = Class.new(StandardError)
   StatusSyncError = Class.new(StandardError)
@@ -53,6 +52,8 @@ class Deployment < ApplicationRecord
 
   scope :finished_after, ->(date) { where('finished_at >= ?', date) }
   scope :finished_before, ->(date) { where('finished_at < ?', date) }
+
+  scope :ordered, -> { order(finished_at: :desc) }
 
   FINISHED_STATUSES = %i[success failed canceled].freeze
 
@@ -325,6 +326,7 @@ class Deployment < ApplicationRecord
 
   def sync_status_with(build)
     return false unless ::Deployment.statuses.include?(build.status)
+    return false if build.created? || build.status == self.status
 
     update_status!(build.status)
   rescue StandardError => e

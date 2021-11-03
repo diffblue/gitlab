@@ -15,7 +15,11 @@ FactoryBot.modify do
       after(:create) do |namespace, evaluator|
         if evaluator.ci_minutes_used
           create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: evaluator.ci_minutes_used)
-          create(:namespace_statistics, namespace: namespace, shared_runners_seconds: evaluator.ci_minutes_used.minutes)
+
+          create(:namespace_statistics,
+            namespace: namespace,
+            shared_runners_seconds: evaluator.ci_minutes_used.minutes,
+            shared_runners_seconds_last_reset: Time.current)
         end
       end
     end
@@ -43,7 +47,7 @@ end
 FactoryBot.define do
   factory :namespace_with_plan, parent: :namespace do
     transient do
-      plan { :default_plan }
+      plan { :free_plan }
       trial_ends_on { nil }
     end
 

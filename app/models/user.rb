@@ -454,8 +454,8 @@ class User < ApplicationRecord
   scope :order_recent_last_activity, -> { reorder(Gitlab::Database.nulls_last_order('last_activity_on', 'DESC')) }
   scope :order_oldest_last_activity, -> { reorder(Gitlab::Database.nulls_first_order('last_activity_on', 'ASC')) }
   scope :by_id_and_login, ->(id, login) { where(id: id).where('username = LOWER(:login) OR email = LOWER(:login)', login: login) }
-  scope :dormant, -> { active.where('last_activity_on <= ?', MINIMUM_INACTIVE_DAYS.day.ago.to_date) }
-  scope :with_no_activity, -> { active.where(last_activity_on: nil) }
+  scope :dormant, -> { with_state(:active).human_or_service_user.where('last_activity_on <= ?', MINIMUM_INACTIVE_DAYS.day.ago.to_date) }
+  scope :with_no_activity, -> { with_state(:active).human_or_service_user.where(last_activity_on: nil) }
   scope :by_provider_and_extern_uid, ->(provider, extern_uid) { joins(:identities).merge(Identity.with_extern_uid(provider, extern_uid)) }
   scope :get_ids_by_username, -> (username) { where(username: username).pluck(:id) }
 
@@ -1434,7 +1434,7 @@ class User < ApplicationRecord
       name: name,
       username: username,
       avatar_url: avatar_url(only_path: false),
-      email: email
+      email: public_email.presence || _('[REDACTED]')
     }
   end
 
@@ -1610,8 +1610,6 @@ class User < ApplicationRecord
     true
   end
 
-  # TODO Please check all callers and remove allow_cross_joins_across_databases,
-  # when https://gitlab.com/gitlab-org/gitlab/-/issues/336436 is done.
   def ci_owned_runners
     @ci_owned_runners ||= begin
       project_runners = Ci::RunnerProject
@@ -1624,7 +1622,7 @@ class User < ApplicationRecord
         .joins(:runner)
         .select('ci_runners.*')
 
-      Ci::Runner.from_union([project_runners, group_runners])
+      Ci::Runner.from_union([project_runners, group_runners]).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/336436')
     end
   end
 

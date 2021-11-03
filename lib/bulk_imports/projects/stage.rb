@@ -23,9 +23,25 @@ module BulkImports
             pipeline: BulkImports::Projects::Pipelines::IssuesPipeline,
             stage: 3
           },
+          boards: {
+            pipeline: BulkImports::Common::Pipelines::BoardsPipeline,
+            stage: 4
+          },
+          merge_requests: {
+            pipeline: BulkImports::Projects::Pipelines::MergeRequestsPipeline,
+            stage: 4
+          },
+          external_pull_requests: {
+            pipeline: BulkImports::Projects::Pipelines::ExternalPullRequestsPipeline,
+            stage: 4
+          },
+          uploads: {
+            pipeline: BulkImports::Common::Pipelines::UploadsPipeline,
+            stage: 5
+          },
           finisher: {
             pipeline: BulkImports::Common::Pipelines::EntityFinisher,
-            stage: 4
+            stage: 6
           }
         }
       end

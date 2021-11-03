@@ -17,7 +17,7 @@ module Mutations
 
       argument :description, GraphQL::Types::String,
         required: true,
-        description: 'Description of the vulnerability.'
+        description: 'Long text section that describes the vulnerability in more detail.'
 
       argument :scanner, Types::VulnerabilityScannerInputType,
         required: true,
@@ -44,11 +44,11 @@ module Mutations
 
       argument :solution, GraphQL::Types::String,
         required: false,
-        description: 'How to fix this vulnerability.'
+        description: 'Instructions for how to fix the vulnerability.'
 
       argument :message, GraphQL::Types::String,
         required: false,
-        description: 'Additional information about the vulnerability.'
+        description: "Short text section that describes the vulnerability. This may include the finding's specific information."
 
       argument :detected_at, Types::TimeType,
         required: false,
@@ -73,7 +73,7 @@ module Mutations
       def resolve(**attributes)
         project = authorized_find!(id: attributes.fetch(:project))
 
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless Feature.enabled?(:create_vulnerabilities_via_api, project)
+        raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless Feature.enabled?(:create_vulnerabilities_via_api, project, default_enabled: :yaml)
 
         params = build_vulnerability_params(attributes)
 
@@ -105,6 +105,7 @@ module Mutations
           severity
           confidence
           message
+          description
           solution
           detected_at
           confirmed_at

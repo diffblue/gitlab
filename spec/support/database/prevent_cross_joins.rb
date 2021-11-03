@@ -33,16 +33,9 @@ module Database
 
       # PgQuery might fail in some cases due to limited nesting:
       # https://github.com/pganalyze/pg_query/issues/209
-      #
-      # Also, we disable GC while parsing because of https://github.com/pganalyze/pg_query/issues/226
-      begin
-        GC.disable
-        tables = PgQuery.parse(sql).tables
-      ensure
-        GC.enable
-      end
+      tables = PgQuery.parse(sql).tables
 
-      schemas = Database::GitlabSchema.table_schemas(tables)
+      schemas = ::Gitlab::Database::GitlabSchema.table_schemas(tables)
 
       if schemas.include?(:gitlab_ci) && schemas.include?(:gitlab_main)
         Thread.current[:has_cross_join_exception] = true
@@ -103,7 +96,7 @@ RSpec.configure do |config|
   config.around do |example|
     Thread.current[:has_cross_join_exception] = false
 
-    if ALLOW_LIST.include?(example.file_path)
+    if ALLOW_LIST.include?(example.file_path_rerun_argument)
       example.run
     else
       with_cross_joins_prevented { example.run }

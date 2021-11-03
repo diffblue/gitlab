@@ -26,9 +26,23 @@ RSpec.shared_examples 'namespace traversal scopes' do
   end
 
   describe '.without_sti_condition' do
-    subject { described_class.without_sti_condition }
+    subject { described_class.where(type: 'Group').without_sti_condition }
 
-    it { expect(subject.where_values_hash).not_to have_key(:type) }
+    context 'when include_sti_condition is enabled' do
+      before do
+        stub_feature_flags(include_sti_condition: true)
+      end
+
+      it { expect(subject.where_values_hash).to have_key('type') }
+    end
+
+    context 'when include_sti_condition is disabled' do
+      before do
+        stub_feature_flags(include_sti_condition: false)
+      end
+
+      it { expect(subject.where_values_hash).not_to have_key('type') }
+    end
   end
 
   describe '.order_by_depth' do
@@ -156,7 +170,7 @@ RSpec.shared_examples 'namespace traversal scopes' do
     end
   end
 
-  describe '.self_and_descendants' do
+  shared_examples '.self_and_descendants' do
     subject { described_class.where(id: [nested_group_1, nested_group_2]).self_and_descendants }
 
     it { is_expected.to contain_exactly(nested_group_1, deep_nested_group_1, nested_group_2, deep_nested_group_2) }
@@ -174,7 +188,19 @@ RSpec.shared_examples 'namespace traversal scopes' do
     end
   end
 
-  describe '.self_and_descendant_ids' do
+  describe '.self_and_descendants' do
+    include_examples '.self_and_descendants'
+
+    context 'with traversal_ids_btree feature flag disabled' do
+      before do
+        stub_feature_flags(traversal_ids_btree: false)
+      end
+
+      include_examples '.self_and_descendants'
+    end
+  end
+
+  shared_examples '.self_and_descendant_ids' do
     subject { described_class.where(id: [nested_group_1, nested_group_2]).self_and_descendant_ids.pluck(:id) }
 
     it { is_expected.to contain_exactly(nested_group_1.id, deep_nested_group_1.id, nested_group_2.id, deep_nested_group_2.id) }
@@ -188,6 +214,18 @@ RSpec.shared_examples 'namespace traversal scopes' do
       end
 
       it { is_expected.to contain_exactly(deep_nested_group_1.id, deep_nested_group_2.id) }
+    end
+  end
+
+  describe '.self_and_descendant_ids' do
+    include_examples '.self_and_descendant_ids'
+
+    context 'with traversal_ids_btree feature flag disabled' do
+      before do
+        stub_feature_flags(traversal_ids_btree: false)
+      end
+
+      include_examples '.self_and_descendant_ids'
     end
   end
 end

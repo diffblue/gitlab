@@ -38,7 +38,9 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         end
 
         namespace :security do
-          resource :configuration, only: [:show], controller: :configuration
+          resource :configuration, only: [:show], controller: :configuration do
+            resource :sast, only: [:show], controller: :sast_configuration
+          end
         end
 
         resources :artifacts, only: [:index, :destroy]
@@ -358,7 +360,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           get 'details', on: :member
         end
 
-        resources :work_items, only: [:index]
+        get 'work_items/*work_items_path' => 'work_items#index', as: :work_items
 
         resource :tracing, only: [:show]
 

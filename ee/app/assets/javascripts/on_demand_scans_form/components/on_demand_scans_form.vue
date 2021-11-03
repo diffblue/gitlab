@@ -26,7 +26,6 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
 import {
@@ -37,6 +36,7 @@ import {
   SCANNER_PROFILES_QUERY,
   SITE_PROFILES_QUERY,
 } from '../settings';
+import { HELP_PAGE_PATH } from '../../on_demand_scans/constants';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
 import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
@@ -68,6 +68,7 @@ export default {
   enabledRefTypes: [REF_TYPE_BRANCHES],
   saveAndRunScanBtnId: 'scan-submit-button',
   saveScanBtnId: 'scan-save-button',
+  helpPagePath: HELP_PAGE_PATH,
   components: {
     RefSelector,
     ProfileConflictAlert,
@@ -91,7 +92,6 @@ export default {
     GlTooltip: GlTooltipDirective,
     validation: validation(),
   },
-  mixins: [glFeatureFlagMixin()],
   apollo: {
     scannerProfiles: createProfilesApolloOptions(
       'scannerProfiles',
@@ -104,7 +104,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
-  inject: ['projectPath', 'helpPagePath', 'profilesLibraryPath'],
+  inject: ['projectPath', 'profilesLibraryPath'],
   props: {
     defaultBranch: {
       type: String,
@@ -245,14 +245,11 @@ export default {
       const mutation = this.isEdit ? dastProfileUpdateMutation : dastProfileCreateMutation;
       const responseType = this.isEdit ? 'dastProfileUpdate' : 'dastProfileCreate';
       const input = {
-        fullPath: this.projectPath,
         dastScannerProfileId: this.selectedScannerProfile.id,
         dastSiteProfileId: this.selectedSiteProfile.id,
         branchName: this.selectedBranch,
-        ...(this.glFeatures.dastOnDemandScansScheduler
-          ? { dastProfileSchedule: this.profileSchedule }
-          : {}),
-        ...(this.isEdit ? { id: this.dastScan.id } : {}),
+        dastProfileSchedule: this.profileSchedule,
+        ...(this.isEdit ? { id: this.dastScan.id } : { fullPath: this.projectPath }),
         ...serializeFormObject(this.form.fields),
         [this.isEdit ? 'runAfterUpdate' : 'runAfterCreate']: runAfter,
       };
@@ -346,7 +343,7 @@ export default {
           "
         >
           <template #learnMoreLink="{ content }">
-            <gl-link :href="helpPagePath">
+            <gl-link :href="$options.helpPagePath" data-testid="help-page-link">
               {{ content }}
             </gl-link>
           </template>
@@ -455,11 +452,7 @@ export default {
         :has-conflict="hasProfilesConflict"
       />
 
-      <scan-schedule
-        v-if="glFeatures.dastOnDemandScansScheduler"
-        v-model="profileSchedule"
-        class="gl-mb-5"
-      />
+      <scan-schedule v-model="profileSchedule" class="gl-mb-5" />
 
       <profile-conflict-alert
         v-if="hasProfilesConflict"

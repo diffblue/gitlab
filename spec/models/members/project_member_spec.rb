@@ -244,86 +244,17 @@ RSpec.describe ProjectMember do
         project.add_user(user, Gitlab::Access::GUEST)
       end
 
-      context 'when :member_destroy_async_auth_refresh feature flag is enabled' do
-        it 'changes access level', :sidekiq_inline do
-          expect { action }.to change { user.can?(:guest_access, project) }.from(true).to(false)
-        end
-
-        it 'calls AuthorizedProjectUpdate::ProjectRecalculatePerUserWorker to recalculate authorizations' do
-          expect(AuthorizedProjectUpdate::ProjectRecalculatePerUserWorker).to receive(:perform_async).with(project.id, user.id)
-
-          action
-        end
-
-        it_behaves_like 'calls AuthorizedProjectUpdate::UserRefreshFromReplicaWorker with a delay to update project authorizations'
+      it 'changes access level', :sidekiq_inline do
+        expect { action }.to change { user.can?(:guest_access, project) }.from(true).to(false)
       end
 
-      context 'when :member_destroy_async_auth_refresh feature flag is disabled' do
-        before do
-          stub_feature_flags(member_destroy_async_auth_refresh: false)
-        end
+      it 'calls AuthorizedProjectUpdate::ProjectRecalculatePerUserWorker to recalculate authorizations' do
+        expect(AuthorizedProjectUpdate::ProjectRecalculatePerUserWorker).to receive(:perform_async).with(project.id, user.id)
 
-        it 'changes access level' do
-          expect { action }.to change { user.can?(:guest_access, project) }.from(true).to(false)
-        end
-
-        it_behaves_like 'calls AuthorizedProjectUpdate::ProjectRecalculatePerUserService to recalculate authorizations'
-        it_behaves_like 'calls AuthorizedProjectUpdate::UserRefreshFromReplicaWorker with a delay to update project authorizations'
-      end
-    end
-
-    context 'when the feature flag `specialized_service_for_project_member_auth_refresh` is disabled' do
-      before do
-        stub_feature_flags(specialized_service_for_project_member_auth_refresh: false)
+        action
       end
 
-      shared_examples_for 'calls UserProjectAccessChangedService to recalculate authorizations' do
-        it 'calls UserProjectAccessChangedService' do
-          expect_next_instance_of(UserProjectAccessChangedService, user.id) do |service|
-            expect(service).to receive(:execute)
-          end
-
-          action
-        end
-      end
-
-      context 'on create' do
-        let(:action) { project.add_user(user, Gitlab::Access::GUEST) }
-
-        it 'changes access level' do
-          expect { action }.to change { user.can?(:guest_access, project) }.from(false).to(true)
-        end
-
-        it_behaves_like 'calls UserProjectAccessChangedService to recalculate authorizations'
-      end
-
-      context 'on update' do
-        let(:action) { project.members.find_by(user: user).update!(access_level: Gitlab::Access::DEVELOPER) }
-
-        before do
-          project.add_user(user, Gitlab::Access::GUEST)
-        end
-
-        it 'changes access level' do
-          expect { action }.to change { user.can?(:developer_access, project) }.from(false).to(true)
-        end
-
-        it_behaves_like 'calls UserProjectAccessChangedService to recalculate authorizations'
-      end
-
-      context 'on destroy' do
-        let(:action) { project.members.find_by(user: user).destroy! }
-
-        before do
-          project.add_user(user, Gitlab::Access::GUEST)
-        end
-
-        it 'changes access level', :sidekiq_inline do
-          expect { action }.to change { user.can?(:guest_access, project) }.from(true).to(false)
-        end
-
-        it_behaves_like 'calls UserProjectAccessChangedService to recalculate authorizations'
-      end
+      it_behaves_like 'calls AuthorizedProjectUpdate::UserRefreshFromReplicaWorker with a delay to update project authorizations'
     end
   end
 end

@@ -67,9 +67,8 @@ the user details need to be passed to GitLab as SAML assertions.
 
 At a minimum, the user's email address *must* be specified as an assertion named `email` or `mail`.
 See [the assertions list](../../../integration/saml.md#assertions) for other available claims.
-
-NOTE:
-The `username` assertion is not supported for GitLab.com SaaS integrations.
+In addition to the attributes in the linked assertions list, GitLab.com supports `username`
+and `nickname` attributes.
 
 ### Metadata configuration
 
@@ -243,7 +242,7 @@ On subsequent visits, you should be able to go [sign in to GitLab.com with SAML]
 
 ### Configure user settings from SAML response
 
-[Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/263661) in GitLab 13.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/263661) in GitLab 13.7.
 
 GitLab allows setting certain user attributes based on values from the SAML response.
 This affects users created on first sign-in via Group SAML. Existing users'
@@ -267,6 +266,9 @@ convert the information to XML. An example SAML response is shown here.
    <saml2:AttributeStatement>
       <saml2:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
          <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">user.email</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="username" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+        <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">user.nickName</saml2:AttributeValue>
       </saml2:Attribute>
       <saml2:Attribute Name="first_name" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified">
          <saml2:AttributeValue xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xs:string">user.firstName</saml2:AttributeValue>
@@ -339,9 +341,8 @@ Ensure your SAML identity provider sends an attribute statement named `Groups` o
 ```
 
 NOTE:
+The value for `Groups` or `groups` in the SAML response can be either the group name or the group ID.
 To inspect the SAML response, you can use one of these [SAML debugging tools](#saml-debugging-tools).
-Also note that the value for `Groups` or `groups` in the SAML response can be either the group name or
-the group ID depending what the IdP sends to GitLab.
 
 When SAML SSO is enabled for the top-level group, `Maintainer` and `Owner` level users
 see a new menu item in group **Settings > SAML Group Links**. You can configure one or more **SAML Group Links** to map
@@ -359,7 +360,14 @@ To link the SAML groups from the `saml:AttributeStatement` example above:
 If a user is a member of multiple SAML groups mapped to the same GitLab group,
 the user gets the highest access level from the groups. For example, if one group
 is linked as `Guest` and another `Maintainer`, a user in both groups gets `Maintainer`
-access.
+access. 
+
+Users granted:
+
+- A higher role with Group Sync are displayed as having
+  [direct membership](../../project/members/#display-direct-members) of the group.
+- A lower or the same role with Group Sync are displayed as having
+  [inherited membership](../../project/members/#display-inherited-members) of the group.
 
 ### Automatic member removal
 
@@ -506,6 +514,13 @@ Here are possible causes and solutions:
 | Cause                                                                                                                                    | Solution                                                                 |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | When a user account with the email address already exists in GitLab, but the user does not have the SAML identity tied to their account. | The user needs to [link their account](#user-access-and-management). |
+
+User accounts are created in one of the following ways:
+
+- User registration
+- Sign in through OAuth
+- Sign in through SAML
+- SCIM provisioning
 
 ### Message: "SAML authentication failed: Extern UID has already been taken, User has already been taken"
 

@@ -13,6 +13,7 @@ module EE
         field :vulnerabilities,
               ::Types::VulnerabilityType.connection_type,
               null: true,
+              extras: [:lookahead],
               description: 'Vulnerabilities reported on the project.',
               resolver: ::Resolvers::VulnerabilitiesResolver
 

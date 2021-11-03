@@ -295,15 +295,15 @@ RSpec.describe 'Issue Boards', :js do
 
         wait_for_requests
 
-        click_link scoped_label_1.title
+        click_button scoped_label_1.title
 
         wait_for_requests
 
-        click_link scoped_label_2.title
+        click_button scoped_label_2.title
 
         wait_for_requests
 
-        find('[data-testid="close-icon"]').click
+        click_button 'Close'
 
         page.within('.value') do
           aggregate_failures do
@@ -335,11 +335,11 @@ RSpec.describe 'Issue Boards', :js do
 
           wait_for_requests
 
-          click_link scoped_label_2.title
+          click_button scoped_label_2.title
 
           wait_for_requests
 
-          find('[data-testid="close-icon"]').click
+          click_button 'Close'
 
           page.within('.value') do
             aggregate_failures do

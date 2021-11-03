@@ -9,7 +9,7 @@ RSpec.describe Gitlab::HookData::GroupMemberBuilder do
     let(:data) { described_class.new(group_member).build(event) }
 
     context 'data' do
-      context 'group_plan attribute' do
+      context 'group_plan attribute', :saas do
         let(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
         it 'returns correct group_plan' do

@@ -11,6 +11,7 @@ import {
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import createFlash, { FLASH_TYPES } from '~/flash';
 import { sprintf } from '~/locale';
+import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
@@ -30,22 +31,14 @@ export default {
     GlModal: GlModalDirective,
     autofocusonshow,
   },
-  props: {
-    namespaceId: {
-      type: Number,
-      required: true,
-    },
-    userName: {
-      type: String,
-      required: true,
-    },
-  },
+  mixins: [Tracking.mixin()],
+  inject: ['user'],
   data() {
     return {
       isLoading: false,
-      firstName: '',
-      lastName: '',
-      companyName: '',
+      firstName: this.user.firstName,
+      lastName: this.user.lastName,
+      companyName: this.user.companyName,
       companySize: null,
       phoneNumber: '',
       country: null,
@@ -74,7 +67,7 @@ export default {
   computed: {
     modalHeaderText() {
       return sprintf(this.$options.i18n.modalHeaderText, {
-        userName: this.userName,
+        userName: this.user.userName,
       });
     },
     mustEnterState() {
@@ -100,6 +93,11 @@ export default {
     actionCancel() {
       return {
         text: this.$options.i18n.modalCancel,
+      };
+    },
+    tracking() {
+      return {
+        label: 'hand_raise_lead_form',
       };
     },
     showState() {
@@ -134,11 +132,11 @@ export default {
     },
     formParams() {
       return {
-        namespaceId: this.namespaceId,
-        companyName: this.companyName,
-        companySize: this.companySize,
+        namespaceId: Number(this.user.namespaceId),
         firstName: this.firstName,
         lastName: this.lastName,
+        companyName: this.companyName,
+        companySize: this.companySize,
         phoneNumber: this.phoneNumber,
         country: this.country,
         state: this.mustEnterState ? this.state : null,
@@ -147,7 +145,7 @@ export default {
     },
   },
   methods: {
-    clearForm() {
+    resetForm() {
       this.firstName = '';
       this.lastName = '';
       this.companyName = '';
@@ -166,7 +164,8 @@ export default {
             message: this.$options.i18n.handRaiseActionSuccess,
             type: FLASH_TYPES.SUCCESS,
           });
-          this.clearForm();
+          this.resetForm();
+          this.track('hand_raise_submit_form_succeeded');
         })
         .catch((error) => {
           createFlash({
@@ -174,6 +173,7 @@ export default {
             captureError: true,
             error,
           });
+          this.track('hand_raise_submit_form_failed');
         })
         .finally(() => {
           this.isLoading = false;
@@ -202,6 +202,8 @@ export default {
       :action-primary="actionPrimary"
       :action-cancel="actionCancel"
       @primary="submit"
+      @cancel="track('hand_raise_form_canceled')"
+      @change="track('hand_raise_form_viewed')"
     >
       {{ modalHeaderText }}
       <div class="combined d-flex gl-mt-5">
@@ -268,6 +270,7 @@ export default {
       <gl-form-group
         :label="$options.i18n.phoneNumberLabel"
         label-size="sm"
+        :description="$options.i18n.phoneNumberDescription"
         label-for="phoneNumber"
       >
         <gl-form-input

@@ -423,8 +423,8 @@ class Project < ApplicationRecord
     :container_registry_access_level, :container_registry_enabled?,
     to: :project_feature, allow_nil: true
   alias_method :container_registry_enabled, :container_registry_enabled?
-  delegate :show_default_award_emojis, :show_default_award_emojis=,
-    :show_default_award_emojis?,
+  delegate :show_default_award_emojis, :show_default_award_emojis=, :show_default_award_emojis?,
+    :warn_about_potentially_unwanted_characters, :warn_about_potentially_unwanted_characters=, :warn_about_potentially_unwanted_characters?,
     to: :project_setting, allow_nil: true
   delegate :scheduled?, :started?, :in_progress?, :failed?, :finished?,
     prefix: :import, to: :import_state, allow_nil: true
@@ -1309,8 +1309,18 @@ class Project < ApplicationRecord
   def changing_shared_runners_enabled_is_allowed
     return unless new_record? || changes.has_key?(:shared_runners_enabled)
 
-    if shared_runners_enabled && group && group.shared_runners_setting == 'disabled_and_unoverridable'
+    if shared_runners_setting_conflicting_with_group?
       errors.add(:shared_runners_enabled, _('cannot be enabled because parent group does not allow it'))
+    end
+  end
+
+  def shared_runners_setting_conflicting_with_group?
+    shared_runners_enabled && group&.shared_runners_setting == Namespace::SR_DISABLED_AND_UNOVERRIDABLE
+  end
+
+  def reconcile_shared_runners_setting!
+    if shared_runners_setting_conflicting_with_group?
+      self.shared_runners_enabled = false
     end
   end
 
@@ -1443,7 +1453,7 @@ class Project < ApplicationRecord
   end
 
   def disabled_integrations
-    [:zentao]
+    []
   end
 
   def find_or_initialize_integration(name)
@@ -1767,10 +1777,12 @@ class Project < ApplicationRecord
 
   def all_runners
     Ci::Runner.from_union([runners, group_runners, shared_runners])
+      .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339937')
   end
 
   def all_available_runners
     Ci::Runner.from_union([runners, group_runners, available_shared_runners])
+      .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/339937')
   end
 
   # Once issue 339937 is fixed, please search for all mentioned of
@@ -2041,14 +2053,16 @@ class Project < ApplicationRecord
   end
 
   def predefined_variables
-    Gitlab::Ci::Variables::Collection.new
-      .concat(predefined_ci_server_variables)
-      .concat(predefined_project_variables)
-      .concat(pages_variables)
-      .concat(container_registry_variables)
-      .concat(dependency_proxy_variables)
-      .concat(auto_devops_variables)
-      .concat(api_variables)
+    strong_memoize(:predefined_variables) do
+      Gitlab::Ci::Variables::Collection.new
+        .concat(predefined_ci_server_variables)
+        .concat(predefined_project_variables)
+        .concat(pages_variables)
+        .concat(container_registry_variables)
+        .concat(dependency_proxy_variables)
+        .concat(auto_devops_variables)
+        .concat(api_variables)
+    end
   end
 
   def predefined_project_variables
@@ -2569,16 +2583,19 @@ class Project < ApplicationRecord
     config = Gitlab.config.incoming_email
     wildcard = Gitlab::IncomingEmail::WILDCARD_PLACEHOLDER
 
-    config.address&.gsub(wildcard, "#{full_path_slug}-#{id}-issue-")
+    config.address&.gsub(wildcard, "#{full_path_slug}-#{default_service_desk_suffix}")
   end
 
   def service_desk_custom_address
     return unless Gitlab::ServiceDeskEmail.enabled?
 
-    key = service_desk_setting&.project_key
-    return unless key.present?
+    key = service_desk_setting&.project_key || default_service_desk_suffix
 
     Gitlab::ServiceDeskEmail.address_for_key("#{full_path_slug}-#{key}")
+  end
+
+  def default_service_desk_suffix
+    "#{id}-issue-"
   end
 
   def root_namespace
@@ -2704,7 +2721,22 @@ class Project < ApplicationRecord
     self.errors.add(:base, _("Could not change HEAD: branch '%{branch}' does not exist") % { branch: branch })
   end
 
+  def visible_group_links(for_user:)
+    user = for_user
+    links = project_group_links_with_preload
+    user.max_member_access_for_group_ids(links.map(&:group_id)) if user && links.any?
+
+    DeclarativePolicy.user_scope do
+      links.select { Ability.allowed?(user, :read_group, _1.group) }
+    end
+  end
+
   private
+
+  # overridden in EE
+  def project_group_links_with_preload
+    project_group_links
+  end
 
   def save_topics
     return if @topic_list.nil?

@@ -41,13 +41,13 @@ describe('LabelsSelectRoot', () => {
       propsData: {
         ...config,
         issuableType: IssuableType.Issue,
+        labelCreateType: 'project',
+        workspaceType: 'project',
       },
       stubs: {
         SidebarEditableItem,
       },
       provide: {
-        iid: '1',
-        fullPath: 'test',
         canUpdate: true,
         allowLabelEdit: true,
         allowLabelCreate: true,
@@ -123,11 +123,11 @@ describe('LabelsSelectRoot', () => {
     });
   });
 
-  it('emits `updateSelectedLabels` event on dropdown contents `setLabels` event', async () => {
+  it('emits `updateSelectedLabels` event on dropdown contents `setLabels` event if iid is not set', async () => {
     const label = { id: 'gid://gitlab/ProjectLabel/1' };
-    createComponent();
+    createComponent({ config: { ...mockConfig, iid: undefined } });
 
     findDropdownContents().vm.$emit('setLabels', [label]);
-    expect(wrapper.emitted('updateSelectedLabels')).toEqual([[[label]]]);
+    expect(wrapper.emitted('updateSelectedLabels')).toEqual([[{ labels: [label] }]]);
   });
 });

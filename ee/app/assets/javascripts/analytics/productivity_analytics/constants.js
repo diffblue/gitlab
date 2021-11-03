@@ -72,15 +72,6 @@ export const defaultMaxColumnChartItemsPerPage = 20;
 export const maxColumnChartItemsPerPage = {
   [chartKeys.main]: 40,
 };
-
-export const dataZoomOptions = [
-  {
-    type: 'slider',
-    bottom: 10,
-    start: 0,
-  },
-];
-
 /**
  * #418cd8 --> $blue-400 (see variables.scss)
  */

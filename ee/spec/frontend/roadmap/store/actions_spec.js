@@ -1,12 +1,12 @@
 import MockAdapter from 'axios-mock-adapter';
-import { PRESET_TYPES, EXTEND_AS } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import groupMilestones from 'ee/roadmap/queries/groupMilestones.query.graphql';
 import * as actions from 'ee/roadmap/store/actions';
 import * as types from 'ee/roadmap/store/mutation_types';
 import defaultState from 'ee/roadmap/store/state';
 import * as epicUtils from 'ee/roadmap/utils/epic_utils';
 import * as roadmapItemUtils from 'ee/roadmap/utils/roadmap_item_utils';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import testAction from 'helpers/vuex_action_helper';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
@@ -14,9 +14,7 @@ import {
   mockGroupId,
   basePath,
   mockTimeframeInitialDate,
-  mockTimeframeMonthsPrepend,
   mockTimeframeMonthsAppend,
-  rawEpics,
   mockRawEpic,
   mockRawEpic2,
   mockFormattedEpic,
@@ -35,7 +33,11 @@ import {
 
 jest.mock('~/flash');
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('Roadmap Vuex Actions', () => {
   const timeframeStartDate = mockTimeframeMonths[0];
@@ -216,104 +218,6 @@ describe('Roadmap Vuex Actions', () => {
           ],
         );
       });
-    });
-  });
-
-  describe('fetchEpicsForTimeframe', () => {
-    describe('success', () => {
-      it('should perform REQUEST_EPICS_FOR_TIMEFRAME mutation and dispatch receiveEpicsSuccess action when request is successful', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-          Promise.resolve({
-            data: mockGroupEpicsQueryResponse.data,
-          }),
-        );
-
-        return testAction(
-          actions.fetchEpicsForTimeframe,
-          { timeframe: mockTimeframeMonths },
-          state,
-          [
-            {
-              type: types.REQUEST_EPICS_FOR_TIMEFRAME,
-            },
-          ],
-          [
-            {
-              type: 'receiveEpicsSuccess',
-              payload: {
-                rawEpics: mockGroupEpics,
-                pageInfo: mockPageInfo,
-                newEpic: true,
-                timeframeExtended: true,
-              },
-            },
-          ],
-        );
-      });
-    });
-
-    describe('failure', () => {
-      it('should perform REQUEST_EPICS_FOR_TIMEFRAME mutation and dispatch requestEpicsFailure action when request fails', () => {
-        jest.spyOn(epicUtils.gqClient, 'query').mockRejectedValue();
-
-        return testAction(
-          actions.fetchEpicsForTimeframe,
-          { timeframe: mockTimeframeMonths },
-          state,
-          [
-            {
-              type: types.REQUEST_EPICS_FOR_TIMEFRAME,
-            },
-          ],
-          [
-            {
-              type: 'receiveEpicsFailure',
-            },
-          ],
-        );
-      });
-    });
-  });
-
-  describe('extendTimeframe', () => {
-    it('should prepend to timeframe when called with extend type prepend', () => {
-      return testAction(
-        actions.extendTimeframe,
-        { extendAs: EXTEND_AS.PREPEND },
-        state,
-        [{ type: types.PREPEND_TIMEFRAME, payload: mockTimeframeMonthsPrepend }],
-        [],
-      );
-    });
-
-    it('should append to timeframe when called with extend type append', () => {
-      return testAction(
-        actions.extendTimeframe,
-        { extendAs: EXTEND_AS.APPEND },
-        state,
-        [{ type: types.APPEND_TIMEFRAME, payload: mockTimeframeMonthsAppend }],
-        [],
-      );
-    });
-  });
-
-  describe('refreshEpicDates', () => {
-    it('should update epics after refreshing epic dates to match with updated timeframe', () => {
-      const epics = rawEpics.map((epic) =>
-        roadmapItemUtils.formatRoadmapItemDetails(
-          epic,
-          state.timeframeStartDate,
-          state.timeframeEndDate,
-        ),
-      );
-
-      return testAction(
-        actions.refreshEpicDates,
-        {},
-        { ...state, timeframe: mockTimeframeMonths.concat(mockTimeframeMonthsAppend), epics },
-        [{ type: types.SET_EPICS, payload: epics }],
-        [],
-      );
     });
   });
 
@@ -558,8 +462,8 @@ describe('Roadmap Vuex Actions', () => {
         fullPath: 'gitlab-org',
         state: mockState.milestonessState,
         timeframe: {
-          start: '2017-11-01',
-          end: '2018-06-30',
+          start: '2018-01-01',
+          end: '2018-12-31',
         },
         includeDescendants: true,
       };
@@ -651,9 +555,9 @@ describe('Roadmap Vuex Actions', () => {
             payload: [
               {
                 ...mockFormattedMilestone,
-                startDateOutOfRange: false,
+                startDateOutOfRange: true,
                 endDateOutOfRange: false,
-                startDate: new Date(2017, 11, 31),
+                startDate: new Date(2018, 0, 1),
                 originalStartDate: new Date(2017, 11, 31),
                 endDate: new Date(2018, 1, 15),
                 originalEndDate: new Date(2018, 1, 15),

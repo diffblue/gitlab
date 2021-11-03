@@ -5,7 +5,7 @@ import getIssuesQuery from './graphql/queries/get_zentao_issues.query.graphql';
 import zentaoIssues from './graphql/resolvers/zentao_issues';
 
 export default externalIssuesListFactory({
-  query: zentaoIssues,
+  externalIssuesQueryResolver: zentaoIssues,
   provides: {
     getIssuesQuery,
     externalIssuesLogo: zentaoLogo,

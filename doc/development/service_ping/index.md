@@ -55,7 +55,7 @@ We use the following terminology to describe the Service Ping components:
 
 - The main purpose of Service Ping is to build a better GitLab. Data about how GitLab is used is collected to better understand feature/stage adoption and usage, which helps us understand how GitLab is adding value and helps our team better understand the reasons why people use GitLab and with this knowledge we're able to make better product decisions.
 - As a benefit of having Service Ping active, GitLab lets you analyze the users' activities over time of your GitLab installation.
-- As a benefit of having Service Ping active, GitLab provides you with The DevOps Report,which gives you an overview of your entire instance's adoption of Concurrent DevOps from planning to monitoring.
+- As a benefit of having Service Ping active, GitLab provides you with [DevOps Score](../../user/admin_area/analytics/dev_ops_report.md#devops-score), which gives you an overview of your entire instance's adoption of Concurrent DevOps from planning to monitoring.
 - You get better, more proactive support. (assuming that our TAMs and support organization used the data to deliver more value)
 - You get insight and advice into how to get the most value out of your investment in GitLab. Wouldn't you want to know that a number of features or values are not being adopted in your organization?
 - You get a report that illustrates how you compare against other similar organizations (anonymized), with specific advice and recommendations on how to improve your DevOps processes.
@@ -71,6 +71,12 @@ Starting with GitLab version 14.1, free self-managed users running [GitLab EE](.
 ##### Features available in 14.1 and later
 
 1. [Email from GitLab](../../tools/email.md).
+
+##### Features available in 14.4 and later
+
+1. [Repository size limit](../../user/admin_area/settings/account_and_limit_settings.md#repository-size-limit).
+
+1. [Restrict group access by IP address](../../user/group/index.md#restrict-group-access-by-ip-address).
 
 NOTE:
 Registration is not yet required for participation, but will be added in a future milestone.
@@ -180,7 +186,7 @@ sequenceDiagram
     S3 Bucket->>Snowflake DW: Import data
     Snowflake DW->>Snowflake DW: Transform data using dbt
     Snowflake DW->>Sisense Dashboards: Data available for querying
-    Versions Application->>GitLab Instance: DevOps Report (Conversational Development Index)
+    Versions Application->>GitLab Instance: DevOps Score (Conversational Development Index)
 ```
 
 ## How Service Ping works

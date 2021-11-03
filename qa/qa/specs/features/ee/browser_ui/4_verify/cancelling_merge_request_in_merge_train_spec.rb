@@ -124,6 +124,10 @@ module QA
         it 'does not create a TODO task', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1884' do
           # Manually removes merge request from the train
           Page::MergeRequest::Show.perform do |show|
+            show.wait_until(reload: false) do
+              show.has_content? 'started a merge train'
+            end
+
             show.cancel_auto_merge!
 
             expect(show).to have_system_note('removed this merge request from the merge train')

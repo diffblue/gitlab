@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::GroupPlansPreloader do
+RSpec.describe Gitlab::GroupPlansPreloader, :saas do
   describe '#preload' do
     let!(:plan1) { create(:free_plan, name: 'plan-1') }
     let!(:plan2) { create(:free_plan, name: 'plan-2') }

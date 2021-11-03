@@ -13,7 +13,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
   end
 
   shared_examples 'resetting pipeline minutes' do
-    context 'when namespace has namespace statistics' do
+    context 'when namespace has minutes used' do
       before do
         set_ci_minutes_used(namespace, 100)
       end
@@ -29,7 +29,8 @@ RSpec.describe 'Reset namespace pipeline minutes', :js do
         expect(current_path).to include(namespace.path)
 
         expect(namespace.reload.ci_minutes_quota.total_minutes_used).to eq(0)
-        expect(namespace.namespace_statistics.reload.shared_runners_seconds_last_reset).to be_like_time(time)
+        expect(namespace.ci_minutes_quota.reset_date.month).to eq(time.month)
+        expect(namespace.ci_minutes_quota.reset_date.year).to eq(time.year)
       end
     end
   end

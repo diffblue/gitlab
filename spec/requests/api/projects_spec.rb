@@ -48,6 +48,7 @@ end
 
 RSpec.describe API::Projects do
   include ProjectForksHelper
+  include StubRequests
 
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
@@ -358,7 +359,7 @@ RSpec.describe API::Projects do
 
         statistics = json_response.find { |p| p['id'] == project.id }['statistics']
         expect(statistics).to be_present
-        expect(statistics).to include('commit_count', 'storage_size', 'repository_size', 'wiki_size', 'lfs_objects_size', 'job_artifacts_size', 'snippets_size', 'packages_size')
+        expect(statistics).to include('commit_count', 'storage_size', 'repository_size', 'wiki_size', 'lfs_objects_size', 'job_artifacts_size', 'pipeline_artifacts_size', 'snippets_size', 'packages_size', 'uploads_size')
       end
 
       it "does not include license by default" do
@@ -990,7 +991,7 @@ RSpec.describe API::Projects do
 
         expect do
           get api('/projects', admin)
-        end.not_to exceed_query_limit(control.count)
+        end.not_to exceed_query_limit(control)
       end
     end
   end
@@ -1157,6 +1158,34 @@ RSpec.describe API::Projects do
         .not_to change {  Project.count }
 
       expect(response).to have_gitlab_http_status(:forbidden)
+    end
+
+    it 'disallows creating a project with an import_url that is not reachable', :aggregate_failures do
+      url = 'http://example.com'
+      endpoint_url = "#{url}/info/refs?service=git-upload-pack"
+      stub_full_request(endpoint_url, method: :get).to_return({ status: 301, body: '', headers: nil })
+      project_params = { import_url: url, path: 'path-project-Foo', name: 'Foo Project' }
+
+      expect { post api('/projects', user), params: project_params }.not_to change { Project.count }
+
+      expect(response).to have_gitlab_http_status(:unprocessable_entity)
+      expect(json_response['message']).to eq("#{url} is not a valid HTTP Git repository")
+    end
+
+    it 'creates a project with an import_url that is valid', :aggregate_failures do
+      url = 'http://example.com'
+      endpoint_url = "#{url}/info/refs?service=git-upload-pack"
+      git_response = {
+        status: 200,
+        body: '001e# service=git-upload-pack',
+        headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' }
+      }
+      stub_full_request(endpoint_url, method: :get).to_return(git_response)
+      project_params = { import_url: url, path: 'path-project-Foo', name: 'Foo Project' }
+
+      expect { post api('/projects', user), params: project_params }.to change { Project.count }.by(1)
+
+      expect(response).to have_gitlab_http_status(:created)
     end
 
     it 'sets a project as public' do
@@ -2591,7 +2620,7 @@ RSpec.describe API::Projects do
       end
     end
 
-    it_behaves_like 'storing arguments in the application context' do
+    it_behaves_like 'storing arguments in the application context for the API' do
       let_it_be(:user) { create(:user) }
       let_it_be(:project) { create(:project, :public) }
       let(:expected_params) { { user: user.username, project: project.full_path } }
@@ -3203,6 +3232,15 @@ RSpec.describe API::Projects do
         expect(json_response['visibility']).to eq('private')
       end
 
+      it 'does not update visibility_level if it is restricted' do
+        stub_application_setting(restricted_visibility_levels: [Gitlab::VisibilityLevel::INTERNAL])
+
+        put api("/projects/#{project3.id}", user), params: { visibility: 'internal' }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response['message']['visibility_level']).to include('internal has been restricted by your GitLab administrator')
+      end
+
       it 'does not update name to existing name' do
         project_param = { name: project3.name }
 
@@ -3523,6 +3561,19 @@ RSpec.describe API::Projects do
                           request_access_enabled: true }
         put api("/projects/#{project.id}", user3), params: project_param
         expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when authenticated as the admin' do
+      let_it_be(:admin) { create(:admin) }
+
+      it 'ignores visibility level restrictions' do
+        stub_application_setting(restricted_visibility_levels: [Gitlab::VisibilityLevel::INTERNAL])
+
+        put api("/projects/#{project3.id}", admin), params: { visibility: 'internal' }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['visibility']).to eq('internal')
       end
     end
 

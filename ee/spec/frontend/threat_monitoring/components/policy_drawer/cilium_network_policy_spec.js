@@ -95,7 +95,8 @@ describe('CiliumNetworkPolicy component', () => {
         },
       });
       expect(findEnvironments().exists()).toBe(true);
-      expect(findEnvironments().text()).toBe('production, local');
+      expect(findEnvironments().text()).toContain('production');
+      expect(findEnvironments().text()).toContain('local');
     });
 
     it("does not render environments row if there aren't any", () => {

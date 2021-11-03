@@ -20,6 +20,10 @@ module Gitlab
             def value
               raise NotImplementedError, "Expected #{self.name} to implement value"
             end
+
+            def links
+              []
+            end
           end
         end
       end

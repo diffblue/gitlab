@@ -1,6 +1,7 @@
 <script>
+import { GlEmptyState } from '@gitlab/ui';
 import { joinPaths, visitUrl } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { EDITOR_MODES, EDITOR_MODE_YAML } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import {
@@ -18,11 +19,22 @@ export default {
   EDITOR_MODES: [EDITOR_MODES[1]],
   i18n: {
     createMergeRequest: __('Create merge request'),
+    notOwnerButtonText: __('Learn more'),
+    notOwnerDescription: s__(
+      'SecurityOrchestration|Scan execution policies can only be created by project owners.',
+    ),
   },
   components: {
+    GlEmptyState,
     PolicyEditorLayout,
   },
-  inject: ['disableScanExecutionUpdate', 'projectId', 'projectPath'],
+  inject: [
+    'disableScanExecutionUpdate',
+    'policyEditorEmptyStateSvgPath',
+    'projectId',
+    'projectPath',
+    'scanExecutionDocumentationPath',
+  ],
   props: {
     assignedPolicyProject: {
       type: Object,
@@ -110,9 +122,9 @@ export default {
 
 <template>
   <policy-editor-layout
+    v-if="!disableScanExecutionUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
     :default-editor-mode="$options.DEFAULT_EDITOR_MODE"
-    :disable-update="disableScanExecutionUpdate"
     :editor-modes="$options.EDITOR_MODES"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
@@ -122,5 +134,13 @@ export default {
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
     @update-yaml="updateYaml"
+  />
+  <gl-empty-state
+    v-else
+    :description="$options.i18n.notOwnerDescription"
+    :primary-button-link="scanExecutionDocumentationPath"
+    :primary-button-text="$options.i18n.notOwnerButtonText"
+    :svg-path="policyEditorEmptyStateSvgPath"
+    title=""
   />
 </template>

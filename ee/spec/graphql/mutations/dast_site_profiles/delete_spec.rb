@@ -6,7 +6,6 @@ RSpec.describe Mutations::DastSiteProfiles::Delete do
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
   let(:user) { create(:user) }
-  let(:full_path) { project.full_path }
   let!(:dast_site_profile) { create(:dast_site_profile, project: project) }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
@@ -19,21 +18,10 @@ RSpec.describe Mutations::DastSiteProfiles::Delete do
 
   describe '#resolve' do
     subject do
-      mutation.resolve(
-        full_path: full_path,
-        id: dast_site_profile.to_global_id
-      )
+      mutation.resolve(id: dast_site_profile.to_global_id)
     end
 
     context 'when on demand scan feature is enabled' do
-      context 'when the project does not exist' do
-        let(:full_path) { SecureRandom.hex }
-
-        it 'raises an exception' do
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
-
       context 'when the user can run a dast scan' do
         before do
           project.add_developer(user)

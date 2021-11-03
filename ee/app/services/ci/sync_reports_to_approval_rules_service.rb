@@ -14,16 +14,16 @@ module Ci
       sync_coverage_rules
       success
     rescue StandardError => error
-      log_error(
+      payload = {
         pipeline: pipeline&.to_param,
-        error: error.class.name,
-        message: error.message,
-        source: "#{__FILE__}:#{__LINE__}",
-        backtrace: error.backtrace
-      )
+        source: "#{__FILE__}:#{__LINE__}"
+      }
+
+      Gitlab::ExceptionLogFormatter.format!(error, payload)
+      log_error(payload)
       error("Failed to update approval rules")
     ensure
-      [:project_rule_vulnerabilities_allowed, :project_rule_scanners, :project_rule_severity_levels, :project_vulnerability_report, :reports].each do |memoization|
+      [:project_rule_vulnerabilities_allowed, :project_rule_scanners, :project_rule_severity_levels, :project_vulnerability_report, :reports, :project_rule_vulnerability_states].each do |memoization|
         clear_memoization(memoization)
       end
     end
@@ -86,7 +86,7 @@ module Ci
 
     def merge_requests_approved_security_reports
       pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed, project_rule_severity_levels)
+        reports.present? && reports.violates_default_policy_against?(merge_request.base_pipeline&.security_reports, project_rule_vulnerabilities_allowed, project_rule_severity_levels, project_rule_vulnerability_states)
       end
     end
 
@@ -99,6 +99,12 @@ module Ci
     def project_rule_severity_levels
       strong_memoize(:project_rule_severity_levels) do
         project_vulnerability_report&.severity_levels
+      end
+    end
+
+    def project_rule_vulnerability_states
+      strong_memoize(:project_rule_vulnerability_states) do
+        project_vulnerability_report&.vulnerability_states_for_branch
       end
     end
 

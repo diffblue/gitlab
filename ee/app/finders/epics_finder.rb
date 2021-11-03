@@ -27,6 +27,7 @@
 #   include_descendant_groups: boolean
 #   starts_with_iid: string (containing a number)
 #   confidential: boolean
+#   hierarchy_order: :desc or :acs, default :acs when searched by child_id
 
 class EpicsFinder < IssuableFinder
   include TimeFrameFilter
@@ -101,7 +102,7 @@ class EpicsFinder < IssuableFinder
 
       # if user is member of top-level related group, he can automatically read
       # all epics in all subgroups
-      next groups if can_read_all_epics_in_related_groups?(groups, include_confidential: false)
+      next groups if can_read_all_epics_in_related_groups?(include_confidential: false)
 
       next groups.public_to_user unless current_user
       next groups.public_to_user(current_user) unless groups.user_is_member(current_user).exists?
@@ -198,13 +199,15 @@ class EpicsFinder < IssuableFinder
   def by_child(items)
     return items unless child_id?
 
-    ancestor_ids = Epic.find(params[:child_id]).ancestors.reselect(:id)
-    items.where(id: ancestor_ids)
+    hierarchy_order = params[:hierarchy_order] || :asc
+
+    ancestors = Epic.find(params[:child_id]).ancestors(hierarchy_order: hierarchy_order)
+    ancestors.where(id: items.select(:id))
   end
   # rubocop: enable CodeReuse/ActiveRecord
 
   def with_confidentiality_access_check(epics, groups)
-    return epics if can_read_all_epics_in_related_groups?(groups)
+    return epics if can_read_all_epics_in_related_groups?
 
     epics.not_confidential_or_in_groups(groups_with_confidential_access(groups))
   end
@@ -224,23 +227,17 @@ class EpicsFinder < IssuableFinder
   # `true` even if `groups` contains a group where the user cannot view
   # confidential epics. As such you should only call this with `false` if you
   # are planning on filtering out confidential epics separately.
-  def can_read_all_epics_in_related_groups?(groups, include_confidential: true)
+  def can_read_all_epics_in_related_groups?(include_confidential: true)
     return true if @skip_visibility_check
     return false unless current_user
 
     # If a user is a member of a group, he also inherits access to all subgroups,
     # so here we check if user is member of the top-level group (from the
-    # list of groups being requested) - this is checked by
+    # epic group hierarchy) - this is checked by
     # `read_confidential_epic` policy. If that's the case we don't need to
     # check membership on subgroups.
-    #
-    # `groups` is a list of groups in the same group hierarchy, group is
-    # highest in the group hierarchy except if we fetch ancestors - in that
-    # case top-level group is group's root parent
     parent = params.fetch(:include_ancestor_groups, false) ? params.group.root_ancestor : params.group
 
-    # If they can view confidential epics in this parent group they can
-    # definitely view confidential epics in subgroups.
     return true if Ability.allowed?(current_user, :read_confidential_epic, parent)
 
     # If we don't account for confidential (assume it will be filtered later by
@@ -277,5 +274,12 @@ class EpicsFinder < IssuableFinder
   override :feature_flag_scope
   def feature_flag_scope
     params.group
+  end
+
+  override :sort
+  def sort(items)
+    return items if params[:hierarchy_order]
+
+    super
   end
 end

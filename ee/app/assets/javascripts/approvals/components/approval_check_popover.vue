@@ -42,7 +42,7 @@ export default {
     <gl-icon
       :id="popoverTriggerId"
       name="question"
-      class="author-link suggestion-help-hover"
+      class="author-link gl-cursor-help"
       :aria-label="__('help')"
       :size="14"
       data-testid="icon2"

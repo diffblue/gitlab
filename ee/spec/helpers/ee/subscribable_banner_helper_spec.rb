@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::SubscribableBannerHelper do
+RSpec.describe EE::SubscribableBannerHelper, :saas do
   describe '#renew_subscription_path' do
     it 'does not raise error if available project is not persisted' do
       assign(:project, Project.new)

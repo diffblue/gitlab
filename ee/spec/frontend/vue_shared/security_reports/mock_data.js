@@ -216,7 +216,7 @@ export const parsedDast = [
   },
 ];
 
-export const secretScanningParsedIssues = [
+export const secretDetectionParsedIssues = [
   {
     title: 'AWS SecretKey detected',
     path: 'Gemfile.lock',

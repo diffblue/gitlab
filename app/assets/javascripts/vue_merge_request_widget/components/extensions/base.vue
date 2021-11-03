@@ -8,6 +8,8 @@ import {
   GlTooltipDirective,
   GlIntersectionObserver,
 } from '@gitlab/ui';
+import { once } from 'lodash';
+import api from '~/api';
 import { sprintf, s__, __ } from '~/locale';
 import SmartVirtualList from '~/vue_shared/components/smart_virtual_list.vue';
 import { EXTENSION_ICON_CLASS } from '../../constants';
@@ -102,8 +104,15 @@ export default {
       });
   },
   methods: {
+    triggerRedisTracking: once(function triggerRedisTracking() {
+      if (this.$options.expandEvent) {
+        api.trackRedisHllUserEvent(this.$options.expandEvent);
+      }
+    }),
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
+
+      this.triggerRedisTracking();
     },
     loadAllData() {
       if (this.fullData) return;
@@ -138,18 +147,24 @@ export default {
 <template>
   <section class="media-section" data-testid="widget-extension">
     <div class="media gl-p-5">
-      <status-icon :name="widgetLabel" :is-loading="isLoadingSummary" :icon-name="statusIconName" />
+      <status-icon
+        :name="$options.label || $options.name"
+        :is-loading="isLoadingSummary"
+        :icon-name="statusIconName"
+      />
       <div
-        class="media-body gl-display-flex gl-align-self-center gl-align-items-center gl-flex-direction-row!"
+        class="media-body gl-display-flex gl-flex-direction-row!"
+        data-testid="widget-extension-top-level"
       >
         <div class="gl-flex-grow-1">
           <template v-if="isLoadingSummary">{{ widgetLoadingText }}</template>
           <div v-else v-safe-html="summary(collapsedData)"></div>
         </div>
-        <actions :widget="widgetLabel" :tertiary-buttons="tertiaryActionsButtons" />
-        <div
-          class="gl-float-right gl-align-self-center gl-border-l-1 gl-border-l-solid gl-border-gray-100 gl-ml-3 gl-pl-3"
-        >
+        <actions
+          :widget="$options.label || $options.name"
+          :tertiary-buttons="tertiaryActionsButtons"
+        />
+        <div class="gl-border-l-1 gl-border-l-solid gl-border-gray-100 gl-ml-3 gl-pl-3 gl-h-6">
           <gl-button
             v-if="isCollapsible"
             v-gl-tooltip
@@ -191,20 +206,28 @@ export default {
           class="gl-display-flex gl-align-items-center gl-py-3 gl-pl-7"
           data-testid="extension-list-item"
         >
-          <status-icon v-if="data.icon" :icon-name="data.icon.name" :size="12" />
+          <status-icon v-if="data.icon" :icon-name="data.icon.name" :size="12" class="gl-pl-0" />
           <gl-intersection-observer
             :options="{ rootMargin: '100px', thresholds: 0.1 }"
-            class="gl-flex-wrap gl-align-self-center gl-display-flex"
+            class="gl-flex-wrap gl-display-flex gl-w-full"
             @appear="appear(index)"
             @disappear="disappear(index)"
           >
-            <div v-safe-html="data.text" class="gl-mr-4"></div>
+            <div
+              v-safe-html="data.text"
+              class="gl-mr-4 gl-display-flex gl-align-items-center"
+            ></div>
             <div v-if="data.link">
               <gl-link :href="data.link.href">{{ data.link.text }}</gl-link>
             </div>
             <gl-badge v-if="data.badge" :variant="data.badge.variant || 'info'">
               {{ data.badge.text }}
             </gl-badge>
+            <actions
+              :widget="$options.label || $options.name"
+              :tertiary-buttons="data.actions"
+              class="gl-ml-auto"
+            />
           </gl-intersection-observer>
         </li>
       </smart-virtual-list>

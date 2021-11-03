@@ -66,6 +66,30 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
           end
         end
 
+        context 'executing migration with retry_on_failure set' do
+          before do
+            allow(migration).to receive(:started?).and_return(true)
+            allow(migration).to receive(:retry_on_failure?).and_return(true)
+            allow(migration).to receive(:max_attempts).and_return(2)
+            allow(migration).to receive(:migrate).and_raise(StandardError)
+          end
+
+          it 'increases previous_attempts on failure' do
+            subject.perform
+
+            expect(migration.migration_state).to match(previous_attempts: 1)
+          end
+
+          it 'fails the migration if max_attempts is exceeded' do
+            migration.set_migration_state(previous_attempts: 2)
+
+            subject.perform
+
+            expect(migration.halted?).to be_truthy
+            expect(migration.failed?).to be_truthy
+          end
+        end
+
         context 'migration process' do
           before do
             allow(migration).to receive(:started?).and_return(started)
@@ -151,7 +175,7 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
 
             it 'halts the migration if there is not enough space' do
               allow(helper).to receive(:cluster_free_size_bytes).and_return(5)
-              expect(migration).to receive(:halt!)
+              expect(migration).to receive(:halt)
               expect(migration).not_to receive(:migrate)
 
               subject.perform
@@ -159,7 +183,7 @@ RSpec.describe Elastic::MigrationWorker, :elastic do
 
             it 'runs the migration if there is enough space' do
               allow(helper).to receive(:cluster_free_size_bytes).and_return(20)
-              expect(migration).not_to receive(:halt!)
+              expect(migration).not_to receive(:fail)
               expect(migration).to receive(:migrate).once
 
               subject.perform

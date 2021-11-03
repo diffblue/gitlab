@@ -218,8 +218,7 @@ Settings.gitlab['no_todos_messages'] ||= YAML.load_file(Rails.root.join('config'
 Settings.gitlab['impersonation_enabled'] ||= true if Settings.gitlab['impersonation_enabled'].nil?
 Settings.gitlab['usage_ping_enabled'] = true if Settings.gitlab['usage_ping_enabled'].nil?
 Settings.gitlab['max_request_duration_seconds'] ||= 57
-
-Settings.gitlab['display_initial_root_password'] = true if Settings.gitlab['display_initial_root_password'].nil?
+Settings.gitlab['display_initial_root_password'] = false if Settings.gitlab['display_initial_root_password'].nil?
 
 Gitlab.ee do
   Settings.gitlab['mirror_max_delay'] ||= 300
@@ -589,6 +588,9 @@ Settings.cron_jobs['ci_delete_unit_tests_worker']['job_class'] = 'Ci::DeleteUnit
 Settings.cron_jobs['batched_background_migrations_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['batched_background_migrations_worker']['cron'] ||= '* * * * *'
 Settings.cron_jobs['batched_background_migrations_worker']['job_class'] = 'Database::BatchedBackgroundMigrationWorker'
+Settings.cron_jobs['issues_reschedule_stuck_issue_rebalances'] ||= Settingslogic.new({})
+Settings.cron_jobs['issues_reschedule_stuck_issue_rebalances']['cron'] ||= '* 0/15 * * *'
+Settings.cron_jobs['issues_reschedule_stuck_issue_rebalances']['job_class'] = 'Issues::RescheduleStuckIssueRebalancesWorker'
 
 Gitlab.ee do
   Settings.cron_jobs['analytics_devops_adoption_create_all_snapshots_worker'] ||= Settingslogic.new({})
@@ -714,6 +716,9 @@ Gitlab.ee do
   Settings.cron_jobs['app_sec_dast_profile_schedule_worker'] ||= Settingslogic.new({})
   Settings.cron_jobs['app_sec_dast_profile_schedule_worker']['cron'] ||= '7-59/15 * * * *'
   Settings.cron_jobs['app_sec_dast_profile_schedule_worker']['job_class'] = 'AppSec::Dast::ProfileScheduleWorker'
+  Settings.cron_jobs['loose_foreign_keys_cleanup_worker'] ||= Settingslogic.new({})
+  Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['cron'] ||= '*/5 * * * *'
+  Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['job_class'] = 'LooseForeignKeys::CleanupWorker'
 end
 
 #

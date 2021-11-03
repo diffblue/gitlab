@@ -16,12 +16,13 @@ module Ci
       end
 
       # Updates the project and namespace usage based on the passed consumption amount
-      def execute(consumption)
+      def execute(consumption, duration = nil)
         legacy_track_usage_of_monthly_minutes(consumption)
 
-        ensure_idempotency { track_usage_of_monthly_minutes(consumption) }
+        ensure_idempotency { track_monthly_usage(consumption, duration.to_i) }
 
-        send_minutes_email_notification
+        # No need to check notification if consumption hasn't changed
+        send_minutes_email_notification if consumption > 0
       end
 
       def idempotency_cache_key
@@ -47,20 +48,31 @@ module Ci
       end
 
       def legacy_track_usage_of_monthly_minutes(consumption)
+        return unless consumption > 0
+
         consumption_in_seconds = consumption.minutes.to_i
 
         update_legacy_project_minutes(consumption_in_seconds)
         update_legacy_namespace_minutes(consumption_in_seconds)
       end
 
-      def track_usage_of_monthly_minutes(consumption)
+      def track_monthly_usage(consumption, duration)
         # preload minutes usage data outside of transaction
         project_usage
         namespace_usage
 
         ::Ci::Minutes::NamespaceMonthlyUsage.transaction do
-          ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage, consumption) if namespace_usage
-          ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage, consumption) if project_usage
+          if namespace_usage
+            ::Ci::Minutes::NamespaceMonthlyUsage.increase_usage(namespace_usage,
+              amount_used: consumption,
+              shared_runners_duration: duration)
+          end
+
+          if project_usage
+            ::Ci::Minutes::ProjectMonthlyUsage.increase_usage(project_usage,
+              amount_used: consumption,
+              shared_runners_duration: duration)
+          end
         end
       end
 

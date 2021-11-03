@@ -5,9 +5,6 @@ import {
   chartKeys,
   metricTypes,
   columnHighlightStyle,
-  defaultMaxColumnChartItemsPerPage,
-  maxColumnChartItemsPerPage,
-  dataZoomOptions,
   scatterPlotAddonQueryDays,
   daysToMergeMetric,
 } from '../../../constants';
@@ -99,39 +96,6 @@ export const getFilterParams = (state, getters, rootState, rootGetters) => (char
   }
 
   return params;
-};
-
-/**
- * Returns additional options for a given column chart (based on the chartKey)
- * Primarily, it computes the end percentage value for echart's dataZoom property
- *
- * If the number of data items being displayed is below the MAX_ITEMS_PER_PAGE threshold,
- * it will return an empty dataZoom property.
- *
- */
-export const getColumnChartDatazoomOption = (state) => (chartKey) => {
-  const { data } = state.charts[chartKey];
-  const totalItems = Object.keys(data).length;
-  const MAX_ITEMS_PER_PAGE = maxColumnChartItemsPerPage[chartKey]
-    ? maxColumnChartItemsPerPage[chartKey]
-    : defaultMaxColumnChartItemsPerPage;
-
-  if (totalItems <= MAX_ITEMS_PER_PAGE) {
-    return {};
-  }
-
-  const intervalEnd = Math.ceil((MAX_ITEMS_PER_PAGE / totalItems) * 100);
-
-  return {
-    dataZoom: dataZoomOptions.map((item) => {
-      const result = {
-        ...item,
-        end: intervalEnd,
-      };
-
-      return result;
-    }),
-  };
 };
 
 export const getSelectedMetric = (state) => (chartKey) => state.charts[chartKey].params.metricType;

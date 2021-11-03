@@ -38,7 +38,7 @@ export const stateData = {
     __typename: 'Subscription',
   },
   redirectAfterSuccess: '/path/to/redirect/',
-  selectedNamespaceId: null,
+  selectedNamespaceId: '30',
   selectedPlanId: null,
   paymentMethod: {
     id: null,

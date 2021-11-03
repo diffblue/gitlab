@@ -1,69 +1,82 @@
-import { GlButtonGroup, GlButton } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import DateRangeButtons from 'ee/audit_events/components/date_range_buttons.vue';
-import { CURRENT_DATE } from 'ee/audit_events/constants';
-import { getDateInPast } from '~/lib/utils/datetime_utility';
+import { CURRENT_DATE, SAME_DAY_OFFSET } from 'ee/audit_events/constants';
+import { getDateInPast, dateAtFirstDayOfMonth } from '~/lib/utils/datetime_utility';
 
 describe('DateRangeButtons component', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(DateRangeButtons, {
-      propsData: { ...props },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(DateRangeButtons, {
+        propsData: { ...props },
+      }),
+    );
   };
 
-  const findButtonGroup = () => wrapper.findComponent(GlButtonGroup);
-  const findButtons = (f) => findButtonGroup().findAllComponents(GlButton).filter(f);
+  const findButtons = (f) => wrapper.findAllComponents(GlButton).filter(f);
   const findSelectedButtons = () => findButtons((b) => b.props('selected'));
-  const findUnSelectedButtons = () => findButtons((b) => !b.props('selected'));
+  const findOneWeekAgoButton = () => wrapper.findByTestId('date_range_button_last_7_days');
+  const findTwoWeeksAgoButton = () => wrapper.findByTestId('date_range_button_last_14_days');
+  const findThisMonthButton = () => wrapper.findByTestId('date_range_button_this_month');
 
   afterEach(() => {
     wrapper.destroy();
   });
 
-  it('sets the tracking data on the button', () => {
-    createComponent({
-      dateRange: { startDate: getDateInPast(CURRENT_DATE, 7), endDate: CURRENT_DATE },
+  describe('when the last 7 days is selected', () => {
+    beforeEach(() => {
+      createComponent({
+        dateRange: {
+          startDate: getDateInPast(CURRENT_DATE, 7 - SAME_DAY_OFFSET),
+          endDate: CURRENT_DATE,
+        },
+      });
     });
 
-    expect(findSelectedButtons().at(0).attributes()).toMatchObject({
-      'data-track-action': 'click_date_range_button',
-      'data-track-label': 'date_range_button_last_7_days',
+    describe.each`
+      button                   | selected | text              | trackingLabel                       | startDate
+      ${findOneWeekAgoButton}  | ${true}  | ${'Last 7 days'}  | ${'date_range_button_last_7_days'}  | ${getDateInPast(CURRENT_DATE, 7 - SAME_DAY_OFFSET)}
+      ${findTwoWeeksAgoButton} | ${false} | ${'Last 14 days'} | ${'date_range_button_last_14_days'} | ${getDateInPast(CURRENT_DATE, 14 - SAME_DAY_OFFSET)}
+      ${findThisMonthButton}   | ${false} | ${'This month'}   | ${'date_range_button_this_month'}   | ${dateAtFirstDayOfMonth(CURRENT_DATE)}
+    `('for the "$text" button', ({ button, selected, text, trackingLabel, startDate }) => {
+      it(`the button is ${selected ? 'selected' : 'not selected'}`, () => {
+        expect(button().props('selected')).toBe(selected);
+      });
+
+      it('shows the correct text', () => {
+        expect(button().text()).toBe(text);
+      });
+
+      it('sets the correct tracking data', () => {
+        expect(button().attributes()).toMatchObject({
+          'data-track-action': 'click_date_range_button',
+          'data-track-label': trackingLabel,
+        });
+      });
+
+      it('emits an "input" event with the dateRange when a new date range is selected', () => {
+        button().vm.$emit('click');
+
+        expect(wrapper.emitted('input')).toEqual([[{ startDate, endDate: CURRENT_DATE }]]);
+      });
     });
   });
 
-  it('shows the selected the option that matches the provided dateRange property', () => {
-    createComponent({
-      dateRange: { startDate: getDateInPast(CURRENT_DATE, 7), endDate: CURRENT_DATE },
+  describe('when no predefined date range is selected', () => {
+    beforeEach(() => {
+      createComponent({
+        dateRange: {
+          startDate: getDateInPast(CURRENT_DATE, 5),
+          endDate: getDateInPast(CURRENT_DATE, 2),
+        },
+      });
     });
 
-    expect(findSelectedButtons().at(0).text()).toBe('Last 7 days');
-  });
-
-  it('shows no date range as selected when the dateRange property does not match any option', () => {
-    createComponent({
-      dateRange: {
-        startDate: getDateInPast(CURRENT_DATE, 5),
-        endDate: getDateInPast(CURRENT_DATE, 2),
-      },
+    it('shows that no button is selected', () => {
+      expect(findSelectedButtons()).toHaveLength(0);
     });
-
-    expect(findSelectedButtons()).toHaveLength(0);
-  });
-
-  it('emits an "input" event with the dateRange when a new date range is selected', async () => {
-    createComponent({
-      dateRange: { startDate: getDateInPast(CURRENT_DATE, 7), endDate: CURRENT_DATE },
-    });
-    findUnSelectedButtons().at(0).vm.$emit('click');
-
-    await wrapper.vm.$nextTick();
-    expect(wrapper.emitted().input[0]).toEqual([
-      {
-        startDate: getDateInPast(CURRENT_DATE, 14),
-        endDate: CURRENT_DATE,
-      },
-    ]);
   });
 });

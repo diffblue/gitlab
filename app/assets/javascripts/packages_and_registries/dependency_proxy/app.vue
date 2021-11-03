@@ -1,12 +1,13 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormInputGroup, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import TitleArea from '~/vue_shared/components/registry/title_area.vue';
 import {
   DEPENDENCY_PROXY_SETTINGS_DESCRIPTION,
   DEPENDENCY_PROXY_DOCS_PATH,
 } from '~/packages_and_registries/settings/group/constants';
+import { GRAPHQL_PAGE_SIZE } from '~/packages_and_registries/dependency_proxy/constants';
 
 import getDependencyProxyDetailsQuery from '~/packages_and_registries/dependency_proxy/graphql/queries/get_dependency_proxy_details.query.graphql';
 
@@ -22,10 +23,16 @@ export default {
   },
   inject: ['groupPath', 'dependencyProxyAvailable'],
   i18n: {
-    proxyNotAvailableText: __('Dependency proxy feature is limited to public groups for now.'),
-    proxyImagePrefix: __('Dependency proxy image prefix'),
-    copyImagePrefixText: __('Copy prefix'),
-    blobCountAndSize: __('Contains %{count} blobs of images (%{size})'),
+    proxyNotAvailableText: s__(
+      'DependencyProxy|Dependency Proxy feature is limited to public groups for now.',
+    ),
+    proxyDisabledText: s__(
+      'DependencyProxy|Dependency Proxy disabled. To enable it, contact the group owner.',
+    ),
+    proxyImagePrefix: s__('DependencyProxy|Dependency Proxy image prefix'),
+    copyImagePrefixText: s__('DependencyProxy|Copy prefix'),
+    blobCountAndSize: s__('DependencyProxy|Contains %{count} blobs of images (%{size})'),
+    pageTitle: s__('DependencyProxy|Dependency Proxy'),
   },
   data() {
     return {
@@ -39,7 +46,7 @@ export default {
         return !this.dependencyProxyAvailable;
       },
       variables() {
-        return { fullPath: this.groupPath };
+        return { fullPath: this.groupPath, first: GRAPHQL_PAGE_SIZE };
       },
     },
   },
@@ -52,25 +59,33 @@ export default {
         },
       ];
     },
+    dependencyProxyEnabled() {
+      return this.group?.dependencyProxySetting?.enabled;
+    },
   },
 };
 </script>
 
 <template>
   <div>
-    <title-area :title="__('Dependency Proxy')" :info-messages="infoMessages" />
-    <gl-alert v-if="!dependencyProxyAvailable" :dismissible="false">
+    <title-area :title="$options.i18n.pageTitle" :info-messages="infoMessages" />
+    <gl-alert
+      v-if="!dependencyProxyAvailable"
+      :dismissible="false"
+      data-testid="proxy-not-available"
+    >
       {{ $options.i18n.proxyNotAvailableText }}
     </gl-alert>
 
     <gl-skeleton-loader v-else-if="$apollo.queries.group.loading" />
 
-    <div v-else data-testid="main-area">
+    <div v-else-if="dependencyProxyEnabled" data-testid="main-area">
       <gl-form-group :label="$options.i18n.proxyImagePrefix">
         <gl-form-input-group
           readonly
           :value="group.dependencyProxyImagePrefix"
           class="gl-layout-w-limited"
+          data-testid="proxy-url"
         >
           <template #append>
             <clipboard-button
@@ -89,5 +104,8 @@ export default {
         </template>
       </gl-form-group>
     </div>
+    <gl-alert v-else :dismissible="false" data-testid="proxy-disabled">
+      {{ $options.i18n.proxyDisabledText }}
+    </gl-alert>
   </div>
 </template>

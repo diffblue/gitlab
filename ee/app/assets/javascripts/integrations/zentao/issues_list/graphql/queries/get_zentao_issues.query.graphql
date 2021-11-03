@@ -1,7 +1,7 @@
 #import "../fragments/zentao_label.fragment.graphql"
 #import "../fragments/zentao_user.fragment.graphql"
 
-query externalIssues(
+query zentaoIssues(
   $issuesFetchPath: String
   $search: String
   $labels: String

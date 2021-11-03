@@ -1,14 +1,16 @@
 <script>
 import { GlEmptyState, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { HELP_PAGE_PATH } from '../constants';
 
 export default {
+  HELP_PAGE_PATH,
   components: {
     GlEmptyState,
     GlSprintf,
     GlLink,
   },
-  inject: ['newDastScanPath', 'helpPagePath', 'emptyStateSvgPath'],
+  inject: ['newDastScanPath', 'emptyStateSvgPath'],
   props: {
     title: {
       type: String,
@@ -19,7 +21,7 @@ export default {
       type: String,
       required: false,
       default: s__(
-        'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Lean more%{learnMoreLinkEnd}.',
+        'OnDemandScans|On-demand scans run outside of DevOps cycle and find vulnerabilities in your projects. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
       ),
     },
     noPrimaryButton: {
@@ -54,7 +56,7 @@ export default {
     <template #description>
       <gl-sprintf :message="text">
         <template #learnMoreLink="{ content }">
-          <gl-link :href="helpPagePath">{{ content }}</gl-link>
+          <gl-link :href="$options.HELP_PAGE_PATH">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </template>

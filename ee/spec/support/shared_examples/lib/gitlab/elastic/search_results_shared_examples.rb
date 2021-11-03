@@ -45,3 +45,19 @@ RSpec.shared_examples 'does not load results for count only queries' do |scopes|
     end
   end
 end
+
+RSpec.shared_examples 'loads aggregations' do
+  let(:query) { 'hello world' }
+
+  it 'returns the expected aggregations' do
+    expect(subject).to match_array(expected)
+  end
+
+  context 'when query is blank' do
+    let(:query) { nil }
+
+    it 'returns an empty array' do
+      expect(subject).to match_array([])
+    end
+  end
+end

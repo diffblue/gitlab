@@ -1,0 +1,22 @@
+---
+key_path: licensee
+description: Licensee Information
+product_section: fulfillment
+product_stage: fulfillment
+product_group: group::license
+product_category: license
+value_type: object
+instrumentation_class: LicenseeMetrics
+status: active
+milestone: "14.4"
+introduced_by_url:
+data_source: license
+time_frame: none
+data_category: subscription
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate
+performance_indicator_type: []
+value_json_schema: "ee/config/metrics/object_schemas/licensee.json"

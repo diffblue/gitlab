@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RunnersController do
+RSpec.describe Projects::RunnersController, :saas do
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:namespace) }
 
@@ -19,7 +19,6 @@ RSpec.describe Projects::RunnersController do
 
   before do
     create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:free_plan))
-    allow(::Gitlab).to receive(:com?).and_return(true)
 
     sign_in(user)
     project.add_maintainer(user)

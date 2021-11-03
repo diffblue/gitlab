@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'shared/billings/_trial_status.html.haml' do
+RSpec.describe 'shared/billings/_trial_status.html.haml', :saas do
   include ApplicationHelper
 
   let_it_be(:group) { create(:group) }
@@ -12,6 +12,8 @@ RSpec.describe 'shared/billings/_trial_status.html.haml' do
   let(:trial) { false }
 
   before do
+    allow(group).to receive(:eligible_for_trial?).and_return(false)
+
     create(:gitlab_subscription, namespace: group, hosted_plan: plan, trial_ends_on: trial_ends_on, trial: trial)
   end
 
@@ -80,7 +82,7 @@ RSpec.describe 'shared/billings/_trial_status.html.haml' do
 
   context 'when eligible for trial' do
     before do
-      allow(::Gitlab).to receive(:com?).and_return(true)
+      allow(group).to receive(:eligible_for_trial?).and_return(true)
     end
 
     it 'offers a trial' do

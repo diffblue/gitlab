@@ -11,6 +11,7 @@ export default {
     label: 'Issues',
     loading: 'Loading issues...',
   },
+  expandEvent: 'i_testing_load_performance_widget_total',
   // Add an array of props
   // These then get mapped to values stored in the MR Widget store
   props: ['targetProjectFullPath', 'conflictsDocsPath'],
@@ -19,7 +20,7 @@ export default {
     // Small summary text to be displayed in the collapsed state
     // Receives the collapsed data as an argument
     summary(count) {
-      return 'Summary text';
+      return 'Summary text<br/>Second line';
     },
     // Status icon to be used next to the summary text
     // Receives the collapsed data as an argument
@@ -66,6 +67,7 @@ export default {
             //   href: 'https://google.com', // Required: href for the link
             //   text: 'Link text', // Required: Text to be used inside the link
             // },
+            actions: [{ text: 'Full report', href: 'https://gitlab.com', target: '_blank' }],
           }));
         });
     },

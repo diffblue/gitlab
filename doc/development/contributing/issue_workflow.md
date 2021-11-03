@@ -45,7 +45,7 @@ scheduling into milestones. Labeling is a task for everyone. (For some projects,
 
 Most issues will have labels for at least one of the following:
 
-- Type. For example: `~feature`, `~bug`, `~tooling`, or `~documentation`.
+- Type. For example: `~"type::feature"`, `~"type::bug"`, or `~"type::tooling"`.
 - Stage. For example: `~"devops::plan"` or `~"devops::create"`.
 - Group. For example: `~"group::source code"`, `~"group::knowledge"`, or `~"group::editor"`.
 - Category. For example: `~"Category:Code Analytics"`, `~"Category:DevOps Reports"`, or `~"Category:Templates"`.
@@ -70,12 +70,12 @@ issue should have one and only one.
 
 The current type labels are:
 
-- `~feature`
+- `~"type::feature"`
   - `~"feature::addition"`
   - `~"feature::enhancement"`
-  - `~"feature::maintenance"`
-- `~bug`
-- `~tooling`
+- `~"type::maintenance"`
+- `~"type::bug"`
+- `~"type::tooling"`
   - `~"tooling::pipelines"`
   - `~"tooling::workflow"`
 - `~"support request"`
@@ -168,7 +168,7 @@ their color is `#428BCA`.
 `<Category Name>` is the category name as it is in the single source of truth for categories at
 <https://gitlab.com/gitlab-com/www-gitlab-com/blob/master/data/categories.yml>.
 
-For instance, the "DevOps Report" category is represented by the
+For instance, the "DevOps Reports" category is represented by the
 ~"Category:DevOps Reports" label in the `gitlab-org` group since its
 `devops_reports.name` value is "DevOps Reports".
 
@@ -303,7 +303,7 @@ We automatically add the ~"Accepting merge requests" label to issues
 that match the [triage policy](https://about.gitlab.com/handbook/engineering/quality/triage-operations/#accepting-merge-requests).
 
 We recommend people that have never contributed to any open source project to
-look for issues labeled `~"Accepting merge requests"` with a [weight of 1](https://gitlab.com/groups/gitlab-org/-/issues?state=opened&label_name[]=Accepting+merge+requests&assignee_id=None&sort=weight&weight=1) or the `~"Good for new contributors"` [label](https://gitlab.com/gitlab-org/gitlab/-/issues?scope=all&state=opened&label_name[]=good%20for%20new%20contributors&assignee_id=None) attached to it.
+look for issues labeled `~"Accepting merge requests"` with a [weight of 1](https://gitlab.com/groups/gitlab-org/-/issues?state=opened&label_name[]=Accepting+merge+requests&assignee_id=None&sort=weight&weight=1) or the `~"good for new contributors"` [label](https://gitlab.com/gitlab-org/gitlab/-/issues?scope=all&state=opened&label_name[]=good%20for%20new%20contributors&assignee_id=None) attached to it.
 More experienced contributors are very welcome to tackle
 [any of them](https://gitlab.com/groups/gitlab-org/-/issues?state=opened&label_name[]=Accepting+merge+requests&assignee_id=None).
 
@@ -342,11 +342,11 @@ To create a feature proposal, open an issue on the
 [issue tracker](https://gitlab.com/gitlab-org/gitlab/-/issues).
 
 In order to help track the feature proposals, we have created a
-[`feature`](https://gitlab.com/gitlab-org/gitlab/-/issues?label_name=feature) label.
+[`~"type::feature"`](https://gitlab.com/gitlab-org/gitlab/-/issues?label_name=type::feature) label.
 For the time being, users that are not members of the project cannot add labels.
 You can instead ask one of the [core team](https://about.gitlab.com/community/core-team/)
-members to add the label `~feature` to the issue or add the following
-code snippet right after your description in a new line: `~feature`.
+members to add the label `~"type::feature"` to the issue or add the following
+code snippet right after your description in a new line: `~"type::feature"`.
 
 Please keep feature proposals as small and simple as possible, complex ones
 might be edited to make them small and simple.

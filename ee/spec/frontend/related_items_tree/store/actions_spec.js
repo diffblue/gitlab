@@ -1,4 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
+import mockProjects from 'test_fixtures_static/projects.json';
 import { ChildType, ChildState } from 'ee/related_items_tree/constants';
 import * as actions from 'ee/related_items_tree/store/actions';
 import * as types from 'ee/related_items_tree/store/mutation_types';
@@ -27,8 +28,6 @@ import {
   mockIssues,
   mockEpic1,
 } from '../mock_data';
-
-const mockProjects = getJSONFixture('static/projects.json');
 
 jest.mock('~/flash');
 

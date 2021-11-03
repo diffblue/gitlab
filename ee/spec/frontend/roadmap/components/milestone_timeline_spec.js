@@ -2,12 +2,16 @@ import { shallowMount } from '@vue/test-utils';
 
 import MilestoneItem from 'ee/roadmap/components/milestone_item.vue';
 import MilestoneTimelineComponent from 'ee/roadmap/components/milestone_timeline.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockMilestone2, mockGroupId } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('MilestoneTimelineComponent', () => {
   let wrapper;

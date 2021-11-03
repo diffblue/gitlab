@@ -1,4 +1,7 @@
 .ProseMirror {
+  max-height: 55vh;
+  overflow-y: auto;
+
   td,
   th,
   li,
@@ -103,4 +106,18 @@
   @include gl-w-auto;
 
   @include gl-white-space-nowrap;
+}
+
+
+.content-editor-color-chip::after {
+  content: ' ';
+  display: inline-block;
+  align-items: center;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  margin-left: 4px;
+  margin-top: -2px;
+  border: 1px solid $black-transparent;
+  background-color: var(--gl-color-chip-color);
 }

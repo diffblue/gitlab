@@ -218,9 +218,11 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
             expect(json_response['git_info']).to eq(expected_git_info)
             expect(json_response['image']).to eq({ 'name' => 'ruby:2.7', 'entrypoint' => '/bin/sh', 'ports' => [] })
             expect(json_response['services']).to eq([{ 'name' => 'postgres', 'entrypoint' => nil,
-                                                       'alias' => nil, 'command' => nil, 'ports' => [] },
+                                                       'alias' => nil, 'command' => nil, 'ports' => [], 'variables' => nil },
                                                      { 'name' => 'docker:stable-dind', 'entrypoint' => '/bin/sh',
-                                                       'alias' => 'docker', 'command' => 'sleep 30', 'ports' => [] }])
+                                                       'alias' => 'docker', 'command' => 'sleep 30', 'ports' => [], 'variables' => [] },
+                                                     { 'name' => 'mysql:latest', 'entrypoint' => nil,
+                                                       'alias' => nil, 'command' => nil, 'ports' => [], 'variables' => [{ 'key' => 'MYSQL_ROOT_PASSWORD', 'value' => 'root123.' }] }])
             expect(json_response['steps']).to eq(expected_steps)
             expect(json_response['artifacts']).to eq(expected_artifacts)
             expect(json_response['cache']).to eq(expected_cache)
@@ -816,7 +818,7 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
 
             subject { request_job(id: job.id) }
 
-            it_behaves_like 'storing arguments in the application context' do
+            it_behaves_like 'storing arguments in the application context for the API' do
               let(:expected_params) { { user: user.username, project: project.full_path, client_id: "user/#{user.id}" } }
             end
 
@@ -827,7 +829,7 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
           end
 
           context 'when the runner is of project type' do
-            it_behaves_like 'storing arguments in the application context' do
+            it_behaves_like 'storing arguments in the application context for the API' do
               let(:expected_params) { { project: project.full_path, client_id: "runner/#{runner.id}" } }
             end
 
@@ -841,7 +843,7 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state do
             let(:group) { create(:group) }
             let(:runner) { create(:ci_runner, :group, groups: [group]) }
 
-            it_behaves_like 'storing arguments in the application context' do
+            it_behaves_like 'storing arguments in the application context for the API' do
               let(:expected_params) { { root_namespace: group.full_path_components.first, client_id: "runner/#{runner.id}" } }
             end
 

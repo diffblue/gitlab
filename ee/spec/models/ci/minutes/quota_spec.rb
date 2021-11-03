@@ -189,7 +189,7 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
-  describe 'purchased_minutes_used_up?' do
+  describe '#purchased_minutes_used_up?' do
     subject { quota.purchased_minutes_used_up? }
 
     context 'when quota is enabled' do
@@ -232,6 +232,32 @@ RSpec.describe Ci::Minutes::Quota do
       end
 
       it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#reset_date' do
+    subject(:reset_date) { quota.reset_date }
+
+    around do |example|
+      travel_to(Date.new(2021, 07, 14)) { example.run }
+    end
+
+    let(:namespace) do
+      create(:namespace, :with_ci_minutes)
+    end
+
+    it 'corresponds to the beginning of the current month' do
+      expect(reset_date).to eq(Date.new(2021, 07, 1))
+    end
+
+    context 'when feature flag ci_use_new_monthly_minutes is disabled' do
+      before do
+        stub_feature_flags(ci_use_new_monthly_minutes: false)
+      end
+
+      it 'corresponds to the current time' do
+        expect(reset_date).to eq(Date.new(2021, 07, 14))
+      end
     end
   end
 end

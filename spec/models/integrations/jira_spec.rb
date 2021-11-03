@@ -495,6 +495,18 @@ RSpec.describe Integrations::Jira do
     end
   end
 
+  describe '#client' do
+    it 'uses the default GitLab::HTTP timeouts' do
+      timeouts = Gitlab::HTTP::DEFAULT_TIMEOUT_OPTIONS
+      stub_request(:get, 'http://jira.example.com/foo')
+
+      expect(Gitlab::HTTP).to receive(:httparty_perform_request)
+        .with(Net::HTTP::Get, '/foo', hash_including(timeouts)).and_call_original
+
+      jira_integration.client.get('/foo')
+    end
+  end
+
   describe '#find_issue' do
     let(:issue_key) { 'JIRA-123' }
     let(:issue_url) { "#{url}/rest/api/2/issue/#{issue_key}" }
@@ -503,7 +515,7 @@ RSpec.describe Integrations::Jira do
       stub_request(:get, issue_url).with(basic_auth: [username, password])
     end
 
-    it 'call the Jira API to get the issue' do
+    it 'calls the Jira API to get the issue' do
       jira_integration.find_issue(issue_key)
 
       expect(WebMock).to have_requested(:get, issue_url)
@@ -864,8 +876,22 @@ RSpec.describe Integrations::Jira do
         subject
 
         expect(WebMock).to have_requested(:post, comment_url).with(
-          body: /mentioned this issue in/
+          body: /mentioned this issue.*on branch \[master/
         ).once
+      end
+
+      context 'with jira_use_first_ref_by_oid feature flag disabled' do
+        before do
+          stub_feature_flags(jira_use_first_ref_by_oid: false)
+        end
+
+        it 'creates a comment on Jira' do
+          subject
+
+          expect(WebMock).to have_requested(:post, comment_url).with(
+            body: /mentioned this issue.*on branch \[master/
+          ).once
+        end
       end
 
       it 'tracks usage' do
@@ -946,7 +972,9 @@ RSpec.describe Integrations::Jira do
         expect(jira_integration).to receive(:log_error).with(
           'Error sending message',
           client_url: 'http://jira.example.com',
-          error: error_message
+          'exception.class' => anything,
+          'exception.message' => error_message,
+          'exception.backtrace' => anything
         )
 
         expect(jira_integration.test(nil)).to eq(success: false, result: error_message)

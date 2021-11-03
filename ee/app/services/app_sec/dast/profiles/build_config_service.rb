@@ -5,7 +5,7 @@ module AppSec
     module Profiles
       class BuildConfigService < BaseProjectService
         def execute
-          return ServiceResponse.error(message: 'Insufficient permissions for dast_configuration keyword') unless allowed?
+          return ServiceResponse.error(message: _('Insufficient permissions for dast_configuration keyword')) unless allowed?
 
           build_config = { dast_site_profile: site_profile, dast_scanner_profile: scanner_profile }
 
@@ -42,7 +42,7 @@ module AppSec
           profile = yield(name).execute.first
 
           unless can?(current_user, :read_on_demand_dast_scan, profile)
-            errors.push("DAST profile not found: #{name}")
+            errors.push(_('DAST profile not found: %{name}') % { name: name })
             return
           end
 

@@ -186,9 +186,9 @@ describe('DastSiteProfileForm', () => {
       });
 
       describe.each`
-        title                  | profile           | mutationVars                 | mutation                         | mutationKind
-        ${'New site profile'}  | ${{}}             | ${{}}                        | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
-        ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }} | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
+        title                  | profile           | mutationVars                     | mutation                         | mutationKind
+        ${'New site profile'}  | ${{}}             | ${{ fullPath: projectFullPath }} | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
+        ${'Edit site profile'} | ${siteProfileOne} | ${{ id: siteProfileOne.id }}     | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
       `('$title', ({ profile, mutationVars, mutation, mutationKind }) => {
         beforeEach(() => {
           createComponent({
@@ -208,7 +208,6 @@ describe('DastSiteProfileForm', () => {
           expect(baseDastProfileForm.props('mutationVariables')).toEqual({
             profileName,
             targetUrl,
-            fullPath: projectFullPath,
             excludedUrls: siteProfileOne.excludedUrls,
             requestHeaders,
             targetType: 'API',

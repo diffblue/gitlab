@@ -311,7 +311,7 @@
   :tags: []
 - :name: cronjob:iterations_cadences_create_iterations
   :worker_name: Iterations::Cadences::CreateIterationsWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -320,7 +320,7 @@
   :tags: []
 - :name: cronjob:iterations_cadences_schedule_create_iterations
   :worker_name: Iterations::Cadences::ScheduleCreateIterationsWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -329,7 +329,7 @@
   :tags: []
 - :name: cronjob:iterations_update_status
   :worker_name: IterationsUpdateStatusWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -455,12 +455,21 @@
   :tags: []
 - :name: epics:epics_update_epics_dates
   :worker_name: Epics::UpdateEpicsDatesWorker
-  :feature_category: :epics
+  :feature_category: :portfolio_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 2
   :idempotent:
+  :tags: []
+- :name: geo:geo_batch_event_create
+  :worker_name: Geo::BatchEventCreateWorker
+  :feature_category: :geo_replication
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
   :tags: []
 - :name: geo:geo_batch_project_registry
   :worker_name: Geo::Batch::ProjectRegistryWorker
@@ -725,7 +734,7 @@
   :tags: []
 - :name: iterations:iterations_roll_over_issues
   :worker_name: Iterations::RollOverIssuesWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -815,7 +824,7 @@
   :tags: []
 - :name: todos_destroyer:todos_destroyer_confidential_epic
   :worker_name: TodosDestroyer::ConfidentialEpicWorker
-  :feature_category: :epics
+  :feature_category: :portfolio_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -833,7 +842,7 @@
   :tags: []
 - :name: admin_emails
   :worker_name: AdminEmailsWorker
-  :feature_category: :issue_tracking
+  :feature_category: :team_planning
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -842,6 +851,15 @@
   :tags: []
 - :name: analytics_code_review_metrics
   :worker_name: Analytics::CodeReviewMetricsWorker
+  :feature_category: :value_stream_management
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: analytics_cycle_analytics_group_data_loader
+  :worker_name: Analytics::CycleAnalytics::GroupDataLoaderWorker
   :feature_category: :value_stream_management
   :has_external_dependencies:
   :urgency: :low
@@ -959,7 +977,7 @@
   :tags: []
 - :name: epics_new_epic_issue
   :worker_name: Epics::NewEpicIssueWorker
-  :feature_category: :epics
+  :feature_category: :portfolio_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :unknown
@@ -983,6 +1001,15 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent:
+  :tags: []
+- :name: groups_create_event
+  :worker_name: Groups::CreateEventWorker
+  :feature_category: :onboarding
+  :has_external_dependencies:
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
   :tags: []
 - :name: groups_export_memberships
   :worker_name: Groups::ExportMembershipsWorker
@@ -1094,7 +1121,7 @@
   :tags: []
 - :name: new_epic
   :worker_name: NewEpicWorker
-  :feature_category: :epics
+  :feature_category: :portfolio_management
   :has_external_dependencies:
   :urgency: :low
   :resource_boundary: :cpu

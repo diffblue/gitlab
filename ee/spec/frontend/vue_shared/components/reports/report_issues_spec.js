@@ -8,7 +8,7 @@ import {
   sastParsedIssues,
   dockerReportParsed,
   parsedDast,
-  secretScanningParsedIssues,
+  secretDetectionParsedIssues,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
 import mountComponent, { mountComponentWithStore } from 'helpers/vue_mount_component_helper';
 import reportIssues from '~/reports/components/report_item.vue';
@@ -137,10 +137,10 @@ describe('Report issues', () => {
     });
   });
 
-  describe('for secret scanning issues', () => {
+  describe('for secret Detection issues', () => {
     beforeEach(() => {
       vm = mountComponent(ReportIssues, {
-        issue: secretScanningParsedIssues[0],
+        issue: secretDetectionParsedIssues[0],
         component: componentNames.SecurityIssueBody,
         status: STATUS_FAILED,
       });
@@ -148,13 +148,13 @@ describe('Report issues', () => {
 
     it('renders severity', () => {
       expect(vm.$el.textContent.trim().toLowerCase()).toContain(
-        secretScanningParsedIssues[0].severity,
+        secretDetectionParsedIssues[0].severity,
       );
     });
 
     it('renders CVE name', () => {
       expect(vm.$el.querySelector('.report-block-list-issue button').textContent.trim()).toEqual(
-        secretScanningParsedIssues[0].title,
+        secretDetectionParsedIssues[0].title,
       );
     });
   });

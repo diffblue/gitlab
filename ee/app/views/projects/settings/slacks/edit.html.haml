@@ -15,9 +15,6 @@
           = form.text_field :alias, class: 'form-control', placeholder: @slack_integration.alias, required: true
 
       .footer-block.row-content-block
-        %button.btn.gl-button.btn-confirm{ type: 'submit' }
-          .gl-spinner.gl-spinner-light
-          %span
-            Save changes
+        = form.submit _('Save changes'), class: "gl-button btn btn-confirm"
         &nbsp;
         = link_to _('Cancel'), edit_project_service_path(@project, @service), class: 'btn gl-button btn-cancel'

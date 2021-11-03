@@ -112,53 +112,6 @@ RSpec.describe Gitlab::Database::Connection do
     end
   end
 
-  describe '#db_config_with_default_pool_size' do
-    it 'returns db_config with our default pool size' do
-      allow(Gitlab::Database).to receive(:default_pool_size).and_return(9)
-
-      expect(connection.db_config_with_default_pool_size.pool).to eq(9)
-    end
-
-    it 'returns db_config with the correct database name' do
-      db_name = connection.scope.connection.pool.db_config.name
-
-      expect(connection.db_config_with_default_pool_size.name).to eq(db_name)
-    end
-  end
-
-  describe '#disable_prepared_statements', :reestablished_active_record_base do
-    it 'disables prepared statements' do
-      connection.scope.establish_connection(
-        ::Gitlab::Database.main.config.merge(prepared_statements: true)
-      )
-
-      expect(connection.scope.connection.prepared_statements).to eq(true)
-
-      connection.disable_prepared_statements
-
-      expect(connection.scope.connection.prepared_statements).to eq(false)
-    end
-
-    it 'retains the connection name' do
-      connection.disable_prepared_statements
-
-      expect(connection.scope.connection_db_config.name).to eq('main')
-    end
-
-    context 'with dynamic connection pool size' do
-      before do
-        connection.scope.establish_connection(connection.config.merge(pool: 7))
-      end
-
-      it 'retains the set pool size' do
-        connection.disable_prepared_statements
-
-        expect(connection.scope.connection.prepared_statements).to eq(false)
-        expect(connection.scope.connection.pool.size).to eq(7)
-      end
-    end
-  end
-
   describe '#db_read_only?' do
     it 'detects a read-only database' do
       allow(connection.scope.connection)
@@ -426,17 +379,6 @@ RSpec.describe Gitlab::Database::Connection do
   describe '#system_id' do
     it 'returns the PostgreSQL system identifier' do
       expect(connection.system_id).to be_an_instance_of(Integer)
-    end
-  end
-
-  describe '#get_write_location' do
-    it 'returns a string' do
-      expect(connection.get_write_location(connection.scope.connection))
-        .to be_a(String)
-    end
-
-    it 'returns nil if there are no results' do
-      expect(connection.get_write_location(double(select_all: []))).to be_nil
     end
   end
 end

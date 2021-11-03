@@ -23,11 +23,7 @@ RSpec.describe Member, type: :model do
   end
 
   describe '#is_using_seat', :aggregate_failures do
-    context 'when hosted on GL.com' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return true
-      end
-
+    context 'when hosted on GL.com', :saas do
       it 'calls users check for using the gitlab_com seat method' do
         expect(user).to receive(:using_gitlab_com_seat?).with(group).once.and_return true
         expect(user).not_to receive(:using_license_seat?)
@@ -162,7 +158,7 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  context 'check if user cap has been reached' do
+  context 'check if user cap has been reached', :saas do
     let_it_be(:group, refind: true) do
       create(:group_with_plan, plan: :ultimate_plan,
              namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
@@ -246,6 +242,82 @@ RSpec.describe Member, type: :model do
         project.add_developer(user)
 
         expect(user.project_members.last).to be_created
+      end
+    end
+  end
+
+  describe '#invalidate_namespace_user_cap_cache' do
+    let_it_be(:other_user) { create(:user) }
+
+    context 'when the :saas_user_caps feature flag is enabled for the root group' do
+      before do
+        stub_feature_flags(saas_user_caps: group)
+      end
+
+      it 'invalidates the namespace user cap reached cache when adding a member to a group' do
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        group.add_developer(other_user)
+      end
+
+      it 'invalidates the cache when adding a member to a subgroup' do
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        sub_group.add_developer(other_user)
+      end
+
+      it 'invalidates the cache when adding a member to a project' do
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        project.add_developer(other_user)
+      end
+
+      it 'invalidates the cache when removing a member from a group' do
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        member.destroy!
+      end
+
+      it 'invalidates the cache when removing a member from a project' do
+        project_member = project.add_developer(other_user)
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        project_member.destroy!
+      end
+
+      it 'invalidates the cache when changing the access level' do
+        guest_member = create(:group_member, :guest, group: group, user: other_user)
+
+        expect(Rails.cache).to receive(:delete).with("namespace_user_cap_reached:#{group.id}")
+
+        guest_member.update!(access_level: GroupMember::DEVELOPER)
+      end
+    end
+
+    context 'when the :saas_user_caps feature flag is globally enabled' do
+      before do
+        stub_feature_flags(saas_user_caps: true)
+      end
+
+      it 'does not try to invalidate the cache for a project with a user namespace' do
+        project_owner = create(:user)
+        personal_project = create(:project, namespace: project_owner.namespace)
+
+        expect(Rails.cache).not_to receive(:delete)
+
+        personal_project.add_developer(other_user)
+      end
+    end
+
+    context 'when the :saas_user_caps feature flag is disabled' do
+      before do
+        stub_feature_flags(saas_user_caps: false)
+      end
+
+      it 'does not invalidate the namespace user cap reached cache' do
+        expect(Rails.cache).not_to receive(:delete)
+
+        group.add_developer(other_user)
       end
     end
   end

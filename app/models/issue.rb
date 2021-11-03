@@ -81,7 +81,8 @@ class Issue < ApplicationRecord
   has_and_belongs_to_many :self_managed_prometheus_alert_events, join_table: :issues_self_managed_prometheus_alert_events # rubocop: disable Rails/HasAndBelongsToMany
   has_and_belongs_to_many :prometheus_alert_events, join_table: :issues_prometheus_alert_events # rubocop: disable Rails/HasAndBelongsToMany
   has_many :prometheus_alerts, through: :prometheus_alert_events
-  has_and_belongs_to_many :customer_relations_contacts, join_table: :issue_customer_relations_contacts, class_name: 'CustomerRelations::Contact' # rubocop: disable Rails/HasAndBelongsToMany
+  has_many :issue_customer_relations_contacts, class_name: 'CustomerRelations::IssueContact', inverse_of: :issue
+  has_many :customer_relations_contacts, through: :issue_customer_relations_contacts, source: :contact, class_name: 'CustomerRelations::Contact', inverse_of: :issues
 
   accepts_nested_attributes_for :issuable_severity, update_only: true
   accepts_nested_attributes_for :sentry_issue
@@ -166,6 +167,8 @@ class Issue < ApplicationRecord
   scope :by_project_id_and_iid, ->(composites) do
     where_composite(%i[project_id iid], composites)
   end
+  scope :with_null_relative_position, -> { where(relative_position: nil) }
+  scope :with_non_null_relative_position, -> { where.not(relative_position: nil) }
 
   after_commit :expire_etag_cache, unless: :importing?
   after_save :ensure_metrics, unless: :importing?

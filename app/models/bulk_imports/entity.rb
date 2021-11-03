@@ -83,9 +83,9 @@ class BulkImports::Entity < ApplicationRecord
   def pipelines
     @pipelines ||= case source_type
                    when 'group_entity'
-                     BulkImports::Groups::Stage.pipelines
+                     BulkImports::Groups::Stage.new(bulk_import).pipelines
                    when 'project_entity'
-                     BulkImports::Projects::Stage.pipelines
+                     BulkImports::Projects::Stage.new(bulk_import).pipelines
                    end
   end
 
@@ -110,6 +110,10 @@ class BulkImports::Entity < ApplicationRecord
 
   def export_relations_url_path
     @export_relations_url_path ||= EXPORT_RELATIONS_URL % { resource: pluralized_name, full_path: encoded_source_full_path }
+  end
+
+  def relation_download_url_path(relation)
+    "#{export_relations_url_path}/download?relation=#{relation}"
   end
 
   private

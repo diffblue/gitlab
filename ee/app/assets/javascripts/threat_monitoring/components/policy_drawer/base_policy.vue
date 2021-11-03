@@ -1,5 +1,5 @@
 <script>
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 
 export default {
   props: {
@@ -10,8 +10,10 @@ export default {
     },
   },
   computed: {
-    enforcementStatusLabel() {
-      return this.policy?.enabled ? __('Enabled') : __('Disabled');
+    statusLabel() {
+      return this.policy?.enabled
+        ? s__('SecurityOrchestration|Enabled')
+        : s__('SecurityOrchestration|Disabled');
     },
   },
 };
@@ -23,6 +25,6 @@ export default {
     <p data-testid="policy-type">
       <slot name="type"></slot>
     </p>
-    <slot v-bind="{ enforcementStatusLabel }"></slot>
+    <slot v-bind="{ statusLabel }"></slot>
   </div>
 </template>

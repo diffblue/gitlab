@@ -314,13 +314,13 @@ RSpec.describe ProjectsHelper do
     end
 
     it 'returns image tag for member avatar' do
-      expect(helper).to receive(:image_tag).with(expected, { width: 16, class: %w[avatar avatar-inline s16], alt: "", "data-src" => anything })
+      expect(helper).to receive(:image_tag).with(expected, { width: 16, class: %w[avatar avatar-inline s16], alt: "" })
 
       helper.link_to_member_avatar(user)
     end
 
     it 'returns image tag with avatar class' do
-      expect(helper).to receive(:image_tag).with(expected, { width: 16, class: %w[avatar avatar-inline s16 any-avatar-class], alt: "", "data-src" => anything })
+      expect(helper).to receive(:image_tag).with(expected, { width: 16, class: %w[avatar avatar-inline s16 any-avatar-class], alt: "" })
 
       helper.link_to_member_avatar(user, avatar_class: "any-avatar-class")
     end
@@ -959,6 +959,36 @@ RSpec.describe ProjectsHelper do
         securityAndComplianceAccessLevel: project.security_and_compliance_access_level,
         containerRegistryAccessLevel: project.project_feature.container_registry_access_level
       )
+    end
+  end
+
+  describe '#project_classes' do
+    subject { helper.project_classes(project) }
+
+    it { is_expected.to be_a(String) }
+
+    context 'PUC highlighting enabled' do
+      before do
+        project.warn_about_potentially_unwanted_characters = true
+      end
+
+      it { is_expected.to include('project-highlight-puc') }
+    end
+
+    context 'PUC highlighting disabled' do
+      before do
+        project.warn_about_potentially_unwanted_characters = false
+      end
+
+      it { is_expected.not_to include('project-highlight-puc') }
+    end
+  end
+
+  describe "#delete_confirm_phrase" do
+    subject { helper.delete_confirm_phrase(project) }
+
+    it 'includes the project full name' do
+      expect(subject).to eq("Delete #{project.full_name}")
     end
   end
 end

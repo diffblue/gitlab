@@ -45,7 +45,7 @@ For a full list of reference architectures, see
 
 <!-- Disable ordered list rule https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md029---ordered-list-item-prefix -->
 <!-- markdownlint-disable MD029 -->
-1. Can be optionally run on reputable third-party external PaaS PostgreSQL solutions. Google Cloud SQL and AWS RDS are known to work, however Azure Database for PostgreSQL is [not recommended](https://gitlab.com/gitlab-org/quality/reference-architectures/-/issues/61) due to performance issues. Consul is primarily used for PostgreSQL high availability so can be ignored when using a PostgreSQL PaaS setup. However it is also used optionally by Prometheus for Omnibus auto host discovery.
+1. Can be optionally run on reputable third-party external PaaS PostgreSQL solutions. Google Cloud SQL and Amazon RDS are known to work, however Azure Database for PostgreSQL is [not recommended](https://gitlab.com/gitlab-org/quality/reference-architectures/-/issues/61) due to performance issues. Consul is primarily used for PostgreSQL high availability so can be ignored when using a PostgreSQL PaaS setup. However it is also used optionally by Prometheus for Omnibus auto host discovery.
 2. Can be optionally run on reputable third-party external PaaS Redis solutions. Google Memorystore and AWS Elasticache are known to work.
 3. Can be optionally run on reputable third-party load balancing services (LB PaaS). AWS ELB is known to work.
 4. Should be run on reputable third-party object storage (storage PaaS) for cloud implementations. Google Cloud Storage and AWS S3 are known to work.
@@ -296,7 +296,7 @@ The basic ports to be used are shown in the table below.
 | 443     | 443          | TCP or HTTPS (*1*) (*2*) |
 | 22      | 22           | TCP                      |
 
-- (*1*): [Web terminal](../../ci/environments/index.md#web-terminals) support requires
+- (*1*): [Web terminal](../../ci/environments/index.md#web-terminals-deprecated) support requires
   your load balancer to correctly handle WebSocket connections. When using
   HTTP or HTTPS proxying, this means your load balancer must be configured
   to pass through the `Connection` and `Upgrade` hop-by-hop headers. See the
@@ -2021,6 +2021,9 @@ There are two ways of specifying object storage configuration in GitLab:
 
 Starting with GitLab 13.2, consolidated object storage configuration is available. It simplifies your GitLab configuration since the connection details are shared across object types. Refer to [Consolidated object storage configuration](../object_storage.md#consolidated-object-storage-configuration) guide for instructions on how to set it up.
 
+GitLab Runner returns job logs in chunks which Omnibus GitLab caches temporarily on disk in `/var/opt/gitlab/gitlab-ci/builds` by default, even when using consolidated object storage. With default configuration, this directory needs to be shared via NFS on any GitLab Rails and Sidekiq nodes.
+In GitLab 13.6 and later, it's recommended to switch to [Incremental logging](../job_logs.md#incremental-logging-architecture), which uses Redis instead of disk space for temporary caching of job logs.
+
 For configuring object storage in GitLab 13.1 and earlier, or for storage types not
 supported by consolidated configuration form, refer to the following guides based
 on what features you intend to use:
@@ -2036,7 +2039,7 @@ on what features you intend to use:
 | [Mattermost](https://docs.mattermost.com/administration/config-settings.html#file-storage)| No |
 | [Packages](../packages/index.md#using-object-storage) (optional feature) | Yes |
 | [Dependency Proxy](../packages/dependency_proxy.md#using-object-storage) (optional feature) | Yes |
-| [Pseudonymizer](../pseudonymizer.md#configuration) (optional feature) **(ULTIMATE SELF)** | No |
+| [Pseudonymizer](../pseudonymizer.md) (optional feature) | No |
 | [Autoscale runner caching](https://docs.gitlab.com/runner/configuration/autoscale.html#distributed-runners-caching) (optional for improved performance) | No |
 | [Terraform state files](../terraform_state.md#using-object-storage) | Yes |
 
@@ -2103,7 +2106,7 @@ but with smaller performance requirements, several modifications can be consider
   - GitLab Rails and Sidekiq: Stateless services don't have a minimum node count. Two are enough for redundancy.
   - Gitaly and Praefect: A quorum is not strictly necessary. Two Gitaly nodes and two Praefect nodes are enough for redundancy.
 - Running select components in reputable Cloud PaaS solutions: Select components of the GitLab setup can instead be run on Cloud Provider PaaS solutions. By doing this, additional dependent components can also be removed:
-  - PostgreSQL: Can be run on reputable Cloud PaaS solutions such as Google Cloud SQL or AWS RDS. In this setup, the PgBouncer and Consul nodes are no longer required:
+  - PostgreSQL: Can be run on reputable Cloud PaaS solutions such as Google Cloud SQL or Amazon RDS. In this setup, the PgBouncer and Consul nodes are no longer required:
     - Consul may still be desired if [Prometheus](../monitoring/prometheus/index.md) auto discovery is a requirement, otherwise you would need to [manually add scrape configurations](../monitoring/prometheus/index.md#adding-custom-scrape-configurations) for all nodes.
       - As Redis Sentinel runs on the same box as Consul in this architecture, it may need to be run on a separate box if Redis is still being run via Omnibus.
   - Redis: Can be run on reputable Cloud PaaS solutions such as Google Memorystore and AWS ElastiCache. In this setup, the Redis Sentinel is no longer required.
@@ -2167,7 +2170,7 @@ services where applicable):
 
 <!-- Disable ordered list rule https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md029---ordered-list-item-prefix -->
 <!-- markdownlint-disable MD029 -->
-1. Can be optionally run on reputable third-party external PaaS PostgreSQL solutions. Google Cloud SQL and AWS RDS are known to work, however Azure Database for PostgreSQL is [not recommended](https://gitlab.com/gitlab-org/quality/reference-architectures/-/issues/61) due to performance issues. Consul is primarily used for PostgreSQL high availability so can be ignored when using a PostgreSQL PaaS setup. However it is also used optionally by Prometheus for Omnibus auto host discovery.
+1. Can be optionally run on reputable third-party external PaaS PostgreSQL solutions. Google Cloud SQL and Amazon RDS are known to work, however Azure Database for PostgreSQL is [not recommended](https://gitlab.com/gitlab-org/quality/reference-architectures/-/issues/61) due to performance issues. Consul is primarily used for PostgreSQL high availability so can be ignored when using a PostgreSQL PaaS setup. However it is also used optionally by Prometheus for Omnibus auto host discovery.
 2. Can be optionally run on reputable third-party external PaaS Redis solutions. Google Memorystore and AWS Elasticache are known to work.
 3. Can be optionally run on reputable third-party load balancing services (LB PaaS). AWS ELB is known to work.
 4. Should be run on reputable third-party object storage (storage PaaS) for cloud implementations. Google Cloud Storage and AWS S3 are known to work.

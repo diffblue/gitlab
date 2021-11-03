@@ -23,6 +23,30 @@ as much as possible.
 After a merge request has been approved, the pipeline would contain the full RSpec & Jest tests. This will ensure that all tests
 have been run before a merge request is merged.
 
+### Overview of the GitLab project test dependency
+
+To understand how the minimal test jobs are executed, we need to understand the dependency between
+GitLab code (frontend and backend) and the respective tests (Jest and RSpec).
+This dependency can be visualized in the following diagram:
+
+```mermaid
+flowchart LR
+    subgraph frontend
+    fe["Frontend code"]--tested with-->jest
+    end
+    subgraph backend
+    be["Backend code"]--tested with-->rspec
+    end
+    
+    be--generates-->fixtures["frontend fixtures"]
+    fixtures--used in-->jest
+```
+
+In summary:
+
+- RSpec tests are dependent on the backend code.
+- Jest tests are dependent on both frontend and backend code, the latter through the frontend fixtures.
+
 ### RSpec minimal jobs
 
 #### Determining related RSpec test files in a merge request
@@ -57,7 +81,7 @@ In this mode, `jest` would resolve all the dependencies of related to the change
 
 In addition, there are a few circumstances where we would always run the full Jest tests:
 
-- when the `pipeline:run-all-rspec` label is set on the merge request
+- when the `pipeline:run-all-jest` label is set on the merge request
 - when the merge request is created by an automation (e.g. Gitaly update or MR targeting a stable branch)
 - when any CI config file is changed (i.e. `.gitlab-ci.yml` or `.gitlab/ci/**/*`)
 - when any frontend "core" file is changed (i.e. `package.json`, `yarn.lock`, `babel.config.js`, `jest.config.*.js`, `config/helpers/**/*.js`)
@@ -112,14 +136,46 @@ This number can be overridden by setting a CI/CD variable named `RSPEC_FAIL_FAST
 
 ## Test jobs
 
-Consult [GitLab tests in the Continuous Integration (CI) context](testing_guide/ci.md)
-for more information.
-
 We have dedicated jobs for each [testing level](testing_guide/testing_levels.md) and each job runs depending on the
 changes made in your merge request.
 If you want to force all the RSpec jobs to run regardless of your changes, you can add the `pipeline:run-all-rspec` label to the merge request.
 
-> Forcing all jobs on docs only related MRs would not have the prerequisite jobs and would lead to errors
+WARNING:
+Forcing all jobs on docs only related MRs would not have the prerequisite jobs and would lead to errors
+
+### Test suite parallelization
+
+Our current RSpec tests parallelization setup is as follows:
+
+1. The `retrieve-tests-metadata` job in the `prepare` stage ensures we have a
+   `knapsack/report-master.json` file:
+   - The `knapsack/report-master.json` file is fetched from the latest `main` pipeline which runs `update-tests-metadata`
+     (for now it's the 2-hourly scheduled master pipeline), if it's not here we initialize the file with `{}`.
+1. Each `[rspec|rspec-ee] [unit|integration|system|geo] n m` job are run with
+   `knapsack rspec` and should have an evenly distributed share of tests:
+   - It works because the jobs have access to the `knapsack/report-master.json`
+     since the "artifacts from all previous stages are passed by default".
+   - the jobs set their own report path to
+     `"knapsack/${TEST_TOOL}_${TEST_LEVEL}_${DATABASE}_${CI_NODE_INDEX}_${CI_NODE_TOTAL}_report.json"`.
+   - if knapsack is doing its job, test files that are run should be listed under
+     `Report specs`, not under `Leftover specs`.
+1. The `update-tests-metadata` job (which only runs on scheduled pipelines for
+   [the canonical project](https://gitlab.com/gitlab-org/gitlab) takes all the
+   `knapsack/rspec*_pg_*.json` files and merge them all together into a single
+   `knapsack/report-master.json` file that is saved as artifact.
+
+After that, the next pipeline uses the up-to-date `knapsack/report-master.json` file.
+
+### Monitoring
+
+The GitLab test suite is [monitored](performance.md#rspec-profiling) for the `main` branch, and any branch
+that includes `rspec-profile` in their name.
+
+### Logging
+
+- Rails logging to `log/test.log` is disabled by default in CI [for
+  performance reasons](https://jtway.co/speed-up-your-rails-test-suite-by-6-in-1-line-13fedb869ec4). To override this setting, provide the
+  `RAILS_ENABLE_TEST_LOG` environment variable.
 
 ## Review app jobs
 
@@ -127,7 +183,7 @@ Consult the [Review Apps](testing_guide/review_apps.md) dedicated page for more 
 
 ## As-if-FOSS jobs
 
-The `* as-if-foss` jobs run the GitLab test suite "as-if-FOSS", meaning as if the jobs would run in the context
+The `* as-if-foss` jobs run the GitLab test suite "as if FOSS", meaning as if the jobs would run in the context
 of the `gitlab-org/gitlab-foss` project. These jobs are only created in the following cases:
 
 - when the `pipeline:run-as-if-foss` label is set on the merge request
@@ -135,10 +191,25 @@ of the `gitlab-org/gitlab-foss` project. These jobs are only created in the foll
 - when any CI config file is changed (i.e. `.gitlab-ci.yml` or `.gitlab/ci/**/*`)
 
 The `* as-if-foss` jobs are run in addition to the regular EE-context jobs. They have the `FOSS_ONLY='1'` variable
-set and get their EE-specific folders removed before the tests start running.
+set and get the `ee/` folder removed before the tests start running.
 
 The intent is to ensure that a change doesn't introduce a failure after the `gitlab-org/gitlab` project is synced to
 the `gitlab-org/gitlab-foss` project.
+
+## As-if-JH jobs
+
+The `* as-if-jh` jobs run the GitLab test suite "as if JiHu", meaning as if the jobs would run in the context
+of [the `gitlab-jh/gitlab` project](jh_features_review.md). These jobs are only created in the following cases:
+
+- when the `pipeline:run-as-if-jh` label is set on the merge request
+- when the `pipeline:run-all-rspec` label is set on the merge request
+- when any code or backstage file is changed
+- when any startup CSS file is changed
+
+The `* as-if-jh` jobs are run in addition to the regular EE-context jobs. The `jh/` folder is added before the tests start running.
+
+The intent is to ensure that a change doesn't introduce a failure after the `gitlab-org/gitlab` project is synced to
+the `gitlab-jh/gitlab` project.
 
 ## PostgreSQL versions testing
 
@@ -231,7 +302,6 @@ graph RL;
     1-16["brakeman-sast"];
     1-17["eslint-sast"];
     1-18["kubesec-sast"];
-    1-19["nodejs-scan-sast"];
     1-20["secrets-sast"];
     1-21["static-analysis (14 minutes)"];
     click 1-21 "https://app.periscopedata.com/app/gitlab/652085/Engineering-Productivity---Pipeline-Build-Durations?widget=6914471&udv=0"
@@ -333,7 +403,6 @@ graph RL;
     1-16["brakeman-sast"];
     1-17["eslint-sast"];
     1-18["kubesec-sast"];
-    1-19["nodejs-scan-sast"];
     1-20["secrets-sast"];
     1-21["static-analysis (14 minutes)"];
     click 1-21 "https://app.periscopedata.com/app/gitlab/652085/Engineering-Productivity---Pipeline-Build-Durations?widget=6914471&udv=0"
@@ -459,7 +528,6 @@ graph RL;
     1-16["brakeman-sast"];
     1-17["eslint-sast"];
     1-18["kubesec-sast"];
-    1-19["nodejs-scan-sast"];
     1-20["secrets-sast"];
     1-21["static-analysis (14 minutes)"];
     click 1-21 "https://app.periscopedata.com/app/gitlab/652085/Engineering-Productivity---Pipeline-Build-Durations?widget=6914471&udv=0"
@@ -546,7 +614,8 @@ The current stages are:
 - `build-images`: This stage includes jobs that prepare Docker images
   that are needed by jobs in subsequent stages or downstream pipelines.
 - `fixtures`: This stage includes jobs that prepare fixtures needed by frontend tests.
-- `test`: This stage includes most of the tests, DB/migration jobs, and static analysis jobs.
+- `lint`: This stage includes linting and static analysis jobs.
+- `test`: This stage includes most of the tests, and DB/migration jobs.
 - `post-test`: This stage includes jobs that build reports or gather data from
   the `test` stage's jobs (for example, coverage, Knapsack metadata, and so on).
 - `review-prepare`: This stage includes a job that build the CNG images that are
@@ -620,7 +689,7 @@ then included in individual jobs via [`extends`](../ci/yaml/index.md#extends).
 The `rules` definitions are composed of `if:` conditions and `changes:` patterns,
 which are also defined in
 [`rules.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rules.gitlab-ci.yml)
-and included in `rules` definitions via [YAML anchors](../ci/yaml/index.md#anchors)
+and included in `rules` definitions via [YAML anchors](../ci/yaml/yaml_specific_features.md#anchors)
 
 #### `if:` conditions
 
@@ -697,8 +766,10 @@ request, be sure to start the `dont-interrupt-me` job before pushing.
    [`.gitlab/ci/global.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/global.gitlab-ci.yml),
    with fixed keys:
    - `.setup-test-env-cache`
+   - `.ruby-cache`
    - `.rails-cache`
    - `.static-analysis-cache`
+   - `.rubocop-cache`
    - `.coverage-cache`
    - `.danger-review-cache`
    - `.qa-cache`
@@ -708,7 +779,7 @@ request, be sure to start the `dont-interrupt-me` job before pushing.
 1. Only the following jobs, running in 2-hourly scheduled pipelines, are pushing (that is, updating) to the caches:
    - `update-setup-test-env-cache`, defined in [`.gitlab/ci/rails.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rails.gitlab-ci.yml).
    - `update-gitaly-binaries-cache`, defined in [`.gitlab/ci/rails.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rails.gitlab-ci.yml).
-   - `update-static-analysis-cache`, defined in [`.gitlab/ci/rails.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rails.gitlab-ci.yml).
+   - `update-rubocop-cache`, defined in [`.gitlab/ci/rails.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/rails.gitlab-ci.yml).
    - `update-qa-cache`, defined in [`.gitlab/ci/qa.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/qa.gitlab-ci.yml).
    - `update-assets-compile-production-cache`, defined in [`.gitlab/ci/frontend.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml).
    - `update-assets-compile-test-cache`, defined in [`.gitlab/ci/frontend.gitlab-ci.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/ci/frontend.gitlab-ci.yml).

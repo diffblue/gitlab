@@ -19,7 +19,7 @@
       %p= permanent_delete_message(project)
       %p
         %strong= _('Are you ABSOLUTELY SURE you wish to delete this project?')
-      #js-project-delete-button{ data: { form_path: project_path(project), confirm_phrase: project.path } }
+      #js-project-delete-button{ data: { form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project) } }
 - else
   = render 'projects/settings/restore', project: project
   = render 'projects/settings/permanently_delete', project: project

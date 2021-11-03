@@ -12,7 +12,7 @@ module Gitlab
 
         REPLICA_SUFFIX = '_replica'
 
-        attr_reader :name, :host_list, :configuration
+        attr_reader :host_list, :configuration
 
         # configuration - An instance of `LoadBalancing::Configuration` that
         #                 contains the configuration details (such as the hosts)
@@ -26,8 +26,10 @@ module Gitlab
             else
               HostList.new(configuration.hosts.map { |addr| Host.new(addr, self) })
             end
+        end
 
-          @name = @configuration.model.connection_db_config.name.to_sym
+        def name
+          @configuration.db_config_name
         end
 
         def primary_only?
@@ -133,7 +135,7 @@ module Gitlab
         # Returns the transaction write location of the primary.
         def primary_write_location
           location = read_write do |connection|
-            ::Gitlab::Database.main.get_write_location(connection)
+            get_write_location(connection)
           end
 
           return location if location
@@ -227,7 +229,7 @@ module Gitlab
         # host - An optional host name to use instead of the default one.
         # port - An optional port to connect to.
         def create_replica_connection_pool(pool_size, host = nil, port = nil)
-          db_config = pool.db_config
+          db_config = @configuration.replica_db_config
 
           env_config = db_config.configuration_hash.dup
           env_config[:pool] = pool_size
@@ -252,7 +254,7 @@ module Gitlab
         # leverage that.
         def pool
           ActiveRecord::Base.connection_handler.retrieve_connection_pool(
-            @configuration.model.connection_specification_name,
+            @configuration.primary_connection_specification_name,
             role: ActiveRecord::Base.writing_role,
             shard: ActiveRecord::Base.default_shard
           ) || raise(::ActiveRecord::ConnectionNotEstablished)
@@ -267,6 +269,33 @@ module Gitlab
         def request_cache
           base = SafeRequestStore[:gitlab_load_balancer] ||= {}
           base[self] ||= {}
+        end
+
+        # @param [ActiveRecord::Connection] ar_connection
+        # @return [String]
+        def get_write_location(ar_connection)
+          use_new_load_balancer_query = Gitlab::Utils
+            .to_boolean(ENV['USE_NEW_LOAD_BALANCER_QUERY'], default: true)
+
+          sql =
+            if use_new_load_balancer_query
+              <<~NEWSQL
+                SELECT CASE
+                    WHEN pg_is_in_recovery() = true AND EXISTS (SELECT 1 FROM pg_stat_get_wal_senders())
+                      THEN pg_last_wal_replay_lsn()::text
+                    WHEN pg_is_in_recovery() = false
+                      THEN pg_current_wal_insert_lsn()::text
+                      ELSE NULL
+                    END AS location;
+              NEWSQL
+            else
+              <<~SQL
+                SELECT pg_current_wal_insert_lsn()::text AS location
+              SQL
+            end
+
+          row = ar_connection.select_all(sql).first
+          row['location'] if row
         end
       end
     end

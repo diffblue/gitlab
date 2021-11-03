@@ -177,6 +177,28 @@ module API
 
           present current_authenticated_job, with: Entities::Ci::Job
         end
+
+        desc 'Get current agents' do
+          detail 'Retrieves a list of agents for the given job token'
+        end
+        route_setting :authentication, job_token_allowed: true
+        get '/allowed_agents', feature_category: :kubernetes_management do
+          validate_current_authenticated_job
+
+          status 200
+
+          pipeline = current_authenticated_job.pipeline
+          project = current_authenticated_job.project
+          agent_authorizations = Clusters::AgentAuthorizationsFinder.new(project).execute
+
+          {
+            allowed_agents: Entities::Clusters::AgentAuthorization.represent(agent_authorizations),
+            job: Entities::Ci::JobRequest::JobInfo.represent(current_authenticated_job),
+            pipeline: Entities::Ci::PipelineBasic.represent(pipeline),
+            project: Entities::ProjectIdentity.represent(project),
+            user: Entities::UserBasic.represent(current_user)
+          }
+        end
       end
 
       helpers do
@@ -202,5 +224,3 @@ module API
     end
   end
 end
-
-API::Ci::Jobs.prepend_mod_with('API::Ci::Jobs')

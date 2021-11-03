@@ -6,6 +6,7 @@ import {
   GlTooltipDirective,
   GlIcon,
   GlBadge,
+  GlLink,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
@@ -16,6 +17,7 @@ import {
   I18N_TABLE_REMOVE_BUTTON_DISABLED,
   I18N_GROUP_COL_LABEL,
 } from '../constants';
+import { getGroupAdoptionPath } from '../utils/helpers';
 import DevopsAdoptionDeleteModal from './devops_adoption_delete_modal.vue';
 import DevopsAdoptionTableCellFlag from './devops_adoption_table_cell_flag.vue';
 
@@ -55,6 +57,7 @@ export default {
     DevopsAdoptionDeleteModal,
     GlIcon,
     GlBadge,
+    GlLink,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -129,6 +132,9 @@ export default {
         ? this.$options.i18n.removeButtonDisabled
         : this.$options.i18n.removeButton;
     },
+    getGroupAdoptionPath(fullPath) {
+      return getGroupAdoptionPath(fullPath);
+    },
   },
 };
 </script>
@@ -159,14 +165,25 @@ export default {
 
       <template #cell(name)="{ item }">
         <div data-testid="namespace">
-          <strong v-if="item.latestSnapshot">{{ item.namespace.fullName }}</strong>
+          <template v-if="item.latestSnapshot">
+            <template v-if="isCurrentGroup(item)">
+              <span class="gl-text-gray-500 gl-font-weight-bold">{{
+                item.namespace.fullName
+              }}</span>
+              <gl-badge class="gl-ml-1" variant="info">{{ __('This group') }}</gl-badge>
+            </template>
+            <gl-link
+              v-else
+              :href="getGroupAdoptionPath(item.namespace.fullPath)"
+              class="gl-text-gray-500 gl-font-weight-bold"
+            >
+              {{ item.namespace.fullName }}
+            </gl-link>
+          </template>
           <template v-else>
             <span class="gl-text-gray-400">{{ item.namespace.fullName }}</span>
             <gl-icon name="hourglass" class="gl-text-gray-400" />
           </template>
-          <gl-badge v-if="isCurrentGroup(item)" class="gl-ml-1" variant="info">{{
-            __('This group')
-          }}</gl-badge>
         </div>
       </template>
 

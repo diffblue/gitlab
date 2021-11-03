@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity do
+RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:project) { create(:project, namespace: namespace) }
   let_it_be(:user) { create(:user) }

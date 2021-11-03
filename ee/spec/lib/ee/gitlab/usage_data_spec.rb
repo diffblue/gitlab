@@ -62,7 +62,7 @@ RSpec.describe Gitlab::UsageData do
     subject { described_class.data }
 
     it 'gathers usage data' do
-      expect(subject.keys).to include(*%i(
+      expect(subject.keys).to include(*%w(
         historical_max_users
         license_add_ons
         license_plan
@@ -85,7 +85,7 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data[:boards]).to eq(1)
       expect(count_data[:projects]).to eq(3)
 
-      expect(count_data.keys).to include(*%i(
+      expect(count_data.keys).to include(*%w(
         confidential_epics
         container_scanning_jobs
         coverage_fuzzing_jobs
@@ -128,50 +128,17 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data[:epic_issues]).to eq(2)
     end
 
-    context 'with quarantine_security_products_usage_metrics turned on' do
-      it 'returns fallback value for quarantined security products usage data' do
-        expect(count_data[:container_scanning_jobs]).to eq(-1)
-        expect(count_data[:dast_jobs]).to eq(-1)
-        expect(count_data[:dependency_scanning_jobs]).to eq(-1)
-        expect(count_data[:license_management_jobs]).to eq(-1)
-        expect(count_data[:sast_jobs]).to eq(-1)
-        expect(count_data[:secret_detection_jobs]).to eq(-1)
-        expect(count_data[:coverage_fuzzing_jobs]).to eq(-1)
-        expect(count_data[:api_fuzzing_jobs]).to eq(-1)
-        expect(count_data[:api_fuzzing_dnd_jobs]).to eq(-1)
-        expect(count_data[:dast_on_demand_pipelines]).to eq(1)
-      end
-
-      it 'avoid counting metrics' do
-        expect(described_class).not_to receive(:count)
-
-        described_class.security_products_usage
-      end
-    end
-
-    context 'with quarantine_security_products_usage_metrics turned off' do
-      before do
-        stub_feature_flags(quarantine_security_products_usage_metrics: false)
-      end
-
-      it 'counts metrics data' do
-        expect(described_class).to receive(:count).exactly(10).times
-
-        described_class.security_products_usage
-      end
-
-      it 'gathers security products usage data' do
-        expect(count_data[:container_scanning_jobs]).to eq(1)
-        expect(count_data[:dast_jobs]).to eq(1)
-        expect(count_data[:dependency_scanning_jobs]).to eq(1)
-        expect(count_data[:license_management_jobs]).to eq(2)
-        expect(count_data[:sast_jobs]).to eq(1)
-        expect(count_data[:secret_detection_jobs]).to eq(1)
-        expect(count_data[:coverage_fuzzing_jobs]).to eq(1)
-        expect(count_data[:api_fuzzing_jobs]).to eq(1)
-        expect(count_data[:api_fuzzing_dnd_jobs]).to eq(1)
-        expect(count_data[:dast_on_demand_pipelines]).to eq(1)
-      end
+    it 'gathers security products usage data' do
+      expect(count_data[:container_scanning_jobs]).to eq(1)
+      expect(count_data[:dast_jobs]).to eq(1)
+      expect(count_data[:dependency_scanning_jobs]).to eq(1)
+      expect(count_data[:license_management_jobs]).to eq(2)
+      expect(count_data[:sast_jobs]).to eq(1)
+      expect(count_data[:secret_detection_jobs]).to eq(1)
+      expect(count_data[:coverage_fuzzing_jobs]).to eq(1)
+      expect(count_data[:api_fuzzing_jobs]).to eq(1)
+      expect(count_data[:api_fuzzing_dnd_jobs]).to eq(1)
+      expect(count_data[:dast_on_demand_pipelines]).to eq(1)
     end
 
     it 'gathers group overview preferences usage data', :aggregate_failures do
@@ -187,6 +154,10 @@ RSpec.describe Gitlab::UsageData do
   describe '.features_usage_data_ee' do
     subject { described_class.features_usage_data_ee }
 
+    before do
+      stub_feature_flags(usage_data_instrumentation: false)
+    end
+
     it 'gathers feature usage data of EE' do
       expect(subject[:elasticsearch_enabled]).to eq(Gitlab::CurrentSettings.elasticsearch_search?)
       expect(subject[:geo_enabled]).to eq(Gitlab::Geo.enabled?)
@@ -200,10 +171,7 @@ RSpec.describe Gitlab::UsageData do
     it 'gathers license data' do
       license = ::License.current
 
-      expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
       expect(subject[:license_id]).to eq(license.license_id)
-      expect(subject[:historical_max_users]).to eq(license.historical_max)
-      expect(subject[:licensee]).to eq(license.licensee)
       expect(subject[:license_user_count]).to eq(license.restricted_user_count)
       expect(subject[:license_starts_at]).to eq(license.starts_at)
       expect(subject[:license_expires_at]).to eq(license.expires_at)
@@ -211,6 +179,39 @@ RSpec.describe Gitlab::UsageData do
       expect(subject[:license_trial]).to eq(license.trial?)
       expect(subject[:license_subscription_id]).to eq(license.subscription_id)
       expect(subject[:license_billable_users]).to eq(license.daily_billable_users_count)
+    end
+
+    context 'with usage_data_instrumentation feature flag' do
+      let(:license) { ::License.current }
+
+      context 'when enabled' do
+        before do
+          stub_feature_flags(usage_data_instrumentation: true)
+        end
+
+        it 'returns fallback value to be overriden' do
+          expect(subject[:licensee]).to eq(Gitlab::Utils::UsageData::INSTRUMENTATION_CLASS_FALLBACK)
+          expect(subject[:license_md5]).to eq(Gitlab::Utils::UsageData::INSTRUMENTATION_CLASS_FALLBACK)
+          expect(subject[:historical_max_users]).to eq(Gitlab::Utils::UsageData::INSTRUMENTATION_CLASS_FALLBACK)
+
+          uncached_data = described_class.uncached_data
+          expect(uncached_data[:licensee]).to eq(license.licensee)
+          expect(uncached_data[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+          expect(uncached_data[:historical_max_users]).to eq(license.historical_max)
+        end
+      end
+
+      context 'when disabled' do
+        before do
+          stub_feature_flags(usage_data_instrumentation: false)
+        end
+
+        it 'computes historical_max_users, licensee and license_md5 values' do
+          expect(subject[:licensee]).to eq(license.licensee)
+          expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+          expect(subject[:historical_max_users]).to eq(license.historical_max)
+        end
+      end
     end
   end
 
@@ -541,17 +542,51 @@ RSpec.describe Gitlab::UsageData do
   end
 
   describe 'usage_activity_by_stage_release' do
-    it 'includes accurate usage_activity_by_stage data' do
+    before do
+      stub_licensed_features(group_milestone_project_releases: true)
+      group_milestone = create(:milestone, :on_group)
+      project = create(:project, group: group_milestone.group)
+
       for_defined_days_back do
         create(:project, :mirror, mirror_trigger_builds: true)
+
+        create(:release, created_at: 3.days.ago, project: project, milestones: [group_milestone])
+      end
+    end
+
+    it 'includes accurate usage_activity_by_stage data' do
+      expect(described_class.usage_activity_by_stage_release({})).to include(projects_mirrored_with_pipelines_enabled: 2)
+      expect(described_class.usage_activity_by_stage_release(described_class.monthly_time_range_db_params)).to include(projects_mirrored_with_pipelines_enabled: 1)
+    end
+
+    context 'with usage_data_instrumentation feature flag' do
+      let(:license) { ::License.current }
+
+      context 'when enabled' do
+        before do
+          stub_feature_flags(usage_data_instrumentation: true)
+        end
+
+        it 'returns fallback value to be overriden' do
+          expect(described_class.usage_activity_by_stage_release({})).to include(releases_with_group_milestones: Gitlab::Utils::UsageData::INSTRUMENTATION_CLASS_FALLBACK)
+          expect(described_class.usage_activity_by_stage_release(described_class.monthly_time_range_db_params)).to include(releases_with_group_milestones: Gitlab::Utils::UsageData::INSTRUMENTATION_CLASS_FALLBACK)
+
+          uncached_data = described_class.uncached_data
+          expect(uncached_data[:usage_activity_by_stage][:release]).to include(releases_with_milestones: 2)
+          expect(uncached_data[:usage_activity_by_stage_monthly][:release]).to include(releases_with_milestones: 1)
+        end
       end
 
-      expect(described_class.usage_activity_by_stage_release({})).to include(
-        projects_mirrored_with_pipelines_enabled: 2
-      )
-      expect(described_class.usage_activity_by_stage_release(described_class.monthly_time_range_db_params)).to include(
-        projects_mirrored_with_pipelines_enabled: 1
-      )
+      context 'when disabled' do
+        before do
+          stub_feature_flags(usage_data_instrumentation: false)
+        end
+
+        it 'computes releases_with_group_milestones values' do
+          expect(described_class.usage_activity_by_stage_release({})).to include(releases_with_group_milestones: 2)
+          expect(described_class.usage_activity_by_stage_release(described_class.monthly_time_range_db_params)).to include(releases_with_group_milestones: 1)
+        end
+      end
     end
   end
 

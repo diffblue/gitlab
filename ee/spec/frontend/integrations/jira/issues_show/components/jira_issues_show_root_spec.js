@@ -5,7 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import * as JiraIssuesShowApi from 'ee/integrations/jira/issues_show/api';
 import JiraIssuesShow from 'ee/integrations/jira/issues_show/components/jira_issues_show_root.vue';
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
-import { issueStates } from 'ee/integrations/jira/issues_show/constants';
+import { IssuableStatus } from '~/issue_show/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssuableHeader from '~/issuable_show/components/issuable_header.vue';
 import IssuableShow from '~/issuable_show/components/issuable_show_root.vue';
@@ -88,9 +88,9 @@ describe('JiraIssuesShow', () => {
   });
 
   describe.each`
-    state                 | statusIcon              | statusBadgeClass             | badgeText
-    ${issueStates.OPENED} | ${'issue-open-m'}       | ${'status-box-open'}         | ${'Open'}
-    ${issueStates.CLOSED} | ${'mobile-issue-close'} | ${'status-box-issue-closed'} | ${'Closed'}
+    state                    | statusIcon              | statusBadgeClass             | badgeText
+    ${IssuableStatus.Open}   | ${'issue-open-m'}       | ${'status-box-open'}         | ${'Open'}
+    ${IssuableStatus.Closed} | ${'mobile-issue-close'} | ${'status-box-issue-closed'} | ${'Closed'}
   `('when issue state is `$state`', ({ state, statusIcon, statusBadgeClass, badgeText }) => {
     beforeEach(async () => {
       mockAxios.onGet(mockJiraIssuesShowPath).replyOnce(200, { ...mockJiraIssue, state });

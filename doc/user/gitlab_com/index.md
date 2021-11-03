@@ -158,7 +158,7 @@ If you are near or over the repository size limit, you can either
 NOTE:
 `git push` and GitLab project imports are limited to 5 GB per request through
 Cloudflare. Git LFS and imports other than a file upload are not affected by
-this limit.
+this limit. Repository limits apply to both public and private projects.
 
 ## IP range
 
@@ -270,7 +270,7 @@ for `shared_buffers` is quite high, and we are
 
 ## Puma
 
-GitLab.com uses the default of 60 seconds for [Puma request timeouts](https://docs.gitlab.com/omnibus/settings/puma.html#worker-timeout).
+GitLab.com uses the default of 60 seconds for [Puma request timeouts](../../administration/operations/puma.md#worker-timeout).
 
 ## GitLab.com-specific rate limits
 

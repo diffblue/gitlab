@@ -222,7 +222,7 @@ RSpec.describe Mutations::IncidentManagement::OncallRotation::Update do
 
     context 'when resource is not accessible to the user' do
       it 'raises an error' do
-        expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, "The resource that you are attempting to access does not exist or you don't have permission to perform this action")
+        expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR)
       end
     end
   end

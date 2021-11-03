@@ -28,29 +28,70 @@ module Security
       include Gitlab::Utils::StrongMemoize
 
       def self.included(base)
-        base.singleton_class.attr_accessor :model, :unique_by, :uses
+        base.singleton_class.attr_accessor(:model, :unique_by, :uses)
+        base.extend(ClassMethods)
+      end
+
+      module ClassMethods
+        # Creates a proxy class to be used in UPSERT queries
+        # which will also run the model layer validations except
+        # the uniquness and presence of associations validations.
+        def klass
+          @klass ||= Class.new(model).tap do |klass|
+            remove_validations(klass)
+          end.include(BulkInsertSafe)
+        end
+
+        private
+
+        def remove_validations(klass)
+          klass.validators.each do |validator|
+            remove_validation_if_necessary(klass, validator)
+          end
+        end
+
+        def remove_validation_if_necessary(klass, validator)
+          return unless uniqunesss_validator?(validator) || presence_of_association_validator?(klass, validator)
+
+          klass.skip_callback(:validate, :before, validator)
+        end
+
+        def uniqunesss_validator?(validator)
+          validator.instance_of?(ActiveRecord::Validations::UniquenessValidator)
+        end
+
+        def presence_of_association_validator?(klass, validator)
+          validator.instance_of?(ActiveRecord::Validations::PresenceValidator) &&
+            (klass.reflections.keys & validator.attributes.map(&:to_s)).any?
+        end
       end
 
       def execute
-        result_set
+        return_data
 
         after_ingest if uses
       end
 
       private
 
-      delegate :unique_by, :model, :uses, :cast_values, to: :'self.class', private: true
+      delegate :unique_by, :model, :klass, :uses, :cast_values, to: :'self.class', private: true
 
       def return_data
-        @return_data ||= result_set&.cast_values(model.attribute_types).to_a
-      end
-
-      def result_set
-        strong_memoize(:result_set) do
-          if insert_attributes.present?
-            ActiveRecord::InsertAll.new(model, insert_attributes, on_duplicate: on_duplicate, returning: uses, unique_by: unique_by).execute
+        strong_memoize(:return_data) do
+          if insert_objects.present?
+            unique_by.present? ? bulk_upsert : bulk_insert
+          else
+            []
           end
         end
+      end
+
+      def bulk_insert
+        klass.bulk_insert!(insert_objects, skip_duplicates: true, returns: uses)
+      end
+
+      def bulk_upsert
+        klass.bulk_upsert!(insert_objects, unique_by: unique_by, returns: uses, &method(:slice_attributes))
       end
 
       def after_ingest
@@ -61,16 +102,28 @@ module Security
         raise "Implement the `attributes` template method!"
       end
 
+      def insert_objects
+        @insert_objects ||= insert_attributes.map { |attributes| klass.new(attributes) }
+      end
+
       def insert_attributes
         @insert_attributes ||= attributes.map { |values| values.merge(timestamps) }
       end
 
-      def timestamps
-        @timestamps ||= Time.zone.now.then { |time| { created_at: time, updated_at: time } }
+      # `BulkInsertSafe` module is trying to update all the attributes
+      # of a record which overrides the columns with NULL values if the
+      # attribute is not provided. For this reason, we need to slice the
+      # attributes with this callback.
+      def slice_attributes(item_attributes)
+        item_attributes.slice!(*attribute_names)
       end
 
-      def on_duplicate
-        unique_by.present? ? :update : :skip
+      def attribute_names
+        @attribute_names ||= insert_attributes.first.keys.map(&:to_s)
+      end
+
+      def timestamps
+        @timestamps ||= Time.zone.now.then { |time| { created_at: time, updated_at: time } }
       end
     end
   end

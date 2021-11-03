@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BillingPlansHelper do
+RSpec.describe BillingPlansHelper, :saas do
   include Devise::Test::ControllerHelpers
 
   before do
@@ -391,6 +391,20 @@ RSpec.describe BillingPlansHelper do
       allow(helper).to receive(:use_new_purchase_flow?).and_return(false)
 
       expect(helper.plan_purchase_url(group, plan)).to eq("#{plan.purchase_link.href}&gl_namespace_id=#{group.id}")
+    end
+  end
+
+  describe "#hand_raise_props" do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    it 'builds correct hash' do
+      props = helper.hand_raise_props(namespace)
+      expect(props).to eq(namespace_id: namespace.id, user_name: 'Joe', first_name: 'Joe', last_name: 'Doe', company_name: 'ACME')
     end
   end
 

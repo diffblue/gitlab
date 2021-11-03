@@ -7,10 +7,10 @@ import MonthsHeaderItem from 'ee/roadmap/components/preset_months/months_header_
 import MonthsHeaderSubItem from 'ee/roadmap/components/preset_months/months_header_sub_item.vue';
 import RoadmapShell from 'ee/roadmap/components/roadmap_shell.vue';
 import RoadmapTimelineSection from 'ee/roadmap/components/roadmap_timeline_section.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import eventHub from 'ee/roadmap/event_hub';
 import createStore from 'ee/roadmap/store';
-import { getTimeframeForMonthsView } from 'ee/roadmap/utils/roadmap_utils';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import {
   mockEpic,
@@ -19,7 +19,11 @@ import {
   mockMilestone,
 } from 'ee_jest/roadmap/mock_data';
 
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('RoadmapShell', () => {
   const localVue = createLocalVue();
@@ -77,12 +81,6 @@ describe('RoadmapShell', () => {
     wrapper.destroy();
     wrapper = null;
     store = null;
-  });
-
-  describe('data', () => {
-    it('returns default data props', () => {
-      expect(wrapper.vm.timeframeStartOffset).toBe(0);
-    });
   });
 
   describe('methods', () => {

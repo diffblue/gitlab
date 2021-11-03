@@ -8,7 +8,7 @@ const SAST = s__('ciReport|SAST');
 const DAST = s__('ciReport|DAST');
 const CONTAINER_SCANNING = s__('ciReport|Container scanning');
 const DEPENDENCY_SCANNING = s__('ciReport|Dependency scanning');
-const SECRET_SCANNING = s__('ciReport|Secret scanning');
+const SECRET_DETECTION = s__('ciReport|Secret detection');
 const COVERAGE_FUZZING = s__('ciReport|Coverage fuzzing');
 const API_FUZZING = s__('ciReport|API fuzzing');
 
@@ -17,7 +17,7 @@ export default {
   DAST,
   CONTAINER_SCANNING,
   DEPENDENCY_SCANNING,
-  SECRET_SCANNING,
+  SECRET_DETECTION,
   COVERAGE_FUZZING,
   API_FUZZING,
   TRANSLATION_IS_LOADING,
@@ -36,10 +36,10 @@ export default {
   DEPENDENCY_SCANNING_HAS_ERROR: sprintf(TRANSLATION_HAS_ERROR, {
     reportType: DEPENDENCY_SCANNING,
   }),
-  SECRET_SCANNING_IS_LOADING: sprintf(TRANSLATION_IS_LOADING, {
-    reportType: SECRET_SCANNING,
+  SECRET_DETECTION_IS_LOADING: sprintf(TRANSLATION_IS_LOADING, {
+    reportType: SECRET_DETECTION,
   }),
-  SECRET_SCANNING_HAS_ERROR: sprintf(TRANSLATION_HAS_ERROR, { reportType: SECRET_SCANNING }),
+  SECRET_DETECTION_HAS_ERROR: sprintf(TRANSLATION_HAS_ERROR, { reportType: SECRET_DETECTION }),
   COVERAGE_FUZZING_IS_LOADING: sprintf(TRANSLATION_IS_LOADING, {
     reportType: COVERAGE_FUZZING,
   }),

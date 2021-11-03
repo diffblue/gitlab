@@ -47,7 +47,7 @@
                 = link_to sprite_icon('question-o'), help_page_path('public_access/public_access'), aria: { label: 'Documentation for Visibility Level' }, target: '_blank', rel: 'noopener noreferrer'
               = render 'shared/visibility_level', f: f, visibility_level: visibility_level.to_i, can_change_visibility_level: true, form_model: @project, with_label: false
 
-              = f.submit _('Create project'), class: 'btn gl-button btn-success btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
+              = f.submit _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?

@@ -546,7 +546,7 @@ RSpec.describe API::Members do
         expect(json_response).to eq({ 'message' => '404 Group Not Found' })
       end
 
-      it 'returns not found when the user is not billable' do
+      it 'returns not found when the user is not billable', :saas do
         create(:gitlab_subscription, :ultimate, namespace: group)
 
         get api("/groups/#{group.id}/billable_members/#{guest.id}/memberships", owner)

@@ -6,7 +6,7 @@ RSpec.describe 'License-Scanning.gitlab-ci.yml' do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('License-Scanning') }
 
   describe 'the created pipeline' do
-    let_it_be(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
+    let_it_be_with_refind(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
 
     let(:default_branch) { 'master' }
     let(:user) { project.owner }

@@ -14,6 +14,7 @@ import { mockMoveIssueParams, mockMoveData, mockMoveState } from 'jest/boards/mo
 import { formatListIssues } from '~/boards/boards_util';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import * as typesCE from '~/boards/stores/mutation_types';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams } from '~/lib/utils/url_utility';
 import {
@@ -1379,5 +1380,63 @@ describe('setActiveEpicLabels', () => {
       .mockResolvedValue({ data: { updateEpic: { errors: ['failed mutation'] } } });
 
     await expect(actions.setActiveEpicLabels({ getters }, input)).rejects.toThrow(Error);
+  });
+
+  describe('labels_widget FF on', () => {
+    beforeEach(() => {
+      window.gon = {
+        features: { labelsWidget: true },
+      };
+
+      getters.activeBoardItem = { ...mockIssue, labels };
+    });
+
+    afterEach(() => {
+      window.gon = {
+        features: {},
+      };
+    });
+
+    it('should assign labels', () => {
+      const payload = {
+        itemId: getters.activeBoardItem.id,
+        prop: 'labels',
+        value: labels,
+      };
+
+      testAction(
+        actions.setActiveEpicLabels,
+        input,
+        { ...state, ...getters },
+        [
+          {
+            type: types.UPDATE_BOARD_ITEM_BY_ID,
+            payload,
+          },
+        ],
+        [],
+      );
+    });
+
+    it('should remove label', () => {
+      const payload = {
+        itemId: getters.activeBoardItem.id,
+        prop: 'labels',
+        value: [labels[1]],
+      };
+
+      testAction(
+        actions.setActiveEpicLabels,
+        { ...input, removeLabelIds: [getIdFromGraphQLId(labels[0].id)] },
+        { ...state, ...getters },
+        [
+          {
+            type: types.UPDATE_BOARD_ITEM_BY_ID,
+            payload,
+          },
+        ],
+        [],
+      );
+    });
   });
 });

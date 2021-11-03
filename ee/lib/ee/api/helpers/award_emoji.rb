@@ -13,7 +13,7 @@ module EE
           override :awardables
           def awardables
             super.concat([
-              { type: 'epic', resource: :groups, find_by: :iid, feature_category: :epics }
+              { type: 'epic', resource: :groups, find_by: :iid, feature_category: :portfolio_management }
             ])
           end
 

@@ -9,6 +9,7 @@ describe('Security Configuration Page Layout component', () => {
       slots: {
         alert: 'Page alert',
         heading: 'Page title',
+        actions: 'Action',
         description: 'Scanner description',
         default: '<div>form</div>',
       },

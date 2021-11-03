@@ -424,8 +424,9 @@ RSpec.describe Project, factory_default: :keep do
       end
 
       include_context 'invalid urls'
+      include_context 'valid urls with CRLF'
 
-      it 'does not allow urls with CR or LF characters' do
+      it 'does not allow URLs with unencoded CR or LF characters' do
         project = build(:project)
 
         aggregate_failures do
@@ -434,6 +435,19 @@ RSpec.describe Project, factory_default: :keep do
 
             expect(project).not_to be_valid
             expect(project.errors.full_messages.first).to match(/is blocked: URI is invalid/)
+          end
+        end
+      end
+
+      it 'allow URLs with CR or LF characters' do
+        project = build(:project)
+
+        aggregate_failures do
+          valid_urls_with_CRLF.each do |url|
+            project.import_url = url
+
+            expect(project).to be_valid
+            expect(project.errors).to be_empty
           end
         end
       end
@@ -666,6 +680,19 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to delegate_method(:last_pipeline).to(:commit).with_arguments(allow_nil: true) }
     it { is_expected.to delegate_method(:container_registry_enabled?).to(:project_feature) }
     it { is_expected.to delegate_method(:container_registry_access_level).to(:project_feature) }
+
+    describe 'project settings' do
+      %i(
+        show_default_award_emojis
+        show_default_award_emojis=
+        show_default_award_emojis?
+        warn_about_potentially_unwanted_characters
+        warn_about_potentially_unwanted_characters=
+        warn_about_potentially_unwanted_characters?
+      ).each do |method|
+        it { is_expected.to delegate_method(method).to(:project_setting).with_arguments(allow_nil: true) }
+      end
+    end
 
     include_examples 'ci_cd_settings delegation' do
       # Skip attributes defined in EE code
@@ -1701,13 +1728,19 @@ RSpec.describe Project, factory_default: :keep do
         allow(::Gitlab::ServiceDeskEmail).to receive(:config).and_return(config)
       end
 
-      it 'returns custom address when project_key is set' do
-        create(:service_desk_setting, project: project, project_key: 'key1')
+      context 'when project_key is set' do
+        it 'returns custom address including the project_key' do
+          create(:service_desk_setting, project: project, project_key: 'key1')
 
-        expect(subject).to eq("foo+#{project.full_path_slug}-key1@bar.com")
+          expect(subject).to eq("foo+#{project.full_path_slug}-key1@bar.com")
+        end
       end
 
-      it_behaves_like 'with incoming email address'
+      context 'when project_key is not set' do
+        it 'returns custom address including the project full path' do
+          expect(subject).to eq("foo+#{project.full_path_slug}-#{project.project_id}-issue-@bar.com")
+        end
+      end
     end
   end
 
@@ -6287,23 +6320,17 @@ RSpec.describe Project, factory_default: :keep do
 
   describe 'validation #changing_shared_runners_enabled_is_allowed' do
     where(:shared_runners_setting, :project_shared_runners_enabled, :valid_record) do
-      'enabled'                    | true  | true
-      'enabled'                    | false | true
-      'disabled_with_override'     | true  | true
-      'disabled_with_override'     | false | true
-      'disabled_and_unoverridable' | true  | false
-      'disabled_and_unoverridable' | false | true
+      :shared_runners_enabled     | true  | true
+      :shared_runners_enabled     | false | true
+      :disabled_with_override     | true  | true
+      :disabled_with_override     | false | true
+      :disabled_and_unoverridable | true  | false
+      :disabled_and_unoverridable | false | true
     end
 
     with_them do
-      let(:group) { create(:group) }
+      let(:group) { create(:group, shared_runners_setting) }
       let(:project) { build(:project, namespace: group, shared_runners_enabled: project_shared_runners_enabled) }
-
-      before do
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:shared_runners_setting).and_return(shared_runners_setting)
-        end
-      end
 
       it 'validates the configuration' do
         expect(project.valid?).to eq(valid_record)

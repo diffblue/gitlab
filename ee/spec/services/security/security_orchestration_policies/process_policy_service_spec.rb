@@ -11,6 +11,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:type) { :scan_execution_policy }
     let(:operation) { :append }
+    let(:policy_name) { policy[:name] }
 
     let(:repository_with_existing_policy_yaml) do
       pipeline_policy = build(:scan_execution_policy, name: 'Test Policy')
@@ -22,18 +23,27 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
       build(:orchestration_policy_yaml, scan_execution_policy: [pipeline_policy, scheduled_policy])
     end
 
-    subject(:service) { described_class.new(policy_configuration: policy_configuration, params: { policy: policy_yaml, operation: operation, type: type }) }
+    subject(:service) { described_class.new(policy_configuration: policy_configuration, params: { policy: policy_yaml, name: policy_name, operation: operation, type: type }) }
 
     context 'when policy is invalid' do
-      let(:policy) { { invalid_name: 'invalid' } }
+      let(:policy_name) { 'invalid' }
+      let(:policy) { { name: 'invalid', invalid_field: 'invalid' } }
 
       it 'raises StandardError' do
         expect { service.execute }.to raise_error(StandardError, 'Invalid policy yaml')
       end
     end
 
+    context 'when policy name is not same as in policy' do
+      let(:policy_name) { 'invalid' }
+
+      it 'raises StandardError' do
+        expect { service.execute }.to raise_error(StandardError, 'Name should be same as the policy name')
+      end
+    end
+
     context 'when type is invalid' do
-      let(:type) { :invalid_type}
+      let(:type) { :invalid_type }
 
       it 'raises StandardError' do
         expect { service.execute }.to raise_error(StandardError, 'Invalid policy type')
@@ -79,6 +89,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
     context 'replace policy' do
       let(:operation) { :replace }
 
+      before do
+        allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_with_existing_policy_yaml).load!)
+      end
+
       context 'when policy is not present in repository' do
         before do
           allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
@@ -89,15 +103,43 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService do
         end
       end
 
-      context 'when policy with same name already exists in repository' do
-        before do
-          allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_with_existing_policy_yaml).load!)
-        end
+      context 'when policy name is empty' do
+        let(:policy_name) { nil }
 
+        it 'does not modify the policy name' do
+          result = service.execute
+
+          expect(result[:scan_execution_policy].first).to eq(policy_yaml)
+        end
+      end
+
+      context 'when policy with same name already exists in repository' do
         it 'replaces the policy' do
           result = service.execute
 
           expect(result[:scan_execution_policy].first[:enabled]).to be_falsey
+        end
+      end
+
+      context 'when policy name is not same as in policy' do
+        let(:policy_yaml) do
+          Gitlab::Config::Loader::Yaml.new(build(:scan_execution_policy, name: 'Updated Policy', enabled: false).to_yaml).load!
+        end
+
+        it 'updates the policy name' do
+          result = service.execute
+
+          expect(result[:scan_execution_policy].first[:name]).to eq('Updated Policy')
+        end
+      end
+
+      context 'when name of the policy to be updated already exists' do
+        let(:policy_yaml) do
+          Gitlab::Config::Loader::Yaml.new(build(:scan_execution_policy, name: 'Scheduled DAST', enabled: false).to_yaml).load!
+        end
+
+        it 'raises StandardError' do
+          expect { service.execute }.to raise_error(StandardError, 'Policy already exists with same name')
         end
       end
     end

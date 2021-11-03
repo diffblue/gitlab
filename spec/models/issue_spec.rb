@@ -34,7 +34,8 @@ RSpec.describe Issue do
     it { is_expected.to have_many(:issue_email_participants) }
     it { is_expected.to have_many(:timelogs).autosave(true) }
     it { is_expected.to have_one(:incident_management_issuable_escalation_status) }
-    it { is_expected.to have_and_belong_to_many(:customer_relations_contacts) }
+    it { is_expected.to have_many(:issue_customer_relations_contacts) }
+    it { is_expected.to have_many(:customer_relations_contacts) }
 
     describe 'versions.most_recent' do
       it 'returns the most recent version' do
@@ -1218,7 +1219,7 @@ RSpec.describe Issue do
       end
 
       it 'returns public and hidden issues' do
-        expect(described_class.public_only).to eq([public_issue, hidden_issue])
+        expect(described_class.public_only).to contain_exactly(public_issue, hidden_issue)
       end
     end
   end
@@ -1247,7 +1248,7 @@ RSpec.describe Issue do
       end
 
       it 'returns public and hidden issues' do
-        expect(described_class.without_hidden).to eq([public_issue, hidden_issue])
+        expect(described_class.without_hidden).to contain_exactly(public_issue, hidden_issue)
       end
     end
   end

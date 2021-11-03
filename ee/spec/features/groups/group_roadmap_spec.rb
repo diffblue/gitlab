@@ -29,8 +29,6 @@ RSpec.describe 'group epic roadmap', :js do
   before do
     stub_licensed_features(epics: true)
     stub_feature_flags(unfiltered_epic_aggregates: false)
-    stub_feature_flags(performance_roadmap: false)
-    stub_feature_flags(roadmap_daterange_filter: false)
 
     sign_in(user)
   end
@@ -48,11 +46,47 @@ RSpec.describe 'group epic roadmap', :js do
     end
 
     describe 'roadmap page' do
-      it 'renders roadmap preset buttons correctly' do
-        page.within('.gl-segmented-control') do
-          expect(page).to have_css('input[value="QUARTERS"]')
-          expect(page).to have_css('input[value="MONTHS"]')
-          expect(page).to have_css('input[value="WEEKS"]')
+      context 'roadmap daterange filtering' do
+        def select_date_range(range_type)
+          page.within('.epics-roadmap-filters') do
+            page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
+            click_button(range_type)
+          end
+        end
+
+        it 'renders daterange filtering dropdown with "This quarter" selected by default no layout presets available', :aggregate_failures do
+          page.within('.epics-roadmap-filters') do
+            expect(page).to have_selector('[data-testid="daterange-dropdown"]')
+            expect(page).not_to have_selector('.gl-segmented-control')
+            expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
+          end
+        end
+
+        it 'selecting "This year" as daterange shows `Months` and `Weeks` layout presets', :aggregate_failures do
+          select_date_range('This year')
+
+          page.within('.epics-roadmap-filters') do
+            expect(page).to have_selector('.gl-segmented-control')
+            expect(page).to have_selector('input[value="MONTHS"]')
+            expect(page).to have_selector('input[value="WEEKS"]')
+          end
+        end
+
+        it 'selecting "Within 3 years" as daterange shows `Quarters`, `Months` and `Weeks` layout presets', :aggregate_failures do
+          select_date_range('Within 3 years')
+
+          page.within('.epics-roadmap-filters') do
+            expect(page).to have_selector('.gl-segmented-control')
+            expect(page).to have_selector('input[value="QUARTERS"]')
+            expect(page).to have_selector('input[value="MONTHS"]')
+            expect(page).to have_selector('input[value="WEEKS"]')
+          end
+        end
+      end
+
+      it 'renders the epics state dropdown' do
+        page.within('.content-wrapper .content .epics-filters') do
+          expect(page).to have_css('.dropdown-epics-state')
         end
       end
 
@@ -190,40 +224,6 @@ RSpec.describe 'group epic roadmap', :js do
         page.within('.empty-state') do
           expect(page).to have_content('The roadmap shows the progress of your epics along a timeline')
         end
-      end
-    end
-  end
-
-  context 'when over 1000 epics match roadmap filters' do
-    before do
-      create_list(:epic, 2, group: group, start_date: 10.days.ago, end_date: 1.day.ago)
-      visit group_roadmap_path(group)
-
-      execute_script("gon.roadmap_epics_limit = 1;")
-    end
-
-    describe 'roadmap page' do
-      it 'renders warning callout banner' do
-        page.within('.content-wrapper .content') do
-          expect(page).to have_selector('[data-testid="epics_limit_callout"]', count: 1)
-          expect(find('[data-testid="epics_limit_callout"]')).to have_content 'Some of your epics might not be visible Roadmaps can display up to 1,000 epics. These appear in your selected sort order.'
-        end
-
-        page.within('[data-testid="epics_limit_callout"]') do
-          expect(find_link('Learn more')[:href]).to eq("https://docs.gitlab.com/ee/user/group/roadmap/")
-        end
-      end
-
-      it 'is removed after dismissal and even after reload' do
-        page.within('[data-testid="epics_limit_callout"]') do
-          find('.gl-dismiss-btn').click
-        end
-
-        expect(page).not_to have_selector('[data-testid="epics_limit_callout"]')
-
-        refresh
-
-        expect(page).not_to have_selector('[data-testid="epics_limit_callout"]')
       end
     end
   end

@@ -33,6 +33,7 @@ module Vulnerabilities
     def initialize_vulnerability(vulnerability_hash)
       attributes = vulnerability_hash
         .slice(*%i[
+          description
           state
           severity
           confidence
@@ -96,6 +97,7 @@ module Vulnerabilities
       Vulnerabilities::Scanner.find_or_initialize_by(name: name) do |s|
         s.project = @project
         s.external_id = scanner_hash[:id]
+        s.vendor = scanner_hash.dig(:vendor, :name)
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord

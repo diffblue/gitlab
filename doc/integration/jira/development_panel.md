@@ -38,7 +38,7 @@ After the integration is [set up on GitLab and Jira](#configure-the-integration)
 - Refer to any Jira issue by its ID (in uppercase) in GitLab branch names,
   commit messages, and merge request titles.
 - See the linked branches, commits, and merge requests in Jira issues.
-- Create GitLab branches from Jira issues ([introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66032) in GitLab 14.2).
+- Create GitLab branches from Jira Cloud issues ([introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66032) in GitLab 14.2).
 
 At this time, merge requests are called "pull requests" in Jira issues.
 This name may change in a future Jira release.
@@ -69,7 +69,7 @@ To simplify administration, we recommend that a GitLab group maintainer or group
 
 | Jira usage | GitLab.com customers need | GitLab self-managed customers need |
 |------------|---------------------------|------------------------------------|
-| [Atlassian cloud](https://www.atlassian.com/cloud) | The [GitLab.com for Jira Cloud app](https://marketplace.atlassian.com/apps/1221011/gitlab-com-for-jira-cloud?hosting=cloud&tab=overview) installed from the [Atlassian Marketplace](https://marketplace.atlassian.com). This offers real-time sync between GitLab.com and Jira. For more information, see the documentation for the [GitLab.com for Jira Cloud app](connect-app.md). | The [GitLab.com for Jira Cloud app](https://marketplace.atlassian.com/apps/1221011/gitlab-com-for-jira-cloud?hosting=cloud&tab=overview), using a workaround process. See the documentation for [installing the GitLab.com for Jira Cloud app for self-managed instances](connect-app.md#install-the-gitlabcom-for-jira-cloud-app-for-self-managed-instances) for more information. |
+| [Atlassian cloud](https://www.atlassian.com/migration/assess/why-cloud) | The [GitLab.com for Jira Cloud app](https://marketplace.atlassian.com/apps/1221011/gitlab-com-for-jira-cloud?hosting=cloud&tab=overview) installed from the [Atlassian Marketplace](https://marketplace.atlassian.com). This offers real-time sync between GitLab.com and Jira. For more information, see the documentation for the [GitLab.com for Jira Cloud app](connect-app.md). | The [GitLab.com for Jira Cloud app](https://marketplace.atlassian.com/apps/1221011/gitlab-com-for-jira-cloud?hosting=cloud&tab=overview), using a workaround process. See the documentation for [installing the GitLab.com for Jira Cloud app for self-managed instances](connect-app.md#install-the-gitlabcom-for-jira-cloud-app-for-self-managed-instances) for more information. |
 | Your own server | The [Jira DVCS (distributed version control system) connector](dvcs.md). This syncs data hourly. | The [Jira DVCS Connector](dvcs.md). |
 
 Each GitLab project can be configured to connect to an entire Jira instance. That means after

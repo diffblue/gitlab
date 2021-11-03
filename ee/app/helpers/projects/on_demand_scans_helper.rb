@@ -1,17 +1,19 @@
 # frozen_string_literal: true
 
 module Projects::OnDemandScansHelper
+  # rubocop: disable CodeReuse/ActiveRecord
   def on_demand_scans_data(project)
-    base_data.merge({
+    common_data(project).merge({
+      'pipelines-count' => project.all_pipelines.where(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan]).count,
       'new-dast-scan-path' => new_project_on_demand_scan_path(project),
       'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg')
     })
   end
+  # rubocop: enable CodeReuse/ActiveRecord
 
   def on_demand_scans_form_data(project)
-    base_data.merge({
+    common_data(project).merge({
       'default-branch' => project.default_branch,
-      'project-path' => project.path_with_namespace,
       'profiles-library-path' => project_security_configuration_dast_scans_path(project),
       'scanner-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'scanner-profiles'),
       'site-profiles-library-path' => project_security_configuration_dast_scans_path(project, anchor: 'site-profiles'),
@@ -23,9 +25,9 @@ module Projects::OnDemandScansHelper
 
   private
 
-  def base_data
+  def common_data(project)
     {
-      'help-page-path' => help_page_path('user/application_security/dast/index', anchor: 'on-demand-scans')
+      'project-path' => project.path_with_namespace
     }
   end
 end

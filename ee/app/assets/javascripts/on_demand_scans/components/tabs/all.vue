@@ -1,11 +1,39 @@
 <script>
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
+import onDemandScansQuery from '../../graphql/on_demand_scans.query.graphql';
 import BaseTab from './base_tab.vue';
 
 export default {
+  query: onDemandScansQuery,
   components: {
     BaseTab,
   },
+  tableFields: [
+    {
+      label: __('Status'),
+      key: 'detailedStatus',
+    },
+    {
+      label: __('Name'),
+      key: 'dastProfile.name',
+    },
+    {
+      label: s__('OnDemandScans|Scan type'),
+      key: 'scanType',
+    },
+    {
+      label: s__('OnDemandScans|Target'),
+      key: 'dastProfile.dastSiteProfile.targetUrl',
+    },
+    {
+      label: __('Start date'),
+      key: 'createdAt',
+    },
+    {
+      label: __('Pipeline'),
+      key: 'id',
+    },
+  ],
   i18n: {
     title: __('All'),
   },
@@ -13,5 +41,10 @@ export default {
 </script>
 
 <template>
-  <base-tab :title="$options.i18n.title" v-bind="$attrs" />
+  <base-tab
+    v-bind="$attrs"
+    :query="$options.query"
+    :title="$options.i18n.title"
+    :fields="$options.tableFields"
+  />
 </template>

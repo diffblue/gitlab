@@ -77,7 +77,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             dependencies: [],
             script: ['/analyzer run'],
             variables: {
-              CIS_ANALYZER_IMAGE: 'registry.gitlab.com/gitlab-org/security-products/analyzers/cluster-image-scanning:0'
+              CIS_ANALYZER_IMAGE: 'registry.gitlab.com/security-products/cluster-image-scanning:0'
             }
           }
 

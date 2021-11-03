@@ -25,8 +25,10 @@ module Gitlab
     require_dependency Rails.root.join('lib/gitlab/redis/shared_state')
     require_dependency Rails.root.join('lib/gitlab/redis/trace_chunks')
     require_dependency Rails.root.join('lib/gitlab/redis/rate_limiting')
+    require_dependency Rails.root.join('lib/gitlab/redis/sessions')
     require_dependency Rails.root.join('lib/gitlab/current_settings')
     require_dependency Rails.root.join('lib/gitlab/middleware/read_only')
+    require_dependency Rails.root.join('lib/gitlab/middleware/compressed_json')
     require_dependency Rails.root.join('lib/gitlab/middleware/basic_health_check')
     require_dependency Rails.root.join('lib/gitlab/middleware/same_site_cookies')
     require_dependency Rails.root.join('lib/gitlab/middleware/handle_ip_spoof_attack_error')
@@ -198,7 +200,7 @@ module Gitlab
     config.assets.enabled = true
 
     # Support legacy unicode file named img emojis, `1F939.png`
-    config.assets.paths << Gemojione.images_path
+    config.assets.paths << TanukiEmoji.images_path
     config.assets.paths << "#{config.root}/vendor/assets/fonts"
 
     config.assets.precompile << "application_utilities.css"
@@ -254,6 +256,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/security_discover.css"
     config.assets.precompile << "page_bundles/signup.css"
     config.assets.precompile << "page_bundles/terminal.css"
+    config.assets.precompile << "page_bundles/terms.css"
     config.assets.precompile << "page_bundles/todos.css"
     config.assets.precompile << "page_bundles/wiki.css"
     config.assets.precompile << "page_bundles/xterm.css"
@@ -316,6 +319,8 @@ module Gitlab
     config.middleware.insert_after ActionDispatch::ActionableExceptions, ::Gitlab::Middleware::HandleMalformedStrings
 
     config.middleware.insert_after Rack::Sendfile, ::Gitlab::Middleware::RackMultipartTempfileFactory
+
+    config.middleware.insert_before Rack::Runtime, ::Gitlab::Middleware::CompressedJson
 
     # Allow access to GitLab API from other domains
     config.middleware.insert_before Warden::Manager, Rack::Cors do

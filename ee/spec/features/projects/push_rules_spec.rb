@@ -45,7 +45,7 @@ RSpec.describe 'Projects > Push Rules', :js do
           expect(page).to have_content(title)
         end
 
-        describe 'with GL.com plans' do
+        describe 'with GL.com plans', :saas do
           before do
             stub_application_setting(check_namespace_plan: true)
           end

@@ -74,7 +74,9 @@ module Security
     end
 
     def report_finding_for(security_finding)
-      report_findings.dig(security_finding.build.id, security_finding.uuid)
+      lookup_uuid = security_finding.overridden_uuid || security_finding.uuid
+
+      report_findings.dig(security_finding.build.id, lookup_uuid)
     end
 
     def vulnerability_for(security_finding)

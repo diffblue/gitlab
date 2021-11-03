@@ -1,11 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
-import { PRESET_TYPES } from 'ee/roadmap/constants';
-import {
-  getTimeframeForQuartersView,
-  getTimeframeForWeeksView,
-  getTimeframeForMonthsView,
-} from 'ee/roadmap/utils/roadmap_utils';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import { mockTimeframeInitialDate, mockSvgPath } from 'ee_jest/roadmap/mock_data';
 import { TEST_HOST } from 'helpers/test_constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -13,9 +9,21 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 const TEST_EPICS_PATH = '/epics';
 const TEST_NEW_EPIC_PATH = '/epics/new';
 
-const mockTimeframeQuarters = getTimeframeForQuartersView(mockTimeframeInitialDate);
-const mockTimeframeMonths = getTimeframeForMonthsView(mockTimeframeInitialDate);
-const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
+const mockTimeframeQuarters = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.THREE_YEARS,
+  presetType: PRESET_TYPES.QUARTERS,
+  initialDate: mockTimeframeInitialDate,
+});
+const mockTimeframeMonths = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+  presetType: PRESET_TYPES.MONTHS,
+  initialDate: mockTimeframeInitialDate,
+});
+const mockTimeframeWeeks = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  presetType: PRESET_TYPES.WEEKS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 describe('ee/roadmap/components/epics_list_empty.vue', () => {
   let wrapper;
@@ -78,7 +86,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Jul 1, 2017 to Mar 31, 2019.',
+        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Jul 1, 2016 to Jun 30, 2019.',
       );
     });
 
@@ -91,7 +99,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To widen your search, change or remove filters; from Jul 1, 2017 to Mar 31, 2019.',
+        'To widen your search, change or remove filters; from Jul 1, 2016 to Jun 30, 2019.',
       );
     });
   });
@@ -103,7 +111,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Nov 1, 2017 to Jun 30, 2018.',
+        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Jan 1 to Dec 31, 2018.',
       );
     });
 
@@ -114,7 +122,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To widen your search, change or remove filters; from Nov 1, 2017 to Jun 30, 2018.',
+        'To widen your search, change or remove filters; from Jan 1 to Dec 31, 2018.',
       );
     });
   });
@@ -135,7 +143,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Dec 17, 2017 to Feb 9, 2018.',
+        'To view the roadmap, add a start or due date to one of your epics in this group or its subgroups; from Dec 31, 2017 to Apr 6, 2018.',
       );
     });
 
@@ -148,7 +156,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
       });
 
       expect(findSubTitle().text()).toBe(
-        'To widen your search, change or remove filters; from Dec 17, 2017 to Feb 15, 2018.',
+        'To widen your search, change or remove filters; from Dec 31, 2017 to Apr 12, 2018.',
       );
     });
   });

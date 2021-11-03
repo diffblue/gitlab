@@ -8,12 +8,14 @@ import {
   GlFormInput,
 } from '@gitlab/ui';
 import createFlash from '~/flash';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import LabelsSelectVue from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createEpic from '../queries/createEpic.mutation.graphql';
 
@@ -47,6 +49,7 @@ export default {
       startDateFixed: null,
       dueDateFixed: null,
       loading: false,
+      LabelType,
     };
   },
   computed: {
@@ -111,7 +114,7 @@ export default {
     },
     handleUpdateSelectedLabels(labels) {
       if (this.glFeatures.labelsWidget) {
-        this.labels = labels;
+        this.labels = labels.map((label) => ({ ...label, id: getIdFromGraphQLId(label.id) }));
         return;
       }
 
@@ -189,15 +192,18 @@ export default {
         <labels-select-widget
           v-if="glFeatures.labelsWidget"
           class="block labels js-labels-block"
+          :full-path="groupPath"
           :allow-label-create="true"
           :allow-multiselect="true"
           :allow-scoped-labels="false"
           :labels-filter-base-path="groupEpicsPath"
-          :selected-labels="labels"
+          :attr-workspace-path="groupPath"
+          workspace-type="group"
+          :label-create-type="LabelType.group"
           issuable-type="epic"
           variant="embedded"
           data-qa-selector="labels_block"
-          @updateSelectedLabels="handleUpdateSelectedLabels"
+          @updateSelectedLabels="handleUpdateSelectedLabels($event.labels)"
         >
           {{ __('None') }}
         </labels-select-widget>

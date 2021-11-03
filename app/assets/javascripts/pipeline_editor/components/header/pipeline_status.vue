@@ -10,6 +10,8 @@ import {
   toggleQueryPollingByVisibility,
 } from '~/pipelines/components/graph/utils';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import PipelineEditorMiniGraph from './pipeline_editor_mini_graph.vue';
 
 const POLL_INTERVAL = 10000;
 export const i18n = {
@@ -19,6 +21,9 @@ export const i18n = {
     `Pipeline|Pipeline %{idStart}#%{idEnd} %{statusStart}%{statusEnd} for %{commitStart}%{commitEnd}`,
   ),
   viewBtn: s__('Pipeline|View pipeline'),
+  pipelineNotTriggeredMsg: s__(
+    'Pipeline|No pipeline was triggered for the latest changes due to the current CI/CD configuration.',
+  ),
 };
 
 export default {
@@ -30,7 +35,9 @@ export default {
     GlLink,
     GlLoadingIcon,
     GlSprintf,
+    PipelineEditorMiniGraph,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['projectFullPath'],
   props: {
     commitSha: {
@@ -55,27 +62,37 @@ export default {
         };
       },
       update(data) {
-        const { id, commitPath = '', detailedStatus = {} } = data.project?.pipeline || {};
+        const { id, iid, commitPath = '', detailedStatus = {}, stages, status } =
+          data.project?.pipeline || {};
 
         return {
           id,
+          iid,
           commitPath,
           detailedStatus,
+          stages,
+          status,
         };
       },
       result(res) {
         if (res.data?.project?.pipeline) {
           this.hasError = false;
+        } else {
+          this.hasError = true;
+          this.pipelineNotTriggered = true;
         }
       },
       error() {
         this.hasError = true;
+        this.networkError = true;
       },
       pollInterval: POLL_INTERVAL,
     },
   },
   data() {
     return {
+      networkError: false,
+      pipelineNotTriggered: false,
       hasError: false,
     };
   },
@@ -111,9 +128,7 @@ export default {
 </script>
 
 <template>
-  <div
-    class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-white-space-nowrap gl-max-w-full"
-  >
+  <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-flex-wrap">
     <template v-if="showLoadingState">
       <div>
         <gl-loading-icon class="gl-mr-auto gl-display-inline-block" size="sm" />
@@ -121,27 +136,26 @@ export default {
       </div>
     </template>
     <template v-else-if="hasError">
-      <div>
+      <div v-if="networkError">
         <gl-icon class="gl-mr-auto" name="warning-solid" />
         <span data-testid="pipeline-error-msg">{{ $options.i18n.fetchError }}</span>
+      </div>
+      <div v-else>
+        <gl-icon class="gl-mr-auto" name="information-o" />
+        <span data-testid="pipeline-not-triggered-error-msg">
+          {{ $options.i18n.pipelineNotTriggeredMsg }}
+        </span>
       </div>
     </template>
     <template v-else>
       <div>
         <a :href="status.detailsPath" class="gl-mr-auto">
-          <ci-icon :status="status" :size="16" />
+          <ci-icon :status="status" :size="16" data-testid="pipeline-status-icon" />
         </a>
         <span class="gl-font-weight-bold">
           <gl-sprintf :message="$options.i18n.pipelineInfo">
             <template #id="{ content }">
-              <gl-link
-                :href="status.detailsPath"
-                class="pipeline-id gl-font-weight-normal pipeline-number"
-                target="_blank"
-                data-testid="pipeline-id"
-              >
-                {{ content }}{{ pipelineId }}</gl-link
-              >
+              <span data-testid="pipeline-id"> {{ content }}{{ pipelineId }} </span>
             </template>
             <template #status>{{ status.text }}</template>
             <template #commit>
@@ -157,8 +171,14 @@ export default {
           </gl-sprintf>
         </span>
       </div>
-      <div>
+      <div class="gl-display-flex gl-flex-wrap">
+        <pipeline-editor-mini-graph
+          v-if="glFeatures.pipelineEditorMiniGraph"
+          :pipeline="pipeline"
+          v-on="$listeners"
+        />
         <gl-button
+          class="gl-mt-2 gl-md-mt-0"
           target="_blank"
           category="secondary"
           variant="confirm"

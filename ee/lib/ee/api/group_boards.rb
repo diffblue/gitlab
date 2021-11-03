@@ -8,7 +8,7 @@ module EE
 
       prepend EE::API::BoardsResponses # rubocop: disable Cop/InjectEnterpriseEditionModule
 
-      feature_category :boards
+      feature_category :team_planning
 
       before do
         authenticate!

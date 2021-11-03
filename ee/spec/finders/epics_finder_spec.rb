@@ -9,8 +9,9 @@ RSpec.describe EpicsFinder do
   let_it_be(:another_group) { create(:group) }
   let_it_be(:reference_time) { Time.parse('2020-09-15 01:00') } # Arbitrary time used for time/date range filters
   let_it_be(:epic1) { create(:epic, :opened, group: group, title: 'This is awesome epic', created_at: 1.week.before(reference_time), end_date: 10.days.before(reference_time)) }
-  let_it_be(:epic2) { create(:epic, :opened, group: group, created_at: 4.days.before(reference_time), author: user, start_date: 2.days.before(reference_time), end_date: 3.days.since(reference_time), parent: epic1) }
-  let_it_be(:epic3) { create(:epic, :closed, group: group, description: 'not so awesome', start_date: 5.days.before(reference_time), end_date: 3.days.before(reference_time), parent: epic2) }
+  let_it_be(:epic3, reload: true) { create(:epic, :closed, group: group, description: 'not so awesome', start_date: 5.days.before(reference_time), end_date: 3.days.before(reference_time)) }
+  let_it_be(:epic2, reload: true) { create(:epic, :opened, group: group, created_at: 4.days.before(reference_time), author: user, start_date: 2.days.before(reference_time), end_date: 3.days.since(reference_time)) }
+  let_it_be(:epic5) { create(:epic, group: group, start_date: 6.days.before(reference_time), end_date: 6.days.before(reference_time), parent: epic3) }
   let_it_be(:epic4) { create(:epic, :closed, group: another_group) }
 
   describe '#execute' do
@@ -55,7 +56,7 @@ RSpec.describe EpicsFinder do
         end
 
         it 'returns all epics that belong to the given group' do
-          expect(epics).to contain_exactly(epic1, epic2, epic3)
+          expect(epics).to contain_exactly(epic1, epic2, epic3, epic5)
         end
 
         it 'does not execute more than 5 SQL queries' do
@@ -64,11 +65,11 @@ RSpec.describe EpicsFinder do
 
         context 'sorting' do
           it 'sorts correctly when supported sorting param provided' do
-            expect(epics(sort: :start_date_asc)).to eq([epic3, epic2, epic1])
+            expect(epics(sort: :start_date_asc)).to eq([epic5, epic3, epic2, epic1])
           end
 
           it 'sorts by id when not supported sorting param provided' do
-            expect(epics(sort: :not_supported_param)).to eq([epic3, epic2, epic1])
+            expect(epics(sort: :not_supported_param)).to eq([epic5, epic2, epic3, epic1])
           end
         end
 
@@ -78,7 +79,7 @@ RSpec.describe EpicsFinder do
           end
 
           it 'returns all epics created after the given date' do
-            expect(epics(created_after: 2.days.before(reference_time))).to contain_exactly(epic3)
+            expect(epics(created_after: 2.days.before(reference_time))).to contain_exactly(epic3, epic5)
           end
 
           it 'returns all epics created within the given interval' do
@@ -146,7 +147,7 @@ RSpec.describe EpicsFinder do
               end
 
               it 'does not add any filter' do
-                expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] })).to contain_exactly(epic1, epic2, epic3)
+                expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] })).to contain_exactly(epic1, epic2, epic3, epic5)
               end
             end
           end
@@ -195,7 +196,7 @@ RSpec.describe EpicsFinder do
           end
 
           it 'returns all epics that belong to the given group and its subgroups' do
-            expect(epics).to contain_exactly(epic1, epic2, epic3, subgroup_epic, subgroup2_epic)
+            expect(epics).to contain_exactly(epic1, epic2, epic3, subgroup_epic, subgroup2_epic, epic5)
           end
 
           describe 'hierarchy params' do
@@ -223,7 +224,7 @@ RSpec.describe EpicsFinder do
               subject { finder.execute }
 
               it 'gets only epics from the project ancestor groups' do
-                is_expected.to contain_exactly(epic1, epic2, epic3, subgroup3_epic)
+                is_expected.to contain_exactly(epic1, epic2, epic3, subgroup3_epic, epic5)
               end
             end
 
@@ -237,7 +238,7 @@ RSpec.describe EpicsFinder do
               context 'and include_ancestor_groups is true' do
                 let(:finder_params) { { include_descendant_groups: false, include_ancestor_groups: true } }
 
-                it { is_expected.to contain_exactly(subgroup_epic, epic1, epic2, epic3) }
+                it { is_expected.to contain_exactly(subgroup_epic, epic1, epic2, epic3, epic5) }
 
                 context "when user does not have permission to view ancestor groups" do
                   let(:finder_params) { { group_id: subgroup.id, include_descendant_groups: false, include_ancestor_groups: true } }
@@ -259,7 +260,7 @@ RSpec.describe EpicsFinder do
               context 'and include_ancestor_groups is true' do
                 let(:finder_params) { { include_ancestor_groups: true } }
 
-                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, epic1, epic2, epic3) }
+                it { is_expected.to contain_exactly(subgroup_epic, subgroup2_epic, epic1, epic2, epic3, epic5) }
 
                 context "when user does not have permission to view ancestor groups" do
                   let(:finder_params) { { group_id: subgroup.id, include_ancestor_groups: true } }
@@ -289,7 +290,7 @@ RSpec.describe EpicsFinder do
             expect { epics.to_a }.not_to exceed_all_query_limit(5)
           end
 
-          it 'does not execute more than 6 SQL queries when checking namespace plans' do
+          it 'does not execute more than 6 SQL queries when checking namespace plans', :saas do
             allow(Gitlab::CurrentSettings)
               .to receive(:should_check_namespace_plan?)
               .and_return(true)
@@ -344,6 +345,11 @@ RSpec.describe EpicsFinder do
         end
 
         context 'by parent' do
+          before do
+            epic3.update!(parent_id: epic2.id)
+            epic2.update!(parent_id: epic1.id)
+          end
+
           it 'returns direct children of the parent' do
             params = { parent_id: epic1.id }
 
@@ -352,10 +358,21 @@ RSpec.describe EpicsFinder do
         end
 
         context 'by child' do
-          it 'returns ancestors of the child epic' do
-            params = { child_id: epic3.id }
+          before do
+            epic3.update!(parent_id: epic2.id)
+            epic2.update!(parent_id: epic1.id)
+          end
 
-            expect(epics(params)).to contain_exactly(epic1, epic2)
+          it 'returns ancestors of the child epic ordered from the bottom' do
+            params = { child_id: epic5.id, hierarchy_order: :asc }
+
+            expect(epics(params)).to eq([epic3, epic2, epic1])
+          end
+
+          it 'returns ancestors of the child epic ordered from the top if requested' do
+            params = { child_id: epic5.id, hierarchy_order: :desc }
+
+            expect(epics(params)).to eq([epic1, epic2, epic3])
           end
         end
 
@@ -741,11 +758,11 @@ RSpec.describe EpicsFinder do
           let_it_be(:params) { { not: { label_name: [label.title, label2.title].join(',') } } }
 
           it 'returns all epics if no negated labels are present' do
-            expect(epics).to contain_exactly(negated_epic, negated_epic2, epic1, epic2, epic3)
+            expect(epics).to contain_exactly(negated_epic, negated_epic2, epic1, epic2, epic3, epic5)
           end
 
           it 'returns all epics without negated label' do
-            expect(epics(params)).to contain_exactly(epic1, epic2, epic3)
+            expect(epics(params)).to contain_exactly(epic1, epic2, epic3, epic5)
           end
         end
 
@@ -755,11 +772,11 @@ RSpec.describe EpicsFinder do
           let_it_be(:params) { { not: { author_id: author.id } } }
 
           it 'returns all epics if no negated author is present' do
-            expect(epics).to contain_exactly(authored_epic, epic1, epic2, epic3)
+            expect(epics).to contain_exactly(authored_epic, epic1, epic2, epic3, epic5)
           end
 
           it 'returns all epics without given author' do
-            expect(epics(params)).to contain_exactly(epic1, epic2, epic3)
+            expect(epics(params)).to contain_exactly(epic1, epic2, epic3, epic5)
           end
         end
 
@@ -768,7 +785,7 @@ RSpec.describe EpicsFinder do
           let_it_be(:params) { { not: { my_reaction_emoji: awarded_emoji.name } } }
 
           it 'returns all epics without given emoji name' do
-            expect(epics(params)).to contain_exactly(epic1, epic2)
+            expect(epics(params)).to contain_exactly(epic1, epic2, epic5)
           end
         end
       end
@@ -820,7 +837,7 @@ RSpec.describe EpicsFinder do
     it 'returns correct counts' do
       results = described_class.new(search_user, group_id: group.id).count_by_state
 
-      expect(results).to eq('opened' => 2, 'closed' => 1, 'all' => 3)
+      expect(results).to eq('opened' => 3, 'closed' => 1, 'all' => 4)
     end
 
     it 'returns -1 if the query times out' do

@@ -11,6 +11,10 @@ RSpec.describe 'Every metric definition' do
       license_add_ons
       testing_total_unique_counts
       user_auth_by_provider
+      package_events_i_package_container_push_package
+      package_events_i_package_container_pull_package
+      package_events_i_package_debian_push_package
+      package_events_i_package_container_delete_package
     ).freeze
   end
 
@@ -82,10 +86,37 @@ RSpec.describe 'Every metric definition' do
     stub_usage_data_connections
   end
 
-  it 'is included in the Usage Ping hash structure', :aggregate_failures do
-    msg = "see https://docs.gitlab.com/ee/development/service_ping/metrics_dictionary.html#metrics-added-dynamic-to-service-ping-payload"
-    expect(metric_files_key_paths).to match_array(usage_ping_key_paths)
-    expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
+  context 'with usage_data_instrumentation feature flag' do
+    let(:msg) { 'see https://docs.gitlab.com/ee/development/service_ping/metrics_dictionary.html#metrics-added-dynamic-to-service-ping-payload' }
+
+    context 'when enabled' do
+      let(:instrumentation_class_keys) do
+        Gitlab::Usage::MetricDefinition.with_instrumentation_class.map(&:key)
+        .reject { |v| v =~ Regexp.union(ignored_usage_ping_key_patterns) }
+      end
+
+      let(:files_key_paths) do
+        (metric_files_key_paths + instrumentation_class_keys).to_set
+      end
+
+      before do
+        stub_feature_flags(usage_data_instrumentation: true)
+      end
+
+      it 'is included in the Usage Ping hash structure', :aggregate_failures do
+        expect(files_key_paths).to eql(usage_ping_key_paths.to_set), msg
+      end
+    end
+
+    context 'when disabled' do
+      before do
+        stub_feature_flags(usage_data_instrumentation: false)
+      end
+
+      it 'is included in the Usage Ping hash structure', :aggregate_failures do
+        expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
+      end
+    end
   end
 
   context 'with value json schema' do

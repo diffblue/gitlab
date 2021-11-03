@@ -18,8 +18,8 @@ RSpec.describe 'Database schema' do
     approvals: %w[user_id],
     approver_groups: %w[target_id],
     approvers: %w[target_id user_id],
-    analytics_cycle_analytics_merge_request_stage_events: %w[author_id group_id merge_request_id milestone_id project_id stage_event_hash_id],
-    analytics_cycle_analytics_issue_stage_events: %w[author_id group_id issue_id milestone_id project_id stage_event_hash_id],
+    analytics_cycle_analytics_merge_request_stage_events: %w[author_id group_id merge_request_id milestone_id project_id stage_event_hash_id state_id],
+    analytics_cycle_analytics_issue_stage_events: %w[author_id group_id issue_id milestone_id project_id stage_event_hash_id state_id],
     audit_events: %w[author_id entity_id target_id],
     award_emoji: %w[awardable_id user_id],
     aws_roles: %w[role_external_id],
@@ -210,7 +210,7 @@ RSpec.describe 'Database schema' do
 
   # We are skipping GEO models for now as it adds up complexity
   describe 'for jsonb columns' do
-    it 'uses json schema validator' do
+    it 'uses json schema validator', :eager_load do
       columns_name_with_jsonb.each do |hash|
         next if models_by_table_name[hash["table_name"]].nil?
 

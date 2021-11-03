@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { Rails } from '~/lib/utils/rails_ujs';
-import eventHub from '~/pages/projects/new/event_hub';
+import eventHub from '~/projects/new/event_hub';
 import projectNew from '~/projects/project_new';
 
 const bindEvents = () => {

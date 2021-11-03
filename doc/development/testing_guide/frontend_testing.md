@@ -423,7 +423,8 @@ it('passes', () => {
 ### Waiting in tests
 
 Sometimes a test needs to wait for something to happen in the application before it continues.
-Avoid using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
+Avoid using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout)
+
 because it makes the reason for waiting unclear. Instead use one of the following approaches.
 
 #### Promises and Ajax calls
@@ -783,7 +784,7 @@ often using fixtures to validate correct integration with the backend code.
 
 ### Use fixtures
 
-To import a JSON fixture, `import` it using the `test_fixtures` alias. 
+To import a JSON fixture, `import` it using the `test_fixtures` alias.
 
 ```javascript
 import responseBody from 'test_fixtures/some/fixture.json' // loads spec/frontend/fixtures/some/fixture.json

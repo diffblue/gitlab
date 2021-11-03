@@ -313,6 +313,7 @@ export default {
         <gl-form-checkbox
           id="cadence-automated-scheduling"
           v-model="automatic"
+          data-qa-selector="iteration_cadence_automated_scheduling_checkbox"
           :disabled="loadingCadence"
           @change="updateAutomatic"
         >
@@ -340,7 +341,7 @@ export default {
             required
             :state="validationState.startDate"
             :disabled="loadingCadence"
-            data-qa-selector="cadence_start_date"
+            data-qa-selector="iteration_cadence_start_date_field"
             @blur="validate('startDate')"
           />
         </gl-datepicker>
@@ -361,7 +362,6 @@ export default {
           :options="$options.availableDurations"
           class="gl-form-input-md"
           :required="automatic"
-          data-qa-selector="iteration_cadence_name_field"
           :disabled="loadingCadence || !automatic"
           @change="validate('durationInWeeks')"
         />
@@ -395,7 +395,6 @@ export default {
           :options="$options.availableFutureIterations"
           :required="automatic"
           class="gl-form-input-md"
-          data-qa-selector="iteration_cadence_name_field"
           @change="validate('iterationsInAdvance')"
         />
       </gl-form-group>
@@ -407,7 +406,12 @@ export default {
         label-class="text-right-md gl-pt-3!"
         label-for="cadence-description"
       >
-        <gl-form-textarea id="cadence-description" v-model="description" class="w-100" />
+        <gl-form-textarea
+          id="cadence-description"
+          v-model="description"
+          class="w-100"
+          data-qa-selector="iteration_cadence_description_field"
+        />
       </gl-form-group>
 
       <div class="form-actions gl-display-flex">
@@ -415,7 +419,7 @@ export default {
           :loading="loading"
           data-testid="save-cadence"
           variant="confirm"
-          data-qa-selector="save_cadence_button"
+          data-qa-selector="save_iteration_cadence_button"
           @click="save"
         >
           {{ i18n[page].save }}

@@ -161,9 +161,9 @@ RSpec.describe 'Epic boards sidebar', :js do
 
         wait_for_requests
 
-        click_link bug.title
+        click_on bug.title
 
-        find('[data-testid="close-icon"]').click
+        click_button 'Close'
 
         wait_for_requests
 

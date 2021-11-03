@@ -101,3 +101,36 @@ detect-tests as-if-foss:
     MATCHED_TESTS_FILE: tmp/matching_foss_tests.txt
   before_script:
     - '[ "$FOSS_ONLY" = "1" ] && rm -rf ee/ qa/spec/ee/ qa/qa/specs/features/ee/ qa/qa/ee/ qa/qa/ee.rb'
+
+detect-previous-failed-tests:
+  extends:
+    - .detect-test-base
+    - .rails:rules:detect-previous-failed-tests
+  variables:
+    PREVIOUS_FAILED_TESTS_DIR: tmp/previous_failed_tests/
+    RSPEC_PG_REGEX: /rspec .+ pg12( .+)?/
+    RSPEC_EE_PG_REGEX: /rspec-ee .+ pg12( .+)?/
+  script:
+    - source ./scripts/utils.sh
+    - source ./scripts/rspec_helpers.sh
+    - retrieve_previous_failed_tests ${PREVIOUS_FAILED_TESTS_DIR} "${RSPEC_PG_REGEX}" "${RSPEC_EE_PG_REGEX}"
+  artifacts:
+    expire_in: 7d
+    paths:
+      - ${PREVIOUS_FAILED_TESTS_DIR}
+
+add-jh-folder:
+  extends: .setup:rules:add-jh-folder
+  image: ${GITLAB_DEPENDENCY_PROXY}alpine:edge
+  stage: prepare
+  before_script:
+    - apk add --no-cache --update curl bash
+  script:
+    - curl --location -o "jh-folder.tar.gz" "https://gitlab.com/gitlab-jh/gitlab/-/archive/main-jh/gitlab-main-jh.tar.gz?path=jh"
+    - tar -xf "jh-folder.tar.gz"
+    - mv gitlab-main-jh-jh/jh/ ./
+    - ls -l jh/
+  artifacts:
+    expire_in: 2d
+    paths:
+      - jh/

@@ -129,6 +129,7 @@ RSpec.describe Registrations::WelcomeController do
   describe '#update' do
     let(:setup_for_company) { 'false' }
     let(:email_opted_in) { '0' }
+    let(:joining_project) { 'false' }
 
     subject(:update) do
       patch :update, params: {
@@ -137,7 +138,8 @@ RSpec.describe Registrations::WelcomeController do
           setup_for_company: setup_for_company,
           email_opted_in: email_opted_in,
           registration_objective: 'code_storage'
-        }
+        },
+        joining_project: joining_project
       }
     end
 
@@ -251,18 +253,40 @@ RSpec.describe Registrations::WelcomeController do
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
           end
 
-          context 'when combined_registration is candidate variant' do
-            before do
-              allow(controller).to receive(:experiment).and_call_original
-              stub_experiments(combined_registration: :candidate)
-            end
+          context 'when joining_project is "true"', :experiment do
+            let(:joining_project) { 'true' }
 
-            it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
+            it { is_expected.to redirect_to dashboard_projects_path }
 
-            it "doesn't call the force_company_trial experiment" do
-              expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
+            it 'creates a "joining_project" experiment track event' do
+              expect(experiment(:bypass_registration)).to track(:joining_project, user: user).on_next_instance
 
               subject
+            end
+          end
+
+          context 'when joining_project is "false"', :experiment do
+            it 'creates a "creating_project" experiment track event' do
+              expect(experiment(:bypass_registration)).to track(:creating_project, user: user).on_next_instance
+
+              subject
+            end
+          end
+
+          context 'when joining_project is "false"' do
+            context 'when combined_registration is candidate variant' do
+              before do
+                allow(controller).to receive(:experiment).and_call_original
+                stub_experiments(combined_registration: :candidate)
+              end
+
+              it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
+
+              it "doesn't call the force_company_trial experiment" do
+                expect(controller).not_to receive(:experiment).with(:force_company_trial, user: user)
+
+                subject
+              end
             end
           end
 

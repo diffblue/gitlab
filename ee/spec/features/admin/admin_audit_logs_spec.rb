@@ -190,7 +190,7 @@ RSpec.describe 'Admin::AuditLogs', :js do
         click_link 'Impersonate'
 
         visit(new_project_path)
-        find('[data-qa-panel-name="blank_project"]').click # rubocop:disable QA/SelectorUsage
+        click_link 'Create blank project'
 
         fill_in(:project_name, with: 'Gotham City')
 

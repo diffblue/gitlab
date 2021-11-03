@@ -10,7 +10,7 @@ RSpec.describe ProjectsFinder do
 
     subject { finder.execute }
 
-    describe 'filter by plans' do
+    describe 'filter by plans', :saas do
       let(:params) { { plans: plans } }
       let(:project_ids_relation) { nil }
 

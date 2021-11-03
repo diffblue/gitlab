@@ -1,4 +1,5 @@
 #import "../fragments/latest_snapshot.fragment.graphql"
+#import "../fragments/namespace.fragment.graphql"
 
 query devopsAdoptionEnabledNamespaces($displayNamespaceId: NamespaceID) {
   devopsAdoptionEnabledNamespaces(displayNamespaceId: $displayNamespaceId) {
@@ -8,8 +9,7 @@ query devopsAdoptionEnabledNamespaces($displayNamespaceId: NamespaceID) {
         ...LatestSnapshot
       }
       namespace {
-        fullName
-        id
+        ...Namespace
       }
     }
   }

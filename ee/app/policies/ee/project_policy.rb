@@ -210,6 +210,7 @@ module EE
 
       rule { coverage_fuzzing_enabled & can?(:developer_access) }.policy do
         enable :read_coverage_fuzzing
+        enable :create_coverage_fuzzing_corpus
       end
 
       rule { on_demand_scans_enabled & can?(:developer_access) }.policy do
@@ -392,7 +393,7 @@ module EE
 
       rule { auditor | can?(:developer_access) }.enable :add_project_to_instance_security_dashboard
 
-      rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
+      rule { (admin | maintainer) & group_merge_request_approval_settings_enabled }.policy do
         enable :admin_merge_request_approval_settings
       end
     end

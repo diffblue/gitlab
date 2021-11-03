@@ -428,6 +428,13 @@ RSpec.describe Geo::RepositorySyncService, :geo do
 
       subject.execute
     end
+
+    it "indicates the repository is not new even with errors" do
+      allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+      subject.execute
+    end
   end
 
   context 'when repository did not exist' do
@@ -441,10 +448,24 @@ RSpec.describe Geo::RepositorySyncService, :geo do
 
       subject.execute
     end
+
+    it "indicates the repository is new when there were errors" do
+      allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
+      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: true).and_call_original
+
+      subject.execute
+    end
   end
 
   context 'when repository already existed' do
     it "indicates the repository is not new" do
+      expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
+
+      subject.execute
+    end
+
+    it "indicates the repository is not new even with errors" do
+      allow(subject).to receive(:fetch_geo_mirror).and_raise(Gitlab::Shell::Error)
       expect(Geo::ProjectHousekeepingService).to receive(:new).with(project, new_repository: false).and_call_original
 
       subject.execute

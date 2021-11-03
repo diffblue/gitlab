@@ -63,29 +63,19 @@ export default {
         <audit-events-export-button v-if="hasExportUrl" :export-href="exportHref" />
       </div>
     </header>
-    <div class="row-content-block second-block gl-pb-0">
-      <div class="gl-display-flex gl-justify-content-space-between gl-flex-wrap">
-        <div v-if="showFilter" class="gl-mb-5 gl-w-full">
-          <audit-events-filter
-            :filter-token-options="filterTokenOptions"
-            :value="filterValue"
-            @selected="setFilterValue"
-            @submit="searchForAuditEvents"
-          />
-        </div>
-        <div class="gl-display-flex gl-flex-wrap gl-w-full">
-          <div
-            class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-justify-content-space-between gl-px-0 gl-w-full"
-          >
-            <date-range-field
-              :start-date="startDate"
-              :end-date="endDate"
-              @selected="setDateRange"
-            />
-            <sorting-field :sort-by="sortBy" @selected="setSortBy" />
-          </div>
-        </div>
+    <div class="audit-log-filter row-content-block second-block gl-pb-0">
+      <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row!">
+        <audit-events-filter
+          v-if="showFilter"
+          :filter-token-options="filterTokenOptions"
+          :value="filterValue"
+          class="gl-mr-5 gl-mb-5"
+          @selected="setFilterValue"
+          @submit="searchForAuditEvents"
+        />
+        <sorting-field :sort-by="sortBy" @selected="setSortBy" />
       </div>
+      <date-range-field :start-date="startDate" :end-date="endDate" @selected="setDateRange" />
     </div>
     <audit-events-table :events="events" :is-last-page="isLastPage" />
   </div>

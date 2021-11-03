@@ -24,6 +24,10 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
     "#{Gitlab::Redis::Queues::SIDEKIQ_NAMESPACE}:duplicate:#{queue}:#{hash}"
   end
 
+  let(:deduplicated_flag_key) do
+    "#{idempotency_key}:deduplicate_flag"
+  end
+
   describe '#schedule' do
     shared_examples 'scheduling with deduplication class' do |strategy_class|
       it 'calls schedule on the strategy' do
@@ -81,23 +85,41 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
     context 'when there was no job in the queue yet' do
       it { expect(duplicate_job.check!).to eq('123') }
 
-      it "adds a idempotency key with ttl set to #{described_class::DUPLICATE_KEY_TTL}" do
-        expect { duplicate_job.check! }
-          .to change { read_idempotency_key_with_ttl(idempotency_key) }
-                .from([nil, -2])
-                .to(['123', be_within(1).of(described_class::DUPLICATE_KEY_TTL)])
+      shared_examples 'sets Redis keys with correct TTL' do
+        it "adds an idempotency key with correct ttl" do
+          expect { duplicate_job.check! }
+            .to change { read_idempotency_key_with_ttl(idempotency_key) }
+                  .from([nil, -2])
+                  .to(['123', be_within(1).of(expected_ttl)])
+        end
+
+        context 'when wal locations is not empty' do
+          it "adds an existing wal locations key with correct ttl" do
+            expect { duplicate_job.check! }
+              .to change { read_idempotency_key_with_ttl(existing_wal_location_key(idempotency_key, :main)) }
+                    .from([nil, -2])
+                    .to([wal_locations[:main], be_within(1).of(expected_ttl)])
+              .and change { read_idempotency_key_with_ttl(existing_wal_location_key(idempotency_key, :ci)) }
+                    .from([nil, -2])
+                    .to([wal_locations[:ci], be_within(1).of(expected_ttl)])
+          end
+        end
       end
 
-      context 'when wal locations is not empty' do
-        it "adds a existing wal locations key with ttl set to #{described_class::DUPLICATE_KEY_TTL}" do
-          expect { duplicate_job.check! }
-            .to change { read_idempotency_key_with_ttl(existing_wal_location_key(idempotency_key, :main)) }
-                  .from([nil, -2])
-                  .to([wal_locations[:main], be_within(1).of(described_class::DUPLICATE_KEY_TTL)])
-            .and change { read_idempotency_key_with_ttl(existing_wal_location_key(idempotency_key, :ci)) }
-                  .from([nil, -2])
-                  .to([wal_locations[:ci], be_within(1).of(described_class::DUPLICATE_KEY_TTL)])
+      context 'with TTL option is not set' do
+        let(:expected_ttl) { described_class::DEFAULT_DUPLICATE_KEY_TTL }
+
+        it_behaves_like 'sets Redis keys with correct TTL'
+      end
+
+      context 'when TTL option is set' do
+        let(:expected_ttl) { 5.minutes }
+
+        before do
+          allow(duplicate_job).to receive(:options).and_return({ ttl: expected_ttl })
         end
+
+        it_behaves_like 'sets Redis keys with correct TTL'
       end
 
       context 'when preserve_latest_wal_locations_for_idempotent_jobs feature flag is disabled' do
@@ -270,6 +292,7 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
     context 'when the key exists in redis' do
       before do
         set_idempotency_key(idempotency_key, 'existing-jid')
+        set_idempotency_key(deduplicated_flag_key, 1)
         wal_locations.each do |config_name, location|
           set_idempotency_key(existing_wal_location_key(idempotency_key, config_name), location)
           set_idempotency_key(wal_location_key(idempotency_key, config_name), location)
@@ -297,6 +320,11 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
         it_behaves_like 'deleting keys from redis', 'idempotent key' do
           let(:key) { idempotency_key }
           let(:from_value) { 'existing-jid' }
+        end
+
+        it_behaves_like 'deleting keys from redis', 'deduplication counter key' do
+          let(:key) { deduplicated_flag_key }
+          let(:from_value) { '1' }
         end
 
         it_behaves_like 'deleting keys from redis', 'existing wal location keys for main database' do
@@ -386,6 +414,103 @@ RSpec.describe Gitlab::SidekiqMiddleware::DuplicateJobs::DuplicateJob, :clean_gi
 
       it 'returns true' do
         expect(duplicate_job.scheduled?).to be(true)
+      end
+    end
+  end
+
+  describe '#reschedule' do
+    it 'reschedules the current job' do
+      fake_logger = instance_double(Gitlab::SidekiqLogging::DeduplicationLogger)
+      expect(Gitlab::SidekiqLogging::DeduplicationLogger).to receive(:instance).and_return(fake_logger)
+      expect(fake_logger).to receive(:rescheduled_log).with(a_hash_including({ 'jid' => '123' }))
+      expect(AuthorizedProjectsWorker).to receive(:perform_async).with(1).once
+
+      duplicate_job.reschedule
+    end
+  end
+
+  describe '#should_reschedule?' do
+    subject { duplicate_job.should_reschedule? }
+
+    context 'when the job is reschedulable' do
+      before do
+        allow(duplicate_job).to receive(:reschedulable?) { true }
+      end
+
+      it { is_expected.to eq(false) }
+
+      context 'with deduplicated flag' do
+        before do
+          duplicate_job.set_deduplicated_flag!
+        end
+
+        it { is_expected.to eq(true) }
+      end
+    end
+
+    context 'when the job is not reschedulable' do
+      before do
+        allow(duplicate_job).to receive(:reschedulable?) { false }
+      end
+
+      it { is_expected.to eq(false) }
+
+      context 'with deduplicated flag' do
+        before do
+          duplicate_job.set_deduplicated_flag!
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#set_deduplicated_flag!' do
+    context 'when the job is reschedulable' do
+      before do
+        allow(duplicate_job).to receive(:reschedulable?) { true }
+      end
+
+      it 'sets the key in Redis' do
+        duplicate_job.set_deduplicated_flag!
+
+        flag = Sidekiq.redis { |redis| redis.get(deduplicated_flag_key) }
+
+        expect(flag).to eq(described_class::DEDUPLICATED_FLAG_VALUE.to_s)
+      end
+
+      it 'sets, gets and cleans up the deduplicated flag' do
+        expect(duplicate_job.should_reschedule?).to eq(false)
+
+        duplicate_job.set_deduplicated_flag!
+        expect(duplicate_job.should_reschedule?).to eq(true)
+
+        duplicate_job.delete!
+        expect(duplicate_job.should_reschedule?).to eq(false)
+      end
+    end
+
+    context 'when the job is not reschedulable' do
+      before do
+        allow(duplicate_job).to receive(:reschedulable?) { false }
+      end
+
+      it 'does not set the key in Redis' do
+        duplicate_job.set_deduplicated_flag!
+
+        flag = Sidekiq.redis { |redis| redis.get(deduplicated_flag_key) }
+
+        expect(flag).to be_nil
+      end
+
+      it 'does not set the deduplicated flag' do
+        expect(duplicate_job.should_reschedule?).to eq(false)
+
+        duplicate_job.set_deduplicated_flag!
+        expect(duplicate_job.should_reschedule?).to eq(false)
+
+        duplicate_job.delete!
+        expect(duplicate_job.should_reschedule?).to eq(false)
       end
     end
   end

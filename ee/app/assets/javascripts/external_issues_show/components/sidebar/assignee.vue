@@ -4,7 +4,7 @@ import { __ } from '~/locale';
 import AssigneeTitle from '~/sidebar/components/assignees/assignee_title.vue';
 
 export default {
-  name: 'JiraIssuesSidebarAssignee',
+  name: 'ExternalIssuesSidebarAssignee',
   components: {
     GlAvatarLabeled,
     GlAvatarLink,
@@ -18,6 +18,11 @@ export default {
   props: {
     assignee: {
       type: Object,
+      required: false,
+      default: null,
+    },
+    avatarSubLabel: {
+      type: String,
       required: false,
       default: null,
     },
@@ -60,7 +65,7 @@ export default {
           :alt="assignee.name"
           :entity-name="assignee.name"
           :label="assignee.name"
-          :sub-label="__('Jira user')"
+          :sub-label="avatarSubLabel"
         />
       </gl-avatar-link>
       <span v-else class="gl-text-gray-500" data-testid="no-assignee-text">{{ __('None') }}</span>

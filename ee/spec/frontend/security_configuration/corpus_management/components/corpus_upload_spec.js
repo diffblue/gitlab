@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import CorpusUpload from 'ee/security_configuration/corpus_management/components/corpus_upload.vue';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
-const TEST_CORPUS_HELP_PATH = '/docs/corpus-management';
 
 describe('Corpus Upload', () => {
   let wrapper;
@@ -12,9 +11,15 @@ describe('Corpus Upload', () => {
     const defaultProps = { totalSize: 4e8 };
     wrapper = mountFn(CorpusUpload, {
       propsData: defaultProps,
+      mocks: {
+        states: {
+          uploadState: {
+            progress: 0,
+          },
+        },
+      },
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
-        corpusHelpPath: TEST_CORPUS_HELP_PATH,
       },
       ...options,
     });

@@ -27,7 +27,7 @@ export default {
         name="question"
         :aria-label="__('help')"
         :size="14"
-        class="author-link suggestion-help-hover"
+        class="author-link gl-cursor-help"
       />
       <gl-popover target="pop-approver" container="popovercontainer" placement="top">
         <template #title>{{ __('Who can approve?') }}</template>

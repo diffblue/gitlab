@@ -322,6 +322,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
           query FilterEligibleNamespaces($customerUid: Int!, $namespaces: [GitlabNamespaceInput!]!, $planId: ID, $eligibleForPurchase: Boolean) {
             namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, planId: $planId, eligibleForPurchase: $eligibleForPurchase) {
               id
+              accountId: zuoraAccountId
             }
           }
         GQL
@@ -333,7 +334,9 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
         response = {
           data: {
             'data' => {
-              'namespaceEligibility' => [{ 'id' => 1 }, { 'id' => 3 }]
+              'namespaceEligibility' => [
+                { 'id' => 1 }, { 'id' => 3 }
+              ]
             }
           }
         }

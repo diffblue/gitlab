@@ -18,7 +18,6 @@ const defaultClient = createDefaultClient(
     cacheConfig: {
       fragmentMatcher,
     },
-    assumeImmutableResults: true,
   },
 );
 

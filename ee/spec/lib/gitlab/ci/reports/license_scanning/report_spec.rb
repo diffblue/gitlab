@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report do
     let(:report) { build(:ci_reports_license_scanning_report, :report_2) }
 
     context 'with existing license' do
-      let(:name) { 'MIT' }
+      let(:name) { 'MIt' }
 
       it 'finds right name' do
         is_expected.to be_a(Gitlab::Ci::Reports::LicenseScanning::License)
@@ -290,7 +290,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report do
     context 'when parsing a v2 report' do
       subject { described_class.parse_from(v2_json) }
 
-      let(:v2_json) { fixture_file('security_reports/gl-license-scanning-report-v2.json', dir: 'ee') }
+      let(:v2_json) { fixture_file('security_reports/license_compliance/gl-license-scanning-report-v2.json', dir: 'ee') }
 
       it { expect(subject.version).to eql('2.0') }
       it { expect(subject.licenses.count).to eq(3) }

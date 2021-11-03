@@ -13,7 +13,7 @@ RSpec.describe  ScanSecurityReportSecretsWorker do
   let(:revocation_key_type) { 'gitleaks_rule_id_aws' }
 
   let(:vulnerability) do
-    create(:vulnerabilities_finding, :with_secret_detection, pipelines: [pipeline], project: project)
+    create(:vulnerabilities_finding, :with_secret_detection, project: project)
   end
 
   subject(:worker) { described_class.new }
@@ -24,6 +24,7 @@ RSpec.describe  ScanSecurityReportSecretsWorker do
           location: { file: file,
                       start_line: 40, end_line: 45 },
                       identifiers: [{ type: identifier_type, name: 'Gitleaks rule ID AWS', value: identifier_value }] }.to_json)
+    create(:vulnerabilities_finding_pipeline, finding: vulnerability, pipeline: pipeline)
   end
 
   describe '#perform' do

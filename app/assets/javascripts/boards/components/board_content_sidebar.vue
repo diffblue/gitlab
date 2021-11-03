@@ -3,15 +3,19 @@ import { GlDrawer } from '@gitlab/ui';
 import { MountingPortal } from 'portal-vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import SidebarDropdownWidget from 'ee_else_ce/sidebar/components/sidebar_dropdown_widget.vue';
+import { __, sprintf } from '~/locale';
 import BoardSidebarLabelsSelect from '~/boards/components/sidebar/board_sidebar_labels_select.vue';
 import BoardSidebarTimeTracker from '~/boards/components/sidebar/board_sidebar_time_tracker.vue';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
 import { ISSUABLE } from '~/boards/constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import SidebarAssigneesWidget from '~/sidebar/components/assignees/sidebar_assignees_widget.vue';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
+import SidebarLabelsWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
@@ -23,6 +27,7 @@ export default {
     SidebarConfidentialityWidget,
     BoardSidebarTimeTracker,
     BoardSidebarLabelsSelect,
+    SidebarLabelsWidget,
     SidebarSubscriptionsWidget,
     SidebarDropdownWidget,
     SidebarTodoWidget,
@@ -46,10 +51,17 @@ export default {
     weightFeatureAvailable: {
       default: false,
     },
+    allowLabelEdit: {
+      default: false,
+    },
+    labelsFilterBasePath: {
+      default: '',
+    },
   },
   inheritAttrs: false,
   computed: {
     ...mapGetters([
+      'isGroupBoard',
       'isSidebarOpen',
       'activeBoardItem',
       'groupPathForActiveIssue',
@@ -65,16 +77,53 @@ export default {
     fullPath() {
       return this.activeBoardItem?.referencePath?.split('#')[0] || '';
     },
+    createLabelTitle() {
+      return sprintf(__('Create %{workspace} label'), {
+        workspace: this.isGroupBoard ? 'group' : 'project',
+      });
+    },
+    manageLabelTitle() {
+      return sprintf(__('Manage %{workspace} labels'), {
+        workspace: this.isGroupBoard ? 'group' : 'project',
+      });
+    },
+    attrWorkspacePath() {
+      return this.isGroupBoard ? this.groupPathForActiveIssue : this.projectPathForActiveIssue;
+    },
+    labelType() {
+      return this.isGroupBoard ? LabelType.group : LabelType.project;
+    },
+    labelsFilterPath() {
+      return this.isGroupBoard
+        ? this.labelsFilterBasePath.replace(':project_path', this.projectPathForActiveIssue)
+        : this.labelsFilterBasePath;
+    },
   },
   methods: {
     ...mapActions([
       'toggleBoardItem',
       'setAssignees',
       'setActiveItemConfidential',
+      'setActiveBoardItemLabels',
       'setActiveItemWeight',
     ]),
     handleClose() {
       this.toggleBoardItem({ boardItem: this.activeBoardItem, sidebarType: this.sidebarType });
+    },
+    handleUpdateSelectedLabels({ labels, id }) {
+      this.setActiveBoardItemLabels({
+        id,
+        projectPath: this.projectPathForActiveIssue,
+        labelIds: labels.map((label) => getIdFromGraphQLId(label.id)),
+        labels,
+      });
+    },
+    handleLabelRemove(removeLabelId) {
+      this.setActiveBoardItemLabels({
+        iid: this.activeBoardItem.iid,
+        projectPath: this.projectPathForActiveIssue,
+        removeLabelIds: [removeLabelId],
+      });
     },
   },
 };
@@ -160,7 +209,28 @@ export default {
           :issuable-type="issuableType"
           data-testid="sidebar-due-date"
         />
-        <board-sidebar-labels-select class="block labels" />
+        <sidebar-labels-widget
+          v-if="glFeatures.labelsWidget"
+          class="block labels"
+          data-testid="sidebar-labels"
+          :iid="activeBoardItem.iid"
+          :full-path="projectPathForActiveIssue"
+          :allow-label-remove="allowLabelEdit"
+          :allow-multiselect="true"
+          :footer-create-label-title="createLabelTitle"
+          :footer-manage-label-title="manageLabelTitle"
+          :labels-create-title="createLabelTitle"
+          :labels-filter-base-path="labelsFilterPath"
+          :attr-workspace-path="attrWorkspacePath"
+          workspace-type="project"
+          :issuable-type="issuableType"
+          :label-create-type="labelType"
+          @onLabelRemove="handleLabelRemove"
+          @updateSelectedLabels="handleUpdateSelectedLabels"
+        >
+          {{ __('None') }}
+        </sidebar-labels-widget>
+        <board-sidebar-labels-select v-else class="block labels" />
         <sidebar-weight-widget
           v-if="weightFeatureAvailable"
           :iid="activeBoardItem.iid"

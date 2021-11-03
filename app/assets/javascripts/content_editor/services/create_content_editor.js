@@ -8,6 +8,7 @@ import Bold from '../extensions/bold';
 import BulletList from '../extensions/bullet_list';
 import Code from '../extensions/code';
 import CodeBlockHighlight from '../extensions/code_block_highlight';
+import ColorChip from '../extensions/color_chip';
 import DescriptionItem from '../extensions/description_item';
 import DescriptionList from '../extensions/description_list';
 import Details from '../extensions/details';
@@ -31,6 +32,7 @@ import Italic from '../extensions/italic';
 import Link from '../extensions/link';
 import ListItem from '../extensions/list_item';
 import Loading from '../extensions/loading';
+import MathInline from '../extensions/math_inline';
 import OrderedList from '../extensions/ordered_list';
 import Paragraph from '../extensions/paragraph';
 import Reference from '../extensions/reference';
@@ -80,6 +82,7 @@ export const createContentEditor = ({
     Bold,
     BulletList,
     Code,
+    ColorChip,
     CodeBlockHighlight,
     DescriptionItem,
     DescriptionList,
@@ -104,6 +107,7 @@ export const createContentEditor = ({
     Link,
     ListItem,
     Loading,
+    MathInline,
     OrderedList,
     Paragraph,
     Reference,

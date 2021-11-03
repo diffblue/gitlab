@@ -1,8 +1,10 @@
+import { GlToast } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import AdminRunnersApp from './admin_runners_app.vue';
 
+Vue.use(GlToast);
 Vue.use(VueApollo);
 
 export const initAdminRunners = (selector = '#js-admin-runners') => {
@@ -17,12 +19,7 @@ export const initAdminRunners = (selector = '#js-admin-runners') => {
   const { activeRunnersCount, registrationToken, runnerInstallHelpPage } = el.dataset;
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(
-      {},
-      {
-        assumeImmutableResults: true,
-      },
-    ),
+    defaultClient: createDefaultClient(),
   });
 
   return new Vue({

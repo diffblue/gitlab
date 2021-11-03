@@ -70,7 +70,7 @@ The following table lists project permissions available for each role:
 | [CI/CD](../ci/index.md):<br>Manage job triggers                                                                        |          |          |           | ✓          | ✓     |
 | [CI/CD](../ci/index.md):<br>Manage runners                                                                             |          |          |           | ✓          | ✓     |
 | [CI/CD](../ci/index.md):<br>Run Web IDE's Interactive Web Terminals **(ULTIMATE ONLY)**                                |          |          |           | ✓          | ✓     |
-| [CI/CD](../ci/index.md):<br>Use [environment terminals](../ci/environments/index.md#web-terminals)                     |          |          |           | ✓          | ✓     |
+| [CI/CD](../ci/index.md):<br>Use [environment terminals](../ci/environments/index.md#web-terminals-deprecated)                     |          |          |           | ✓          | ✓     |
 | [CI/CD](../ci/index.md):<br>Delete pipelines                                                                           |          |          |           |            | ✓     |
 | [Clusters](infrastructure/clusters/index.md):<br>View [pod logs](project/clusters/kubernetes_pod_logs.md)                                                                 |          |          | ✓         | ✓          | ✓     |
 | [Clusters](infrastructure/clusters/index.md):<br>Manage clusters                                                               |          |          |           | ✓          | ✓     |
@@ -81,6 +81,15 @@ The following table lists project permissions available for each role:
 | [GitLab Pages](project/pages/index.md):<br>Manage                                                                       |          |          |           | ✓          | ✓     |
 | [GitLab Pages](project/pages/index.md):<br>Manage GitLab Pages domains and certificates                                 |          |          |           | ✓          | ✓     |
 | [GitLab Pages](project/pages/index.md):<br>Remove GitLab Pages                                                          |          |          |           | ✓          | ✓     |
+| [Incident Management](../operations/incident_management/index.md):<br>View [alerts](../operations/incident_management/alerts.md)                            |  | ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>Assign an alert                                                                       | ✓| ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>View [incident](../operations/incident_management/incidents.md)                       | ✓| ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>Create [incident](../operations/incident_management/incidents.md)                     | ✓| ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>View [on-call schedules](../operations/incident_management/oncall_schedules.md)       |  | ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>Participate in on-call rotation                                                       | ✓| ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>View [escalation policies](../operations/incident_management/escalation_policies.md)  |  | ✓ | ✓ | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>Manage [on-call schedules](../operations/incident_management/oncall_schedules.md)     |  |   |   | ✓ | ✓ |
+| [Incident Management](../operations/incident_management/index.md):<br>Manage [escalation policies](../operations/incident_management/escalation_policies.md)|  |   |   | ✓ | ✓ |
 | [Issues](project/issues/index.md):<br>Add Labels                                                                        | ✓ (*16*) | ✓        | ✓         | ✓          | ✓     |
 | [Issues](project/issues/index.md):<br>Assign                                                                            | ✓ (*16*) | ✓        | ✓         | ✓          | ✓     |
 | [Issues](project/issues/index.md):<br>Create                                                                            | ✓        | ✓        | ✓         | ✓          | ✓     |
@@ -140,7 +149,7 @@ The following table lists project permissions available for each role:
 | [Projects](project/index.md):<br>Add new team members                                                                   |          |          |           | ✓          | ✓     |
 | [Projects](project/index.md):<br>Change [project features visibility](../public_access/public_access.md) level          |          |          |           | ✓ (14)     | ✓     |
 | [Projects](project/index.md):<br>Configure [webhooks](project/integrations/webhooks.md)                                                             |          |          |           | ✓          | ✓     |
-| [Projects](project/index.md):<br>Delete [wiki](project/wiki/index.md) pages                                             |          |          |           | ✓          | ✓     |
+| [Projects](project/index.md):<br>Delete [wiki](project/wiki/index.md) pages                                             |          |          | ✓         | ✓          | ✓     |
 | [Projects](project/index.md):<br>Edit comments (posted by any user)                                                     |          |          |           | ✓          | ✓     |
 | [Projects](project/index.md):<br>Edit project badges                                                                    |          |          |           | ✓          | ✓     |
 | [Projects](project/index.md):<br>Edit project settings                                                                  |          |          |           | ✓          | ✓     |
@@ -169,7 +178,7 @@ The following table lists project permissions available for each role:
 | [Repository](project/repository/index.md):<br>Enable or disable branch protection                                       |          |          |           | ✓          | ✓     |
 | [Repository](project/repository/index.md):<br>Enable or disable tag protection                                          |          |          |           | ✓          | ✓     |
 | [Repository](project/repository/index.md):<br>Manage [push rules](../push_rules/push_rules.md)                          |          |          |           | ✓          | ✓     |
-| [Repository](project/repository/index.md):<br>Push to protected branches                                                |          |          |           | ✓          | ✓     |
+| [Repository](project/repository/index.md):<br>Push to protected branches (*5*)                                          |          |          |           | ✓          | ✓     |
 | [Repository](project/repository/index.md):<br>Turn on or off protected branch push for developers                       |          |          |           | ✓          | ✓     |
 | [Repository](project/repository/index.md):<br>Remove fork relationship                                                  |          |          |           |            | ✓     |
 | [Repository](project/repository/index.md):<br>Force push to protected branches (*4*)                                    |          |          |           |            |       |
@@ -305,7 +314,7 @@ The following table lists group permissions available for each role:
 | Use security dashboard **(ULTIMATE)**                  |       |          | ✓         | ✓          | ✓     |
 | View group Audit Events                                |       |          | ✓ (7)     | ✓ (7)      | ✓     |
 | Create subgroup                                        |       |          |           | ✓ (1)      | ✓     |
-| Delete group wiki pages **(PREMIUM)**                  |       |          |           | ✓          | ✓     |
+| Delete group wiki pages **(PREMIUM)**                  |       |          | ✓         | ✓          | ✓     |
 | Edit epic comments (posted by any user) **(ULTIMATE)** |       |          |           | ✓ (2)      | ✓ (2) |
 | List group deploy tokens                               |       |          |           | ✓          | ✓     |
 | Manage [group push rules](group/index.md#group-push-rules) **(PREMIUM)** | | |        | ✓          | ✓     |
@@ -384,8 +393,10 @@ An administrator can flag a user as external by either of the following methods:
   1. On the left sidebar, select **Overview > Users** to create a new user or edit an existing one.
      There, you can find the option to flag the user as external.
 
-Additionally users can be set as external users using [SAML groups](../integration/saml.md#external-groups)
-and [LDAP groups](../administration/auth/ldap/index.md#external-groups).
+Additionally users can be set as external users using:
+
+- [SAML groups](../integration/saml.md#external-groups).
+- [LDAP groups](../administration/auth/ldap/ldap_synchronization.md#external-groups).
 
 ### Setting new users to external
 
@@ -466,15 +477,14 @@ subscriptions.
 Project features like wiki and issues can be hidden from users depending on
 which visibility level you select on project settings.
 
-- Disabled: disabled for everyone
-- Only team members: only team members will see even if your project is public or internal
-- Everyone with access: everyone can see depending on your project visibility level
-- Everyone: enabled for everyone (only available for GitLab Pages)
+- Disabled: disabled for everyone.
+- Only team members: only team members can see, even if your project is public or internal.
+- Everyone with access: everyone can see depending on your project visibility level.
+- Everyone: enabled for everyone (only available for GitLab Pages).
 
 ## GitLab CI/CD permissions
 
-GitLab CI/CD permissions rely on the role the user has in GitLab. There are four
-roles:
+GitLab CI/CD permissions rely on the role the user has in GitLab:
 
 - Administrator
 - Maintainer

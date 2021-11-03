@@ -39,6 +39,7 @@ module API
 
         optional :emails_disabled, type: Boolean, desc: 'Disable email notifications'
         optional :show_default_award_emojis, type: Boolean, desc: 'Show default award emojis'
+        optional :warn_about_potentially_unwanted_characters, type: Boolean, desc: 'Warn about Potentially Unwanted Characters'
         optional :shared_runners_enabled, type: Boolean, desc: 'Flag indication if shared runners are enabled for that project'
         optional :resolve_outdated_diff_discussions, type: Boolean, desc: 'Automatically resolve merge request diffs discussions on lines changed with a push'
         optional :remove_source_branch_after_merge, type: Boolean, desc: 'Remove the source branch by default after merge'
@@ -176,6 +177,17 @@ module API
       end
 
       def filter_attributes_using_license!(attrs)
+      end
+
+      def validate_git_import_url!(import_url, import_enabled: true)
+        return if import_url.blank?
+        return unless import_enabled
+
+        result = Import::ValidateRemoteGitEndpointService.new(url: import_url).execute # network call
+
+        if result.error?
+          render_api_error!(result.message, 422)
+        end
       end
     end
   end

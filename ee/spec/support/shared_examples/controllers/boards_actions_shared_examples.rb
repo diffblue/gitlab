@@ -13,7 +13,7 @@ RSpec.shared_examples 'pushes wip limits to frontend' do
     end
   end
 
-  context 'on .com' do
+  context 'on .com', :saas do
     before do
       enable_namespace_license_check!
     end

@@ -15,9 +15,7 @@ performance, data, or could even exhaust the allocated resources for the applica
 
 Rate limits can be used to improve the security and durability of GitLab.
 
-For example, one script can make thousands of web requests per second. Whether malicious, apathetic, or just a bug, your application and infrastructure may not be able to cope with the load. Rate limits can help to mitigate these types of attacks.
-
-Read more about [configuring rate limits](../security/rate_limits.md) in the Security documentation.
+Read more about [configuring rate limits](../security/rate_limits.md).
 
 ### Issue creation
 
@@ -128,16 +126,6 @@ This setting limits the import/export actions for groups and projects.
 
 Read more about [import/export rate limits](../user/admin_area/settings/import_export_rate_limits.md).
 
-### Rack attack
-
-This method of rate limiting is cumbersome, but has some advantages. It allows
-throttling of specific paths, and is also integrated into Git and container
-registry requests.
-
-Read more about the [Rack Attack initializer](../security/rack_attack.md) method of setting rate limits.
-
-- **Default rate limit**: Disabled.
-
 ### Member Invitations
 
 Limit the maximum daily member invitations allowed per group hierarchy.
@@ -222,10 +210,12 @@ When the number exceeds the limit the page displays an alert and links to a pagi
 > [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/issues/51401) in GitLab 11.10.
 
 The number of pipelines that can be created in a single push is 4.
-This is to prevent the accidental creation of pipelines when `git push --all`
+This limit prevents the accidental creation of pipelines when `git push --all`
 or `git push --mirror` is used.
 
-Read more in the [CI documentation](../ci/yaml/index.md#processing-git-pushes).
+This limit does not affect any of the updated merge request pipelines.
+All updated merge requests have a pipeline created when using
+[pipelines for merge requests](../ci/pipelines/merge_request_pipelines.md).
 
 ## Retention of activity history
 
@@ -534,11 +524,16 @@ Plan.default.actual_limits.update!(pages_file_entries: 100)
 
 ### Number of registered runners per scope
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/321368) in GitLab 13.12.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/321368) in GitLab 13.12. Disabled by default.
+> - Enabled on GitLab.com in GitLab 14.3.
+> - Enabled on self-managed in GitLab 14.4.
+> - Feature flag `ci_runner_limits` removed in GitLab 14.4. You can still use `ci_runner_limits_override`
+    to remove limits for a given scope.
 
 The total number of registered runners is limited at the group and project levels. Each time a new runner is registered,
 GitLab checks these limits against runners that have been active in the last 3 months.
 A runner's registration fails if it exceeds the limit for the scope determined by the runner registration token.
+If the limit value is set to zero, the limit is disabled.
 
 - GitLab SaaS subscribers have different limits defined per plan, affecting all projects using that plan.
 - Self-managed GitLab Premium and Ultimate limits are defined by a default plan that affects all projects:
@@ -772,7 +767,7 @@ than the specified limit, hooks won't be executed.
 
 More information can be found in these docs:
 
-- [Webhooks push events](../user/project/integrations/webhooks.md#push-events)
+- [Webhooks push events](../user/project/integrations/webhook_events.md#push-events)
 - [Project services push hooks limit](../user/project/integrations/overview.md#push-hooks-limit)
 
 ### Activities

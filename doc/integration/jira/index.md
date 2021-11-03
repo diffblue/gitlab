@@ -20,7 +20,7 @@ in your GitLab project with any of your projects in Jira.
 ### Jira integration
 
 This integration connects one or more GitLab projects to a Jira instance. The Jira instance
-can be hosted by you or in [Atlassian cloud](https://www.atlassian.com/cloud).
+can be hosted by you or in [Atlassian cloud](https://www.atlassian.com/migration/assess/why-cloud).
 The supported Jira versions are `v6.x`, `v7.x`, and `v8.x`.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
@@ -63,7 +63,7 @@ The process for configuring Jira depends on whether you host Jira on your own se
   how to [set up a user in Jira Server](jira_server_configuration.md).
 - **Jira on Atlassian cloud** supports authentication through an API token. When connecting to Jira on
   Atlassian cloud, an email and API token are required. For more information, read
-  [set up a user in Jira on Atlassian cloud](jira_cloud_configuration.md).
+  [create an API token for Jira in Atlassian cloud](jira_cloud_configuration.md).
 
 ## Privacy considerations
 

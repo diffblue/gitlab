@@ -11,7 +11,6 @@ RSpec.describe Project do
 
   describe 'associations' do
     it { is_expected.to delegate_method(:shared_runners_seconds).to(:statistics) }
-    it { is_expected.to delegate_method(:shared_runners_seconds_last_reset).to(:statistics) }
 
     it { is_expected.to delegate_method(:ci_minutes_quota).to(:shared_runners_limit_namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:shared_runners_limit_namespace) }
@@ -1839,7 +1838,7 @@ RSpec.describe Project do
     end
   end
 
-  describe '#licensed_features' do
+  describe '#licensed_features', :saas do
     let(:plan_license) { :free }
     let(:global_license) { create(:license) }
     let(:group) { create(:group) }
@@ -2954,7 +2953,7 @@ RSpec.describe Project do
       end
 
       it 'deletes immediately' do
-        expect(user_project.adjourned_deletion?).to be nil
+        expect(user_project.adjourned_deletion?).to be_falsey
       end
     end
   end

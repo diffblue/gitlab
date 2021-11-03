@@ -213,21 +213,6 @@ RSpec.describe ProjectsController do
 
       before do
         sign_in(user)
-
-        allow(controller).to receive(:record_experiment_user)
-      end
-
-      context 'when user can push to default branch', :experiment do
-        let(:user) { empty_project.owner }
-
-        it 'creates an "view_project_show" experiment tracking event' do
-          expect(experiment(:empty_repo_upload)).to track(
-            :view_project_show,
-            property: 'empty'
-          ).on_next_instance
-
-          get :show, params: { namespace_id: empty_project.namespace, id: empty_project }
-        end
       end
 
       User.project_views.keys.each do |project_view|
@@ -322,6 +307,34 @@ RSpec.describe ProjectsController do
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template('_files')
         expect(response.body).to have_content('LICENSE') # would be 'MIT license' if stub not works
+      end
+
+      describe "PUC highlighting" do
+        render_views
+
+        before do
+          expect(controller).to receive(:find_routable!).and_return(public_project)
+        end
+
+        context "option is enabled" do
+          it "adds the highlighting class" do
+            expect(public_project).to receive(:warn_about_potentially_unwanted_characters?).and_return(true)
+
+            get_show
+
+            expect(response.body).to have_css(".project-highlight-puc")
+          end
+        end
+
+        context "option is disabled" do
+          it "doesn't add the highlighting class" do
+            expect(public_project).to receive(:warn_about_potentially_unwanted_characters?).and_return(false)
+
+            get_show
+
+            expect(response.body).not_to have_css(".project-highlight-puc")
+          end
+        end
       end
     end
 

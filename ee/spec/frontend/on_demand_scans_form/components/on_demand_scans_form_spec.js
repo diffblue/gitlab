@@ -21,7 +21,6 @@ import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import * as responses from '../mocks/apollo_mocks';
 import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
 
-const helpPagePath = '/application_security/dast/index#on-demand-scans';
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
 const defaultBranch = 'main';
@@ -68,6 +67,7 @@ describe('OnDemandScansForm', () => {
 
   const findForm = () => wrapper.find(GlForm);
   const findByTestId = (testId) => wrapper.find(`[data-testid="${testId}"]`);
+  const findHelpPageLink = () => findByTestId('help-page-link');
   const findNameInput = () => findByTestId('dast-scan-name-input');
   const findBranchInput = () => findByTestId('dast-scan-branch-input');
   const findDescriptionInput = () => findByTestId('dast-scan-description-input');
@@ -156,16 +156,12 @@ describe('OnDemandScansForm', () => {
           mocks: defaultMocks,
           provide: {
             projectPath,
-            helpPagePath,
             profilesLibraryPath,
             scannerProfilesLibraryPath,
             siteProfilesLibraryPath,
             newScannerProfilePath,
             newSiteProfilePath,
             dastSiteValidationDocsPath,
-            glFeatures: {
-              dastOnDemandScansScheduler: true,
-            },
           },
           stubs: {
             GlFormInput: GlFormInputStub,
@@ -208,6 +204,16 @@ describe('OnDemandScansForm', () => {
 
       expect(wrapper.text()).toContain('New on-demand DAST scan');
       expect(wrapper.findComponent(ScanSchedule).exists()).toBe(true);
+    });
+
+    it('renders a link to the docs', () => {
+      createComponent();
+      const link = findHelpPageLink();
+
+      expect(link.exists()).toBe(true);
+      expect(link.attributes('href')).toBe(
+        '/help/user/application_security/dast/index#on-demand-scans',
+      );
     });
 
     it('populates the branch input with the default branch', () => {
@@ -419,7 +425,6 @@ describe('OnDemandScansForm', () => {
                   description: 'Tests for SQL injections',
                   dastScannerProfileId: passiveScannerProfile.id,
                   dastSiteProfileId: nonValidatedSiteProfile.id,
-                  fullPath: projectPath,
                   runAfterUpdate: runAfter,
                 },
               },
@@ -663,17 +668,5 @@ describe('OnDemandScansForm', () => {
         'You must create a repository within your project to run an on-demand scan.',
       );
     });
-  });
-
-  it('does not render scan schedule when the feature flag is disabled', () => {
-    createComponent({
-      provide: {
-        glFeatures: {
-          dastOnDemandScansScheduler: false,
-        },
-      },
-    });
-
-    expect(wrapper.findComponent(ScanSchedule).exists()).toBe(false);
   });
 });

@@ -17,6 +17,7 @@ module EE
         field :vulnerabilities,
               ::Types::VulnerabilityType.connection_type,
               null: true,
+              extras: [:lookahead],
               description: "Vulnerabilities reported on projects on the current user's instance security dashboard.",
               resolver: ::Resolvers::VulnerabilitiesResolver
 

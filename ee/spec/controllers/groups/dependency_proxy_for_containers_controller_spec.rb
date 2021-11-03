@@ -99,19 +99,12 @@ RSpec.describe Groups::DependencyProxyForContainersController do
   end
 
   describe 'GET #blob' do
-    let_it_be(:blob) { create(:dependency_proxy_blob) }
+    let_it_be(:blob) { create(:dependency_proxy_blob, group: group) }
 
     let(:blob_sha) { blob.file_name.sub('.gz', '') }
-    let(:blob_response) { { status: :success, blob: blob, from_cache: false } }
 
     subject(:get_blob) do
       get :blob, params: { group_id: group.to_param, image: 'alpine', sha: blob_sha }
-    end
-
-    before do
-      allow_next_instance_of(DependencyProxy::FindOrCreateBlobService) do |instance|
-        allow(instance).to receive(:execute).and_return(blob_response)
-      end
     end
 
     it_behaves_like 'when sso is enabled for the group', 'a successful blob pull'

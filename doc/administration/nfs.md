@@ -20,7 +20,7 @@ file system performance, see
 
 ## Gitaly and NFS deprecation
 
-Starting with GitLab version 14.0, support for NFS to store Git repository data will be deprecated. Technical customer support and engineering support will be available for the 14.x releases. Engineering will fix bugs and security vulnerabilities consistent with our [release and maintenance policy](../policy/maintenance.md#security-releases). 
+Starting with GitLab version 14.0, support for NFS to store Git repository data will be deprecated. Technical customer support and engineering support will be available for the 14.x releases. Engineering will fix bugs and security vulnerabilities consistent with our [release and maintenance policy](../policy/maintenance.md#security-releases).
 
 At the end of the 14.12 milestone (tenatively June 22nd, 2022) technical and engineering support for using NFS to store Git repository data will be officially at end-of-life. There will be no product changes or troubleshooting provided via Engineering, Security or Paid Support channels.
 
@@ -187,7 +187,7 @@ If the Rugged feature flag is explicitly set to either `true` or `false`, GitLab
 NOTE:
 From GitLab 12.7, Rugged is not automatically enabled if Puma thread count is greater than `1`.
 
-If you want to use Rugged with Puma, [set Puma thread count to `1`](https://docs.gitlab.com/omnibus/settings/puma.html#puma-settings).
+If you want to use Rugged with Puma, [set Puma thread count to `1`](../install/requirements.md#puma-settings).
 
 If you want to use Rugged with Puma thread count more than `1`, Rugged can be enabled using the [feature flag](../development/gitaly.md#legacy-rugged-code).
 

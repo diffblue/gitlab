@@ -7,7 +7,7 @@
     window.gl.mrWidgetData.is_geo_secondary_node = '#{Gitlab::Geo.secondary?}' === 'true';
     window.gl.mrWidgetData.geo_secondary_help_path = '#{help_page_path("administration/geo/replication/configuration.md")}';
     window.gl.mrWidgetData.sast_help_path = '#{help_page_path("user/application_security/sast/index")}';
-    window.gl.mrWidgetData.secret_scanning_help_path = '#{help_page_path("user/application_security/secret_detection/index")}';
+    window.gl.mrWidgetData.secret_detection_help_path = '#{help_page_path("user/application_security/secret_detection/index")}';
     window.gl.mrWidgetData.container_scanning_help_path = '#{help_page_path("user/application_security/container_scanning/index")}';
     window.gl.mrWidgetData.dast_help_path = '#{help_page_path("user/application_security/dast/index")}';
     window.gl.mrWidgetData.dependency_scanning_help_path = '#{help_page_path("user/application_security/dependency_scanning/index")}';
@@ -19,7 +19,7 @@
     window.gl.mrWidgetData.dependency_scanning_comparison_path = '#{dependency_scanning_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:dependency_scanning)}'
     window.gl.mrWidgetData.sast_comparison_path = '#{sast_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:sast)}'
     window.gl.mrWidgetData.dast_comparison_path = '#{dast_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:dast)}'
-    window.gl.mrWidgetData.secret_scanning_comparison_path = '#{secret_detection_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:secret_detection)}'
+    window.gl.mrWidgetData.secret_detection_comparison_path = '#{secret_detection_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:secret_detection)}'
     window.gl.mrWidgetData.coverage_fuzzing_comparison_path = '#{coverage_fuzzing_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:coverage_fuzzing)}'
     window.gl.mrWidgetData.api_fuzzing_comparison_path = '#{api_fuzzing_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:api_fuzzing)}'
 

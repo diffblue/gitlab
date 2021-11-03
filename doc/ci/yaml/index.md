@@ -390,9 +390,9 @@ You can also store template files in a central repository and `include` them in 
 `include` requires the external YAML file to have the extensions `.yml` or `.yaml`,
 otherwise the external file is not included.
 
-You can't use [YAML anchors](#anchors) across different YAML files sourced by `include`.
+You can't use [YAML anchors](yaml_specific_features.md#anchors) across different YAML files sourced by `include`.
 You can only refer to anchors in the same file. To reuse configuration from different
-YAML files, use [`!reference` tags](#reference-tags) or the [`extends` keyword](#extends).
+YAML files, use [`!reference` tags](yaml_specific_features.md#reference-tags) or the [`extends` keyword](#extends).
 
 `include` supports the following inclusion methods:
 
@@ -422,15 +422,36 @@ configurations. Local configurations in the `.gitlab-ci.yml` file override inclu
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/284883) in GitLab 13.8.
 > - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/294294) in GitLab 13.9.
 > - [Support for project, group, and instance variables added](https://gitlab.com/gitlab-org/gitlab/-/issues/219065) in GitLab 14.2.
+> - [Support for pipeline variables added](https://gitlab.com/gitlab-org/gitlab/-/issues/337633) in GitLab 14.5.
 
 In `include` sections in your `.gitlab-ci.yml` file, you can use:
 
-- `$CI_COMMIT_REF_NAME` [predefined variable](../variables/predefined_variables.md) in GitLab 14.2
-  and later.
 - [Project variables](../variables/index.md#add-a-cicd-variable-to-a-project)
 - [Group variables](../variables/index.md#add-a-cicd-variable-to-a-group)
 - [Instance variables](../variables/index.md#add-a-cicd-variable-to-an-instance)
-- Project [predefined variables](../variables/predefined_variables.md).
+- Project [predefined variables](../variables/predefined_variables.md)
+- In GitLab 14.2 and later, the `$CI_COMMIT_REF_NAME` [predefined variable](../variables/predefined_variables.md).
+
+  When used in `include`, the `CI_COMMIT_REF_NAME` variable returns the full
+  ref path, like `refs/heads/branch-name`. In `include:rules`, you might need to use
+  `if: $CI_COMMIT_REF_NAME =~ /main/` (not `== main`). This behavior is resolved in GitLab 14.5.
+
+In GitLab 14.5 and later, you can also use:
+
+- [Trigger variables](../triggers/index.md#making-use-of-trigger-variables).
+- [Scheduled pipeline variables](../pipelines/schedules.md#using-variables).
+- [Manual pipeline run variables](../variables/index.md#override-a-variable-when-running-a-pipeline-manually).
+- Pipeline [predefined variables](../variables/predefined_variables.md).
+
+  YAML files are parsed before the pipeline is created, so the following pipeline predefined variables
+  are **not** available:
+
+  - `CI_PIPELINE_ID`
+  - `CI_PIPELINE_URL`
+  - `CI_PIPELINE_IID`
+  - `CI_PIPELINE_CREATED_AT`
+
+For example:
 
 ```yaml
 include:
@@ -440,9 +461,6 @@ include:
 
 For an example of how you can include these predefined variables, and the variables' impact on CI/CD jobs,
 see this [CI/CD variable demo](https://youtu.be/4XR8gw3Pkos).
-
-There is a [related issue](https://gitlab.com/gitlab-org/gitlab/-/issues/337633)
-that proposes expanding this feature to support more variables.
 
 #### `rules` with `include`
 
@@ -461,6 +479,9 @@ include:
   - local: builds.yml
     rules:
       - if: '$INCLUDE_BUILDS == "true"'
+  - local: deploys.yml
+    rules:
+      - if: $CI_COMMIT_BRANCH == "main"
 
 test:
   stage: test
@@ -558,6 +579,9 @@ include:
 All [nested includes](#nested-includes) are executed in the scope of the target project.
 You can use local (relative to target project), project, remote, or template includes.
 
+NOTE:
+When including a YAML file from another private project, the user running the pipeline must be a member of both projects and have the appropriate permissions to run pipelines. A `not found or access denied` error may be shown if the user does not have access to any of the included files.
+
 ##### Multiple files from a project
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/26793) in GitLab 13.6.
@@ -587,6 +611,11 @@ include:
 
 All [nested includes](#nested-includes) execute without context as a public user,
 so you can only `include` public projects or templates.
+
+NOTE:
+Be careful when including a remote CI/CD configuration file. No pipelines or notifications
+trigger when external CI/CD configuration files change. From a security perspective,
+this is similar to pulling a third party dependency.
 
 #### `include:template`
 
@@ -635,58 +664,134 @@ The following topics explain how to use keywords to configure CI/CD pipelines.
 
 ### `image`
 
-Use `image` to specify [a Docker image](../docker/using_docker_images.md#what-is-an-image) to use for the job.
+Use `image` to specify a Docker image that the job runs in.
 
-For:
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
 
-- Usage examples, see [Define `image` in the `.gitlab-ci.yml` file](../docker/using_docker_images.md#define-image-in-the-gitlab-ciyml-file).
-- Detailed usage information, refer to [Docker integration](../docker/index.md) documentation.
+**Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
+
+- `<image-name>` (Same as using `<image-name>` with the `latest` tag)
+- `<image-name>:<tag>`
+- `<image-name>@<digest>`
+
+**Example of `image`**:
+
+```yaml
+default:
+  image: ruby:3.0
+
+rspec:
+  script: bundle exec rspec
+
+rspec 2.7:
+  image: registry.example.com/my-group/my-project/ruby:2.7
+  script: bundle exec rspec
+```
+
+In this example, the `ruby:3.0` image is the default for all jobs in the pipeline.
+The `rspec 2.7` job does not use the default, because it overrides the default with
+a job-specific `image:` section.
+
+**Related topics**:
+
+- [Run your CI/CD jobs in Docker containers](../docker/using_docker_images.md).
 
 #### `image:name`
 
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+The name of the Docker image that the job runs in. Similar to [`image:`](#image) used by itself.
 
-For more information, see [Available settings for `image`](../docker/using_docker_images.md#available-settings-for-image).
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
+
+**Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
+
+- `<image-name>` (Same as using `<image-name>` with the `latest` tag)
+- `<image-name>:<tag>`
+- `<image-name>@<digest>`
+
+**Example of `image:name`**:
+
+```yaml
+image:
+  name: "registry.example.com/my/image:latest"
+```
+
+**Related topics**:
+
+- [Run your CI/CD jobs in Docker containers](../docker/using_docker_images.md).
 
 #### `image:entrypoint`
 
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+Command or script to execute as the container's entry point.
 
-For more information, see [Available settings for `image`](../docker/using_docker_images.md#available-settings-for-image).
+When the Docker container is created, the `entrypoint` is translated to the Docker `--entrypoint` option.
+The syntax is similar to the [Dockerfile `ENTRYPOINT` directive](https://docs.docker.com/engine/reference/builder/#entrypoint),
+where each shell token is a separate string in the array.
+
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
+
+**Possible inputs**: A string.
+
+**Example of `image:entrypoint`**:
+
+```yaml
+image:
+  name: super/sql:experimental
+  entrypoint: [""]
+```
+
+**Related topics**:
+
+- [Override the entrypoint of an image](../docker/using_docker_images.md#override-the-entrypoint-of-an-image).
 
 #### `services`
 
-Use `services` to specify a [service Docker image](../services/index.md), linked to a base image specified in [`image`](#image).
+Use `services` to specify an additional Docker image to run scripts in. The [`services` image](../services/index.md) is linked
+to the image specified in the [`image`](#image) keyword.
 
-For:
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#custom-default-keyword-values).
 
-- Usage examples, see [Define `services` in the `.gitlab-ci.yml` file](../services/index.md#define-services-in-the-gitlab-ciyml-file).
-- Detailed usage information, refer to [Docker integration](../docker/index.md) documentation.
-- Example services, see [GitLab CI/CD Services](../services/index.md).
+**Possible inputs**: The name of the services image, including the registry path if needed, in one of these formats:
 
-##### `services:name`
+- `<image-name>` (Same as using `<image-name>` with the `latest` tag)
+- `<image-name>:<tag>`
+- `<image-name>@<digest>`
 
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+**Example of `services`**:
 
-For more information, see [Available settings for `services`](../services/index.md#available-settings-for-services).
+```yaml
+default:
+  image:
+    name: ruby:2.6
+    entrypoint: ["/bin/bash"]
 
-##### `services:alias`
+  services:
+    - name: my-postgres:11.7
+      alias: db-postgres
+      entrypoint: ["/usr/local/bin/db-postgres"]
+      command: ["start"]
 
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+  before_script:
+    - bundle install
 
-For more information, see [Available settings for `services`](../services/index.md#available-settings-for-services).
+test:
+  script:
+    - bundle exec rake spec
+```
 
-##### `services:entrypoint`
+In this example, the job launches a Ruby container. Then, from that container, the job launches
+another container that's running PostgreSQL. Then the job then runs scripts
+in that container.
 
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
+**Related topics**:
 
-For more information, see [Available settings for `services`](../services/index.md#available-settings-for-services).
-
-##### `services:command`
-
-An [extended Docker configuration option](../docker/using_docker_images.md#extended-docker-configuration-options).
-
-For more information, see [Available settings for `services`](../services/index.md#available-settings-for-services).
+- [Available settings for `services`](../services/index.md#available-settings-for-services).
+- [Define `services` in the `.gitlab-ci.yml` file](../services/index.md#define-services-in-the-gitlab-ciyml-file).
+- [Run your CI/CD jobs in Docker containers](../docker/using_docker_images.md).
+- [Use Docker to build Docker images](../docker/using_docker_build.md).
 
 ### `script`
 
@@ -700,7 +805,7 @@ All jobs except [trigger jobs](#trigger) require a `script` keyword.
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
 
 **Example of `script`:**
 
@@ -739,7 +844,7 @@ Use `before_script` to define an array of commands that should run before each j
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
 
 **Example of `before_script`:**
 
@@ -777,7 +882,7 @@ Use `after_script` to define an array of commands that run after each job, inclu
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
 
 **Example of `after_script`:**
 
@@ -940,7 +1045,7 @@ job2:
 
 > Introduced in GitLab 11.3.
 
-Use `extends` to reuse configuration sections. It's an alternative to [YAML anchors](#anchors)
+Use `extends` to reuse configuration sections. It's an alternative to [YAML anchors](yaml_specific_features.md#anchors)
 and is a little more flexible and readable. You can use `extends` to reuse configuration
 from [included configuration files](#use-extends-and-include-together).
 
@@ -980,7 +1085,7 @@ rspec:
       - $RSPEC
 ```
 
-`.tests` in this example is a [hidden job](#hide-jobs), but it's
+`.tests` in this example is a [hidden job](../jobs/index.md#hide-jobs), but it's
 possible to extend configuration from regular jobs as well.
 
 `extends` supports multi-level inheritance. You should avoid using more than three levels,
@@ -1073,7 +1178,62 @@ In this example:
 - The `variables` sections merge, but `URL: "http://docker-url.internal"` overwrites `URL: "http://my-url.internal"`.
 - `tags: ['docker']` overwrites `tags: ['production']`.
 - `script` does not merge, but `script: ['rake rspec']` overwrites
-  `script: ['echo "Hello world!"']`. You can use [YAML anchors](#anchors) to merge arrays.
+  `script: ['echo "Hello world!"']`. You can use [YAML anchors](yaml_specific_features.md#anchors) to merge arrays.
+
+##### Exclude a key from `extends`
+
+To exclude a key from the extended content, you must assign it to `null`, for example:
+
+```yaml
+.base:
+  script: test
+  variables:
+    VAR1: base var 1
+
+test1:
+  extends: .base
+  variables:
+    VAR1: test1 var 1
+    VAR2: test2 var 2
+
+test2:
+  extends: .base
+  variables:
+    VAR2: test2 var 2
+
+test3:
+  extends: .base
+  variables: {}
+
+test4:
+  extends: .base
+  variables: null
+```
+
+Merged configuration:
+
+```yaml
+test1:
+  script: test
+  variables:
+    VAR1: test1 var 1
+    VAR2: test2 var 2
+
+test2:
+  script: test
+  variables:
+    VAR1: base var 1
+    VAR2: test2 var 2
+
+test3:
+  script: test
+  variables:
+    VAR1: base var 1
+
+test4:
+  script: test
+  variables: null
+```
 
 #### Use `extends` and `include` together
 
@@ -1108,8 +1268,11 @@ to the contents of the `script`:
 
 Use `rules` to include or exclude jobs in pipelines.
 
-Rules are evaluated *in order* until the first match. When a match is found, the job
-is either included or excluded from the pipeline, depending on the configuration.
+Rules are evaluated when the pipeline is created, and evaluated *in order*
+until the first match. When a match is found, the job is either included or excluded from the pipeline,
+depending on the configuration.
+
+You cannot use dotenv variables created in job scripts in rules, because rules are evaluated before any jobs run.
 
 `rules` replaces [`only/except`](#only--except) and they can't be used together
 in the same job. If you configure one job to use both keywords, the GitLab returns
@@ -1137,7 +1300,7 @@ The job is not added to the pipeline:
 - If no rules match.
 - If a rule matches and has `when: never`.
 
-You can use [`!reference` tags](#reference-tags) to [reuse `rules` configuration](../jobs/job_control.md#reuse-rules-in-different-jobs)
+You can use [`!reference` tags](yaml_specific_features.md#reference-tags) to [reuse `rules` configuration](../jobs/job_control.md#reuse-rules-in-different-jobs)
 in different jobs.
 
 #### `rules:if`
@@ -2174,7 +2337,7 @@ Also in the example, `GIT_STRATEGY` is set to `none`. If the
 the runner won't try to check out the code after the branch is deleted.
 
 The example also overwrites global variables. If your `stop` `environment` job depends
-on global variables, use [anchor variables](#yaml-anchors-for-variables) when you set the `GIT_STRATEGY`
+on global variables, use [anchor variables](yaml_specific_features.md#yaml-anchors-for-variables) when you set the `GIT_STRATEGY`
 to change the job without overriding the global variables.
 
 The `stop_review_app` job is **required** to have the following keywords defined:
@@ -2242,7 +2405,7 @@ environment, using the `production`
 [Kubernetes namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
 
 For more information, see
-[Available settings for `kubernetes`](../environments/index.md#configure-kubernetes-deployments).
+[Available settings for `kubernetes`](../environments/index.md#configure-kubernetes-deployments-deprecated).
 
 NOTE:
 Kubernetes configuration is not supported for Kubernetes clusters
@@ -2706,7 +2869,7 @@ Files matched by [`artifacts:untracked`](#artifactsuntracked) can be excluded us
 Use `expire_in` to specify how long [job artifacts](../pipelines/job_artifacts.md) are stored before
 they expire and are deleted. The `expire_in` setting does not affect:
 
-- Artifacts from the latest job, unless this keeping the latest job artifacts is:
+- Artifacts from the latest job, unless keeping the latest job artifacts is:
   - [Disabled at the project level](../pipelines/job_artifacts.md#keep-artifacts-from-most-recent-successful-jobs).
   - [Disabled instance-wide](../../user/admin_area/settings/continuous_integration.md#keep-the-latest-artifacts-for-all-jobs-in-the-latest-successful-pipelines).
 - [Pipeline artifacts](../pipelines/pipeline_artifacts.md). It's not possible to specify an
@@ -2962,16 +3125,47 @@ artifacts:
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/20390) in GitLab 11.2.
 > - Requires GitLab Runner 11.2 and above.
 
-Use [`artifacts:reports`](#artifactsreports)
-to collect test reports, code quality reports, and security reports from jobs.
-It also exposes these reports in the GitLab UI (merge requests, pipeline views, and security dashboards).
+Use [`artifacts:reports`](#artifactsreports) to:
+
+- Collect test reports, code quality reports, and security reports from jobs.
+- Expose these reports in merge requests, pipeline views, and security dashboards.
 
 The test reports are collected regardless of the job results (success or failure).
 You can use [`artifacts:expire_in`](#artifactsexpire_in) to set up an expiration
 date for their artifacts.
 
-If you also want the ability to browse the report output files, include the
+Some `artifacts:reports` types can be generated by multiple jobs in the same pipeline, and used by merge request or pipeline features from each job.
+
+| Keyword                                    | Multiple reports in the same pipeline? |
+|:-------------------------------------------|:--------------------------------------:|
+| `accessibility`          | **{check-circle}** Yes |
+| `api_fuzzing`            | **{check-circle}** Yes |
+| `browser_performance`    | **{dotted-circle}** No |
+| `cluster_image_scanning` | **{check-circle}** Yes |
+| `cobertura`              | **{check-circle}** Yes |
+| `codequality`            | Merge request widget: **{check-circle}** [Yes](https://gitlab.com/gitlab-org/gitlab/-/issues/271077#note_507239820).<br>Merge request diff annotations: **{dotted-circle}** [No](https://gitlab.com/gitlab-org/gitlab/-/issues/271077#note_507239820).<br>Full report: **{dotted-circle}** [No](https://gitlab.com/gitlab-org/gitlab/-/issues/9014). |
+| `container_scanning`     | **{check-circle}** Yes |
+| `coverage_fuzzing`       | **{check-circle}** Yes |
+| `dast`                   | **{check-circle}** Yes |
+| `dependency_scanning`    | **{check-circle}** Yes |
+| `dotenv`                 | Not applicable |
+| `junit`                  | **{check-circle}** Yes |
+| `license_management`     | [Renamed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/36817) to `license_scanning` |
+| `license_scanning`       | **{check-circle}** Yes |
+| `load_performance`       | **{dotted-circle}** No |
+| `metrics`                | **{check-circle}** Yes |
+| `performance`            | **{dotted-circle}** No |
+| `requirements`           | **{check-circle}** Yes |
+| `sast`                   | **{check-circle}** Yes |
+| `secret_detection`       | **{check-circle}** Yes |
+| `terraform`              | **{check-circle}** Yes |
+
+If you also want to be able to browse the report output files, include the
 [`artifacts:paths`](#artifactspaths) keyword.
+
+NOTE:
+Reports from [child pipelines](../pipelines/parent_child_pipelines.md) aren't supported. Track
+progress on adding support in [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/215725).
 
 ##### `artifacts:reports:api_fuzzing` **(ULTIMATE)**
 
@@ -2983,6 +3177,29 @@ as artifacts.
 
 The collected API Fuzzing report uploads to GitLab as an artifact and is summarized in merge
 requests and the pipeline view. It's also used to provide data for security dashboards.
+
+##### `artifacts:reports:browser_performance` **(PREMIUM)**
+
+> - Introduced in GitLab 11.5.
+> - Requires GitLab Runner 11.5 and above.
+> - [Name changed](https://gitlab.com/gitlab-org/gitlab/-/issues/225914) from `artifacts:reports:performance` in GitLab 14.0.
+
+The `browser_performance` report collects [Browser Performance Testing metrics](../../user/project/merge_requests/browser_performance_testing.md)
+as artifacts.
+
+The collected Browser Performance report uploads to GitLab as an artifact and displays in merge requests.
+
+##### `artifacts:reports:cluster_image_scanning` **(ULTIMATE)**
+
+> - Introduced in GitLab 14.1.
+> - Requires GitLab Runner 14.1 and above.
+
+The `cluster_image_scanning` report collects `CLUSTER_IMAGE_SCANNING` vulnerabilities
+as artifacts.
+
+The collected `CLUSTER_IMAGE_SCANNING` report uploads to GitLab as an artifact and
+is summarized in the pipeline view. It's also used to provide data for security
+dashboards.
 
 ##### `artifacts:reports:cobertura`
 
@@ -3029,18 +3246,6 @@ as artifacts.
 
 The collected coverage fuzzing report uploads to GitLab as an artifact and is summarized in merge
 requests and the pipeline view. It's also used to provide data for security dashboards.
-
-##### `artifacts:reports:cluster_image_scanning` **(ULTIMATE)**
-
-> - Introduced in GitLab 14.1.
-> - Requires GitLab Runner 14.1 and above.
-
-The `cluster_image_scanning` report collects `CLUSTER_IMAGE_SCANNING` vulnerabilities
-as artifacts.
-
-The collected `CLUSTER_IMAGE_SCANNING` report uploads to GitLab as an artifact and
-is summarized in the pipeline view. It's also used to provide data for security
-dashboards.
 
 ##### `artifacts:reports:dast` **(ULTIMATE)**
 
@@ -3148,17 +3353,6 @@ The `metrics` report collects [Metrics](../metrics_reports.md)
 as artifacts.
 
 The collected Metrics report uploads to GitLab as an artifact and displays in merge requests.
-
-##### `artifacts:reports:browser_performance` **(PREMIUM)**
-
-> - Introduced in GitLab 11.5.
-> - Requires GitLab Runner 11.5 and above.
-> - [Name changed](https://gitlab.com/gitlab-org/gitlab/-/issues/225914) from `artifacts:reports:performance` in GitLab 14.0.
-
-The `browser_performance` report collects [Browser Performance Testing metrics](../../user/project/merge_requests/browser_performance_testing.md)
-as artifacts.
-
-The collected Browser Performance report uploads to GitLab as an artifact and displays in merge requests.
 
 ##### `artifacts:reports:requirements` **(ULTIMATE)**
 
@@ -3622,31 +3816,19 @@ deploystacks:
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/8997) in GitLab Premium 11.8.
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/199224) to GitLab Free in 12.8.
 
-Use `trigger` to define a downstream pipeline trigger. When GitLab starts a `trigger` job,
-a downstream pipeline is created.
+Use `trigger` to start a downstream pipeline that is either:
 
-Jobs with `trigger` can only use a [limited set of keywords](../pipelines/multi_project_pipelines.md#define-multi-project-pipelines-in-your-gitlab-ciyml-file).
-For example, you can't run commands with [`script`](#script), [`before_script`](#before_script),
-or [`after_script`](#after_script).
+- [A multi-project pipeline](../pipelines/multi_project_pipelines.md).
+- [A child pipeline](../pipelines/parent_child_pipelines.md).
 
-You can use this keyword to create two different types of downstream pipelines:
+**Keyword type**: Job keyword. You can use it only as part of a job.
 
-- [Multi-project pipelines](../pipelines/multi_project_pipelines.md#define-multi-project-pipelines-in-your-gitlab-ciyml-file)
-- [Child pipelines](../pipelines/parent_child_pipelines.md)
+**Possible inputs**: 
 
-In [GitLab 13.2 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/197140/), you can
-view which job triggered a downstream pipeline. In the [pipeline graph](../pipelines/index.md#visualize-pipelines),
-hover over the downstream pipeline job.
+- For multi-project pipelines, path to the downstream project.
+- For child pipelines, path to the child pipeline CI/CD configuration file.
 
-In [GitLab 13.5 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/201938), you
-can use [`when:manual`](#when) in the same job as `trigger`. In GitLab 13.4 and
-earlier, using them together causes the error `jobs:#{job-name} when should be on_success, on_failure or always`.
-You [cannot start `manual` trigger jobs with the API](https://gitlab.com/gitlab-org/gitlab/-/issues/284086).
-
-#### Basic `trigger` syntax for multi-project pipelines
-
-You can configure a downstream trigger by using the `trigger` keyword
-with a full path to a downstream project:
+**Example of `trigger` for multi-project pipeline**:
 
 ```yaml
 rspec:
@@ -3658,47 +3840,7 @@ staging:
   trigger: my/deployment
 ```
 
-#### Complex `trigger` syntax for multi-project pipelines
-
-You can configure a branch name that GitLab uses to create
-a downstream pipeline with:
-
-```yaml
-rspec:
-  stage: test
-  script: bundle exec rspec
-
-staging:
-  stage: deploy
-  trigger:
-    project: my/deployment
-    branch: stable
-```
-
-To mirror the status from a triggered pipeline:
-
-```yaml
-trigger_job:
-  trigger:
-    project: my/project
-    strategy: depend
-```
-
-To mirror the status from an upstream pipeline:
-
-```yaml
-upstream_bridge:
-  stage: test
-  needs:
-    pipeline: other/project
-```
-
-#### `trigger` syntax for child pipeline
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/16094) in GitLab 12.7.
-
-To create a [child pipeline](../pipelines/parent_child_pipelines.md), specify the path to the
-YAML file that contains the configuration of the child pipeline:
+**Example of `trigger` for child pipelines**:
 
 ```yaml
 trigger_job:
@@ -3706,71 +3848,36 @@ trigger_job:
     include: path/to/child-pipeline.yml
 ```
 
-Similar to [multi-project pipelines](../pipelines/multi_project_pipelines.md#mirror-status-of-a-triggered-pipeline-in-the-trigger-job),
-it's possible to mirror the status from a triggered pipeline:
+**Additional details**:
 
-```yaml
-trigger_job:
-  trigger:
-    include:
-      - local: path/to/child-pipeline.yml
-    strategy: depend
-```
+- Jobs with `trigger` can only use a [limited set of keywords](../pipelines/multi_project_pipelines.md#define-multi-project-pipelines-in-your-gitlab-ciyml-file).
+  For example, you can't run commands with [`script`](#script), [`before_script`](#before_script),
+  or [`after_script`](#after_script).
+- In [GitLab 13.5 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/201938), you
+  can use [`when:manual`](#when) in the same job as `trigger`. In GitLab 13.4 and
+  earlier, using them together causes the error `jobs:#{job-name} when should be on_success, on_failure or always`.
+- In [GitLab 13.2 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/197140/), you can
+  view which job triggered a downstream pipeline in the [pipeline graph](../pipelines/index.md#visualize-pipelines).
 
-##### Trigger child pipeline with generated configuration file
+**Related topics**:
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/35632) in GitLab 12.9.
+- [Multi-project pipeline configuration examples](../pipelines/multi_project_pipelines.md#define-multi-project-pipelines-in-your-gitlab-ciyml-file).
+- [Child pipeline configuration examples](../pipelines/parent_child_pipelines.md#examples).
+- To force a rebuild of a specific branch, tag, or commit, you can
+  [use an API call with a trigger token](../triggers/index.md).
+  The trigger token is different than the `trigger` keyword.
 
-You can also trigger a child pipeline from a [dynamically generated configuration file](../pipelines/parent_child_pipelines.md#dynamic-child-pipelines):
+#### `trigger:strategy`
 
-```yaml
-generate-config:
-  stage: build
-  script: generate-ci-config > generated-config.yml
-  artifacts:
-    paths:
-      - generated-config.yml
+Use `trigger:strategy` to force the `trigger` job to wait for the downstream pipeline to complete
+before it is marked as **success**.
 
-child-pipeline:
-  stage: test
-  trigger:
-    include:
-      - artifact: generated-config.yml
-        job: generate-config
-```
+This behavior is different than the default, which is for the `trigger` job to be marked as
+**success** as soon as the downstream pipeline is created.
 
-The `generated-config.yml` is extracted from the artifacts and used as the configuration
-for triggering the child pipeline.
+This setting makes your pipeline execution linear rather than parallel.
 
-##### Trigger child pipeline with files from another project
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/205157) in GitLab 13.5.
-
-To trigger child pipelines with files from another private project under the same
-GitLab instance, use [`include:file`](#includefile):
-
-```yaml
-child-pipeline:
-  trigger:
-    include:
-      - project: 'my-group/my-pipeline-library'
-        ref: 'main'
-        file: '/path/to/child-pipeline.yml'
-```
-
-#### Linking pipelines with `trigger:strategy`
-
-By default, the `trigger` job completes with the `success` status
-as soon as the downstream pipeline is created.
-
-To force the `trigger` job to wait for the downstream (multi-project or child) pipeline to complete, use
-`strategy: depend`. This setting makes the trigger job wait with a "running" status until the triggered
-pipeline completes. At that point, the `trigger` job completes and displays the same status as
-the downstream job.
-
-This setting can help keep your pipeline execution linear. In the following example, jobs from
-subsequent stages wait for the triggered pipeline to successfully complete before
-starting, which reduces parallelization.
+**Example of `trigger:strategy`**:
 
 ```yaml
 trigger_job:
@@ -3779,14 +3886,8 @@ trigger_job:
     strategy: depend
 ```
 
-#### Trigger a pipeline by API call
-
-To force a rebuild of a specific branch, tag, or commit, you can use an API call
-with a trigger token.
-
-The trigger token is different than the [`trigger`](#trigger) keyword.
-
-[Read more in the triggers documentation.](../triggers/index.md)
+In this example, jobs from subsequent stages wait for the triggered pipeline to
+successfully complete before starting. 
 
 ### `interruptible`
 
@@ -3929,7 +4030,7 @@ deployment:
   script: echo "Deploying..."
 ```
 
-You must define [`strategy: depend`](#linking-pipelines-with-triggerstrategy)
+You must define [`strategy: depend`](#triggerstrategy)
 with the `trigger` keyword. This ensures that the lock isn't released until the downstream pipeline
 finishes.
 
@@ -4538,7 +4639,7 @@ If a variable of the same name is defined globally and for a specific job, the
 All YAML-defined variables are also set to any linked
 [Docker service containers](../services/index.md).
 
-You can use [YAML anchors for variables](#yaml-anchors-for-variables).
+You can use [YAML anchors for variables](yaml_specific_features.md#yaml-anchors-for-variables).
 
 ### Prefill variables in manual pipelines
 
@@ -4573,320 +4674,6 @@ You can use [CI/CD variables](../variables/index.md) to configure how the runner
 
 You can also use variables to configure how many times a runner
 [attempts certain stages of job execution](../runners/configure_runners.md#job-stages-attempts).
-
-## YAML-specific features
-
-In your `.gitlab-ci.yml` file, you can use YAML-specific features like anchors (`&`), aliases (`*`),
-and map merging (`<<`). Use these features to reduce the complexity
-of the code in the `.gitlab-ci.yml` file.
-
-Read more about the various [YAML features](https://learnxinyminutes.com/docs/yaml/).
-
-In most cases, the [`extends` keyword](#extends) is more user friendly and you should
-use it when possible.
-
-You can use YAML anchors to merge YAML arrays.
-
-### Anchors
-
-YAML has a feature called 'anchors' that you can use to duplicate
-content across your document.
-
-Use anchors to duplicate or inherit properties. Use anchors with [hidden jobs](#hide-jobs)
-to provide templates for your jobs. When there are duplicate keys, GitLab
-performs a reverse deep merge based on the keys.
-
-You can't use YAML anchors across multiple files when using the [`include`](#include)
-keyword. Anchors are only valid in the file they were defined in. To reuse configuration
-from different YAML files, use [`!reference` tags](#reference-tags) or the
-[`extends` keyword](#extends).
-
-The following example uses anchors and map merging. It creates two jobs,
-`test1` and `test2`, that inherit the `.job_template` configuration, each
-with their own custom `script` defined:
-
-```yaml
-.job_template: &job_configuration  # Hidden yaml configuration that defines an anchor named 'job_configuration'
-  image: ruby:2.6
-  services:
-    - postgres
-    - redis
-
-test1:
-  <<: *job_configuration           # Merge the contents of the 'job_configuration' alias
-  script:
-    - test1 project
-
-test2:
-  <<: *job_configuration           # Merge the contents of the 'job_configuration' alias
-  script:
-    - test2 project
-```
-
-`&` sets up the name of the anchor (`job_configuration`), `<<` means "merge the
-given hash into the current one," and `*` includes the named anchor
-(`job_configuration` again). The expanded version of this example is:
-
-```yaml
-.job_template:
-  image: ruby:2.6
-  services:
-    - postgres
-    - redis
-
-test1:
-  image: ruby:2.6
-  services:
-    - postgres
-    - redis
-  script:
-    - test1 project
-
-test2:
-  image: ruby:2.6
-  services:
-    - postgres
-    - redis
-  script:
-    - test2 project
-```
-
-You can use anchors to define two sets of services. For example, `test:postgres`
-and `test:mysql` share the `script` defined in `.job_template`, but use different
-`services`, defined in `.postgres_services` and `.mysql_services`:
-
-```yaml
-.job_template: &job_configuration
-  script:
-    - test project
-  tags:
-    - dev
-
-.postgres_services:
-  services: &postgres_configuration
-    - postgres
-    - ruby
-
-.mysql_services:
-  services: &mysql_configuration
-    - mysql
-    - ruby
-
-test:postgres:
-  <<: *job_configuration
-  services: *postgres_configuration
-  tags:
-    - postgres
-
-test:mysql:
-  <<: *job_configuration
-  services: *mysql_configuration
-```
-
-The expanded version is:
-
-```yaml
-.job_template:
-  script:
-    - test project
-  tags:
-    - dev
-
-.postgres_services:
-  services:
-    - postgres
-    - ruby
-
-.mysql_services:
-  services:
-    - mysql
-    - ruby
-
-test:postgres:
-  script:
-    - test project
-  services:
-    - postgres
-    - ruby
-  tags:
-    - postgres
-
-test:mysql:
-  script:
-    - test project
-  services:
-    - mysql
-    - ruby
-  tags:
-    - dev
-```
-
-You can see that the hidden jobs are conveniently used as templates, and
-`tags: [postgres]` overwrites `tags: [dev]`.
-
-#### YAML anchors for scripts
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23005) in GitLab 12.5.
-
-You can use [YAML anchors](#anchors) with [script](#script), [`before_script`](#before_script),
-and [`after_script`](#after_script) to use predefined commands in multiple jobs:
-
-```yaml
-.some-script-before: &some-script-before
-  - echo "Execute this script first"
-
-.some-script: &some-script
-  - echo "Execute this script second"
-  - echo "Execute this script too"
-
-.some-script-after: &some-script-after
-  - echo "Execute this script last"
-
-job1:
-  before_script:
-    - *some-script-before
-  script:
-    - *some-script
-    - echo "Execute something, for this job only"
-  after_script:
-    - *some-script-after
-
-job2:
-  script:
-    - *some-script-before
-    - *some-script
-    - echo "Execute something else, for this job only"
-    - *some-script-after
-```
-
-#### YAML anchors for variables
-
-Use [YAML anchors](#anchors) with `variables` to repeat assignment
-of variables across multiple jobs. You can also use YAML anchors when a job
-requires a specific `variables` block that would otherwise override the global variables.
-
-The following example shows how override the `GIT_STRATEGY` variable without affecting
-the use of the `SAMPLE_VARIABLE` variable:
-
-```yaml
-# global variables
-variables: &global-variables
-  SAMPLE_VARIABLE: sample_variable_value
-  ANOTHER_SAMPLE_VARIABLE: another_sample_variable_value
-
-# a job that must set the GIT_STRATEGY variable, yet depend on global variables
-job_no_git_strategy:
-  stage: cleanup
-  variables:
-    <<: *global-variables
-    GIT_STRATEGY: none
-  script: echo $SAMPLE_VARIABLE
-```
-
-### Hide jobs
-
-If you want to temporarily disable a job, rather than commenting out all the
-lines where the job is defined:
-
-```yaml
-# hidden_job:
-#   script:
-#     - run test
-```
-
-Instead, you can start its name with a dot (`.`) and it is not processed by
-GitLab CI/CD. In the following example, `.hidden_job` is ignored:
-
-```yaml
-.hidden_job:
-  script:
-    - run test
-```
-
-Use this feature to ignore jobs, or use the
-[YAML-specific features](#yaml-specific-features) and transform the hidden jobs
-into templates.
-
-### `!reference` tags
-
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/266173) in GitLab 13.9.
-> - `rules` keyword support [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/322992) in GitLab 14.3.
-
-Use the `!reference` custom YAML tag to select keyword configuration from other job
-sections and reuse it in the current section. Unlike [YAML anchors](#anchors), you can
-use `!reference` tags to reuse configuration from [included](#include) configuration
-files as well.
-
-In the following example, a `script` and an `after_script` from two different locations are
-reused in the `test` job:
-
-- `setup.yml`:
-
-  ```yaml
-  .setup:
-    script:
-      - echo creating environment
-  ```
-
-- `.gitlab-ci.yml`:
-
-  ```yaml
-  include:
-    - local: setup.yml
-
-  .teardown:
-    after_script:
-      - echo deleting environment
-
-  test:
-    script:
-      - !reference [.setup, script]
-      - echo running my own command
-    after_script:
-      - !reference [.teardown, after_script]
-  ```
-
-In the following example, `test-vars-1` reuses all the variables in `.vars`, while `test-vars-2`
-selects a specific variable and reuses it as a new `MY_VAR` variable.
-
-```yaml
-.vars:
-  variables:
-    URL: "http://my-url.internal"
-    IMPORTANT_VAR: "the details"
-
-test-vars-1:
-  variables: !reference [.vars, variables]
-  script:
-    - printenv
-
-test-vars-2:
-  variables:
-    MY_VAR: !reference [.vars, variables, IMPORTANT_VAR]
-  script:
-    - printenv
-```
-
-You can't reuse a section that already includes a `!reference` tag. Only one level
-of nesting is supported.
-
-## Skip Pipeline
-
-To push a commit without triggering a pipeline, add `[ci skip]` or `[skip ci]`, using any
-capitalization, to your commit message.
-
-Alternatively, if you are using Git 2.10 or later, use the `ci.skip` [Git push option](../../user/project/push_options.md#push-options-for-gitlab-cicd).
-The `ci.skip` push option does not skip merge request
-pipelines.
-
-## Processing Git pushes
-
-GitLab creates at most four branch and tag pipelines when
-pushing multiple changes in a single `git push` invocation.
-
-This limitation does not affect any of the updated merge request pipelines.
-All updated merge requests have a pipeline created when using
-[pipelines for merge requests](../pipelines/merge_request_pipelines.md).
 
 ## Deprecated keywords
 

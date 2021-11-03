@@ -2,12 +2,12 @@
 import produce from 'immer';
 import getUsersProjects from '~/graphql_shared/queries/get_users_projects.query.graphql';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
+import { PAGE_SIZE } from 'ee/threat_monitoring/constants';
 
 const defaultPageInfo = { endCursor: '', hasNextPage: false };
 
 export default {
   MINIMUM_QUERY_LENGTH: 3,
-  PROJECTS_PER_PAGE: 20,
   SEARCH_ERROR: 'SEARCH_ERROR',
   QUERY_TOO_SHORT_ERROR: 'QUERY_TOO_SHORT_ERROR',
   NO_RESULTS_ERROR: 'NO_RESULTS_ERROR',
@@ -17,7 +17,7 @@ export default {
       variables() {
         return {
           search: this.searchQuery,
-          first: this.$options.PROJECTS_PER_PAGE,
+          first: PAGE_SIZE,
           searchNamespaces: true,
           sort: 'similarity',
         };

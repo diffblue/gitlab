@@ -1,5 +1,5 @@
-- faq_link          = link_to s_("BillingPlans|frequently asked questions"), "https://about.gitlab.com/gitlab-com/#faq"
-- pricing_page_link = link_to s_("BillingPlans|Pricing page"), "https://about.gitlab.com/pricing"
+- faq_link          = link_to s_("BillingPlans|frequently asked questions"), Gitlab::Saas.about_pricing_faq_url
+- pricing_page_link = link_to s_("BillingPlans|Pricing page"), Gitlab::Saas.about_pricing_url
 
 - if show_start_free_trial_messages?(namespace)
   = html_escape(s_("BillingPlans|Learn more about each plan by reading our %{faq_link}, or start a free 30-day trial of GitLab.com Ultimate.")) % { faq_link: faq_link.html_safe }

@@ -11,10 +11,6 @@ module Vulnerabilities
     # https://gitlab.com/gitlab-org/gitlab/-/issues/214563#note_370782508 is why the table names are not renamed
     self.table_name = "vulnerability_occurrences"
 
-    # This is necessary to prevent updating the
-    # created_at attribute with upsert queries.
-    attr_readonly(:created_at)
-
     FINDINGS_PER_PAGE = 20
     MAX_NUMBER_OF_IDENTIFIERS = 20
     REPORT_TYPES_WITH_LOCATION_IMAGE = %w[container_scanning cluster_image_scanning].freeze
@@ -38,7 +34,6 @@ module Vulnerabilities
     has_many :remediations, through: :finding_remediations
 
     has_many :finding_pipelines, class_name: 'Vulnerabilities::FindingPipeline', inverse_of: :finding, foreign_key: 'occurrence_id'
-    has_many :pipelines, through: :finding_pipelines, class_name: 'Ci::Pipeline', disable_joins: -> { ::Feature.enabled?(:finding_ci_pipeline_disable_joins, default_enabled: :yaml) }
 
     has_many :signatures, class_name: 'Vulnerabilities::FindingSignature', inverse_of: :finding
 

@@ -22,6 +22,7 @@ describe('ee/epic/components/epic_form.vue', () => {
   const createWrapper = ({ mutationResult = TEST_NEW_EPIC } = {}) => {
     wrapper = shallowMount(EpicForm, {
       provide: {
+        iid: '1',
         groupPath: TEST_GROUP_PATH,
         groupEpicsPath: TEST_HOST,
         labelsFetchPath: TEST_HOST,

@@ -1034,6 +1034,27 @@ Input type: `ConfigureSecretDetectionInput`
 | <a id="mutationconfiguresecretdetectionerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationconfiguresecretdetectionsuccesspath"></a>`successPath` | [`String`](#string) | Redirect path to use when the response is successful. |
 
+### `Mutation.corpusCreate`
+
+Available only when feature flag `corpus_management` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Input type: `CorpusCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationcorpuscreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcorpuscreatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the corpus belongs to. |
+| <a id="mutationcorpuscreatepackageid"></a>`packageId` | [`PackagesPackageID!`](#packagespackageid) | ID of the corpus package. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationcorpuscreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationcorpuscreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.createAlertIssue`
 
 Input type: `CreateAlertIssueInput`
@@ -1554,7 +1575,7 @@ Input type: `DastProfileCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofilecreatebranchname"></a>`branchName` | [`String`](#string) | Associated branch. |
 | <a id="mutationdastprofilecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastprofilecreatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled. |
+| <a id="mutationdastprofilecreatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST Profile Schedule. |
 | <a id="mutationdastprofilecreatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be associated. |
 | <a id="mutationdastprofilecreatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be associated. |
 | <a id="mutationdastprofilecreatedescription"></a>`description` | [`String`](#string) | Description of the profile. Defaults to an empty string. |
@@ -1598,7 +1619,7 @@ Input type: `DastProfileRunInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofilerunclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastprofilerunfullpath"></a>`fullPath` | [`ID!`](#id) | Full path for the project the scanner profile belongs to. |
+| <a id="mutationdastprofilerunfullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastprofilerunid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the profile to be used for the scan. |
 
 #### Fields
@@ -1619,11 +1640,11 @@ Input type: `DastProfileUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdastprofileupdatebranchname"></a>`branchName` | [`String`](#string) | Associated branch. |
 | <a id="mutationdastprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastprofileupdatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST profile schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled. |
+| <a id="mutationdastprofileupdatedastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileScheduleInput`](#dastprofilescheduleinput) | Represents a DAST profile schedule. |
 | <a id="mutationdastprofileupdatedastscannerprofileid"></a>`dastScannerProfileId` | [`DastScannerProfileID`](#dastscannerprofileid) | ID of the scanner profile to be associated. |
 | <a id="mutationdastprofileupdatedastsiteprofileid"></a>`dastSiteProfileId` | [`DastSiteProfileID`](#dastsiteprofileid) | ID of the site profile to be associated. |
 | <a id="mutationdastprofileupdatedescription"></a>`description` | [`String`](#string) | Description of the profile. Defaults to an empty string. |
-| <a id="mutationdastprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the profile belongs to. |
+| <a id="mutationdastprofileupdatefullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastprofileupdateid"></a>`id` | [`DastProfileID!`](#dastprofileid) | ID of the profile to be deleted. |
 | <a id="mutationdastprofileupdatename"></a>`name` | [`String`](#string) | Name of the profile. |
 | <a id="mutationdastprofileupdaterunafterupdate"></a>`runAfterUpdate` | [`Boolean`](#boolean) | Run scan using profile after update. Defaults to false. |
@@ -1671,7 +1692,7 @@ Input type: `DastScannerProfileDeleteInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastscannerprofiledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastscannerprofiledeletefullpath"></a>`fullPath` | [`ID!`](#id) | Full path for the project the scanner profile belongs to. |
+| <a id="mutationdastscannerprofiledeletefullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastscannerprofiledeleteid"></a>`id` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be deleted. |
 
 #### Fields
@@ -1690,7 +1711,7 @@ Input type: `DastScannerProfileUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastscannerprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastscannerprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the scanner profile belongs to. |
+| <a id="mutationdastscannerprofileupdatefullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastscannerprofileupdateid"></a>`id` | [`DastScannerProfileID!`](#dastscannerprofileid) | ID of the scanner profile to be updated. |
 | <a id="mutationdastscannerprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | Name of the scanner profile. |
 | <a id="mutationdastscannerprofileupdatescantype"></a>`scanType` | [`DastScanTypeEnum`](#dastscantypeenum) | Indicates the type of DAST scan that will run. Either a Passive Scan or an Active Scan. |
@@ -1741,7 +1762,7 @@ Input type: `DastSiteProfileDeleteInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdastsiteprofiledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdastsiteprofiledeletefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
+| <a id="mutationdastsiteprofiledeletefullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastsiteprofiledeleteid"></a>`id` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be deleted. |
 
 #### Fields
@@ -1762,7 +1783,7 @@ Input type: `DastSiteProfileUpdateInput`
 | <a id="mutationdastsiteprofileupdateauth"></a>`auth` | [`DastSiteProfileAuthInput`](#dastsiteprofileauthinput) | Parameters for authentication. |
 | <a id="mutationdastsiteprofileupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdastsiteprofileupdateexcludedurls"></a>`excludedUrls` | [`[String!]`](#string) | URLs to skip during an authenticated scan. |
-| <a id="mutationdastsiteprofileupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Project the site profile belongs to. |
+| <a id="mutationdastsiteprofileupdatefullpath"></a>`fullPath` **{warning-solid}** | [`ID`](#id) | **Deprecated:** Full path not required to qualify Global ID. Deprecated in 14.5. |
 | <a id="mutationdastsiteprofileupdateid"></a>`id` | [`DastSiteProfileID!`](#dastsiteprofileid) | ID of the site profile to be updated. |
 | <a id="mutationdastsiteprofileupdateprofilename"></a>`profileName` | [`String!`](#string) | Name of the site profile. |
 | <a id="mutationdastsiteprofileupdaterequestheaders"></a>`requestHeaders` | [`String`](#string) | Comma-separated list of request header names and values to be added to every request made by DAST. |
@@ -3228,6 +3249,29 @@ Input type: `MergeRequestAcceptInput`
 | <a id="mutationmergerequestaccepterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationmergerequestacceptmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request after mutation. |
 
+### `Mutation.mergeRequestAttentionRequired`
+
+Available only when feature flag `mr_attention_requests` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Input type: `MergeRequestAttentionRequiredInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestattentionrequiredclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestattentionrequirediid"></a>`iid` | [`String!`](#string) | IID of the merge request to mutate. |
+| <a id="mutationmergerequestattentionrequiredprojectpath"></a>`projectPath` | [`ID!`](#id) | Project the merge request to mutate is in. |
+| <a id="mutationmergerequestattentionrequireduserid"></a>`userId` | [`UserID!`](#userid) | User ID for the user that has their attention requested. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmergerequestattentionrequiredclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmergerequestattentionrequirederrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationmergerequestattentionrequiredmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Merge request after mutation. |
+
 ### `Mutation.mergeRequestCreate`
 
 Input type: `MergeRequestCreateInput`
@@ -4042,6 +4086,7 @@ Input type: `ScanExecutionPolicyCommitInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationscanexecutionpolicycommitclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationscanexecutionpolicycommitname"></a>`name` | [`String`](#string) | Name of the policy. If the name is null, the `name` field from `policy_yaml` is used. |
 | <a id="mutationscanexecutionpolicycommitoperationmode"></a>`operationMode` | [`MutationOperationMode!`](#mutationoperationmode) | Changes the operation mode. |
 | <a id="mutationscanexecutionpolicycommitpolicyyaml"></a>`policyYaml` | [`String!`](#string) | YAML snippet of the policy. |
 | <a id="mutationscanexecutionpolicycommitprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
@@ -4095,6 +4140,26 @@ Input type: `SecurityPolicyProjectCreateInput`
 | <a id="mutationsecuritypolicyprojectcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationsecuritypolicyprojectcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationsecuritypolicyprojectcreateproject"></a>`project` | [`Project`](#project) | Security Policy Project that was created. |
+
+### `Mutation.securityPolicyProjectUnassign`
+
+Unassigns the security policy project for the given project(`project_path`).
+
+Input type: `SecurityPolicyProjectUnassignInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationsecuritypolicyprojectunassignclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationsecuritypolicyprojectunassignprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationsecuritypolicyprojectunassignclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationsecuritypolicyprojectunassignerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.terraformStateDelete`
 
@@ -4710,17 +4775,17 @@ Input type: `VulnerabilityCreateInput`
 | <a id="mutationvulnerabilitycreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvulnerabilitycreateconfidence"></a>`confidence` | [`VulnerabilityConfidence`](#vulnerabilityconfidence) | Confidence of the vulnerability (defaults to `unknown`). |
 | <a id="mutationvulnerabilitycreateconfirmedat"></a>`confirmedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to confirmed (defaults to creation time if status is `confirmed`). |
-| <a id="mutationvulnerabilitycreatedescription"></a>`description` | [`String!`](#string) | Description of the vulnerability. |
+| <a id="mutationvulnerabilitycreatedescription"></a>`description` | [`String!`](#string) | Long text section that describes the vulnerability in more detail. |
 | <a id="mutationvulnerabilitycreatedetectedat"></a>`detectedAt` | [`Time`](#time) | Timestamp of when the vulnerability was first detected (defaults to creation time). |
 | <a id="mutationvulnerabilitycreatedismissedat"></a>`dismissedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to dismissed (defaults to creation time if status is `dismissed`). |
 | <a id="mutationvulnerabilitycreateidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifierInput!]!`](#vulnerabilityidentifierinput) | Array of CVE or CWE identifiers for the vulnerability. |
-| <a id="mutationvulnerabilitycreatemessage"></a>`message` | [`String`](#string) | Additional information about the vulnerability. |
+| <a id="mutationvulnerabilitycreatemessage"></a>`message` | [`String`](#string) | Short text section that describes the vulnerability. This may include the finding's specific information. |
 | <a id="mutationvulnerabilitycreatename"></a>`name` | [`String!`](#string) | Name of the vulnerability. |
 | <a id="mutationvulnerabilitycreateproject"></a>`project` | [`ProjectID!`](#projectid) | ID of the project to attach the vulnerability to. |
 | <a id="mutationvulnerabilitycreateresolvedat"></a>`resolvedAt` | [`Time`](#time) | Timestamp of when the vulnerability state changed to resolved (defaults to creation time if status is `resolved`). |
 | <a id="mutationvulnerabilitycreatescanner"></a>`scanner` | [`VulnerabilityScannerInput!`](#vulnerabilityscannerinput) | Information about the scanner used to discover the vulnerability. |
 | <a id="mutationvulnerabilitycreateseverity"></a>`severity` | [`VulnerabilitySeverity`](#vulnerabilityseverity) | Severity of the vulnerability (defaults to `unknown`). |
-| <a id="mutationvulnerabilitycreatesolution"></a>`solution` | [`String`](#string) | How to fix this vulnerability. |
+| <a id="mutationvulnerabilitycreatesolution"></a>`solution` | [`String`](#string) | Instructions for how to fix the vulnerability. |
 | <a id="mutationvulnerabilitycreatestate"></a>`state` | [`VulnerabilityState`](#vulnerabilitystate) | State of the vulnerability (defaults to `detected`). |
 
 #### Fields
@@ -8696,6 +8761,8 @@ Represents a code quality degradation on the pipeline.
 | <a id="commitauthoreddate"></a>`authoredDate` | [`Time`](#time) | Timestamp of when the commit was authored. |
 | <a id="commitdescription"></a>`description` | [`String`](#string) | Description of the commit message. |
 | <a id="commitdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
+| <a id="commitfulltitle"></a>`fullTitle` | [`String`](#string) | Full title of the commit message. |
+| <a id="commitfulltitlehtml"></a>`fullTitleHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `full_title`. |
 | <a id="commitid"></a>`id` | [`ID!`](#id) | ID (global ID) of the commit. |
 | <a id="commitmessage"></a>`message` | [`String`](#string) | Raw commit message. |
 | <a id="commitsha"></a>`sha` | [`String!`](#string) | SHA1 ID of the commit. |
@@ -8887,6 +8954,7 @@ Represents the current license.
 | <a id="currentlicensebillableuserscount"></a>`billableUsersCount` | [`Int`](#int) | Number of billable users on the system. |
 | <a id="currentlicenseblockchangesat"></a>`blockChangesAt` | [`Date`](#date) | Date, including grace period, when licensed features will be blocked. |
 | <a id="currentlicensecompany"></a>`company` | [`String`](#string) | Company of the licensee. |
+| <a id="currentlicensecreatedat"></a>`createdAt` | [`Date`](#date) | Date when the license was added. |
 | <a id="currentlicenseemail"></a>`email` | [`String`](#string) | Email of the licensee. |
 | <a id="currentlicenseexpiresat"></a>`expiresAt` | [`Date`](#date) | Date when the license expires. |
 | <a id="currentlicenseid"></a>`id` | [`ID!`](#id) | ID of the license. |
@@ -8950,7 +9018,7 @@ Represents a DAST Profile.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dastprofilebranch"></a>`branch` | [`DastProfileBranch`](#dastprofilebranch) | Associated branch. |
-| <a id="dastprofiledastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileSchedule`](#dastprofileschedule) | Associated profile schedule. Will always return `null` if `dast_on_demand_scans_scheduler` feature flag is disabled. |
+| <a id="dastprofiledastprofileschedule"></a>`dastProfileSchedule` | [`DastProfileSchedule`](#dastprofileschedule) | Associated profile schedule. |
 | <a id="dastprofiledastscannerprofile"></a>`dastScannerProfile` | [`DastScannerProfile`](#dastscannerprofile) | Associated scanner profile. |
 | <a id="dastprofiledastsiteprofile"></a>`dastSiteProfile` | [`DastSiteProfile`](#dastsiteprofile) | Associated site profile. |
 | <a id="dastprofiledescription"></a>`description` | [`String`](#string) | Description of the scan. |
@@ -10171,7 +10239,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ##### `GeoNode.uploadRegistries`
 
-Find Upload registries on this Geo node Available only when feature flag `geo_upload_replication` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+Find Upload registries on this Geo node.
 
 Returns [`UploadRegistryConnection`](#uploadregistryconnection).
 
@@ -10580,6 +10648,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="groupmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="groupmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="groupmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="groupmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="groupmergerequestsincludesubgroups"></a>`includeSubgroups` | [`Boolean`](#boolean) | Include merge requests belonging to subgroups. |
 | <a id="groupmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
@@ -11258,6 +11328,7 @@ Represents an entry from the Cloud License history.
 | <a id="licensehistoryentryactivatedat"></a>`activatedAt` | [`Date`](#date) | Date when the license was activated. |
 | <a id="licensehistoryentryblockchangesat"></a>`blockChangesAt` | [`Date`](#date) | Date, including grace period, when licensed features will be blocked. |
 | <a id="licensehistoryentrycompany"></a>`company` | [`String`](#string) | Company of the licensee. |
+| <a id="licensehistoryentrycreatedat"></a>`createdAt` | [`Date`](#date) | Date when the license was added. |
 | <a id="licensehistoryentryemail"></a>`email` | [`String`](#string) | Email of the licensee. |
 | <a id="licensehistoryentryexpiresat"></a>`expiresAt` | [`Date`](#date) | Date when the license expires. |
 | <a id="licensehistoryentryid"></a>`id` | [`ID!`](#id) | ID of the license. |
@@ -11494,6 +11565,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneeassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestassigneeassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestassigneeassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestassigneeassignedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestassigneeassignedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestassigneeassignedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -11523,6 +11596,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneeauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestassigneeauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestassigneeauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestassigneeauthoredmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestassigneeauthoredmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestassigneeauthoredmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -11570,6 +11645,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestassigneereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestassigneereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestassigneereviewrequestedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -11740,6 +11817,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestreviewerassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestreviewerassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestreviewerassignedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestreviewerassignedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestreviewerassignedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -11769,6 +11848,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestreviewerauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestreviewerauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestreviewerauthoredmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestreviewerauthoredmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestreviewerauthoredmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -11816,6 +11897,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="mergerequestreviewerreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="mergerequestreviewerreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -12148,10 +12231,10 @@ Nuget metadata.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="nugetmetadataiconurl"></a>`iconUrl` | [`String!`](#string) | Icon URL of the Nuget package. |
+| <a id="nugetmetadataiconurl"></a>`iconUrl` | [`String`](#string) | Icon URL of the Nuget package. |
 | <a id="nugetmetadataid"></a>`id` | [`PackagesNugetMetadatumID!`](#packagesnugetmetadatumid) | ID of the metadatum. |
-| <a id="nugetmetadatalicenseurl"></a>`licenseUrl` | [`String!`](#string) | License URL of the Nuget package. |
-| <a id="nugetmetadataprojecturl"></a>`projectUrl` | [`String!`](#string) | Project URL of the Nuget package. |
+| <a id="nugetmetadatalicenseurl"></a>`licenseUrl` | [`String`](#string) | License URL of the Nuget package. |
+| <a id="nugetmetadataprojecturl"></a>`projectUrl` | [`String`](#string) | Project URL of the Nuget package. |
 
 ### `OncallParticipantType`
 
@@ -12375,6 +12458,7 @@ Represents a file or directory in the project repository that has been locked.
 | <a id="pipelinebeforesha"></a>`beforeSha` | [`String`](#string) | Base SHA of the source branch. |
 | <a id="pipelinecancelable"></a>`cancelable` | [`Boolean!`](#boolean) | Specifies if a pipeline can be canceled. |
 | <a id="pipelinecodequalityreports"></a>`codeQualityReports` | [`CodeQualityDegradationConnection`](#codequalitydegradationconnection) | Code Quality degradations reported on the pipeline. (see [Connections](#connections)) |
+| <a id="pipelinecommit"></a>`commit` | [`Commit`](#commit) | Git commit of the pipeline. |
 | <a id="pipelinecommitpath"></a>`commitPath` | [`String`](#string) | Path to the commit that triggered the pipeline. |
 | <a id="pipelinecommittedat"></a>`committedAt` | [`Time`](#time) | Timestamp of the pipeline's commit. |
 | <a id="pipelinecomplete"></a>`complete` | [`Boolean!`](#boolean) | Indicates if a pipeline is complete. |
@@ -12919,6 +13003,8 @@ Returns [`Issue`](#issue).
 | <a id="projectissuemilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuemyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuenot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissuereleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
+| <a id="projectissuereleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuesearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectissuesort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
 | <a id="projectissuestate"></a>`state` | [`IssuableState`](#issuablestate) | Current state of this issue. |
@@ -12953,6 +13039,8 @@ Returns [`IssueStatusCountsType`](#issuestatuscountstype).
 | <a id="projectissuestatuscountsmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuestatuscountsmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuestatuscountsnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissuestatuscountsreleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
+| <a id="projectissuestatuscountsreleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuestatuscountssearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectissuestatuscountstypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter issues by the given issue types. |
 | <a id="projectissuestatuscountsupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Issues updated after this date. |
@@ -12992,6 +13080,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectissuesmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuesmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuesnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissuesreleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
+| <a id="projectissuesreleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuessearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectissuessort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
 | <a id="projectissuesstate"></a>`state` | [`IssuableState`](#issuablestate) | Current state of this issue. |
@@ -13118,6 +13208,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="projectmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="projectmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="projectmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="projectmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="projectmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="projectmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -13912,7 +14004,7 @@ Counts of requirements by their state.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="runnersetupinstallinstructions"></a>`installInstructions` | [`String!`](#string) | Instructions for installing the runner on the specified architecture. |
-| <a id="runnersetupregisterinstructions"></a>`registerInstructions` | [`String`](#string) | Instructions for registering the runner. |
+| <a id="runnersetupregisterinstructions"></a>`registerInstructions` | [`String`](#string) | Instructions for registering the runner. The actual registration tokens are not included in the commands. Instead, a placeholder `$REGISTRATION_TOKEN` is shown. |
 
 ### `SastCiConfiguration`
 
@@ -14688,6 +14780,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="usercoreassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="usercoreassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="usercoreassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="usercoreassignedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="usercoreassignedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="usercoreassignedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -14717,6 +14811,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="usercoreauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="usercoreauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="usercoreauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="usercoreauthoredmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="usercoreauthoredmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="usercoreauthoredmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -14764,6 +14860,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="usercorereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="usercorereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="usercorereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="usercorereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="usercorereviewrequestedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="usercorereviewrequestedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="usercorereviewrequestedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -16158,6 +16256,7 @@ State of a review of a GitLab merge request.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="mergerequestreviewstateattention_required"></a>`ATTENTION_REQUIRED` | The merge request is attention_required. |
 | <a id="mergerequestreviewstatereviewed"></a>`REVIEWED` | The merge request is reviewed. |
 | <a id="mergerequestreviewstateunreviewed"></a>`UNREVIEWED` | The merge request is unreviewed. |
 
@@ -16462,6 +16561,15 @@ Values for sorting releases.
 | <a id="releasesortreleased_at_asc"></a>`RELEASED_AT_ASC` | Released at by ascending order. |
 | <a id="releasesortreleased_at_desc"></a>`RELEASED_AT_DESC` | Released at by descending order. |
 
+### `ReleaseTagWildcardId`
+
+Release tag ID wildcard values.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="releasetagwildcardidany"></a>`ANY` | Release tag is assigned. |
+| <a id="releasetagwildcardidnone"></a>`NONE` | No release tag is assigned. |
+
 ### `RequirementState`
 
 State of a requirement.
@@ -16578,6 +16686,7 @@ State of a Sentry error.
 | <a id="servicetypeunify_circuit_service"></a>`UNIFY_CIRCUIT_SERVICE` | UnifyCircuitService type. |
 | <a id="servicetypewebex_teams_service"></a>`WEBEX_TEAMS_SERVICE` | WebexTeamsService type. |
 | <a id="servicetypeyoutrack_service"></a>`YOUTRACK_SERVICE` | YoutrackService type. |
+| <a id="servicetypezentao_service"></a>`ZENTAO_SERVICE` | ZentaoService type. |
 
 ### `SharedRunnersSetting`
 
@@ -17733,6 +17842,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="userassignedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="userassignedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="userassignedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="userassignedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="userassignedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="userassignedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -17762,6 +17873,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="userauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="userauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="userauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="userauthoredmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="userauthoredmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="userauthoredmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -17809,6 +17922,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="userreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
 | <a id="userreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
+| <a id="userreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after this timestamp. |
+| <a id="userreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before this timestamp. |
 | <a id="userreviewrequestedmergerequestsiids"></a>`iids` | [`[String!]`](#string) | Array of IIDs of merge requests, for example `[1, 2]`. |
 | <a id="userreviewrequestedmergerequestslabels"></a>`labels` | [`[String!]`](#string) | Array of label names. All resolved merge requests will have all of these labels. |
 | <a id="userreviewrequestedmergerequestsmergedafter"></a>`mergedAfter` | [`Time`](#time) | Merge requests merged after this date. |
@@ -18161,6 +18276,7 @@ Represents an escalation rule.
 | <a id="negatedissuefilterinputmilestonetitle"></a>`milestoneTitle` | [`[String!]`](#string) | Milestone not applied to this issue. |
 | <a id="negatedissuefilterinputmilestonewildcardid"></a>`milestoneWildcardId` | [`NegatedMilestoneWildcardId`](#negatedmilestonewildcardid) | Filter by negated milestone wildcard values. |
 | <a id="negatedissuefilterinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. |
+| <a id="negatedissuefilterinputreleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag not associated with the issue's milestone. Ignored when parent is a group. |
 | <a id="negatedissuefilterinputtypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filters out issues by the given issue types. |
 | <a id="negatedissuefilterinputweight"></a>`weight` | [`String`](#string) | Weight not applied to the issue. |
 

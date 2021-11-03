@@ -15,7 +15,7 @@ module Ci
         where(
           date: namespace_monthly_usage.date,
           project: namespace_monthly_usage.namespace.projects
-        )
+        ).allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343301')
       end
 
       def self.beginning_of_month(time = Time.current)
@@ -30,13 +30,14 @@ module Ci
         current_month.safe_find_or_create_by(project_id: project_id)
       end
 
-      def self.increase_usage(usage, amount)
-        return unless amount > 0
+      def self.increase_usage(usage, increments)
+        increment_params = increments.select { |_attribute, value| value > 0 }
+        return if increment_params.empty?
 
         # The use of `update_counters` ensures we do a SQL update rather than
         # incrementing the counter for the object in memory and then save it.
         # This is better for concurrent updates.
-        update_counters(usage, amount_used: amount)
+        update_counters(usage, increment_params)
       end
     end
   end

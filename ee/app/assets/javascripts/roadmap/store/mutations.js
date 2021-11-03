@@ -85,15 +85,6 @@ export default {
     state.childrenFlags[parentItemId].itemExpanded = false;
   },
 
-  [types.PREPEND_TIMEFRAME](state, extendedTimeframe) {
-    state.extendedTimeframe = extendedTimeframe;
-    state.timeframe.unshift(...extendedTimeframe);
-  },
-  [types.APPEND_TIMEFRAME](state, extendedTimeframe) {
-    state.extendedTimeframe = extendedTimeframe;
-    state.timeframe.push(...extendedTimeframe);
-  },
-
   [types.SET_MILESTONES](state, milestones) {
     state.milestones = milestones;
   },

@@ -1,6 +1,7 @@
 import {
   shouldPollTableData,
   getAdoptedCountsByCols,
+  getGroupAdoptionPath,
 } from 'ee/analytics/devops_report/devops_adoption/utils/helpers';
 import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
 import { devopsAdoptionNamespaceData, namespaceWithSnapotsData } from '../mock_data';
@@ -42,4 +43,14 @@ describe('getAdoptedCountsByCols', () => {
       expect(getAdoptedCountsByCols(snapshots, cols)).toStrictEqual(expected);
     },
   );
+});
+
+describe('getGroupAdoptionPath', () => {
+  it.each`
+    fullPath        | expected
+    ${'gitlab-org'} | ${'/groups/gitlab-org/-/analytics/devops_adoption'}
+    ${null}         | ${null}
+  `('returns the correct value based on the group full path', ({ fullPath, expected }) => {
+    expect(getGroupAdoptionPath(fullPath)).toBe(expected);
+  });
 });

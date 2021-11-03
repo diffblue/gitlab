@@ -13,7 +13,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
-      Gitlab::Elastic::Indexer.new(project).run
+      project.repository.index_commits_and_blobs
       ensure_elasticsearch_index!
     end
 
@@ -30,6 +30,57 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
       expect(result.startline).to eq(2)
       expect(result.data).to include('Popen')
       expect(result.project).to eq(project)
+    end
+  end
+
+  describe '#blob_aggregations', :sidekiq_inline do
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+
+      project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
+    end
+
+    it 'returns aggregations' do
+      subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
+      result = subject.blob_aggregations
+
+      expect(result.first.name).to eq('language')
+      expect(result.first.buckets.first[:key]).to eq({ 'language' => 'Markdown' })
+      expect(result.first.buckets.first[:count]).to eq(2)
+    end
+
+    context 'when search_blobs_language_aggregation feature flag is disabled' do
+      before do
+        stub_feature_flags(search_blobs_language_aggregation: false)
+      end
+
+      it 'returns empty array' do
+        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
+        result = subject.blob_aggregations
+
+        expect(result).to match_array([])
+      end
+    end
+
+    context 'when search type is not blobs' do
+      let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
+
+      it 'returns empty array' do
+        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab')
+        result = subject.blob_aggregations
+
+        expect(result).to match_array([])
+      end
+    end
+
+    context 'when count_only search' do
+      it 'returns empty array' do
+        subject.elastic_search_as_found_blob('This guide details how contribute to GitLab', options: { count_only: true })
+        result = subject.blob_aggregations
+
+        expect(result).to match_array([])
+      end
     end
   end
 

@@ -22,6 +22,9 @@ RSpec.describe AuditEventService, :request_store do
 
     it 'generates event' do
       expect(event_details[:target_details]).to eq(user.name)
+      expect(event_details[:target_id]).to eq(user.id)
+      expect(event_details[:target_type]).to eq('User')
+      expect(event_details[:member_id]).to eq(project_member.id)
     end
 
     it 'handles deleted users' do

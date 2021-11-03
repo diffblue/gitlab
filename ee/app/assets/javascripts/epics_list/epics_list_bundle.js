@@ -18,12 +18,7 @@ export default function initEpicsList({ mountPointSelector }) {
   }
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(
-      {},
-      {
-        assumeImmutableResults: true,
-      },
-    ),
+    defaultClient: createDefaultClient(),
   });
 
   const {

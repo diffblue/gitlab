@@ -5,7 +5,6 @@ module Geo
     include Geo::Model
     include Geo::Eventable
     include BulkInsertSafe
-    include IgnorableColumns
 
     belongs_to :job_artifact, class_name: 'Ci::JobArtifact'
 

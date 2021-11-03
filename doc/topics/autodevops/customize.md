@@ -58,7 +58,7 @@ If your goal is to use only a single custom buildpack, you should provide the pr
 
 ## Custom `Dockerfile`
 
-> Support for `DOCKERFILE_PATH` was [added in GitLab 13.2](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/35662)
+> Support for `DOCKERFILE_PATH` was [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/35662) in GitLab 13.2
 
 If your project has a `Dockerfile` in the root of the project repository, Auto DevOps
 builds a Docker image based on the Dockerfile, rather than using buildpacks.
@@ -218,7 +218,7 @@ See [Multiple Kubernetes clusters for Auto DevOps](multiple_clusters_auto_devops
 
 For clusters not managed by GitLab, you can customize the namespace in
 `.gitlab-ci.yml` by specifying
-[`environment:kubernetes:namespace`](../../ci/environments/index.md#configure-kubernetes-deployments).
+[`environment:kubernetes:namespace`](../../ci/environments/index.md#configure-kubernetes-deployments-deprecated).
 For example, the following configuration overrides the namespace used for
 `production` deployments:
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size do
+RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size, :saas do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:project, reload: true) { create(:project, :repository, namespace: namespace) }
   let_it_be(:user) { create(:user) }

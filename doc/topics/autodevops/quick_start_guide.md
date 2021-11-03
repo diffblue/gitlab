@@ -199,13 +199,13 @@ The jobs are separated into stages:
     vulnerabilities and is allowed to fail ([Auto Container Scanning](stages.md#auto-container-scanning))
   - The `dependency_scanning` job checks if the application has any dependencies
     susceptible to vulnerabilities and is allowed to fail
-    ([Auto Dependency Scanning](stages.md#auto-dependency-scanning)) **(ULTIMATE)**
+    ([Auto Dependency Scanning](stages.md#auto-dependency-scanning))
   - Jobs suffixed with `-sast` run static analysis on the current code to check for potential
-    security issues, and are allowed to fail ([Auto SAST](stages.md#auto-sast)) **(ULTIMATE)**
-  - The `secret-detection` job checks for leaked secrets and is allowed to fail ([Auto Secret Detection](stages.md#auto-secret-detection)) **(ULTIMATE)**
+    security issues, and are allowed to fail ([Auto SAST](stages.md#auto-sast))
+  - The `secret-detection` job checks for leaked secrets and is allowed to fail ([Auto Secret Detection](stages.md#auto-secret-detection))
   - The `license_scanning` job searches the application's dependencies to determine each of their
     licenses and is allowed to fail
-    ([Auto License Compliance](stages.md#auto-license-compliance)) **(ULTIMATE)**
+    ([Auto License Compliance](stages.md#auto-license-compliance))
 
 - **Review** - Pipelines on the default branch include this stage with a `dast_environment_deploy` job.
   To learn more, see [Dynamic Application Security Testing (DAST)](../../user/application_security/dast/index.md).
@@ -214,7 +214,7 @@ The jobs are separated into stages:
   Kubernetes ([Auto Deploy](stages.md#auto-deploy)).
 
 - **Performance** - Performance tests are run on the deployed application
-  ([Auto Browser Performance Testing](stages.md#auto-browser-performance-testing)). **(PREMIUM)**
+  ([Auto Browser Performance Testing](stages.md#auto-browser-performance-testing)).
 
 - **Cleanup** - Pipelines on the default branch include this stage with a `stop_dast_environment` job.
 
@@ -236,7 +236,7 @@ you to common environment tasks:
   about the Kubernetes cluster and how the application
   affects it in terms of memory usage, CPU usage, and latency
 - **Deploy to** (**{play}** **{angle-down}**) - Displays a list of environments you can deploy to
-- **Terminal** (**{terminal}**) - Opens a [web terminal](../../ci/environments/index.md#web-terminals)
+- **Terminal** (**{terminal}**) - Opens a [web terminal](../../ci/environments/index.md#web-terminals-deprecated)
   session inside the container where the application is running
 - **Re-deploy to environment** (**{repeat}**) - For more information, see
   [Retrying and rolling back](../../ci/environments/index.md#retry-or-roll-back-a-deployment)
@@ -323,7 +323,7 @@ and customized to fit your workflow. Here are some helpful resources for further
 
 1. [Auto DevOps](index.md)
 1. [Multiple Kubernetes clusters](multiple_clusters_auto_devops.md)
-1. [Incremental rollout to production](customize.md#incremental-rollout-to-production) **(PREMIUM)**
+1. [Incremental rollout to production](customize.md#incremental-rollout-to-production)
 1. [Disable jobs you don't need with CI/CD variables](customize.md#cicd-variables)
 1. [Use your own buildpacks to build your application](customize.md#custom-buildpacks)
 1. [Prometheus monitoring](../../user/project/integrations/prometheus.md)

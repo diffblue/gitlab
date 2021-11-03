@@ -1,5 +1,5 @@
 <script>
-import BoardFilteredSearch from '~/boards/components/board_filtered_search.vue';
+import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import issueBoardFilter from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';

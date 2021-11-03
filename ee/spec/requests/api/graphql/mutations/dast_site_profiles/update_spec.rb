@@ -18,7 +18,6 @@ RSpec.describe 'Creating a DAST Site Profile' do
   let(:mutation) do
     graphql_mutation(
       mutation_name,
-      full_path: full_path,
       id: dast_site_profile_id,
       profile_name: new_profile_name,
       target_url: new_target_url,
@@ -70,7 +69,7 @@ RSpec.describe 'Creating a DAST Site Profile' do
     context 'when the dast_site_profile does not exist' do
       let_it_be(:dast_site_profile_id) { Gitlab::GlobalId.build(nil, model_name: 'DastSiteProfile', id: non_existing_record_id) }
 
-      it_behaves_like 'a mutation that returns errors in the response', errors: ['DastSiteProfile not found']
+      it_behaves_like 'a mutation that returns top-level errors', errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
     end
 
     context 'when wrong type of global id is passed' do
@@ -83,13 +82,6 @@ RSpec.describe 'Creating a DAST Site Profile' do
               "of DastSiteProfile)"])
         end
       end
-    end
-
-    context 'when the dast_site_profile belongs to a different project' do
-      let_it_be(:other_project) { create(:project, creator: current_user) }
-      let_it_be(:full_path) { other_project.full_path }
-
-      it_behaves_like 'a mutation that returns a top-level access error'
     end
   end
 end

@@ -61,6 +61,7 @@ module Database
       return unless cross_database_context[:enabled]
 
       return if connection.pool.instance_of?(ActiveRecord::ConnectionAdapters::NullPool)
+      return if in_factory_bot_create?
 
       database = connection.pool.db_config.name
 
@@ -81,28 +82,46 @@ module Database
 
       # PgQuery might fail in some cases due to limited nesting:
       # https://github.com/pganalyze/pg_query/issues/209
-      #
-      # Also, we disable GC while parsing because of https://github.com/pganalyze/pg_query/issues/226
-      begin
-        GC.disable
-        parsed_query = PgQuery.parse(sql)
-        tables = sql.downcase.include?(' for update') ? parsed_query.tables : parsed_query.dml_tables
-      ensure
-        GC.enable
-      end
+      parsed_query = PgQuery.parse(sql)
+      tables = sql.downcase.include?(' for update') ? parsed_query.tables : parsed_query.dml_tables
+
+      # We have some code where plans and gitlab_subscriptions are lazily
+      # created and this causes lots of spec failures
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/343394
+      tables -= %w[plans gitlab_subscriptions]
 
       return if tables.empty?
+
+      # All migrations will write to schema_migrations in the same transaction.
+      # It's safe to ignore this since schema_migrations exists in all
+      # databases
+      return if tables == ['schema_migrations']
 
       cross_database_context[:modified_tables_by_db][database].merge(tables)
 
       all_tables = cross_database_context[:modified_tables_by_db].values.map(&:to_a).flatten
-      schemas = Database::GitlabSchema.table_schemas(all_tables)
+      schemas = ::Gitlab::Database::GitlabSchema.table_schemas(all_tables)
 
       if schemas.many?
-        raise Database::PreventCrossDatabaseModification::CrossDatabaseModificationAcrossUnsupportedTablesError,
-          "Cross-database data modification of '#{schemas.to_a.join(", ")}' were detected within " \
-          "a transaction modifying the '#{all_tables.to_a.join(", ")}' tables"
+        message = "Cross-database data modification of '#{schemas.to_a.join(", ")}' were detected within " \
+          "a transaction modifying the '#{all_tables.to_a.join(", ")}' tables." \
+          "Please refer to https://docs.gitlab.com/ee/development/database/multiple_databases.html#removing-cross-database-transactions for details on how to resolve this exception."
+
+        if schemas.any? { |s| s.to_s.start_with?("undefined") }
+          message += " The gitlab_schema was undefined for one or more of the tables in this transaction. Any new tables must be added to spec/support/database/gitlab_schemas.yml ."
+        end
+
+        raise Database::PreventCrossDatabaseModification::CrossDatabaseModificationAcrossUnsupportedTablesError, message
       end
+    end
+
+    # We ignore execution in the #create method from FactoryBot
+    # because it is not representative of real code we run in
+    # production. There are far too many false positives caused
+    # by instantiating objects in different `gitlab_schema` in a
+    # FactoryBot `create`.
+    def self.in_factory_bot_create?
+      caller_locations.any? { |l| l.path.end_with?('lib/factory_bot/evaluation.rb') && l.label == 'create' }
     end
   end
 end
@@ -118,7 +137,7 @@ RSpec.configure do |config|
   # Using before and after blocks because the around block causes problems with the let_it_be
   # record creations. It makes an extra savepoint which breaks the transaction count logic.
   config.before do |example_file|
-    if CROSS_DB_MODIFICATION_ALLOW_LIST.exclude?(example_file.file_path)
+    if CROSS_DB_MODIFICATION_ALLOW_LIST.exclude?(example_file.file_path_rerun_argument)
       with_cross_database_modification_prevented
     end
   end

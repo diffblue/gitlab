@@ -50,8 +50,9 @@ Learn the various ways to [create a merge request](creating_merge_requests.md).
 ## What you can do with merge requests
 
 When you start a new merge request, you can immediately include the following
-options, or add them later by clicking the **Edit** button on the merge
-request's page at the top-right side:
+options. You can also add them later by either selecting **Edit** on the merge
+request's page at the top-right side, or by using
+[keyboard shortcuts for merge requests](../../shortcuts.md#issues-and-merge-requests):
 
 - [Assign](#assignee) the merge request to a colleague for review. With [multiple assignees](#multiple-assignees), you can assign it to more than one person at a time.
 - Set a [milestone](../milestones/index.md) to track time-sensitive changes.
@@ -74,8 +75,10 @@ After you have created the merge request, you can also:
 - Add [code suggestions](reviews/suggestions.md) to change the content of merge requests directly into merge request threads, and easily apply them to the codebase directly from the UI.
 - Add a time estimation and the time spent with that merge request with [Time Tracking](../time_tracking.md#time-tracking).
 
-Many of these can be set when pushing changes from the command line,
-with [Git push options](../push_options.md).
+Many of these options can be set:
+
+- From the merge request page, with [keyboard shortcuts](../../shortcuts.md#issues-and-merge-requests).
+- When pushing changes from the command line, with [Git push options](../push_options.md).
 
 See also other [features associated to merge requests](reviews/index.md#associated-features).
 
@@ -168,11 +171,6 @@ is set for deletion, the merge request widget displays the
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/320902) in GitLab 13.9.
 > - [Disabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/320902) in GitLab 13.9.
 > - [Enabled on self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/320895) GitLab 13.10.
-
-FLAG:
-On self-managed GitLab, by default this feature is available. To hide the feature,
-ask an administrator to
-[disable the `retarget_merge_requests` flag](../../../administration/feature_flags.md).
 
 In specific circumstances, GitLab can retarget the destination branch of
 open merge request, if the destination branch merges while the merge request is

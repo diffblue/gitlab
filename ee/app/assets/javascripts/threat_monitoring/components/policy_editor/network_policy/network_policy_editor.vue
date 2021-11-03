@@ -67,9 +67,8 @@ export default {
     DimDisableContainer,
   },
   inject: [
-    'hasEnvironment',
     'networkDocumentationPath',
-    'noEnvironmentSvgPath',
+    'policyEditorEmptyStateSvgPath',
     'projectId',
     'policiesPath',
   ],
@@ -124,6 +123,7 @@ export default {
       'currentEnvironmentId',
       'environments',
       'isLoadingEnvironments',
+      'hasEnvironment',
     ]),
     ...mapState('networkPolicies', [
       'isUpdatingPolicy',
@@ -308,7 +308,7 @@ export default {
     :description="$options.i18n.noEnvironmentDescription"
     :primary-button-link="networkDocumentationPath"
     :primary-button-text="$options.i18n.noEnvironmentButton"
-    :svg-path="noEnvironmentSvgPath"
+    :svg-path="policyEditorEmptyStateSvgPath"
     title=""
   />
 </template>

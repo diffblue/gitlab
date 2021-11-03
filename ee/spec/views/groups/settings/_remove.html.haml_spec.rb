@@ -14,7 +14,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
-    it 'disables the Remove group button and shows an alert for a group with a paid gitlab.com plan' do
+    it 'disables the Remove group button and shows an alert for a group with a paid gitlab.com plan', :saas do
       create(:gitlab_subscription, :ultimate, namespace: group)
 
       render 'groups/settings/remove', group: group
@@ -23,7 +23,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
-    it 'disables the Remove group button and shows an alert for a group with a legacy paid gitlab.com plan' do
+    it 'disables the Remove group button and shows an alert for a group with a legacy paid gitlab.com plan', :saas do
       create(:gitlab_subscription, :gold, namespace: group)
 
       render 'groups/settings/remove', group: group
@@ -32,7 +32,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
-    it 'enables the Remove group button and does not show an alert for a subgroup' do
+    it 'enables the Remove group button and does not show an alert for a subgroup', :saas do
       create(:gitlab_subscription, :ultimate, namespace: group)
       subgroup = create(:group, parent: group)
 
@@ -56,7 +56,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
         expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
 
-      it 'disables the Remove group button and shows an alert for a group with a paid gitlab.com plan' do
+      it 'disables the Remove group button and shows an alert for a group with a paid gitlab.com plan', :saas do
         create(:gitlab_subscription, :ultimate, namespace: group)
 
         render 'groups/settings/remove', group: group
@@ -65,7 +65,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
         expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
 
-      it 'enables the Remove group button and does not show an alert for a subgroup' do
+      it 'enables the Remove group button and does not show an alert for a subgroup', :saas do
         create(:gitlab_subscription, :ultimate, namespace: group)
         subgroup = create(:group, parent: group)
 

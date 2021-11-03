@@ -16,7 +16,6 @@ module IncidentManagement
         return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project)
         return if too_early_to_process?
         return if target_already_resolved?
-        return unless rule # Remove in %14.3; Rule might be unavailable after deploy, but before post-migrations complete.
         return if target_status_exceeded_rule?
 
         notify_recipients

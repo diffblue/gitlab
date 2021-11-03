@@ -29,13 +29,14 @@ module Projects::Security::PoliciesHelper
       create_agent_help_path: help_page_url('user/clusters/agent/index.md', anchor: 'create-an-agent-record-in-gitlab'),
       environments_endpoint: project_environments_path(project),
       environment_id: environment&.id,
-      network_documentation_path: help_page_path('user/application_security/policies/index'),
-      no_environment_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
+      network_documentation_path: help_page_path('user/application_security/policies/index', anchor: 'container-network-policy'),
       policy: policy&.to_json,
+      policy_editor_empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
       policy_type: policy_type,
       project_path: project.full_path,
       project_id: project.id,
-      policies_path: project_security_policies_path(project)
+      policies_path: project_security_policies_path(project),
+      scan_execution_documentation_path: help_page_path('user/application_security/policies/index', anchor: 'scan-execution-policy-editor')
     }
   end
 end

@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '~> 6.1.4.1'
 
-gem 'bootsnap', '~> 1.4.6'
+gem 'bootsnap', '~> 1.9.1', require: false
 
 # Responders respond_to and respond_with
 gem 'responders', '~> 3.0'
@@ -129,7 +129,7 @@ gem 'fog-local', '~> 0.6'
 gem 'fog-openstack', '~> 1.0'
 gem 'fog-rackspace', '~> 0.1.1'
 gem 'fog-aliyun', '~> 0.3'
-gem 'gitlab-fog-azure-rm', '~> 1.2.0', require: false
+gem 'gitlab-fog-azure-rm', '~> 1.2.0', require: 'fog/azurerm'
 
 # for Google storage
 gem 'google-api-client', '~> 0.33'
@@ -186,6 +186,7 @@ gem 'rack-timeout', '~> 0.5.1', require: 'rack/timeout/base'
 group :puma do
   gem 'puma', '~> 5.3.1', require: false
   gem 'puma_worker_killer', '~> 0.3.1', require: false
+  gem 'sd_notify', '~> 0.1.0', require: false
 end
 
 # State machine
@@ -290,7 +291,7 @@ gem 'autoprefixer-rails', '10.2.5.1'
 gem 'terser', '1.0.2'
 
 gem 'addressable', '~> 2.8'
-gem 'gemojione', '~> 3.3'
+gem 'tanuki_emoji', '~> 0.5'
 gem 'gon', '~> 6.4.0'
 gem 'request_store', '~> 1.5'
 gem 'base32', '~> 0.3.0'
@@ -348,6 +349,8 @@ group :development do
 
   # thin instead webrick
   gem 'thin', '~> 1.8.0'
+
+  gem 'sprite-factory', '~> 1.7'
 end
 
 group :development, :test do
@@ -372,7 +375,7 @@ group :development, :test do
   gem 'spring', '~> 2.1.0'
   gem 'spring-commands-rspec', '~> 1.0.4'
 
-  gem 'gitlab-styles', '~> 6.3.0', require: false
+  gem 'gitlab-styles', '~> 6.4.0', require: false
 
   gem 'haml_lint', '~> 0.36.0', require: false
   gem 'bundler-audit', '~> 0.7.0.1', require: false
@@ -396,7 +399,7 @@ group :development, :test do
 end
 
 group :development, :test, :danger do
-  gem 'gitlab-dangerfiles', '~> 2.3.0', require: false
+  gem 'gitlab-dangerfiles', '~> 2.4.0', require: false
 end
 
 group :development, :test, :coverage do
@@ -474,7 +477,7 @@ end
 gem 'spamcheck', '~> 0.1.0'
 
 # Gitaly GRPC protocol definitions
-gem 'gitaly', '~> 14.3.0.pre.rc2'
+gem 'gitaly', '~> 14.4.0.pre.rc43'
 
 # KAS GRPC protocol definitions
 gem 'kas-grpc', '~> 0.0.2'
@@ -534,3 +537,5 @@ gem 'webauthn', '~> 2.3'
 gem 'ipaddress', '~> 0.8.3'
 
 gem 'parslet', '~> 1.8'
+
+gem 'ipynbdiff', '0.3.6'

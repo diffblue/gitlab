@@ -17,6 +17,7 @@ export default {
     unknown: __('Unknown'),
     ok: __('OK'),
   },
+  classTimestamp: 'gl-text-gray-500 gl-font-sm gl-font-weight-normal',
   components: {
     GlCard,
     GlSprintf,
@@ -84,11 +85,13 @@ export default {
       <div class="gl-font-weight-bold gl-mt-2" data-testid="last-event">
         <template v-if="hasEventInfo">
           <span v-if="node.lastEventId">{{ node.lastEventId }}</span>
-          <gl-sprintf v-if="lastEventTimestamp" :message="$options.i18n.lastEventTime">
-            <template #timeAgo>
-              <time-ago :time="lastEventTimestamp" />
-            </template>
-          </gl-sprintf>
+          <span v-if="lastEventTimestamp" :class="$options.classTimestamp">
+            <gl-sprintf :message="$options.i18n.lastEventTime">
+              <template #timeAgo>
+                <time-ago :time="lastEventTimestamp" />
+              </template>
+            </gl-sprintf>
+          </span>
         </template>
         <span v-else>{{ $options.i18n.unknown }}</span>
       </div>
@@ -98,11 +101,13 @@ export default {
       <div class="gl-font-weight-bold gl-mt-2" data-testid="last-cursor-event">
         <template v-if="hasCursorEventInfo">
           <span v-if="node.cursorLastEventId">{{ node.cursorLastEventId }}</span>
-          <gl-sprintf v-if="lastCursorEventTimestamp" :message="$options.i18n.lastEventTime">
-            <template #timeAgo>
-              <time-ago :time="lastCursorEventTimestamp" />
-            </template>
-          </gl-sprintf>
+          <span v-if="lastCursorEventTimestamp" :class="$options.classTimestamp">
+            <gl-sprintf :message="$options.i18n.lastEventTime">
+              <template #timeAgo>
+                <time-ago :time="lastCursorEventTimestamp" />
+              </template>
+            </gl-sprintf>
+          </span>
         </template>
         <span v-else>{{ $options.i18n.unknown }}</span>
       </div>

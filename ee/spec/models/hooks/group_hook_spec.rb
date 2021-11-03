@@ -11,8 +11,8 @@ RSpec.describe GroupHook do
     subject { build(:group_hook, group: create(:group)) }
   end
 
-  describe '#rate_limit' do
-    let_it_be(:default_limits) { create(:plan_limits, :default_plan, web_hook_calls: 100) }
+  describe '#rate_limit', :saas do
+    let_it_be(:default_limits) { create(:plan_limits, :free_plan, web_hook_calls: 100) }
     let_it_be(:ultimate_limits) { create(:plan_limits, plan: create(:ultimate_plan), web_hook_calls: 500) }
 
     let_it_be(:group) { create(:group) }

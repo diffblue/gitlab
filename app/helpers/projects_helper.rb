@@ -20,16 +20,15 @@ module ProjectsHelper
   end
 
   def link_to_member_avatar(author, opts = {})
-    default_opts = { size: 16, lazy_load: false }
+    default_opts = { size: 16 }
     opts = default_opts.merge(opts)
 
     classes = %W[avatar avatar-inline s#{opts[:size]}]
     classes << opts[:avatar_class] if opts[:avatar_class]
 
     avatar = avatar_icon_for_user(author, opts[:size])
-    src = opts[:lazy_load] ? nil : avatar
 
-    image_tag(src, width: opts[:size], class: classes, alt: '', "data-src" => avatar)
+    image_tag(avatar, width: opts[:size], class: classes, alt: '')
   end
 
   def author_content_tag(author, opts = {})
@@ -377,6 +376,22 @@ module ProjectsHelper
     }
   end
 
+  def project_classes(project)
+    return "project-highlight-puc" if project.warn_about_potentially_unwanted_characters?
+
+    ""
+  end
+
+  # Returns the confirm phrase the user needs to type in order to delete the project
+  #
+  # Occasionally a user will delete one project, believing it is a different (similar) one.
+  # Specifically, a user might delete an original project, believing it is a fork.
+  # Thus the phrase should be the project full name to include the namespace.
+  # Relevant issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343591
+  def delete_confirm_phrase(project)
+    s_('DeleteProject|Delete %{name}') % { name: project.full_name }
+  end
+
   private
 
   def tab_ability_map
@@ -533,6 +548,7 @@ module ProjectsHelper
       metricsDashboardAccessLevel: feature.metrics_dashboard_access_level,
       operationsAccessLevel: feature.operations_access_level,
       showDefaultAwardEmojis: project.show_default_award_emojis?,
+      warnAboutPotentiallyUnwantedCharacters: project.warn_about_potentially_unwanted_characters?,
       securityAndComplianceAccessLevel: project.security_and_compliance_access_level,
       containerRegistryAccessLevel: feature.container_registry_access_level
     }
@@ -584,6 +600,7 @@ module ProjectsHelper
     %w[
       environments
       clusters
+      cluster_agents
       functions
       error_tracking
       alert_management

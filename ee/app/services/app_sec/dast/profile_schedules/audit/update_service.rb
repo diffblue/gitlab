@@ -16,7 +16,7 @@ module AppSec
                 author: current_user,
                 scope: project,
                 target: params[:dast_profile_schedule],
-                message: "Changed DAST profile schedule #{property} from #{old_value} to #{new_value}"
+                message: "Changed DAST profile schedule #{property} from #{old_value || 'nil'} to #{new_value}"
               )
             end
           end

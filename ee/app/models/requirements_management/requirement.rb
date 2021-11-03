@@ -40,7 +40,7 @@ module RequirementsManagement
 
     validate :only_requirement_type_issue
 
-    after_validation :invalidate_if_sync_error, on: [:update]
+    after_validation :invalidate_if_sync_error, on: [:update, :create]
 
     enum state: { opened: 1, archived: 2 }
 
@@ -86,7 +86,7 @@ module RequirementsManagement
       end
 
       def sync_params
-        [:title, :description, :state]
+        [:title, :description, :state, :project_id, :author_id]
       end
     end
 
@@ -122,10 +122,10 @@ module RequirementsManagement
 
     def invalidate_if_sync_error
       return unless requirement_issue_sync_error
-      return unless requirement_issue
 
       # Mirror errors from requirement issue so that users can adjust accordingly
-      errors = requirement_issue.errors.full_messages.to_sentence
+      errors = requirement_issue.errors.full_messages.to_sentence if requirement_issue
+
       errors = errors.presence || "Associated issue was invalid and changes could not be applied."
       self.errors.add(:base, errors)
     end

@@ -14,8 +14,6 @@ module AppSec
       data_consistency :always
 
       def perform
-        return unless Feature.enabled?(:dast_on_demand_scans_scheduler, default_enabled: :yaml)
-
         dast_runnable_schedules.find_in_batches do |schedules|
           schedules.each do |schedule|
             if schedule.owner_valid?
@@ -37,10 +35,7 @@ module AppSec
         ::AppSec::Dast::Scans::CreateService.new(
           container: schedule.project,
           current_user: schedule.owner,
-          params: {
-            dast_site_profile: schedule.dast_profile.dast_site_profile,
-            dast_scanner_profile: schedule.dast_profile.dast_scanner_profile
-          }
+          params: { dast_profile: schedule.dast_profile }
         )
       end
 

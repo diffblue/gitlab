@@ -252,6 +252,9 @@ export default {
     resetPagination() {
       this.pagination = initialPaginationState;
     },
+    hasPipelineNodes(item) {
+      return item.pipelines?.nodes;
+    },
   },
   assigneesVisible: ASSIGNEES_VISIBLE,
   avatarSize: AVATAR_SIZE,
@@ -281,7 +284,7 @@ export default {
             >
             <ul class="horizontal-list gl-mb-0">
               <li class="gl-mr-3">{{ formatMergeRequestId(item.iid) }}</li>
-              <li v-if="item.pipelines.nodes.length" class="gl-mr-3">
+              <li v-if="hasPipelineNodes(item) && item.pipelines.nodes.length" class="gl-mr-3">
                 <gl-icon
                   :name="item.pipelines.nodes[0].detailedStatus.icon"
                   :class="pipelineStatusClass(item.pipelines.nodes[0].detailedStatus.icon)"
@@ -336,7 +339,9 @@ export default {
       </template>
 
       <template #cell(pipelines)="{ item }">
-        <div :data-testid="$options.testIds.PIPELINES">{{ item.pipelines.nodes.length }}</div>
+        <div v-if="hasPipelineNodes(item)" :data-testid="$options.testIds.PIPELINES">
+          {{ item.pipelines.nodes.length }}
+        </div>
       </template>
 
       <template #cell(line_changes)="{ item }">

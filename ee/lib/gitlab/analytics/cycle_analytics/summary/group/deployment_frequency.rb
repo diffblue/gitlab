@@ -27,6 +27,13 @@ module Gitlab
             def unit
               _('per day')
             end
+
+            def links
+              [
+                { "name" => _('Deployment frequency'), "url" => Gitlab::Routing.url_helpers.group_analytics_ci_cd_analytics_path(group, tab: 'deployment-frequency'), "label" => s_('ValueStreamAnalytics|Dashboard') },
+                { "name" => _('Deployment frequency'), "url" => Gitlab::Routing.url_helpers.help_page_path('user/analytics/index', anchor: 'definitions'), "docs_link" => true, "label" => s_('ValueStreamAnalytics|Go to docs') }
+              ]
+            end
           end
         end
       end

@@ -12,7 +12,7 @@ module EE
           override :feature_category_per_eventable_type
           def feature_category_per_eventable_type
             super.merge!(
-              ::Epic => :issue_tracking
+              ::Epic => :portfolio_management
             )
           end
         end

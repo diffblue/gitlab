@@ -63,18 +63,32 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           project.add_users([user, scheduler_owner], :developer)
         end
 
-        it 'communicates success' do
-          expect(subject.status).to eq(:success)
-        end
+        context 'without dast_profile_schedule param' do
+          it 'communicates success' do
+            expect(subject.status).to eq(:success)
+          end
 
-        it 'updates the dast_profile' do
-          updated_dast_profile = subject.payload[:dast_profile].reload
+          it 'updates the dast_profile' do
+            updated_dast_profile = subject.payload[:dast_profile].reload
 
-          aggregate_failures do
-            expect(updated_dast_profile.dast_site_profile.id).to eq(params[:dast_site_profile_id])
-            expect(updated_dast_profile.dast_scanner_profile.id).to eq(params[:dast_scanner_profile_id])
-            expect(updated_dast_profile.name).to eq(params[:name])
-            expect(updated_dast_profile.description).to eq(params[:description])
+            aggregate_failures do
+              expect(updated_dast_profile.dast_site_profile.id).to eq(params[:dast_site_profile_id])
+              expect(updated_dast_profile.dast_scanner_profile.id).to eq(params[:dast_scanner_profile_id])
+              expect(updated_dast_profile.name).to eq(params[:name])
+              expect(updated_dast_profile.description).to eq(params[:description])
+            end
+          end
+
+          it 'does not try to create or update the dast_profile_schedule' do
+            subject
+
+            expect { subject }.not_to change { dast_profile.reload.dast_profile_schedule }.from(nil)
+          end
+
+          it 'ignores the dast_profile_schedule' do
+            subject
+
+            expect(params[:dast_profile]).not_to receive(:dast_profile_schedule)
           end
         end
 
@@ -130,6 +144,16 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
           context 'when associated schedule is present' do
             let_it_be_with_reload(:dast_profile_schedule) { create(:dast_profile_schedule, project: project, dast_profile: dast_profile, owner: scheduler_owner) }
 
+            shared_examples 'audits the owner change' do
+              it 'audits the owner change', :sidekiq_inline do
+                subject
+
+                messages = AuditEvent.where(target_id: dast_profile.dast_profile_schedule.id).pluck(:details).pluck(:custom_message)
+                old_owner = User.find_by(id: scheduler_owner.id)
+                expect(messages).to include("Changed DAST profile schedule user_id from #{old_owner&.id || 'nil'} to #{user.id}")
+              end
+            end
+
             it 'updates the dast profile schedule' do
               subject
 
@@ -155,15 +179,17 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
             context 'when the owner was deleted' do
               before do
-                scheduler_owner.destroy!
-                subject.payload[:dast_profile_schedule].reload
+                dast_profile_schedule.owner.destroy!
+                dast_profile_schedule.reload
               end
 
               it 'updates the schedule owner' do
                 subject
 
-                expect(dast_profile_schedule.user_id).to eq(user.id)
+                expect(dast_profile_schedule.reload.user_id).to eq(user.id)
               end
+
+              include_examples 'audits the owner change'
             end
 
             context 'when the owner permission was downgraded' do
@@ -176,20 +202,23 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
                 expect(dast_profile_schedule.user_id).to eq(user.id)
               end
+
+              include_examples 'audits the owner change'
             end
 
             context 'when the owner was removed from the project' do
               before do
-                stub_feature_flags(member_destroy_async_auth_refresh: false)
                 project.team.truncate
                 project.add_developer(user)
               end
 
-              it 'updates the schedule owner' do
+              it 'updates the schedule owner', :sidekiq_inline do
                 subject
 
                 expect(dast_profile_schedule.user_id).to eq(user.id)
               end
+
+              include_examples 'audits the owner change'
             end
           end
         end

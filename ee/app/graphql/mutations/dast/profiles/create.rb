@@ -22,7 +22,7 @@ module Mutations
 
         argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
               required: false,
-              description: 'Represents a DAST Profile Schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+              description: 'Represents a DAST Profile Schedule.'
 
         argument :name, GraphQL::Types::String,
                  required: true,
@@ -54,7 +54,6 @@ module Mutations
 
         def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false, dast_profile_schedule: nil)
           project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(project, dast_profile_schedule)
 
           # TODO: remove explicit coercion once compatibility layer is removed
           # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
@@ -85,16 +84,6 @@ module Mutations
         end
 
         private
-
-        def allowed?(project, dast_profile_schedule)
-          scheduler_flag_enabled?(dast_profile_schedule, project)
-        end
-
-        def scheduler_flag_enabled?(dast_profile_schedule, project)
-          return true unless dast_profile_schedule
-
-          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
-        end
 
         def build_response(payload)
           {

@@ -430,7 +430,7 @@
   height: $input-height;
 }
 
-.issue-boards-content {
+.issue-boards-content:not(.breadcrumbs) {
   isolation: isolate;
 }
 
@@ -469,6 +469,10 @@
 
   .labels-select-wrapper.is-embedded .labels-select-wrapper.is-embedded {
     width: auto;
+  }
+
+  .show.dropdown .dropdown-menu {
+    @include gl-w-full;
   }
 }
 

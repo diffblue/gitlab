@@ -15,7 +15,7 @@ import {
   dockerReportParsed,
   parsedDast,
   dependencyScanningIssues,
-  secretScanningParsedIssues,
+  secretDetectionParsedIssues,
 } from '../mock_data';
 
 describe('Security Issue Body', () => {
@@ -44,7 +44,7 @@ describe('Security Issue Body', () => {
     ['DAST', parsedDast[0], false, LOW],
     ['Container Scanning', dockerReportParsed.vulnerabilities[0], false, MEDIUM],
     ['Dependency Scanning', dependencyScanningIssues[0], true],
-    ['Secret Scanning', secretScanningParsedIssues[0], false, CRITICAL],
+    ['Secret Detection', secretDetectionParsedIssues[0], false, CRITICAL],
   ])('for a %s vulnerability', (name, vuln, hasReportLink, severity) => {
     beforeEach(() => {
       createComponent(vuln);

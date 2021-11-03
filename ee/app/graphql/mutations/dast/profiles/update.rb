@@ -27,12 +27,13 @@ module Mutations
                  description: 'ID of the profile to be deleted.'
 
         argument :full_path, GraphQL::Types::ID,
-                 required: true,
+                 required: false,
+                 deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
                  description: 'Project the profile belongs to.'
 
         argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
-              required: false,
-              description: 'Represents a DAST profile schedule. Results in an error if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+                 required: false,
+                 description: 'Represents a DAST profile schedule.'
 
         argument :name, GraphQL::Types::String,
                  required: false,
@@ -62,12 +63,8 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, id:, name:, description:, branch_name: nil, dast_scanner_profile_id: nil, run_after_update: false, **args)
-          project = authorized_find!(full_path)
-          raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'Feature disabled' unless allowed?(args[:dast_profile_schedule], project)
-
-          dast_profile = find_dast_profile(project.id, id)
-          authorize!(dast_profile)
+        def resolve(id:, name:, description:, full_path: nil, branch_name: nil, dast_scanner_profile_id: nil, run_after_update: false, **args)
+          dast_profile = authorized_find!(id)
 
           params = {
             dast_profile: dast_profile,
@@ -81,7 +78,7 @@ module Mutations
           }.compact
 
           response = ::AppSec::Dast::Profiles::UpdateService.new(
-            container: project,
+            container: dast_profile.project,
             current_user: current_user,
             params: params
           ).execute
@@ -91,16 +88,6 @@ module Mutations
 
         private
 
-        def allowed?(dast_profile_schedule, project)
-          scheduler_flag_enabled?(dast_profile_schedule, project)
-        end
-
-        def scheduler_flag_enabled?(dast_profile_schedule, project)
-          return true unless dast_profile_schedule
-
-          Feature.enabled?(:dast_on_demand_scans_scheduler, project, default_enabled: :yaml)
-        end
-
         def as_model_id(klass, value)
           return unless value
 
@@ -109,14 +96,12 @@ module Mutations
           klass.coerce_isolated_input(value).model_id
         end
 
-        def find_dast_profile(project_id, id)
-          # TODO: remove this line once the compatibility layer is removed
+        def find_object(id)
+          # TODO: remove this line when the compatibility layer is removed
           # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
-          id = ProfileID.coerce_isolated_input(id).model_id
+          id = ProfileID.coerce_isolated_input(id)
 
-          ::Dast::ProfilesFinder.new(project_id: project_id, id: id)
-            .execute
-            .first
+          GitlabSchema.find_by_gid(id)
         end
       end
     end

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { createRouter } from './router';
 import OnDemandScans from './components/on_demand_scans.vue';
+import apolloProvider from './graphql/provider';
 
 export default () => {
   const el = document.querySelector('#js-on-demand-scans');
@@ -8,18 +9,23 @@ export default () => {
     return null;
   }
 
-  const { newDastScanPath, helpPagePath, emptyStateSvgPath } = el.dataset;
+  const { pipelinesCount, projectPath, newDastScanPath, emptyStateSvgPath } = el.dataset;
 
   return new Vue({
     el,
     router: createRouter(),
+    apolloProvider,
     provide: {
+      projectPath,
       newDastScanPath,
-      helpPagePath,
       emptyStateSvgPath,
     },
     render(h) {
-      return h(OnDemandScans);
+      return h(OnDemandScans, {
+        props: {
+          pipelinesCount: Number(pipelinesCount),
+        },
+      });
     },
   });
 };

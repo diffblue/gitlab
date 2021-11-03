@@ -31,14 +31,12 @@ export default {
     Object.assign(state, {
       managedLicenses,
       isLoadingManagedLicenses: false,
-      loadManagedLicensesError: false,
     });
   },
-  [types.RECEIVE_MANAGED_LICENSES_ERROR](state, error) {
+  [types.RECEIVE_MANAGED_LICENSES_ERROR](state) {
     Object.assign(state, {
       managedLicenses: [],
       isLoadingManagedLicenses: false,
-      loadManagedLicensesError: error,
     });
   },
   [types.REQUEST_MANAGED_LICENSES](state) {
@@ -64,41 +62,6 @@ export default {
   [types.REQUEST_PARSED_LICENSE_REPORT](state) {
     Object.assign(state, {
       isLoadingLicenseReport: true,
-    });
-  },
-
-  [types.RECEIVE_DELETE_LICENSE](state) {
-    Object.assign(state, {
-      isDeleting: false,
-      currentLicenseInModal: null,
-    });
-  },
-  [types.RECEIVE_DELETE_LICENSE_ERROR](state) {
-    Object.assign(state, {
-      isDeleting: false,
-      currentLicenseInModal: null,
-    });
-  },
-  [types.REQUEST_DELETE_LICENSE](state) {
-    Object.assign(state, {
-      isDeleting: true,
-    });
-  },
-  [types.REQUEST_SET_LICENSE_APPROVAL](state) {
-    Object.assign(state, {
-      isSaving: true,
-    });
-  },
-  [types.RECEIVE_SET_LICENSE_APPROVAL](state) {
-    Object.assign(state, {
-      isSaving: false,
-      currentLicenseInModal: null,
-    });
-  },
-  [types.RECEIVE_SET_LICENSE_APPROVAL_ERROR](state) {
-    Object.assign(state, {
-      isSaving: false,
-      currentLicenseInModal: null,
     });
   },
   [types.REQUEST_LICENSE_CHECK_APPROVAL_RULE](state) {

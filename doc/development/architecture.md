@@ -348,7 +348,6 @@ Component statuses are linked to configuration documentation for each component.
 | [Gitaly](#gitaly)                                     | Git RPC service for handling all Git calls made by GitLab            |       ✅       |       ✅        |      ✅       |        ✅         |     ✅      |   ⚙    |  ✅  | CE & EE |
 | [GitLab Exporter](#gitlab-exporter)                   | Generates a variety of GitLab metrics                                |       ✅       |       ✅        |      ✅       |        ✅         |     ✅      |   ❌    |  ❌  | CE & EE |
 | [GitLab Geo Node](#gitlab-geo)                        | Geographically distributed GitLab nodes                              |       ⚙        |       ⚙      |        ❌      |        ❌         |     ✅      |   ❌    |  ⚙  | EE Only |
-| [GitLab Kubernetes Agent](#gitlab-kubernetes-agent)   | Integrate Kubernetes clusters in a cloud-native way                  |       ⚙       |       ⚙        |      ⚙       |        ❌         |     ❌      |   ⤓    |  ⚙   | EE Only |
 | [GitLab Pages](#gitlab-pages)                         | Hosts static websites                                                |       ⚙       |       ⚙        |      ❌       |        ❌         |     ✅      |   ⚙    |  ⚙  | CE & EE |
 | [GitLab Kubernetes Agent](#gitlab-kubernetes-agent)   | Integrate Kubernetes clusters in a cloud-native way                  |       ⚙       |       ⚙        |      ⚙       |        ❌         |     ❌      |   ⤓    |  ⚙   | EE Only |
 | [GitLab self-monitoring: Alertmanager](#alertmanager) | Deduplicates, groups, and routes alerts from Prometheus              |       ⚙       |       ⚙        |      ✅       |        ⚙         |     ✅      |   ❌    |  ❌  | CE & EE |
@@ -813,7 +812,7 @@ Starting with GitLab 13.0, Puma is the default web server.
 
 - [Project page](https://gitlab.com/gitlab-org/gitlab/-/blob/master/README.md)
 - Configuration:
-  - [Omnibus](https://docs.gitlab.com/omnibus/settings/puma.html)
+  - [Omnibus](../administration/operations/puma.md)
   - [Charts](https://docs.gitlab.com/charts/charts/gitlab/webservice/)
   - [Source](../install/installation.md#configure-it)
   - [GDK](https://gitlab.com/gitlab-org/gitlab/-/blob/master/config/gitlab.yml.example)

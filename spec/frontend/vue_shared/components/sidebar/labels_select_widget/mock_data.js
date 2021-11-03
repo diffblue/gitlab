@@ -34,16 +34,18 @@ export const mockLabels = [
 ];
 
 export const mockConfig = {
+  iid: '1',
+  fullPath: 'test',
   allowMultiselect: true,
   labelsListTitle: 'Assign labels',
   labelsCreateTitle: 'Create label',
   variant: 'sidebar',
-  selectedLabels: [mockRegularLabel, mockScopedLabel],
   labelsSelectInProgress: false,
   labelsFilterBasePath: '/gitlab-org/my-project/issues',
   labelsFilterParam: 'label_name',
   footerCreateLabelTitle: 'create',
   footerManageLabelTitle: 'manage',
+  attrWorkspacePath: 'test',
 };
 
 export const mockSuggestedColors = {
@@ -78,6 +80,7 @@ export const createLabelSuccessfulResponse = {
         color: '#dc143c',
         description: null,
         title: 'ewrwrwer',
+        textColor: '#000000',
         __typename: 'Label',
       },
       errors: [],
@@ -89,6 +92,7 @@ export const createLabelSuccessfulResponse = {
 export const workspaceLabelsQueryResponse = {
   data: {
     workspace: {
+      id: 'gid://gitlab/Project/126',
       labels: {
         nodes: [
           {
@@ -96,12 +100,14 @@ export const workspaceLabelsQueryResponse = {
             description: null,
             id: 'gid://gitlab/ProjectLabel/1',
             title: 'Label1',
+            textColor: '#000000',
           },
           {
             color: '#2f7b2e',
             description: null,
             id: 'gid://gitlab/ProjectLabel/2',
             title: 'Label2',
+            textColor: '#000000',
           },
         ],
       },
@@ -121,6 +127,7 @@ export const issuableLabelsQueryResponse = {
               description: null,
               id: 'gid://gitlab/ProjectLabel/1',
               title: 'Label1',
+              textColor: '#000000',
             },
           ],
         },

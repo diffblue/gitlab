@@ -5,7 +5,7 @@ export const NAME_MAX_LENGTH = 100;
 export const i18n = {
   FORM_TITLE: s__('CreateValueStreamForm|Create Value Stream'),
   EDIT_FORM_TITLE: s__('CreateValueStreamForm|Edit Value Stream'),
-  EDIT_FORM_ACTION: s__('CreateValueStreamForm|Save Value Stream'),
+  EDIT_FORM_ACTION: s__('CreateValueStreamForm|Save value stream'),
   FORM_CREATED: s__("CreateValueStreamForm|'%{name}' Value Stream created"),
   FORM_EDITED: s__("CreateValueStreamForm|'%{name}' Value Stream saved"),
   RECOVER_HIDDEN_STAGE: s__('CreateValueStreamForm|Recover hidden stage'),

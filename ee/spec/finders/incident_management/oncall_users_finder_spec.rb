@@ -108,7 +108,7 @@ RSpec.describe IncidentManagement::OncallUsersFinder do
           end
         end
 
-        context 'with no persisted shifts for oncall_at time' do
+        context 'with no persisted shifts for oncall_at time', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/343506' do
           let(:oncall_at) { after_second_shift }
 
           it { is_expected.to contain_exactly(user_1, user_2, user_4) }

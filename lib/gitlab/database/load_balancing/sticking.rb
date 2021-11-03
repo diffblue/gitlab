@@ -12,7 +12,6 @@ module Gitlab
 
         def initialize(load_balancer)
           @load_balancer = load_balancer
-          @model = load_balancer.configuration.model
         end
 
         # Unsticks or continues sticking the current request.
@@ -27,13 +26,13 @@ module Gitlab
         def stick_or_unstick_request(env, namespace, id)
           unstick_or_continue_sticking(namespace, id)
 
-          env[RackMiddleware::STICK_OBJECT] ||= Set.new
-          env[RackMiddleware::STICK_OBJECT] << [@model, namespace, id]
+          env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT] ||= Set.new
+          env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT] << [self, namespace, id]
         end
 
         # Sticks to the primary if a write was performed.
         def stick_if_necessary(namespace, id)
-          stick(namespace, id) if Session.current.performed_write?
+          stick(namespace, id) if ::Gitlab::Database::LoadBalancing::Session.current.performed_write?
         end
 
         def all_caught_up?(namespace, id)

@@ -6,25 +6,27 @@ RSpec.describe 'Query.project(fullPath).dastSiteValidations' do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
-  let_it_be(:dast_site_token1) { create(:dast_site_token, project: project, url: generate(:url)) }
-  let_it_be(:dast_site_token2) { create(:dast_site_token, project: project, url: generate(:url)) }
-  let_it_be(:dast_site_token3) { create(:dast_site_token, project: project, url: generate(:url)) }
-  let_it_be(:dast_site_token4) { create(:dast_site_token, project: project, url: generate(:url)) }
+  let_it_be(:dast_site_token1) { create(:dast_site_token, project: project) }
+  let_it_be(:dast_site_token2) { create(:dast_site_token, project: project) }
+  let_it_be(:dast_site_token3) { create(:dast_site_token, project: project) }
+  let_it_be(:dast_site_token4) { create(:dast_site_token, project: project) }
   let_it_be(:dast_site_validation1) { create(:dast_site_validation, dast_site_token: dast_site_token1) }
   let_it_be(:dast_site_validation2) { create(:dast_site_validation, dast_site_token: dast_site_token2) }
   let_it_be(:dast_site_validation3) { create(:dast_site_validation, dast_site_token: dast_site_token3) }
   let_it_be(:dast_site_validation4) { create(:dast_site_validation, dast_site_token: dast_site_token4) }
   let_it_be(:current_user) { create(:user) }
 
-  subject do
+  let(:query) do
     fields = all_graphql_fields_for('DastSiteValidation')
 
-    query = graphql_query_for(
+    graphql_query_for(
       :project,
       { full_path: project.full_path },
       query_nodes(:dast_site_validations, fields)
     )
+  end
 
+  subject do
     post_graphql(
       query,
       current_user: current_user,
@@ -79,6 +81,21 @@ RSpec.describe 'Query.project(fullPath).dastSiteValidations' do
           dast_site_validation1
         ].map { |validation| global_id_of(validation)}
       end
+    end
+
+    it 'avoids N+1 queries', :aggregate_failures do
+      control = ActiveRecord::QueryRecorder.new do
+        post_graphql(query, current_user: current_user)
+      end
+
+      5.times do
+        dast_site_token = create(:dast_site_token, project: project)
+
+        create(:dast_site_validation, dast_site_token: dast_site_token)
+      end
+
+      expect { subject }.not_to exceed_query_limit(control)
+      expect(graphql_data_at(:project, :dast_site_validations, :nodes).size).to eq(9)
     end
   end
 

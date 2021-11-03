@@ -16,7 +16,7 @@ module EE
 
         before_action :redirect_if_test_case, only: [:show]
 
-        feature_category :issue_tracking, [:delete_description_version, :description_diff]
+        feature_category :team_planning, [:delete_description_version, :description_diff]
       end
 
       private

@@ -82,6 +82,7 @@ module EE
             super
 
             verify_mirror_attrs!(project, attrs)
+            validate_git_import_url!(attrs[:import_url])
             verify_issuable_default_templates_attrs!(project, attrs)
             verify_merge_pipelines_attrs!(project, attrs)
           end

@@ -252,6 +252,26 @@ RSpec.describe Gitlab::GitalyClient::RefService do
     end
   end
 
+  describe '#list_refs' do
+    it 'sends a list_refs message' do
+      expect_any_instance_of(Gitaly::RefService::Stub)
+        .to receive(:list_refs)
+        .with(gitaly_request_with_params(patterns: ['refs/heads/']), kind_of(Hash))
+        .and_call_original
+
+      client.list_refs
+    end
+
+    it 'accepts a patterns argument' do
+      expect_any_instance_of(Gitaly::RefService::Stub)
+        .to receive(:list_refs)
+        .with(gitaly_request_with_params(patterns: ['refs/tags/']), kind_of(Hash))
+        .and_call_original
+
+      client.list_refs([Gitlab::Git::TAG_REF_PREFIX])
+    end
+  end
+
   describe '#pack_refs' do
     it 'sends a pack_refs message' do
       expect_any_instance_of(Gitaly::RefService::Stub)
@@ -260,6 +280,21 @@ RSpec.describe Gitlab::GitalyClient::RefService do
         .and_return(double(:pack_refs_response))
 
       client.pack_refs
+    end
+  end
+
+  describe '#find_refs_by_oid' do
+    let(:oid) { project.repository.commit.id }
+
+    it 'sends a find_refs_by_oid message' do
+      expect_any_instance_of(Gitaly::RefService::Stub)
+        .to receive(:find_refs_by_oid)
+        .with(gitaly_request_with_params(sort_field: 'refname', oid: oid, limit: 1), kind_of(Hash))
+        .and_call_original
+
+      refs = client.find_refs_by_oid(oid: oid, limit: 1)
+
+      expect(refs.to_a).to eq([Gitlab::Git::BRANCH_REF_PREFIX + project.repository.root_ref])
     end
   end
 end

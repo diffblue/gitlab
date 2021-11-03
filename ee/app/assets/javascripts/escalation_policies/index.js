@@ -19,7 +19,6 @@ const apolloProvider = new VueApollo({
           return defaultDataIdFromObject(object);
         },
       },
-      assumeImmutableResults: true,
     },
   ),
 });

@@ -24,7 +24,7 @@ RSpec.describe "Admin Runners" do
 
         visit admin_runners_path
 
-        expect(page).to have_text "Set up a shared runner manually"
+        expect(page).to have_text "Register an instance runner"
         expect(page).to have_text "Runners currently online: 1"
       end
 
@@ -136,6 +136,19 @@ RSpec.describe "Admin Runners" do
           expect(page).to have_content 'runner-a-1'
           expect(page).not_to have_content 'runner-b-1'
           expect(page).not_to have_content 'runner-a-2'
+        end
+
+        it 'shows correct runner when type is selected and search term is entered' do
+          create(:ci_runner, :instance, description: 'runner-connected', contacted_at: Time.now)
+          create(:ci_runner, :instance, description: 'runner-not-connected', contacted_at: nil)
+
+          visit admin_runners_path
+
+          # use the string "Not" to avoid using space and trigger an early selection
+          input_filtered_search_filter_is_only('Status', 'Not')
+
+          expect(page).not_to have_content 'runner-connected'
+          expect(page).to have_content 'runner-not-connected'
         end
       end
 
@@ -267,29 +280,55 @@ RSpec.describe "Admin Runners" do
       end
 
       it 'has all necessary texts including no runner message' do
-        expect(page).to have_text "Set up a shared runner manually"
+        expect(page).to have_text "Register an instance runner"
         expect(page).to have_text "Runners currently online: 0"
         expect(page).to have_text 'No runners found'
       end
     end
 
-    describe 'runners registration token' do
+    describe 'runners registration' do
       let!(:token) { Gitlab::CurrentSettings.runners_registration_token }
 
       before do
         visit admin_runners_path
+
+        click_on 'Register an instance runner'
+      end
+
+      describe 'show registration instructions' do
+        before do
+          click_on 'Show runner installation and registration instructions'
+
+          wait_for_requests
+        end
+
+        it 'opens runner installation modal' do
+          expect(page).to have_text "Install a runner"
+
+          expect(page).to have_text "Environment"
+          expect(page).to have_text "Architecture"
+          expect(page).to have_text "Download and install binary"
+        end
+
+        it 'dismisses runner installation modal' do
+          page.within('[role="dialog"]') do
+            click_button('Close', match: :first)
+          end
+
+          expect(page).not_to have_text "Install a runner"
+        end
       end
 
       it 'has a registration token' do
         click_on 'Click to reveal'
-        expect(page.find('[data-testid="registration-token"]')).to have_content(token)
+        expect(page.find('[data-testid="token-value"]')).to have_content(token)
       end
 
       describe 'reset registration token' do
-        let(:page_token) { find('[data-testid="registration-token"]').text }
+        let(:page_token) { find('[data-testid="token-value"]').text }
 
         before do
-          click_button 'Reset registration token'
+          click_on 'Reset registration token'
 
           page.accept_alert
 
@@ -297,6 +336,8 @@ RSpec.describe "Admin Runners" do
         end
 
         it 'changes registration token' do
+          click_on 'Register an instance runner'
+
           click_on 'Click to reveal'
           expect(page_token).not_to eq token
         end

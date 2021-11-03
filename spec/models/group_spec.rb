@@ -563,6 +563,25 @@ RSpec.describe Group do
           it { expect(group.ancestors.to_sql).not_to include 'traversal_ids <@' }
         end
       end
+
+      context 'when project namespace exists in the group' do
+        let!(:project) { create(:project, group: group) }
+        let!(:project_namespace) { create(:project_namespace, project: project) }
+
+        it 'filters out project namespace' do
+          expect(group.descendants.find_by_id(project_namespace.id)).to be_nil
+        end
+
+        context 'when include_sti_condition is disabled' do
+          before do
+            stub_feature_flags(include_sti_condition: false)
+          end
+
+          it 'raises an exception' do
+            expect { group.descendants.find_by_id(project_namespace.id)}.to raise_error(ActiveRecord::SubclassNotFound)
+          end
+        end
+      end
     end
   end
 
@@ -717,6 +736,22 @@ RSpec.describe Group do
       group.add_users([user.id], GroupMember::DEVELOPER)
       expect(group.group_members.developers.map(&:user)).to include(user)
       expect(group.group_members.guests.map(&:user)).not_to include(user)
+    end
+
+    context 'when `tasks_to_be_done` and `tasks_project_id` are passed' do
+      let!(:project) { create(:project, group: group) }
+
+      before do
+        stub_experiments(invite_members_for_task: true)
+        group.add_users([create(:user)], :developer, tasks_to_be_done: %w(ci code), tasks_project_id: project.id)
+      end
+
+      it 'creates a member_task with the correct attributes', :aggregate_failures do
+        member = group.group_members.last
+
+        expect(member.tasks_to_be_done).to match_array([:ci, :code])
+        expect(member.member_task.project).to eq(project)
+      end
     end
   end
 
@@ -2370,7 +2405,7 @@ RSpec.describe Group do
       let_it_be(:project) { create(:project, group: group, shared_runners_enabled: true) }
       let_it_be(:project_2) { create(:project, group: sub_group_2, shared_runners_enabled: true) }
 
-      subject { group.update_shared_runners_setting!('disabled_and_unoverridable') }
+      subject { group.update_shared_runners_setting!(Namespace::SR_DISABLED_AND_UNOVERRIDABLE) }
 
       it 'disables shared Runners for all descendant groups and projects' do
         expect { subject_and_reload(group, sub_group, sub_group_2, project, project_2) }
@@ -2396,7 +2431,7 @@ RSpec.describe Group do
     end
 
     context 'disabled_with_override' do
-      subject { group.update_shared_runners_setting!('disabled_with_override') }
+      subject { group.update_shared_runners_setting!(Namespace::SR_DISABLED_WITH_OVERRIDE) }
 
       context 'top level group' do
         let_it_be(:group) { create(:group, :shared_runners_disabled) }

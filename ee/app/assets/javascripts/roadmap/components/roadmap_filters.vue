@@ -11,7 +11,6 @@ import { mapState, mapActions } from 'vuex';
 import { visitUrl, mergeUrlParams, updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPICS_STATES, PRESET_TYPES, DATE_RANGES } from '../constants';
 import EpicsFilteredSearchMixin from '../mixins/filtered_search_mixin';
@@ -56,7 +55,7 @@ export default {
     GlDropdownDivider,
     FilteredSearchBar,
   },
-  mixins: [EpicsFilteredSearchMixin, glFeatureFlagsMixin()],
+  mixins: [EpicsFilteredSearchMixin],
   props: {
     timeframeRangeType: {
       type: String,
@@ -94,10 +93,6 @@ export default {
       const quarters = { text: __('Quarters'), value: PRESET_TYPES.QUARTERS };
       const months = { text: __('Months'), value: PRESET_TYPES.MONTHS };
       const weeks = { text: __('Weeks'), value: PRESET_TYPES.WEEKS };
-
-      if (!this.glFeatures.roadmapDaterangeFilter) {
-        return [quarters, months, weeks];
-      }
 
       if (this.selectedDaterange === DATE_RANGES.CURRENT_YEAR) {
         return [months, weeks];
@@ -146,9 +141,7 @@ export default {
     handleRoadmapLayoutChange(presetType) {
       visitUrl(
         mergeUrlParams(
-          this.glFeatures.roadmapDaterangeFilter
-            ? { timeframe_range_type: this.selectedDaterange, layout: presetType }
-            : { layout: presetType },
+          { timeframe_range_type: this.selectedDaterange, layout: presetType },
           window.location.href,
         ),
       );
@@ -157,9 +150,11 @@ export default {
       this.setEpicsState(epicsState);
       this.fetchEpics();
     },
-    handleFilterEpics(filters) {
-      this.setFilterParams(this.getFilterParams(filters));
-      this.fetchEpics();
+    handleFilterEpics(filters, cleared) {
+      if (filters.length || cleared) {
+        this.setFilterParams(this.getFilterParams(filters));
+        this.fetchEpics();
+      }
     },
     handleSortEpics(sortedBy) {
       this.setSortedBy(sortedBy);
@@ -175,7 +170,6 @@ export default {
       class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-pb-3 row-content-block second-block"
     >
       <gl-dropdown
-        v-if="glFeatures.roadmapDaterangeFilter"
         icon="calendar"
         class="gl-mr-0 gl-lg-mr-3 mb-sm-2 roadmap-daterange-dropdown"
         toggle-class="gl-rounded-base!"
