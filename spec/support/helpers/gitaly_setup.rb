@@ -54,9 +54,11 @@ module GitalySetup
     {
       'HOME' => expand_path('tmp/tests'),
       'GEM_PATH' => Gem.path.join(':'),
-      'BUNDLE_APP_CONFIG' => File.join(gemfile_dir, '.bundle'),
       'BUNDLE_INSTALL_FLAGS' => nil,
+      'BUNDLE_PATH' => bundle_path,
       'BUNDLE_GEMFILE' => gemfile,
+      'BUNDLE_JOBS' => '4',
+      'BUNDLE_RETRY' => '3',
       'RUBYOPT' => nil,
 
       # Git hooks can't run during tests as the internal API is not running.
@@ -65,17 +67,11 @@ module GitalySetup
     }
   end
 
-  # rubocop:disable GitlabSecurity/SystemCommandInjection
-  def set_bundler_config
-    system('bundle config set --local jobs 4', chdir: gemfile_dir)
-    system('bundle config set --local retry 3', chdir: gemfile_dir)
-
+  def bundle_path
     if ENV['CI']
-      bundle_path = expand_path('vendor/gitaly-ruby')
-      system('bundle', 'config', 'set', '--local', 'path', bundle_path, chdir: gemfile_dir)
+      expand_path('vendor/gitaly-ruby')
     end
   end
-  # rubocop:enable GitlabSecurity/SystemCommandInjection
 
   def config_path(service)
     case service
