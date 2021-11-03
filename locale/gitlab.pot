@@ -12637,9 +12637,6 @@ msgstr ""
 msgid "EmailsOnPushService|Send notifications from the committer's email address if the domain matches the domain used by your GitLab instance (such as %{domains})."
 msgstr ""
 
-msgid "EmailsOnPushService|can't exceed %{recipients_limit}"
-msgstr ""
-
 msgid "EmailsOnPushService|tanuki@example.com gitlab@example.com"
 msgstr ""
 
@@ -18600,6 +18597,9 @@ msgid "Integrations|You've activated every integration 🎉"
 msgstr ""
 
 msgid "Integrations|ZenTao issues display here when you create issues in your project in ZenTao."
+msgstr ""
+
+msgid "Integrations|can't exceed %{recipients_limit}"
 msgstr ""
 
 msgid "Interactive mode"
