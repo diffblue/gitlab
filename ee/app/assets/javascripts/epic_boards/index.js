@@ -3,7 +3,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import initFilteredSearch from 'ee/boards/epic_filtered_search';
-import { fullEpicBoardId, transformBoardConfig } from 'ee_component/boards/boards_util';
+import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 import toggleLabels from 'ee_component/boards/toggle_labels';
 
 import BoardAddNewColumnTrigger from '~/boards/components/board_add_new_column_trigger.vue';
@@ -16,7 +16,6 @@ import createDefaultClient from '~/lib/graphql';
 
 import '~/boards/filters/due_date_filters';
 import { NavigationType, parseBoolean } from '~/lib/utils/common_utils';
-import { updateHistory } from '~/lib/utils/url_utility';
 import introspectionQueryResultData from '~/sidebar/fragmentTypes.json';
 
 Vue.use(VueApollo);
@@ -59,15 +58,6 @@ function mountBoardApp(el) {
       weight: el.dataset.boardWeight ? parseInt(el.dataset.boardWeight, 10) : null,
     },
   });
-
-  const boardConfigPath = transformBoardConfig(store.state.boardConfig);
-
-  if (boardConfigPath !== '') {
-    const filterPath = window.location.search ? `${window.location.search}&` : '?';
-    updateHistory({
-      url: `${filterPath}${transformBoardConfig(store.state.boardConfig)}`,
-    });
-  }
 
   // eslint-disable-next-line no-new
   new Vue({
