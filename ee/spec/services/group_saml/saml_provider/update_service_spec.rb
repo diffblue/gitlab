@@ -11,6 +11,7 @@ RSpec.describe GroupSaml::SamlProvider::UpdateService do
   end
 
   let(:group) { saml_provider.group }
+  let(:audit_event_name) { 'group_saml_provider_update' }
 
   include_examples 'base SamlProvider service'
   include_examples 'SamlProvider service toggles Group Managed Accounts'

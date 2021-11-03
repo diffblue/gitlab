@@ -25,6 +25,20 @@ module GroupSaml
             require_linked_saml_to_enable_group_managed!
           end
         end
+
+        if saml_provider.previous_changes.present?
+          ::Gitlab::Audit::Auditor.audit(
+            name: audit_name,
+            author: current_user,
+            scope: saml_provider.group,
+            target: saml_provider.group,
+            message: message
+          )
+        end
+      end
+
+      def audit_name
+        "group_saml_provider"
       end
 
       private
@@ -39,6 +53,23 @@ module GroupSaml
         saml_provider.errors.add(:base, message)
 
         raise ActiveRecord::Rollback
+      end
+
+      def message
+        audit_logs_allowlist = %w[enabled certificate_fingerprint sso_url enforced_sso enforced_group_managed_accounts prohibited_outer_forks default_membership_role git_check_enforced]
+        change_text = saml_provider
+                        .previous_changes
+                        .map do |k, v|
+          next unless audit_logs_allowlist.include?(k)
+
+          if v[0].nil?
+            "#{k} changed to #{v[1]}. "
+          else
+            "#{k} changed from #{v[0]} to #{v[1]}. "
+          end
+        end.join
+
+        "Group SAML SSO configuration changed: #{change_text}"
       end
     end
   end

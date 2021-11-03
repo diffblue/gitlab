@@ -8,5 +8,7 @@ RSpec.describe GroupSaml::SamlProvider::CreateService do
 
   let(:group) { create :group }
 
+  let(:audit_event_name) { 'group_saml_provider_create' }
+
   include_examples 'base SamlProvider service'
 end
