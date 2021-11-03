@@ -2872,10 +2872,9 @@ they expire and are deleted. The `expire_in` setting does not affect:
 - Artifacts from the latest job, unless keeping the latest job artifacts is:
   - [Disabled at the project level](../pipelines/job_artifacts.md#keep-artifacts-from-most-recent-successful-jobs).
   - [Disabled instance-wide](../../user/admin_area/settings/continuous_integration.md#keep-the-latest-artifacts-for-all-jobs-in-the-latest-successful-pipelines).
-- [Pipeline artifacts](../pipelines/pipeline_artifacts.md). It's not possible to specify an
-  expiration date for these:
-  - Pipeline artifacts from the latest pipeline are kept forever.
-  - Other pipeline artifacts are erased after one week.
+- [Pipeline artifacts](../pipelines/pipeline_artifacts.md). You can't specify an expiration date for
+  pipeline artifacts. See [When pipeline artifacts are deleted](../pipelines/pipeline_artifacts.md#when-pipeline-artifacts-are-deleted)
+  for more information.
 
 The value of `expire_in` is an elapsed time in seconds, unless a unit is provided. Valid values
 include:
