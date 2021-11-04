@@ -81,17 +81,22 @@ RSpec.describe Groups::DependencyProxyForContainersController do
   end
 
   describe 'GET #manifest' do
-    let_it_be(:manifest) { create(:dependency_proxy_manifest) }
+    let_it_be(:manifest) { create(:dependency_proxy_manifest, group: group) }
 
     let(:pull_response) { { status: :success, manifest: manifest, from_cache: false } }
+    let(:head_response) { { status: :success, digest: manifest.digest, content_type: manifest.content_type } }
+    let(:tag) { manifest.file_name.sub('.json', '').split(':').last }
 
     subject(:get_manifest) do
-      get :manifest, params: { group_id: group.to_param, image: 'alpine', tag: '3.9.2' }
+      get :manifest, params: { group_id: group.to_param, image: 'alpine', tag: tag }
     end
 
     before do
       allow_next_instance_of(DependencyProxy::FindOrCreateManifestService) do |instance|
         allow(instance).to receive(:execute).and_return(pull_response)
+      end
+      allow_next_instance_of(DependencyProxy::HeadManifestService) do |instance|
+        allow(instance).to receive(:execute).and_return(head_response)
       end
     end
 
