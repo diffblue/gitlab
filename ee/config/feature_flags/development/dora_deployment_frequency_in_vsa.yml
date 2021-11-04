@@ -1,8 +1,0 @@
----
-name: dora_deployment_frequency_in_vsa
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/60367
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/329178
-milestone: '13.12'
-type: development
-group: group::optimize
-default_enabled: true

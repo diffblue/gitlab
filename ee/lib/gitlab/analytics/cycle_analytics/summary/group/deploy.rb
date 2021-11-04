@@ -19,23 +19,8 @@ module Gitlab
             private
 
             def deployments_count
-              @deployments_count ||= if Feature.enabled?(:dora_deployment_frequency_in_vsa, default_enabled: :yaml)
-                                       deployment_count_via_dora_api
-                                     else
-                                       deployment_count_via_finder
-                                     end
+              @deployments_count ||= deployment_count_via_dora_api
             end
-
-            # rubocop: disable CodeReuse/ActiveRecord
-            def deployment_count_via_finder
-              deployments = DeploymentsFinder
-                .new(group: group, finished_after: options[:from], finished_before: options[:to], status: :success, order_by: :finished_at)
-                .execute
-
-              deployments = deployments.where(project_id: options[:projects]) if options[:projects].present?
-              deployments.count
-            end
-            # rubocop: enable CodeReuse/ActiveRecord
 
             def deployment_count_via_dora_api
               result = Dora::AggregateMetricsService.new(

@@ -132,155 +132,133 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
     environment = project.environments.production.first || create(:environment, :production, project: project)
     create(:deployment, :success, args.merge(environment: environment))
 
-    # this is needed for the dora_deployment_frequency_in_vsa feature flag so we have aggregated data
+    # this is needed for the DORA API so we have aggregated data
     ::Dora::DailyMetrics::RefreshWorker.new.perform(environment.id, Time.current.to_date.to_s)
   end
 
-  shared_examples 'VSA deployment related metrics' do
-    describe "#deploys" do
-      let(:current_time) { Time.current }
-      let(:one_day_ago) { current_time - 1.day }
-      let(:two_days_ago) { current_time - 2.days }
-      let(:five_days_ago) { current_time - 5.days }
-      let(:ten_days_ago) { current_time - 10.days }
+  describe "#deploys" do
+    let(:current_time) { Time.current }
+    let(:one_day_ago) { current_time - 1.day }
+    let(:two_days_ago) { current_time - 2.days }
+    let(:five_days_ago) { current_time - 5.days }
+    let(:ten_days_ago) { current_time - 10.days }
 
-      context 'with from date' do
-        subject { described_class.new(group, options: { from: two_days_ago, current_user: user }).data }
+    context 'with from date' do
+      subject { described_class.new(group, options: { from: two_days_ago, current_user: user }).data }
 
+      before do
+        travel_to(five_days_ago) do
+          create_deployment(project: project, finished_at: Time.current)
+          create_deployment(project: project_2, finished_at: Time.current)
+        end
+
+        travel_to(current_time) do
+          create_deployment(project: project, finished_at: Time.current)
+          create_deployment(project: project_2, finished_at: Time.current)
+        end
+      end
+
+      it "finds the number of deploys made created after it" do
+        expect(subject.second[:value]).to eq('2')
+      end
+
+      it 'returns the localized title' do
+        Gitlab::I18n.with_locale(:ru) do
+          expect(subject.second[:title]).to eq(n_('Deploy', 'Deploys', 2))
+        end
+      end
+
+      context 'with subgroups' do
         before do
-          travel_to(five_days_ago) do
-            create_deployment(project: project, finished_at: Time.current)
-            create_deployment(project: project_2, finished_at: Time.current)
-          end
-
           travel_to(current_time) do
             create_deployment(project: project, finished_at: Time.current)
-            create_deployment(project: project_2, finished_at: Time.current)
           end
         end
 
-        it "finds the number of deploys made created after it" do
+        it "finds deploys from them" do
+          expect(subject.second[:value]).to eq('3')
+        end
+      end
+
+      context 'with projects specified in options' do
+        before do
+          travel_to(Date.today) do
+            create_deployment(finished_at: current_time, project: create(:project, :repository, namespace: group, name: 'not_applicable'))
+          end
+        end
+
+        subject { described_class.new(group, options: { from: one_day_ago, current_user: user, projects: [project.id, project_2.id] }).data }
+
+        it 'shows deploys from those projects' do
           expect(subject.second[:value]).to eq('2')
         end
+      end
 
-        it 'returns the localized title' do
-          Gitlab::I18n.with_locale(:ru) do
-            expect(subject.second[:title]).to eq(n_('Deploy', 'Deploys', 2))
-          end
+      context 'when `from` and `to` parameters are provided' do
+        subject { described_class.new(group, options: { from: ten_days_ago, to: one_day_ago, current_user: user }).data }
+
+        it 'finds deployments from 5 days ago' do
+          expect(subject.second[:value]).to eq('2')
         end
+      end
+    end
 
-        context 'with subgroups' do
-          before do
-            travel_to(current_time) do
-              create_deployment(project: project, finished_at: Time.current)
-            end
-          end
-
-          it "finds deploys from them" do
-            expect(subject.second[:value]).to eq('3')
-          end
-        end
-
-        context 'with projects specified in options' do
-          before do
-            travel_to(Date.today) do
-              create_deployment(finished_at: current_time, project: create(:project, :repository, namespace: group, name: 'not_applicable'))
-            end
-          end
-
-          subject { described_class.new(group, options: { from: one_day_ago, current_user: user, projects: [project.id, project_2.id] }).data }
-
-          it 'shows deploys from those projects' do
-            expect(subject.second[:value]).to eq('2')
-          end
-        end
-
-        context 'when `from` and `to` parameters are provided' do
-          subject { described_class.new(group, options: { from: ten_days_ago, to: one_day_ago, current_user: user }).data }
-
-          it 'finds deployments from 5 days ago' do
-            expect(subject.second[:value]).to eq('2')
-          end
+    context 'with other projects' do
+      before do
+        travel_to(one_day_ago) do
+          create_deployment(finished_at: Time.current, project: create(:project, :repository, namespace: create(:group)))
         end
       end
 
-      context 'with other projects' do
-        before do
-          travel_to(one_day_ago) do
-            create_deployment(finished_at: Time.current, project: create(:project, :repository, namespace: create(:group)))
-          end
-        end
+      it "doesn't find deploys from them" do
+        expect(subject.second[:value]).to eq('-')
+      end
+    end
 
-        it "doesn't find deploys from them" do
-          expect(subject.second[:value]).to eq('-')
+    describe '#deployment_frequency' do
+      let(:from) { ten_days_ago }
+      let(:to) { nil }
+
+      subject do
+        described_class.new(group, options: {
+          from: from,
+          to: to,
+          current_user: user
+        }).data.third
+      end
+
+      it 'includes the unit: `per day`' do
+        expect(subject[:unit]).to eq(_('per day'))
+      end
+
+      before do
+        travel_to(five_days_ago) do
+          create_deployment(finished_at: Time.current, project: project)
         end
       end
 
-      describe '#deployment_frequency' do
+      context 'when `to` is nil' do
+        it 'includes range until now' do
+          # 1 deployment over 7 days
+          expect(subject[:value]).to eq('0.1')
+        end
+      end
+
+      context 'when `to` is given' do
         let(:from) { ten_days_ago }
-        let(:to) { nil }
-
-        subject do
-          described_class.new(group, options: {
-            from: from,
-            to: to,
-            current_user: user
-          }).data.third
-        end
-
-        it 'includes the unit: `per day`' do
-          expect(subject[:unit]).to eq(_('per day'))
-        end
+        let(:to) { 10.days.from_now }
 
         before do
-          travel_to(five_days_ago) do
+          travel_to(Date.yesterday) do
             create_deployment(finished_at: Time.current, project: project)
           end
         end
 
-        context 'when `to` is nil' do
-          it 'includes range until now' do
-            # 1 deployment over 7 days
-            expect(subject[:value]).to eq('0.1')
-          end
-        end
-
-        context 'when `to` is given' do
-          let(:from) { ten_days_ago }
-          let(:to) { 10.days.from_now }
-
-          before do
-            travel_to(Date.yesterday) do
-              create_deployment(finished_at: Time.current, project: project)
-            end
-          end
-
-          it 'returns deployment frequency within `from` and `to` range' do
-            # 2 deployments over 20 days
-            expect(subject[:value]).to eq('0.1')
-          end
+        it 'returns deployment frequency within `from` and `to` range' do
+          # 2 deployments over 20 days
+          expect(subject[:value]).to eq('0.1')
         end
       end
     end
-  end
-
-  context 'when dora_deployment_frequency_in_vsa feature flag is enabled' do
-    before do
-      stub_feature_flags(dora_deployment_frequency_in_vsa: true)
-
-      expect(Dora::AggregateMetricsService).to receive(:new).and_call_original
-    end
-
-    it_behaves_like 'VSA deployment related metrics'
-  end
-
-  context 'when dora_deployment_frequency_in_vsa feature flag is disabled' do
-    before do
-      stub_feature_flags(dora_deployment_frequency_in_vsa: false)
-
-      expect(Dora::AggregateMetricsService).not_to receive(:new)
-    end
-
-    it_behaves_like 'VSA deployment related metrics'
   end
 end
