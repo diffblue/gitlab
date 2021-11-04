@@ -160,9 +160,12 @@ describe('Iteration Breadcrumb', () => {
 
   describe('when cadence is present', () => {
     const cadenceTitle = 'cadencetitle';
+    const breadcrumbProps = () => findBreadcrumb().props('items');
 
-    it('is found in crumb items', async () => {
-      const cadenceSpy = jest.fn().mockResolvedValue({
+    let cadenceSpy;
+
+    beforeEach(async () => {
+      cadenceSpy = jest.fn().mockResolvedValue({
         data: {
           group: {
             id: '',
@@ -183,16 +186,25 @@ describe('Iteration Breadcrumb', () => {
           },
         },
       });
+    });
 
+    it('is found in crumb items', async () => {
       await router.push({ name: 'editIteration', params: { cadenceId: '123', iterationId: '1' } });
 
       createComponentWithApollo({ readCadenceSpy: cadenceSpy });
 
       await waitForPromises();
+      expect(breadcrumbProps().some(({ text }) => text === cadenceTitle)).toBe(true);
+    });
 
-      const breadcrumbProps = findBreadcrumb().props('items');
+    it('does not pass a breadcrumb without a title', async () => {
+      await router.push({ name: 'index' });
 
-      expect(breadcrumbProps.some(({ text }) => text === cadenceTitle)).toBe(true);
+      createComponentWithApollo({ readCadenceSpy: cadenceSpy });
+
+      await waitForPromises();
+
+      expect(breadcrumbProps().some(({ text }) => text === '')).toBe(false);
     });
   });
 
