@@ -8,7 +8,6 @@ import {
 import { debounce } from 'lodash';
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
-import { isNumeric } from '~/lib/utils/number_utils';
 import { sprintf, s__, __ } from '~/locale';
 
 export default {
@@ -41,6 +40,18 @@ export default {
       required: true,
     },
     getItemName: {
+      type: Function,
+      required: true,
+    },
+    getSuggestionValue: {
+      type: Function,
+      required: true,
+    },
+    findActiveItem: {
+      type: Function,
+      required: true,
+    },
+    isValidIdentifier: {
       type: Function,
       required: true,
     },
@@ -77,14 +88,14 @@ export default {
     },
     active() {
       const { data: input } = this.value;
-      if (isNumeric(input)) {
-        this.selectActiveItem(parseInt(input, 10));
+      if (this.isValidIdentifier(input)) {
+        this.activeItem = this.findActiveItem(this.suggestions, input);
       }
     },
   },
   mounted() {
     const { data: id } = this.value;
-    if (id && isNumeric(id)) {
+    if (this.isValidIdentifier(id)) {
       this.loadView(id);
     } else {
       this.loadSuggestions();
@@ -106,14 +117,14 @@ export default {
         message: sprintf(message, { type }),
       });
     },
-    selectActiveItem(id) {
-      this.activeItem = this.suggestions.find((u) => u.id === id);
-    },
     loadView(id) {
       this.viewLoading = true;
       return this.fetchItem(id)
         .then((data) => {
-          this.activeItem = data;
+          if (data) {
+            this.activeItem = data;
+            this.suggestions.push(data);
+          }
         })
         .catch(this.onApiError)
         .finally(() => {
@@ -152,6 +163,7 @@ export default {
           :alt="getAvatarString(activeItem.name)"
           shape="circle"
           class="gl-mr-2"
+          data-testid="audit-filter-item-avatar"
         />
         {{ activeItemName }}
       </template>
@@ -164,7 +176,8 @@ export default {
         <gl-filtered-search-suggestion
           v-for="item in suggestions"
           :key="item.id"
-          :value="item.id.toString()"
+          :value="getSuggestionValue(item)"
+          data-testid="audit-filter-suggestion"
         >
           <div class="d-flex">
             <gl-avatar

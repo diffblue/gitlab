@@ -17,7 +17,7 @@ describe('Audit Events getters', () => {
 
     describe('with filters and dates', () => {
       it('returns the export url', () => {
-        const filterValue = [{ type: 'user', value: { data: 1, operator: '=' } }];
+        const filterValue = [{ type: 'user', value: { data: '@root', operator: '=' } }];
         const startDate = new Date(2020, 1, 2);
         const endDate = new Date(2020, 1, 30);
         const state = { ...createState, ...{ filterValue, startDate, endDate } };
@@ -25,7 +25,7 @@ describe('Audit Events getters', () => {
         expect(getters.buildExportHref(state)(exportUrl)).toEqual(
           'https://example.com/audit_reports.csv?' +
             'created_after=2020-02-02&created_before=2020-03-01' +
-            '&entity_id=1&entity_type=User',
+            '&entity_type=User&entity_username=root',
         );
       });
     });

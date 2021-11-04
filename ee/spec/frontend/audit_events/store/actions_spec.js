@@ -41,7 +41,7 @@ describe('Audit Event actions', () => {
   );
 
   it('setFilterValue action should commit to the store', () => {
-    const payload = [{ type: 'User', value: { data: 1, operator: '=' } }];
+    const payload = [{ type: 'User', value: { data: '@root', operator: '=' } }];
     testAction(actions.setFilterValue, payload, state, [{ type: types.SET_FILTER_VALUE, payload }]);
   });
 
@@ -91,6 +91,9 @@ describe('Audit Event actions', () => {
             payload: {
               created_after: null,
               created_before: null,
+              author_username: null,
+              entity_username: null,
+              entity_type: undefined,
             },
           },
         ]);
@@ -100,7 +103,7 @@ describe('Audit Event actions', () => {
     describe('with a full search query', () => {
       beforeEach(() => {
         setWindowLocation(
-          '?sort=created_desc&entity_type=User&entity_id=44&created_after=2020-06-05&created_before=2020-06-25',
+          '?sort=created_desc&entity_type=Project&entity_id=44&created_after=2020-06-05&created_before=2020-06-25',
         );
       });
 
@@ -112,8 +115,10 @@ describe('Audit Event actions', () => {
               created_after: new Date('2020-06-05T00:00:00.000Z'),
               created_before: new Date('2020-06-25T00:00:00.000Z'),
               entity_id: '44',
-              entity_type: 'user',
+              entity_type: 'project',
               sort: 'created_desc',
+              author_username: null,
+              entity_username: null,
             },
           },
         ]);

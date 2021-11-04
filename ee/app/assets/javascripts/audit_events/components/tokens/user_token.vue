@@ -1,5 +1,6 @@
 <script>
-import { getUsers, getUser } from '~/rest_api';
+import { getUsers } from '~/rest_api';
+import { parseUsername, displayUsername, isValidUsername } from '../../token_utils';
 import AuditFilterToken from './shared/audit_filter_token.vue';
 
 export default {
@@ -8,14 +9,24 @@ export default {
   },
   inheritAttrs: false,
   tokenMethods: {
-    fetchItem(id) {
-      return getUser(id).then((res) => res.data);
+    fetchItem(term) {
+      const username = parseUsername(term);
+      return getUsers('', { username, per_page: 1 }).then((res) => res.data[0]);
     },
     fetchSuggestions(term) {
-      return getUsers(term).then((res) => res.data);
+      return getUsers(parseUsername(term)).then((res) => res.data);
     },
     getItemName({ name }) {
       return name;
+    },
+    getSuggestionValue({ username }) {
+      return displayUsername(username);
+    },
+    isValidIdentifier(username) {
+      return isValidUsername(username);
+    },
+    findActiveItem(suggestions, username) {
+      return suggestions.find((u) => u.username === parseUsername(username));
     },
   },
 };

@@ -38,9 +38,13 @@ describe('Audit Event mutations', () => {
       sort: 'created_asc',
     };
 
+    const createFilterValue = (data) => {
+      return [{ type: payload.entity_type, value: { data, operator: '=' } }];
+    };
+
     it.each`
       stateKey         | expectedState
-      ${'filterValue'} | ${[{ type: payload.entity_type, value: { data: payload.entity_id, operator: '=' } }]}
+      ${'filterValue'} | ${createFilterValue(payload.entity_id)}
       ${'startDate'}   | ${payload.created_after}
       ${'endDate'}     | ${payload.created_before}
       ${'sortBy'}      | ${payload.sort}
@@ -49,6 +53,22 @@ describe('Audit Event mutations', () => {
       mutations[types.INITIALIZE_AUDIT_EVENTS](state, payload);
 
       expect(state[stateKey]).toEqual(expectedState);
+    });
+
+    it.each`
+      payloadKey           | payloadValue
+      ${'entity_id'}       | ${'1'}
+      ${'entity_username'} | ${'abc'}
+      ${'author_username'} | ${'abc'}
+    `('sets the filter value when provided with a $payloadKey', ({ payloadKey, payloadValue }) => {
+      const payloadWithValue = {
+        ...payload,
+        entity_id: undefined,
+        [payloadKey]: payloadValue,
+      };
+
+      mutations[types.INITIALIZE_AUDIT_EVENTS](state, payloadWithValue);
+      expect(state.filterValue).toEqual(createFilterValue(payloadValue));
     });
   });
 });
