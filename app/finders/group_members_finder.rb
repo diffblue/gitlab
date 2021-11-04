@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class GroupMembersFinder < UnionFinder
-  RELATIONS = %i(direct inherited descendants shared_with_groups).freeze
+  RELATIONS = %i(direct inherited descendants shared_from_groups).freeze
   DEFAULT_RELATIONS = %i(direct inherited).freeze
   INVALID_RELATION_TYPE_ERROR_MSG = "is not a valid relation type. Valid relation types are #{RELATIONS.join(', ')}."
 
@@ -30,8 +30,6 @@ class GroupMembersFinder < UnionFinder
 
   def execute(include_relations: DEFAULT_RELATIONS)
     groups = groups_by_relations(include_relations)
-    return GroupMember.none unless groups
-
     members = all_group_members(groups).distinct_on_user_with_max_access_level
 
     filter_members(members)
@@ -44,14 +42,14 @@ class GroupMembersFinder < UnionFinder
   def groups_by_relations(include_relations)
     check_relation_arguments!(include_relations)
 
-    members = []
+    related_groups = []
 
-    members << Group.where(id: group.id) if include_relations.include?(:direct)
-    members << group.ancestors if include_relations.include?(:inherited)
-    members << group.descendants if include_relations.include?(:descendants)
-    members << group.shared_with_groups.public_or_visible_to_user(user) if include_relations.include?(:shared_from_groups)
+    related_groups << Group.by_id(group.id) if include_relations&.include?(:direct)
+    related_groups << group.ancestors if include_relations&.include?(:inherited)
+    related_groups << group.descendants if include_relations&.include?(:descendants)
+    related_groups << group.shared_with_groups.public_or_visible_to_user(user) if include_relations&.include?(:shared_from_groups)
 
-    find_union(members, Group)
+    find_union(related_groups, Group)
   end
 
   def filter_members(members)

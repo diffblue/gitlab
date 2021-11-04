@@ -76,7 +76,7 @@ RSpec.describe 'getting group members information' do
     end
 
     it 'returns invited members plus inherited members' do
-      fetch_members(group: child_group, args: { relations: [:DIRECT, :INHERITED, :SHARED_WITH_GROUPS] })
+      fetch_members(group: child_group, args: { relations: [:DIRECT, :INHERITED, :SHARED_FROM_GROUPS] })
 
       expect(graphql_errors).to be_nil
       expect_array_response(invited_user, user_1, user_2, child_user)
