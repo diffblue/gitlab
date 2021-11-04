@@ -20,7 +20,7 @@ RSpec.describe ::Routing::PseudonymizationHelper do
 
   describe 'when url has params to mask' do
     context 'when project/insights page is loaded' do
-      let(:masked_url) { "http://localhost//namespace#{group.id}/project#{project.id}/insights/" }
+      let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/insights" }
       let(:request) do
         double(:Request,
           path_parameters: {
@@ -42,7 +42,7 @@ RSpec.describe ::Routing::PseudonymizationHelper do
     end
 
     context 'when groups/insights page is loaded' do
-      let(:masked_url) { "http://localhost//groups/namespace#{group.id}/-/insights/" }
+      let(:masked_url) { "http://localhost/groups/namespace#{group.id}/-/insights" }
       let(:request) do
         double(:Request,
           path_parameters: {
