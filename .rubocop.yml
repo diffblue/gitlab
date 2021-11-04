@@ -708,10 +708,6 @@ Cop/UserAdmin:
     - 'spec/**/*.rb'
     - 'ee/spec/**/*.rb'
 
-Performance/OpenStruct:
-  Exclude:
-    - 'ee/spec/**/*.rb'
-
 # See https://gitlab.com/gitlab-org/gitlab/-/issues/327495
 Style/RegexpLiteral:
   Enabled: false
