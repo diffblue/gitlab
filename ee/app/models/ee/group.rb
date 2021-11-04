@@ -624,13 +624,7 @@ module EE
     end
 
     def invited_or_shared_group_members(groups)
-      groups_and_ancestors = if ::Feature.enabled?(:linear_ee_group_ancestor_scopes, self, default_enabled: :yaml)
-                               groups.self_and_ancestors
-                             else
-                               ::Gitlab::ObjectHierarchy.new(groups).base_and_ancestors
-                             end
-
-      ::GroupMember.active_without_invites_and_requests.where(source_id: groups_and_ancestors)
+      ::GroupMember.active_without_invites_and_requests.where(source_id: groups.self_and_ancestors)
     end
 
     override :_safe_read_repository_read_only_column

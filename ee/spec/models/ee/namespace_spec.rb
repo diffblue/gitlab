@@ -1165,14 +1165,6 @@ RSpec.describe Namespace do
       end
 
       it_behaves_like 'billable group plan retrieval'
-
-      context 'when feature flag :linear_ee_group_ancestor_scopes is disabled' do
-        before do
-          stub_feature_flags(linear_ee_group_ancestor_scopes: false)
-        end
-
-        it_behaves_like 'billable group plan retrieval'
-      end
     end
   end
 
