@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SettingsHelper do
+RSpec.describe EE::Groups::SettingsHelper do
   include AdminModeHelper
 
   let_it_be(:user) { create(:user) }

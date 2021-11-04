@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Groups
+module EE::Groups
   module SettingsHelper
     def delayed_project_removal_help_text
       html_escape(delayed_project_removal_i18n_string) % {
