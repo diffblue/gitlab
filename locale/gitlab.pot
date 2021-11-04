@@ -14083,6 +14083,9 @@ msgstr ""
 msgid "Exported requirements"
 msgstr ""
 
+msgid "Extension definition should be either a class or a function"
+msgstr ""
+
 msgid "External Classification Policy Authorization"
 msgstr ""
 

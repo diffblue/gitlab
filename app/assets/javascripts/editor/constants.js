@@ -20,6 +20,10 @@ export const EDITOR_TYPE_DIFF = 'vs.editor.IDiffEditor';
 export const EDITOR_CODE_INSTANCE_FN = 'createInstance';
 export const EDITOR_DIFF_INSTANCE_FN = 'createDiffInstance';
 
+export const EDITOR_EXTENSION_DEFINITION_ERROR = __(
+  'Extension definition should be either a class or a function',
+);
+
 //
 // EXTENSIONS' CONSTANTS
 //
