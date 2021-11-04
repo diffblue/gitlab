@@ -59,11 +59,13 @@ export default {
         const prevPath = breadcrumbs[index - 1]?.to || '';
         const to = `${prevPath}/${path}`.replace(/\/+/, '/');
 
-        breadcrumbs.push({
-          path,
-          to,
-          text,
-        });
+        if (text) {
+          breadcrumbs.push({
+            path,
+            to,
+            text,
+          });
+        }
       });
 
       return breadcrumbs;
