@@ -97,14 +97,15 @@ module EE
 
       def render_vulnerability_description
         render_to_string(
-          template: 'vulnerabilities/issue_description.md.erb',
+          template: 'vulnerabilities/issue_description',
+          formats: :md,
           locals: { vulnerability: vulnerability.present }
         )
       end
 
       def render_vulnerability_link_alert(error_message)
         render_to_string(
-          partial: 'vulnerabilities/unable_to_link_vulnerability.html.haml',
+          partial: 'vulnerabilities/unable_to_link_vulnerability',
           locals: {
             vulnerability_link: vulnerability_path(vulnerability),
             error_message: error_message
