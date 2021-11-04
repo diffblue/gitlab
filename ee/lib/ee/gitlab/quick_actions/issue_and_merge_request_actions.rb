@@ -17,7 +17,7 @@ module EE
             quick_action_target.supports_assignee? &&
               quick_action_target.allows_multiple_assignees? &&
               quick_action_target.persisted? &&
-              current_user.can?(:"admin_#{quick_action_target.to_ability_name}", project)
+              current_user.can?(:"set_#{quick_action_target.to_ability_name}_metadata", quick_action_target)
           end
           command :reassign do |reassign_param|
             @updates[:assignee_ids] = extract_users(reassign_param).map(&:id)
