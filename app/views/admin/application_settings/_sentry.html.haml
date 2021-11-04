@@ -17,6 +17,6 @@
       = f.text_field :sentry_clientside_dsn, class: 'form-control gl-form-input', placeholder: 'https://public@sentry.example.com/2'
     .form-group
       = f.label :sentry_environment, _('Environment'), class: 'label-light'
-      = f.text_field :sentry_environment, class: 'form-control gl-form-input', placeholder: 'production'
+      = f.text_field :sentry_environment, class: 'form-control gl-form-input', placeholder: Rails.env
 
   = f.submit _('Save changes'), class: 'gl-button btn btn-confirm'
