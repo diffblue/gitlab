@@ -2,7 +2,8 @@
 # EE fixture
 Gitlab::Seeder.quiet do
   Project.not_mass_generated.sample(5).each do |project|
-    project.ci_pipelines.all.sample(2).each do |pipeline|
+    project.builds.sample(2).each do |build|
+      pipeline = build.pipeline
       next if pipeline.source_pipeline
 
       target_pipeline = Ci::Pipeline
@@ -15,7 +16,7 @@ Gitlab::Seeder.quiet do
 
       # link to source pipeline
       pipeline.sourced_pipelines.create!(
-        source_job: pipeline.builds.all.sample,
+        source_job: pipeline.builds.sample,
         source_project: pipeline.project,
         project: target_pipeline.project,
         pipeline: target_pipeline
