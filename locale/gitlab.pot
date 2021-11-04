@@ -1140,6 +1140,9 @@ msgstr ""
 msgid "* All times are in UTC unless specified"
 msgstr ""
 
+msgid "*Required"
+msgstr ""
+
 msgid "+ %{amount} more"
 msgstr ""
 
