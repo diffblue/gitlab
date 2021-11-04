@@ -69,6 +69,7 @@ const createMergeRequest = async ({ projectPath, sourceBranch, targetBranch }) =
  */
 const updatePolicy = async ({
   action = SECURITY_POLICY_ACTIONS.APPEND,
+  name,
   projectPath,
   yamlEditorValue,
 }) => {
@@ -80,6 +81,7 @@ const updatePolicy = async ({
     mutation: createScanExecutionPolicy,
     variables: {
       mode: action,
+      name,
       projectPath,
       policyYaml: yamlEditorValue,
     },
@@ -96,6 +98,7 @@ const updatePolicy = async ({
 export const modifyPolicy = async ({
   action,
   assignedPolicyProject,
+  name,
   projectPath,
   yamlEditorValue,
 }) => {
@@ -109,6 +112,7 @@ export const modifyPolicy = async ({
 
   const newPolicyCommitBranch = await updatePolicy({
     action,
+    name,
     projectPath,
     yamlEditorValue,
   });
