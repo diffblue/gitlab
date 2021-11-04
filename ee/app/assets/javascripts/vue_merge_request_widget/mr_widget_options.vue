@@ -469,11 +469,17 @@ export default {
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
-        <div class="mr-widget-info">
+        <ready-to-merge
+          v-if="isRestructuredMrWidgetEnabled && mr.commitsCount"
+          :mr="mr"
+          :service="service"
+        />
+        <div v-else class="mr-widget-info">
           <mr-widget-related-links
             v-if="shouldRenderRelatedLinks"
             :state="mr.state"
             :related-links="mr.relatedLinks"
+            class="mr-info-list gl-ml-7 gl-pb-5"
           />
 
           <source-branch-removal-status v-if="shouldRenderSourceBranchRemovalStatus" />
