@@ -37,7 +37,7 @@ describe('Minutes usage by month chart component', () => {
     expect(findAlert().exists()).toBe(false);
   });
 
-  it('renders an alert when no data is avaliable', () => {
+  it('renders an alert when no data is available', () => {
     createComponent({ minutesUsageData: [] });
 
     expect(findAlert().exists()).toBe(true);

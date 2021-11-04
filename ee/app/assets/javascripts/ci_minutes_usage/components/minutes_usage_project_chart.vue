@@ -69,7 +69,7 @@ export default {
       return this.minutesUsageData.map((cur) => cur.month);
     },
     isDataEmpty() {
-      return this.minutesUsageData.length === 0 && this.selectedMonth.length === 0;
+      return this.minutesUsageData.length === 0 && !this.selectedMonth;
     },
   },
   watch: {

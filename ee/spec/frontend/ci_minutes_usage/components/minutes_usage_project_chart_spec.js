@@ -55,7 +55,7 @@ describe('Minutes usage by project chart component', () => {
   });
 
   describe('without CI minutes data', () => {
-    it('renders an alert when no data is avaliable', () => {
+    it('renders an alert when no data is available', () => {
       createComponent({ minutesUsageData: [] });
 
       expect(findAlert().exists()).toBe(true);
