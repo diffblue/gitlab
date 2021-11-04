@@ -38,6 +38,7 @@ describe('BoardAddNewColumn', () => {
     iterations = [],
     getListByTypeId = jest.fn(),
     actions = {},
+    glFeatures = {},
   } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(BoardAddNewColumn, {
@@ -75,6 +76,7 @@ describe('BoardAddNewColumn', () => {
           milestoneListsAvailable: true,
           assigneeListsAvailable: true,
           iterationListsAvailable: true,
+          glFeatures,
         },
       }),
     );
@@ -92,6 +94,8 @@ describe('BoardAddNewColumn', () => {
   const findForm = () => wrapper.findComponent(BoardAddNewColumnForm);
   const cancelButton = () => wrapper.findByTestId('cancelAddNewColumn');
   const submitButton = () => wrapper.findByTestId('addNewColumnButton');
+  const findLabels = () => wrapper.findComponent(GlDropdown).findAll('label');
+  const findIterationPeriod = (item) => item.find('[data-testid="new-column-iteration-period"]');
   const listTypeSelect = (type) => {
     const radio = wrapper
       .findAllComponents(GlFormRadio)
@@ -99,6 +103,11 @@ describe('BoardAddNewColumn', () => {
       .at(0);
     radio.element.value = type;
     radio.vm.$emit('change', type);
+  };
+  const selectIteration = async () => {
+    listTypeSelect(ListType.iteration);
+
+    await nextTick();
   };
 
   it('clicking cancel hides the form', () => {
@@ -203,17 +212,19 @@ describe('BoardAddNewColumn', () => {
   });
 
   describe('iteration list', () => {
+    const iterationMountOptions = {
+      iterations: mockIterations,
+      actions: {
+        fetchIterations: jest.fn(),
+      },
+    };
+
     beforeEach(async () => {
       mountComponent({
-        iterations: mockIterations,
-        actions: {
-          fetchIterations: jest.fn(),
-        },
+        ...iterationMountOptions,
       });
 
-      listTypeSelect(ListType.iteration);
-
-      await nextTick();
+      await selectIteration();
     });
 
     it('sets iteration placeholder text in form', () => {
@@ -229,6 +240,33 @@ describe('BoardAddNewColumn', () => {
       expect(itemList).toHaveLength(mockIterations.length);
       expect(itemList.at(0).attributes('value')).toBe(mockIterations[0].id);
       expect(itemList.at(1).attributes('value')).toBe(mockIterations[1].id);
+    });
+
+    describe('iteration_cadences feature flag is off', () => {
+      it('does not display iteration period', async () => {
+        const labels = findLabels();
+        expect(findIterationPeriod(labels.at(0)).exists()).toBe(false);
+        expect(findIterationPeriod(labels.at(1)).exists()).toBe(false);
+      });
+    });
+
+    describe('iteration_cadences feature flag is on', () => {
+      it('displays iteration period', async () => {
+        mountComponent({
+          ...iterationMountOptions,
+          glFeatures: {
+            iterationCadences: true,
+          },
+        });
+
+        await selectIteration();
+
+        const labels = findLabels();
+        expect(labels.at(0).text()).toContain('Oct 5, 2021 - Oct 10, 2021');
+        expect(findIterationPeriod(labels.at(0)).isVisible()).toBe(true);
+        expect(labels.at(1).text()).toContain('Oct 12, 2021 - Oct 17, 2021');
+        expect(findIterationPeriod(labels.at(1)).isVisible()).toBe(true);
+      });
     });
   });
 });

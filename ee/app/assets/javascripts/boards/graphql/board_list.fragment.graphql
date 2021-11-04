@@ -20,6 +20,8 @@ fragment BoardListFragment on BoardList {
   iteration {
     id
     title
+    startDate
+    dueDate
     webPath
     description
   }

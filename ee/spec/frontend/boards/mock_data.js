@@ -108,10 +108,14 @@ export const mockIterations = [
   {
     id: 'gid://gitlab/Iteration/1',
     title: 'Iteration 1',
+    startDate: '2021-10-05',
+    dueDate: '2021-10-10',
   },
   {
     id: 'gid://gitlab/Iteration/2',
     title: 'Iteration 2',
+    startDate: '2021-10-12',
+    dueDate: '2021-10-17',
   },
 ];
 

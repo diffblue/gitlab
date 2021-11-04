@@ -7,7 +7,9 @@ import {
   GlLink,
 } from '@gitlab/ui';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
+import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
 import { IssuableType } from '~/issue_show/constants';
+import { getIterationPeriod } from 'ee/iterations/utils';
 import { IssuableAttributeType } from '../constants';
 
 export default {
@@ -19,6 +21,7 @@ export default {
     GlIcon,
     GlLink,
     SidebarDropdownWidget,
+    IterationPeriod,
   },
   props: {
     attrWorkspacePath: {
@@ -45,6 +48,9 @@ export default {
     getCadenceTitle(currentIteration) {
       return currentIteration?.iterationCadence?.title;
     },
+    getIterationPeriod(iteration) {
+      return getIterationPeriod({ startDate: iteration?.startDate, dueDate: iteration?.dueDate });
+    },
     getIterationCadences(iterations) {
       const cadences = [];
       iterations.forEach((iteration) => {
@@ -52,7 +58,11 @@ export default {
           return;
         }
         const { title } = iteration.iterationCadence;
-        const cadenceIteration = { id: iteration.id, title: iteration.title };
+        const cadenceIteration = {
+          id: iteration.id,
+          title: iteration.title,
+          period: this.getIterationPeriod(iteration),
+        };
         const cadence = cadences.find((cad) => cad.title === title);
         if (cadence) {
           cadence.iterations.push(cadenceIteration);
@@ -83,8 +93,11 @@ export default {
         :href="attributeUrl"
         data-qa-selector="iteration_link"
       >
-        <gl-icon name="iteration" class="gl-mr-1" />
-        {{ attributeTitle }}
+        <div>
+          <gl-icon name="iteration" class="gl-mr-1" />
+          {{ attributeTitle }}
+        </div>
+        <IterationPeriod>{{ getIterationPeriod(currentAttribute) }}</IterationPeriod>
       </gl-link>
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
@@ -102,6 +115,7 @@ export default {
           @click="updateAttribute(iteration.id)"
         >
           {{ iteration.title }}
+          <IterationPeriod>{{ iteration.period }}</IterationPeriod>
         </gl-dropdown-item>
       </template>
     </template>

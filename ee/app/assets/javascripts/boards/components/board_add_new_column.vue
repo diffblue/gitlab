@@ -13,6 +13,9 @@ import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form
 import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { getIterationPeriod } from 'ee/iterations/utils';
+import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
 
 export const listTypeInfo = {
   [ListType.label]: {
@@ -57,10 +60,12 @@ export default {
     GlFormGroup,
     GlFormRadio,
     GlFormRadioGroup,
+    IterationPeriod,
   },
   directives: {
     GlTooltip,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'scopedLabelsAvailable',
     'milestoneListsAvailable',
@@ -221,6 +226,7 @@ export default {
         this.selectedItem = { ...item };
       }
     },
+    getIterationPeriod,
   },
 };
 </script>
@@ -318,7 +324,14 @@ export default {
             :sub-label="`@${item.username}`"
             :src="item.avatarUrl"
           />
-          <span v-else>{{ item.title }}</span>
+          <div v-else class="gl-display-inline-block">
+            {{ item.title }}
+            <IterationPeriod
+              v-if="iterationTypeSelected && glFeatures.iterationCadences"
+              data-testid="new-column-iteration-period"
+              >{{ getIterationPeriod(item) }}</IterationPeriod
+            >
+          </div>
         </label>
       </gl-form-radio-group>
 

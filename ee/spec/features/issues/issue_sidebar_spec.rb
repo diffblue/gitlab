@@ -209,6 +209,7 @@ RSpec.describe 'Issue Sidebar' do
           within '[data-testid="iteration-edit"]' do
             expect(page).to have_text(iteration_cadence.title)
             expect(page).to have_text(iteration.title)
+            expect(page).to have_text(iteration_period(iteration))
           end
 
           select_iteration(iteration.title)
@@ -216,6 +217,7 @@ RSpec.describe 'Issue Sidebar' do
           within '[data-testid="select-iteration"]' do
             expect(page).to have_text(iteration_cadence.title)
             expect(page).to have_text(iteration.title)
+            expect(page).to have_text(iteration_period(iteration))
           end
 
           find_and_click_edit_iteration
@@ -294,5 +296,9 @@ RSpec.describe 'Issue Sidebar' do
       click_button('Edit')
       wait_for_requests
     end
+  end
+
+  def iteration_period(iteration)
+    iteration.start_date.strftime("%b%e, %Y") + ' - ' + iteration.due_date.strftime("%b%e, %Y")
   end
 end

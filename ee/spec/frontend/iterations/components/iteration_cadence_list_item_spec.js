@@ -44,6 +44,8 @@ describe('Iteration cadence list item', () => {
     },
   ];
 
+  const iterationPeriods = ['Aug 13, 2021 - Aug 14, 2021'];
+
   const cadence = {
     id: 'gid://gitlab/Iterations::Cadence/561',
     title: 'Weekly cadence',
@@ -180,15 +182,16 @@ describe('Iteration cadence list item', () => {
     expect(findCreateIterationButton().exists()).toBe(canCreateIteration);
   });
 
-  it('shows iterations after loading', async () => {
+  it('shows iterations with dates after loading', async () => {
     await createComponent();
 
     expand();
 
     await waitForPromises();
 
-    iterations.forEach(({ title }) => {
+    iterations.forEach(({ title }, i) => {
       expect(wrapper.text()).toContain(title);
+      expect(wrapper.text()).toContain(iterationPeriods[i]);
     });
   });
 
