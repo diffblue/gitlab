@@ -15,7 +15,7 @@ RSpec.describe 'Session initializer for GitLab' do
         stub_env('GITLAB_REDIS_STORE_WITH_SESSION_STORE', nil)
       end
 
-      it 'returns the regular cookie without a suffix' do
+      it 'initialized as a redis_store with a proper Redis::Store instance' do
         expect(subject).to receive(:session_store).with(:redis_store, a_hash_including(redis_store: kind_of(::Redis::Store)))
 
         load_session_store
@@ -27,7 +27,7 @@ RSpec.describe 'Session initializer for GitLab' do
         stub_env('GITLAB_REDIS_STORE_WITH_SESSION_STORE', false)
       end
 
-      it 'returns the regular cookie without a suffix' do
+      it 'initialized as a redis_store with a proper servers configuration' do
         expect(subject).to receive(:session_store).with(:redis_store, a_hash_including(servers: kind_of(Hash)))
 
         load_session_store
