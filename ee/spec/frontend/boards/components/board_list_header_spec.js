@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import defaultGetters from 'ee/boards/stores/getters';
-import { mockLabelList } from 'jest/boards/mock_data';
+import { mockList, mockLabelList } from 'jest/boards/mock_data';
 import { ListType, inactiveId } from '~/boards/constants';
 import boardsEventHub from '~/boards/eventhub';
 import sidebarEventHub from '~/sidebar/event_hub';
@@ -12,6 +12,24 @@ import sidebarEventHub from '~/sidebar/event_hub';
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
+
+const listMocks = {
+  [ListType.assignee]: {
+    assignee: {},
+  },
+  [ListType.iteration]: {
+    iteration: {
+      startDate: '2021-11-01',
+      dueDate: '2021-11-05',
+    },
+  },
+  [ListType.label]: {
+    ...mockLabelList,
+  },
+  [ListType.backlog]: {
+    ...mockList,
+  },
+};
 
 describe('Board List Header Component', () => {
   let store;
@@ -26,19 +44,15 @@ describe('Board List Header Component', () => {
     currentUserId = 1,
     state = { activeId: inactiveId },
     getters = {},
+    glFeatures = {},
   } = {}) => {
     const boardId = '1';
 
     const listMock = {
-      ...mockLabelList,
+      ...listMocks[listType],
       listType,
       collapsed,
     };
-
-    if (listType === ListType.assignee) {
-      delete listMock.label;
-      listMock.assignee = {};
-    }
 
     if (withLocalStorage) {
       localStorage.setItem(
@@ -69,11 +83,13 @@ describe('Board List Header Component', () => {
         boardId,
         weightFeatureAvailable,
         currentUserId,
+        glFeatures,
       },
     });
   };
 
   const findSettingsButton = () => wrapper.find({ ref: 'settingsBtn' });
+  const findIterationPeriod = () => wrapper.find('[data-testid="board-list-iteration-period"]');
 
   afterEach(() => {
     wrapper.destroy();
@@ -107,7 +123,7 @@ describe('Board List Header Component', () => {
     it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', async () => {
       await newEpicButton.vm.$emit('click');
 
-      expect(boardsEventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockLabelList.id}`);
+      expect(boardsEventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
       expect(boardsEventHub.$emit).toHaveBeenCalledTimes(1);
     });
   });
@@ -182,6 +198,30 @@ describe('Board List Header Component', () => {
       createComponent();
 
       expect(wrapper.find({ ref: 'weightTooltip' }).exists()).toBe(false);
+    });
+  });
+
+  describe('iteration cadence', () => {
+    describe('iteration_cadences feature flag is on', () => {
+      it('displays iteration period', () => {
+        createComponent({
+          listType: ListType.iteration,
+          glFeatures: {
+            iterationCadences: true,
+          },
+        });
+
+        expect(findIterationPeriod().text()).toContain('Nov 1, 2021 - Nov 5, 2021');
+        expect(findIterationPeriod().isVisible()).toBe(true);
+      });
+    });
+
+    describe('iteration_cadences feature flag is off', () => {
+      it('does not display iteration period', () => {
+        createComponent({ listType: ListType.iteration });
+
+        expect(findIterationPeriod().exists()).toBe(false);
+      });
     });
   });
 });

@@ -22,6 +22,8 @@ const TEST_ITERATIONS = [
   {
     id: '11',
     title: 'Test Title',
+    startDate: '2021-10-01',
+    dueDate: '2021-10-05',
     webUrl: '',
     state: '',
     iterationCadence: {
@@ -32,6 +34,8 @@ const TEST_ITERATIONS = [
   {
     id: '22',
     title: 'Another Test Title',
+    startDate: '2021-10-06',
+    dueDate: '2021-10-10',
     webUrl: '',
     state: '',
     iterationCadence: {
@@ -42,6 +46,8 @@ const TEST_ITERATIONS = [
   {
     id: '33',
     title: 'Yet Another Test Title',
+    startDate: '2021-10-11',
+    dueDate: '2021-10-15',
     webUrl: '',
     state: '',
     iterationCadence: {
@@ -265,16 +271,19 @@ describe('IterationDropdown', () => {
       const dropdownItems = wrapper.findAll('li');
 
       expect(dropdownItems.at(0).text()).toBe('Assign Iteration');
-      expect(dropdownItems.at(1).text()).toBe('No iteration');
+      expect(dropdownItems.at(1).text()).toContain('No iteration');
       expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
-      expect(dropdownItems.at(4).text()).toBe('Test Title');
-      expect(dropdownItems.at(5).text()).toBe('Yet Another Test Title');
+      expect(dropdownItems.at(4).text()).toContain('Test Title');
+      expect(dropdownItems.at(4).text()).toContain('Oct 1, 2021 - Oct 5, 2021');
+      expect(dropdownItems.at(5).text()).toContain('Yet Another Test Title');
+      expect(dropdownItems.at(5).text()).toContain('Oct 11, 2021 - Oct 15, 2021');
       expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
       expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
         'My Second Cadence',
       );
-      expect(dropdownItems.at(8).text()).toBe('Another Test Title');
+      expect(dropdownItems.at(8).text()).toContain('Another Test Title');
+      expect(dropdownItems.at(8).text()).toContain('Oct 6, 2021 - Oct 10, 2021');
     });
   });
 });

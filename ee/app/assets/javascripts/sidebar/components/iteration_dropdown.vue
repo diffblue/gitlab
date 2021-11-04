@@ -10,6 +10,8 @@ import {
 } from '@gitlab/ui';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
+import { getIterationPeriod } from 'ee/iterations/utils';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
 import groupIterationsQuery from '../queries/iterations.query.graphql';
 
@@ -25,6 +27,7 @@ export default {
     GlSearchBoxByType,
     GlDropdownSectionHeader,
     GlLoadingIcon,
+    IterationPeriod,
   },
   mixins: [glFeatureFlagMixin()],
   apollo: {
@@ -73,7 +76,11 @@ export default {
           return;
         }
         const { title } = iteration.iterationCadence;
-        const cadenceIteration = { id: iteration.id, title: iteration.title };
+        const cadenceIteration = {
+          id: iteration.id,
+          title: iteration.title,
+          period: getIterationPeriod(iteration),
+        };
         const cadence = cadences.find((cad) => cad.title === title);
         if (cadence) {
           cadence.iterations.push(cadenceIteration);
@@ -144,8 +151,10 @@ export default {
           :is-check-item="true"
           :is-checked="isIterationChecked(iterationItem.id)"
           @click="onClick(iterationItem)"
-          >{{ iterationItem.title }}</gl-dropdown-item
         >
+          {{ iterationItem.title }}
+          <IterationPeriod>{{ iterationItem.period }}</IterationPeriod>
+        </gl-dropdown-item>
       </template>
     </template>
   </gl-dropdown>
