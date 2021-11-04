@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo do
     }
   end
 
-  let(:primary_repo_http) { geo_primary_http_url_to_repo(project) }
+  let(:primary_repo_http) { geo_primary_http_internal_url_to_repo(project) }
   let(:primary_repo_ssh) { geo_primary_ssh_url_to_repo(project) }
 
   let(:data) do

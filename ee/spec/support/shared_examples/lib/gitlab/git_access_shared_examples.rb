@@ -8,7 +8,14 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
   end
 
   context 'for a Geo setup' do
-    let(:primary_node) { create(:geo_node, :primary, url: 'https://localhost:3000/gitlab') }
+    let(:primary_node) do
+      create(
+        :geo_node,
+        :primary,
+        url: 'https://localhost:3000/gitlab',
+        internal_url: 'https://localhost:3001/gitlab'
+      )
+    end
 
     before do
       allow(Gitlab::Geo).to receive(:primary).and_return(primary_node)

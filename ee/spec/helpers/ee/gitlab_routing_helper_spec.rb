@@ -6,7 +6,16 @@ RSpec.describe EE::GitlabRoutingHelper do
   include ProjectsHelper
   include ApplicationSettingsHelper
 
-  let_it_be(:primary, reload: true) { create(:geo_node, :primary, url: 'http://localhost:123/relative', clone_url_prefix: 'git@localhost:') }
+  let_it_be(:primary, reload: true) do
+    create(
+      :geo_node,
+      :primary,
+      url: 'http://localhost:123/relative',
+      internal_url: 'http://internal:321/relative',
+      clone_url_prefix: 'git@localhost:'
+    )
+  end
+
   let_it_be(:group, reload: true) { create(:group, path: 'foo') }
   let_it_be(:project, reload: true) { create(:project, namespace: group, path: 'bar') }
 
@@ -15,16 +24,32 @@ RSpec.describe EE::GitlabRoutingHelper do
       allow(helper).to receive(:default_clone_protocol).and_return('http')
     end
 
-    it 'generates a path to the project' do
-      result = helper.geo_primary_web_url(project)
+    context 'public / default URL' do
+      it 'generates a path to the project' do
+        result = helper.geo_primary_web_url(project)
 
-      expect(result).to eq('http://localhost:123/relative/foo/bar')
+        expect(result).to eq('http://localhost:123/relative/foo/bar')
+      end
+
+      it 'generates a path to the wiki' do
+        result = helper.geo_primary_web_url(project.wiki)
+
+        expect(result).to eq('http://localhost:123/relative/foo/bar.wiki')
+      end
     end
 
-    it 'generates a path to the wiki' do
-      result = helper.geo_primary_web_url(project.wiki)
+    context 'internal URL' do
+      it 'generates a path to the project' do
+        result = helper.geo_primary_web_url(project, internal: true)
 
-      expect(result).to eq('http://localhost:123/relative/foo/bar.wiki')
+        expect(result).to eq('http://internal:321/relative/foo/bar')
+      end
+
+      it 'generates a path to the wiki' do
+        result = helper.geo_primary_web_url(project.wiki, internal: true)
+
+        expect(result).to eq('http://internal:321/relative/foo/bar.wiki')
+      end
     end
   end
 

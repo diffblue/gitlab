@@ -35,7 +35,7 @@ RSpec.describe Gitlab::GitAccess do
       allow(Gitlab::Database).to receive(:read_only?) { true }
     end
 
-    let(:primary_repo_url) { geo_primary_http_url_to_repo(project) }
+    let(:primary_repo_url) { geo_primary_http_internal_url_to_repo(project) }
     let(:primary_repo_ssh_url) { geo_primary_ssh_url_to_repo(project) }
 
     it_behaves_like 'git access for a read-only GitLab instance'
@@ -370,7 +370,7 @@ RSpec.describe Gitlab::GitAccess do
           end
 
           it 'returns a custom action' do
-            expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"], "primary_repo" => geo_primary_http_url_to_repo(project) } }
+            expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_upload_pack", "/api/v4/geo/proxy_git_ssh/upload_pack"], "primary_repo" => geo_primary_http_internal_url_to_repo(project) } }
             expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
 
             response = pull_changes
@@ -394,7 +394,7 @@ RSpec.describe Gitlab::GitAccess do
         end
 
         it 'returns a custom action' do
-          expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"], "primary_repo" => geo_primary_http_url_to_repo(project) } }
+          expected_payload = { "action" => "geo_proxy_to_primary", "data" => { "api_endpoints" => ["/api/v4/geo/proxy_git_ssh/info_refs_receive_pack", "/api/v4/geo/proxy_git_ssh/receive_pack"], "primary_repo" => geo_primary_http_internal_url_to_repo(project) } }
           expected_console_messages = ["This request to a Geo secondary node will be forwarded to the", "Geo primary node:", "", "  #{geo_primary_ssh_url_to_repo(project)}"]
 
           response = push_changes
