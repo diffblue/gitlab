@@ -1,9 +1,10 @@
 <script>
-import { GlLink } from '@gitlab/ui';
+import { GlFriendlyWrap, GlLink } from '@gitlab/ui';
 
 export default {
   components: {
     GlLink,
+    GlFriendlyWrap,
   },
   inheritAttrs: false,
   props: {
@@ -12,8 +13,11 @@ export default {
       required: true,
     },
   },
+  wrapSymbols: ['/', '?', '&', '='],
 };
 </script>
 <template>
-  <gl-link :href="href">{{ href }}</gl-link>
+  <gl-link :href="href">
+    <gl-friendly-wrap :text="href" :symbols="$options.wrapSymbols" />
+  </gl-link>
 </template>

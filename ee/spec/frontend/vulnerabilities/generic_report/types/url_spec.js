@@ -1,4 +1,4 @@
-import { GlLink } from '@gitlab/ui';
+import { GlFriendlyWrap, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Url from 'ee/vulnerabilities/components/generic_report/types/url.vue';
 
@@ -35,7 +35,8 @@ describe('ee/vulnerabilities/components/generic_report/types/url.vue', () => {
     expect(findLink().attributes('href')).toBe(TEST_DATA.href);
   });
 
-  it('shows the href as the link-text', () => {
-    expect(findLink().text()).toBe(TEST_DATA.href);
+  it('shows the href as the link-text and makes it wrap if needed', () => {
+    // `GlFriendlyWrap` is a functional component, so we have to use `attributes` instead of `props`
+    expect(findLink().findComponent(GlFriendlyWrap).attributes('text')).toBe(TEST_DATA.href);
   });
 });
