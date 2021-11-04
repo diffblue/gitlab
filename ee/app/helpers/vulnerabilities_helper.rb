@@ -46,8 +46,11 @@ module VulnerabilitiesHelper
 
     decorated_vulnerability = vulnerability.present
     summary = _('Investigate vulnerability: %{title}') % { title: decorated_vulnerability.title }
-    description = ApplicationController.render(template: 'vulnerabilities/jira_issue_description.md.erb',
-                                               locals: { vulnerability: decorated_vulnerability })
+    description = ApplicationController.render(
+      template: 'vulnerabilities/jira_issue_description',
+      formats: :md,
+      locals: { vulnerability: decorated_vulnerability }
+    )
 
     vulnerability.project.jira_integration.new_issue_url_with_predefined_fields(summary, description)
   end
