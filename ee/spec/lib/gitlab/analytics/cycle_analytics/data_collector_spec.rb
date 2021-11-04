@@ -23,6 +23,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   shared_examples 'custom Value Stream Analytics Stage' do
     let(:params) { { from: Time.new(2019), to: Time.new(2020), current_user: user } }
     let(:data_collector) { described_class.new(stage: stage, params: params) }
+    let(:aggregated_data_collector) { described_class.new(stage: stage, params: params.merge(use_vsa_aggregated_tables: true)) }
+
     let_it_be(:resource_1_end_time) { Time.new(2019, 3, 15) }
     let_it_be(:resource_2_end_time) { Time.new(2019, 3, 10) }
     let_it_be(:resource_3_end_time) { Time.new(2019, 3, 20) }
@@ -102,6 +104,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
     it 'calculates median' do
       expect(round_to_days(data_collector.median.seconds)).to eq(10)
+      expect(round_to_days(aggregated_data_collector.median.seconds)).to eq(10) if aggregated_data_collector_enabled
     end
 
     describe '#duration_chart_average_data' do
@@ -121,7 +124,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
     describe '#count' do
       subject(:count) { data_collector.count }
 
-      it { is_expected.to eq(3) }
+      it 'returns limited count' do
+        expect(data_collector.count).to eq(3)
+        expect(aggregated_data_collector.count).to eq(3) if aggregated_data_collector_enabled
+      end
     end
 
     context 'when filtering in progress items' do
@@ -130,9 +136,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       end
 
       describe '#count' do
-        subject(:count) { data_collector.count }
-
-        it { is_expected.to eq(2) }
+        it 'returns limited count' do
+          expect(data_collector.count).to eq(2)
+          expect(aggregated_data_collector.count).to eq(2) if aggregated_data_collector_enabled
+        end
       end
 
       it 'calculates median' do
@@ -142,6 +149,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         expected_median = (duration_1 + duration_2).fdiv(2)
 
         expect(round_to_days(data_collector.median.seconds)).to eq(round_to_days(expected_median))
+        expect(round_to_days(aggregated_data_collector.median.seconds)).to eq(round_to_days(expected_median))
       end
 
       it 'loads serialized records' do
@@ -233,11 +241,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       context 'between issue label added time and label removed time' do
         let(:start_event_identifier) { :issue_label_added }
         let(:end_event_identifier) { :issue_label_removed }
-
-        before do
-          stage.start_event_label = label
-          stage.end_event_label = label
-        end
+        let(:start_event_label) { label }
+        let(:end_event_label) { label }
 
         def create_data_for_start_event(example_class)
           issue = create(:issue, :opened, project: example_class.project)
@@ -267,11 +272,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       context 'between issue label added time and another issue label added time' do
         let(:start_event_identifier) { :issue_label_added }
         let(:end_event_identifier) { :issue_label_added }
-
-        before do
-          stage.start_event_label = label
-          stage.end_event_label = other_label
-        end
+        let(:start_event_label) { label }
+        let(:end_event_label) { other_label }
 
         def create_data_for_start_event(example_class)
           issue = create(:issue, :opened, project: example_class.project)
@@ -320,10 +322,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       context 'between issue creation time and issue label added time' do
         let(:start_event_identifier) { :issue_created }
         let(:end_event_identifier) { :issue_label_added }
-
-        before do
-          stage.end_event_label = label
-        end
+        let(:end_event_label) { label }
 
         def create_data_for_start_event(example_class)
           create(:issue, :opened, project: example_class.project)
@@ -443,11 +442,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       context 'between merge request label added time and label removed time' do
         let(:start_event_identifier) { :merge_request_label_added }
         let(:end_event_identifier) { :merge_request_label_removed }
-
-        before do
-          stage.start_event_label = label
-          stage.end_event_label = label
-        end
+        let(:start_event_label) { label }
+        let(:end_event_label) { label }
 
         def create_data_for_start_event(example_class)
           mr = create(:merge_request, source_project: example_class.project, allow_broken: true)
@@ -475,104 +471,28 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         it_behaves_like 'custom Value Stream Analytics Stage'
       end
-
-      context 'between code stage start time and merge request closed time' do
-        let(:start_event_identifier) { :code_stage_start }
-        let(:end_event_identifier) { :merge_request_closed }
-
-        context 'when issue is referenced in the commit message' do
-          def create_data_for_start_event(example_class)
-            issue = create(:issue, project: example_class.project)
-
-            mr = create(:merge_request, {
-              source_project: example_class.project,
-              target_branch: example_class.project.default_branch,
-              description: "Description\n\nclosing #{issue.to_reference}",
-              allow_broken: true
-            })
-
-            Sidekiq::Worker.skipping_transaction_check do
-              MergeRequests::UpdateService.new(
-                project: example_class.project,
-                current_user: user,
-                params: { assignees: [user] }
-              ).execute(mr)
-            end
-
-            mr.metrics.update!(first_commit_at: Time.zone.now)
-            mr
-          end
-
-          def create_data_for_end_event(mr, example_class)
-            mr.metrics.update!(latest_closed_at: Time.zone.now)
-          end
-
-          it_behaves_like 'custom Value Stream Analytics Stage'
-        end
-
-        context 'when `first_commit_at` is present' do
-          def create_data_for_start_event(example_class)
-            mr = create(:merge_request, { source_project: example_class.project, target_branch: example_class.project.default_branch, allow_broken: true })
-            mr.metrics.update!(first_commit_at: Time.zone.now)
-            mr
-          end
-
-          def create_data_for_end_event(mr, example_class)
-            mr.metrics.update!(latest_closed_at: Time.zone.now)
-          end
-
-          it_behaves_like 'custom Value Stream Analytics Stage'
-        end
-
-        context 'label filter' do
-          before do
-            params[:label_name] = [label.name, other_label.name]
-          end
-
-          def create_data_for_start_event(example_class)
-            issue = create(:issue, project: example_class.project)
-            issue.metrics.update!(first_mentioned_in_commit_at: Time.zone.now)
-
-            mr = create(:merge_request, {
-              source_project: example_class.project,
-              target_branch: example_class.project.default_branch,
-              description: "Description\n\nclosing #{issue.to_reference}",
-              allow_broken: true
-            })
-
-            Sidekiq::Worker.skipping_transaction_check do
-              MergeRequests::UpdateService.new(
-                project: example_class.project,
-                current_user: user,
-                params: { label_ids: [label.id, other_label.id] }
-              ).execute(mr)
-            end
-
-            mr
-          end
-
-          def create_data_for_end_event(mr, example_class)
-            mr.metrics.update!(latest_closed_at: Time.zone.now)
-          end
-
-          it_behaves_like 'custom Value Stream Analytics Stage'
-        end
-      end
     end
   end
 
   context 'when `Analytics::CycleAnalytics::ProjectStage` is given' do
+    let(:aggregated_data_collector_enabled) { false }
+
     it_behaves_like 'test various start and end event combinations' do
       let_it_be(:project) { create(:project, :repository, group: create(:group)) }
       let_it_be(:label) { create(:group_label, group: project.group) }
       let_it_be(:other_label) { create(:group_label, group: project.group) }
+
+      let(:start_event_label) { nil }
+      let(:end_event_label) { nil }
 
       let(:stage) do
         Analytics::CycleAnalytics::ProjectStage.new(
           name: 'My Stage',
           project: project,
           start_event_identifier: start_event_identifier,
-          end_event_identifier: end_event_identifier
+          end_event_identifier: end_event_identifier,
+          start_event_label: start_event_label,
+          end_event_label: end_event_label
         )
       end
 
@@ -583,19 +503,44 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   end
 
   context 'when `Analytics::CycleAnalytics::GroupStage` is given' do
+    let(:aggregated_data_collector_enabled) { true }
+
     it_behaves_like 'test various start and end event combinations' do
       let_it_be(:group) { create(:group) }
+      let_it_be(:group_value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
       let_it_be(:project) { create(:project, :repository, group: group) }
       let_it_be(:label) { create(:group_label, group: group) }
       let_it_be(:other_label) { create(:group_label, group: group) }
 
-      let(:stage) do
-        Analytics::CycleAnalytics::GroupStage.new(
+      let(:start_event_label) { nil }
+      let(:end_event_label) { nil }
+
+      let!(:stage) do
+        Analytics::CycleAnalytics::GroupStage.create!(
           name: 'My Stage',
           group: group,
           start_event_identifier: start_event_identifier,
-          end_event_identifier: end_event_identifier
+          end_event_identifier: end_event_identifier,
+          start_event_label: start_event_label,
+          end_event_label: end_event_label,
+          value_stream: group_value_stream
         )
+      end
+
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: true)
+
+        Analytics::CycleAnalytics::DataLoaderService.new(
+          group: group,
+          model: Issue,
+          updated_at_before: Time.now
+        ).execute
+
+        Analytics::CycleAnalytics::DataLoaderService.new(
+          group: group,
+          model: MergeRequest,
+          updated_at_before: Time.now
+        ).execute
       end
 
       before_all do
