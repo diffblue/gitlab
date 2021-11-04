@@ -71,7 +71,7 @@ RSpec.shared_examples "Registrations::ProjectsController POST #create" do
       let_it_be(:trial_onboarding_flow_params) { { trial_onboarding_flow: true } }
 
       it 'creates a new project, a "Learn GitLab - Ultimate trial" project, does not set a cookie' do
-        expect { subject }.to change { namespace.projects.pluck(:name) }.from([]).to(['New project', s_('Learn GitLab - Ultimate trial')])
+        expect { subject }.to change { namespace.projects.pluck(:name).sort }.from([]).to(['New project', s_('Learn GitLab - Ultimate trial')].sort)
         expect(subject).to have_gitlab_http_status(:redirect)
         expect(namespace.projects.find_by_name(s_('Learn GitLab - Ultimate trial'))).to be_import_finished
       end
