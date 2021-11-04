@@ -92,7 +92,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
   get hasMergeChecksFailed() {
     if (!window.gon?.features?.restructuredMrWidget) return false;
 
-    if (this.hasApprovalsAvailable) return !this.isApproved;
+    if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) return !this.isApproved;
 
     return super.hasMergeChecksFailed;
   }
