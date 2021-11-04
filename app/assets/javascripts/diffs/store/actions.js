@@ -85,6 +85,12 @@ export const setBaseConfig = ({ commit }, options) => {
     viewDiffsFileByFile,
     mrReviews,
   });
+
+  Array.from(new Set(Object.values(mrReviews).flat())).forEach((id) => {
+    const viewedId = id.replace(/^hash:/, '');
+
+    commit(types.SET_DIFF_FILE_VIEWED, { id: viewedId, seen: true });
+  });
 };
 
 export const fetchDiffFilesBatch = ({ commit, state, dispatch }) => {
@@ -850,6 +856,8 @@ export function reviewFile({ commit, state }, { file, reviewed = true }) {
   const reviews = markFileReview(state.mrReviews, file, reviewed);
 
   setReviewsForMergeRequest(mrPath, reviews);
+
+  commit(types.SET_DIFF_FILE_VIEWED, { id: file.file_hash, seen: reviewed });
   commit(types.SET_MR_FILE_REVIEWS, reviews);
 }
 

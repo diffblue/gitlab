@@ -99,6 +99,10 @@ describe('DiffsStoreActions', () => {
       const projectPath = '/root/project';
       const dismissEndpoint = '/-/user_callouts';
       const showSuggestPopover = false;
+      const mrReviews = {
+        a: ['z', 'hash:a'],
+        b: ['y', 'hash:a'],
+      };
 
       testAction(
         setBaseConfig,
@@ -110,6 +114,7 @@ describe('DiffsStoreActions', () => {
           projectPath,
           dismissEndpoint,
           showSuggestPopover,
+          mrReviews,
         },
         {
           endpoint: '',
@@ -131,7 +136,20 @@ describe('DiffsStoreActions', () => {
               projectPath,
               dismissEndpoint,
               showSuggestPopover,
+              mrReviews,
             },
+          },
+          {
+            type: types.SET_DIFF_FILE_VIEWED,
+            payload: { id: 'z', seen: true },
+          },
+          {
+            type: types.SET_DIFF_FILE_VIEWED,
+            payload: { id: 'a', seen: true },
+          },
+          {
+            type: types.SET_DIFF_FILE_VIEWED,
+            payload: { id: 'y', seen: true },
           },
         ],
         [],
@@ -1523,13 +1541,14 @@ describe('DiffsStoreActions', () => {
   describe('reviewFile', () => {
     const file = {
       id: '123',
+      file_hash: 'xyz',
       file_identifier_hash: 'abc',
       load_collapsed_diff_url: 'gitlab-org/gitlab-test/-/merge_requests/1/diffs',
     };
     it.each`
-      reviews             | diffFile | reviewed
-      ${{ abc: ['123'] }} | ${file}  | ${true}
-      ${{}}               | ${file}  | ${false}
+      reviews                         | diffFile | reviewed
+      ${{ abc: ['123', 'hash:xyz'] }} | ${file}  | ${true}
+      ${{}}                           | ${file}  | ${false}
     `(
       'sets reviews ($reviews) to localStorage and state for file $file if it is marked reviewed=$reviewed',
       ({ reviews, diffFile, reviewed }) => {

@@ -256,7 +256,6 @@ export default {
   },
   [types.VIEW_DIFF_FILE](state, fileId) {
     state.currentDiffFileId = fileId;
-    Vue.set(state.viewedDiffFileIds, fileId, true);
   },
   [types.SET_DIFF_FILE_VIEWED](state, { id, seen }) {
     Vue.set(state.viewedDiffFileIds, id, seen);
