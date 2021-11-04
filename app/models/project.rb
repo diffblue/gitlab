@@ -2920,18 +2920,20 @@ class Project < ApplicationRecord
   end
 
   def ensure_project_namespace_in_sync
-    if self.namespace && self.root_namespace.project_namespace_creation_enabled?
-      if new_record? && !project_namespace
-        build_project_namespace
-        sync_attributes(project_namespace)
-      end
+    # create project_namespace when project is created if create_project_namespace_on_project_create FF is enabled
+    build_project_namespace if project_namespace_creation_enabled?
 
-      sync_attributes(project_namespace) if sync_project_namespace?
-    end
+    # regardless of create_project_namespace_on_project_create FF we need
+    # to keep project and project namespace in sync if there is one
+    sync_attributes(project_namespace) if sync_project_namespace?
+  end
+
+  def project_namespace_creation_enabled?
+    new_record? && !project_namespace && self.namespace && self.root_namespace.project_namespace_creation_enabled?
   end
 
   def sync_project_namespace?
-    (changes.keys & %w(name path namespace_id namespace visibility_level)).any? && project_namespace.present?
+    (changes.keys & %w(name path namespace_id namespace visibility_level shared_runners_enabled)).any? && project_namespace.present?
   end
 
   def sync_attributes(project_namespace)

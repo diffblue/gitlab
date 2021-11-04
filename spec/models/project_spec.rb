@@ -233,6 +233,58 @@ RSpec.describe Project, factory_default: :keep do
         expect(project.project_setting).to be_an_instance_of(ProjectSetting)
         expect(project.project_setting).to be_new_record
       end
+
+      context 'with project namespaces' do
+        it 'automatically creates a project namespace' do
+          project = build(:project, path: 'hopefully-valid-path1')
+          project.save!
+
+          expect(project).to be_persisted
+          expect(project.project_namespace).to be_persisted
+          expect(project.project_namespace).to be_in_sync_with_project(project)
+        end
+
+        context 'with FF disabled' do
+          before do
+            stub_feature_flags(create_project_namespace_on_project_create: false)
+          end
+
+          it 'does not create a project namespace' do
+            project = build(:project, path: 'hopefully-valid-path2')
+            project.save!
+
+            expect(project).to be_persisted
+            expect(project.project_namespace).to be_nil
+          end
+        end
+      end
+    end
+
+    context 'updating a project' do
+      context 'with project namespaces' do
+        it 'keeps project namespace in sync with project' do
+          project = create(:project)
+          project.update!(path: 'hopefully-valid-path1')
+
+          expect(project).to be_persisted
+          expect(project.project_namespace).to be_persisted
+          expect(project.project_namespace).to be_in_sync_with_project(project)
+        end
+
+        context 'with FF disabled' do
+          before do
+            stub_feature_flags(create_project_namespace_on_project_create: false)
+          end
+
+          it 'does not create a project namespace when project is updated' do
+            project = create(:project)
+            project.update!(path: 'hopefully-valid-path1')
+
+            expect(project).to be_persisted
+            expect(project.project_namespace).to be_nil
+          end
+        end
+      end
     end
 
     context 'updating cd_cd_settings' do
@@ -320,6 +372,18 @@ RSpec.describe Project, factory_default: :keep do
       expect_any_instance_of(described_class).to receive(:visibility_level_allowed_by_group).and_call_original
 
       create(:project)
+    end
+
+    context 'validates project namespace creation' do
+      it 'does not create project namespace if project is not created' do
+        project = build(:project, path: 'tree')
+
+        project.valid?
+
+        expect(project).not_to be_valid
+        expect(project).to be_new_record
+        expect(project.project_namespace).to be_new_record
+      end
     end
 
     context 'repository storages inclusion' do

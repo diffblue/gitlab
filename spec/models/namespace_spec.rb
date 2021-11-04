@@ -243,7 +243,7 @@ RSpec.describe Namespace do
           project = create(:project)
           namespace = project.project_namespace
 
-          namespace.update(path: 'j')
+          namespace.update!(path: 'j')
 
           expect(namespace).to be_valid
         end
@@ -569,7 +569,7 @@ RSpec.describe Namespace do
 
     context 'with project namespaces' do
       let_it_be(:project) { create(:project, namespace: parent_group, path: 'some-new-path') }
-      let_it_be(:project_namespace) { create(:project_namespace, project: project) }
+      let_it_be(:project_namespace) { project.project_namespace }
 
       it 'does not return project namespace' do
         search_result = described_class.search('path')
