@@ -71,9 +71,9 @@ class GitlabSubscription < ApplicationRecord
   end
 
   # Refresh seat related attribute (without persisting them)
-  def refresh_seat_attributes!(new_term_reset: false)
+  def refresh_seat_attributes!
     self.seats_in_use = calculate_seats_in_use
-    self.max_seats_used = new_term_reset ? seats_in_use : [max_seats_used, seats_in_use].max
+    self.max_seats_used = [max_seats_used, seats_in_use].max
     self.seats_owed = calculate_seats_owed
   end
 
@@ -179,12 +179,13 @@ class GitlabSubscription < ApplicationRecord
     ElasticsearchIndexedNamespace.safe_find_or_create_by!(namespace_id: namespace_id)
   end
 
-  # If the subscription starts a new term, the dates will change. We reset seat counts
-  # so that we don't carry over max_seats_used/owed from the previous term
+  # If the subscription starts a new term, the dates will change. We reset max_seats_used
+  # and seats_owed so that we don't carry it over from the previous term
   def reset_seats_for_new_term
     return unless new_term?
 
-    refresh_seat_attributes!(new_term_reset: true)
+    self.max_seats_used = attributes['seats_in_use']
+    self.seats_owed = calculate_seats_owed
   end
 
   def new_term?

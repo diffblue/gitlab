@@ -179,16 +179,6 @@ RSpec.describe GitlabSubscription, :saas do
           .and not_change(gitlab_subscription, :max_seats_used)
           .and not_change(gitlab_subscription, :seats_owed)
       end
-
-      context 'when resetting for a new term' do
-        it 'sets max_seats_used to seats_in_use' do
-          expect do
-            gitlab_subscription.refresh_seat_attributes!(new_term_reset: true)
-          end.to change(gitlab_subscription, :seats_in_use).from(0).to(1)
-            .and change(gitlab_subscription, :max_seats_used).from(2).to(1)
-            .and not_change(gitlab_subscription, :seats_owed)
-        end
-      end
     end
 
     context 'when current seats in use is higher than seats and max_seats_used' do
@@ -200,16 +190,6 @@ RSpec.describe GitlabSubscription, :saas do
         end.to change(gitlab_subscription, :seats_in_use).from(0).to(4)
           .and change(gitlab_subscription, :max_seats_used).from(2).to(4)
           .and change(gitlab_subscription, :seats_owed).from(0).to(1)
-      end
-
-      context 'when resetting for a new term' do
-        it 'sets max_seats_used to seats_in_use' do
-          expect do
-            gitlab_subscription.refresh_seat_attributes!(new_term_reset: true)
-          end.to change(gitlab_subscription, :seats_in_use).from(0).to(4)
-            .and change(gitlab_subscription, :max_seats_used).from(2).to(4)
-            .and change(gitlab_subscription, :seats_owed).from(0).to(1)
-        end
       end
     end
   end
@@ -454,7 +434,7 @@ RSpec.describe GitlabSubscription, :saas do
 
     context 'before_update', :freeze_time do
       let(:gitlab_subscription) do
-        create(:gitlab_subscription, max_seats_used: 42, seats: 13, seats_owed: 29, start_date: Date.today - 1.year)
+        create(:gitlab_subscription, seats_in_use: 20, max_seats_used: 42, seats: 13, seats_owed: 29, start_date: Date.today - 1.year)
       end
 
       it 'logs previous state to gitlab subscription history' do
@@ -470,10 +450,6 @@ RSpec.describe GitlabSubscription, :saas do
       end
 
       context 'when start and end dates change' do
-        before do
-          allow(gitlab_subscription).to receive(:seats_in_use).and_return(20)
-        end
-
         context 'when start_date is after the old end_date' do
           it 'resets seats attributes' do
             new_start = gitlab_subscription.end_date + 1.year
@@ -485,6 +461,7 @@ RSpec.describe GitlabSubscription, :saas do
               .and change(gitlab_subscription, :end_date).to(new_end)
               .and change(gitlab_subscription, :max_seats_used).from(42).to(20)
               .and change(gitlab_subscription, :seats_owed).from(29).to(7)
+              .and not_change(gitlab_subscription, :seats_in_use)
           end
         end
 
@@ -501,6 +478,7 @@ RSpec.describe GitlabSubscription, :saas do
               .and change(gitlab_subscription, :end_date).to(new_end)
               .and change(gitlab_subscription, :max_seats_used).from(42).to(20)
               .and change(gitlab_subscription, :seats_owed).from(29).to(7)
+              .and not_change(gitlab_subscription, :seats_in_use)
           end
         end
 

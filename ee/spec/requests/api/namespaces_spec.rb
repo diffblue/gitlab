@@ -685,7 +685,7 @@ RSpec.describe API::Namespaces do
             gitlab_subscription.update!(seats: 20, max_seats_used: 42, seats_owed: 22)
 
             new_start = gitlab_subscription.end_date + 1.year
-            new_end = gitlab_subscription.end_date + 1.year
+            new_end = new_start + 1.year
             new_term_params = params.merge(start_date: new_start, end_date: new_end)
 
             expect(gitlab_subscription.seats_in_use).to eq 0
