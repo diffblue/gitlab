@@ -92,7 +92,7 @@ RSpec.describe Projects::GoogleCloudController do
 
       context 'but feature flag is disabled' do
         before do
-          allow(Feature).to receive(:enabled?).and_return(false)
+          stub_feature_flags(incubation_5mp_google_cloud: false)
         end
 
         it 'returns not found' do
