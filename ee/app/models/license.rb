@@ -174,6 +174,7 @@ class License < ApplicationRecord
     issuable_health_status
     jira_vulnerabilities_integration
     jira_issue_association_enforcement
+    kubernetes_cluster_vulnerabilities
     license_scanning
     personal_access_token_expiration_policy
     prometheus_alerts
