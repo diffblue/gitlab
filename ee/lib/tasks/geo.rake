@@ -170,12 +170,12 @@ namespace :geo do
       current_max_id = [from_project_id + batch_size, to_project_id + 1].min
 
       project_ids = Project
-        .where('id >= ? AND id < ?', from_project_id, current_max_id)
-        .pluck_primary_key
+                      .where('id >= ? AND id < ?', from_project_id, current_max_id)
+                      .pluck_primary_key
 
       orphaned_registries = Geo::ProjectRegistry
-        .where('project_id NOT IN(?)', project_ids)
-        .where('project_id >= ? AND project_id < ?', from_project_id, current_max_id)
+                              .where('project_id NOT IN(?)', project_ids)
+                              .where('project_id >= ? AND project_id < ?', from_project_id, current_max_id)
       count = orphaned_registries.delete_all
       total_count += count
 
@@ -214,6 +214,10 @@ namespace :geo do
     abort GEO_LICENSE_ERROR_TEXT unless Gitlab::Geo.license_allows?
 
     current_node_status = GeoNodeStatus.current_node_status
+    unless current_node_status
+      abort 'Gitlab Geo is not configured for this site'
+    end
+
     geo_node = current_node_status.geo_node
 
     unless geo_node.secondary?
@@ -222,5 +226,21 @@ namespace :geo do
     end
 
     Gitlab::Geo::GeoNodeStatusCheck.new(current_node_status, geo_node).print_status
+  end
+
+  namespace :site do
+    desc 'GitLab | Geo | Print Geo site role'
+    task role: :environment do
+      current_node = GeoNode.current_node
+
+      if current_node&.primary?
+        puts 'primary'
+      elsif current_node&.secondary?
+        puts 'secondary'
+      else
+        puts 'misconfigured'
+        exit 1
+      end
+    end
   end
 end

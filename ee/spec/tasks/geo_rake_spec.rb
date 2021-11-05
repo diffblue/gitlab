@@ -309,6 +309,12 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
   end
 
   describe 'geo:status' do
+    context 'when geo is not properly configured' do
+      it 'returns misconfigured when not a primary nor a secondary site' do
+        expect { run_rake_task('geo:status') }.to raise_error("Gitlab Geo is not configured for this site")
+      end
+    end
+
     context 'without a valid license' do
       before do
         stub_licensed_features(geo: false)
@@ -395,6 +401,30 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
           expect { run_rake_task('geo:status') }.to output(/Health Status Summary: Something went wrong/).to_stdout
         end
       end
+    end
+  end
+
+  describe 'geo:site:role' do
+    context 'when in a primary site' do
+      it 'returns primary' do
+        create(:geo_node, :primary, name: 'primary')
+        allow(GeoNode).to receive(:current_node_name).and_return('primary')
+
+        expect { run_rake_task('geo:site:role') }.to output(/primary/).to_stdout
+      end
+    end
+
+    context 'when in a secondary site' do
+      it 'returns secondary' do
+        create(:geo_node, :secondary, name: 'secondary')
+        allow(GeoNode).to receive(:current_node_name).and_return('secondary')
+
+        expect { run_rake_task('geo:site:role') }.to output(/secondary/).to_stdout
+      end
+    end
+
+    it 'returns misconfigured when not a primary nor a secondary site' do
+      expect { run_rake_task('geo:site:role') }.to output(/misconfigured/).to_stdout & raise_error(SystemExit)
     end
   end
 
