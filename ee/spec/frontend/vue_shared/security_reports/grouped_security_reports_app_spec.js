@@ -274,6 +274,9 @@ describe('Grouped security reports app', () => {
     });
 
     describe('with successful responses', () => {
+      let trackingSpy;
+      const { category } = trackMrSecurityReportDetails;
+
       beforeEach(() => {
         mock.onGet(CONTAINER_SCANNING_DIFF_ENDPOINT).reply(200, containerScanningDiffSuccessMock);
         mock.onGet(DEPENDENCY_SCANNING_DIFF_ENDPOINT).reply(200, dependencyScanningDiffSuccessMock);
@@ -284,6 +287,7 @@ describe('Grouped security reports app', () => {
         mock.onGet(API_FUZZING_DIFF_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
 
         createWrapper(allReportProps);
+        trackingSpy = mockTracking(category, wrapper.element, jest.spyOn);
 
         return Promise.all([
           waitForMutation(wrapper.vm.$store, `sast/${sastTypes.RECEIVE_DIFF_SUCCESS}`),
@@ -297,6 +301,31 @@ describe('Grouped security reports app', () => {
           waitForMutation(wrapper.vm.$store, types.RECEIVE_COVERAGE_FUZZING_DIFF_SUCCESS),
           waitForMutation(wrapper.vm.$store, `apiFuzzing/${apiFuzzingTypes.RECEIVE_DIFF_SUCCESS}`),
         ]);
+      });
+
+      afterEach(() => {
+        unmockTracking();
+      });
+
+      const eventName = (toolName, eventType) =>
+        `mr_widget_findings_counts_${toolName}_${eventType}`;
+
+      it.each`
+        toolName                 | report
+        ${'coverage_fuzzing'}    | ${coverageFuzzingDiffSuccessMock}
+        ${'sast'}                | ${sastDiffSuccessMock}
+        ${'container_scanning'}  | ${containerScanningDiffSuccessMock}
+        ${'dast'}                | ${dastDiffSuccessMock}
+        ${'dependency_scanning'} | ${dependencyScanningDiffSuccessMock}
+        ${'secret_detection'}    | ${secretDetectionDiffSuccessMock}
+        ${'api_fuzzing'}         | ${apiFuzzingDiffSuccessMock}
+      `('track reports for "$toolName', ({ toolName, report }) => {
+        expect(trackingSpy).toHaveBeenCalledWith(category, eventName(toolName, 'fixed'), {
+          value: report.fixed.length,
+        });
+        expect(trackingSpy).toHaveBeenCalledWith(category, eventName(toolName, 'added'), {
+          value: report.added.length,
+        });
       });
 
       it('renders reports', () => {
