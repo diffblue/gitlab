@@ -6,8 +6,7 @@ product_stage: secure
 product_group: group::composition analysis
 product_category: license_compliance
 value_type: number
-status: broken
-repair_issue_url: tbd
+status: active
 time_frame: all
 data_source: database
 data_category: operational

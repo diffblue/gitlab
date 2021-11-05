@@ -7,8 +7,7 @@ product_stage: protect
 product_group: group::container security
 product_category: container_scanning
 value_type: number
-status: broken
-repair_issue_url: tbd
+status: active
 time_frame: all
 data_source: database
 distribution:
