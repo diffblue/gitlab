@@ -121,7 +121,7 @@ class BlobPresenter < Gitlab::View::Presenter::Delegated
   end
 
   def transformed_blob_language
-    @transformed_blob_language ||= blob.path.ends_with?('.ipynb') ? "md" : language
+    @transformed_blob_language ||= blob.path.ends_with?('.ipynb') ? 'md' : language
   end
 
   def transformed_blob_data
