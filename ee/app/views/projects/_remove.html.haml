@@ -11,7 +11,7 @@
       %strong= s_('Delayed Project Deletion (%{adjourned_deletion})') % { adjourned_deletion: adjourned_deletion ? 'Enabled' : 'Disabled' }
     - if adjourned_deletion
       = render 'projects/settings/marked_for_removal'
-      #js-project-adjourned-delete-button{ data: { recovery_help_path: recovery_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: project.path } }
+      #js-project-adjourned-delete-button{ data: { recovery_help_path: recovery_help_path, adjourned_removal_date: adjourned_date, form_path: project_path(project), confirm_phrase: delete_confirm_phrase(project) } }
     - else
       %p
         %span.gl-text-gray-500= _('Projects will be permanently deleted immediately.')
