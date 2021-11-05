@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable do
+  # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
+  RSpec.describe 'Plan', :reliable, :requires_admin do
     describe 'Editing scoped labels on issues' do
       let(:initial_label) { 'animal::fox' }
       let(:new_label_same_scope) { 'animal::dolphin' }
@@ -11,12 +12,16 @@ module QA
       let(:new_label_same_scope_multi_colon) { 'group::car::porsche' }
       let(:new_label_different_scope_multi_colon) { 'group::truck::mercedes-bens' }
 
-      before do
-        Flow::Login.sign_in
-
-        issue = Resource::Issue.fabricate_via_api! do |issue|
+      let!(:issue) do
+        Resource::Issue.fabricate_via_api! do |issue|
           issue.labels = [initial_label, initial_label_multi_colon]
         end
+      end
+
+      before do
+        Runtime::Feature.enable(:labels_widget, project: issue.project)
+
+        Flow::Login.sign_in
 
         [
           new_label_same_scope,
@@ -38,7 +43,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1181'
       ) do
         Page::Project::Issue::Show.perform do |show|
-          show.select_labels_and_refresh(
+          show.select_labels(
             [
               new_label_same_scope,
               new_label_different_scope,
