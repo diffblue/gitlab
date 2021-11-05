@@ -7,12 +7,14 @@ RSpec.describe 'Subscriptions Content Security Policy' do
 
   let_it_be(:default_csp_values) { "'self' https://some-cdn.test" }
   let_it_be(:zuora_url) { 'https://*.zuora.com' }
+  let_it_be(:onetrust_url) { 'https://*.onetrust.com' }
+  let_it_be(:cookielaw_url) { 'https://cdn.cookielaw.org' }
 
   before do
     stub_request(:get, /.*gitlab_plans.*/).to_return(status: 200, body: "{}")
 
     expect_next_instance_of(SubscriptionsController) do |controller|
-      expect(controller).to receive(:current_content_security_policy).and_return(csp)
+      expect(controller).to receive(:current_content_security_policy).and_return(csp).twice
     end
 
     sign_in(create(:user))
@@ -35,9 +37,10 @@ RSpec.describe 'Subscriptions Content Security Policy' do
       end
     end
 
-    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{zuora_url}") }
+    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{zuora_url}") }
     it { is_expected.to include("frame-src #{default_csp_values} #{zuora_url}") }
     it { is_expected.to include("child-src #{default_csp_values} #{zuora_url}") }
+    it { is_expected.to include("connect-src #{cookielaw_url}") }
   end
 
   context 'when just a default CSP config exists' do
@@ -48,7 +51,7 @@ RSpec.describe 'Subscriptions Content Security Policy' do
     end
 
     it { is_expected.to include("default-src #{default_csp_values}") }
-    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{zuora_url}") }
+    it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{zuora_url}") }
     it { is_expected.to include("frame-src #{default_csp_values} #{zuora_url}") }
     it { is_expected.to include("child-src #{default_csp_values} #{zuora_url}") }
   end

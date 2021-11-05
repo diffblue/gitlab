@@ -1,3 +1,5 @@
 - page_title _('Checkout')
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 #js-new-subscription{ data: subscription_data(@eligible_groups) }
