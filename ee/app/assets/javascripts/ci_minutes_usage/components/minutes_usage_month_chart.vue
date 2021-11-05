@@ -1,13 +1,22 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
-import { USAGE_BY_MONTH, X_AXIS_MONTH_LABEL, X_AXIS_CATEGORY, Y_AXIS_LABEL } from '../constants';
+import {
+  USAGE_BY_MONTH,
+  X_AXIS_MONTH_LABEL,
+  X_AXIS_CATEGORY,
+  Y_AXIS_LABEL,
+  NO_CI_MINUTES_MSG,
+} from '../constants';
 
 export default {
   USAGE_BY_MONTH,
   X_AXIS_MONTH_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
+  NO_CI_MINUTES_MSG,
   components: {
+    GlAlert,
     GlAreaChart,
   },
   props: {
@@ -46,5 +55,8 @@ export default {
   <div>
     <h5>{{ $options.USAGE_BY_MONTH }}</h5>
     <gl-area-chart v-if="!isDataEmpty" class="gl-mb-3" :data="chartData" :option="chartOptions" />
+    <gl-alert v-else class="gl-mb-5" :dismissible="false">
+      {{ $options.NO_CI_MINUTES_MSG }}
+    </gl-alert>
   </div>
 </template>
