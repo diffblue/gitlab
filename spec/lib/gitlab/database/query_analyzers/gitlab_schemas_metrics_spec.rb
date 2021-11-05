@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics do
+RSpec.describe Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics, query_analyzers: false do
   let(:analyzer) { described_class }
 
   before do
-    stub_const('Gitlab::Database::QueryAnalyzer::ANALYZERS', [analyzer])
+    allow(Gitlab::Database::QueryAnalyzer.instance).to receive(:all_analyzers).and_return([analyzer])
   end
 
   it 'does not increment metrics if feature flag is disabled' do
@@ -58,6 +58,10 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics do
     end
 
     with_them do
+      around do |example|
+        Gitlab::Database::QueryAnalyzer.instance.within { example.run }
+      end
+
       it do
         expect(described_class.schemas_metrics).to receive(:increment)
           .with(expectations).and_call_original
@@ -68,8 +72,9 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics do
   end
 
   def process_sql(model, sql)
-    model.connection.load_balancer.read_write do |connection|
-      Gitlab::Database::QueryAnalyzer.new.process_sql(sql, connection)
+    Gitlab::Database::QueryAnalyzer.instance.within do
+      # Skip load balancer and retrieve connection assigned to model
+      Gitlab::Database::QueryAnalyzer.instance.process_sql(sql, model.retrieve_connection)
     end
   end
 end

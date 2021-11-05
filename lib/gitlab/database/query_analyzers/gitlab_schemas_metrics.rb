@@ -12,8 +12,9 @@ module Gitlab
       #
       class GitlabSchemasMetrics < Base
         class << self
-          def enabled?(_connection)
-            Feature.enabled?(:query_analyzer_gitlab_schema_metrics)
+          def enabled?
+            ::Feature::FlipperFeature.table_exists? &&
+              Feature.enabled?(:query_analyzer_gitlab_schema_metrics)
           end
 
           def analyze(parsed)
