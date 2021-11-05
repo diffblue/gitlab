@@ -1,3 +1,5 @@
 - page_title _('Buy CI Minutes')
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 #js-buy-minutes{ data: buy_addon_data(@group, @account_id, 'pipelines-quota-tab', s_('Checkout|CI minutes')) }

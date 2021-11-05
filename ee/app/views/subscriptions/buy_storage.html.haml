@@ -1,3 +1,5 @@
 - page_title _('Buy Storage')
+- content_for :page_specific_javascripts do
+  = render "layouts/one_trust"
 
 #js-buy-storage{ data: buy_addon_data(@group, @account_id, 'storage-quota-tab', s_('Checkout|a storage subscription')) }

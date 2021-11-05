@@ -4,6 +4,7 @@
 # TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 class TrialsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
+  include OneTrustCSP
 
   layout 'minimal'
 
