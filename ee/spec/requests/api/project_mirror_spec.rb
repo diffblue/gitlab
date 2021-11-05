@@ -84,29 +84,6 @@ RSpec.describe API::ProjectMirror do
           subject(:send_request) { do_post(params: params) }
 
           shared_examples_for 'triggering pipeline creation' do
-            context 'when the FF ci_create_external_pr_pipeline_async is disabled' do
-              before do
-                stub_feature_flags(ci_create_external_pr_pipeline_async: false)
-              end
-
-              let(:create_pipeline_service) { instance_double(Ci::CreatePipelineService) }
-
-              it 'triggers a pipeline for pull request' do
-                expect(Ci::CreatePipelineService)
-                  .to receive(:new)
-                  .with(project_mirrored, user, pipeline_params)
-                  .and_return(create_pipeline_service)
-
-                expect(create_pipeline_service)
-                  .to receive(:execute)
-                  .with(:external_pull_request_event, any_args)
-
-                send_request
-
-                expect(response).to have_gitlab_http_status(:ok)
-              end
-            end
-
             it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
               expect { send_request }
                 .to change { ExternalPullRequest.count }.by(1)

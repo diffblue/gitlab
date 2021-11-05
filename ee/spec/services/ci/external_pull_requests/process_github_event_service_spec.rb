@@ -53,29 +53,6 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService do
           let(:source_branch) { branch.name }
           let(:source_sha) { branch.target }
 
-          context 'when the FF ci_create_external_pr_pipeline_async is disabled' do
-            before do
-              stub_feature_flags(ci_create_external_pr_pipeline_async: false)
-            end
-
-            let(:create_pipeline_service) { instance_double(Ci::CreatePipelineService) }
-
-            it 'creates a pipeline and the external pull request' do
-              pipeline_params = {
-                ref: Gitlab::Git::BRANCH_REF_PREFIX + branch.name,
-                source_sha: branch.target,
-                target_sha: 'a09386439ca39abe575675ffd4b89ae824fec22f'
-              }
-              expect(Ci::CreatePipelineService).to receive(:new)
-                .with(project, user, pipeline_params)
-                .and_return(create_pipeline_service)
-              expect(create_pipeline_service).to receive(:execute)
-                .with(:external_pull_request_event, any_args)
-
-              expect { subject.execute(params) }.to change { ExternalPullRequest.count }.by(1)
-            end
-          end
-
           it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
             expect { subject.execute(params) }
              .to change { ExternalPullRequest.count }.by(1)
