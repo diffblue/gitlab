@@ -1536,9 +1536,6 @@ msgstr ""
 msgid "A sign-in to your account has been made from the following IP address: %{ip}"
 msgstr ""
 
-msgid "A string appended to the project path to form the Service Desk email address."
-msgstr ""
-
 msgid "A title is required"
 msgstr ""
 
@@ -1969,6 +1966,9 @@ msgid "Add a numbered list"
 msgstr ""
 
 msgid "Add a related issue"
+msgstr ""
+
+msgid "Add a suffix to Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "Add a table"
@@ -12685,6 +12685,9 @@ msgid "Email Notification"
 msgstr ""
 
 msgid "Email a new %{name} to this project"
+msgstr ""
+
+msgid "Email address suffix"
 msgstr ""
 
 msgid "Email address to use for Support Desk"
@@ -26926,9 +26929,6 @@ msgid "Project milestone"
 msgstr ""
 
 msgid "Project name"
-msgstr ""
-
-msgid "Project name suffix"
 msgstr ""
 
 msgid "Project navigation"
