@@ -12,11 +12,11 @@
         %p= _('Have more to say about GitLab?')
         .gl-display-flex.gl-justify-content-center.gl-md-max-w-30p.gl-m-auto.gl-mb-5
           .gl-px-5
-            = image_tag 'illustrations/chat.svg', class: 'gl-mb-3'
+            = image_tag 'illustrations/chat-bubble-sm.svg', class: 'gl-mb-3'
             %p= _('Have a quick chat with us about your experience.')
           - if @show_incentive
             .gl-px-5
-              = image_tag 'illustrations/gift.svg', class: 'gl-mb-3'
+              = image_tag 'illustrations/gift-sm.svg', class: 'gl-mb-3'
               %p= html_escape(_('Receive a %{strongOpen}$50 gift card%{strongClose} as a thank you for your time.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe }
         %p.gl-pt-2= link_to _("Let's talk!"), @invite_link, target: '_blank', rel: 'noopener noreferrer', class: 'gl-button btn btn-confirm'
       - else
