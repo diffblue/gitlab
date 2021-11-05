@@ -31,18 +31,6 @@ module EpicsHelper
     opts
   end
 
-  def epic_state_dropdown_link(state, selected_state)
-    link_to epic_state_title(state), page_filter_path(state: state), class: state == selected_state ? 'is-active' : ''
-  end
-
-  def epic_state_title(state)
-    titles = {
-      "opened" => "Open"
-    }
-
-    _("%{state} epics") % { state: (titles[state.to_s] || state.to_s.humanize) }
-  end
-
   def epic_timeframe(epic)
     short_format = '%b %d'
     long_format = '%b %d, %Y'

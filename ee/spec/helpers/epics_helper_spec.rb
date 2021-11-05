@@ -44,28 +44,6 @@ RSpec.describe EpicsHelper, type: :helper do
     end
   end
 
-  describe '#epic_state_dropdown_link' do
-    it 'returns the active link when selected state is same as the link' do
-      expect(helper.epic_state_dropdown_link(:opened, :opened))
-        .to eq('<a class="is-active" href="?state=opened">Open epics</a>')
-    end
-
-    it 'returns the non-active link when selected state is different from the link' do
-      expect(helper.epic_state_dropdown_link(:opened, :closed))
-        .to eq('<a class="" href="?state=opened">Open epics</a>')
-    end
-  end
-
-  describe '#epic_state_title' do
-    it 'returns "Open" when the state is opened' do
-      expect(epic_state_title(:opened)).to eq('Open epics')
-    end
-
-    it 'returns humanized string when the state is other than opened' do
-      expect(epic_state_title(:some_other_state)).to eq('Some other state epics')
-    end
-  end
-
   describe '#epic_timeframe' do
     let(:epic) { build(:epic, start_date: start_date, end_date: end_date) }
 
