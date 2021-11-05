@@ -75,7 +75,7 @@ export default {
       severityLevels: [],
       vulnerabilityStates: [],
       approvalVulnerabilityStatesKeys: Object.keys(APPROVAL_VULNERABILITY_STATES),
-      reportTypesKeys: Object.keys(REPORT_TYPES),
+      reportTypesKeys: Object.keys(this.$options.REPORT_TYPES),
       severityLevelsKeys: Object.keys(SEVERITY_LEVELS),
       ...this.getInitialData(),
     };
@@ -513,6 +513,7 @@ export default {
           key="all"
           is-check-item
           :is-checked="areAllScannersSelected"
+          data-testid="all-scanners-selected"
           @click.native.capture.stop="setAllSelectedScanners"
         >
           <gl-truncate :text="$options.APPROVAL_DIALOG_I18N.form.selectAllLabel" />
