@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344516', type: :bug } do
     context 'Purchase CI minutes' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }

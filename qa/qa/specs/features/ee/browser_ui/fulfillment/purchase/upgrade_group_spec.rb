@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344516', type: :bug } do
     describe 'Purchase' do
       describe 'group plan' do
         let(:hash) { SecureRandom.hex(4) }
