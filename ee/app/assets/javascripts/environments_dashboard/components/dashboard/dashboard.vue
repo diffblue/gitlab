@@ -31,6 +31,9 @@ export default {
   ),
 
   viewDocumentationButton: __('View documentation'),
+  informationText: s__(
+    'EnvironmentsDashboard|This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. %{linkStart}More information%{linkEnd}',
+  ),
 
   components: {
     Environment,
@@ -165,6 +168,19 @@ export default {
       @hidden="onModalHidden"
       @ok="onOk"
     >
+      <p>
+        <gl-sprintf :message="$options.informationText">
+          <template #link="{ content }">
+            <gl-link
+              :href="environmentsDashboardHelpPath"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
       <project-selector
         ref="projectSelector"
         :project-search-results="projectSearchResults"
@@ -188,16 +204,10 @@ export default {
       </gl-button>
     </div>
     <p class="mt-2 mb-4 js-page-limits-message">
-      <gl-sprintf
-        :message="
-          s__(
-            'EnvironmentsDashboard|This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. %{readMoreLink}',
-          )
-        "
-      >
-        <template #readMoreLink>
+      <gl-sprintf :message="$options.informationText">
+        <template #link="{ content }">
           <gl-link :href="environmentsDashboardHelpPath" target="_blank" rel="noopener noreferrer">
-            {{ s__('EnvironmentsDashboard|More information') }}
+            {{ content }}
           </gl-link>
         </template>
       </gl-sprintf>
