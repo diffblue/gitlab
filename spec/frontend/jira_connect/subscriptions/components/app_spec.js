@@ -4,6 +4,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 import JiraConnectApp from '~/jira_connect/subscriptions/components/app.vue';
 import AddNamespaceButton from '~/jira_connect/subscriptions/components/add_namespace_button.vue';
 import SignInButton from '~/jira_connect/subscriptions/components/sign_in_button.vue';
+import SubscriptionsList from '~/jira_connect/subscriptions/components/subscriptions_list.vue';
 import createStore from '~/jira_connect/subscriptions/store';
 import { SET_ALERT } from '~/jira_connect/subscriptions/store/mutation_types';
 import { __ } from '~/locale';
@@ -21,6 +22,7 @@ describe('JiraConnectApp', () => {
   const findAlertLink = () => findAlert().findComponent(GlLink);
   const findSignInButton = () => wrapper.findComponent(SignInButton);
   const findAddNamespaceButton = () => wrapper.findComponent(AddNamespaceButton);
+  const findSubscriptionsList = () => wrapper.findComponent(SubscriptionsList);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   const createComponent = ({ provide, mountFn = shallowMount } = {}) => {
@@ -36,54 +38,51 @@ describe('JiraConnectApp', () => {
     wrapper.destroy();
   });
 
-  describe('with subscriptions', () => {
+  describe('template', () => {
     describe.each`
-      scenario                   | usersPath    | expectSignInButton | expectNamespaceButton
-      ${'user is not signed in'} | ${'/users'}  | ${true}            | ${false}
-      ${'user is signed in'}     | ${undefined} | ${false}           | ${true}
-    `('when $scenario', ({ usersPath, expectSignInButton, expectNamespaceButton }) => {
-      beforeEach(() => {
-        createComponent({
-          provide: {
-            usersPath,
-            subscriptions: [mockSubscription],
-          },
+      scenario                                         | usersPath    | subscriptions         | expectSignInButton | expectEmptyState | expectNamespaceButton | expectSubscriptionsList
+      ${'user is not signed in with subscriptions'}    | ${'/users'}  | ${[mockSubscription]} | ${true}            | ${false}         | ${false}              | ${true}
+      ${'user is not signed in without subscriptions'} | ${'/users'}  | ${undefined}          | ${true}            | ${false}         | ${false}              | ${false}
+      ${'user is signed in with subscriptions'}        | ${undefined} | ${[mockSubscription]} | ${false}           | ${false}         | ${true}               | ${true}
+      ${'user is signed in without subscriptions'}     | ${undefined} | ${undefined}          | ${false}           | ${true}          | ${false}              | ${false}
+    `(
+      'when $scenario',
+      ({
+        usersPath,
+        expectSignInButton,
+        subscriptions,
+        expectEmptyState,
+        expectNamespaceButton,
+        expectSubscriptionsList,
+      }) => {
+        beforeEach(() => {
+          createComponent({
+            provide: {
+              usersPath,
+              subscriptions,
+            },
+          });
         });
-      });
 
-      it('renders sign in button as expected', () => {
-        expect(findSignInButton().exists()).toBe(expectSignInButton);
-      });
-
-      it('renders "Add Namespace" button as expected', () => {
-        expect(findAddNamespaceButton().exists()).toBe(expectNamespaceButton);
-      });
-    });
-  });
-
-  describe('with no subscriptions', () => {
-    describe.each`
-      scenario                   | usersPath    | expectSignInButton | expectEmptyState
-      ${'user is not signed in'} | ${'/users'}  | ${true}            | ${false}
-      ${'user is signed in'}     | ${undefined} | ${false}           | ${true}
-    `('when $scenario', ({ usersPath, expectSignInButton, expectEmptyState }) => {
-      beforeEach(() => {
-        createComponent({
-          provide: {
-            usersPath,
-            subscriptions: [],
-          },
+        it(`${expectSignInButton ? 'renders' : 'does not render'} sign in button`, () => {
+          expect(findSignInButton().exists()).toBe(expectSignInButton);
         });
-      });
 
-      it('renders sign in button as expected', () => {
-        expect(findSignInButton().exists()).toBe(expectSignInButton);
-      });
+        it(`${expectEmptyState ? 'renders' : 'does not render'} empty state`, () => {
+          expect(findEmptyState().exists()).toBe(expectEmptyState);
+        });
 
-      it('renders empty state as expected', () => {
-        expect(findEmptyState().exists()).toBe(expectEmptyState);
-      });
-    });
+        it(`${
+          expectNamespaceButton ? 'renders' : 'does not render'
+        } button to add namespace`, () => {
+          expect(findAddNamespaceButton().exists()).toBe(expectNamespaceButton);
+        });
+
+        it(`${expectSubscriptionsList ? 'renders' : 'does not render'} subscriptions list`, () => {
+          expect(findSubscriptionsList().exists()).toBe(expectSubscriptionsList);
+        });
+      },
+    );
   });
 
   describe('alert', () => {
