@@ -74,7 +74,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it "pulls an image using the dependency proxy on a group enforced SSO" do
+      it "pulls an image using the dependency proxy on a group enforced SSO", testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2291' do
         project.group.visit!
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|
@@ -122,7 +122,7 @@ module QA
         Page::Group::Menu.perform(&:go_to_dependency_proxy)
 
         Page::Group::DependencyProxy.perform do |index|
-          expect(index).to have_blob_count("Contains 2 blobs of images")
+          expect(index).to have_blob_count("Contains 1 blobs of images")
         end
       end
 
