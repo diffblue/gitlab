@@ -67,6 +67,7 @@ export const fetchContainerScanningDiff = ({ state, dispatch }) => {
   return fetchDiffData(state, state.containerScanning.paths.diffEndpoint, 'container_scanning')
     .then((data) => {
       dispatch('receiveContainerScanningDiffSuccess', data);
+      return data;
     })
     .catch(() => {
       dispatch('receiveContainerScanningDiffError');
@@ -96,6 +97,7 @@ export const fetchDastDiff = ({ state, dispatch }) => {
   return fetchDiffData(state, state.dast.paths.diffEndpoint, 'dast')
     .then((data) => {
       dispatch('receiveDastDiffSuccess', data);
+      return data;
     })
     .catch(() => {
       dispatch('receiveDastDiffError');
@@ -124,6 +126,7 @@ export const fetchDependencyScanningDiff = ({ state, dispatch }) => {
   return fetchDiffData(state, state.dependencyScanning.paths.diffEndpoint, 'dependency_scanning')
     .then((data) => {
       dispatch('receiveDependencyScanningDiffSuccess', data);
+      return data;
     })
     .catch(() => {
       dispatch('receiveDependencyScanningDiffError');
@@ -160,10 +163,13 @@ export const fetchCoverageFuzzingDiff = ({ state, dispatch }) => {
     }),
   ])
     .then((values) => {
-      dispatch('receiveCoverageFuzzingDiffSuccess', {
+      const data = {
         diff: values[0].data,
         enrichData: values[1].data,
-      });
+      };
+
+      dispatch('receiveCoverageFuzzingDiffSuccess', data);
+      return data;
     })
     .catch(() => {
       dispatch('receiveCoverageFuzzingDiffError');

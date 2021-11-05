@@ -394,38 +394,38 @@ export default {
 
     if (this.sastComparisonPath && this.hasSastReports) {
       this.setSastDiffEndpoint(this.sastComparisonPath);
-      this.fetchSastDiff();
+      this.fetchSecurityReport(this.fetchSastDiff, 'sast');
     }
 
     if (this.containerScanningComparisonPath && this.hasContainerScanningReports) {
       this.setContainerScanningDiffEndpoint(this.containerScanningComparisonPath);
-      this.fetchContainerScanningDiff();
+      this.fetchSecurityReport(this.fetchContainerScanningDiff, 'container_scanning');
     }
 
     if (this.dastComparisonPath && this.hasDastReports) {
       this.setDastDiffEndpoint(this.dastComparisonPath);
-      this.fetchDastDiff();
+      this.fetchSecurityReport(this.fetchDastDiff, 'dast');
     }
 
     if (this.dependencyScanningComparisonPath && this.hasDependencyScanningReports) {
       this.setDependencyScanningDiffEndpoint(this.dependencyScanningComparisonPath);
-      this.fetchDependencyScanningDiff();
+      this.fetchSecurityReport(this.fetchDependencyScanningDiff, 'dependency_scanning');
     }
 
     if (this.secretDetectionComparisonPath && this.hasSecretDetectionReports) {
       this.setSecretDetectionDiffEndpoint(this.secretDetectionComparisonPath);
-      this.fetchSecretDetectionDiff();
+      this.fetchSecurityReport(this.fetchSecretDetectionDiff, 'secret_detection');
     }
 
     if (this.coverageFuzzingComparisonPath && this.hasCoverageFuzzingReports) {
       this.setCoverageFuzzingDiffEndpoint(this.coverageFuzzingComparisonPath);
-      this.fetchCoverageFuzzingDiff();
+      this.fetchSecurityReport(this.fetchCoverageFuzzingDiff, 'coverage_fuzzing');
       this.fetchPipelineJobs();
     }
 
     if (this.apiFuzzingComparisonPath && this.hasApiFuzzingReports) {
       this.setApiFuzzingDiffEndpoint(this.apiFuzzingComparisonPath);
-      this.fetchApiFuzzingDiff();
+      this.fetchSecurityReport(this.fetchApiFuzzingDiff, 'api_fuzzing');
     }
   },
   methods: {
@@ -474,6 +474,24 @@ export default {
     }),
     hasIssuesForReportType(reportType) {
       return Boolean(this[reportType]?.newIssues.length || this[reportType]?.resolvedIssues.length);
+    },
+    async fetchSecurityReport(fetchFn, toolName) {
+      try {
+        const reports = await fetchFn();
+        const category = 'Vulnerability_Management';
+        const eventNameFixed = `mr_widget_findings_counts_${toolName}_fixed`;
+        const eventNameAdded = `mr_widget_findings_counts_${toolName}_added`;
+
+        Tracking.event(category, eventNameFixed, {
+          value: reports?.diff?.fixed?.length || 0,
+        });
+
+        Tracking.event(category, eventNameAdded, {
+          value: reports?.diff?.added?.length || 0,
+        });
+      } catch {
+        // Do nothing, we dispatch an error message in the action
+      }
     },
   },
   summarySlots: ['success', 'error', 'loading'],

@@ -17,6 +17,7 @@ export const fetchDiff = ({ state, rootState, dispatch }) => {
   return fetchDiffData(rootState, state.paths.diffEndpoint, 'api_fuzzing')
     .then((data) => {
       dispatch('receiveDiffSuccess', data);
+      return data;
     })
     .catch(() => {
       dispatch('receiveDiffError');
