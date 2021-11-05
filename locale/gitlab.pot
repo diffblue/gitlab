@@ -7403,6 +7403,9 @@ msgstr ""
 msgid "ClusterAgents|Registration token"
 msgstr ""
 
+msgid "ClusterAgents|Security"
+msgstr ""
+
 msgid "ClusterAgents|Select an Agent"
 msgstr ""
 
