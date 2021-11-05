@@ -25,6 +25,7 @@ RSpec.describe Projects::GoogleCloudController do
       it 'returns not found' do
         project.add_guest(user)
         sign_in(user)
+
         get url
 
         expect(response).to have_gitlab_http_status(:not_found)
@@ -37,6 +38,7 @@ RSpec.describe Projects::GoogleCloudController do
       it 'returns not found' do
         project.add_developer(user)
         sign_in(user)
+
         get url
 
         expect(response).to have_gitlab_http_status(:not_found)
@@ -49,6 +51,7 @@ RSpec.describe Projects::GoogleCloudController do
       it 'returns successful' do
         project.add_maintainer(user)
         sign_in(user)
+
         get url
 
         expect(response).to be_successful
@@ -60,6 +63,7 @@ RSpec.describe Projects::GoogleCloudController do
 
       it 'returns successful' do
         sign_in(user)
+
         get url
 
         expect(response).to be_successful
@@ -70,12 +74,16 @@ RSpec.describe Projects::GoogleCloudController do
       let(:user) { project.creator }
 
       context 'but gitlab instance is not configured for google oauth2' do
-        it 'returns forbidden' do
+        before do
           unconfigured_google_oauth2 = MockGoogleOAuth2Credentials.new('', '')
           allow(Gitlab::Auth::OAuth::Provider).to receive(:config_for)
                                                     .with('google_oauth2')
                                                     .and_return(unconfigured_google_oauth2)
+        end
+
+        it 'returns forbidden' do
           sign_in(user)
+
           get url
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -83,10 +91,15 @@ RSpec.describe Projects::GoogleCloudController do
       end
 
       context 'but feature flag is disabled' do
-        it 'returns not found' do
+        before do
           allow(Feature).to receive(:enabled?).and_return(false)
+        end
+
+        it 'returns not found' do
           sign_in(user)
+
           get url
+
           expect(response).to have_gitlab_http_status(:not_found)
         end
       end
