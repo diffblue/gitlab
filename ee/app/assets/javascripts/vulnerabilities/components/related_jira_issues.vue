@@ -22,7 +22,7 @@ export const i18n = {
   ),
   helpPageLinkLabel: s__('VulnerabilityManagement|Read more about related issues'),
   createNewIssueLinkText: s__('VulnerabilityManagement|Create Jira issue'),
-  loadingStateLabel: s__('VulnerabilityManagement, Fetching linked Jira issues'),
+  loadingStateLabel: s__('VulnerabilityManagement|Fetching linked Jira issues'),
 };
 
 export default {

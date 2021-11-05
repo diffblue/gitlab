@@ -1,11 +1,11 @@
 <script>
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 const HEADERS = {
   name: s__('ApprovalRule|Name'),
   members: s__('ApprovalRule|Approvers'),
   approvalsRequired: s__('ApprovalRule|Approvals required'),
-  branches: s__('Target branch'),
+  branches: __('Target branch'),
 };
 
 export default {

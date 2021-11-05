@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlModal, GlModalDirective } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export default {
   components: {
@@ -21,11 +21,11 @@ export default {
   },
   modal: {
     actionPrimary: {
-      text: s__('Delete corpus'),
+      text: __('Delete corpus'),
       attributes: { variant: 'danger', 'data-testid': 'modal-confirm' },
     },
     actionCancel: {
-      text: s__('Cancel'),
+      text: __('Cancel'),
     },
   },
   computed: {

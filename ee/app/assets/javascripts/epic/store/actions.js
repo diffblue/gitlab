@@ -308,7 +308,7 @@ export const requestEpicCreateSuccess = (_, webUrl) => visitUrl(webUrl);
 export const requestEpicCreateFailure = ({ commit }) => {
   commit(types.REQUEST_EPIC_CREATE_FAILURE);
   createFlash({
-    message: s__('Error creating epic'),
+    message: __('Error creating epic'),
   });
 };
 export const createEpic = ({ state, dispatch }) => {

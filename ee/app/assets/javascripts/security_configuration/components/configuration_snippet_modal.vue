@@ -16,7 +16,7 @@ export default {
     SourceEditor,
   },
   i18n: {
-    helpText: s__(
+    helpText: __(
       'This code snippet contains everything reflected in the configuration form. Copy and paste it into %{linkStart}.gitlab-ci.yml%{linkEnd} file and save your changes. Future %{scanType} scans will use these settings.',
     ),
     modalTitle: s__('SecurityConfiguration|%{scanType} configuration code snippet'),

@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex';
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
-import { n__, __, sprintf, s__ } from '~/locale';
+import { n__, __, sprintf } from '~/locale';
 
 export default {
   extends: BoardListHeaderFoss,
@@ -34,7 +34,7 @@ export default {
       const { totalWeight } = this.list;
 
       if (this.weightFeatureAvailable) {
-        return sprintf(s__('%{totalWeight} total weight'), { totalWeight });
+        return sprintf(__('%{totalWeight} total weight'), { totalWeight });
       }
 
       return null;

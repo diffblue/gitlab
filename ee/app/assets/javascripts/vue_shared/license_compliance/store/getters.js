@@ -1,4 +1,4 @@
-import { n__, s__, sprintf } from '~/locale';
+import { __, n__, s__, sprintf } from '~/locale';
 import { LICENSE_APPROVAL_STATUS, REPORT_GROUPS } from '../constants';
 import { addLicensesMatchingReportGroupStatus, reportGroupHasAtLeastOneLicense } from './utils';
 
@@ -35,13 +35,13 @@ export const licenseReportLength = (_, getters) => {
 export const licenseSummaryText = (state, getters) => {
   if (getters.isLoading) {
     return sprintf(s__('ciReport|Loading %{reportName} report'), {
-      reportName: s__('License Compliance'),
+      reportName: __('License Compliance'),
     });
   }
 
   if (state.loadLicenseReportError) {
     return sprintf(s__('ciReport|Failed to load %{reportName} report'), {
-      reportName: s__('License Compliance'),
+      reportName: __('License Compliance'),
     });
   }
 

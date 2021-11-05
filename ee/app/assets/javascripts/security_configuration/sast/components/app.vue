@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import DismissibleFeedbackAlert from '~/vue_shared/components/dismissible_feedback_alert.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ConfigurationPageLayout from '../../components/configuration_page_layout.vue';
@@ -61,7 +61,7 @@ export default {
     },
   },
   i18n: {
-    feedbackAlertMessage: s__(`
+    feedbackAlertMessage: __(`
       As we continue to build more features for SAST, we'd love your feedback
       on the SAST configuration feature in %{linkStart}this issue%{linkEnd}.`),
     helpText: s__(

@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
@@ -17,7 +17,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
   dismissed: {
     action: 'dismiss',
     state: 'dismissed',
-    displayName: s__('Dismiss'),
+    displayName: __('Dismiss'),
     description: falsePositiveMessage,
     payload: {
       comment: falsePositiveMessage,
@@ -26,13 +26,13 @@ export const VULNERABILITY_STATE_OBJECTS = {
   confirmed: {
     action: 'confirm',
     state: 'confirmed',
-    displayName: s__('Confirm'),
+    displayName: __('Confirm'),
     description: s__('VulnerabilityManagement|A true-positive and will fix'),
   },
   resolved: {
     action: 'resolve',
     state: 'resolved',
-    displayName: s__('Resolve'),
+    displayName: __('Resolve'),
     description: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
   },
 };
