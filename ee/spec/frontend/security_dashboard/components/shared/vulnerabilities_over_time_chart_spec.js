@@ -77,12 +77,14 @@ describe('Vulnerabilities Over Time Chart Component', () => {
     });
 
     it('should change the actively selected chart button and refetch the new data', async () => {
-      expect(findChartButtons().props('activeDay')).toBe(30);
-      findChartButtons().vm.$emit('days-selected', 90);
+      const chartButtons = findChartButtons();
+
+      expect(chartButtons.props('activeDay')).toBe(30);
+      chartButtons.vm.$emit('days-selected', 90);
 
       await nextTick();
 
-      expect(findChartButtons().props('activeDay')).toBe(90);
+      expect(chartButtons.props('activeDay')).toBe(90);
       expect(wrapper.vm.$apollo.queries.vulnerabilitiesHistory.refetch).toHaveBeenCalledTimes(1);
     });
   });
