@@ -1,12 +1,13 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount, mount } from '@vue/test-utils';
+
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/vue_shared/security_reports/components/event_item.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
 
 describe('Event Item', () => {
   let wrapper;
 
-  const mountComponent = (options, mountFn = shallowMount) => {
+  const mountComponent = (options, mountFn = shallowMountExtended) => {
     wrapper = mountFn(Component, options);
   };
 
@@ -51,7 +52,7 @@ describe('Event Item', () => {
     });
 
     it('renders the action buttons container', () => {
-      expect(wrapper.find('.action-buttons')).toExist();
+      expect(wrapper.findByTestId('action-buttons').exists()).toBe(true);
     });
 
     it('renders the default slot', () => {
@@ -83,11 +84,11 @@ describe('Event Item', () => {
     });
 
     beforeEach(() => {
-      mountComponent({ propsData }, mount);
+      mountComponent({ propsData }, mountExtended);
     });
 
     it('renders the action buttons container', () => {
-      expect(wrapper.find('.action-buttons')).toExist();
+      expect(wrapper.findByTestId('action-buttons').exists()).toBe(true);
     });
 
     it('renders the action buttons', () => {

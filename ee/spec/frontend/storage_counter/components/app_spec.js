@@ -165,7 +165,7 @@ describe('Storage counter app', () => {
       it('does render link', () => {
         const link = findPurchaseStorageLink();
 
-        expect(link).toExist();
+        expect(link.exists()).toBe(true);
         expect(link.attributes('href')).toBe('customers.gitlab.com');
       });
     });

@@ -71,7 +71,7 @@ describe('EE - DastSiteProfileList', () => {
   const getAllTableRows = () => within(getTableBody()).getAllByRole('row');
   const getTableRowForProfile = (profile) => getAllTableRows()[siteProfiles.indexOf(profile)];
 
-  const findProfileList = () => wrapper.find(ProfilesList);
+  const findProfileList = () => wrapper.findComponent(ProfilesList);
 
   afterEach(() => {
     wrapper.destroy();
@@ -83,7 +83,7 @@ describe('EE - DastSiteProfileList', () => {
       propsData: { profiles: siteProfiles },
     });
 
-    expect(findProfileList()).toExist();
+    expect(findProfileList().exists()).toBe(true);
   });
 
   it('passes down the props properly', () => {
@@ -155,7 +155,7 @@ describe('EE - DastSiteProfileList', () => {
           const validateButton = within(actionsCell).queryByRole('button', {
             name: buttonLabel,
           });
-          expect(validateButton).toExist();
+          expect(validateButton).not.toBe(null);
         });
 
         it(`should ${isBtnDisabled ? '' : 'not '}disable ${buttonLabel} button`, () => {

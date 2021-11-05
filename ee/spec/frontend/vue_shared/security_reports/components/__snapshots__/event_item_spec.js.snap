@@ -83,6 +83,7 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
    
   <div
     class="gl-flex-shrink-0 gl-align-self-start"
+    data-testid="action-buttons"
   >
     <button
       aria-label="Foo Action"
