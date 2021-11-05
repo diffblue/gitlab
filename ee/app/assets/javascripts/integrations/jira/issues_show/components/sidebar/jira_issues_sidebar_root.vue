@@ -20,9 +20,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
-    issueLabelsPath: {
-      default: null,
-    },
     issuesListPath: {
       default: null,
     },
@@ -41,11 +38,6 @@ export default {
       required: false,
       default: false,
     },
-    isUpdatingLabels: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     isUpdatingStatus: {
       type: Boolean,
       required: false,
@@ -57,11 +49,6 @@ export default {
       default: () => [],
     },
   },
-  data() {
-    return {
-      isEditingLabels: false,
-    };
-  },
   computed: {
     assignee() {
       // Jira issues have at most 1 assignee
@@ -69,9 +56,6 @@ export default {
     },
     reference() {
       return this.issue.references?.relative;
-    },
-    canUpdateLabels() {
-      return this.glFeatures.jiraIssueDetailsEditLabels;
     },
     canUpdateStatus() {
       return this.glFeatures.jiraIssueDetailsEditStatus;
@@ -108,18 +92,6 @@ export default {
         });
       }
     },
-    onIssueLabelsClose() {
-      this.isEditingLabels = false;
-    },
-    onIssueLabelsToggle() {
-      this.expandSidebarAndOpenDropdown();
-      this.afterSidebarTransitioned(() => {
-        this.isEditingLabels = true;
-      });
-    },
-    onIssueLabelsUpdated(labels) {
-      this.$emit('issue-labels-updated', labels);
-    },
     onIssueStatusFetch() {
       this.$emit('issue-status-fetch');
     },
@@ -149,20 +121,13 @@ export default {
       @issue-field-updated="onIssueStatusUpdated"
     />
     <labels-select
-      :allow-label-edit="canUpdateLabels"
-      :allow-multiselect="true"
       :allow-scoped-labels="true"
       :selected-labels="issue.labels"
-      :labels-fetch-path="issueLabelsPath"
       :labels-filter-base-path="issuesListPath"
       :labels-filter-param="$options.labelsFilterParam"
-      :labels-select-in-progress="isUpdatingLabels"
-      :is-editing="isEditingLabels"
       variant="sidebar"
       class="block labels js-labels-block"
-      @onDropdownClose="onIssueLabelsClose"
-      @toggleCollapse="onIssueLabelsToggle"
-      @updateSelectedLabels="onIssueLabelsUpdated"
+      @toggleCollapse="expandSidebarAndOpenDropdown"
     >
       {{ __('None') }}
     </labels-select>

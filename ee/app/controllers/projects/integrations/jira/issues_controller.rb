@@ -15,7 +15,6 @@ module Projects
         before_action :check_feature_enabled!
         before_action only: :show do
           push_frontend_feature_flag(:jira_issue_details_edit_status, project, default_enabled: :yaml)
-          push_frontend_feature_flag(:jira_issue_details_edit_labels, project, default_enabled: :yaml)
         end
 
         rescue_from ::Projects::Integrations::Jira::IssuesFinder::Error, with: :render_error
@@ -42,11 +41,6 @@ module Projects
               render json: issue_json
             end
           end
-        end
-
-        def labels
-          # This implementation is just to mock the endpoint, to be implemented https://gitlab.com/gitlab-org/gitlab/-/issues/330778
-          render json: issue_json[:labels]
         end
 
         private

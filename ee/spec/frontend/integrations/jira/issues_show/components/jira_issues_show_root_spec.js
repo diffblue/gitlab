@@ -120,22 +120,6 @@ describe('JiraIssuesShow', () => {
       await waitForPromises();
     });
 
-    it('updates issue labels on issue-labels-updated', async () => {
-      const updateIssueSpy = jest.spyOn(JiraIssuesShowApi, 'updateIssue').mockResolvedValue();
-
-      const labels = [{ id: 'ecosystem' }];
-
-      findJiraIssueSidebar().vm.$emit('issue-labels-updated', labels);
-      await wrapper.vm.$nextTick();
-
-      expect(updateIssueSpy).toHaveBeenCalledWith(expect.any(Object), { labels });
-      expect(findJiraIssueSidebar().props('isUpdatingLabels')).toBe(true);
-
-      await waitForPromises();
-
-      expect(findJiraIssueSidebar().props('isUpdatingLabels')).toBe(false);
-    });
-
     it('fetches issue statuses on issue-status-fetch', async () => {
       const fetchIssueStatusesSpy = jest
         .spyOn(JiraIssuesShowApi, 'fetchIssueStatuses')
