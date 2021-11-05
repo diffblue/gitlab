@@ -33,7 +33,7 @@ module API
       def todo_target_url(todo)
         return design_todo_target_url(todo) if todo.for_design?
 
-        target_type = todo.target_type.underscore
+        target_type = todo.target_type.constantize.model_name.param_key
         target_url = "#{todo.resource_parent.class.to_s.underscore}_#{target_type}_url"
 
         Gitlab::Routing
