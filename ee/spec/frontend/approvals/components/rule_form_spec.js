@@ -643,6 +643,26 @@ describe('EE Approvals RuleForm', () => {
         });
       });
 
+      describe('and with all scanners selected', () => {
+        const findAllScannersSelected = () => wrapper.findByTestId('all-scanners-selected');
+        beforeEach(() => {
+          createComponent({
+            initRule: TEST_RULE_VULNERABILITY_CHECK,
+          });
+          findAllScannersSelected().trigger('click');
+          findForm().trigger('submit');
+        });
+
+        it(`dispatches the action on submit without including ${EXCLUDED_REPORT_TYPE}`, () => {
+          const reportTypesKeys = Object.keys(REPORT_TYPES);
+          const expectedScanners = reportTypesKeys.filter((item) => item !== EXCLUDED_REPORT_TYPE);
+          expect(actions.postRule).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ scanners: expectedScanners }),
+          );
+        });
+      });
+
       describe('with invalid number of vulnerabilities', () => {
         beforeEach(() => {
           createComponent({
