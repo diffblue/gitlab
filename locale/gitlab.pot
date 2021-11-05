@@ -9793,9 +9793,6 @@ msgstr ""
 msgid "CreateTag|Tag"
 msgstr ""
 
-msgid "CreateTokenToCloneLink|create a personal access token"
-msgstr ""
-
 msgid "CreateValueStreamForm|%{name} (default)"
 msgstr ""
 
@@ -22414,6 +22411,9 @@ msgstr ""
 msgid "MissingSSHKeyWarningLink|Don't show again"
 msgstr ""
 
+msgid "MissingSSHKeyWarningLink|You can't push or pull repositories using SSH until you add an SSH key to your profile."
+msgstr ""
+
 msgid "MissingSSHKeyWarningLink|You won't be able to pull or push repositories via SSH until you add an SSH key to your profile"
 msgstr ""
 
@@ -31504,9 +31504,6 @@ msgstr ""
 msgid "Set what should be replicated by this secondary site."
 msgstr ""
 
-msgid "SetPasswordToCloneLink|set a password"
-msgstr ""
-
 msgid "SetStatusModal|Add status emoji"
 msgstr ""
 
@@ -39582,9 +39579,6 @@ msgstr ""
 msgid "You won't be able to create new projects because you have reached your project limit."
 msgstr ""
 
-msgid "You won't be able to pull or push repositories via %{protocol} until you %{set_password_link} on your account"
-msgstr ""
-
 msgid "You'll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement."
 msgstr ""
 
@@ -39733,6 +39727,12 @@ msgid "Your account has been deactivated by your administrator. Please log back 
 msgstr ""
 
 msgid "Your account has been deactivated. You will not be able to: "
+msgstr ""
+
+msgid "Your account is authenticated with SSO or SAML. To %{push_pull_link_start}push and pull%{link_end} over %{protocol} with Git using this account, you must %{set_password_link_start}set a password%{link_end} or %{set_up_pat_link_start}set up a Personal Access Token%{link_end} to use instead of a password. For more information, see %{clone_with_https_link_start}Clone with HTTPS%{link_end}."
+msgstr ""
+
+msgid "Your account is authenticated with SSO or SAML. To %{push_pull_link_start}push and pull%{link_end} over %{protocol} with Git using this account, you must %{set_up_pat_link_start}set up a Personal Access Token%{link_end} to use instead of a password. For more information, see %{clone_with_https_link_start}Clone with HTTPS%{link_end}."
 msgstr ""
 
 msgid "Your account is locked."
