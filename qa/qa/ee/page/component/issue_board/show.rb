@@ -31,7 +31,12 @@ module QA
 
             def configure_by_label(label)
               click_boards_config_button
-              click_element(:labels_edit_button)
+
+              QA::Support::Retrier.retry_on_exception do
+                click_element(:labels_edit_button)
+                find_element(:labels_dropdown_content)
+              end
+
               find_element(:labels_dropdown_content).find('li', text: label).click
               # Clicking the edit button again closes the dropdown and allows the save button to be clicked
               click_element(:labels_edit_button)
