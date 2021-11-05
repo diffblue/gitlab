@@ -12,7 +12,8 @@
     "reference",
     "path",
     "relation_path",
-    "weight"
+    "weight",
+    "blocked"
   ],
   "properties": {
     "id": { "type": "integer" },
@@ -23,6 +24,7 @@
     "due_date": { "type": ["string", "null"] },
     "state": { "type": "string" },
     "weight": { "type": ["integer", "null"] },
+    "blocked": { "type": "boolean" },
     "reference": { "type": "string" },
     "path": { "type": "string" },
     "relation_path": { "type": "string" },
