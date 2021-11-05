@@ -76,6 +76,24 @@ module EE
             end
           end
 
+          desc 'Approves all pending members'
+          post ':id/members/approve_all' do
+            group = find_group!(params[:id])
+
+            bad_request! unless group.root?
+            bad_request! unless can?(current_user, :admin_group_member, group)
+
+            result = ::Members::ActivateService
+              .new(group, activate_all: true, current_user: current_user)
+              .execute
+
+            if result[:status] == :success
+              no_content!
+            else
+              bad_request!(result[:message])
+            end
+          end
+
           desc 'Gets a list of billable users of root group.' do
             success Entities::Member
           end

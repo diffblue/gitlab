@@ -956,13 +956,13 @@ RSpec.describe API::Members do
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:not_an_owner) { create(:user) }
 
-    let(:url) { "/groups/#{group.id}/members/#{developer.id}/approve" }
-
     before do
       group.add_owner(owner)
     end
 
     describe 'PUT /groups/:id/members/:user_id/approve' do
+      let(:url) { "/groups/#{group.id}/members/#{developer.id}/approve" }
+
       context 'with invalid params' do
         context 'when a subgroup is used' do
           let(:url) { "/groups/#{subgroup.id}/members/#{developer.id}/approve" }
@@ -1043,6 +1043,62 @@ RSpec.describe API::Members do
 
             expect(response).to have_gitlab_http_status(:success)
             expect(pending_member.reload.active?).to be true
+          end
+        end
+      end
+    end
+
+    describe 'PUT /groups/:id/members/approve_all' do
+      let(:url) { "/groups/#{group.id}/members/approve_all" }
+
+      context 'when the current user is not authorized' do
+        it 'returns a bad request response' do
+          post api(url, not_an_owner)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when the current user is authorized' do
+        before do
+          group.add_owner(owner)
+        end
+
+        context 'when the group ID is a subgroup' do
+          let(:url) { "/groups/#{subgroup.id}/members/approve_all" }
+
+          it 'returns a bad request response' do
+            post api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+
+        context 'when params are valid' do
+          it 'approves all pending members' do
+            pending_group_member = create(:group_member, :awaiting, group: group)
+            pending_subgroup_member = create(:group_member, :awaiting, group: subgroup)
+            pending_project_member = create(:project_member, :awaiting, project: project)
+
+            post api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:success)
+
+            [pending_group_member, pending_subgroup_member, pending_subgroup_member, pending_project_member].each do |member|
+              expect(member.reload.active?).to be true
+            end
+          end
+        end
+
+        context 'when activation fails' do
+          it 'returns a bad request response' do
+            allow_next_instance_of(::Members::ActivateService) do |service|
+              allow(service).to receive(:execute).and_return({ status: :error })
+            end
+
+            post api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
           end
         end
       end
