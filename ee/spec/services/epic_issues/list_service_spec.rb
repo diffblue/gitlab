@@ -36,6 +36,10 @@ RSpec.describe EpicIssues::ListService do
         stub_licensed_features(epics: true)
       end
 
+      before_all do
+        create(:issue_link, source: create(:issue), target: issue1, link_type: IssueLink::TYPE_BLOCKS)
+      end
+
       it 'does not have N+1 queries', :use_clean_rails_memory_store_caching, :request_store do
         # The control query is made with the worst case scenario:
         # * Two different issues from two different projects that belong to two different groups
@@ -61,6 +65,7 @@ RSpec.describe EpicIssues::ListService do
         milestone3 = create(:milestone, project: new_project)
         new_issue4 = create(:issue, project: new_project, milestone: milestone3)
         create(:epic_issue, issue: new_issue4, epic: epic, relative_position: 6)
+        create(:issue_link, source: create(:issue), target: issue2, link_type: IssueLink::TYPE_BLOCKS)
 
         expect { list_service.execute }.not_to exceed_query_limit(control_count)
       end
@@ -86,7 +91,8 @@ RSpec.describe EpicIssues::ListService do
               epic_issue_id: epic_issue2.id,
               due_date: nil,
               created_at: issue2.created_at,
-              closed_at: issue2.closed_at
+              closed_at: issue2.closed_at,
+              blocked: false
             },
             {
               id: issue1.id,
@@ -102,7 +108,8 @@ RSpec.describe EpicIssues::ListService do
               epic_issue_id: epic_issue1.id,
               due_date: nil,
               created_at: issue1.created_at,
-              closed_at: issue1.closed_at
+              closed_at: issue1.closed_at,
+              blocked: true
             },
             {
               id: issue3.id,
@@ -118,7 +125,8 @@ RSpec.describe EpicIssues::ListService do
               epic_issue_id: epic_issue3.id,
               due_date: nil,
               created_at: issue3.created_at,
-              closed_at: issue3.closed_at
+              closed_at: issue3.closed_at,
+              blocked: false
             }
           ]
 
@@ -147,7 +155,8 @@ RSpec.describe EpicIssues::ListService do
               epic_issue_id: epic_issue2.id,
               due_date: nil,
               created_at: issue2.created_at,
-              closed_at: issue2.closed_at
+              closed_at: issue2.closed_at,
+              blocked: false
             },
             {
               id: issue1.id,
@@ -163,7 +172,8 @@ RSpec.describe EpicIssues::ListService do
               epic_issue_id: epic_issue1.id,
               due_date: nil,
               created_at: issue1.created_at,
-              closed_at: issue1.closed_at
+              closed_at: issue1.closed_at,
+              blocked: true
             }
           ]
 
