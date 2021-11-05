@@ -9,7 +9,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
     it 'enables the Remove group button and does not show an alert for a group' do
       render 'groups/settings/remove', group: group
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
       expect(rendered).not_to match 'data-disabled="true"'
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
@@ -19,7 +19,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
       render 'groups/settings/remove', group: group
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
       expect(rendered).to match 'data-disabled="true"'
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
@@ -29,7 +29,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
       render 'groups/settings/remove', group: group
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
       expect(rendered).to match 'data-disabled="true"'
       expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
@@ -40,7 +40,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
       render 'groups/settings/remove', group: subgroup
 
-      expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+      expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
       expect(rendered).not_to match 'data-disabled="true"'
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
@@ -53,7 +53,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       it 'enables the Remove group button and does not show an alert for a group without a paid gitlab.com plan' do
         render 'groups/settings/remove', group: group
 
-        expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+        expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
         expect(rendered).not_to match 'data-disabled="true"'
         expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
@@ -63,7 +63,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
         render 'groups/settings/remove', group: group
 
-        expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+        expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
         expect(rendered).to match 'data-disabled="true"'
         expect(rendered).to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
@@ -74,7 +74,7 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
 
         render 'groups/settings/remove', group: subgroup
 
-        expect(rendered).to have_selector '[data-testid="remove-group-button"]'
+        expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
         expect(rendered).not_to match 'data-disabled="true"'
         expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
       end
