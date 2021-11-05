@@ -16094,6 +16094,9 @@ msgstr ""
 msgid "GraphViewType|Stage"
 msgstr ""
 
+msgid "Graphs"
+msgstr ""
+
 msgid "Gravatar"
 msgstr ""
 
