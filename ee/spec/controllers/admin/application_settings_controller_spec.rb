@@ -321,6 +321,33 @@ RSpec.describe Admin::ApplicationSettingsController do
       @request.env['HTTP_REFERER'] = advanced_search_admin_application_settings_path
     end
 
+    context 'warning if not using index aliases' do
+      let(:helper) { instance_double(::Gitlab::Elastic::Helper) }
+
+      before do
+        allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+      end
+
+      it 'warns when NOT using index aliases' do
+        allow(helper).to receive(:alias_missing?).and_return true
+        get :advanced_search
+        expect(assigns[:elasticsearch_warn_if_not_using_aliases]).to be_truthy
+      end
+
+      it 'does NOT warn when using index aliases' do
+        allow(helper).to receive(:alias_missing?).and_return false
+        get :advanced_search
+        expect(assigns[:elasticsearch_warn_if_not_using_aliases]).to be_falsy
+      end
+
+      it 'does NOT blow up if elasticsearch is unreachable' do
+        allow(helper).to receive(:alias_missing?).and_raise(::Elasticsearch::Transport::Transport::ServerError, 'boom')
+        get :advanced_search
+        expect(assigns[:elasticsearch_warn_if_not_using_aliases]).to be_falsy
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
     context 'advanced search settings' do
       it 'updates the advanced search settings' do
         settings = {

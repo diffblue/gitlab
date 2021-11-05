@@ -2914,6 +2914,9 @@ msgstr ""
 msgid "Advanced export options"
 msgstr ""
 
+msgid "AdvancedSearch|Reindex required"
+msgstr ""
+
 msgid "After a successful password update you will be redirected to login screen."
 msgstr ""
 
@@ -18645,6 +18648,9 @@ msgid "Internal users cannot be deactivated"
 msgstr ""
 
 msgid "Interval Pattern"
+msgstr ""
+
+msgid "Introduced in GitLab 13.1, before using %{reindexing_link_start}zero-downtime reindexing%{link_end} and %{migrations_link_start}Advanced Search migrations%{link_end}, you need to %{recreate_link_start}recreate your index%{link_end}."
 msgstr ""
 
 msgid "Introducing Your DevOps Reports"

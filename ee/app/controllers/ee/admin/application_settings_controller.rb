@@ -9,6 +9,7 @@ module EE
       prepended do
         before_action :elasticsearch_reindexing_task, only: [:advanced_search]
         before_action :elasticsearch_index_settings, only: [:advanced_search]
+        before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
 
         feature_category :license, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -21,6 +22,12 @@ module EE
 
         def elasticsearch_index_settings
           @elasticsearch_index_settings = Elastic::IndexSetting.order_by_name
+        end
+
+        def elasticsearch_warn_if_not_using_aliases
+          @elasticsearch_warn_if_not_using_aliases = ::Gitlab::Elastic::Helper.default.alias_missing?
+        rescue StandardError => e
+          log_exception(e)
         end
       end
 

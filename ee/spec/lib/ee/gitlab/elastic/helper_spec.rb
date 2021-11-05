@@ -264,6 +264,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     end
   end
 
+  describe '#alias_missing?' do
+    it 'is the opposite of #alias_exists?' do
+      expect(helper.alias_missing?).to eq(!helper.alias_exists?)
+    end
+  end
+
   describe '#cluster_free_size_bytes' do
     it 'returns valid cluster size' do
       expect(helper.cluster_free_size_bytes).to be_positive
