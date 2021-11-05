@@ -12,9 +12,9 @@ module EE
 
     # For Iteration
     class Predefined
-      None = ::Timebox::TimeboxStruct.new('None', 'none', ::Timebox::None.id).freeze
-      Any = ::Timebox::TimeboxStruct.new('Any', 'any', ::Timebox::Any.id).freeze
-      Current = ::Timebox::TimeboxStruct.new('Current', 'current', -4).freeze
+      None = ::Timebox::TimeboxStruct.new('None', 'none', ::Timebox::None.id, ::Iteration.name).freeze
+      Any = ::Timebox::TimeboxStruct.new('Any', 'any', ::Timebox::Any.id, ::Iteration.name).freeze
+      Current = ::Timebox::TimeboxStruct.new('Current', 'current', -4, ::Iteration.name).freeze
 
       ALL = [None, Any, Current].freeze
 

@@ -42,6 +42,27 @@ RSpec.describe 'get list of boards' do
       )
     end
 
+    def board_milestone_query(board)
+      graphql_query_for(
+        board_parent_type,
+        { 'fullPath' => board_parent.full_path },
+        query_graphql_field(
+          'board', { id: global_id_of(board) },
+          'milestone { id }'
+        )
+      )
+    end
+
+    context 'when board is scoped to a wildcard milestone' do
+      it 'returns milestone global ID in the correct format' do
+        board = create(:board, resource_parent: board_parent, milestone_id: -3)
+
+        post_graphql(board_milestone_query(board), current_user: current_user)
+
+        expect(graphql_data.dig(board_parent_type, "board", "milestone", "id")).to eq("gid://gitlab/Milestone/-3")
+      end
+    end
+
     it 'returns open epics referenced by issues in the board' do
       board = create(:board, resource_parent: board_parent)
       issue_project = board_parent.is_a?(Project) ? board_parent : create(:project, group: board_parent)
