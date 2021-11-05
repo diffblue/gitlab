@@ -10,8 +10,8 @@ export default () => {
     removeFormId = null,
     phrase,
     buttonText,
+    buttonTestid = null,
     confirmDangerMessage,
-    testid = null,
     disabled = false,
   } = el.dataset;
 
@@ -25,12 +25,12 @@ export default () => {
         props: {
           phrase,
           buttonText,
-          testid,
+          buttonTestid,
           disabled: parseBoolean(disabled),
         },
         on: {
           confirm: () => {
-            if (removeFormId) document.getElementById(removeFormId).submit();
+            if (removeFormId) document.getElementById(removeFormId)?.submit();
           },
         },
       }),

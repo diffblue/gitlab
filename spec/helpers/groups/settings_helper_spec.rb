@@ -29,7 +29,7 @@ RSpec.describe Groups::SettingsHelper do
           confirm_danger_message: remove_group_message(group),
           remove_form_id: form_value_id,
           phrase: group.full_path,
-          testid: "remove-group-button",
+          button_testid: "remove-group-button",
           disabled: is_button_disabled
         })
       end
