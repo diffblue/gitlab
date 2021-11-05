@@ -9745,6 +9745,9 @@ msgstr ""
 msgid "Create requirement"
 msgstr ""
 
+msgid "Create service account"
+msgstr ""
+
 msgid "Create snippet"
 msgstr ""
 
@@ -16035,6 +16038,9 @@ msgid "Goal of the changes and what reviewers should be aware of"
 msgstr ""
 
 msgid "Google Cloud"
+msgstr ""
+
+msgid "Google Cloud Project"
 msgstr ""
 
 msgid "Google authentication is not %{link_start}properly configured%{link_end}. Ask your GitLab administrator if you want to use this service."
@@ -23372,6 +23378,9 @@ msgstr ""
 msgid "No schedules"
 msgstr ""
 
+msgid "No service accounts"
+msgstr ""
+
 msgid "No severity matches the provided parameter"
 msgstr ""
 
@@ -23465,6 +23474,9 @@ msgid "Not available for protected branches"
 msgstr ""
 
 msgid "Not confidential"
+msgstr ""
+
+msgid "Not found"
 msgstr ""
 
 msgid "Not found."
@@ -31288,6 +31300,18 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
+msgid "Service Account"
+msgstr ""
+
+msgid "Service Account Key"
+msgstr ""
+
+msgid "Service Accounts"
+msgstr ""
+
+msgid "Service Accounts keys authorize GitLab to deploy your Google Cloud project"
+msgstr ""
+
 msgid "Service Desk"
 msgstr ""
 
@@ -31340,6 +31364,9 @@ msgid "ServicePing|Turn on service ping"
 msgstr ""
 
 msgid "ServicePing|Turn on service ping to review instance-level analytics."
+msgstr ""
+
+msgid "Services"
 msgstr ""
 
 msgid "Session ID"
@@ -35116,6 +35143,9 @@ msgstr ""
 msgid "This is a self-managed instance of GitLab."
 msgstr ""
 
+msgid "This is an experimental feature developed by GitLab Incubation Engineering."
+msgstr ""
+
 msgid "This is the highest peak of users on your installation since the license started."
 msgstr ""
 
@@ -38363,6 +38393,9 @@ msgid "We have found the following errors:"
 msgstr ""
 
 msgid "We heard back from your device. You have been authenticated."
+msgstr ""
+
+msgid "We invite you to %{featureLinkStart}request a feature%{featureLinkEnd}, %{bugLinkStart}report a bug%{bugLinkEnd} or %{feedbackLinkStart}share feedback%{feedbackLinkEnd}"
 msgstr ""
 
 msgid "We recommend cloud-based mobile authenticator apps such as Authy, Duo Mobile, and LastPass. They can restore access if you lose your hardware device."
