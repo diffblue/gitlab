@@ -160,9 +160,10 @@ RSpec.describe EpicIssues::CreateService do
               # threshold 24 because 6 queries are generated for each insert
               # (savepoint, find, exists, relative_position get, insert, release savepoint)
               # and we insert 5 issues instead of 1 which we do for control count
+              # plus 4 to include additional authorization queries "SELECT MAX("project_authorizations"."access_level")"
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(29)
+                .with_threshold(33)
             end
           end
 
@@ -178,6 +179,10 @@ RSpec.describe EpicIssues::CreateService do
             let_it_be(:issue) { create(:issue, project: project2) }
 
             subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)])}
+
+            before do
+              project2.add_reporter(user)
+            end
 
             include_examples 'returns success'
           end
@@ -202,6 +207,7 @@ RSpec.describe EpicIssues::CreateService do
 
               expect(created_link2.relative_position).to be < created_link1.relative_position
             end
+
             it 'orders the epic issues to the first place and moves the existing ones down' do
               existing_link = create(:epic_issue, epic: epic, issue: issue3)
 
