@@ -13,6 +13,20 @@ RSpec.describe Projects::CreateService, '#execute' do
     }
   end
 
+  context 'with a built-in template' do
+    before do
+      opts.merge!(
+        template_name: 'rails'
+      )
+    end
+
+    it 'creates a project using the template service' do
+      expect(::Projects::CreateFromTemplateService).to receive_message_chain(:new, :execute)
+
+      create_project(user, opts)
+    end
+  end
+
   context 'with a template project ID' do
     before do
       opts.merge!(

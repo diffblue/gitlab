@@ -184,6 +184,21 @@ RSpec.describe ProjectsController do
       end
     end
 
+    context 'built in project templates' do
+      let(:templates_params) do
+        {
+          path: 'foo',
+          description: 'bar',
+          namespace_id: user.namespace.id,
+          template_name: 'rails'
+        }
+      end
+
+      it 'creates one audit event' do
+        expect { post :create, params: { project: templates_params } }.to change { AuditEvent.count }.by(1)
+      end
+    end
+
     context 'custom project templates' do
       let(:project_template) { create(:project, :repository, :public, :metrics_dashboard_enabled, namespace: group) }
       let(:templates_params) do
