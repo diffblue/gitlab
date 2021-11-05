@@ -31,6 +31,8 @@ module Vulnerabilities
 
     scope :with_associations, -> { includes(:pipeline, :issue, :merge_request, :author, :comment_author) }
     scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
+    scope :by_project, -> (project) { where(project: project) }
+    scope :by_project_fingerprints, -> (project_fingerprints) { where(project_fingerprint: project_fingerprints) }
 
     scope :all_preloaded, -> do
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)

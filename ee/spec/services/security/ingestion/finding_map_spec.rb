@@ -30,6 +30,19 @@ RSpec.describe Security::Ingestion::FindingMap do
     end
   end
 
+  describe '#issue_feedback' do
+    let!(:feedback) do
+      create(:vulnerability_feedback,
+             :issue,
+             project: security_finding.scan.project,
+             project_fingerprint: report_finding.project_fingerprint)
+    end
+
+    subject { finding_map.issue_feedback }
+
+    it { is_expected.to eq(feedback) }
+  end
+
   describe '#to_hash' do
     let(:expected_hash) do
       {
