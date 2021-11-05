@@ -72,7 +72,7 @@ export default {
 </script>
 
 <template>
-  <configuration-page-layout v-if="hasData">
+  <configuration-page-layout v-if="hasData" no-border>
     <template #heading>
       {{ $options.i18n.title }}
     </template>
