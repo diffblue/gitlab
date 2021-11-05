@@ -27,9 +27,11 @@ RSpec.describe Gitlab::ImportExport::AttributesPermitter do
 
     subject { described_class.new }
 
+    additional_attributes = { user: %w[id] }
+
     Gitlab::ImportExport::Config.new.to_h[:included_attributes].each do |relation_sym, permitted_attributes|
       context "for #{relation_sym}" do
-        it_behaves_like 'a permitted attribute', relation_sym, permitted_attributes
+        it_behaves_like 'a permitted attribute', relation_sym, permitted_attributes, additional_attributes[relation_sym]
       end
     end
   end
