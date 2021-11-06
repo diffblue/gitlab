@@ -1,0 +1,5 @@
+mutation uploadComplete($projectPath: ID!, $packageId: Int!) {
+  uploadComplete(projectPath: $projectPath, packageId: $packageId) @client {
+    errors
+  }
+}
