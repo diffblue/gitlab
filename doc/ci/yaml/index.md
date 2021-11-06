@@ -3937,23 +3937,23 @@ you can ensure that concurrent deployments never happen to the production enviro
 
 Use `release` to create a [release](../../user/project/releases/index.md).
 
-The release job must have access to [`release-cli`](https://gitlab.com/gitlab-org/release-cli/-/tree/master/docs)
-when it runs. When using a runner with:
+The release job must have access to the [`release-cli`](https://gitlab.com/gitlab-org/release-cli/-/tree/master/docs)
+and your runner must be using one of these executors:
 
-- The [Docker executor](https://docs.gitlab.com/runner/executors/docker.html), use
-  [`image:`](#image) and a Docker image that includes `release-cli`. For example,
-  this image from the GitLab.com Container registry: `registry.gitlab.com/gitlab-org/release-cli:latest`
+- If you use the [Docker executor](https://docs.gitlab.com/runner/executors/docker.html),
+  your [`image:`](#image) must include the `release-cli`. You can use this image from the GitLab
+  Container Registry: `registry.gitlab.com/gitlab-org/release-cli:latest`
 
-- The [Shell executor](https://docs.gitlab.com/runner/executors/shell.html), the server
-  where the runner is registered must [have `release-cli` installed](../../user/project/releases/release_cli.md).
+- If you use the [Shell executor](https://docs.gitlab.com/runner/executors/shell.html), the server
+  where the runner is registered must have the `release-cli` [installed](../../user/project/releases/release_cli.md).
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
 **Possible inputs**: The `release:` subkeys:
 
 - [`tag_name`](#releasetag_name)
-- [`description`](#releasedescription)
 - [`name`](#releasename) (optional)
+- [`description`](#releasedescription)
 - [`ref`](#releaseref) (optional)
 - [`milestones`](#releasemilestones) (optional)
 - [`released_at`](#releasereleased_at) (optional)
@@ -3981,16 +3981,19 @@ This example creates a release:
 
 **Additional details**:
 
-- All jobs except [trigger](#trigger) jobs must have the `script` keyword. A `release`
-  job can use the output from script commands, but you can use a placeholder script if
-  the script is not needed:
+- All release jobs, except [trigger](#trigger) jobs, must include the `script` keyword. A release
+  job can use the output from script commands. If you don't need the script, you can use a placeholder:
 
   ```yaml
   script:
     - echo 'release job'
   ```
 
-  An [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/223856) exists to remove this requirement in an upcoming version of GitLab.
+  An [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/223856) exists to remove this requirement.
+
+- The `release` section executes after the `script` keyword and before the `after_script`.
+- A release is created only if the job's main script succeeds.
+- If the release already exists, it is not updated and the job with the `release` keyword fails.
 
 **Related topics**:
 
@@ -4000,36 +4003,45 @@ This example creates a release:
 
 #### `release:tag_name`
 
-You must specify a `tag_name` for the release. The tag can refer to an existing Git tag or
-you can specify a new tag.
+Required. The Git tag for the release.
 
-When the specified tag doesn't exist in the repository, a new tag is created from the associated SHA of the pipeline.
+If the tag does not exist in the project yet, it is created at the same time as the release.
+New tags use the SHA associated with the pipeline.
 
-For example, when creating a release from a Git tag:
+**Keyword type**: Job keyword. You can use it only as part of a job.
+
+**Possible inputs**: A tag name. Can use [CI/CD variables](../variables/index.md).
+
+**Example of `release:tag_name`**:
+
+To create a release when a new tag is added to the project:
+
+- Use the `$CI_COMMIT_TAG` CI/CD variable as the `tag_name`.
+- Use [`rules:if`](#rulesif) or [`only: tags`](#onlyrefs--exceptrefs) to configure
+  the job to run only for new tags.
 
 ```yaml
 job:
+  script: echo 'Running the release job for the new tag.'
   release:
     tag_name: $CI_COMMIT_TAG
     description: 'Release description'
+  rules:
+    - if: $CI_COMMIT_TAG
 ```
 
-It is also possible for the release job to automatically create a new unique tag. In that case,
-do not use [`rules`](#rules) or [`only`](#only--except) to configure the job to
-only run for tags.
-
-A semantic versioning example:
+To create a release and a new tag at the same time, your [`rules`](#rules) or [`only`](#only--except)
+should **not** configure the job to run only for new tags. A semantic versioning example:
 
 ```yaml
 job:
+  script: echo 'Running the release job and creating a new tag.'
   release:
     tag_name: ${MAJOR}_${MINOR}_${REVISION}
     description: 'Release description'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 ```
-
-- The release is created only if the job's main script succeeds.
-- If the release already exists, it is not updated and the job with the `release` keyword fails.
-- The `release` section executes after the `script` tag and before the `after_script`.
 
 #### `release:name`
 
