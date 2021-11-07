@@ -360,9 +360,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           get 'details', on: :member
         end
 
-        resources :alert_management, only: [], as: 'alert_management_alert' do
-          get '', on: :member, action: :details, as: ''
-        end
+        get 'alert_management/:id', to: 'alert_management#details', as: 'alert_management_alert'
 
         get 'work_items/*work_items_path' => 'work_items#index', as: :work_items
 
