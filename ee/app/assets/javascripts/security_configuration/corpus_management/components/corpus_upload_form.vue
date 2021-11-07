@@ -30,7 +30,7 @@ export default {
     corpusName: s__('CorpusManagement|Corpus name'),
     uploadButtonText: __('Choose File...'),
     uploadMessage: s__(
-      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 10GB',
+      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 5GB',
     ),
   },
   data() {

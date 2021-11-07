@@ -74,7 +74,11 @@ export default {
     addCorpus() {
       this.$apollo.mutate({
         mutation: addCorpusMutation,
-        variables: { name: this.$options.i18n.newCorpus, projectPath: this.projectFullPath },
+        variables: {
+          name: this.$options.i18n.newCorpus,
+          projectPath: this.projectFullPath,
+          packageId: this.states.uploadState.uploadedPackageId,
+        },
       });
     },
     resetCorpus() {

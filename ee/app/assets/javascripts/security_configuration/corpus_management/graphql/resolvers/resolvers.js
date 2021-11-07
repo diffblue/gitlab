@@ -5,6 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
+import corpusCreate from '../mutations/corpus_create.mutation.graphql';
 
 export default {
   Query: {
@@ -29,7 +30,7 @@ export default {
     },
   },
   Mutation: {
-    addCorpus: (_, { name, projectPath }, { cache }) => {
+    addCorpus: (_, { name, projectPath, packageId }, { cache, client }) => {
       const sourceData = cache.readQuery({
         query: getCorpusesQuery,
         variables: { projectPath },
@@ -56,6 +57,11 @@ export default {
       });
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+
+      client.mutate({
+        mutation: corpusCreate,
+        variables: { fullPath: projectPath, packageId },
+      });
     },
     deleteCorpus: (_, { name, projectPath }, { cache }) => {
       const sourceData = cache.readQuery({
@@ -99,7 +105,7 @@ export default {
         uploadState.cancelSource = source;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, targetData, variables: { projectPath } });
+      cache.writeQuery({ query: getCorpusesQuery, data: targetData, variables: { projectPath } });
 
       publishPackage(
         { projectPath, name, version: 0, fileName: name, files },
