@@ -26,8 +26,8 @@
                 %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Dismiss') }
                   = sprite_icon('close', css_class: 'gl-icon')
                 .gl-alert-body
-                  %h4.gl-alert-title= _('There is a halted Elasticsearch migration')
-                  = html_escape_once(_('Check the elasticsearch.log file to debug why the migration was halted and make any changes before retrying the migration. When you fix the cause of the failure, click "Retry migration", and the migration will be scheduled to be retried in the background.')).html_safe
+                  %h4.gl-alert-title= _('Elasticsearch migration halted')
+                  = html_escape_once(_('Check the %{code_open}elasticsearch.log%{code_close} file to debug why the migration halted and make any changes before retrying the migration. When you fix the cause of the failure, select %{strong_open}Retry migration%{strong_close}, and the migration is scheduled to retry in the background.')) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe, code_open: '<code>'.html_safe, code_close: '</code>'.html_safe }
                   = link_to _('Learn more.'), help_page_path('integration/elasticsearch', anchor: 'advanced-search-migrations')
                 .gl-alert-actions
                   - migration = Elastic::DataMigrationService.halted_migration
@@ -40,7 +40,7 @@
                   = _('Elasticsearch indexing')
                 - unless Gitlab::CurrentSettings.elasticsearch_indexing?
                   .form-text.gl-text-gray-600.gl-mt-0
-                    = _('An empty index will be created if one does not already exist')
+                    = _('If there isn\'t any existing index, GitLab creates one.')
                 - if Gitlab::CurrentSettings.elasticsearch_indexing?
                   .form-text
                     = link_to _('Index all projects'), admin_elasticsearch_enqueue_index_path,
@@ -56,32 +56,38 @@
                 = f.label :elasticsearch_pause_indexing, class: 'form-check-label' do
                   = _('Pause Elasticsearch indexing')
                 .form-text.gl-text-gray-600.gl-mt-0
-                  = _('Changes are still tracked. Useful for cluster/index migrations.')
+                  = _('When paused, GitLab still tracks the changes. This is useful for cluster/index migrations.')
                 - if pending_migration_running_and_pauses_indexing
                   .form-text.text-warning
-                    = _('There are pending advanced search migrations which require indexing to be paused. Indexing must remain paused until the migrations are completed.')
+                    = _('There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.')
 
             .form-group
               .form-check
                 = f.check_box :elasticsearch_search, class: 'form-check-input', data: { qa_selector: 'search_checkbox' }
                 = f.label :elasticsearch_search, class: 'form-check-label' do
                   Search with Elasticsearch enabled
+                .form-text.gl-text-gray-600.gl-mt-0
+                  = _('Disable Elasticsearch until indexing completes.')
 
             .form-group
               = f.label :elasticsearch_url, 'URL', class: 'label-bold'
-              = f.text_field :elasticsearch_url, value: @application_setting.elasticsearch_url.join(', '), class: 'form-control gl-form-input', placeholder: 'http://localhost:9200', data: { qa_selector: 'url_field' }
+              = f.text_field :elasticsearch_url, value: @application_setting.elasticsearch_url.join(', '), class: 'form-control gl-form-input', placeholder: 'http://localhost:9200, http://localhost:9201', data: { qa_selector: 'url_field' }
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('The URL to use for connecting to Elasticsearch. Use a comma-separated list to support clustering (e.g., "http://localhost:9200, http://localhost:9201").')
+                = _('The URLs for connecting to Elasticsearch. For clustering, add the URLs separated by commas.')
 
             .form-group
-              = f.label :elasticsearch_username, _('Username (for password-protected Elasticsearch servers)'), class: 'label-bold'
+              = f.label :elasticsearch_username, _('Username'), class: 'label-bold'
               = f.text_field :elasticsearch_username, value: @application_setting.elasticsearch_username, class: 'form-control gl-form-input', data: { qa_selector: 'username_field' }
+              .form-text.gl-text-gray-600.gl-mt-0
+                = _('Enter the username for password-protected Elasticsearch servers.')
             .form-group
-              = f.label :elasticsearch_password, _('Password (for password-protected Elasticsearch servers)'), class: 'label-bold'
+              = f.label :elasticsearch_password, _('Password'), class: 'label-bold'
               = f.password_field :elasticsearch_password, value: (@application_setting.elasticsearch_password.present? ? ApplicationSetting::MASK_PASSWORD : ''), class: 'form-control gl-form-input', data: { qa_selector: 'password_field' }
+              .form-text.gl-text-gray-600.gl-mt-0
+                = _('Enter the password for password-protected Elasticsearch servers.')
 
             .form-group
-              = f.label :elasticsearch_shards, _('Number of Elasticsearch shards and replicas (per index)'), class: 'gl-font-weight-bold'
+              = f.label :elasticsearch_shards, _('Number of Elasticsearch shards and replicas per index:'), class: 'gl-font-weight-bold'
 
             %table.table
               %thead
@@ -103,19 +109,19 @@
                 - configuration_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: configuration_link_url }
                 - recreated_link_url = help_page_url('integration/elasticsearch.md', anchor: 'zero-downtime-reindexing')
                 - recreated_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: recreated_link_url }
-                = _("Learn more about shards and replicas in the %{configuration_link_start}Advanced search configuration%{configuration_link_end} documentation. Changes won't take place until the index is %{recreated_link_start}recreated%{recreated_link_end}.").html_safe % { configuration_link_start: configuration_link_start, configuration_link_end: '</a>'.html_safe, recreated_link_start: recreated_link_start, recreated_link_end: '</a>'.html_safe }
+                = html_escape(_("Learn more about shards and replicas in the %{configuration_link_start}Advanced Search configuration%{configuration_link_end} documentation. Changes don\'t take place until you %{recreated_link_start}recreate%{recreated_link_end} the index.")) % { configuration_link_start: configuration_link_start, configuration_link_end: '</a>'.html_safe, recreated_link_start: recreated_link_start, recreated_link_end: '</a>'.html_safe }
 
             .form-group
               = f.label :elasticsearch_indexed_file_size_limit_kb, _('Maximum file size indexed (KiB)'), class: 'label-bold'
               = f.number_field :elasticsearch_indexed_file_size_limit_kb, value: @application_setting.elasticsearch_indexed_file_size_limit_kb, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('Any files larger than this limit only index the file name. The file content is neither indexed nor searchable.')
+                = _('For files larger than this limit, only index the file name. The file content is neither indexed nor searchable.')
 
             .form-group
               = f.label :elasticsearch_indexed_field_length_limit, _('Maximum field length'), class: 'label-bold'
               = f.number_field :elasticsearch_indexed_field_length_limit, value: @application_setting.elasticsearch_indexed_field_length_limit, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('If any indexed field exceeds this limit it will be truncated to this number of characters and the rest will not be indexed or searchable. This does not apply to repository and wiki indexing. Setting this to 0 means it is unlimited.')
+                = _('If any indexed field exceeds this limit, it is truncated to this number of characters. The rest of the content is neither indexed nor searchable. This does not apply to repository and wiki indexing. For unlimited characters, set this to 0.')
 
             .form-group
               = f.label :elasticsearch_max_bulk_size_mb, _('Maximum bulk request size (MiB)'), class: 'label-bold'
@@ -136,7 +142,7 @@
               = f.number_field :elasticsearch_client_request_timeout, value: @application_setting.elasticsearch_client_request_timeout, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Elasticsearch HTTP client timeout value in seconds.')
-                = _('Setting this to 0 means using the system default timeout value.')
+                = _('To use the system\'s default, set this value to 0.')
 
         .gl-card.gl-bg-gray-10.gl-mb-6
           .gl-card-body
@@ -145,19 +151,19 @@
               .form-check
                 = f.check_box :elasticsearch_limit_indexing, class: 'form-check-input js-limit-checkbox'
                 = f.label :elasticsearch_limit_indexing, class: 'form-check-label' do
-                  = _('Limit namespaces and projects that can be indexed')
+                  = _('Limit the number of namespaces and projects that can be indexed.')
 
             .form-group.js-limit-namespaces{ class: ('hidden' unless @application_setting.elasticsearch_limit_indexing) }
               = f.label :elasticsearch_namespace_ids, _('Namespaces to index'), class: 'label-bold'
               - if elasticsearch_too_many_namespaces?
-                %p= _('Too many namespaces enabled. You will need to manage them via the console or the API.')
+                %p= _('Too many namespaces enabled. Manage them through the console or the API.')
               - else
                 = f.text_field :elasticsearch_namespace_ids, class: 'js-elasticsearch-namespaces', value: elasticsearch_namespace_ids, data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_namespaces(true)).to_json }
 
             .form-group.js-limit-projects{ class: ('hidden' unless @application_setting.elasticsearch_limit_indexing) }
               = f.label :elasticsearch_project_ids, _('Projects to index'), class: 'label-bold'
               - if elasticsearch_too_many_projects?
-                %p= _('Too many projects enabled. You will need to manage them via the console or the API.')
+                %p= _('Too many projects enabled. Manage them through the console or the API.')
               - else
                 = f.text_field :elasticsearch_project_ids, class: 'js-elasticsearch-projects', value: elasticsearch_project_ids, data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_projects(true)).to_json }
 
@@ -179,7 +185,7 @@
                 = f.label :elasticsearch_analyzers_smartcn_search, class: 'form-check-label' do
                   = _('Enable smartcn custom analyzer: Search')
                 .form-text.gl-text-gray-600
-                  = _('Please only enable search after installing the plugin, enabling indexing and recreating the index')
+                  = _('Only enable search after installing the plugin, enabling indexing, and recreating the index.')
             %h5
               = _('Japanese language support using')
               %a{ href: 'https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-kuromoji.html' }
@@ -195,7 +201,7 @@
                 = f.label :elasticsearch_analyzers_kuromoji_search, class: 'form-check-label' do
                   = _('Enable kuromoji custom analyzer: Search')
                 .form-text.gl-text-gray-600
-                  = _('Please only enable search after installing the plugin, enabling indexing and recreating the index')
+                  = _('Only enable search after installing the plugin, enabling indexing, and recreating the index.')
 
         .gl-card.gl-bg-gray-10.gl-mb-6
           .gl-card-body
@@ -204,25 +210,25 @@
               .form-check
                 = f.check_box :elasticsearch_aws, class: 'form-check-input'
                 = f.label :elasticsearch_aws, class: 'form-check-label' do
-                  Using AWS hosted Elasticsearch with IAM credentials
+                  Use AWS hosted Elasticsearch with IAM credentials
             .form-group
               = f.label :elasticsearch_aws_region, 'AWS region', class: 'label-bold'
               = f.text_field :elasticsearch_aws_region, value: @application_setting.elasticsearch_aws_region, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('Region that Elasticsearch is configured')
+                = _('Elasticsearch\'s region.')
 
             .form-group
               = f.label :elasticsearch_aws_access_key, _('AWS Access Key'), class: 'label-bold'
               = f.text_field :elasticsearch_aws_access_key, value: @application_setting.elasticsearch_aws_access_key, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('AWS Access Key. Only required if not using role instance credentials')
+                = _('Required only if you are not using role instance credentials.')
 
             - secret_access_key_label = @application_setting.elasticsearch_aws_secret_access_key.present? ? _('Enter new AWS Secret Access Key') : _('AWS Secret Access Key')
             .form-group
               = f.label :elasticsearch_aws_secret_access_key, secret_access_key_label, class: 'label-bold'
               = f.password_field :elasticsearch_aws_secret_access_key, autocomplete: 'new-password', class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('AWS Secret Access Key. Only required if not using role instance credentials')
+                = _('Required only if you are not using role instance credentials.')
 
       = f.submit _('Save changes'), class: "gl-button btn btn-confirm", data: { qa_selector: 'submit_button' }
 
@@ -233,7 +239,7 @@
     %button.btn.gl-button.btn-default.js-settings-toggle{ type: 'button' }
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
-      = _('Trigger cluster reindexing. This feature should be used with an index that was created after 13.0.')
+      = _('Trigger cluster reindexing. Only use this with an index that was created in GitLab 13.0 or later.')
 
   .settings-content
     = form_for @elasticsearch_reindexing_task, url: admin_elasticsearch_trigger_reindexing_path, method: :post, html: { class: 'fieldset-form' } do |f|
@@ -244,7 +250,7 @@
           .form-text.gl-text-gray-600.gl-mt-0
             - slice_multiplier_link_url = help_page_path('integration/elasticsearch.md', anchor: 'slice-multiplier')
             - slice_multiplier_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: slice_multiplier_link_url }
-            = _('Used to calculate the number of slices during reindexing. The multiplier will be applied to the number of shards per index. Learn more about %{slice_multiplier_link_start}slice multiplier configuration%{slice_multiplier_link_end}.').html_safe % { slice_multiplier_link_start: slice_multiplier_link_start, slice_multiplier_link_end: '</a>'.html_safe }
+            = html_escape(_('Calculate the number of slices during reindexing. The multiplier is applied to the number of shards per index. Learn more about %{slice_multiplier_link_start}slice multiplier configuration%{slice_multiplier_link_end}.')) % { slice_multiplier_link_start: slice_multiplier_link_start, slice_multiplier_link_end: '</a>'.html_safe }
 
         .form-group
           = f.label :max_slices_running, _('Maximum running slices'), class: 'label-bold'
@@ -252,7 +258,7 @@
           .form-text.gl-text-gray-600.gl-mt-0
             - max_slices_running_link_url = help_page_path('integration/elasticsearch.md', anchor: 'maximum-running-slices')
             - max_slices_running_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: max_slices_running_link_url }
-            = _('The maximum number of slices allowed to run concurrently during Elasticsearch reindexing. Learn more about %{max_slices_running_link_start}maximum running slices configuration%{max_slices_link_end}.').html_safe % { max_slices_running_link_start: max_slices_running_link_start, max_slices_link_end: '</a>'.html_safe }
+            = html_escape(_('Set the maximum number of slices allowed to run concurrently during Elasticsearch reindexing. Learn more about %{max_slices_running_link_start}maximum running slices configuration%{max_slices_link_end}.')) % { max_slices_running_link_start: max_slices_running_link_start, max_slices_link_end: '</a>'.html_safe }
 
         = f.submit _('Trigger cluster reindexing'), class: "gl-button btn btn-info", disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to reindex?') }
         .form-text.gl-text-gray-600
