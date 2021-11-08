@@ -130,7 +130,7 @@ RSpec.describe EpicIssues::CreateService do
 
             include_examples 'returns success'
 
-            it 'does not perform N + 1 queries' do
+            it 'does not perform N + 1 queries', :request_store do
               allow(SystemNoteService).to receive(:epic_issue)
               allow(SystemNoteService).to receive(:issue_on_epic)
 
@@ -160,10 +160,9 @@ RSpec.describe EpicIssues::CreateService do
               # threshold 24 because 6 queries are generated for each insert
               # (savepoint, find, exists, relative_position get, insert, release savepoint)
               # and we insert 5 issues instead of 1 which we do for control count
-              # plus 4 to include additional authorization queries "SELECT MAX("project_authorizations"."access_level")"
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(33)
+                .with_threshold(29)
             end
           end
 

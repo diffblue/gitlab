@@ -818,15 +818,6 @@ RSpec.describe Issue do
         end
 
         it { is_expected.to be_truthy }
-
-        context 'when a user can not read epic' do
-          before do
-            allow(Ability).to receive(:allowed?).with(user, :read_epic, group).and_return(false)
-            allow(Ability).to receive(:allowed?).with(user, :admin_issue, project).and_call_original
-          end
-
-          it { is_expected.to be_falsey }
-        end
       end
     end
 
