@@ -1,0 +1,17 @@
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
+query EpicBoard($fullPath: ID!, $boardId: BoardsEpicBoardID!) {
+  workspace: group(fullPath: $fullPath) {
+    board: epicBoard(id: $boardId) {
+      id
+      name
+      hideBacklogList
+      hideClosedList
+      labels {
+        nodes {
+          ...Label
+        }
+      }
+    }
+  }
+}

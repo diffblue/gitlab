@@ -2,7 +2,6 @@
 import { GlButton } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import LabelItem from '~/vue_shared/components/sidebar/labels_select_widget/label_item.vue';
 import searchGroupLabels from '~/vue_shared/components/sidebar/labels_select_widget/graphql/group_labels.query.graphql';
 import searchProjectLabels from '~/vue_shared/components/sidebar/labels_select_widget/graphql/project_labels.query.graphql';
@@ -60,10 +59,7 @@ export default {
         return !this.isEditing;
       },
       update(data) {
-        return data.workspace?.labels?.nodes.map((label) => ({
-          ...label,
-          id: getIdFromGraphQLId(label.id),
-        }));
+        return data.workspace?.labels?.nodes;
       },
       error() {
         this.setError({ message: this.$options.i18n.errorSearchingLabels });
@@ -123,7 +119,7 @@ export default {
       this.$emit('set-labels', labels);
     },
     onLabelRemove(labelId) {
-      const labels = this.selected.filter(({ id }) => getIdFromGraphQLId(id) !== labelId);
+      const labels = this.selected.filter(({ id }) => id !== labelId);
       this.selected = labels;
       this.$emit('set-labels', labels);
     },

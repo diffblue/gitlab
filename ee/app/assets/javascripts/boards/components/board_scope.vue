@@ -1,6 +1,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import AssigneeSelect from './assignee_select.vue';
 import BoardScopeCurrentIteration from './board_scope_current_iteration.vue';
 import BoardLabelsSelect from './labels_select.vue';
@@ -51,6 +52,9 @@ export default {
         ? __('Board scope affects which issues are displayed for anyone who visits this board')
         : __('Board scope affects which epics are displayed for anyone who visits this board');
     },
+    iterationId() {
+      return getIdFromGraphQLId(this.board.iteration?.id) || null;
+    },
   },
 
   methods: {
@@ -87,7 +91,7 @@ export default {
       <board-scope-current-iteration
         v-if="isIssueBoard"
         :can-admin-board="canAdminBoard"
-        :iteration-id="board.iteration_id"
+        :iteration-id="iterationId"
         @set-iteration="$emit('set-iteration', $event)"
       />
 

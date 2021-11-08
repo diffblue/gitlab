@@ -5630,6 +5630,9 @@ msgstr ""
 msgid "Boards|View scope"
 msgstr ""
 
+msgid "Board|An error occurred while fetching the board, please try again."
+msgstr ""
+
 msgid "Board|Are you sure you want to delete this board?"
 msgstr ""
 

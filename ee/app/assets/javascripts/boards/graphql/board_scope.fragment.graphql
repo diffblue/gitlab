@@ -1,0 +1,26 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+#import "~/graphql_shared/fragments/iteration.fragment.graphql"
+
+fragment BoardScopeFragment on Board {
+  id
+  name
+  hideBacklogList
+  hideClosedList
+  assignee {
+    ...User
+  }
+  milestone {
+    id
+    title
+  }
+  labels {
+    nodes {
+      ...Label
+    }
+  }
+  iteration {
+    ...Iteration
+  }
+  weight
+}
