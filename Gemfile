@@ -24,7 +24,7 @@ gem 'faraday', '~> 1.0'
 gem 'marginalia', '~> 1.10.0'
 
 # Authorization
-gem 'declarative_policy', '~> 1.0.0'
+gem 'declarative_policy', '~> 1.1.0'
 
 # Authentication libraries
 gem 'devise', '~> 4.7.2'
