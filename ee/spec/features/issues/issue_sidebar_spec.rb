@@ -299,6 +299,6 @@ RSpec.describe 'Issue Sidebar' do
   end
 
   def iteration_period(iteration)
-    iteration.start_date.strftime("%b%e, %Y") + ' - ' + iteration.due_date.strftime("%b%e, %Y")
+    "#{iteration.start_date.to_s(:medium)} - #{iteration.due_date.to_s(:medium)}"
   end
 end
