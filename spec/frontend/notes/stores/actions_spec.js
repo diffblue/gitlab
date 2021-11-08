@@ -1395,4 +1395,45 @@ describe('Actions Notes Store', () => {
       );
     });
   });
+
+  describe('fetchDiscussions', () => {
+    const discussion = { notes: [] };
+
+    afterEach(() => {
+      window.gon = {};
+    });
+
+    it('updates the discussions and dispatches `updateResolvableDiscussionsCounts`', (done) => {
+      axiosMock.onAny().reply(200, { discussion });
+      testAction(
+        actions.fetchDiscussions,
+        true,
+        null,
+        [
+          { type: mutationTypes.ADD_OR_UPDATE_DISCUSSIONS, payload: { discussion } },
+          { type: mutationTypes.SET_FETCHING_DISCUSSIONS, payload: false },
+        ],
+        [{ type: 'updateResolvableDiscussionsCounts' }],
+        done,
+      );
+    });
+
+    it('dispatches `fetchDiscussionsBatch` action if `paginatedIssueDiscussions` feature flag is enabled', (done) => {
+      window.gon = { features: { paginatedIssueDiscussions: true } };
+
+      testAction(
+        actions.fetchDiscussions,
+        true,
+        null,
+        [],
+        [
+          {
+            type: 'fetchDiscussionsBatch',
+            payload: { config: null, path: undefined, perPage: 20 },
+          },
+        ],
+        done,
+      );
+    });
+  });
 });
