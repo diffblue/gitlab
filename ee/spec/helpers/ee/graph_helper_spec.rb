@@ -58,4 +58,38 @@ RSpec.describe EE::GraphHelper do
       it_behaves_like '#should_render_dora_charts for a specific type of container'
     end
   end
+
+  describe '#should_render_quality_summary' do
+    subject { helper.should_render_quality_summary }
+
+    before do
+      self.instance_variable_set(:@project, project)
+    end
+
+    context 'when licensed feature is available' do
+      before do
+        stub_licensed_features(project_quality_summary: true)
+      end
+
+      context 'when feature flag is enabled' do
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(project_quality_summary_page: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when licensed feature is not available' do
+      before do
+        stub_licensed_features(project_quality_summary: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end
