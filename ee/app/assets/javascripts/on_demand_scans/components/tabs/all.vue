@@ -12,6 +12,7 @@ export default {
     {
       label: __('Status'),
       key: 'detailedStatus',
+      columnClass: 'gl-w-15',
     },
     {
       label: __('Name'),
@@ -20,6 +21,7 @@ export default {
     {
       label: s__('OnDemandScans|Scan type'),
       key: 'scanType',
+      columnClass: 'gl-w-13',
     },
     {
       label: s__('OnDemandScans|Target'),
@@ -28,10 +30,12 @@ export default {
     {
       label: __('Start date'),
       key: 'createdAt',
+      columnClass: 'gl-w-15',
     },
     {
       label: __('Pipeline'),
       key: 'id',
+      columnClass: 'gl-w-13',
     },
   ],
   i18n: {

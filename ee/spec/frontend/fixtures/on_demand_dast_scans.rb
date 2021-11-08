@@ -15,6 +15,7 @@ RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
     path = 'on_demand_scans/graphql/on_demand_scans.query.graphql'
 
     before do
+      stub_licensed_features(security_on_demand_scans: true)
       project.add_developer(current_user)
     end
 

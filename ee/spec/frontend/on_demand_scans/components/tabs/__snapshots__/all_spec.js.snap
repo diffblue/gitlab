@@ -3,6 +3,7 @@
 exports[`AllTab renders the base tab with the correct props 1`] = `
 Array [
   Object {
+    "columnClass": "gl-w-15",
     "key": "detailedStatus",
     "label": "Status",
   },
@@ -11,6 +12,7 @@ Array [
     "label": "Name",
   },
   Object {
+    "columnClass": "gl-w-13",
     "key": "scanType",
     "label": "Scan type",
   },
@@ -19,10 +21,12 @@ Array [
     "label": "Target",
   },
   Object {
+    "columnClass": "gl-w-15",
     "key": "createdAt",
     "label": "Start date",
   },
   Object {
+    "columnClass": "gl-w-13",
     "key": "id",
     "label": "Pipeline",
   },

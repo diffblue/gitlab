@@ -1,10 +1,11 @@
 import { GlTab, GlTable, GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { merge } from 'lodash';
 import allPipelinesWithPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.with_pipelines.json';
 import allPipelinesWithoutPipelinesMock from 'test_fixtures/graphql/on_demand_scans/graphql/on_demand_scans.query.graphql.without_pipelines.json';
 import { stubComponent } from 'helpers/stub_component';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
 import EmptyState from 'ee/on_demand_scans/components/empty_state.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -13,6 +14,7 @@ import { createRouter } from 'ee/on_demand_scans/router';
 import waitForPromises from 'helpers/wait_for_promises';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 jest.mock('~/lib/utils/common_utils');
 
@@ -44,25 +46,52 @@ describe('BaseTab', () => {
     return wrapper.vm.$nextTick();
   };
 
-  const createComponent = (propsData) => {
+  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
     router = createRouter();
-    wrapper = shallowMountExtended(BaseTab, {
-      localVue,
-      apolloProvider: createMockApolloProvider(),
-      router,
-      propsData: {
-        title: 'All',
-        query: onDemandScansQuery,
-        itemsCount: 0,
-        fields: [{ name: 'ID', key: 'id' }],
-        ...propsData,
-      },
-      provide: {
-        projectPath,
-      },
-      stubs: {
-        GlTab: stubComponent(GlTab, {
-          template: `
+    wrapper = mountFn(
+      BaseTab,
+      merge(
+        {
+          localVue,
+          apolloProvider: createMockApolloProvider(),
+          router,
+          propsData: {
+            title: 'All',
+            query: onDemandScansQuery,
+            itemsCount: 0,
+            fields: [
+              {
+                label: 'Status',
+                key: 'detailedStatus',
+              },
+              {
+                label: 'Name',
+                key: 'dastProfile.name',
+              },
+              {
+                label: 'OnDemandScans|Scan type',
+                key: 'scanType',
+              },
+              {
+                label: 'OnDemandScans|Target',
+                key: 'dastProfile.dastSiteProfile.targetUrl',
+              },
+              {
+                label: 'Start date',
+                key: 'createdAt',
+              },
+              {
+                label: 'Pipeline',
+                key: 'id',
+              },
+            ],
+          },
+          provide: {
+            projectPath,
+          },
+          stubs: {
+            GlTab: stubComponent(GlTab, {
+              template: `
             <div>
               <span data-testid="tab-title">
                 <slot name="title" />
@@ -70,13 +99,19 @@ describe('BaseTab', () => {
               <slot />
             </div>
           `,
-        }),
-        GlTable: stubComponent(GlTable, {
-          props: ['items', 'busy'],
-        }),
-      },
-    });
+            }),
+            GlTable: stubComponent(GlTable, {
+              props: ['items', 'busy'],
+            }),
+          },
+        },
+        options,
+      ),
+    );
   };
+
+  const createComponent = createComponentFactory();
+  const createFullComponent = createComponentFactory(mountExtended);
 
   beforeEach(() => {
     requestHandler = jest.fn().mockResolvedValue(allPipelinesWithPipelinesMock);
@@ -127,11 +162,13 @@ describe('BaseTab', () => {
   describe('when there are pipelines', () => {
     beforeEach(() => {
       createComponent({
-        itemsCount: 30,
+        propsData: {
+          itemsCount: 30,
+        },
       });
     });
 
-    it('renders the title with the item count', () => {
+    it('renders the title with the item count', async () => {
       expect(findTitle().text()).toMatchInterpolatedText('All 30');
     });
 
@@ -168,6 +205,66 @@ describe('BaseTab', () => {
       expect(Object.keys(router.currentRoute.query)).not.toContain('after');
       expect(Object.keys(router.currentRoute.query)).toContain('before');
       expect(requestHandler).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('rendered cells', () => {
+    const [firstPipeline] = allPipelinesWithPipelinesMock.data.project.pipelines.nodes;
+
+    const findFirstRow = () => wrapper.find('tbody > tr');
+    const findCellAt = (index) => findFirstRow().findAll('td').at(index);
+
+    beforeEach(() => {
+      createFullComponent({
+        propsData: {
+          itemsCount: 30,
+        },
+        stubs: {
+          GlTable: false,
+        },
+      });
+    });
+
+    it('renders the status badge', () => {
+      const statusCell = findCellAt(0);
+
+      expect(statusCell.text()).toBe(firstPipeline.detailedStatus.text);
+    });
+
+    it('renders the name with GlTruncate', () => {
+      const nameCell = findCellAt(1);
+      const truncateContainer = nameCell.find('[data-testid="truncate-end-container"]');
+
+      expect(truncateContainer.exists()).toBe(true);
+      expect(truncateContainer.text()).toBe(firstPipeline.dastProfile.name);
+    });
+
+    it('renders the scan type', () => {
+      const scanTypeCell = findCellAt(2);
+
+      expect(scanTypeCell.text()).toBe('DAST');
+    });
+
+    it('renders the target URL with GlTruncate', () => {
+      const targetUrlCell = findCellAt(3);
+      const truncateContainer = targetUrlCell.find('[data-testid="truncate-end-container"]');
+
+      expect(truncateContainer.exists()).toBe(true);
+      expect(truncateContainer.text()).toBe(firstPipeline.dastProfile.dastSiteProfile.targetUrl);
+    });
+
+    it('renders the start date as a timeElement', () => {
+      const startDateCell = findCellAt(4);
+      const timeElement = startDateCell.find('time');
+
+      expect(timeElement.exists()).toBe(true);
+      expect(timeElement.attributes('datetime')).toBe(firstPipeline.createdAt);
+    });
+
+    it('renders the pipeline ID', () => {
+      const pipelineIdCell = findCellAt(5);
+
+      expect(pipelineIdCell.text()).toBe(`#${getIdFromGraphQLId(firstPipeline.id)}`);
     });
   });
 
