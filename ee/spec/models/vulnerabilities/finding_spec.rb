@@ -363,6 +363,30 @@ RSpec.describe Vulnerabilities::Finding do
       end
     end
 
+    describe '.by_location_cluster' do
+      let_it_be(:vulnerability) { create(:vulnerability, report_type: 'cluster_image_scanning') }
+      let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: vulnerability) }
+      let_it_be(:cluster_ids) { [finding.location['cluster_id']] }
+
+      before do
+        finding_with_different_cluster_id = create(
+          :vulnerabilities_finding,
+          :with_cluster_image_scanning_scanning_metadata,
+          vulnerability: create(:vulnerability, report_type: 'cluster_image_scanning')
+        )
+        finding_with_different_cluster_id.location['cluster_id'] = '2'
+        finding_with_different_cluster_id.save!
+
+        create(:vulnerabilities_finding, report_type: :dast)
+      end
+
+      subject(:cluster_findings) { described_class.by_location_cluster(cluster_ids) }
+
+      it 'returns findings with given cluster_id' do
+        expect(cluster_findings).to contain_exactly(finding)
+      end
+    end
+
     describe '#false_positive?' do
       let_it_be(:finding) { create(:vulnerabilities_finding) }
       let_it_be(:finding_with_fp) { create(:vulnerabilities_finding, vulnerability_flags: [create(:vulnerabilities_flag)]) }

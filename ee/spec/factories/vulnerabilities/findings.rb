@@ -532,7 +532,8 @@ FactoryBot.define do
             "version": "2.24-11+deb9u3"
           },
           "operating_system": "alpine 3.7",
-          "image": "alpine:3.7"
+          "image": "alpine:3.7",
+          "cluster_id": "1"
         }
         finding.raw_metadata = {
           "category": "cluster_image_scanning",
@@ -551,7 +552,8 @@ FactoryBot.define do
               "version": "2.24-11+deb9u3"
             },
             "operating_system": "alpine 3.7",
-            "image": "alpine:3.7"
+            "image": "alpine:3.7",
+            "cluster_id": "1"
           },
           "identifiers": [{
             "type": "cve",
