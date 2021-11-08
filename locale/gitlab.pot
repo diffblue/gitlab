@@ -7336,6 +7336,9 @@ msgstr ""
 msgid "ClusterAgents|Configuration"
 msgstr ""
 
+msgid "ClusterAgents|Connect with a GitLab Agent"
+msgstr ""
+
 msgid "ClusterAgents|Connected"
 msgstr ""
 
@@ -7366,16 +7369,13 @@ msgstr ""
 msgid "ClusterAgents|Go to the repository"
 msgstr ""
 
+msgid "ClusterAgents|If you are setting up multiple clusters and are using Auto DevOps, %{linkStart}read about using multiple Kubernetes clusters first.%{linkEnd}"
+msgstr ""
+
 msgid "ClusterAgents|Install a new GitLab Agent"
 msgstr ""
 
 msgid "ClusterAgents|Install new Agent"
-msgstr ""
-
-msgid "ClusterAgents|Integrate Kubernetes with a GitLab Agent"
-msgstr ""
-
-msgid "ClusterAgents|Integrate with the GitLab Agent"
 msgstr ""
 
 msgid "ClusterAgents|Last connected %{timeAgo}."
@@ -7385,6 +7385,9 @@ msgid "ClusterAgents|Last contact"
 msgstr ""
 
 msgid "ClusterAgents|Learn how to create an agent access token"
+msgstr ""
+
+msgid "ClusterAgents|Learn more about the GitLab Kubernetes Agent."
 msgstr ""
 
 msgid "ClusterAgents|Make sure you are using a valid token."
@@ -7429,12 +7432,6 @@ msgstr ""
 msgid "ClusterAgents|The Agent has not been connected in a long time. There might be a connectivity issue. Last contact was %{timeAgo}."
 msgstr ""
 
-msgid "ClusterAgents|The GitLab Agent also requires %{linkStart}enabling the Agent Server%{linkEnd}"
-msgstr ""
-
-msgid "ClusterAgents|The GitLab Kubernetes Agent allows an Infrastructure as Code, GitOps approach to integrating Kubernetes clusters with GitLab. %{linkStart}Learn more.%{linkEnd}"
-msgstr ""
-
 msgid "ClusterAgents|The recommended installation method provided below includes the token. If you want to follow the alternative installation method provided in the docs make sure you save the token value before you close the window."
 msgstr ""
 
@@ -7451,6 +7448,9 @@ msgid "ClusterAgents|To install an Agent you should create an agent directory in
 msgstr ""
 
 msgid "ClusterAgents|Unknown user"
+msgstr ""
+
+msgid "ClusterAgents|Use GitLab Agents to more securely integrate with your clusters to deploy your applications, run your pipelines, use review apps and much more."
 msgstr ""
 
 msgid "ClusterAgents|You will need to create a token to connect to your agent"
@@ -7604,6 +7604,9 @@ msgid "ClusterIntegration|Connect cluster with certificate"
 msgstr ""
 
 msgid "ClusterIntegration|Connect existing cluster"
+msgstr ""
+
+msgid "ClusterIntegration|Connect with a certificate"
 msgstr ""
 
 msgid "ClusterIntegration|Connection Error"
@@ -7768,6 +7771,9 @@ msgstr ""
 msgid "ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{help_link_start}read this first%{help_link_end}."
 msgstr ""
 
+msgid "ClusterIntegration|If you are setting up multiple clusters and are using Auto DevOps, %{linkStart}read about using multiple Kubernetes clusters first.%{linkEnd}"
+msgstr ""
+
 msgid "ClusterIntegration|If you do not wish to delete all associated GitLab resources, you can simply remove the integration."
 msgstr ""
 
@@ -7778,12 +7784,6 @@ msgid "ClusterIntegration|Instance cluster"
 msgstr ""
 
 msgid "ClusterIntegration|Instance type"
-msgstr ""
-
-msgid "ClusterIntegration|Integrate Kubernetes with a cluster certificate"
-msgstr ""
-
-msgid "ClusterIntegration|Integrate with a cluster certificate"
 msgstr ""
 
 msgid "ClusterIntegration|Integration disabled"
@@ -7807,9 +7807,6 @@ msgstr ""
 msgid "ClusterIntegration|Kubernetes cluster was successfully created."
 msgstr ""
 
-msgid "ClusterIntegration|Kubernetes clusters allow you to use review apps, deploy your applications, run your pipelines, and much more in an easy way."
-msgstr ""
-
 msgid "ClusterIntegration|Kubernetes version"
 msgstr ""
 
@@ -7829,6 +7826,9 @@ msgid "ClusterIntegration|Learn more about group Kubernetes clusters"
 msgstr ""
 
 msgid "ClusterIntegration|Learn more about instance Kubernetes clusters"
+msgstr ""
+
+msgid "ClusterIntegration|Learn more about the GitLab managed clusters"
 msgstr ""
 
 msgid "ClusterIntegration|Loading IAM Roles"
@@ -8162,6 +8162,9 @@ msgid "ClusterIntegration|Unable to Connect"
 msgstr ""
 
 msgid "ClusterIntegration|Unknown Error"
+msgstr ""
+
+msgid "ClusterIntegration|Use certificates to integrate with your clusters to deploy your applications, run your pipelines, use review apps and much more in an easy way."
 msgstr ""
 
 msgid "ClusterIntegration|Uses the Cloud Run, Istio, and HTTP Load Balancing addons for this cluster."
