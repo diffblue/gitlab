@@ -32,8 +32,10 @@ export default {
     fullPath() {
       return this.group.importTarget.targetNamespace.fullPath || s__('BulkImport|No parent');
     },
-    invalidNameValidationMessage() {
-      return getInvalidNameValidationMessage(this.group.importTarget);
+    validationMessage() {
+      return (
+        this.group.progress?.message || getInvalidNameValidationMessage(this.group.importTarget)
+      );
     },
   },
 };
@@ -93,10 +95,11 @@ export default {
         @input="$emit('update-new-name', $event)"
       />
       <p
-        v-if="group.flags.isAvailableForImport && group.flags.isInvalid"
+        v-if="group.flags.isAvailableForImport && (group.flags.isInvalid || validationMessage)"
         class="gl-text-red-500 gl-m-0 gl-mt-2"
+        role="alert"
       >
-        {{ invalidNameValidationMessage }}
+        {{ validationMessage }}
       </p>
     </div>
   </div>
