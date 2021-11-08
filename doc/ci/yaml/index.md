@@ -3974,6 +3974,19 @@ job:
 
 The release name. If omitted, it is populated with the value of `release: tag_name`.
 
+**Keyword type**: Job keyword. You can use it only as part of a job.
+
+**Possible inputs**: A text string.
+
+**Example of `release:name`**:
+
+```yaml
+  release_job:
+    stage: release
+    release:
+      name: 'Release $CI_COMMIT_TAG'
+```
+
 #### `release:description`
 
 The long description of the release.
