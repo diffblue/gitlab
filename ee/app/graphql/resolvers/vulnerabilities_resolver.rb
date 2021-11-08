@@ -50,6 +50,12 @@ module Resolvers
                           "the response only matches entries for a `reportType` "\
                           "that includes #{::Vulnerabilities::Finding::REPORT_TYPES_WITH_LOCATION_IMAGE.map { |type| "`#{type}`" }.join(', ')}."
 
+    argument :cluster_id, [::Types::GlobalIDType[::Clusters::Cluster]],
+             prepare: ->(ids, _) { ids.map(&:model_id) },
+             required: false,
+             description: "Filter vulnerabilities by `cluster_id`. Vulnerabilities with a `reportType` "\
+                          "of `cluster_image_scanning` are only included with this filter."
+
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
 

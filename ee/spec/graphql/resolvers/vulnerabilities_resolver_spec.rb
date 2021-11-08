@@ -210,5 +210,25 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
         end
       end
     end
+
+    context 'when cluster_id is given' do
+      let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
+      let_it_be(:cluster_finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+      let_it_be(:cluster_gid) { ::Gitlab::GlobalId.as_global_id(cluster_finding.location['cluster_id'].to_i, model_name: 'Clusters::Cluster') }
+
+      let(:params) { { cluster_id: [cluster_gid] } }
+
+      it 'only returns vulnerabilities with given cluster' do
+        is_expected.to contain_exactly(cluster_vulnerability)
+      end
+
+      context 'when different report_type is given along with cluster' do
+        let(:params) { { report_type: %w[sast], cluster_id: [cluster_gid] } }
+
+        it 'returns empty list' do
+          is_expected.to be_empty
+        end
+      end
+    end
   end
 end

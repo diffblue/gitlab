@@ -199,4 +199,23 @@ RSpec.describe Security::VulnerabilitiesFinder do
       end
     end
   end
+
+  context 'when filtered by cluster_id' do
+    let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, vulnerability: cluster_vulnerability) }
+
+    let(:filters) { { cluster_id: [finding.location['cluster_id']] } }
+
+    it 'only returns vulnerabilities matching the given cluster_id' do
+      is_expected.to contain_exactly(cluster_vulnerability)
+    end
+
+    context 'when different report_type is passed' do
+      let(:filters) { { report_type: %w[dast], cluster_id: [finding.location['cluster_id']] }}
+
+      it 'returns empty list' do
+        is_expected.to be_empty
+      end
+    end
+  end
 end

@@ -99,6 +99,10 @@ module Vulnerabilities
       where(report_type: REPORT_TYPES_WITH_LOCATION_IMAGE)
         .where("vulnerability_occurrences.location -> 'image' ?| array[:images]", images: images)
     end
+    scope :by_location_cluster, -> (cluster_ids) do
+      where(report_type: 'cluster_image_scanning')
+        .where("vulnerability_occurrences.location -> 'cluster_id' ?| array[:cluster_ids]", cluster_ids: cluster_ids)
+    end
 
     def self.counted_by_severity
       group(:severity).count.transform_keys do |severity|

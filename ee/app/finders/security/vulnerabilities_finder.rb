@@ -37,6 +37,7 @@ module Security
       filter_by_scanner_ids
       filter_by_resolution
       filter_by_issues
+      filter_by_cluster_id
 
       sort(vulnerabilities)
     end
@@ -99,6 +100,12 @@ module Security
 
       if params[:image].present? && Feature.enabled?(:vulnerability_location_image_filter, vulnerable, default_enabled: :yaml)
         @vulnerabilities = vulnerabilities.with_container_image(params[:image])
+      end
+    end
+
+    def filter_by_cluster_id
+      if params[:cluster_id].present?
+        @vulnerabilities = vulnerabilities.with_cluster_ids(params[:cluster_id])
       end
     end
 
