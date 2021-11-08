@@ -40,4 +40,19 @@ RSpec.describe 'projects/edit' do
       end
     end
   end
+
+  context 'repository size limit' do
+    context 'feature is disabled' do
+      before do
+        stub_licensed_features(repository_size_limit: false)
+
+        render
+      end
+
+      it('renders registration features prompt') do
+        expect(rendered).to render_template('shared/_registration_features_discovery_message')
+        expect(rendered).to have_field('project_disabled_repository_size_limit', disabled: true)
+      end
+    end
+  end
 end

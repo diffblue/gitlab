@@ -32674,6 +32674,9 @@ msgstr ""
 msgid "Similar issues"
 msgstr ""
 
+msgid "Simply %{linkStart}enable Service Ping and select Registration Features%{linkEnd} in your admin settings."
+msgstr ""
+
 msgid "Simulate a pipeline created for the default branch"
 msgstr ""
 
@@ -39218,6 +39221,9 @@ msgid "Waiting for performance data"
 msgstr ""
 
 msgid "Want to see the data? Please ask an administrator for access."
+msgstr ""
+
+msgid "Want to use this feature for free? The %{linkStart}Registration Features Program%{linkEnd} does just that."
 msgstr ""
 
 msgid "Warning"
