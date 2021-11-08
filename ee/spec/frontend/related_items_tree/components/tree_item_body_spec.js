@@ -83,6 +83,8 @@ describe('RelatedItemsTree', () => {
     const findCountBadge = () => wrapper.find({ ref: 'countBadge' });
     const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
     const findEpicHealthStatus = () => wrapper.find('[data-testid="epic-health-status"]');
+    const findIssueIcon = () => wrapper.find({ ref: 'stateIconMd' });
+    const findLink = () => wrapper.findComponent(GlLink);
     const enableHealthStatus = () => {
       wrapper.vm.$store.commit('SET_INITIAL_CONFIG', {
         ...mockInitialConfig,
@@ -137,7 +139,19 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.isOpen).toBe(true);
+            expect(findIssueIcon().attributes('name')).toBe('issues');
+          });
+        });
+      });
+
+      describe('isBlocked', () => {
+        it('returns true when `item.blocked` value is `true`', () => {
+          wrapper.setProps({
+            item: { ...mockItem, blocked: true },
+          });
+
+          return wrapper.vm.$nextTick(() => {
+            expect(findIssueIcon().attributes('name')).toBe('issue-block');
           });
         });
       });
@@ -149,7 +163,7 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.isClosed).toBe(true);
+            expect(findIssueIcon().attributes('name')).toBe('issue-closed');
           });
         });
       });
@@ -173,7 +187,7 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateText).toBe('Opened');
+            expect(findIssueIcon().props('ariaLabel')).toBe('Opened');
           });
         });
 
@@ -183,7 +197,7 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateText).toBe('Closed');
+            expect(findIssueIcon().props('ariaLabel')).toBe('Closed');
           });
         });
       });
@@ -195,7 +209,19 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateIconClass).toBe('issue-token-state-icon-open gl-text-green-500');
+            expect(findIssueIcon().attributes('class')).toContain(
+              'issue-token-state-icon-open gl-text-green-500',
+            );
+          });
+        });
+
+        it('return string `gl-text-red-500` when `item.blocked` value is `true`', () => {
+          wrapper.setProps({
+            item: { ...mockItem, blocked: true },
+          });
+
+          return wrapper.vm.$nextTick(() => {
+            expect(findIssueIcon().attributes('class')).toContain('gl-text-red-500');
           });
         });
 
@@ -205,28 +231,23 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.stateIconClass).toBe(
+            expect(findIssueIcon().attributes('class')).toContain(
               'issue-token-state-icon-closed gl-text-blue-500',
             );
           });
         });
       });
 
-      describe('itemId', () => {
-        it('returns string containing item id', () => {
-          expect(wrapper.vm.itemId).toBe('8');
-        });
-      });
-
-      describe('itemPath', () => {
-        it('returns string containing item path', () => {
-          expect(wrapper.vm.itemPath).toBe('gitlab-org/gitlab-shell');
+      describe('itemHierarchy', () => {
+        it('returns string containing item id and item path', () => {
+          const stateTooltip = wrapper.findAll(StateTooltip).at(0);
+          expect(stateTooltip.props('path')).toBe('gitlab-org/gitlab-shell#8');
         });
       });
 
       describe('computedPath', () => {
         it('returns value of `itemWebPath` when it is defined', () => {
-          expect(wrapper.vm.computedPath).toBe(mockItem.webPath);
+          expect(findLink().attributes('href')).toBe(mockItem.webPath);
         });
 
         it('returns `null` when `itemWebPath` is empty', () => {
@@ -235,7 +256,7 @@ describe('RelatedItemsTree', () => {
           });
 
           return wrapper.vm.$nextTick(() => {
-            expect(wrapper.vm.computedPath).toBeNull();
+            expect(findLink().attributes('href')).toBeUndefined();
           });
         });
       });
@@ -276,7 +297,7 @@ describe('RelatedItemsTree', () => {
 
             await wrapper.vm.$nextTick();
 
-            expect(wrapper.vm.stateIconName).toBe(stateIconName);
+            expect(findIssueIcon().props('name')).toBe(stateIconName);
           });
         });
       });
@@ -336,10 +357,8 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item link', () => {
-        const link = wrapper.findComponent(GlLink);
-
-        expect(link.attributes('href')).toBe(mockItem.webPath);
-        expect(link.text()).toBe(mockItem.title);
+        expect(findLink().attributes('href')).toBe(mockItem.webPath);
+        expect(findLink().text()).toBe(mockItem.title);
       });
 
       it('renders item state tooltip for medium and small screens', () => {

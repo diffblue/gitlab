@@ -66,6 +66,9 @@ export default {
     isOpen() {
       return this.item.state === ChildState.Open;
     },
+    isBlocked() {
+      return this.item.blocked;
+    },
     isClosed() {
       return this.item.state === ChildState.Closed;
     },
@@ -85,9 +88,15 @@ export default {
       if (this.item.type === ChildType.Epic) {
         return this.isOpen ? 'epic' : 'epic-closed';
       }
+      if (this.isBlocked && this.isOpen) {
+        return 'issue-block';
+      }
       return this.isOpen ? 'issues' : 'issue-closed';
     },
     stateIconClass() {
+      if (this.isBlocked && this.isOpen) {
+        return 'gl-text-red-500';
+      }
       return this.isOpen
         ? 'issue-token-state-icon-open gl-text-green-500'
         : 'issue-token-state-icon-closed gl-text-blue-500';
