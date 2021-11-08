@@ -28215,6 +28215,9 @@ msgstr ""
 msgid "PushoverService|Total commits count: %{total_commits_count}"
 msgstr ""
 
+msgid "QualitySummary|Project quality"
+msgstr ""
+
 msgid "Quarters"
 msgstr ""
 

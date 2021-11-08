@@ -177,6 +177,7 @@ class License < ApplicationRecord
     kubernetes_cluster_vulnerabilities
     license_scanning
     personal_access_token_expiration_policy
+    project_quality_summary
     prometheus_alerts
     pseudonymizer
     quality_management

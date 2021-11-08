@@ -12,5 +12,11 @@ module EE
 
       can?(current_user, :read_dora4_analytics, container)
     end
+
+    override :should_render_quality_summary
+    def should_render_quality_summary
+      @project.feature_available?(:project_quality_summary) &&
+        ::Feature.enabled?(:project_quality_summary_page, @project, default_enabled: :yaml)
+    end
   end
 end
