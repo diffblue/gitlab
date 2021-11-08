@@ -452,6 +452,76 @@ RSpec.describe 'Edit group settings' do
         expect(page).not_to have_content("Group 'Foo bar' was successfully updated.")
       end
     end
+
+    describe 'form submit button', :js do
+      let_it_be(:pending_user) { create(:user) }
+
+      def fill_in_new_user_signups_cap(new_user_signups_cap_value)
+        page.within('#js-permissions-settings') do
+          fill_in 'group[new_user_signups_cap]', with: new_user_signups_cap_value
+          click_button 'Save changes'
+        end
+      end
+
+      shared_examples 'successful form submit' do
+        it 'shows form submit successful message' do
+          fill_in_new_user_signups_cap(new_user_signups_cap_value)
+
+          expect(page).to have_content("Group 'Foo bar' was successfully updated.")
+        end
+      end
+
+      shared_examples 'confirmation modal before submit' do
+        it 'shows #confirm-general-permissions-changes modal' do
+          fill_in_new_user_signups_cap(new_user_signups_cap_value)
+
+          expect(page).to have_selector('#confirm-general-permissions-changes')
+          expect(page).to have_css('#confirm-general-permissions-changes .modal-body', text: 'By making this change, you will automatically approve all users in pending approval status.')
+        end
+      end
+
+      before_all do
+        stub_feature_flags(saas_user_caps: true)
+        group.namespace_settings.update!(new_user_signups_cap: group.group_members.count)
+      end
+
+      before do
+        visit edit_group_path(group, anchor: 'js-permissions-settings')
+      end
+
+      context 'should show confirmation modal' do
+        context 'if user cap increases' do
+          it_behaves_like 'confirmation modal before submit' do
+            let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
+          end
+        end
+
+        context 'if user cap changes from limited to unlimited' do
+          it_behaves_like 'confirmation modal before submit' do
+            let(:new_user_signups_cap_value) { nil }
+          end
+        end
+      end
+
+      context 'should not show confirmation modal' do
+        context 'if user cap decreases' do
+          it_behaves_like 'successful form submit' do
+            let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap - 1 }
+          end
+        end
+
+        context 'if user cap changes from unlimited to limited' do
+          before do
+            group.namespace_settings.update!(new_user_signups_cap: nil)
+            visit edit_group_path(group, anchor: 'js-permissions-settings')
+          end
+
+          it_behaves_like 'successful form submit' do
+            let(:new_user_signups_cap_value) { 1 }
+          end
+        end
+      end
+    end
   end
 
   def save_permissions_group
