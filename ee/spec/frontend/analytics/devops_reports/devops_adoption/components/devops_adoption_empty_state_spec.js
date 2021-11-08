@@ -1,10 +1,10 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import DevopsAdoptionEmptyState from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_empty_state.vue';
+import DevopsAdoptionEmptyState from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_empty_state.vue';
 import {
   I18N_EMPTY_STATE_TITLE,
   I18N_EMPTY_STATE_DESCRIPTION,
-} from 'ee/analytics/devops_report/devops_adoption/constants';
+} from 'ee/analytics/devops_reports/devops_adoption/constants';
 
 const emptyStateSvgPath = 'illustrations/monitoring/getting_started.svg';
 

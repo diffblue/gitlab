@@ -2,7 +2,7 @@
 import { GlAlert, GlTabs, GlTab } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import dateformat from 'dateformat';
-import DevopsScore from '~/analytics/devops_report/components/devops_score.vue';
+import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import {

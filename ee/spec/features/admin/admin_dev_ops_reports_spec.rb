@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'DevOps Report page', :js do
+RSpec.describe 'DevOps Reports page', :js do
   tabs_selector = '.gl-tabs-nav'
   tab_item_selector = '.nav-item'
   active_tab_selector = '.nav-link.active'
@@ -107,13 +107,13 @@ RSpec.describe 'DevOps Report page', :js do
       it 'has dismissable intro callout' do
         visit admin_dev_ops_report_path(tab: 'devops-score')
 
-        expect(page).to have_content 'Introducing Your DevOps Report'
+        expect(page).to have_content 'Introducing Your DevOps Reports'
 
         page.within(find('[data-testid="devops-score-container"]')) do
           find('[data-testid="close-icon"]').click
         end
 
-        expect(page).not_to have_content 'Introducing Your DevOps Report'
+        expect(page).not_to have_content 'Introducing Your DevOps Reports'
       end
 
       context 'when usage ping is disabled' do
@@ -130,7 +130,7 @@ RSpec.describe 'DevOps Report page', :js do
         it 'hides the intro callout' do
           visit admin_dev_ops_report_path(tab: 'devops-score')
 
-          expect(page).not_to have_content 'Introducing Your DevOps Report'
+          expect(page).not_to have_content 'Introducing Your DevOps Reports'
         end
       end
 

@@ -1,11 +1,11 @@
 import { GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 import { getByText } from '@testing-library/dom';
 import { shallowMount } from '@vue/test-utils';
-import DevopsAdoptionAddDropdown from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_add_dropdown.vue';
-import DevopsAdoptionEmptyState from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_empty_state.vue';
-import DevopsAdoptionSection from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_section.vue';
-import DevopsAdoptionTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table.vue';
-import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
+import DevopsAdoptionEmptyState from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_empty_state.vue';
+import DevopsAdoptionSection from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_section.vue';
+import DevopsAdoptionTable from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_table.vue';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_reports/devops_adoption/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { devopsAdoptionNamespaceData, groupNodes } from '../mock_data';
 

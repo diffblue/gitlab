@@ -2,8 +2,8 @@ import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import DevopsAdoptionOverviewChart from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_chart.vue';
-import getSnapshotsQuery from 'ee/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql';
+import DevopsAdoptionOverviewChart from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_chart.vue';
+import getSnapshotsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { namespaceWithSnapotsData } from '../mock_data';
 

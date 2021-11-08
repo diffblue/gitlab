@@ -2,8 +2,8 @@ import {
   shouldPollTableData,
   getAdoptedCountsByCols,
   getGroupAdoptionPath,
-} from 'ee/analytics/devops_report/devops_adoption/utils/helpers';
-import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+} from 'ee/analytics/devops_reports/devops_adoption/utils/helpers';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_reports/devops_adoption/constants';
 import { devopsAdoptionNamespaceData, namespaceWithSnapotsData } from '../mock_data';
 
 describe('shouldPollTableData', () => {

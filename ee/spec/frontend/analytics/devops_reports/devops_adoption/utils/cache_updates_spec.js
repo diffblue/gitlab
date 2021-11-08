@@ -1,7 +1,7 @@
 import {
   deleteEnabledNamespacesFromCache,
   addEnabledNamespacesToCache,
-} from 'ee/analytics/devops_report/devops_adoption/utils/cache_updates';
+} from 'ee/analytics/devops_reports/devops_adoption/utils/cache_updates';
 import { devopsAdoptionNamespaceData } from '../mock_data';
 
 describe('addEnabledNamespacesToCache', () => {

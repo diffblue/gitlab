@@ -1,3 +1,3 @@
-import initDevopsAdoptionApp from 'ee/analytics/devops_report/devops_adoption';
+import initDevopsAdoptionApp from 'ee/analytics/devops_reports/devops_adoption';
 
 initDevopsAdoptionApp();

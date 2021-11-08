@@ -1,6 +1,6 @@
-import devopsAdoptionOverviewChartJson from 'test_fixtures/graphql/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql.json';
-import devopsAdoptionEnabledNamespacesJson from 'test_fixtures/graphql/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql.json';
-import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+import devopsAdoptionOverviewChartJson from 'test_fixtures/graphql/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql.json';
+import devopsAdoptionEnabledNamespacesJson from 'test_fixtures/graphql/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql.json';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_reports/devops_adoption/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 export const namespaceWithSnapotsData = devopsAdoptionOverviewChartJson;
