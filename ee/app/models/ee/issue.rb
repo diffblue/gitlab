@@ -167,6 +167,13 @@ module EE
       !!promoted_to_epic_id
     end
 
+    override :clear_closure_reason_references
+    def clear_closure_reason_references
+      super
+
+      self.promoted_to_epic_id = nil
+    end
+
     class_methods do
       extend ::Gitlab::Utils::Override
 
