@@ -1097,7 +1097,7 @@ describe('ee merge request widget options', () => {
       nextTick(() => {
         const tooltip = wrapper.find('[data-testid="question-o-icon"]');
 
-        expect(wrapper.text()).toContain('The source branch will be deleted');
+        expect(wrapper.text()).toContain('Deletes the source branch');
         expect(tooltip.attributes('title')).toBe(
           'A user with write access to the source branch selected this option',
         );
