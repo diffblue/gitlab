@@ -1107,9 +1107,6 @@ msgstr ""
 msgid "(check progress)"
 msgstr ""
 
-msgid "(commits will be squashed)"
-msgstr ""
-
 msgid "(deleted)"
 msgstr ""
 
@@ -1127,6 +1124,11 @@ msgstr ""
 
 msgid "(revoked)"
 msgstr ""
+
+msgid "(squashes %d commit)"
+msgid_plural "(squashes %d commits)"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "(this user)"
 msgstr ""
@@ -11176,6 +11178,12 @@ msgstr ""
 msgid "Deleted projects cannot be restored!"
 msgstr ""
 
+msgid "Deletes the source branch"
+msgstr ""
+
+msgid "Deletes the source branch."
+msgstr ""
+
 msgid "Deleting"
 msgstr ""
 
@@ -12224,6 +12232,9 @@ msgid "Documents reindexed: %{processed_documents} (%{percentage}%%)"
 msgstr ""
 
 msgid "Does not apply to projects in personal namespaces, which are deleted immediately on request."
+msgstr ""
+
+msgid "Does not delete the source branch."
 msgstr ""
 
 msgid "Domain"
@@ -32521,12 +32532,6 @@ msgstr ""
 msgid "Source branch"
 msgstr ""
 
-msgid "Source branch will be deleted."
-msgstr ""
-
-msgid "Source branch will not be deleted."
-msgstr ""
-
 msgid "Source branch: %{source_branch_open}%{source_branch}%{source_branch_close}"
 msgstr ""
 
@@ -34520,9 +34525,6 @@ msgid "The snippet is visible only to project members."
 msgstr ""
 
 msgid "The snippet is visible to any logged in user except external users."
-msgstr ""
-
-msgid "The source branch will be deleted"
 msgstr ""
 
 msgid "The specified tab is invalid, please select another"
@@ -41034,13 +41036,13 @@ msgstr ""
 msgid "most recent deployment"
 msgstr ""
 
-msgid "mrWidgetCommitsAdded|%{commitCount} and %{mergeCommitCount} will be added to %{targetBranch}%{squashedCommits}."
-msgstr ""
-
-msgid "mrWidgetCommitsAdded|%{commitCount} will be added to %{targetBranch}."
-msgstr ""
-
 msgid "mrWidgetCommitsAdded|1 merge commit"
+msgstr ""
+
+msgid "mrWidgetCommitsAdded|Adds %{commitCount} and %{mergeCommitCount} to %{targetBranch}%{squashedCommits}."
+msgstr ""
+
+msgid "mrWidgetCommitsAdded|Adds %{commitCount} to %{targetBranch}."
 msgstr ""
 
 msgid "mrWidgetNothingToMerge|This merge request contains no changes."
@@ -41150,6 +41152,9 @@ msgstr ""
 msgid "mrWidget|Delete source branch"
 msgstr ""
 
+msgid "mrWidget|Deletes the source branch"
+msgstr ""
+
 msgid "mrWidget|Deployment statistics are not available currently"
 msgstr ""
 
@@ -41157,6 +41162,9 @@ msgid "mrWidget|Did not close"
 msgstr ""
 
 msgid "mrWidget|Dismiss"
+msgstr ""
+
+msgid "mrWidget|Does not delete the source branch"
 msgstr ""
 
 msgid "mrWidget|Email patches"
@@ -41213,6 +41221,9 @@ msgid "mrWidget|Merge locally"
 msgstr ""
 
 msgid "mrWidget|Merged by"
+msgstr ""
+
+msgid "mrWidget|Merges changes into"
 msgstr ""
 
 msgid "mrWidget|Merging! Changes are being shipped…"
@@ -41299,9 +41310,6 @@ msgstr ""
 msgid "mrWidget|The changes were not merged into"
 msgstr ""
 
-msgid "mrWidget|The changes will be merged into"
-msgstr ""
-
 msgid "mrWidget|The pipeline for this merge request did not complete. Push a new commit to fix the failure, or check the %{linkStart}troubleshooting documentation%{linkEnd} to see other possible actions."
 msgstr ""
 
@@ -41315,12 +41323,6 @@ msgid "mrWidget|The source branch is %{link} the target branch"
 msgstr ""
 
 msgid "mrWidget|The source branch is being deleted"
-msgstr ""
-
-msgid "mrWidget|The source branch will be deleted"
-msgstr ""
-
-msgid "mrWidget|The source branch will not be deleted"
 msgstr ""
 
 msgid "mrWidget|There are merge conflicts"
