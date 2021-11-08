@@ -226,7 +226,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   it 'has plan specific messaging' do
                     allow(subscribable).to receive(:plan).and_return(plan)
 
-                    expect(subject).to include("Your #{plan.capitalize} subscription for No Limit Records will expire on 2020-03-09. After that, you will not be able to use merge approvals or epics as well as many security features.")
+                    expect(subject).to include("Your #{plan.capitalize} subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, epics, or many security features.")
                   end
                 end
 
@@ -236,14 +236,14 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   it 'has plan specific messaging' do
                     allow(subscribable).to receive(:plan).and_return('premium')
 
-                    expect(subject).to include('Your Premium subscription for No Limit Records will expire on 2020-03-09. After that, you will not be able to use merge approvals or epics as well as many other features.')
+                    expect(subject).to include("Your Premium subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, epics, or many other features.")
                   end
                 end
 
                 it 'has bronze plan specific messaging' do
                   allow(subscribable).to receive(:plan).and_return('bronze')
 
-                  expect(subject).to include('Your Bronze subscription for No Limit Records will expire on 2020-03-09. After that, you will not be able to use merge approvals or code quality as well as many other features.')
+                  expect(subject).to include("Your Bronze subscription for No Limit Records will expire on 2020-03-09. After it expires, you can't use merge approvals, code quality, or many other features.")
                 end
 
                 context 'is auto_renew nil' do
