@@ -7,6 +7,7 @@ import {
   GlKeysetPagination,
   GlAlert,
   GlSkeletonLoader,
+  GlTruncate,
 } from '@gitlab/ui';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
@@ -36,6 +37,7 @@ export default {
     GlKeysetPagination,
     GlAlert,
     GlSkeletonLoader,
+    GlTruncate,
     CiBadgeLink,
     TimeAgoTooltip,
     EmptyState,
@@ -122,9 +124,8 @@ export default {
       return this.pipelines?.pageInfo;
     },
     tableFields() {
-      return this.fields.map(({ key, label }) => ({
-        key,
-        label,
+      return this.fields.map((field) => ({
+        ...field,
         class: ['gl-text-black-normal'],
         thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
       }));
@@ -188,7 +189,12 @@ export default {
         :items="pipelineNodes"
         :busy="$apollo.queries.pipelines.loading"
         stacked="md"
+        fixed
       >
+        <template #table-colgroup="scope">
+          <col v-for="field in scope.fields" :key="field.key" :class="field.columnClass" />
+        </template>
+
         <template #table-busy>
           <gl-skeleton-loader v-for="i in 20" :key="i" :width="1000" :height="45">
             <rect width="85" height="20" x="0" y="5" rx="4" />
@@ -205,12 +211,30 @@ export default {
           </div>
         </template>
 
+        <!-- eslint-disable-next-line vue/valid-v-slot -->
+        <template #cell(dastProfile.name)="{ item }">
+          <gl-truncate v-if="item.dastProfile" :text="item.dastProfile.name" with-tooltip />
+        </template>
+
         <template #cell(scanType)>
           {{ $options.DAST_SHORT_NAME }}
         </template>
 
+        <!-- eslint-disable-next-line vue/valid-v-slot -->
+        <template #cell(dastProfile.dastSiteProfile.targetUrl)="{ item }">
+          <gl-truncate
+            v-if="item.dastProfile"
+            :text="item.dastProfile.dastSiteProfile.targetUrl"
+            with-tooltip
+          />
+        </template>
+
         <template #cell(createdAt)="{ item }">
-          <time-ago-tooltip v-if="item.createdAt" :time="item.createdAt" tooltip-placement="left" />
+          <time-ago-tooltip
+            v-if="item.createdAt"
+            class="gl-white-space-nowrap"
+            :time="item.createdAt"
+          />
         </template>
 
         <template #cell(id)="{ item }">
