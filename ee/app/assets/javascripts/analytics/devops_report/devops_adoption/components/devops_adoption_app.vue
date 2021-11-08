@@ -52,7 +52,6 @@ export default {
   data() {
     return {
       hasSubgroups: undefined,
-      isLoadingGroups: false,
       isLoadingEnableGroup: false,
       requestCount: 0,
       openModal: false,
@@ -68,6 +67,7 @@ export default {
       adoptionTabClicked: false,
       devopsScoreTabClicked: false,
       selectedTab: 0,
+      groupsSearchTerm: '',
     };
   },
   apollo: {
@@ -94,6 +94,25 @@ export default {
         this.handleError(I18N_ENABLED_NAMESPACE_QUERY_ERROR, error);
       },
     },
+    groups: {
+      query: getGroupsQuery,
+      context: {
+        isSingleRequest: true,
+      },
+      variables() {
+        return {
+          search: this.groupsSearchTerm,
+        };
+      },
+      result({ data }) {
+        if (this.hasSubgroups === undefined) {
+          this.hasSubgroups = data.groups?.nodes?.length > 0;
+        }
+      },
+      error(error) {
+        this.handleError(I18N_GROUPS_QUERY_ERROR, error);
+      },
+    },
   },
   computed: {
     isAdmin() {
@@ -116,7 +135,7 @@ export default {
     },
     isLoading() {
       return (
-        this.isLoadingGroups ||
+        this.$apollo.queries.groups.loading ||
         this.isLoadingEnableGroup ||
         this.$apollo.queries.devopsAdoptionEnabledNamespaces.loading
       );
@@ -142,7 +161,6 @@ export default {
     },
   },
   created() {
-    this.fetchGroups();
     this.selectTab();
     this.startPollingTableData();
   },
@@ -202,30 +220,8 @@ export default {
       this.errors.push(message);
       Sentry.captureException(error);
     },
-    fetchGroups(searchTerm = '') {
-      this.searchTerm = searchTerm;
-      this.isLoadingGroups = true;
-
-      this.$apollo
-        .query({
-          query: getGroupsQuery,
-          context: {
-            isSingleRequest: true,
-          },
-          variables: {
-            search: searchTerm,
-          },
-        })
-        .then(({ data }) => {
-          this.groups = data.groups;
-
-          if (this.hasSubgroups === undefined) {
-            this.hasSubgroups = this.groups?.nodes?.length > 0;
-          }
-
-          this.isLoadingGroups = false;
-        })
-        .catch((error) => this.handleError(I18N_GROUPS_QUERY_ERROR, error));
+    setGroupsSearchTerm(searchTerm = '') {
+      this.groupsSearchTerm = searchTerm;
     },
     addEnabledNamespacesToCache(enabledNamespaces) {
       const { cache } = this.$apollo.getClient();
@@ -310,12 +306,12 @@ export default {
           :has-group-data="hasGroupData"
           :cols="tab.cols"
           :enabled-namespaces="devopsAdoptionEnabledNamespaces"
-          :search-term="searchTerm"
+          :search-term="groupsSearchTerm"
           :groups="availableGroups"
-          :is-loading-groups="isLoadingGroups"
+          :is-loading-groups="$apollo.queries.groups.loading"
           :has-subgroups="hasSubgroups"
           @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
-          @fetchGroups="fetchGroups"
+          @fetchGroups="setGroupsSearchTerm"
           @enabledNamespacesAdded="addEnabledNamespacesToCache"
           @trackModalOpenState="trackModalOpenState"
         />
@@ -332,12 +328,12 @@ export default {
           align="right"
         >
           <devops-adoption-add-dropdown
-            :search-term="searchTerm"
+            :search-term="groupsSearchTerm"
             :groups="availableGroups"
             :enabled-namespaces="devopsAdoptionEnabledNamespaces"
-            :is-loading-groups="isLoadingGroups"
+            :is-loading-groups="$apollo.queries.groups.loading"
             :has-subgroups="hasSubgroups"
-            @fetchGroups="fetchGroups"
+            @fetchGroups="setGroupsSearchTerm"
             @enabledNamespacesAdded="addEnabledNamespacesToCache"
             @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
           />
