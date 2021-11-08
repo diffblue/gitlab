@@ -176,6 +176,29 @@ describe('DevopsAdoptionApp', () => {
         expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(NETWORK_ERROR);
       });
     });
+
+    describe('refetches data when groupsSearchTerm is updated', () => {
+      beforeEach(async () => {
+        groupsSpy = promiseFactory(STATE_WITH_DATA, RESOURCE_TYPE_GROUP);
+        const mockApollo = createMockApolloProvider({ groupsSpy });
+        wrapper = createComponent({ mockApollo });
+        await waitForPromises();
+      });
+
+      it.each`
+        name                           | component
+        ${'DevopsAdoptionSection'}     | ${DevopsAdoptionSection}
+        ${'DevopsAdoptionAddDropdown'} | ${DevopsAdoptionAddDropdown}
+      `('from $name', async ({ component }) => {
+        expect(groupsSpy).toHaveBeenCalledTimes(1);
+
+        wrapper.findComponent(component).vm.$emit('fetchGroups', 'group');
+
+        await waitForPromises();
+
+        expect(groupsSpy).toHaveBeenCalledTimes(2);
+      });
+    });
   });
 
   describe('enabled namespaces data', () => {
