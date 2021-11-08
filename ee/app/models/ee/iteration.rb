@@ -56,7 +56,6 @@ module EE
       before_destroy :check_if_can_be_destroyed
 
       scope :due_date_order_asc, -> { order(:due_date) }
-      scope :due_date_order_desc, -> { order(due_date: :desc) }
       scope :upcoming, -> { with_state(:upcoming) }
       scope :current, -> { with_state(:current) }
       scope :closed, -> { with_state(:closed) }
