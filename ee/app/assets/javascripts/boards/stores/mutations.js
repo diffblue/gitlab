@@ -105,6 +105,20 @@ export default {
     });
   },
 
+  [mutationTypes.RECEIVE_ITERATIONS_REQUEST](state) {
+    state.iterationsLoading = true;
+  },
+
+  [mutationTypes.RECEIVE_ITERATIONS_SUCCESS](state, iterations) {
+    state.iterations = iterations;
+    state.iterationsLoading = false;
+  },
+
+  [mutationTypes.RECEIVE_ITERATIONS_FAILURE](state) {
+    state.iterationsLoading = false;
+    state.error = __('Failed to load iterations.');
+  },
+
   [mutationTypes.REQUEST_MORE_EPICS]: (state) => {
     Vue.set(state, 'epicsSwimlanesFetchInProgress', {
       ...state.epicsSwimlanesFetchInProgress,
