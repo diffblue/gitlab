@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlLoadingIcon, GlTable } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import VulnerabilitiesOverTimeChart from 'ee/security_dashboard/components/shared/vulnerabilities_over_time_chart.vue';
@@ -19,8 +20,6 @@ describe('Vulnerabilities Over Time Chart Component', () => {
 
   const findTimeInfo = () => wrapper.findByTestId('timeInfo');
   const findChartButtons = () => wrapper.findComponent(ChartButtons);
-  const findSelectedChartButton = () => findChartButtons().find('.selected');
-  const find90DaysChartButton = () => findChartButtons().find('[data-days="90"]');
 
   const mockApollo = (options) => {
     return {
@@ -69,24 +68,24 @@ describe('Vulnerabilities Over Time Chart Component', () => {
   describe('date range selectors', () => {
     beforeEach(() => {
       wrapper = createComponent({
-        stubs: { ChartButtons },
         $apollo: { refetch: jest.fn() },
       });
     });
 
     it('should contain the chart buttons', () => {
-      expect(findChartButtons().text()).toContain('30 Days');
-      expect(findChartButtons().text()).toContain('60 Days');
-      expect(findChartButtons().text()).toContain('90 Days');
+      expect(findChartButtons().props('days')).toEqual([30, 60, 90]);
     });
 
-    it('should change the actively selected chart button and refetch the new data', () => {
-      expect(findSelectedChartButton().text()).toContain('30 Days');
-      find90DaysChartButton().vm.$emit('click');
-      return wrapper.vm.$nextTick(() => {
-        expect(findSelectedChartButton().text()).toContain('90 Days');
-        expect(wrapper.vm.$apollo.queries.vulnerabilitiesHistory.refetch).toHaveBeenCalledTimes(1);
-      });
+    it('should change the actively selected chart button and refetch the new data', async () => {
+      const chartButtons = findChartButtons();
+
+      expect(chartButtons.props('activeDay')).toBe(30);
+      chartButtons.vm.$emit('days-selected', 90);
+
+      await nextTick();
+
+      expect(chartButtons.props('activeDay')).toBe(90);
+      expect(wrapper.vm.$apollo.queries.vulnerabilitiesHistory.refetch).toHaveBeenCalledTimes(1);
     });
   });
 
