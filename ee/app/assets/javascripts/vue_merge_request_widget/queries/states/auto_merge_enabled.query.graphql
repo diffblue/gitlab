@@ -1,6 +1,6 @@
 #import "~/vue_merge_request_widget/queries/states/auto_merge_enabled.fragment.graphql"
 
-query autoMergeEnabledQuery($projectPath: ID!, $iid: String!) {
+query autoMergeEnabledEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     mergeRequest(iid: $iid) {
       ...autoMergeEnabled

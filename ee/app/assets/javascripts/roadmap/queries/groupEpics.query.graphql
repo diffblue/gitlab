@@ -1,7 +1,7 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "./epic.fragment.graphql"
 
-query groupEpics(
+query roadmapGroupEpics(
   $fullPath: ID!
   $state: EpicState
   $sort: EpicSort

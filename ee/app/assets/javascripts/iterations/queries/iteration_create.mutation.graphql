@@ -1,4 +1,4 @@
-mutation createIteration($input: iterationCreateInput!) {
+mutation createIteration2($input: iterationCreateInput!) {
   iterationCreate(input: $input) {
     iteration {
       id

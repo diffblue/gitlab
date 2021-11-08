@@ -1,7 +1,7 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "ee/security_dashboard/graphql/fragments/project.fragment.graphql"
 
-query getProjects(
+query securityGetProjects(
   $search: String!
   $after: String = ""
   $first: Int!

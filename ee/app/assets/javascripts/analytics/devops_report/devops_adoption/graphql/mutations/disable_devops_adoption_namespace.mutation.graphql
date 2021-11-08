@@ -1,4 +1,4 @@
-mutation($id: [AnalyticsDevopsAdoptionEnabledNamespaceID!]!) {
+mutation disableDevopsAdoptionNamespace($id: [AnalyticsDevopsAdoptionEnabledNamespaceID!]!) {
   disableDevopsAdoptionNamespace(input: { id: $id }) {
     errors
   }

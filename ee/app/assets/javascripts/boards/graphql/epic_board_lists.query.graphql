@@ -1,6 +1,6 @@
 #import "./epic_board_list.fragment.graphql"
 
-query ListEpics($fullPath: ID!, $boardId: BoardsEpicBoardID!, $filters: EpicFilters) {
+query boardListEpics($fullPath: ID!, $boardId: BoardsEpicBoardID!, $filters: EpicFilters) {
   group(fullPath: $fullPath) {
     board: epicBoard(id: $boardId) {
       lists(epicFilters: $filters) {

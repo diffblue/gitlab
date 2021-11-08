@@ -1,6 +1,6 @@
 #import "~/alerts_settings/graphql/fragments/http_integration_item.fragment.graphql"
 
-mutation createHttpIntegration(
+mutation createHttpIntegrationEE(
   $projectPath: ID!
   $name: String!
   $active: Boolean!

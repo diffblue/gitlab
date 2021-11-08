@@ -1,7 +1,7 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "./iteration_list_item.fragment.graphql"
 
-query Iterations(
+query workspaceIterations(
   $fullPath: ID!
   $isGroup: Boolean = true
   $state: IterationState!

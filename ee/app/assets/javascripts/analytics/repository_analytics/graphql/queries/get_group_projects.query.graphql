@@ -1,6 +1,6 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 
-query getGroupProjects($groupFullPath: ID!, $after: String) {
+query repoAnalyticsGetGroupProjects($groupFullPath: ID!, $after: String) {
   group(fullPath: $groupFullPath) {
     projects(hasCodeCoverage: true, after: $after, first: 100) {
       nodes {

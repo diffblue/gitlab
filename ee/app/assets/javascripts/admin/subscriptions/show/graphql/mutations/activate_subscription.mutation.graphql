@@ -1,6 +1,6 @@
 #import "../fragments/license.fragment.graphql"
 
-mutation($gitlabSubscriptionActivateInput: GitlabSubscriptionActivateInput!) {
+mutation activateSubscription($gitlabSubscriptionActivateInput: GitlabSubscriptionActivateInput!) {
   gitlabSubscriptionActivate(input: $gitlabSubscriptionActivateInput) {
     errors
     license {

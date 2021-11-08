@@ -1,4 +1,4 @@
-query($fullPath: ID!, $pipelineIid: ID!) {
+query getSecurityReportSummary($fullPath: ID!, $pipelineIid: ID!) {
   project(fullPath: $fullPath) {
     pipeline(iid: $pipelineIid) {
       securityReportSummary {

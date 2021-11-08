@@ -1,4 +1,4 @@
-query groupMilestones(
+query groupMilestonesEE(
   $fullPath: ID!
   $state: MilestoneStateEnum
   $timeframe: Timeframe

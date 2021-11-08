@@ -1,6 +1,6 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 
-query IterationCadences(
+query groupIterationCadences(
   $fullPath: ID!
   $beforeCursor: String = ""
   $afterCursor: String = ""

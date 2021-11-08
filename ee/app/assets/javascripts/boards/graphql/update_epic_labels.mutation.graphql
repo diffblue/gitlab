@@ -1,4 +1,4 @@
-mutation updateEpic($input: UpdateEpicInput!) {
+mutation updateBoardEpicLabels($input: UpdateEpicInput!) {
   updateEpic(input: $input) {
     epic {
       id
