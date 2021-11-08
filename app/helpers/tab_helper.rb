@@ -210,3 +210,10 @@ module TabHelper
     current_page?(options)
   end
 end
+
+def gl_tab_counter_badge(count)
+  content_tag(:span,
+    count,
+    class: 'badge badge-muted badge-pill gl-badge sm gl-tab-counter-badge'
+  )
+end
