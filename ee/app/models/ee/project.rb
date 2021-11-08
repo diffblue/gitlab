@@ -134,7 +134,6 @@ module EE
         joins(:ci_feature_usages).where(ci_feature_usages: join_conditions).group(:id)
       end
 
-      scope :including_project, ->(project) { where(id: project) }
       scope :with_wiki_enabled, -> { with_feature_enabled(:wiki) }
       scope :within_shards, -> (shard_names) { where(repository_storage: Array(shard_names)) }
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
@@ -157,7 +156,6 @@ module EE
       end
       scope :with_slack_integration, -> { joins(:slack_integration) }
       scope :with_slack_slash_commands_integration, -> { joins(:slack_slash_commands_integration) }
-      scope :with_prometheus_integration, -> { joins(:prometheus_integration) }
       scope :aimed_for_deletion, -> (date) { where('marked_for_deletion_at <= ?', date).without_deleted }
       scope :not_aimed_for_deletion, -> { where(marked_for_deletion_at: nil) }
       scope :with_repos_templates, -> { where(namespace_id: ::Gitlab::CurrentSettings.current_application_settings.custom_project_templates_group_id) }
