@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ComplianceManagement::Frameworks::CreateService do
-  let_it_be_with_refind(:namespace) { create(:namespace) }
+  let_it_be_with_refind(:namespace) { create(:user_namespace) }
 
   let(:params) do
     {
