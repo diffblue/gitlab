@@ -16,66 +16,68 @@ This document lists the configuration options for your GitLab `.gitlab-ci.yml` f
 When you are editing your `.gitlab-ci.yml` file, you can validate it with the
 [CI Lint](../lint.md) tool.
 
-## Job keywords
+## Keywords
 
-A job is defined as a list of keywords that define the job's behavior.
+A GitLab CI/CD pipeline configuration includes:
 
-The keywords available for jobs are:
+- [Global keywords](#global-keywords) that configure pipeline behavior:
 
-| Keyword                                     | Description |
-| :-------------------------------------------|:------------|
-| [`after_script`](#after_script)             | Override a set of commands that are executed after job. |
-| [`allow_failure`](#allow_failure)           | Allow job to fail. A failed job does not cause the pipeline to fail. |
-| [`artifacts`](#artifacts)                   | List of files and directories to attach to a job on success. |
-| [`before_script`](#before_script)           | Override a set of commands that are executed before job. |
-| [`cache`](#cache)                           | List of files that should be cached between subsequent runs. |
-| [`coverage`](#coverage)                     | Code coverage settings for a given job. |
-| [`dast_configuration`](#dast_configuration) | Use configuration from DAST profiles on a job level. |
-| [`dependencies`](#dependencies)             | Restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from. |
-| [`environment`](#environment)               | Name of an environment to which the job deploys. |
-| [`except`](#only--except)                   | Control when jobs are not created. |
-| [`extends`](#extends)                       | Configuration entries that this job inherits from. |
-| [`image`](#image)                           | Use Docker images. |
-| [`inherit`](#inherit)                       | Select which global defaults all jobs inherit. |
-| [`interruptible`](#interruptible)           | Defines if a job can be canceled when made redundant by a newer run. |
-| [`needs`](#needs)                           | Execute jobs earlier than the stage ordering. |
-| [`only`](#only--except)                     | Control when jobs are created. |
-| [`pages`](#pages)                           | Upload the result of a job to use with GitLab Pages. |
-| [`parallel`](#parallel)                     | How many instances of a job should be run in parallel. |
-| [`release`](#release)                       | Instructs the runner to generate a [release](../../user/project/releases/index.md) object. |
-| [`resource_group`](#resource_group)         | Limit job concurrency. |
-| [`retry`](#retry)                           | When and how many times a job can be auto-retried in case of a failure. |
-| [`rules`](#rules)                           | List of conditions to evaluate and determine selected attributes of a job, and whether or not it's created. |
-| [`script`](#script)                         | Shell script that is executed by a runner. |
-| [`secrets`](#secrets)                       | The CI/CD secrets the job needs. |
-| [`services`](#services)                     | Use Docker services images. |
-| [`stage`](#stage)                           | Defines a job stage. |
-| [`tags`](#tags)                             | List of tags that are used to select a runner. |
-| [`timeout`](#timeout)                       | Define a custom job-level timeout that takes precedence over the project-wide setting. |
-| [`trigger`](#trigger)                       | Defines a downstream pipeline trigger. |
-| [`variables`](#variables)                   | Define job variables on a job level. |
-| [`when`](#when)                             | When to run job. |
+  | Keyword                 | Description |
+  |-------------------------|:------------|
+  | [`default`](#default)   | Custom default values for job keywords. |
+  | [`stages`](#stages)     | The names and order of the pipeline stages. |
+  | [`workflow`](#workflow) | Control what types of pipeline run. |
+  | [`include`](#include)   | Import configuration from other YAML files. |
 
-### Unavailable names for jobs
+- [Jobs](../jobs/index.md) configured with [job keywords](#job-keywords):
 
-You can't use these keywords as job names:
+  | Keyword                                     | Description |
+  | :-------------------------------------------|:------------|
+  | [`after_script`](#after_script)             | Override a set of commands that are executed after job. |
+  | [`allow_failure`](#allow_failure)           | Allow job to fail. A failed job does not cause the pipeline to fail. |
+  | [`artifacts`](#artifacts)                   | List of files and directories to attach to a job on success. |
+  | [`before_script`](#before_script)           | Override a set of commands that are executed before job. |
+  | [`cache`](#cache)                           | List of files that should be cached between subsequent runs. |
+  | [`coverage`](#coverage)                     | Code coverage settings for a given job. |
+  | [`dast_configuration`](#dast_configuration) | Use configuration from DAST profiles on a job level. |
+  | [`dependencies`](#dependencies)             | Restrict which artifacts are passed to a specific job by providing a list of jobs to fetch artifacts from. |
+  | [`environment`](#environment)               | Name of an environment to which the job deploys. |
+  | [`except`](#only--except)                   | Control when jobs are not created. |
+  | [`extends`](#extends)                       | Configuration entries that this job inherits from. |
+  | [`image`](#image)                           | Use Docker images. |
+  | [`inherit`](#inherit)                       | Select which global defaults all jobs inherit. |
+  | [`interruptible`](#interruptible)           | Defines if a job can be canceled when made redundant by a newer run. |
+  | [`needs`](#needs)                           | Execute jobs earlier than the stage ordering. |
+  | [`only`](#only--except)                     | Control when jobs are created. |
+  | [`pages`](#pages)                           | Upload the result of a job to use with GitLab Pages. |
+  | [`parallel`](#parallel)                     | How many instances of a job should be run in parallel. |
+  | [`release`](#release)                       | Instructs the runner to generate a [release](../../user/project/releases/index.md) object. |
+  | [`resource_group`](#resource_group)         | Limit job concurrency. |
+  | [`retry`](#retry)                           | When and how many times a job can be auto-retried in case of a failure. |
+  | [`rules`](#rules)                           | List of conditions to evaluate and determine selected attributes of a job, and whether or not it's created. |
+  | [`script`](#script)                         | Shell script that is executed by a runner. |
+  | [`secrets`](#secrets)                       | The CI/CD secrets the job needs. |
+  | [`services`](#services)                     | Use Docker services images. |
+  | [`stage`](#stage)                           | Defines a job stage. |
+  | [`tags`](#tags)                             | List of tags that are used to select a runner. |
+  | [`timeout`](#timeout)                       | Define a custom job-level timeout that takes precedence over the project-wide setting. |
+  | [`trigger`](#trigger)                       | Defines a downstream pipeline trigger. |
+  | [`variables`](#variables)                   | Define job variables on a job level. |
+  | [`when`](#when)                             | When to run job. |
 
-- `image`
-- `services`
-- `stages`
-- `types`
-- `before_script`
-- `after_script`
-- `variables`
-- `cache`
-- `include`
+## Global keywords
 
-### Custom default keyword values
+Some keywords are not defined in a job. These keywords control pipeline behavior
+or import additional pipeline configuration.
+
+### `default`
 
 You can set global defaults for some keywords. Jobs that do not define one or more
 of the listed keywords use the value defined in the `default:` section.
 
-These job keywords can be defined inside a `default:` section:
+**Keyword type**: Global keyword.
+
+**Possible inputs**: These keywords can have custom defaults:
 
 - [`after_script`](#after_script)
 - [`artifacts`](#artifacts)
@@ -88,9 +90,7 @@ These job keywords can be defined inside a `default:` section:
 - [`tags`](#tags)
 - [`timeout`](#timeout)
 
-The following example sets the `ruby:3.0` image as the default for all jobs in the pipeline.
-The `rspec 2.7` job does not use the default, because it overrides the default with
-a job-specific `image:` section:
+**Example of `default`:**
 
 ```yaml
 default:
@@ -104,16 +104,16 @@ rspec 2.7:
   script: bundle exec rspec
 ```
 
-## Global keywords
+In this example, `ruby:3.0` is the default `image` value for all jobs in the pipeline.
+The `rspec 2.7` job does not use the default, because it overrides the default with
+a job-specific `image:` section:
 
-Some keywords are not defined in a job. These keywords control pipeline behavior
-or import additional pipeline configuration:
+**Additional details**:
 
-| Keyword                 | Description |
-|-------------------------|:------------|
-| [`stages`](#stages)     | The names and order of the pipeline stages. |
-| [`workflow`](#workflow) | Control what types of pipeline run. |
-| [`include`](#include)   | Import configuration from other YAML files. |
+- When the pipeline is created, each default is copied to all jobs that don't have
+  that keyword defined.
+- If a job already has one of the keywords configured, the configuration in the job
+  takes precedence and is not replaced by the default.
 
 ### `stages`
 
@@ -568,7 +568,7 @@ include:
 - All [nested includes](includes.md#use-nested-includes) are executed only with the permission of the user,
   so it's possible to use `project`, `remote`, or `template` includes.
 
-## Keyword details
+## Job keywords
 
 The following topics explain how to use keywords to configure CI/CD pipelines.
 
@@ -577,7 +577,7 @@ The following topics explain how to use keywords to configure CI/CD pipelines.
 Use `image` to specify a Docker image that the job runs in.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
 
@@ -612,7 +612,7 @@ a job-specific `image:` section.
 The name of the Docker image that the job runs in. Similar to [`image:`](#image) used by itself.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: The name of the image, including the registry path if needed, in one of these formats:
 
@@ -640,7 +640,7 @@ The syntax is similar to the [Dockerfile `ENTRYPOINT` directive](https://docs.do
 where each shell token is a separate string in the array.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: A string.
 
@@ -662,7 +662,7 @@ Use `services` to specify an additional Docker image to run scripts in. The [`se
 to the image specified in the [`image`](#image) keyword.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: The name of the services image, including the registry path if needed, in one of these formats:
 
@@ -748,7 +748,7 @@ Use `before_script` to define an array of commands that should run before each j
 `script` commands, but after [artifacts](#artifacts) are restored.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: An array including:
 
@@ -786,7 +786,7 @@ in the main [`script`](#script). The combined scripts execute together in a sing
 Use `after_script` to define an array of commands that run after each job, including failed jobs.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: An array including:
 
@@ -1916,7 +1916,7 @@ example `ruby`, `postgres`, or `development`. To pick up and run a job, a runner
 be assigned every tag listed in the job.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**:
 
@@ -2410,7 +2410,8 @@ Learn more about caches in [Caching in GitLab CI/CD](../caching/index.md).
 
 Use the `cache:paths` keyword to choose which files or directories to cache.
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**: An array of paths relative to the project directory (`$CI_PROJECT_DIR`).
 You can use wildcards that use [glob](https://en.wikipedia.org/wiki/Glob_(programming))
@@ -2449,7 +2450,8 @@ that use the same cache key use the same cache, including in different pipelines
 If not set, the default key is `default`. All jobs with the `cache:` keyword but
 no `cache:key` share the `default` cache.
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**:
 
@@ -2498,7 +2500,8 @@ Use the `cache:key:files` keyword to generate a new key when one or two specific
 change. `cache:key:files` lets you reuse some caches, and rebuild them less often,
 which speeds up subsequent pipeline runs.
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**: An array of one or two file paths.
 
@@ -2534,7 +2537,8 @@ fallback key is `default`.
 
 Use `cache:key:prefix` to combine a prefix with the SHA computed for [`cache:key:files`](#cachekeyfiles).
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**:
 
@@ -2569,7 +2573,8 @@ the prefix is added to the `default` key.
 
 Use `untracked: true` to cache all files that are untracked in your Git repository:
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**: `true` or `false` (default).
 
@@ -2602,7 +2607,8 @@ rspec:
 
 Use `cache:when` to define when to save the cache, based on the status of the job.
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**:
 
@@ -2639,7 +2645,8 @@ Use the `pull` policy when you have many jobs executing in parallel that use the
 This policy speeds up job execution and reduces load on the cache server. You can
 use a job with the `push` policy to build the cache.
 
-**Keyword type**: Job-specific. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**:
 
@@ -3480,7 +3487,7 @@ By default, all failure types cause the job to be retried. Use [`retry:when`](#r
 to select which failures to retry on.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: `0` (default), `1`, or `2`.
 
@@ -3499,7 +3506,7 @@ Use `retry:when` with `retry:max` to retry jobs for only specific failure cases.
 `0`, `1`, or `2`.
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: A single failure type, or an array of one or more failure types:
 
@@ -3565,7 +3572,7 @@ The job-level timeout can be longer than the [project-level timeout](../pipeline
 but can't be longer than the [runner's timeout](../runners/configure_runners.md#set-maximum-job-timeout-for-a-runner).
 
 **Keyword type**: Job keyword. You can use it only as part of a job or in the
-[`default:` section](#custom-default-keyword-values).
+[`default:` section](#default).
 
 **Possible inputs**: A period of time written in natural language. For example, these are all equivalent:
 
@@ -3763,7 +3770,8 @@ a new pipeline starts on the same branch.
 
 You can't cancel subsequent jobs after a job with `interruptible: false` starts.
 
-**Keyword type**: Job keyword. You can use it only as part of a job.
+**Keyword type**: Job keyword. You can use it only as part of a job or in the
+[`default:` section](#default).
 
 **Possible inputs**: `true` or `false` (default).
 
@@ -4350,7 +4358,7 @@ Defining `image`, `services`, `cache`, `before_script`, and
 `after_script` globally is deprecated. Support could be removed
 from a future release.
 
-Use [`default:`](#custom-default-keyword-values) instead. For example:
+Use [`default:`](#default) instead. For example:
 
 ```yaml
 default:
