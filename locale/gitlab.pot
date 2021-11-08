@@ -29639,6 +29639,9 @@ msgstr ""
 msgid "Runners|Active"
 msgstr ""
 
+msgid "Runners|All"
+msgstr ""
+
 msgid "Runners|Amazon Linux 2 Docker HA with manual scaling and optional scheduling. %{percentage} spot."
 msgstr ""
 
@@ -29693,6 +29696,9 @@ msgstr ""
 msgid "Runners|For each solution, you will choose a capacity. 1 enables warm HA through Auto Scaling group re-spawn. 2 enables hot HA because the service is available even when a node is lost. 3 or more enables hot HA and manual scaling of runner fleet."
 msgstr ""
 
+msgid "Runners|Group"
+msgstr ""
+
 msgid "Runners|Group Runners"
 msgstr ""
 
@@ -29703,6 +29709,9 @@ msgid "Runners|If you do not select an AWS VPC, the runner will deploy to the De
 msgstr ""
 
 msgid "Runners|Install a runner"
+msgstr ""
+
+msgid "Runners|Instance"
 msgstr ""
 
 msgid "Runners|Last contact"
@@ -29745,6 +29754,9 @@ msgid "Runners|Paused"
 msgstr ""
 
 msgid "Runners|Platform"
+msgstr ""
+
+msgid "Runners|Project"
 msgstr ""
 
 msgid "Runners|Property Name"
@@ -29897,9 +29909,6 @@ msgstr ""
 msgid "Runners|group"
 msgstr ""
 
-msgid "Runners|instance"
-msgstr ""
-
 msgid "Runners|locked"
 msgstr ""
 
@@ -29913,9 +29922,6 @@ msgid "Runners|online"
 msgstr ""
 
 msgid "Runners|paused"
-msgstr ""
-
-msgid "Runners|project"
 msgstr ""
 
 msgid "Runners|shared"
