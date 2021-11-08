@@ -225,6 +225,7 @@ RSpec.describe 'Scoped issue boards', :js do
 
       it 'prefills fields' do
         visit project_boards_path(project_2)
+        wait_for_all_requests
 
         edit_board.click
 
@@ -332,6 +333,7 @@ RSpec.describe 'Scoped issue boards', :js do
         it 'adds label to board' do
           label_title = issue.labels.first.title
           visit project_boards_path(project)
+          wait_for_all_requests
 
           update_board_label(label_title)
 
@@ -346,6 +348,7 @@ RSpec.describe 'Scoped issue boards', :js do
           label_2_title = issue_2.labels.first.title
 
           visit project_boards_path(project)
+          wait_for_all_requests
 
           update_board_label(label_title)
 
@@ -365,6 +368,7 @@ RSpec.describe 'Scoped issue boards', :js do
           label_2_title = issue_2.labels.first.title
 
           visit project_boards_path(project)
+          wait_for_all_requests
 
           update_board_label(label_title)
 
@@ -378,6 +382,7 @@ RSpec.describe 'Scoped issue boards', :js do
             stub_licensed_features(multiple_group_issue_boards: true)
 
             visit group_boards_path(group)
+            wait_for_all_requests
             edit_board.click
 
             page.within('.labels') do

@@ -7,6 +7,18 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
+export const mockEpicBoardResponse = {
+  data: {
+    workspace: {
+      epicBoard: {
+        id: 'gid://gitlab/Boards::EpicBoard/1',
+        name: 'Development',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
 export const mockLabel = {
   id: 'gid://gitlab/GroupLabel/121',
   title: 'To Do',

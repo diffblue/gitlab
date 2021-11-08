@@ -3,9 +3,7 @@
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
 import { mapGetters } from 'vuex';
-import { fullBoardId } from '~/boards/boards_util';
 import BoardFormFoss from '~/boards/components/board_form.vue';
-import { fullEpicBoardId } from '../boards_util';
 import createEpicBoardMutation from '../graphql/epic_board_create.mutation.graphql';
 import destroyEpicBoardMutation from '../graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from '../graphql/epic_board_update.mutation.graphql';
@@ -18,11 +16,8 @@ export default {
       return this.board.id ? updateEpicBoardMutation : createEpicBoardMutation;
     },
     mutationVariables() {
-      const { board } = this;
-
       return {
         ...this.baseMutationVariables,
-        ...(board.id && this.isEpicBoard && { id: fullEpicBoardId(board.id) }),
         ...(this.scopedIssueBoardFeatureEnabled || this.isEpicBoard
           ? this.boardScopeMutationVariables
           : {}),
@@ -56,7 +51,7 @@ export default {
       await this.$apollo.mutate({
         mutation: this.isEpicBoard ? destroyEpicBoardMutation : this.deleteMutation,
         variables: {
-          id: this.isEpicBoard ? fullEpicBoardId(this.board.id) : fullBoardId(this.board.id),
+          id: this.board.id,
         },
       });
     },
