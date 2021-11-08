@@ -2,7 +2,7 @@
 
 module QA
   # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :reliable, :requires_admin do
+  RSpec.describe 'Plan', :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345076', type: :flaky } do
     describe 'Editing scoped labels on issues' do
       let(:initial_label) { 'animal::fox' }
       let(:new_label_same_scope) { 'animal::dolphin' }
