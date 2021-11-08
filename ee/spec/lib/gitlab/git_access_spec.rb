@@ -331,6 +331,20 @@ RSpec.describe Gitlab::GitAccess do
     context 'git pull' do
       it { expect { pull_changes }.not_to raise_error }
 
+      context 'for non-Geo with maintenance mode' do
+        before do
+          stub_maintenance_mode_setting(true)
+        end
+
+        it 'does not return a replication lag message nor call the lag check' do
+          allow_next_instance_of(Gitlab::Geo::HealthCheck) do |instance|
+            expect(instance).not_to receive(:db_replication_lag_seconds)
+          end
+
+          expect(pull_changes.console_messages).to be_empty
+        end
+      end
+
       context 'for a secondary' do
         let(:current_replication_lag) { nil }
 
