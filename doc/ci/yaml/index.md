@@ -117,12 +117,10 @@ or import additional pipeline configuration:
 
 ### `stages`
 
-Use `stages` to define stages that contain groups of jobs. `stages` is defined globally
-for the pipeline. Use [`stage`](#stage) in a job to define which stage the job is
-part of.
+Use `stages` to define stages that contain groups of jobs. Use [`stage`](#stage)
+in a job to configure the job to run in a specific stage.
 
-If `stages` is not defined in the `.gitlab-ci.yml` file, then the default
-pipeline stages are:
+If `stages` is not defined in the `.gitlab-ci.yml` file, the default pipeline stages are:
 
 - [`.pre`](#stage-pre)
 - `build`
@@ -130,12 +128,14 @@ pipeline stages are:
 - `deploy`
 - [`.post`](#stage-post)
 
-The order of the `stages` items defines the execution order for jobs:
+The order of the items in `stages` defines the execution order for jobs:
 
 - Jobs in the same stage run in parallel.
 - Jobs in the next stage run after the jobs from the previous stage complete successfully.
 
-For example:
+**Keyword type**: Global keyword.
+
+**Example of `stages`:**
 
 ```yaml
 stages:
@@ -143,6 +143,8 @@ stages:
   - test
   - deploy
 ```
+
+In this example:
 
 1. All jobs in `build` execute in parallel.
 1. If all jobs in `build` succeed, the `test` jobs execute in parallel.
@@ -152,17 +154,17 @@ stages:
 If any job fails, the pipeline is marked as `failed` and jobs in later stages do not
 start. Jobs in the current stage are not stopped and continue to run.
 
-If a job does not specify a [`stage`](#stage), the job is assigned the `test` stage.
+**Additional details**:
 
-If a stage is defined, but no jobs use it, the stage is not visible in the pipeline. This is
-useful for [compliance pipeline configuration](../../user/project/settings/index.md#compliance-pipeline-configuration)
-because:
+- If a job does not specify a [`stage`](#stage), the job is assigned the `test` stage.
+- If a stage is defined but no jobs use it, the stage is not visible in the pipeline,
+  which can help [compliance pipeline configurations](../../user/project/settings/index.md#compliance-pipeline-configuration):
+  - Stages can be defined in the compliance configuration but remain hidden if not used.
+  - The defined stages become visible when developers use them in job definitions.
 
-- Stages can be defined in the compliance configuration but remain hidden if not used.
-- The defined stages become visible when developers use them in job definitions.
+**Related topics**:
 
-To make a job start earlier and ignore the stage order, use
-the [`needs`](#needs) keyword.
+- To make a job start earlier and ignore the stage order, use the [`needs`](#needs) keyword.
 
 ### `workflow`
 
