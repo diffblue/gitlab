@@ -37,12 +37,6 @@
     :versions: []
     :when: 2016-05-02 05:31:54.498490000 Z
 - - :permit
-  - LGPL
-  - :who: Connor Shea
-    :why: http://www.gnu.org/licenses/license-list.html#LGPLv2.1
-    :versions: []
-    :when: 2016-05-02 05:32:48.645841000 Z
-- - :permit
   - ISC
   - :who: Connor Shea
     :why: http://www.gnu.org/licenses/license-list.html#ISC
@@ -55,23 +49,11 @@
     :versions: []
     :when: 2016-05-02 05:44:38.246021000 Z
 - - :permit
-  - LGPL-2.1+
-  - :who: Connor Shea
-    :why: Equivalent to LGPL.
-    :versions: []
-    :when: 2016-05-02 05:52:56.303239000 Z
-- - :permit
   - BSD
   - :who: Connor Shea
     :why: https://opensource.org/licenses/BSD-2-Clause
     :versions: []
     :when: 2016-05-02 05:55:09.796363000 Z
-- - :permit
-  - LGPLv2+
-  - :who: Stan Hu
-    :why: Equivalent to LGPLv2
-    :versions: []
-    :when: 2016-06-07 17:14:10.907682000 Z
 - - :permit
   - Artistic 2.0
   - :who: Josh Frye
