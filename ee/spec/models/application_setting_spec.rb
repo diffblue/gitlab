@@ -457,14 +457,6 @@ RSpec.describe ApplicationSetting do
           end
 
           it_behaves_like 'whether the project is indexed'
-
-          context 'when feature flag :linear_application_setting_ancestor_scopes is disabled' do
-            before do
-              stub_feature_flags(linear_application_setting_ancestor_scopes: false)
-            end
-
-            it_behaves_like 'whether the project is indexed'
-          end
         end
       end
 
