@@ -338,30 +338,16 @@ rspec fast_spec_helper minimal:
     - .minimal-rspec-tests
     - .rails:rules:ee-and-foss-fast_spec_helper:minimal
 
+db:rollback:
+  extends: .db-job-base
+  script:
+    - bundle exec rake db:migrate VERSION=20181228175414
+    - bundle exec rake db:migrate SKIP_SCHEMA_VERSION_CHECK=true
+
 db:migrate:reset:
   extends: .db-job-base
   script:
     - bundle exec rake db:migrate:reset
-
-db:check-schema:
-  extends:
-    - db:migrate-from-previous-major-version
-    - .rails:rules:ee-mr-and-default-branch-only
-  variables:
-    TAG_TO_CHECKOUT: "v14.4.0"
-  script:
-    - run_timed_command "bundle exec rake db:migrate"
-    - scripts/schema_changed.sh
-    - scripts/validate_migration_timestamps
-
-db:check-migrations:
-  extends:
-    - .db-job-base
-    - .rails:rules:ee-and-foss-mr-with-migration
-  script:
-    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME:$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --depth 20
-    - scripts/validate_migration_schema
-  allow_failure: true
 
 db:migrate-from-previous-major-version:
   extends: .db-job-base
@@ -383,11 +369,25 @@ db:migrate-from-previous-major-version:
   script:
     - run_timed_command "bundle exec rake db:migrate"
 
-db:rollback:
-  extends: .db-job-base
+db:check-schema:
+  extends:
+    - db:migrate-from-previous-major-version
+    - .rails:rules:ee-mr-and-default-branch-only
+  variables:
+    TAG_TO_CHECKOUT: "v14.4.0"
   script:
-    - bundle exec rake db:migrate VERSION=20181228175414
-    - bundle exec rake db:migrate SKIP_SCHEMA_VERSION_CHECK=true
+    - run_timed_command "bundle exec rake db:migrate"
+    - scripts/schema_changed.sh
+    - scripts/validate_migration_timestamps
+
+db:check-migrations:
+  extends:
+    - .db-job-base
+    - .rails:rules:ee-and-foss-mr-with-migration
+  script:
+    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME:$CI_MERGE_REQUEST_TARGET_BRANCH_NAME --depth 20
+    - scripts/validate_migration_schema
+  allow_failure: true
 
 db:gitlabcom-database-testing:
   extends: .rails:rules:db:gitlabcom-database-testing
