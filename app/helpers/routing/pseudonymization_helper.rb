@@ -80,7 +80,9 @@ module Routing
       mask_helper = MaskHelper.new(request, current_group, current_project)
       mask_helper.mask_params
 
-    rescue ActionController::RoutingError, URI::InvalidURIError => e
+    # We rescue all exception for time being till we test this helper extensively.
+    # Check https://gitlab.com/gitlab-org/gitlab/-/merge_requests/72864#note_711515501
+    rescue => e # rubocop:disable Style/RescueStandardError
       Gitlab::ErrorTracking.track_exception(e, url: request.original_fullpath)
       nil
     end
