@@ -6553,6 +6553,9 @@ msgstr ""
 msgid "Changes to the title have not been saved"
 msgstr ""
 
+msgid "Changing any setting here requires an application restart"
+msgstr ""
+
 msgid "Changing group URL can have unintended side effects."
 msgstr ""
 
@@ -7194,6 +7197,9 @@ msgid "Client request timeout"
 msgstr ""
 
 msgid "Clients"
+msgstr ""
+
+msgid "Clientside DSN"
 msgstr ""
 
 msgid "Clone"
@@ -8687,6 +8693,9 @@ msgid "Configure Secret Detection in `.gitlab-ci.yml` using the GitLab managed t
 msgstr ""
 
 msgid "Configure Secret Detection in `.gitlab-ci.yml`, creating this file if it does not already exist"
+msgstr ""
+
+msgid "Configure Sentry integration for error tracking"
 msgstr ""
 
 msgid "Configure Tracing"
@@ -10395,6 +10404,9 @@ msgid "DORA4Metrics|The chart displays the frequency of deployments to productio
 msgstr ""
 
 msgid "DORA4Metrics|The chart displays the median time between a merge request being merged and deployed to production environment(s) that are based on the %{linkStart}deployment_tier%{linkEnd} value."
+msgstr ""
+
+msgid "DSN"
 msgstr ""
 
 msgid "Dashboard"
@@ -12707,6 +12719,9 @@ msgid "Enable Registration Features"
 msgstr ""
 
 msgid "Enable SSL verification"
+msgstr ""
+
+msgid "Enable Sentry error tracking"
 msgstr ""
 
 msgid "Enable Service Ping"

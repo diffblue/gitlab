@@ -178,6 +178,42 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value(nil).for(:new_user_signups_cap) }
       it { is_expected.not_to allow_value(max_active_user_count + 1).for(:new_user_signups_cap) }
     end
+
+    context 'Sentry validations' do
+      context 'when Sentry is enabled' do
+        before do
+          setting.sentry_enabled = true
+        end
+
+        it { is_expected.to allow_value(false).for(:sentry_enabled) }
+        it { is_expected.not_to allow_value(nil).for(:sentry_enabled) }
+
+        it { is_expected.to allow_value('http://example.com').for(:sentry_dsn) }
+        it { is_expected.not_to allow_value("http://#{'a' * 255}.com").for(:sentry_dsn) }
+        it { is_expected.not_to allow_value('example').for(:sentry_dsn) }
+        it { is_expected.not_to allow_value(nil).for(:sentry_dsn) }
+
+        it { is_expected.to allow_value('http://example.com').for(:sentry_clientside_dsn) }
+        it { is_expected.to allow_value(nil).for(:sentry_clientside_dsn) }
+        it { is_expected.not_to allow_value('example').for(:sentry_clientside_dsn) }
+        it { is_expected.not_to allow_value("http://#{'a' * 255}.com").for(:sentry_clientside_dsn) }
+
+        it { is_expected.to allow_value('production').for(:sentry_environment) }
+        it { is_expected.not_to allow_value(nil).for(:sentry_environment) }
+        it { is_expected.not_to allow_value('a' * 256).for(:sentry_environment) }
+      end
+
+      context 'when Sentry is disabled' do
+        before do
+          setting.sentry_enabled = false
+        end
+
+        it { is_expected.not_to allow_value(nil).for(:sentry_enabled) }
+        it { is_expected.to allow_value(nil).for(:sentry_dsn) }
+        it { is_expected.to allow_value(nil).for(:sentry_clientside_dsn) }
+        it { is_expected.to allow_value(nil).for(:sentry_environment) }
+      end
+    end
   end
 
   describe '#should_check_namespace_plan?' do
