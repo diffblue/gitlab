@@ -79,7 +79,7 @@ describe('Editor Extension', () => {
     },
   );
 
-  describe('getApi', () => {
+  describe('api', () => {
     it.each`
       definition          | expectedKeys
       ${MyClassExtension} | ${['shared', 'classExtMethod']}
@@ -87,13 +87,10 @@ describe('Editor Extension', () => {
       ${MyConstExt}       | ${['shared', 'constExtMethod']}
     `('correctly returns API for $definition', ({ definition, expectedKeys }) => {
       const extension = new EditorExtension({ definition });
-      const expectedApi = {};
-
-      expectedKeys.forEach((key) => {
-        expectedApi[key] = expect.any(Function);
-      });
-
-      expect(extension.getApi()).toEqual(expect.objectContaining(expectedApi));
+      const expectedApi = Object.fromEntries(
+        expectedKeys.map((key) => [key, expect.any(Function)]),
+      );
+      expect(extension.api).toEqual(expect.objectContaining(expectedApi));
     });
   });
 });

@@ -11,7 +11,7 @@ export default class EditorExtension {
     this.obj = new definition();
   }
 
-  getApi() {
+  get api() {
     return this.obj.provides();
   }
 
