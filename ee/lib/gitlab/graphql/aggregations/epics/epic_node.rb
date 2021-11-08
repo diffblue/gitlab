@@ -15,6 +15,8 @@ module Gitlab
 
           attr_accessor :children, :calculated_count_totals, :calculated_weight_sum_totals
 
+          AggregateStruct = Struct.new(:opened_issues, :closed_issues, :opened_epics, :closed_epics)
+
           def initialize(epic_id, flat_info_list)
             # epic aggregate records from the DB loader look like the following:
             # { 1 => [{iid: 1, parent_id: nil, epic_state_id: 1, issues_count: 1, issues_weight_sum: 2, issues_state_id: 2}] ... }
@@ -30,21 +32,21 @@ module Gitlab
 
           def aggregate_count
             strong_memoize(:count_aggregate) do
-              OpenStruct.new({
-                opened_issues: sum_objects(COUNT, OPENED_ISSUE_STATE, ISSUE_TYPE),
-                closed_issues: sum_objects(COUNT, CLOSED_ISSUE_STATE, ISSUE_TYPE),
-                opened_epics: sum_objects(COUNT, OPENED_EPIC_STATE, EPIC_TYPE),
-                closed_epics: sum_objects(COUNT, CLOSED_EPIC_STATE, EPIC_TYPE)
-             })
+              AggregateStruct.new(
+                sum_objects(COUNT, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                sum_objects(COUNT, CLOSED_ISSUE_STATE, ISSUE_TYPE),
+                sum_objects(COUNT, OPENED_EPIC_STATE, EPIC_TYPE),
+                sum_objects(COUNT, CLOSED_EPIC_STATE, EPIC_TYPE)
+              )
             end
           end
 
           def aggregate_weight_sum
             strong_memoize(:weight_sum_aggregate) do
-              OpenStruct.new({
-                opened_issues: sum_objects(WEIGHT_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE),
-                closed_issues: sum_objects(WEIGHT_SUM, CLOSED_ISSUE_STATE, ISSUE_TYPE)
-               })
+              AggregateStruct.new(
+                sum_objects(WEIGHT_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                sum_objects(WEIGHT_SUM, CLOSED_ISSUE_STATE, ISSUE_TYPE)
+              )
             end
           end
 
