@@ -14044,6 +14044,9 @@ msgstr ""
 msgid "Explore public groups"
 msgstr ""
 
+msgid "Explore snippets"
+msgstr ""
+
 msgid "Explore topics"
 msgstr ""
 
@@ -40077,6 +40080,9 @@ msgid "Your search timed out"
 msgstr ""
 
 msgid "Your sign-in page is %{url}."
+msgstr ""
+
+msgid "Your snippets"
 msgstr ""
 
 msgid "Your subscription expired!"
