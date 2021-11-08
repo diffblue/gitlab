@@ -27,7 +27,7 @@ RSpec.describe 'search/_category' do
 
           render
 
-          expect(rendered).to have_selector('.nav-tabs li', text: tab_name)
+          expect(rendered).to have_selector('.search-filter li', text: tab_name)
         end
 
         it 'hides the tab if FF is disabled' do
@@ -35,7 +35,7 @@ RSpec.describe 'search/_category' do
 
           render
 
-          expect(rendered).not_to have_selector('.nav-tabs li', text: tab_name)
+          expect(rendered).not_to have_selector('.search-filter li', text: tab_name)
         end
       end
 
@@ -49,7 +49,7 @@ RSpec.describe 'search/_category' do
 
           render
 
-          expect(rendered).to have_selector('.nav-tabs li', text: tab_name)
+          expect(rendered).to have_selector('.search-filter li', text: tab_name)
         end
       end
     end
