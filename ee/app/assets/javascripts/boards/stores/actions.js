@@ -16,6 +16,8 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { historyPushState, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { mergeUrlParams, removeParams, queryToObject } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
+import groupBoardIterationsQuery from 'ee/boards/graphql/group_board_iterations.query.graphql';
+import projectBoardIterationsQuery from 'ee/boards/graphql/project_board_iterations.query.graphql';
 import {
   fullEpicBoardId,
   formatEpic,
@@ -107,6 +109,52 @@ export default {
         filterFields: FilterFields,
       }),
     );
+  },
+
+  fetchIterations({ state, commit }, title) {
+    commit(types.RECEIVE_ITERATIONS_REQUEST);
+
+    const { fullPath, boardType } = state;
+
+    const variables = {
+      fullPath,
+      title,
+    };
+
+    let query;
+    if (boardType === BoardType.project) {
+      query = projectBoardIterationsQuery;
+    }
+    if (boardType === BoardType.group) {
+      query = groupBoardIterationsQuery;
+    }
+
+    if (!query) {
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      throw new Error('Unknown board type');
+    }
+
+    return gqlClient
+      .query({
+        query,
+        variables,
+      })
+      .then(({ data }) => {
+        const errors = data[boardType]?.errors;
+        const iterations = data[boardType]?.iterations.nodes;
+
+        if (errors?.[0]) {
+          throw new Error(errors[0]);
+        }
+
+        commit(types.RECEIVE_ITERATIONS_SUCCESS, iterations);
+
+        return iterations;
+      })
+      .catch((e) => {
+        commit(types.RECEIVE_ITERATIONS_FAILURE);
+        throw e;
+      });
   },
 
   performSearch({ dispatch, getters }) {
