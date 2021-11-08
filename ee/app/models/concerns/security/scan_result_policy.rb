@@ -22,6 +22,13 @@ module Security
       def scan_result_policies
         policy_by_type(:scan_result_policy)
       end
+
+      def uniq_scanners
+        distinct_scanners = approval_rules.distinct_scanners
+        return [] if distinct_scanners.none?
+
+        distinct_scanners.pluck(:scanners).flatten.uniq
+      end
     end
   end
 end
