@@ -3,14 +3,19 @@
 module Gitlab
   module Redis
     class MultiStore
+      class ReadFromPrimaryError < StandardError
+        def message
+          'Value not found on the redis primary store. Read from the redis secondary store successful.'
+        end
+      end
       class MultiReadError < StandardError
         def message
-          'Value not found, falling back to read from the redis secondary store.'
+          'Value not found on both primary and secondary store.'
         end
       end
       class MethodMissingError < StandardError
         def message
-          'Method missing. Falling back to execute method on the redis secondary_store.'
+          'Method missing. Falling back to execute method on the redis secondary store.'
         end
       end
 
@@ -23,6 +28,7 @@ module Gitlab
         get
         mget
         smembers
+        scard
       ).freeze
 
       WRITE_COMMANDS = %i(
@@ -52,67 +58,91 @@ module Gitlab
 
       READ_COMMANDS.each do |name|
         define_method(name) do |*args, &block|
-          read_command(name, *args, &block)
+          if multi_store_enabled?
+            read_command(name, *args, &block)
+          else
+            secondary_store.send(name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
+          end
         end
       end
 
       WRITE_COMMANDS.each do |name|
         define_method(name) do |*args, &block|
-          write_command(name, *args, &block)
+          if multi_store_enabled?
+            write_command(name, *args, &block)
+          else
+            secondary_store.send(name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
+          end
         end
+      end
+
+      def method_missing(command_name, *args, &block)
+        if @instance
+          send_command(@instance, command_name, *args, &block)
+        else
+          log_error(MethodMissingError.new, command_name)
+          increment_method_missing_count(command_name)
+
+          secondary_store.send(command_name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
+        end
+      end
+
+      def respond_to_missing?(command_name, include_private = false)
+        true
       end
 
       private
 
       def read_command(command_name, *args, &block)
-        instance = check_redis_store_instance
-
-        if instance
-          send_command(instance, command_name, *args, &block)
+        if @instance
+          send_command(@instance, command_name, *args, &block)
         else
           read_one_with_fallback(command_name, *args, &block)
         end
       end
 
       def write_command(command_name, *args, &block)
-        instance = check_redis_store_instance
-
-        if instance
-          send_command(instance, command_name, *args, &block)
+        if @instance
+          send_command(@instance, command_name, *args, &block)
         else
           write_both(command_name, *args, &block)
         end
       end
 
-      def check_redis_store_instance
-        if multi_store_enabled?
-          @instance
-        else
-          secondary_store # default
+      def read_one_with_fallback(command_name, *args, &block)
+        begin
+          value = send_command(primary_store, command_name, *args, &block)
+        rescue StandardError => e
+          log_error(e, command_name,
+            multi_store_error_message: FAILED_TO_READ_ERROR_MESSAGE)
         end
+
+        value ||= fallback_read(command_name, *args, &block)
+
+        value
       end
 
-      def read_one_with_fallback(command_name, *args, &block)
-        value = send_command(primary_store, command_name, *args, &block)
-      rescue StandardError => e
-        log_error(e, command_name,
-          multi_store_error_message: FAILED_TO_READ_ERROR_MESSAGE)
-      ensure
-        unless value
-          log_error(MultiReadError.new, command_name)
+      def fallback_read(command_name, *args, &block)
+        value = send_command(secondary_store, command_name, *args, &block)
+
+        if value
+          log_error(ReadFromPrimaryError.new, command_name)
           increment_read_fallback_count(command_name)
-          value = send_command(secondary_store, command_name, *args, &block)
+        else
+          log_error(MultiReadError.new, command_name)
         end
 
         value
       end
 
       def write_both(command_name, *args, &block)
-        send_command(primary_store, command_name, *args, &block)
-      rescue StandardError => e
-        log_error(e, command_name,
-          multi_store_error_message: FAILED_TO_WRITE_ERROR_MESSAGE)
-      ensure
+        begin
+          send_command(primary_store, command_name, *args, &block)
+        rescue StandardError => e
+          log_error(e, command_name,
+            multi_store_error_message: FAILED_TO_WRITE_ERROR_MESSAGE)
+        end
+
         send_command(secondary_store, command_name, *args, &block)
       end
 
@@ -155,17 +185,6 @@ module Gitlab
           exception,
           command_name: command_name,
           extra: extra)
-      end
-
-      def method_missing(command_name, *args, &block)
-        log_error(MethodMissingError.new, command_name)
-        increment_method_missing_count(command_name)
-
-        secondary_store.send(command_name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
-      end
-
-      def respond_to_missing?(command_name, include_private = false)
-        true
       end
     end
   end

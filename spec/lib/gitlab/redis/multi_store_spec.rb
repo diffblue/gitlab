@@ -5,11 +5,16 @@ require 'spec_helper'
 RSpec.describe Gitlab::Redis::MultiStore do
   using RSpec::Parameterized::TableSyntax
 
-  let(:multi_store) { described_class.new(Gitlab::Redis::Sessions.params.merge(serializer: nil), Gitlab::Redis::SharedState.params.merge(serializer: nil))}
-  let(:primary_store) { multi_store.primary_store }
-  let(:secondary_store) { multi_store.secondary_store }
+  let_it_be(:multi_store) { described_class.new(Gitlab::Redis::Sessions.params.merge(serializer: nil), Gitlab::Redis::SharedState.params.merge(serializer: nil))}
+  let_it_be(:primary_store) { multi_store.primary_store }
+  let_it_be(:secondary_store) { multi_store.secondary_store }
 
   subject { multi_store.send(name, *args) }
+
+  after(:all) do
+    primary_store.flushdb
+    secondary_store.flushdb
+  end
 
   context 'with READ redis commands' do
     let_it_be(:key1) { "redis:{1}:key_a" }
@@ -26,43 +31,84 @@ RSpec.describe Gitlab::Redis::MultiStore do
       'execute :mget command'     | :mget     | ref(:keys)  | ref(:values)  | nil
       'execute :mget with block'  | :mget     | ref(:keys)  | ref(:values)  | ->(value) { value }
       'execute :smembers command' | :smembers | ref(:skey)  | ref(:svalues) | nil
+      'execute :scard command'    | :scard    | ref(:skey)  | 2             | nil
     end
 
     before(:all) do
-      redis_shared_state_cleanup!
-      redis_sessions_cleanup!
-
-      Gitlab::Redis::Sessions.with do |redis|
-        redis.multi do |multi|
-          multi.set(key1, value1)
-          multi.set(key2, value2)
-          multi.sadd(skey, value1)
-          multi.sadd(skey, value2)
-        end
+      primary_store.multi do |multi|
+        multi.set(key1, value1)
+        multi.set(key2, value2)
+        multi.sadd(skey, value1)
+        multi.sadd(skey, value2)
       end
 
-      Gitlab::Redis::SharedState.with do |redis|
-        redis.multi do |multi|
-          multi.set(key1, value1)
-          multi.set(key2, value2)
-          multi.sadd(skey, value1)
-          multi.sadd(skey, value2)
-        end
+      secondary_store.multi do |multi|
+        multi.set(key1, value1)
+        multi.set(key2, value2)
+        multi.sadd(skey, value1)
+        multi.sadd(skey, value2)
       end
     end
 
-    after(:all) do
-      redis_shared_state_cleanup!
-      redis_sessions_cleanup!
-    end
-
-    RSpec.shared_examples_for 'reads correct value' do |store|
+    RSpec.shared_examples_for 'reads correct value' do
       it 'returns the correct value' do
         if value.is_a?(Array)
           # :smemebers does not guarantee the order it will return the values (unsorted set)
           is_expected.to match_array(value)
         else
           is_expected.to eq(value)
+        end
+      end
+    end
+
+    RSpec.shared_examples_for 'fallback read from the secondary store' do
+      it 'fallback and execute on secondary instance' do
+        expect(secondary_store).to receive(name).with(*args).and_call_original
+
+        subject
+      end
+
+      it 'logs the ReadFromPrimaryError' do
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::ReadFromPrimaryError),
+          hash_including(command_name: name))
+
+        subject
+      end
+
+      it 'increment read fallback count metrics' do
+        expect(multi_store).to receive(:increment_read_fallback_count).with(name)
+
+        subject
+      end
+
+      include_examples 'reads correct value'
+
+      context 'when fallback read from the secondary instance raises and exception' do
+        before do
+          allow(secondary_store).to receive(name).with(*args).and_raise(StandardError)
+        end
+
+        it 'fails with exception' do
+          expect { subject }.to raise_error(StandardError)
+        end
+      end
+
+      context 'when fallback read from the secondary instance returns no value' do
+        before do
+          allow(secondary_store).to receive(name).and_return(nil)
+        end
+
+        it 'logs the MultiReadError error' do
+          expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::MultiReadError),
+            hash_including(command_name: name))
+
+          subject
+        end
+
+        it 'does not increment read fallback count metrics' do
+          expect(multi_store).not_to receive(:increment_read_fallback_count)
+
+          subject
         end
       end
     end
@@ -109,13 +155,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
               subject
             end
 
-            it 'fallback and execute on secondary instance' do
-              expect(secondary_store).to receive(name).with(*args).and_call_original
-              expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::MultiReadError),
-                hash_including(command_name: name))
-
-              subject
-            end
+            include_examples 'fallback read from the secondary store'
           end
 
           context 'when reading from primary instance return no value' do
@@ -123,24 +163,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
               allow(primary_store).to receive(name).and_return(nil)
             end
 
-            it 'fallback and execute on secondary instance' do
-              expect(secondary_store).to receive(name).with(*args).and_call_original
-
-              subject
-            end
-
-            it 'logs the fallback' do
-              expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::MultiReadError),
-                hash_including(command_name: name))
-
-              subject
-            end
-
-            it 'increment metrics' do
-              expect(multi_store).to receive(:increment_read_fallback_count).with(name)
-
-              subject
-            end
+            include_examples 'fallback read from the secondary store'
           end
 
           context 'when the command is executed within pipelined block' do
@@ -197,7 +220,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
     end
   end
 
-  context 'with WRITE redis commands', :clean_gitlab_redis_sessions, :clean_gitlab_redis_shared_state do
+  context 'with WRITE redis commands' do
     let_it_be(:key1) { "redis:{1}:key_a" }
     let_it_be(:key2) { "redis:{1}:key_b" }
     let_it_be(:value1) { "redis_value1"}
@@ -223,18 +246,17 @@ RSpec.describe Gitlab::Redis::MultiStore do
     end
 
     before do
-      Gitlab::Redis::Sessions.with do |redis|
-        redis.multi do |multi|
-          multi.set(key2, value1)
-          multi.sadd(skey, value1)
-        end
+      primary_store.flushdb
+      secondary_store.flushdb
+
+      primary_store.multi do |multi|
+        multi.set(key2, value1)
+        multi.sadd(skey, value1)
       end
 
-      Gitlab::Redis::SharedState.with do |redis|
-        redis.multi do |multi|
-          multi.set(key2, value1)
-          multi.sadd(skey, value1)
-        end
+      secondary_store.multi do |multi|
+        multi.set(key2, value1)
+        multi.sadd(skey, value1)
       end
     end
 
@@ -296,14 +318,14 @@ RSpec.describe Gitlab::Redis::MultiStore do
             include_examples 'verify that store contains values', :secondary_store
           end
 
-          context 'when the command is executed within pipelined block', :aggregate_errors do
+          context 'when the command is executed within pipelined block' do
             subject do
               multi_store.pipelined do
                 multi_store.send(name, *args)
               end
             end
 
-            it 'is executed only 1 time on each instance' do
+            it 'is executed only 1 time on each instance', :aggregate_errors do
               expect(primary_store).to receive(name).with(*expected_args).once
               expect(secondary_store).to receive(name).with(*expected_args).once
 
@@ -333,8 +355,13 @@ RSpec.describe Gitlab::Redis::MultiStore do
     end
   end
 
-  context 'with unsupported command', :clean_gitlab_redis_shared_state, :clean_gitlab_redis_sessions do
-    let_it_be(:key) { "redis:{1}:key_a" }
+  context 'with unsupported command' do
+    before do
+      primary_store.flushdb
+      secondary_store.flushdb
+    end
+
+    let_it_be(:key) { "redis:counter" }
 
     subject do
       multi_store.incr(key)
@@ -360,12 +387,38 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
     it 'fallback and executes only on the secondary store', :aggregate_errors do
       expect(secondary_store).to receive(:incr).with(key).and_call_original
-      expect(secondary_store).not_to receive(:incr)
+      expect(primary_store).not_to receive(:incr)
 
+      subject
+    end
+
+    it 'correct value is stored on the secondary store', :aggregate_errors do
       subject
 
       expect(primary_store.get(key)).to be_nil
       expect(secondary_store.get(key)).to eq('1')
+    end
+
+    context 'when the command is executed within pipelined block' do
+      subject do
+        multi_store.pipelined do
+          multi_store.incr(key)
+        end
+      end
+
+      it 'is executed only 1 time on each instance', :aggregate_errors do
+        expect(primary_store).to receive(:incr).with(key).once
+        expect(secondary_store).to receive(:incr).with(key).once
+
+        subject
+      end
+
+      it "both redis stores are containing correct values", :aggregate_errors do
+        subject
+
+        expect(primary_store.get(key)).to eq('1')
+        expect(secondary_store.get(key)).to eq('1')
+      end
     end
   end
 end

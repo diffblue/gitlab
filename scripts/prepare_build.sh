@@ -38,6 +38,9 @@ sed -i 's|url:.*$|url: redis://redis:6379|g' config/cable.yml
 cp config/resque.yml.example config/resque.yml
 sed -i 's|url:.*$|url: redis://redis:6379|g' config/resque.yml
 
+cp config/resque.yml.example config/redis.sessions.yml
+sed -i 's|url:.*$|url: redis://redis:6379/15|g' config/redis.sessions.yml
+
 if [ "$SETUP_DB" != "false" ]; then
   setup_db
 elif getent hosts postgres; then
