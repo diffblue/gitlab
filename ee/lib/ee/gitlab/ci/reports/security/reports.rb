@@ -11,11 +11,11 @@ module EE
             private
 
             override :unsafe_findings_count
-            def unsafe_findings_count(target_reports, severity_levels, vulnerability_states)
-              pipeline_uuids = unsafe_findings_uuids(severity_levels)
+            def unsafe_findings_count(target_reports, severity_levels, vulnerability_states, report_types)
+              pipeline_uuids = unsafe_findings_uuids(severity_levels, report_types)
               pipeline_count = count_by_uuid(pipeline_uuids, vulnerability_states)
 
-              new_uuids = pipeline_uuids - target_reports&.unsafe_findings_uuids(severity_levels).to_a
+              new_uuids = pipeline_uuids - target_reports&.unsafe_findings_uuids(severity_levels, report_types).to_a
 
               if vulnerability_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
                 pipeline_count += new_uuids.count

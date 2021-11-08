@@ -24,6 +24,7 @@ class ApprovalProjectRule < ApplicationRecord
   }
 
   scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: :scan_finding) }
+  scope :distinct_scanners, -> { scan_finding.select(:scanners).distinct }
 
   alias_method :code_owner, :code_owner?
   validate :validate_default_license_report_name, on: :update, if: :report_approver?

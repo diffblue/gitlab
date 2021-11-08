@@ -42,6 +42,11 @@ FactoryBot.define do
       name { ApprovalRuleLike::DEFAULT_NAME_FOR_COVERAGE }
       report_type { :code_coverage }
     end
+
+    trait :scan_finding do
+      sequence(:name) { |n| "Scan finding #{n}" }
+      report_type { :scan_finding }
+    end
   end
 
   factory :any_approver_rule, parent: :approval_merge_request_rule do

@@ -380,4 +380,23 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       expect(scan_result_policies.pluck(:enabled)).to contain_exactly(true, true, false, true, true, true, true, true)
     end
   end
+
+  describe '#uniq_scanners' do
+    let(:project) { security_orchestration_policy_configuration.project }
+
+    subject { security_orchestration_policy_configuration.uniq_scanners }
+
+    context 'with approval rules' do
+      before do
+        create(:approval_project_rule, :scan_finding, scanners: %w(dast sast), project: project)
+        create(:approval_project_rule, :scan_finding, scanners: %w(dast container_scanning), project: project)
+      end
+
+      it { is_expected.to contain_exactly('dast', 'sast', 'container_scanning') }
+    end
+
+    context 'without approval rules' do
+      it { is_expected.to be_empty }
+    end
+  end
 end

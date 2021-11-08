@@ -128,6 +128,10 @@ class ApprovalMergeRequestRule < ApplicationRecord
     refresh_license_scanning_approvals(project_approval_rule) if license_scanning?
   end
 
+  def self.remove_required_approved(approval_rules)
+    where(id: approval_rules).update_all(approvals_required: 0)
+  end
+
   private
 
   def compare_with_project_rule
