@@ -1,6 +1,6 @@
 #import "~/alerts_settings/graphql/fragments/http_integration_item.fragment.graphql"
 
-mutation updateHttpIntegration(
+mutation updateHttpIntegrationEE(
   $id: ID!
   $name: String!
   $active: Boolean!

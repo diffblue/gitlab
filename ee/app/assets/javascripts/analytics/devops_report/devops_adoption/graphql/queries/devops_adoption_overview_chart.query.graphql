@@ -1,4 +1,4 @@
-query devopsAdoptionEnabledNamespaces(
+query devopsAdoptionOverviewChart(
   $displayNamespaceId: NamespaceID
   $startDate: Time!
   $endDate: Time!

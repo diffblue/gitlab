@@ -1,6 +1,6 @@
 #import "~/vue_merge_request_widget/queries/states/ready_to_merge.fragment.graphql"
 
-query readyToMergeQuery($projectPath: ID!, $iid: String!) {
+query readyToMergeEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     ...ReadyToMerge
     mergeRequest(iid: $iid) {

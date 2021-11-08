@@ -1,7 +1,7 @@
 #import "~/graphql_shared/fragments/pageInfo.fragment.graphql"
 #import "./iteration_list_item.fragment.graphql"
 
-query Iterations(
+query groupIterations(
   $fullPath: ID!
   $iterationCadenceId: ID!
   $state: IterationState!

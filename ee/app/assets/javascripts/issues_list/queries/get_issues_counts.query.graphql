@@ -1,4 +1,4 @@
-query getIssuesCount(
+query getIssuesCountEE(
   $isProject: Boolean = false
   $fullPath: ID!
   $search: String
