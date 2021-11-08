@@ -128,14 +128,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService do
 
           subject
         end
-
-        context 'when feature flag ci_always_track_shared_runners_usage is disabled' do
-          before do
-            stub_feature_flags(ci_always_track_shared_runners_usage: false)
-          end
-
-          it_behaves_like 'does nothing'
-        end
       end
 
       context 'when statistics and usage have existing amounts' do
