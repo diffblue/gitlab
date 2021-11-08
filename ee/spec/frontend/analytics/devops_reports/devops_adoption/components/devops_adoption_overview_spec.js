@@ -1,8 +1,8 @@
 import { GlLoadingIcon } from '@gitlab/ui';
-import DevopsAdoptionOverviewChart from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_chart.vue';
-import DevopsAdoptionOverview from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview.vue';
-import DevopsAdoptionOverviewCard from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_card.vue';
-import DevopsAdoptionOverviewTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_table.vue';
+import DevopsAdoptionOverviewChart from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_chart.vue';
+import DevopsAdoptionOverview from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview.vue';
+import DevopsAdoptionOverviewCard from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_card.vue';
+import DevopsAdoptionOverviewTable from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { devopsAdoptionNamespaceData, overallAdoptionData } from '../mock_data';
 

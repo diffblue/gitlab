@@ -1,6 +1,6 @@
 import { GlIcon, GlProgressBar } from '@gitlab/ui';
-import DevopsAdoptionOverviewCard from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview_card.vue';
-import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table_cell_flag.vue';
+import DevopsAdoptionOverviewCard from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_card.vue';
+import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_table_cell_flag.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { overallAdoptionData } from '../mock_data';
 

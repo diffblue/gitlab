@@ -3,29 +3,29 @@ import * as Sentry from '@sentry/browser';
 import { createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import DevopsAdoptionAddDropdown from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_add_dropdown.vue';
-import DevopsAdoptionApp from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_app.vue';
-import DevopsAdoptionOverview from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_overview.vue';
-import DevopsAdoptionSection from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_section.vue';
+import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
+import DevopsAdoptionApp from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_app.vue';
+import DevopsAdoptionOverview from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview.vue';
+import DevopsAdoptionSection from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_section.vue';
 import {
   I18N_GROUPS_QUERY_ERROR,
   I18N_ENABLE_NAMESPACE_MUTATION_ERROR,
   I18N_ENABLED_NAMESPACE_QUERY_ERROR,
   DEFAULT_POLLING_INTERVAL,
   DEVOPS_ADOPTION_TABLE_CONFIGURATION,
-} from 'ee/analytics/devops_report/devops_adoption/constants';
-import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
-import devopsAdoptionEnabledNamespaces from 'ee/analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql';
-import getGroupsQuery from 'ee/analytics/devops_report/devops_adoption/graphql/queries/get_groups.query.graphql';
-import { addEnabledNamespacesToCache } from 'ee/analytics/devops_report/devops_adoption/utils/cache_updates';
+} from 'ee/analytics/devops_reports/devops_adoption/constants';
+import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
+import devopsAdoptionEnabledNamespaces from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql';
+import getGroupsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/get_groups.query.graphql';
+import { addEnabledNamespacesToCache } from 'ee/analytics/devops_reports/devops_adoption/utils/cache_updates';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import DevopsScore from '~/analytics/devops_report/components/devops_score.vue';
+import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
 import { groupNodes, devopsAdoptionNamespaceData } from '../mock_data';
 
-jest.mock('ee/analytics/devops_report/devops_adoption/utils/cache_updates', () => ({
+jest.mock('ee/analytics/devops_reports/devops_adoption/utils/cache_updates', () => ({
   addEnabledNamespacesToCache: jest.fn(),
 }));
 

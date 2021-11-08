@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { createMockClient } from 'mock-apollo-client';
-import { createResolvers } from 'ee/analytics/devops_report/devops_adoption/graphql';
-import getGroupsQuery from 'ee/analytics/devops_report/devops_adoption/graphql/queries/get_groups.query.graphql';
+import { createResolvers } from 'ee/analytics/devops_reports/devops_adoption/graphql';
+import getGroupsQuery from 'ee/analytics/devops_reports/devops_adoption/graphql/queries/get_groups.query.graphql';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';

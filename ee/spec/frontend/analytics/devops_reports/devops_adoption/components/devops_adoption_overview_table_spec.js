@@ -1,32 +1,33 @@
-import { GlTable, GlButton, GlIcon, GlBadge, GlLink } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import DevopsAdoptionDeleteModal from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_delete_modal.vue';
-import DevopsAdoptionTable from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table.vue';
-import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_table_cell_flag.vue';
-import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_report/devops_adoption/constants';
+import { GlButton, GlIcon, GlBadge, GlProgressBar, GlLink } from '@gitlab/ui';
+import DevopsAdoptionDeleteModal from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_delete_modal.vue';
+import DevopsAdoptionOverviewTable from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_overview_table.vue';
+import { DEVOPS_ADOPTION_TABLE_CONFIGURATION } from 'ee/analytics/devops_reports/devops_adoption/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
-import { devopsAdoptionNamespaceData, devopsAdoptionTableHeaders } from '../mock_data';
+import { devopsAdoptionNamespaceData } from '../mock_data';
 
+const DELETE_MODAL_ID = 'delete-modal-test-unique-id';
 const TABLE_TEST_IDS_HEADERS = 'headers';
 const TABLE_TEST_IDS_NAMESPACE = 'namespace';
 const TABLE_TEST_IDS_ACTIONS = 'actions';
 
-describe('DevopsAdoptionTable', () => {
+jest.mock('lodash/uniqueId', () => (x) => `${x}test-unique-id`);
+
+describe('DevopsAdoptionOverviewTable', () => {
   let wrapper;
 
   const createComponent = (options = {}) => {
     const { provide = {} } = options;
 
-    wrapper = mount(DevopsAdoptionTable, {
+    wrapper = mountExtended(DevopsAdoptionOverviewTable, {
       propsData: {
-        cols: DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols,
-        enabledNamespaces: devopsAdoptionNamespaceData.nodes,
+        data: devopsAdoptionNamespaceData,
       },
       provide,
       directives: {
         GlTooltip: createMockDirective(),
+        GlModal: createMockDirective(),
       },
     });
   };
@@ -39,65 +40,32 @@ describe('DevopsAdoptionTable', () => {
     wrapper.destroy();
   });
 
-  const findTable = () => wrapper.find(GlTable);
+  const findCol = (testId) => wrapper.findByTestId(testId);
 
-  const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
-
-  const findColRowChild = (col, row, child) =>
-    findTable().findAll(`[data-testid="${col}"]`).at(row).find(child);
+  const findColRowChild = (col, row, child) => wrapper.findAllByTestId(col).at(row).find(child);
 
   const findColSubComponent = (colTestId, childComponent) =>
     findCol(colTestId).find(childComponent);
 
+  const findDeleteModal = () => wrapper.findComponent(DevopsAdoptionDeleteModal);
+
   const findSortByLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(0);
   const findSortDescLocalStorageSync = () => wrapper.findAll(LocalStorageSync).at(1);
 
-  const findDeleteModal = () => wrapper.find(DevopsAdoptionDeleteModal);
-
   describe('table headings', () => {
-    let headers;
-
     beforeEach(() => {
       createComponent();
-      headers = findTable().findAll(`[data-testid="${TABLE_TEST_IDS_HEADERS}"]`);
     });
 
-    it('displays the correct number of headings', () => {
-      expect(headers).toHaveLength(devopsAdoptionTableHeaders.length);
+    it('displays the table headings', () => {
+      const headerTexts = wrapper
+        .findAllByTestId(TABLE_TEST_IDS_HEADERS)
+        .wrappers.map((x) => x.text().split('\n')[0]);
+
+      headerTexts.pop(); // Remove the blank entry at the end used for the actions
+
+      expect(headerTexts).toEqual(['Group', 'Dev', 'Sec', 'Ops']);
     });
-
-    describe.each(devopsAdoptionTableHeaders)(
-      'header fields',
-      ({ label, tooltip: tooltipText, index }) => {
-        let headerWrapper;
-
-        beforeEach(() => {
-          headerWrapper = headers.at(index);
-        });
-
-        it(`displays the correct table heading text for "${label}"`, () => {
-          expect(headerWrapper.text()).toContain(label);
-        });
-
-        describe(`helper information for "${label}"`, () => {
-          const expected = Boolean(tooltipText);
-
-          it(`${expected ? 'displays' : "doesn't display"} an information icon`, () => {
-            expect(headerWrapper.find(GlIcon).exists()).toBe(expected);
-          });
-
-          if (expected) {
-            it('includes a tooltip', () => {
-              const icon = headerWrapper.find(GlIcon);
-              const tooltip = getBinding(icon.element, 'gl-tooltip');
-
-              expect(tooltip).toBeDefined();
-              expect(tooltip.value).toBe(tooltipText);
-            });
-          }
-        });
-      },
-    );
   });
 
   describe('table fields', () => {
@@ -170,14 +138,14 @@ describe('DevopsAdoptionTable', () => {
       });
     });
 
-    const testCols = DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols.map((col) => [col.label, col]);
+    const testCols = DEVOPS_ADOPTION_TABLE_CONFIGURATION.map((col) => [col.title, col.testId]);
 
-    it.each(testCols)('displays the cell flag component for %s', (label, { testId }) => {
+    it.each(testCols)('displays the progress bar for %s', (title, testId) => {
       createComponent();
 
-      const booleanFlag = findColSubComponent(testId, DevopsAdoptionTableCellFlag);
+      const progressBar = findColSubComponent(testId, GlProgressBar);
 
-      expect(booleanFlag.exists()).toBe(true);
+      expect(progressBar.exists()).toBe(true);
     });
 
     describe.each`
@@ -191,11 +159,13 @@ describe('DevopsAdoptionTable', () => {
 
       it('displays the actions icon', () => {
         const button = findColSubComponent(TABLE_TEST_IDS_ACTIONS, GlButton);
+        const buttonModalId = getBinding(button.element, 'gl-modal').value;
 
         expect(button.exists()).toBe(true);
         expect(button.props('disabled')).toBe(disabled);
         expect(button.props('icon')).toBe('remove');
         expect(button.props('category')).toBe('tertiary');
+        expect(buttonModalId).toBe(DELETE_MODAL_ID);
       });
 
       it('wraps the icon in an element with a tooltip', () => {
@@ -209,20 +179,34 @@ describe('DevopsAdoptionTable', () => {
     });
   });
 
-  describe('delete modal integration', () => {
-    beforeEach(() => {
+  describe('when delete button is clicked', () => {
+    beforeEach(async () => {
       createComponent();
 
-      wrapper.setData({
-        selectedNamespace: devopsAdoptionNamespaceData.nodes[0],
+      const deleteButton = findColSubComponent(TABLE_TEST_IDS_ACTIONS, GlButton);
+      deleteButton.vm.$emit('click');
+      await deleteButton.vm.$nextTick();
+    });
+
+    it('renders delete modal', () => {
+      expect(findDeleteModal().props()).toEqual({
+        modalId: DELETE_MODAL_ID,
+        namespace: expect.objectContaining(devopsAdoptionNamespaceData.nodes[0]),
       });
     });
 
-    it('re emits trackModalOpenState with the given value', async () => {
-      findDeleteModal().vm.$emit('trackModalOpenState', true);
+    it.each(['trackModalOpenState', 'enabledNamespacesRemoved'])(
+      're emits %s with the given value',
+      (event) => {
+        expect(wrapper.emitted(event)).toBeFalsy();
 
-      expect(wrapper.emitted('trackModalOpenState')).toStrictEqual([[true]]);
-    });
+        const arg = {};
+
+        findDeleteModal().vm.$emit(event, arg);
+
+        expect(wrapper.emitted(event)).toStrictEqual([[arg]]);
+      },
+    );
   });
 
   describe('sorting', () => {
@@ -230,17 +214,19 @@ describe('DevopsAdoptionTable', () => {
 
     beforeEach(() => {
       createComponent();
-      headers = findTable().findAll(`[data-testid="${TABLE_TEST_IDS_HEADERS}"]`);
+      headers = wrapper.findAllByTestId(TABLE_TEST_IDS_HEADERS);
     });
 
-    it('sorts the namespaces by name', async () => {
+    it.each`
+      column    | index
+      ${'name'} | ${0}
+      ${'dev'}  | ${1}
+    `('sorts correctly $column column', async ({ index }) => {
       expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
         devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
       );
 
-      headers.at(0).trigger('click');
-
-      await nextTick();
+      await headers.at(index).trigger('click');
 
       expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
         devopsAdoptionNamespaceData.nodes[1].namespace.fullName,
@@ -250,19 +236,15 @@ describe('DevopsAdoptionTable', () => {
     it('should update local storage when the sort column changes', async () => {
       expect(findSortByLocalStorageSync().props('value')).toBe('name');
 
-      headers.at(1).trigger('click');
+      await headers.at(1).trigger('click');
 
-      await nextTick();
-
-      expect(findSortByLocalStorageSync().props('value')).toBe('mergeRequestApproved');
+      expect(findSortByLocalStorageSync().props('value')).toBe('dev');
     });
 
     it('should update local storage when the sort direction changes', async () => {
       expect(findSortDescLocalStorageSync().props('value')).toBe(false);
 
-      headers.at(0).trigger('click');
-
-      await nextTick();
+      await headers.at(0).trigger('click');
 
       expect(findSortDescLocalStorageSync().props('value')).toBe(true);
     });

@@ -40,7 +40,7 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
       stub_licensed_features(instance_level_devops_adoption: true, group_level_devops_adoption: true)
     end
 
-    path = 'analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql'
+    path = 'analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql'
 
     it "graphql/#{path}.json" do
       query = get_graphql_query_as_string(path, ee: true)
@@ -52,7 +52,7 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
       expect_graphql_errors_to_be_empty
     end
 
-    query_path = 'analytics/devops_report/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql'
+    query_path = 'analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_overview_chart.query.graphql'
 
     it "graphql/#{query_path}.json" do
       query = get_graphql_query_as_string(query_path, ee: true)

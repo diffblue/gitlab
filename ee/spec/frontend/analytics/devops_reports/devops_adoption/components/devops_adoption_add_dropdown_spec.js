@@ -3,16 +3,16 @@ import * as Sentry from '@sentry/browser';
 import { createLocalVue } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import DevopsAdoptionAddDropdown from 'ee/analytics/devops_report/devops_adoption/components/devops_adoption_add_dropdown.vue';
+import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
 import {
   I18N_GROUP_DROPDOWN_TEXT,
   I18N_GROUP_DROPDOWN_HEADER,
   I18N_ADMIN_DROPDOWN_TEXT,
   I18N_ADMIN_DROPDOWN_HEADER,
   I18N_NO_SUB_GROUPS,
-} from 'ee/analytics/devops_report/devops_adoption/constants';
-import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
-import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_report/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
+} from 'ee/analytics/devops_reports/devops_adoption/constants';
+import bulkEnableDevopsAdoptionNamespacesMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/bulk_enable_devops_adoption_namespaces.mutation.graphql';
+import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
