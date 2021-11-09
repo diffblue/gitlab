@@ -27,7 +27,7 @@ To create an epic in the group you're in:
 1. Enter a title.
 1. Complete the fields.
    - Enter a description.
-   - To make the epic confidential, select the [Confidentiality checkbox](#make-an-epic-confidential).
+   - To [make the epic confidential](#make-an-epic-confidential), select the checkbox under **Confidentiality**.
    - Choose labels.
    - Select a start and due date, or [inherit](#start-and-due-date-inheritance) them.
 1. Select **Create epic**.
@@ -225,8 +225,8 @@ to learn how to create a confidential merge request.
 
 To make an epic confidential:
 
-- **When creating an epic:** select the checkbox **Make this epic confidential**.
-- **In an existing epic:** in the epic's sidebar, select **Edit** next to **Confidentiality** then
+- **When creating an epic:** select the checkbox under **Confidentiality**.
+- **In an existing epic:** on the right sidebar, select **Edit** next to **Confidentiality**, and then
   select **Turn on**.
 
 ## Manage issues assigned to an epic
