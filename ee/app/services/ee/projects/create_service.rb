@@ -16,6 +16,10 @@ module EE
 
       override :execute
       def execute
+        if create_from_template?
+          return ::Projects::CreateFromTemplateService.new(current_user, params).execute
+        end
+
         limit = params.delete(:repository_size_limit)
         mirror = ::Gitlab::Utils.to_boolean(params.delete(:mirror))
         mirror_user_id = current_user.id if mirror
