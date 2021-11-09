@@ -41,5 +41,3 @@ export const mockJiraIssueComment = {
   },
   id: 10000,
 };
-
-export const mockJiraIssueStatuses = [{ title: 'In Progress' }, { title: 'Done' }];
