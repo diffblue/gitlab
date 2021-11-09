@@ -1092,4 +1092,12 @@ RSpec.describe Vulnerabilities::Finding do
       end
     end
   end
+
+  describe '.by_location_fingerprints' do
+    let(:finding) { create(:vulnerabilities_finding) }
+
+    subject { described_class.by_location_fingerprints(finding.location_fingerprint) }
+
+    it { is_expected.to contain_exactly(finding) }
+  end
 end

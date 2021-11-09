@@ -525,9 +525,11 @@ RSpec.describe Security::StoreReportService, '#execute', :snowplow do
           end
 
           it 'the issue link is valid' do
+            first_finding_uuid = new_report.findings.first.uuid
+
             subject
 
-            finding = Vulnerabilities::Finding.find_by(uuid: new_report.findings.first.uuid)
+            finding = Vulnerabilities::Finding.find_by(uuid: first_finding_uuid)
             vulnerability_id = finding.vulnerability_id
             issue_id = issue.id
             issue_link = Vulnerabilities::IssueLink.find_by(
