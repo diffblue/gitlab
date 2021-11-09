@@ -31751,6 +31751,15 @@ msgstr ""
 msgid "Sherlock Transactions"
 msgstr ""
 
+msgid "Shimo|Link to a Shimo Workspace from the sidebar."
+msgstr ""
+
+msgid "Shimo|Shimo"
+msgstr ""
+
+msgid "Shimo|Shimo Workspace URL"
+msgstr ""
+
 msgid "Should you ever lose your phone or access to your one time password secret, each of these recovery codes can be used one time each to regain access to your account. Please save them in a safe place, or you %{boldStart}will%{boldEnd} lose access to your account."
 msgstr ""
 
