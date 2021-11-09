@@ -5,15 +5,13 @@ module Gitlab
     # The purpose of this class is to implement a various query analyzers based on `pg_query`
     # And process them all via `Gitlab::Database::QueryAnalyzers::*`
     class QueryAnalyzer
+      include ::Singleton
+
       ANALYZERS = [].freeze
 
       Parsed = Struct.new(
         :sql, :connection, :pg
       )
-
-      def self.instance
-        @instance ||= new
-      end
 
       def hook!
         @subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') do |event|
