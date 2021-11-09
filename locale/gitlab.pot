@@ -28583,6 +28583,9 @@ msgstr ""
 msgid "Remove assignee"
 msgstr ""
 
+msgid "Remove attention request"
+msgstr ""
+
 msgid "Remove avatar"
 msgstr ""
 
@@ -28716,6 +28719,9 @@ msgid "Removed all labels."
 msgstr ""
 
 msgid "Removed an issue from an epic."
+msgstr ""
+
+msgid "Removed attention request from @%{username}"
 msgstr ""
 
 msgid "Removed group can not be restored!"
@@ -29146,6 +29152,12 @@ msgstr ""
 msgid "Request a new one"
 msgstr ""
 
+msgid "Request attention"
+msgstr ""
+
+msgid "Request attention to review"
+msgstr ""
+
 msgid "Request details"
 msgstr ""
 
@@ -29165,6 +29177,9 @@ msgid "Requested"
 msgstr ""
 
 msgid "Requested %{time_ago}"
+msgstr ""
+
+msgid "Requested attention from @%{username}"
 msgstr ""
 
 msgid "Requested design version does not exist."
@@ -36896,6 +36911,9 @@ msgid "Updates"
 msgstr ""
 
 msgid "Updating"
+msgstr ""
+
+msgid "Updating the attention request for %{username} failed."
 msgstr ""
 
 msgid "Updating…"
