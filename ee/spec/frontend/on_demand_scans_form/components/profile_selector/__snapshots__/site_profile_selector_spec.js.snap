@@ -4,7 +4,7 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
 <div
   class="gl-card"
   data-foo="bar"
-  value="gid://gitlab/DastSiteProfile/1"
+  value="gid://gitlab/DastSiteProfile/15"
 >
   <div
     class="gl-card-header"
@@ -62,7 +62,7 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
             <span
               class="gl-new-dropdown-button-text"
             >
-              Site profile #1: https://foo.com
+              Validation pending: http://example5.test
             </span>
              
             <svg
@@ -158,7 +158,7 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
                         class="gl-new-dropdown-item-text-primary"
                       >
                         
-        Site profile #1
+        Validation pending
       
                       </p>
                        
@@ -199,7 +199,130 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
                         class="gl-new-dropdown-item-text-primary"
                       >
                         
-        Site profile #2
+        Validation in progress
+      
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-new-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-new-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-new-dropdown-item-text-primary"
+                      >
+                        
+        Validation passed
+      
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-new-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-new-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-new-dropdown-item-text-primary"
+                      >
+                        
+        Validation failed
+      
+                      </p>
+                       
+                      <!---->
+                    </div>
+                     
+                    <!---->
+                  </button>
+                </li>
+                <li
+                  class="gl-new-dropdown-item"
+                  role="presentation"
+                >
+                  <button
+                    class="dropdown-item"
+                    role="menuitem"
+                    type="button"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      data-testid="dropdown-item-checkbox"
+                      role="img"
+                    >
+                      <use
+                        href="#mobile-issue-close"
+                      />
+                    </svg>
+                     
+                    <!---->
+                     
+                    <!---->
+                     
+                    <div
+                      class="gl-new-dropdown-item-text-wrapper"
+                    >
+                      <p
+                        class="gl-new-dropdown-item-text-primary"
+                      >
+                        
+        Non-validated
       
                       </p>
                        
@@ -300,7 +423,7 @@ exports[`OnDemandScansSiteProfileSelector renders properly with profiles 1`] = `
           <a
             aria-label="Edit profile"
             class="btn gl-absolute gl-right-7 gl-z-index-1 btn-default btn-md gl-button btn-icon"
-            href="/site_profiles/edit/1"
+            href="/namespace1/project1/-/security/configuration/dast_scans/dast_site_profiles/15/edit"
             title="Edit profile"
           >
             <!---->

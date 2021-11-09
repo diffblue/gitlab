@@ -11,15 +11,22 @@ import createApolloProvider from 'helpers/mock_apollo_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as responses from '../../mocks/apollo_mocks';
-import { scannerProfiles, siteProfiles } from '../../mocks/mock_data';
+import { scannerProfiles } from '../../mocks/mock_data';
+import { siteProfiles } from '../../../security_configuration/dast_profiles/mocks/mock_data';
 
 const URL_HOST = 'https://localhost/';
 
 const fullPath = '/project/path';
 
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
-const [nonValidatedSiteProfile, validatedSiteProfile] = siteProfiles;
+const nonValidatedSiteProfile = siteProfiles.find(
+  ({ validationStatus }) => validationStatus === 'NONE',
+);
+const validatedSiteProfile = siteProfiles.find(
+  ({ validationStatus }) => validationStatus === 'PASSED_VALIDATION',
+);
 
 beforeEach(() => {
   setWindowLocation(URL_HOST);
@@ -190,14 +197,16 @@ describe('EE - DAST Profiles Selector', () => {
     });
 
     it('site profile', () => {
-      setWindowLocation(`?site_profile_id=1`);
+      setWindowLocation(`?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}`);
       createComponent();
 
       expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
     });
 
     it('both scanner & site profile', () => {
-      setWindowLocation(`?site_profile_id=1&scanner_profile_id=1`);
+      setWindowLocation(
+        `?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}&scanner_profile_id=1`,
+      );
       createComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);

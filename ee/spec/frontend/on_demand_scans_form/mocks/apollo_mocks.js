@@ -1,4 +1,5 @@
-import { scannerProfiles, siteProfiles } from './mock_data';
+import { siteProfiles } from '../../security_configuration/dast_profiles/mocks/mock_data';
+import { scannerProfiles } from './mock_data';
 
 const defaults = {
   pageInfo: {

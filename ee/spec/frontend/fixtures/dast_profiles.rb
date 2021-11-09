@@ -75,11 +75,36 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
         # DAST site profiles
         let_it_be(:dast_site_profiles) do
           [
-            create(:dast_site_profile, project: project, dast_site: dast_site_none),
-            create(:dast_site_profile, project: project, dast_site: dast_site_failed),
-            create(:dast_site_profile, project: project, dast_site: dast_site_passed),
-            create(:dast_site_profile, project: project, dast_site: dast_site_inprogress),
-            create(:dast_site_profile, project: project, dast_site: dast_site_pending)
+            create(
+              :dast_site_profile,
+              name: "Non-validated",
+              auth_username: "non-validated@example.com",
+              project: project, dast_site: dast_site_none
+            ),
+            create(
+              :dast_site_profile,
+              name: "Validation failed",
+              auth_username: "validation-failed@example.com",
+              project: project, dast_site: dast_site_failed
+            ),
+            create(
+              :dast_site_profile,
+              name: "Validation passed",
+              auth_username: "validation-passed@example.com",
+              project: project, dast_site: dast_site_passed
+            ),
+            create(
+              :dast_site_profile,
+              name: "Validation in progress",
+              auth_username: "validation-in-progress@example.com",
+              project: project, dast_site: dast_site_inprogress
+            ),
+            create(
+              :dast_site_profile,
+              name: "Validation pending",
+              auth_username: "validation-pending@example.com",
+              project: project, dast_site: dast_site_pending
+            )
           ]
         end
 
