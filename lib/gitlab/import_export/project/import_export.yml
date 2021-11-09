@@ -393,6 +393,10 @@ included_attributes:
     - :sorted
     - :diff_type
   merge_request_diff_commits:
+    - :author_name
+    - :author_email
+    - :committer_name
+    - :committer_email
     - :relative_order
     - :sha
     - :authored_date
