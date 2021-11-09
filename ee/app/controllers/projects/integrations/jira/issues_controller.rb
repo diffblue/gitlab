@@ -13,9 +13,6 @@ module Projects
           name: 'i_ecosystem_jira_service_list_issues'
 
         before_action :check_feature_enabled!
-        before_action only: :show do
-          push_frontend_feature_flag(:jira_issue_details_edit_status, project, default_enabled: :yaml)
-        end
 
         rescue_from ::Projects::Integrations::Jira::IssuesFinder::Error, with: :render_error
 
