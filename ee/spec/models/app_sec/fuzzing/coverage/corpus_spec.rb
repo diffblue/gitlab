@@ -24,4 +24,19 @@ RSpec.describe AppSec::Fuzzing::Coverage::Corpus, type: :model do
       end
     end
   end
+
+  describe 'scopes' do
+    describe 'by_project_id' do
+      it 'includes the correct records' do
+        another_corpus_profile = create(:corpus)
+
+        result = described_class.by_project_id(subject.package.project_id)
+
+        aggregate_failures do
+          expect(result).to include(subject)
+          expect(result).not_to include(another_corpus_profile)
+        end
+      end
+    end
+  end
 end

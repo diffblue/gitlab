@@ -20,7 +20,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       vulnerabilities vulnerability_scanners requirement_states_count
       vulnerability_severities_count packages compliance_frameworks vulnerabilities_count_by_day
       security_dashboard_path iterations iteration_cadences repository_size_excess actual_repository_size_limit
-      code_coverage_summary api_fuzzing_ci_configuration path_locks incident_management_escalation_policies
+      code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies
     ]
 
