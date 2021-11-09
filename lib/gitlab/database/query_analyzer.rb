@@ -31,7 +31,10 @@ module Gitlab
       end
 
       def within
-        return yield if enabled_analyzers
+        # Due to singleton nature of analyzers
+        # only an outer invocation of the `.within`
+        # is allowed to initialize them
+        return yield if already_within?
 
         begin!
 
@@ -40,6 +43,11 @@ module Gitlab
         ensure
           end!
         end
+      end
+
+      def already_within?
+        # If analyzers are set they are already configured
+        !enabled_analyzers.nil?
       end
 
       def process_sql(sql, connection)
@@ -69,6 +77,8 @@ module Gitlab
           end
         rescue StandardError => e
           Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
+
+          false
         end
 
         Thread.current[:query_analyzer_enabled_analyzers] = analyzers
