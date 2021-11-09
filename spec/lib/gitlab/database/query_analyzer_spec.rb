@@ -126,8 +126,10 @@ RSpec.describe Gitlab::Database::QueryAnalyzer, query_analyzers: false do
     end
 
     def process_sql(sql)
-      ApplicationRecord.load_balancer.read_write do |connection|
-        described_class.instance.process_sql(sql, connection)
+      described_class.instance.within do
+        ApplicationRecord.load_balancer.read_write do |connection|
+          described_class.instance.process_sql(sql, connection)
+        end
       end
     end
   end
