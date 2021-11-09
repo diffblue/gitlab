@@ -53,6 +53,40 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
             log = ActiveRecord::QueryRecorder.new { subject }
             expect(log.count).to be_within(1).of(8)
           end
+
+          context 'with several locked-unknown artifact records' do
+            before do
+              stub_const("#{described_class}::LOOP_LIMIT", 3)
+              stub_const("#{described_class}::BATCH_SIZE", 2)
+            end
+
+            let!(:lockable_artifact_records) do
+              [
+                create(:ci_job_artifact, :metadata,  :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: locked_job),
+                create(:ci_job_artifact, :junit,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: locked_job),
+                create(:ci_job_artifact, :sast,      :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: locked_job),
+                create(:ci_job_artifact, :cobertura, :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: locked_job),
+                create(:ci_job_artifact, :trace,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: locked_job)
+              ]
+            end
+
+            let!(:unlockable_artifact_records) do
+              [
+                create(:ci_job_artifact, :metadata,  :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
+                create(:ci_job_artifact, :junit,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
+                create(:ci_job_artifact, :sast,      :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
+                create(:ci_job_artifact, :cobertura, :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
+                create(:ci_job_artifact, :trace,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job)
+              ]
+            end
+
+            it 'updates the locked status of job artifacts from artifacts-locked pipelines' do
+              subject
+
+              expect(lockable_artifact_records).to be_all { |artifact| artifact.reload.artifact_artifacts_locked? }
+              expect(unlockable_artifact_records).to be_all { |artifact| artifact.reload.artifact_unlocked? }
+            end
+          end
         end
       end
 
