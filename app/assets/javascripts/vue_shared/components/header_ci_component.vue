@@ -144,7 +144,7 @@ export default {
             :size="24"
             :src="avatarUrl"
             :label="user.name"
-            class="d-none d-sm-inline-flex gl-mx-1"
+            class="gl-display-none gl-sm-display-inline-flex gl-mx-1"
           />
           <strong class="author gl-display-inline gl-sm-display-none!">@{{ user.username }}</strong>
           <gl-tooltip v-if="message" :target="() => $refs[$options.EMOJI_REF]">
