@@ -38,7 +38,9 @@ module EE
 
             override :create_findings
             def create_findings
-              collate_remediations.each { |finding| create_finding(finding, create_remediations(report_data['remediations'])) }
+              collate_remediations.each do |finding|
+                create_finding(finding, create_remediations(finding["remediations"]))
+              end
             end
           end
         end
