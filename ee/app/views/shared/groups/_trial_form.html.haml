@@ -27,5 +27,4 @@
       %p.gray-500= _('Allowed characters: +, 0-9, -, and spaces.')
   .row
     .form-group.col-sm-12.gl-select2-html5-required-fix
-      = label_tag :country, s_('Trial|Country'), class: 'col-form-label'
-      = select_tag :country, options_for_select([[_('Please select a country'), '']]), class: ' js-trial-field select2 gl-transparent-pixel', required: true, id: 'country_select', data: { countries_end_point: countries_path, selected_option: params[:country]}
+      = render 'shared/groups/country_or_region_selector'
