@@ -26,6 +26,8 @@ module EE
 
       override :after_create_hook
       def after_create_hook
+        super
+
         if group.persisted? && create_event
           ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
         end
