@@ -44,24 +44,28 @@ RSpec.describe Board do
         board.milestone_id = Milestone::None.id
 
         expect(board.milestone).to eq Milestone::None
+        expect(board.milestone.to_global_id.to_s).to eq "gid://gitlab/Milestone/#{Milestone::None.id}"
       end
 
       it 'returns Milestone::Any for started milestone id' do
         board.milestone_id = Milestone::Any.id
 
         expect(board.milestone).to eq Milestone::Any
+        expect(board.milestone.to_global_id.to_s).to eq "gid://gitlab/Milestone/#{Milestone::Any.id}"
       end
 
       it 'returns Milestone::Upcoming for upcoming milestone id' do
         board.milestone_id = Milestone::Upcoming.id
 
         expect(board.milestone).to eq Milestone::Upcoming
+        expect(board.milestone.to_global_id.to_s).to eq "gid://gitlab/Milestone/#{Milestone::Upcoming.id}"
       end
 
       it 'returns Milestone::Started for started milestone id' do
         board.milestone_id = Milestone::Started.id
 
         expect(board.milestone).to eq Milestone::Started
+        expect(board.milestone.to_global_id.to_s).to eq "gid://gitlab/Milestone/#{Milestone::Started.id}"
       end
 
       it 'returns milestone for valid milestone id' do
@@ -101,18 +105,21 @@ RSpec.describe Board do
         board.iteration_id = Iteration::Predefined::None.id
 
         expect(board.iteration).to eq Iteration::Predefined::None
+        expect(board.iteration.to_global_id.to_s).to eq "gid://gitlab/Iteration/#{Iteration::Predefined::None.id}"
       end
 
       it 'returns Iteration::Predefined::Any, when iteration_id is Any.id' do
         board.iteration_id = Iteration::Predefined::Any.id
 
         expect(board.iteration).to eq Iteration::Predefined::Any
+        expect(board.iteration.to_global_id.to_s).to eq "gid://gitlab/Iteration/#{Iteration::Predefined::Any.id}"
       end
 
       it 'returns ::Iteration::Predefined::Current, when iteration_id is Current.id' do
         board.iteration_id = Iteration::Predefined::Current.id
 
         expect(board.iteration).to eq Iteration::Predefined::Current
+        expect(board.iteration.to_global_id.to_s).to eq "gid://gitlab/Iteration/#{Iteration::Predefined::Current.id}"
       end
 
       it 'returns iteration for valid iteration id' do
