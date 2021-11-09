@@ -11,6 +11,10 @@ module Gitlab
         :sql, :connection, :pg
       )
 
+      def self.instance
+        @instance ||= new
+      end
+
       def hook!
         @subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') do |event|
           process_sql(event.payload[:sql], event.payload[:connection])
