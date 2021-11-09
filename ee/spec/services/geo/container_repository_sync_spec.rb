@@ -60,7 +60,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
 
     tags.each do |tag, digest|
       stub_request(:head, "#{repository_url}/manifests/#{tag}")
-        .to_return(status: 200, body: "", headers: { 'docker-content-digest' => digest })
+        .to_return(status: 200, body: "", headers: { DependencyProxy::Manifest::DIGEST_HEADER => digest })
     end
   end
 
@@ -73,7 +73,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
 
     tags.each do |tag, digest|
       stub_request(:head, "#{repository_url}/manifests/#{tag}")
-        .to_return(status: 200, body: "", headers: { 'docker-content-digest' => digest })
+        .to_return(status: 200, body: "", headers: { DependencyProxy::Manifest::DIGEST_HEADER => digest })
     end
   end
 

@@ -8,6 +8,7 @@ class DependencyProxy::Manifest < ApplicationRecord
   belongs_to :group
 
   MAX_FILE_SIZE = 10.megabytes.freeze
+  DIGEST_HEADER = 'Docker-Content-Digest'
 
   validates :group, presence: true
   validates :file, presence: true
