@@ -18,6 +18,9 @@ module Types
         field :projects, ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type, null: true,
               description: 'CI minutes usage data for projects in the namespace.'
 
+        field :shared_runners_duration, ::GraphQL::INT_TYPE, null: true,
+              description: 'Total numbers of minutes used by the shared runners in the namespace.'
+
         def month
           object.date.strftime('%B')
         end
