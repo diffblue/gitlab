@@ -114,6 +114,7 @@ a job-specific `image:` section:
   that keyword defined.
 - If a job already has one of the keywords configured, the configuration in the job
   takes precedence and is not replaced by the default.
+- Control inheritance of default keywords in jobs with [`inherit:default`](#inheritdefault).
 
 ### `stages`
 
@@ -4194,83 +4195,79 @@ You must:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/207484) in GitLab 12.9.
 
-Use `inherit:` to control inheritance of globally-defined defaults
-and variables.
+Use `inherit:` to [control inheritance of globally-defined defaults and variables](../jobs/index.md#control-the-inheritance-of-default-keywords-and-global-variables).
 
-To enable or disable the inheritance of all `default:` or `variables:` keywords, use:
+#### `inherit:default`
 
-- `default: true` or `default: false`
-- `variables: true` or `variables: false`
+Use `inherit:default` to control the inheritance of [default keywords](#default).
 
-To inherit only a subset of `default:` keywords or `variables:`, specify what
-you wish to inherit. Anything not listed is **not** inherited. Use
-one of the following formats:
+**Keyword type**: Job keyword. You can use it only as part of a job.
 
-```yaml
-inherit:
-  default: [keyword1, keyword2]
-  variables: [VARIABLE1, VARIABLE2]
-```
+**Possible inputs**:
 
-Or:
+- `true` (default) or `false` to enable or disable the inheritance of all default keywords.
+- A list of specific default keywords to inherit.
 
-```yaml
-inherit:
-  default:
-    - keyword1
-    - keyword2
-  variables:
-    - VARIABLE1
-    - VARIABLE2
-```
-
-In the following example:
-
-- `rubocop`:
-  - inherits: Nothing.
-- `rspec`:
-  - inherits: the default `image` and the `WEBHOOK_URL` variable.
-  - does **not** inherit: the default `before_script` and the `DOMAIN` variable.
-- `capybara`:
-  - inherits: the default `before_script` and `image`.
-  - does **not** inherit: the `DOMAIN` and `WEBHOOK_URL` variables.
-- `karma`:
-  - inherits: the default `image` and `before_script`, and the `DOMAIN` variable.
-  - does **not** inherit: `WEBHOOK_URL` variable.
+**Example of `inherit:default`:**
 
 ```yaml
 default:
-  image: 'ruby:2.4'
-  before_script:
-    - echo Hello World
+  retry: 2
+  image: ruby:3.0
+  interruptible: true
 
-variables:
-  DOMAIN: example.com
-  WEBHOOK_URL: https://my-webhook.example.com
-
-rubocop:
+job1:
+  script: echo "This job does not inherit any default keywords."
   inherit:
     default: false
-    variables: false
-  script: bundle exec rubocop
 
-rspec:
+job2:
+  script: echo "This job inherits only the two listed default keywords. It does not inherit 'interruptible'."
   inherit:
-    default: [image]
-    variables: [WEBHOOK_URL]
-  script: bundle exec rspec
-
-capybara:
-  inherit:
-    variables: false
-  script: bundle exec capybara
-
-karma:
-  inherit:
-    default: true
-    variables: [DOMAIN]
-  script: karma
+    default:
+      - retry
+      - image
 ```
+
+**Additional details:**
+
+- You can also list default keywords to inherit on one line: `default: [keyword1, keyword2]`
+
+#### `inherit:variables`
+
+Use `inherit:variables` to control the inheritance of [global variables](#variables) keywords.
+
+**Keyword type**: Job keyword. You can use it only as part of a job.
+
+**Possible inputs**:
+
+- `true` (default) or `false` to enable or disable the inheritance of all global variables.
+- A list of specific variables to inherit.
+
+**Example of `inherit:variables`:**
+
+```yaml
+variables:
+  VARIABLE1: "This is variable 1"
+  VARIABLE2: "This is variable 2"
+  VARIABLE3: "This is variable 3"
+
+job1:
+  script: echo "This job does not inherit any global variables."
+  inherit:
+    variables: false
+
+job2:
+  script: echo "This job inherits only the two listed global variables. It does not inherit 'VARIABLE3'."
+  inherit:
+    variables:
+      - VARIABLE1
+      - VARIABLE2
+```
+
+**Additional details:**
+
+- You can also list global variables to inherit on one line: `variables: [VARIABLE1, VARIABLE2]`
 
 ## `variables`
 
