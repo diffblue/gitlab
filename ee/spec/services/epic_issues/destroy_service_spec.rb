@@ -15,7 +15,8 @@ RSpec.describe EpicIssues::DestroyService do
 
     context 'when epics feature is disabled' do
       before do
-        group.add_reporter(user)
+        project.add_reporter(user)
+        group.add_guest(user)
       end
 
       it 'returns an error' do
@@ -30,7 +31,8 @@ RSpec.describe EpicIssues::DestroyService do
 
       context 'when user has permissions to remove associations' do
         before do
-          group.add_reporter(user)
+          project.add_reporter(user)
+          group.add_guest(user)
         end
 
         it 'removes related issue' do
@@ -73,6 +75,14 @@ RSpec.describe EpicIssues::DestroyService do
 
           subject
         end
+
+        context 'refresh epic dates' do
+          it 'calls UpdateDatesService' do
+            expect(Epics::UpdateDatesService).to receive(:new).with([epic_issue.epic]).and_call_original
+
+            subject
+          end
+        end
       end
 
       context 'user does not have permissions to remove associations' do
@@ -86,16 +96,6 @@ RSpec.describe EpicIssues::DestroyService do
 
         it 'does not counts an usage ping event' do
           expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter).not_to receive(:track_epic_issue_removed)
-
-          subject
-        end
-      end
-
-      context 'refresh epic dates' do
-        it 'calls UpdateDatesService' do
-          group.add_reporter(user)
-
-          expect(Epics::UpdateDatesService).to receive(:new).with([epic_issue.epic]).and_call_original
 
           subject
         end

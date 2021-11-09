@@ -23,7 +23,7 @@ RSpec.describe 'Update of an existing issue' do
 
   before do
     stub_licensed_features(issuable_health_status: true)
-    project.add_developer(current_user)
+    project.add_reporter(current_user)
   end
 
   it 'updates the issue' do
@@ -42,7 +42,7 @@ RSpec.describe 'Update of an existing issue' do
 
     before do
       stub_licensed_features(epics: true)
-      group.add_developer(current_user)
+      group.add_guest(current_user)
     end
 
     it 'sets the epic' do
@@ -56,7 +56,7 @@ RSpec.describe 'Update of an existing issue' do
     end
 
     context 'the epic is not readable to the current user' do
-      let(:epic) { create(:epic) }
+      let(:epic) { create(:epic, :confidential, group: group) }
 
       it 'does not set the epic' do
         post_graphql_mutation(mutation, current_user: current_user)
@@ -117,7 +117,7 @@ RSpec.describe 'Update of an existing issue' do
 
     before do
       stub_licensed_features(epics: true)
-      group.add_developer(current_user)
+      group.add_guest(current_user)
       issue.update!(epic: epic)
     end
 

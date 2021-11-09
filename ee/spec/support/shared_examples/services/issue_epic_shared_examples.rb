@@ -26,7 +26,7 @@ RSpec.shared_examples 'issue with epic_id parameter' do
 
   context 'when user can not add issues to the epic' do
     before do
-      project.add_maintainer(user)
+      project.add_guest(user)
     end
 
     let(:params) { { title: 'issue1', epic_id: epic.id } }

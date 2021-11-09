@@ -24,7 +24,7 @@ RSpec.describe Mutations::Boards::Issues::IssueMoveList do
 
   before do
     stub_licensed_features(epics: true)
-    project.add_maintainer(user)
+    project.add_reporter(user)
   end
 
   subject do
@@ -34,7 +34,7 @@ RSpec.describe Mutations::Boards::Issues::IssueMoveList do
   describe '#resolve' do
     context 'when user has access to the epic' do
       before do
-        group.add_developer(user)
+        group.add_guest(user)
       end
 
       it 'moves and repositions issue' do
@@ -47,6 +47,8 @@ RSpec.describe Mutations::Boards::Issues::IssueMoveList do
     end
 
     context 'when user does not have access to the epic' do
+      let(:epic) { create(:epic, :confidential, group: group) }
+
       it 'does not update issue' do
         subject
 

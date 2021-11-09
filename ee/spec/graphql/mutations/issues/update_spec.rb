@@ -39,13 +39,12 @@ RSpec.describe Mutations::Issues::Update do
 
     before do
       group.clear_memoization(:feature_available)
-      group.add_developer(user)
+      project.add_reporter(user)
+      group.add_guest(user)
     end
 
     context 'when epics feature is disabled' do
       it 'raises an error' do
-        group.add_developer(user)
-
         expect { subject }.to raise_error(::Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
@@ -56,7 +55,7 @@ RSpec.describe Mutations::Issues::Update do
       end
 
       context 'for user without permissions' do
-        let(:current_user) { create(:user) }
+        let(:epic) { create(:epic, :confidential, group: group) }
 
         it 'raises an error' do
           expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)

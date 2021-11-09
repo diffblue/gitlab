@@ -102,6 +102,7 @@ RSpec.describe API::EpicIssues do
     context 'when epics feature is enabled' do
       before do
         stub_licensed_features(epics: true)
+        group.add_guest(user)
       end
 
       context 'when an error occurs' do
@@ -117,13 +118,33 @@ RSpec.describe API::EpicIssues do
 
           post api(url, user)
 
-          expect(response).to have_gitlab_http_status(:not_found)
+          expect(response).to have_gitlab_http_status(:forbidden)
         end
 
-        it 'returns 403 forbidden error for a user without permissions to admin the epic' do
-          post api(url, user)
+        context 'without permissions to admin the issue' do
+          before do
+            project.add_guest(user)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 forbidden error' do
+            post api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context 'without permissions to read the epic' do
+          let(:epic) { create(:epic, :confidential, group: create(:group, :private)) }
+
+          before do
+            project.add_reporter(user)
+          end
+
+          it 'returns 403 forbidden error' do
+            post api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
         context 'when issue project is not under the epic group' do
@@ -146,7 +167,7 @@ RSpec.describe API::EpicIssues do
 
       context 'when the request is correct' do
         before do
-          group.add_developer(user)
+          project.add_reporter(user)
 
           post api(url, user)
         end
@@ -205,10 +226,29 @@ RSpec.describe API::EpicIssues do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        it 'returns 403 forbidden error for a user without permissions to admin the epic' do
-          delete api(url, user)
+        context 'With user without permissions to admin the issue' do
+          before do
+            project.add_guest(user)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 forbidden error' do
+            delete api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context 'without permissions to read the epic' do
+          before do
+            [issue, epic].map { |issuable| issuable.update!(confidential: true) }
+            project.add_reporter(user)
+          end
+
+          it 'returns 403 forbidden error' do
+            delete api(url, user)
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
         context 'when epic_issue association does not include the epic in the url' do

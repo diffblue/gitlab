@@ -813,19 +813,11 @@ RSpec.describe Issue do
       end
 
       context 'when a user is a project member' do
-        it 'returns false' do
-          project.add_developer(user)
-
-          expect(subject).to be_falsey
+        before do
+          project.add_reporter(user)
         end
-      end
 
-      context 'when a user is a group member' do
-        it 'returns true' do
-          group.add_developer(user)
-
-          expect(subject).to be_truthy
-        end
+        it { is_expected.to be_truthy }
       end
     end
 

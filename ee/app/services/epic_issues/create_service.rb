@@ -35,14 +35,23 @@ module EpicIssues
 
     def linkable_issuables(issues)
       @linkable_issues ||= begin
-        return [] unless can?(current_user, :admin_epic, issuable.group)
+        return [] unless can?(current_user, :read_epic, issuable.group)
+
+        Preloaders::UserMaxAccessLevelInProjectsPreloader
+          .new(issues.map(&:project).compact, current_user)
+          .execute
 
         issues.select do |issue|
-          issue.supports_epic? &&
-            issuable_group_descendants.include?(issue.project.group) &&
-            !previous_related_issuables.include?(issue)
+          linkable_issue?(issue)
         end
       end
+    end
+
+    def linkable_issue?(issue)
+      issue.supports_epic? &&
+        can?(current_user, :admin_issue, issue.project) &&
+        issuable_group_descendants.include?(issue.project.group) &&
+        !previous_related_issuables.include?(issue)
     end
 
     def previous_related_issuables

@@ -89,6 +89,11 @@ RSpec.describe EpicIssues::CreateService do
     context 'when epics feature is disabled' do
       subject { assign_issue([valid_reference]) }
 
+      before do
+        group.add_guest(user)
+        project.add_reporter(user)
+      end
+
       include_examples 'returns an error'
     end
 
@@ -99,7 +104,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when user has permissions to link the issue' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
         end
 
         context 'when the reference list is empty' do
@@ -124,7 +130,7 @@ RSpec.describe EpicIssues::CreateService do
 
             include_examples 'returns success'
 
-            it 'does not perform N + 1 queries' do
+            it 'does not perform N + 1 queries', :request_store do
               allow(SystemNoteService).to receive(:epic_issue)
               allow(SystemNoteService).to receive(:issue_on_epic)
 
@@ -146,7 +152,7 @@ RSpec.describe EpicIssues::CreateService do
               project = create(:project, group: group)
               issues = create_list(:issue, 5, project: project)
               epic = create(:epic, group: group)
-              group.add_developer(user)
+              group.add_reporter(user)
 
               allow(extractor).to receive(:issues).and_return(issues)
               params = { issuable_references: issues.map { |i| i.to_reference(full: true) } }
@@ -173,6 +179,10 @@ RSpec.describe EpicIssues::CreateService do
 
             subject { assign_issue([Gitlab::Routing.url_helpers.namespace_project_issue_url(namespace_id: issue.project.namespace, project_id: issue.project, id: issue.iid)])}
 
+            before do
+              project2.add_reporter(user)
+            end
+
             include_examples 'returns success'
           end
 
@@ -196,6 +206,7 @@ RSpec.describe EpicIssues::CreateService do
 
               expect(created_link2.relative_position).to be < created_link1.relative_position
             end
+
             it 'orders the epic issues to the first place and moves the existing ones down' do
               existing_link = create(:epic_issue, epic: epic, issue: issue3)
 
@@ -258,7 +269,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when assigning issue(s) to the same epic' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
           assign_issue([valid_reference])
           epic.reload
         end
@@ -288,7 +300,8 @@ RSpec.describe EpicIssues::CreateService do
 
       context 'when an issue is already assigned to another epic', :sidekiq_inline do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+          project.add_reporter(user)
           create(:epic_issue, epic: epic, issue: issue)
           issue.reload
         end
@@ -361,8 +374,8 @@ RSpec.describe EpicIssues::CreateService do
         let_it_be(:another_issue) { create :issue }
 
         before do
-          group.add_developer(user)
-          another_issue.project.add_developer(user)
+          group.add_guest(user)
+          another_issue.project.add_reporter(user)
         end
 
         include_examples 'returns an error'
