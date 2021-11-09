@@ -99,6 +99,14 @@ When checking if a runner is "paused", API users are advised to check the boolea
 
 Announced: 
 
+### `AuthenticationType` for `[runners.cache.s3]` must be explicitly assigned
+
+In GitLab 15.0 and later, to access the AWS S3 cache, you must specify the `AuthenticationType` for [`[runners.cache.s3]`](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnerscaches3-section). The `AuthenticationType` must be `IAM` or `credentials`.
+
+Prior to 14.5, if you did not define the `AuthenticationType`, GitLab Runner chose a type for you. 
+
+Announced: 2021-11-22
+
 ## 15.2
 
 ### NFS for Git repository storage deprecated
