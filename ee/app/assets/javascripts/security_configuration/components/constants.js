@@ -1,6 +1,10 @@
 import { s__ } from '~/locale';
 import { featureToMutationMap as featureToMutationMapCE } from '~/security_configuration/components/constants';
-import { REPORT_TYPE_DEPENDENCY_SCANNING } from '~/vue_shared/security_reports/constants';
+import {
+  REPORT_TYPE_SAST_IAC,
+  REPORT_TYPE_DEPENDENCY_SCANNING,
+} from '~/vue_shared/security_reports/constants';
+import configureSastIacMutation from '../graphql/configure_iac.mutation.graphql';
 import configureDependencyScanningMutation from '../graphql/configure_dependency_scanning.mutation.graphql';
 
 export const SMALL = 'SMALL';
@@ -21,6 +25,21 @@ export const CUSTOM_VALUE_MESSAGE = s__(
 
 export const featureToMutationMap = {
   ...featureToMutationMapCE,
+  ...(gon?.features?.configureIacScanningViaMr
+    ? {
+        [REPORT_TYPE_SAST_IAC]: {
+          mutationId: 'configureSastIac',
+          getMutationPayload: (projectPath) => ({
+            mutation: configureSastIacMutation,
+            variables: {
+              input: {
+                projectPath,
+              },
+            },
+          }),
+        },
+      }
+    : {}),
   [REPORT_TYPE_DEPENDENCY_SCANNING]: {
     mutationId: 'configureDependencyScanning',
     getMutationPayload: (projectPath) => ({

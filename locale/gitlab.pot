@@ -3929,6 +3929,9 @@ msgstr ""
 msgid "Analyze your dependencies for known vulnerabilities."
 msgstr ""
 
+msgid "Analyze your infrastructure as code configuration files for known vulnerabilities."
+msgstr ""
+
 msgid "Analyze your source code and git history for secrets."
 msgstr ""
 
@@ -18324,6 +18327,9 @@ msgid "Infrastructure"
 msgstr ""
 
 msgid "Infrastructure Registry"
+msgstr ""
+
+msgid "Infrastructure as Code (IaC) Scanning"
 msgstr ""
 
 msgid "InfrastructureRegistry|Copy Terraform Command"
@@ -40421,6 +40427,9 @@ msgid "ciReport|Fixed:"
 msgstr ""
 
 msgid "ciReport|Found %{issuesWithCount}"
+msgstr ""
+
+msgid "ciReport|IaC Scanning"
 msgstr ""
 
 msgid "ciReport|Investigate this vulnerability by creating an issue"

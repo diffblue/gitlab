@@ -16755,6 +16755,7 @@ Size of UI component in SAST configuration page.
 | <a id="securityreporttypeenumdast"></a>`DAST` | DAST scan report. |
 | <a id="securityreporttypeenumdependency_scanning"></a>`DEPENDENCY_SCANNING` | DEPENDENCY SCANNING scan report. |
 | <a id="securityreporttypeenumsast"></a>`SAST` | SAST scan report. |
+| <a id="securityreporttypeenumsast_iac"></a>`SAST_IAC` | SAST IAC scan report. |
 | <a id="securityreporttypeenumsecret_detection"></a>`SECRET_DETECTION` | SECRET DETECTION scan report. |
 
 ### `SecurityScannerType`
@@ -16770,6 +16771,7 @@ The type of the security scanner.
 | <a id="securityscannertypedast"></a>`DAST` | DAST scanner. |
 | <a id="securityscannertypedependency_scanning"></a>`DEPENDENCY_SCANNING` | Dependency Scanning scanner. |
 | <a id="securityscannertypesast"></a>`SAST` | SAST scanner. |
+| <a id="securityscannertypesast_iac"></a>`SAST_IAC` | Sast Iac scanner. |
 | <a id="securityscannertypesecret_detection"></a>`SECRET_DETECTION` | Secret Detection scanner. |
 
 ### `SentryErrorStatus`
