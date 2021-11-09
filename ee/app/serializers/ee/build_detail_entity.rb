@@ -12,7 +12,7 @@ module EE
           end
 
           expose :limit do |runner|
-            project.ci_minutes_quota.total_minutes
+            project.ci_minutes_quota.limit.total
           end
         end
       end

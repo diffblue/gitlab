@@ -1,0 +1,93 @@
+# frozen_string_literal: true
+require 'spec_helper'
+
+RSpec.describe Ci::Minutes::Limit do
+  using RSpec::Parameterized::TableSyntax
+
+  let_it_be_with_reload(:namespace) { create(:namespace) }
+  let_it_be_with_reload(:another_group) { create(:group) }
+
+  let(:limit) { described_class.new(namespace) }
+  let(:namespace_monthly_limit) { 400 }
+  let(:application_monthly_limit) { 400 }
+  let(:purchased_minutes) { 0 }
+
+  before do
+    namespace.shared_runners_minutes_limit = namespace_monthly_limit
+    namespace.extra_shared_runners_minutes_limit = purchased_minutes
+    allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(application_monthly_limit)
+  end
+
+  describe '#enabled?' do
+    subject { limit.enabled? }
+
+    where(:namespace_monthly_limit, :application_monthly_limit, :purchased_minutes, :result) do
+      0   | 100 | 0  | false
+      0   | 100 | 10 | true
+      nil | 100 | 10 | true
+      nil | 100 | 0  | true
+      20  | 100 | 0  | true
+      nil | nil | 0  | false
+      nil | 0   | 0  | false
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+
+      context 'when namespace is not root' do
+        before do
+          namespace.parent = another_group
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#total' do
+    subject { limit.total }
+
+    where(:namespace_monthly_limit, :application_monthly_limit, :purchased_minutes, :result) do
+      20  | 100 | 30 | 50
+      nil | 100 | 30 | 130
+      20  | 100 | 0  | 20
+      0   | 0   | 30 | 30
+      nil | 0   | 30 | 30
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#monthly' do
+    subject { limit.monthly}
+
+    where(:namespace_monthly_limit, :application_monthly_limit, :result) do
+      20  | 100 | 20
+      nil | 100 | 100
+      100 | nil | 100
+      0   | 100 | 0
+      nil | nil | 0
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#purchased and #any_purchased?' do
+    where(:purchased_minutes, :purchased, :any_purchased) do
+      nil | 0  | false
+      0   | 0  | false
+      10  | 10 | true
+    end
+
+    with_them do
+      it do
+        expect(limit.purchased).to eq(purchased)
+        expect(limit.any_purchased?).to eq(any_purchased)
+      end
+    end
+  end
+end

@@ -91,28 +91,6 @@ RSpec.describe Ci::Minutes::Quota do
     end
   end
 
-  describe '#total_minutes' do
-    subject { quota.total_minutes }
-
-    where(:namespace_monthly_limit, :application_monthly_limit, :purchased_minutes, :result) do
-      20  | 100 | 30 | 50
-      nil | 100 | 30 | 130
-      20  | 100 | 0  | 20
-      0   | 0   | 30 | 30
-      nil | 0   | 30 | 30
-    end
-
-    with_them do
-      before do
-        namespace.shared_runners_minutes_limit = namespace_monthly_limit
-        allow(::Gitlab::CurrentSettings).to receive(:shared_runners_minutes).and_return(application_monthly_limit)
-        allow(namespace).to receive(:extra_shared_runners_minutes_limit).and_return(purchased_minutes)
-      end
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#total_minutes_used' do
     subject { quota.total_minutes_used }
 
