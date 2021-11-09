@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Projects::IncidentsHelper do
   include Gitlab::Routing.url_helpers
 
-  let_it_be_with_refind(:project) { create(:project) }
-
+  let(:project) { build_stubbed(:project) }
+  let(:user) { build_stubbed(:user) }
   let(:project_path) { project.full_path }
   let(:new_issue_path) { new_project_issue_path(project) }
   let(:issue_path) { project_issues_path(project) }
@@ -16,6 +16,13 @@ RSpec.describe Projects::IncidentsHelper do
       author_username: 'root',
       assignee_username: 'max.power'
     }
+  end
+
+  before do
+    allow(helper).to receive(:current_user).and_return(user)
+    allow(helper).to receive(:can?)
+      .with(user, :create_incident, project)
+      .and_return(true)
   end
 
   describe '#incidents_data' do
@@ -31,7 +38,8 @@ RSpec.describe Projects::IncidentsHelper do
         'sla-feature-available' => 'false',
         'text-query': 'search text',
         'author-username-query': 'root',
-        'assignee-username-query': 'max.power'
+        'assignee-username-query': 'max.power',
+        'can-create-incident': 'true'
       }
     end
 

@@ -15,6 +15,7 @@ const defaultProvide = {
   authorUsernameQuery: '',
   assigneeUsernameQuery: '',
   slaFeatureAvailable: true,
+  canCreateIncident: true,
 };
 
 describe('Incidents Service Level Agreement', () => {
