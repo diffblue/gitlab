@@ -2,7 +2,7 @@
 
 module Gitlab
   module Database
-    module PreventCrossDatabaseModification
+    class PreventCrossDatabaseModification < Database::QueryAnalyzer::Base
       CrossDatabaseModificationAcrossUnsupportedTablesError = Class.new(StandardError)
 
       # This method will allow cross database modifications within the block
@@ -24,12 +24,8 @@ module Gitlab
       end
 
       def self.with_cross_database_modification_prevented(log_only: false)
-        subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') do |name, start, finish, id, payload|
-          prevent_cross_database_modification!(payload[:connection], payload[:sql], log_only: log_only)
-        end
-
         reset_cross_database_context!
-        cross_database_context.merge!(enabled: true, subscriber: subscriber)
+        cross_database_context.merge!(enabled: true, log_only: log_only)
 
         yield if block_given?
       ensure
@@ -38,7 +34,6 @@ module Gitlab
 
       def self.cleanup_with_cross_database_modification_prevented
         if cross_database_context
-          ActiveSupport::Notifications.unsubscribe(PreventCrossDatabaseModification.cross_database_context[:subscriber])
           cross_database_context[:enabled] = false
         end
       end
@@ -55,19 +50,28 @@ module Gitlab
         {
           enabled: false,
           transaction_depth_by_db: Hash.new { |h, k| h[k] = 0 },
-          modified_tables_by_db: Hash.new { |h, k| h[k] = Set.new }
+          modified_tables_by_db: Hash.new { |h, k| h[k] = Set.new },
+          log_only: false
         }
       end
 
-      # rubocop:disable Metrics/AbcSize
-      def self.prevent_cross_database_modification!(connection, sql, log_only: false)
-        return unless cross_database_context
-        return unless cross_database_context[:enabled]
+      def self.enabled?
+        true
+      end
 
-        return if connection.pool.instance_of?(ActiveRecord::ConnectionAdapters::NullPool)
+      # rubocop:disable Metrics/AbcSize
+      def self.analyze(parsed)
+        return false unless cross_database_context
+        return false unless cross_database_context[:enabled]
+
+        connection = parsed.connection
+        return false if connection.pool.instance_of?(ActiveRecord::ConnectionAdapters::NullPool)
+
         return if in_factory_bot_create?
 
         database = connection.pool.db_config.name
+
+        sql = parsed.sql
 
         # We ignore BEGIN in tests as this is the outer transaction for
         # DatabaseCleaner
@@ -88,8 +92,7 @@ module Gitlab
 
         # PgQuery might fail in some cases due to limited nesting:
         # https://github.com/pganalyze/pg_query/issues/209
-        parsed_query = PgQuery.parse(sql)
-        tables = sql.downcase.include?(' for update') ? parsed_query.tables : parsed_query.dml_tables
+        tables = sql.downcase.include?(' for update') ? parsed.pg.tables : parsed.pg.dml_tables
 
         # We have some code where plans and gitlab_subscriptions are lazily
         # created and this causes lots of spec failures
@@ -120,7 +123,7 @@ module Gitlab
             raise Database::PreventCrossDatabaseModification::CrossDatabaseModificationAcrossUnsupportedTablesError, message
           rescue Database::PreventCrossDatabaseModification::CrossDatabaseModificationAcrossUnsupportedTablesError => e
             ::Gitlab::ErrorTracking.track_exception(e, { gitlab_schemas: schemas, tables: all_tables, query: PgQuery.normalize(sql) })
-            raise unless log_only
+            raise unless cross_database_context[:log_only]
           end
         end
       rescue StandardError => e
@@ -136,7 +139,7 @@ module Gitlab
       # by instantiating objects in different `gitlab_schema` in a
       # FactoryBot `create`.
       def self.in_factory_bot_create?
-        caller_locations.any? { |l| l.path.end_with?('lib/factory_bot/evaluation.rb') && l.label == 'create' }
+        Rails.env.test? && caller_locations.any? { |l| l.path.end_with?('lib/factory_bot/evaluation.rb') && l.label == 'create' }
       end
     end
   end
