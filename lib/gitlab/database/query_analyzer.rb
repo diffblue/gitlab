@@ -15,7 +15,11 @@ module Gitlab
 
       def hook!
         @subscriber = ActiveSupport::Notifications.subscribe('sql.active_record') do |event|
-          process_sql(event.payload[:sql], event.payload[:connection])
+          # In some cases analyzer code might trigger another SQL call
+          # to avoid stack too deep this detects recursive call of subscriber
+          with_ignored_recursive_calls do
+            process_sql(event.payload[:sql], event.payload[:connection])
+          end
         end
       end
 
@@ -56,6 +60,17 @@ module Gitlab
         Gitlab::ErrorTracking.track_exception(e)
 
         nil
+      end
+
+      def with_ignored_recursive_calls
+        return if Thread.current[:query_analyzer_recursive]
+
+        begin
+          Thread.current[:query_analyzer_recursive] = true
+          yield
+        ensure
+          Thread.current[:query_analyzer_recursive] = nil
+        end
       end
     end
   end

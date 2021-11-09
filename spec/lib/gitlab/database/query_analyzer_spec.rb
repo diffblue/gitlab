@@ -19,6 +19,15 @@ RSpec.describe Gitlab::Database::QueryAnalyzer do
 
       Project.connection.execute("SELECT 1 FROM projects")
     end
+
+    it 'does prevent recursive execution' do
+      expect(analyzer).to receive(:enabled?).and_return(true)
+      expect(analyzer).to receive(:analyze) do
+        Project.connection.execute("SELECT 1 FROM projects")
+      end
+
+      Project.connection.execute("SELECT 1 FROM projects")
+    end
   end
 
   describe '#process_sql' do
