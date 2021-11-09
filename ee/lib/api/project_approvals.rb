@@ -29,7 +29,7 @@ module API
           detail 'This feature was introduced in 10.6'
           success EE::API::Entities::ApprovalSettings
         end
-        get '/' do
+        get '/', urgency: :low do
           present user_project.present(current_user: current_user), with: EE::API::Entities::ApprovalSettings
         end
 

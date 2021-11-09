@@ -11,6 +11,7 @@ class Projects::PathLocksController < Projects::ApplicationController
   before_action :check_license
 
   feature_category :source_code_management
+  urgency :low, [:index]
 
   def index
     @path_locks = @project.path_locks.page(params[:page])
