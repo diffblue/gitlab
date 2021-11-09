@@ -97,7 +97,6 @@ module EE
               EE::Types::AuditEvents::ExternalAuditEventDestinationType.connection_type,
               null: true,
               description: 'External locations that receive audit events belonging to the group.',
-              feature_flag: :ff_external_audit_events_namespace,
               authorize: :admin_external_audit_events
       end
     end
