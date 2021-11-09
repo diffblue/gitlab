@@ -14,6 +14,8 @@ class DependencyProxy::Manifest < ApplicationRecord
   validates :file_name, presence: true
   validates :digest, presence: true
 
+  scope :order_id_desc, -> { reorder(id: :desc) }
+
   mount_file_store_uploader DependencyProxy::FileUploader
 
   def self.find_by_file_name_or_digest(file_name:, digest:)
