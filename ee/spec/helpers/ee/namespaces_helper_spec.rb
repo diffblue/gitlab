@@ -49,12 +49,12 @@ RSpec.describe EE::NamespacesHelper do
 
       context "when ci minutes quota is not enabled" do
         before do
-          allow(quota).to receive(:namespace_unlimited_minutes?).and_return(true)
+          user_group.update!(shared_runners_minutes_limit: 0)
         end
 
         context 'and the namespace is eligible for unlimited' do
           before do
-            allow(quota).to receive(:namespace_root?).and_return(true)
+            allow(user_group).to receive(:root?).and_return(true)
             allow(user_group).to receive(:any_project_with_shared_runners_enabled?).and_return(true)
           end
 
@@ -65,7 +65,7 @@ RSpec.describe EE::NamespacesHelper do
 
         context 'and the namespace is not eligible for unlimited' do
           before do
-            allow(quota).to receive(:namespace_root?).and_return(false)
+            allow(user_group).to receive(:root?).and_return(false)
           end
 
           it 'returns Not supported for the limit section' do

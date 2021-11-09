@@ -9,34 +9,29 @@ module Ci
     class Quota
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :namespace
+      attr_reader :namespace, :limit
 
       def initialize(namespace)
         @namespace = namespace
+        @limit = ::Ci::Minutes::Limit.new(namespace)
       end
 
       def enabled?
-        namespace_root? && !namespace_unlimited_minutes?
+        limit.enabled?
       end
 
       def minutes_used_up?
-        enabled? && total_minutes_used >= total_minutes
+        enabled? && total_minutes_used >= limit.total
       end
 
       def percent_total_minutes_remaining
-        return 0 if total_minutes == 0
+        return 0 unless limit.enabled?
 
-        100 * total_minutes_remaining.to_i / total_minutes
+        100 * total_minutes_remaining.to_i / limit.total
       end
 
       def current_balance
-        total_minutes.to_i - total_minutes_used
-      end
-
-      def total_minutes
-        strong_memoize(:total_minutes) do
-          monthly_minutes + purchased_minutes
-        end
+        limit.total - total_minutes_used
       end
 
       def total_minutes_used
@@ -59,33 +54,11 @@ module Ci
         end
       end
 
-      def purchased_minutes
-        strong_memoize(:purchased_minutes) do
-          namespace.extra_shared_runners_minutes_limit.to_i
-        end
-      end
-
-      def namespace_root?
-        strong_memoize(:namespace_root) do
-          namespace.root?
-        end
-      end
-
-      def namespace_unlimited_minutes?
-        total_minutes.to_i == 0
-      end
-
-      def monthly_minutes
-        strong_memoize(:monthly_minutes) do
-          (namespace.shared_runners_minutes_limit || ::Gitlab::CurrentSettings.shared_runners_minutes).to_i
-        end
-      end
-
       # === private to view ===
       def monthly_minutes_used_up?
         return false unless enabled?
 
-        monthly_minutes_used >= monthly_minutes
+        monthly_minutes_used >= limit.monthly
       end
 
       def monthly_minutes_used
@@ -95,13 +68,13 @@ module Ci
       def purchased_minutes_used_up?
         return false unless enabled?
 
-        any_minutes_purchased? && purchased_minutes_used >= purchased_minutes
+        limit.any_purchased? && purchased_minutes_used >= limit.purchased
       end
 
       def purchased_minutes_used
-        return 0 if no_minutes_purchased? || monthly_minutes_available?
+        return 0 if !limit.any_purchased? || monthly_minutes_available?
 
-        total_minutes_used - monthly_minutes
+        total_minutes_used - limit.monthly
       end
 
       private
@@ -111,15 +84,7 @@ module Ci
       end
 
       def monthly_minutes_available?
-        total_minutes_used <= monthly_minutes
-      end
-
-      def no_minutes_purchased?
-        purchased_minutes == 0
-      end
-
-      def any_minutes_purchased?
-        purchased_minutes > 0
+        total_minutes_used <= limit.monthly
       end
 
       def total_minutes_remaining

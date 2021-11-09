@@ -16,30 +16,30 @@ module Ci
 
       def monthly_percent_used
         return 0 unless quota.enabled?
-        return 0 if quota.monthly_minutes == 0
+        return 0 if quota.limit.monthly == 0
 
-        100 * quota.monthly_minutes_used.to_i / quota.monthly_minutes
+        100 * quota.monthly_minutes_used.to_i / quota.limit.monthly
       end
 
       # Status of any purchased minutes used.
       def purchased_minutes_report
         status = quota.purchased_minutes_used_up? ? :over_quota : :under_quota
-        Report.new(quota.purchased_minutes_used, quota.purchased_minutes, status)
+        Report.new(quota.purchased_minutes_used, quota.limit.purchased, status)
       end
 
       def purchased_percent_used
         return 0 unless quota.enabled?
-        return 0 if quota.purchased_minutes == 0
+        return 0 unless quota.limit.any_purchased?
 
-        100 * quota.purchased_minutes_used.to_i / quota.purchased_minutes
+        100 * quota.purchased_minutes_used.to_i / quota.limit.purchased
       end
 
       def display_minutes_available_data?
-        display_shared_runners_data? && !quota.namespace_unlimited_minutes?
+        display_shared_runners_data? && quota.limit.enabled?
       end
 
       def display_shared_runners_data?
-        quota.namespace_root? && any_project_enabled?
+        quota.namespace.root? && any_project_enabled?
       end
 
       def any_project_enabled?
@@ -60,7 +60,7 @@ module Ci
         return _('Not supported') unless display_shared_runners_data?
 
         if display_minutes_available_data?
-          quota.monthly_minutes
+          quota.limit.monthly
         else
           _('Unlimited')
         end
