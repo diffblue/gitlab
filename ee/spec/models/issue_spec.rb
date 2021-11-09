@@ -492,6 +492,15 @@ RSpec.describe Issue do
     end
   end
 
+  describe '#reopen' do
+    let(:promoted_to_epic) { create(:epic) }
+    let(:issue) { create(:issue, :closed, promoted_to_epic: promoted_to_epic) }
+
+    it 'clears promoted_to_epic_id for promoted issues' do
+      expect { issue.reopen }.to change { issue.promoted_to_epic_id }.from(promoted_to_epic.id).to(nil)
+    end
+  end
+
   context 'ES related specs', :elastic do
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
