@@ -1,7 +1,6 @@
 <script>
 import { GlButton, GlPopover, GlSprintf, GlOutsideDirective as Outside } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import eventHub from '../event_hub';
 
 export default {
   directives: { Outside },
@@ -36,7 +35,7 @@ export default {
     },
     handleClickCta() {
       this.close();
-      eventHub.$emit('walkthroughPopoverCtaClicked');
+      this.$emit('walkthrough-popover-cta-clicked');
     },
   },
 };
