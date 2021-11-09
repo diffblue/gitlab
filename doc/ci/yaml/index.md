@@ -811,7 +811,7 @@ job:
 Scripts you specify in `after_script` execute in a new shell, separate from any
 `before_script` or `script` commands. As a result, they:
 
-- Have the current working directory set back to the default (according to the [variables which define how the runner processes Git requests](#configure-runner-behavior-with-variables)).
+- Have the current working directory set back to the default (according to the [variables which define how the runner processes Git requests](../runners/configure_runners.md#configure-runner-behavior-with-variables)).
 - Don't have access to changes done by commands defined in the `before_script` or `script`,
   including:
   - Command aliases and variables exported in `script` scripts.
@@ -4274,24 +4274,25 @@ karma:
 
 ## `variables`
 
-> Introduced in GitLab Runner v0.5.0.
-
 [CI/CD variables](../variables/index.md) are configurable values that are passed to jobs.
-They can be set globally and per-job.
+Use `variables` to create [custom variables](../variables/index.md#custom-cicd-variables).
 
-There are two types of variables.
+Variables are always available in `script`, `before_script`, and `after_script` commands.
+You can also use variables as inputs in some job keywords.
 
-- [Custom variables](../variables/index.md#custom-cicd-variables):
-  You can define their values in the `.gitlab-ci.yml` file, in the GitLab UI,
-  or by using the API. You can also input variables in the GitLab UI when
-  [running a pipeline manually](../pipelines/index.md#run-a-pipeline-manually).
-- [Predefined variables](../variables/predefined_variables.md):
-  These values are set by the runner itself.
-  One example is `CI_COMMIT_REF_NAME`, which is the branch or tag the project is built for.
+**Keyword type**: Global and job keyword. You can use it at the global level,
+and also at the job level.
 
-After you define a variable, you can use it in all executed commands and scripts.
+If you define `variables` at the global level, each variable is copied to
+every job configuration when the pipeline is created. If the job already has that
+variable defined, the [job-level variable takes precedence](../variables/index.md#cicd-variable-precedence).
 
-Variables are meant for non-sensitive project configuration, for example:
+**Possible inputs**: Variable name and value pairs:
+
+- The name can use only numbers, letters, and underscores (`_`).
+- The value must be a string.
+
+**Examples of `variables`:**
 
 ```yaml
 variables:
@@ -4310,53 +4311,40 @@ deploy_review_job:
     - deploy-review-script --url $DEPLOY_SITE --path $REVIEW_PATH
 ```
 
-You can use only integers and strings for the variable's name and value.
+**Additional details**:
 
-If you define a variable at the top level of the `.gitlab-ci.yml` file, it is global,
-meaning it applies to all jobs. If you define a variable in a job, it's available
-to that job only.
+- All YAML-defined variables are also set to any linked [Docker service containers](../services/index.md).
+- YAML-defined variables are meant for non-sensitive project configuration. Store sensitive information
+  in [protected variables](../variables/index.md#protect-a-cicd-variable) or [CI/CD secrets](../secrets/index.md).
 
-If a variable of the same name is defined globally and for a specific job, the
-[job-specific variable overrides the global variable](../variables/index.md#cicd-variable-precedence).
+**Related topics**:
 
-All YAML-defined variables are also set to any linked
-[Docker service containers](../services/index.md).
+- You can use [YAML anchors for variables](yaml_specific_features.md#yaml-anchors-for-variables).
+- [Predefined variables](../variables/predefined_variables.md) are variables the runner
+  automatically creates and makes available in the job.
+- You can [configure runner behavior with variables](../runners/configure_runners.md#configure-runner-behavior-with-variables).
 
-You can use [YAML anchors for variables](yaml_specific_features.md#yaml-anchors-for-variables).
-
-### Prefill variables in manual pipelines
+### `variables:description`
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/30101) in GitLab 13.7.
 
-Use the `value` and `description` keywords to define [pipeline-level (global) variables that are prefilled](../pipelines/index.md#prefill-variables-in-manual-pipelines)
-when [running a pipeline manually](../pipelines/index.md#run-a-pipeline-manually):
+Use the `description` keyword to define a [pipeline-level (global) variable that is prefilled](../pipelines/index.md#prefill-variables-in-manual-pipelines)
+when [running a pipeline manually](../pipelines/index.md#run-a-pipeline-manually).
+
+Must be used with `value`, for the variable value.
+
+**Keyword type**: Global keyword. You cannot set job-level variables to be pre-filled when you run a pipeline manually.
+
+**Possible inputs**: A string.
+
+**Example of `variables:description`**:
 
 ```yaml
 variables:
   DEPLOY_ENVIRONMENT:
-    value: "staging"  # Deploy to staging by default
+    value: "staging"
     description: "The deployment target. Change this variable to 'canary' or 'production' if needed."
 ```
-
-You cannot set job-level variables to be pre-filled when you run a pipeline manually.
-
-### Configure runner behavior with variables
-
-You can use [CI/CD variables](../variables/index.md) to configure how the runner processes Git requests:
-
-- [`GIT_STRATEGY`](../runners/configure_runners.md#git-strategy)
-- [`GIT_SUBMODULE_STRATEGY`](../runners/configure_runners.md#git-submodule-strategy)
-- [`GIT_CHECKOUT`](../runners/configure_runners.md#git-checkout)
-- [`GIT_CLEAN_FLAGS`](../runners/configure_runners.md#git-clean-flags)
-- [`GIT_FETCH_EXTRA_FLAGS`](../runners/configure_runners.md#git-fetch-extra-flags)
-- [`GIT_DEPTH`](../runners/configure_runners.md#shallow-cloning) (shallow cloning)
-- [`GIT_CLONE_PATH`](../runners/configure_runners.md#custom-build-directories) (custom build directories)
-- [`TRANSFER_METER_FREQUENCY`](../runners/configure_runners.md#artifact-and-cache-settings) (artifact/cache meter update frequency)
-- [`ARTIFACT_COMPRESSION_LEVEL`](../runners/configure_runners.md#artifact-and-cache-settings) (artifact archiver compression level)
-- [`CACHE_COMPRESSION_LEVEL`](../runners/configure_runners.md#artifact-and-cache-settings) (cache archiver compression level)
-
-You can also use variables to configure how many times a runner
-[attempts certain stages of job execution](../runners/configure_runners.md#job-stages-attempts).
 
 ## Deprecated keywords
 
