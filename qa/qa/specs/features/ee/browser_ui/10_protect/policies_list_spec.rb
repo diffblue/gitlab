@@ -23,7 +23,7 @@ module QA
           project.visit!
         end
 
-        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1892' do
+        it 'can load Policies page and view the policies list', :smoke, testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2382' do
           Page::Project::Menu.perform(&:click_on_policies)
 
           EE::Page::Project::Policies::Index.perform do |policies_page|
