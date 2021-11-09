@@ -590,14 +590,14 @@ RSpec.describe API::Namespaces do
 
     let_it_be(:premium_plan) { create(:premium_plan) }
     let_it_be(:namespace) { create(:group, name: 'test.test-group.22') }
-    let_it_be(:gitlab_subscription) { create(:gitlab_subscription, namespace: namespace) }
+    let_it_be(:gitlab_subscription) { create(:gitlab_subscription, namespace: namespace, start_date: '2018/01/01', end_date: '2019/01/01') }
 
     let(:params) do
       {
         seats: 150,
         plan_code: 'premium',
-        start_date: '01/01/2018',
-        end_date: '01/01/2019'
+        start_date: '2018/01/01',
+        end_date: '2019/01/01'
       }
     end
 
@@ -678,6 +678,26 @@ RSpec.describe API::Namespaces do
           expect do
             do_put(namespace.id, admin, gitlab_subscription.attributes)
           end.to change { gitlab_subscription.reload.updated_at }
+        end
+
+        context 'when starting a new term' do
+          it 'resets the seat attributes for the subscription' do
+            gitlab_subscription.update!(seats: 20, max_seats_used: 42, seats_owed: 22)
+
+            new_start = gitlab_subscription.end_date + 1.year
+            new_end = new_start + 1.year
+            new_term_params = params.merge(start_date: new_start, end_date: new_end)
+
+            expect(gitlab_subscription.seats_in_use).to eq 0
+
+            do_put(namespace.id, admin, new_term_params)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(gitlab_subscription.reload).to have_attributes(
+              max_seats_used: 0,
+              seats_owed: 0
+            )
+          end
         end
       end
     end
