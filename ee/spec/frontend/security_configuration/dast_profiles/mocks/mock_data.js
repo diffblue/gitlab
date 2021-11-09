@@ -1,50 +1,8 @@
-export const siteProfiles = [
-  {
-    id: 'gid://gitlab/DastSiteProfile/1',
-    profileName: 'Profile 1',
-    targetUrl: 'http://example-1.com',
-    normalizedTargetUrl: 'http://example-1.com',
-    editPath: '/1/edit',
-    validationStatus: 'PENDING_VALIDATION',
-    referencedInSecurityPolicies: [],
-  },
-  {
-    id: 'gid://gitlab/DastSiteProfile/2',
-    profileName: 'Profile 2',
-    targetUrl: 'http://example-2.com',
-    normalizedTargetUrl: 'http://example-2.com',
-    editPath: '/2/edit',
-    validationStatus: 'INPROGRESS_VALIDATION',
-    referencedInSecurityPolicies: [],
-  },
-  {
-    id: 'gid://gitlab/DastSiteProfile/3',
-    profileName: 'Profile 3',
-    targetUrl: 'http://example-2.com',
-    normalizedTargetUrl: 'http://example-2.com',
-    editPath: '/3/edit',
-    validationStatus: 'PASSED_VALIDATION',
-    referencedInSecurityPolicies: [],
-  },
-  {
-    id: 'gid://gitlab/DastSiteProfile/4',
-    profileName: 'Profile 4',
-    targetUrl: 'http://example-3.com',
-    normalizedTargetUrl: 'http://example-3.com',
-    editPath: '/3/edit',
-    validationStatus: 'FAILED_VALIDATION',
-    referencedInSecurityPolicies: [],
-  },
-  {
-    id: 'gid://gitlab/DastSiteProfile/5',
-    profileName: 'Profile 5',
-    targetUrl: 'http://example-5.com',
-    normalizedTargetUrl: 'http://example-5.com',
-    editPath: '/5/edit',
-    validationStatus: 'NONE',
-    referencedInSecurityPolicies: [],
-  },
-];
+import siteProfilesFixture from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
+
+export const siteProfiles = siteProfilesFixture.data.project.siteProfiles.edges.map(
+  ({ node }) => node,
+);
 
 export const policySiteProfile = [
   {
