@@ -5676,6 +5676,29 @@ The edge type for [`ContainerRepositoryTag`](#containerrepositorytag).
 | <a id="containerrepositorytagedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="containerrepositorytagedgenode"></a>`node` | [`ContainerRepositoryTag`](#containerrepositorytag) | The item at the end of the edge. |
 
+#### `CoverageFuzzingCorpusConnection`
+
+The connection type for [`CoverageFuzzingCorpus`](#coveragefuzzingcorpus).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="coveragefuzzingcorpusconnectionedges"></a>`edges` | [`[CoverageFuzzingCorpusEdge]`](#coveragefuzzingcorpusedge) | A list of edges. |
+| <a id="coveragefuzzingcorpusconnectionnodes"></a>`nodes` | [`[CoverageFuzzingCorpus]`](#coveragefuzzingcorpus) | A list of nodes. |
+| <a id="coveragefuzzingcorpusconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `CoverageFuzzingCorpusEdge`
+
+The edge type for [`CoverageFuzzingCorpus`](#coveragefuzzingcorpus).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="coveragefuzzingcorpusedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="coveragefuzzingcorpusedgenode"></a>`node` | [`CoverageFuzzingCorpus`](#coveragefuzzingcorpus) | The item at the end of the edge. |
+
 #### `CustomEmojiConnection`
 
 The connection type for [`CustomEmoji`](#customemoji).
@@ -8990,6 +9013,17 @@ A tag from a container repository.
 | <a id="containerrepositorytagrevision"></a>`revision` | [`String`](#string) | Revision of the tag. |
 | <a id="containerrepositorytagshortrevision"></a>`shortRevision` | [`String`](#string) | Short revision of the tag. |
 | <a id="containerrepositorytagtotalsize"></a>`totalSize` | [`BigInt`](#bigint) | Size of the tag. |
+
+### `CoverageFuzzingCorpus`
+
+Corpus for a coverage fuzzing job.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="coveragefuzzingcorpusid"></a>`id` | [`AppSecFuzzingCoverageCorpusID!`](#appsecfuzzingcoveragecorpusid) | ID of the corpus. |
+| <a id="coveragefuzzingcorpuspackage"></a>`package` | [`PackageDetailsType!`](#packagedetailstype) | Package of the corpus. |
 
 ### `CurrentLicense`
 
@@ -12762,6 +12796,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectcontainerexpirationpolicy"></a>`containerExpirationPolicy` | [`ContainerExpirationPolicy`](#containerexpirationpolicy) | Container expiration policy of the project. |
 | <a id="projectcontainerregistryenabled"></a>`containerRegistryEnabled` | [`Boolean`](#boolean) | Indicates if Container Registry is enabled for the current user. |
 | <a id="projectcontainerrepositoriescount"></a>`containerRepositoriesCount` | [`Int!`](#int) | Number of container repositories in the project. |
+| <a id="projectcorpuses"></a>`corpuses` | [`CoverageFuzzingCorpusConnection`](#coveragefuzzingcorpusconnection) | Find corpuses of the project. Available only when feature flag `corpus_management` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice. (see [Connections](#connections)) |
 | <a id="projectcreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of the project creation. |
 | <a id="projectdastscannerprofiles"></a>`dastScannerProfiles` | [`DastScannerProfileConnection`](#dastscannerprofileconnection) | DAST scanner profiles associated with the project. (see [Connections](#connections)) |
 | <a id="projectdastsiteprofiles"></a>`dastSiteProfiles` | [`DastSiteProfileConnection`](#dastsiteprofileconnection) | DAST Site Profiles associated with the project. (see [Connections](#connections)) |
@@ -17135,6 +17170,12 @@ An example `AlertManagementHttpIntegrationID` is: `"gid://gitlab/AlertManagement
 A `AnalyticsDevopsAdoptionEnabledNamespaceID` is a global ID. It is encoded as a string.
 
 An example `AnalyticsDevopsAdoptionEnabledNamespaceID` is: `"gid://gitlab/Analytics::DevopsAdoption::EnabledNamespace/1"`.
+
+### `AppSecFuzzingCoverageCorpusID`
+
+A `AppSecFuzzingCoverageCorpusID` is a global ID. It is encoded as a string.
+
+An example `AppSecFuzzingCoverageCorpusID` is: `"gid://gitlab/AppSec::Fuzzing::Coverage::Corpus/1"`.
 
 ### `AuditEventsExternalAuditEventDestinationID`
 

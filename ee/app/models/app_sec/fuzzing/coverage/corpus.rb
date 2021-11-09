@@ -12,6 +12,10 @@ module AppSec
 
         validate :project_same_as_package_project
 
+        scope :by_project_id, -> (project_id) do
+          joins(:package).where(package: { project_id: project_id })
+        end
+
         def audit_details
           user&.name
         end
