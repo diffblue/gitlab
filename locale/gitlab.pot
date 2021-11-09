@@ -27178,6 +27178,9 @@ msgstr ""
 msgid "ProjectSettings|Requirements management system."
 msgstr ""
 
+msgid "ProjectSettings|Search for topic"
+msgstr ""
+
 msgid "ProjectSettings|Security & Compliance"
 msgstr ""
 
@@ -31211,9 +31214,6 @@ msgid "Sentry event"
 msgstr ""
 
 msgid "Sep"
-msgstr ""
-
-msgid "Separate topics with commas."
 msgstr ""
 
 msgid "September"
@@ -36138,9 +36138,6 @@ msgid "Topic was successfully updated."
 msgstr ""
 
 msgid "Topics"
-msgstr ""
-
-msgid "Topics (optional)"
 msgstr ""
 
 msgid "Total"

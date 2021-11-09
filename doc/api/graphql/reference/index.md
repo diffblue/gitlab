@@ -419,6 +419,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="querytimelogsstarttime"></a>`startTime` | [`Time`](#time) | List timelogs within a time range where the logged time is equal to or after startTime. |
 | <a id="querytimelogsusername"></a>`username` | [`String`](#string) | List timelogs for a user. |
 
+### `Query.topics`
+
+Find project topics.
+
+Returns [`TopicConnection`](#topicconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="querytopicssearch"></a>`search` | [`String`](#string) | Search query for topic name. |
+
 ### `Query.usageTrendsMeasurements`
 
 Get statistics on the instance.
@@ -7667,6 +7683,29 @@ The edge type for [`Todo`](#todo).
 | <a id="todoedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="todoedgenode"></a>`node` | [`Todo`](#todo) | The item at the end of the edge. |
 
+#### `TopicConnection`
+
+The connection type for [`Topic`](#topic).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="topicconnectionedges"></a>`edges` | [`[TopicEdge]`](#topicedge) | A list of edges. |
+| <a id="topicconnectionnodes"></a>`nodes` | [`[Topic]`](#topic) | A list of nodes. |
+| <a id="topicconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `TopicEdge`
+
+The edge type for [`Topic`](#topic).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="topicedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="topicedgenode"></a>`node` | [`Topic`](#topic) | The item at the end of the edge. |
+
 #### `TreeConnection`
 
 The connection type for [`Tree`](#tree).
@@ -14780,6 +14819,18 @@ Representing a to-do entry.
 | <a id="todoproject"></a>`project` | [`Project`](#project) | Project this to-do item is associated with. |
 | <a id="todostate"></a>`state` | [`TodoStateEnum!`](#todostateenum) | State of the to-do item. |
 | <a id="todotargettype"></a>`targetType` | [`TodoTargetEnum!`](#todotargetenum) | Target type of the to-do item. |
+
+### `Topic`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="topicavatarurl"></a>`avatarUrl` | [`String`](#string) | URL to avatar image file of the topic. |
+| <a id="topicdescription"></a>`description` | [`String`](#string) | Description of the topic. |
+| <a id="topicdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
+| <a id="topicid"></a>`id` | [`ID!`](#id) | ID of the topic. |
+| <a id="topicname"></a>`name` | [`String!`](#string) | Name of the topic. |
 
 ### `Tree`
 
