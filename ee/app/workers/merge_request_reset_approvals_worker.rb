@@ -12,15 +12,13 @@ class MergeRequestResetApprovalsWorker # rubocop:disable Scalability/IdempotentW
   worker_resource_boundary :cpu
   loggable_arguments 2, 3
 
-  # rubocop: disable CodeReuse/ActiveRecord
   def perform(project_id, user_id, ref, newrev)
-    project = Project.find_by(id: project_id)
+    project = Project.find_by_id(project_id)
     return unless project
 
-    user = User.find_by(id: user_id)
+    user = User.find_by_id(user_id)
     return unless user
 
     MergeRequests::ResetApprovalsService.new(project: project, current_user: user).execute(ref, newrev)
   end
-  # rubocop: enable CodeReuse/ActiveRecord
 end

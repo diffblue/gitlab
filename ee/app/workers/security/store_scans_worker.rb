@@ -12,9 +12,8 @@ module Security
 
     feature_category :vulnerability_management
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def perform(pipeline_id)
-      ::Ci::Pipeline.find_by(id: pipeline_id).try do |pipeline|
+      ::Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
         break unless pipeline.can_store_security_reports?
 
         record_onboarding_progress(pipeline)
