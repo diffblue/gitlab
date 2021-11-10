@@ -24442,6 +24442,9 @@ msgstr ""
 msgid "Package type must be Maven"
 msgstr ""
 
+msgid "Package type must be NPM"
+msgstr ""
+
 msgid "Package type must be NuGet"
 msgstr ""
 
@@ -41762,6 +41765,9 @@ msgid "started on %{timebox_start_date}"
 msgstr ""
 
 msgid "starts on %{timebox_start_date}"
+msgstr ""
+
+msgid "structure is too large"
 msgstr ""
 
 msgid "stuck"
