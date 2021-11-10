@@ -31764,9 +31764,6 @@ msgstr ""
 msgid "Show list"
 msgstr ""
 
-msgid "Show me how to add a pipeline"
-msgstr ""
-
 msgid "Show one file at a time"
 msgstr ""
 
@@ -36463,6 +36460,9 @@ msgstr ""
 msgid "Try grouping with different labels"
 msgstr ""
 
+msgid "Try out GitLab Pipelines"
+msgstr ""
+
 msgid "Try to fork again"
 msgstr ""
 
@@ -41037,6 +41037,9 @@ msgstr ""
 msgid "mrWidget| Please restore it or use a different %{missingBranchName} branch"
 msgstr ""
 
+msgid "mrWidget|%{boldHeaderStart}Looks like there's no pipeline here.%{boldHeaderEnd}"
+msgstr ""
+
 msgid "mrWidget|%{linkStart}Set up now%{linkEnd} to analyze your source code for known security vulnerabilities."
 msgstr ""
 
@@ -41053,9 +41056,6 @@ msgid "mrWidget|%{metricsLinkStart} Memory %{metricsLinkEnd} usage %{emphasisSta
 msgstr ""
 
 msgid "mrWidget|%{metricsLinkStart} Memory %{metricsLinkEnd} usage is %{emphasisStart} unchanged %{emphasisEnd} at %{memoryFrom}MB"
-msgstr ""
-
-msgid "mrWidget|%{prefixToLinkStart}No pipeline%{prefixToLinkEnd} %{addPipelineLinkStart}Add the .gitlab-ci.yml file%{addPipelineLinkEnd} to create one."
 msgstr ""
 
 msgid "mrWidget|A merge train is a queued list of merge requests waiting to be merged into the target branch. The changes in each merge request are combined with the changes in earlier merge requests and tested before merge."
@@ -41098,9 +41098,6 @@ msgid "mrWidget|Approved by you"
 msgstr ""
 
 msgid "mrWidget|Approved by you and others"
-msgstr ""
-
-msgid "mrWidget|Are you adding technical debt or code vulnerabilities?"
 msgstr ""
 
 msgid "mrWidget|Cancel auto-merge"
@@ -41148,6 +41145,9 @@ msgid "mrWidget|Email patches"
 msgstr ""
 
 msgid "mrWidget|Failed to load deployment statistics"
+msgstr ""
+
+msgid "mrWidget|GitLab %{linkStart}CI/CD can automatically build, test, and deploy your application.%{linkEnd} It only takes a few minutes to get started, and we can help you create a pipeline configuration file."
 msgstr ""
 
 msgid "mrWidget|Hide %{widget} details"
@@ -41321,9 +41321,6 @@ msgid "mrWidget|To approve this merge request, please enter your password. This 
 msgstr ""
 
 msgid "mrWidget|To merge, a Jira issue key must be mentioned in the title or description."
-msgstr ""
-
-msgid "mrWidget|Use %{linkStart}CI pipelines to test your code%{linkEnd} by simply adding a GitLab CI configuration file to your project. It only takes a minute to make your code more secure and robust."
 msgstr ""
 
 msgid "mrWidget|What is a merge train?"
