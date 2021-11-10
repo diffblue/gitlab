@@ -2,9 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification do
+RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification, query_analyzers: false do
   let_it_be(:pipeline, refind: true) { create(:ci_pipeline) }
   let_it_be(:project, refind: true) { create(:project) }
+
+  before do
+    allow(Gitlab::Database::QueryAnalyzer.instance).to receive(:all_analyzers).and_return([described_class])
+  end
+
+  around do |example|
+    Gitlab::Database::QueryAnalyzer.instance.within { example.run }
+  end
 
   shared_examples 'successful examples' do
     context 'outside transaction' do

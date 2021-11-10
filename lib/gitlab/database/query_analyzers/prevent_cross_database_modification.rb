@@ -6,90 +6,77 @@ module Gitlab
       class PreventCrossDatabaseModification < Database::QueryAnalyzers::Base
         CrossDatabaseModificationAcrossUnsupportedTablesError = Class.new(StandardError)
 
+        def self.allow_cross_database_modification?
+          Thread.current[:prevent_cross_database_modification_allowed]
+        end
+
+        def self.allow_cross_database_modification=(value)
+          Thread.current[:prevent_cross_database_modification_allowed] = value
+        end
+
+        def self.with_allow_cross_database_modification(value, &blk)
+          previous = self.allow_cross_database_modification?
+          self.allow_cross_database_modification = value
+
+          yield
+        ensure
+          self.allow_cross_database_modification = previous
+        end
+
         # This method will allow cross database modifications within the block
         # Example:
         #
         # allow_cross_database_modification_within_transaction(url: 'url-to-an-issue') do
         #   create(:build) # inserts ci_build and project record in one transaction
         # end
-        def self.allow_cross_database_modification_within_transaction(url:)
-          cross_database_context = self.cross_database_context
-          return yield unless cross_database_context && cross_database_context[:enabled]
-
-          transaction_tracker_enabled_was = cross_database_context[:enabled]
-          cross_database_context[:enabled] = false
-
-          yield
-        ensure
-          cross_database_context[:enabled] = transaction_tracker_enabled_was if cross_database_context
+        def self.allow_cross_database_modification_within_transaction(url:, &blk)
+          self.with_allow_cross_database_modification(true, &blk)
         end
 
-        def self.with_cross_database_modification_prevented(log_only: false)
-          reset_cross_database_context!
-          cross_database_context.merge!(enabled: true, log_only: log_only)
-
-          yield if block_given?
-        ensure
-          cleanup_with_cross_database_modification_prevented if block_given?
+        # This method will prevent cross database modifications within the block
+        # if it was allowed previously
+        def self.with_cross_database_modification_prevented(&blk)
+          self.with_allow_cross_database_modification(false, &blk)
         end
 
-        def self.cleanup_with_cross_database_modification_prevented
-          if cross_database_context
-            cross_database_context[:enabled] = false
-          end
-        end
+        def self.begin!
+          super
 
-        def self.cross_database_context
-          Thread.current[:transaction_tracker]
-        end
-
-        def self.reset_cross_database_context!
-          Thread.current[:transaction_tracker] = initial_data
-        end
-
-        def self.initial_data
-          {
-            enabled: false,
+          context.merge!({
             transaction_depth_by_db: Hash.new { |h, k| h[k] = 0 },
-            modified_tables_by_db: Hash.new { |h, k| h[k] = Set.new },
-            log_only: false
-          }
+            modified_tables_by_db: Hash.new { |h, k| h[k] = Set.new }
+          })
         end
 
         def self.enabled?
-          true
+          ::Feature::FlipperFeature.table_exists? &&
+            Feature.enabled?(:detect_cross_database_modification, default_enabled: :yaml)
         end
 
         # rubocop:disable Metrics/AbcSize
         def self.analyze(parsed)
-          return false unless cross_database_context
-          return false unless cross_database_context[:enabled]
-
-          connection = parsed.connection
-          return false if connection.pool.instance_of?(ActiveRecord::ConnectionAdapters::NullPool)
-
+          return if self.allow_cross_database_modification?
           return if in_factory_bot_create?
 
-          database = connection.pool.db_config.name
-
+          database = ::Gitlab::Database.db_config_name(parsed.connection)
           sql = parsed.sql
 
           # We ignore BEGIN in tests as this is the outer transaction for
           # DatabaseCleaner
           if sql.start_with?('SAVEPOINT') || (!Rails.env.test? && sql.start_with?('BEGIN'))
-            cross_database_context[:transaction_depth_by_db][database] += 1
+            context[:transaction_depth_by_db][database] += 1
 
             return
           elsif sql.start_with?('RELEASE SAVEPOINT', 'ROLLBACK TO SAVEPOINT') || (!Rails.env.test? && sql.start_with?('ROLLBACK', 'COMMIT'))
-            cross_database_context[:transaction_depth_by_db][database] -= 1
-            if cross_database_context[:transaction_depth_by_db][database] <= 0
-              cross_database_context[:modified_tables_by_db][database].clear
+            context[:transaction_depth_by_db][database] -= 1
+            if context[:transaction_depth_by_db][database] <= 0
+              context[:modified_tables_by_db][database].clear
             end
 
             return
           end
 
-          return if cross_database_context[:transaction_depth_by_db].values.all?(&:zero?)
+          return if context[:transaction_depth_by_db].values.all?(&:zero?)
 
           # PgQuery might fail in some cases due to limited nesting:
           # https://github.com/pganalyze/pg_query/issues/209
@@ -107,8 +94,8 @@ module Gitlab
           # databases
           return if tables == ['schema_migrations']
 
-          cross_database_context[:modified_tables_by_db][database].merge(tables)
-          all_tables = cross_database_context[:modified_tables_by_db].values.map(&:to_a).flatten
+          context[:modified_tables_by_db][database].merge(tables)
+          all_tables = context[:modified_tables_by_db].values.map(&:to_a).flatten
           schemas = ::Gitlab::Database::GitlabSchema.table_schemas(all_tables)
 
           if schemas.many?
@@ -120,13 +107,11 @@ module Gitlab
               message += " The gitlab_schema was undefined for one or more of the tables in this transaction. Any new tables must be added to lib/gitlab/database/gitlab_schemas.yml ."
             end
 
-            begin
-              raise CrossDatabaseModificationAcrossUnsupportedTablesError, message
-            rescue CrossDatabaseModificationAcrossUnsupportedTablesError => e
-              ::Gitlab::ErrorTracking.track_exception(e, { gitlab_schemas: schemas, tables: all_tables, query: parsed.sql })
-              raise unless cross_database_context[:log_only]
-            end
+            raise CrossDatabaseModificationAcrossUnsupportedTablesError, message
           end
+        rescue CrossDatabaseModificationAcrossUnsupportedTablesError => e
+          ::Gitlab::ErrorTracking.track_exception(e, { gitlab_schemas: schemas, tables: all_tables, query: parsed.sql })
+          raise if raise_exception?
         rescue StandardError => e
           # Extra safety net to ensure we never raise in production
           # if something goes wrong in this logic
@@ -141,6 +126,11 @@ module Gitlab
         # FactoryBot `create`.
         def self.in_factory_bot_create?
           Rails.env.test? && caller_locations.any? { |l| l.path.end_with?('lib/factory_bot/evaluation.rb') && l.label == 'create' }
+        end
+
+        # When in test we raise exception
+        def self.raise_exception?
+          Rails.env.test?
         end
       end
     end
