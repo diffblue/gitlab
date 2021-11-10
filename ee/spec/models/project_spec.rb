@@ -414,19 +414,6 @@ RSpec.describe Project do
       it { is_expected.to eq([project_2, project_3, project_1]) }
     end
 
-    describe '.with_code_coverage' do
-      let_it_be(:project_1) { create(:project) }
-      let_it_be(:project_2) { create(:project) }
-      let_it_be(:project_3) { create(:project) }
-
-      let!(:coverage_1) { create(:ci_daily_build_group_report_result, project: project_1) }
-      let!(:coverage_2) { create(:ci_daily_build_group_report_result, project: project_2) }
-
-      subject { described_class.with_code_coverage }
-
-      it { is_expected.to contain_exactly(project_1, project_2) }
-    end
-
     describe '.with_coverage_feature_usage' do
       let_it_be(:project_1) { create(:project) }
       let_it_be(:project_2) { create(:project) }

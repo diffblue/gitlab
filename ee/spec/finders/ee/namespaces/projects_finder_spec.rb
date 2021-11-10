@@ -69,36 +69,14 @@ RSpec.describe Namespaces::ProjectsFinder do
           create(:ci_daily_build_group_report_result, project: project_2, default_branch: false)
         end
 
-        context 'and query_project_ci_feature_usages_for_coverage flag is enabled for the given group' do
-          before do
-            stub_feature_flags(query_project_ci_feature_usages_for_coverage: namespace)
+        it 'returns projects with code coverage on default branch based on ci feature usages' do
+          record = ActiveRecord::QueryRecorder.new do
+            expect(projects).to contain_exactly(project_1)
           end
 
-          it 'returns projects with code coverage on default branch based on ci feature usages' do
-            record = ActiveRecord::QueryRecorder.new do
-              expect(projects).to contain_exactly(project_1)
-            end
+          queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
 
-            queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
-
-            expect(queried_ci_table).to eq(false)
-          end
-        end
-
-        context 'and query_project_ci_feature_usages_for_coverage flag is disabled for the given group' do
-          before do
-            stub_feature_flags(query_project_ci_feature_usages_for_coverage: create(:group))
-          end
-
-          it 'returns projects with code coverage on default branch based on daily build group report results' do
-            record = ActiveRecord::QueryRecorder.new do
-              expect(projects).to contain_exactly(project_1)
-            end
-
-            queried_ci_table = record.log.any? {|l| l.include?('ci_daily_build_group_report_results')}
-
-            expect(queried_ci_table).to eq(true)
-          end
+          expect(queried_ci_table).to eq(false)
         end
       end
 
