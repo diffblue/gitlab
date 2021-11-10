@@ -58,6 +58,14 @@ dramatically slow down GitLab instances. For this reason, they are being removed
 
 Announced: 2021-09-22
 
+### Deprecate `Versions` on base `PackageType`
+
+As part of the work to create a [Package Registry GraphQL API](https://gitlab.com/groups/gitlab-org/-/epics/6318), the Package group deprecated the `Version` type for the basic `PackageType` type and moved it to [`PackageDetailsType`](https://docs.gitlab.com/ee/api/graphql/reference/index.html#packagedetailstype).
+
+In milestone 15.0, we will completely remove `Version` from `PackageType`.
+
+Announced: 2021-11-22
+
 ### GitLab Serverless
 
 [GitLab Serverless](https://docs.gitlab.com/ee/user/project/clusters/serverless/) is a feature set to support Knative-based serverless development with automatic deployments and monitoring.
