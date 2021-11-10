@@ -102,16 +102,15 @@ end
 
 RSpec.shared_examples 'sync retries use the snapshot RPC' do
   context 'snapshot synchronization method' do
-    before do
-      allow(subject).to receive(:temp_repo) { repository }
-    end
+    let(:temp_repo) { subject.send(:temp_repo) }
 
     def receive_create_from_snapshot
-      receive(:create_from_snapshot).with(primary.snapshot_url(repository), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
+      receive(:create_from_snapshot).with(primary.snapshot_url(temp_repo), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
     end
 
     it 'does not attempt to snapshot for initial sync' do
       expect(repository).not_to receive_create_from_snapshot
+      expect(temp_repo).not_to receive_create_from_snapshot
       expect(subject).to receive(:fetch_geo_mirror).with(repository)
 
       subject.execute
@@ -121,6 +120,7 @@ RSpec.shared_examples 'sync retries use the snapshot RPC' do
       registry_with_retry_count(retry_count - 1)
 
       expect(repository).not_to receive_create_from_snapshot
+      expect(temp_repo).not_to receive_create_from_snapshot
       expect(subject).to receive(:fetch_geo_mirror).with(repository)
 
       subject.execute
@@ -130,16 +130,18 @@ RSpec.shared_examples 'sync retries use the snapshot RPC' do
       let!(:registry) { registry_with_retry_count(retry_count + 1) }
 
       it 'attempts to snapshot' do
-        expect(repository).to receive_create_from_snapshot
-        expect(subject).not_to receive(:fetch_geo_mirror).with(repository)
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).to receive_create_from_snapshot
+        expect(subject).not_to receive(:fetch_geo_mirror).with(temp_repo)
         expect(subject).to receive(:set_temp_repository_as_main)
 
         subject.execute
       end
 
       it 'attempts to fetch if snapshotting raises an exception' do
-        expect(repository).to receive_create_from_snapshot.and_raise(ArgumentError)
-        expect(subject).to receive(:fetch_geo_mirror).with(repository)
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).to receive_create_from_snapshot.and_raise(ArgumentError)
+        expect(subject).to receive(:fetch_geo_mirror).with(temp_repo)
 
         subject.execute
       end
