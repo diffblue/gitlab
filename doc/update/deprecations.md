@@ -115,6 +115,14 @@ When checking if a runner is `paused`, API users are advised to check the boolea
 
 Announced: 2021-11-22
 
+### Remove the `:dependency_proxy_for_private_groups` feature flag
+
+We added a feature flag because [GitLab-#11582](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) changed how public groups use the Dependency Proxy. Prior to this change, you could use the Dependency Proxy without authentication. The change requires authentication to use the Dependency Proxy.
+
+In milestone 15.0, we will remove the feature flag entirely. Moving forward, you must authenticate when using the Dependency Proxy.
+
+Announced: 2021-11-22
+
 ### `AuthenticationType` for `[runners.cache.s3]` must be explicitly assigned
 
 In GitLab 15.0 and later, to access the AWS S3 cache, you must specify the `AuthenticationType` for [`[runners.cache.s3]`](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnerscaches3-section). The `AuthenticationType` must be `IAM` or `credentials`.
