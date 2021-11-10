@@ -1500,9 +1500,6 @@ msgstr ""
 msgid "A new Release %{tag} for %{name} was published. Visit the Releases page to read more about it:"
 msgstr ""
 
-msgid "A new branch will be created in your fork and a new merge request will be started."
-msgstr ""
-
 msgid "A new impersonation token has been created."
 msgstr ""
 
@@ -6519,10 +6516,10 @@ msgstr ""
 msgid "ChangeReviewer|Unassigned"
 msgstr ""
 
-msgid "ChangeTypeAction|A new branch will be created in your fork and a new merge request will be started."
+msgid "ChangeTypeAction|Cherry-pick"
 msgstr ""
 
-msgid "ChangeTypeAction|Cherry-pick"
+msgid "ChangeTypeAction|GitLab will create a branch in your fork and start a merge request."
 msgstr ""
 
 msgid "ChangeTypeAction|Pick into branch"
@@ -15851,6 +15848,9 @@ msgid "GitLab uses %{linkStart}Sidekiq%{linkEnd} to process background jobs"
 msgstr ""
 
 msgid "GitLab version"
+msgstr ""
+
+msgid "GitLab will create a branch in your fork and start a merge request."
 msgstr ""
 
 msgid "GitLab.com"
@@ -37243,6 +37243,9 @@ msgid "Upload image"
 msgstr ""
 
 msgid "Upload license"
+msgstr ""
+
+msgid "Upload new file"
 msgstr ""
 
 msgid "Upload object map"
