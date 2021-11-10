@@ -54,19 +54,19 @@ module Ci
       end
 
       def work_on_unknown_artifacts_backlog
-        build_ids = Ci::JobArtifact.expired_before(@start_at).artifact_unknown.distinct.limit(BATCH_SIZE).pluck(:job_id)
+        build_ids = Ci::JobArtifact.expired_before(@start_at).artifact_unknown.limit(BATCH_SIZE).distinct_job_ids
 
         return false unless build_ids.present?
 
-        locked_pipeline_build_ids   = ::Ci::Build.joins(:pipeline).where(id: build_ids, :'pipeline.locked' => Ci::Pipeline.lockeds[:artifacts_locked]).pluck(:id)
-        unlocked_pipeline_build_ids = build_ids - locked_pipeline_build_ids # IDs in memory
+        locked_pipeline_build_ids   = ::Ci::Build.with_pipeline_locked_artifacts.id_in(build_ids).pluck_primary_key
+        unlocked_pipeline_build_ids = build_ids - locked_pipeline_build_ids
 
         update_unknown_artifacts(locked_pipeline_build_ids,   Ci::JobArtifact.lockeds[:artifacts_locked]) ||
         update_unknown_artifacts(unlocked_pipeline_build_ids, Ci::JobArtifact.lockeds[:unlocked])
       end
 
       def update_unknown_artifacts(build_ids, locked_value)
-        Ci::JobArtifact.where(job_id: build_ids).update_all(locked: locked_value) if build_ids.any?
+        Ci::JobArtifact.for_job_ids(build_ids).update_all(locked: locked_value) if build_ids.any?
       end
 
       def destroy_job_artifacts_with_slow_iteration
