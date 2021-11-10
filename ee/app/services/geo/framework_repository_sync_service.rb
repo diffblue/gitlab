@@ -45,9 +45,11 @@ module Geo
       log_info('Expiring caches')
       repository.after_create
     rescue Gitlab::Shell::Error, Gitlab::Git::BaseError => e
-      # In some cases repository does not exist, the only way to know about this is to parse the error text.
-      # If it does not exist we should consider it as successfully downloaded.
-      if e.message.include?(replicator.class.git_access_class.error_message(:no_repo))
+      # In some cases repository does not exist, the only way to know about this
+      # is to parse the error text. If the repository does not exist on the
+      # primary, then the state on this secondary matches the primary, and
+      # therefore the repository is successfully synced.
+      if e.message.include?(replicator.class.no_repo_message)
         log_info('Repository is not found, marking it as successfully synced')
         mark_sync_as_successful(missing_on_primary: true)
       else

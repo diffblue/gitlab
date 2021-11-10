@@ -120,6 +120,8 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
         .with(url_to_repo, forced: true, http_authorization_header: anything)
         .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessSnippet::ERROR_MESSAGES[:no_repo]))
 
+      expect(replicator.class).to receive(:no_repo_message).once.and_call_original
+
       subject.execute
 
       expect(registry).to have_attributes(
