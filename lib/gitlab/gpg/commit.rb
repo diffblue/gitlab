@@ -48,7 +48,7 @@ module Gitlab
 
           if gpg_key
             Gitlab::Gpg::CurrentKeyChain.add(gpg_key.key)
-            clear_memoization(:verified_signature)
+            clear_memoization(:gpg_signatures)
           end
 
           yield gpg_key
@@ -56,10 +56,6 @@ module Gitlab
       end
 
       def verified_signature
-        strong_memoize(:verified_signature) { gpgme_signature }
-      end
-
-      def gpgme_signature
         gpg_signatures.first
       end
 
@@ -73,15 +69,17 @@ module Gitlab
       end
 
       def gpg_signatures
-        signatures = []
+        strong_memoize(:gpg_signatures) do
+          signatures = []
 
-        GPGME::Crypto.new.verify(signature_text, signed_text: signed_text) do |verified_signature|
-          signatures << verified_signature
+          GPGME::Crypto.new.verify(signature_text, signed_text: signed_text) do |verified_signature|
+            signatures << verified_signature
+          end
+
+          signatures
+        rescue GPGME::Error
+          []
         end
-
-        signatures
-      rescue GPGME::Error
-        []
       end
 
       def multiple_signatures?
