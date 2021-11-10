@@ -4,7 +4,7 @@
 if Gitlab.dev_or_test_env? || Gitlab::Utils.to_boolean(ENV['GITLAB_ENABLE_QUERY_ANALYZERS'], default: false)
   Gitlab::Database::QueryAnalyzer.instance.hook!
   Gitlab::Database::QueryAnalyzer.instance.all_analyzers.append(::Gitlab::Database::QueryAnalyzers::GitlabSchemasMetrics)
-  Gitlab::Database::QueryAnalyzer.instance.all_analyzers.append(::Gitlab::Database::PreventCrossDatabaseModification)
+  Gitlab::Database::QueryAnalyzer.instance.all_analyzers.append(::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification)
 
   Gitlab::Application.configure do |config|
     config.middleware.use(Gitlab::Middleware::QueryAnalyzer)

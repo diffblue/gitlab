@@ -9,7 +9,7 @@ module Gitlab
 
       def call(env)
         if Feature.enabled?(:detect_cross_database_modification, default_enabled: :yaml)
-          ::Gitlab::Database::PreventCrossDatabaseModification.with_cross_database_modification_prevented(log_only: true) do
+          ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.with_cross_database_modification_prevented(log_only: true) do
             @app.call(env)
           end
         else

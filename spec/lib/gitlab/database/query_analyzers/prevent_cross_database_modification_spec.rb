@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Database::PreventCrossDatabaseModification do
+RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification do
   let_it_be(:pipeline, refind: true) { create(:ci_pipeline) }
   let_it_be(:project, refind: true) { create(:project) }
 
@@ -125,7 +125,7 @@ RSpec.describe Gitlab::Database::PreventCrossDatabaseModification do
     describe '.allow_cross_database_modification_within_transaction' do
       it 'skips raising error' do
         expect do
-          ::Gitlab::Database::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'gitlab-issue') do
+          described_class.allow_cross_database_modification_within_transaction(url: 'gitlab-issue') do
             Project.transaction do
               pipeline.touch
               project.touch
@@ -136,7 +136,7 @@ RSpec.describe Gitlab::Database::PreventCrossDatabaseModification do
 
       it 'skips raising error on factory creation' do
         expect do
-          ::Gitlab::Database::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'gitlab-issue') do
+          described_class.allow_cross_database_modification_within_transaction(url: 'gitlab-issue') do
             ApplicationRecord.transaction do
               create(:ci_pipeline)
             end

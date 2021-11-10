@@ -2,11 +2,11 @@
 
 module PreventCrossDatabaseModificationSpecHelpers
   def with_cross_database_modification_prevented(...)
-    ::Gitlab::Database::PreventCrossDatabaseModification.with_cross_database_modification_prevented(...)
+    ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.with_cross_database_modification_prevented(...)
   end
 
   def cleanup_with_cross_database_modification_prevented
-    ::Gitlab::Database::PreventCrossDatabaseModification.cleanup_with_cross_database_modification_prevented
+    ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.cleanup_with_cross_database_modification_prevented
   end
 end
 
