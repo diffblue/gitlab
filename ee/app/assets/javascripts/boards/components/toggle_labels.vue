@@ -43,6 +43,7 @@ export default {
       label-position="left"
       aria-describedby="board-labels-toggle-text"
       data-qa-selector="show_labels_toggle"
+      class="gl-flex-direction-row"
       @change="onToggle"
     />
   </div>
