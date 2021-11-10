@@ -112,6 +112,25 @@ RSpec.describe Ci::CreatePipelineService do
 
         it_behaves_like 'a missing profile'
       end
+
+      context 'when there is an unexpected system error' do
+        let_it_be(:error_tracking) { Gitlab::ErrorTracking }
+        let_it_be(:exception) { ActiveRecord::ConnectionTimeoutError }
+
+        before do
+          allow(error_tracking).to receive(:track_exception).and_call_original
+
+          allow_next_instance_of(AppSec::Dast::Profiles::BuildConfigService) do |instance|
+            allow(instance).to receive(:execute).and_raise(exception)
+          end
+        end
+
+        it 'handles the error', :aggregate_failures do
+          expect(subject.errors.full_messages).to include('Failed to associate DAST profiles')
+
+          expect(error_tracking).to have_received(:track_exception).with(exception, extra: { pipeline_id: subject.id })
+        end
+      end
     end
 
     context 'when the stage is not dast' do
