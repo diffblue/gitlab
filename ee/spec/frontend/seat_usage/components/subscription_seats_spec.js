@@ -212,6 +212,33 @@ describe('Subscription Seats', () => {
         },
       );
     });
+
+    describe('members details', () => {
+      it.each`
+        membershipType      | shouldShowDetails
+        ${'project_invite'} | ${false}
+        ${'group_invite'}   | ${false}
+        ${'project_member'} | ${true}
+        ${'group_member'}   | ${true}
+      `(
+        'when membershipType is $membershipType, shouldShowDetails should be $shouldShowDetails',
+        ({ membershipType, shouldShowDetails }) => {
+          const seatCells = findTable().findAll('[data-testid*="seat-cell-"]');
+
+          seatCells.wrappers.forEach((seatCellWrapper) => {
+            const currentMember = mockTableItems.find(
+              (item) => seatCellWrapper.attributes('data-testid') === `seat-cell-${item.user.id}`,
+            );
+
+            if (membershipType === currentMember.user.membership_type) {
+              expect(
+                seatCellWrapper.find('[data-testid="toggle-seat-usage-details"]').exists(),
+              ).toBe(shouldShowDetails);
+            }
+          });
+        },
+      );
+    });
   });
 
   describe('is loading', () => {
