@@ -363,6 +363,10 @@ This rule has a different impact depending on the package name:
 This aligns with npmjs.org's behavior. However, npmjs.org does not ever let you publish
 the same version more than once, even if it has been deleted.
 
+## `package.json` limitations
+
+You can't publish a package if its `package.json` file exceeds 20,000 characters.
+
 ## Install a package
 
 npm packages are commonly-installed by using the `npm` or `yarn` commands
@@ -427,22 +431,29 @@ and use your organization's URL. The name is case-sensitive and must match the n
 //gitlab.example.com/api/v4/projects/<your_project_id>/packages/npm/:_authToken= "<your_token>"
 ```
 
-### npm dependencies metadata
+### npm metadata
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11867) in GitLab Premium 12.6.
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/221259) to GitLab Free in 13.3.
+> - [Improved](https://gitlab.com/gitlab-org/gitlab/-/issues/330929) in GitLab 14.5.
 
-In GitLab 12.6 and later, packages published to the Package Registry expose the following attributes to the npm client:
+The GitLab Package Registry exposes the following attributes to the npm client.
+These are similar to the [abbreviated metadata format](https://github.com/npm/registry/blob/9e368cf6aaca608da5b2c378c0d53f475298b916/docs/responses/package-metadata.md#abbreviated-metadata-format):
 
-- name
-- version
-- dist-tags
-- dependencies
-  - dependencies
-  - devDependencies
-  - bundleDependencies
-  - peerDependencies
-  - deprecated
+- `name`
+- `versions`
+  - `name`
+  - `version`
+  - `deprecated`
+  - `dependencies`
+  - `devDependencies`
+  - `bundleDependencies`
+  - `peerDependencies`
+  - `bin`
+  - `directories`
+  - `dist`
+  - `engines`
+  - `_hasShrinkwrap`
 
 ## Add npm distribution tags
 
@@ -578,6 +589,10 @@ root namespace and therefore cannot be published again using the same name.
 
 This is also true even if the prior published package shares the same name,
 but not the version.
+
+#### Package JSON file is too large
+
+Make sure that your `package.json` file does not [exceed `20,000` characters](#packagejson-limitations).
 
 ### `npm publish` returns `npm ERR! 500 Internal Server Error - PUT`
 

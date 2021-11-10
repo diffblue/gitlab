@@ -17199,6 +17199,12 @@ CREATE SEQUENCE packages_maven_metadata_id_seq
 
 ALTER SEQUENCE packages_maven_metadata_id_seq OWNED BY packages_maven_metadata.id;
 
+CREATE TABLE packages_npm_metadata (
+    package_id bigint NOT NULL,
+    package_json jsonb DEFAULT '{}'::jsonb NOT NULL,
+    CONSTRAINT chk_rails_e5cbc301ae CHECK ((char_length((package_json)::text) < 20000))
+);
+
 CREATE TABLE packages_nuget_dependency_link_metadata (
     dependency_link_id bigint NOT NULL,
     target_framework text NOT NULL,
@@ -23523,6 +23529,9 @@ ALTER TABLE ONLY packages_helm_file_metadata
 
 ALTER TABLE ONLY packages_maven_metadata
     ADD CONSTRAINT packages_maven_metadata_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY packages_npm_metadata
+    ADD CONSTRAINT packages_npm_metadata_pkey PRIMARY KEY (package_id);
 
 ALTER TABLE ONLY packages_nuget_dependency_link_metadata
     ADD CONSTRAINT packages_nuget_dependency_link_metadata_pkey PRIMARY KEY (dependency_link_id);
@@ -30778,6 +30787,9 @@ ALTER TABLE ONLY atlassian_identities
 
 ALTER TABLE ONLY serverless_domain_cluster
     ADD CONSTRAINT fk_rails_c09009dee1 FOREIGN KEY (pages_domain_id) REFERENCES pages_domains(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_npm_metadata
+    ADD CONSTRAINT fk_rails_c0e5fce6f3 FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY labels
     ADD CONSTRAINT fk_rails_c1ac5161d8 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
