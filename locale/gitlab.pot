@@ -495,6 +495,11 @@ msgstr[1] ""
 msgid "%{count} approvals from %{name}"
 msgstr ""
 
+msgid "%{count} contact"
+msgid_plural "%{count} contacts"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{count} files touched"
 msgstr ""
 
@@ -32379,6 +32384,9 @@ msgstr ""
 msgid "Something went wrong trying to change the locked state of this %{issuableDisplayName}"
 msgstr ""
 
+msgid "Something went wrong trying to load issue contacts."
+msgstr ""
+
 msgid "Something went wrong when creating a work item. Please try again"
 msgstr ""
 
@@ -39333,6 +39341,9 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress Limit"
+msgstr ""
+
+msgid "Work in progress- click here to find out more"
 msgstr ""
 
 msgid "WorkItem|Work Items"
