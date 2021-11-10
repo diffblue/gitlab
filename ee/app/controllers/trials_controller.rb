@@ -72,6 +72,10 @@ class TrialsController < ApplicationController
     end
   end
 
+  def skip
+    redirect_to stored_location_or_provided_path(dashboard_projects_path)
+  end
+
   protected
 
   # override the ConfirmEmailWarning method in order to skip
@@ -80,6 +84,15 @@ class TrialsController < ApplicationController
   end
 
   private
+
+  def stored_location_or_provided_path(path)
+    if current_user.setup_for_company &&
+        experiment(:combined_registration, user: current_user).variant.name == 'candidate'
+      stored_location_for(:user) || path
+    else
+      path
+    end
+  end
 
   def authenticate_user!
     return if current_user
@@ -240,7 +253,7 @@ class TrialsController < ApplicationController
       if discover_group_security_flow?
         redirect_trial_user_to_feature_experiment_flow
       else
-        redirect_to group_url(@namespace, { trial: true })
+        redirect_to stored_location_or_provided_path(group_url(@namespace, { trial: true }))
       end
     else
       render :select
