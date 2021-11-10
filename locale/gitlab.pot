@@ -23326,6 +23326,9 @@ msgstr ""
 msgid "No forks are available to you."
 msgstr ""
 
+msgid "No group provided"
+msgstr ""
+
 msgid "No grouping"
 msgstr ""
 
@@ -23375,6 +23378,9 @@ msgid "No matching results..."
 msgstr ""
 
 msgid "No members found"
+msgstr ""
+
+msgid "No memberships found"
 msgstr ""
 
 msgid "No merge requests found"
@@ -39468,6 +39474,9 @@ msgid "You do not have any subscriptions yet"
 msgstr ""
 
 msgid "You do not have permission to access dora metrics."
+msgstr ""
+
+msgid "You do not have permission to approve a member"
 msgstr ""
 
 msgid "You do not have permission to leave this %{namespaceType}."
