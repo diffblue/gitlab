@@ -61,7 +61,7 @@ RSpec.describe Security::Ingestion::FindingMap do
         description: 'The cipher does not provide data integrity update 1',
         solution: 'GCM mode introduces an HMAC into the resulting encrypted data, providing integrity of the result.',
         message: nil,
-        cve: nil,
+        cve: report_finding.cve,
         location: {
           "class" => "com.gitlab.security_products.tests.App",
           "end_line" => 29,
