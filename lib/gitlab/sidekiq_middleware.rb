@@ -41,12 +41,6 @@ module Gitlab
         # so we can compare the latest WAL location against replica
         chain.add ::Gitlab::SidekiqMiddleware::DuplicateJobs::Server
         chain.add ::Gitlab::Database::LoadBalancing::SidekiqServerMiddleware
-
-        # Do not use middleware in tests since we already wrap all tests with
-        # `PreventCrossDatabaseModification` logic . Also the environment
-        # variable offers a quick way to disable this check if it is causing
-        # problems
-        chain.add ::Gitlab::SidekiqMiddleware::DetectCrossDatabaseModification unless Rails.env.test? || ENV['DISABLE_CROSS_DATABASE_MODIFICATION_DETECTION']
       end
     end
 
