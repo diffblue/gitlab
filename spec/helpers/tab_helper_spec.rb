@@ -155,5 +155,11 @@ RSpec.describe TabHelper do
     it 'creates a tab counter badge' do
       expect(gl_tab_counter_badge(1)).to eq('<span class="badge badge-muted badge-pill gl-badge sm gl-tab-counter-badge">1</span>')
     end
+
+    context 'with extra classes' do
+      it 'creates a tab counter badge with the correct class attribute' do
+        expect(gl_tab_counter_badge(1, { class: 'js-test' })).to eq('<span class="js-test badge badge-muted badge-pill gl-badge sm gl-tab-counter-badge">1</span>')
+      end
+    end
   end
 end
