@@ -208,6 +208,15 @@ Then, you can run `npm publish` either locally or by using GitLab CI/CD.
 - **GitLab CI/CD:** Set an `NPM_TOKEN` [CI/CD variable](../../../ci/variables/index.md)
   under your project's **Settings > CI/CD > Variables**.
 
+## Working with private registries
+
+When working with private repositories, you may want to configure additional settings to ensure a secure communication channel:
+
+```shell
+# Force npm to always require authentication when accessing the registry, even for GET requests.
+npm config set always-auth true
+```
+
 ## Package naming convention
 
 When you use the [instance-level endpoint](#use-the-gitlab-endpoint-for-npm-packages), only the packages with names in the format of `@scope/package-name` are available.
