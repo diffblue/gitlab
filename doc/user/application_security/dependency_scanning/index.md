@@ -89,6 +89,7 @@ table.supported-languages ul {
 }
 </style>
 
+<!-- markdownlint-disable MD044 -->
 <table class="supported-languages">
   <thead>
     <tr>
@@ -272,6 +273,7 @@ table.supported-languages ul {
     </p>
   </li>
 </ol>
+<!-- markdownlint-enable MD044 -->
 
 ### How analyzers obtain dependency information
 
@@ -311,6 +313,7 @@ To support the following package managers, the GitLab analyzers proceed in two s
 | pip             | [20.2.4](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/v2.29.9/Dockerfile#L26)                                                                              | [20.x](https://gitlab.com/gitlab-org/security-products/tests/python-pip/-/blob/master/requirements.txt)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Pipenv          | [2018.11.26](https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-python/-/blob/v2.18.4/requirements.txt#L13)                                                             | [2018.11.26](https://gitlab.com/gitlab-org/security-products/tests/python-pipenv/-/blob/pipfile-lock-FREEZE/Pipfile.lock#L6)<sup><b><a href="#exported-dependency-information-notes-2">2</a></b></sup>, [2018.11.26](https://gitlab.com/gitlab-org/security-products/tests/python-pipenv/-/blob/master/Pipfile)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
+<!-- markdownlint-disable MD044 -->
 <ol>
   <li>
     <a id="exported-dependency-information-notes-1"></a>
@@ -325,6 +328,7 @@ To support the following package managers, the GitLab analyzers proceed in two s
     </p>
   </li>
 </ol>
+<!-- markdownlint-enable MD044 -->
 
 ### How analyzers are triggered
 
