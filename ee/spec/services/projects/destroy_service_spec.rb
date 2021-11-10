@@ -98,7 +98,7 @@ RSpec.describe Projects::DestroyService do
   end
 
   context 'when project has an associated ProjectNamespace' do
-    let!(:project_namespace) { create(:project_namespace, project: project) }
+    let!(:project_namespace) { project.project_namespace }
 
     it 'destroys the associated ProjectNamespace also' do
       subject.execute
