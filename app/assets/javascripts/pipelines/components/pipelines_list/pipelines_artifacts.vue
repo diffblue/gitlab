@@ -1,19 +1,15 @@
 <script>
 import {
-  GlAlert,
   GlDropdown,
   GlDropdownItem,
   GlDropdownSectionHeader,
   GlTooltipDirective,
 } from '@gitlab/ui';
-import axios from '~/lib/utils/axios_utils';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
 
 export const i18n = {
   artifacts: __('Artifacts'),
   artifactSectionHeader: __('Download artifacts'),
-  artifactsFetchErrorMessage: s__('Pipelines|Could not load artifacts.'),
-  noArtifacts: s__('Pipelines|No artifacts available'),
 };
 
 export default {
@@ -22,7 +18,6 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    GlAlert,
     GlDropdown,
     GlDropdownItem,
     GlDropdownSectionHeader,
@@ -40,41 +35,15 @@ export default {
       type: Number,
       required: true,
     },
-  },
-  data() {
-    return {
-      artifacts: [],
-      hasError: false,
-      isLoading: false,
-    };
+    artifacts: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   computed: {
     shouldShowDropdown() {
-      return this.isLoading || this.hasError || this.artifacts?.length;
-    },
-  },
-  mounted() {
-    this.fetchArtifacts();
-  },
-  methods: {
-    fetchArtifacts() {
-      this.isLoading = true;
-      // Replace the placeholder with the ID of the pipeline we are viewing
-      const endpoint = this.artifactsEndpoint.replace(
-        this.artifactsEndpointPlaceholder,
-        this.pipelineId,
-      );
-      return axios
-        .get(endpoint)
-        .then(({ data }) => {
-          this.artifacts = data.artifacts;
-        })
-        .catch(() => {
-          this.hasError = true;
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+      return this.artifacts?.length;
     },
   },
 };
@@ -87,7 +56,6 @@ export default {
     :title="$options.i18n.artifacts"
     :text="$options.i18n.artifacts"
     :aria-label="$options.i18n.artifacts"
-    :loading="isLoading"
     icon="download"
     right
     lazy
@@ -96,10 +64,6 @@ export default {
     <gl-dropdown-section-header>{{
       $options.i18n.artifactSectionHeader
     }}</gl-dropdown-section-header>
-
-    <gl-alert v-if="hasError" variant="danger" :dismissible="false">
-      {{ $options.i18n.artifactsFetchErrorMessage }}
-    </gl-alert>
 
     <gl-dropdown-item
       v-for="(artifact, i) in artifacts"
