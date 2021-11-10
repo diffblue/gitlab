@@ -5,6 +5,7 @@ module AlertManagement
   class NetworkAlertService
     extend ::Gitlab::Utils::Override
     include ::AlertManagement::AlertProcessing
+    include ::AlertManagement::Responses
 
     MONITORING_TOOL = Gitlab::AlertManagement::Payload::MONITORING_TOOLS.fetch(:cilium)
 
@@ -20,7 +21,7 @@ module AlertManagement
 
       return bad_request unless alert.persisted?
 
-      ServiceResponse.success
+      success(alert)
     end
 
     private
