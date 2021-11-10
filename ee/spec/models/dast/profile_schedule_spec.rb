@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Dast::ProfileSchedule, type: :model do
   let(:dast_profile_schedule) { create(:dast_profile_schedule, project: project) }
 
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
   let_it_be(:inactive_dast_profile_schedule) { create(:dast_profile_schedule, active: false, project: project) }
 
   subject { dast_profile_schedule }

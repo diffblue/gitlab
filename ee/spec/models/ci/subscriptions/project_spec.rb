@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Subscriptions::Project do
-  let_it_be(:upstream_project) { create(:project, :public) }
-  let_it_be(:downstream_project) { create(:project) }
+  let_it_be_with_reload(:upstream_project) { create(:project, :public) }
+  let_it_be_with_reload(:downstream_project) { create(:project) }
 
   describe 'Relations' do
     it { is_expected.to belong_to(:downstream_project).required }

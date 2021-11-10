@@ -179,13 +179,15 @@ module EE
     override :actual_plan
     def actual_plan
       strong_memoize(:actual_plan) do
+        next ::Plan.default unless ::Gitlab.com?
+
         if parent_id
           root_ancestor.actual_plan
         else
-          subscription = find_or_create_subscription
-          hosted_plan_for(subscription)
+          subscription = gitlab_subscription || generate_subscription
+          hosted_plan_for(subscription) || ::Plan.free
         end
-      end || fallback_plan
+      end
     end
 
     def closest_gitlab_subscription
@@ -444,14 +446,6 @@ module EE
       projects_query.with_shared_runners.any?
     end
 
-    def fallback_plan
-      if ::Gitlab.com?
-        ::Plan.free
-      else
-        ::Plan.default
-      end
-    end
-
     def validate_shared_runner_minutes_support
       return if root?
 
@@ -485,13 +479,6 @@ module EE
       return if checked_file_template_project_id.present?
 
       self.file_template_project_id = nil
-    end
-
-    def find_or_create_subscription
-      # Hosted subscriptions are only available for root groups for now.
-      return if parent_id
-
-      gitlab_subscription || generate_subscription
     end
 
     def generate_subscription
