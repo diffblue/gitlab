@@ -102,6 +102,14 @@ Note that we are not deprecating the Kerberos SPNEGO integration, only the old p
 
 Announced: 2021-09-22
 
+### Package pipelines in API payload is paginated
+
+A request to the API for `/api/v4/projects/:id/packages` returns a paginated result of packages. Each package lists all of its pipelines in this response. This is a performance concern, as it's possible for a package to have hundreds or thousands of associated pipelines.
+
+In milestone 15.0, we will remove the `pipelines` attribute from the API response.
+
+Announced: 2021-11-22
+
 ### REST API Runner will not contain `paused`
 
 Runner REST API will not return `paused` as a status in GitLab 15.0.
