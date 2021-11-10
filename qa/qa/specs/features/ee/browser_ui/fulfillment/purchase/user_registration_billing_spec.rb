@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
+  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env do
     describe 'Purchase' do
       describe 'User Registration' do
         let(:group) do
@@ -18,14 +18,25 @@ module QA
         end
 
         before do
+          # Enable sign-ups
+          Runtime::ApplicationSettings.set_application_settings(signup_enabled: true)
+
           # Register the new user through the registration page
           Gitlab::Page::Main::SignUp.perform do |sign_up|
             sign_up.visit
             sign_up.register_user(user)
           end
+
+          # Click the Get Started button on the welcome page if it presents itself
+          Gitlab::Page::Main::Welcome.perform do |welcome|
+            welcome.get_started_button if welcome.get_started_button?
+          end
         end
 
         after do
+          # Restore what the signup_enabled setting was before this test was run
+          Runtime::ApplicationSettings.restore_application_settings(:signup_enabled)
+
           user.remove_via_api!
           group.remove_via_api!
         rescue Resource::ApiFabricator::ResourceNotDeletedError
@@ -35,7 +46,7 @@ module QA
         end
 
         context 'when adding and removing a group member' do
-          it 'consumes a seat on the license', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2268', quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342675', type: :investigating } do
+          it 'consumes a seat on the license', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2268' do
             Flow::Login.sign_in_as_admin
 
             # Save the number of users as stated by the license
