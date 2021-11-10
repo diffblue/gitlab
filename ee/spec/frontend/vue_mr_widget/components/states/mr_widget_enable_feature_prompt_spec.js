@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import MrWidgetEnableFeaturePrompt from 'ee/vue_merge_request_widget/components/states/mr_widget_enable_feature_prompt.vue';
-import { assignGitlabExperiment } from 'helpers/experimentation_helper';
+import { stubExperiments } from 'helpers/experimentation_helper';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 
 const FEATURE = 'my_feature_name';
@@ -30,19 +30,16 @@ describe('MrWidgetEnableFeaturePrompt', () => {
   });
 
   describe('when the experiment is not enabled', () => {
-    beforeAll(() => {
-      assignGitlabExperiment(FEATURE, 'control');
-    });
-
     it('renders nothing', () => {
+      stubExperiments({ [FEATURE]: 'control' });
       expect(wrapper.text()).toBe('');
     });
   });
 
   describe('when the experiment is enabled', () => {
     beforeAll(() => {
+      stubExperiments({ [FEATURE]: 'candidate' });
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-      assignGitlabExperiment(FEATURE, 'candidate');
     });
 
     it('shows a neutral icon', () => {
