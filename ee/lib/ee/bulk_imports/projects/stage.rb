@@ -9,7 +9,12 @@ module EE
         private
 
         def ee_config
-          @ee_config ||= {}
+          @ee_config ||= {
+            push_rule: {
+              pipeline: ::BulkImports::Projects::Pipelines::PushRulePipeline,
+              stage: 4
+            }
+          }
         end
 
         override :config
