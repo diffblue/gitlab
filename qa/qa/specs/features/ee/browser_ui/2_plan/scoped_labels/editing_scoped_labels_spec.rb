@@ -2,7 +2,7 @@
 
 module QA
   # TODO: Remove :requires_admin when the `Runtime::Feature.enable` method call is removed
-  RSpec.describe 'Plan', :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345076', type: :flaky } do
+  RSpec.describe 'Plan', :requires_admin do
     describe 'Editing scoped labels on issues' do
       let(:initial_label) { 'animal::fox' }
       let(:new_label_same_scope) { 'animal::dolphin' }
@@ -43,6 +43,9 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1181'
       ) do
         Page::Project::Issue::Show.perform do |show|
+          # TODO: Remove this method when the `Runtime::Feature.enable` method call is removed
+          show.wait_for_labels_widget_feature_flag
+
           show.select_labels(
             [
               new_label_same_scope,
