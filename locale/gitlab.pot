@@ -35190,6 +35190,9 @@ msgstr ""
 msgid "This field is required."
 msgstr ""
 
+msgid "This file was modified for readability, and can't accept suggestions. Edit it directly."
+msgstr ""
+
 msgid "This form is disabled in preview"
 msgstr ""
 
