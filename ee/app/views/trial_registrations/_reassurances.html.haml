@@ -15,4 +15,4 @@
 %ul.gl-display-flex.gl-flex-wrap.gl-pl-0.gl-font-sm.gl-font-weight-bold
   - reassurance_orgs.each do |org|
     %li.gl-display-flex.gl-align-items-center.gl-min-w-8.gl-h-8.gl-mr-7{ class: org.opacity_css_class }
-      = image_tag org.logo_image_path, alt: org.image_alt_text, title: org.name
+      = image_tag org.logo_image_path, alt: org.image_alt_text, title: org.name, class: 'gl-max-w-full'
