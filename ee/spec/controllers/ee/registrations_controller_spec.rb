@@ -111,8 +111,8 @@ RSpec.describe RegistrationsController do
         end
 
         context 'when user registers for the instance' do
-          it 'logs an audit event' do
-            expect { subject }.to change { AuditEvent.count }.by(1)
+          it 'logs add email event and instance access request event' do
+            expect { subject }.to change { AuditEvent.count }.by(2)
           end
 
           it 'logs the audit event info', :aggregate_failures do
