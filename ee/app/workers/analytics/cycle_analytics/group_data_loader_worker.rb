@@ -12,9 +12,8 @@ module Analytics
 
       MODEL_KLASSES = %w[Issue MergeRequest].freeze
 
-      # rubocop: disable CodeReuse/ActiveRecord
       def perform(group_id, model_klass = MODEL_KLASSES.first, cursor = {}, updated_at_before = Time.current)
-        group = Group.find_by(id: group_id)
+        group = Group.find_by_id(group_id)
         return unless group
 
         model = model_klass.safe_constantize
@@ -51,7 +50,6 @@ module Analytics
 
         true
       end
-      # rubocop: enable CodeReuse/ActiveRecord
     end
   end
 end

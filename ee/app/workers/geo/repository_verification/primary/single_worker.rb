@@ -16,18 +16,16 @@ module Geo
 
         attr_reader :project
 
-        # rubocop: disable CodeReuse/ActiveRecord
         def perform(project_id)
           return unless Gitlab::Geo.primary?
 
-          @project = Project.find_by(id: project_id)
+          @project = Project.find_by_id(project_id)
           return if project.nil? || project.pending_delete?
 
           try_obtain_lease do
             Geo::RepositoryVerificationPrimaryService.new(project).execute
           end
         end
-        # rubocop: enable CodeReuse/ActiveRecord
 
         private
 

@@ -20,11 +20,10 @@ module Geo
 
         delegate :project, to: :registry
 
-        # rubocop: disable CodeReuse/ActiveRecord
         def perform(registry_id)
           return unless Gitlab::Geo.secondary?
 
-          @registry = Geo::ProjectRegistry.find_by(id: registry_id)
+          @registry = Geo::ProjectRegistry.find_by_id(registry_id)
           return if registry.nil? || project.nil? || project.pending_delete?
 
           try_obtain_lease do
@@ -32,7 +31,6 @@ module Geo
             verify_checksum(:wiki)
           end
         end
-        # rubocop: enable CodeReuse/ActiveRecord
 
         private
 
