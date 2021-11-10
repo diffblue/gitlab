@@ -495,13 +495,12 @@ RSpec.describe Groups::EpicsController do
 
         context 'when the endpoint receives requests above the limit', :freeze_time, :clean_gitlab_redis_rate_limiting do
           before do
-            stub_application_setting(issues_create_limit: 5)
+            stub_application_setting(issues_create_limit: 1)
           end
 
           it 'prevents from creating more epics' do
-            5.times { post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } } }
+            2.times { post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } } }
 
-            post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } }
             expect(response.body).to eq(_('This endpoint has been requested too many times. Try again later.'))
             expect(response).to have_gitlab_http_status(:too_many_requests)
           end
@@ -519,7 +518,7 @@ RSpec.describe Groups::EpicsController do
 
             expect(Gitlab::AuthLogger).to receive(:error).with(attributes).once
 
-            6.times { post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } } }
+            2.times { post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } } }
           end
         end
       end
