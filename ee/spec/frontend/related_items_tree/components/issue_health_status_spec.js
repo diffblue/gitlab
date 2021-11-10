@@ -37,7 +37,7 @@ describe('IssueHealthStatus', () => {
   it('applies correct health status class', () => {
     const expectedValue = issueHealthStatusCSSMapping[healthStatus];
 
-    expect(wrapper.find(`.${expectedValue}`)).toExist();
+    expect(wrapper.find(`.${expectedValue}`).exists()).toBe(true);
   });
 
   it('contains health status tooltip', () => {

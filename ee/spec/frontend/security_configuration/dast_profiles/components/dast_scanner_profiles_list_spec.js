@@ -33,7 +33,7 @@ describe('EE - DastScannerProfileList', () => {
   };
   const createFullComponent = wrapperFactory(mount);
 
-  const findProfileList = () => wrapper.find(ProfilesList);
+  const findProfileList = () => wrapper.findComponent(ProfilesList);
 
   afterEach(() => {
     wrapper.destroy();
@@ -44,7 +44,7 @@ describe('EE - DastScannerProfileList', () => {
       propsData: { profiles: scannerProfiles },
     });
 
-    expect(findProfileList()).toExist();
+    expect(findProfileList().exists()).toBe(true);
   });
 
   it('passes down the props properly', () => {

@@ -55,12 +55,12 @@ describe('SharedForm', () => {
     it('shows the correct input and button fields', () => {
       wrapper = createComponent();
 
-      expect(findNameInput()).toExist();
-      expect(findDescriptionInput()).toExist();
-      expect(findPipelineConfigurationInput()).toExist();
-      expect(findColorPicker()).toExist();
-      expect(findSubmitBtn()).toExist();
-      expect(findCancelBtn()).toExist();
+      expect(findNameInput().exists()).toBe(true);
+      expect(findDescriptionInput().exists()).toBe(true);
+      expect(findPipelineConfigurationInput().exists()).toBe(true);
+      expect(findColorPicker().exists()).toBe(true);
+      expect(findSubmitBtn().exists()).toBe(true);
+      expect(findCancelBtn().exists()).toBe(true);
     });
 
     it('sets the submit button text from the property', () => {

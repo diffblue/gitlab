@@ -48,7 +48,7 @@ describe('EE - DastSavedScansList', () => {
   };
   const createFullComponent = wrapperFactory(mount);
 
-  const findProfileList = () => wrapper.find(ProfilesList);
+  const findProfileList = () => wrapper.findComponent(ProfilesList);
 
   afterEach(() => {
     wrapper.destroy();
@@ -59,7 +59,7 @@ describe('EE - DastSavedScansList', () => {
       propsData: { profiles: savedScans },
     });
 
-    expect(findProfileList()).toExist();
+    expect(findProfileList().exists()).toBe(true);
   });
 
   it('renders branch information for each profile', () => {

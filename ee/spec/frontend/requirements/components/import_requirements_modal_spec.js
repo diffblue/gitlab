@@ -66,7 +66,6 @@ describe('ImportRequirementsModal', () => {
 
       const emitted = wrapper.emitted('import')[0][0];
 
-      expect(emitted).toExist();
       expect(emitted.file).toBe(file);
       expect(emitted.projectPath).toBe(wrapper.vm.projectPath);
     });

@@ -23,12 +23,6 @@ describe('EpicHealthStatus', () => {
     wrapper.destroy();
   });
 
-  it('renders tooltip', () => {
-    const tooltip = wrapper.find(GlTooltip);
-
-    expect(tooltip).toExist();
-  });
-
   describe('when no statuses are assigned', () => {
     it('hasHealthStatus computed property returns false', () => {
       expect(wrapper.vm.hasHealthStatus).toBe(false);
@@ -52,6 +46,12 @@ describe('EpicHealthStatus', () => {
           issuesAtRisk: 0,
         },
       });
+    });
+
+    it('renders tooltip', () => {
+      const tooltip = wrapper.find(GlTooltip);
+
+      expect(tooltip.exists()).toBe(true);
     });
 
     it('hasHealthStatus computed property returns false', () => {
