@@ -2163,9 +2163,6 @@ msgstr ""
 msgid "Added an issue to an epic."
 msgstr ""
 
-msgid "Added at"
-msgstr ""
-
 msgid "Added for this merge request"
 msgstr ""
 
@@ -12454,6 +12451,9 @@ msgid "Edit commit message"
 msgstr ""
 
 msgid "Edit deploy freeze"
+msgstr ""
+
+msgid "Edit deploy key"
 msgstr ""
 
 msgid "Edit description"
@@ -40159,9 +40159,6 @@ msgid "access:"
 msgstr ""
 
 msgid "added"
-msgstr ""
-
-msgid "added %{created_at_timeago}"
 msgstr ""
 
 msgid "added %{emails}"
