@@ -25707,6 +25707,9 @@ msgstr ""
 msgid "Pipeline|Variables"
 msgstr ""
 
+msgid "Pipeline|View commit"
+msgstr ""
+
 msgid "Pipeline|View pipeline"
 msgstr ""
 
