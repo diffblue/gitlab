@@ -58,6 +58,12 @@ dramatically slow down GitLab instances. For this reason, they are being removed
 
 Announced: 2021-09-22
 
+### Converting an instance (shared) runner to a project (specific) runner is deprecated
+
+In GitLab 15.0, we will remove the feature that enables you to convert an instance (shared) runner to a project (specific) runner. Users who need to add a runner to only a particular project can register a runner to the project directly.
+
+Announced: 2021-11-22
+
 ### Deprecate `Versions` on base `PackageType`
 
 As part of the work to create a [Package Registry GraphQL API](https://gitlab.com/groups/gitlab-org/-/epics/6318), the Package group deprecated the `Version` type for the basic `PackageType` type and moved it to [`PackageDetailsType`](https://docs.gitlab.com/ee/api/graphql/reference/index.html#packagedetailstype).
