@@ -70,9 +70,6 @@ msgstr ""
 msgid "\"%{repository_name}\" size (%{repository_size}) is larger than the limit of %{limit}."
 msgstr ""
 
-msgid "\"el\" parameter is required for createInstance()"
-msgstr ""
-
 msgid "#%{issueIid} (closed)"
 msgstr ""
 
@@ -14081,9 +14078,6 @@ msgid "Export variable to pipelines running on protected branches and tags only.
 msgstr ""
 
 msgid "Exported requirements"
-msgstr ""
-
-msgid "Extension definition should be either a class or a function"
 msgstr ""
 
 msgid "External Classification Policy Authorization"
@@ -32568,9 +32562,6 @@ msgstr ""
 msgid "Source Branch"
 msgstr ""
 
-msgid "Source Editor instance is required to set up an extension."
-msgstr ""
-
 msgid "Source IP"
 msgstr ""
 
@@ -32587,6 +32578,15 @@ msgid "Source is not available"
 msgstr ""
 
 msgid "Source project cannot be found."
+msgstr ""
+
+msgid "SourceEditor|\"el\" parameter is required for createInstance()"
+msgstr ""
+
+msgid "SourceEditor|Extension definition should be either a class or a function"
+msgstr ""
+
+msgid "SourceEditor|Source Editor instance is required to set up an extension."
 msgstr ""
 
 msgid "Sourcegraph"
