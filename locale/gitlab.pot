@@ -28065,6 +28065,9 @@ msgstr ""
 msgid "Public Access Help"
 msgstr ""
 
+msgid "Public deploy keys"
+msgstr ""
+
 msgid "Public deploy keys (%{deploy_keys_count})"
 msgstr ""
 
