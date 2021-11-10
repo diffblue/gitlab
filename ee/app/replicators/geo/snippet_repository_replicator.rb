@@ -13,6 +13,10 @@ module Geo
       ::Gitlab::GitAccessSnippet
     end
 
+    def self.no_repo_message
+      git_access_class.error_message(:no_repo)
+    end
+
     override :verification_feature_flag_enabled?
     def self.verification_feature_flag_enabled?
       true

@@ -12,6 +12,10 @@ module Geo
       ::Gitlab::GitAccessWiki
     end
 
+    def self.no_repo_message
+      git_access_class.error_message(:no_group_repo)
+    end
+
     def repository
       model_record.repository
     end
