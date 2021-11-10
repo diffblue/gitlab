@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig do
       project.add_developer(user)
     end
 
-    describe 'credit card requirement' do
+    describe 'credit card requirement', :saas do
       context 'when user does not have credit card for pipelines in project' do
         before do
           allow(user)

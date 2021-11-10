@@ -735,8 +735,7 @@ RSpec.describe Namespace do
       it 'generates a subscription and returns default plan' do
         expect(namespace.actual_plan).to eq(Plan.default)
 
-        # This should be revisited after https://gitlab.com/gitlab-org/gitlab/-/issues/214434
-        expect(namespace.gitlab_subscription).to be_present
+        expect(namespace.gitlab_subscription).to be_nil
       end
     end
 
