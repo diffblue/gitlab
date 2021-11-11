@@ -37,8 +37,9 @@ module QA
         group.visit!
       end
 
-      after do
+      after do |example|
         user.remove_via_api!
+        group.remove_via_api! unless example.exception
 
         Runtime::Feature.disable(:top_level_group_creation_enabled)
       end
