@@ -52,6 +52,7 @@ eslint:
     - .static-analysis-base
     - .yarn-cache
     - .static-analysis:rules:ee
+    - .frontend:rules:default-frontend-jobs
   needs: ['graphql-schema-dump']
   variables:
     USE_BUNDLE_INSTALL: "false"
