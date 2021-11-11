@@ -4,14 +4,14 @@ module Security
   class DependencyListService
     SORT_BY_VALUES = %w(name packager severity).freeze
     SORT_VALUES = %w(asc desc).freeze
-    FILTER_PACKAGE_MANAGERS_VALUES = %w(bundler yarn npm maven composer pip conan go nuget sbt).freeze
+    FILTER_PACKAGE_MANAGERS_VALUES = %w(bundler yarn npm maven composer pip conan go nuget sbt gradle pipenv setuptools).freeze
     FILTER_VALUES = %w(all vulnerable).freeze
 
     # @param pipeline [Ci::Pipeline]
     # @param [Hash] params to sort and filter dependencies
     # @option params ['asc', 'desc'] :sort ('asc') Order
     # @option params ['name', 'packager', 'severity'] :sort_by ('name') Field to sort
-    # @option params ['bundler', 'yarn', 'npm', 'maven', 'composer', 'pip'] :package_manager ('bundler') Field to filter
+    # @option params ['bundler', 'yarn', 'npm', 'maven', 'composer', 'pip', 'conan', 'go', 'nuget', 'sbt', 'gradle', 'pipenv', 'setuptools'] :package_manager ('bundler') Field to filter
     # @option params ['all', 'vulnerable'] :filter ('all') Field to filter
     def initialize(pipeline:, params: {})
       @pipeline = pipeline
@@ -37,8 +37,15 @@ module Security
     def filter_by_package_manager(collection)
       return collection unless params[:package_manager]
 
+      # ensure that package_manager is an Array
+      # otherwise #include? is true when dependency[:package_manager]
+      # begins with params[:package_manager] (String),
+      # even if the requested package manager isn't a match
+      package_managers = params[:package_manager]
+      package_managers = [package_managers] unless params[:package_manager].is_a?(Array)
+
       collection.select do |dependency|
-        params[:package_manager].include?(dependency[:package_manager])
+        package_managers.include?(dependency[:package_manager])
       end
     end
 

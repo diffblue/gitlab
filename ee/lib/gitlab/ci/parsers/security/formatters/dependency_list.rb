@@ -54,6 +54,12 @@ module Gitlab
                 'C# (Nuget)'
               when 'go'
                 'Go (Go modules)'
+              when 'gradle'
+                'Java (Gradle)'
+              when 'pipenv'
+                'Python (Pipenv)'
+              when 'setuptools'
+                'Python (Setuptools)'
               else
                 package_manager
               end
