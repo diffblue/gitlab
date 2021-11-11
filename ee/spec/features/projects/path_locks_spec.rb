@@ -9,6 +9,7 @@ RSpec.describe 'Path Locks', :js do
 
   before do
     allow(project).to receive(:feature_available?).with(:file_locks) { true }
+    stub_feature_flags(bootstrap_confirmation_modals: false)
 
     project.add_maintainer(user)
     sign_in(user)

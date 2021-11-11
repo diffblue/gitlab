@@ -13,6 +13,7 @@ RSpec.describe 'Groups > Members > Leave group' do
   before do
     user.update!(provisioned_by_group: group)
     sign_in(user)
+    stub_feature_flags(bootstrap_confirmation_modals: false)
   end
 
   context 'with block_password_auth_for_saml_users feature flag switched on' do

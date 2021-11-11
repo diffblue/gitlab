@@ -173,6 +173,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
     let!(:protected_branch) { create(:protected_branch, project: project) }
 
     before do
+      stub_feature_flags(bootstrap_confirmation_modals: false)
       stub_licensed_features(unprotection_restrictions: true)
     end
 

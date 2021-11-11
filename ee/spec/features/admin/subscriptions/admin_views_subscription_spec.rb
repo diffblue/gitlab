@@ -6,6 +6,7 @@ RSpec.describe 'Admin views Subscription', :js do
   let_it_be(:admin) { create(:admin) }
 
   before do
+    stub_feature_flags(bootstrap_confirmation_modals: false)
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
   end
