@@ -175,8 +175,21 @@ RSpec.describe VulnerabilitiesHelper do
         }
       end
 
-      it 'incldues dismissal descriptions' do
-        expect(subject[:dismissal_descriptions]).to eq(expected_descriptions)
+      let(:translated_descriptions) do
+        # Use dynamic translations via N_(...)
+        expected_descriptions.values.map { |description| _(description) }
+      end
+
+      it 'includes translated dismissal descriptions' do
+        Gitlab::I18n.with_locale(:en) do
+          # Force loading of the class and configured translations
+          Vulnerabilities::DismissalReasonEnum.translated_descriptions
+        end
+
+        Gitlab::I18n.with_locale(:zh_CN) do
+          expect(subject[:dismissal_descriptions].keys).to eq(expected_descriptions.keys)
+          expect(subject[:dismissal_descriptions].values).to eq(translated_descriptions)
+        end
       end
     end
   end
