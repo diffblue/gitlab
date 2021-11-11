@@ -36,11 +36,12 @@ class SubscriptionsController < ApplicationController
     return render_404 unless ci_minutes_plan_data.present?
 
     # At the moment of this comment the account id is directly available to the view.
-    # This might change in the future  given the intention to associate the account id to the namespace.
+    # This might change in the future given the intention to associate the account id to the namespace.
     # See: https://gitlab.com/gitlab-org/gitlab/-/issues/338546#note_684762160
     result = find_group(plan_id: ci_minutes_plan_data["id"])
     @group = result[:namespace]
     @account_id = result[:account_id]
+    @active_subscription = result[:active_subscription]
 
     return render_404 if @group.nil?
 
@@ -51,11 +52,12 @@ class SubscriptionsController < ApplicationController
     return render_404 unless storage_plan_data.present?
 
     # At the moment of this comment the account id is directly available to the view.
-    # This might change in the future  given the intention to associate the account id to the namespace.
+    # This might change in the future given the intention to associate the account id to the namespace.
     # See: https://gitlab.com/gitlab-org/gitlab/-/issues/338546#note_684762160
     result = find_group(plan_id: storage_plan_data["id"])
     @group = result[:namespace]
     @account_id = result[:account_id]
+    @active_subscription = result[:active_subscription]
 
     return render_404 if @group.nil?
 
@@ -110,7 +112,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.require(:subscription).permit(:plan_id, :payment_method_id, :quantity, :source)
+    params.require(:subscription).permit(:plan_id, :is_addon, :payment_method_id, :quantity, :source).merge(params.permit(:active_subscription))
   end
 
   def find_group(plan_id:)

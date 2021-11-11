@@ -323,6 +323,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
             namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, planId: $planId, eligibleForPurchase: $eligibleForPurchase) {
               id
               accountId: zuoraAccountId
+              subscription { name }
             }
           }
         GQL

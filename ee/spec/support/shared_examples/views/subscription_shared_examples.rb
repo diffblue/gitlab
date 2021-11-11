@@ -21,8 +21,13 @@ RSpec.shared_examples_for 'subscription form data' do |js_selector|
 end
 
 RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
+  let_it_be(:group) { create(:group) }
+  let_it_be(:account_id) { '111111111111' }
+  let_it_be(:active_subscription) { { name: 'S-000000000' } }
+
   before do
-    allow(view).to receive(:buy_addon_data).and_return(
+    allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|CI minutes')).and_return(
+      active_subscription: active_subscription,
       group_data: '[{"id":"ci_minutes_plan_id","code":"ci_minutes","price_per_year":10.0}]',
       namespace_id: '1',
       plan_id: 'ci_minutes_plan_id',
@@ -33,6 +38,7 @@ RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
 
   subject { render }
 
+  it { is_expected.to have_selector("#{js_selector}[data-active-subscription-name='S-000000000']") }
   it { is_expected.to have_selector("#{js_selector}[data-group-data='[{\"id\":\"ci_minutes_plan_id\",\"code\":\"ci_minutes\",\"price_per_year\":10.0}]']") }
   it { is_expected.to have_selector("#{js_selector}[data-plan-id='ci_minutes_plan_id']") }
   it { is_expected.to have_selector("#{js_selector}[data-namespace-id='1']") }
@@ -41,8 +47,13 @@ RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
 end
 
 RSpec.shared_examples_for 'buy storage addon form data' do |js_selector|
+  let_it_be(:group) { create(:group) }
+  let_it_be(:account_id) { '111111111111' }
+  let_it_be(:active_subscription) { { name: 'S-000000000' } }
+
   before do
-    allow(view).to receive(:buy_addon_data).and_return(
+    allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'storage-quota-tab', s_('Checkout|a storage subscription')).and_return(
+      active_subscription: active_subscription,
       group_data: '[{"id":"storage_plan_id","code":"storage","price_per_year":10.0}]',
       namespace_id: '2',
       plan_id: 'storage_plan_id',
@@ -53,6 +64,7 @@ RSpec.shared_examples_for 'buy storage addon form data' do |js_selector|
 
   subject { render }
 
+  it { is_expected.to have_selector("#{js_selector}[data-active-subscription-name='S-000000000']") }
   it { is_expected.to have_selector("#{js_selector}[data-group-data='[{\"id\":\"storage_plan_id\",\"code\":\"storage\",\"price_per_year\":10.0}]']") }
   it { is_expected.to have_selector("#{js_selector}[data-plan-id='storage_plan_id']") }
   it { is_expected.to have_selector("#{js_selector}[data-namespace-id='2']") }

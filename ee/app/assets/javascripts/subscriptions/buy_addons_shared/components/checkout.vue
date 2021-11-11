@@ -16,15 +16,15 @@ export default {
     },
   },
   mounted() {
-    this.updateSelectedPlanId(this.plan.id);
+    this.updateSelectedPlan(this.plan);
   },
   methods: {
-    updateSelectedPlanId(planId) {
+    updateSelectedPlan({ id, isAddon }) {
       this.$apollo
         .mutate({
           mutation: updateState,
           variables: {
-            input: { selectedPlanId: planId },
+            input: { selectedPlan: { id, isAddon } },
           },
         })
         .catch((error) => {

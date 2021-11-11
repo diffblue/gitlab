@@ -5,10 +5,16 @@ query State {
     name
     users
   }
+  activeSubscription @client {
+    name
+  }
   isNewUser @client
   fullName @client
   isSetupForCompany @client
-  selectedPlanId @client
+  selectedPlan @client {
+    id
+    isAddon
+  }
   selectedNamespaceId @client
   redirectAfterSuccess @client
   customer @client {

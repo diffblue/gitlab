@@ -1,6 +1,8 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
+import { pick } from 'lodash';
+import { I18N_CI_MINUTES_TITLE, planTags } from 'ee/subscriptions/buy_addons_shared/constants';
 import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
@@ -9,8 +11,8 @@ import App from 'ee/subscriptions/buy_minutes/components/app.vue';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { planTags } from '../../../../../app/assets/javascripts/subscriptions/buy_addons_shared/constants';
 import { createMockApolloProvider } from '../spec_helper';
+import { mockCiMinutesPlans } from '../mock_data';
 
 const localVue = createLocalVue();
 localVue.use(VueApollo);
@@ -32,23 +34,41 @@ describe('App', () => {
     });
   }
 
+  const getCiMinutePlan = () => pick(mockCiMinutesPlans[0], ['id', 'code', 'pricePerYear', 'name']);
+  const findCheckout = () => wrapper.findComponent(Checkout);
+  const findOrderSummary = () => wrapper.findComponent(OrderSummary);
+  const findPriceLabel = () => wrapper.findByTestId('price-per-unit');
   const findQuantityText = () => wrapper.findByTestId('addon-quantity-text');
   const findSummaryLabel = () => wrapper.findByTestId('summary-label');
   const findSummaryTotal = () => wrapper.findByTestId('summary-total');
-  const findPriceLabel = () => wrapper.findByTestId('price-per-unit');
 
   afterEach(() => {
     wrapper.destroy();
   });
 
   describe('when data is received', () => {
-    it('should display the StepOrderApp', async () => {
+    beforeEach(() => {
       const mockApollo = createMockApolloProvider();
       wrapper = createComponent(mockApollo);
-      await waitForPromises();
+      return waitForPromises();
+    });
 
+    it('should display the StepOrderApp', () => {
       expect(wrapper.findComponent(StepOrderApp).exists()).toBe(true);
       expect(wrapper.findComponent(GlEmptyState).exists()).toBe(false);
+    });
+
+    it('provides the correct props to checkout', () => {
+      expect(findCheckout().props()).toMatchObject({
+        plan: { ...getCiMinutePlan, isAddon: true },
+      });
+    });
+
+    it('provides the correct props to order summary', () => {
+      expect(findOrderSummary().props()).toMatchObject({
+        plan: { ...getCiMinutePlan, isAddon: true },
+        title: I18N_CI_MINUTES_TITLE,
+      });
     });
   });
 

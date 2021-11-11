@@ -8,6 +8,11 @@ export const planTags = {
 /* eslint-enable @gitlab/require-i18n-strings */
 export const CUSTOMERSDOT_CLIENT = 'customersDotClient';
 export const GITLAB_CLIENT = 'gitlabClient';
+export const CUSTOMER_TYPE = 'Customer';
+export const SUBSCRIPTION_TYPE = 'Subscription';
+export const NAMESPACE_TYPE = 'Namespace';
+export const PAYMENT_METHOD_TYPE = 'PaymentMethod';
+export const PLAN_TYPE = 'Plan';
 
 export const CI_MINUTES_PER_PACK = 1000;
 export const STORAGE_PER_PACK = 10;

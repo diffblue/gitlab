@@ -25,10 +25,14 @@ module GitlabSubscriptions
       return missing_plan_error if plan_id.nil? && any_self_service_plan.nil?
 
       if response[:success] && response[:data]
-        eligible_namespaces = response[:data].to_h { |data| [data["id"], data["accountId"]] }
+        eligible_namespaces = response[:data].to_h { |data| [data["id"], [data["accountId"], data['subscription']]] }
         data = namespaces.each_with_object([]) do |namespace, acc|
           if eligible_namespaces.include?(namespace.id)
-            acc << { namespace: namespace, account_id: eligible_namespaces[namespace.id] }
+            acc << {
+              namespace: namespace,
+              account_id: eligible_namespaces[namespace.id][0],
+              active_subscription: eligible_namespaces[namespace.id][1]
+            }
           end
         end
 
