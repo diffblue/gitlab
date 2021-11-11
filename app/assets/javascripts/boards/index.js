@@ -110,7 +110,7 @@ export default () => {
   });
 
   if (gon?.features?.issueBoardsFilteredSearch) {
-    initBoardsFilteredSearch(apolloProvider, parseBoolean($boardApp.dataset.epicFeatureAvailable));
+    initBoardsFilteredSearch(apolloProvider, gon.current_user_id > 0);
   }
 
   mountBoardApp($boardApp);
