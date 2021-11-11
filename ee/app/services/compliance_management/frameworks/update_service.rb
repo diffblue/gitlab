@@ -25,6 +25,7 @@ module ComplianceManagement
       end
 
       def success
+        audit_changes
         ServiceResponse.success(payload: { framework: framework })
       end
 
@@ -33,6 +34,20 @@ module ComplianceManagement
       end
 
       private
+
+      def audit_changes
+        framework.previous_changes.each do |attribute, changes|
+          audit_context = {
+            name: 'update_compliance_framework',
+            author: current_user,
+            scope: framework.namespace,
+            target: framework,
+            message: "Changed compliance framework's #{attribute} from #{changes[0]} to #{changes[1]}"
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+      end
 
       def permitted?
         can? current_user, :manage_compliance_framework, framework

@@ -97,6 +97,10 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
     context 'when using parameters for a valid compliance framework' do
       subject { described_class.new(namespace: namespace, params: params, current_user: namespace.owner) }
 
+      it 'audits the changes' do
+        expect { subject.execute }.to change { AuditEvent.count }.by(1)
+      end
+
       it 'creates a new compliance framework' do
         expect { subject.execute }.to change { ComplianceManagement::Framework.count }.by(1)
       end

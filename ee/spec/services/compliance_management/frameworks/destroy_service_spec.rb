@@ -37,6 +37,10 @@ RSpec.describe ComplianceManagement::Frameworks::DestroyService do
       it 'is successful' do
         expect(subject.execute.success?).to be true
       end
+
+      it 'audits the destruction' do
+        expect { subject.execute }.to change { AuditEvent.count }.by(1)
+      end
     end
 
     context 'when current user is not the namespace owner' do
