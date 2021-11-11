@@ -9,8 +9,8 @@ RSpec.describe GitlabSubscription, :saas do
     let_it_be(plan) { create(plan) }
   end
 
-  describe 'default values', time_travel: 30.days do
-    specify do
+  describe 'default values', :freeze_time do
+    it 'defaults start_date to the current date' do
       expect(subject.start_date).to eq(Date.today)
     end
   end
