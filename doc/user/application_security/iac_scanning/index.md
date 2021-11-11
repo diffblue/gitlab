@@ -29,7 +29,6 @@ is **not** `19.03.0`. See [troubleshooting information](../sast/index.md#error-r
 ## Supported languages and frameworks
 
 GitLab IaC scanning supports a variety of IaC configuration files. Our IaC security scanners also feature automatic language detection which works even for mixed-language projects. If any supported configuration files are detected in project source code we automatically run the appropriate IaC analyzers.
- Terraform, Ansible, AWS CloudFormation, and Kubernetes
 
 | Configuration File Type                  | Scan tool                        | Introduced in GitLab Version  |
 |------------------------------------------|----------------------------------|-------------------------------|
