@@ -19,6 +19,8 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     WebMock.stub_request(:get, /primary-geo-node/).to_return(status: 200, body: "", headers: {})
 
     stub_feature_flags(geo_upload_replication: false)
+
+    allow(Geo::FileDownloadWorker).to receive(:with_status).and_return(Geo::FileDownloadWorker)
   end
 
   it 'does not schedule anything when tracking database is not configured' do

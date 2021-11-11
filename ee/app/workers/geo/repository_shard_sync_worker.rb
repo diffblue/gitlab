@@ -50,7 +50,7 @@ module Geo
     def schedule_job(project_id)
       registry = Geo::ProjectRegistry.find_or_initialize_by(project_id: project_id)
 
-      job_id = Geo::ProjectSyncWorker.perform_async(
+      job_id = Geo::ProjectSyncWorker.with_status.perform_async(
         project_id,
         sync_repository: registry.repository_sync_due?(Time.current),
         sync_wiki: registry.wiki_sync_due?(Time.current)

@@ -22,6 +22,8 @@ RSpec.describe Geo::DesignRepositoryShardSyncWorker, :geo, :clean_gitlab_redis_c
 
       create(:design, project: project_1)
       create(:design, project: project_2)
+
+      allow(Geo::DesignRepositorySyncWorker).to receive(:with_status).and_return(Geo::DesignRepositorySyncWorker)
     end
 
     it 'does not perform Geo::DesignRepositorySyncWorker when shard becomes unhealthy' do

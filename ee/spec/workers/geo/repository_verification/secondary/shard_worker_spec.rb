@@ -19,6 +19,8 @@ RSpec.describe Geo::RepositoryVerification::Secondary::ShardWorker, :geo, :reque
       stub_exclusive_lease(renew: true)
 
       Gitlab::ShardHealthCache.update([shard_name])
+
+      allow(verification_worker).to receive(:with_status).and_return(verification_worker)
     end
 
     context 'shard worker scheduler' do

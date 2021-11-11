@@ -23,7 +23,7 @@ module Geo
     end
 
     def schedule_job(replicable_name, model_record_id)
-      job_id = ::Geo::EventWorker.perform_async(replicable_name, :created, model_record_id: model_record_id)
+      job_id = ::Geo::EventWorker.with_status.perform_async(replicable_name, :created, model_record_id: model_record_id)
 
       { model_record_id: model_record_id, replicable_name: replicable_name, job_id: job_id } if job_id
     end

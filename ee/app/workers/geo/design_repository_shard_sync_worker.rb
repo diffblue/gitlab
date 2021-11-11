@@ -5,7 +5,7 @@ module Geo
     private
 
     def schedule_job(project_id)
-      job_id = Geo::DesignRepositorySyncWorker.perform_async(project_id)
+      job_id = Geo::DesignRepositorySyncWorker.with_status.perform_async(project_id)
 
       { project_id: project_id, job_id: job_id } if job_id
     end

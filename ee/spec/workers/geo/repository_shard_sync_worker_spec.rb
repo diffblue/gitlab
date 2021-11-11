@@ -19,6 +19,8 @@ RSpec.describe Geo::RepositoryShardSyncWorker, :geo, :clean_gitlab_redis_cache, 
       stub_exclusive_lease(renew: true)
 
       Gitlab::ShardHealthCache.update([shard_name])
+
+      allow(Geo::ProjectSyncWorker).to receive(:with_status).and_return(Geo::ProjectSyncWorker)
     end
 
     it 'does not perform Geo::ProjectSyncWorker when shard becomes unhealthy' do
