@@ -237,6 +237,11 @@ class Issue < ApplicationRecord
     def order_upvotes_asc
       reorder(upvotes_count: :asc)
     end
+
+    override :pg_full_text_search
+    def pg_full_text_search(search_term)
+      super.where('issue_search_data.project_id = issues.project_id')
+    end
   end
 
   def next_object_by_relative_position(ignoring: nil, order: :asc)
@@ -614,6 +619,11 @@ class Issue < ApplicationRecord
   end
 
   private
+
+  override :persist_pg_full_text_search_vector
+  def persist_pg_full_text_search_vector(search_vector)
+    Issues::SearchData.upsert({ project_id: project_id, issue_id: id, search_vector: search_vector }, unique_by: %i(project_id issue_id))
+  end
 
   def spammable_attribute_changed?
     title_changed? ||

@@ -3,11 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::BackfillIssueSearchData do
-  let(:issues_table) { table(:issues) }
+  let(:namespaces_table) { table(:namespaces) }
+  let(:projects_table) { table(:projects) }
   let(:issue_search_data_table) { table(:issue_search_data) }
-  let!(:issues) { Array.new(10) { issues_table.create!(title: 'test title', description: 'test description') } }
+
+  let!(:namespace) { namespaces_table.create!(name: 'gitlab-org', path: 'gitlab-org') }
+  let!(:project) { projects_table.create!(name: 'gitlab', path: 'gitlab-org/gitlab-ce', namespace_id: namespace.id) }
+  let!(:issues) { Array.new(10) { table(:issues).create!(project_id: project.id, title: 'test title', description: 'test description') } }
 
   let(:migration) { described_class.new }
+
+  before do
+    allow(migration).to receive(:sleep)
+  end
 
   it 'backfills search data for the specified records' do
     # sleeps for every sub-batch
@@ -20,12 +28,12 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillIssueSearchData do
 
   it 'skips issues that already have search data' do
     old_time = Time.new(2019, 1, 1).in_time_zone
-    issue_search_data_table.create!(issue_id: issues[0].id, updated_at: old_time)
+    issue_search_data_table.create!(project_id: project.id, issue_id: issues[0].id, updated_at: old_time)
 
     migration.perform(issues[0].id, issues[5].id, :issues, :id, 2, 50)
 
     expect(issue_search_data_table.count).to eq(6)
-    expect(issue_search_data_table.find(issues[0].id).updated_at).to be_like_time(old_time)
+    expect(issue_search_data_table.find_by_issue_id(issues[0].id).updated_at).to be_like_time(old_time)
   end
 
   it 'rescues batch with bad data and inserts other rows' do

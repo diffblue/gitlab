@@ -11,7 +11,8 @@
 # pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
 #
 # This module sets up an after_commit hook that updates the search data
-# when the searchable columns are changed.
+# when the searchable columns are changed. You will need to implement the
+# `#persist_pg_full_text_search_vector` method that does the actual insert or update.
 #
 # This also adds a `pg_full_text_search` scope so you can do:
 #
@@ -29,8 +30,7 @@ module PgFullTextSearchable
       tsvector_arel_node(column, weight)&.to_sql
     end
 
-    association = self.class.reflect_on_association(:search_data)
-    association.klass.upsert({ association.foreign_key => id, search_vector: Arel.sql(tsvector_sql_nodes.compact.join(' || ')) })
+    persist_pg_full_text_search_vector(Arel.sql(tsvector_sql_nodes.compact.join(' || ')))
   rescue ActiveRecord::StatementInvalid => e
     raise unless e.cause.is_a?(PG::ProgramLimitExceeded) && e.message.include?('string is too long for tsvector')
 
@@ -42,6 +42,10 @@ module PgFullTextSearchable
   end
 
   private
+
+  def persist_pg_full_text_search_vector(search_vector)
+    raise NotImplementedError
+  end
 
   def tsvector_arel_node(column, weight)
     return if self[column].blank?
@@ -76,6 +80,12 @@ module PgFullTextSearchable
         pg_full_text_searchable_columns[column[:name]] = column[:weight]
       end
 
+      # We update this outside the transaction because this could raise an error if the resulting tsvector
+      # is too long. When that happens, we still persist the create / update but the model will not have a
+      # search data record. This is fine in most cases because this is a very rare occurrence and only happens
+      # with strings that are most likely unsearchable anyway.
+      #
+      # We also do not want to use a subtransaction here due to: https://gitlab.com/groups/gitlab-org/-/epics/6540
       after_save_commit do
         next unless pg_full_text_searchable_columns.keys.any? { |f| saved_changes.has_key?(f) }
 

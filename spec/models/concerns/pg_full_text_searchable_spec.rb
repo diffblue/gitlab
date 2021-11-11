@@ -3,13 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe PgFullTextSearchable do
+  let(:project) { create(:project) }
+
   let(:model_class) do
     Class.new(ActiveRecord::Base) do
       include PgFullTextSearchable
 
       self.table_name = 'issues'
 
+      belongs_to :project
       has_one :search_data, class_name: 'Issues::SearchData'
+
+      def persist_pg_full_text_search_vector(search_vector)
+        Issues::SearchData.upsert({ project_id: project_id, issue_id: id, search_vector: search_vector }, unique_by: %i(project_id issue_id))
+      end
 
       def self.name
         'Issue'
@@ -32,7 +39,7 @@ RSpec.describe PgFullTextSearchable do
   end
 
   describe 'after commit hook' do
-    let(:model) { model_class.create! }
+    let(:model) { model_class.create!(project: project) }
 
     before do
       model_class.pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }]
@@ -56,9 +63,9 @@ RSpec.describe PgFullTextSearchable do
   end
 
   describe '.pg_full_text_search' do
-    let(:english) { model_class.create!(title: 'title', description: 'something english') }
-    let(:with_accent) { model_class.create!(title: 'Jürgen', description: 'Ærøskøbing') }
-    let(:japanese) { model_class.create!(title: '日本語 title', description: 'another english description') }
+    let(:english) { model_class.create!(project: project, title: 'title', description: 'something english') }
+    let(:with_accent) { model_class.create!(project: project, title: 'Jürgen', description: 'Ærøskøbing') }
+    let(:japanese) { model_class.create!(project: project, title: '日本語 title', description: 'another english description') }
 
     before do
       model_class.pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
@@ -84,7 +91,7 @@ RSpec.describe PgFullTextSearchable do
   end
 
   describe '#update_search_data!' do
-    let(:model) { model_class.create!(title: 'title', description: 'description') }
+    let(:model) { model_class.create!(project: project, title: 'title', description: 'description') }
 
     before do
       model_class.pg_full_text_searchable columns: [{ name: 'title', weight: 'A' }, { name: 'description', weight: 'B' }]
@@ -98,7 +105,7 @@ RSpec.describe PgFullTextSearchable do
     end
 
     context 'with accented and non-Latin characters' do
-      let(:model) { model_class.create!(title: '日本語', description: 'Jürgen') }
+      let(:model) { model_class.create!(project: project, title: '日本語', description: 'Jürgen') }
 
       it 'transliterates accented characters and removes non-Latin ones' do
         model.update_search_data!
@@ -118,7 +125,7 @@ RSpec.describe PgFullTextSearchable do
 
     context 'with strings that go over tsvector limit', :delete do
       let(:long_string) { Array.new(30_000) { SecureRandom.hex }.join(' ') }
-      let(:model) { model_class.create!(title: 'title', description: long_string) }
+      let(:model) { model_class.create!(project: project, title: 'title', description: long_string) }
 
       it 'does not raise an exception' do
         expect(Gitlab::AppJsonLogger).to receive(:error).with(
@@ -128,6 +135,27 @@ RSpec.describe PgFullTextSearchable do
         expect { model.update_search_data! }.not_to raise_error
 
         expect(model.search_data).to eq(nil)
+      end
+    end
+
+    context 'when model class does not implement persist_pg_full_text_search_vector' do
+      let(:model_class) do
+        Class.new(ActiveRecord::Base) do
+          include PgFullTextSearchable
+
+          self.table_name = 'issues'
+
+          belongs_to :project
+          has_one :search_data, class_name: 'Issues::SearchData'
+
+          def self.name
+            'Issue'
+          end
+        end
+      end
+
+      it 'raises an error' do
+        expect { model.update_search_data! }.to raise_error(NotImplementedError)
       end
     end
   end

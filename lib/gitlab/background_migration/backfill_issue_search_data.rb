@@ -25,8 +25,9 @@ module Gitlab
       def update_search_data(relation)
         relation.klass.connection.execute(
           <<~SQL
-          INSERT INTO issue_search_data (issue_id, search_vector, created_at, updated_at)
+          INSERT INTO issue_search_data (project_id, issue_id, search_vector, created_at, updated_at)
           SELECT
+            project_id,
             id,
             setweight(to_tsvector('english', LEFT(title, 255)), 'A') || setweight(to_tsvector('english', LEFT(REGEXP_REPLACE(description, '[A-Za-z0-9+/]{50,}', ' ', 'g'), 1048576)), 'B'),
             NOW(),
