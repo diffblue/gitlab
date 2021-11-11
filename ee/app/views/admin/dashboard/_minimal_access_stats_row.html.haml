@@ -1,0 +1,11 @@
+- return unless License.feature_available?(:minimal_access_role)
+
+- users_statistics = local_assigns.fetch(:users_statistics)
+
+%tr
+  %td.gl-p-5!
+    = s_('AdminArea|Users with highest role')
+    %strong
+      = s_('AdminArea|Minimal access')
+  %td.gl-text-right{ class: 'gl-p-5!' }
+    = users_statistics&.with_highest_role_minimal_access
