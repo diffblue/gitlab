@@ -4,7 +4,7 @@ module Projects
   module Integrations
     module Jira
       class ByIdsFinder
-        include ReactiveService
+        include ::Integrations::ReactivelyCached
 
         self.reactive_cache_key = ->(finder) { [finder.model_name] }
         self.reactive_cache_work_type = :external_dependency
