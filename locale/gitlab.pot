@@ -18550,10 +18550,16 @@ msgstr ""
 msgid "Integrations|Default settings are inherited from the instance level."
 msgstr ""
 
+msgid "Integrations|Edit project alias"
+msgstr ""
+
 msgid "Integrations|Enable GitLab.com slash commands in a Slack workspace."
 msgstr ""
 
 msgid "Integrations|Enable comments"
+msgstr ""
+
+msgid "Integrations|Enter your alias"
 msgstr ""
 
 msgid "Integrations|Failed to link namespace. Please try again."
@@ -18671,6 +18677,9 @@ msgid "Integrations|When you mention a Jira issue in a commit or merge request, 
 msgstr ""
 
 msgid "Integrations|You can now close this window and return to the GitLab for Jira application."
+msgstr ""
+
+msgid "Integrations|You can use this alias in your Slack commands"
 msgstr ""
 
 msgid "Integrations|You haven't activated any integrations yet."
