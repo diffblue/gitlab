@@ -4,6 +4,13 @@ export const siteProfiles = siteProfilesFixture.data.project.siteProfiles.edges.
   ({ node }) => node,
 );
 
+export const nonValidatedSiteProfile = siteProfiles.find(
+  ({ validationStatus }) => validationStatus === 'NONE',
+);
+export const validatedSiteProfile = siteProfiles.find(
+  ({ validationStatus }) => validationStatus === 'PASSED_VALIDATION',
+);
+
 export const policySiteProfile = [
   {
     id: 'gid://gitlab/DastSiteProfile/6',

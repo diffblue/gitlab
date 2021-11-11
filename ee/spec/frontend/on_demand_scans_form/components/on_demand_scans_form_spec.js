@@ -21,7 +21,11 @@ import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as responses from '../mocks/apollo_mocks';
 import { scannerProfiles } from '../mocks/mock_data';
-import { siteProfiles } from '../../security_configuration/dast_profiles/mocks/mock_data';
+import {
+  siteProfiles,
+  nonValidatedSiteProfile,
+  validatedSiteProfile,
+} from '../../security_configuration/dast_profiles/mocks/mock_data';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
@@ -35,12 +39,6 @@ const newSiteProfilePath = `/${projectPath}/-/security/configuration/dast_scans`
 const pipelineUrl = `/${projectPath}/pipelines/123`;
 const editPath = `/${projectPath}/on_demand_scans_form/1/edit`;
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
-const nonValidatedSiteProfile = siteProfiles.find(
-  ({ validationStatus }) => validationStatus === 'NONE',
-);
-const validatedSiteProfile = siteProfiles.find(
-  ({ validationStatus }) => validationStatus === 'PASSED_VALIDATION',
-);
 const dastScan = {
   id: 1,
   branch: { name: 'dev' },
