@@ -5,7 +5,7 @@ import vulnerabilityGradesQuery from 'ee/security_dashboard/graphql/queries/grou
 import vulnerabilityHistoryQuery from 'ee/security_dashboard/graphql/queries/group_vulnerability_history.query.graphql';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
 import createFlash from '~/flash';
-import DashboardNotConfigured from '../shared/empty_states/group_dashboard_not_configured.vue';
+import ReportNotConfigured from '../shared/empty_states/report_not_configured_group.vue';
 import VulnerabilitySeverities from '../shared/project_security_status_chart.vue';
 import SecurityDashboardLayout from '../shared/security_dashboard_layout.vue';
 import VulnerabilitiesOverTimeChart from '../shared/vulnerabilities_over_time_chart.vue';
@@ -13,7 +13,7 @@ import VulnerabilitiesOverTimeChart from '../shared/vulnerabilities_over_time_ch
 export default {
   components: {
     GlLoadingIcon,
-    DashboardNotConfigured,
+    ReportNotConfigured,
     SecurityDashboardLayout,
     VulnerabilitySeverities,
     VulnerabilitiesOverTimeChart,
@@ -57,7 +57,7 @@ export default {
 <template>
   <security-dashboard-layout>
     <template v-if="shouldShowEmptyState" #empty-state>
-      <dashboard-not-configured />
+      <report-not-configured />
     </template>
     <template v-else-if="shouldShowCharts" #default>
       <vulnerabilities-over-time-chart :query="vulnerabilityHistoryQuery" />

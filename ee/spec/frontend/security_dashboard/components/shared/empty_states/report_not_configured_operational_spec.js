@@ -1,14 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
-import OperationalReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/operational_report_not_configured.vue';
+import ReportNotConfiguredOperational from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_operational.vue';
 
-describe('reports not configured empty state', () => {
+describe('Operational report not configured component', () => {
   let wrapper;
   const operationalConfigurationPath = '/operational-configuration';
   const operationalEmptyStateSvgPath = '/operational-placeholder.svg';
   const operationalHelpPath = '/operational-help';
 
   const createComponent = (dashboardType = 'project') => {
-    wrapper = shallowMount(OperationalReportNotConfigured, {
+    wrapper = shallowMount(ReportNotConfiguredOperational, {
       provide: {
         dashboardType,
         operationalConfigurationPath,
