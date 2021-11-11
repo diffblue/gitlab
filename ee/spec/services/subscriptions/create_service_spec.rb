@@ -32,7 +32,7 @@ RSpec.describe Subscriptions::CreateService do
 
   let_it_be(:customer_email) { 'first.last@gitlab.com' }
   let_it_be(:client) { Gitlab::SubscriptionPortal::Client }
-  let_it_be(:create_service_params) { Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee')).deep_symbolize_keys }
+  let_it_be(:create_service_params) { Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))[0].deep_symbolize_keys }
 
   describe '#execute' do
     before do
@@ -121,6 +121,27 @@ RSpec.describe Subscriptions::CreateService do
         expect(client).to receive(:create_subscription).with(create_service_params[:subscription], customer_email, 'token')
 
         execute
+      end
+
+      context 'with add-on purchase' do
+        let_it_be(:subscription_params) do
+          {
+            is_addon: true,
+            active_subscription: 'A-000000',
+            plan_id: 'Add-on Plan ID',
+            payment_method_id: 'Payment method ID',
+            quantity: 111,
+            source: 'some_source'
+          }
+        end
+
+        it 'passes the correct parameters for creating a subscription' do
+          create_service_addon_params = Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))[1].deep_symbolize_keys
+
+          expect(client).to receive(:create_subscription).with(create_service_addon_params[:subscription], customer_email, 'token')
+
+          execute
+        end
       end
 
       it_behaves_like 'records an onboarding progress action', :subscription_created do

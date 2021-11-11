@@ -35,11 +35,13 @@ export default {
       },
       update(data) {
         const { customer } = data;
+        const { name } = data.activeSubscription;
         return {
           setup_for_company: data.isSetupForCompany,
           selected_group: data.selectedNamespaceId,
           new_user: data.isNewUser,
           redirect_after_success: data.redirectAfterSuccess,
+          active_subscription: name,
           customer: {
             country: customer.country,
             address_1: customer.address1,
@@ -50,9 +52,10 @@ export default {
             company: customer.company,
           },
           subscription: {
-            plan_id: data.selectedPlanId,
-            payment_method_id: data.paymentMethod.id,
             quantity: data.subscription.quantity,
+            is_addon: data.selectedPlan.isAddon,
+            plan_id: data.selectedPlan.id,
+            payment_method_id: data.paymentMethod.id,
           },
         };
       },

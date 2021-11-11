@@ -25,10 +25,7 @@ module Subscriptions
       # We can't use an email from GL.com because it may differ from the billing email.
       # Instead we use the email received from the CustomersDot as a billing email.
       customer_data = response.with_indifferent_access[:data][:customer]
-      billing_email = customer_data[:email]
-      token = customer_data[:authentication_token]
-
-      response = client.create_subscription(create_subscription_params, billing_email, token)
+      response = create_subscription(customer_data)
 
       OnboardingProgressService.new(@group).execute(action: :subscription_created) if response[:success]
 
@@ -73,20 +70,46 @@ module Subscriptions
       }
     end
 
-    def create_subscription_params
+    def create_subscription(customer_data)
+      # When purchasing an add on, we don't want to send create_subscription_params
+      # in order to avoid amending the main product. Note that this will go away
+      # when fully transitioning the flow to GraphQL
+      create_params = add_on? ? create_addon_params : create_subscription_params
+      billing_email, token = customer_data.values_at(:email, :authentication_token)
+
+      client.create_subscription(create_params, billing_email, token)
+    end
+
+    def create_params
       {
         plan_id: subscription_params[:plan_id],
         payment_method_id: subscription_params[:payment_method_id],
-        products: {
-          main: {
-            quantity: subscription_params[:quantity]
-          }
-        },
         gl_namespace_id: @group.id,
         gl_namespace_name: @group.name,
         preview: 'false',
         source: subscription_params[:source]
       }
+    end
+
+    def create_addon_params
+      {
+        active_subscription: subscription_params[:active_subscription],
+        quantity: subscription_params[:quantity]
+      }.merge(create_params)
+    end
+
+    def create_subscription_params
+      {
+        products: {
+          main: {
+            quantity: subscription_params[:quantity]
+          }
+        }
+      }.merge(create_params)
+    end
+
+    def add_on?
+      Gitlab::Utils.to_boolean(subscription_params[:is_addon], default: false)
     end
 
     def country_code(country)

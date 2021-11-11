@@ -134,11 +134,12 @@ RSpec.describe SubscriptionsHelper do
   end
 
   describe '#buy_addon_data' do
-    subject(:buy_addon_data) { helper.buy_addon_data(group, account_id, anchor, purchased_product) }
+    subject(:buy_addon_data) { helper.buy_addon_data(group, account_id, active_subscription, anchor, purchased_product) }
 
     let_it_be(:group) { create(:group, name: 'My Namespace') }
     let_it_be(:user) { create(:user, name: 'First Last') }
     let_it_be(:account_id) { '111111111111' }
+    let_it_be(:active_subscription) { { name: 'S-000000000' } }
 
     let(:anchor) { 'pipelines-quota-tab' }
     let(:purchased_product) { 'CI Minutes' }
@@ -150,6 +151,7 @@ RSpec.describe SubscriptionsHelper do
     end
 
     it { is_expected.to include(namespace_id: group.id.to_s) }
+    it { is_expected.to include(active_subscription: active_subscription) }
     it { is_expected.to include(source: 'some_source') }
     it { is_expected.to include(group_data: %Q{[{"id":#{group.id},"account_id":"#{account_id}","name":"My Namespace","users":1,"guests":0}]}) }
     it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product)) }

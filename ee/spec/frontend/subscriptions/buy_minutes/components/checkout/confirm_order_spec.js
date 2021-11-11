@@ -6,7 +6,10 @@ import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
+import {
+  stateData as initialStateData,
+  subscriptionName,
+} from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import flash from '~/flash';
@@ -40,15 +43,11 @@ describe('Confirm Order', () => {
     wrapper.destroy();
   });
 
-  describe('Active', () => {
+  describe('when rendering', () => {
     describe('when receiving proper step data', () => {
       beforeEach(() => {
         mockApolloProvider = createMockApolloProvider(STEPS, 3);
         createComponent({ apolloProvider: mockApolloProvider });
-      });
-
-      it('button should be visible', () => {
-        expect(findConfirmButton().exists()).toBe(true);
       });
 
       it('shows the text "Confirm purchase"', () => {
@@ -60,7 +59,7 @@ describe('Confirm Order', () => {
       });
     });
 
-    describe('Clicking the button', () => {
+    describe('when confirming the order', () => {
       beforeEach(() => {
         mockApolloProvider = createMockApolloProvider([]);
         mockApolloProvider.clients.defaultClient.cache.writeQuery({
@@ -74,9 +73,10 @@ describe('Confirm Order', () => {
 
       it('calls the confirmOrder API method with the correct params', () => {
         expect(Api.confirmOrder).toHaveBeenCalledTimes(1);
-        expect(Api.confirmOrder.mock.calls[0][0]).toMatchObject({
+        expect(Api.confirmOrder.mock.calls[0][0]).toEqual({
           setup_for_company: true,
           selected_group: '30',
+          active_subscription: subscriptionName,
           new_user: false,
           redirect_after_success: '/path/to/redirect/',
           customer: {
@@ -90,6 +90,7 @@ describe('Confirm Order', () => {
           },
           subscription: {
             plan_id: null,
+            is_addon: true,
             payment_method_id: null,
             quantity: 1,
           },
@@ -105,35 +106,33 @@ describe('Confirm Order', () => {
       });
     });
 
-    describe('Order confirmation', () => {
-      describe('when the confirmation succeeds', () => {
-        const location = 'group/location/path';
+    describe('when confirming the purchase', () => {
+      const location = 'group/location/path';
 
-        beforeEach(() => {
-          mockApolloProvider = createMockApolloProvider(STEPS, 3);
-          createComponent({ apolloProvider: mockApolloProvider });
-        });
+      beforeEach(() => {
+        mockApolloProvider = createMockApolloProvider(STEPS, 3);
+        createComponent({ apolloProvider: mockApolloProvider });
+      });
 
-        it('should redirect to the location', async () => {
-          Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { location } });
-          findConfirmButton().vm.$emit('click');
-          await flushPromises();
+      it('redirects to the location if it succeeds', async () => {
+        Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { location } });
+        findConfirmButton().vm.$emit('click');
+        await flushPromises();
 
-          expect(UrlUtility.redirectTo).toHaveBeenCalledTimes(1);
-          expect(UrlUtility.redirectTo).toHaveBeenCalledWith(location);
-        });
+        expect(UrlUtility.redirectTo).toHaveBeenCalledTimes(1);
+        expect(UrlUtility.redirectTo).toHaveBeenCalledWith(location);
+      });
 
-        it('shows an error', async () => {
-          const errors = 'an error';
-          Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
-          findConfirmButton().vm.$emit('click');
-          await flushPromises();
+      it('shows an error if it fails', async () => {
+        const errors = 'an error';
+        Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });
+        findConfirmButton().vm.$emit('click');
+        await flushPromises();
 
-          expect(flash.mock.calls[0][0]).toMatchObject({
-            message: GENERAL_ERROR_MESSAGE,
-            captureError: true,
-            error: new Error(JSON.stringify(errors)),
-          });
+        expect(flash.mock.calls[0][0]).toMatchObject({
+          message: GENERAL_ERROR_MESSAGE,
+          captureError: true,
+          error: new Error(JSON.stringify(errors)),
         });
       });
     });
@@ -163,7 +162,7 @@ describe('Confirm Order', () => {
     });
   });
 
-  describe('Inactive', () => {
+  describe('when inactive', () => {
     it('does not show buttons', () => {
       mockApolloProvider = createMockApolloProvider(STEPS, 1);
       createComponent({ apolloProvider: mockApolloProvider });

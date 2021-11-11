@@ -1,3 +1,10 @@
+import {
+  CUSTOMER_TYPE,
+  NAMESPACE_TYPE,
+  SUBSCRIPTION_TYPE,
+  PAYMENT_METHOD_TYPE,
+  PLAN_TYPE,
+} from 'ee/subscriptions/buy_addons_shared/constants';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -11,26 +18,38 @@ function arrayToGraphqlArray(arr, typename) {
 }
 
 export function writeInitialDataToApolloCache(apolloProvider, dataset) {
-  const { groupData, namespaceId, redirectAfterSuccess, subscriptionQuantity } = dataset;
+  const {
+    activeSubscriptionName = '',
+    groupData,
+    namespaceId,
+    redirectAfterSuccess,
+    subscriptionQuantity,
+  } = dataset;
 
-  // eslint-disable-next-line @gitlab/require-i18n-strings
-  const eligibleNamespaces = arrayToGraphqlArray(JSON.parse(groupData), 'Namespace');
+  const eligibleNamespaces = arrayToGraphqlArray(JSON.parse(groupData), NAMESPACE_TYPE);
   const quantity = subscriptionQuantity || 1;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
     query: stateQuery,
     data: {
+      activeSubscription: {
+        name: activeSubscriptionName,
+        __typename: SUBSCRIPTION_TYPE,
+      },
       isNewUser: false,
       fullName: null,
       isSetupForCompany: false,
-      selectedPlanId: null,
+      selectedPlan: {
+        id: null,
+        isAddon: false,
+        __typename: PLAN_TYPE,
+      },
       eligibleNamespaces,
       redirectAfterSuccess,
       selectedNamespaceId: namespaceId,
       subscription: {
         quantity,
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        __typename: 'Subscription',
+        __typename: SUBSCRIPTION_TYPE,
       },
       paymentMethod: {
         id: null,
@@ -38,7 +57,7 @@ export function writeInitialDataToApolloCache(apolloProvider, dataset) {
         creditCardExpirationYear: null,
         creditCardType: null,
         creditCardMaskNumber: null,
-        __typename: 'PaymentMethod',
+        __typename: PAYMENT_METHOD_TYPE,
       },
       customer: {
         country: null,
@@ -48,8 +67,7 @@ export function writeInitialDataToApolloCache(apolloProvider, dataset) {
         state: null,
         zipCode: null,
         company: null,
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        __typename: 'Customer',
+        __typename: CUSTOMER_TYPE,
       },
       activeStep: STEPS[0],
       stepList: STEPS,

@@ -67,13 +67,15 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
     end
 
     context 'when all the namespaces are eligible' do
+      let(:subscription_name) { 'S-000000' }
+
       before do
         allow(Gitlab::SubscriptionPortal::Client)
           .to receive(:filter_purchase_eligible_namespaces)
           .with(user, [namespace_1, namespace_2], plan_id: 'test', any_self_service_plan: nil)
           .and_return(success: true, data: [
-            { 'id' => namespace_1.id, 'accountId' => nil },
-            { 'id' => namespace_2.id, 'accountId' => nil }
+            { 'id' => namespace_1.id, 'accountId' => nil, 'subscription' => { 'name' => subscription_name } },
+            { 'id' => namespace_2.id, 'accountId' => nil, 'subscription' => nil }
           ])
       end
 
@@ -83,8 +85,8 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
         expect(result).to be_success
         expect(result.payload).to match_array [
-           namespace_result(namespace_1, nil),
-           namespace_result(namespace_2, nil)
+           namespace_result(namespace_1, nil, { 'name' => subscription_name }),
+           namespace_result(namespace_2, nil, nil)
         ]
       end
     end
@@ -105,7 +107,7 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
         expect(result).to be_success
         expect(result.payload).to match_array [
-           namespace_result(namespace_1, account_id)
+           namespace_result(namespace_1, account_id, nil)
          ]
       end
     end
@@ -124,7 +126,7 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
         expect(result).to be_success
         expect(result.payload).to match_array [
-          namespace_result(namespace_1, nil)
+          namespace_result(namespace_1, nil, nil)
         ]
       end
     end
@@ -132,7 +134,7 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
   private
 
-  def namespace_result(namespace, account_id)
-    { namespace: namespace, account_id: account_id }
+  def namespace_result(namespace, account_id, active_subscription)
+    { namespace: namespace, account_id: account_id, active_subscription: active_subscription }
   end
 end

@@ -2,4 +2,4 @@
 - content_for :page_specific_javascripts do
   = render "layouts/one_trust"
 
-#js-buy-storage{ data: buy_addon_data(@group, @account_id, 'storage-quota-tab', s_('Checkout|a storage subscription')) }
+#js-buy-storage{ data: buy_addon_data(@group, @account_id, @active_subscription, 'storage-quota-tab', s_('Checkout|a storage subscription')) }

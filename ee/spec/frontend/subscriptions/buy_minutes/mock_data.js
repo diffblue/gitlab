@@ -1,6 +1,14 @@
 import { STEPS } from 'ee/subscriptions/constants';
+import {
+  CUSTOMER_TYPE,
+  NAMESPACE_TYPE,
+  PAYMENT_METHOD_TYPE,
+  PLAN_TYPE,
+  SUBSCRIPTION_TYPE,
+} from 'ee/subscriptions/buy_addons_shared/constants';
 
 export const accountId = '111111111111';
+export const subscriptionName = 'A-000000000';
 
 export const mockCiMinutesPlans = [
   {
@@ -8,7 +16,7 @@ export const mockCiMinutesPlans = [
     code: 'ci_minutes',
     pricePerYear: 10,
     name: 'CI minutes pack',
-    __typename: 'Plan',
+    __typename: PLAN_TYPE,
   },
 ];
 
@@ -19,7 +27,7 @@ export const mockNamespaces = `
 
 export const mockParsedNamespaces = JSON.parse(mockNamespaces).map((namespace) => ({
   ...namespace,
-  __typename: 'Namespace',
+  __typename: NAMESPACE_TYPE,
 }));
 
 export const mockNewUser = 'false';
@@ -35,18 +43,25 @@ export const stateData = {
   eligibleNamespaces: [],
   subscription: {
     quantity: 1,
-    __typename: 'Subscription',
+    __typename: SUBSCRIPTION_TYPE,
+  },
+  activeSubscription: {
+    name: subscriptionName,
+    __typename: SUBSCRIPTION_TYPE,
   },
   redirectAfterSuccess: '/path/to/redirect/',
   selectedNamespaceId: '30',
-  selectedPlanId: null,
+  selectedPlan: {
+    id: null,
+    isAddon: true,
+  },
   paymentMethod: {
     id: null,
     creditCardExpirationMonth: null,
     creditCardExpirationYear: null,
     creditCardType: null,
     creditCardMaskNumber: null,
-    __typename: 'PaymentMethod',
+    __typename: PAYMENT_METHOD_TYPE,
   },
   customer: {
     country: null,
@@ -56,7 +71,7 @@ export const stateData = {
     state: null,
     zipCode: null,
     company: null,
-    __typename: 'Customer',
+    __typename: CUSTOMER_TYPE,
   },
   fullName: 'Full Name',
   isNewUser: false,

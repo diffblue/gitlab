@@ -124,6 +124,7 @@ module Gitlab
               namespaceEligibility(customerUid: $customerUid, namespaces: $namespaces, planId: $planId, eligibleForPurchase: $eligibleForPurchase) {
                 id
                 accountId: zuoraAccountId
+                subscription { name }
               }
             }
             GQL

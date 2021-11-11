@@ -59,7 +59,6 @@ describe('Order Summary', () => {
     beforeEach(() => {
       createComponent({
         subscription: { quantity: 1 },
-        selectedPlanId: 'ciMinutesPackPlanId',
       });
     });
 
