@@ -38,8 +38,6 @@ RSpec.describe Security::DependencyListService do
 
     context 'with params' do
       context 'filtered by package_managers' do
-        using RSpec::Parameterized::TableSyntax
-
         before do
           dependencies = described_class::FILTER_PACKAGE_MANAGERS_VALUES.map do |package_manager|
             build(:dependency, package_manager: package_manager)
@@ -58,6 +56,14 @@ RSpec.describe Security::DependencyListService do
               expect(subject.size).to eq(1)
               expect(subject.first[:package_manager]).to eq(package_manager)
             end
+          end
+        end
+
+        context 'with all package managers' do
+          let(:params) { { package_manager: described_class::FILTER_PACKAGE_MANAGERS_VALUES } }
+
+          it 'returns all items' do
+            expect(subject.size).to eq(described_class::FILTER_PACKAGE_MANAGERS_VALUES.size)
           end
         end
 

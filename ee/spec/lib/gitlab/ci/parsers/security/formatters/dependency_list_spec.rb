@@ -92,17 +92,20 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Formatters::DependencyList do
     using RSpec::Parameterized::TableSyntax
 
     where(:packager, :expected) do
-      'bundler'  | 'Ruby (Bundler)'
-      'yarn'     | 'JavaScript (Yarn)'
-      'npm'      | 'JavaScript (npm)'
-      'pip'      | 'Python (pip)'
-      'maven'    | 'Java (Maven)'
-      'composer' | 'PHP (Composer)'
-      'conan'    | 'C/C++ (Conan)'
-      'sbt'      | 'Scala (Sbt)'
-      'nuget'    | 'C# (Nuget)'
-      'go'       | 'Go (Go modules)'
-      ''         | ''
+      'bundler'    | 'Ruby (Bundler)'
+      'yarn'       | 'JavaScript (Yarn)'
+      'npm'        | 'JavaScript (npm)'
+      'pip'        | 'Python (pip)'
+      'maven'      | 'Java (Maven)'
+      'composer'   | 'PHP (Composer)'
+      'conan'      | 'C/C++ (Conan)'
+      'sbt'        | 'Scala (Sbt)'
+      'nuget'      | 'C# (Nuget)'
+      'go'         | 'Go (Go modules)'
+      'gradle'     | 'Java (Gradle)'
+      'pipenv'     | 'Python (Pipenv)'
+      'setuptools' | 'Python (Setuptools)'
+      ''           | ''
     end
 
     with_them do
