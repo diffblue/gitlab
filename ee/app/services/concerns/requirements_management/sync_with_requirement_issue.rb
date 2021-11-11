@@ -13,7 +13,7 @@ module RequirementsManagement
       if requirement.valid? && (requirement.requirement_issue || requirement.new_record?)
         synced_issue = save_requirement_issue(requirement)
 
-        return synced_issue if synced_issue.valid?
+        return synced_issue if synced_issue&.valid?
 
         requirement.requirement_issue_sync_error!
 

@@ -191,6 +191,10 @@ RSpec.describe RequirementsManagement::UpdateRequirementService do
         end
 
         context 'if there is no requirement_issue' do
+          before do
+            requirement.update!(requirement_issue: nil)
+          end
+
           it 'does not call the Issues::UpdateService' do
             expect(Issues::UpdateService).not_to receive(:new)
 

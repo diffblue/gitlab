@@ -17,15 +17,21 @@ RSpec.describe RequirementsManagement::Requirement do
     it_behaves_like 'a model with a requirement issue association'
   end
 
+  describe 'delegate' do
+    it { is_expected.to delegate_method(:title).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:description).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:project_id).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:author_id).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:description_html).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:title_html).to(:requirement_issue).allow_nil }
+    it { is_expected.to delegate_method(:cached_markdown_version).to(:requirement_issue).allow_nil }
+  end
+
   describe 'validations' do
     subject { build(:requirement) }
 
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_presence_of(:author) }
-    it { is_expected.to validate_presence_of(:title) }
-
-    it { is_expected.to validate_length_of(:title).is_at_most(::Issuable::TITLE_LENGTH_MAX) }
-    it { is_expected.to validate_length_of(:title_html).is_at_most(::Issuable::TITLE_HTML_LENGTH_MAX) }
 
     context 'with requirement issue' do
       let(:ri) { create(:requirement_issue) }

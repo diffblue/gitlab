@@ -33,14 +33,13 @@ module RequirementsManagement
 
     has_internal_id :iid, scope: :project
 
-    validates :author, :project, :title, presence: true
-
-    validates :title, length: { maximum: Issuable::TITLE_LENGTH_MAX }
-    validates :title_html, length: { maximum: Issuable::TITLE_HTML_LENGTH_MAX }, allow_blank: true
+    validates :author, :project, presence: true
 
     validate :only_requirement_type_issue
 
     after_validation :invalidate_if_sync_error, on: [:update, :create]
+
+    delegate :title, :description, :project_id, :author_id, :description_html, :title_html, :cached_markdown_version, to: :requirement_issue, allow_nil: true
 
     enum state: { opened: 1, archived: 2 }
 
