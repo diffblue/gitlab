@@ -876,6 +876,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: app_sec_dast_scans_consistency
+  :worker_name: AppSec::Dast::Scans::ConsistencyWorker
+  :feature_category: :dynamic_application_security_testing
+  :has_external_dependencies:
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: approval_rules_external_approval_rule_payload
   :worker_name: ApprovalRules::ExternalApprovalRulePayloadWorker
   :feature_category: :source_code_management

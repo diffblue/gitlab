@@ -57,6 +57,14 @@ RSpec.describe AppSec::Dast::Scans::RunService do
         expect { subject }.to change(Ci::Pipeline, :count).by(1)
       end
 
+      it 'associates the dast profile', :aggregate_failures do
+        worker_class = AppSec::Dast::Scans::ConsistencyWorker
+        allow(worker_class).to receive(:perform_async).and_call_original
+
+        expect(pipeline.dast_profile).to eq(dast_profile)
+        expect(worker_class).to have_received(:perform_async).with(pipeline.id, dast_profile.id)
+      end
+
       it 'sets the pipeline ref to the branch' do
         expect(pipeline.ref).to eq(project.default_branch)
       end
