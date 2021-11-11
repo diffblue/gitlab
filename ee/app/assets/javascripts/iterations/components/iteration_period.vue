@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <time class="gl-text-gray-400">
-      <slot></slot>
-    </time>
+  <div class="gl-text-gray-400">
+    <slot></slot>
   </div>
 </template>

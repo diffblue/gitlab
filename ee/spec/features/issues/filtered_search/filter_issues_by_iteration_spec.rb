@@ -123,17 +123,20 @@ RSpec.describe 'Filter issues by iteration', :js do
         click_link '= is'
       end
 
-      it 'shows cadence titles and iteration titles', :aggregate_failures do
+      it 'shows cadence titles, and iteration titles and dates', :aggregate_failures do
         within '.gl-filtered-search-suggestion-list' do
           # cadence 1 grouping
-          expect(page).to have_css('li:nth-child(5)', text: cadence_1.title)
-          expect(page).to have_css('li:nth-child(6)', text: iteration_1.title)
-          expect(page).to have_css('li:nth-child(7)', text: iteration_3.title)
+          expect(page).to have_css('li:nth-child(6)', text: "#{iteration_1.title} #{iteration_period(iteration_1)}")
+          expect(page).to have_css('li:nth-child(7)', text: "#{iteration_3.title} #{iteration_period(iteration_3)}")
           # cadence 2 grouping
           expect(page).to have_css('li:nth-child(9)', text: cadence_2.title)
-          expect(page).to have_css('li:nth-child(10)', text: iteration_2.title)
+          expect(page).to have_css('li:nth-child(10)', text: "#{iteration_2.title} #{iteration_period(iteration_2)}")
         end
       end
+    end
+
+    def iteration_period(iteration)
+      "#{iteration.start_date.to_s(:medium)} - #{iteration.due_date.to_s(:medium)}"
     end
   end
 
