@@ -14,7 +14,4 @@ export const STORAGE_USAGE_THRESHOLDS = {
 
 export const PROJECTS_PER_PAGE = 20;
 
-export const SKELETON_LOADER_ROWS = {
-  desktop: PROJECTS_PER_PAGE,
-  mobile: 5,
-};
+export const SKELETON_LOADER_ROWS = 5;

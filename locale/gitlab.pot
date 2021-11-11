@@ -13927,9 +13927,6 @@ msgstr ""
 msgid "Exceptions"
 msgstr ""
 
-msgid "Excess storage"
-msgstr ""
-
 msgid "Excluding merge commits. Limited to %{limit} commits."
 msgstr ""
 
@@ -37261,18 +37258,6 @@ msgid "UsageQuota|This namespace contains locked projects"
 msgstr ""
 
 msgid "UsageQuota|This namespace has no projects which use shared runners"
-msgstr ""
-
-msgid "UsageQuota|This project is at risk of being locked because purchased storage is running low."
-msgstr ""
-
-msgid "UsageQuota|This project is locked because it is using %{actualRepositorySizeLimit} of free storage and there is no purchased storage available."
-msgstr ""
-
-msgid "UsageQuota|This project is locked because it used %{actualRepositorySizeLimit} of free storage and all the purchased storage."
-msgstr ""
-
-msgid "UsageQuota|This project is near the free %{actualRepositorySizeLimit} limit and at risk of being locked."
 msgstr ""
 
 msgid "UsageQuota|Total excess storage used"
