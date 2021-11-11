@@ -34,6 +34,7 @@ RSpec.describe 'Protected Environments' do
 
   context 'logged in as a maintainer' do
     before do
+      stub_feature_flags(bootstrap_confirmation_modals: false)
       project.add_maintainer(user)
 
       visit project_settings_ci_cd_path(project)
