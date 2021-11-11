@@ -34,8 +34,22 @@ module EE
 
       def filter_by_iteration(filters)
         iteration_wildcard_id = filters.delete(:iteration_wildcard_id)
+        # passing string is not failing the check...should be an array
+        iterations = filters[:iteration_id]
 
-        if iteration_wildcard_id
+        if iterations.present? && iteration_wildcard_id
+          raise ::Gitlab::Graphql::Errors::ArgumentError, 'Incompatible arguments: iterationId, iterationWildCardId.'
+        end
+
+        if iterations.present?
+          filters[:iteration_id] = iterations.map do |global_id|
+            # TODO: remove this line when the compatibility layer is removed
+            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
+            parsed_id = ::Types::GlobalIDType[::Iteration].coerce_isolated_input(global_id)
+            parsed_id&.model_id
+          end
+
+        elsif iteration_wildcard_id
           filters[:iteration_id] = iteration_wildcard_id
         end
       end
