@@ -3,7 +3,7 @@ import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMount, createLocalVue } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
-import DashboardNotConfigured from 'ee/security_dashboard/components/shared/empty_states/reports_not_configured.vue';
+import ReportNotConfigured from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
 import SecurityDashboardLayout from 'ee/security_dashboard/components/shared/security_dashboard_layout.vue';
 import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_vulnerabilities_by_day_and_count.query.graphql';
 import { useFakeDate } from 'helpers/fake_date';
@@ -28,7 +28,7 @@ describe('Project Security Dashboard component', () => {
 
   const findLineChart = () => wrapper.find(GlLineChart);
   const findLoadingIcon = () => wrapper.find(GlLoadingIcon);
-  const findEmptyState = () => wrapper.find(DashboardNotConfigured);
+  const findEmptyState = () => wrapper.find(ReportNotConfigured);
 
   const createApolloProvider = (...queries) => {
     return createMockApollo([...queries]);

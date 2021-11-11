@@ -1,14 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
-import ReportsNotConfigured from 'ee/security_dashboard/components/shared/empty_states/reports_not_configured.vue';
+import ReportNotConfiguredProject from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_project.vue';
 
-describe('reports not configured empty state', () => {
+describe('Project report not configured component', () => {
   let wrapper;
   const emptyStateSvgPath = '/placeholder.svg';
   const securityConfigurationPath = '/configuration';
   const securityDashboardHelpPath = '/help';
 
   const createComponent = () => {
-    wrapper = shallowMount(ReportsNotConfigured, {
+    wrapper = shallowMount(ReportNotConfiguredProject, {
       provide: {
         emptyStateSvgPath,
         securityConfigurationPath,

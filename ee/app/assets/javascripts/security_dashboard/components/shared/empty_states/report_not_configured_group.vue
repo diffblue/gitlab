@@ -1,11 +1,10 @@
 <script>
-import { GlEmptyState, GlButton } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 
 export default {
   components: {
     GlEmptyState,
-    GlButton,
   },
   inject: ['dashboardDocumentation', 'emptyStateSvgPath'],
   i18n: {
@@ -23,9 +22,7 @@ export default {
     :title="$options.i18n.title"
     :svg-path="emptyStateSvgPath"
     :description="$options.i18n.description"
-  >
-    <template #actions>
-      <gl-button :href="dashboardDocumentation">{{ $options.i18n.secondaryButtonText }}</gl-button>
-    </template>
-  </gl-empty-state>
+    :secondary-button-text="$options.i18n.secondaryButtonText"
+    :secondary-button-link="dashboardDocumentation"
+  />
 </template>

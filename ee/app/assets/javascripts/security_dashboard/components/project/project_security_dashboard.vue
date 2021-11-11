@@ -7,7 +7,7 @@ import createFlash from '~/flash';
 import { formatDate, getDateInPast } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { s__, __ } from '~/locale';
-import DashboardNotConfigured from '../shared/empty_states/reports_not_configured.vue';
+import ReportNotConfigured from '../shared/empty_states/report_not_configured_project.vue';
 import SecurityDashboardLayout from '../shared/security_dashboard_layout.vue';
 
 const CHART_DEFAULT_DAYS = 30;
@@ -24,7 +24,7 @@ const SEVERITIES = [
 
 export default {
   components: {
-    DashboardNotConfigured,
+    ReportNotConfigured,
     SecurityDashboardLayout,
     GlLoadingIcon,
     GlLineChart,
@@ -169,7 +169,7 @@ export default {
 <template>
   <security-dashboard-layout ref="layout">
     <template v-if="shouldShowEmptyState" #empty-state>
-      <dashboard-not-configured />
+      <report-not-configured />
     </template>
     <template v-else-if="shouldShowCharts" #default>
       <gl-line-chart

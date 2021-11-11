@@ -1,18 +1,16 @@
 import { shallowMount } from '@vue/test-utils';
-import DashboardNotConfigured from 'ee/security_dashboard/components/shared/empty_states/instance_dashboard_not_configured.vue';
+import ReportNotConfiguredGroup from 'ee/security_dashboard/components/shared/empty_states/report_not_configured_group.vue';
 
-describe('Instance Security Dashboard Empty State', () => {
+describe('Group report not configured component', () => {
   let wrapper;
-  const instanceDashboardSettingsPath = '/path/to/dashboard/settings';
   const dashboardDocumentation = '/path/to/dashboard/documentation';
   const emptyStateSvgPath = '/placeholder.svg';
 
   const createWrapper = () =>
-    shallowMount(DashboardNotConfigured, {
+    shallowMount(ReportNotConfiguredGroup, {
       provide: {
         dashboardDocumentation,
         emptyStateSvgPath,
-        instanceDashboardSettingsPath,
       },
     });
 
