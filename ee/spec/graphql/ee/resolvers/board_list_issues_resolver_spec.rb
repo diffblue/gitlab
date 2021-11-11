@@ -107,6 +107,12 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
         expect(result).to contain_exactly(issue1, issue3)
       end
 
+      it 'accepts iteration iteration id' do
+        result = resolve_board_list_issues({ filters: { iteration_id: [iteration.to_global_id] } })
+
+        expect(result).to contain_exactly(issue2)
+      end
+
       context 'filterning by negated iteration' do
         it 'accepts iteration wildcard id' do
           result = resolve_board_list_issues({ filters: { not: { iteration_wildcard_id: 'CURRENT' } } })
