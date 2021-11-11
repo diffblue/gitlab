@@ -144,13 +144,12 @@ module EE
 
         def security_products_usage
           results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
+            next if secure_type == :license_management
+
             response[attribs[:name]] = count(::Ci::Build.where(name: secure_type)) # rubocop:disable CodeReuse/ActiveRecord
           end
 
-          # handle license rename https://gitlab.com/gitlab-org/gitlab/issues/8911
-          license_scan_count = results.delete(:license_scanning_jobs)
-          results[:license_management_jobs] += license_scan_count > 0 ? license_scan_count : 0 if license_scan_count.is_a?(Integer)
-
+          results[:license_management_jobs] = add_metric("LicenseManagementJobsMetric")
           results
         end
 
