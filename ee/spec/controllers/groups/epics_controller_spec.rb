@@ -493,12 +493,12 @@ RSpec.describe Groups::EpicsController do
           end
         end
 
-        context 'when the endpoint receives requests above the limit' do
+        context 'when the endpoint receives requests above the limit', :freeze_time, :clean_gitlab_redis_rate_limiting do
           before do
             stub_application_setting(issues_create_limit: 5)
           end
 
-          it 'prevents from creating more epics', :request_store do
+          it 'prevents from creating more epics' do
             5.times { post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } } }
 
             post :create, params: { group_id: group, epic: { title: 'new epic', description: 'description' } }
