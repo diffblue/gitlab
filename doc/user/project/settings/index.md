@@ -51,6 +51,9 @@ The assigned topics are visible only to everyone with access to the project,
 but everyone can see which topics exist at all on the GitLab instance.
 Do not include sensitive information in the name of a topic.
 
+If you're an instance administrator, see also
+[Administering topics](../../admin_area/index.md#administering-topics).
+
 #### Compliance frameworks **(PREMIUM)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/276221) in GitLab 13.9.
