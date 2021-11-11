@@ -1,5 +1,6 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/profile_selector.vue';
 import OnDemandScansSiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import SiteProfileSummary from 'ee/on_demand_scans_form/components/profile_selector/site_profile_summary.vue';
@@ -42,20 +43,26 @@ describe('OnDemandScansSiteProfileSelector', () => {
     );
   };
   const createComponent = wrapperFactory();
-  const createFullComponent = wrapperFactory(mount);
+  const createFullComponent = wrapperFactory(mountExtended);
 
-  const findProfileSelector = () => wrapper.find(ProfileSelector);
+  const findProfileSelector = () => wrapper.findComponent(ProfileSelector);
+  const findSelectorOptions = () => wrapper.findAll('li');
+  const findProfileSummary = () => wrapper.findByTestId('selected-profile-summary');
 
   afterEach(() => {
     wrapper.destroy();
   });
 
   it('renders properly with profiles', () => {
+    const [selectedProfile] = profiles;
     createFullComponent({
-      propsData: { profiles, value: profiles[0].id },
+      propsData: { profiles, value: selectedProfile.id },
     });
 
-    expect(wrapper.element).toMatchSnapshot();
+    expect(findProfileSummary().html()).toContain(selectedProfile.editPath);
+    profiles.forEach((profile, index) => {
+      expect(findSelectorOptions().at(index).text()).toContain(profile.profileName);
+    });
   });
 
   it('renders properly without profiles', () => {
