@@ -27407,6 +27407,9 @@ msgstr ""
 msgid "ProjectSettings|Snippets"
 msgstr ""
 
+msgid "ProjectSettings|Squash commit message template"
+msgstr ""
+
 msgid "ProjectSettings|Squash commits when merging"
 msgstr ""
 
@@ -27429,6 +27432,9 @@ msgid "ProjectSettings|The commit message used when applying merge request sugge
 msgstr ""
 
 msgid "ProjectSettings|The commit message used when merging, if the merge method creates a merge commit. %{link_start}Learn more about syntax and variables.%{link_end}"
+msgstr ""
+
+msgid "ProjectSettings|The commit message used when squashing commits. %{link_start}Learn more about syntax and variables.%{link_end}"
 msgstr ""
 
 msgid "ProjectSettings|The default target project for merge requests created in this fork project."
