@@ -11340,7 +11340,10 @@ msgstr ""
 msgid "DependencyProxy|Enable Proxy"
 msgstr ""
 
-msgid "DependencyProxy|Manifest list"
+msgid "DependencyProxy|Image list"
+msgstr ""
+
+msgid "DependencyProxy|There are no images in the cache"
 msgstr ""
 
 msgid "Depends on %d merge request being merged"
