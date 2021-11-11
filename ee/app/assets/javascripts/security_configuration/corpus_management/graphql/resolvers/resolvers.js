@@ -6,6 +6,8 @@ import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
 import corpusCreate from '../mutations/corpus_create.mutation.graphql';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_PACKAGES_PACKAGE  } from '~/graphql_shared/constants';
 
 export default {
   Query: {
@@ -60,7 +62,7 @@ export default {
 
       client.mutate({
         mutation: corpusCreate,
-        variables: { fullPath: projectPath, packageId },
+        variables: {input:{ fullPath: projectPath, packageId: convertToGraphQLId(TYPE_PACKAGES_PACKAGE, packageId) }},
       });
     },
     deleteCorpus: (_, { name, projectPath }, { cache }) => {
