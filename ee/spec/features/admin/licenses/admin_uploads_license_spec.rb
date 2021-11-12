@@ -24,7 +24,7 @@ RSpec.describe "Admin uploads license", :js do
     end
 
     it 'redirects to current Subscription terms' do
-      expect(page).to have_link('Terms of Service', href: 'https://about.gitlab.com/terms/#subscription')
+      expect(page).to have_link('Terms of Service', href: "https://#{ApplicationHelper.promo_host}/terms/#subscription")
     end
 
     it 'enables button "Upload license" when EULA checkbox is selected' do

@@ -1,4 +1,5 @@
 import { __, s__ } from '~/locale';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import activateSubscriptionMutation from './graphql/mutations/activate_subscription.mutation.graphql';
 import getCurrentLicense from './graphql/queries/get_current_license.query.graphql';
 import getLicenseHistory from './graphql/queries/get_license_history.query.graphql';
@@ -152,7 +153,7 @@ export const connectivityErrorAlert = {
     'SuperSonics|Get help for the most common connectivity issues by %{linkStart}troubleshooting the activation code%{linkEnd}.',
   ),
 };
-export const supportLink = 'https://about.gitlab.com/support/#contact-support';
+export const supportLink = `${PROMO_URL}/support/#contact-support`;
 export const subscriptionBannerTitle = s__('SuperSonics|Cloud licensing');
 export const subscriptionBannerText = s__(
   "SuperSonics|Cloud licensing is now available. It's an easier way to activate instances and manage subscriptions. Read more about it in our %{blogPostLinkStart}blog post%{blogPostLinkEnd}. Activation codes are available in the %{portalLinkStart}Customers Portal%{portalLinkEnd}.",

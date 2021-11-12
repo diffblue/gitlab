@@ -9,6 +9,7 @@ import {
   GlSprintf,
 } from '@gitlab/ui';
 import validation from '~/vue_shared/directives/validation';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import {
   activateLabel,
   INVALID_CODE_ERROR,
@@ -79,6 +80,7 @@ export default {
     return {
       form,
       isLoading: false,
+      termsLink: `${PROMO_URL}/terms/`,
     };
   },
   computed: {
@@ -182,9 +184,7 @@ export default {
           <span :class="checkboxLabelClass">
             <gl-sprintf :message="$options.i18n.acceptTerms">
               <template #link="{ content }">
-                <gl-link href="https://about.gitlab.com/terms/" target="_blank">{{
-                  content
-                }}</gl-link>
+                <gl-link :href="termsLink" target="_blank">{{ content }}</gl-link>
               </template>
             </gl-sprintf>
           </span>

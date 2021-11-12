@@ -25,6 +25,6 @@ RSpec.describe EE::Projects::Security::ConfigurationHelper do
   context 'when user can not access discover security' do
     let(:can_access_discover_security) { false }
 
-    it { is_expected.to eq('https://about.gitlab.com/pricing/') }
+    it { is_expected.to eq("https://#{ApplicationHelper.promo_host}/pricing/") }
   end
 end

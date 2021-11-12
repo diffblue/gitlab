@@ -4,7 +4,7 @@
 - has_upgrade = has_upgrade?(plan_offer_type)
 - if show_deprecated_plan
   - plan_name      += ' (Legacy)'
-  - faq_link_url   = 'https://about.gitlab.com/pricing/faq-new-product-subscription-tiers'
+  - faq_link_url   = "https://#{ApplicationHelper.promo_host}/pricing/faq-new-product-subscription-tiers"
   - faq_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: faq_link_url }
 
 .card-wrapper{ class: ("card-wrapper-has-badge" if has_upgrade), data: { testid: "plan-card-#{plan.code}" } }

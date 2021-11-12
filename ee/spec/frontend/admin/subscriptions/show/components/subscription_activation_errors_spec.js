@@ -104,6 +104,8 @@ describe('SubscriptionActivationErrors', () => {
         subscriptionActivationHelpLink,
       );
 
+      expect(supportLink).toMatch(/https:\/\/about.gitlab.(com|cn)\/support\/#contact-support/);
+
       expect(alert.findAllComponents(GlLink).at(1).attributes('href')).toBe(supportLink);
     });
 
