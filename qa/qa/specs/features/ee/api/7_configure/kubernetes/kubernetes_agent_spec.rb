@@ -2,11 +2,11 @@
 require 'erb'
 
 module QA
-  RSpec.describe 'Configure' do
+  RSpec.describe 'Configure', only: { subdomain: :staging } do
     include Service::Shellout
 
-    describe 'Kubernetes Agent', :orchestrated, :kubernetes, :requires_admin, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/294177', type: :waiting_on } do
-      let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::K3s).create! }
+    describe 'Kubernetes Agent' do
+      let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::Gcloud).create! }
 
       let(:agent_token) do
         Resource::Clusters::AgentToken.fabricate_via_api!
@@ -23,7 +23,7 @@ module QA
       end
 
       after do
-        cluster.remove!
+        cluster&.remove!
 
         project.group.remove_via_api!
       end
@@ -43,10 +43,7 @@ module QA
       def install_agentk(cluster, agent_token)
         cluster.create_secret(agent_token.secret, 'gitlab-agent-token')
 
-        uri = URI.parse(Runtime::Scenario.gitlab_address)
-
-        kas_grpc_address = "grpc://#{uri.host}:8150"
-        kas_wss_address = "wss://kas.#{uri.host}:#{uri.port}"
+        kas_wss_address = "wss://kas.staging.gitlab.com"
         agent_manifest_template = read_agent_fixture('agentk-manifest.yaml.erb')
         agent_manifest_yaml = ERB.new(agent_manifest_template).result(binding)
 
