@@ -64,7 +64,7 @@ module EE
       scope :with_start_date_after, ->(date) { where('start_date > :date', date: date) }
 
       scope :within_timeframe, -> (start_date, end_date) do
-        where('start_date <= ?', end_date).where('due_date >= ?', start_date)
+        where('sprints.start_date <= ?', end_date).where('sprints.due_date >= ?', start_date)
       end
 
       scope :start_date_passed, -> { where('start_date <= ?', Date.current).where('due_date >= ?', Date.current) }

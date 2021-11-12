@@ -10,6 +10,7 @@ module EE
       def set_filter_values(filters)
         filter_by_epic(filters)
         filter_by_iteration(filters)
+        filter_by_iteration_cadence(filters)
         filter_by_weight(filters)
 
         super
@@ -51,6 +52,17 @@ module EE
 
         elsif iteration_wildcard_id
           filters[:iteration_id] = iteration_wildcard_id
+        end
+      end
+
+      def filter_by_iteration_cadence(filters)
+        return if filters[:iteration_cadence_id].blank?
+
+        filters[:iteration_cadence_id].map! do |iteration_cadence_id|
+          # TODO: remove this line when the compatibility layer is removed
+          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/257883
+          parsed_id = ::Types::GlobalIDType[::Iterations::Cadence].coerce_isolated_input(iteration_cadence_id)
+          parsed_id&.model_id
         end
       end
 
