@@ -115,7 +115,7 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown :text="title" class="gl-w-full" @show="onDropdownShow">
+  <gl-dropdown :text="title" class="gl-w-full" block @show="onDropdownShow">
     <gl-dropdown-section-header class="gl-display-flex! gl-justify-content-center">{{
       __('Assign Iteration')
     }}</gl-dropdown-section-header>
