@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlTable } from '@gitlab/ui';
+import { GlBadge, GlTableLite } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import {
@@ -25,7 +25,7 @@ export default {
   name: 'SubscriptionDetailsHistory',
   components: {
     GlBadge,
-    GlTable,
+    GlTableLite,
   },
   props: {
     currentSubscriptionId: {
@@ -136,7 +136,7 @@ export default {
     <header>
       <h2 class="gl-mb-6 gl-mt-0">{{ $options.i18n.subscriptionHistoryTitle }}</h2>
     </header>
-    <gl-table
+    <gl-table-lite
       :details-td-class="$options.tdClass"
       :fields="fields"
       :items="subscriptionList"
@@ -149,6 +149,6 @@ export default {
       <template #cell(type)="{ value }">
         <gl-badge size="md" variant="info">{{ value }}</gl-badge>
       </template>
-    </gl-table>
+    </gl-table-lite>
   </section>
 </template>
