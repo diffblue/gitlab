@@ -38,7 +38,7 @@ module API
           detail 'This feature was introduced in 14.3 behind the :group_merge_request_approval_settings_feature_flag'
           success EE::API::Entities::MergeRequestApprovalSettings
         end
-        get do
+        get '/', urgency: :medium do
           not_found! unless ::Feature.enabled?(:group_merge_request_approval_settings_feature_flag, user_project.root_ancestor, default_enabled: :yaml)
 
           group = user_project.group.present? ? user_project.root_ancestor : nil

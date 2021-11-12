@@ -21,7 +21,7 @@ module API
         desc 'Get all merge request approval rules' do
           success EE::API::Entities::MergeRequestApprovalRule
         end
-        get do
+        get '/', urgency: :low do
           merge_request = find_merge_request_with_access(params[:merge_request_iid])
 
           present merge_request.approval_rules, with: EE::API::Entities::MergeRequestApprovalRule, current_user: current_user
