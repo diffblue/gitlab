@@ -31535,6 +31535,9 @@ msgstr ""
 msgid "Select a milestone"
 msgstr ""
 
+msgid "Select a namespace"
+msgstr ""
+
 msgid "Select a new namespace"
 msgstr ""
 

@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader, GlSearchBoxByType } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceSelect, {
   i18n,
