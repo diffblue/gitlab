@@ -68,22 +68,28 @@ export default {
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>
     <template v-if="hasGroupNamespaces">
-      <gl-dropdown-section-header>{{ __('Groups') }}</gl-dropdown-section-header>
-      <gl-dropdown-item
-        v-for="item in filteredGroupNamespaces"
-        :key="item.id"
-        @click="handleSelect(item)"
-        >{{ item.humanName }}</gl-dropdown-item
-      >
+      <div class="qa-namespaces-list-groups">
+        <gl-dropdown-section-header>{{ __('Groups') }}</gl-dropdown-section-header>
+        <gl-dropdown-item
+          v-for="item in filteredGroupNamespaces"
+          :key="item.id"
+          class="qa-namespaces-list-item"
+          @click="handleSelect(item)"
+          >{{ item.humanName }}</gl-dropdown-item
+        >
+      </div>
     </template>
     <template v-if="hasUserNamespaces">
-      <gl-dropdown-section-header>{{ __('Users') }}</gl-dropdown-section-header>
-      <gl-dropdown-item
-        v-for="item in filteredUserNamespaces"
-        :key="item.id"
-        @click="handleSelect(item)"
-        >{{ item.humanName }}</gl-dropdown-item
-      >
+      <div class="qa-namespaces-list-users">
+        <gl-dropdown-section-header>{{ __('Users') }}</gl-dropdown-section-header>
+        <gl-dropdown-item
+          v-for="item in filteredUserNamespaces"
+          :key="item.id"
+          class="qa-namespaces-list-item"
+          @click="handleSelect(item)"
+          >{{ item.humanName }}</gl-dropdown-item
+        >
+      </div>
     </template>
   </gl-dropdown>
 </template>

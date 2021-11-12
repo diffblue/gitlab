@@ -90,8 +90,8 @@ module NamespacesHelper
 
   def namespaces_as_json(selected = :current_user)
     {
-      group: formatted_namespaces(current_user.manageable_groups_with_routes, 'group'),
-      user: formatted_namespaces([current_user.namespace], 'user')
+      group: formatted_namespaces(current_user.manageable_groups_with_routes),
+      user: formatted_namespaces([current_user.namespace])
     }.to_json
   end
 
@@ -127,17 +127,13 @@ module NamespacesHelper
     [group_label.camelize, elements]
   end
 
-  def formatted_namespaces(namespaces, type)
-    namespaces.sort_by(&:human_name).map do |n|
+  def formatted_namespaces(namespaces)
+    namespaces.sort_by(&:human_name).map! do |n|
       {
         id: n.id,
         display_path: n.full_path,
         human_name: n.human_name,
-        visibility_level: n.visibility_level_value,
-        visibility: n.visibility,
-        name: n.name,
-        show_path: type == 'group' ? group_path(n) : user_path(n),
-        edit_path: type == 'group' ? edit_group_path(n) : nil
+        name: n.name
       }
     end
   end

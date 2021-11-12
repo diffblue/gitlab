@@ -44,6 +44,7 @@ export default {
   <div>
     <gl-form-group>
       <namespace-select
+        class="qa-namespaces-list"
         data-testid="transfer-project-namespace"
         :full-width="true"
         :data="namespaces"
@@ -52,6 +53,7 @@ export default {
       />
     </gl-form-group>
     <confirm-danger
+      qa-button-class="qa-transfer-button"
       :disabled="!hasSelectedNamespace"
       :phrase="confirmationPhrase"
       :button-text="confirmButtonText"

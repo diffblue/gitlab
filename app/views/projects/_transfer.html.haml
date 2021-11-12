@@ -5,7 +5,7 @@
 
 .sub-section
   %h4.danger-title= _('Transfer project')
-  = form_for @project, url: transfer_project_path(@project), method: :put, html: { class: "js-project-transfer-form", id: form_id } do |f|
+  = form_for @project, url: transfer_project_path(@project), method: :put, html: { class: 'js-project-transfer-form', id: form_id } do |f|
     .form-group
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/settings/index', anchor: 'transferring-an-existing-project-into-another-namespace') }
       %p= _("Transfer your project into another namespace. %{link_start}Learn more.%{link_end}").html_safe % { link_start: link_start, link_end: '</a>'.html_safe }

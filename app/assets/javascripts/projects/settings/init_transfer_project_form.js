@@ -12,6 +12,10 @@ const prepareNamespaces = (rawNamespaces = '') => {
 
 export default () => {
   const el = document.querySelector('.js-transfer-project-form');
+  if (!el) {
+    return false;
+  }
+
   const {
     targetFormId = null,
     targetHiddenInputId = null,
@@ -20,10 +24,6 @@ export default () => {
     confirmDangerMessage = '',
     namespaces = '',
   } = el.dataset;
-
-  if (!el) {
-    return false;
-  }
 
   return new Vue({
     el,
