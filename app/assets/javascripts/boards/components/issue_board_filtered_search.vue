@@ -127,7 +127,6 @@ export default {
           icon: 'issues',
           title: type,
           type: 'types',
-          operators: [{ value: '=', description: is }],
           token: GlFilteredSearchToken,
           unique: true,
           options: [
