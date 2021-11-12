@@ -1,5 +1,5 @@
 <script>
-import { GlSkeletonLoader, GlTable } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { copySubscriptionIdButtonText, detailsLabels } from '../constants';
@@ -33,7 +33,7 @@ export default {
   components: {
     ClipboardButton,
     GlSkeletonLoader,
-    GlTable,
+    GlTableLite,
   },
   props: {
     details: {
@@ -88,7 +88,7 @@ export default {
 </script>
 
 <template>
-  <gl-table
+  <gl-table-lite
     v-if="hasContent"
     :fields="$options.fields"
     :items="details"
@@ -117,7 +117,7 @@ export default {
         />
       </p>
     </template>
-  </gl-table>
+  </gl-table-lite>
   <div
     v-else
     :style="{ height: `${placeholderContainerHeight}px`, width: `${placeholderContainerWidth}px` }"
