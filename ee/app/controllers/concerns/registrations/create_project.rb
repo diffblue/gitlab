@@ -4,7 +4,7 @@ module Registrations::CreateProject
   extend ActiveSupport::Concern
   include LearnGitlabHelper
 
-  LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate_trial.tar.gz'
+  LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
 
   included do
     private
