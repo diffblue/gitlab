@@ -34,7 +34,6 @@ module EE
 
       def filter_by_iteration(filters)
         iteration_wildcard_id = filters.delete(:iteration_wildcard_id)
-        # passing string is not failing the check...should be an array
         iterations = filters[:iteration_id]
 
         if iterations.present? && iteration_wildcard_id
