@@ -1,4 +1,4 @@
-import { GlForm, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
+import { GlForm, GlFormCheckbox, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
@@ -41,6 +41,7 @@ describe('SubscriptionActivationForm', () => {
   const findActivationCodeFormGroup = () => wrapper.findByTestId('form-group-activation-code');
   const findActivationCodeInput = () => wrapper.findComponent(GlFormInput);
   const findActivateSubscriptionForm = () => wrapper.findComponent(GlForm);
+  const findTermLink = () => findAgreementCheckboxFormGroup().findComponent(GlLink);
 
   const GlFormInputStub = stubComponent(GlFormInput, {
     template: `<input />`,
@@ -61,6 +62,7 @@ describe('SubscriptionActivationForm', () => {
         },
         stubs: {
           GlFormInput: GlFormInputStub,
+          GlSprintf,
         },
       }),
     );
@@ -95,6 +97,11 @@ describe('SubscriptionActivationForm', () => {
 
     it('has the activate button enabled', () => {
       expect(findActivateButton().props('disabled')).toBe(false);
+    });
+
+    it('verify terms link url', () => {
+      const link = findTermLink();
+      expect(link.attributes('href')).toMatch(/https:\/\/about.gitlab.(com|cn)\/terms\//);
     });
   });
 

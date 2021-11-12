@@ -1,5 +1,5 @@
 - page_title _("Upload License")
-- eula_url = 'https://about.gitlab.com/terms/#subscription'
+- eula_url = "https://#{ApplicationHelper.promo_host}/terms/#subscription"
 - eula_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: eula_url }
 %h3.page-title= _('Upload License')
 
