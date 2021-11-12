@@ -481,13 +481,13 @@ module EE
       ::Feature.enabled?(:iteration_cadences, self, default_enabled: :yaml)
     end
 
-    def user_cap_reached?(requested_hosted_plan = nil)
+    def user_cap_reached?
       return false unless ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
 
       user_cap = root_ancestor.namespace_settings&.new_user_signups_cap
       return false unless user_cap
 
-      user_cap <= root_ancestor.billable_members_count(requested_hosted_plan)
+      user_cap <= root_ancestor.billable_members_count
     end
 
     def namespace_user_cap_reached_cache_key
