@@ -624,7 +624,7 @@ All jobs except [trigger jobs](#trigger) require a `script` keyword.
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
 **Example of `script`:**
 
@@ -662,7 +662,7 @@ Use `before_script` to define an array of commands that should run before each j
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
 **Example of `before_script`:**
 
@@ -700,7 +700,7 @@ Use `after_script` to define an array of commands that run after each job, inclu
 
 - Single line commands.
 - Long commands [split over multiple lines](script.md#split-long-commands).
-- [YAML anchors](yaml_specific_features.md#yaml-anchors-for-scripts).
+- [YAML anchors](yaml_optimization.md#yaml-anchors-for-scripts).
 
 **Example of `after_script`:**
 
@@ -861,16 +861,17 @@ job2:
 
 ### `extends`
 
-Use `extends` to reuse configuration sections. It's an alternative to [YAML anchors](yaml_specific_features.md#anchors)
-and is a little more flexible and readable. You can use `extends` to reuse configuration
-from [included configuration files](#use-extends-and-include-together).
+Use `extends` to reuse configuration sections. It's an alternative to [YAML anchors](yaml_optimization.md#anchors)
+and is a little more flexible and readable.
 
-In the following example, the `rspec` job uses the configuration from the `.tests` template job.
-GitLab:
+**Keyword type**: Job keyword. You can use it only as part of a job.
 
-- Performs a reverse deep merge based on the keys.
-- Merges the `.tests` content with the `rspec` job.
-- Doesn't merge the values of the keys.
+**Possible inputs:**
+
+- The name of another job in the pipeline.
+- A list (array) of names of other jobs in the pipeline.
+
+**Example of `extends`:**
 
 ```yaml
 .tests:
@@ -888,6 +889,13 @@ rspec:
       - $RSPEC
 ```
 
+In this example, the `rspec` job uses the configuration from the `.tests` template job.
+When creating the pipeline, GitLab:
+
+- Performs a reverse deep merge based on the keys.
+- Merges the `.tests` content with the `rspec` job.
+- Doesn't merge the values of the keys.
+
 The result is this `rspec` job:
 
 ```yaml
@@ -901,182 +909,18 @@ rspec:
       - $RSPEC
 ```
 
-`.tests` in this example is a [hidden job](../jobs/index.md#hide-jobs), but it's
-possible to extend configuration from regular jobs as well.
+**Additional details:**
 
-`extends` supports multi-level inheritance. You should avoid using more than three levels,
-but you can use as many as eleven. The following example has two levels of inheritance:
+- In GitLab 12.0 and later, you can use multiple parents for `extends`.
+- The `extends` keyword supports up to eleven levels of inheritance, but you should
+  avoid using more than three levels.
+- In the example above, `.tests` is a [hidden job](../jobs/index.md#hide-jobs),
+  but you can extend configuration from regular jobs as well.
 
-```yaml
-.tests:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
+**Related topics:**
 
-.rspec:
-  extends: .tests
-  script: rake rspec
-
-rspec 1:
-  variables:
-    RSPEC_SUITE: '1'
-  extends: .rspec
-
-rspec 2:
-  variables:
-    RSPEC_SUITE: '2'
-  extends: .rspec
-
-spinach:
-  extends: .tests
-  script: rake spinach
-```
-
-In GitLab 12.0 and later, it's also possible to use multiple parents for
-`extends`.
-
-#### Merge details
-
-You can use `extends` to merge hashes but not arrays.
-The algorithm used for merge is "closest scope wins," so
-keys from the last member always override anything defined on other
-levels. For example:
-
-```yaml
-.only-important:
-  variables:
-    URL: "http://my-url.internal"
-    IMPORTANT_VAR: "the details"
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH == "stable"
-  tags:
-    - production
-  script:
-    - echo "Hello world!"
-
-.in-docker:
-  variables:
-    URL: "http://docker-url.internal"
-  tags:
-    - docker
-  image: alpine
-
-rspec:
-  variables:
-    GITLAB: "is-awesome"
-  extends:
-    - .only-important
-    - .in-docker
-  script:
-    - rake rspec
-```
-
-The result is this `rspec` job:
-
-```yaml
-rspec:
-  variables:
-    URL: "http://docker-url.internal"
-    IMPORTANT_VAR: "the details"
-    GITLAB: "is-awesome"
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH == "stable"
-  tags:
-    - docker
-  image: alpine
-  script:
-    - rake rspec
-```
-
-In this example:
-
-- The `variables` sections merge, but `URL: "http://docker-url.internal"` overwrites `URL: "http://my-url.internal"`.
-- `tags: ['docker']` overwrites `tags: ['production']`.
-- `script` does not merge, but `script: ['rake rspec']` overwrites
-  `script: ['echo "Hello world!"']`. You can use [YAML anchors](yaml_specific_features.md#anchors) to merge arrays.
-
-##### Exclude a key from `extends`
-
-To exclude a key from the extended content, you must assign it to `null`, for example:
-
-```yaml
-.base:
-  script: test
-  variables:
-    VAR1: base var 1
-
-test1:
-  extends: .base
-  variables:
-    VAR1: test1 var 1
-    VAR2: test2 var 2
-
-test2:
-  extends: .base
-  variables:
-    VAR2: test2 var 2
-
-test3:
-  extends: .base
-  variables: {}
-
-test4:
-  extends: .base
-  variables: null
-```
-
-Merged configuration:
-
-```yaml
-test1:
-  script: test
-  variables:
-    VAR1: test1 var 1
-    VAR2: test2 var 2
-
-test2:
-  script: test
-  variables:
-    VAR1: base var 1
-    VAR2: test2 var 2
-
-test3:
-  script: test
-  variables:
-    VAR1: base var 1
-
-test4:
-  script: test
-  variables: null
-```
-
-#### Use `extends` and `include` together
-
-To reuse configuration from different configuration files,
-combine `extends` and [`include`](#include).
-
-In the following example, a `script` is defined in the `included.yml` file.
-Then, in the `.gitlab-ci.yml` file, `extends` refers
-to the contents of the `script`:
-
-- `included.yml`:
-
-  ```yaml
-  .template:
-    script:
-      - echo Hello!
-  ```
-
-- `.gitlab-ci.yml`:
-
-  ```yaml
-  include: included.yml
-
-  useTemplate:
-    image: alpine
-    extends: .template
-  ```
+- [Reuse configuration sections by using `extends`](yaml_optimization.md#use-extends-to-reuse-configuration-sections).
+- Use `extends` to reuse configuration from [included configuration files](yaml_optimization.md#use-extends-and-include-together).
 
 ### `rules`
 
@@ -1116,7 +960,7 @@ The job is not added to the pipeline:
 - If no rules match.
 - If a rule matches and has `when: never`.
 
-You can use [`!reference` tags](yaml_specific_features.md#reference-tags) to [reuse `rules` configuration](../jobs/job_control.md#reuse-rules-in-different-jobs)
+You can use [`!reference` tags](yaml_optimization.md#reference-tags) to [reuse `rules` configuration](../jobs/job_control.md#reuse-rules-in-different-jobs)
 in different jobs.
 
 #### `rules:if`
@@ -2162,7 +2006,7 @@ Also in the example, `GIT_STRATEGY` is set to `none`. If the
 the runner won't try to check out the code after the branch is deleted.
 
 The example also overwrites global variables. If your `stop` `environment` job depends
-on global variables, use [anchor variables](yaml_specific_features.md#yaml-anchors-for-variables) when you set the `GIT_STRATEGY`
+on global variables, use [anchor variables](yaml_optimization.md#yaml-anchors-for-variables) when you set the `GIT_STRATEGY`
 to change the job without overriding the global variables.
 
 The `stop_review_app` job is **required** to have the following keywords defined:
@@ -4186,7 +4030,7 @@ deploy_review_job:
 
 **Related topics**:
 
-- You can use [YAML anchors for variables](yaml_specific_features.md#yaml-anchors-for-variables).
+- You can use [YAML anchors for variables](yaml_optimization.md#yaml-anchors-for-variables).
 - [Predefined variables](../variables/predefined_variables.md) are variables the runner
   automatically creates and makes available in the job.
 - You can [configure runner behavior with variables](../runners/configure_runners.md#configure-runner-behavior-with-variables).
