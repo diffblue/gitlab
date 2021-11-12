@@ -10,7 +10,7 @@ module Gitlab
           def create_location(location_data)
             ::Gitlab::Ci::Reports::Security::Locations::ClusterImageScanning.new(
               image: location_data['image'],
-              cluster_id: location_data['cluster_id'],
+              cluster_id: location_data.dig('kubernetes_resource', 'cluster_id'),
               operating_system: location_data['operating_system'],
               package_name: location_data.dig('dependency', 'package', 'name'),
               package_version: location_data.dig('dependency', 'version'))
