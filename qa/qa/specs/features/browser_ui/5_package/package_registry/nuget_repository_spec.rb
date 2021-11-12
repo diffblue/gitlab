@@ -9,6 +9,7 @@ module QA
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'nuget-package-project'
           project.template_name = 'dotnetcore'
+          project.visibility = :private
         end
       end
 
