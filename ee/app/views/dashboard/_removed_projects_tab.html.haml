@@ -1,5 +1,4 @@
 - if can?(current_user, :list_removable_projects)
-  = nav_link(page: removed_dashboard_projects_path) do
-    = link_to removed_dashboard_projects_path, data: {placement: 'right'} do
-      = _("Deleted projects")
-      %span.badge.gl-badge.badge-muted.sm.badge-pill= limited_counter_with_delimiter(removed_projects_count)
+  = gl_tab_link_to removed_dashboard_projects_path, { data: { placement: 'right' } } do
+    = _("Deleted projects")
+    = gl_tab_counter_badge(limited_counter_with_delimiter(removed_projects_count))
