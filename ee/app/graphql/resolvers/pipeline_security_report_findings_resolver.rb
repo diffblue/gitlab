@@ -23,7 +23,12 @@ module Resolvers
              description: 'Filter vulnerability findings by state.'
 
     def resolve(**args)
+      # This finder class has been deprecated and will be removed by
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/334488.
+      # We can remove the rescue block while addressing that issue.
       Security::PipelineVulnerabilitiesFinder.new(pipeline: pipeline, params: args).execute.findings
+    rescue Security::PipelineVulnerabilitiesFinder::ParseError
+      []
     end
   end
 end
