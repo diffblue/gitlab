@@ -1,5 +1,10 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader, GlSearchBoxByType } from '@gitlab/ui';
+import { __ } from '~/locale';
+
+export const i18n = {
+  DEFAULT_TEXT: __('Select a namespace'),
+};
 
 const filterByName = (data, searchTerm = '') =>
   data.filter((d) => d.humanName.toLowerCase().includes(searchTerm));
@@ -13,28 +18,20 @@ export default {
     GlSearchBoxByType,
   },
   props: {
+    data: {
+      type: Object,
+      required: true,
+    },
     fullWidth: {
       type: Boolean,
       required: false,
       default: false,
     },
-    dropdownText: {
-      type: String,
-      required: true,
-    },
-    data: {
-      type: Object,
-      required: true,
-    },
-    dropdownClasses: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
   },
   data() {
     return {
       searchTerm: '',
+      selectedNamespace: null,
     };
   },
   computed: {
@@ -52,16 +49,21 @@ export default {
       if (!this.hasUserNamespaces) return [];
       return filterByName(this.data.user, this.searchTerm);
     },
+    selectedNamespaceText() {
+      return this.selectedNamespace?.humanName || this.$options.i18n.DEFAULT_TEXT;
+    },
   },
   methods: {
     handleSelect(item) {
+      this.selectedNamespace = item;
       this.$emit('select', item);
     },
   },
+  i18n,
 };
 </script>
 <template>
-  <gl-dropdown :text="dropdownText" :block="fullWidth">
+  <gl-dropdown :text="selectedNamespaceText" :block="fullWidth">
     <template #header>
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </template>

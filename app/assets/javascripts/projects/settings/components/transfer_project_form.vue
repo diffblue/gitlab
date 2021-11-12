@@ -1,7 +1,6 @@
 <script>
 import { GlFormGroup } from '@gitlab/ui';
-import { __ } from '~/locale';
-import NamespaceSelect from '~/vue_shared/components/namespace_select.vue';
+import NamespaceSelect from '~/vue_shared/components/namespace_select/namespace_select.vue';
 import ConfirmDanger from '~/vue_shared/components/confirm_danger/confirm_danger.vue';
 
 export default {
@@ -30,10 +29,7 @@ export default {
   },
   computed: {
     hasSelectedNamespace() {
-      return Boolean(this.selectedNamespace?.humanName);
-    },
-    dropdownText() {
-      return this.selectedNamespace?.humanName || this.$options.i18n.defaultText;
+      return Boolean(this.selectedNamespace?.id);
     },
   },
   methods: {
@@ -41,9 +37,6 @@ export default {
       this.selectedNamespace = selectedNamespace;
       this.$emit('selectNamespace', selectedNamespace.id);
     },
-  },
-  i18n: {
-    defaultText: __('Select a namespace'),
   },
 };
 </script>
@@ -54,7 +47,7 @@ export default {
         data-testid="transfer-project-namespace"
         :full-width="true"
         :data="namespaces"
-        :dropdown-text="dropdownText"
+        :selected-namespace="selectedNamespace"
         @select="handleSelect"
       />
     </gl-form-group>
