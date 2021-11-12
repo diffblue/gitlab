@@ -177,10 +177,11 @@ entries under **Database**. The entries defined under the sections **Documentati
 
 ### Make a Code Owners section optional
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/232995) in GitLab Premium 13.8 behind a feature flag, enabled by default.
-> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/53227) in GitLab 13.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/232995) in GitLab Premium 13.8
 
-You can make a section optional, so that approval from the Code Owners in that section is optional.
+GitLab has the ability to designate optional sections in your Code Owners file. Simply prepend the section name with the caret `^` character and the section will be treated as optional. This means related change through merge requests will not require approval from designated owners.
+
+With optional sections you may continue to designate responsible parties for various parts of the code while providing a more relaxed policy for parts of your project that may be updated often but don't require stringent reviews.
 
 Put a caret `^` character before the Code Owners section name. For example:
 
@@ -204,8 +205,11 @@ If a section is duplicated in the file, and one of them is marked as optional an
 Optional sections in the `CODEOWNERS` file are treated as optional only
 when changes are submitted by using merge requests. If a change is submitted directly
 to the protected branch, approval from Code Owners is still required, even if the
-section is marked as optional. [An issue exists](https://gitlab.com/gitlab-org/gitlab/-/issues/297638)
-to allow direct pushes to the protected branch for sections marked as optional.
+section is marked as optional.
+
+### Allowed to Push
+
+Code owner approval and protected branch functionality does not apply to users who are `Allowed to push`.
 
 ## Example `CODEOWNERS` file
 
