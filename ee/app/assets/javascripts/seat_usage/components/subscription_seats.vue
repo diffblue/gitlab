@@ -112,6 +112,9 @@ export default {
     isProjectInvite(item) {
       return item.user.membership_type === 'project_invite';
     },
+    shouldShowDetails(item) {
+      return !this.isGroupInvite(item) && !this.isProjectInvite(item);
+    },
   },
   i18n: {
     emailNotVisibleTooltipText: s__(
@@ -172,8 +175,9 @@ export default {
       :empty-text="emptyText"
     >
       <template #cell(user)="{ item, toggleDetails, detailsShowing }">
-        <div class="gl-display-flex">
+        <div class="gl-display-flex" :data-testid="`seat-cell-${item.user.id}`">
           <gl-button
+            v-if="shouldShowDetails(item)"
             variant="link"
             class="gl-mr-2"
             :aria-label="s__('Billing|Toggle seat details')"
