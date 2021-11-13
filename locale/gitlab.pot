@@ -16183,6 +16183,9 @@ msgstr ""
 msgid "Google Cloud Project"
 msgstr ""
 
+msgid "Google Cloud authorizations required"
+msgstr ""
+
 msgid "Google authentication is not %{link_start}properly configured%{link_end}. Ask your GitLab administrator if you want to use this service."
 msgstr ""
 
@@ -31558,6 +31561,9 @@ msgid "Service Desk allows people to create issues in your GitLab instance witho
 msgstr ""
 
 msgid "Service URL"
+msgstr ""
+
+msgid "Service account generated successfully"
 msgstr ""
 
 msgid "Service ping is disabled in your configuration file, and cannot be enabled through this form."
