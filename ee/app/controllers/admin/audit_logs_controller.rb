@@ -23,7 +23,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
 
     @entity = case audit_logs_params[:entity_type]
               when 'User'
-                User.find_by_id(audit_logs_params[:entity_id])
+                user_entity
               when 'Project'
                 Project.find_by_id(audit_logs_params[:entity_id])
               when 'Group'
@@ -53,5 +53,13 @@ class Admin::AuditLogsController < Admin::ApplicationController
 
   def check_license_admin_audit_log_available!
     render_404 unless License.feature_available?(:admin_audit_log)
+  end
+
+  def user_entity
+    if audit_logs_params[:entity_username].present?
+      return User.find_by_username(audit_logs_params[:entity_username])
+    end
+
+    User.find_by_id(audit_logs_params[:entity_id])
   end
 end
