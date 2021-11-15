@@ -40,6 +40,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           expect(subject.namespace).to eq(namespace)
           expect(subject.date).to eq(described_class.beginning_of_month)
           expect(subject.notification_level).to eq(::Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
+          expect(subject.created_at).to eq(Time.current)
         end
       end
     end

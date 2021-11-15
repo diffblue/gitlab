@@ -32,6 +32,7 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
           expect(subject.amount_used).to eq(0)
           expect(subject.project).to eq(project)
           expect(subject.date).to eq(described_class.beginning_of_month)
+          expect(subject.created_at).to eq(Time.current)
         end
       end
     end
