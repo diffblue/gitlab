@@ -6,7 +6,7 @@ import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import BillingAddress from 'ee/vue_shared/purchase_flow/components/checkout/billing_address.vue';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
-import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
+import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 

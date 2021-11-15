@@ -59,6 +59,14 @@ export default {
       hasError: false,
     };
   },
+  computed: {
+    plan() {
+      return {
+        ...this.plans[0],
+        isAddon: true,
+      };
+    },
+  },
   methods: {
     isQuantityValid(quantity) {
       return Number.isFinite(quantity) && quantity > 0;
@@ -124,7 +132,7 @@ export default {
   />
   <step-order-app v-else-if="!$apollo.loading">
     <template #checkout>
-      <checkout :plan="plans[0]">
+      <checkout :plan="plan">
         <template #purchase-details>
           <addon-purchase-details
             :product-label="$options.i18n.productLabel"
@@ -138,14 +146,14 @@ export default {
               <strong data-testid="summary-label">
                 {{ summaryTitle(quantity) }}
               </strong>
-              <p class="gl-mb-0">{{ summaryTotal(quantity) }}</p>
+              <p class="gl-mb-0" data-testid="summary-total">{{ summaryTotal(quantity) }}</p>
             </template>
           </addon-purchase-details>
         </template>
       </checkout>
     </template>
     <template #order-summary>
-      <order-summary :plan="plans[0]" :title="$options.i18n.title" purchase-has-expiration>
+      <order-summary :plan="plan" :title="$options.i18n.title" purchase-has-expiration>
         <template #price-per-unit="{ price }">
           {{ pricePerUnitLabel(price) }}
         </template>

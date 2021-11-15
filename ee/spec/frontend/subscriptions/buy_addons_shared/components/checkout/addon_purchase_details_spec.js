@@ -2,12 +2,12 @@ import { GlAlert } from '@gitlab/ui';
 import { createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
+import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import subscriptionsResolvers from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import purchaseFlowResolvers from 'ee/vue_shared/purchase_flow/graphql/resolvers';
-import { stateData as initialStateData } from 'ee_jest/subscriptions/buy_minutes/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 

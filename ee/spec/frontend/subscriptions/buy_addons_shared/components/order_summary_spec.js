@@ -10,7 +10,7 @@ import {
   mockCiMinutesPlans,
   mockParsedNamespaces,
   stateData as mockStateData,
-} from 'ee_jest/subscriptions/buy_minutes/mock_data';
+} from 'ee_jest/subscriptions/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
 const localVue = createLocalVue();
