@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::UpdateVulnerabilitiesFromDismissalFeedback, :migration, schema: 20200519201128 do
+RSpec.describe Gitlab::BackgroundMigration::UpdateVulnerabilitiesFromDismissalFeedback, :migration, schema: 20181228175414 do
   let(:users) { table(:users) }
   let(:projects) { table(:projects) }
   let(:vulnerabilities) { table(:vulnerabilities) }

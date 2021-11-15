@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::PruneOrphanedGeoEvents, geo: false, schema: 2020_01_02_170221 do
+RSpec.describe Gitlab::BackgroundMigration::PruneOrphanedGeoEvents, geo: false, schema: 20181228175414 do
   let(:event_table_name) { 'geo_repository_updated_events' }
   let(:geo_event_log) { table(:geo_event_log) }
   let(:geo_updated_events) { table(event_table_name) }

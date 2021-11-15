@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::UpdateLocationFingerprintForContainerScanningFindings, :migration, schema: 20200908095446 do
+RSpec.describe Gitlab::BackgroundMigration::UpdateLocationFingerprintForContainerScanningFindings, :migration, schema: 20181228175414 do
   let(:namespaces) { table(:namespaces) }
   let(:group) { namespaces.create!(name: 'foo', path: 'foo') }
   let(:projects) { table(:projects) }
