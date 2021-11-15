@@ -10095,6 +10095,9 @@ msgstr ""
 msgid "Crm|No contacts found"
 msgstr ""
 
+msgid "Crm|No organizations found"
+msgstr ""
+
 msgid "Cron Timezone"
 msgstr ""
 
