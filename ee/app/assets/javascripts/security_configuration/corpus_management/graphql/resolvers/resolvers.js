@@ -2,12 +2,12 @@ import produce from 'immer';
 import { corpuses } from 'ee_jest/security_configuration/corpus_management/mock_data';
 import { publishPackage } from '~/api/packages_api';
 import axios from '~/lib/utils/axios_utils';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
 import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
 import uploadComplete from '../mutations/upload_complete.mutation.graphql';
 import corpusCreate from '../mutations/corpus_create.mutation.graphql';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_PACKAGES_PACKAGE  } from '~/graphql_shared/constants';
 
 export default {
   Query: {
@@ -62,7 +62,12 @@ export default {
 
       client.mutate({
         mutation: corpusCreate,
-        variables: {input:{ fullPath: projectPath, packageId: convertToGraphQLId(TYPE_PACKAGES_PACKAGE, packageId) }},
+        variables: {
+          input: {
+            fullPath: projectPath,
+            packageId: convertToGraphQLId(TYPE_PACKAGES_PACKAGE, packageId),
+          },
+        },
       });
     },
     deleteCorpus: (_, { name, projectPath }, { cache }) => {
