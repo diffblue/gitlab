@@ -15,6 +15,8 @@ module EE
       # for self-managed we check if the licensed feature available
       track_redis_hll_event :show, name: 'i_search_paid',
         if: :track_search_paid?
+
+      rescue_from Elastic::TimeoutError, with: :render_timeout
     end
 
     private

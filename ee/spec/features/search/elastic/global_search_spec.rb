@@ -38,6 +38,26 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
     end
   end
 
+  shared_examples 'advanced search timeouts' do
+    context 'when search times out' do
+      before do
+        allow_next_instance_of(SearchService) do |service|
+          allow(service).to receive(:search_objects).and_raise(Elastic::TimeoutError)
+        end
+
+        visit path
+      end
+
+      it 'renders timeout information' do
+        expect(page).to have_content('Your search timed out')
+      end
+
+      it 'sets tab count to 0' do
+        expect(page.find('.search-filter .active')).to have_text('0')
+      end
+    end
+  end
+
   describe 'I do not overload the database' do
     let(:creation_traits) { [] }
 
@@ -48,6 +68,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:query_count_multiplier) { 0 }
 
       it_behaves_like 'an efficient database result'
+      it_behaves_like 'advanced search timeouts'
     end
 
     context 'searching projects' do
@@ -60,6 +81,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:query_count_multiplier) { 4 }
 
       it_behaves_like 'an efficient database result'
+      it_behaves_like 'advanced search timeouts'
     end
 
     context 'searching merge requests' do
@@ -70,6 +92,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
       let(:query_count_multiplier) { 0 }
 
       it_behaves_like 'an efficient database result'
+      it_behaves_like 'advanced search timeouts'
     end
 
     context 'searching milestones' do
@@ -83,6 +106,8 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
 
     context 'searching code' do
       let(:path) { search_path(search: '*', scope: 'blobs') }
+
+      it_behaves_like 'advanced search timeouts'
 
       it 'avoids N+1 database queries' do
         project.repository.index_commits_and_blobs
@@ -106,6 +131,10 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
     context 'searching commits' do
       let(:path_for_one) { search_path(search: '*', scope: 'commits', per_page: 1) }
       let(:path_for_multiple) { search_path(search: '*', scope: 'commits', per_page: 5) }
+
+      it_behaves_like 'advanced search timeouts' do
+        let(:path) { path_for_one }
+      end
 
       it 'avoids N+1 database queries' do
         project.repository.index_commits_and_blobs
