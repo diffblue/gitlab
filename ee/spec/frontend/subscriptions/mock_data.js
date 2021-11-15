@@ -20,6 +20,16 @@ export const mockCiMinutesPlans = [
   },
 ];
 
+export const mockStoragePlans = [
+  {
+    id: 'storagePackPlanId',
+    code: 'storage',
+    pricePerYear: 50,
+    name: 'Storage pack',
+    __typename: PLAN_TYPE,
+  },
+];
+
 export const mockNamespaces = `
   [{"id":132,"accountId":"${accountId}","name":"Gitlab Org","users":3},
   {"id":483,"accountId":null,"name":"Gnuwget","users":12}]

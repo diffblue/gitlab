@@ -6,10 +6,7 @@ import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import {
-  stateData as initialStateData,
-  subscriptionName,
-} from 'ee_jest/subscriptions/buy_minutes/mock_data';
+import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import flash from '~/flash';
