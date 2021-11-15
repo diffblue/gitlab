@@ -1,7 +1,0 @@
-mutation createApiFuzzingCiConfiguration($input: ApiFuzzingCiConfigurationCreateInput!) {
-  apiFuzzingCiConfigurationCreate(input: $input) {
-    configurationYaml
-    gitlabCiYamlEditPath
-    errors
-  }
-}

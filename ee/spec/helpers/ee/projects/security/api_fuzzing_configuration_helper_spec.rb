@@ -8,6 +8,7 @@ RSpec.describe Projects::Security::ApiFuzzingConfigurationHelper do
 
   let(:security_configuration_path) { project_security_configuration_path(project) }
   let(:full_path) { project.full_path }
+  let(:gitlab_ci_yaml_edit_path) { Rails.application.routes.url_helpers.project_ci_pipeline_editor_path(project) }
   let(:api_fuzzing_documentation_path) { help_page_path('user/application_security/api_fuzzing/index') }
   let(:api_fuzzing_authentication_documentation_path) { help_page_path('user/application_security/api_fuzzing/index', anchor: 'authentication') }
   let(:ci_variables_documentation_path) { help_page_path('ci/variables/index') }
@@ -29,6 +30,7 @@ RSpec.describe Projects::Security::ApiFuzzingConfigurationHelper do
         is_expected.to eq(
           security_configuration_path: security_configuration_path,
           full_path: full_path,
+          gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
           api_fuzzing_documentation_path: api_fuzzing_documentation_path,
           api_fuzzing_authentication_documentation_path: api_fuzzing_authentication_documentation_path,
           ci_variables_documentation_path: ci_variables_documentation_path,
@@ -47,6 +49,7 @@ RSpec.describe Projects::Security::ApiFuzzingConfigurationHelper do
         is_expected.to eq(
           security_configuration_path: security_configuration_path,
           full_path: full_path,
+          gitlab_ci_yaml_edit_path: gitlab_ci_yaml_edit_path,
           api_fuzzing_documentation_path: api_fuzzing_documentation_path,
           api_fuzzing_authentication_documentation_path: api_fuzzing_authentication_documentation_path,
           ci_variables_documentation_path: ci_variables_documentation_path,

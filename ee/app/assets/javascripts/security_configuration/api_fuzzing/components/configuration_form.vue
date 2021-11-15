@@ -10,7 +10,6 @@ import {
   GlLink,
   GlSprintf,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import { isEmptyValue } from '~/lib/utils/forms';
@@ -20,8 +19,7 @@ import DropdownInput from '../../components/dropdown_input.vue';
 import DynamicFields from '../../components/dynamic_fields.vue';
 import FormInput from '../../components/form_input.vue';
 import { SCAN_MODES } from '../constants';
-import apiFuzzingCiConfigurationCreate from '../graphql/api_fuzzing_ci_configuration_create.mutation.graphql';
-import { insertTips } from '../utils';
+import { buildConfigurationSnippet } from '../utils';
 
 export default {
   CONFIGURATION_SNIPPET_MODAL_ID,
@@ -44,6 +42,7 @@ export default {
   inject: [
     'securityConfigurationPath',
     'fullPath',
+    'gitlabCiYamlEditPath',
     'apiFuzzingAuthenticationDocumentationPath',
     'ciVariablesDocumentationPath',
     'projectCiSettingsPath',
@@ -57,8 +56,6 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
-      isErrorVisible: false,
       targetUrl: {
         field: 'targetUrl',
         label: s__('APIFuzzing|Target URL'),
@@ -119,7 +116,6 @@ export default {
           }),
         ),
       },
-      ciYamlEditPath: '',
       configurationYaml: '',
     };
   },
@@ -159,80 +155,23 @@ export default {
       }
       return fields.some(({ value }) => isEmptyValue(value));
     },
-    configurationYamlWithTips() {
-      if (!this.configurationYaml) {
-        return '';
-      }
-      return insertTips(this.configurationYaml, [
-        {
-          tip: s__('APIFuzzing|Tip: Insert this part below all stages'),
-          // eslint-disable-next-line @gitlab/require-i18n-strings
-          token: 'stages:',
-        },
-        {
-          tip: s__('APIFuzzing|Tip: Insert this part below all include'),
-          // eslint-disable-next-line @gitlab/require-i18n-strings
-          token: 'include:',
-        },
-        {
-          tip: s__(
-            'APIFuzzing|Tip: Insert the following variables anywhere below stages and include',
-          ),
-          // eslint-disable-next-line @gitlab/require-i18n-strings
-          token: 'variables:',
-        },
-      ]);
-    },
   },
   methods: {
-    async onSubmit() {
-      this.isLoading = true;
-      this.dismissError();
-      try {
-        const input = {
-          projectPath: this.fullPath,
-          target: this.targetUrl.value,
-          scanMode: this.scanMode.value,
-          apiSpecificationFile: this.apiSpecificationFile.value,
-          scanProfile: this.scanProfile.value,
-        };
-        if (this.authenticationEnabled) {
-          const [authUsername, authPassword] = this.authenticationSettings;
-          input.authUsername = authUsername.value;
-          input.authPassword = authPassword.value;
-        }
-        const {
-          data: {
-            apiFuzzingCiConfigurationCreate: {
-              gitlabCiYamlEditPath,
-              configurationYaml,
-              errors = [],
-            },
-          },
-        } = await this.$apollo.mutate({
-          mutation: apiFuzzingCiConfigurationCreate,
-          variables: { input },
-        });
-        if (errors.length) {
-          this.showError();
-        } else {
-          this.ciYamlEditPath = gitlabCiYamlEditPath;
-          this.configurationYaml = configurationYaml;
-          this.$refs[CONFIGURATION_SNIPPET_MODAL_ID].show();
-        }
-      } catch (e) {
-        this.showError();
-        Sentry.captureException(e);
-      } finally {
-        this.isLoading = false;
+    onSubmit() {
+      const options = {
+        projectPath: this.fullPath,
+        target: this.targetUrl.value,
+        scanMode: this.scanMode.value,
+        apiSpecificationFile: this.apiSpecificationFile.value,
+        scanProfile: this.scanProfile.value,
+      };
+      if (this.authenticationEnabled) {
+        const [authUsername, authPassword] = this.authenticationSettings;
+        options.authUsername = authUsername.value;
+        options.authPassword = authPassword.value;
       }
-    },
-    showError() {
-      this.isErrorVisible = true;
-      window.scrollTo({ top: 0 });
-    },
-    dismissError() {
-      this.isErrorVisible = false;
+      this.configurationYaml = buildConfigurationSnippet(options);
+      this.$refs[CONFIGURATION_SNIPPET_MODAL_ID].show();
     },
   },
   SCAN_MODES,
@@ -241,10 +180,6 @@ export default {
 
 <template>
   <form @submit.prevent="onSubmit">
-    <gl-alert v-if="isErrorVisible" variant="danger" class="gl-mb-5" @dismiss="dismissError">
-      {{ s__('APIFuzzing|Code snippet could not be generated. Try again later.') }}
-    </gl-alert>
-
     <form-input v-model="targetUrl.value" v-bind="targetUrl" class="gl-mb-7" />
 
     <dropdown-input v-model="scanMode.value" v-bind="scanMode" />
@@ -312,7 +247,6 @@ export default {
 
     <gl-button
       :disabled="someFieldEmpty"
-      :loading="isLoading"
       type="submit"
       variant="confirm"
       class="js-no-auto-disable"
@@ -320,7 +254,6 @@ export default {
       >{{ s__('APIFuzzing|Generate code snippet') }}</gl-button
     >
     <gl-button
-      :disabled="isLoading"
       :href="securityConfigurationPath"
       data-testid="api-fuzzing-configuration-cancel-button"
       >{{ __('Cancel') }}</gl-button
@@ -328,8 +261,8 @@ export default {
 
     <configuration-snippet-modal
       :ref="$options.CONFIGURATION_SNIPPET_MODAL_ID"
-      :ci-yaml-edit-url="ciYamlEditPath"
-      :yaml="configurationYamlWithTips"
+      :ci-yaml-edit-url="gitlabCiYamlEditPath"
+      :yaml="configurationYaml"
       :redirect-param="$options.CODE_SNIPPET_SOURCE_API_FUZZING"
       scan-type="API Fuzzing"
     />
