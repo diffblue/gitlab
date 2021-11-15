@@ -23,11 +23,10 @@ RSpec.describe Gitlab::SidekiqMiddleware::QueryAnalyzer, query_analyzers: false 
           end
         end
 
-        it 'detects cross modifications and logs them without raising exception' do
-          allow(Rails.env).to receive(:test?).and_return(false)
-          expect(::Gitlab::ErrorTracking).to receive(:track_exception)
+        it 'detects cross modifications and tracks exception' do
+          expect(::Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
 
-          expect { subject }.not_to raise_error
+          subject
         end
 
         context 'when the detect_cross_database_modification is disabled' do
@@ -36,7 +35,7 @@ RSpec.describe Gitlab::SidekiqMiddleware::QueryAnalyzer, query_analyzers: false 
           end
 
           it 'does not detect cross modifications' do
-            expect(::Gitlab::ErrorTracking).not_to receive(:track_exception)
+            expect(::Gitlab::ErrorTracking).not_to receive(:track_and_raise_for_dev_exception)
 
             subject
           end
@@ -52,7 +51,7 @@ RSpec.describe Gitlab::SidekiqMiddleware::QueryAnalyzer, query_analyzers: false 
         end
 
         it 'does not log anything' do
-          expect(::Gitlab::ErrorTracking).not_to receive(:track_exception)
+          expect(::Gitlab::ErrorTracking).not_to receive(:track_and_raise_for_dev_exception)
 
           subject
         end
