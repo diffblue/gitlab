@@ -3,6 +3,7 @@ import { GlTooltip, GlIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
 import { issuableTypesMap } from '~/related_issues/constants';
+import ToggleLabels from '../../boards/components/toggle_labels.vue';
 
 import EpicHealthStatus from './epic_health_status.vue';
 import EpicActionsSplitButton from './epic_issue_actions_split_button.vue';
@@ -13,6 +14,7 @@ export default {
     GlIcon,
     EpicHealthStatus,
     EpicActionsSplitButton,
+    ToggleLabels,
   },
   computed: {
     ...mapState([
@@ -120,6 +122,11 @@ export default {
       </div>
       <epic-health-status v-if="showHealthStatus" :health-status="healthStatus" />
     </div>
+
+    <div class="gl-display-inline-flex gl-mr-3">
+      <toggle-labels />
+    </div>
+
     <div
       v-if="parentItem.userPermissions.adminEpic"
       class="d-inline-flex flex-column flex-sm-row js-button-container"

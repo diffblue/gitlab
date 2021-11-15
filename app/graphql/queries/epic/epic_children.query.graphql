@@ -45,6 +45,16 @@ fragment EpicNode on Epic {
   confidential
   hasChildren
   hasIssues
+  labels {
+    __typename
+    nodes {
+      __typename
+      color
+      description
+      textColor
+      title
+    }
+  }
   group {
     __typename
     id
@@ -127,6 +137,16 @@ query childItems(
               dueDate
             }
             healthStatus
+            labels {
+              __typename
+              nodes {
+                __typename
+                color
+                description
+                textColor
+                title
+              }
+            }
           }
         }
         pageInfo {

@@ -624,3 +624,7 @@ export const fetchDescendantGroups = ({ commit }, { groupId, search = '' }) => {
       commit(types.RECEIVE_DESCENDANT_GROUPS_FAILURE);
     });
 };
+
+export const setShowLabels = ({ commit }, val) => {
+  commit(types.SET_SHOW_LABELS, val);
+};

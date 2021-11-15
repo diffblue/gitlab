@@ -47,8 +47,12 @@ export default () => ({
   showCreateIssueForm: false,
   autoCompleteEpics: false,
   autoCompleteIssues: false,
-  allowSubEpics: false,
   allowIssuableHealthStatus: false,
+  allowScopedLabels: false,
+  allowSubEpics: false,
+  epicsWebUrl: '',
+  issuesWebUrl: '',
+  isShowingLabels: false,
 
   removeItemModalProps: {
     parentItem: {},

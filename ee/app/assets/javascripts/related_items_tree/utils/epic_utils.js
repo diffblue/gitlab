@@ -51,6 +51,11 @@ export const applySorts = (array) => array.sort(sortChildren).sort(sortByState);
  */
 export const formatChildItem = (item) => ({ ...item, pathIdSeparator: PathIdSeparator[item.type] });
 
+export const extractLabels = (labels) =>
+  labels.nodes.map((labelNode) => ({
+    ...labelNode,
+  }));
+
 /**
  * Returns formatted array of Epics that doesn't contain
  * `edges`->`node` nesting
@@ -63,6 +68,7 @@ export const extractChildEpics = (children) =>
       ...epicNode,
       fullPath: epicNode.group.fullPath,
       type: ChildType.Epic,
+      labels: extractLabels(epicNode.labels),
     }),
   );
 
@@ -89,6 +95,7 @@ export const extractChildIssues = (issues) =>
       ...issueNode,
       type: ChildType.Issue,
       assignees: extractIssueAssignees(issueNode.assignees),
+      labels: extractLabels(issueNode.labels),
     }),
   );
 
