@@ -9,7 +9,7 @@ RSpec.describe AuditLogFinder do
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:subproject) { create(:project, namespace: subgroup) }
 
-  let_it_be(:user_audit_event) { create(:user_audit_event, created_at: 3.days.ago) }
+  let_it_be(:user_audit_event) { create(:user_audit_event, created_at: 3.days.ago, entity_id: user.id) }
   let_it_be(:project_audit_event) { create(:project_audit_event, entity_id: project.id, author_id: user.id, created_at: 2.days.ago) }
   let_it_be(:subproject_audit_event) { create(:project_audit_event, entity_id: subproject.id, created_at: 2.days.ago) }
   let_it_be(:group_audit_event) { create(:group_audit_event, entity_id: group.id, author_id: user.id, created_at: 1.day.ago) }
@@ -256,6 +256,92 @@ RSpec.describe AuditLogFinder do
 
         it 'returns events created between the given dates' do
           expect(subject).to contain_exactly(user_audit_event, project_audit_event)
+        end
+      end
+    end
+
+    context 'filtering by entity_username' do
+      context 'User Event' do
+        let(:params) { { entity_type: 'User', entity_username: user.username } }
+        let(:entity_type) { 'User' }
+        let(:audit_event) { user_audit_event }
+
+        it 'finds the right event' do
+          expect(subject.count).to eq(1)
+
+          entity = subject.first
+
+          expect(entity.entity_type).to eq(entity_type)
+          expect(entity.id).to eq(audit_event.id)
+          expect(entity.entity_id).to eq(user.id)
+        end
+      end
+    end
+
+    context 'filtering by author_username' do
+      context 'username is too short' do
+        let(:params) { { author_username: 'a' * (User::MIN_USERNAME_LENGTH - 1) } }
+
+        it 'ignores author_username and returns all events irrespective of entity_type' do
+          expect(subject.count).to eq(4)
+        end
+      end
+
+      context 'username is too long' do
+        let(:params) { { author_username: 'a' * (User::MAX_USERNAME_LENGTH + 1) } }
+
+        it 'ignores author_username and returns all events irrespective of entity_type' do
+          expect(subject.count).to eq(4)
+        end
+      end
+
+      shared_examples 'finds the right event' do
+        it 'finds the right event' do
+          expect(subject.count).to eq(1)
+
+          entity = subject.first
+
+          expect(entity.entity_type).to eq(entity_type)
+          expect(entity.id).to eq(audit_event.id)
+          expect(entity.author_id).to eq(audit_event.author_id)
+        end
+      end
+
+      context 'Instance Event' do
+        let(:level) { Gitlab::Audit::Levels::Instance.new }
+        let(:params) { { author_username: user.username } }
+
+        it 'finds all the events the user authored', :aggregate_failures do
+          expect(subject.count).to eq(2)
+
+          subject.each do |entity|
+            expect(entity.author_id).to eq(user.id)
+          end
+        end
+      end
+
+      context 'Group Event' do
+        let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
+        let(:params) { { author_username: user.username } }
+
+        before do
+          # Only looking for group event, with this on it tests Group and Project events
+          stub_feature_flags(audit_log_group_level: false)
+        end
+
+        it_behaves_like 'finds the right event' do
+          let(:entity_type) { 'Group' }
+          let(:audit_event) { group_audit_event }
+        end
+      end
+
+      context 'Project Event' do
+        let(:level) { Gitlab::Audit::Levels::Project.new(project: project) }
+        let(:params) { { author_username: user.username } }
+
+        it_behaves_like 'finds the right event' do
+          let(:entity_type) { 'Project' }
+          let(:audit_event) { project_audit_event }
         end
       end
     end

@@ -55,7 +55,9 @@ class AuditLogFinder
 
     audit_events = audit_events.by_entity_type(params[:entity_type])
 
-    if valid_entity_id?
+    if valid_entity_username?
+      audit_events = audit_events.by_entity_username(params[:entity_username])
+    elsif valid_entity_id?
       audit_events = audit_events.by_entity_id(params[:entity_id])
     end
 
@@ -63,9 +65,13 @@ class AuditLogFinder
   end
 
   def by_author(audit_events)
-    return audit_events unless valid_author_id?
+    if valid_author_username?
+      audit_events = audit_events.by_author_username(params[:author_username])
+    elsif valid_author_id?
+      audit_events = audit_events.by_author_id(params[:author_id])
+    end
 
-    audit_events.by_author_id(params[:author_id])
+    audit_events
   end
 
   def sort(audit_events)
@@ -82,5 +88,17 @@ class AuditLogFinder
 
   def valid_author_id?
     params[:author_id].to_i.nonzero?
+  end
+
+  def valid_username?(username)
+    username.present? && username.length >= User::MIN_USERNAME_LENGTH && username.length <= User::MAX_USERNAME_LENGTH
+  end
+
+  def valid_entity_username?
+    valid_username?(params[:entity_username])
+  end
+
+  def valid_author_username?
+    valid_username?(params[:author_username])
   end
 end
