@@ -3,14 +3,11 @@
 module Gitlab
   module Redis
     class MultiStore
+      include Gitlab::Utils::StrongMemoize
+
       class ReadFromPrimaryError < StandardError
         def message
           'Value not found on the redis primary store. Read from the redis secondary store successful.'
-        end
-      end
-      class MultiReadError < StandardError
-        def message
-          'Value not found on both primary and secondary store.'
         end
       end
       class MethodMissingError < StandardError
@@ -19,7 +16,7 @@ module Gitlab
         end
       end
 
-      attr_reader :primary_store, :secondary_store
+      attr_reader :primary_store, :secondary_store, :instance_name
 
       FAILED_TO_READ_ERROR_MESSAGE = 'Failed to read from the redis primary_store.'
       FAILED_TO_WRITE_ERROR_MESSAGE = 'Failed to write to the redis primary_store.'
@@ -42,18 +39,13 @@ module Gitlab
         flushdb
       ).freeze
 
-      def initialize(primary_store_options, secondary_store_options)
-        @primary_store = ::Redis::Store.new(primary_store_options)
-        @secondary_store = ::Redis::Store.new(secondary_store_options)
-      end
+      def initialize(primary_store, secondary_store, instance_name = nil)
+        raise ArgumentError, 'primary_store is required' unless primary_store
+        raise ArgumentError, 'secondary_store is required' unless secondary_store
 
-      # This is needed because of Redis::Rack::Connection is requiring Redis::Store
-      # https://github.com/redis-store/redis-rack/blob/a833086ba494083b6a384a1a4e58b36573a9165d/lib/redis/rack/connection.rb#L15
-      # Done similarly in https://github.com/lsegal/yard/blob/main/lib/yard/templates/template.rb#L122
-      def is_a?(klass)
-        return true if klass == ::Redis::Store
-
-        super(klass)
+        @primary_store = primary_store
+        @secondary_store = secondary_store
+        @instance_name = instance_name
       end
 
       READ_COMMANDS.each do |name|
@@ -76,22 +68,42 @@ module Gitlab
         end
       end
 
-      def method_missing(command_name, *args, &block)
-        if @instance
-          send_command(@instance, command_name, *args, &block)
-        else
-          log_error(MethodMissingError.new, command_name)
-          increment_method_missing_count(command_name)
+      def method_missing(...)
+        return @instance.send(...) if @instance
 
-          secondary_store.send(command_name, *args, &block) # rubocop:disable GitlabSecurity/PublicSend
-        end
+        log_method_missing(...)
+
+        secondary_store.send(...) # rubocop:disable GitlabSecurity/PublicSend
       end
 
       def respond_to_missing?(command_name, include_private = false)
         true
       end
 
+      # This is needed because of Redis::Rack::Connection is requiring Redis::Store
+      # https://github.com/redis-store/redis-rack/blob/a833086ba494083b6a384a1a4e58b36573a9165d/lib/redis/rack/connection.rb#L15
+      # Done similarly in https://github.com/lsegal/yard/blob/main/lib/yard/templates/template.rb#L122
+      def is_a?(klass)
+        return true if klass == secondary_store.class
+
+        super(klass)
+      end
+      alias_method :kind_of?, :is_a?
+
+      def to_s
+        if multi_store_enabled?
+          primary_store.to_s
+        else
+          secondary_store.to_s
+        end
+      end
+
       private
+
+      def log_method_missing(command_name, *_args)
+        log_error(MethodMissingError.new, command_name)
+        increment_method_missing_count(command_name)
+      end
 
       def read_command(command_name, *args, &block)
         if @instance
@@ -128,8 +140,6 @@ module Gitlab
         if value
           log_error(ReadFromPrimaryError.new, command_name)
           increment_read_fallback_count(command_name)
-        else
-          log_error(MultiReadError.new, command_name)
         end
 
         value
@@ -147,15 +157,22 @@ module Gitlab
       end
 
       def multi_store_enabled?
-        Feature.enabled?(:use_multi_store, default_enabled: :yaml)
+        Feature.enabled?(:use_multi_store, default_enabled: :yaml) && !same_redis_store?
+      end
+
+      def same_redis_store?
+        strong_memoize(:same_redis_store) do
+          # <Redis client v4.4.0 for redis:///path_to/redis/redis.socket/5>"
+          primary_store.inspect == secondary_store.inspect
+        end
       end
 
       # rubocop:disable GitlabSecurity/PublicSend
       def send_command(redis_instance, command_name, *args, &block)
         if block_given?
           # Make sure that block is wrapped and executed only on the redis instance that is executing the block
-          redis_instance.send(command_name, *args) do |*args|
-            with_instance(redis_instance, *args, &block)
+          redis_instance.send(command_name, *args) do |*params|
+            with_instance(redis_instance, *params, &block)
           end
         else
           redis_instance.send(command_name, *args)
@@ -163,28 +180,29 @@ module Gitlab
       end
       # rubocop:enable GitlabSecurity/PublicSend
 
-      def with_instance(instance, *args)
+      def with_instance(instance, *params)
         @instance = instance
-        yield(*args)
+
+        yield(*params)
       ensure
         @instance = nil
       end
 
       def increment_read_fallback_count(command_name)
         @read_fallback_counter ||= Gitlab::Metrics.counter(:gitlab_redis_multi_store_read_fallback_total, 'Client side Redis MultiStore reading fallback')
-        @read_fallback_counter.increment(command: command_name)
+        @read_fallback_counter.increment(command: command_name, instance_name: instance_name)
       end
 
       def increment_method_missing_count(command_name)
         @method_missing_counter ||= Gitlab::Metrics.counter(:gitlab_redis_multi_store_method_missing_total, 'Client side Redis MultiStore method missing')
-        @method_missing_counter.increment(command: command_name)
+        @method_missing_counter.increment(command: command_name, innamece_name: instance_name)
       end
 
       def log_error(exception, command_name, extra = {})
         Gitlab::ErrorTracking.log_exception(
           exception,
           command_name: command_name,
-          extra: extra)
+          extra: extra.merge(instance_name: instance_name))
       end
     end
   end

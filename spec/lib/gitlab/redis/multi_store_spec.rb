@@ -5,15 +5,47 @@ require 'spec_helper'
 RSpec.describe Gitlab::Redis::MultiStore do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:multi_store) { described_class.new(Gitlab::Redis::Sessions.params.merge(serializer: nil), Gitlab::Redis::SharedState.params.merge(serializer: nil))}
-  let_it_be(:primary_store) { multi_store.primary_store }
-  let_it_be(:secondary_store) { multi_store.secondary_store }
+  let_it_be(:redis_store_class) do
+    Class.new(Gitlab::Redis::Wrapper) do
+      def config_file_name
+        config_file_name = "spec/fixtures/config/redis_new_format_host.yml"
+        Rails.root.join(config_file_name).to_s
+      end
+
+      def self.name
+        'Sessions'
+      end
+    end
+  end
+
+  let_it_be(:primary_db) { 1 }
+  let_it_be(:secondary_db) { 2 }
+  let_it_be(:primary_store) { create_redis_store(redis_store_class.params, db: primary_db, serializer: nil) }
+  let_it_be(:secondary_store) { create_redis_store(redis_store_class.params, db: secondary_db, serializer: nil) }
+  let_it_be(:instance_name) { 'TestStore' }
+  let_it_be(:multi_store) { described_class.new(primary_store, secondary_store, instance_name)}
 
   subject { multi_store.send(name, *args) }
 
   after(:all) do
     primary_store.flushdb
     secondary_store.flushdb
+  end
+
+  context 'when primary_store is nil' do
+    let(:multi_store) { described_class.new(nil, secondary_store, instance_name)}
+
+    it 'fails with exception' do
+      expect { multi_store }.to raise_error(ArgumentError, /primary_store is required/)
+    end
+  end
+
+  context 'when secondary_store is nil' do
+    let(:multi_store) { described_class.new(primary_store, nil, instance_name)}
+
+    it 'fails with exception' do
+      expect { multi_store }.to raise_error(ArgumentError, /secondary_store is required/)
+    end
   end
 
   context 'with READ redis commands' do
@@ -53,7 +85,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
     RSpec.shared_examples_for 'reads correct value' do
       it 'returns the correct value' do
         if value.is_a?(Array)
-          # :smemebers does not guarantee the order it will return the values (unsorted set)
+          # :smembers does not guarantee the order it will return the values (unsorted set)
           is_expected.to match_array(value)
         else
           is_expected.to eq(value)
@@ -70,7 +102,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
       it 'logs the ReadFromPrimaryError' do
         expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::ReadFromPrimaryError),
-          hash_including(command_name: name))
+          hash_including(command_name: name, extra: hash_including(instance_name: instance_name)))
 
         subject
       end
@@ -83,7 +115,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
       include_examples 'reads correct value'
 
-      context 'when fallback read from the secondary instance raises and exception' do
+      context 'when fallback read from the secondary instance raises an exception' do
         before do
           allow(secondary_store).to receive(name).with(*args).and_raise(StandardError)
         end
@@ -92,24 +124,21 @@ RSpec.describe Gitlab::Redis::MultiStore do
           expect { subject }.to raise_error(StandardError)
         end
       end
+    end
 
-      context 'when fallback read from the secondary instance returns no value' do
-        before do
-          allow(secondary_store).to receive(name).and_return(nil)
-        end
+    RSpec.shared_examples_for 'secondary store' do
+      it 'execute on the secondary instance' do
+        expect(secondary_store).to receive(name).with(*args).and_call_original
 
-        it 'logs the MultiReadError error' do
-          expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::MultiReadError),
-            hash_including(command_name: name))
+        subject
+      end
 
-          subject
-        end
+      include_examples 'reads correct value'
 
-        it 'does not increment read fallback count metrics' do
-          expect(multi_store).not_to receive(:increment_read_fallback_count)
+      it 'does not execute on the primary store' do
+        expect(primary_store).not_to receive(name)
 
-          subject
-        end
+        subject
       end
     end
 
@@ -149,7 +178,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
             it 'logs the exception' do
               expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(StandardError),
-                hash_including(extra: hash_including(:multi_store_error_message),
+                hash_including(extra: hash_including(:multi_store_error_message, instance_name: instance_name),
                                command_name: name))
 
               subject
@@ -202,19 +231,15 @@ RSpec.describe Gitlab::Redis::MultiStore do
             stub_feature_flags(use_multi_store: false)
           end
 
-          it 'execute on the secondary instance' do
-            expect(secondary_store).to receive(name).with(*args).and_call_original
+          it_behaves_like 'secondary store'
+        end
 
-            subject
-          end
+        context 'with both primary and secondary store using same redis instance' do
+          let(:primary_store) { create_redis_store(redis_store_class.params, db: primary_db, serializer: nil) }
+          let(:secondary_store) { create_redis_store(redis_store_class.params, db: primary_db , serializer: nil) }
+          let(:multi_store) { described_class.new(primary_store, secondary_store, instance_name)}
 
-          include_examples 'reads correct value'
-
-          it 'does not execute on the primary store' do
-            expect(primary_store).not_to receive(name)
-
-            subject
-          end
+          it_behaves_like 'secondary store'
         end
       end
     end
@@ -267,7 +292,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
         redis_store = multi_store.send(store)
 
         if expected_value.is_a?(Array)
-          # :smemebers does not guarantee the order it will return the values
+          # :smembers does not guarantee the order it will return the values
           expect(redis_store.send(verification_name, *verification_args)).to match_array(expected_value)
         else
           expect(redis_store.send(verification_name, *verification_args)).to eq(expected_value)
@@ -375,7 +400,8 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
     it 'logs MethodMissingError' do
       expect(Gitlab::ErrorTracking).to receive(:log_exception).with(an_instance_of(Gitlab::Redis::MultiStore::MethodMissingError),
-        hash_including(command_name: :incr))
+        hash_including(command_name: :incr, extra: hash_including(instance_name: instance_name)))
+
       subject
     end
 
@@ -420,5 +446,9 @@ RSpec.describe Gitlab::Redis::MultiStore do
         expect(secondary_store.get(key)).to eq('1')
       end
     end
+  end
+
+  def create_redis_store(options, extras = {})
+    ::Redis::Store.new(options.merge(extras))
   end
 end
