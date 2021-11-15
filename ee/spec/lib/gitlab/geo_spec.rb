@@ -426,4 +426,51 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       end
     end
   end
+
+  describe '.uncached_queries' do
+    context 'when no block is given' do
+      it 'raises error' do
+        expect do
+          described_class.uncached_queries
+        end.to raise_error('No block given')
+      end
+    end
+
+    context 'when the current node is a primary' do
+      it 'wraps the block in an ApplicationRecord.uncached block' do
+        stub_current_geo_node(primary_node)
+
+        expect(Geo::TrackingBase).not_to receive(:uncached)
+        expect(ApplicationRecord).to receive(:uncached).and_call_original
+
+        expect do |b|
+          described_class.uncached_queries(&b)
+        end.to yield_control
+      end
+    end
+
+    context 'when the current node is a secondary' do
+      it 'wraps the block in a Geo::TrackingBase.uncached block and an ApplicationRecord.uncached block' do
+        stub_current_geo_node(secondary_node)
+
+        expect(Geo::TrackingBase).to receive(:uncached).and_call_original
+        expect(ApplicationRecord).to receive(:uncached).and_call_original
+
+        expect do |b|
+          described_class.uncached_queries(&b)
+        end.to yield_control
+      end
+    end
+
+    context 'when there is no current node' do
+      it 'wraps the block in an ApplicationRecord.uncached block' do
+        expect(Geo::TrackingBase).not_to receive(:uncached)
+        expect(ApplicationRecord).to receive(:uncached).and_call_original
+
+        expect do |b|
+          described_class.uncached_queries(&b)
+        end.to yield_control
+      end
+    end
+  end
 end

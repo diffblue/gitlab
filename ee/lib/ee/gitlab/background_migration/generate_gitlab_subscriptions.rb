@@ -49,7 +49,7 @@ module EE
                     }
                   end
 
-          Gitlab::Database.main.bulk_insert(:gitlab_subscriptions, rows) # rubocop:disable Gitlab/BulkInsert
+          ApplicationRecord.legacy_bulk_insert(:gitlab_subscriptions, rows) # rubocop:disable Gitlab/BulkInsert
         end
       end
     end

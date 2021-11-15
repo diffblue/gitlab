@@ -213,5 +213,17 @@ module Gitlab
 
       [1, capacity].max # at least 1
     end
+
+    def self.uncached_queries(&block)
+      raise 'No block given' unless block_given?
+
+      ApplicationRecord.uncached do
+        if ::Gitlab::Geo.secondary?
+          ::Geo::TrackingBase.uncached(&block)
+        else
+          yield
+        end
+      end
+    end
   end
 end
