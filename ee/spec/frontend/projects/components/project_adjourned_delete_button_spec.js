@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlSprintf } from '@gitlab/ui';
 import ProjectAdjournedDeleteButton from 'ee/projects/components/project_adjourned_delete_button.vue';
 import SharedDeleteButton from '~/projects/components/shared/delete_button.vue';
 
@@ -14,6 +15,11 @@ describe('Project remove modal', () => {
     confirmPhrase: 'foo',
     formPath: 'some/path',
     recoveryHelpPath: 'recovery/help/path',
+    isFork: false,
+    issuesCount: 1,
+    mergeRequestsCount: 2,
+    forksCount: 3,
+    starsCount: 4,
   };
 
   const createComponent = (props = {}) => {
@@ -23,6 +29,7 @@ describe('Project remove modal', () => {
         ...props,
       },
       stubs: {
+        GlSprintf,
         SharedDeleteButton,
       },
     });
