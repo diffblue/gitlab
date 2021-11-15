@@ -31,7 +31,7 @@ module Gitlab
 
             def docker_image_name_without_tag
               image_name = default_branch_image.presence || image
-              base_name, version = image_name.split(':')
+              base_name, _, version = image_name.rpartition(':')
 
               return image if version_semver_like?(version)
 

@@ -18,10 +18,10 @@ RSpec.describe Gitlab::Ci::Reports::Security::Locations::ContainerScanning do
 
   it_behaves_like 'vulnerability location'
 
+  subject { described_class.new(**params) }
+
   describe 'fingerprint' do
     sha1_of = -> (input) { Digest::SHA1.hexdigest(input) }
-
-    subject { described_class.new(**params) }
 
     context 'with feature enabled' do
       before do
@@ -34,6 +34,11 @@ RSpec.describe Gitlab::Ci::Reports::Security::Locations::ContainerScanning do
           ['alpine:3.7', nil, 'alpine:3.7:glibc'],
           ['alpine:8101518288111119448185914762536722131810', nil, 'alpine:glibc'],
           ['alpine:1.0.0-beta', nil, 'alpine:1.0.0-beta:glibc'],
+          [
+            'gdk.local:5000/group/project/branch:307e0a35643f63652a713d0820db7c388012f724',
+            nil,
+            'gdk.local:5000/group/project/branch:glibc'
+          ],
           [
             'registry.gitlab.com/group/project/tmp:af864bd61230d3d694eb01d6205b268b4ad63ac0',
             nil,
