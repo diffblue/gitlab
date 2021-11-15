@@ -25,7 +25,6 @@
 - "./ee/spec/services/ee/users/destroy_service_spec.rb"
 - "./ee/spec/services/projects/transfer_service_spec.rb"
 - "./ee/spec/services/security/security_orchestration_policies/rule_schedule_service_spec.rb"
-- "./ee/spec/services/vulnerability_feedback/create_service_spec.rb"
 - "./spec/controllers/abuse_reports_controller_spec.rb"
 - "./spec/controllers/admin/spam_logs_controller_spec.rb"
 - "./spec/controllers/admin/users_controller_spec.rb"
