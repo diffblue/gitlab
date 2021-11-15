@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  # This test is disabled on staging and production due to `top_level_group_creation_enabled` set to false.
-  # See: https://gitlab.com/gitlab-org/gitlab/-/issues/324808#note_531060031
-  RSpec.describe 'Manage', quarantine: { only: [:staging, :production], issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324808', type: :waiting_on } do
+  RSpec.describe 'Manage' do
     describe 'prevent forking outside group' do
       let!(:group_for_fork) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox_group|
+        Resource::Sandbox.fabricate! do |sandbox_group|
           sandbox_group.path = "group_for_fork_#{SecureRandom.hex(8)}"
         end
       end

@@ -17,15 +17,13 @@ module QA
         # after the test runs since GitLab will not allow deletion of a group
         # that has a Subscription attached
         let(:group) do
-          Resource::Sandbox.fabricate_via_api! do |sandbox|
+          Resource::Sandbox.fabricate! do |sandbox|
             sandbox.path = "gitlab-qa-group-#{hash}"
             sandbox.api_client = Runtime::API::Client.as_admin
           end
         end
 
         before do
-          Runtime::Feature.enable(:top_level_group_creation_enabled)
-
           group.add_member(user, Resource::Members::AccessLevel::OWNER)
           Flow::Login.sign_in(as: user)
 
@@ -34,8 +32,6 @@ module QA
 
         after do
           user.remove_via_api!
-
-          Runtime::Feature.disable(:top_level_group_creation_enabled)
         end
 
         it 'upgrades from free to ultimate', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1882' do
