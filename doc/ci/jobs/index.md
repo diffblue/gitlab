@@ -181,7 +181,7 @@ file:
 You can use hidden jobs that start with `.` as templates for reusable configuration with:
 
 - The [`extends` keyword](../yaml/index.md#extends).
-- [YAML anchors](../yaml/yaml_specific_features.md#anchors).
+- [YAML anchors](../yaml/yaml_optimization.md#anchors).
 
 ## Control the inheritance of default keywords and global variables
 
