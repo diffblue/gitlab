@@ -2575,7 +2575,6 @@ Style/OpenStructUse:
     - 'lib/mattermost/session.rb'
     - 'spec/bin/feature_flag_spec.rb'
     - 'spec/controllers/admin/clusters_controller_spec.rb'
-    - 'spec/controllers/concerns/import_url_params_spec.rb'
     - 'spec/controllers/groups/clusters_controller_spec.rb'
     - 'spec/controllers/import/fogbugz_controller_spec.rb'
     - 'spec/controllers/import/gitlab_controller_spec.rb'
