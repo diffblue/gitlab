@@ -40,12 +40,11 @@ module Gitlab
       ).freeze
 
       def initialize(primary_store, secondary_store, instance_name = nil)
-        raise ArgumentError, 'primary_store is required' unless primary_store
-        raise ArgumentError, 'secondary_store is required' unless secondary_store
-
         @primary_store = primary_store
         @secondary_store = secondary_store
         @instance_name = instance_name
+
+        validate_stores!
       end
 
       READ_COMMANDS.each do |name|
@@ -196,6 +195,13 @@ module Gitlab
       def increment_method_missing_count(command_name)
         @method_missing_counter ||= Gitlab::Metrics.counter(:gitlab_redis_multi_store_method_missing_total, 'Client side Redis MultiStore method missing')
         @method_missing_counter.increment(command: command_name, innamece_name: instance_name)
+      end
+
+      def validate_stores!
+        raise ArgumentError, 'primary_store is required' unless primary_store
+        raise ArgumentError, 'secondary_store is required' unless secondary_store
+        raise ArgumentError, 'invalid primary_store' unless primary_store.is_a?(::Redis)
+        raise ArgumentError, 'invalid secondary_store' unless secondary_store.is_a?(::Redis)
       end
 
       def log_error(exception, command_name, extra = {})

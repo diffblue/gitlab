@@ -48,6 +48,26 @@ RSpec.describe Gitlab::Redis::MultiStore do
     end
   end
 
+  context 'when primary_store is not a ::Redis instance' do
+    before do
+      allow(primary_store).to receive(:is_a?).with(::Redis).and_return(false)
+    end
+
+    it 'fails with exception' do
+      expect { described_class.new(primary_store, secondary_store, instance_name) }.to raise_error(ArgumentError, /invalid primary_store/)
+    end
+  end
+
+  context 'when secondary_store is not a ::Redis instance' do
+    before do
+      allow(secondary_store).to receive(:is_a?).with(::Redis).and_return(false)
+    end
+
+    it 'fails with exception' do
+      expect { described_class.new(primary_store, secondary_store, instance_name) }.to raise_error(ArgumentError, /invalid secondary_store/)
+    end
+  end
+
   context 'with READ redis commands' do
     let_it_be(:key1) { "redis:{1}:key_a" }
     let_it_be(:key2) { "redis:{1}:key_b" }
