@@ -15,7 +15,7 @@ module QA
       end
 
       let(:group) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox|
+        Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "gitlab-qa-group-#{hash}"
           sandbox.api_client = Runtime::API::Client.as_admin
         end
