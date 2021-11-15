@@ -14358,6 +14358,9 @@ msgstr ""
 msgid "Failed to move this issue because target project doesn't exist."
 msgstr ""
 
+msgid "Failed to promote issue to incident"
+msgstr ""
+
 msgid "Failed to promote label due to internal error. Please contact administrators."
 msgstr ""
 
@@ -19217,6 +19220,9 @@ msgid "Issue events"
 msgstr ""
 
 msgid "Issue first deployed to production"
+msgstr ""
+
+msgid "Issue has been promoted to incident"
 msgstr ""
 
 msgid "Issue label"
@@ -27768,6 +27774,9 @@ msgstr ""
 msgid "Promote issue to an epic"
 msgstr ""
 
+msgid "Promote issue to incident"
+msgstr ""
+
 msgid "Promote to epic"
 msgstr ""
 
@@ -27784,6 +27793,9 @@ msgid "PromoteMilestone|Promotion failed - %{message}"
 msgstr ""
 
 msgid "Promoted issue to an epic."
+msgstr ""
+
+msgid "Promotes issue to incident"
 msgstr ""
 
 msgid "Promotion is not supported."
