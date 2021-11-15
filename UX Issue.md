@@ -2,10 +2,7 @@
 
 The goal of this template is to ensure we have captured all the information available to the product designer so they can approach the problem creatively and efficiently. Please add links to SSOT if this informatin exists elsewhere. -->
 
-
-### Intended users
-
-<!-- Who will use this feature? If known, include any of the following: types of users (e.g. Developer), personas, or specific company roles (e.g. Release Manager). It's okay to write "Unknown" and fill this field in later.
+### Who will use this solution? <!-- If known, include any of the following: types of users (e.g. Developer), personas, or specific company roles (e.g. Release Manager). It's okay to write "Unknown" and fill this field in later.
 
 Personas are described at https://about.gitlab.com/handbook/marketing/product-marketing/roles-personas/
 
@@ -26,6 +23,34 @@ Personas are described at https://about.gitlab.com/handbook/marketing/product-ma
 * [Eddie (Content Editor)](https://about.gitlab.com/handbook/marketing/product-marketing/roles-personas/#eddie-content-editor)
 
 -->
+
+
+### What problem do they have?
+
+
+### When do they have the problem?
+
+
+### Where in the app do they have the problem and at what frequency (if known)?
+
+
+### Why will a design help them?
+
+
+### What is the JTBD and/or Tasks?
+
+
+### Is this problem supported by user research (please link relevant research issue/s)?
+
+
+### Known technical constraints
+
+
+### How does this help the business?
+
+
+
+
 
 /label ~"group::" ~"section::"  ~"Category::"  ~UX 
 
