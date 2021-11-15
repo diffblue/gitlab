@@ -56,6 +56,8 @@ In your repository, add the Agent configuration file under:
 .gitlab/agents/<agent-name>/config.yaml
 ```
 
+Make sure that `<agent-name>` conforms to the [Agent's naming format](https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent/-/blob/master/doc/identity_and_auth.md#agent-identity-and-name).
+
 Your `config.yaml` file specifies all configurations of the Agent, such as:
 
 - The manifest projects to synchronize.
