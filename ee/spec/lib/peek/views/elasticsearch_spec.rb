@@ -14,6 +14,7 @@ RSpec.describe Peek::Views::Elasticsearch, :elastic, :request_store do
   describe '#results' do
     let(:results) { described_class.new.results }
     let(:project) { create(:project, :repository) }
+    let(:timeout) { '30s' }
 
     it 'includes performance details' do
       ::Gitlab::SafeRequestStore.clear!
@@ -24,9 +25,9 @@ RSpec.describe Peek::Views::Elasticsearch, :elastic, :request_store do
       expect(results[:duration]).to be_kind_of(String)
       expect(results[:details].last[:method]).to eq('GET')
       expect(results[:details].last[:path]).to eq('gitlab-test/doc/_search')
-      expect(results[:details].last[:params]).to eq({ routing: "project_#{project.id}" })
+      expect(results[:details].last[:params]).to eq({ routing: "project_#{project.id}", timeout: timeout })
 
-      expect(results[:details].last[:request]).to eq("GET gitlab-test/doc/_search?routing=project_#{project.id}")
+      expect(results[:details].last[:request]).to eq("GET gitlab-test/doc/_search?routing=project_#{project.id}&timeout=#{timeout}")
     end
   end
 end

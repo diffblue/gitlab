@@ -13,7 +13,10 @@ RSpec.shared_examples 'does not hit Elasticsearch twice for objects and counts' 
         results.objects(scope)
         results.public_send("#{scope}_count")
 
+        request = ::Gitlab::Instrumentation::ElasticsearchTransport.detail_store.first
+
         expect(::Gitlab::Instrumentation::ElasticsearchTransport.get_request_count).to eq(1)
+        expect(request.dig(:params, :timeout)).to eq('30s')
       end
     end
   end

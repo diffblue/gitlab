@@ -13,7 +13,7 @@ module Elastic
         # Counts need to be fast as we load one count per type of document
         # on every page load. Fail early if they are slow since they don't
         # need to be accurate.
-        es_options[:timeout] = '1s' if search_options[:count_only]
+        es_options[:timeout] = search_options[:count_only] ? '1s' : '30s'
 
         # Calling elasticsearch-ruby method
         super(query, es_options)
