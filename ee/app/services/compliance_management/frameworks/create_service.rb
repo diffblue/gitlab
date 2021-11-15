@@ -36,7 +36,20 @@ module ComplianceManagement
       end
 
       def success
+        audit_create
         ServiceResponse.success(payload: { framework: framework })
+      end
+
+      def audit_create
+        audit_context = {
+          name: 'create_compliance_framework',
+          author: current_user,
+          scope: framework.namespace,
+          target: framework,
+          message: "Created compliance framework #{framework.name}"
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
       def error
