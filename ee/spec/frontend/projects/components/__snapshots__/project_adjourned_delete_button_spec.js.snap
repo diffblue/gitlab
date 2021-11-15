@@ -42,9 +42,51 @@ exports[`Project remove modal initialized matches the snapshot 1`] = `
   >
      
     <div>
-      <p>
-        Once a project is permanently deleted, it cannot be recovered. You will lose this project's repository and all related resources, including issues and merge requests.
-      </p>
+      <gl-alert-stub
+        class="gl-mb-5"
+        dismisslabel="Dismiss"
+        primarybuttonlink=""
+        primarybuttontext=""
+        secondarybuttonlink=""
+        secondarybuttontext=""
+        title="You are about to permanently delete this project"
+        variant="danger"
+      >
+        <p>
+          This project is 
+          <strong>
+            NOT
+          </strong>
+           a fork, and has the following:
+        </p>
+         
+        <ul>
+          <li>
+            1 issue
+          </li>
+           
+          <li>
+            2 merge requests
+          </li>
+           
+          <li>
+            3 forks
+          </li>
+           
+          <li>
+            4 stars
+          </li>
+        </ul>
+         Once a project is permanently deleted, it 
+        <strong>
+          cannot be recovered
+        </strong>
+        . You will lose this project's repository and 
+        <strong>
+          all related resources
+        </strong>
+        , including issues and merge requests.
+      </gl-alert-stub>
        
       <p
         class="gl-mb-1"
@@ -69,9 +111,8 @@ exports[`Project remove modal initialized matches the snapshot 1`] = `
       <p
         class="gl-display-flex gl-display-flex gl-align-items-center gl-mt-3 gl-mb-0 gl-text-gray-500"
       >
-        <gl-sprintf-stub
-          message="You can recover this project until %{date}"
-        />
+        You can recover this project until 
+          2020-12-12
          
         <gl-link-stub
           aria-label="Recovering projects"
