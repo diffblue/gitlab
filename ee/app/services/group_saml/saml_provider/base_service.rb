@@ -9,6 +9,10 @@ module GroupSaml
 
       delegate :group, to: :saml_provider
 
+      AUDIT_LOG_ALLOWLIST = %w[
+        enabled certificate_fingerprint sso_url enforced_sso enforced_group_managed_accounts prohibited_outer_forks default_membership_role git_check_enforced
+      ].freeze
+
       def initialize(current_user, saml_provider, params:)
         @saml_provider = saml_provider
         @current_user = current_user
@@ -26,14 +30,18 @@ module GroupSaml
           end
         end
 
-        if saml_provider.previous_changes.present?
-          ::Gitlab::Audit::Auditor.audit(
+        saml_provider.previous_changes.each do |attribute, changes|
+          next unless AUDIT_LOG_ALLOWLIST.include?(attribute)
+
+          audit_context = {
             name: audit_name,
             author: current_user,
             scope: saml_provider.group,
             target: saml_provider.group,
-            message: message
-          )
+            message: message(attribute, changes)
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
 
@@ -55,19 +63,12 @@ module GroupSaml
         raise ActiveRecord::Rollback
       end
 
-      def message
-        audit_logs_allowlist = %w[enabled certificate_fingerprint sso_url enforced_sso enforced_group_managed_accounts prohibited_outer_forks default_membership_role git_check_enforced]
-        change_text = saml_provider
-                        .previous_changes
-                        .map do |k, v|
-          next unless audit_logs_allowlist.include?(k)
-
-          if v[0].nil?
-            "#{k} changed to #{v[1]}. "
-          else
-            "#{k} changed from #{v[0]} to #{v[1]}. "
-          end
-        end.join
+      def message(attribute, changes)
+        change_text = if changes[0].nil?
+                        "#{attribute} changed to #{changes[1]}. "
+                      else
+                        "#{attribute} changed from #{changes[0]} to #{changes[1]}. "
+                      end
 
         "Group SAML SSO configuration changed: #{change_text}"
       end
