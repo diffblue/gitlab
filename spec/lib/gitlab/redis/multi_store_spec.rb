@@ -236,7 +236,7 @@ RSpec.describe Gitlab::Redis::MultiStore do
 
         context 'with both primary and secondary store using same redis instance' do
           let(:primary_store) { create_redis_store(redis_store_class.params, db: primary_db, serializer: nil) }
-          let(:secondary_store) { create_redis_store(redis_store_class.params, db: primary_db , serializer: nil) }
+          let(:secondary_store) { create_redis_store(redis_store_class.params, db: primary_db, serializer: nil) }
           let(:multi_store) { described_class.new(primary_store, secondary_store, instance_name)}
 
           it_behaves_like 'secondary store'

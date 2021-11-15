@@ -69,7 +69,7 @@ module Gitlab
       end
 
       def method_missing(...)
-        return @instance.send(...) if @instance
+        return @instance.send(...) if @instance # rubocop:disable GitlabSecurity/PublicSend
 
         log_method_missing(...)
 
