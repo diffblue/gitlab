@@ -2,8 +2,14 @@
 
 module EE
   module GitlabRoutingHelper
-    def geo_primary_web_url(container)
-      File.join(::Gitlab::Geo.primary_node.url, container.full_path)
+    def geo_primary_web_url(container, internal: false)
+      primary_base_url = if internal
+                           ::Gitlab::Geo.primary_node.internal_url
+                         else
+                           ::Gitlab::Geo.primary_node.url
+                         end
+
+      File.join(primary_base_url, container.full_path)
     end
 
     def geo_primary_ssh_url_to_repo(container)
@@ -12,6 +18,10 @@ module EE
 
     def geo_primary_http_url_to_repo(container)
       geo_primary_web_url(container) + '.git'
+    end
+
+    def geo_primary_http_internal_url_to_repo(container)
+      geo_primary_web_url(container, internal: true) + '.git'
     end
 
     def geo_primary_default_url_to_repo(container)
