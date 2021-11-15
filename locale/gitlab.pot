@@ -7318,6 +7318,12 @@ msgstr ""
 msgid "Cluster type must be specificed for Stages::ClusterEndpointInserter"
 msgstr ""
 
+msgid "ClusterAgents|%{number} of %{total} Agent based integrations"
+msgstr ""
+
+msgid "ClusterAgents|%{number} of %{total} Certificate based integrations"
+msgstr ""
+
 msgid "ClusterAgents|Access tokens"
 msgstr ""
 
@@ -7331,6 +7337,9 @@ msgid "ClusterAgents|Agent might not be connected to GitLab"
 msgstr ""
 
 msgid "ClusterAgents|Agent never connected to GitLab"
+msgstr ""
+
+msgid "ClusterAgents|All"
 msgstr ""
 
 msgid "ClusterAgents|Alternative installation methods"
@@ -7349,6 +7358,9 @@ msgid "ClusterAgents|Certificate based"
 msgstr ""
 
 msgid "ClusterAgents|Configuration"
+msgstr ""
+
+msgid "ClusterAgents|Connect existing cluster"
 msgstr ""
 
 msgid "ClusterAgents|Connect with Agent"
@@ -7387,6 +7399,12 @@ msgstr ""
 msgid "ClusterAgents|For alternative installation methods %{linkStart}go to the documentation%{linkEnd}."
 msgstr ""
 
+msgid "ClusterAgents|GitLab Agents"
+msgstr ""
+
+msgid "ClusterAgents|GitLab Agents provide an increased level of security when integrating with clusters. %{linkStart}Learn more about the GitLab Kubernetes Agent.%{linkEnd}"
+msgstr ""
+
 msgid "ClusterAgents|Go to the repository"
 msgstr ""
 
@@ -7423,10 +7441,19 @@ msgstr ""
 msgid "ClusterAgents|Never connected"
 msgstr ""
 
+msgid "ClusterAgents|No Agent based integrations"
+msgstr ""
+
+msgid "ClusterAgents|No Certificate based integrations"
+msgstr ""
+
 msgid "ClusterAgents|Not connected"
 msgstr ""
 
 msgid "ClusterAgents|Read more about getting started"
+msgstr ""
+
+msgid "ClusterAgents|Recommended"
 msgstr ""
 
 msgid "ClusterAgents|Recommended installation method"
@@ -7475,6 +7502,12 @@ msgid "ClusterAgents|Unknown user"
 msgstr ""
 
 msgid "ClusterAgents|Use GitLab Agents to more securely integrate with your clusters to deploy your applications, run your pipelines, use review apps and much more."
+msgstr ""
+
+msgid "ClusterAgents|View all %{number} Agent based integrations"
+msgstr ""
+
+msgid "ClusterAgents|View all %{number} Certificate based integrations"
 msgstr ""
 
 msgid "ClusterAgents|You will need to create a token to connect to your agent"
