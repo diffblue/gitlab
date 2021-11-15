@@ -11,7 +11,7 @@ module EE
 
         override :unconditional_includes
         def unconditional_includes
-          [:saml_provider, *super]
+          [:ip_restrictions, *super]
         end
       end
     end
