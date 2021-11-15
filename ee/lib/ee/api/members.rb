@@ -54,6 +54,28 @@ module EE
             end
           end
 
+          desc 'Approves a pending member'
+          params do
+            requires :user_id, type: Integer, desc: 'The user ID of the member requiring approval'
+          end
+          put ':id/members/:user_id/approve' do
+            group = find_group!(params[:id])
+            user = ::User.find(params[:user_id])
+
+            bad_request! unless group.root?
+            bad_request! unless can?(current_user, :admin_group_member, group)
+
+            result = ::Members::ActivateService
+              .new(group, user: user, current_user: current_user)
+              .execute
+
+            if result[:status] == :success
+              no_content!
+            else
+              bad_request!(result[:message])
+            end
+          end
+
           desc 'Gets a list of billable users of root group.' do
             success Entities::Member
           end
