@@ -3,7 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
-  let_it_be(:namespace) { create(:namespace) }
+  let_it_be(:namespace) do
+    create(:namespace,
+      shared_runners_minutes_limit: 1_000,
+      extra_shared_runners_minutes_limit: 500)
+  end
 
   let_it_be_with_refind(:current_usage) do
     create(:ci_namespace_monthly_usage,
@@ -35,7 +39,77 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           expect(subject.amount_used).to eq(0)
           expect(subject.namespace).to eq(namespace)
           expect(subject.date).to eq(described_class.beginning_of_month)
+          expect(subject.notification_level).to eq(::Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
         end
+      end
+    end
+
+    shared_examples 'does not update the additional minutes' do
+      it 'does not update the additional minutes' do
+        expect { subject }
+          .not_to change { namespace.reload.extra_shared_runners_minutes_limit }
+      end
+    end
+
+    shared_examples 'attempts recalculation of additional minutes' do
+      context 'when namespace has any additional minutes' do
+        context 'when last known amount_used is greater than the monthly limit' do
+          before do
+            previous_usage.update!(amount_used: 1_200)
+          end
+
+          it 'recalculates the remaining additional minutes' do
+            expect { subject }
+              .to change { namespace.reload.extra_shared_runners_minutes_limit }
+              .from(500).to(300)
+          end
+
+          context 'when last known amount_used is greater than the total limit' do
+            before do
+              previous_usage.update!(amount_used: 2_000)
+            end
+
+            it 'recalculates the remaining additional minutes' do
+              expect { subject }
+                .to change { namespace.reload.extra_shared_runners_minutes_limit }
+                .from(500).to(0)
+            end
+          end
+
+          context 'when ci_reset_purchased_minutes_lazily feature flag is disabled' do
+            before do
+              stub_feature_flags(ci_reset_purchased_minutes_lazily: false)
+            end
+
+            it_behaves_like 'does not update the additional minutes'
+          end
+
+          context 'when limit is disabled' do
+            before do
+              namespace.update!(
+                shared_runners_minutes_limit: 0,
+                extra_shared_runners_minutes_limit: 0)
+            end
+
+            it_behaves_like 'does not update the additional minutes'
+          end
+        end
+
+        context 'when amount_used is lower than the monthly limit' do
+          before do
+            previous_usage.update!(amount_used: 900)
+          end
+
+          it_behaves_like 'does not update the additional minutes'
+        end
+      end
+
+      context 'when namespace does not have additional minutes' do
+        before do
+          namespace.update!(extra_shared_runners_minutes_limit: 0)
+        end
+
+        it_behaves_like 'does not update the additional minutes'
       end
     end
 
@@ -45,19 +119,53 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
       end
 
       it_behaves_like 'creates usage record'
+      it_behaves_like 'does not update the additional minutes'
 
-      context 'when namespace usage exists for previous months' do
-        before do
-          create(:ci_namespace_monthly_usage, namespace: namespace, date: described_class.beginning_of_month(2.months.ago))
+      context 'when namespace usage exists for previous month' do
+        let!(:previous_usage) do
+          create(:ci_namespace_monthly_usage,
+            namespace: namespace,
+            date: described_class.beginning_of_month(1.month.ago))
         end
 
         it_behaves_like 'creates usage record'
+        it_behaves_like 'attempts recalculation of additional minutes'
+      end
+
+      context 'when last known usage is more than 1 month ago' do
+        let!(:previous_usage) do
+          create(:ci_namespace_monthly_usage,
+            namespace: namespace,
+            date: described_class.beginning_of_month(3.months.ago))
+        end
+
+        it_behaves_like 'creates usage record'
+        it_behaves_like 'attempts recalculation of additional minutes'
+      end
+
+      context 'when namespace usage exists for previous months' do
+        let!(:previous_usage) do
+          create(:ci_namespace_monthly_usage,
+            namespace: namespace,
+            date: described_class.beginning_of_month(1.month.ago))
+        end
+
+        let!(:old_usage) do
+          create(:ci_namespace_monthly_usage,
+            namespace: namespace,
+            date: described_class.beginning_of_month(2.months.ago),
+            amount_used: 2_000)
+        end
+
+        it_behaves_like 'creates usage record'
+        it_behaves_like 'attempts recalculation of additional minutes'
       end
 
       context 'when a usage for another namespace exists for the current month' do
         let!(:usage) { create(:ci_namespace_monthly_usage) }
 
         it_behaves_like 'creates usage record'
+        it_behaves_like 'does not update the additional minutes'
       end
     end
 
@@ -67,6 +175,8 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
           expect(subject).to eq(current_usage)
         end
       end
+
+      it_behaves_like 'does not update the additional minutes'
     end
   end
 
@@ -81,6 +191,23 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
       usages = described_class.for_namespace(namespace)
 
       expect(usages).to contain_exactly(current_usage)
+    end
+  end
+
+  describe '.previous_usage' do
+    subject { described_class.previous_usage(namespace) }
+
+    context 'when there are no usage records' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when there are usage records for the previous month' do
+      let(:current_month) { described_class.beginning_of_month }
+
+      let!(:previous_month_usage) { create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 200, date: current_month - 2.months) }
+      let!(:very_old_usage) { create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 300, date: current_month - 3.months) }
+
+      it { is_expected.to eq(previous_month_usage) }
     end
   end
 

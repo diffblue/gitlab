@@ -62,6 +62,8 @@ module Ci
       # We prefer to keep the queries here rather than scatter them across classes.
       # rubocop: disable CodeReuse/ActiveRecord
       def recalculate_extra_shared_runners_minutes_limits!(namespaces)
+        return if Feature.enabled?(:ci_reset_purchased_minutes_lazily, default_enabled: :yaml)
+
         namespaces
           .joins(:namespace_statistics)
           .where(namespaces_arel[:extra_shared_runners_minutes_limit].gt(0))
