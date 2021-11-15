@@ -2,7 +2,8 @@
 
 module PathLocksHelper
   def can_unlock?(path_lock, current_user = @current_user, project = @project)
-    can?(current_user, :admin_path_locks, project) || path_lock.user == current_user
+    can?(current_user, :admin_path_locks, project) ||
+      (path_lock.user == current_user && project.member?(current_user))
   end
 
   def text_label_for_lock(file_lock, path)

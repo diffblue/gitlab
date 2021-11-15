@@ -1656,6 +1656,10 @@ class Project < ApplicationRecord
     end
   end
 
+  def member?(user)
+    project_member(user).present?
+  end
+
   def membership_locked?
     false
   end

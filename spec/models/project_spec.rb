@@ -1589,6 +1589,19 @@ RSpec.describe Project, factory_default: :keep do
     it { expect(project.builds_enabled?).to be_truthy }
   end
 
+  describe '#member?' do
+    it 'returns true if the given user is a project member, false otherwise' do
+      project = create(:project)
+      user = create(:user)
+
+      expect(project.member?(user)).to be(false)
+
+      project.add_user(user, :developer)
+
+      expect(project.member?(user)).to be(true)
+    end
+  end
+
   describe '.sort_by_attribute' do
     it 'reorders the input relation by start count desc' do
       project1 = create(:project, star_count: 2)
