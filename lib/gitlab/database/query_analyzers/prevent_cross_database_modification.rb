@@ -6,23 +6,6 @@ module Gitlab
       class PreventCrossDatabaseModification < Database::QueryAnalyzers::Base
         CrossDatabaseModificationAcrossUnsupportedTablesError = Class.new(StandardError)
 
-        def self.allow_cross_database_modification?
-          Thread.current[:prevent_cross_database_modification_allowed]
-        end
-
-        def self.allow_cross_database_modification=(value)
-          Thread.current[:prevent_cross_database_modification_allowed] = value
-        end
-
-        def self.with_allow_cross_database_modification(value, &blk)
-          previous = self.allow_cross_database_modification?
-          self.allow_cross_database_modification = value
-
-          yield
-        ensure
-          self.allow_cross_database_modification = previous
-        end
-
         # This method will allow cross database modifications within the block
         # Example:
         #
@@ -30,13 +13,13 @@ module Gitlab
         #   create(:build) # inserts ci_build and project record in one transaction
         # end
         def self.allow_cross_database_modification_within_transaction(url:, &blk)
-          self.with_allow_cross_database_modification(true, &blk)
+          self.with_suppressed(true, &blk)
         end
 
         # This method will prevent cross database modifications within the block
         # if it was allowed previously
         def self.with_cross_database_modification_prevented(&blk)
-          self.with_allow_cross_database_modification(false, &blk)
+          self.with_suppressed(false, &blk)
         end
 
         def self.begin!
@@ -55,7 +38,6 @@ module Gitlab
 
         # rubocop:disable Metrics/AbcSize
         def self.analyze(parsed)
-          return if self.allow_cross_database_modification?
           return if in_factory_bot_create?
 
           database = ::Gitlab::Database.db_config_name(parsed.connection)
@@ -112,10 +94,6 @@ module Gitlab
         rescue CrossDatabaseModificationAcrossUnsupportedTablesError => e
           ::Gitlab::ErrorTracking.track_exception(e, { gitlab_schemas: schemas, tables: all_tables, query: parsed.sql })
           raise if raise_exception?
-        rescue StandardError => e
-          # Extra safety net to ensure we never raise in production
-          # if something goes wrong in this logic
-          Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
         end
         # rubocop:enable Metrics/AbcSize
 
