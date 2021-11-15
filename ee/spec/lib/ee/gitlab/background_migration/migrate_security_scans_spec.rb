@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 # rubocop: disable RSpec/FactoriesInMigrationSpecs
-RSpec.describe Gitlab::BackgroundMigration::MigrateSecurityScans, schema: 20200220180944 do
+RSpec.describe Gitlab::BackgroundMigration::MigrateSecurityScans, schema: 20181228175414 do
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:builds) { table(:ci_builds) }

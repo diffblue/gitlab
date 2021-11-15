@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::RemoveDuplicateCsFindings, :migration, schema: 20200910131218 do
+RSpec.describe Gitlab::BackgroundMigration::RemoveDuplicateCsFindings, :migration, schema: 20181228175414 do
   let(:namespaces) { table(:namespaces) }
   let(:notes) { table(:notes) }
   let(:group) { namespaces.create!(name: 'foo', path: 'foo') }

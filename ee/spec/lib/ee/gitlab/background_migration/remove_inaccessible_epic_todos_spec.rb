@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::RemoveInaccessibleEpicTodos, schema: 20201109114603 do
+RSpec.describe Gitlab::BackgroundMigration::RemoveInaccessibleEpicTodos, schema: 20181228175414 do
   include MigrationHelpers::NamespacesHelpers
 
   let(:users) { table(:users) }
