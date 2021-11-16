@@ -3,10 +3,11 @@
 module Projects
   module Security
     class ConfigurationPresenter < Gitlab::View::Presenter::Delegated
+      include Gitlab::Utils::StrongMemoize
       include AutoDevopsHelper
       include ::Security::LatestPipelineInformation
 
-      delegator_override_with Gitlab::Utils::StrongMemoize
+      delegator_override_with Gitlab::Utils::StrongMemoize # TODO: Remove `Gitlab::Utils::StrongMemoize` inclusion as it's duplicate
 
       presents ::Project, as: :project
 
@@ -19,14 +20,14 @@ module Projects
           features: features,
           help_page_path: help_page_path('user/application_security/index'),
           latest_pipeline_path: latest_pipeline_path,
+          auto_fix_enabled: autofix_enabled,
+          can_toggle_auto_fix_settings: auto_fix_permission,
           # TODO: gitlab_ci_present will incorrectly report `false` if the CI/CD configuration file name
           # has been customized and a file with the given custom name exists in the repo. This edge case
           # will be addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/342465
           gitlab_ci_present: project.repository.gitlab_ci_yml.present?,
           gitlab_ci_history_path: gitlab_ci_history_path,
-          auto_fix_enabled: autofix_enabled,
-          can_toggle_auto_fix_settings: can_toggle_autofix,
-          auto_fix_user_path: auto_fix_user_path
+          auto_fix_user_path: '/' # TODO: real link will be updated with https://gitlab.com/gitlab-org/gitlab/-/issues/215669
         }
       end
 
@@ -40,9 +41,12 @@ module Projects
 
       private
 
-      def autofix_enabled; end
-
-      def auto_fix_user_path; end
+      def autofix_enabled
+        {
+          dependency_scanning: project_settings&.auto_fix_dependency_scanning,
+          container_scanning: project_settings&.auto_fix_container_scanning
+        }
+      end
 
       def can_enable_auto_devops?
         feature_available?(:builds, current_user) &&
@@ -50,13 +54,11 @@ module Projects
           !archived?
       end
 
-      def can_toggle_autofix; end
-
       def gitlab_ci_history_path
         return '' if project.empty_repo?
 
-        gitlab_ci = ::Gitlab::FileDetector::PATTERNS[:gitlab_ci]
-        ::Gitlab::Routing.url_helpers.project_blame_path(project, File.join(project.default_branch_or_main, gitlab_ci))
+        gitlab_ci = Gitlab::FileDetector::PATTERNS[:gitlab_ci]
+        Gitlab::Routing.url_helpers.project_blame_path(project, File.join(project.default_branch_or_main, gitlab_ci))
       end
 
       def features
@@ -76,13 +78,11 @@ module Projects
       end
 
       def scan(type, configured: false)
-        scan = ::Gitlab::Security::ScanConfiguration.new(project: project, type: type, configured: configured)
-
         {
-          type: scan.type,
-          configured: scan.configured?,
-          configuration_path: scan.configuration_path,
-          available: scan.available?
+          type: type,
+          configured: configured,
+          configuration_path: configuration_path(type),
+          available: feature_available(type)
         }
       end
 
@@ -93,8 +93,23 @@ module Projects
       def project_settings
         project.security_setting
       end
+
+      def configuration_path(type)
+        {
+          sast: project_security_configuration_sast_path(project),
+          dast: project_security_configuration_dast_path(project),
+          dast_profiles: project_security_configuration_dast_scans_path(project),
+          api_fuzzing: project_security_configuration_api_fuzzing_path(project),
+          corpus_management: (project_security_configuration_corpus_management_path(project) if ::Feature.enabled?(:corpus_management, project, default_enabled: :yaml) && scanner_enabled?(:coverage_fuzzing))
+        }[type]
+      end
+
+      def feature_available(type)
+        # SAST and Secret Detection are always available, but this isn't
+        # reflected by our license model yet.
+        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/333113
+        %w[sast secret_detection].include?(type) || project.licensed_feature_available?(type)
+      end
     end
   end
 end
-
-Projects::Security::ConfigurationPresenter.prepend_mod_with('Projects::Security::ConfigurationPresenter')

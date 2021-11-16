@@ -39,7 +39,7 @@ module Gitlab
             # The record hasn't been loaded yet, so
             # hit the database with all pending IDs to prevent N+1
             profiles_by_project_id = @lazy_state[:dast_pending_profiles].group_by(&:project_id)
-            policy_configurations = ::Security::OrchestrationPolicyConfiguration.for_project(profiles_by_project_id.keys).index_by(&:project_id)
+            policy_configurations = Security::OrchestrationPolicyConfiguration.for_project(profiles_by_project_id.keys).index_by(&:project_id)
 
             profiles_by_project_id.each do |project_id, dast_pending_profiles|
               dast_pending_profiles.each do |profile|
