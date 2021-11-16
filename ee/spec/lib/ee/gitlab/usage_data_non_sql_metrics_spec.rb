@@ -15,7 +15,7 @@ RSpec.describe Gitlab::UsageDataNonSqlMetrics do
         described_class.uncached_data
       end
 
-      expect(recorder.count).to eq(59)
+      expect(recorder.count).to eq(61)
     end
   end
 end
