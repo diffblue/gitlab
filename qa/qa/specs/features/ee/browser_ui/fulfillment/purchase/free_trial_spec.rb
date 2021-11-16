@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/344516', type: :bug } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
     describe 'Purchase' do
       let(:user) do
         Resource::User.fabricate_via_api! do |user|
