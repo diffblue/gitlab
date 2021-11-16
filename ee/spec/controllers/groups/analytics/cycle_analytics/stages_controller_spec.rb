@@ -10,7 +10,21 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController do
     let(:params) { { group_id: group } }
     let(:parent) { group }
 
-    it_behaves_like 'Value Stream Analytics Stages controller'
+    context 'when use_vsa_aggregated_tables FF is enabled' do
+      it_behaves_like 'Value Stream Analytics Stages controller' do
+        before do
+          stub_feature_flags(use_vsa_aggregated_tables: true)
+        end
+      end
+    end
+
+    context 'when use_vsa_aggregated_tables FF is disabled' do
+      it_behaves_like 'Value Stream Analytics Stages controller' do
+        before do
+          stub_feature_flags(use_vsa_aggregated_tables: false)
+        end
+      end
+    end
   end
 
   context 'when params have group_id and value_stream_id' do
@@ -19,6 +33,20 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController do
     let(:params) { { group_id: group, value_stream_id: value_stream.id } }
     let(:parent) { group }
 
-    it_behaves_like 'Value Stream Analytics Stages controller'
+    context 'when use_vsa_aggregated_tables FF is enabled' do
+      it_behaves_like 'Value Stream Analytics Stages controller' do
+        before do
+          stub_feature_flags(use_vsa_aggregated_tables: true)
+        end
+      end
+    end
+
+    context 'when use_vsa_aggregated_tables FF is disabled' do
+      it_behaves_like 'Value Stream Analytics Stages controller' do
+        before do
+          stub_feature_flags(use_vsa_aggregated_tables: false)
+        end
+      end
+    end
   end
 end

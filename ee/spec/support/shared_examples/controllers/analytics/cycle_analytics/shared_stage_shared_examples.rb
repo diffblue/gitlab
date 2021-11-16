@@ -227,8 +227,22 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
         end
 
         it 'accepts sort params' do
-          expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Sorting) do |sort|
-            expect(sort).to receive(:apply).with(:duration, :asc).and_call_original
+          if Feature.enabled?(:use_vsa_aggregated_tables)
+            event_1 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 1, start_event_timestamp: 4.months.ago, end_event_timestamp: Date.today)
+            event_2 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 2, start_event_timestamp: 2.months.ago, end_event_timestamp: Date.today)
+            event_3 = create(:cycle_analytics_merge_request_stage_event, merge_request_id: 3, start_event_timestamp: 3.months.ago, end_event_timestamp: Date.today)
+
+            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
+
+            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher) do |records_fetcher|
+              records_fetcher.serialized_records do |raw_active_record_scope|
+                expect(raw_active_record_scope.pluck(:merge_request_id)).to eq([event_2.merge_request_id, event_3.merge_request_id, event_1.merge_request_id])
+              end
+            end
+          else
+            expect_next_instance_of(Gitlab::Analytics::CycleAnalytics::Sorting) do |sort|
+              expect(sort).to receive(:apply).with(:duration, :asc).and_call_original
+            end
           end
 
           subject
@@ -239,9 +253,19 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       context 'pagination' do
         it 'exposes pagination headers' do
-          create_list(:merge_request, 3)
-          stub_const('Gitlab::Analytics::CycleAnalytics::RecordsFetcher::MAX_RECORDS', 2)
-          allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::RecordsFetcher).to receive(:query).and_return(MergeRequest.join_metrics.all)
+          if Feature.enabled?(:use_vsa_aggregated_tables)
+            create_list(:cycle_analytics_merge_request_stage_event, 3)
+            stub_const('Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher::MAX_RECORDS', 2)
+          else
+            create_list(:merge_request, 3)
+            stub_const('Gitlab::Analytics::CycleAnalytics::RecordsFetcher::MAX_RECORDS', 2)
+          end
+
+          if Feature.enabled?(:use_vsa_aggregated_tables)
+            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::RecordsFetcher).to receive(:query).and_return(Analytics::CycleAnalytics::MergeRequestStageEvent.all)
+          else
+            allow_any_instance_of(Gitlab::Analytics::CycleAnalytics::RecordsFetcher).to receive(:query).and_return(MergeRequest.join_metrics.all)
+          end
 
           subject
 
