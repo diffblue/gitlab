@@ -100,14 +100,13 @@ export default class EditorInstance {
 
   static useUnuse(extensionsStore, fn, extensions) {
     if (Array.isArray(extensions)) {
-      if (!extensions.length) {
-        return fn.call(this, extensionsStore, undefined);
-      }
-      const exts = new Array(extensions.length);
-      extensions.forEach((ext, i) => {
-        exts[i] = fn.call(this, extensionsStore, ext);
-      });
-      return exts;
+      /**
+       * We cut short if the Array is empty and let the destination function to throw
+       * Otherwise, we run the destination function on every entry of the Array
+       */
+      return extensions.length
+        ? extensions.map(fn.bind(this, extensionsStore))
+        : fn.call(this, extensionsStore);
     }
     return fn.call(this, extensionsStore, extensions);
   }
