@@ -9,6 +9,10 @@ module GroupSaml
         @group = group
         super(current_user, group.build_saml_provider, params: params)
       end
+
+      def audit_name
+        "#{super}_create"
+      end
     end
   end
 end
