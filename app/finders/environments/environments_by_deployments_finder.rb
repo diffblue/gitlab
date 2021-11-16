@@ -24,7 +24,7 @@ module Environments
         end
 
       environments =
-        if Feature.enabled?(:environments_by_deployments_finder_exists_optimization, default_enabled: :yaml)
+        if Feature.enabled?(:environments_by_deployments_finder_exists_optimization, project, default_enabled: :yaml)
           project.environments.available
             .where('EXISTS (?)', deployments.where('environment_id = environments.id'))
         else
