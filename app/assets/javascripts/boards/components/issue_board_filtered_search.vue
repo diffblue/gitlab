@@ -1,5 +1,6 @@
 <script>
 import { GlFilteredSearchToken } from '@gitlab/ui';
+import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { mapActions } from 'vuex';
 import BoardFilteredSearch from 'ee_else_ce/boards/components/board_filtered_search.vue';
 import { BoardType } from '~/boards/constants';
@@ -128,14 +129,15 @@ export default {
                 token: EmojiToken,
                 unique: true,
                 fetchEmojis: (search = '') => {
+                  // TODO: Switch to GraphQL query when backend is ready: https://gitlab.com/gitlab-org/gitlab/-/issues/339694
                   return axios
                     .get(`${gon.relative_url_root || ''}/-/autocomplete/award_emojis`)
                     .then(({ data }) => {
                       if (search) {
                         return {
-                          data: data.filter((e) =>
-                            e.name.toLowerCase().includes(search.toLowerCase()),
-                          ),
+                          data: fuzzaldrinPlus.filter(data, search, {
+                            key: ['name'],
+                          }),
                         };
                       }
                       return { data };
