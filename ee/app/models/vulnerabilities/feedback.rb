@@ -38,8 +38,7 @@ module Vulnerabilities
       preload(:author, :comment_author, :project, :issue, :merge_request, :pipeline)
     end
 
-    after_save :touch_pipeline, if: :for_dismissal?
-    after_destroy :touch_pipeline, if: :for_dismissal?
+    after_commit :touch_pipeline, if: :for_dismissal?, on: [:create, :update, :destroy]
 
     def self.find_or_init_for(feedback_params)
       validate_enums(feedback_params)
