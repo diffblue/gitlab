@@ -9,12 +9,20 @@ module Resolvers
 
     alias_method :project, :object
 
+    argument :action_scan_types, [::Types::Security::ReportTypeEnum],
+             description: "Filters policies by the action scan type. "\
+                          "Only these scan types are supported: #{Security::ScanExecutionPolicy::SCAN_TYPES.map { |type| "`#{type}`" }.join(', ')}.",
+             required: false
+
     def resolve(**args)
       return [] unless valid?
 
       authorize!
 
-      policy_configuration.scan_execution_policy.map do |policy|
+      policies = policy_configuration.scan_execution_policy
+      policies = filter_scan_types(policies, args[:action_scan_types]) if args[:action_scan_types]
+
+      policies.map do |policy|
         {
           name: policy[:name],
           description: policy[:description],
@@ -35,6 +43,13 @@ module Resolvers
 
     def policy_configuration
       @policy_configuration ||= project.security_orchestration_policy_configuration
+    end
+
+    def filter_scan_types(policies, scan_types)
+      policies.filter do |policy|
+        policy_scan_types = policy[:actions].map { |action| action[:scan].to_sym }
+        (scan_types & policy_scan_types).present?
+      end
     end
 
     def valid?
