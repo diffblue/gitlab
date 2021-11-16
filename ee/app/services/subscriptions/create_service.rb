@@ -71,10 +71,7 @@ module Subscriptions
     end
 
     def create_subscription(customer_data)
-      # When purchasing an add on, we don't want to send create_subscription_params
-      # in order to avoid amending the main product. Note that this will go away
-      # when fully transitioning the flow to GraphQL
-      create_params = add_on? ? create_addon_params : create_subscription_params
+      create_params = send_create_addon_params? ? create_addon_params : create_subscription_params
       billing_email, token = customer_data.values_at(:email, :authentication_token)
 
       client.create_subscription(create_params, billing_email, token)
@@ -110,6 +107,14 @@ module Subscriptions
 
     def add_on?
       Gitlab::Utils.to_boolean(subscription_params[:is_addon], default: false)
+    end
+
+    def send_create_addon_params?
+      # We don't want to send create_subscription_params when purchasing addon
+      # in order to avoid amending the main product. The only exception to it
+      # is when we don't have an active subscription for a group purchasing addon.
+      # Note that this will go away when fully transitioning the flow to GraphQL
+      add_on? && subscription_params[:active_subscription].present?
     end
 
     def country_code(country)
