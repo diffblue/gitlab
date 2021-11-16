@@ -37,7 +37,8 @@ Are there any other stages or teams involved that need to be kept in the loop?
 ### What can we monitor to detect problems with this?
 
 <!-- Which dashboards from https://dashboards.gitlab.net are most relevant? -->
-_Consider mentioning checks for 5xx errors or other anomalies like increase in 302 errors_
+_Consider mentioning checks for 5xx errors or other anomalies like an increase in redirects 
+(302 HTTP response status)_
 
 ### What can we check for monitoring production after rollouts?
 
