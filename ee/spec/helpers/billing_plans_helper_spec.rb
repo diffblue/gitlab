@@ -14,7 +14,7 @@ RSpec.describe BillingPlansHelper, :saas do
     let(:refresh_seats_href) { helper.refresh_seats_group_billings_url(group) }
 
     let(:plan) do
-      OpenStruct.new(id: 'external-paid-plan-hash-code', name: 'Bronze Plan')
+      double('plan', id: 'external-paid-plan-hash-code', name: 'Bronze Plan')
     end
 
     context 'when group and plan with ID present' do
@@ -92,7 +92,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     context 'when plan with ID not present' do
-      let(:plan) { OpenStruct.new(id: nil, name: 'Bronze Plan') }
+      let(:plan) { double('plan', id: nil, name: 'Bronze Plan') }
 
       let(:base_attrs) do
         {
@@ -217,7 +217,7 @@ RSpec.describe BillingPlansHelper, :saas do
   describe '#upgrade_offer_type' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:plan) { OpenStruct.new({ id: '123456789' }) }
+    let(:plan) { double('plan', { id: '123456789' }) }
 
     context 'when plan has a valid property' do
       where(:plan_name, :for_free, :plan_id, :result) do
@@ -233,7 +233,7 @@ RSpec.describe BillingPlansHelper, :saas do
 
       with_them do
         let(:namespace) do
-          OpenStruct.new(
+          double('plan',
             {
               actual_plan_name: plan_name,
               id: '000000000'
@@ -462,7 +462,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     context 'when namespace is on an active plan' do
-      let(:current_plan) { OpenStruct.new(code: 'premium') }
+      let(:current_plan) { double('plan', code: 'premium') }
 
       it 'returns plans without deprecated' do
         expect(helper.billing_available_plans(plans_data, nil)).to eq([plan])
@@ -470,7 +470,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     context 'when namespace is on a deprecated plan' do
-      let(:current_plan) { OpenStruct.new(code: 'bronze') }
+      let(:current_plan) { double('plan', code: 'bronze') }
 
       it 'returns plans with a deprecated plan' do
         expect(helper.billing_available_plans(plans_data, current_plan)).to eq(plans_data)
@@ -478,7 +478,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     context 'when namespace is on a deprecated plan that has hide_deprecated_card set to true' do
-      let(:current_plan) { OpenStruct.new(code: 'bronze') }
+      let(:current_plan) { double('plan', code: 'bronze') }
       let(:deprecated_plan) { double('Plan', deprecated?: true, code: 'bronze', hide_deprecated_card?: true) }
 
       it 'returns plans without the deprecated plan' do
@@ -487,7 +487,7 @@ RSpec.describe BillingPlansHelper, :saas do
     end
 
     context 'when namespace is on a plan that has hide_deprecated_card set to true, but deprecated? is false' do
-      let(:current_plan) { OpenStruct.new(code: 'premium') }
+      let(:current_plan) { double('plan', code: 'premium') }
       let(:plan) { double('Plan', deprecated?: false, code: 'premium', hide_deprecated_card?: true) }
 
       it 'returns plans with the deprecated plan' do
