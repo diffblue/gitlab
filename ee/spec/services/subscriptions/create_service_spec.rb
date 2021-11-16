@@ -32,7 +32,7 @@ RSpec.describe Subscriptions::CreateService do
 
   let_it_be(:customer_email) { 'first.last@gitlab.com' }
   let_it_be(:client) { Gitlab::SubscriptionPortal::Client }
-  let_it_be(:create_service_params) { Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))[0].deep_symbolize_keys }
+  let_it_be(:create_service_params) { Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))["subscription_params"].deep_symbolize_keys }
 
   describe '#execute' do
     before do
@@ -127,7 +127,6 @@ RSpec.describe Subscriptions::CreateService do
         let_it_be(:subscription_params) do
           {
             is_addon: true,
-            active_subscription: 'A-000000',
             plan_id: 'Add-on Plan ID',
             payment_method_id: 'Payment method ID',
             quantity: 111,
@@ -135,12 +134,28 @@ RSpec.describe Subscriptions::CreateService do
           }
         end
 
-        it 'passes the correct parameters for creating a subscription' do
-          create_service_addon_params = Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))[1].deep_symbolize_keys
+        context 'without active subscription' do
+          it 'passes the correct parameters for creating a subscription' do
+            create_service_addon_params = Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))["addon_without_active_sub"].deep_symbolize_keys
 
-          expect(client).to receive(:create_subscription).with(create_service_addon_params[:subscription], customer_email, 'token')
+            expect(client).to receive(:create_subscription).with(create_service_addon_params[:subscription], customer_email, 'token')
 
-          execute
+            execute
+          end
+        end
+
+        context 'with active subscription' do
+          before do
+            subscription_params[:active_subscription] = 'A-000000'
+          end
+
+          it 'passes the correct parameters for creating a subscription' do
+            create_service_addon_params = Gitlab::Json.parse(fixture_file('create_service_params.json', dir: 'ee'))["addon_with_active_sub"].deep_symbolize_keys
+
+            expect(client).to receive(:create_subscription).with(create_service_addon_params[:subscription], customer_email, 'token')
+
+            execute
+          end
         end
       end
 
