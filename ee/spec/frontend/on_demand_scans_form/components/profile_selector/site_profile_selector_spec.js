@@ -4,7 +4,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/profile_selector.vue';
 import OnDemandScansSiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import SiteProfileSummary from 'ee/on_demand_scans_form/components/profile_selector/site_profile_summary.vue';
-import { siteProfiles } from '../../../security_configuration/dast_profiles/mocks/mock_data';
+import { siteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 
 const TEST_LIBRARY_PATH = '/test/site/profiles/library/path';
 const TEST_NEW_PATH = '/test/new/site/profile/path';

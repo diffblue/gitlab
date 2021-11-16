@@ -19,13 +19,13 @@ import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import * as responses from '../mocks/apollo_mocks';
-import { scannerProfiles } from '../mocks/mock_data';
 import {
   siteProfiles,
   nonValidatedSiteProfile,
   validatedSiteProfile,
-} from '../../security_configuration/dast_profiles/mocks/mock_data';
+} from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import * as responses from '../mocks/apollo_mocks';
+import { scannerProfiles } from '../mocks/mock_data';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
