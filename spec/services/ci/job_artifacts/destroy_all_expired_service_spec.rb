@@ -56,7 +56,7 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
 
           context 'with several locked-unknown artifact records' do
             before do
-              stub_const("#{described_class}::LOOP_LIMIT", 3)
+              stub_const("#{described_class}::LOOP_LIMIT", 10)
               stub_const("#{described_class}::BATCH_SIZE", 2)
             end
 
@@ -76,15 +76,21 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
                 create(:ci_job_artifact, :junit,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
                 create(:ci_job_artifact, :sast,      :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
                 create(:ci_job_artifact, :cobertura, :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
-                create(:ci_job_artifact, :trace,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job)
+                create(:ci_job_artifact, :trace,     :expired, locked: ::Ci::JobArtifact.lockeds[:unknown], job: job),
+                artifact
               ]
             end
 
             it 'updates the locked status of job artifacts from artifacts-locked pipelines' do
               subject
 
+              expect(lockable_artifact_records).to be_all(&:persisted?)
               expect(lockable_artifact_records).to be_all { |artifact| artifact.reload.artifact_artifacts_locked? }
-              expect(unlockable_artifact_records).to be_all { |artifact| artifact.reload.artifact_unlocked? }
+            end
+
+            it 'unlocks and then destroys job artifacts from artifacts-unlocked pipelines' do
+              expect { subject }.to change { Ci::JobArtifact.count }.by(-6)
+              expect(Ci::JobArtifact.where(id: unlockable_artifact_records.map(&:id))).to be_empty
             end
           end
         end
