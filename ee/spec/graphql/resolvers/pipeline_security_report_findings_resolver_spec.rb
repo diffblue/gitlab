@@ -63,5 +63,17 @@ RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver do
         expect(Security::PipelineVulnerabilitiesFinder).to have_received(:new).with(pipeline: pipeline, params: params)
       end
     end
+
+    context 'when the finder class raises parsing error' do
+      before do
+        allow_next_instance_of(Security::PipelineVulnerabilitiesFinder) do |finder|
+          allow(finder).to receive(:execute).and_raise(Security::PipelineVulnerabilitiesFinder::ParseError)
+        end
+      end
+
+      it 'does not propagate the error to the client' do
+        expect { resolve_query }.not_to raise_error
+      end
+    end
   end
 end
