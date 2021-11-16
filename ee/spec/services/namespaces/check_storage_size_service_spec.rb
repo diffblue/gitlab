@@ -14,7 +14,7 @@ RSpec.describe Namespaces::CheckStorageSizeService, '#execute' do
   before do
     allow(namespace).to receive(:root_ancestor).and_return(namespace)
 
-    root_storage_size = instance_double("RootStorageSize",
+    root_storage_size = instance_double(EE::Namespace::RootStorageSize,
       current_size: current_size,
       limit: limit,
       usage_ratio: limit == 0 ? 0 : current_size.to_f / limit.to_f,

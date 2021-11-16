@@ -9,9 +9,6 @@ RSpec.describe Gitlab::RackAttack, :aggregate_failures do
     let(:fake_cache) { instance_double("Rack::Attack::Cache") }
 
     before do
-      stub_const("Rack::Attack", fake_rack_attack)
-      stub_const("Rack::Attack::Request", fake_rack_attack_request)
-
       allow(fake_rack_attack).to receive(:throttled_response=)
       allow(fake_rack_attack).to receive(:throttle)
       allow(fake_rack_attack).to receive(:track)
@@ -19,6 +16,9 @@ RSpec.describe Gitlab::RackAttack, :aggregate_failures do
       allow(fake_rack_attack).to receive(:blocklist)
       allow(fake_rack_attack).to receive(:cache).and_return(fake_cache)
       allow(fake_cache).to receive(:store=)
+
+      fake_rack_attack.const_set('Request', fake_rack_attack_request)
+      stub_const("Rack::Attack", fake_rack_attack)
     end
 
     it 'adds the incident management throttle' do
