@@ -6,7 +6,6 @@ module QA
       module Settings
         class Advanced < Page::Base
           include Component::ConfirmModal
-          include Page::Component::DropdownFilter
 
           view 'app/views/projects/edit.html.haml' do
             element :project_path_field

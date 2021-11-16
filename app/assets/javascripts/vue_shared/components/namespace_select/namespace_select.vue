@@ -3,7 +3,9 @@ import { GlDropdown, GlDropdownItem, GlDropdownSectionHeader, GlSearchBoxByType 
 import { __ } from '~/locale';
 
 export const i18n = {
-  DEFAULT_TEXT: __('Select a namespace'),
+  DEFAULT_TEXT: __('Select a new namespace'),
+  GROUPS: __('Groups'),
+  USERS: __('Users'),
 };
 
 const filterByName = (data, searchTerm = '') =>
@@ -36,10 +38,10 @@ export default {
   },
   computed: {
     hasUserNamespaces() {
-      return this.data.user.length;
+      return this.data.user?.length;
     },
     hasGroupNamespaces() {
-      return this.data.group.length;
+      return this.data.group?.length;
     },
     filteredGroupNamespaces() {
       if (!this.hasGroupNamespaces) return [];
@@ -69,7 +71,7 @@ export default {
     </template>
     <template v-if="hasGroupNamespaces">
       <div class="qa-namespaces-list-groups">
-        <gl-dropdown-section-header>{{ __('Groups') }}</gl-dropdown-section-header>
+        <gl-dropdown-section-header>{{ $options.i18n.GROUPS }}</gl-dropdown-section-header>
         <gl-dropdown-item
           v-for="item in filteredGroupNamespaces"
           :key="item.id"
@@ -81,7 +83,7 @@ export default {
     </template>
     <template v-if="hasUserNamespaces">
       <div class="qa-namespaces-list-users">
-        <gl-dropdown-section-header>{{ __('Users') }}</gl-dropdown-section-header>
+        <gl-dropdown-section-header>{{ $options.i18n.USERS }}</gl-dropdown-section-header>
         <gl-dropdown-item
           v-for="item in filteredUserNamespaces"
           :key="item.id"

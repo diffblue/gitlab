@@ -54,7 +54,7 @@ describe('Namespace Select', () => {
   it('splits group and user namespaces', () => {
     const headers = findSectionHeaders();
     expect(headers).toHaveLength(2);
-    expect(wrappersText(headers)).toEqual(['Groups', 'Users']);
+    expect(wrappersText(headers)).toEqual([i18n.GROUPS, i18n.USERS]);
   });
 
   it('sets the dropdown to full width', () => {
