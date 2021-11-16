@@ -50,7 +50,7 @@ export default {
         >
           <template #link="{ content }">
             <gl-link
-              href="https://about.gitlab.com/direction/plan/quality_management/"
+              href="https://about.gitlab.com/direction/plan/#quality-management"
               target="_blank"
               >{{ content }}</gl-link
             >
