@@ -477,12 +477,17 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_container_registry_data
-    return unless container_repositories_replication_enabled
-
-    self.container_repositories_count = container_registry_finder.registry_count
-    self.container_repositories_synced_count = container_registry_finder.synced_count
-    self.container_repositories_failed_count = container_registry_finder.failed_count
-    self.container_repositories_registry_count = container_registry_finder.registry_count
+    if container_repositories_replication_enabled
+      self.container_repositories_count = container_registry_finder.registry_count
+      self.container_repositories_synced_count = container_registry_finder.synced_count
+      self.container_repositories_failed_count = container_registry_finder.failed_count
+      self.container_repositories_registry_count = container_registry_finder.registry_count
+    else
+      self.container_repositories_count = nil
+      self.container_repositories_synced_count = nil
+      self.container_repositories_failed_count = nil
+      self.container_repositories_registry_count = nil
+    end
   end
 
   def load_designs_data

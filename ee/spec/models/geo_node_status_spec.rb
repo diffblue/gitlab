@@ -502,6 +502,18 @@ RSpec.describe GeoNodeStatus, :geo do
         expect(subject.container_repositories_count).to be_nil
       end
     end
+
+    context 'when old container repositories counts exist' do
+      before do
+        stub_geo_setting(registry_replication: { enabled: false })
+      end
+
+      it 'returns nil' do
+        described_class.current_node_status.update!(container_repositories_count: 3)
+
+        expect(subject.container_repositories_count).to be_nil
+      end
+    end
   end
 
   describe '#container_repositories_synced_count' do
