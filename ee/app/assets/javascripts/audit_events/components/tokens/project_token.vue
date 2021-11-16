@@ -1,5 +1,6 @@
 <script>
 import Api from '~/api';
+import { isValidEntityId } from '../../token_utils';
 import AuditFilterToken from './shared/audit_filter_token.vue';
 
 export default {
@@ -16,6 +17,16 @@ export default {
     },
     getItemName({ name }) {
       return name;
+    },
+    getSuggestionValue({ id }) {
+      return id.toString();
+    },
+    isValidIdentifier(id) {
+      return isValidEntityId(id);
+    },
+    findActiveItem(suggestions, id) {
+      const parsedId = parseInt(id, 10);
+      return suggestions.find((p) => p.id === parsedId);
     },
   },
 };

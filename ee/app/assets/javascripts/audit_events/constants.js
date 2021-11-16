@@ -12,7 +12,7 @@ const DEFAULT_TOKEN_OPTIONS = {
 
 // Due to the i18n eslint rule we can't have a capitalized string even if it is a case-aware URL param
 /* eslint-disable @gitlab/require-i18n-strings */
-const ENTITY_TYPES = {
+export const ENTITY_TYPES = {
   USER: 'User',
   AUTHOR: 'Author',
   GROUP: 'Group',
