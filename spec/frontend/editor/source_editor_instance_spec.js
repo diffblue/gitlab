@@ -308,10 +308,11 @@ describe('Source Editor Instance', () => {
         const extensions = seInstance.use(fullExtensionsArray);
         const verifyExpectations = () => {
           const entries = extensionStore.entries();
-          expect(extensionStore.size).toBe(3);
-          expect(entries.next().value).toEqual(['MyClassExtension', extensions[0]]);
-          expect(entries.next().value).toEqual(['MyFnExtension', extensions[1]]);
-          expect(entries.next().value).toEqual(['MyConstExt', extensions[2]]);
+          const mockExtensions = ['MyClassExtension', 'MyFnExtension', 'MyConstExt'];
+          expect(extensionStore.size).toBe(mockExtensions.length);
+          mockExtensions.forEach((ext, index) => {
+            expect(entries.next().value).toEqual([ext, extensions[index]]);
+          });
         };
 
         verifyExpectations();
