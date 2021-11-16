@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
         location: location,
         metadata_version: 'sast:1.0',
         name: 'Cipher with no integrity',
-        raw_metadata: 'I am a stringified json object',
+        original_data: {},
         report_type: :sast,
         scanner: scanner,
         scan: nil,
@@ -71,7 +71,8 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
           location: location,
           metadata_version: 'sast:1.0',
           name: 'Cipher with no integrity',
-          raw_metadata: 'I am a stringified json object',
+          raw_metadata: '{}',
+          original_data: {},
           report_type: :sast,
           scanner: scanner,
           severity: :high,
@@ -98,7 +99,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
       end
     end
 
-    %i[compare_key identifiers location metadata_version name raw_metadata report_type scanner uuid].each do |attribute|
+    %i[compare_key identifiers location metadata_version name original_data report_type scanner uuid].each do |attribute|
       context "when attribute #{attribute} is missing" do
         before do
           params.delete(attribute)
@@ -144,6 +145,10 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
         severity: occurrence.severity,
         uuid: occurrence.uuid,
         details: occurrence.details,
+        cve: occurrence.compare_key,
+        description: occurrence.description,
+        message: occurrence.message,
+        solution: occurrence.solution,
         signatures: []
       })
     end

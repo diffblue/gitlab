@@ -8,9 +8,7 @@ module Security
     # You can think this as the Message object in the pipeline design pattern
     # which is passed between tasks.
     class FindingMap
-      FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details].freeze
-      RAW_METADATA_ATTRIBUTES = %w[description message solution cve location].freeze
-      RAW_METADATA_PLACEHOLDER = { description: nil, message: nil, solution: nil, cve: nil, location: nil }.freeze
+      FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details description message cve solution].freeze
 
       attr_reader :security_finding, :report_finding
       attr_accessor :finding_id, :vulnerability_id, :new_record, :identifier_ids
@@ -44,16 +42,16 @@ module Security
       end
 
       def to_hash
-        # This was already an existing problem so we've used it here as well.
-        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/342043
-        parsed_from_raw_metadata = Gitlab::Json.parse(report_finding.raw_metadata).slice(*RAW_METADATA_ATTRIBUTES).symbolize_keys
-
         report_finding.to_hash
                       .slice(*FINDING_ATTRIBUTES)
-                      .merge(RAW_METADATA_PLACEHOLDER)
-                      .merge(parsed_from_raw_metadata)
-                      .merge(primary_identifier_id: identifier_ids.first, location_fingerprint: report_finding.location.fingerprint, project_fingerprint: project_fingerprint)
-                      .merge(uuid: uuid, scanner_id: scanner_id)
+                      .merge!(
+                        uuid: uuid,
+                        scanner_id: scanner_id,
+                        project_fingerprint: project_fingerprint,
+                        primary_identifier_id: identifier_ids.first,
+                        location: report_finding.location_data,
+                        location_fingerprint: report_finding.location.fingerprint
+                      )
       end
     end
   end
