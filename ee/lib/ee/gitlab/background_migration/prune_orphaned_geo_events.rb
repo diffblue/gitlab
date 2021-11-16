@@ -17,8 +17,7 @@ module EE
                           geo_hashed_storage_migrated_events
                           geo_hashed_storage_attachments_events
                           geo_lfs_object_deleted_events
-                          geo_job_artifact_deleted_events
-                          geo_upload_deleted_events].freeze
+                          geo_job_artifact_deleted_events].freeze
 
         module PrunableEvent
           extend ActiveSupport::Concern

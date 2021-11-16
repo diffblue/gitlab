@@ -16,7 +16,7 @@ class GeoNodeStatus < ApplicationRecord
   attr_accessor :event_log_max_id, :repository_created_max_id, :repository_updated_max_id,
                 :repository_deleted_max_id, :repository_renamed_max_id, :repositories_changed_max_id,
                 :lfs_object_deleted_max_id, :job_artifact_deleted_max_id,
-                :lfs_objects_registry_count, :job_artifacts_registry_count, :attachments_registry_count,
+                :lfs_objects_registry_count, :job_artifacts_registry_count,
                 :hashed_storage_migrated_max_id, :hashed_storage_attachments_max_id,
                 :repositories_checked_count, :repositories_checked_failed_count
 
@@ -64,10 +64,6 @@ class GeoNodeStatus < ApplicationRecord
     repositories_replication_enabled
     repositories_synced_count
     repositories_failed_count
-    attachments_replication_enabled
-    attachments_count
-    attachments_synced_count
-    attachments_failed_count
     wikis_synced_count
     wikis_failed_count
     job_artifacts_replication_enabled
@@ -81,7 +77,6 @@ class GeoNodeStatus < ApplicationRecord
     wikis_verification_failed_count
     wikis_verification_total_count
     job_artifacts_synced_missing_on_primary_count
-    attachments_synced_missing_on_primary_count
     repositories_checksummed_count
     repositories_checksum_failed_count
     repositories_checksum_mismatch_count
@@ -137,12 +132,6 @@ class GeoNodeStatus < ApplicationRecord
     job_artifacts_failed_count: 'Number of syncable job artifacts failed to sync on secondary',
     job_artifacts_registry_count: 'Number of job artifacts in the registry',
     job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
-    attachments_replication_enabled: 'Boolean denoting if replication is enabled for Attachments',
-    attachments_count: 'Total number of syncable file attachments available on primary',
-    attachments_synced_count: 'Number of syncable file attachments synced on secondary',
-    attachments_failed_count: 'Number of syncable file attachments failed to sync on secondary',
-    attachments_registry_count: 'Number of attachments in the registry',
-    attachments_synced_missing_on_primary_count: 'Number of attachments marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
     replication_slots_max_retained_wal_bytes: 'Maximum number of bytes retained in the WAL on the primary',
@@ -287,7 +276,6 @@ class GeoNodeStatus < ApplicationRecord
     self.repository_verification_enabled = Gitlab::Geo.repository_verification_enabled?
 
     if Gitlab::Geo.secondary?
-      self.attachments_replication_enabled = Geo::UploadRegistry.replication_enabled?
       self.container_repositories_replication_enabled = Geo::ContainerRepositoryRegistry.replication_enabled?
       self.design_repositories_replication_enabled = Geo::DesignRegistry.replication_enabled?
       self.job_artifacts_replication_enabled = Geo::JobArtifactRegistry.replication_enabled?
@@ -390,7 +378,6 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :wikis_checksummed,             :wikis_checksummed_count,             :wikis_count
   attr_in_percentage :wikis_verified,                :wikis_verified_count,                :wikis_count
   attr_in_percentage :job_artifacts_synced,          :job_artifacts_synced_count,          :job_artifacts_count
-  attr_in_percentage :attachments_synced,            :attachments_synced_count,            :attachments_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
   attr_in_percentage :container_repositories_synced, :container_repositories_synced_count, :container_repositories_count
   attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
@@ -465,7 +452,6 @@ class GeoNodeStatus < ApplicationRecord
 
     load_repositories_data
     load_job_artifacts_data
-    load_attachments_data
     load_container_registry_data
     load_designs_data
     load_ssf_replicable_data
@@ -488,16 +474,6 @@ class GeoNodeStatus < ApplicationRecord
     self.job_artifacts_failed_count = job_artifacts_finder.failed_count
     self.job_artifacts_registry_count = job_artifacts_finder.registry_count
     self.job_artifacts_synced_missing_on_primary_count = job_artifacts_finder.synced_missing_on_primary_count
-  end
-
-  def load_attachments_data
-    return unless attachments_replication_enabled
-
-    self.attachments_count = attachments_finder.registry_count
-    self.attachments_synced_count = attachments_finder.synced_count
-    self.attachments_failed_count = attachments_finder.failed_count
-    self.attachments_registry_count = attachments_finder.registry_count
-    self.attachments_synced_missing_on_primary_count = attachments_finder.synced_missing_on_primary_count
   end
 
   def load_container_registry_data
@@ -592,10 +568,6 @@ class GeoNodeStatus < ApplicationRecord
 
   def primary_storage_digest
     @primary_storage_digest ||= Gitlab::Geo.primary_node.find_or_build_status.storage_configuration_digest
-  end
-
-  def attachments_finder
-    @attachments_finder ||= Geo::AttachmentLegacyRegistryFinder.new
   end
 
   def job_artifacts_finder

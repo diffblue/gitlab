@@ -43,8 +43,6 @@ module Geo
       strong_memoize(:file_registry) do
         if job_artifact?
           ::Geo::JobArtifactRegistry.find_by(artifact_id: object_db_id)
-        elsif user_upload?
-          ::Geo::UploadRegistry.find_by(file_type: object_type, file_id: object_db_id)
         elsif replicator
           replicator.registry
         end
@@ -89,13 +87,7 @@ module Geo
         next if file_uploader.nil?
         next file_uploader.file.path if file_uploader.object_store == ObjectStorage::Store::LOCAL
 
-        # For remote storage more juggling is needed to actually get the full path on disk
-        if user_upload?
-          upload = file_uploader.upload
-          file_uploader.class.absolute_path(upload)
-        else
-          file_uploader.class.absolute_path(file_uploader.file)
-        end
+        file_uploader.class.absolute_path(file_uploader.file)
       end
     end
 

@@ -70,8 +70,6 @@ namespace :admin do
 
       resources :designs, only: [:index]
 
-      resources :uploads, only: [:index, :destroy], path: 'legacy-uploads'
-
       get '/:replicable_name_plural', to: 'replicables#index', as: 'replicables'
     end
 

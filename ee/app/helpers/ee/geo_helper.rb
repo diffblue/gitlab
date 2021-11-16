@@ -224,18 +224,6 @@ module EE
         }
       ]
 
-      if ::Geo::UploadReplicator.disabled?
-        replicable_types.insert(2, {
-          data_type: 'blob',
-          data_type_title: _('File'),
-          title: _('Upload'),
-          title_plural: _('Uploads'),
-          name: 'attachment',
-          name_plural: 'attachments',
-          secondary_view: true
-        })
-      end
-
       # Adds all the SSF Data Types automatically
       enabled_replicator_classes.each do |replicator_class|
         replicable_types.push(

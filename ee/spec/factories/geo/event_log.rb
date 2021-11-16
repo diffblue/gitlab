@@ -30,10 +30,6 @@ FactoryBot.define do
       job_artifact_deleted_event factory: :geo_job_artifact_deleted_event
     end
 
-    trait :upload_deleted_event do
-      upload_deleted_event factory: :geo_upload_deleted_event
-    end
-
     trait :reset_checksum_event do
       reset_checksum_event factory: :geo_reset_checksum_event
     end
@@ -130,26 +126,6 @@ FactoryBot.define do
       relative_path = Pathname.new(event.job_artifact.file.path).relative_path_from(local_store_path)
 
       event.file_path = relative_path
-    end
-  end
-
-  factory :geo_upload_deleted_event, class: 'Geo::UploadDeletedEvent' do
-    upload { association(:upload) }
-    file_path { upload.path }
-    model_id { upload.model_id }
-    model_type { upload.model_type }
-    uploader { upload.uploader }
-
-    trait :issuable_upload do
-      upload { association(:upload, :issuable_upload) }
-    end
-
-    trait :personal_snippet do
-      upload { association(:upload, :personal_snippet) }
-    end
-
-    trait :namespace_upload do
-      upload { association(:upload, :namespace_upload) }
     end
   end
 
