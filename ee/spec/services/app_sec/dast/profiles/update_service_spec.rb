@@ -179,7 +179,7 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService do
 
             context 'when the owner was deleted' do
               before do
-                dast_profile_schedule.owner.destroy!
+                dast_profile_schedule.owner.delete
                 dast_profile_schedule.reload
               end
 
