@@ -27,6 +27,10 @@ const tdClass = (value, key, item) => {
     classes.push('text-right');
   }
 
+  if (key === 'location') {
+    classes.push('gl-md-max-w-15p');
+  }
+
   return classes;
 };
 

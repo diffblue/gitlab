@@ -2,14 +2,14 @@
   align-items: flex-start;
 }
 
-.gl-md-max-w-30p {
+.gl-md-max-w-15p {
   @media (min-width: $breakpoint-md) {
-    max-width: 30%;
+    max-width: $gl-spacing-scale-15;
   }
 }
 
-.gl-md-w-50p {
-  @media (min-width: $breakpoint-md) {
-    width: 50%;
+.gl-lg-max-w-80p {
+  @media (min-width: $breakpoint-lg) {
+    max-width: 80%;
   }
 }

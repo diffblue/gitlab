@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLink, GlPopover, GlIntersperse } from '@gitlab/ui';
+import { GlIcon, GlIntersperse, GlLink, GlPopover, GlTruncate } from '@gitlab/ui';
 import { n__ } from '~/locale';
 import DependencyPathViewer from './dependency_path_viewer.vue';
 
@@ -10,9 +10,10 @@ export default {
   components: {
     DependencyPathViewer,
     GlIcon,
+    GlIntersperse,
     GlLink,
     GlPopover,
-    GlIntersperse,
+    GlTruncate,
   },
   props: {
     location: {
@@ -50,9 +51,14 @@ export default {
   <gl-intersperse separator=" / " class="gl-text-gray-500">
     <!-- We need to put an extra span to avoid separator between path & top level label -->
     <span>
-      <gl-link :href="location.blob_path">
-        <gl-icon name="doc-text" class="gl-vertical-align-middle!" />
-        {{ location.path }}
+      <gl-link class="gl-display-inline-block gl-lg-display-block!" :href="location.blob_path">
+        <gl-icon name="doc-text" />
+        <gl-truncate
+          class="gl-lg-max-w-80p gl-display-none gl-lg-display-inline-flex"
+          :text="location.path"
+          with-tooltip
+        />
+        <span class="gl-lg-display-none">{{ location.path }}</span>
       </gl-link>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>
     </span>

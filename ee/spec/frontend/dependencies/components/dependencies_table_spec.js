@@ -44,7 +44,7 @@ describe('DependenciesTable component', () => {
 
     const locationLink = locationCell.find(GlLink);
     expect(locationLink.attributes().href).toBe(dependency.location.blob_path);
-    expect(locationLink.text()).toBe(dependency.location.path);
+    expect(locationLink.text()).toContain(dependency.location.path);
 
     const licenseLinks = licenseCell.find(DependencyLicenseLinks);
     expect(licenseLinks.exists()).toBe(true);
