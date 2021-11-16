@@ -66,7 +66,7 @@ module Users
 
       # Destroy the namespace after destroying the user since certain methods may depend on the namespace existing
       user_data = nil
-      ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345843') do
+      ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.allow_cross_database_modification_within_transaction(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/340260') do
         user_data = user.destroy
       end
       namespace.destroy
