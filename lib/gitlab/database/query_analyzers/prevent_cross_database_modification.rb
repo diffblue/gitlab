@@ -91,8 +91,19 @@ module Gitlab
 
             raise CrossDatabaseModificationAcrossUnsupportedTablesError, message
           end
+        rescue CrossDatabaseModificationAcrossUnsupportedTablesError => e
+          ::Gitlab::ErrorTracking.track_exception(e, { gitlab_schemas: schemas, tables: all_tables, query: parsed.sql })
+          raise if raise_exception?
         end
         # rubocop:enable Metrics/AbcSize
+
+        # We only raise in tests for now otherwise some features will be broken
+        # in development. For now we've mostly only added allowlist based on
+        # spec names. Until we have allowed all the violations inline we don't
+        # want to raise in development.
+        def self.raise_exception?
+          Rails.env.test?
+        end
 
         # We ignore execution in the #create method from FactoryBot
         # because it is not representative of real code we run in
