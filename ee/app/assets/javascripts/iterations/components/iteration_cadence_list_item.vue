@@ -310,7 +310,11 @@ export default {
                 {{ iteration.title }}
               </router-link>
               <IterationPeriod class="gl-pt-2">{{ getIterationPeriod(iteration) }}</IterationPeriod>
-              <timebox-status-badge v-if="showStateBadge" :state="iteration.state" />
+              <timebox-status-badge
+                v-if="showStateBadge"
+                class="gl-mt-2"
+                :state="iteration.state"
+              />
             </li>
           </ol>
           <div v-if="loading" class="gl-p-5">
