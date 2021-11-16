@@ -7,25 +7,11 @@ import Translate from '~/vue_shared/translate';
 
 import JiraConnectApp from './components/app.vue';
 import createStore from './store';
-import { getGitlabSignInURL, sizeToParent } from './utils';
+import { sizeToParent } from './utils';
 
 const store = createStore();
 
-/**
- * Add `return_to` query param to all HAML-defined GitLab sign in links.
- */
-const updateSignInLinks = async () => {
-  await Promise.all(
-    Array.from(document.querySelectorAll('.js-jira-connect-sign-in')).map(async (el) => {
-      const updatedLink = await getGitlabSignInURL(el.getAttribute('href'));
-      el.setAttribute('href', updatedLink);
-    }),
-  );
-};
-
-export async function initJiraConnect() {
-  await updateSignInLinks();
-
+export function initJiraConnect() {
   const el = document.querySelector('.js-jira-connect-app');
   if (!el) {
     return null;
