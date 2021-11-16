@@ -34,6 +34,19 @@ RSpec.shared_examples 'base SamlProvider service' do
              .and change { group.saml_provider&.enabled? }.to(true)
              .and change { group.saml_provider&.enforced_sso? }.to(true)
              .and change { AuditEvent.count }.by(4)
+
+    audit_event_messages = [
+      %r{enabled changed([\w\s]*)to true},
+      %r{certificate_fingerprint changed([\w\W\s]*)to #{fingerprint}},
+      %r{sso_url changed([\w\W\s]*)to https:\/\/test},
+      %r{enforced_sso changed([\w\s]*)to true}
+    ]
+
+    audit_events = AuditEvent.last(4)
+
+    audit_event_messages.each_with_index do |expected_message, index|
+      expect(audit_events[index].details[:custom_message]).to match(expected_message)
+    end
   end
 end
 
