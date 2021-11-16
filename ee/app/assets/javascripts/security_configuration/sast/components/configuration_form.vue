@@ -130,14 +130,14 @@ export default {
     submissionError: s__(
       'SecurityConfiguration|An error occurred while creating the merge request.',
     ),
-    submitButton: s__('SecurityConfiguration|Create Merge Request'),
+    submitButton: s__('SecurityConfiguration|Create merge request'),
     cancelButton: __('Cancel'),
     help: __('Help'),
     analyzersHeading: s__('SecurityConfiguration|SAST Analyzers'),
     analyzersSubHeading: s__(
       `SecurityConfiguration|By default, all analyzers are applied in order to
       cover all languages across your project, and only run if the language is
-      detected in the Merge Request.`,
+      detected in the merge request.`,
     ),
     analyzersTipHeading: __('We recommend leaving all SAST analyzers enabled'),
     analyzersTipBody: __(

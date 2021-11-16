@@ -18,7 +18,7 @@ RSpec.describe 'projects/_merge_request_status_checks_settings' do
   end
 
   it 'renders the settings description', :aggregate_failures do
-    expect(rendered).to have_content 'Check for a status response in Merge Requests. Failures do not block merges.'
+    expect(rendered).to have_content 'Check for a status response in merge requests. Failures do not block merges.'
     expect(rendered).to have_link 'Learn more', href: '/help/user/project/merge_requests/status_checks'
   end
 
