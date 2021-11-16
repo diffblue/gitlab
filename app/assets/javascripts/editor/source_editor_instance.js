@@ -13,6 +13,7 @@
  * A Source Editor Extension
  * @typedef {Object} SourceEditorExtension
  * @property {Object} obj
+ * @property {string} name
  * @property {Object} api
  */
 
@@ -53,6 +54,12 @@ const utils = {
 
 /** Class representing a Source Editor Instance */
 export default class EditorInstance {
+  /**
+   * Create a Source Editor Instance
+   * @param {Object} rootInstance - Monaco instance to build on top of
+   * @param {Map} extensionsStore - The global registry for the extension instances
+   * @returns {Object} - A Proxy returning props/methods from either registered extensions, or Source Editor instance, or underlying Monaco instance
+   */
   constructor(rootInstance = {}, extensionsStore = new Map()) {
     /** The methods provided by extensions. */
     this.methods = {};
@@ -70,9 +77,7 @@ export default class EditorInstance {
             return extension.api[prop].call(seInstance, ...args, receiver);
           };
         }
-        return seInstance[prop]
-          ? Reflect.get(seInstance, prop, receiver)
-          : Reflect.get(target, prop, receiver);
+        return Reflect.get(seInstance[prop] ? seInstance : target, prop, receiver);
       },
       set(target, prop, value) {
         Object.assign(seInstance, {
@@ -98,6 +103,13 @@ export default class EditorInstance {
     return instProxy;
   }
 
+  /**
+   * A private dispatcher function for both `use` and `unuse`
+   * @param {Map} extensionsStore - The global registry for the extension instances
+   * @param {Function} fn - A function to route to. Either `this.useExtension` or `this.unuseExtension`
+   * @param {SourceEditorExtensionDefinition[]} extensions - The extensions to use/unuse.
+   * @returns {Function}
+   */
   static useUnuse(extensionsStore, fn, extensions) {
     if (Array.isArray(extensions)) {
       /**
@@ -114,8 +126,15 @@ export default class EditorInstance {
   //
   // REGISTERING NEW EXTENSION
   //
-  useExtension(extensionsStore, extensionDefinition = {}) {
-    const { definition } = extensionDefinition;
+
+  /**
+   * Run all registrations when using an extension
+   * @param {Map} extensionsStore - The global registry for the extension instances
+   * @param {SourceEditorExtensionDefinition} extension - The extension definition to use.
+   * @returns {EditorExtension|*}
+   */
+  useExtension(extensionsStore, extension = {}) {
+    const { definition } = extension;
     if (!definition) {
       throw new Error(EDITOR_EXTENSION_NO_DEFINITION_ERROR);
     }
@@ -126,26 +145,32 @@ export default class EditorInstance {
     // Existing Extension Path
     const existingExt = utils.getStoredExtension(extensionsStore, definition.name);
     if (existingExt) {
-      if (isEqual(extensionDefinition.setupOptions, existingExt.setupOptions)) {
+      if (isEqual(extension.setupOptions, existingExt.setupOptions)) {
         return existingExt;
       }
       this.unuseExtension(extensionsStore, existingExt);
     }
 
     // New Extension Path
-    const extension = new EditorExtension(extensionDefinition);
-    const { name, setupOptions, obj: extensionObj } = extension;
+    const extensionInstance = new EditorExtension(extension);
+    const { setupOptions, obj: extensionObj } = extensionInstance;
     if (extensionObj.onSetup) {
       extensionObj.onSetup(setupOptions, this);
     }
     if (extensionsStore) {
-      this.registerExtension(name, extension, extensionsStore);
+      this.registerExtension(extensionInstance, extensionsStore);
     }
-    this.registerExtensionMethods(name, extension);
-    return extension;
+    this.registerExtensionMethods(extensionInstance);
+    return extensionInstance;
   }
 
-  registerExtension(name, extension, extensionsStore) {
+  /**
+   * Register extension in the global extensions store
+   * @param {SourceEditorExtension} extension - Instance of Source Editor extension
+   * @param {Map} extensionsStore - The global registry for the extension instances
+   */
+  registerExtension(extension, extensionsStore) {
+    const { name } = extension;
     const hasExtensionRegistered =
       extensionsStore.has(name) &&
       isEqual(extension.setupOptions, extensionsStore.get(name).setupOptions);
@@ -159,8 +184,12 @@ export default class EditorInstance {
     }
   }
 
-  registerExtensionMethods(name, extension) {
-    const { api } = extension;
+  /**
+   * Register extension methods in the registry on the instance
+   * @param {SourceEditorExtension} extension - Instance of Source Editor extension
+   */
+  registerExtensionMethods(extension) {
+    const { api, name } = extension;
 
     if (!api) {
       return;
@@ -178,6 +207,12 @@ export default class EditorInstance {
   //
   // UNREGISTERING AN EXTENSION
   //
+
+  /**
+   * Unregister extension with the cleanup
+   * @param {Map} extensionsStore - The global registry for the extension instances
+   * @param {SourceEditorExtension} extension - Instance of Source Editor extension to un-use
+   */
   unuseExtension(extensionsStore, extension) {
     if (!extension) {
       throw new Error(EDITOR_EXTENSION_NOT_SPECIFIED_FOR_UNUSE_ERROR);
@@ -191,14 +226,18 @@ export default class EditorInstance {
     if (extensionObj.onBeforeUnuse) {
       extensionObj.onBeforeUnuse(this);
     }
-    this.unregisterExtensionMethods(name, existingExt);
+    this.unregisterExtensionMethods(existingExt);
     if (extensionObj.onUnuse) {
       extensionObj.onUnuse(this);
     }
   }
 
-  unregisterExtensionMethods(name, extension) {
-    const { api } = extension;
+  /**
+   * Remove all methods associated with this extension from the registry on the instance
+   * @param {SourceEditorExtension} extension - Instance of Source Editor extension to un-use
+   */
+  unregisterExtensionMethods(extension) {
+    const { api, name } = extension;
     if (!api) {
       return;
     }
