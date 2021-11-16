@@ -43,25 +43,22 @@ module Ci
           service_response = destroy_batch(artifacts)
           @removed_artifacts_count += service_response[:destroyed_artifacts_count]
 
-          optional_artifacts_backlog_update(service_response)
+          update_locked_status_on_unknown_artifacts if service_response[:destroyed_artifacts_count] == 0
+
+          # Return a truthy value here to prevent exiting #loop_until
+          @removed_artifacts_count
         end
       end
 
-      def optional_artifacts_backlog_update(service_response)
-        return true if service_response[:destroyed_artifacts_count] > 0
-
-        work_on_unknown_artifacts_backlog
-      end
-
-      def work_on_unknown_artifacts_backlog
+      def update_locked_status_on_unknown_artifacts
         build_ids = Ci::JobArtifact.expired_before(@start_at).artifact_unknown.limit(BATCH_SIZE).distinct_job_ids
 
-        return false unless build_ids.present?
+        return unless build_ids.present?
 
         locked_pipeline_build_ids   = ::Ci::Build.with_pipeline_locked_artifacts.id_in(build_ids).pluck_primary_key
         unlocked_pipeline_build_ids = build_ids - locked_pipeline_build_ids
 
-        update_unknown_artifacts(locked_pipeline_build_ids,   Ci::JobArtifact.lockeds[:artifacts_locked]) ||
+        update_unknown_artifacts(locked_pipeline_build_ids,   Ci::JobArtifact.lockeds[:artifacts_locked])
         update_unknown_artifacts(unlocked_pipeline_build_ids, Ci::JobArtifact.lockeds[:unlocked])
       end
 
