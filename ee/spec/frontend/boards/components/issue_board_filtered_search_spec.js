@@ -12,6 +12,7 @@ describe('IssueBoardFilter', () => {
   const createComponent = () => {
     wrapper = shallowMount(IssueBoardFilteredSpec, {
       propsData: { fullPath: 'gitlab-org', boardType: 'group' },
+      provide: { isSignedIn: true },
     });
   };
 
