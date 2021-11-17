@@ -66,9 +66,9 @@ RSpec.describe Ci::JobArtifacts::DestroyAllExpiredService, :clean_gitlab_redis_s
 
       let!(:artifact) { create(:ci_job_artifact, :expired, job: job, locked: job.pipeline.locked) }
 
-      it 'raises an exception and stop destroying' do
+      it 'raises an exception but destroys the security_finding object regardless' do
         expect { subject }.to raise_error(ActiveRecord::RecordNotDestroyed)
-                          .and not_change { Security::Finding.count }
+          .and change { Security::Finding.count }.by(-1)
       end
     end
 
