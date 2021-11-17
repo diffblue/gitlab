@@ -98,7 +98,7 @@ Proxy.
 #### Authenticate within CI/CD
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/280582) in GitLab 13.7.
-> - Automatic runner authentication [added](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27302) in GitLab 13.9.
+> - Automatic runner authentication, when using the Dependency Proxy to pull the image for the job, was [added](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27302) in GitLab 13.9.
 > - The prefix for group names containing uppercase letters was [fixed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/54559) in GitLab 13.10.
 
 Runners log in to the Dependency Proxy automatically. To pull through
@@ -132,6 +132,32 @@ Proxy manually without including the port:
 
 ```shell
 docker pull gitlab.example.com:443/my-group/dependency_proxy/containers/alpine:latest
+```
+
+Example when using the Dependency Proxy to build an image:
+
+```plaintext
+# Dockerfile
+FROM gitlab.example.com:443/my-group/dependency_proxy/containers/alpine:latest
+```
+
+```yaml
+# .gitlab-ci.yml
+image: docker:19.03.12
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - docker:19.03.12-dind
+
+build:
+  image: docker:19.03.12
+  before_script:
+    - docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
+  script:
+    -  docker build -t test .
 ```
 
 You can also use [custom CI/CD variables](../../../ci/variables/index.md#custom-cicd-variables) to store and access your personal access token or deploy token.
