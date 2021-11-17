@@ -6,11 +6,11 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Dependency Proxy **(FREE)**
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7934) in [GitLab Premium](https://about.gitlab.com/pricing/) 11.11.
-> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/273655) to GitLab Free in GitLab 13.6.
-> - [Support for private groups](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) in GitLab Free 13.7.
-> - Anonymous access to images in public groups is no longer available starting in GitLab Free 13.7.
-> - [Support for pull-by-digest and Docker version 20.x](https://gitlab.com/gitlab-org/gitlab/-/issues/290944) in GitLab Free 13.10.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/7934) in GitLab 11.11.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/273655) from GitLab Premium to GitLab Free in 13.6.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) support for private groups in GitLab 13.7.
+> - Anonymous access to images in public groups is no longer available starting in GitLab 13.7.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/290944) support for pull-by-digest and Docker version 20.x in GitLab 13.10.
 
 The GitLab Dependency Proxy is a local proxy you can use for your frequently-accessed
 upstream images.
@@ -59,7 +59,7 @@ Prerequisites:
 
 ### Authenticate with the Dependency Proxy
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) in GitLab Free 13.7.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/11582) in GitLab 13.7.
 > - It's [deployed behind a feature flag](../../feature_flags.md), enabled by default.
 > - It's enabled on GitLab.com.
 > - It's recommended for production use.
@@ -189,7 +189,7 @@ If you clear the cache, the next time a pipeline runs it must pull an image or t
 
 ### Cleanup policies
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/294187) in GitLab Free 14.4.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/294187) in GitLab 14.4.
 
 The cleanup policy is a scheduled job you can use to clear cached images that are no longer used,
 freeing up additional storage space. The policies use time-to-live (TTL) logic:
@@ -229,7 +229,7 @@ files are ignored and new files are downloaded and cached from the external regi
 
 ## Docker Hub rate limits and the Dependency Proxy
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/241639) in GitLab Free 13.7.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/241639) in GitLab 13.7.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 Watch how to [use the Dependency Proxy to help avoid Docker Hub rate limits](https://youtu.be/Nc4nUo7Pq08).
