@@ -1,4 +1,3 @@
-import { GlAlert } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import ConfigurationForm from 'ee/security_configuration/api_fuzzing/components/configuration_form.vue';
@@ -10,12 +9,12 @@ import DynamicFields from 'ee/security_configuration/components/dynamic_fields.v
 import FormInput from 'ee/security_configuration/components/form_input.vue';
 import { stripTypenames } from 'helpers/graphql_helpers';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/pipeline_editor/components/code_snippet_alert/constants';
-import {
-  apiFuzzingConfigurationQueryResponse,
-  createApiFuzzingConfigurationMutationResponse,
-} from '../mock_data';
+import { apiFuzzingConfigurationQueryResponse } from '../mock_data';
+
+jest.mock('ee/security_configuration/api_fuzzing/utils', () => ({
+  buildConfigurationSnippet: jest.fn().mockReturnValue('configuration YAML'),
+}));
 
 describe('EE - ApiFuzzingConfigurationForm', () => {
   let wrapper;
@@ -24,7 +23,6 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     apiFuzzingConfigurationQueryResponse.data.project.apiFuzzingCiConfiguration,
   );
 
-  const findAlert = () => wrapper.find(GlAlert);
   const findEnableAuthenticationCheckbox = () =>
     wrapper.findByTestId('api-fuzzing-enable-authentication-checkbox');
   const findTargetUrlInput = () => wrapper.findAll(FormInput).at(0);
@@ -57,6 +55,7 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
           {
             provide: {
               fullPath: 'namespace/project',
+              gitlabCiYamlEditPath: '/ci/editor',
               securityConfigurationPath: '/security/configuration',
               apiFuzzingAuthenticationDocumentationPath:
                 'api_fuzzing_authentication/documentation/path',
@@ -223,80 +222,20 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
       expect(findSubmitButton().props('disabled')).toBe(false);
     });
 
-    it('triggers the createApiFuzzingConfiguration mutation on submit and opens the modal with the correct props', async () => {
+    it('opens the modal with the correct props', async () => {
       createWrapper();
-      jest
-        .spyOn(wrapper.vm.$apollo, 'mutate')
-        .mockResolvedValue(createApiFuzzingConfigurationMutationResponse);
       jest.spyOn(wrapper.vm.$refs[CONFIGURATION_SNIPPET_MODAL_ID], 'show');
       await setFormData();
       wrapper.find('form').trigger('submit');
-      await waitForPromises();
+      await wrapper.vm.$nextTick();
 
-      expect(findAlert().exists()).toBe(false);
-      expect(wrapper.vm.$apollo.mutate).toHaveBeenCalled();
       expect(wrapper.vm.$refs[CONFIGURATION_SNIPPET_MODAL_ID].show).toHaveBeenCalled();
       expect(findConfigurationSnippetModal().props()).toEqual({
-        ciYamlEditUrl:
-          createApiFuzzingConfigurationMutationResponse.data.apiFuzzingCiConfigurationCreate
-            .gitlabCiYamlEditPath,
-        yaml: `---
-# Tip: Insert this part below all stages
-stages:
-- fuzz
-# Tip: Insert this part below all include
-include:
-- template: template.gitlab-ci.yml
-# Tip: Insert the following variables anywhere below stages and include
-variables:
-- FOO: bar`,
+        ciYamlEditUrl: '/ci/editor',
+        yaml: 'configuration YAML',
         redirectParam: CODE_SNIPPET_SOURCE_API_FUZZING,
         scanType: 'API Fuzzing',
       });
-    });
-
-    it('shows an error on top-level error', async () => {
-      createWrapper({
-        mocks: {
-          $apollo: {
-            mutate: jest.fn().mockRejectedValue(),
-          },
-        },
-      });
-      await setFormData();
-
-      expect(findAlert().exists()).toBe(false);
-
-      wrapper.find('form').trigger('submit');
-      await waitForPromises();
-
-      expect(findAlert().exists()).toBe(true);
-      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0 });
-    });
-
-    it('shows an error on error-as-data', async () => {
-      createWrapper({
-        mocks: {
-          $apollo: {
-            mutate: jest.fn().mockResolvedValue({
-              data: {
-                apiFuzzingCiConfigurationCreate: {
-                  errors: ['error#1'],
-                },
-              },
-            }),
-          },
-        },
-      });
-      await setFormData();
-
-      expect(findAlert().exists()).toBe(false);
-
-      wrapper.find('form').trigger('submit');
-      await waitForPromises();
-
-      expect(findAlert().exists()).toBe(true);
-      expect(window.scrollTo).toHaveBeenCalledWith({ top: 0 });
     });
   });
 });

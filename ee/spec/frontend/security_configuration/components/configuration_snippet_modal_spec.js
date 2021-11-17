@@ -6,7 +6,6 @@ import ConfigurationSnippetModal from 'ee/security_configuration/components/conf
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { redirectTo } from '~/lib/utils/url_utility';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
-import { createApiFuzzingConfigurationMutationResponse } from '../api_fuzzing/mock_data';
 
 jest.mock('clipboard', () =>
   jest.fn().mockImplementation(() => ({
@@ -24,10 +23,8 @@ jest.mock('~/lib/utils/url_utility', () => {
   };
 });
 
-const {
-  gitlabCiYamlEditPath,
-  configurationYaml,
-} = createApiFuzzingConfigurationMutationResponse.data.apiFuzzingCiConfigurationCreate;
+const gitlabCiYamlEditPath = '/ci/editor';
+const configurationYaml = 'YAML';
 const redirectParam = 'foo';
 
 describe('EE - SecurityConfigurationSnippetModal', () => {

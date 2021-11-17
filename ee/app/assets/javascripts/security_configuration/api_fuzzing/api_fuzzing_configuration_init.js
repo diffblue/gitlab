@@ -13,6 +13,7 @@ export const initApiFuzzingConfiguration = () => {
   const {
     securityConfigurationPath,
     fullPath,
+    gitlabCiYamlEditPath,
     apiFuzzingDocumentationPath,
     apiFuzzingAuthenticationDocumentationPath,
     ciVariablesDocumentationPath,
@@ -26,6 +27,7 @@ export const initApiFuzzingConfiguration = () => {
     provide: {
       securityConfigurationPath,
       fullPath,
+      gitlabCiYamlEditPath,
       apiFuzzingDocumentationPath,
       apiFuzzingAuthenticationDocumentationPath,
       ciVariablesDocumentationPath,

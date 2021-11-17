@@ -1,29 +1,39 @@
-/* eslint-disable @gitlab/require-i18n-strings */
-import { isString } from 'lodash';
+import {
+  API_FUZZING_TARGET_URL_PLACEHOLDER,
+  API_FUZZING_SCAN_MODE_PLACEHOLDER,
+  API_FUZZING_SPECIFICATION_FILE_PATH_PLACEHOLDER,
+  API_FUZZING_PROFILE_PLACEHOLDER,
+  API_FUZZING_AUTH_PASSWORD_VAR_PLACEHOLDER,
+  API_FUZZING_AUTH_USERNAME_VAR_PLACEHOLDER,
+  API_FUZZING_YAML_CONFIGURATION_TEMPLATE,
+  API_FUZZING_YAML_CONFIGURATION_AUTH_TEMPLATE,
+} from './constants';
 
-export const insertTip = ({ snippet, tip, token }) => {
-  if (!isString(snippet)) {
-    throw new Error('snippet must be a string');
+export const buildConfigurationSnippet = ({
+  target,
+  scanMode,
+  apiSpecificationFile,
+  scanProfile,
+  authUsername,
+  authPassword,
+} = {}) => {
+  if (!target || !scanMode || !apiSpecificationFile || !scanProfile) {
+    return '';
   }
-  if (!isString(tip)) {
-    throw new Error('tip must be a string');
+
+  let template = API_FUZZING_YAML_CONFIGURATION_TEMPLATE.replace(
+    API_FUZZING_TARGET_URL_PLACEHOLDER,
+    target,
+  )
+    .replace(API_FUZZING_SCAN_MODE_PLACEHOLDER, scanMode)
+    .replace(API_FUZZING_SPECIFICATION_FILE_PATH_PLACEHOLDER, apiSpecificationFile)
+    .replace(API_FUZZING_PROFILE_PLACEHOLDER, scanProfile);
+
+  if (authUsername && authPassword) {
+    template += API_FUZZING_YAML_CONFIGURATION_AUTH_TEMPLATE.replace(
+      API_FUZZING_AUTH_USERNAME_VAR_PLACEHOLDER,
+      authUsername,
+    ).replace(API_FUZZING_AUTH_PASSWORD_VAR_PLACEHOLDER, authPassword);
   }
-  if (!isString(token)) {
-    throw new Error('token must be a string');
-  }
-  const lines = snippet.split('\n');
-  for (let i = 0; i < lines.length; i += 1) {
-    if (lines[i].includes(token)) {
-      const indent = lines[i].match(/^[ \t]+/)?.[0] ?? '';
-      lines[i] = lines[i].replace(token, `# ${tip}\n${indent}${token}`);
-      break;
-    }
-  }
-  return lines.join('\n');
+  return template;
 };
-
-export const insertTips = (snippet, tips = []) =>
-  tips.reduce(
-    (snippetWithTips, { tip, token }) => insertTip({ snippet: snippetWithTips, tip, token }),
-    snippet,
-  );
