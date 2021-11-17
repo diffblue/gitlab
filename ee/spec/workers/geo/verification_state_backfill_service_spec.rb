@@ -3,15 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe Geo::VerificationStateBackfillService, :geo do
-  let(:replicable_1) { FactoryBot.create(:merge_request_diff, :external) }
-  let(:verifiable_1) { FactoryBot.create(:merge_request_diff_detail, merge_request_diff: replicable_1) }
+  let_it_be(:replicable) { create(:merge_request_diff, :external) }
 
   subject(:job) { described_class.new(MergeRequestDiff, batch_size: 1000) }
 
   describe '#execute' do
     context 'when a replicable is missing a corresponding verifiable' do
       before do
-        replicable_1.merge_request_diff_detail.destroy!
+        replicable.merge_request_diff_detail.destroy!
       end
 
       it 'adds a new verifiable' do
@@ -20,8 +19,10 @@ RSpec.describe Geo::VerificationStateBackfillService, :geo do
     end
 
     context 'when some replicables were removed from scope' do
+      let(:verifiable) { create(:merge_request_diff_detail, merge_request_diff: replicable) }
+
       before do
-        replicable_1.update_attribute(:stored_externally, false)
+        replicable.update_attribute(:stored_externally, false)
       end
 
       it 'deletes the verifiable' do
