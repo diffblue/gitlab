@@ -100,6 +100,11 @@ namespace :gitlab do
         queues_and_weights = Gitlab::SidekiqConfig.queues_for_sidekiq_queues_yml
 
         write_yaml(Gitlab::SidekiqConfig::SIDEKIQ_QUEUES_PATH, banner, queues: queues_and_weights)
+
+        if Gitlab.jh?
+          jh_quesues_and_weights = Gitlab::SidekiqConfig.queues_for_sidekiq_queues_yml(jh: true)
+          write_yaml(Gitlab::SidekiqConfig::JH_SIDEKIQ_QUEUES_PATH, banner, queues: jh_quesues_and_weights)
+        end
       end
 
       desc 'GitLab | Sidekiq | Validate that sidekiq_queues.yml matches worker definitions'
@@ -113,6 +118,7 @@ namespace :gitlab do
             Then commit and push the changes from:
 
             - #{Gitlab::SidekiqConfig::SIDEKIQ_QUEUES_PATH}
+            #{"- " + Gitlab::SidekiqConfig::JH_SIDEKIQ_QUEUES_PATH if Gitlab.jh?}
 
           MSG
         end
