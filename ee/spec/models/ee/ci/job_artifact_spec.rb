@@ -12,14 +12,27 @@ RSpec.describe Ci::JobArtifact do
     let_it_be(:primary) { create(:geo_node, :primary) }
     let_it_be(:secondary) { create(:geo_node) }
 
-    it 'creates a JobArtifactDeletedEvent' do
+    before do
       stub_current_geo_node(primary)
+    end
 
+    it 'creates a JobArtifactDeletedEvent' do
       job_artifact = create(:ee_ci_job_artifact, :archive)
 
-      expect do
-        job_artifact.destroy!
-      end.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+      expect { job_artifact.destroy! }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+    end
+
+    context 'JobArtifact destroy fails' do
+      it 'does not create a JobArtifactDeletedEvent' do
+        job_artifact = create(:ee_ci_job_artifact, :archive)
+
+        allow(job_artifact).to receive(:destroy!)
+                           .and_raise(ActiveRecord::RecordNotDestroyed)
+
+        expect { job_artifact.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
+                                        .and not_change { Ci::JobArtifact.count }
+                                        .and not_change { Geo::JobArtifactDeletedEvent.count }
+      end
     end
   end
 
