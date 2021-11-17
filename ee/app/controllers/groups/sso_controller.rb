@@ -75,6 +75,10 @@ class Groups::SsoController < Groups::ApplicationController
 
   private
 
+  def group
+    @group ||= unauthenticated_group
+  end
+
   def new_user
     @new_user ||= User.new(new_user_params)
   end
