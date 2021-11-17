@@ -41,6 +41,24 @@ RSpec.describe Ci::Minutes::RefreshCachedDataService do
         expect(pending_build_2.reload.minutes_exceeded).to be_truthy
       end
 
+      context 'when running multiple updates' do
+        before do
+          stub_const("#{described_class}::BATCH_SIZE", 1)
+        end
+
+        it 'runs 2 SQL update queries' do
+          sql_queries = ActiveRecord::QueryRecorder.new { subject }.log
+          update_queries_number = sql_queries.inject(0) do |result, query|
+            result += 1 if query.start_with?("UPDATE")
+            result
+          end
+
+          expect(update_queries_number).to eq(2)
+          expect(pending_build_1.reload.minutes_exceeded).to be_falsey
+          expect(pending_build_2.reload.minutes_exceeded).to be_truthy
+        end
+      end
+
       context 'when ci_pending_builds_maintain_ci_minutes_data is disabled' do
         before do
           stub_feature_flags(ci_pending_builds_maintain_ci_minutes_data: false)

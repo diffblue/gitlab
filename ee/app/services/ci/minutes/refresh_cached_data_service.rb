@@ -3,6 +3,8 @@
 module Ci
   module Minutes
     class RefreshCachedDataService
+      BATCH_SIZE = 1_000
+
       def initialize(root_namespace)
         @root_namespace = root_namespace
       end
@@ -28,10 +30,10 @@ module Ci
         return unless ::Feature.enabled?(:ci_pending_builds_maintain_ci_minutes_data, @root_namespace, type: :development, default_enabled: :yaml)
 
         minutes_exceeded = @root_namespace.ci_minutes_quota.minutes_used_up?
-        all_namespaces = @root_namespace.self_and_descendant_ids
+        all_namespace_ids = @root_namespace.self_and_descendant_ids.ids
 
-        ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345867') do
-          ::Ci::PendingBuild.where(namespace: all_namespaces).update_all(minutes_exceeded: minutes_exceeded)
+        all_namespace_ids.in_groups_of(BATCH_SIZE, minutes_exceeded) do |namespace_ids|
+          ::Ci::PendingBuild.where(namespace: namespace_ids).update_all(minutes_exceeded: minutes_exceeded)
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord
