@@ -343,7 +343,7 @@ Be aware that:
 
 ### Purchase additional CI minutes on GitLab SaaS
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6574) in GitLab 14.4.
+> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/6574) in GitLab 14.5.
 
 If you're using GitLab SaaS, you can purchase additional CI minutes so your
 pipelines aren't blocked after you have used all your CI minutes from your
