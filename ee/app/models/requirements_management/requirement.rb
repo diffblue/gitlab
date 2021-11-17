@@ -111,8 +111,11 @@ module RequirementsManagement
       errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
     end
 
-    def requirement_issue_sync_error!
+    def requirement_issue_sync_error!(message: '')
       self.requirement_issue_sync_error = true
+      return if message.blank?
+
+      self.errors.add(:requirement_issue, :invalid, message: message)
     end
 
     private

@@ -64,7 +64,7 @@ RSpec.describe 'Creating a Requirement' do
         let(:attributes) { { title: '' } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-          errors: ["Associated issue was invalid and changes could not be applied."]
+          errors: ["Title can't be blank"]
 
         it 'does not create the requirement' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(RequirementsManagement::Requirement, :count)
