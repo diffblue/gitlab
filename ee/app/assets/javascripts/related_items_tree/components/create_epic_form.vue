@@ -194,7 +194,7 @@ export default {
       <gl-button
         :disabled="isSubmitButtonDisabled"
         :loading="isSubmitting"
-        variant="success"
+        variant="confirm"
         category="primary"
         type="submit"
         class="float-left"
