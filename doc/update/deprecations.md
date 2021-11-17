@@ -78,7 +78,7 @@ Announced: 2021-09-22
 
 ### Certificate-based integration with Kubernetes
 
-We are deprecating the certificate-based integration with Kubernetes and the features that rely on it.
+[We are deprecating the certificate-based integration with Kubernetes](https://about.gitlab.com/blog/2021/11/15/deprecating-the-cert-based-kubernetes-integration/).
 The timeline of removal of the integration from the product is not yet planned and we will communicate
 more details as they emerge. The certificate-based integration will continue to receive security and
 critical fixes, and features built on the integration will continue to work with supported Kubernetes
