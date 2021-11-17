@@ -9,6 +9,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { manualIterationCadence } from '../mock_data';
 
 const push = jest.fn();
 const $router = {
@@ -28,17 +29,7 @@ describe('Iteration cadence form', () => {
   let wrapper;
   const groupPath = 'gitlab-org';
   const id = 72;
-  const iterationCadence = {
-    id: `gid://gitlab/Iterations::Cadence/${id}`,
-    title: 'An iteration',
-    automatic: true,
-    rollOver: false,
-    durationInWeeks: '3',
-    description: 'The words',
-    duration: '3',
-    startDate: '2020-06-28',
-    iterationsInAdvance: '2',
-  };
+  const iterationCadence = manualIterationCadence;
 
   const createMutationSuccess = {
     data: { result: { iterationCadence, errors: [] } },
@@ -53,7 +44,7 @@ describe('Iteration cadence form', () => {
       group: {
         id: 'gid://gitlab/Group/114',
         iterationCadences: {
-          nodes: [iterationCadence],
+          nodes: [manualIterationCadence],
         },
       },
     },
