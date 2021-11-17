@@ -23,11 +23,28 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
       let_it_be(:primary) { create(:geo_node, :primary) }
       let_it_be(:secondary) { create(:geo_node) }
 
-      it 'creates a JobArtifactDeletedEvent' do
+      before do
         stub_current_geo_node(primary)
         create(:ee_ci_job_artifact, :archive)
+      end
 
+      it 'creates a JobArtifactDeletedEvent' do
         expect { subject }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)
+      end
+
+      context 'JobArtifact batch destroy fails' do
+        before do
+          expect(Ci::DeletedObject)
+            .to receive(:bulk_import)
+            .once
+            .and_raise(ActiveRecord::RecordInvalid)
+        end
+
+        it 'does not create a JobArtifactDeletedEvent' do
+          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+                            .and not_change { Ci::JobArtifact.count }
+                            .and not_change { Geo::JobArtifactDeletedEvent.count }
+        end
       end
     end
   end

@@ -11,6 +11,10 @@ module EE
         override :destroy_related_records
         def destroy_related_records(artifacts)
           destroy_security_findings(artifacts)
+        end
+
+        override :after_batch_destroy_hook
+        def after_batch_destroy_hook(artifacts)
           insert_geo_event_records(artifacts)
         end
 
