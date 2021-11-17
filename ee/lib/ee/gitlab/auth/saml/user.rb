@@ -13,6 +13,7 @@ module EE
 
             if user_in_required_group?
               unblock_user(user, "in required group") if user&.persisted? && user&.ldap_blocked?
+              unblock_user(user, "user cap not reached yet") if activate_user_based_on_user_cap?(user)
             elsif user&.persisted?
               block_user(user, "not in required group") unless user.blocked?
             else
@@ -30,6 +31,17 @@ module EE
           end
 
           protected
+
+          def activate_user_based_on_user_cap?(user)
+            return false unless user&.activate_based_on_user_cap?
+
+            begin
+              !::User.user_cap_reached?
+            rescue ActiveRecord::QueryAborted => e
+              ::Gitlab::ErrorTracking.track_exception(e, saml_user_email: user.email)
+              false
+            end
+          end
 
           def block_user(user, reason)
             user.ldap_block

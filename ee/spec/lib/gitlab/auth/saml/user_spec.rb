@@ -144,6 +144,67 @@ RSpec.describe Gitlab::Auth::Saml::User do
             expect(saml_user.find_user).to be_ldap_blocked
           end
         end
+
+        context 'when a sign-up user cap has been set' do
+          before do
+            saml_user.gl_user.state = ::User::BLOCKED_PENDING_APPROVAL_STATE
+            stub_application_setting(new_user_signups_cap: new_user_signups_cap)
+          end
+
+          context 'when the user cap has been reached' do
+            let(:new_user_signups_cap) { 1 }
+
+            it 'does not activate the user' do
+              create(:user)
+
+              saml_user.save
+
+              expect(saml_user.find_user).to be_blocked
+            end
+          end
+
+          context 'when the user cap has not been reached' do
+            let(:new_user_signups_cap) { 100 }
+
+            before do
+              stub_omniauth_setting(block_auto_created_users: block)
+            end
+
+            context 'when the user can be activated based on user cap' do
+              let(:block) { false }
+
+              it 'activates the user' do
+                saml_user.save
+
+                expect(saml_user.find_user).to be_active
+              end
+
+              context 'when the query behind .user_cap_reached? times out' do
+                it 'does not activate the user' do
+                  allow(::User).to receive(:user_cap_reached?).and_raise(ActiveRecord::QueryAborted)
+
+                  saml_user.save
+
+                  expect(::Gitlab::ErrorTracking).to receive(:track_exception).with(
+                    instance_of(ActiveRecord::QueryAborted),
+                    saml_user_email: saml_user.gl_user.email
+                  )
+                  expect(saml_user.find_user).to be_blocked
+                end
+              end
+            end
+
+            context 'when the user cannot be activated based on user cap' do
+              let(:block) { true }
+
+              it 'does not activate the user' do
+                saml_user.save
+
+                expect(saml_user.find_user).to be_blocked
+              end
+            end
+          end
+        end
       end
     end
   end
