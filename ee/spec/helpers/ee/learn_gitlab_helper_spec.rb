@@ -17,8 +17,10 @@ RSpec.describe LearnGitlabHelper do
     OnboardingProgress.onboard(namespace)
   end
 
-  describe '#onboarding_actions_data' do
-    subject(:onboarding_actions_data) { helper.onboarding_actions_data(project) }
+  describe '#learn_gitlab_data' do
+    subject(:onboarding_actions_data) do
+      Gitlab::Json.parse(helper.learn_gitlab_data(project)[:actions]).deep_symbolize_keys
+    end
 
     context 'when in the new action URLs experiment' do
       before do

@@ -38,6 +38,12 @@ RSpec.describe Registrations::WelcomeController do
       end
 
       it { is_expected.to render_template(:continuous_onboarding_getting_started) }
+
+      it 'sets the correct session key' do
+        continuous_onboarding_getting_started
+
+        expect(session[:confetti_post_signup]).to eq(true)
+      end
     end
 
     context 'with a non-owner user signed in' do
