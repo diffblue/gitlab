@@ -66,7 +66,6 @@ const createComponent = ({ state, getters, props, actionMocks, isAdmin, options,
       PaginatedList,
     },
     provide: {
-      glFeatures: { licenseComplianceDeniesMr: false },
       ...provide,
     },
     store: fakeStore,
@@ -176,23 +175,15 @@ describe('License Management', () => {
         });
       });
 
-      describe.each([true, false])(
-        'when licenseComplianceDeniesMr feature flag is %p',
-        (licenseComplianceDeniesMr) => {
-          it('should not show the developer only tooltip', () => {
-            createComponent({
-              state: { isLoadingManagedLicenses: false },
-              isAdmin: true,
-              provide: {
-                glFeatures: { licenseComplianceDeniesMr },
-              },
-            });
+      it('should not show the developer only tooltip', () => {
+        createComponent({
+          state: { isLoadingManagedLicenses: false },
+          isAdmin: true,
+        });
 
-            expect(findIcon().exists()).toBe(false);
-            expect(findPopover().exists()).toBe(false);
-          });
-        },
-      );
+        expect(findIcon().exists()).toBe(false);
+        expect(findPopover().exists()).toBe(false);
+      });
     });
 
     describe('when developer', () => {
@@ -232,27 +223,15 @@ describe('License Management', () => {
         });
       });
 
-      describe.each`
-        licenseComplianceDeniesMr | should
-        ${true}                   | ${'should'}
-        ${false}                  | ${'should not'}
-      `(
-        'when licenseComplianceDeniesMr feature flag is $licenseComplianceDeniesMr',
-        ({ licenseComplianceDeniesMr, should }) => {
-          it(`${should} show the developer only tooltip`, () => {
-            createComponent({
-              state: { isLoadingManagedLicenses: false },
-              isAdmin: false,
-              provide: {
-                glFeatures: { licenseComplianceDeniesMr },
-              },
-            });
+      it('should show the developer only tooltip', () => {
+        createComponent({
+          state: { isLoadingManagedLicenses: false },
+          isAdmin: false,
+        });
 
-            expect(findIcon().exists()).toBe(licenseComplianceDeniesMr);
-            expect(findPopover().exists()).toBe(licenseComplianceDeniesMr);
-          });
-        },
-      );
+        expect(findIcon().exists()).toBe(true);
+        expect(findPopover().exists()).toBe(true);
+      });
     });
   });
 });

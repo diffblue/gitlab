@@ -103,12 +103,25 @@ describe('AddLicenseForm', () => {
       expect(dropdownElement.exists()).toBe(true);
     });
 
-    it('renders the license approval radio buttons dropdown', () => {
-      const approvalOptions = findRadioInputs();
+    describe('license approval radio list', () => {
+      it('renders the correct approval options', () => {
+        const approvalOptions = findRadioInputs();
 
-      expect(approvalOptions).toHaveLength(2);
-      expect(approvalOptions.at(0).text()).toBe('Allow');
-      expect(approvalOptions.at(1).text()).toBe('Deny');
+        expect(approvalOptions).toHaveLength(2);
+        expect(approvalOptions.at(0).text()).toContain('Allow');
+        expect(approvalOptions.at(1).text()).toContain('Deny');
+      });
+
+      it('renders the approval option descriptions', () => {
+        const approvalOptions = findRadioInputs();
+
+        expect(approvalOptions.at(0).text()).toContain(
+          'Acceptable license to be used in the project',
+        );
+        expect(approvalOptions.at(1).text()).toContain(
+          'Disallow merge request if detected and will instruct developer to remove',
+        );
+      });
     });
 
     it('renders error text, if there is a duplicate license', async () => {
@@ -123,14 +136,11 @@ describe('AddLicenseForm', () => {
       expect(feedbackElement.text()).toBe('This license already exists in this project.');
     });
 
-    it('shows radio button descriptions, if licenseComplianceDeniesMr feature flag is enabled', async () => {
+    it('shows radio button descriptions', async () => {
       wrapper = shallowMount(LicenseIssueBody, {
         propsData: {
           managedLicenses: [{ name: 'FOO' }],
           knownLicenses: KNOWN_LICENSES,
-        },
-        provide: {
-          glFeatures: { licenseComplianceDeniesMr: true },
         },
       });
 
@@ -143,15 +153,6 @@ describe('AddLicenseForm', () => {
       expect(descriptionElement.at(1).text()).toBe(
         'Disallow merge request if detected and will instruct developer to remove',
       );
-    });
-
-    it('does not show radio button descriptions, if licenseComplianceDeniesMr feature flag is disabled', () => {
-      createComponent({ managedLicenses: [{ name: 'FOO' }] });
-      wrapper.setData({ licenseName: 'FOO' });
-      return Vue.nextTick().then(() => {
-        expect(findRadioInputs().at(0).element).toMatchSnapshot();
-        expect(findRadioInputs().at(1).element).toMatchSnapshot();
-      });
     });
 
     it('disables submit, if the form is invalid', async () => {

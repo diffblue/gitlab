@@ -58,9 +58,6 @@ export default {
     submitDisabled() {
       return this.isInvalidLicense || this.licenseName.trim() === '' || this.approvalStatus === '';
     },
-    isDescriptionEnabled() {
-      return Boolean(this.glFeatures.licenseComplianceDeniesMr);
-    },
   },
   methods: {
     addLicense() {
@@ -99,10 +96,10 @@ export default {
           :value="option.value"
           :data-qa-selector="`${option.value}_license_radio`"
           :aria-describedby="`js-${option.value}-license-radio`"
-          :class="{ 'mb-3': isDescriptionEnabled }"
+          class="gl-mb-3"
         >
           {{ option.label }}
-          <div v-if="isDescriptionEnabled" class="text-secondary">
+          <div class="text-secondary">
             {{ option.description }}
           </div>
         </gl-form-radio>
