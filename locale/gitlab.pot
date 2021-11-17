@@ -25557,9 +25557,6 @@ msgstr ""
 msgid "Pipelines|More Information"
 msgstr ""
 
-msgid "Pipelines|No artifacts available"
-msgstr ""
-
 msgid "Pipelines|No triggers have been created yet. Add one using the form above."
 msgstr ""
 
