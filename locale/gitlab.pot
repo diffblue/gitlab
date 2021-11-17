@@ -19003,13 +19003,22 @@ msgstr ""
 msgid "InviteMembersModal|Configure security features"
 msgstr ""
 
+msgid "InviteMembersModal|Congratulations on creating your project, you're almost there!"
+msgstr ""
+
 msgid "InviteMembersModal|Contribute to the codebase"
 msgstr ""
 
 msgid "InviteMembersModal|Create issues for your new team member to work on (optional)"
 msgstr ""
 
+msgid "InviteMembersModal|GitLab is better with colleagues!"
+msgstr ""
+
 msgid "InviteMembersModal|GitLab member or email address"
+msgstr ""
+
+msgid "InviteMembersModal|How about inviting a colleague or two to join you?"
 msgstr ""
 
 msgid "InviteMembersModal|Invite"
