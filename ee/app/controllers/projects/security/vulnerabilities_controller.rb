@@ -12,7 +12,8 @@ module Projects
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project, default_enabled: :yaml)
       end
 
-      before_action :vulnerability, except: :index
+      before_action :vulnerability, except: [:index, :new]
+      before_action :authorize_create_vulnerability!, only: :new
 
       alias_method :vulnerable, :project
 
