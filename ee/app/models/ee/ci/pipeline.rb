@@ -92,10 +92,15 @@ module EE
         tag? && project_has_subscriptions?
       end
 
-      def batch_lookup_report_artifact_for_file_type(file_type)
-        return unless available_licensed_report_type?(file_type)
+      def batch_lookup_report_artifact_for_file_types(file_types)
+        file_types_to_search = []
+        file_types.each do |file_type|
+          file_types_to_search.append(file_type) if available_licensed_report_type?(file_type)
+        end
 
-        super
+        return unless file_types_to_search.present?
+
+        super(file_types_to_search)
       end
 
       def expose_license_scanning_data?
