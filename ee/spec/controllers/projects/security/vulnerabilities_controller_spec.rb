@@ -15,6 +15,34 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
     sign_in(user)
   end
 
+  describe 'GET #new' do
+    let(:request_new_vulnerability_page) { get :new, params: { namespace_id: project.namespace, project_id: project } }
+
+    include_context '"Security & Compliance" permissions' do
+      let(:valid_request) { request_new_vulnerability_page }
+    end
+
+    it 'renders the add new finding page' do
+      request_new_vulnerability_page
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    context 'when user can not create vulnerability' do
+      before do
+        guest = create(:user)
+        project.add_guest(guest)
+        sign_in(guest)
+      end
+
+      it 'renders a 403' do
+        request_new_vulnerability_page
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
   describe 'GET #show' do
     let_it_be(:pipeline) { create(:ci_pipeline, sha: project.commit.id, project: project, user: user) }
     let_it_be(:vulnerability) { create(:vulnerability, project: project) }
