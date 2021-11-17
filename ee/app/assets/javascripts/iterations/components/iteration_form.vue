@@ -2,12 +2,16 @@
 import { GlAlert, GlButton, GlForm, GlFormInput } from '@gitlab/ui';
 import initDatePicker from '~/behaviors/date_picker';
 import createFlash from '~/flash';
+import { dayAfter, formatDate } from '~/lib/utils/datetime_utility';
+import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import readIteration from '../queries/iteration.query.graphql';
 import createIteration from '../queries/iteration_create.mutation.graphql';
+import readCadence from '../queries/iteration_cadence.query.graphql';
 import updateIteration from '../queries/update_iteration.mutation.graphql';
+import iterationsInCadence from '../queries/group_iterations_in_cadence.query.graphql';
 
 export default {
   cadencesList: {
@@ -40,13 +44,15 @@ export default {
 
         if (!iteration) {
           this.error = s__('Iterations|Unable to find iteration.');
-          return;
+          return null;
         }
 
         this.title = iteration.title;
         this.description = iteration.description;
         this.startDate = iteration.startDate;
         this.dueDate = iteration.dueDate;
+
+        return iteration;
       },
       error(err) {
         this.error = err.message;
@@ -59,6 +65,7 @@ export default {
       loading: false,
       error: '',
       group: { iteration: {} },
+      cadence: {},
       title: '',
       description: '',
       startDate: '',
@@ -85,9 +92,51 @@ export default {
       };
     },
   },
-  mounted() {
+  async mounted() {
     // TODO: utilize GlDatepicker instead of relying on this jQuery behavior
     initDatePicker();
+
+    // prefill start date for the New cadence form
+    // if there's iterations in the cadence, use last end_date + 1
+    // else use cadence startDate
+    if (!this.isEditing && this.cadenceId) {
+      const { data } = await this.$apollo.query({
+        query: iterationsInCadence,
+        variables: {
+          fullPath: this.fullPath,
+          iterationCadenceId: convertToGraphQLId(TYPE_ITERATIONS_CADENCE, this.cadenceId),
+          lastPageSize: 1,
+          state: 'all',
+        },
+      });
+      const iteration = data.workspace.iterations?.nodes[0];
+
+      if (iteration) {
+        this.startDate = formatDate(
+          dayAfter(new Date(iteration.dueDate), { utc: true }),
+          'yyyy-mm-dd',
+        );
+      } else {
+        const { data: cadenceData } = await this.$apollo.query({
+          query: readCadence,
+          variables: {
+            fullPath: this.fullPath,
+            id: this.cadenceId,
+          },
+        });
+
+        if (cadenceData.group) {
+          const cadence = cadenceData.group?.iterationCadences?.nodes[0];
+
+          if (!cadence) {
+            this.error = s__('Iterations|Unable to find iteration cadence.');
+            return;
+          }
+
+          this.startDate = cadence.startDate;
+        }
+      }
+    }
   },
   methods: {
     save() {

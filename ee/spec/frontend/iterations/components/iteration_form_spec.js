@@ -5,13 +5,29 @@ import IterationForm from 'ee/iterations/components/iteration_form.vue';
 import readIteration from 'ee/iterations/queries/iteration.query.graphql';
 import createIteration from 'ee/iterations/queries/iteration_create.mutation.graphql';
 import updateIteration from 'ee/iterations/queries/update_iteration.mutation.graphql';
+import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
+import readCadence from 'ee/iterations/queries/iteration_cadence.query.graphql';
 import createRouter from 'ee/iterations/router';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { dayAfter, formatDate } from '~/lib/utils/datetime_utility';
+import {
+  manualIterationCadence as cadence,
+  mockGroupIterations,
+  mockIterationNode as iteration,
+  createMutationSuccess,
+  createMutationFailure,
+  updateMutationSuccess,
+  emptyGroupIterationsSuccess,
+  nonEmptyGroupIterationsSuccess,
+  readCadenceSuccess,
+} from '../mock_data';
 
 const baseUrl = '/cadences/';
+const iterationId = getIdFromGraphQLId(iteration.id);
+const cadenceId = getIdFromGraphQLId(cadence.id);
 
 function createMockApolloProvider(requestHandlers) {
   Vue.use(VueApollo);
@@ -23,41 +39,20 @@ describe('Iteration Form', () => {
   let wrapper;
   let router;
   const groupPath = 'gitlab-org';
-  const iterationId = 72;
-  const cadenceId = 2;
-  const iteration = {
-    id: `gid://gitlab/Iteration/${iterationId}`,
-    iid: 70,
-    title: 'An iteration',
-    state: 'opened',
-    webPath: '/test',
-    description: 'The words',
-    descriptionHtml: '<p>The words</p>',
-    startDate: '2020-06-28',
-    dueDate: '2020-07-05',
-  };
-
-  const readMutationSuccess = {
-    data: {
-      group: { id: 'gid://gitlab/Group/114', iterations: { nodes: [iteration] }, errors: [] },
-    },
-  };
-  const createMutationSuccess = { data: { iterationCreate: { iteration, errors: [] } } };
-  const createMutationFailure = {
-    data: { iterationCreate: { iteration, errors: ['alas, your data is unchanged'] } },
-  };
-  const updateMutationSuccess = { data: { updateIteration: { iteration, errors: [] } } };
 
   function createComponent({
     mutationQuery = createIteration,
     mutationResult = createMutationSuccess,
     query = readIteration,
-    result = readMutationSuccess,
+    result = mockGroupIterations,
     resolverMock = jest.fn().mockResolvedValue(mutationResult),
+    groupIterationsSuccess = emptyGroupIterationsSuccess,
   } = {}) {
     const apolloProvider = createMockApolloProvider([
       [query, jest.fn().mockResolvedValue(result)],
       [mutationQuery, resolverMock],
+      [groupIterationsInCadenceQuery, jest.fn().mockResolvedValue(groupIterationsSuccess)],
+      [readCadence, jest.fn().mockResolvedValue(readCadenceSuccess)],
     ]);
     wrapper = extendedWrapper(
       mount(IterationForm, {
@@ -95,7 +90,10 @@ describe('Iteration Form', () => {
     const resolverMock = jest.fn().mockResolvedValue(createMutationSuccess);
 
     beforeEach(() => {
-      router.replace({ name: 'newIteration', params: { cadenceId, iterationId: undefined } });
+      router.replace({
+        name: 'newIteration',
+        params: { cadenceId, iterationId: undefined },
+      });
       createComponent({ resolverMock });
     });
 
@@ -126,7 +124,7 @@ describe('Iteration Form', () => {
             groupPath,
             title,
             description,
-            iterationsCadenceId: convertToGraphQLId('Iterations::Cadence', cadenceId),
+            iterationsCadenceId: convertToGraphQLId('Iterations::Cadence', cadence.id),
             startDate,
             dueDate,
           },
@@ -159,11 +157,49 @@ describe('Iteration Form', () => {
         });
       });
     });
+
+    describe('prefill start date field', () => {
+      describe('cadence with iterations', () => {
+        it('starts next day after the last iteration', async () => {
+          await createComponent({
+            groupIterationsSuccess: nonEmptyGroupIterationsSuccess,
+          });
+
+          await waitForPromises();
+
+          const expectedDate = formatDate(
+            dayAfter(new Date(iteration.dueDate), { utc: true }),
+            'yyyy-mm-dd',
+          );
+
+          expect(findStartDate().element.value).toBe(expectedDate);
+        });
+      });
+
+      describe('manual cadence without iterations', () => {
+        beforeEach(async () => {
+          await createComponent({
+            groupIterationsSuccess: emptyGroupIterationsSuccess,
+          });
+
+          await nextTick();
+        });
+
+        it('uses cadence start date', () => {
+          const expectedDate = cadence.startDate;
+
+          expect(findStartDate().element.value).toBe(expectedDate);
+        });
+      });
+    });
   });
 
   describe('Edit iteration', () => {
     beforeEach(() => {
-      router.replace({ name: 'editIteration', params: { cadenceId, iterationId } });
+      router.replace({
+        name: 'editIteration',
+        params: { cadenceId: cadence.id, iterationId: iteration.id },
+      });
     });
 
     afterEach(() => {
@@ -212,7 +248,7 @@ describe('Iteration Form', () => {
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
           groupPath,
-          id: iterationId,
+          id: iteration.id,
           title,
           description,
           startDate,
@@ -236,7 +272,7 @@ describe('Iteration Form', () => {
       expect(resolverMock).toHaveBeenCalledWith({
         input: {
           groupPath,
-          id: iterationId,
+          id: iteration.id,
           startDate: '',
           dueDate: '',
           title: '',

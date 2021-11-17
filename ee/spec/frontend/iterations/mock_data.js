@@ -36,3 +36,78 @@ export const mockProjectIterations = {
     },
   },
 };
+
+export const manualIterationCadence = {
+  id: `gid://gitlab/Iterations::Cadence/72`,
+  title: 'A manual iteration cadence',
+  automatic: true,
+  rollOver: false,
+  durationInWeeks: '3',
+  description: 'The words',
+  duration: '3',
+  startDate: '2020-06-28',
+  iterationsInAdvance: '2',
+};
+
+export const createMutationSuccess = {
+  data: { iterationCreate: { iteration: mockIterationNode, errors: [] } },
+};
+
+export const createMutationFailure = {
+  data: {
+    iterationCreate: { iteration: mockIterationNode, errors: ['alas, your data is unchanged'] },
+  },
+};
+export const updateMutationSuccess = {
+  data: { updateIteration: { iteration: mockIterationNode, errors: [] } },
+};
+
+export const emptyGroupIterationsSuccess = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/114',
+      iterations: {
+        nodes: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: '',
+          endCursor: '',
+        },
+      },
+    },
+  },
+};
+
+export const nonEmptyGroupIterationsSuccess = {
+  data: {
+    workspace: {
+      id: 1,
+      iterations: {
+        nodes: [
+          {
+            ...mockIterationNode,
+            scopedPath: '/',
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: '',
+          endCursor: '',
+        },
+      },
+    },
+  },
+};
+
+export const readCadenceSuccess = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/114',
+      iterationCadences: {
+        nodes: [manualIterationCadence],
+      },
+    },
+  },
+};
