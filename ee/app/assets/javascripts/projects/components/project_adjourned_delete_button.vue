@@ -52,7 +52,7 @@ export default {
   strings: {
     alertTitle: __('You are about to permanently delete this project'),
     alertBody: __(
-      "Once a project is permanently deleted, it %{strongStart}cannot be recovered%{strongEnd}. You will lose this project's repository and %{strongStart}all related resources%{strongEnd}, including issues and merge requests.",
+      "After a project is permanently deleted, it %{strongStart}cannot be recovered%{strongEnd}. You will lose this project's repository and %{strongStart}all related resources%{strongEnd}, including issues and merge requests.",
     ),
     helpLabel: __('Recovering projects'),
     recoveryMessage: __('You can recover this project until %{date}'),
