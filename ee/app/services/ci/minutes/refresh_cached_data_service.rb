@@ -13,7 +13,7 @@ module Ci
         reset_ci_minutes_cache!
         update_pending_builds!
       rescue StandardError => e
-        ::Gitlab::ErrorTracking.track_exception(
+        ::Gitlab::ErrorTracking.track_and_raise_for_dev_exception(
           e,
           root_namespace_id: @root_namespace.id
         )
@@ -30,7 +30,9 @@ module Ci
         minutes_exceeded = @root_namespace.ci_minutes_quota.minutes_used_up?
         all_namespaces = @root_namespace.self_and_descendant_ids
 
-        ::Ci::PendingBuild.where(namespace: all_namespaces).update_all(minutes_exceeded: minutes_exceeded)
+        ::Gitlab::Database.allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345867') do
+          ::Ci::PendingBuild.where(namespace: all_namespaces).update_all(minutes_exceeded: minutes_exceeded)
+        end
       end
       # rubocop: enable CodeReuse/ActiveRecord
     end
