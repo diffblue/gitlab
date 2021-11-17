@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Package', :orchestrated, :group_saml, :requires_admin do
+  RSpec.describe 'Package', :orchestrated, :group_saml, :requires_admin, except: { subdomain: :staging } do
     describe 'Dependency Proxy Group SSO' do
       include Support::API
 
