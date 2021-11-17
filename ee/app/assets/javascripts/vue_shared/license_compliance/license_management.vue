@@ -46,9 +46,6 @@ export default {
     showLoadingSpinner() {
       return this.isLoadingManagedLicenses && !this.hasPendingLicenses;
     },
-    isTooltipEnabled() {
-      return Boolean(this.glFeatures.licenseComplianceDeniesMr);
-    },
   },
   watch: {
     isAddingNewLicense(isAddingNewLicense) {
@@ -104,36 +101,34 @@ export default {
         </div>
 
         <template v-else>
-          <div class="table-section gl-d-flex gl-pl-2 section-70" role="rowheader">
+          <div class="table-section gl-display-flex gl-pl-2 section-70" role="rowheader">
             {{ s__('Licenses|Policy') }}
-            <template v-if="isTooltipEnabled">
-              <gl-icon
-                ref="reportInfo"
-                name="question"
-                class="text-info gl-ml-1 gl-cursor-pointer"
-                :aria-label="__('help')"
-                :size="14"
-              />
-              <gl-popover
-                :target="() => $refs.reportInfo.$el"
-                placement="bottom"
-                triggers="click blur"
-                :css-classes="['gl-mt-3']"
+            <gl-icon
+              ref="reportInfo"
+              name="question"
+              class="text-info gl-ml-2 gl-cursor-pointer"
+              :aria-label="__('help')"
+              :size="14"
+            />
+            <gl-popover
+              :target="() => $refs.reportInfo.$el"
+              placement="bottom"
+              triggers="click blur"
+              :css-classes="['gl-mt-3']"
+            >
+              <div class="h5">{{ __('Allowed') }}</div>
+              <span class="text-secondary">
+                {{ s__('Licenses|Acceptable license to be used in the project') }}</span
               >
-                <div class="h5">{{ __('Allowed') }}</div>
-                <span class="text-secondary">
-                  {{ s__('Licenses|Acceptable license to be used in the project') }}</span
-                >
-                <div class="h5">{{ __('Denied') }}</div>
-                <span class="text-secondary">
-                  {{
-                    s__(
-                      'Licenses|Disallow Merge request if detected and will instruct the developer to remove',
-                    )
-                  }}</span
-                >
-              </gl-popover>
-            </template>
+              <div class="h5">{{ __('Denied') }}</div>
+              <span class="text-secondary">
+                {{
+                  s__(
+                    "Licenses|Unacceptable license, if detected it will disallow a merge request until it's removed",
+                  )
+                }}</span
+              >
+            </gl-popover>
           </div>
 
           <div class="table-section section-30" role="rowheader">
