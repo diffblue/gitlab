@@ -26,6 +26,6 @@ describe('EE MrWidgetPolicyViolation', () => {
   });
 
   it('shows the disabled reason', () => {
-    expect(wrapper.text()).toContain('You can merge after removing denied licenses');
+    expect(wrapper.text()).toContain('Merge blocked: denied licenses must be removed.');
   });
 });
