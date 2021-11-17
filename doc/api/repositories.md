@@ -291,7 +291,7 @@ Example response:
 }
 ```
 
-## Generate changelog data
+## Add changelog data to a changelog file
 
 > [Introduced](https://gitlab.com/groups/gitlab-com/gl-infra/-/epics/351) in GitLab 13.9.
 
@@ -373,26 +373,26 @@ If the last tag is `v0.9.0` and the default branch is `main`, the range of commi
 included in this example is `v0.9.0..main`:
 
 ```shell
-curl --header "PRIVATE-TOKEN: token" --data "version=1.0.0" "https://gitlab.com/api/v4/projects/42/repository/changelog"
+curl --request POST --header "PRIVATE-TOKEN: token" --data "version=1.0.0" "https://gitlab.com/api/v4/projects/42/repository/changelog"
 ```
 
 To generate the data on a different branch, specify the `branch` parameter. This
 command generates data from the `foo` branch:
 
 ```shell
-curl --header "PRIVATE-TOKEN: token" --data "version=1.0.0&branch=foo" "https://gitlab.com/api/v4/projects/42/repository/changelog"
+curl --request POST --header "PRIVATE-TOKEN: token" --data "version=1.0.0&branch=foo" "https://gitlab.com/api/v4/projects/42/repository/changelog"
 ```
 
 To use a different trailer, use the `trailer` parameter:
 
 ```shell
-curl --header "PRIVATE-TOKEN: token" --data "version=1.0.0&trailer=Type" "https://gitlab.com/api/v4/projects/42/repository/changelog"
+curl --request POST --header "PRIVATE-TOKEN: token" --data "version=1.0.0&trailer=Type" "https://gitlab.com/api/v4/projects/42/repository/changelog"
 ```
 
 To store the results in a different file, use the `file` parameter:
 
 ```shell
-curl --header "PRIVATE-TOKEN: token" --data "version=1.0.0&file=NEWS" "https://gitlab.com/api/v4/projects/42/repository/changelog"
+curl --request POST --header "PRIVATE-TOKEN: token" --data "version=1.0.0&file=NEWS" "https://gitlab.com/api/v4/projects/42/repository/changelog"
 ```
 
 ### How it works
@@ -707,3 +707,39 @@ tag_regex: '^version-(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$'
 To test if your regular expression is working, you can use websites such as
 [regex101](https://regex101.com/). If the regular expression syntax is invalid,
 an error is produced when generating a changelog.
+
+## Generate changelog data
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/345934) in GitLab 14.6.
+
+Generate changelog data based on commits in a repository, without committing
+them to a changelog file.
+
+Works exactly like `POST /projects/:id/repository/changelog`, except the changelog
+data isn't committed to any changelog file.
+
+```plaintext
+GET /projects/:id/repository/changelog
+```
+
+Supported attributes:
+
+| Attribute | Type     | Required   | Description |
+| :-------- | :------- | :--------- | :---------- |
+| `version` | string   | yes | The version to generate the changelog for. The format must follow [semantic versioning](https://semver.org/). |
+| `from`    | string   | no | The start of the range of commits (as a SHA) to use for generating the changelog. This commit itself isn't included in the list. |
+| `to`      | string   | no | The end of the range of commits (as a SHA) to use for the changelog. This commit _is_ included in the list. Defaults to the branch specified in the `branch` attribute. |
+| `date`    | datetime | no | The date and time of the release, ISO 8601 formatted. Example: `2016-03-11T03:45:40Z`. Defaults to the current time. |
+| `trailer` | string   | no | The Git trailer to use for including commits, defaults to `Changelog`. |
+
+```shell
+curl --header "PRIVATE-TOKEN: token" --data "version=1.0.0" "https://gitlab.com/api/v4/projects/42/repository/changelog"
+```
+
+Example Response:
+
+```json
+{
+  "notes": "## 1.0.0 (2021-11-17)\n\n### feature (2 changes)\n\n- [Title 2](namespace13/project13@ad608eb642124f5b3944ac0ac772fecaf570a6bf) ([merge request](namespace13/project13!2))\n- [Title 1](namespace13/project13@3c6b80ff7034fa0d585314e1571cc780596ce3c8) ([merge request](namespace13/project13!1))\n"
+}
+```
