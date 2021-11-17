@@ -54,6 +54,16 @@ The [release-cli](https://gitlab.com/gitlab-org/release-cli) will be released as
 
 Announced: 2021-08-22
 
+## 14.8
+
+### openSUSE Leap 15.2 packages
+
+Distribution support and security updates for openSUSE Leap 15.2 are [ending December 2021](https://en.opensuse.org/Lifetime#openSUSE_Leap).
+
+Starting in 14.5 we are providing packages for openSUSE Leap 15.3, and will stop providing packages for openSUSE Leap 15.2 in the 14.8 milestone.
+
+Announced: 2021-11-22
+
 ## 15.0
 
 ### Audit events for repository push events
