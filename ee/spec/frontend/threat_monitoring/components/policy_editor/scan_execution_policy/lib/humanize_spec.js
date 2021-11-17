@@ -34,6 +34,11 @@ describe('humanizeActions', () => {
 });
 
 describe('humanizeRules', () => {
+  beforeEach(() => {
+    // Need to spy on window.navigator.languages as it is read-only
+    jest.spyOn(window.navigator, 'languages', 'get').mockReturnValueOnce(['en']);
+  });
+
   it('returns the empty rules message in an Array if no rules are specified', () => {
     expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
   });

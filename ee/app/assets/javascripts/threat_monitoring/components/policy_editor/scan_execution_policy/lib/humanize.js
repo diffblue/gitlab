@@ -1,6 +1,6 @@
-import cronstrue from 'cronstrue';
+import cronstrue from 'cronstrue/i18n';
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
-import { sprintf, s__, n__ } from '~/locale';
+import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
 import { NO_RULE_MESSAGE } from './constants';
 
 const getActionText = (scanType) =>
@@ -34,7 +34,9 @@ const humanizeBranches = (originalBranches) => {
 };
 
 const humanizeCadence = (cadence) => {
-  return cronstrue.toString(cadence, { verbose: true }).toLowerCase();
+  return cronstrue
+    .toString(cadence, { locale: getPreferredLocales()[0], verbose: true })
+    .toLowerCase();
 };
 
 const humanizePipelineRule = (rule) => {
