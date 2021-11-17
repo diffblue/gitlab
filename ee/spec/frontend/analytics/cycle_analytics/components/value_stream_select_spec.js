@@ -1,5 +1,5 @@
 import { GlDropdown } from '@gitlab/ui';
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -38,9 +38,9 @@ describe('ValueStreamSelect', () => {
       },
     });
 
-  const createComponent = ({ data = {}, initialState = {} } = {}) =>
+  const createComponent = ({ data = {}, initialState = {}, mountFn = shallowMount } = {}) =>
     extendedWrapper(
-      shallowMount(ValueStreamSelect, {
+      mountFn(ValueStreamSelect, {
         localVue,
         store: fakeStore({ initialState }),
         data() {
@@ -59,19 +59,10 @@ describe('ValueStreamSelect', () => {
   const findModal = (modal) => wrapper.find(`[data-testid="${modal}-value-stream-modal"]`);
   const submitModal = (modal) => findModal(modal).vm.$emit('primary', mockEvent);
   const findSelectValueStreamDropdown = () => wrapper.findComponent(GlDropdown);
-  const findSelectValueStreamDropdownOptions = (_wrapper) => findDropdownItemText(_wrapper);
+  const findSelectValueStreamDropdownOptions = () => findDropdownItemText(wrapper);
   const findCreateValueStreamButton = () => wrapper.findByTestId('create-value-stream-button');
   const findEditValueStreamButton = () => wrapper.findByTestId('edit-value-stream');
   const findDeleteValueStreamButton = () => wrapper.findByTestId('delete-value-stream');
-
-  beforeEach(() => {
-    wrapper = createComponent({
-      initialState: {
-        valueStreams,
-      },
-    });
-    trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-  });
 
   afterEach(() => {
     unmockTracking();
@@ -79,24 +70,37 @@ describe('ValueStreamSelect', () => {
   });
 
   describe('with value streams available', () => {
-    it('does not display the create value stream button', () => {
-      expect(findCreateValueStreamButton().exists()).toBe(false);
-    });
+    describe('default behaviour', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          mountFn: mount,
+          initialState: {
+            valueStreams,
+          },
+        });
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
 
-    it('displays the select value stream dropdown', () => {
-      expect(findSelectValueStreamDropdown().exists()).toBe(true);
-    });
+      it('does not display the create value stream button', () => {
+        expect(findCreateValueStreamButton().exists()).toBe(false);
+      });
 
-    it('renders each value stream including a create button', () => {
-      const opts = findSelectValueStreamDropdownOptions(wrapper);
-      [...valueStreams.map((v) => v.name), 'Create new Value Stream'].forEach((vs) => {
-        expect(opts).toContain(vs);
+      it('displays the select value stream dropdown', () => {
+        expect(findSelectValueStreamDropdown().exists()).toBe(true);
+      });
+
+      it('renders each value stream including a create button', () => {
+        const opts = findSelectValueStreamDropdownOptions(wrapper);
+        [...valueStreams.map((v) => v.name), 'Create new Value Stream'].forEach((vs) => {
+          expect(opts).toContain(vs);
+        });
       });
     });
 
     describe('with a selected value stream', () => {
       beforeEach(() => {
         wrapper = createComponent({
+          mountFn: mount,
           initialState: {
             valueStreams,
             selectedValueStream: {
@@ -188,6 +192,8 @@ describe('ValueStreamSelect', () => {
             },
           },
         });
+
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
 
         submitModal('delete');
       });

@@ -4,7 +4,6 @@ import {
   GlButton,
   GlDropdown,
   GlDropdownItem,
-  GlDropdownDivider,
   GlModal,
   GlModalDirective,
   GlSprintf,
@@ -34,7 +33,6 @@ export default {
     GlButton,
     GlDropdown,
     GlDropdownItem,
-    GlDropdownDivider,
     GlModal,
     GlSprintf,
     ValueStreamForm,
@@ -155,27 +153,28 @@ export default {
         @click="onSelect(id)"
         >{{ streamName }}</gl-dropdown-item
       >
-      <gl-dropdown-divider />
-      <gl-dropdown-item
-        v-gl-modal-directive="'value-stream-form-modal'"
-        data-testid="create-value-stream"
-        data-track-action="click_dropdown"
-        data-track-label="create_value_stream_form_open"
-        @click="onCreate"
-        >{{ $options.i18n.CREATE_VALUE_STREAM }}</gl-dropdown-item
-      >
-      <gl-dropdown-item
-        v-if="isCustomValueStream"
-        v-gl-modal-directive="'delete-value-stream-modal'"
-        variant="danger"
-        data-testid="delete-value-stream"
-        data-track-action="click_dropdown"
-        data-track-label="delete_value_stream_form_open"
-      >
-        <gl-sprintf :message="$options.i18n.DELETE_NAME">
-          <template #name>{{ selectedValueStreamName }}</template>
-        </gl-sprintf>
-      </gl-dropdown-item>
+      <template #footer>
+        <gl-dropdown-item
+          v-gl-modal-directive="'value-stream-form-modal'"
+          data-testid="create-value-stream"
+          data-track-action="click_dropdown"
+          data-track-label="create_value_stream_form_open"
+          @click="onCreate"
+          >{{ $options.i18n.CREATE_VALUE_STREAM }}</gl-dropdown-item
+        >
+        <gl-dropdown-item
+          v-if="isCustomValueStream"
+          v-gl-modal-directive="'delete-value-stream-modal'"
+          variant="danger"
+          data-testid="delete-value-stream"
+          data-track-action="click_dropdown"
+          data-track-label="delete_value_stream_form_open"
+        >
+          <gl-sprintf :message="$options.i18n.DELETE_NAME">
+            <template #name>{{ selectedValueStreamName }}</template>
+          </gl-sprintf>
+        </gl-dropdown-item>
+      </template>
     </gl-dropdown>
     <gl-button
       v-else
