@@ -236,6 +236,8 @@ export default {
   },
   statusTimeRanges,
   safeHtmlConfig: { ADD_TAGS: ['gl-emoji'] },
+  actionPrimary: { text: s__('SetStatusModal|Set status') },
+  actionCancel: { text: s__('SetStatusModal|Remove status') },
 };
 </script>
 
@@ -243,8 +245,8 @@ export default {
   <gl-modal
     :title="s__('SetStatusModal|Set a status')"
     :modal-id="modalId"
-    :action-primary="{ text: s__('SetStatusModal|Set status') }"
-    :action-cancel="{ text: s__('SetStatusModal|Remove status') }"
+    :action-primary="$options.actionPrimary"
+    :action-cancel="$options.actionCancel"
     modal-class="set-user-status-modal"
     @shown="setupEmojiListAndAutocomplete"
     @hide="hideEmojiMenu"
