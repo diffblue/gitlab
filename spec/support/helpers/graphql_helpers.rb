@@ -514,8 +514,10 @@ module GraphqlHelpers
     # Allows for array indexing, like this
     # ['project', 'boards', 'edges', 0, 'node', 'lists']
     keys.reduce(data) do |memo, key|
-      if memo.is_a?(Array)
-        key.is_a?(Integer) ? memo[key] : memo.compact.flat_map do |e|
+      if memo.is_a?(Array) && key.is_a?(Integer)
+        memo[key]
+      elsif memo.is_a?(Array)
+        memo.compact.flat_map do |e|
           x = e[key]
           x.nil? ? [x] : Array.wrap(x)
         end
