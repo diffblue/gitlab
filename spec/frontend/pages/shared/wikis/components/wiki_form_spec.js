@@ -309,6 +309,18 @@ describe('WikiForm', () => {
     );
   });
 
+  describe('when wikiSwitchBetweenContentEditorRawMarkdown feature flag is not enabled', () => {
+    beforeEach(() => {
+      createShallowWrapper(true, {
+        glFeatures: { wikiSwitchBetweenContentEditorRawMarkdown: false },
+      });
+    });
+
+    it('hides toggle editing mode button', () => {
+      expect(findToggleEditingModeButton().exists()).toBe(false);
+    });
+  });
+
   describe('when wikiSwitchBetweenContentEditorRawMarkdown feature flag is enabled', () => {
     beforeEach(() => {
       createShallowWrapper(true, {
@@ -330,10 +342,8 @@ describe('WikiForm', () => {
       });
 
       describe('when clicking the toggle editing mode button', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           findToggleEditingModeButton().vm.$emit('click');
-
-          await nextTick();
         });
 
         it('hides the classic editor', () => {
@@ -355,7 +365,7 @@ describe('WikiForm', () => {
           setSerializedContent: jest.fn(),
         };
 
-        wrapper.setData({ useContentEditor: true });
+        findToggleEditingModeButton().vm.$emit('click');
       });
 
       it('hides switch to old editor button', () => {
@@ -369,15 +379,13 @@ describe('WikiForm', () => {
       describe('when clicking the toggle editing mode button', () => {
         const contentEditorFakeSerializedContent = 'fake content';
 
-        beforeEach(async () => {
+        beforeEach(() => {
           mockContentEditor.getSerializedContent.mockReturnValueOnce(
             contentEditorFakeSerializedContent,
           );
 
           findContentEditor().vm.$emit('initialized', mockContentEditor);
           findToggleEditingModeButton().vm.$emit('click');
-
-          await nextTick();
         });
 
         it('hides the content editor', () => {
