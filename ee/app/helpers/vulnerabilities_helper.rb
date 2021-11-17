@@ -32,7 +32,7 @@ module VulnerabilitiesHelper
   end
 
   def dismissal_descriptions
-    Vulnerabilities::DismissalReasonEnum.definition.transform_values { |v| v[:description] }
+    Vulnerabilities::DismissalReasonEnum.translated_descriptions
   end
 
   def new_issue_url_for(vulnerability)
