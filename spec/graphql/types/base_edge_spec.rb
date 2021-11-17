@@ -71,6 +71,6 @@ RSpec.describe Types::BaseEdge do
       .to contain_exactly(member_project.name, maintainer_project.name, public_project.name)
 
     expect(graphql_dig_at(result, 'data', 'projects', 'edges', 'proofOfAdminRights'))
-      .to contain_exactly('ok')
+      .to contain_exactly(nil, 'ok', nil)
   end
 end
