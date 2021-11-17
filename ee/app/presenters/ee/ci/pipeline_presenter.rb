@@ -9,7 +9,7 @@ module EE
       def expose_security_dashboard?
         return false unless can?(current_user, :read_security_resource, pipeline.project)
 
-        Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES.any? { |file_type| batch_lookup_report_artifact_for_file_type(file_type.to_sym) }
+        batch_lookup_report_artifact_for_file_types(Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES.map(&:to_sym)).present?
       end
 
       def degradation_threshold(file_type)

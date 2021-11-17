@@ -61,6 +61,36 @@ RSpec.describe Ci::PipelinePresenter do
 
           it { is_expected.to be_falsey }
         end
+
+        it 'calls latest_report_artifacts once' do
+          expect(pipeline).to receive(:latest_report_artifacts).once.and_call_original
+          subject
+        end
+      end
+
+      context 'when all features are available' do
+        before do
+          stub_licensed_features(dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
+                                 cluster_image_scanning: true, dast: true, coverage_fuzzing: true, api_fuzzing: true,
+                                 license_scanning: true, security_dashboard: true)
+        end
+
+        it 'does not increase the number of queries' do
+          all_features_query_count = count_ci_artifacts_queries
+
+          stub_licensed_features(dependency_scanning: true, secret_detection: true, sast: true, container_scanning: true,
+                                 cluster_image_scanning: false, dast: false, coverage_fuzzing: false, api_fuzzing: false,
+                                 license_scanning: true, security_dashboard: true)
+
+          less_features_query_count = count_ci_artifacts_queries
+
+          expect(all_features_query_count).to eq(less_features_query_count)
+        end
+
+        it 'calls latest_report_artifacts once' do
+          expect(pipeline).to receive(:latest_report_artifacts).once.and_call_original
+          subject
+        end
       end
 
       context 'when features are disabled' do
@@ -205,5 +235,10 @@ RSpec.describe Ci::PipelinePresenter do
     context 'with branch pipeline' do
       it { is_expected.to be true }
     end
+  end
+
+  def count_ci_artifacts_queries
+    query_recorder = ActiveRecord::QueryRecorder.new { presenter.expose_security_dashboard? }
+    query_recorder.log.count { |q| q.include?('FROM "ci_job_artifacts"') }
   end
 end
