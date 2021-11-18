@@ -72,9 +72,9 @@ export default {
             throw new Error(JSON.stringify(data.errors));
           }
         })
-        .catch((error) =>
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true }),
-        )
+        .catch((error) => {
+          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        })
         .finally(() => {
           this.isLoading = false;
         });

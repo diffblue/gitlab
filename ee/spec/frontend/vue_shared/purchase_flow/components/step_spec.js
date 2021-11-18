@@ -17,7 +17,6 @@ jest.mock('~/flash');
 
 describe('Step', () => {
   let wrapper;
-
   const initialProps = {
     stepId: STEPS[1].id,
     isValid: true,
@@ -33,6 +32,7 @@ describe('Step', () => {
   }
   function createComponent(options = {}) {
     const { apolloProvider, propsData } = options;
+
     return shallowMount(Step, {
       propsData: { ...initialProps, ...propsData },
       apolloProvider,
@@ -196,6 +196,30 @@ describe('Step', () => {
         captureError: true,
         error: expect.any(Error),
       });
+    });
+  });
+
+  describe('tracking', () => {
+    it('emits stepEdit', async () => {
+      const mockApollo = createMockApolloProvider(STEPS, 1);
+      wrapper = createComponent({ propsData: { stepId: STEPS[1].id }, apolloProvider: mockApollo });
+
+      // button in step-summary is not rendered b/c of shallowMount
+      wrapper.vm.edit();
+
+      await waitForPromises();
+      expect(wrapper.emitted().stepEdit[0]).toEqual(['secondStep']);
+    });
+
+    it('emits nextStep on step transition', async () => {
+      const mockApollo = createMockApolloProvider(STEPS, 1);
+      wrapper = createComponent({ propsData: { stepId: STEPS[1].id }, apolloProvider: mockApollo });
+      await activateFirstStep(mockApollo);
+
+      wrapper.findComponent(GlButton).vm.$emit('click');
+      await waitForPromises();
+
+      expect(wrapper.emitted().nextStep).toBeTruthy();
     });
   });
 });

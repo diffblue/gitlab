@@ -264,7 +264,7 @@ RSpec.describe SubscriptionsController do
     end
   end
 
-  describe 'POST #create' do
+  describe 'POST #create', :snowplow do
     subject do
       post :create,
         params: params,
@@ -350,6 +350,20 @@ RSpec.describe SubscriptionsController do
 
             expect(Gitlab::Json.parse(response.body)['name']).to match_array([Gitlab::Regex.group_name_regex_message, HtmlSafetyValidator.error_message])
           end
+
+          it 'tracks errors' do
+            group.valid?
+            subject
+
+            expect_snowplow_event(
+              category: 'SubscriptionsController',
+              label: 'confirm_purchase',
+              action: 'click_button',
+              property: group.errors.full_messages.to_s,
+              user: user,
+              namespace: nil
+            )
+          end
         end
       end
 
@@ -372,6 +386,14 @@ RSpec.describe SubscriptionsController do
           subject
 
           expect(response.body).to eq('{"errors":"error message"}')
+          expect_snowplow_event(
+            category: 'SubscriptionsController',
+            label: 'confirm_purchase',
+            action: 'click_button',
+            property: 'error message',
+            user: user,
+            namespace: group
+          )
         end
       end
 
@@ -429,6 +451,19 @@ RSpec.describe SubscriptionsController do
               subject
 
               expect(response.body).to eq({ location: redirect_after_success }.to_json)
+            end
+
+            it 'tracks the creation of the subscriptions' do
+              subject
+
+              expect_snowplow_event(
+                category: 'SubscriptionsController',
+                label: 'confirm_purchase',
+                action: 'click_button',
+                property: 'Success',
+                namespace: selected_group,
+                user: user
+              )
             end
           end
         end

@@ -2,11 +2,12 @@
 import { GlFormGroup, GlFormSelect, GlFormInput, GlSprintf, GlLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { STEPS } from 'ee/subscriptions/constants';
+import { STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { sprintf, s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import Tracking from '~/tracking';
 
 export default {
   components: {
@@ -20,6 +21,7 @@ export default {
   directives: {
     autofocusonshow,
   },
+  mixins: [Tracking.mixin()],
   computed: {
     ...mapState([
       'availablePlans',
@@ -33,6 +35,8 @@ export default {
     ]),
     ...mapGetters([
       'selectedPlanText',
+      'selectedPlanDetails',
+      'selectedGroupId',
       'isGroupSelected',
       'selectedGroupUsers',
       'selectedGroupName',
@@ -134,6 +138,21 @@ export default {
       'updateNumberOfUsers',
       'updateOrganizationName',
     ]),
+    trackStepTransition() {
+      this.track('click_button', {
+        label: 'update_plan_type',
+        property: this.selectedPlanDetails.code,
+      });
+      this.track('click_button', { label: 'update_group', property: this.selectedGroupId });
+      this.track('click_button', { label: 'update_seat_count', property: this.numberOfUsers });
+      this.track('click_button', { label: 'continue_billing' });
+    },
+    trackStepEdit() {
+      this.track('click_button', {
+        label: 'edit',
+        property: STEP_SUBSCRIPTION_DETAILS,
+      });
+    },
   },
   i18n: {
     stepTitle: s__('Checkout|Subscription details'),
@@ -152,7 +171,7 @@ export default {
     group: s__('Checkout|Group'),
     users: s__('Checkout|Users'),
   },
-  stepId: STEPS[0].id,
+  stepId: STEP_SUBSCRIPTION_DETAILS,
 };
 </script>
 <template>
@@ -161,6 +180,8 @@ export default {
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
     :next-step-button-text="$options.i18n.nextStepButtonText"
+    @nextStep="trackStepTransition"
+    @stepEdit="trackStepEdit"
   >
     <template #body>
       <gl-form-group :label="$options.i18n.selectedPlanLabel" label-size="sm" class="mb-3">

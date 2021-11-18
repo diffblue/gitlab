@@ -1,18 +1,21 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
+import Tracking from '~/tracking';
 import { ZUORA_SCRIPT_URL, ZUORA_IFRAME_OVERRIDE_PARAMS } from 'ee/subscriptions/constants';
 
 export default {
   components: {
     GlLoadingIcon,
   },
+  mixins: [Tracking.mixin()],
   props: {
     active: {
       type: Boolean,
       required: true,
     },
   },
+  emits: ['success', 'error'],
   computed: {
     ...mapState([
       'paymentFormParams',
@@ -51,10 +54,18 @@ export default {
         this.fetchPaymentFormParams();
       }
     },
+    handleZuoraCallback(response) {
+      this.paymentFormSubmitted(response);
+      if (response?.success === 'true') {
+        this.$emit('success');
+      } else {
+        this.$emit('error', response?.errorMessage);
+      }
+    },
     renderZuoraIframe() {
       const params = { ...this.paymentFormParams, ...ZUORA_IFRAME_OVERRIDE_PARAMS };
       window.Z.runAfterRender(this.zuoraIframeRendered);
-      window.Z.render(params, {}, this.paymentFormSubmitted);
+      window.Z.render(params, {}, this.handleZuoraCallback);
     },
   },
 };
