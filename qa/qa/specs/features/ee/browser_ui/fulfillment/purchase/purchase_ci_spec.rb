@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/345674', type: :bug } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
     context 'Purchase CI minutes' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }
@@ -22,7 +22,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:top_level_group_creation_enabled)
         group.add_member(user, Resource::Members::AccessLevel::OWNER)
 
         # A group project is required for additional CI Minutes to show up
@@ -40,8 +39,6 @@ module QA
       after do |example|
         user.remove_via_api!
         group.remove_via_api! unless example.exception
-
-        Runtime::Feature.disable(:top_level_group_creation_enabled)
       end
 
       it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
