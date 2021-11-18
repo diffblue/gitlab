@@ -54,34 +54,17 @@ RSpec.describe 'DAST.gitlab-ci.yml' do
 
       context 'when project has Ultimate license' do
         let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
-        let(:cluster) { create(:cluster, :project, :provided_by_gcp, projects: [project]) }
 
         before do
           allow(License).to receive(:current).and_return(license)
         end
 
-        context 'by default' do
-          before do
-            allow(cluster).to receive(:active?).and_return(true)
-          end
-
-          it 'includes job' do
-            expect(build_names).to match_array(%w[dast])
-          end
-        end
-
-        context 'when cluster is not active' do
-          context 'by default' do
-            it 'includes dast job' do
-              expect(build_names).to match_array(%w[dast])
-            end
-          end
+        it 'includes job' do
+          expect(build_names).to match_array(%w[dast])
         end
 
         context 'when DAST_DISABLED=1' do
           before do
-            allow(cluster).to receive(:active?).and_return(true)
-
             create(:ci_variable, project: project, key: 'DAST_DISABLED', value: '1')
           end
 
@@ -92,8 +75,6 @@ RSpec.describe 'DAST.gitlab-ci.yml' do
 
         context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH=1' do
           before do
-            allow(cluster).to receive(:active?).and_return(true)
-
             create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: '1')
           end
 
@@ -118,8 +99,6 @@ RSpec.describe 'DAST.gitlab-ci.yml' do
 
         context 'when REVIEW_DISABLED=true' do
           before do
-            allow(cluster).to receive(:active?).and_return(true)
-
             create(:ci_variable, project: project, key: 'REVIEW_DISABLED', value: 'true')
           end
 

@@ -19,12 +19,13 @@ RSpec.describe 'Jobs/Browser-Performance-Testing.gitlab-ci.yml' do
   end
 
   describe 'the created pipeline' do
-    let_it_be(:project) do
+    let_it_be(:project_with_ci_kubernetes_active) do
       create(:project, :repository, variables: [
         build(:ci_variable, key: 'CI_KUBERNETES_ACTIVE', value: 'true')
       ])
     end
 
+    let(:project) { project_with_ci_kubernetes_active }
     let(:user) { project.owner }
     let(:default_branch) { 'master' }
     let(:pipeline_ref) { default_branch }
@@ -44,6 +45,18 @@ RSpec.describe 'Jobs/Browser-Performance-Testing.gitlab-ci.yml' do
 
     it 'has no errors' do
       expect(pipeline.errors).to be_empty
+    end
+
+    context 'when variable is KUBECONFIG and not CI_KUBERNETES_ACTIVE' do
+      let_it_be(:project_with_kubeconfig) do
+        create(:project, :repository, variables: [
+          build(:ci_variable, key: 'KUBECONFIG', value: 'true')
+        ])
+      end
+
+      it 'is present' do
+        expect(build_names).to include('browser_performance')
+      end
     end
 
     shared_examples_for 'browser_performance job on tag or branch' do
