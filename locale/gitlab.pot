@@ -17092,6 +17092,9 @@ msgstr ""
 msgid "Hi %{username}!"
 msgstr ""
 
+msgid "Hidden"
+msgstr ""
+
 msgid "Hide"
 msgstr ""
 
