@@ -7,6 +7,7 @@ import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
+import IterationToken from '~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 
 export const mockEpicBoardResponse = {
   data: {
@@ -398,7 +399,7 @@ export const mockGroup2 = {
 
 export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
 
-export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones) => [
+export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIterations) => [
   {
     icon: 'user',
     title: __('Assignee'),
@@ -485,5 +486,17 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones) => [
     idProperty: 'id',
     useIdValue: true,
     fullPath: 'gitlab-org',
+  },
+  {
+    type: 'iteration',
+    icon: 'iteration',
+    title: 'Iteration',
+    operators: [
+      { value: '=', description: 'is' },
+      { value: '!=', description: 'is not' },
+    ],
+    unique: true,
+    fetchIterations,
+    token: IterationToken,
   },
 ];
