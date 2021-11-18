@@ -36,9 +36,10 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
     let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
     let(:extra_params) { {} }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: setup_for_company } }
     let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
     let(:dev_env_or_com) { true }
+    let(:setup_for_company) { nil }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -189,7 +190,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       let_it_be(:project) { create(:project) }
       let_it_be(:namespace) { create(:group) }
 
-      let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: "#{Gitlab::VisibilityLevel::PRIVATE}" } }
+      let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: "#{Gitlab::VisibilityLevel::PRIVATE}", setup_for_company: setup_for_company } }
       let(:extra_params) { { group: group_params } }
       let(:params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
       let(:create_service) { double(:create_service) }
@@ -209,10 +210,12 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     end
 
     context 'when the user is setup_for_company: true it redirects to the new_trial_path' do
+      let(:setup_for_company) { true }
+
       it_behaves_like "Registrations::ProjectsController POST #create" do
-        let_it_be(:user) { create(:user, setup_for_company: true) }
         let_it_be(:first_project) { create(:project) }
 
+        let(:user) { create(:user, setup_for_company: setup_for_company) }
         let(:success_path) { new_trial_path }
         let(:stored_location_for) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: first_project.id) }
 
@@ -225,7 +228,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     subject(:post_import) { post :import, params: params }
 
     let(:params) { { group: group_params, import_url: new_import_github_path } }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: nil } }
     let(:dev_env_or_com) { true }
 
     context 'with an unauthenticated user' do

@@ -14,7 +14,8 @@ RSpec.describe Registrations::GroupsController do
     let_it_be(:trial_onboarding_flow_params) { {} }
 
     let(:dev_env_or_com) { true }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s } }
+    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, create_event: true, setup_for_company: setup_for_company } }
+    let(:setup_for_company) { nil }
     let(:params) do
       { group: group_params }.merge(glm_params).merge(trial_form_params).merge(trial_onboarding_flow_params)
     end
@@ -40,10 +41,21 @@ RSpec.describe Registrations::GroupsController do
             expect { post_create }.to change { Group.count }.by(1)
           end
 
-          it 'passes create_event to Groups::CreateService' do
-            expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+          it 'passes group_params to Groups::CreateService' do
+            expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params).permit!).and_call_original
 
             post_create
+          end
+
+          context 'when the user is `setup_for_company: true`' do
+            let(:user) { create(:user, setup_for_company: setup_for_company) }
+            let(:setup_for_company) { true }
+
+            it 'passes `setup_for_company: true` to the Groups::CreateService' do
+              expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params).permit!).and_call_original
+
+              post_create
+            end
           end
 
           context 'when in trial onboarding  - apply_trial_for_trial_onboarding_flow' do

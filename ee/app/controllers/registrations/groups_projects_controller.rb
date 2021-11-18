@@ -90,7 +90,7 @@ module Registrations
         modifed_group_params = modifed_group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
       end
 
-      modifed_group_params.merge(create_event: true)
+      modifed_group_params
     end
   end
 end

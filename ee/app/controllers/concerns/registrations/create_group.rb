@@ -20,7 +20,14 @@ module Registrations::CreateGroup
     end
 
     def group_params
-      params.require(:group).permit(:name, :path, :visibility_level)
+      params.require(:group).permit(
+        :name,
+        :path,
+        :visibility_level
+      ).merge(
+        create_event: true,
+        setup_for_company: current_user.setup_for_company
+      )
     end
   end
 end
