@@ -1,5 +1,5 @@
-mutation uploadCorpus($projectPath: ID!, $name: String!) {
-  uploadCorpus(projectPath: $projectPath, name: $name) @client {
+mutation uploadCorpus($projectPath: ID!, $name: String!, $files: [Upload!]!) {
+  uploadCorpus(projectPath: $projectPath, name: $name, files: $files) @client {
     errors
   }
 }

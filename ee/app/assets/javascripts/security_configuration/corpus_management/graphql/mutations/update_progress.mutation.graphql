@@ -1,0 +1,5 @@
+mutation updateProgress($projectPath: ID!, $progress: Int!) {
+  updateProgress(projectPath: $projectPath, progress: $progress) @client {
+    errors
+  }
+}

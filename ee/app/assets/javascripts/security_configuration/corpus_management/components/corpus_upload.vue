@@ -4,6 +4,7 @@ import { decimalBytes } from '~/lib/utils/unit_format';
 import { s__, __ } from '~/locale';
 import addCorpusMutation from '../graphql/mutations/add_corpus.mutation.graphql';
 import resetCorpus from '../graphql/mutations/reset_corpus.mutation.graphql';
+import uploadCorpus from '../graphql/mutations/upload_corpus.mutation.graphql';
 import getCorpusesQuery from '../graphql/queries/get_corpuses.query.graphql';
 import CorpusUploadForm from './corpus_upload_form.vue';
 
@@ -79,7 +80,13 @@ export default {
     resetCorpus() {
       this.$apollo.mutate({
         mutation: resetCorpus,
-        variables: { name: '', projectPath: this.projectFullPath },
+        variables: { projectPath: this.projectFullPath },
+      });
+    },
+    beginFileUpload({ name, files }) {
+      this.$apollo.mutate({
+        mutation: uploadCorpus,
+        variables: { name, projectPath: this.projectFullPath, files },
       });
     },
   },
@@ -110,7 +117,11 @@ export default {
       @primary="addCorpus"
       @canceled="resetCorpus"
     >
-      <corpus-upload-form :states="states" />
+      <corpus-upload-form
+        :states="states"
+        @beginFileUpload="beginFileUpload"
+        @resetCorpus="resetCorpus"
+      />
     </gl-modal>
   </div>
 </template>

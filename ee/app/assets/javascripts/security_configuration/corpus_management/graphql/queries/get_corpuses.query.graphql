@@ -6,5 +6,6 @@ query getCorpuses($projectPath: ID!) {
   uploadState(projectPath: $projectPath) @client {
     isUploading
     progress
+    cancelSource
   }
 }
