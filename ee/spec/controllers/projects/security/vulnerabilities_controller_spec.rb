@@ -18,27 +18,33 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
   describe 'GET #new' do
     let(:request_new_vulnerability_page) { get :new, params: { namespace_id: project.namespace, project_id: project } }
 
-    include_context '"Security & Compliance" permissions' do
-      let(:valid_request) { request_new_vulnerability_page }
+    before do
+      allow(controller).to receive(:can?).and_call_original
+      allow(controller).to receive(:can?).with(controller.current_user, :create_vulnerability, an_instance_of(Project)).and_return(can_create_vulnerability)
     end
 
-    it 'renders the add new finding page' do
-      request_new_vulnerability_page
+    include_context '"Security & Compliance" permissions' do
+      let(:valid_request) { request_new_vulnerability_page }
+      let(:can_create_vulnerability) { true }
+    end
 
-      expect(response).to have_gitlab_http_status(:ok)
+    context 'when user can create vulnerability' do
+      let(:can_create_vulnerability) { true }
+
+      it 'renders the add new finding page' do
+        request_new_vulnerability_page
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
     end
 
     context 'when user can not create vulnerability' do
-      before do
-        guest = create(:user)
-        project.add_guest(guest)
-        sign_in(guest)
-      end
+      let(:can_create_vulnerability) { false }
 
-      it 'renders a 403' do
+      it 'renders 404 page not found' do
         request_new_vulnerability_page
 
-        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
