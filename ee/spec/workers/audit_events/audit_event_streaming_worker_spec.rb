@@ -97,5 +97,19 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         worker.perform(event.id)
       end
     end
+
+    context 'when the entity is a NullEntity' do
+      let_it_be(:event) { create(:audit_event, :project_event) }
+
+      before do
+        event.entity_id = non_existing_record_id
+      end
+
+      it 'makes no HTTP calls' do
+        expect(Gitlab::HTTP).not_to receive(:post)
+
+        worker.perform(event.id)
+      end
+    end
   end
 end

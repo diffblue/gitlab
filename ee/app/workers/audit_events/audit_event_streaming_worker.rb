@@ -15,6 +15,9 @@ module AuditEvents
 
     def perform(audit_event_id)
       audit_event = AuditEvent.find(audit_event_id)
+
+      return if audit_event.entity.nil?
+
       group = group_entity(audit_event)
 
       return if group.nil? # Do nothing if the event can't be resolved to a single group.
