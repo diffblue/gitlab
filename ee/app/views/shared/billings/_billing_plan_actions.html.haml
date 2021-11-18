@@ -1,0 +1,7 @@
+- if show_contact_sales_button?(purchase_link.action, plan_offer_type)
+  - if Feature.enabled?(:in_app_hand_raise_pql, namespace)
+    .js-hand-raise-lead-button{ data: hand_raise_props(namespace) }
+  - else
+    = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-confirm-secondary" : "btn-confirm"], data: { 'track-action': 'click_button', 'track-label': 'contact_sales', 'track-property': plan.code }
+- if show_upgrade_button
+  = link_to upgrade_button_text(plan_offer_type), plan_purchase_or_upgrade_url(namespace, plan), class: ["btn btn-confirm gl-button", upgrade_button_css_classes(namespace, plan, is_current), "gl-ml-3"], data: { 'track-action': 'click_button', 'track-label': 'upgrade', 'track-property': plan.code, qa_selector: "upgrade_to_#{plan.code}" }

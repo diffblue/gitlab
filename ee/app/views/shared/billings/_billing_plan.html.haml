@@ -65,10 +65,6 @@
     .card-footer
       - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
       .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
-        - if show_contact_sales_button?(purchase_link.action, plan_offer_type)
-          - if Feature.enabled?(:in_app_hand_raise_pql, namespace)
-            .js-hand-raise-lead-button{ data: hand_raise_props(namespace) }
-          - else
-            = link_to s_('BillingPlan|Contact sales'), "#{contact_sales_url}?test=inappcontactsales#{plan.code}", class: ["btn gl-button", show_upgrade_button ? "btn-success-secondary" : "btn-success"], data: { 'track-action': 'click_button', 'track-label': 'contact_sales', 'track-property': plan.code }
-        - if show_upgrade_button
-          = link_to upgrade_button_text(plan_offer_type), plan_purchase_or_upgrade_url(namespace, plan), class: ["btn btn-success gl-button", upgrade_button_css_classes(namespace, plan, is_current), "gl-ml-3"], data: { 'track-action': 'click_button', 'track-label': 'upgrade', 'track-property': plan.code, qa_selector: "upgrade_to_#{plan.code}" }
+        = render "shared/billings/billing_plan_actions", namespace: namespace, plan: plan,
+                                                         purchase_link: purchase_link, show_upgrade_button: show_upgrade_button,
+                                                         plan_offer_type: plan_offer_type, is_current: is_current
