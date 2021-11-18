@@ -30106,6 +30106,9 @@ msgstr ""
 msgid "Runners|New runner, has not connected yet"
 msgstr ""
 
+msgid "Runners|No contact from this runner in over 3 months"
+msgstr ""
+
 msgid "Runners|No recent contact from this runner; last contact was %{timeAgo}"
 msgstr ""
 
@@ -30211,6 +30214,9 @@ msgstr ""
 msgid "Runners|Something went wrong while fetching the tags suggestions"
 msgstr ""
 
+msgid "Runners|Stale"
+msgstr ""
+
 msgid "Runners|Status"
 msgstr ""
 
@@ -30305,6 +30311,9 @@ msgid "Runners|shared"
 msgstr ""
 
 msgid "Runners|specific"
+msgstr ""
+
+msgid "Runners|stale"
 msgstr ""
 
 msgid "Running"
