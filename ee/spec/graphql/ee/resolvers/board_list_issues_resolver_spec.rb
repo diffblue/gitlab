@@ -13,8 +13,10 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   let_it_be(:list) { create(:list, board: board, label: label) }
 
   let_it_be(:epic) { create(:epic, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group, start_date: 1.week.ago, due_date: 2.days.ago) }
-  let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now) }
+  let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group) }
+  let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group) }
+  let_it_be(:iteration) { create(:iteration, group: group, start_date: 1.week.ago, due_date: 2.days.ago, iterations_cadence: iteration_cadence1) }
+  let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
 
   let_it_be(:issue1) { create(:issue, project: project, labels: [label], weight: 3) }
   let_it_be(:issue2) { create(:issue, project: project, labels: [label], iteration: iteration) }
@@ -101,24 +103,43 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
         expect(result).to contain_exactly(issue2)
       end
 
-      it 'accepts iteration wildcard id' do
-        result = resolve_board_list_issues({ filters: { iteration_wildcard_id: 'NONE' } })
-
-        expect(result).to contain_exactly(issue1, issue3)
-      end
-
-      it 'accepts iteration iteration id' do
+      it 'accepts iteration id' do
         result = resolve_board_list_issues({ filters: { iteration_id: [iteration.to_global_id] } })
 
         expect(result).to contain_exactly(issue2)
       end
 
-      context 'filterning by negated iteration' do
+      context 'when filtering by wildcard id' do
+        it 'filters by iteration NONE' do
+          result = resolve_board_list_issues({ filters: { iteration_wildcard_id: 'NONE' } })
+
+          expect(result).to contain_exactly(issue1, issue3)
+        end
+
+        it 'filters by iteration current and cadence id' do
+          another_current_iteration = create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence1)
+          another_current_iteration_issue = create(:issue, project: project, iteration: another_current_iteration, labels: [label])
+
+          result = resolve_board_list_issues({ filters: { iteration_wildcard_id: 'CURRENT', iteration_cadence_id: [iteration_cadence1.to_global_id] } })
+
+          expect(result).to contain_exactly(another_current_iteration_issue)
+        end
+      end
+
+      context 'filtering by negated iteration' do
         it 'accepts iteration wildcard id' do
           result = resolve_board_list_issues({ filters: { not: { iteration_wildcard_id: 'CURRENT' } } })
 
           expect(result).to contain_exactly(issue1, issue3, issue2)
         end
+      end
+    end
+
+    context 'filtering by iteration cadence' do
+      it 'returns issues associated with an iteration cadence' do
+        result = resolve_board_list_issues({ filters: { iteration_cadence_id: [iteration.iterations_cadence.to_global_id] } })
+
+        expect(result).to contain_exactly(issue2)
       end
     end
 

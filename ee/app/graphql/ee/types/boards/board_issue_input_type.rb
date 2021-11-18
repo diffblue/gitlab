@@ -16,6 +16,10 @@ module EE
                    required: false,
                    description: 'Filter by iteration ID wildcard.'
 
+          argument :iteration_cadence_id, [::Types::GlobalIDType[::Iterations::Cadence]],
+                   required: false,
+                   description: 'Filter by a list of iteration cadence IDs.'
+
           argument :weight_wildcard_id, ::Types::Boards::WeightWildcardIdEnum,
                    required: false,
                    description: 'Filter by weight ID wildcard. Incompatible with weight.'

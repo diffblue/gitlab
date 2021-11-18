@@ -42,6 +42,14 @@ module EE
         params[:iteration_id].present? || params[:iteration_title].present?
       end
 
+      def iteration_cadence_id
+        params[:iteration_cadence_id]
+      end
+
+      def by_iteration_cadence?
+        iteration_cadence_id.present?
+      end
+
       def filter_by_no_iteration?
         params[:iteration_id].to_s.downcase == ::IssuableFinder::Params::FILTER_NONE
       end

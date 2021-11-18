@@ -24,7 +24,8 @@ module EE
     def filter_items(items)
       issues = by_weight(super)
       issues = by_epic(issues)
-      by_iteration(issues)
+      issues = by_iteration(issues)
+      by_iteration_cadence(issues)
     end
 
     private
@@ -63,12 +64,18 @@ module EE
       elsif params.filter_by_any_iteration?
         items.any_iteration
       elsif params.filter_by_current_iteration? && get_current_iteration
-        items.in_iterations(get_current_iteration)
+        items.in_iteration_scope(get_current_iteration)
       elsif params.filter_by_iteration_title?
         items.with_iteration_title(params[:iteration_title])
       else
         items.in_iterations(params[:iteration_id])
       end
+    end
+
+    def by_iteration_cadence(items)
+      return items unless params.by_iteration_cadence?
+
+      items.in_iteration_cadences(params.iteration_cadence_id)
     end
 
     override :filter_negated_items
@@ -108,7 +115,7 @@ module EE
       strong_memoize(:current_iteration) do
         next unless params.parent
 
-        IterationsFinder.new(current_user, iterations_finder_params).execute.first
+        IterationsFinder.new(current_user, iterations_finder_params).execute
       end
     end
 
