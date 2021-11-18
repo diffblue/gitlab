@@ -70,6 +70,7 @@ class ActiveSession
       session_private_id = request.session.id.private_id
       client = DeviceDetector.new(request.user_agent)
       timestamp = Time.current
+      expiry = Settings.gitlab['session_expire_delay'] * 60
 
       active_user_session = new(
         ip_address: request.remote_ip,
@@ -86,8 +87,15 @@ class ActiveSession
       redis.pipelined do
         redis.setex(
           key_name(user.id, session_private_id),
-          Settings.gitlab['session_expire_delay'] * 60,
+          expiry,
           active_user_session.dump
+        )
+
+        # Deprecated legacy format - temporary to support mixed deployments
+        redis.setex(
+          key_name_v1(user.id, session_private_id),
+          expiry,
+          Marshal.dump(active_user_session)
         )
 
         redis.sadd(
@@ -238,9 +246,13 @@ class ActiveSession
       session_ids.zip(redis.mget(entry_keys)).to_h
     end
 
+    found.compact!
+    missing = session_ids - found.keys
+    return found if missing.empty?
+
     fallbacks = Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
-      entry_keys = session_ids.map { |session_id| key_name_v1(user_id, session_id) }
-      session_ids.zip(redis.mget(entry_keys)).to_h
+      entry_keys = missing.map { |session_id| key_name_v1(user_id, session_id) }
+      missing.zip(redis.mget(entry_keys)).to_h
     end
 
     fallbacks.merge(found.compact)
