@@ -59,6 +59,7 @@ application.
    gitlab_rails['omniauth_providers'] = [
      {
        "name" => "auth0",
+       # "label" => "Provider name", # optional label for login button, defaults to "Auth0"
        "args" => { client_id: 'YOUR_AUTH0_CLIENT_ID',
                    client_secret: 'YOUR_AUTH0_CLIENT_SECRET',
                    domain: 'YOUR_AUTH0_DOMAIN',
@@ -72,6 +73,7 @@ application.
 
    ```yaml
    - { name: 'auth0',
+       # label: 'Provider name', # optional label for login button, defaults to "Auth0"
        args: {
          client_id: 'YOUR_AUTH0_CLIENT_ID',
          client_secret: 'YOUR_AUTH0_CLIENT_SECRET',

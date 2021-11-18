@@ -63,6 +63,7 @@ Twitter. Twitter generates a client ID and secret key for you to use.
      gitlab_rails['omniauth_providers'] = [
        {
          "name" => "twitter",
+         # "label" => "Provider name", # optional label for login button, defaults to "Twitter"
          "app_id" => "YOUR_APP_ID",
          "app_secret" => "YOUR_APP_SECRET"
        }
@@ -73,6 +74,7 @@ Twitter. Twitter generates a client ID and secret key for you to use.
 
    ```yaml
    - { name: 'twitter',
+       # label: 'Provider name', # optional label for login button, defaults to "Twitter"
        app_id: 'YOUR_APP_ID',
        app_secret: 'YOUR_APP_SECRET' }
    ```

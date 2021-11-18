@@ -51,6 +51,7 @@ Follow these steps to incorporate the GitHub OAuth 2 app in your GitLab server:
    gitlab_rails['omniauth_providers'] = [
      {
        "name" => "github",
+       # "label" => "Provider name", # optional label for login button, defaults to "GitHub"
        "app_id" => "YOUR_APP_ID",
        "app_secret" => "YOUR_APP_SECRET",
        "args" => { "scope" => "user:email" }
@@ -64,6 +65,7 @@ Follow these steps to incorporate the GitHub OAuth 2 app in your GitLab server:
    gitlab_rails['omniauth_providers'] = [
      {
        "name" => "github",
+       # "label" => "Provider name", # optional label for login button, defaults to "GitHub"
        "app_id" => "YOUR_APP_ID",
        "app_secret" => "YOUR_APP_SECRET",
        "url" => "https://github.example.com/",
@@ -85,7 +87,9 @@ Follow these steps to incorporate the GitHub OAuth 2 app in your GitLab server:
    For GitHub.com:
 
    ```yaml
-   - { name: 'github', app_id: 'YOUR_APP_ID',
+   - { name: 'github',
+       # label: 'Provider name', # optional label for login button, defaults to "GitHub"
+       app_id: 'YOUR_APP_ID',
        app_secret: 'YOUR_APP_SECRET',
        args: { scope: 'user:email' } }
    ```
@@ -94,6 +98,7 @@ Follow these steps to incorporate the GitHub OAuth 2 app in your GitLab server:
 
    ```yaml
    - { name: 'github',
+       # label: 'Provider name', # optional label for login button, defaults to "GitHub"
        app_id: 'YOUR_APP_ID',
        app_secret: 'YOUR_APP_SECRET',
        url: "https://github.example.com/",
@@ -123,6 +128,7 @@ For Omnibus package:
 gitlab_rails['omniauth_providers'] = [
   {
     "name" => "github",
+    # "label" => "Provider name", # optional label for login button, defaults to "GitHub"
     "app_id" => "YOUR_APP_ID",
     "app_secret" => "YOUR_APP_SECRET",
     "url" => "https://github.example.com/",
@@ -142,6 +148,7 @@ For installation from source:
 
 ```yaml
 - { name: 'github',
+    # label: 'Provider name', # optional label for login button, defaults to "GitHub"
     app_id: 'YOUR_APP_ID',
     app_secret: 'YOUR_APP_SECRET',
     url: "https://github.example.com/",

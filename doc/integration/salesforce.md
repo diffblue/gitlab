@@ -58,6 +58,7 @@ To get the credentials (a pair of Client ID and Client Secret), you must [create
    gitlab_rails['omniauth_providers'] = [
      {
        "name" => "salesforce",
+       # "label" => "Provider name", # optional label for login button, defaults to "Salesforce"
        "app_id" => "SALESFORCE_CLIENT_ID",
        "app_secret" => "SALESFORCE_CLIENT_SECRET"
      }
@@ -68,6 +69,7 @@ To get the credentials (a pair of Client ID and Client Secret), you must [create
 
    ```yaml
    - { name: 'salesforce',
+       # label: 'Provider name', # optional label for login button, defaults to "Salesforce"
        app_id: 'SALESFORCE_CLIENT_ID',
        app_secret: 'SALESFORCE_CLIENT_SECRET'
    }

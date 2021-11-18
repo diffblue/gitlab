@@ -62,7 +62,7 @@ This strategy is designed to allow configuration of the simple OmniAuth SSO proc
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      { 'name' => 'oauth2_generic',
-       'label' => '<your_oauth2_label>',
+       'label' => 'Provider name', # optional label for login button, defaults to "Oauth2 Generic"
        'app_id' => '<your_app_client_id>',
        'app_secret' => '<your_app_client_secret>',
        'args' => {

@@ -99,14 +99,14 @@ as described in the section on [Security](#security). Otherwise, your users are 
    gitlab_rails['omniauth_providers'] = [
      {
        name: 'saml',
+       label: 'Provider name', # optional label for login button, defaults to "Saml"
        args: {
                 assertion_consumer_service_url: 'https://gitlab.example.com/users/auth/saml/callback',
                 idp_cert_fingerprint: '43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8',
                 idp_sso_target_url: 'https://login.example.com/idp',
                 issuer: 'https://gitlab.example.com',
                 name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
-              },
-       label: 'Provider name' # optional label for SAML login button, defaults to "Saml"
+              }
      }
    ]
    ```
@@ -118,14 +118,14 @@ as described in the section on [Security](#security). Otherwise, your users are 
      providers:
        - {
          name: 'saml',
+         label: 'Provider name', # optional label for login button, defaults to "Saml"
          args: {
            assertion_consumer_service_url: 'https://gitlab.example.com/users/auth/saml/callback',
            idp_cert_fingerprint: '43:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8',
            idp_sso_target_url: 'https://login.example.com/idp',
            issuer: 'https://gitlab.example.com',
            name_identifier_format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'
-         },
-         label: 'Company Login'  # optional label for SAML login button, defaults to "Saml"
+         }
        }
    ```
 

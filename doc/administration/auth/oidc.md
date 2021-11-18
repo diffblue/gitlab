@@ -36,7 +36,7 @@ The OpenID Connect provides you with a client's details and secret for you to us
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      { 'name' => 'openid_connect',
-       'label' => '<your_oidc_label>',
+       'label' => 'Provider name', # optional label for login button, defaults to "Openid Connect"
        'icon' => '<custom_provider_icon>',
        'args' => {
          'name' => 'openid_connect',
@@ -61,7 +61,7 @@ The OpenID Connect provides you with a client's details and secret for you to us
 
    ```yaml
      - { name: 'openid_connect',
-         label: '<your_oidc_label>',
+         label: 'Provider name', # optional label for login button, defaults to "Openid Connect"
          icon: '<custom_provider_icon>',
          args: {
            name: 'openid_connect',
@@ -137,7 +137,7 @@ for more details:
 gitlab_rails['omniauth_providers'] = [
   {
     'name' => 'openid_connect',
-    'label' => 'Google OpenID',
+    'label' => 'Google OpenID', # optional label for login button, defaults to "Openid Connect"
     'args' => {
       'name' => 'openid_connect',
       'scope' => ['openid', 'profile', 'email'],
@@ -174,7 +174,7 @@ Example Omnibus configuration block:
 gitlab_rails['omniauth_providers'] = [
   {
     'name' => 'openid_connect',
-    'label' => 'Azure OIDC',
+    'label' => 'Azure OIDC', # optional label for login button, defaults to "Openid Connect"
     'args' => {
       'name' => 'openid_connect',
       'scope' => ['openid', 'profile', 'email'],
@@ -303,7 +303,7 @@ The trailing forward slash is required.
    gitlab_rails['omniauth_providers'] = [
    {
      'name' => 'openid_connect',
-     'label' => 'Azure B2C OIDC',
+     'label' => 'Azure B2C OIDC', # optional label for login button, defaults to "Openid Connect"
      'args' => {
        'name' => 'openid_connect',
        'scope' => ['openid'],
@@ -360,7 +360,7 @@ Example Omnibus configuration block:
 gitlab_rails['omniauth_providers'] = [
   {
     'name' => 'openid_connect',
-    'label' => 'Keycloak',
+    'label' => 'Keycloak', # optional label for login button, defaults to "Openid Connect"
     'args' => {
       'name' => 'openid_connect',
       'scope' => ['openid', 'profile', 'email'],
@@ -437,7 +437,7 @@ To use symmetric key encryption:
    gitlab_rails['omniauth_providers'] = [
      {
        'name' => 'openid_connect',
-       'label' => 'Keycloak',
+       'label' => 'Keycloak', # optional label for login button, defaults to "Openid Connect"
        'args' => {
          'name' => 'openid_connect',
          'scope' => ['openid', 'profile', 'email'],

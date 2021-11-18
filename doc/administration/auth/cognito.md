@@ -57,7 +57,7 @@ Include the code block in the `/etc/gitlab/gitlab.rb` file:
    gitlab_rails['omniauth_providers'] = [
      {
        "name" => "cognito",
-       # "label" => "Cognito",
+       # "label" => "Provider name", # optional label for login button, defaults to "Cognito"
        # "icon" => nil,   # Optional icon URL
        "app_id" => "CLIENT ID",
        "app_secret" => "CLIENT SECRET",
