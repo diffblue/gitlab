@@ -162,7 +162,7 @@ class ActiveSession
   end
 
   def self.key_name(user_id, session_id = '*')
-    "#{Gitlab::Redis::Sessions::USER_SESSIONS_NAMESPACE}:v2:#{user_id}:#{session_id}"
+    "#{Gitlab::Redis::Sessions::USER_SESSIONS_NAMESPACE}::v2:#{user_id}:#{session_id}"
   end
 
   # Deprecated
