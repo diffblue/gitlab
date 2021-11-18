@@ -57,6 +57,10 @@ class ActiveSession
     session_private_id.presence || session_id
   end
 
+  def ids
+    [session_private_id, session_id].compact
+  end
+
   def human_device_type
     device_type&.titleize
   end
@@ -136,16 +140,16 @@ class ActiveSession
     sessions.reject! { |session| session.current?(current_rack_session) } if current_rack_session
 
     redis_store_class.with do |redis|
-      session_ids = sessions.map(&:id).compact
+      session_ids = sessions.flat_map(&:ids)
       destroy_sessions(redis, user, session_ids) if session_ids.any?
     end
   end
 
-  def self.not_impersonated(user)
+  private_class_method def self.not_impersonated(user)
     list(user).reject(&:is_impersonated)
   end
 
-  def self.rack_key_name(session_id)
+  private_class_method def self.rack_key_name(session_id)
     "#{Gitlab::Redis::Sessions::SESSION_NAMESPACE}:#{session_id}"
   end
 
@@ -197,16 +201,18 @@ class ActiveSession
   end
 
   def dump
-    "v1:#{Gitlab::Json.dump(self)}"
+    "v2:#{Gitlab::Json.dump(self)}"
   end
+
+  # Private:
 
   # raw_session - Raw bytes from Redis
   #
   # Returns an instance of this class
-  def self.load_raw_session(raw_session)
+  private_class_method def self.load_raw_session(raw_session)
     return unless raw_session
 
-    if raw_session.start_with?('v1:')
+    if raw_session.start_with?('v2:')
       session_data = Gitlab::Json.parse(raw_session[3..]).symbolize_keys
       new(**session_data)
     else
@@ -220,11 +226,11 @@ class ActiveSession
     end
   end
 
-  def self.rack_session_keys(rack_session_ids)
+  private_class_method def self.rack_session_keys(rack_session_ids)
     rack_session_ids.map { |session_id| rack_key_name(session_id) }
   end
 
-  def self.raw_active_session_entries(redis, session_ids, user_id)
+  private_class_method def self.raw_active_session_entries(redis, session_ids, user_id)
     return {} if session_ids.empty?
 
     found = Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
@@ -240,7 +246,7 @@ class ActiveSession
     fallbacks.merge(found.compact)
   end
 
-  def self.active_session_entries(session_ids, user_id, redis)
+  private_class_method def self.active_session_entries(session_ids, user_id, redis)
     return [] if session_ids.empty?
 
     raw_active_session_entries(redis, session_ids, user_id)
@@ -249,7 +255,7 @@ class ActiveSession
       .map { load_raw_session(_1) }
   end
 
-  def self.clean_up_old_sessions(redis, user)
+  private_class_method def self.clean_up_old_sessions(redis, user)
     session_ids = session_ids_for_user(user.id)
 
     return if session_ids.count <= ALLOWED_NUMBER_OF_ACTIVE_SESSIONS
@@ -268,7 +274,7 @@ class ActiveSession
   # Cleans up the lookup set by removing any session IDs that are no longer present.
   #
   # Returns an array of marshalled ActiveModel objects that are still active.
-  def self.cleaned_up_lookup_entries(redis, user)
+  private_class_method def self.cleaned_up_lookup_entries(redis, user)
     session_ids = session_ids_for_user(user.id)
     session_ids_and_entries = raw_active_session_entries(redis, session_ids, user.id)
 
