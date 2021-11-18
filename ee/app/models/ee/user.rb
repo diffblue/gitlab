@@ -168,6 +168,16 @@ module EE
 
         scope
       end
+
+      def user_cap_reached?
+        return false unless user_cap_max
+
+        billable.limit(user_cap_max + 1).count >= user_cap_max
+      end
+
+      def user_cap_max
+        ::Gitlab::CurrentSettings.new_user_signups_cap
+      end
     end
 
     def cannot_be_admin_and_auditor
@@ -410,6 +420,16 @@ module EE
       has_valid_credit_card? || !requires_credit_card_to_enable_shared_runners?(project)
     end
 
+    def activate_based_on_user_cap?
+      !blocked_auto_created_omniauth_user? &&
+        blocked_pending_approval? &&
+        self.class.user_cap_max.present?
+    end
+
+    def blocked_auto_created_omniauth_user?
+      ::Gitlab.config.omniauth.block_auto_created_users && identities.any?
+    end
+
     protected
 
     override :password_required?
@@ -487,6 +507,7 @@ module EE
 
     def perform_user_cap_check
       return unless ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
+      return if active?
 
       run_after_commit do
         SetUserStatusBasedOnUserCapSettingWorker.perform_async(id)

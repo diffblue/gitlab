@@ -15,11 +15,9 @@ class SetUserStatusBasedOnUserCapSettingWorker
   def perform(user_id)
     user = User.includes(:identities).find_by_id(user_id) # rubocop: disable CodeReuse/ActiveRecord
 
-    return if blocked_auto_created_omniauth_user?(user)
-    return unless user.blocked_pending_approval?
-    return if user_cap_max.nil?
+    return unless user.activate_based_on_user_cap?
 
-    if user_cap_reached?
+    if User.user_cap_reached?
       send_user_cap_reached_email
       return
     end
@@ -37,27 +35,9 @@ class SetUserStatusBasedOnUserCapSettingWorker
 
   private
 
-  def user_cap_max
-    strong_memoize(:user_cap_max) do
-      ::Gitlab::CurrentSettings.new_user_signups_cap
-    end
-  end
-
-  def current_billable_users_count
-    User.billable.count
-  end
-
-  def user_cap_reached?
-    current_billable_users_count >= user_cap_max
-  end
-
   def send_user_cap_reached_email
     User.admins.active.each do |user|
       ::Notify.user_cap_reached(user.id).deliver_later
     end
-  end
-
-  def blocked_auto_created_omniauth_user?(user)
-    ::Gitlab.config.omniauth.block_auto_created_users && user.identities.any?
   end
 end
