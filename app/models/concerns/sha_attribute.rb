@@ -7,7 +7,7 @@ module ShaAttribute
     def sha_attribute(name)
       return if ENV['STATIC_VERIFICATION']
 
-      validate_binary_column_exists!(name) if Rails.env.development?
+      validate_binary_column_exists!(name) if Rails.env.development? || Rails.env.test?
 
       attribute(name, Gitlab::Database::ShaAttribute.new)
     end
