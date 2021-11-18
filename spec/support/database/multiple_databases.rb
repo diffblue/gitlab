@@ -6,6 +6,10 @@ module Database
       skip 'Skipping because multiple databases not set up' unless Gitlab::Database.has_config?(:ci)
     end
 
+    def skip_if_multiple_databases_are_setup
+      skip 'Skipping because multiple databases are set up' if Gitlab::Database.has_config?(:ci)
+    end
+
     def reconfigure_db_connection(name: nil, config_hash: {}, model: ActiveRecord::Base, config_model: nil)
       db_config = (config_model || model).connection_db_config
 
@@ -46,6 +50,25 @@ module Database
       new_handler&.clear_all_connections!
     end
     # rubocop:enable Database/MultipleDatabases
+
+    def with_mocked_ci_connection
+      if Gitlab::Database.has_config?(:ci)
+        yield
+      else
+        with_reestablished_active_record_base(reconnect: true) do
+          reconfigure_db_connection(
+            name: :ci,
+            model: Ci::ApplicationRecord,
+            config_model: ActiveRecord::Base
+          )
+
+          yield
+
+          # Cleanup connection_specification_name for Ci::ApplicationRecord
+          Ci::ApplicationRecord.remove_connection
+        end
+      end
+    end
   end
 
   module ActiveRecordBaseEstablishConnection
@@ -70,17 +93,8 @@ RSpec.configure do |config|
   end
 
   config.around(:each, :mocked_ci_connection) do |example|
-    with_reestablished_active_record_base(reconnect: true) do
-      reconfigure_db_connection(
-        name: :ci,
-        model: Ci::ApplicationRecord,
-        config_model: ActiveRecord::Base
-      )
-
+    with_mocked_ci_connection do
       example.run
-
-      # Cleanup connection_specification_name for Ci::ApplicationRecord
-      Ci::ApplicationRecord.remove_connection
     end
   end
 end
