@@ -1,6 +1,9 @@
 import produce from 'immer';
 import { corpuses } from 'ee_jest/security_configuration/corpus_management/mock_data';
+import { publishPackage } from '~/api/packages_api';
+import axios from '~/lib/utils/axios_utils';
 import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
+import updateProgress from '../mutations/update_progress.mutation.graphql';
 
 export default {
   Query: {
@@ -18,6 +21,7 @@ export default {
       return {
         isUploading: false,
         progress: 0,
+        cancelSource: null,
         __typename: 'UploadState',
       };
     },
@@ -71,7 +75,17 @@ export default {
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
     },
-    uploadCorpus: (_, { name, projectPath }, { cache }) => {
+    uploadCorpus: (_, { projectPath, name, files }, { cache, client }) => {
+      const onUploadProgress = (e) => {
+        client.mutate({
+          mutation: updateProgress,
+          variables: { projectPath, progress: Math.round((e.loaded / e.total) * 100) },
+        });
+      };
+
+      const { CancelToken } = axios;
+      const source = CancelToken.source();
+
       const sourceData = cache.readQuery({
         query: getCorpusesQuery,
         variables: { projectPath },
@@ -80,18 +94,18 @@ export default {
       const data = produce(sourceData, (draftState) => {
         const { uploadState } = draftState;
         uploadState.isUploading = true;
-        // Simulate incrementing file upload progress
-        uploadState.progress += 10;
-
-        if (uploadState.progress >= 100) {
-          uploadState.isUploading = false;
-        }
+        uploadState.cancelSource = source;
       });
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
-      return data.uploadState.progress;
+
+      publishPackage(
+        { projectPath, name, version: 0, fileName: name, files },
+        { status: 'hidden', select: 'package_file' },
+        { onUploadProgress, cancelToken: source.token },
+      );
     },
-    resetCorpus: (_, { name, projectPath }, { cache }) => {
+    updateProgress: (_, { projectPath, progress }, { cache }) => {
       const sourceData = cache.readQuery({
         query: getCorpusesQuery,
         variables: { projectPath },
@@ -99,8 +113,30 @@ export default {
 
       const data = produce(sourceData, (draftState) => {
         const { uploadState } = draftState;
+        uploadState.isUploading = true;
+        uploadState.progress = progress;
+
+        if (progress >= 100) {
+          uploadState.isUploading = false;
+          uploadState.cancelSource = null;
+        }
+      });
+
+      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+    },
+    resetCorpus: (_, { projectPath }, { cache }) => {
+      const sourceData = cache.readQuery({
+        query: getCorpusesQuery,
+        variables: { projectPath },
+      });
+
+      sourceData.uploadState.cancelSource?.cancel();
+
+      const data = produce(sourceData, (draftState) => {
+        const { uploadState } = draftState;
         uploadState.isUploading = false;
         uploadState.progress = 0;
+        uploadState.cancelToken = null;
       });
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });

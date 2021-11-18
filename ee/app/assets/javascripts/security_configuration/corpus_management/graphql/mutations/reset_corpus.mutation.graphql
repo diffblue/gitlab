@@ -1,5 +1,5 @@
-mutation resetCorpus($projectPath: ID!, $name: String!) {
-  resetCorpus(projectPath: $projectPath, name: $name) @client {
+mutation resetCorpus($projectPath: ID!) {
+  resetCorpus(projectPath: $projectPath) @client {
     errors
   }
 }
