@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::NamespaceUserCapReachedAlertHelper do
+RSpec.describe EE::NamespaceUserCapReachedAlertHelper, :use_clean_rails_memory_store_caching do
+  include ReactiveCachingHelpers
+
   describe '#display_namespace_user_cap_reached_alert?' do
     let_it_be(:group, refind: true) do
       create(:group, :public,
@@ -21,6 +23,7 @@ RSpec.describe EE::NamespaceUserCapReachedAlertHelper do
     before do
       allow(helper).to receive(:can?).with(owner, :admin_namespace, group).and_return(true)
       allow(helper).to receive(:can?).with(developer, :admin_namespace, group).and_return(false)
+      stub_cache(group)
     end
 
     it 'returns true when the user cap is reached for a user who can admin the namespace' do
@@ -35,24 +38,23 @@ RSpec.describe EE::NamespaceUserCapReachedAlertHelper do
       expect(helper.display_namespace_user_cap_reached_alert?(group)).to be false
     end
 
-    it 'caches the result' do
+    it 'does not trigger reactive caching if there is no user cap set' do
+      group.namespace_settings.update!(new_user_signups_cap: nil)
+
       sign_in(owner)
 
-      expect(Rails.cache).to receive(:fetch).with("namespace_user_cap_reached:#{group.id}", expires_in: 2.hours)
-
-      helper.display_namespace_user_cap_reached_alert?(group)
-    end
-
-    it 'caches the result for a subgroup' do
-      sign_in(owner)
-
-      expect(Rails.cache).to receive(:fetch).with("namespace_user_cap_reached:#{group.id}", expires_in: 2.hours)
-
-      helper.display_namespace_user_cap_reached_alert?(subgroup)
+      expect(group).not_to receive(:with_reactive_cache)
+      expect(helper.display_namespace_user_cap_reached_alert?(group)).to be false
     end
 
     def sign_in(user)
       allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    def stub_cache(group)
+      group_with_fresh_memoization = Group.find(group.id)
+      result = group_with_fresh_memoization.calculate_reactive_cache
+      stub_reactive_cache(group, result)
     end
   end
 end

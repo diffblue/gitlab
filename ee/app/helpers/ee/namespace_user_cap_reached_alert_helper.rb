@@ -10,7 +10,7 @@ module EE
 
       return false if alert_has_been_dismissed?(root_namespace)
 
-      can?(current_user, :admin_namespace, root_namespace) && user_cap_reached?(root_namespace)
+      can?(current_user, :admin_namespace, root_namespace) && root_namespace.user_cap_reached?(use_cache: true)
     end
 
     def hide_user_cap_alert_cookie_id(root_namespace)
@@ -21,12 +21,6 @@ module EE
 
     def alert_has_been_dismissed?(root_namespace)
       cookies[hide_user_cap_alert_cookie_id(root_namespace)] == 'true'
-    end
-
-    def user_cap_reached?(root_namespace)
-      Rails.cache.fetch(root_namespace.namespace_user_cap_reached_cache_key, expires_in: 2.hours) do
-        root_namespace.user_cap_reached?
-      end
     end
   end
 end

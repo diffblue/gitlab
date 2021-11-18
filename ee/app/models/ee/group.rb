@@ -14,6 +14,11 @@ module EE
       include InsightsFeature
       include HasWiki
       include CanMoveRepositoryStorage
+      include ReactiveCaching
+
+      self.reactive_cache_work_type = :no_dependency
+      self.reactive_cache_refresh_interval = 10.minutes
+      self.reactive_cache_lifetime = 1.hour
 
       add_authentication_token_field :saml_discovery_token, unique: false, token_generator: -> { Devise.friendly_token(8) }
 
@@ -305,6 +310,16 @@ module EE
       project
     end
 
+    def calculate_reactive_cache
+      billable_members_count
+    end
+
+    def billable_members_count_with_reactive_cache
+      with_reactive_cache do |return_value|
+        return_value
+      end
+    end
+
     override :billable_members_count
     def billable_members_count(requested_hosted_plan = nil)
       billable_ids = billed_user_ids(requested_hosted_plan)
@@ -481,17 +496,16 @@ module EE
       ::Feature.enabled?(:iteration_cadences, self, default_enabled: :yaml)
     end
 
-    def user_cap_reached?
+    def user_cap_reached?(use_cache: false)
       return false unless ::Feature.enabled?(:saas_user_caps, root_ancestor, default_enabled: :yaml)
 
       user_cap = root_ancestor.namespace_settings&.new_user_signups_cap
       return false unless user_cap
 
-      user_cap <= root_ancestor.billable_members_count
-    end
+      members_count = use_cache ? root_ancestor.billable_members_count_with_reactive_cache : root_ancestor.billable_members_count
+      return false unless members_count
 
-    def namespace_user_cap_reached_cache_key
-      "namespace_user_cap_reached:#{root_ancestor.id}"
+      user_cap <= members_count
     end
 
     private

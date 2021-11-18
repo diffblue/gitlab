@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Namespace user cap reached alert', :feature, :js do
+RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rails_memory_store_caching do
+  include ReactiveCachingHelpers
+
   let_it_be(:group, refind: true) do
     create(:group, :public,
            namespace_settings: create(:namespace_settings, new_user_signups_cap: 2))
@@ -21,6 +23,10 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js do
   end
 
   context 'with an exceeded user cap' do
+    before do
+      stub_cache(group)
+    end
+
     it 'displays the banner to a group owner' do
       sign_in(owner)
       visit group_path(group)
@@ -101,6 +107,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js do
       other_group = create(:group, :public,
                            namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
       other_group.add_owner(owner)
+      stub_cache(other_group)
       sign_in(owner)
       visit group_path(group)
       dismiss_button.click
@@ -121,11 +128,21 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js do
       expect_group_page_for(group)
       expect_banner_to_be_absent
     end
+
+    it 'does not display the banner to a group owner on a reactive cache miss' do
+      stub_reactive_cache(group, nil)
+      sign_in(owner)
+      visit group_path(group)
+
+      expect_group_page_for(group)
+      expect_banner_to_be_absent
+    end
   end
 
   context 'with a user cap that has not been exceeded' do
     before do
       group.namespace_settings.update!(new_user_signups_cap: 4)
+      stub_cache(group)
     end
 
     it 'does not display the banner to a group owner' do
@@ -140,6 +157,7 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js do
   context 'without a user cap set' do
     before do
       group.namespace_settings.update!(new_user_signups_cap: nil)
+      stub_cache(group)
     end
 
     it 'does not display the banner to a group owner' do
@@ -183,5 +201,11 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js do
 
   def expect_banner_to_be_absent
     expect(page).not_to have_text 'Your group has reached its billable member limit'
+  end
+
+  def stub_cache(group)
+    group_with_fresh_memoization = Group.find(group.id)
+    result = group_with_fresh_memoization.calculate_reactive_cache
+    stub_reactive_cache(group, result)
   end
 end
