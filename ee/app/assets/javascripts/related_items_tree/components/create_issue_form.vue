@@ -245,7 +245,7 @@ export default {
       <div class="col-sm flex-sm-grow-0 mb-2 mb-sm-0">
         <gl-button
           class="w-100"
-          variant="success"
+          variant="confirm"
           category="primary"
           :disabled="!selectedProject || itemCreateInProgress"
           :loading="itemCreateInProgress || recentItemFetchInProgress"
