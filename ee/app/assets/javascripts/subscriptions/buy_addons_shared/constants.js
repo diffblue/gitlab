@@ -13,6 +13,9 @@ export const SUBSCRIPTION_TYPE = 'Subscription';
 export const NAMESPACE_TYPE = 'Namespace';
 export const PAYMENT_METHOD_TYPE = 'PaymentMethod';
 export const PLAN_TYPE = 'Plan';
+export const STEP_TYPE = 'Step';
+export const COUNTRY_TYPE = 'Country';
+export const STATE_TYPE = 'State';
 
 export const CI_MINUTES_PER_PACK = 1000;
 export const STORAGE_PER_PACK = 10;

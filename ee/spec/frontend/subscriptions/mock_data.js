@@ -14,6 +14,7 @@ export const mockCiMinutesPlans = [
   {
     id: 'ciMinutesPackPlanId',
     code: 'ci_minutes',
+    isAddon: true,
     pricePerYear: 10,
     name: 'CI minutes pack',
     __typename: PLAN_TYPE,
