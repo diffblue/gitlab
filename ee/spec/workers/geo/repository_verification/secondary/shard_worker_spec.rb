@@ -64,7 +64,7 @@ RSpec.describe Geo::RepositoryVerification::Secondary::ShardWorker, :geo, :reque
     it 'does not schedule jobs when number of scheduled jobs exceeds capacity' do
       create(:project)
 
-      is_expected.to receive(:scheduled_job_ids).and_return(1..1000).at_least(:once)
+      is_expected.to receive(:scheduled_job_ids).and_return((1..1000).to_a).at_least(:once)
       is_expected.not_to receive(:schedule_job)
 
       Sidekiq::Testing.inline! { subject.perform(shard_name) }
