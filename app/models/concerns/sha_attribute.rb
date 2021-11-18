@@ -3,6 +3,9 @@
 module ShaAttribute
   extend ActiveSupport::Concern
 
+  # Needed for the database method
+  include DatabaseReflection
+
   class_methods do
     def sha_attribute(name)
       return if ENV['STATIC_VERIFICATION']
