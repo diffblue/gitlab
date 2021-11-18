@@ -6,11 +6,9 @@ module QA
       class GroupCadence < QA::Resource::Base
         include Support::Dates
 
-        attr_accessor :title, :group
-
         attribute :group do
           QA::Resource::Group.fabricate_via_api! do |group|
-            group.path = "group-to-test-iterations-#{SecureRandom.hex(8)}"
+            group.path = "group-to-test-iteration-cadences-#{SecureRandom.hex(8)}"
           end
         end
 
