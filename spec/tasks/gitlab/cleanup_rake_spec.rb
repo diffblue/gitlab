@@ -175,7 +175,7 @@ RSpec.describe 'gitlab:cleanup rake tasks', :silence_stdout do
       before do
         Gitlab::Redis::Sessions.with do |redis|
           redis.set(ActiveSession.key_name(user.id, existing_session_id),
-                    Gitlab::Json.dump(ActiveSession.new(session_id: 'x')))
+                    ActiveSession.new(session_id: 'x').dump)
           redis.sadd(ActiveSession.lookup_key_name(user.id), (1..10).to_a)
         end
       end
