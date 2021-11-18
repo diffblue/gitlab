@@ -3,7 +3,6 @@
 require 'rspec-parameterized'
 
 require_relative '../../sidekiq_cluster/sidekiq_cluster'
-require_relative '../../lib/gitlab/process_management'
 
 RSpec.describe Gitlab::SidekiqCluster do # rubocop:disable RSpec/FilePath
   describe '.start' do
