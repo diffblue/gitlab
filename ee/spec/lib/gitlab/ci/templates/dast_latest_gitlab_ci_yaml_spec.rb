@@ -63,13 +63,11 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
       end
 
       context 'when project has cluster' do
-        let(:cluster) { create(:cluster, :project, :provided_by_gcp, projects: [project]) }
+        before do
+          create(:cluster, :project, :provided_by_gcp, projects: [project])
+        end
 
         context 'by default' do
-          before do
-            allow(cluster).to receive(:active?).and_return(true)
-          end
-
           include_examples 'includes no jobs'
         end
 
@@ -78,7 +76,6 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
 
           before do
             allow(License).to receive(:current).and_return(license)
-            allow(cluster).to receive(:active?).and_return(true)
           end
 
           context 'when no specification provided' do
@@ -87,91 +84,85 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
         end
       end
 
-      context 'when cluster is not active' do
-        context 'by default' do
-          include_examples 'includes no jobs'
+      context 'by default' do
+        include_examples 'includes no jobs'
+      end
+
+      context 'when DAST_WEBSITE is present' do
+        before do
+          create(:ci_variable, project: project, key: 'DAST_WEBSITE', value: 'http://example.com')
         end
 
-        context 'when DAST_WEBSITE is present' do
-          before do
-            create(:ci_variable, project: project, key: 'DAST_WEBSITE', value: 'http://example.com')
-          end
+        include_examples 'includes dast job'
+      end
 
-          include_examples 'includes dast job'
+      context 'when DAST_API_SPECIFICATION is present' do
+        before do
+          create(:ci_variable, project: project, key: 'DAST_API_SPECIFICATION', value: 'http://my.api/api-specification.yml')
         end
 
-        context 'when DAST_API_SPECIFICATION is present' do
-          before do
-            create(:ci_variable, project: project, key: 'DAST_API_SPECIFICATION', value: 'http://my.api/api-specification.yml')
-          end
+        include_examples 'includes dast job'
+      end
 
-          include_examples 'includes dast job'
+      context 'when project has Ultimate license' do
+        let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
+
+        before do
+          allow(License).to receive(:current).and_return(license)
         end
 
-        context 'when project has Ultimate license' do
-          let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
-
+        context 'when project has cluster' do
           before do
-            allow(License).to receive(:current).and_return(license)
+            create(:cluster, :project, :provided_by_gcp, projects: [project])
           end
 
-          context 'when project has cluster' do
-            let(:cluster) { create(:cluster, :project, :provided_by_gcp, projects: [project]) }
+          context 'when DAST_DISABLED=1' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_DISABLED', value: '1')
+            end
 
-            context 'when DAST_DISABLED=1' do
-              before do
-                allow(cluster).to receive(:active?).and_return(true)
+            include_examples 'includes no jobs'
+          end
 
-                create(:ci_variable, project: project, key: 'DAST_DISABLED', value: '1')
-              end
+          context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH=1' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: '1')
+            end
 
+            context 'when on default branch' do
               include_examples 'includes no jobs'
             end
 
-            context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH=1' do
+            context 'when on feature branch' do
+              let(:pipeline_branch) { 'patch-1' }
+
               before do
-                allow(cluster).to receive(:active?).and_return(true)
-
-                create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: '1')
+                project.repository.create_branch(pipeline_branch, default_branch)
               end
 
-              context 'when on default branch' do
-                include_examples 'includes no jobs'
-              end
-
-              context 'when on feature branch' do
-                let(:pipeline_branch) { 'patch-1' }
-
-                before do
-                  project.repository.create_branch(pipeline_branch, default_branch)
-                end
-
-                it 'includes dast job' do
-                  expect(build_names).to match_array(%w[dast])
-                end
+              it 'includes dast job' do
+                expect(build_names).to match_array(%w[dast])
               end
             end
+          end
 
-            context 'when REVIEW_DISABLED=true' do
+          context 'when REVIEW_DISABLED=true' do
+            before do
+              create(:ci_variable, project: project, key: 'REVIEW_DISABLED', value: 'true')
+            end
+
+            context 'when on default branch' do
+              include_examples 'includes dast job'
+            end
+
+            context 'when on feature branch' do
+              let(:pipeline_branch) { 'patch-1' }
+
               before do
-                allow(cluster).to receive(:active?).and_return(true)
-
-                create(:ci_variable, project: project, key: 'REVIEW_DISABLED', value: 'true')
+                project.repository.create_branch(pipeline_branch, default_branch)
               end
 
-              context 'when on default branch' do
-                include_examples 'includes dast job'
-              end
-
-              context 'when on feature branch' do
-                let(:pipeline_branch) { 'patch-1' }
-
-                before do
-                  project.repository.create_branch(pipeline_branch, default_branch)
-                end
-
-                include_examples 'includes no jobs'
-              end
+              include_examples 'includes no jobs'
             end
           end
         end

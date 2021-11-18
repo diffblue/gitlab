@@ -22,12 +22,13 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
   end
 
   describe 'the created pipeline' do
-    let_it_be_with_refind(:project) do
+    let_it_be_with_refind(:project_with_ci_kubernetes_active) do
       create(:project, :repository, variables: [
         build(:ci_variable, key: 'CI_KUBERNETES_ACTIVE', value: 'true')
       ])
     end
 
+    let(:project) { project_with_ci_kubernetes_active }
     let(:user) { project.owner }
     let(:default_branch) { 'master' }
     let(:pipeline_ref) { default_branch }
@@ -61,12 +62,9 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
       end
 
       context 'default branch' do
-        it 'includes the DAST environment jobs by default' do
+        it 'includes the DAST environment jobs by default', :aggregate_failures do
           expect(build_names).to include('dast_environment_deploy')
           expect(build_names).to include('stop_dast_environment')
-        end
-
-        it 'always runs the cleanup job' do
           expect(pipeline.builds.find_by(name: 'stop_dast_environment').when).to eq('always')
         end
 
@@ -75,6 +73,20 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
 
           expect(build_names).not_to include('dast_environment_deploy')
           expect(build_names).not_to include('stop_dast_environment')
+        end
+
+        context 'when KUBECONFIG and not CI_KUBERNETES_ACTIVE' do
+          let(:project) do
+            create(:project, :repository, variables: [
+              build(:ci_variable, key: 'KUBECONFIG', value: 'true')
+            ])
+          end
+
+          it 'includes the DAST environment jobs', :aggregate_failures do
+            expect(build_names).to include('dast_environment_deploy')
+            expect(build_names).to include('stop_dast_environment')
+            expect(pipeline.builds.find_by(name: 'stop_dast_environment').when).to eq('always')
+          end
         end
       end
 
