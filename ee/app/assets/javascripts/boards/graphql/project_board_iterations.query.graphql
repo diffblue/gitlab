@@ -1,9 +1,10 @@
+#import "../../sidebar/queries/iteration.fragment.graphql"
+
 query ProjectBoardIterations($fullPath: ID!, $title: String) {
   project(fullPath: $fullPath) {
     iterations(includeAncestors: true, title: $title) {
       nodes {
-        id
-        title
+        ...IterationFragment
       }
     }
   }
