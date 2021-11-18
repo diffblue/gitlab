@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'shared/namespace_user_cap_reached_alert' do
+RSpec.describe 'shared/namespace_user_cap_reached_alert', :use_clean_rails_memory_store_caching do
+  include ReactiveCachingHelpers
+
   let_it_be(:group, refind: true) { create(:group, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1)) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:other_group) { create(:group, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1)) }
@@ -18,6 +20,8 @@ RSpec.describe 'shared/namespace_user_cap_reached_alert' do
 
   before do
     allow(view).to receive(:current_user).and_return(owner)
+    stub_cache(group)
+    stub_cache(other_group)
   end
 
   it 'renders a link to pending user approvals' do
@@ -43,5 +47,11 @@ RSpec.describe 'shared/namespace_user_cap_reached_alert' do
     render partial
 
     expect(rendered).to have_link('View pending user approvals', href: usage_quotas_path(project.namespace, anchor: 'seats-quota-tab'))
+  end
+
+  def stub_cache(group)
+    group_with_fresh_memoization = Group.find(group.id)
+    result = group_with_fresh_memoization.calculate_reactive_cache
+    stub_reactive_cache(group, result)
   end
 end

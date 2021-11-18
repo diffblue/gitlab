@@ -30,8 +30,6 @@ module EE
 
       before_create :set_membership_activation
 
-      after_commit :invalidate_namespace_user_cap_cache
-
       scope :with_csv_entity_associations, -> do
         includes(:user, source: [:route, :parent])
       end
@@ -150,12 +148,6 @@ module EE
       return unless group && ::Feature.enabled?(:saas_user_caps, group.root_ancestor, default_enabled: :yaml)
 
       self.state = group.user_cap_reached? ? STATE_AWAITING : STATE_ACTIVE
-    end
-
-    def invalidate_namespace_user_cap_cache
-      return unless group && ::Feature.enabled?(:saas_user_caps, group.root_ancestor, default_enabled: :yaml)
-
-      Rails.cache.delete(group.namespace_user_cap_reached_cache_key)
     end
   end
 end
