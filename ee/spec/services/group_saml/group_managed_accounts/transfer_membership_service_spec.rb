@@ -15,7 +15,7 @@ RSpec.describe GroupSaml::GroupManagedAccounts::TransferMembershipService do
 
     allow(Gitlab::Auth::GroupSaml::IdentityLinker)
       .to receive(:new).with(current_user, oauth_data, session, group.saml_provider)
-            .and_return(instance_double('GitLab::Auth::GroupSaml::IdentityLinker', link: '', failed?: false))
+            .and_return(instance_double('Gitlab::Auth::GroupSaml::IdentityLinker', link: '', failed?: false))
   end
 
   it 'removes the current password' do

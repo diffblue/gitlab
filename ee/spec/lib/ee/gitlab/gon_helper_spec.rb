@@ -14,7 +14,7 @@ RSpec.describe EE::Gitlab::GonHelper do
   end
 
   describe '#add_gon_variables' do
-    let(:gon) { instance_double('gon').as_null_object }
+    let(:gon) { double('gon').as_null_object }
 
     before do
       allow(helper).to receive(:gon).and_return(gon)
@@ -45,7 +45,7 @@ RSpec.describe EE::Gitlab::GonHelper do
 
     shared_examples 'sets the licensed features flag' do
       it 'pushes the licensed feature flag to the frotnend' do
-        gon = instance_double('gon')
+        gon = class_double('Gon')
         stub_licensed_features(feature => true)
 
         allow(helper)
