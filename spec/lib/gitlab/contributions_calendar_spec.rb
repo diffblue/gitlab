@@ -66,14 +66,34 @@ RSpec.describe Gitlab::ContributionsCalendar do
     end
 
     context "when the user has opted-in for private contributions" do
-      it "shows private and public events to all users" do
+      before do
         contributor.update_column(:include_private_contributions, true)
+      end
+
+      it "shows private and public events to all users" do
         create_event(private_project, today)
         create_event(public_project, today)
 
         expect(calendar.activity_dates[today]).to eq(2)
         expect(calendar(user).activity_dates[today]).to eq(2)
         expect(calendar(contributor).activity_dates[today]).to eq(2)
+      end
+
+      # tests for bug https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74826
+      it "still counts correct with feature access levels set to private" do
+        create_event(private_project, today)
+
+        private_project.project_feature.update_attribute(:issues_access_level, ProjectFeature::PRIVATE)
+        private_project.project_feature.update_attribute(:repository_access_level, ProjectFeature::PRIVATE)
+        private_project.project_feature.update_attribute(:merge_requests_access_level, ProjectFeature::PRIVATE)
+
+        expect(calendar.activity_dates[today]).to eq(1)
+        expect(calendar(user).activity_dates[today]).to eq(1)
+        expect(calendar(contributor).activity_dates[today]).to eq(1)
+      end
+
+      it "does not fail if there are no contributed projects" do
+        expect(calendar.activity_dates[today]).to eq(nil)
       end
     end
 
