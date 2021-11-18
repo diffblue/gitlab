@@ -569,4 +569,86 @@ RSpec.describe ActiveSession, :clean_gitlab_redis_sessions do
       it_behaves_like 'cleaning up'
     end
   end
+
+  describe '.cleaned_up_lookup_entries' do
+    before do
+      stub_const("ActiveSession::ALLOWED_NUMBER_OF_ACTIVE_SESSIONS", 5)
+    end
+
+    shared_examples 'cleaning up lookup entries' do
+      let(:current_session_id) { '6919a6f1bb119dd7396fadc38fd18d0d' }
+      let(:active_count) { 3 }
+
+      before do
+        Gitlab::Redis::SharedState.with do |redis|
+          active_count.times do |number|
+            redis.set(
+              key_name(user.id, number),
+              dump_session(ActiveSession.new(session_id: number.to_s, updated_at: number.days.ago))
+            )
+
+            redis.sadd(lookup_key, number.to_s)
+          end
+
+          redis.sadd(lookup_key, (active_count + 1).to_s)
+          redis.sadd(lookup_key, (active_count + 2).to_s)
+        end
+      end
+
+      it 'removes obsolete lookup entries' do
+        active = Gitlab::Redis::SharedState.with do |redis|
+          ActiveSession.cleaned_up_lookup_entries(redis, user)
+        end
+
+        expect(active.count).to eq(active_count)
+
+        Gitlab::Redis::SharedState.with do |redis|
+          lookup_entries = redis.smembers(lookup_key)
+
+          expect(lookup_entries.count).to eq(active_count)
+          expect(lookup_entries).not_to include(
+            (active_count + 1).to_s,
+            (active_count + 2).to_s
+          )
+        end
+      end
+
+      it 'reports the removed entries' do
+        removed = []
+        Gitlab::Redis::SharedState.with do |redis|
+          ActiveSession.cleaned_up_lookup_entries(redis, user, removed)
+        end
+
+        expect(removed.count).to eq(2)
+      end
+    end
+
+    context 'with legacy sessions' do
+      let(:session_key) { described_class.key_name_v1(user.id, current_session_id) }
+
+      def key_name(user_id, session_id)
+        described_class.key_name_v1(user_id, session_id)
+      end
+
+      def dump_session(session)
+        Marshal.dump(session)
+      end
+
+      it_behaves_like 'cleaning up lookup entries'
+    end
+
+    context 'with new sessions' do
+      let(:session_key) { described_class.key_name(user.id, current_session_id) }
+
+      def key_name(user_id, session_id)
+        described_class.key_name(user_id, session_id)
+      end
+
+      def dump_session(session)
+        session.dump
+      end
+
+      it_behaves_like 'cleaning up lookup entries'
+    end
+  end
 end

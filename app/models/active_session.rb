@@ -274,7 +274,9 @@ class ActiveSession
   # Cleans up the lookup set by removing any session IDs that are no longer present.
   #
   # Returns an array of marshalled ActiveModel objects that are still active.
-  private_class_method def self.cleaned_up_lookup_entries(redis, user)
+  # Records removed keys in the optional `removed` argument array.
+  def self.cleaned_up_lookup_entries(redis, user, removed = [])
+    lookup_key = lookup_key_name(user.id)
     session_ids = session_ids_for_user(user.id)
     session_ids_and_entries = raw_active_session_entries(redis, session_ids, user.id)
 
@@ -283,7 +285,10 @@ class ActiveSession
     # lookup entries in the set need to be removed manually.
     redis.pipelined do |pipeline|
       session_ids_and_entries.each do |session_id, entry|
-        pipeline.srem(lookup_key_name(user.id), session_id) unless entry
+        next if entry
+
+        pipeline.srem(lookup_key, session_id)
+        removed << session_id
       end
     end
 
