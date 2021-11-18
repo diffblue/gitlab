@@ -15,7 +15,7 @@
             = s_('GroupSAML|Before enforcing SSO, enable SAML authentication.')
           %p.help-text.js-warning{ class: saml_provider.enforced_sso? && 'gl-display-none' }
             - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/saml_sso/index', anchor: 'sso-enforcement') }
-            = html_escape(s_('GroupSAML|%{strongOpen}Warning%{strongClose} - Enabling %{linkStart}SSO enforcement%{linkEnd} can reduce security risks.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe, linkStart: link_start, linkEnd: '</a>'.html_safe }
+            = html_escape(s_('GroupSAML|%{strongOpen}Warning%{strongClose} - Enable %{linkStart}SSO enforcement%{linkEnd} to reduce security risks.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe, linkStart: link_start, linkEnd: '</a>'.html_safe }
     .form-group
       .gl-form-checkbox.custom-control.custom-checkbox
         = f.check_box :git_check_enforced, { class: 'custom-control-input js-group-saml-enforced-git-check-input' }
