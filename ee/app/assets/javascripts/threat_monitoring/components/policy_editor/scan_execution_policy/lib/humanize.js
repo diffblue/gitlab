@@ -1,5 +1,6 @@
+import cronstrue from 'cronstrue/i18n';
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
-import { sprintf, s__, n__ } from '~/locale';
+import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
 import { NO_RULE_MESSAGE } from './constants';
 
 const getActionText = (scanType) =>
@@ -33,7 +34,9 @@ const humanizeBranches = (originalBranches) => {
 };
 
 const humanizeCadence = (cadence) => {
-  return cadence;
+  return cronstrue
+    .toString(cadence, { locale: getPreferredLocales()[0], verbose: true })
+    .toLowerCase();
 };
 
 const humanizePipelineRule = (rule) => {
@@ -44,10 +47,10 @@ const humanizePipelineRule = (rule) => {
 };
 
 const humanizeScheduleRule = (rule) => {
-  return sprintf(
-    s__('SecurityOrchestration|Scan to be performed every %{cadence} on the %{branches}'),
-    { cadence: humanizeCadence(rule.cadence), branches: humanizeBranches(rule.branches) },
-  );
+  return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}'), {
+    cadence: humanizeCadence(rule.cadence),
+    branches: humanizeBranches(rule.branches),
+  });
 };
 
 const HUMANIZE_RULES_METHODS = {

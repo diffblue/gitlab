@@ -34,6 +34,11 @@ describe('humanizeActions', () => {
 });
 
 describe('humanizeRules', () => {
+  beforeEach(() => {
+    // Need to spy on window.navigator.languages as it is read-only
+    jest.spyOn(window.navigator, 'languages', 'get').mockReturnValueOnce(['en']);
+  });
+
   it('returns the empty rules message in an Array if no rules are specified', () => {
     expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
   });
@@ -44,13 +49,13 @@ describe('humanizeRules', () => {
 
   it('returns a single rule as a human-readable string', () => {
     expect(humanizeRules([mockRules[0]])).toStrictEqual([
-      'Scan to be performed every */10 * * * * on the main branch',
+      'Scan to be performed every 10 minutes, every hour, every day on the main branch',
     ]);
   });
 
   it('returns multiple rules with different number of branches as human-readable strings', () => {
     expect(humanizeRules(mockRules)).toStrictEqual([
-      'Scan to be performed every */10 * * * * on the main branch',
+      'Scan to be performed every 10 minutes, every hour, every day on the main branch',
       'Scan to be performed on every pipeline on the release/* and staging branches',
       'Scan to be performed on every pipeline on the release/1.*, canary and staging branches',
     ]);
