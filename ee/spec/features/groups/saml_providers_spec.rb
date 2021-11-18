@@ -71,7 +71,7 @@ RSpec.describe 'SAML provider settings' do
 
         uncheck 'Enforce SSO-only authentication for web activity for this group'
 
-        expect(page).to have_content 'Warning - Enabling SSO enforcement can reduce security risks.'
+        expect(page).to have_content 'Warning - Enable SSO enforcement to reduce security risks.'
       end
     end
 
@@ -118,7 +118,7 @@ RSpec.describe 'SAML provider settings' do
         uncheck 'Enforce SSO-only authentication for web activity for this group'
 
         expect { submit }.to change { saml_provider.reload.enforced_sso }.to(false)
-        expect(page).to have_content 'Warning - Enabling SSO enforcement can reduce security risks.'
+        expect(page).to have_content 'Warning - Enable SSO enforcement to reduce security risks.'
       end
 
       context 'enforced_group_managed_accounts enabled', :js do
