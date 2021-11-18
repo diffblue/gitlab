@@ -14,6 +14,7 @@ describe('IssueBoardFilter', () => {
       propsData: { fullPath: 'gitlab-org', boardType: 'group' },
       provide: {
         isSignedIn: true,
+        releasesFetchPath: '/releases',
         glFeatures: {
           iterationCadences: true,
         },
