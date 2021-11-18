@@ -266,7 +266,7 @@ class ActiveSession
     # remove sessions if there are more than ALLOWED_NUMBER_OF_ACTIVE_SESSIONS.
     destroyable_session_ids = sessions
       .drop(ALLOWED_NUMBER_OF_ACTIVE_SESSIONS)
-      .flat_map { |session| [session.session_id, session.session_private_id].compact }
+      .flat_map(&:ids)
 
     destroy_sessions(redis, user, destroyable_session_ids)
   end
