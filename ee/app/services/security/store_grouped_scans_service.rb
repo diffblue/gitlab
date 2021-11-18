@@ -43,12 +43,16 @@ module Security
     end
 
     def sorted_artifacts
-      @sorted_artifacts ||= artifacts.sort do |a, b|
-        report_a = a.security_report(validate: true)
-        report_b = b.security_report(validate: true)
+      @sorted_artifacts ||= artifacts.each(&method(:prepare_report_for)).sort do |a, b|
+        report_a = a.security_report
+        report_b = b.security_report
 
         report_a.primary_scanner_order_to(report_b)
       end
+    end
+
+    def prepare_report_for(artifact)
+      artifact.security_report(validate: true)
     end
 
     def store_scan_for(artifact, deduplicate)
