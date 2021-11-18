@@ -41,11 +41,13 @@ module Mutations
 
             field :configuration_yaml, GraphQL::Types::String,
               null: true,
+              deprecated: { reason: 'The configuration snippet is now generated client-side', milestone: '14.6' },
               description: "A YAML snippet that can be inserted into the project's "\
               '`.gitlab-ci.yml` to set up API fuzzing scans.'
 
             field :gitlab_ci_yaml_edit_path, GraphQL::Types::String,
               null: true,
+              deprecated: { reason: 'The configuration snippet is now generated client-side', milestone: '14.6' },
               description: "Location at which the project's `.gitlab-ci.yml` file can be edited in the browser."
 
             authorize :create_vulnerability
