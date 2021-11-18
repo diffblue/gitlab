@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 import Api from 'ee/api';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscriptions/constants';
+import { COUNTRY_TYPE, STATE_TYPE } from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import createFlash from '~/flash';
 
@@ -13,10 +14,7 @@ export const resolvers = {
     countries: () => {
       return Api.fetchCountries()
         .then(({ data }) =>
-          data.map(([name, alpha2]) =>
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            ({ name, id: alpha2, __typename: 'Country' }),
-          ),
+          data.map(([name, alpha2]) => ({ name, id: alpha2, __typename: COUNTRY_TYPE })),
         )
         .catch(() => createFlash({ message: ERROR_FETCHING_COUNTRIES }));
     },
@@ -26,8 +24,7 @@ export const resolvers = {
           return Object.entries(data).map(([key, value]) => ({
             id: value,
             name: key,
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            __typename: 'State',
+            __typename: STATE_TYPE,
           }));
         })
         .catch(() => createFlash({ message: ERROR_FETCHING_STATES }));

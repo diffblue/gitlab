@@ -1,4 +1,4 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import ProgressBar from 'ee/registrations/components/progress_bar.vue';
 import Component from 'ee/subscriptions/new/components/checkout.vue';

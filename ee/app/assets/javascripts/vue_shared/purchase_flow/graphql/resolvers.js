@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { STEP_TYPE } from 'ee/subscriptions/buy_addons_shared/constants';
 import activeStepQuery from './queries/active_step.query.graphql';
 import stepListQuery from './queries/step_list.query.graphql';
 
@@ -9,8 +10,7 @@ function updateActiveStep(_, { id }, { cache }) {
 
   const data = produce(sourceData, (draftData) => {
     draftData.activeStep = {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      __typename: 'Step',
+      __typename: STEP_TYPE,
       id: activeStep.id,
     };
   });
@@ -26,8 +26,7 @@ function activateNextStep(parent, _, { cache }) {
 
   const data = produce(sourceData, (draftData) => {
     draftData.activeStep = {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      __typename: 'Step',
+      __typename: STEP_TYPE,
       id: activeStep.id,
     };
   });

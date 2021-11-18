@@ -8,7 +8,11 @@ import createFlash from '~/flash';
 import { s__ } from '~/locale';
 
 export default {
-  components: { BillingAddress, PaymentMethod, ConfirmOrder },
+  components: {
+    BillingAddress,
+    PaymentMethod,
+    ConfirmOrder,
+  },
   props: {
     plan: {
       type: Object,
@@ -19,7 +23,7 @@ export default {
     this.updateSelectedPlan(this.plan);
   },
   methods: {
-    updateSelectedPlan({ id, isAddon }) {
+    updateSelectedPlan({ id, isAddon } = {}) {
       this.$apollo
         .mutate({
           mutation: updateState,
