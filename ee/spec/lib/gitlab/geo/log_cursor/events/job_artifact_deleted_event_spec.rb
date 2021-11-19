@@ -11,6 +11,10 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::JobArtifactDeletedEvent, :clean_g
 
   subject { described_class.new(job_artifact_deleted_event, Time.now, logger) }
 
+  before do
+    stub_feature_flags(geo_job_artifact_replication: false)
+  end
+
   around do |example|
     Sidekiq::Testing.inline! { example.run }
   end
@@ -24,7 +28,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::JobArtifactDeletedEvent, :clean_g
   describe '#process' do
     context 'with a tracking database entry' do
       before do
-        create(:geo_job_artifact_registry, artifact_id: job_artifact.id)
+        create(:geo_job_artifact_registry_legacy, artifact_id: job_artifact.id)
       end
 
       context 'with a file' do

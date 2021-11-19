@@ -6,6 +6,15 @@ RSpec.describe Ci::JobArtifact do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
+  include_examples 'a replicable model with a separate table for verification state' do
+    before do
+      stub_artifacts_object_storage
+    end
+
+    let(:verifiable_model_record) { build(:ci_job_artifact) } # add extra params if needed to make sure the record is included in `available_verifiables`
+    let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
+  end
+
   it { is_expected.to delegate_method(:validate_schema?).to(:job) }
 
   describe '#destroy' do
@@ -17,6 +26,8 @@ RSpec.describe Ci::JobArtifact do
     end
 
     it 'creates a JobArtifactDeletedEvent' do
+      stub_feature_flags(geo_job_artifact_replication: false)
+
       job_artifact = create(:ee_ci_job_artifact, :archive)
 
       expect { job_artifact.destroy! }.to change { Geo::JobArtifactDeletedEvent.count }.by(1)

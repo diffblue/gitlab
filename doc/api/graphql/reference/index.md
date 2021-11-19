@@ -6803,6 +6803,29 @@ The edge type for [`JiraProject`](#jiraproject).
 | <a id="jiraprojectedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="jiraprojectedgenode"></a>`node` | [`JiraProject`](#jiraproject) | The item at the end of the edge. |
 
+#### `JobArtifactRegistryConnection`
+
+The connection type for [`JobArtifactRegistry`](#jobartifactregistry).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="jobartifactregistryconnectionedges"></a>`edges` | [`[JobArtifactRegistryEdge]`](#jobartifactregistryedge) | A list of edges. |
+| <a id="jobartifactregistryconnectionnodes"></a>`nodes` | [`[JobArtifactRegistry]`](#jobartifactregistry) | A list of nodes. |
+| <a id="jobartifactregistryconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `JobArtifactRegistryEdge`
+
+The edge type for [`JobArtifactRegistry`](#jobartifactregistry).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="jobartifactregistryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="jobartifactregistryedgenode"></a>`node` | [`JobArtifactRegistry`](#jobartifactregistry) | The item at the end of the edge. |
+
 #### `JobNeedUnionConnection`
 
 The connection type for [`JobNeedUnion`](#jobneedunion).
@@ -10780,6 +10803,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="geonodegroupwikirepositoryregistriesids"></a>`ids` | [`[ID!]`](#id) | Filters registries by their ID. |
 
+##### `GeoNode.jobArtifactRegistries`
+
+Find Job Artifact registries on this Geo node Available only when feature flag `geo_job_artifact_replication` is enabled. This flag is disabled by default, because the feature is experimental and is subject to change without notice.
+
+Returns [`JobArtifactRegistryConnection`](#jobartifactregistryconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="geonodejobartifactregistriesids"></a>`ids` | [`[ID!]`](#id) | Filters registries by their ID. |
+
 ##### `GeoNode.lfsObjectRegistries`
 
 Find LFS object registries on this Geo node.
@@ -11969,6 +12008,23 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="jirauserjiraaccountid"></a>`jiraAccountId` | [`String!`](#string) | Account ID of the Jira user. |
 | <a id="jirauserjiradisplayname"></a>`jiraDisplayName` | [`String!`](#string) | Display name of the Jira user. |
 | <a id="jirauserjiraemail"></a>`jiraEmail` | [`String`](#string) | Email of the Jira user, returned only for users with public emails. |
+
+### `JobArtifactRegistry`
+
+Represents the Geo replication and verification state of a job_artifact.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="jobartifactregistryartifactid"></a>`artifactId` | [`ID!`](#id) | ID of the Job Artifact. |
+| <a id="jobartifactregistrycreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp when the JobArtifactRegistry was created. |
+| <a id="jobartifactregistryid"></a>`id` | [`ID!`](#id) | ID of the JobArtifactRegistry. |
+| <a id="jobartifactregistrylastsyncfailure"></a>`lastSyncFailure` | [`String`](#string) | Error message during sync of the JobArtifactRegistry. |
+| <a id="jobartifactregistrylastsyncedat"></a>`lastSyncedAt` | [`Time`](#time) | Timestamp of the most recent successful sync of the JobArtifactRegistry. |
+| <a id="jobartifactregistryretryat"></a>`retryAt` | [`Time`](#time) | Timestamp after which the JobArtifactRegistry should be resynced. |
+| <a id="jobartifactregistryretrycount"></a>`retryCount` | [`Int`](#int) | Number of consecutive failed sync attempts of the JobArtifactRegistry. |
+| <a id="jobartifactregistrystate"></a>`state` | [`RegistryState`](#registrystate) | Sync state of the JobArtifactRegistry. |
 
 ### `JobPermissions`
 

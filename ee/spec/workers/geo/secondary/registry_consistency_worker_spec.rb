@@ -100,6 +100,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::TerraformStateVersionRegistry.where(terraform_state_version_id: terraform_state_version.id).count).to eq(0)
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(0)
       expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(0)
+      expect(Geo::JobArtifactRegistry.where(job_artifact: job_artifact.id).count).to eq(0)
 
       subject.perform
 
@@ -114,6 +115,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
       expect(Geo::TerraformStateVersionRegistry.where(terraform_state_version_id: terraform_state_version.id).count).to eq(1)
       expect(Geo::UploadRegistry.where(file_id: upload.id).count).to eq(1)
       expect(Geo::PagesDeploymentRegistry.where(pages_deployment: pages_deployment.id).count).to eq(1)
+      expect(Geo::JobArtifactRegistry.where(job_artifact: job_artifact.id).count).to eq(1)
     end
 
     context 'when the current Geo node is disabled or primary' do

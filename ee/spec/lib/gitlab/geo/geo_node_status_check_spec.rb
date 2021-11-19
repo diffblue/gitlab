@@ -14,6 +14,8 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck do
   describe '#replication_verification_complete?' do
     before do
       allow(Gitlab.config.geo.registry_replication).to receive(:enabled).and_return(true)
+
+      stub_feature_flags(geo_job_artifact_replication: false)
     end
 
     context 'with legacy replication' do

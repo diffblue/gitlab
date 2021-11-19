@@ -58,6 +58,11 @@ module Types
             null: true,
             resolver: ::Resolvers::Geo::UploadRegistriesResolver,
             description: 'Find Upload registries on this Geo node'
+      field :job_artifact_registries, ::Types::Geo::JobArtifactRegistryType.connection_type,
+            null: true,
+            resolver: ::Resolvers::Geo::JobArtifactRegistriesResolver,
+            description: 'Find Job Artifact registries on this Geo node',
+            feature_flag: :geo_job_artifact_replication
     end
   end
 end

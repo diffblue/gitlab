@@ -19,6 +19,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     WebMock.stub_request(:get, /primary-geo-node/).to_return(status: 200, body: "", headers: {})
 
     allow(Geo::FileDownloadWorker).to receive(:with_status).and_return(Geo::FileDownloadWorker)
+    stub_feature_flags(geo_job_artifact_replication: false)
   end
 
   it 'does not schedule anything when tracking database is not configured' do
@@ -48,7 +49,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
 
   context 'with job artifacts' do
     it 'performs Geo::FileDownloadWorker for unsynced job artifacts' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, :never_synced)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :never_synced)
 
       expect(Geo::FileDownloadWorker).to receive(:perform_async)
         .with('job_artifact', registry.artifact_id).once.and_return(spy)
@@ -57,7 +58,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     end
 
     it 'performs Geo::FileDownloadWorker for failed-sync job artifacts' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, :failed)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :failed)
 
       expect(Geo::FileDownloadWorker).to receive(:perform_async)
         .with('job_artifact', registry.artifact_id).once.and_return(spy)
@@ -66,7 +67,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     end
 
     it 'does not perform Geo::FileDownloadWorker for synced job artifacts' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, bytes: 1234, success: true)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, bytes: 1234, success: true)
 
       expect(Geo::FileDownloadWorker).not_to receive(:perform_async)
         .with('job_artifact', registry.artifact_id)
@@ -75,7 +76,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     end
 
     it 'does not perform Geo::FileDownloadWorker for synced job artifacts even with 0 bytes downloaded' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, bytes: 0, success: true)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, bytes: 0, success: true)
 
       expect(Geo::FileDownloadWorker).not_to receive(:perform_async)
         .with('job_artifact', registry.artifact_id)
@@ -84,7 +85,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     end
 
     it 'does not retry failed artifacts when retry_at is tomorrow' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, :failed, retry_at: Date.tomorrow)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :failed, retry_at: Date.tomorrow)
 
       expect(Geo::FileDownloadWorker).not_to receive(:perform_async)
        .with('job_artifact', registry.artifact_id)
@@ -93,7 +94,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     end
 
     it 'retries failed artifacts when retry_at is in the past' do
-      registry = create(:geo_job_artifact_registry, :with_artifact, :failed, retry_at: Date.yesterday)
+      registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :failed, retry_at: Date.yesterday)
 
       expect(Geo::FileDownloadWorker).to receive(:perform_async)
         .with('job_artifact', registry.artifact_id).once.and_return(spy)
@@ -103,10 +104,10 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
 
     context 'with files missing on the primary that are marked as synced' do
       let!(:artifact_file_missing_on_primary) { create(:ci_job_artifact) }
-      let!(:artifact_registry) { create(:geo_job_artifact_registry, artifact_id: artifact_file_missing_on_primary.id, bytes: 1234, success: true, missing_on_primary: true) }
+      let!(:artifact_registry) { create(:geo_job_artifact_registry_legacy, artifact_id: artifact_file_missing_on_primary.id, bytes: 1234, success: true, missing_on_primary: true) }
 
       it 'retries the files if there is spare capacity' do
-        registry = create(:geo_job_artifact_registry, :with_artifact, :never_synced)
+        registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :never_synced)
 
         expect(Geo::FileDownloadWorker).to receive(:perform_async).with('job_artifact', registry.artifact_id)
         expect(Geo::FileDownloadWorker).to receive(:perform_async).with('job_artifact', artifact_file_missing_on_primary.id)
@@ -131,7 +132,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
       end
 
       it 'does not retry those files if there is no spare capacity' do
-        registry = create(:geo_job_artifact_registry, :with_artifact, :never_synced)
+        registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :never_synced)
 
         expect(subject).to receive(:db_retrieve_batch_size).and_return(1).twice
         expect(Geo::FileDownloadWorker).to receive(:perform_async).with('job_artifact', registry.artifact_id)
@@ -140,7 +141,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
       end
 
       it 'does not retry those files if they are already scheduled' do
-        registry = create(:geo_job_artifact_registry, :with_artifact, :never_synced)
+        registry = create(:geo_job_artifact_registry_legacy, :with_artifact, :never_synced)
 
         scheduled_jobs = [{ type: 'job_artifact', id: artifact_file_missing_on_primary.id, job_id: 'foo' }]
         expect(subject).to receive(:scheduled_jobs).and_return(scheduled_jobs).at_least(1)
@@ -171,7 +172,7 @@ RSpec.describe Geo::FileDownloadDispatchWorker, :geo, :use_sql_query_cache_for_t
     result_object = double(:result, success: true, bytes_downloaded: 100, primary_missing_file: false)
     allow_any_instance_of(::Gitlab::Geo::Replication::BaseTransfer).to receive(:download_from_primary).and_return(result_object)
 
-    create_list(:geo_job_artifact_registry, 6, :with_artifact, :never_synced)
+    create_list(:geo_job_artifact_registry_legacy, 6, :with_artifact, :never_synced)
 
     expect(Geo::FileDownloadWorker).to receive(:perform_async).exactly(6).times.and_call_original
     # For 10 downloads, we expect four database reloads:

@@ -59,8 +59,12 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
       end
 
       let!(:job_artifact) { create(:ci_job_artifact, :archive) }
-      let!(:registry) { create(:geo_job_artifact_registry, artifact_id: job_artifact.id) }
+      let!(:registry) { create(:geo_job_artifact_registry_legacy, artifact_id: job_artifact.id) }
       let!(:file_path) { job_artifact.file.path }
+
+      before do
+        stub_feature_flags(geo_job_artifact_replication: false)
+      end
 
       it_behaves_like 'removes artifact'
 

@@ -58,4 +58,11 @@ RSpec.describe 'Gets registries' do
     registry_factory: :geo_upload_registry,
     registry_foreign_key_field_name: 'fileId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'jobArtifactRegistries',
+    registry_class_name: 'JobArtifactRegistry',
+    registry_factory: :geo_job_artifact_registry,
+    registry_foreign_key_field_name: 'artifactId'
+  }
 end

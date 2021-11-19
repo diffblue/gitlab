@@ -205,6 +205,8 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout do
 
         context 'with SSF LFS replication eneabled' do
           it 'prints messages for all the checks' do
+            stub_feature_flags(geo_job_artifact_replication: false)
+
             checks.each do |text|
               expect { run_rake_task('geo:status') }.to output(text).to_stdout
             end

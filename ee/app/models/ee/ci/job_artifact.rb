@@ -12,6 +12,13 @@ module EE
     SECURITY_REPORT_FILE_TYPES = %w[sast secret_detection dependency_scanning container_scanning cluster_image_scanning dast coverage_fuzzing api_fuzzing].freeze
 
     prepended do
+      include ::Geo::ReplicableModel
+      include ::Geo::VerifiableModel
+
+      with_replicator ::Geo::JobArtifactReplicator
+
+      has_one :job_artifact_state, autosave: false, inverse_of: :job_artifact, class_name: '::Geo::JobArtifactState'
+
       # After destroy callbacks are often skipped because of FastDestroyAll.
       # All destroy callbacks should be implemented in `Ci::JobArtifacts::DestroyBatchService`
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/297472
@@ -66,7 +73,26 @@ module EE
         with_file_types(API_FUZZING_REPORT_TYPES)
       end
 
+      scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
+      scope :with_files_stored_remotely, -> { where(file_store: ::ObjectStorage::Store::REMOTE) }
+      scope :with_verification_state, ->(state) { joins(:job_artifact_state).where(verification_arel_table[:verification_state].eq(verification_state_value(state))) }
+      scope :checksummed, -> { joins(:job_artifact_state).where.not(verification_arel_table[:verification_checksum].eq(nil)) }
+      scope :not_checksummed, -> { joins(:job_artifact_state).where(verification_arel_table[:verification_checksum].eq(nil)) }
+
+      scope :available_verifiables, -> { joins(:job_artifact_state) }
+
       delegate :validate_schema?, to: :job
+
+      delegate :verification_retry_at, :verification_retry_at=,
+               :verified_at, :verified_at=,
+               :verification_checksum, :verification_checksum=,
+               :verification_failure, :verification_failure=,
+               :verification_retry_count, :verification_retry_count=,
+               :verification_state=, :verification_state,
+               :verification_started_at=, :verification_started_at,
+               to: :job_artifact_state
+
+      after_save :save_verification_details
     end
 
     class_methods do
@@ -79,6 +105,19 @@ module EE
 
         super
       end
+
+      override :verification_state_table_class
+      def verification_state_table_class
+        ::Geo::JobArtifactState
+      end
+    end
+
+    def job_artifact_state
+      super || build_job_artifact_state
+    end
+
+    def verification_state_object
+      job_artifact_state
     end
 
     def log_geo_deleted_event
