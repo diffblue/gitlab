@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Billing plan pages', :feature, :js do
   include SubscriptionPortalHelpers
 
-  let(:user) { create(:user) }
+  let(:user) { create(:user, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
   let(:namespace) { user.namespace }
   let(:free_plan) { create(:free_plan) }
   let(:bronze_plan) { create(:bronze_plan) }
@@ -86,8 +86,15 @@ RSpec.describe 'Billing plan pages', :feature, :js do
       end
 
       it 'displays the in-app hand raise lead' do
-        skip "not supported for #{plan.name}" if plan.name == 'bronze'
-        page.within('.content') do
+        if namespace.group_namespace?
+          page.within('[data-testid="plan-card-premium"]') do
+            click_button 'Contact sales'
+          end
+          expect(page).to have_content('Contact our Sales team')
+          expect(page).to have_field('First Name', with: 'James')
+          expect(page).to have_field('Last Name', with: 'Bond')
+          expect(page).to have_field('Company Name', with: 'ACME')
+        else
           expect(page).to have_selector(".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']", visible: false)
         end
       end
