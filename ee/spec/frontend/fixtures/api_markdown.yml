@@ -1,6 +1,0 @@
-# This data file drives the specs in
-# ee/spec/frontend/fixtures/api_markdown.rb and
----
-- name: attachment_link
-  context: group_wiki
-  markdown: '[test-file](test-file.zip)'
