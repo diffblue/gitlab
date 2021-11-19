@@ -244,56 +244,6 @@ describe('vue_shared/components/chronic_duration_input', () => {
         });
       });
 
-      describe('when integerRequired is true', () => {
-        beforeEach(() => {
-          createComponent({ value: null, integerRequired: true });
-        });
-
-        it('emits valid when input is integer', async () => {
-          textElement.value = '2hr20min';
-          textElement.dispatchEvent(new Event('input'));
-          await wrapper.vm.$nextTick();
-
-          expect(wrapper.emitted('change')).toEqual([[MOCK_VALUE]]);
-          expect(wrapper.emitted('valid')).toEqual([
-            [{ valid: null, feedback: '' }],
-            [{ valid: true, feedback: '' }],
-          ]);
-          expect(textElement.validity.valid).toBe(true);
-          expect(textElement.validity.customError).toBe(false);
-          expect(textElement.validationMessage).toBe('');
-          expect(hiddenElement.validity.valid).toBe(true);
-          expect(hiddenElement.validity.customError).toBe(false);
-          expect(hiddenElement.validationMessage).toBe('');
-        });
-
-        it('emits invalid when input is decimal', async () => {
-          textElement.value = '1.5s';
-          textElement.dispatchEvent(new Event('input'));
-          await wrapper.vm.$nextTick();
-
-          expect(wrapper.emitted('change')).toBeUndefined();
-          expect(wrapper.emitted('valid')).toEqual([
-            [{ valid: null, feedback: '' }],
-            [
-              {
-                valid: false,
-                feedback: ChronicDurationInput.i18n.INVALID_DECIMAL_FEEDBACK,
-              },
-            ],
-          ]);
-          expect(textElement.validity.valid).toBe(false);
-          expect(textElement.validity.customError).toBe(true);
-          expect(textElement.validationMessage).toBe(
-            ChronicDurationInput.i18n.INVALID_DECIMAL_FEEDBACK,
-          );
-          expect(hiddenElement.validity.valid).toBe(false);
-          expect(hiddenElement.validity.customError).toBe(true);
-          // Hidden elements do not have validationMessage
-          expect(hiddenElement.validationMessage).toBe('');
-        });
-      });
-
       describe('when integerRequired is unspecified', () => {
         beforeEach(() => {
           createComponent({ value: null });
@@ -365,7 +315,7 @@ describe('vue_shared/components/chronic_duration_input', () => {
       });
 
       it('passes updated prop via v-model', async () => {
-        wrapper.vm.value = MOCK_VALUE;
+        wrapper.setData({ value: MOCK_VALUE });
         await wrapper.vm.$nextTick();
 
         expect(textElement.value).toBe('2 hrs 20 mins');
@@ -379,7 +329,7 @@ describe('vue_shared/components/chronic_duration_input', () => {
         textElement.dispatchEvent(new Event('input'));
         await wrapper.vm.$nextTick();
 
-        expect(wrapper.vm.value).toBe(MOCK_VALUE);
+        expect(wrapper.findComponent(ChronicDurationInput).props('value')).toBe(MOCK_VALUE);
         expect(textElement.value).toBe('2hr20min');
         expect(hiddenElement.value).toBe(MOCK_VALUE.toString());
       });
@@ -435,68 +385,6 @@ describe('vue_shared/components/chronic_duration_input', () => {
         done: false,
       });
       expect(iter.next()).toEqual({ value: undefined, done: true });
-    });
-  });
-
-  describe('extra attributes', () => {
-    beforeEach(() => {
-      createComponent({ id: 'myInput', disabled: true });
-    });
-
-    it('passes extra attributes to text input', () => {
-      expect(textElement.id).toBe('myInput');
-      expect(textElement.disabled).toBe(true);
-    });
-
-    it('does not pass extra attributes to hidden input', () => {
-      expect(hiddenElement.id).toBe('');
-      expect(hiddenElement.disabled).toBe(false);
-    });
-  });
-
-  describe('lazy', () => {
-    describe('when lazy is true', () => {
-      beforeEach(() => {
-        createComponent({ lazy: true });
-      });
-
-      it('emits change on field change', async () => {
-        textElement.value = '2h20m';
-        textElement.dispatchEvent(new Event('change'));
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.emitted('change')).toEqual([[MOCK_VALUE]]);
-      });
-
-      it('does not emit change on field input', async () => {
-        textElement.value = '2h20m';
-        textElement.dispatchEvent(new Event('input'));
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.emitted('change')).toBeUndefined();
-      });
-    });
-
-    describe('when lazy is false', () => {
-      beforeEach(() => {
-        createComponent({ lazy: false });
-      });
-
-      it('emits change on field change', async () => {
-        textElement.value = '2h20m';
-        textElement.dispatchEvent(new Event('change'));
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.emitted('change')).toEqual([[MOCK_VALUE]]);
-      });
-
-      it('emits change on field input', async () => {
-        textElement.value = '2h20m';
-        textElement.dispatchEvent(new Event('input'));
-        await wrapper.vm.$nextTick();
-
-        expect(wrapper.emitted('change')).toEqual([[MOCK_VALUE]]);
-      });
     });
   });
 });

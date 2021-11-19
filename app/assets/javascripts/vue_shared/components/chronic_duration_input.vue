@@ -1,4 +1,5 @@
 <script>
+import * as Sentry from '@sentry/browser';
 import { GlFormInput } from '@gitlab/ui';
 import {
   DurationParseError,
@@ -74,7 +75,7 @@ export default {
           if (e instanceof DurationParseError) {
             this.isValueValid = false;
           } else {
-            throw e;
+            Sentry.captureException(e);
           }
         }
         this.emitEvents(true);
