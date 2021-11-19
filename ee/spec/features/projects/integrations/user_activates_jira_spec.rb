@@ -25,10 +25,9 @@ RSpec.describe 'User activates Jira', :js do
         click_test_then_save_integration(expect_test_to_fail: false)
       end
 
-      it 'adds Jira links to sidebar menu' do
+      it 'adds Jira links to "Issues" sidebar menu' do
         page.within('.nav-sidebar') do
-          expect(page).to have_link('Jira Issues', href: project_integrations_jira_issues_path(project))
-          expect(page).to have_link('Issue List', href: project_integrations_jira_issues_path(project), visible: false)
+          expect(page).to have_link('Jira issues', href: project_integrations_jira_issues_path(project), visible: false)
           expect(page).to have_link('Open Jira', href: url, visible: false)
           expect(page).not_to have_link('Jira', href: url)
         end
@@ -44,10 +43,9 @@ RSpec.describe 'User activates Jira', :js do
         click_save_integration
       end
 
-      it 'does not show Jira links in sidebar menu' do
+      it 'does not show Jira links in "Issues" sidebar menu' do
         page.within('.nav-sidebar') do
-          expect(page).not_to have_link('Jira Issues', href: project_integrations_jira_issues_path(project))
-          expect(page).not_to have_link('Issue List', href: project_integrations_jira_issues_path(project), visible: false)
+          expect(page).not_to have_link('Jira issues', href: project_integrations_jira_issues_path(project), visible: false)
           expect(page).not_to have_link('Open Jira', href: url, visible: false)
           expect(page).to have_link('Jira', href: url)
         end

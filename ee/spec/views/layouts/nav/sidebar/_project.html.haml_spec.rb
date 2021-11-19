@@ -60,42 +60,38 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
         end
       end
     end
-  end
 
-  describe 'Jira' do
-    let_it_be_with_refind(:project) { create(:project, has_external_issue_tracker: true) }
+    describe 'Jira' do
+      let_it_be_with_refind(:project) { create(:project, has_external_issue_tracker: true) }
 
-    context 'when Jira service integration is not set' do
-      it 'does not have a link to the Jira issues menu' do
-        render
-
-        expect(rendered).not_to have_link('Jira Issues', href: project_integrations_jira_issues_path(project))
-      end
-    end
-
-    context 'when Jira service integration is set' do
-      let!(:jira) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'GL') }
+      let(:user) { project.owner }
 
       before do
-        stub_licensed_features(jira_issues_integration: true)
+        allow(view).to receive(:current_user).and_return(user)
       end
 
-      it 'has a link to the Jira issue tracker' do
-        render
-
-        expect(rendered).to have_link('Jira Issues', href: project_integrations_jira_issues_path(project))
-      end
-
-      describe 'Issue List' do
-        it 'has a link to Jira issue list' do
+      context 'when Jira service integration is not set' do
+        it 'does not have a link to the Jira issues menu' do
           render
 
-          expect(rendered).to have_link('Issue List', href: project_integrations_jira_issues_path(project))
+          expect(rendered).not_to have_link('Jira issues', href: project_integrations_jira_issues_path(project))
         end
       end
 
-      describe 'Open Jira' do
-        it 'has a link to open Jira' do
+      context 'when Jira service integration is set' do
+        let_it_be(:jira) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'GL') }
+
+        before do
+          stub_licensed_features(jira_issues_integration: true)
+        end
+
+        it 'has a link to Jira issues list' do
+          render
+
+          expect(rendered).to have_link('Jira issues', href: project_integrations_jira_issues_path(project))
+        end
+
+        it 'has an external link to open Jira' do
           render
 
           expect(rendered).to have_link('Open Jira', href: project.external_issue_tracker.issue_tracker_path)

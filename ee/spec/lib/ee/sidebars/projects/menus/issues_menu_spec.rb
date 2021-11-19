@@ -70,4 +70,43 @@ RSpec.describe Sidebars::Projects::Menus::IssuesMenu do
       end
     end
   end
+
+  describe 'Jira issues' do
+    let_it_be_with_refind(:project) { create(:project, has_external_issue_tracker: true) }
+
+    let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, jira_issues_integration: jira_issues_integration) }
+    let(:jira_issues_integration) { false }
+
+    subject { described_class.new(context) }
+
+    context 'when issue tracker is not Jira' do
+      it 'does not include Jira issues menu items' do
+        create(:custom_issue_tracker_integration, active: true, project: project, project_url: 'http://test.com')
+
+        expect(subject.show_jira_menu_items?).to eq(false)
+        expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(false)
+      end
+    end
+
+    context 'when issue tracker is Jira' do
+      let_it_be(:jira) { create(:jira_integration, project: project, project_key: 'GL') }
+
+      context 'when issues integration is disabled' do
+        it 'does not include Jira issues menu items' do
+          expect(subject.show_jira_menu_items?).to eq(false)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(false)
+        end
+      end
+
+      context 'when issues integration is enabled' do
+        let(:jira_issues_integration) { true }
+
+        it 'includes Jira issues menu items' do
+          expect(subject.show_jira_menu_items?).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_issue_list}).to eq(true)
+          expect(subject.renderable_items.any? { |e| e.item_id == :jira_external_link}).to eq(true)
+        end
+      end
+    end
+  end
 end
