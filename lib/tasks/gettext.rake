@@ -132,14 +132,6 @@ namespace :gettext do
     )
   end
 
-  # Disallow HTML from translatable strings
-  # See: https://docs.gitlab.com/ee/development/i18n/externalization.html#html
-  def html_todolist
-    return @html_todolist if defined?(@html_todolist)
-
-    @html_todolist = YAML.safe_load(File.read(Rails.root.join('lib/gitlab/i18n/html_todo.yml')))
-  end
-
   def report_errors_for_file(file, errors_for_file)
     puts "Errors in `#{file}`:"
 
