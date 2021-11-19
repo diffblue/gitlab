@@ -58,6 +58,7 @@ namespace :gettext do
   task lint: :environment do
     require 'simple_po_parser'
     require 'gitlab/utils'
+    require 'parallel'
 
     FastGettext.silence_errors
     files = Dir.glob(Rails.root.join('locale/*/gitlab.po'))
@@ -70,7 +71,9 @@ namespace :gettext do
 
     linters.unshift(Gitlab::I18n::PoLinter.new(po_path: pot_file_path))
 
-    failed_linters = linters.select { |linter| linter.errors.any? }
+    failed_linters = Parallel
+      .map(linters, progress: 'Linting po files') { |linter| linter if linter.errors.any? }
+      .compact
 
     if failed_linters.empty?
       puts 'All PO files are valid.'
