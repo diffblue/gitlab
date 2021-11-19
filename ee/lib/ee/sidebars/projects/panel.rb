@@ -10,15 +10,9 @@ module EE
         def configure_menus
           super
 
-          if jira_menu.render?
-            replace_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu, jira_menu)
+          if ::Sidebars::Projects::Menus::IssuesMenu.new(context).show_jira_menu_items?
+            remove_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu)
           end
-        end
-
-        private
-
-        def jira_menu
-          @jira_menu ||= ::Sidebars::Projects::Menus::JiraMenu.new(context)
         end
       end
     end

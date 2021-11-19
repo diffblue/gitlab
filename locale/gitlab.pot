@@ -19648,9 +19648,6 @@ msgstr ""
 msgid "Japanese language support using"
 msgstr ""
 
-msgid "Jira Issues"
-msgstr ""
-
 msgid "Jira display name"
 msgstr ""
 
@@ -19780,16 +19777,10 @@ msgstr ""
 msgid "JiraService|If different from Web URL."
 msgstr ""
 
-msgid "JiraService|Issue List"
-msgstr ""
-
 msgid "JiraService|Issues created from vulnerabilities in this project will be Jira issues, even if GitLab issues are enabled."
 msgstr ""
 
 msgid "JiraService|Jira API URL"
-msgstr ""
-
-msgid "JiraService|Jira Issues"
 msgstr ""
 
 msgid "JiraService|Jira comments are created when an issue is referenced in a commit."
@@ -19799,6 +19790,9 @@ msgid "JiraService|Jira comments are created when an issue is referenced in a me
 msgstr ""
 
 msgid "JiraService|Jira issue type"
+msgstr ""
+
+msgid "JiraService|Jira issues"
 msgstr ""
 
 msgid "JiraService|Jira project key"
