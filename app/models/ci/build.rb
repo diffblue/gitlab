@@ -454,7 +454,7 @@ module Ci
     end
 
     def retryable?
-      return false if retried? || archived?
+      return false if retried? || archived? || deployment_rejected?
 
       success? || failed? || canceled?
     end

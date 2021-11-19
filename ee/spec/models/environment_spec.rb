@@ -245,4 +245,88 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
       end
     end
   end
+
+  describe '#needs_approval?' do
+    subject { environment.needs_approval? }
+
+    context 'when Protected Environments feature is available' do
+      before do
+        stub_licensed_features(protected_environments: true)
+        create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
+      end
+
+      context 'with some approvals required' do
+        let(:required_approval_count) { 1 }
+
+        it { is_expected.to be_truthy }
+
+        context 'and deployment_approvals feature flag turned off' do
+          before do
+            stub_feature_flags(deployment_approvals: false)
+          end
+
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context 'with no approvals required' do
+        let(:required_approval_count) { 0 }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when Protected Environments feature is not available' do
+      before do
+        stub_licensed_features(protected_environments: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#required_approval_count' do
+    subject { environment.required_approval_count }
+
+    let_it_be(:project) { create(:project, group: create(:group)) }
+
+    context 'when Protected Environments feature is not available' do
+      before do
+        stub_licensed_features(protected_environments: false)
+      end
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when Protected Environments feature is available' do
+      before do
+        stub_licensed_features(protected_environments: true)
+      end
+
+      context 'and no associated protected environments exist' do
+        it { is_expected.to eq(0) }
+      end
+
+      context 'with one associated protected environment' do
+        before do
+          create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+        end
+
+        it 'returns the required_approval_count of the protected environment' do
+          expect(subject).to eq(3)
+        end
+      end
+
+      context 'with multiple associated protected environments' do
+        before do
+          create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+          create(:protected_environment, name: environment.tier, project: nil, group: project.group, required_approval_count: 5)
+        end
+
+        it 'returns the highest required_approval_count of the protected environments' do
+          expect(subject).to eq(5)
+        end
+      end
+    end
+  end
 end

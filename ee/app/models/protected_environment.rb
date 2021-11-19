@@ -12,6 +12,7 @@ class ProtectedEnvironment < ApplicationRecord
   validates :deploy_access_levels, length: { minimum: 1 }
   validates :name, presence: true
   validate :valid_tier_name, if: :group_level?
+  validates :required_approval_count, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 5 }
 
   scope :sorted_by_name, -> { order(:name) }
 
