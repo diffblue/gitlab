@@ -8,7 +8,7 @@ module EE
 
         prepended do
           params :optional_params_ee do
-            optional :membership_lock, type: ::Grape::API::Boolean, desc: 'Prevent adding new members to project membership within this group'
+            optional :membership_lock, type: ::Grape::API::Boolean, desc: 'Prevent adding new members to projects within this group'
             optional :ldap_cn, type: String, desc: 'LDAP Common Name'
             optional :ldap_access, type: Integer, desc: 'A valid access level'
             optional :shared_runners_minutes_limit, type: Integer, desc: '(admin-only) Pipeline minutes quota for this group'
