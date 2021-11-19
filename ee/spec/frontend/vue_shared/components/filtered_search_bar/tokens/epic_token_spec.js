@@ -8,9 +8,9 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
-import searchEpicsQuery from '~/vue_shared/components/filtered_search_bar/queries/search_epics.query.graphql';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import searchEpicsQuery from 'ee/vue_shared/components/filtered_search_bar/queries/search_epics.query.graphql';
+import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 
 import { mockEpicToken, mockEpics, mockGroupEpicsQueryResponse } from '../mock_data';
 

@@ -6,7 +6,7 @@ import {
 import { mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
-import IterationToken from '~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
+import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import { mockIterationToken, mockIterations } from '../mock_data';
 
 jest.mock('~/flash');

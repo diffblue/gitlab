@@ -3,10 +3,9 @@ import { GlFilteredSearchSuggestion } from '@gitlab/ui';
 import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
+import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import { DEFAULT_NONE_ANY, FILTER_NONE_ANY, OPERATOR_IS_NOT } from '../constants';
 import searchEpicsQuery from '../queries/search_epics.query.graphql';
-
-import BaseToken from './base_token.vue';
 
 export default {
   prefix: '&',
