@@ -154,9 +154,8 @@ module SystemNotes
       create_note(NoteSummary.new(noteable, project, author, body, action: 'description'))
     end
 
-    # Called when a Mentionable references a Noteable
-    #
-    # mentioner - Mentionable object
+    # Called when a Mentionable (the `mentioner`) references another Mentionable (the `mentioned`,
+    # passed to this service as `noteable`).
     #
     # Example Note text:
     #
@@ -168,7 +167,8 @@ module SystemNotes
     #
     # See cross_reference_note_content.
     #
-    # Returns the created Note object
+    # @param mentioner [Mentionable]
+    # @return [Note]
     def cross_reference(mentioner)
       return if cross_reference_disallowed?(mentioner)
 
@@ -195,9 +195,8 @@ module SystemNotes
     # in a merge request. Additionally, it prevents the creation of references to
     # external issues (which would fail).
     #
-    # mentioner - Mentionable object
-    #
-    # Returns Boolean
+    # @param mentioner [Mentionable]
+    # @return [Boolean]
     def cross_reference_disallowed?(mentioner)
       return true if noteable.is_a?(ExternalIssue) && !noteable.project&.external_references_supported?
       return false unless mentioner.is_a?(MergeRequest)
@@ -309,16 +308,15 @@ module SystemNotes
       create_resource_state_event(status: status, mentionable_source: source)
     end
 
-    # Check if a cross reference to a noteable from a mentioner already exists
+    # Check if a cross reference to a Mentionable from a mentioner already exists
     #
     # This method is used to prevent multiple notes being created for a mention
     # when a issue is updated, for example. The method also calls notes_for_mentioner
     # to check if the mentioner is a commit, and return matches only on commit hash
     # instead of project + commit, to avoid repeated mentions from forks.
     #
-    # mentioner - Mentionable object
-    #
-    # Returns Boolean
+    # @param mentioner [Mentionable]
+    # @return [Boolean]
     def cross_reference_exists?(mentioner)
       notes = noteable.notes.system
       notes_for_mentioner(mentioner, noteable, notes).exists?

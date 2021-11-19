@@ -234,19 +234,19 @@ module Integrations
     end
 
     override :create_cross_reference_note
-    def create_cross_reference_note(mentioned, noteable, author)
-      unless can_cross_reference?(noteable)
-        return s_("JiraService|Events for %{noteable_model_name} are disabled.") % { noteable_model_name: noteable.model_name.plural.humanize(capitalize: false) }
+    def create_cross_reference_note(external_issue, mentioner, author)
+      unless can_cross_reference?(mentioner)
+        return s_("JiraService|Events for %{noteable_model_name} are disabled.") % { noteable_model_name: mentioner.model_name.plural.humanize(capitalize: false) }
       end
 
-      jira_issue = find_issue(mentioned.id)
+      jira_issue = find_issue(external_issue.id)
 
       return unless jira_issue.present?
 
-      noteable_id   = noteable.respond_to?(:iid) ? noteable.iid : noteable.id
-      noteable_type = noteable_name(noteable)
-      entity_url    = build_entity_url(noteable_type, noteable_id)
-      entity_meta   = build_entity_meta(noteable)
+      mentioner_id = mentioner.respond_to?(:iid) ? mentioner.iid : mentioner.id
+      mentioner_type = mentionable_name(mentioner)
+      entity_url = build_entity_url(mentioner_type, mentioner_id)
+      entity_meta = build_entity_meta(mentioner)
 
       data = {
         user: {
@@ -259,9 +259,9 @@ module Integrations
         },
         entity: {
           id: entity_meta[:id],
-          name: noteable_type.humanize.downcase,
+          name: mentioner_type.humanize.downcase,
           url: entity_url,
-          title: noteable.title,
+          title: mentioner.title,
           description: entity_meta[:description],
           branch: entity_meta[:branch]
         }
@@ -302,11 +302,11 @@ module Integrations
 
     private
 
-    def branch_name(noteable)
+    def branch_name(commit)
       if Feature.enabled?(:jira_use_first_ref_by_oid, project, default_enabled: :yaml)
-        noteable.first_ref_by_oid(project.repository)
+        commit.first_ref_by_oid(project.repository)
       else
-        noteable.ref_names(project.repository).first
+        commit.ref_names(project.repository).first
       end
     end
 
@@ -316,8 +316,8 @@ module Integrations
       end
     end
 
-    def can_cross_reference?(noteable)
-      case noteable
+    def can_cross_reference?(mentioner)
+      case mentioner
       when Commit then commit_events
       when MergeRequest then merge_requests_events
       else true
@@ -487,36 +487,36 @@ module Integrations
       "#{Settings.gitlab.base_url.chomp("/")}#{resource}"
     end
 
-    def build_entity_url(noteable_type, entity_id)
+    def build_entity_url(entity_type, entity_id)
       polymorphic_url(
         [
           self.project,
-          noteable_type.to_sym
+          entity_type.to_sym
         ],
         id:   entity_id,
         host: Settings.gitlab.base_url
       )
     end
 
-    def build_entity_meta(noteable)
-      if noteable.is_a?(Commit)
+    def build_entity_meta(entity)
+      if entity.is_a?(Commit)
         {
-          id: noteable.short_id,
-          description: noteable.safe_message,
-          branch: branch_name(noteable)
+          id: entity.short_id,
+          description: entity.safe_message,
+          branch: branch_name(entity)
         }
-      elsif noteable.is_a?(MergeRequest)
+      elsif entity.is_a?(MergeRequest)
         {
-          id: noteable.to_reference,
-          branch: noteable.source_branch
+          id: entity.to_reference,
+          branch: entity.source_branch
         }
       else
         {}
       end
     end
 
-    def noteable_name(noteable)
-      name = noteable.model_name.singular
+    def mentionable_name(mentionable)
+      name = mentionable.model_name.singular
 
       # ProjectSnippet inherits from Snippet class so it causes
       # routing error building the URL.
