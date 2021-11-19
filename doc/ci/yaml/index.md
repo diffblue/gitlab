@@ -1590,23 +1590,19 @@ environment.
 
 Use the `action` keyword to specify jobs that prepare, start, or stop environments.
 
-| **Value** | **Description**                                                                                                                                               |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `start`     | Default value. Indicates that job starts the environment. The deployment is created after the job starts.                                                          |
-| `prepare`   | Indicates that the job is only preparing the environment. It does not trigger deployments. [Read more about preparing environments](../environments/index.md#prepare-an-environment-without-creating-a-deployment). |
-| `stop`      | Indicates that job stops deployment. See the example below.                                                                                                   |
+**Keyword type**: Job keyword. You can use it only as part of a job.
 
-Take for instance:
+**Possible inputs**: One of the following keywords:
+
+| **Value** | **Description** |
+|:----------|:----------------|
+| `start`   | Default value. Indicates that the job starts the environment. The deployment is created after the job starts. |
+| `prepare` | Indicates that the job is only preparing the environment. It does not trigger deployments. [Read more about preparing environments](../environments/index.md#prepare-an-environment-without-creating-a-deployment). |
+| `stop`    | Indicates that the job stops a deployment. For more detail, read [Stop an environment](../environments/index.md#stop-an-environment). |
+
+**Example of `environment:action`**:
 
 ```yaml
-review_app:
-  stage: deploy
-  script: make deploy-app
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.example.com
-    on_stop: stop_review_app
-
 stop_review_app:
   stage: deploy
   variables:
@@ -1617,39 +1613,6 @@ stop_review_app:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
 ```
-
-In the above example, the `review_app` job deploys to the `review`
-environment. A new `stop_review_app` job is listed under `on_stop`.
-After the `review_app` job is finished, it triggers the
-`stop_review_app` job based on what is defined under `when`. In this case,
-it is set to `manual`, so it needs a [manual action](../jobs/job_control.md#create-a-job-that-must-be-run-manually) from
-the GitLab UI to run.
-
-Also in the example, `GIT_STRATEGY` is set to `none`. If the
-`stop_review_app` job is [automatically triggered](../environments/index.md#stop-an-environment),
-the runner won't try to check out the code after the branch is deleted.
-
-The example also overwrites global variables. If your `stop` `environment` job depends
-on global variables, use [anchor variables](yaml_optimization.md#yaml-anchors-for-variables) when you set the `GIT_STRATEGY`
-to change the job without overriding the global variables.
-
-The `stop_review_app` job is **required** to have the following keywords defined:
-
-- `when`, defined at either:
-  - [The job level](#when).
-  - [In a rules clause](#rules). If you use `rules:` and `when: manual`, you should
-    also set [`allow_failure: true`](#allow_failure) so the pipeline can complete
-    even if the job doesn't run.
-- `environment:name`
-- `environment:action`
-
-Additionally, both jobs should have matching [`rules`](#only--except)
-or [`only/except`](#only--except) configuration.
-
-In the examples above, if the configuration is not identical:
-
-- The `stop_review_app` job might not be included in all pipelines that include the `review_app` job.
-- It is not possible to trigger the `action: stop` to stop the environment automatically.
 
 #### `environment:auto_stop_in`
 
