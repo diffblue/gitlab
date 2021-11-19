@@ -81,10 +81,10 @@ Facebook. Facebook generates an app ID and secret key for you to use.
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      {
-       "name" => "facebook",
-       # "label" => "Provider name", # optional label for login button, defaults to "Facebook"
-       "app_id" => "YOUR_APP_ID",
-       "app_secret" => "YOUR_APP_SECRET"
+       name: "facebook",
+       # label: "Provider name", # optional label for login button, defaults to "Facebook"
+       app_id: "YOUR_APP_ID",
+       app_secret: "YOUR_APP_SECRET"
      }
    ]
    ```

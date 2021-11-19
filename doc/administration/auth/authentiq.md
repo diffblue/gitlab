@@ -36,13 +36,13 @@ Authentiq generates a Client ID and the accompanying Client Secret for you to us
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      {
-       "name" => "authentiq",
-       # "label" => "Provider name", # optional label for login button, defaults to "Authentiq"
-       "app_id" => "YOUR_CLIENT_ID",
-       "app_secret" => "YOUR_CLIENT_SECRET",
-       "args" => {
-              "scope": 'aq:name email~rs address aq:push'
-        }
+       name: "authentiq",
+       # label: "Provider name", # optional label for login button, defaults to "Authentiq"
+       app_id: "YOUR_CLIENT_ID",
+       app_secret: "YOUR_CLIENT_SECRET",
+       args: {
+         "scope": 'aq:name email~rs address aq:push'
+       }
      }
    ]
    ```

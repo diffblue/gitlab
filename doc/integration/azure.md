@@ -58,12 +58,12 @@ As you go through the Microsoft procedure, keep the following in mind:
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      {
-       "name" => "azure_oauth2",
-       # "label" => "Provider name", # optional label for login button, defaults to "Azure AD"
-       "args" => {
-         "client_id" => "CLIENT ID",
-         "client_secret" => "CLIENT SECRET",
-         "tenant_id" => "TENANT ID",
+       name: "azure_oauth2",
+       # label: "Provider name", # optional label for login button, defaults to "Azure AD"
+       args: {
+         client_id: "CLIENT ID",
+         client_secret: "CLIENT SECRET",
+         tenant_id: "TENANT ID",
        }
      }
    ]
@@ -74,9 +74,9 @@ As you go through the Microsoft procedure, keep the following in mind:
    ```yaml
    - { name: 'azure_oauth2',
        # label: 'Provider name', # optional label for login button, defaults to "Azure AD"
-       args: { client_id: "CLIENT ID",
-       client_secret: "CLIENT SECRET",
-       tenant_id: "TENANT ID" } }
+       args: { client_id: 'CLIENT ID',
+       client_secret: 'CLIENT SECRET',
+       tenant_id: 'TENANT ID' } }
    ```
 
    The `base_azure_url` is optional and can be added for different locales;

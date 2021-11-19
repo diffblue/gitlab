@@ -50,10 +50,10 @@ To enable the Atlassian OmniAuth provider for passwordless authentication you mu
    gitlab_rails['omniauth_providers'] = [
      {
        name: "atlassian_oauth2",
-       # label: 'Provider name', # optional label for login button, defaults to "Atlassian"
+       # label: "Provider name", # optional label for login button, defaults to "Atlassian"
        app_id: "YOUR_CLIENT_ID",
        app_secret: "YOUR_CLIENT_SECRET",
-       args: { scope: 'offline_access read:jira-user read:jira-work', prompt: 'consent' }
+       args: { scope: "offline_access read:jira-user read:jira-work", prompt: "consent" }
      }
    ]
    ```
@@ -62,10 +62,10 @@ To enable the Atlassian OmniAuth provider for passwordless authentication you mu
 
    ```yaml
    - { name: "atlassian_oauth2",
-       # label: 'Provider name', # optional label for login button, defaults to "Atlassian"
+       # label: "Provider name", # optional label for login button, defaults to "Atlassian"
        app_id: "YOUR_CLIENT_ID",
        app_secret: "YOUR_CLIENT_SECRET",
-       args: { scope: 'offline_access read:jira-user read:jira-work', prompt: 'consent' }
+       args: { scope: "offline_access read:jira-user read:jira-work", prompt: "consent" }
     }
    ```
 

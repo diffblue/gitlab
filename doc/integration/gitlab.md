@@ -53,11 +53,11 @@ GitLab.com generates an application ID and secret key for you to use.
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      {
-       "name" => "gitlab",
-       # "label" => "Provider name", # optional label for login button, defaults to "GitLab.com"
-       "app_id" => "YOUR_APP_ID",
-       "app_secret" => "YOUR_APP_SECRET",
-       "args" => { "scope" => "api" }
+       name: "gitlab",
+       # label: "Provider name", # optional label for login button, defaults to "GitLab.com"
+       app_id: "YOUR_APP_ID",
+       app_secret: "YOUR_APP_SECRET",
+       args: { scope: "api" }
      }
    ]
    ```
@@ -67,11 +67,11 @@ GitLab.com generates an application ID and secret key for you to use.
    ```ruby
    gitlab_rails['omniauth_providers'] = [
      {
-       "name" => "gitlab",
-       "label" => "Provider name", # optional label for login button, defaults to "GitLab.com"
-       "app_id" => "YOUR_APP_ID",
-       "app_secret" => "YOUR_APP_SECRET",
-       "args" => { "scope" => "api", "client_options" => { "site" => "https://gitlab.example.com/api/v4" } }
+       name: "gitlab",
+       label: "Provider name", # optional label for login button, defaults to "GitLab.com"
+       app_id: "YOUR_APP_ID",
+       app_secret: "YOUR_APP_SECRET",
+       args: { scope: "api", client_options: { site: "https://gitlab.example.com/api/v4" } }
      }
    ]
    ```
