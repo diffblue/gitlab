@@ -27,12 +27,18 @@ RSpec.describe Gitlab::BitbucketServerImport::Importer do
   end
 
   describe '#import_repository' do
+    let(:repo_url) { 'http://bitbucket:test@my-bitbucket' }
+
+    before do
+      expect(project.repository).to receive(:import_repository).with(repo_url)
+    end
+
     it 'adds a remote' do
       expect(subject).to receive(:import_pull_requests)
       expect(subject).to receive(:delete_temp_branches)
       expect(project.repository).to receive(:fetch_as_mirror)
-                                     .with('http://bitbucket:test@my-bitbucket',
-                                           refmap: [:heads, :tags, '+refs/pull-requests/*/to:refs/merge-requests/*/head'])
+                                     .with(repo_url,
+                                           refmap: ['+refs/pull-requests/*/to:refs/merge-requests/*/head'])
 
       subject.execute
     end
