@@ -96,7 +96,11 @@ module Resolvers
       {
         parent: [:parent],
         events: { events: [:target] },
-        award_emoji: [:award_emoji]
+        award_emoji: [:award_emoji],
+        start_date_from_milestones: [:start_date_sourcing_milestone],
+        start_date_from_inherited_source: [:start_date_sourcing_milestone, :start_date_sourcing_epic],
+        due_date_from_milestones: [:due_date_sourcing_milestone],
+        due_date_from_inherited_source: [:due_date_sourcing_milestone, :due_date_sourcing_epic]
       }
     end
 

@@ -50,6 +50,9 @@ module Types
     field :start_date_from_milestones, Types::TimeType, null: true,
           description: 'Inherited start date of the epic from milestones.',
           authorize: :admin_epic
+    field :start_date_from_inherited_source, Types::TimeType, null: true,
+          description: 'Inherited start date of the epic from child epics or milestones.',
+          authorize: :admin_epic
 
     field :due_date, Types::TimeType, null: true,
           description: 'Due date of the epic.'
@@ -61,6 +64,9 @@ module Types
           authorize: :admin_epic
     field :due_date_from_milestones, Types::TimeType, null: true,
           description: 'Inherited due date of the epic from milestones.',
+          authorize: :admin_epic
+    field :due_date_from_inherited_source, Types::TimeType, null: true,
+          description: 'Inherited due date of the epic from child epics or milestones.',
           authorize: :admin_epic
 
     field :upvotes, GraphQL::Types::Int, null: false,

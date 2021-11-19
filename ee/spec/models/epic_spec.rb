@@ -467,6 +467,20 @@ RSpec.describe Epic do
 
         expect(subject.start_date_from_milestones).to eq(milestone.start_date)
       end
+
+      it 'keeps start date sourcing milestone when switching to fixed dates' do
+        source_milestone = create(:milestone, :with_dates)
+        epic = create(:epic, start_date_sourcing_milestone: source_milestone, start_date_is_fixed: false)
+
+        expect { epic.update!(start_date_is_fixed: true) }.not_to change { epic.start_date_sourcing_milestone }
+      end
+
+      it 'keeps start date sourcing epic when switching to fixed dates' do
+        source_epic = create(:epic, start_date: Time.current)
+        epic = create(:epic, start_date_sourcing_epic: source_epic, start_date_is_fixed: false)
+
+        expect { epic.update!(start_date_is_fixed: true) }.not_to change { epic.start_date_sourcing_epic }
+      end
     end
 
     context 'milestone date' do
@@ -486,6 +500,20 @@ RSpec.describe Epic do
         subject.due_date_sourcing_milestone = milestone
 
         expect(subject.due_date_from_milestones).to eq(milestone.due_date)
+      end
+
+      it 'keeps due date sourcing milestone when switching to fixed dates' do
+        source_milestone = create(:milestone, :with_dates)
+        epic = create(:epic, due_date_sourcing_milestone: source_milestone, due_date_is_fixed: false)
+
+        expect { epic.update!(due_date_is_fixed: true) }.not_to change { epic.due_date_sourcing_milestone }
+      end
+
+      it 'keeps due date sourcing epic when switching to fixed dates' do
+        source_epic = create(:epic, due_date: Time.current)
+        epic = create(:epic, due_date_sourcing_epic: source_epic, due_date_is_fixed: false)
+
+        expect { epic.update!(due_date_is_fixed: true) }.not_to change { epic.due_date_sourcing_epic }
       end
     end
 
