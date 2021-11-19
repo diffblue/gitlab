@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Member is removed from project', :js do
+  include Spec::Support::Helpers::ModalHelpers
+
   let(:user) { create(:user) }
   let(:project) { create(:project) }
   let(:other_user) { create(:user) }
@@ -18,7 +20,7 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js do
   it 'user is removed from project' do
     click_button 'Leave'
 
-    page.within('[role="dialog"]') do
+    within_modal do
       click_button('Leave')
     end
 
@@ -32,7 +34,7 @@ RSpec.describe 'Projects > Members > Member is removed from project', :js do
     it 'user leaves project' do
       click_button 'Leave'
 
-      page.within('[role="dialog"]') do
+      within_modal do
         click_button('Leave')
       end
 
