@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access levels' do
   include WaitForRequests
   include Spec::Support::Helpers::Features::MembersHelpers
+  include Spec::Support::Helpers::ModalHelpers
 
   let(:johndoe)  { create(:user, name: 'John Doe') }
   let(:maryjane) { create(:user, name: 'Mary Jane') }
@@ -61,7 +62,7 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
       click_button 'Edit permissions'
     end
 
-    page.within('[role="dialog"]') do
+    within_modal do
       expect(page).to have_content ldap_override_message
       click_button 'Edit permissions'
     end
