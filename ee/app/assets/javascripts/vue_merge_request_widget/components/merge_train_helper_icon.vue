@@ -1,5 +1,6 @@
 <script>
 import { GlIcon, GlLink, GlPopover } from '@gitlab/ui';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
 
 export default {
@@ -9,13 +10,6 @@ export default {
     GlLink,
     GlPopover,
   },
-  props: {
-    mergeTrainWhenPipelineSucceedsDocsPath: {
-      type: String,
-      required: true,
-    },
-  },
-
   i18n: {
     popoverTitle: s__('mrWidget|What is a merge train?'),
     popoverContent: s__(
@@ -27,6 +21,13 @@ export default {
   popoverConstants: {
     target: 'merge-train-help',
     container: 'merge-train-help-container',
+  },
+  computed: {
+    mergeTrainWhenPipelineSucceedsDocsPath() {
+      return helpPagePath('ci/pipelines/merge_trains.md', {
+        anchor: 'add-a-merge-request-to-a-merge-train',
+      });
+    },
   },
 };
 </script>

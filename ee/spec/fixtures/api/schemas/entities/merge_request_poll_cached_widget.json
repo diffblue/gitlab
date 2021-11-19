@@ -4,7 +4,6 @@
     { "$ref": "../../../../../../spec/fixtures/api/schemas/entities/merge_request_poll_cached_widget.json" },
     {
       "properties" : {
-        "merge_train_when_pipeline_succeeds_docs_path": { "type": "string" },
         "policy_violation": { "type": "boolean" }
       }
     }
