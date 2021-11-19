@@ -37,7 +37,9 @@
   release: 14.5
 - title: Group-level settings for merge request approvals
   body: |
-    You can now define and enforce values for merge request approval settings at the group level. These values cascade and are used by any projects within the group. Group-level merge request approvals make it easy for organizations to ensure proper separation of duties across all teams. You only have to specify settings in a single location now, rather than needing to update and monitor every project. When set at the group level, you:
+    You can now define and enforce values for merge request approval settings at the group level. These values cascade and are used by any projects within the group. Group-level merge request approvals make it easy for organizations to ensure proper separation of duties across all teams. You only have to specify settings in a single location now, rather than needing to update and monitor every project.
+
+    When these settings are set at the group level, you:
 
     - Can be confident that projects will use consistent separation of duties workflows.
     - Do not need to manually check that every project has not had its settings modified.
