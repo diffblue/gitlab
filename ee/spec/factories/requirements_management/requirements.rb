@@ -9,5 +9,11 @@ FactoryBot.define do
     requirement_issue do
       association(:issue, issue_type: :requirement, project: project, author: author, title: title, description: description)
     end
+
+    after(:create) do |requirement, evaluator|
+      if evaluator.state.to_sym == :archived
+        requirement.requirement_issue.update!(state: "closed")
+      end
+    end
   end
 end

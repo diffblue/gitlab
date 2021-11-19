@@ -95,7 +95,7 @@ module TestEnv
   TMP_TEST_PATH = Rails.root.join('tmp', 'tests').freeze
   REPOS_STORAGE = 'default'
   SECOND_STORAGE_PATH = Rails.root.join('tmp', 'tests', 'second_storage')
-  SETUP_METHODS = %i[setup_gitlab_shell setup_workhorse setup_factory_repo setup_forked_repo].freeze
+  SETUP_METHODS = %i[setup_gitaly setup_gitlab_shell setup_workhorse setup_factory_repo setup_forked_repo].freeze
 
   # Can be overriden
   def setup_methods

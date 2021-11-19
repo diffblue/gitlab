@@ -209,4 +209,32 @@ RSpec.describe RequirementsManagement::Requirement do
       end
     end
   end
+
+  describe '#state' do
+    let_it_be_with_reload(:requirement) { create(:requirement, state: :archived) }
+
+    context 'when linked requirement issue is not present' do
+      before do
+        requirement.requirement_issue = nil
+      end
+
+      it 'returns the requirement stored state' do
+        expect(requirement.state).to eq('archived')
+      end
+    end
+
+    context 'when linked requirement issue is present' do
+      it 'returns requirement issue stored state' do
+        requirement.requirement_issue.state = 'opened'
+
+        expect(requirement.state).to eq('opened')
+      end
+
+      it 'returns mapped value for state' do
+        requirement.requirement_issue.state = 'closed'
+
+        expect(requirement.state).to eq('archived')
+      end
+    end
+  end
 end

@@ -12,6 +12,7 @@ module RequirementsManagement
     # but to avoid downtime and deployment issues `requirements` is still used
     # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/30052#note_329556542
     self.table_name = 'requirements'
+    STATE_MAP = { opened: 'opened', closed: 'archived' }.with_indifferent_access.freeze
 
     cache_markdown_field :title, pipeline: :single_line
     cache_markdown_field :description, issuable_reference_expansion_enabled: true
@@ -39,8 +40,15 @@ module RequirementsManagement
 
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
-    delegate :title, :description, :project_id, :author_id, :description_html, :title_html, :cached_markdown_version, to: :requirement_issue, allow_nil: true
-
+    delegate :title,
+             :description,
+             :project_id,
+             :author_id,
+             :description_html,
+             :title_html,
+             :cached_markdown_version,
+             to: :requirement_issue,
+             allow_nil: true
     enum state: { opened: 1, archived: 2 }
 
     scope :for_iid, -> (iid) { where(iid: iid) }
@@ -116,6 +124,13 @@ module RequirementsManagement
       return if message.blank?
 
       self.errors.add(:requirement_issue, :invalid, message: message)
+    end
+
+    def state
+      # Do not map state if requirement_issue not present or issue_type != requirement
+      return super unless requirement_issue&.requirement?
+
+      STATE_MAP[requirement_issue.state]
     end
 
     private
