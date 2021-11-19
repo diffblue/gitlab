@@ -97,10 +97,6 @@ module EE
         presenter(merge_request).api_approval_settings_path
       end
 
-      expose :merge_train_when_pipeline_succeeds_docs_path do |merge_request|
-        presenter(merge_request).merge_train_when_pipeline_succeeds_docs_path
-      end
-
       expose :merge_immediately_docs_path do |merge_request|
         presenter(merge_request).merge_immediately_docs_path
       end

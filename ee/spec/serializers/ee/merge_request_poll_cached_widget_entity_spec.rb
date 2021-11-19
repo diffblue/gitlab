@@ -11,10 +11,6 @@ RSpec.describe MergeRequestPollCachedWidgetEntity do
 
   subject { described_class.new(resource, request: request).as_json }
 
-  it 'includes docs path for merge trains' do
-    is_expected.to include(:merge_train_when_pipeline_succeeds_docs_path)
-  end
-
   it 'includes policy violation status' do
     is_expected.to include(:policy_violation)
   end

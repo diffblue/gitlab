@@ -5,18 +5,14 @@ import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_t
 describe('MergeTrainHelperIcon', () => {
   let wrapper;
 
-  const helpLink = 'path/to/help';
+  const helpLink = '/help/ci/pipelines/merge_trains.md#add-a-merge-request-to-a-merge-train';
 
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = () => {
-    wrapper = shallowMount(MergeTrainHelperIcon, {
-      propsData: {
-        mergeTrainWhenPipelineSucceedsDocsPath: helpLink,
-      },
-    });
+    wrapper = shallowMount(MergeTrainHelperIcon);
   };
 
   beforeEach(() => {

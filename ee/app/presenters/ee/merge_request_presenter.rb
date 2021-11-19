@@ -28,10 +28,6 @@ module EE
       end
     end
 
-    def merge_train_when_pipeline_succeeds_docs_path
-      help_page_path('ci/pipelines/merge_trains.md', anchor: 'add-a-merge-request-to-a-merge-train')
-    end
-
     def merge_immediately_docs_path
       help_page_path('ci/pipelines/merge_trains.md', anchor: 'immediately-merge-a-merge-request-with-a-merge-train')
     end
