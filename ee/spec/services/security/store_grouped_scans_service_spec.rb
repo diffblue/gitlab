@@ -69,12 +69,24 @@ RSpec.describe Security::StoreGroupedScansService do
           allow(artifact_3).to receive(:security_report).and_return(mock_report)
         end
 
-        it 'accesses the validated security reports' do
-          store_scan_group
+        context 'when there is only one report' do
+          let(:artifacts) { [artifact_1] }
 
-          expect(artifact_1).to have_received(:security_report).with(validate: true).once
-          expect(artifact_2).to have_received(:security_report).with(validate: true).twice
-          expect(artifact_3).to have_received(:security_report).with(validate: true).once
+          it 'accesses the validated security report' do
+            store_scan_group
+
+            expect(artifact_1).to have_received(:security_report).with(validate: true).once
+          end
+        end
+
+        context 'when there are more than one reports' do
+          it 'accesses the validated security reports' do
+            store_scan_group
+
+            expect(artifact_1).to have_received(:security_report).with(validate: true).once
+            expect(artifact_2).to have_received(:security_report).with(validate: true).once
+            expect(artifact_3).to have_received(:security_report).with(validate: true).once
+          end
         end
       end
 
