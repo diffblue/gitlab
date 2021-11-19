@@ -43,10 +43,10 @@ RSpec.describe Gitlab::BitbucketServerImport::Importer do
       subject.execute
     end
 
-    it 'raises a Gitlab::Shell exception in the fetch' do
-      expect(project.repository).to receive(:fetch_as_mirror).and_raise(Gitlab::Shell::Error)
+    it 'raises a Gitlab::Git::CommandError in the fetch' do
+      expect(project.repository).to receive(:fetch_as_mirror).and_raise(::Gitlab::Git::CommandError)
 
-      expect { subject.execute }.to raise_error(Gitlab::Shell::Error)
+      expect { subject.execute }.to raise_error(::Gitlab::Git::CommandError)
     end
 
     it 'raises an unhandled exception in the fetch' do

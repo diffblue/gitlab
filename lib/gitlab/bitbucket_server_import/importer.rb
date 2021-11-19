@@ -145,7 +145,7 @@ module Gitlab
         project.repository.fetch_as_mirror(project.import_url, refmap: self.class.refmap)
 
         log_info(stage: 'import_repository', message: 'finished import')
-      rescue Gitlab::Shell::Error => e
+      rescue ::Gitlab::Git::CommandError => e
         Gitlab::ErrorTracking.log_exception(
           e,
           stage: 'import_repository', message: 'failed import', error: e.message
