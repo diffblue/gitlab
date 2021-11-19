@@ -2,12 +2,12 @@ import { GlFilteredSearchToken } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { DEFAULT_MILESTONES_GRAPHQL } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
-import WeightToken from '~/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
-import IterationToken from '~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
+import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
+import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
 export const mockEpicBoardResponse = {
   data: {
@@ -470,13 +470,6 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     ],
   },
   {
-    icon: 'weight',
-    title: __('Weight'),
-    type: 'weight',
-    token: WeightToken,
-    unique: true,
-  },
-  {
     type: 'epic_id',
     icon: 'epic',
     title: 'Epic',
@@ -498,5 +491,12 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
     unique: true,
     fetchIterations,
     token: IterationToken,
+  },
+  {
+    type: 'weight',
+    icon: 'weight',
+    title: __('Weight'),
+    token: WeightToken,
+    unique: true,
   },
 ];

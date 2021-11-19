@@ -12,9 +12,9 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 
 export default {
   inject: ['groupFullPath', 'groupMilestonesPath', 'listEpicsPath'],

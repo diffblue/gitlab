@@ -7,9 +7,10 @@ import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filter
 import { BoardType } from '~/boards/constants';
 import { __ } from '~/locale';
 import { OPERATOR_IS_AND_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
-import EpicToken from '~/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
-import IterationToken from '~/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
+import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
 export default {
   extends: IssueBoardFilteredSearchFoss,
@@ -17,6 +18,7 @@ export default {
     ...IssueBoardFilteredSearchFoss.i18n,
     epic: __('Epic'),
     iteration: __('Iteration'),
+    weight: __('Weight'),
   },
   mixins: [glFeatureFlagMixin()],
   computed: {
@@ -29,7 +31,7 @@ export default {
         : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
     },
     tokens() {
-      const { epic, iteration } = this.$options.i18n;
+      const { epic, iteration, weight } = this.$options.i18n;
 
       return [
         ...this.tokensCE,
@@ -57,6 +59,13 @@ export default {
               },
             ]
           : []),
+        {
+          type: 'weight',
+          title: weight,
+          icon: 'weight',
+          token: WeightToken,
+          unique: true,
+        },
       ];
     },
   },
