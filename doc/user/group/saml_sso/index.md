@@ -37,6 +37,9 @@ If required, you can find [a glossary of common terms](../../../integration/saml
 
 ![Issuer and callback for configuring SAML identity provider with GitLab.com](img/group_saml_configuration_information.png)
 
+If your account is the only owner in the group after SAML is set up, you can't unlink the account. To [unlink the account](#unlinking-accounts),
+set up another user as a group owner.
+
 ### NameID
 
 GitLab.com uses the SAML NameID to identify users. The NameID element:
