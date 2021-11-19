@@ -193,14 +193,10 @@ module EE
 
       def set_fixed_start_date
         self.start_date = start_date_fixed
-        self.start_date_sourcing_milestone = nil
-        self.due_date_sourcing_epic = nil
       end
 
       def set_fixed_due_date
         self.end_date = due_date_fixed
-        self.due_date_sourcing_milestone = nil
-        self.due_date_sourcing_epic = nil
       end
 
       def usage_ping_record_epic_creation
