@@ -210,11 +210,11 @@ export default {
         <gl-form-group
           :label="$options.i18n.firstNameLabel"
           label-size="sm"
-          label-for="firstName"
+          label-for="first-name"
           class="mr-3 w-50"
         >
           <gl-form-input
-            id="first-Name"
+            id="first-name"
             v-model="firstName"
             type="text"
             class="form-control"
@@ -224,11 +224,11 @@ export default {
         <gl-form-group
           :label="$options.i18n.lastNameLabel"
           label-size="sm"
-          label-for="lastName"
+          label-for="last-name"
           class="w-50"
         >
           <gl-form-input
-            id="last-Name"
+            id="last-name"
             v-model="lastName"
             type="text"
             class="form-control"
@@ -240,7 +240,7 @@ export default {
         <gl-form-group
           :label="$options.i18n.companyNameLabel"
           label-size="sm"
-          label-for="companyName"
+          label-for="company-name"
           class="mr-3 w-50"
         >
           <gl-form-input
@@ -254,7 +254,7 @@ export default {
         <gl-form-group
           :label="$options.i18n.companySizeLabel"
           label-size="sm"
-          label-for="companySize"
+          label-for="company-size"
           class="w-50"
         >
           <gl-form-select
@@ -271,7 +271,7 @@ export default {
         :label="$options.i18n.phoneNumberLabel"
         label-size="sm"
         :description="$options.i18n.phoneNumberDescription"
-        label-for="phoneNumber"
+        label-for="phone-number"
       >
         <gl-form-input
           id="phone-number"
