@@ -15,7 +15,7 @@ module EE
       # After destroy callbacks are often skipped because of FastDestroyAll.
       # All destroy callbacks should be implemented in `Ci::JobArtifacts::DestroyBatchService`
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/297472
-      after_destroy :log_geo_deleted_event
+      after_commit :log_geo_deleted_event, on: :destroy
 
       LICENSE_SCANNING_REPORT_FILE_TYPES = %w[license_scanning].freeze
       DEPENDENCY_LIST_REPORT_FILE_TYPES = %w[dependency_scanning].freeze
