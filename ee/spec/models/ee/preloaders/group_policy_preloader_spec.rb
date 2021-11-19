@@ -11,12 +11,17 @@ RSpec.describe Preloaders::GroupPolicyPreloader do
   let_it_be(:public_maintainer_group) { create(:group, :private, name: 'a public maintainer', path: 'a-public-maintainer') }
 
   let(:base_groups) { [guest_group, private_maintainer_group, private_developer_group, public_maintainer_group] }
+  let(:should_check_namespace_plan) { false }
 
   before_all do
     guest_group.add_guest(user)
     private_maintainer_group.add_maintainer(user)
     private_developer_group.add_developer(user)
     public_maintainer_group.add_maintainer(user)
+  end
+
+  before do
+    allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(should_check_namespace_plan)
   end
 
   context 'when ip_restrictions feature is enabled' do
@@ -38,6 +43,24 @@ RSpec.describe Preloaders::GroupPolicyPreloader do
 
       preload_groups_for_policy(user, pristine_groups)
       expect { authorize_all_groups(user, pristine_groups) }.not_to exceed_query_limit(control)
+    end
+  end
+
+  context 'when check_namespace_plan setting is disabled' do
+    it 'does not preload group plans' do
+      expect(::Gitlab::GroupPlansPreloader).not_to receive(:new)
+
+      preload_groups_for_policy(user)
+    end
+  end
+
+  context 'when check_namespace_plan setting is enabled' do
+    let(:should_check_namespace_plan) { true }
+
+    it 'preloads group plans' do
+      expect(::Gitlab::GroupPlansPreloader).to receive_message_chain(:new, :preload)
+
+      preload_groups_for_policy(user)
     end
   end
 

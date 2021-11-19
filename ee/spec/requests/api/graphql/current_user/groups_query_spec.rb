@@ -32,6 +32,20 @@ RSpec.describe 'Query current user groups' do
     public_maintainer_group.add_maintainer(user)
   end
 
+  shared_examples 'no N + 1 DB queries' do
+    it 'avoids N+1 queries', :request_store do
+      control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
+
+      create(:group, :private).tap { |group| group.add_maintainer(current_user) }
+      create(:group, :private, parent: private_maintainer_group)
+
+      another_root = create(:group, :private, name: 'root-3', path: 'root-3')
+      create(:group, :private, parent: another_root).tap { |group| group.add_maintainer(current_user) }
+
+      expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
+    end
+  end
+
   context 'when permission_scope is CREATE_PROJECTS' do
     let(:group_arguments) { { permission_scope: :CREATE_PROJECTS } }
 
@@ -46,16 +60,20 @@ RSpec.describe 'Query current user groups' do
         stub_licensed_features(group_ip_restriction: true)
       end
 
-      it 'avoids N+1 queries', :request_store do
-        control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
+      context 'when check_namespace_plan setting is enabled' do
+        before do
+          stub_application_setting(check_namespace_plan: true)
+        end
 
-        create(:group, :private).tap { |group| group.add_maintainer(current_user) }
-        create(:group, :private, parent: private_maintainer_group)
+        it_behaves_like 'no N + 1 DB queries'
+      end
 
-        another_root = create(:group, :private, name: 'root-3', path: 'root-3')
-        create(:group, :private, parent: another_root).tap { |group| group.add_maintainer(current_user) }
+      context 'when check_namespace_plan setting is disabled' do
+        before do
+          stub_application_setting(check_namespace_plan: false)
+        end
 
-        expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
+        it_behaves_like 'no N + 1 DB queries'
       end
     end
   end
