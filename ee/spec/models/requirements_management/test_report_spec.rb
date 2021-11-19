@@ -17,32 +17,12 @@ RSpec.describe RequirementsManagement::TestReport do
 
     let(:requirement) { build(:requirement) }
     let(:requirement_issue) { build(:requirement_issue) }
-    let(:requirement_error) { /Must be associated with either a RequirementsManagement::Requirement OR an Issue of type `requirement`, but not both/ }
 
     it { is_expected.to validate_presence_of(:state) }
+    it { is_expected.to validate_presence_of(:requirement) }
 
     context 'requirements associations' do
       subject { build(:test_report, requirement: requirement_arg, requirement_issue: requirement_issue_arg) }
-
-      context 'when both are set' do
-        let(:requirement_arg) { requirement }
-        let(:requirement_issue_arg) { requirement_issue }
-
-        specify do
-          expect(subject).not_to be_valid
-          expect(subject.errors.messages[:base]).to include(requirement_error)
-        end
-      end
-
-      context 'when neither are set' do
-        let(:requirement_arg) { nil }
-        let(:requirement_issue_arg) { nil }
-
-        specify do
-          expect(subject).not_to be_valid
-          expect(subject.errors.messages[:base]).to include(requirement_error)
-        end
-      end
 
       context 'when only requirement is set' do
         let(:requirement_arg) { requirement }
@@ -111,7 +91,7 @@ RSpec.describe RequirementsManagement::TestReport do
         end
 
         it 'creates test report with expected status for each open requirement' do
-          requirement1 = create(:requirement, state: :opened, project: project)
+          requirement1 = create(:requirement, state: :opened, project: project, requirement_issue: create(:requirement_issue))
           requirement2 = create(:requirement, state: :opened, project: project)
           create(:requirement, state: :opened) # different project
           create(:requirement, state: :archived, project: project) # archived
@@ -119,8 +99,10 @@ RSpec.describe RequirementsManagement::TestReport do
           expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
           reports = RequirementsManagement::TestReport.where(build: build)
+
           expect(reports).to match_array([
             have_attributes(requirement: requirement1,
+                            requirement_issue: requirement1.requirement_issue,
                             author: build.user,
                             state: 'passed'),
             have_attributes(requirement: requirement2,
@@ -155,7 +137,8 @@ RSpec.describe RequirementsManagement::TestReport do
     let_it_be(:user) { create(:user) }
     let_it_be(:build_author) { create(:user) }
     let_it_be(:build) { create(:ci_build, author: build_author) }
-    let_it_be(:requirement) { create(:requirement, state: :opened) }
+    let_it_be(:requirement_issue) { create(:requirement_issue)}
+    let_it_be(:requirement) { create(:requirement, requirement_issue: requirement_issue, state: :opened) }
 
     let(:now) { Time.current }
 
@@ -166,6 +149,7 @@ RSpec.describe RequirementsManagement::TestReport do
         expect(test_report.author).to eq(build.author)
         expect(test_report.build).to eq(build)
         expect(test_report.requirement).to eq(requirement)
+        expect(test_report.requirement_issue).to eq(requirement.requirement_issue)
         expect(test_report.state).to eq('failed')
         expect(test_report.created_at).to eq(now)
       end
@@ -178,6 +162,7 @@ RSpec.describe RequirementsManagement::TestReport do
         expect(test_report.author).to eq(user)
         expect(test_report.build).to eq(nil)
         expect(test_report.requirement).to eq(requirement)
+        expect(test_report.requirement_issue).to eq(requirement.requirement_issue)
         expect(test_report.state).to eq('passed')
         expect(test_report.created_at).to eq(now)
       end
