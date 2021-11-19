@@ -160,7 +160,7 @@ RSpec.describe EE::Audit::ProjectChangesAuditor do
         aggregate_failures do
           expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
           expect(AuditEvent.last.details).to include(
-            change: 'prevent merge request approval from reviewers',
+            change: 'prevent merge request approval from committers',
             from: true,
             to: false
           )

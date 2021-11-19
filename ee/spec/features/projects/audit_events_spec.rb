@@ -168,7 +168,7 @@ RSpec.describe 'Projects > Audit Events', :js do
           page.within('.audit-log-table') do
             expect(page).to have_content(project.owner.name)
             expect(page).to have_content('Changed prevent merge request approval from authors')
-            expect(page).to have_content('Changed prevent merge request approval from reviewers')
+            expect(page).to have_content('Changed prevent merge request approval from committers')
             expect(page).to have_content(project.name)
           end
         end
