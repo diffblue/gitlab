@@ -85,7 +85,7 @@ RSpec.describe 'Query.project(fullPath).pipelines.dastProfile' do
 
           subject
 
-          expect(dast_profile_data).to be_empty
+          expect(dast_profile_data).to contain_exactly(nil)
         end
       end
     end
