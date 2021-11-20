@@ -49,14 +49,7 @@ module Gitlab
       def config_queues
         @config_queues ||= begin
           config = YAML.load_file(Rails.root.join(SIDEKIQ_QUEUES_PATH))
-          queues = config[:queues].map(&:first)
-
-          if Gitlab.jh? && File.exist?(JH_SIDEKIQ_QUEUES_PATH)
-            jh_config = YAML.load_file(JH_SIDEKIQ_QUEUES_PATH)
-            queues += jh_config[:queues].map(&:first)
-          end
-
-          queues
+          config[:queues].map(&:first)
         end
       end
 
@@ -105,32 +98,32 @@ module Gitlab
         Gitlab.jh? && File.exist?(JH_QUEUE_CONFIG_PATH) && jh_workers != YAML.load_file(JH_QUEUE_CONFIG_PATH)
       end
 
-      def queues_for_sidekiq_queues_yml(jh: false)
+      def queues_for_sidekiq_queues_yml
         namespaces_with_equal_weights =
           workers
-            .select { |worker| worker.jh? == jh }
+            .reject { |worker| worker.jh? }
             .group_by(&:queue_namespace)
             .map(&:last)
             .select { |workers| workers.map(&:get_weight).uniq.count == 1 }
             .map(&:first)
 
         namespaces = namespaces_with_equal_weights.map(&:queue_namespace).to_set
-        remaining_queues = workers.select { |worker| worker.jh? == jh }.reject { |worker| namespaces.include?(worker.queue_namespace) }
+        remaining_queues = workers.reject { |worker| worker.jh? }.reject { |worker| namespaces.include?(worker.queue_namespace) }
 
         (namespaces_with_equal_weights.map(&:namespace_and_weight) +
          remaining_queues.map(&:queue_and_weight)).sort
+      end
+
+      # Override in JH repo
+      def jh_queues_for_sidekiq_queues_yml
+        []
       end
 
       # YAML.load_file is OK here as we control the file contents
       def sidekiq_queues_yml_outdated?
         config_queues = YAML.load_file(SIDEKIQ_QUEUES_PATH)[:queues]
 
-        if Gitlab.jh? && File.exist?(JH_SIDEKIQ_QUEUES_PATH)
-          jh_config_queues = YAML.load_file(JH_SIDEKIQ_QUEUES_PATH)[:queues]
-          queues_for_sidekiq_queues_yml != config_queues || queues_for_sidekiq_queues_yml(jh: true) != jh_config_queues
-        else
-          queues_for_sidekiq_queues_yml != config_queues
-        end
+        queues_for_sidekiq_queues_yml != config_queues
       end
 
       # Returns a hash of worker class name => mapped queue name
@@ -168,3 +161,5 @@ module Gitlab
     end
   end
 end
+
+Gitlab::SidekiqConfig.prepend_mod

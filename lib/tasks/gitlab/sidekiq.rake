@@ -102,8 +102,7 @@ namespace :gitlab do
         write_yaml(Gitlab::SidekiqConfig::SIDEKIQ_QUEUES_PATH, banner, queues: queues_and_weights)
 
         if Gitlab.jh?
-          jh_queues_and_weights = Gitlab::SidekiqConfig.queues_for_sidekiq_queues_yml(jh: true)
-          write_yaml(Gitlab::SidekiqConfig::JH_SIDEKIQ_QUEUES_PATH, banner, queues: jh_queues_and_weights)
+          write_yaml(Gitlab::SidekiqConfig::JH_SIDEKIQ_QUEUES_PATH, banner, queues: Gitlab::SidekiqConfig.jh_queues_for_sidekiq_queues_yml)
         end
       end
 
