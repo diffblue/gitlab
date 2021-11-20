@@ -10,6 +10,8 @@ module EE
 
         expose :id
         expose :iid
+        expose :color
+        expose :text_color
         expose :group_id
         expose :parent_id
         expose :parent_iid do |epic|
