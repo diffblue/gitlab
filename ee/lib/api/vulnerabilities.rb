@@ -6,6 +6,7 @@ module API
     include PaginationParams
 
     feature_category :vulnerability_management
+    urgency :low
 
     helpers ::API::Helpers::VulnerabilitiesHelpers
 
