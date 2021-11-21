@@ -44,6 +44,11 @@ class GroupHook < WebHook
     group.actual_limits.limit_for(:web_hook_calls)
   end
 
+  override :parent
+  def parent
+    group
+  end
+
   private
 
   override :web_hooks_disable_failed?
