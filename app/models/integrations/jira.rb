@@ -234,19 +234,19 @@ module Integrations
     end
 
     override :create_cross_reference_note
-    def create_cross_reference_note(external_issue, mentioner, author)
-      unless can_cross_reference?(mentioner)
-        return s_("JiraService|Events for %{noteable_model_name} are disabled.") % { noteable_model_name: mentioner.model_name.plural.humanize(capitalize: false) }
+    def create_cross_reference_note(external_issue, mentioned_in, author)
+      unless can_cross_reference?(mentioned_in)
+        return s_("JiraService|Events for %{noteable_model_name} are disabled.") % { noteable_model_name: mentioned_in.model_name.plural.humanize(capitalize: false) }
       end
 
       jira_issue = find_issue(external_issue.id)
 
       return unless jira_issue.present?
 
-      mentioner_id = mentioner.respond_to?(:iid) ? mentioner.iid : mentioner.id
-      mentioner_type = mentionable_name(mentioner)
-      entity_url = build_entity_url(mentioner_type, mentioner_id)
-      entity_meta = build_entity_meta(mentioner)
+      mentioned_in_id = mentioned_in.respond_to?(:iid) ? mentioned_in.iid : mentioned_in.id
+      mentioned_in_type = mentionable_name(mentioned_in)
+      entity_url = build_entity_url(mentioned_in_type, mentioned_in_id)
+      entity_meta = build_entity_meta(mentioned_in)
 
       data = {
         user: {
@@ -259,9 +259,9 @@ module Integrations
         },
         entity: {
           id: entity_meta[:id],
-          name: mentioner_type.humanize.downcase,
+          name: mentioned_in_type.humanize.downcase,
           url: entity_url,
-          title: mentioner.title,
+          title: mentioned_in.title,
           description: entity_meta[:description],
           branch: entity_meta[:branch]
         }
@@ -316,8 +316,8 @@ module Integrations
       end
     end
 
-    def can_cross_reference?(mentioner)
-      case mentioner
+    def can_cross_reference?(mentioned_in)
+      case mentioned_in
       when Commit then commit_events
       when MergeRequest then merge_requests_events
       else true
