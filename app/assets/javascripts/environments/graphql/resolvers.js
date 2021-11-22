@@ -115,6 +115,14 @@ export const resolvers = (endpoint) => ({
         data: { environmentToStop: environment },
       });
     },
+    action(_, { action: { playPath } }) {
+      return axios
+        .post(playPath)
+        .then(() => buildErrors())
+        .catch(() =>
+          buildErrors([s__('Environments|An error occurred while making the request.')]),
+        );
+    },
     setEnvironmentToDelete(_, { environment }, { client }) {
       client.writeQuery({
         query: environmentToDeleteQuery,

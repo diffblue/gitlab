@@ -81,4 +81,5 @@ extend type Mutation {
   setEnvironmentToDelete(environment: LocalEnvironmentInput): LocalErrors
   setEnvironmentToRollback(environment: LocalEnvironmentInput): LocalErrors
   setEnvironmentToStop(environment: LocalEnvironmentInput): LocalErrors
+  action(environment: LocalEnvironmentInput): LocalErrors
 }

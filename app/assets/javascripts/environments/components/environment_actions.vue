@@ -3,6 +3,7 @@ import { GlDropdown, GlDropdownItem, GlIcon, GlLoadingIcon, GlTooltipDirective }
 import { formatTime } from '~/lib/utils/datetime_utility';
 import { __, s__, sprintf } from '~/locale';
 import eventHub from '../event_hub';
+import actionMutation from '../graphql/mutations/action.mutation.graphql';
 
 export default {
   directives: {
@@ -19,6 +20,11 @@ export default {
       type: Array,
       required: false,
       default: () => [],
+    },
+    graphql: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -49,7 +55,11 @@ export default {
 
       this.isLoading = true;
 
-      eventHub.$emit('postAction', { endpoint: action.playPath });
+      if (this.graphql) {
+        this.$apollo.mutate({ mutation: actionMutation, variables: { action } });
+      } else {
+        eventHub.$emit('postAction', { endpoint: action.playPath });
+      }
     },
 
     isActionDisabled(action) {
