@@ -84,10 +84,11 @@ module Gitlab
       # use IN(project_ids...) instead. It's the intersection of two users so
       # the list will be (relatively) short
       @contributed_project_ids ||= projects.distinct.pluck(:id)
-      authed_projects = Project.where(id: @contributed_project_ids)
+      authed_projects = ProjectFeature
         .with_feature_available_for_user(feature, current_user)
+        .where(project_id: @contributed_project_ids)
         .reorder(nil)
-        .select(:id)
+        .select(:project_id)
 
       conditions = t[:created_at].gteq(date_from.beginning_of_day)
         .and(t[:created_at].lteq(@contributor_time_instance.today.end_of_day))
