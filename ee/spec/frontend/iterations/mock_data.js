@@ -38,15 +38,15 @@ export const mockProjectIterations = {
 };
 
 export const manualIterationCadence = {
+  active: true,
   id: `gid://gitlab/Iterations::Cadence/72`,
   title: 'A manual iteration cadence',
   automatic: true,
   rollOver: false,
-  durationInWeeks: '3',
+  durationInWeeks: 3,
   description: 'The words',
-  duration: '3',
   startDate: '2020-06-28',
-  iterationsInAdvance: '2',
+  iterationsInAdvance: 2,
 };
 
 export const createMutationSuccess = {

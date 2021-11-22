@@ -145,6 +145,7 @@ export default {
           id,
           title: this.title,
           automatic: this.automatic,
+          rollOver: this.rollOver,
           startDate: this.startDate,
           durationInWeeks: this.durationInWeeks,
           active: true,
