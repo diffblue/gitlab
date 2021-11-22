@@ -1,0 +1,86 @@
+query getComplianceViolations($fullPath: ID!) {
+  group(fullPath: $fullPath) @client {
+    id
+    mergeRequestViolations {
+      nodes {
+        id
+        severity
+        reason
+        violatingUser {
+          id
+          name
+          username
+          avatarUrl
+          webUrl
+        }
+        mergeRequest {
+          id
+          title
+          mergedAt
+          webUrl
+          author {
+            id
+            name
+            username
+            avatarUrl
+            webUrl
+          }
+          mergedBy {
+            id
+            name
+            username
+            avatarUrl
+            webUrl
+          }
+          committers {
+            nodes {
+              id
+              name
+              username
+              avatarUrl
+              webUrl
+            }
+          }
+          participants {
+            nodes {
+              id
+              name
+              username
+              avatarUrl
+              webUrl
+            }
+          }
+          approvedBy {
+            nodes {
+              id
+              name
+              username
+              avatarUrl
+              webUrl
+            }
+          }
+          ref: reference
+          fullRef: reference(full: true)
+          sourceBranch
+          sourceBranchExists
+          targetBranch
+          targetBranchExists
+        }
+        project {
+          id
+          avatarUrl
+          name
+          webUrl
+          complianceFrameworks {
+            nodes {
+              id
+              name
+              description
+              color
+            }
+          }
+        }
+      }
+    }
+  }
+}

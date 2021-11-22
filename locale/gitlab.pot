@@ -11087,6 +11087,9 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
+msgid "Date merged"
+msgstr ""
+
 msgid "Date picker"
 msgstr ""
 
@@ -29916,6 +29919,9 @@ msgstr ""
 msgid "Resync"
 msgstr ""
 
+msgid "Retrieving the compliance report failed. Please refresh the page and try again."
+msgstr ""
+
 msgid "Retry"
 msgstr ""
 
@@ -34764,6 +34770,9 @@ msgstr ""
 msgid "The compliance report captures merged changes that violate compliance best practices."
 msgstr ""
 
+msgid "The compliance report shows the merge request violations merged in protected environments."
+msgstr ""
+
 msgid "The connection will time out after %{timeout}. For repositories that take longer, use a clone/push combination."
 msgstr ""
 
@@ -38724,6 +38733,9 @@ msgid "Viewed"
 msgstr ""
 
 msgid "Viewing commit"
+msgstr ""
+
+msgid "Violation"
 msgstr ""
 
 msgid "Visibility"
