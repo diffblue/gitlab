@@ -57,7 +57,7 @@ RSpec.describe 'Database::MultipleDatabases' do
     end
   end
 
-  describe '.with_mocked_ci_connection' do
+  describe '.with_added_ci_connection' do
     context 'when only a single database is setup' do
       before do
         skip_if_multiple_databases_are_setup
@@ -67,7 +67,7 @@ RSpec.describe 'Database::MultipleDatabases' do
         main_database = current_database(ActiveRecord::Base)
         original_database = current_database(Ci::ApplicationRecord)
 
-        with_mocked_ci_connection do
+        with_added_ci_connection do
           expect(current_database(Ci::ApplicationRecord)).to eq(main_database)
         end
 
@@ -83,7 +83,7 @@ RSpec.describe 'Database::MultipleDatabases' do
       it 'does not mock the original Ci::ApplicationRecord connection', :aggregate_failures do
         original_database = current_database(Ci::ApplicationRecord)
 
-        with_mocked_ci_connection do
+        with_added_ci_connection do
           expect(current_database(Ci::ApplicationRecord)).to eq(original_database)
         end
 

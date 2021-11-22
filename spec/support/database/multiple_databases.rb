@@ -51,8 +51,9 @@ module Database
     end
     # rubocop:enable Database/MultipleDatabases
 
-    def with_mocked_ci_connection
+    def with_added_ci_connection
       if Gitlab::Database.has_config?(:ci)
+        # No need to add a ci: connection if we already have one
         yield
       else
         with_reestablished_active_record_base(reconnect: true) do
@@ -92,8 +93,8 @@ RSpec.configure do |config|
     end
   end
 
-  config.around(:each, :mocked_ci_connection) do |example|
-    with_mocked_ci_connection do
+  config.around(:each, :add_ci_connection) do |example|
+    with_added_ci_connection do
       example.run
     end
   end
