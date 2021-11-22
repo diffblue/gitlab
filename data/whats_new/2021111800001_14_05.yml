@@ -48,7 +48,7 @@
   gitlab-com: true
   packages: [Premium, Ultimate]
   url: 'https://docs.gitlab.com/ee/user/group/#group-approval-rules'
-  image_url: https://about.gitlab.com//images/14_5/group_level_mr_settings_picture.png
+  image_url: https://about.gitlab.com/images/14_5/group_level_mr_settings_picture.png
   published_at: 2021-11-22
   release: 14.5
 - title: GitLab Kubernetes Agent available in GitLab Free
