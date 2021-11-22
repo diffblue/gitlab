@@ -369,6 +369,9 @@ Keyset pagination supports only `order_by=id`. Other sorting options aren't avai
 Get a list of visible projects owned by the given user. When accessed without
 authentication, only public projects are returned.
 
+NOTE:
+Only the projects in the user's (specified in `user_id`) namespace are returned. Projects owned by the user in any group or subgroups are not returned.
+
 This endpoint supports [keyset pagination](index.md#keyset-based-pagination)
 for selected `order_by` options.
 
