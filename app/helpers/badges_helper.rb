@@ -1,24 +1,20 @@
 # frozen_string_literal: true
 
 module BadgesHelper
-  VARIANT_CLASSES = { # rubocop:disable Style/MutableConstant
+  VARIANT_CLASSES = {
     muted: "badge-muted",
     neutral: "badge-neutral",
     info: "badge-info",
     success: "badge-success",
     warning: "badge-warning",
     danger: "badge-danger"
-  }
-  VARIANT_CLASSES.default = VARIANT_CLASSES.fetch(:muted)
-  VARIANT_CLASSES.freeze
+  }.tap { |hash| hash.default = hash.fetch(:muted) } .freeze
 
-  SIZE_CLASSES = { # rubocop:disable Style/MutableConstant
+  SIZE_CLASSES = {
     sm: "sm",
     md: "md",
     lg: "lg"
-  }
-  SIZE_CLASSES.default = SIZE_CLASSES.fetch(:md)
-  SIZE_CLASSES.freeze
+  }.tap { |hash| hash.default = hash.fetch(:md) } .freeze
 
   GL_BADGE_CLASSES = %w[gl-badge badge badge-pill].freeze
 
