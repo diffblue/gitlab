@@ -29,9 +29,9 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
   let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2) }
   let_it_be(:epic_issue3) { create(:epic_issue, epic: epic3, issue: issue3) }
 
-  let_it_be(:context) do
+  let(:context) do
     GraphQL::Query::Context.new(
-      query: OpenStruct.new(schema: nil),
+      query: double('query', schema: nil),
       values: { current_user: current_user },
       object: nil
     )
