@@ -18,8 +18,14 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import {
+  siteProfiles,
+  nonValidatedSiteProfile,
+  validatedSiteProfile,
+} from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import * as responses from '../mocks/apollo_mocks';
-import { scannerProfiles, siteProfiles } from '../mocks/mock_data';
+import { scannerProfiles } from '../mocks/mock_data';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
@@ -33,7 +39,6 @@ const newSiteProfilePath = `/${projectPath}/-/security/configuration/dast_scans`
 const pipelineUrl = `/${projectPath}/pipelines/123`;
 const editPath = `/${projectPath}/on_demand_scans_form/1/edit`;
 const [passiveScannerProfile, activeScannerProfile] = scannerProfiles;
-const [nonValidatedSiteProfile, validatedSiteProfile] = siteProfiles;
 const dastScan = {
   id: 1,
   branch: { name: 'dev' },
@@ -301,7 +306,7 @@ describe('OnDemandScansForm', () => {
           JSON.stringify({
             name: 'My daily scan',
             selectedScannerProfileId: 'gid://gitlab/DastScannerProfile/1',
-            selectedSiteProfileId: 'gid://gitlab/DastSiteProfile/1',
+            selectedSiteProfileId: nonValidatedSiteProfile.id,
             selectedBranch,
           }),
         ],
@@ -620,14 +625,16 @@ describe('OnDemandScansForm', () => {
     });
 
     it('site profile', () => {
-      setWindowLocation('?site_profile_id=1');
+      setWindowLocation(`?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}`);
       createShallowComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
     });
 
     it('both scanner & site profile', () => {
-      setWindowLocation('?site_profile_id=1&scanner_profile_id=1');
+      setWindowLocation(
+        `?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}&scanner_profile_id=1`,
+      );
       createShallowComponent();
 
       expect(wrapper.find(SiteProfileSelector).attributes('value')).toBe(siteProfile.id);
