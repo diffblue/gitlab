@@ -8,7 +8,7 @@ class Groups::HooksController < Groups::ApplicationController
   before_action :authorize_admin_group!
   before_action :check_group_webhooks_available!
   before_action :set_hook, only: [:edit, :update, :test, :destroy]
-  before_action -> { create_rate_limit(:group_testing_hook, @group) }, only: :test
+  before_action -> { check_rate_limit!(:group_testing_hook, scope: [@group, current_user]) }, only: :test
 
   respond_to :html
 
