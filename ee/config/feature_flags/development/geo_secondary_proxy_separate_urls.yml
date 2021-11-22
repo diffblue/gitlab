@@ -1,8 +1,0 @@
----
-name: geo_secondary_proxy_separate_urls
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74329
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/325732
-milestone: '14.5'
-type: development
-group: group::geo
-default_enabled: false

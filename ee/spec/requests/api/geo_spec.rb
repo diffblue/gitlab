@@ -671,11 +671,9 @@ RSpec.describe API::Geo do
         end
       end
 
-      context 'when this is a secondary site with unified URL' do
-        let_it_be(:unified_url_secondary_node) { create(:geo_node, url: primary_node.url) }
-
+      context 'when this is a secondary site' do
         before do
-          stub_current_geo_node(unified_url_secondary_node)
+          stub_current_geo_node(secondary_node)
         end
 
         context 'when a primary exists' do
@@ -699,42 +697,16 @@ RSpec.describe API::Geo do
         end
       end
 
-      context 'when this is a secondary site with separate URLs' do
+      context 'when geo_secondary_proxy feature flag is disabled' do
         before do
-          stub_current_geo_node(secondary_node)
+          stub_feature_flags(geo_secondary_proxy: false)
         end
 
-        context 'when a primary does not exist' do
-          it 'returns empty data' do
-            allow(::Gitlab::Geo).to receive(:primary_node_configured?).and_return(false)
+        it 'returns empty data' do
+          subject
 
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_empty
-          end
-        end
-
-        context 'when geo_secondary_proxy_separate_urls feature flag is disabled' do
-          before do
-            stub_feature_flags(geo_secondary_proxy_separate_urls: false)
-          end
-
-          it 'returns empty data' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_empty
-          end
-        end
-
-        context 'when geo_secondary_proxy_separate_urls feature flag is enabled' do
-          it 'returns the primary internal URL' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response['geo_proxy_url']).to match(primary_node.internal_url)
-          end
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_empty
         end
       end
     end
