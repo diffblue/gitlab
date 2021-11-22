@@ -28,6 +28,12 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
       let(:can_create_vulnerability) { true }
     end
 
+    it 'checks if the user can create a vulnerability' do
+      request_new_vulnerability_page
+
+      expect(controller).to have_received(:can?).with(controller.current_user, :create_vulnerability, an_instance_of(Project))
+    end
+
     context 'when user can create vulnerability' do
       let(:can_create_vulnerability) { true }
 
