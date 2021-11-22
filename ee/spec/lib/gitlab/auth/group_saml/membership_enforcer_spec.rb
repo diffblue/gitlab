@@ -10,13 +10,19 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipEnforcer do
     allow_any_instance_of(SamlProvider).to receive(:enforced_sso?).and_return(true)
   end
 
-  it 'allows adding the group member' do
+  it 'allows adding a user linked to the SAML account as member' do
     expect(described_class.new(group).can_add_user?(user)).to be_truthy
   end
 
-  it 'does not add the group member' do
+  it 'does not allow adding a user not linked to the SAML account as member' do
     non_saml_user = create(:user)
 
     expect(described_class.new(group).can_add_user?(non_saml_user)).to be_falsey
+  end
+
+  it 'allows adding a project bot as member' do
+    project_bot = create(:user, :project_bot)
+
+    expect(described_class.new(group).can_add_user?(project_bot)).to be_truthy
   end
 end

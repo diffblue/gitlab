@@ -42,45 +42,7 @@ RSpec.describe ProjectMember do
       end
     end
 
-    context "for SSO enforced groups" do
-      let(:group) { create(:group, :private) }
-      let!(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
-      let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
-
-      before do
-        stub_licensed_features(group_saml: true)
-      end
-
-      it 'allows adding a user linked to the SAML account as project member' do
-        sso_user = identity.user
-        member = entity.add_developer(sso_user)
-
-        expect(member).to be_valid
-      end
-
-      it 'does not allow adding a user not linked to the SAML account as a project member' do
-        member = entity.add_developer(create(:user))
-
-        expect(member).not_to be_valid
-        expect(member.errors.messages[:user]).to include('is not linked to a SAML account')
-      end
-
-      it 'allows adding a project bot' do
-        member = entity.add_developer(create(:user, :project_bot))
-
-        expect(member).to be_valid
-      end
-    end
-
     context 'enforced group managed account disabled' do
-      it 'allows adding any user as project member' do
-        member = entity.add_developer(create(:user))
-
-        expect(member).to be_valid
-      end
-    end
-
-    context 'enforced SSO disabled' do
       it 'allows adding any user as project member' do
         member = entity.add_developer(create(:user))
 

@@ -13,17 +13,23 @@ RSpec.shared_examples 'member validations' do
           allow_any_instance_of(SamlProvider).to receive(:enforced_sso?).and_return(true)
         end
 
-        it 'allows adding the group member' do
+        it 'allows adding a user linked to the SAML account as member' do
           member = entity.add_user(user, Member::DEVELOPER)
 
           expect(member).to be_valid
         end
 
-        it 'does not add the group member' do
+        it 'does not allow adding a user not linked to the SAML account as member' do
           member = entity.add_user(create(:user), Member::DEVELOPER)
 
           expect(member).not_to be_valid
           expect(member.errors.messages[:user]).to eq(['is not linked to a SAML account'])
+        end
+
+        it 'allows adding a project bot as member' do
+          member = entity.add_user(create(:user, :project_bot), Member::DEVELOPER)
+
+          expect(member).to be_valid
         end
 
         context 'subgroups' do
