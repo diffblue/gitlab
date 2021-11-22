@@ -21050,7 +21050,7 @@ msgstr ""
 msgid "MERGED"
 msgstr ""
 
-msgid "MR widget|Back to the Merge request"
+msgid "MR widget|Back to the merge request"
 msgstr ""
 
 msgid "MR widget|See your pipeline in action"
