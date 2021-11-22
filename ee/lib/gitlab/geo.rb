@@ -86,6 +86,10 @@ module Gitlab
       self.secondary? && self.primary_node_configured?
     end
 
+    def self.secondary_with_unified_url?
+      self.secondary_with_primary? && self.primary_node.url == self.current_node.url
+    end
+
     def self.license_allows?
       ::License.feature_available?(:geo)
     end
