@@ -4,6 +4,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceForm from 'ee/iterations/components/iteration_cadence_form.vue';
 import createCadence from 'ee/iterations/queries/cadence_create.mutation.graphql';
+import updateCadence from 'ee/iterations/queries/cadence_update.mutation.graphql';
 import getCadence from 'ee/iterations/queries/iteration_cadence.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -50,8 +51,16 @@ describe('Iteration cadence form', () => {
     },
   };
 
-  function createComponent({ query = createCadence, resolverMock } = {}) {
-    const apolloProvider = createMockApolloProvider([[query, resolverMock]]);
+  function createComponent({
+    query = getCadence,
+    resolverMock,
+    mutation = createCadence,
+    mutationMock,
+  } = {}) {
+    const apolloProvider = createMockApolloProvider([
+      [query, resolverMock],
+      [mutation, mutationMock],
+    ]);
     wrapper = extendedWrapper(
       mount(IterationCadenceForm, {
         apolloProvider,
@@ -74,6 +83,7 @@ describe('Iteration cadence form', () => {
   const findAutomatedSchedulingGroup = () => wrapper.findAllComponents(GlFormGroup).at(1);
   const findStartDateGroup = () => wrapper.findAllComponents(GlFormGroup).at(2);
   const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);
+  const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
   const findFutureIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(5);
 
   const findError = () => wrapper.findComponent(GlAlert);
@@ -82,6 +92,7 @@ describe('Iteration cadence form', () => {
   const findStartDate = () => wrapper.find('#cadence-start-date');
   const findFutureIterations = () => wrapper.find('#cadence-schedule-future-iterations');
   const findDuration = () => wrapper.find('#cadence-duration');
+  const findRollOver = () => wrapper.find('#cadence-rollover-issues');
   const findDescription = () => wrapper.find('#cadence-description');
 
   const setTitle = (value) => findTitle().vm.$emit('input', value);
@@ -89,7 +100,13 @@ describe('Iteration cadence form', () => {
   const setFutureIterations = (value) => findFutureIterations().vm.$emit('input', value);
   const setDuration = (value) => findDuration().vm.$emit('input', value);
   const setAutomaticValue = (value) => {
-    const checkbox = findAutomatedSchedulingGroup().find(GlFormCheckbox).vm;
+    const checkbox = findAutomatedSchedulingGroup().findComponent(GlFormCheckbox).vm;
+    checkbox.$emit('input', value);
+    checkbox.$emit('change', value);
+  };
+
+  const setRollOver = (value) => {
+    const checkbox = findRollOverGroup().findComponent(GlFormCheckbox).vm;
     checkbox.$emit('input', value);
     checkbox.$emit('change', value);
   };
@@ -108,11 +125,11 @@ describe('Iteration cadence form', () => {
   const clickCancel = () => findCancelButton().vm.$emit('click');
 
   describe('Create cadence', () => {
-    let resolverMock;
+    let mutationMock;
 
     beforeEach(() => {
-      resolverMock = jest.fn().mockResolvedValue(createMutationSuccess);
-      createComponent({ resolverMock });
+      mutationMock = jest.fn().mockResolvedValue(createMutationSuccess);
+      createComponent({ mutationMock });
     });
 
     it('cancel button links to list page', () => {
@@ -125,12 +142,14 @@ describe('Iteration cadence form', () => {
       const title = 'Iteration 5';
       const startDate = '2020-05-05';
       const durationInWeeks = 2;
+      const rollOver = true;
       const iterationsInAdvance = 6;
 
       it('triggers mutation with form data', async () => {
         setTitle(title);
         setStartDate(startDate);
         setDuration(durationInWeeks);
+        setRollOver(rollOver);
         setFutureIterations(iterationsInAdvance);
 
         clickSave();
@@ -138,13 +157,14 @@ describe('Iteration cadence form', () => {
         await nextTick();
 
         expect(findError().exists()).toBe(false);
-        expect(resolverMock).toHaveBeenCalledWith({
+        expect(mutationMock).toHaveBeenCalledWith({
           input: {
             groupPath,
             title,
             automatic: true,
             startDate,
             durationInWeeks,
+            rollOver,
             iterationsInAdvance,
             active: true,
             description: '',
@@ -173,7 +193,7 @@ describe('Iteration cadence form', () => {
       it('does not submit if required fields missing', () => {
         clickSave();
 
-        expect(resolverMock).not.toHaveBeenCalled();
+        expect(mutationMock).not.toHaveBeenCalled();
         expect(findTitleGroup().text()).toContain('This field is required');
         expect(findStartDateGroup().text()).toContain('This field is required');
         expect(findDurationGroup().text()).toContain('This field is required');
@@ -181,8 +201,8 @@ describe('Iteration cadence form', () => {
       });
 
       it('loading=false on error', async () => {
-        resolverMock = jest.fn().mockResolvedValue(createMutationFailure);
-        createComponent({ resolverMock });
+        mutationMock = jest.fn().mockResolvedValue(createMutationFailure);
+        createComponent({ mutationMock });
 
         clickSave();
 
@@ -226,12 +246,13 @@ describe('Iteration cadence form', () => {
 
         await nextTick();
 
-        expect(resolverMock).toHaveBeenCalledWith({
+        expect(mutationMock).toHaveBeenCalledWith({
           input: {
             groupPath,
             title,
             automatic: false,
             startDate,
+            rollOver: false,
             durationInWeeks: 0,
             iterationsInAdvance: 0,
             description: '',
@@ -249,11 +270,12 @@ describe('Iteration cadence form', () => {
   describe('Edit cadence', () => {
     const query = getCadence;
     const resolverMock = jest.fn().mockResolvedValue(getCadenceSuccess);
+    const mutationMock = jest.fn().mockResolvedValue(createMutationSuccess);
 
     beforeEach(() => {
       $router.currentRoute.params.cadenceId = id;
 
-      createComponent({ query, resolverMock });
+      createComponent({ query, resolverMock, mutation: updateCadence, mutationMock });
     });
 
     afterEach(() => {
@@ -280,7 +302,7 @@ describe('Iteration cadence form', () => {
     });
 
     it('fills fields with existing cadence info after loading', async () => {
-      createComponent({ query, resolverMock });
+      createComponent({ query, resolverMock, mutation: updateCadence });
 
       await waitForPromises();
 
@@ -288,8 +310,9 @@ describe('Iteration cadence form', () => {
 
       expect(findTitle().element.value).toBe(iterationCadence.title);
       expect(findStartDate().element.value).toBe(iterationCadence.startDate);
-      expect(findFutureIterations().element.value).toBe(iterationCadence.iterationsInAdvance);
-      expect(findDuration().element.value).toBe(iterationCadence.durationInWeeks);
+      expect(findFutureIterations().element.value).toBe(`${iterationCadence.iterationsInAdvance}`);
+      expect(findDuration().element.value).toBe(`${iterationCadence.durationInWeeks}`);
+      expect(findRollOver().element.checked).toBe(iterationCadence.rollOver);
       expect(findDescription().element.value).toBe(iterationCadence.description);
     });
 
@@ -299,6 +322,23 @@ describe('Iteration cadence form', () => {
       await nextTick();
 
       expect(findSaveAndStartButton().exists()).toBe(false);
+    });
+
+    it('updates roll over issues checkbox', async () => {
+      const rollOver = true;
+      setRollOver(rollOver);
+
+      clickSave();
+
+      await nextTick();
+
+      expect(findError().exists()).toBe(false);
+      expect(mutationMock).toHaveBeenCalledWith({
+        input: {
+          ...iterationCadence,
+          rollOver,
+        },
+      });
     });
   });
 });
