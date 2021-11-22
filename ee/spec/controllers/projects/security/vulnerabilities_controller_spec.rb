@@ -20,7 +20,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
 
     before do
       allow(controller).to receive(:can?).and_call_original
-      allow(controller).to receive(:can?).with(controller.current_user, :create_vulnerability, an_instance_of(Project)).and_return(can_create_vulnerability)
+      allow(controller).to receive(:can?).with(controller.current_user, :create_vulnerability, project).and_return(can_create_vulnerability)
     end
 
     include_context '"Security & Compliance" permissions' do
@@ -31,7 +31,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController do
     it 'checks if the user can create a vulnerability' do
       request_new_vulnerability_page
 
-      expect(controller).to have_received(:can?).with(controller.current_user, :create_vulnerability, an_instance_of(Project))
+      expect(controller).to have_received(:can?).with(controller.current_user, :create_vulnerability, project)
     end
 
     context 'when user can create vulnerability' do
