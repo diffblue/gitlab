@@ -13,8 +13,8 @@ RSpec.describe API::Ldap do
 
   before do
     groups = [
-      OpenStruct.new(cn: 'developers'),
-      OpenStruct.new(cn: 'students')
+      double('group', cn: 'developers'),
+      double('group', cn: 'students')
     ]
 
     allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(true)
