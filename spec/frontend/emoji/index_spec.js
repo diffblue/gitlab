@@ -1,6 +1,19 @@
-import { emojiFixtureMap, mockEmojiData, initEmojiMock } from 'helpers/emoji';
+import {
+  emojiFixtureMap,
+  mockEmojiData,
+  initEmojiMock,
+  validEmoji,
+  invalidEmoji,
+} from 'helpers/emoji';
 import { trimText } from 'helpers/text_helper';
-import { glEmojiTag, searchEmoji, getEmojiInfo, sortEmoji } from '~/emoji';
+import {
+  glEmojiTag,
+  searchEmoji,
+  getEmojiInfo,
+  sortEmoji,
+  initEmojiMap,
+  getAllEmoji,
+} from '~/emoji';
 import isEmojiUnicodeSupported, {
   isFlagEmoji,
   isRainbowFlagEmoji,
@@ -9,7 +22,6 @@ import isEmojiUnicodeSupported, {
   isHorceRacingSkinToneComboEmoji,
   isPersonZwjEmoji,
 } from '~/emoji/support/is_emoji_unicode_supported';
-import { sanitize } from '~/lib/dompurify';
 
 const emptySupportMap = {
   personZwj: false,
@@ -39,6 +51,26 @@ describe('emoji', () => {
 
   afterEach(() => {
     mock.restore();
+  });
+
+  describe('initEmojiMap', () => {
+    it('should contain valid emoji', async () => {
+      await initEmojiMap();
+
+      const allEmoji = Object.keys(getAllEmoji());
+      Object.keys(validEmoji).forEach((key) => {
+        expect(allEmoji.includes(key)).toBe(true);
+      });
+    });
+
+    it('should not contain invalid emoji', async () => {
+      await initEmojiMap();
+
+      const allEmoji = Object.keys(getAllEmoji());
+      Object.keys(invalidEmoji).forEach((key) => {
+        expect(allEmoji.includes(key)).toBe(false);
+      });
+    });
   });
 
   describe('glEmojiTag', () => {
@@ -378,32 +410,14 @@ describe('emoji', () => {
   });
 
   describe('searchEmoji', () => {
-    const emojiFixture = Object.keys(mockEmojiData).reduce((acc, k) => {
-      const { name, e, u, d } = mockEmojiData[k];
-      acc[k] = { name, e: sanitize(e), u, d };
-
-      return acc;
-    }, {});
-
     it.each([undefined, null, ''])("should return all emoji when the input is '%s'", (input) => {
       const search = searchEmoji(input);
 
-      const expected = [
-        'atom',
-        'bomb',
-        'construction_worker_tone5',
-        'five',
-        'grey_question',
-        'black_heart',
-        'heart',
-        'custard',
-        'star',
-        'xss',
-      ].map((name) => {
+      const expected = Object.keys(validEmoji).map((name) => {
         return {
-          emoji: emojiFixture[name],
+          emoji: mockEmojiData[name],
           field: 'd',
-          fieldValue: emojiFixture[name].d,
+          fieldValue: mockEmojiData[name].d,
           score: 0,
         };
       });
@@ -453,7 +467,7 @@ describe('emoji', () => {
         const { field, score, fieldValue, name } = item;
 
         return {
-          emoji: emojiFixture[name],
+          emoji: mockEmojiData[name],
           field,
           fieldValue,
           score,
@@ -564,9 +578,9 @@ describe('emoji', () => {
         const { field, score, name } = item;
 
         return {
-          emoji: emojiFixture[name],
+          emoji: mockEmojiData[name],
           field,
-          fieldValue: emojiFixture[name][field],
+          fieldValue: mockEmojiData[name][field],
           score,
         };
       });
@@ -620,15 +634,6 @@ describe('emoji', () => {
 
     it.each(testCases)('%s', (_, scoredItems, expected) => {
       expect(sortEmoji(scoredItems)).toEqual(expected);
-    });
-  });
-
-  describe('sanitize emojis', () => {
-    it('should return sanitized emoji', () => {
-      expect(getEmojiInfo('xss')).toEqual({
-        ...mockEmojiData.xss,
-        e: '<img src="x">',
-      });
     });
   });
 });

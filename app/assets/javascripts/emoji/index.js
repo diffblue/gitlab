@@ -1,6 +1,6 @@
 import { escape, minBy } from 'lodash';
+import emojiRegexFactory from 'emoji-regex';
 import emojiAliases from 'emojis/aliases.json';
-import { sanitize } from '~/lib/dompurify';
 import AccessorUtilities from '../lib/utils/accessor';
 import axios from '../lib/utils/axios_utils';
 import { CATEGORY_ICON_MAP, FREQUENTLY_USED_KEY } from './constants';
@@ -35,9 +35,13 @@ async function loadEmoji() {
 }
 
 async function loadEmojiWithNames() {
-  return Object.entries(await loadEmoji()).reduce((acc, [key, value]) => {
-    acc[key] = { ...value, name: key, e: sanitize(value.e) };
+  const emojiRegex = emojiRegexFactory();
 
+  return Object.entries(await loadEmoji()).reduce((acc, [key, value]) => {
+    // Filter out entries which aren't emojis
+    if (value.e.match(emojiRegex)?.[0] === value.e) {
+      acc[key] = { ...value, name: key };
+    }
     return acc;
   }, {});
 }
