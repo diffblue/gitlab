@@ -153,7 +153,7 @@ RSpec.describe 'Edit group settings' do
     end
   end
 
-  context 'enable delayed project removal' do
+  context 'enable delayed project deletion' do
     before do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
     end

@@ -1304,7 +1304,7 @@ RSpec.describe API::Projects do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
       end
 
-      context 'delayed project removal is enabled for group' do
+      context 'delayed project deletion is enabled for group' do
         let(:group) { create(:group) }
 
         before do
@@ -1334,7 +1334,7 @@ RSpec.describe API::Projects do
         end
       end
 
-      context 'delayed project removal is disabled for group' do
+      context 'delayed project deletion is disabled for group' do
         it_behaves_like 'deletes project immediately'
       end
 
