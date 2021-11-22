@@ -59,7 +59,7 @@ query getComplianceViolations($fullPath: ID!) {
               webUrl
             }
           }
-          ref: reference
+          reference
           fullRef: reference(full: true)
           sourceBranch
           sourceBranchExists

@@ -1,5 +1,4 @@
 import { GlDrawer } from '@gitlab/ui';
-import { convertArrayOfObjectsToCamelCase } from '~/lib/utils/common_utils';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/drawer.vue';
 import BranchPath from 'ee/compliance_dashboard/components/drawer_sections/branch_path.vue';
 import Committers from 'ee/compliance_dashboard/components/drawer_sections/committers.vue';
@@ -7,10 +6,11 @@ import MergedBy from 'ee/compliance_dashboard/components/drawer_sections/merged_
 import Project from 'ee/compliance_dashboard/components/drawer_sections/project.vue';
 import Reference from 'ee/compliance_dashboard/components/drawer_sections/reference.vue';
 import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
-import { complianceFramework } from 'ee_jest/vue_shared/components/compliance_framework_label/mock_data';
 import { getContentWrapperHeight } from 'ee/threat_monitoring/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { createApprovers, createMergeRequests } from '../mock_data';
+import resolvers from 'ee/compliance_dashboard/graphql/resolvers';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 
 jest.mock('ee/threat_monitoring/utils', () => ({
   getContentWrapperHeight: jest.fn(),
@@ -18,15 +18,18 @@ jest.mock('ee/threat_monitoring/utils', () => ({
 
 describe('MergeRequestDrawer component', () => {
   let wrapper;
-  const mergeRequest = createMergeRequests({
-    count: 1,
-    props: {
-      compliance_management_framework: complianceFramework,
-      committers: createApprovers(3),
-      approved_by_users: createApprovers(2),
-      participants: createApprovers(3),
+  const defaultData = mapViolations(resolvers.Query.group().mergeRequestViolations.nodes)[0];
+  const data = {
+    id: defaultData.id,
+    mergeRequest: {
+      ...defaultData.mergeRequest,
+      sourceBranch: null,
+      sourceBranchUri: null,
+      targetBranch: null,
+      targetBranchUri: null,
     },
-  })[0];
+    project: defaultData.project,
+  };
 
   const findTitle = () => wrapper.findByTestId('dashboard-drawer-title');
   const findDrawer = () => wrapper.findComponent(GlDrawer);
@@ -40,7 +43,8 @@ describe('MergeRequestDrawer component', () => {
   const createComponent = (props) => {
     return shallowMountExtended(MergeRequestDrawer, {
       propsData: {
-        mergeRequest,
+        mergeRequest: data.mergeRequest,
+        project: data.project,
         ...props,
       },
     });
@@ -61,7 +65,7 @@ describe('MergeRequestDrawer component', () => {
     it('configures the drawer with header height and z-index', () => {
       expect(findDrawer().props()).toMatchObject({
         headerHeight: mockHeaderHeight,
-        zIndex: 252,
+        zIndex: DRAWER_Z_INDEX,
       });
     });
   });
@@ -90,22 +94,22 @@ describe('MergeRequestDrawer component', () => {
     });
 
     it('has the drawer title', () => {
-      expect(findTitle().text()).toEqual(mergeRequest.title);
+      expect(findTitle().text()).toEqual(data.mergeRequest.title);
     });
 
     it('has the project section', () => {
       expect(findProject().props()).toStrictEqual({
-        avatarUrl: mergeRequest.project.avatar_url,
-        complianceFramework,
-        name: mergeRequest.project.name,
-        url: mergeRequest.project.web_url,
+        avatarUrl: data.project.avatarUrl,
+        complianceFramework: data.project.complianceFramework,
+        name: data.project.name,
+        url: data.project.webUrl,
       });
     });
 
     it('has the reference section', () => {
       expect(findReference().props()).toStrictEqual({
-        path: mergeRequest.path,
-        reference: mergeRequest.reference,
+        path: data.mergeRequest.webUrl,
+        reference: data.mergeRequest.reference,
       });
     });
 
@@ -115,20 +119,20 @@ describe('MergeRequestDrawer component', () => {
 
     it('has the committers section with users array converted to camel case', () => {
       expect(findCommitters().props()).toStrictEqual({
-        committers: convertArrayOfObjectsToCamelCase(mergeRequest.committers),
+        committers: data.mergeRequest.committers,
       });
     });
 
     it('has the reviewers section with users array converted to camel case', () => {
       expect(findReviewers().props()).toStrictEqual({
-        approvers: convertArrayOfObjectsToCamelCase(mergeRequest.approved_by_users),
-        commenters: convertArrayOfObjectsToCamelCase(mergeRequest.participants),
+        approvers: data.mergeRequest.approvedByUsers,
+        commenters: data.mergeRequest.participants,
       });
     });
 
     it('has the merged by section', () => {
       expect(findMergedBy().props()).toStrictEqual({
-        mergedBy: mergeRequest.merged_by,
+        mergedBy: data.mergeRequest.mergedBy,
       });
     });
   });
@@ -143,11 +147,11 @@ describe('MergeRequestDrawer component', () => {
       wrapper = createComponent({
         showDrawer: true,
         mergeRequest: {
-          ...mergeRequest,
-          source_branch: sourceBranch,
-          source_branch_uri: sourceBranchUri,
-          target_branch: targetBranch,
-          target_branch_uri: targetBranchUri,
+          ...data.mergeRequest,
+          sourceBranch,
+          sourceBranchUri,
+          targetBranch,
+          targetBranchUri,
         },
       });
     });
