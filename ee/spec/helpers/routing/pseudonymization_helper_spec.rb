@@ -14,7 +14,7 @@ RSpec.describe ::Routing::PseudonymizationHelper do
 
   shared_examples 'masked url' do
     it 'generates masked page url' do
-      expect(helper.masked_page_url).to eq(masked_url)
+      expect(helper.masked_page_url(group: group, project: project)).to eq(masked_url)
     end
   end
 
