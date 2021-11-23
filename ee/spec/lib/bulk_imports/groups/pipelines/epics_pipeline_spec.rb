@@ -83,16 +83,6 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline do
       end
     end
 
-    context 'when epic is persisted' do
-      it 'does not save epic' do
-        epic = create(:epic, group: group)
-
-        expect(epic).not_to receive(:save!)
-
-        subject.load(context, epic)
-      end
-    end
-
     context 'when epic is missing' do
       it 'returns' do
         expect(subject.load(context, nil)).to be_nil

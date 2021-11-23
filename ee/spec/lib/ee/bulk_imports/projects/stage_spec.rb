@@ -17,6 +17,7 @@ RSpec.describe BulkImports::Projects::Stage do
       [4, BulkImports::Projects::Pipelines::PushRulePipeline],
       [4, BulkImports::Projects::Pipelines::ProtectedBranchesPipeline],
       [4, BulkImports::Projects::Pipelines::CiPipelinesPipeline],
+      [4, BulkImports::Projects::Pipelines::ProjectFeaturePipeline],
       [5, BulkImports::Common::Pipelines::WikiPipeline],
       [5, BulkImports::Common::Pipelines::UploadsPipeline],
       [6, BulkImports::Common::Pipelines::EntityFinisher]
