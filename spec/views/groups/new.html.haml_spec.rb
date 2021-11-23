@@ -18,7 +18,7 @@ RSpec.describe 'groups/new.html.haml' do
   end
 
   describe 'setup_for_company field' do
-    it 'does not have a default selection' do
+    it 'does not have a default selection', :aggregate_failures do
       expect(rendered).to have_field('My company or team')
       expect(rendered).not_to have_checked_field('My company or team')
       expect(rendered).to have_field('Just me')
