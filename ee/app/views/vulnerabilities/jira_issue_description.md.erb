@@ -46,7 +46,7 @@ h3. <%= _("Links") %>:
 <% end %>
 <% end %>
 
-<% if vulnerability.remediations.present? && vulnerability.remediations.any? %>
+<% if vulnerability.is_a?(Vulnerability) && vulnerability.remediations.present? %>
 ### <%= _("Remediations") %>:
 
 <%= _("See vulnerability %{vulnerability_link} for any Remediation details.".html_safe) % { vulnerability_link: "[#{vulnerability.id}|#{vulnerability_url(vulnerability)}]" } %>

@@ -15,6 +15,11 @@ module Vulnerabilities
       add_line_numbers(location['start_line'], location['end_line'])
     end
 
+    delegator_override :links
+    def links
+      @links ||= finding.links.map(&:with_indifferent_access)
+    end
+
     private
 
     def add_line_numbers(start_line, end_line)

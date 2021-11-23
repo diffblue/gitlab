@@ -195,7 +195,7 @@ RSpec.describe VulnerabilitiesHelper do
   end
 
   describe '#create_jira_issue_url_for' do
-    subject { helper.vulnerability_details(vulnerability, pipeline) }
+    subject { helper.create_jira_issue_url_for(vulnerability) }
 
     let(:jira_integration) { double('Integrations::Jira', new_issue_url_with_predefined_fields: 'https://jira.example.com/new') }
 
@@ -210,51 +210,80 @@ RSpec.describe VulnerabilitiesHelper do
         allow(project).to receive(:configured_to_create_issues_from_vulnerabilities?).and_return(true)
       end
 
-      let(:expected_jira_issue_description) do
-        <<-JIRA.strip_heredoc
-          Issue created from vulnerability [#{vulnerability.id}|http://localhost/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}]
+      context 'when the given object is a vulnerability' do
+        let(:expected_jira_issue_description) do
+          <<-JIRA.strip_heredoc
+            Issue created from vulnerability [#{vulnerability.id}|http://localhost/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}]
 
-          h3. Description:
+            h3. Description:
 
-          Description of My vulnerability
+            Description of My vulnerability
 
-          * Severity: high
-          * Confidence: medium
-          * Location: [maven/src/main/java/com/gitlab/security_products/tests/App.java:29|http://localhost/#{project.full_path}/-/blob/b83d6e391c22777fca1ed3012fce84f633d7fed0/maven/src/main/java/com/gitlab/security_products/tests/App.java#L29]
+            * Severity: high
+            * Confidence: medium
+            * Location: [maven/src/main/java/com/gitlab/security_products/tests/App.java:29|http://localhost/#{project.full_path}/-/blob/b83d6e391c22777fca1ed3012fce84f633d7fed0/maven/src/main/java/com/gitlab/security_products/tests/App.java#L29]
 
-          ### Solution:
+            ### Solution:
 
-          See vulnerability [#{vulnerability.id}|http://localhost/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}] for any Solution details.
-
-
-          h3. Links:
-
-          * [Cipher does not check for integrity first?|https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first]
+            See vulnerability [#{vulnerability.id}|http://localhost/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}] for any Solution details.
 
 
-          h3. Scanner:
+            h3. Links:
 
-          * Name: Find Security Bugs
-        JIRA
-      end
+            * [Cipher does not check for integrity first?|https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first]
 
-      it 'delegates rendering URL to Integrations::Jira' do
-        expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.title}", expected_jira_issue_description)
 
-        subject
-      end
+            h3. Scanner:
 
-      it 'generates url to create issue in Jira' do
-        expect(subject[:create_jira_issue_url]).to eq('https://jira.example.com/new')
-      end
-
-      context 'when scan property is empty' do
-        before do
-          vulnerability.finding.scan = nil
+            * Name: Find Security Bugs
+          JIRA
         end
 
-        it 'renders description using dedicated template without raising error' do
+        it 'delegates rendering URL to Integrations::Jira' do
           expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.title}", expected_jira_issue_description)
+
+          subject
+        end
+
+        context 'when scan property is empty' do
+          before do
+            vulnerability.finding.scan = nil
+          end
+
+          it 'renders description using dedicated template without raising error' do
+            expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.title}", expected_jira_issue_description)
+
+            subject
+          end
+        end
+      end
+
+      context 'when the given object is an unpersisted finding' do
+        let(:vulnerability) { build(:vulnerabilities_finding, :with_remediation, project: project) }
+        let(:expected_jira_issue_description) do
+          <<~TEXT
+            h3. Description:
+
+            The cipher does not provide data integrity update 1
+
+            * Severity: high
+            * Confidence: medium
+
+
+
+            h3. Links:
+
+            * [Cipher does not check for integrity first?|https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first]
+
+
+            h3. Scanner:
+
+            * Name: Find Security Bugs
+          TEXT
+        end
+
+        it 'delegates rendering URL to Integrations::Jira' do
+          expect(jira_integration).to receive(:new_issue_url_with_predefined_fields).with("Investigate vulnerability: #{vulnerability.name}", expected_jira_issue_description)
 
           subject
         end
@@ -267,7 +296,7 @@ RSpec.describe VulnerabilitiesHelper do
         allow(project).to receive(:configured_to_create_issues_from_vulnerabilities?).and_return(false)
       end
 
-      it { expect(subject[:create_jira_issue_url]).to be_nil }
+      it { is_expected.to be_nil }
     end
   end
 

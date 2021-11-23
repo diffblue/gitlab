@@ -72,4 +72,18 @@ RSpec.describe Vulnerabilities::FindingPresenter do
       end
     end
   end
+
+  describe '#links' do
+    let(:link_name) { 'Cipher does not check for integrity first?' }
+    let(:link_url) { 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first' }
+
+    subject(:links) { presenter.links }
+
+    it 'transforms the links to hash with indifferent access', :aggregate_failures do
+      expect(links.first['name']).to eq(link_name)
+      expect(links.first[:name]).to eq(link_name)
+      expect(links.first['url']).to eq(link_url)
+      expect(links.first[:url]).to eq(link_url)
+    end
+  end
 end
