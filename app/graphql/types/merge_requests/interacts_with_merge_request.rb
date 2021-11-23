@@ -16,7 +16,7 @@ module Types
       end
 
       def merge_request_interaction(parent:, id: nil)
-        merge_request = closest_parent([::Types::MergeRequestType], parent)
+        merge_request = closest_parent([::MergeRequest, ::MergeRequestPresenter], parent)
 
         return unless merge_request
 

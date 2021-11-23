@@ -21,7 +21,7 @@ module Types
             description: 'Title for the action, for example: Retry.'
 
       def id(parent:)
-        "#{parent.parent.object.object.class.name}-#{parent.object.object.id}"
+        "#{parent.subject.class.name}-#{parent.id}"
       end
 
       def action_method

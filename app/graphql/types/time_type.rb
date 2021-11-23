@@ -12,6 +12,8 @@ module Types
     DESC
 
     def self.coerce_input(value, ctx)
+      return if value.nil?
+
       Time.parse(value)
     rescue ArgumentError, TypeError => e
       raise GraphQL::CoercionError, e.message

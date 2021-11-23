@@ -30,7 +30,7 @@ module Types
       private
 
       def runner_url(parent:, url_type: :default)
-        owner = closest_parent([::Types::ProjectType, ::Types::GroupType], parent)
+        owner = closest_parent([::Project, ::Group], parent)
 
         # Only ::Group is supported at the moment, future iterations will include ::Project.
         # See https://gitlab.com/gitlab-org/gitlab/-/issues/16338

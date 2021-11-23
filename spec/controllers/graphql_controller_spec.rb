@@ -363,7 +363,9 @@ RSpec.describe GraphqlController do
           depth: 2,
           used_deprecated_fields: [],
           used_fields: ['Project.id', 'Project.name', 'Query.project'],
-          variables: '{}'
+          variables: '{}',
+          query_string: "query getProject_1{ project(fullPath: \"foo\"){\n  id\nname\n}\n }",
+          duration_s: 0.0
         },
         {
           operation_name: 'getProject_2',
@@ -371,7 +373,9 @@ RSpec.describe GraphqlController do
           depth: 2,
           used_deprecated_fields: [],
           used_fields: ['Project.id', 'Query.project'],
-          variables: '{}'
+          variables: '{}',
+          query_string: "query getProject_2{ project(fullPath: \"bar\"){\n  id\n}\n }",
+          duration_s: 0.0
         }
       ]
     end

@@ -24,6 +24,9 @@ RSpec.describe 'GraphQL' do
           "query_analysis.complexity" => 1,
           "query_analysis.used_fields" => ['Query.echo'],
           "query_analysis.used_deprecated_fields" => [],
+          "query_analysis.variables" => variables.to_s,
+          "query_analysis.operation_name" => nil,
+          "query_analysis.query_string" => query,
           # query_fingerprint starts with operation name
           query_fingerprint: %r{^anonymous\/},
           duration_s: kind_of(Numeric),
@@ -67,10 +70,10 @@ RSpec.describe 'GraphQL' do
 
     context 'when there is an error in the logger' do
       before do
-        logger_analyzer = GitlabSchema.query_analyzers.find do |qa|
-          qa.is_a? Gitlab::Graphql::QueryAnalyzers::LoggerAnalyzer
-        end
-        allow(logger_analyzer).to receive(:process_variables)
+        allow(GraphQL::Analysis::AST).to receive(:analyze_query)
+          .and_call_original
+        allow(GraphQL::Analysis::AST).to receive(:analyze_query)
+          .with(anything, Gitlab::Graphql::QueryAnalyzers::AST::LoggerAnalyzer::ALL_ANALYZERS, anything)
           .and_raise(StandardError.new("oh noes!"))
       end
 

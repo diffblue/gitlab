@@ -8,11 +8,11 @@ RSpec.describe GitlabSchema do
   let(:user) { build :user }
 
   it 'uses batch loading' do
-    expect(field_instrumenters).to include(BatchLoader::GraphQL)
+    expect(tracers).to include(BatchLoader::GraphQL)
   end
 
   it 'enables the generic instrumenter' do
-    expect(field_instrumenters).to include(instance_of(::Gitlab::Graphql::GenericTracing))
+    expect(tracers).to include(instance_of(::Gitlab::Graphql::GenericTracing))
   end
 
   it 'has the base mutation' do
@@ -219,6 +219,8 @@ RSpec.describe GitlabSchema do
             badField
             veryBadField
             alsoNotAGoodField
+            yetAnotherBadField
+            andYetAnother
           }
         }
       GQL
@@ -311,5 +313,9 @@ RSpec.describe GitlabSchema do
 
   def field_instrumenters
     described_class.instrumenters[:field] + described_class.instrumenters[:field_after_built_ins]
+  end
+
+  def tracers
+    described_class.tracers
   end
 end
