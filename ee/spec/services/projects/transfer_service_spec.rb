@@ -169,26 +169,25 @@ RSpec.describe Projects::TransferService do
       let_it_be(:project_2) { create(:project, :public) }
 
       before do
-        project.upstream_project_subscriptions.create!(upstream_project: project_2)
+        create(:license, plan: License::PREMIUM_PLAN)
         stub_ee_application_setting(should_check_namespace_plan: true)
+
         premium_group.add_owner(user)
       end
 
       context 'when target namespace has a premium plan' do
-        it 'does not delete the pipeline subscriptions' do
-          subject.execute(premium_group)
+        it 'does not schedule cleanup for upstream project subscription' do
+          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).not_to receive(:perform_async)
 
-          expect { subject.execute(premium_group) }.not_to change { project.upstream_project_subscriptions.count }
+          subject.execute(premium_group)
         end
       end
 
       context 'when target namespace has a free plan' do
-        it 'deletes the upstream subscriptions' do
-          expect { subject.execute(free_group) }.to change { project.upstream_project_subscriptions.count }.from(1).to(0)
-        end
+        it 'schedules cleanup for upstream project subscription' do
+          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async).with(project.id).and_call_original
 
-        it 'deletes the downstream subscriptions' do
-          expect { subject.execute(free_group) }.to change { project_2.downstream_project_subscriptions.count }.from(1).to(0)
+          subject.execute(free_group)
         end
       end
     end
