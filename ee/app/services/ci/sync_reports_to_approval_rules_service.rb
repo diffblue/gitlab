@@ -67,6 +67,8 @@ module Ci
       return unless pipeline.complete?
 
       pipeline.update_builds_coverage
+      return unless pipeline.coverage.present?
+
       remove_required_approvals_for(ApprovalMergeRequestRule.code_coverage, merge_requests_approved_coverage)
     end
 
@@ -109,11 +111,19 @@ module Ci
 
     def merge_requests_approved_coverage
       pipeline.merge_requests_as_head_pipeline.reject do |merge_request|
-        base_pipeline = merge_request.base_pipeline
-
-        # if base pipeline is missing we just default to not require approval.
-        pipeline.coverage < base_pipeline.coverage if base_pipeline.present?
+        require_coverage_approval?(merge_request)
       end
+    end
+
+    def require_coverage_approval?(merge_request)
+      base_pipeline = merge_request.base_pipeline
+
+      # if base pipeline is missing we just default to not require approval.
+      return false unless base_pipeline.present?
+
+      return true unless base_pipeline.coverage.present?
+
+      pipeline.coverage < base_pipeline.coverage
     end
 
     def merge_requests_approved_security_reports
