@@ -61,10 +61,14 @@ module EE
           .update_all(revoked: true)
       end
 
+      # This method is within a transaction
       def delete_pipeline_subscriptions
         return if new_namespace.licensed_feature_available?(:ci_project_subscriptions)
 
-        project.upstream_project_subscriptions.destroy_all # rubocop: disable Cop/DestroyAll
+        project_id = project.id
+        project.run_after_commit do
+          ::Ci::UpstreamProjectsSubscriptionsCleanupWorker.perform_async(project_id)
+        end
       end
 
       def delete_test_cases
