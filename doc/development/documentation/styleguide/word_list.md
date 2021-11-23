@@ -478,6 +478,19 @@ The word **once** means **one time**. Don't use it to mean **after** or **when**
 - Do: When the process is complete...
 - Do not: Once the process is complete...
 
+## only
+
+Put the word **only** next to the word it modifies.
+
+- You can create only private projects.
+
+In this example, **only** modifies the noun **projects**. The sentence means you can create one type of project--a private project.
+
+- You can only create private projects.
+
+In this example, **only** modifies the verb **create**. This sentence means that you can't perform other actions,
+like deleting private projects, or adding users to them.
+
 ## Owner
 
 When writing about the Owner role:
