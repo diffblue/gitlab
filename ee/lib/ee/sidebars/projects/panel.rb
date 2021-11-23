@@ -10,6 +10,9 @@ module EE
         def configure_menus
           super
 
+          insert_menu_before(::Sidebars::Projects::Menus::ProjectInformationMenu,
+                             ::Sidebars::Projects::Menus::TrialExperimentMenu.new(context))
+
           if ::Sidebars::Projects::Menus::IssuesMenu.new(context).show_jira_menu_items?
             remove_menu(::Sidebars::Projects::Menus::ExternalIssueTrackerMenu)
           end

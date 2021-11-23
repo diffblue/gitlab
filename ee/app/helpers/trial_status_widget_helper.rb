@@ -33,10 +33,6 @@ module TrialStatusWidgetHelper
     )
   end
 
-  def show_trial_status_widget?(group)
-    billing_plans_and_trials_available? && eligible_for_trial_upgrade_callout?(group)
-  end
-
   private
 
   def billing_plans_and_trials_available?
