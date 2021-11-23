@@ -154,25 +154,29 @@ RSpec.describe API::Internal::Base do
         project.add_developer(user)
       end
 
-      context 'user with a smartcard session', :clean_gitlab_redis_shared_state do
-        let(:session_id) { '42' }
-        let(:stored_session) do
-          { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
-        end
+      RSpec.shared_examples_for 'smartcard session' do
+        context 'user with a smartcard session' do
+          let(:session_id) { '42' }
+          let(:stored_session) do
+            { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
+          end
 
-        before do
-          Gitlab::Redis::SharedState.with do |redis|
-            redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
-            redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+          before do
+            redis_store_class.with do |redis|
+              redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
+              redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+            end
+          end
+
+          it "allows access" do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
           end
         end
-
-        it "allows access" do
-          subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-        end
       end
+
+      it_behaves_like 'redis sessions store', 'smartcard session'
 
       context 'user without a smartcard session' do
         it "does not allow access" do

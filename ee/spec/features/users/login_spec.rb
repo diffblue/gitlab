@@ -85,44 +85,52 @@ RSpec.describe 'Login' do
           expect(page.body).to have_link('Register now', href: new_user_registration_path)
         end
 
-        describe 'with two-factor authentication required', :clean_gitlab_redis_shared_state do
-          let_it_be(:user) { create(:user) }
-          let_it_be(:smartcard_identity) { create(:smartcard_identity, user: user) }
-
+        RSpec.shared_examples_for 'two-factor authentication' do
           before do
-            stub_application_setting(require_two_factor_authentication: true)
+            load Rails.root.join('config/initializers/session_store.rb')
           end
 
-          context 'with a smartcard session' do
-            let(:openssl_certificate_store) { instance_double(OpenSSL::X509::Store) }
-            let(:openssl_certificate) do
-              instance_double(OpenSSL::X509::Certificate, subject: smartcard_identity.subject, issuer: smartcard_identity.issuer)
+          describe 'with two-factor authentication required' do
+            let_it_be(:user) { create(:user) }
+            let_it_be(:smartcard_identity) { create(:smartcard_identity, user: user) }
+
+            before do
+              stub_application_setting(require_two_factor_authentication: true)
             end
 
-            it 'does not ask for Two-Factor Authentication' do
-              allow(Gitlab::Auth::Smartcard::Certificate).to receive(:store).and_return(openssl_certificate_store)
-              allow(OpenSSL::X509::Certificate).to receive(:new).and_return(openssl_certificate)
-              allow(openssl_certificate_store).to receive(:verify).and_return(true)
+            context 'with a smartcard session' do
+              let(:openssl_certificate_store) { instance_double(OpenSSL::X509::Store) }
+              let(:openssl_certificate) do
+                instance_double(OpenSSL::X509::Certificate, subject: smartcard_identity.subject, issuer: smartcard_identity.issuer)
+              end
 
-              # Loging using smartcard
-              visit verify_certificate_smartcard_path(client_certificate: openssl_certificate)
+              it 'does not ask for Two-Factor Authentication' do
+                allow(Gitlab::Auth::Smartcard::Certificate).to receive(:store).and_return(openssl_certificate_store)
+                allow(OpenSSL::X509::Certificate).to receive(:new).and_return(openssl_certificate)
+                allow(openssl_certificate_store).to receive(:verify).and_return(true)
 
-              visit profile_path
+                # Loging using smartcard
+                visit verify_certificate_smartcard_path(client_certificate: openssl_certificate)
 
-              expect(page).not_to have_content('Two-Factor Authentication')
+                visit profile_path
+
+                expect(page).not_to have_content('Two-Factor Authentication')
+              end
             end
-          end
 
-          context 'without a smartcard session' do
-            it 'asks for Two-Factor Authentication' do
-              sign_in(user)
+            context 'without a smartcard session' do
+              it 'asks for Two-Factor Authentication' do
+                sign_in(user)
 
-              visit profile_path
+                visit profile_path
 
-              expect(page).to have_content('Two-Factor Authentication')
+                expect(page).to have_content('Two-Factor Authentication')
+              end
             end
           end
         end
+
+        it_behaves_like 'redis sessions store', 'two-factor authentication'
       end
     end
   end

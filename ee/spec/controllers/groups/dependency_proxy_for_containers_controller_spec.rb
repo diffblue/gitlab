@@ -45,22 +45,26 @@ RSpec.describe Groups::DependencyProxyForContainersController do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'with an active session', :clean_gitlab_redis_shared_state do
-          let(:session_id) { '42' }
-          let(:session_time) { 5.minutes.ago }
-          let(:stored_session) do
-            { 'active_group_sso_sign_ins' => { saml_provider.id => session_time } }
-          end
-
-          before do
-            Gitlab::Redis::SharedState.with do |redis|
-              redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
-              redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+        shared_examples 'active session' do
+          context 'with an active session' do
+            let(:session_id) { '42' }
+            let(:session_time) { 5.minutes.ago }
+            let(:stored_session) do
+              { 'active_group_sso_sign_ins' => { saml_provider.id => session_time } }
             end
-          end
 
-          it_behaves_like successful_example
+            before do
+              redis_store_class.with do |redis|
+                redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
+                redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+              end
+            end
+
+            it_behaves_like successful_example
+          end
         end
+
+        it_behaves_like 'redis sessions store', 'active session'
       end
 
       context 'when git check is not enforced' do

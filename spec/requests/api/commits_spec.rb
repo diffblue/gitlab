@@ -376,23 +376,27 @@ RSpec.describe API::Commits do
         end
       end
 
-      context 'when using warden' do
-        it 'increments usage counters', :clean_gitlab_redis_shared_state do
-          session_id = Rack::Session::SessionId.new('6919a6f1bb119dd7396fadc38fd18d0d')
-          session_hash = { 'warden.user.user.key' => [[user.id], user.encrypted_password[0, 29]] }
+      RSpec.shared_examples_for 'warden user session' do
+        context 'when using warden' do
+          it 'increments usage counters' do
+            session_id = Rack::Session::SessionId.new('6919a6f1bb119dd7396fadc38fd18d0d')
+            session_hash = { 'warden.user.user.key' => [[user.id], user.encrypted_password[0, 29]] }
 
-          Gitlab::Redis::SharedState.with do |redis|
-            redis.set("session:gitlab:#{session_id.private_id}", Marshal.dump(session_hash))
+            redis_store_class.with do |redis|
+              redis.set("session:gitlab:#{session_id.private_id}", Marshal.dump(session_hash))
+            end
+
+            cookies[Gitlab::Application.config.session_options[:key]] = session_id.public_id
+
+            expect(::Gitlab::UsageDataCounters::WebIdeCounter).to receive(:increment_commits_count)
+            expect(::Gitlab::UsageDataCounters::EditorUniqueCounter).to receive(:track_web_ide_edit_action)
+
+            post api(url), params: valid_c_params
           end
-
-          cookies[Gitlab::Application.config.session_options[:key]] = session_id.public_id
-
-          expect(::Gitlab::UsageDataCounters::WebIdeCounter).to receive(:increment_commits_count)
-          expect(::Gitlab::UsageDataCounters::EditorUniqueCounter).to receive(:track_web_ide_edit_action)
-
-          post api(url), params: valid_c_params
         end
       end
+
+      it_behaves_like 'redis sessions store', 'warden user session'
 
       context 'a new file in project repo' do
         before do

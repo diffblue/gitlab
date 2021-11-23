@@ -29,21 +29,25 @@ RSpec.describe Gitlab::Auth::Smartcard::SessionEnforcer do
       stub_smartcard_setting(enabled: true, required_for_git_access: true)
     end
 
-    context 'with a smartcard session', :clean_gitlab_redis_shared_state do
-      let(:session_id) { '42' }
-      let(:stored_session) do
-        { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
-      end
-
-      before do
-        Gitlab::Redis::SharedState.with do |redis|
-          redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
-          redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+    RSpec.shared_examples_for 'smartcard session' do
+      context 'with a smartcard session' do
+        let(:session_id) { '42' }
+        let(:stored_session) do
+          { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
         end
-      end
 
-      it { is_expected.to be_falsey }
+        before do
+          redis_store_class.with do |redis|
+            redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
+            redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+          end
+        end
+
+        it { is_expected.to be_falsey }
+      end
     end
+
+    it_behaves_like 'redis sessions store', 'smartcard session'
 
     context 'without any session' do
       it { is_expected.to be_truthy }
