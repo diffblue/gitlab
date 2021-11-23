@@ -44,9 +44,18 @@ export default {
   },
   inject: ['projectPath'],
   props: {
+    isActive: {
+      type: Boolean,
+      required: true,
+    },
     query: {
       type: Object,
       required: true,
+    },
+    queryVariables: {
+      type: Object,
+      required: false,
+      default: () => ({}),
     },
     title: {
       type: String,
@@ -79,6 +88,7 @@ export default {
       variables() {
         return {
           fullPath: this.projectPath,
+          ...this.queryVariables,
           ...this.cursor,
         };
       },
@@ -92,6 +102,9 @@ export default {
       },
       error() {
         this.hasError = true;
+      },
+      skip() {
+        return !this.isActive;
       },
       pollInterval: PIPELINES_POLL_INTERVAL,
     },
@@ -132,6 +145,11 @@ export default {
     },
   },
   watch: {
+    isActive(isActive) {
+      if (isActive) {
+        this.resetCursor();
+      }
+    },
     hasPipelines(hasPipelines) {
       if (this.hasError && hasPipelines) {
         this.hasError = false;

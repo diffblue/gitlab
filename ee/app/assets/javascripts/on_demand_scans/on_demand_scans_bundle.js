@@ -8,8 +8,13 @@ export default () => {
   if (!el) {
     return null;
   }
-
-  const { pipelinesCount, projectPath, newDastScanPath, emptyStateSvgPath } = el.dataset;
+  const {
+    projectPath,
+    newDastScanPath,
+    emptyStateSvgPath,
+    projectOnDemandScanCountsEtag,
+  } = el.dataset;
+  const initialOnDemandScanCounts = JSON.parse(el.dataset.onDemandScanCounts);
 
   return new Vue({
     el,
@@ -19,11 +24,12 @@ export default () => {
       projectPath,
       newDastScanPath,
       emptyStateSvgPath,
+      projectOnDemandScanCountsEtag,
     },
     render(h) {
       return h(OnDemandScans, {
         props: {
-          pipelinesCount: Number(pipelinesCount),
+          initialOnDemandScanCounts,
         },
       });
     },

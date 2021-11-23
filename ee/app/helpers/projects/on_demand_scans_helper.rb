@@ -3,8 +3,16 @@
 module Projects::OnDemandScansHelper
   # rubocop: disable CodeReuse/ActiveRecord
   def on_demand_scans_data(project)
+    on_demand_scans = project.all_pipelines.where(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan])
+    running_scan_count, finished_scan_count = count_running_and_finished_scans(on_demand_scans)
+
     common_data(project).merge({
-      'pipelines-count' => project.all_pipelines.where(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan]).count,
+      'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path(project),
+      'on-demand-scan-counts' => {
+        all: on_demand_scans.length,
+        running: running_scan_count,
+        finished: finished_scan_count
+      }.to_json,
       'new-dast-scan-path' => new_project_on_demand_scan_path(project),
       'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg')
     })
@@ -29,5 +37,20 @@ module Projects::OnDemandScansHelper
     {
       'project-path' => project.path_with_namespace
     }
+  end
+
+  def count_running_and_finished_scans(on_demand_scans)
+    running_scan_count = 0
+    finished_scan_count = 0
+
+    on_demand_scans.each do |pipeline|
+      if %w[success failed canceled].include?(pipeline.status)
+        finished_scan_count += 1
+      elsif pipeline.status == "running"
+        running_scan_count += 1
+      end
+    end
+
+    [running_scan_count, finished_scan_count]
   end
 end
