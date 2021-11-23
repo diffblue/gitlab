@@ -7,7 +7,7 @@ module Vulnerabilities
 
       belongs_to :finding,
                  class_name: 'Vulnerabilities::Finding',
-                 inverse_of: :evidence,
+                 inverse_of: :finding_evidence,
                  foreign_key: 'vulnerability_occurrence_id',
                  optional: false
 

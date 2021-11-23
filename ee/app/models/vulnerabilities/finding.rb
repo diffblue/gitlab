@@ -39,7 +39,7 @@ module Vulnerabilities
 
     has_many :vulnerability_flags, class_name: 'Vulnerabilities::Flag', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
-    has_one :evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
+    has_one :finding_evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
     serialize :config_options, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
 
@@ -281,12 +281,14 @@ module Vulnerabilities
     end
 
     def evidence
+      evidence_data = finding_evidence.present? ? finding_evidence.data : metadata.dig('evidence')
+
       {
-        summary: metadata.dig('evidence', 'summary'),
-        request: build_evidence_request(metadata.dig('evidence', 'request')),
-        response: build_evidence_response(metadata.dig('evidence', 'response')),
-        source: build_evidence_source(metadata.dig('evidence', 'source')),
-        supporting_messages: build_evidence_supporting_messages(metadata.dig('evidence', 'supporting_messages'))
+        summary: evidence_data&.dig('summary'),
+        request: build_evidence_request(evidence_data&.dig('request')),
+        response: build_evidence_response(evidence_data&.dig('response')),
+        source: build_evidence_source(evidence_data&.dig('source')),
+        supporting_messages: build_evidence_supporting_messages(evidence_data&.dig('supporting_messages'))
       }
     end
 
