@@ -9,11 +9,11 @@ module Gitlab
             _('Lead Time')
           end
 
-          def start_event_identifier
+          def self.start_event_identifier
             :issue_created
           end
 
-          def end_event_identifier
+          def self.end_event_identifier
             :issue_closed
           end
 

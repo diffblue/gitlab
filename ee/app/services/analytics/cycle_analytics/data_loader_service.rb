@@ -173,8 +173,9 @@ module Analytics
       end
 
       def stages
-        @stages ||= Analytics::CycleAnalytics::GroupStage
-          .distinct_stages_within_hierarchy(group)
+        @stages ||= Gitlab::Analytics::CycleAnalytics::DistinctStageLoader
+          .new(group: group)
+          .stages
           .select { |stage| stage.start_event.object_type == model }
       end
 

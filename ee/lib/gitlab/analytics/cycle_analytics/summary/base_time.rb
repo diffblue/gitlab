@@ -21,11 +21,11 @@ module Gitlab
             n_('day', 'days', value)
           end
 
-          def start_event_identifier
+          def self.start_event_identifier
             raise NotImplementedError, "Expected #{self.name} to implement start_event_identifier"
           end
 
-          def end_event_identifier
+          def self.end_event_identifier
             raise NotImplementedError, "Expected #{self.name} to implement end_event_identifier"
           end
 
@@ -36,8 +36,8 @@ module Gitlab
           private
 
           def assign_event_identifiers
-            @stage.start_event_identifier = start_event_identifier
-            @stage.end_event_identifier = end_event_identifier
+            @stage.start_event_identifier = self.class.start_event_identifier
+            @stage.end_event_identifier = self.class.end_event_identifier
           end
 
           def data_collector
