@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::BackgroundMigration::PopulateUuidsForSecurityFindings do
+RSpec.describe ::Gitlab::BackgroundMigration::PopulateUuidsForSecurityFindings, schema: 20211108211434 do
   let(:users) { table(:users) }
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
