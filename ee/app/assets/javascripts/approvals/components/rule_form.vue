@@ -638,6 +638,7 @@ export default {
       :state="isValidApprovers"
       :invalid-feedback="invalidApprovers"
       data-testid="approvers-group"
+      data-qa-selector="member_select_field"
     >
       <approvers-select
         v-model="approversToAdd"
@@ -645,7 +646,6 @@ export default {
         :skip-user-ids="userIds"
         :skip-group-ids="groupIds"
         :is-invalid="!isValidApprovers"
-        data-qa-selector="member_select_field"
       />
     </gl-form-group>
     <div class="bordered-box overflow-auto h-12em">

@@ -89,7 +89,7 @@ module QA
           end
 
           def approved?
-            approvals_content =~ /Merge request approved/
+            approvals_content.include?('Approved by') && !approvals_content.match(/Requires \d+ approvals? from/)
           end
 
           def approvers
@@ -209,7 +209,7 @@ module QA
           end
 
           def num_approvals_required
-            approvals_content.match(/Requires (\d+) more approvals/)[1].to_i
+            approvals_content.match(/Requires (\d+) approvals/)[1].to_i
           end
 
           def skip_merge_train_and_merge_immediately
@@ -243,17 +243,17 @@ module QA
             # for it to include terms from content we expect. The kinds
             # of content we expect are:
             #
-            # * Requires X more approvals from Quality, UX, and frontend.
-            # * Merge request approved
+            # * Requires X approvals from Quality, UX, and frontend.
+            # * Approved by you and others
             #
             # It can also briefly display cached data while loading so we
             # wait for it to update first
             sleep 1
 
             text = nil
-            wait_until(reload: false) do
+            wait_until(reload: false, sleep_interval: 1) do
               text = find_element(:approvals_summary_content).text
-              text =~ /Requires|approved/
+              text =~ /requires|approved/i
             end
 
             text

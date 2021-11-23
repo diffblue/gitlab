@@ -24,6 +24,9 @@ module QA
               end
 
               def add_approval_rules(rules)
+                # The Approval rules button/link is a gitlab-ui component that doesn't have a QA selector
+                click_button('Approval rules')
+
                 rules.each do |rule|
                   click_element :add_approvers_button
 
@@ -48,7 +51,7 @@ module QA
               # add a data attribute to the 'Ok' button without overriding it
               # So we break the rules and use a CSS selector instead of an element
               def click_approvers_modal_ok_button
-                find("#mr-edit-approvals-create-modal footer button.btn-success").click
+                find("#mr-edit-approvals-create-modal footer button.btn-confirm").click
               end
 
               # Select2 is an external library, so we can't add our own selector
