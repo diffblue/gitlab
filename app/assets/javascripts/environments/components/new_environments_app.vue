@@ -5,22 +5,28 @@ import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_util
 import environmentAppQuery from '../graphql/queries/environment_app.query.graphql';
 import pollIntervalQuery from '../graphql/queries/poll_interval.query.graphql';
 import pageInfoQuery from '../graphql/queries/page_info.query.graphql';
+import environmentToDeleteQuery from '../graphql/queries/environment_to_delete.query.graphql';
+import environmentToRollbackQuery from '../graphql/queries/environment_to_rollback.query.graphql';
 import environmentToStopQuery from '../graphql/queries/environment_to_stop.query.graphql';
 import EnvironmentFolder from './new_environment_folder.vue';
 import EnableReviewAppModal from './enable_review_app_modal.vue';
 import StopEnvironmentModal from './stop_environment_modal.vue';
 import EnvironmentItem from './new_environment_item.vue';
+import ConfirmRollbackModal from './confirm_rollback_modal.vue';
+import DeleteEnvironmentModal from './delete_environment_modal.vue';
 
 export default {
   components: {
+    DeleteEnvironmentModal,
+    ConfirmRollbackModal,
     EnvironmentFolder,
     EnableReviewAppModal,
     EnvironmentItem,
+    StopEnvironmentModal,
     GlBadge,
     GlPagination,
     GlTab,
     GlTabs,
-    StopEnvironmentModal,
   },
   apollo: {
     environmentApp: {
@@ -40,6 +46,12 @@ export default {
     },
     pageInfo: {
       query: pageInfoQuery,
+    },
+    environmentToDelete: {
+      query: environmentToDeleteQuery,
+    },
+    environmentToRollback: {
+      query: environmentToRollbackQuery,
     },
     environmentToStop: {
       query: environmentToStopQuery,
@@ -65,6 +77,8 @@ export default {
       isReviewAppModalVisible: false,
       page: parseInt(page, 10),
       scope,
+      environmentToDelete: {},
+      environmentToRollback: {},
       environmentToStop: {},
     };
   },
@@ -169,7 +183,9 @@ export default {
       :modal-id="$options.modalId"
       data-testid="enable-review-app-modal"
     />
+    <delete-environment-modal :environment="environmentToDelete" graphql />
     <stop-environment-modal :environment="environmentToStop" graphql />
+    <confirm-rollback-modal :environment="environmentToRollback" graphql />
     <gl-tabs
       :action-secondary="addEnvironment"
       :action-primary="openReviewAppModal"
