@@ -481,6 +481,24 @@ Specific attention should be paid to:
 - The presence of a `X509Certificate`, which we require to verify the response signature.
 - The `SubjectConfirmation` and `Conditions`, which can cause errors if misconfigured.
 
+#### Generate a SAML Response
+
+SAML Responses can be used to preview the attribute names and values sent in the assertions list while attempting to sign in using an IdP. 
+
+To generate a SAML Response:
+
+1. Install either:
+   - [SAML Chrome Panel](https://chrome.google.com/webstore/detail/saml-chrome-panel/paijfdbeoenhembfhkhllainmocckace) for Chrome.
+   - [SAML-tracer](https://addons.mozilla.org/en-US/firefox/addon/saml-tracer/) for Firefox.
+1. Open a new browser tab.
+1. Open the SAML tracer console:
+   - Chrome: Right click on the page, select **Inspect**, then click on the SAML tab in the opened developer console.
+   - Firefox: Select the SAML-tracer icon located on the browser toolbar.
+1. Go to the GitLab single sign-on URL for the group in the same browser tab with the SAML tracer open.
+1. Select **Authorize** or attempt to log in. A SAML response is displayed in the tracer console that resembles this
+   [example SAML response](#example-saml-response).
+1. Within the SAML tracer, select the **Export** icon to save the response in JSON format.
+
 ### Verifying configuration
 
 For convenience, we've included some [example resources](../../../administration/troubleshooting/group_saml_scim.md) used by our Support Team. While they may help you verify the SAML app configuration, they are not guaranteed to reflect the current state of third-party products.
