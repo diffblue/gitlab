@@ -11,13 +11,26 @@ RSpec.describe ::Iterations::Cadence do
   end
 
   describe 'validations' do
-    subject { build(:iterations_cadence) }
+    let(:instance_attributes) { {} }
+
+    subject { build(:iterations_cadence, **instance_attributes) }
 
     it { is_expected.to validate_presence_of(:title) }
-    it { is_expected.to validate_presence_of(:start_date) }
     it { is_expected.to validate_presence_of(:group_id) }
     it { is_expected.not_to allow_value(nil).for(:active) }
     it { is_expected.not_to allow_value(nil).for(:automatic) }
     it { is_expected.to validate_length_of(:description).is_at_most(5000) }
+
+    context 'when iteration cadence is automatic' do
+      let(:instance_attributes) { { automatic: true } }
+
+      it { is_expected.to validate_presence_of(:start_date) }
+    end
+
+    context 'when iteration cadence is manual' do
+      let(:instance_attributes) { { automatic: false } }
+
+      it { is_expected.not_to validate_presence_of(:start_date) }
+    end
   end
 end
