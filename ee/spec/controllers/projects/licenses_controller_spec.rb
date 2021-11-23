@@ -58,7 +58,7 @@ RSpec.describe Projects::LicensesController do
               expect(licenses_app_data[:project_path]).to eql(controller.helpers.api_v4_projects_path(id: project.id))
               expect(licenses_app_data[:rules_path]).to eql(controller.helpers.api_v4_projects_approval_settings_rules_path(id: project.id))
               expect(licenses_app_data[:settings_path]).to eql(controller.helpers.api_v4_projects_approval_settings_path(id: project.id))
-              expect(licenses_app_data[:approvals_documentation_path]).to eql(help_page_path('user/application_security/index', anchor: 'enabling-license-approvals-within-a-project'))
+              expect(licenses_app_data[:approvals_documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index', anchor: 'enabling-license-approvals-within-a-project'))
               expect(licenses_app_data[:locked_approvals_rule_name]).to eql(ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT)
             end
           end
