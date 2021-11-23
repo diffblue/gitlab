@@ -21,6 +21,12 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
     stub_licensed_features(dependency_scanning: true, dast: true, license_scanning: true)
   end
 
+  shared_examples 'a successful execution' do
+    it "is successful" do
+      expect(sync_rules[:status]).to eq(:success)
+    end
+  end
+
   shared_context 'security reports with vulnerabilities' do
     context 'when there are security reports' do
       context 'when pipeline passes' do
@@ -244,6 +250,8 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
           ]
         end
 
+        it_behaves_like 'a successful execution'
+
         it "won't lower approvals_required count" do
           expect { sync_rules }
             .not_to change { report_approver_rule.reload.approvals_required }
@@ -259,6 +267,8 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
           ]
         end
 
+        it_behaves_like 'a successful execution'
+
         it "lowers approvals_required count" do
           expect { sync_rules }
             .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
@@ -266,6 +276,8 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
 
         context 'when MR is merged' do
           let!(:merge_request) { create(:merge_request, :merged, source_project: project) }
+
+          it_behaves_like 'a successful execution'
 
           it "won't change approvals_required count" do
             expect { subject }
@@ -283,9 +295,32 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
           ]
         end
 
+        it_behaves_like 'a successful execution'
+
         it "lowers approvals_required count" do
           expect { sync_rules }
             .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
+        end
+      end
+
+      context 'and head pipeline does not have coverage' do
+        let!(:head_pipeline_builds) do
+          [
+            create(:ci_build, :success, coverage: nil, pipeline: pipeline)
+          ]
+        end
+
+        let!(:base_pipeline_builds) do
+          [
+            create(:ci_build, :success, coverage: 60.0, pipeline: base_pipeline)
+          ]
+        end
+
+        it_behaves_like 'a successful execution'
+
+        it "does not lower approvals_required count" do
+          expect { sync_rules }
+            .not_to change { report_approver_rule.reload.approvals_required }
         end
       end
     end
@@ -302,6 +337,8 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
         allow(pipeline).to receive(:complete?).and_return(false)
       end
 
+      it_behaves_like 'a successful execution'
+
       it "won't lower approvals_required count" do
         expect { sync_rules }
           .not_to change { report_approver_rule.reload.approvals_required }
@@ -313,9 +350,30 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
         allow(pipeline).to receive(:complete?).and_return(true)
       end
 
+      it_behaves_like 'a successful execution'
+
       it "lowers approvals_required count" do
         expect { sync_rules }
           .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
+      end
+    end
+
+    context 'when base pipeline does not have coverage' do
+      before do
+        allow(pipeline).to receive(:complete?).and_return(true)
+      end
+
+      let!(:base_pipeline_builds) do
+        [
+          create(:ci_build, :success, coverage: nil, pipeline: base_pipeline)
+        ]
+      end
+
+      it_behaves_like 'a successful execution'
+
+      it "does not lower approvals_required count" do
+        expect { sync_rules }
+          .not_to change { report_approver_rule.reload.approvals_required }
       end
     end
   end
