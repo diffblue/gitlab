@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'admin/users/show.html.haml' do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, email: 'user@example.com') }
 
   let(:page) { Nokogiri::HTML.parse(rendered) }
   let(:status) { page.at('#credit-card-status')&.text }
@@ -17,6 +17,12 @@ RSpec.describe 'admin/users/show.html.haml' do
 
     expect(rendered).not_to include('Credit card validated')
     expect(status).to be_nil
+  end
+
+  it 'does not show primary email as secondary email - lists primary email only once' do
+    render
+
+    expect(rendered).to have_text('user@example.com', count: 1)
   end
 
   context 'Gitlab.com' do
