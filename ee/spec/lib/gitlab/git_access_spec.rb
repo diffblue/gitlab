@@ -704,80 +704,182 @@ RSpec.describe Gitlab::GitAccess do
     end
   end
 
-  RSpec.shared_examples_for 'checks smartcard access & otp session' do
-    describe '#check_smartcard_access!' do
-      before do
-        stub_licensed_features(smartcard_auth: true)
-        stub_smartcard_setting(enabled: true, required_for_git_access: true)
+  describe '#check_smartcard_access!' do
+    before do
+      stub_licensed_features(smartcard_auth: true)
+      stub_smartcard_setting(enabled: true, required_for_git_access: true)
 
-        project.add_developer(user)
+      project.add_developer(user)
+    end
+
+    context 'user with a smartcard session', :clean_gitlab_redis_sessions do
+      let(:session_id) { '42' }
+      let(:stored_session) do
+        { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
       end
 
-      context 'user with a smartcard session' do
-        let(:session_id) { '42' }
-        let(:stored_session) do
-          { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
+      before do
+        Gitlab::Redis::Sessions.with do |redis|
+          redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
+          redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
         end
+      end
+
+      it 'allows pull changes' do
+        expect { pull_changes }.not_to raise_error
+      end
+
+      it 'allows push changes' do
+        expect { push_changes }.not_to raise_error
+      end
+    end
+
+    context 'user without a smartcard session' do
+      it 'does not allow pull changes' do
+        expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+      end
+
+      it 'does not allow push changes' do
+        expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+      end
+    end
+
+    context 'with the setting off' do
+      before do
+        stub_smartcard_setting(required_for_git_access: false)
+      end
+
+      it 'allows pull changes' do
+        expect { pull_changes }.not_to raise_error
+      end
+
+      it 'allows push changes' do
+        expect { push_changes }.not_to raise_error
+      end
+    end
+  end
+
+  describe '#check_otp_session!' do
+    let_it_be(:user) { create(:user, :two_factor_via_otp)}
+    let_it_be(:key) { create(:key, user: user) }
+    let_it_be(:actor) { key }
+
+    let(:protocol) { 'ssh' }
+
+    before do
+      project.add_developer(user)
+      stub_feature_flags(two_factor_for_cli: true)
+      stub_licensed_features(git_two_factor_enforcement: true)
+    end
+
+    context 'with an OTP session', :clean_gitlab_redis_sessions do
+      before do
+        Gitlab::Redis::Sessions.with do |redis|
+          redis.set("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true)
+        end
+      end
+
+      it 'allows push and pull access' do
+        aggregate_failures do
+          expect { push_changes }.not_to raise_error
+          expect { pull_changes }.not_to raise_error
+        end
+      end
+
+      context 'based on the duration set by the `git_two_factor_session_expiry` setting' do
+        let_it_be(:git_two_factor_session_expiry) { 20 }
+        let_it_be(:redis_key_expiry_at) { git_two_factor_session_expiry.minutes.from_now }
 
         before do
-          redis_store_class.with do |redis|
-            redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
-            redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
+          stub_application_setting(git_two_factor_session_expiry: git_two_factor_session_expiry)
+        end
+
+        def value_of_key
+          key_expired = Time.current > redis_key_expiry_at
+          return if key_expired
+
+          true
+        end
+
+        def stub_redis
+          redis = double(:redis)
+          expect(Gitlab::Redis::Sessions).to receive(:with).at_most(:twice).and_yield(redis)
+
+          expect(redis).to(
+            receive(:get)
+              .with("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}"))
+                       .at_most(:twice)
+                       .and_return(value_of_key)
+        end
+
+        context 'at a time before the stipulated expiry' do
+          it 'allows push and pull access' do
+            travel_to(10.minutes.from_now) do
+              stub_redis
+
+              aggregate_failures do
+                expect { push_changes }.not_to raise_error
+                expect { pull_changes }.not_to raise_error
+              end
+            end
           end
         end
 
-        it 'allows pull changes' do
-          expect { pull_changes }.not_to raise_error
-        end
+        context 'at a time after the stipulated expiry' do
+          it 'does not allow push and pull access' do
+            travel_to(30.minutes.from_now) do
+              stub_redis
 
-        it 'allows push changes' do
-          expect { push_changes }.not_to raise_error
-        end
-      end
-
-      context 'user without a smartcard session' do
-        it 'does not allow pull changes' do
-          expect { pull_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError)
-        end
-
-        it 'does not allow push changes' do
-          expect { push_changes }.to raise_error(Gitlab::GitAccess::ForbiddenError)
-        end
-      end
-
-      context 'with the setting off' do
-        before do
-          stub_smartcard_setting(required_for_git_access: false)
-        end
-
-        it 'allows pull changes' do
-          expect { pull_changes }.not_to raise_error
-        end
-
-        it 'allows push changes' do
-          expect { push_changes }.not_to raise_error
+              aggregate_failures do
+                expect { push_changes }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
+                expect { pull_changes }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
+              end
+            end
+          end
         end
       end
     end
 
-    describe '#check_otp_session!' do
-      let_it_be(:user) { create(:user, :two_factor_via_otp)}
-      let_it_be(:key) { create(:key, user: user) }
-      let_it_be(:actor) { key }
+    context 'without OTP session' do
+      it 'does not allow push or pull access' do
+        user = 'jane.doe'
+        host = 'fridge.ssh'
+        port = 42
 
-      let(:protocol) { 'ssh' }
+        stub_config(
+          gitlab_shell: {
+            ssh_user: user,
+            ssh_host: host,
+            ssh_port: port
+          }
+        )
 
-      before do
-        project.add_developer(user)
-        stub_feature_flags(two_factor_for_cli: true)
-        stub_licensed_features(git_two_factor_enforcement: true)
+        error_message = "OTP verification is required to access the repository.\n\n"\
+                        "   Use: ssh #{user}@#{host} -p #{port} 2fa_verify"
+
+        aggregate_failures do
+          expect { push_changes }.to raise_forbidden(error_message)
+          expect { pull_changes }.to raise_forbidden(error_message)
+        end
       end
 
-      context 'with an OTP session' do
-        before do
-          redis_store_class.with do |redis|
-            redis.set("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true)
+      context 'when protocol is HTTP' do
+        let(:protocol) { 'http' }
+
+        it 'allows push and pull access' do
+          aggregate_failures do
+            expect { push_changes }.not_to raise_error
+            expect { pull_changes }.not_to raise_error
           end
+        end
+      end
+
+      context 'when actor is not an SSH key' do
+        let(:deploy_key) { create(:deploy_key, user: user) }
+        let(:actor) { deploy_key }
+
+        before do
+          deploy_key.deploy_keys_projects.create(project: project, can_push: true)
         end
 
         it 'allows push and pull access' do
@@ -786,153 +888,47 @@ RSpec.describe Gitlab::GitAccess do
             expect { pull_changes }.not_to raise_error
           end
         end
+      end
 
-        context 'based on the duration set by the `git_two_factor_session_expiry` setting' do
-          let_it_be(:git_two_factor_session_expiry) { 20 }
-          let_it_be(:redis_key_expiry_at) { git_two_factor_session_expiry.minutes.from_now }
+      context 'when 2FA is not enabled for the user' do
+        let(:user) { create(:user)}
+        let(:actor) { create(:key, user: user) }
 
-          before do
-            stub_application_setting(git_two_factor_session_expiry: git_two_factor_session_expiry)
-          end
-
-          def value_of_key
-            key_expired = Time.current > redis_key_expiry_at
-            return if key_expired
-
-            true
-          end
-
-          def stub_redis
-            redis = double(:redis)
-            expect(redis_store_class).to receive(:with).at_most(:twice).and_yield(redis)
-
-            expect(redis).to(
-              receive(:get)
-                .with("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}"))
-                         .at_most(:twice)
-                         .and_return(value_of_key)
-          end
-
-          context 'at a time before the stipulated expiry' do
-            it 'allows push and pull access' do
-              travel_to(10.minutes.from_now) do
-                stub_redis
-
-                aggregate_failures do
-                  expect { push_changes }.not_to raise_error
-                  expect { pull_changes }.not_to raise_error
-                end
-              end
-            end
-          end
-
-          context 'at a time after the stipulated expiry' do
-            it 'does not allow push and pull access' do
-              travel_to(30.minutes.from_now) do
-                stub_redis
-
-                aggregate_failures do
-                  expect { push_changes }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
-                  expect { pull_changes }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
-                end
-              end
-            end
+        it 'allows push and pull access' do
+          aggregate_failures do
+            expect { push_changes }.not_to raise_error
+            expect { pull_changes }.not_to raise_error
           end
         end
       end
 
-      context 'without OTP session' do
-        it 'does not allow push or pull access' do
-          user = 'jane.doe'
-          host = 'fridge.ssh'
-          port = 42
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(two_factor_for_cli: false)
+        end
 
-          stub_config(
-            gitlab_shell: {
-              ssh_user: user,
-              ssh_host: host,
-              ssh_port: port
-            }
-          )
-
-          error_message = "OTP verification is required to access the repository.\n\n"\
-                          "   Use: ssh #{user}@#{host} -p #{port} 2fa_verify"
-
+        it 'allows push and pull access' do
           aggregate_failures do
-            expect { push_changes }.to raise_forbidden(error_message)
-            expect { pull_changes }.to raise_forbidden(error_message)
+            expect { push_changes }.not_to raise_error
+            expect { pull_changes }.not_to raise_error
           end
         end
+      end
 
-        context 'when protocol is HTTP' do
-          let(:protocol) { 'http' }
-
-          it 'allows push and pull access' do
-            aggregate_failures do
-              expect { push_changes }.not_to raise_error
-              expect { pull_changes }.not_to raise_error
-            end
-          end
+      context 'when licensed feature is not available' do
+        before do
+          stub_licensed_features(git_two_factor_enforcement: false)
         end
 
-        context 'when actor is not an SSH key' do
-          let(:deploy_key) { create(:deploy_key, user: user) }
-          let(:actor) { deploy_key }
-
-          before do
-            deploy_key.deploy_keys_projects.create(project: project, can_push: true)
-          end
-
-          it 'allows push and pull access' do
-            aggregate_failures do
-              expect { push_changes }.not_to raise_error
-              expect { pull_changes }.not_to raise_error
-            end
-          end
-        end
-
-        context 'when 2FA is not enabled for the user' do
-          let(:user) { create(:user)}
-          let(:actor) { create(:key, user: user) }
-
-          it 'allows push and pull access' do
-            aggregate_failures do
-              expect { push_changes }.not_to raise_error
-              expect { pull_changes }.not_to raise_error
-            end
-          end
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(two_factor_for_cli: false)
-          end
-
-          it 'allows push and pull access' do
-            aggregate_failures do
-              expect { push_changes }.not_to raise_error
-              expect { pull_changes }.not_to raise_error
-            end
-          end
-        end
-
-        context 'when licensed feature is not available' do
-          before do
-            stub_licensed_features(git_two_factor_enforcement: false)
-          end
-
-          it 'allows push and pull access' do
-            aggregate_failures do
-              expect { push_changes }.not_to raise_error
-              expect { pull_changes }.not_to raise_error
-            end
+        it 'allows push and pull access' do
+          aggregate_failures do
+            expect { push_changes }.not_to raise_error
+            expect { pull_changes }.not_to raise_error
           end
         end
       end
     end
   end
-
-  it_behaves_like 'redis sessions store', 'checks smartcard access & otp session'
 
   describe '#check_sso_session!' do
     before do
