@@ -1977,6 +1977,9 @@ msgstr ""
 msgid "Add a task list"
 msgstr ""
 
+msgid "Add a title…"
+msgstr ""
+
 msgid "Add a to do"
 msgstr ""
 
@@ -32371,6 +32374,9 @@ msgid "Something went wrong on our end. Please try again."
 msgstr ""
 
 msgid "Something went wrong trying to change the locked state of this %{issuableDisplayName}"
+msgstr ""
+
+msgid "Something went wrong when creating a work item. Please try again"
 msgstr ""
 
 msgid "Something went wrong when reordering designs. Please try again"
