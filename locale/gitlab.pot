@@ -38327,6 +38327,18 @@ msgstr ""
 msgid "Verification status"
 msgstr ""
 
+msgid "VerificationReminder|Pipeline failing? To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method."
+msgstr ""
+
+msgid "VerificationReminder|Until then, free pipeline minutes on shared runners are unavailable. %{validateLinkStart}Validate your account%{validateLinkEnd} or %{docsLinkStart}use your own runners%{docsLinkEnd}."
+msgstr ""
+
+msgid "VerificationReminder|Your account has been validated."
+msgstr ""
+
+msgid "VerificationReminder|You’ll now be able to take advantage of free pipeline minutes on shared runners."
+msgstr ""
+
 msgid "Verified"
 msgstr ""
 

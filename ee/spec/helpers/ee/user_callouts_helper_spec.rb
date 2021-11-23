@@ -412,4 +412,55 @@ RSpec.describe EE::UserCalloutsHelper do
       helper.dismiss_two_factor_auth_recovery_settings_check
     end
   end
+
+  describe '#show_verification_reminder?' do
+    subject { helper.show_verification_reminder? }
+
+    let_it_be(:user) { create(:user) }
+    let_it_be(:pipeline) { create(:ci_pipeline, user: user, failure_reason: :user_not_verified) }
+
+    where(:on_gitlab_com?, :logged_in?, :unverified?, :failed_pipeline?, :not_dismissed_callout?, :flag_enabled?, :result) do
+      true  | true  | true  | true  | true  | true  | true
+      false | true  | true  | true  | true  | true  | false
+      true  | false | true  | true  | true  | true  | false
+      true  | true  | false | true  | true  | true  | false
+      true  | true  | true  | false | true  | true  | false
+      true  | true  | true  | true  | false | true  | false
+      true  | true  | true  | true  | true  | false | false
+    end
+
+    with_them do
+      before do
+        allow(Gitlab).to receive(:dev_env_or_com?).and_return(on_gitlab_com?)
+        allow(helper).to receive(:current_user).and_return(logged_in? ? user : nil)
+        allow(user).to receive(:has_valid_credit_card?).and_return(!unverified?)
+        pipeline.update!(failure_reason: nil) unless failed_pipeline?
+        allow(user).to receive(:dismissed_callout?).and_return(!not_dismissed_callout?)
+        stub_feature_flags(verification_reminder: flag_enabled?)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+
+    describe 'dismissing the alert timing' do
+      before do
+        allow(Gitlab).to receive(:dev_env_or_com?).and_return(true)
+        allow(helper).to receive(:current_user).and_return(user)
+        create(:user_callout, user: user, feature_name: :verification_reminder, dismissed_at: Time.current)
+        create(:ci_pipeline, user: user, failure_reason: :user_not_verified, created_at: pipeline_created_at)
+      end
+
+      context 'when failing a pipeline after dismissing the alert' do
+        let(:pipeline_created_at) { 2.days.from_now }
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when dismissing the alert after failing a pipeline' do
+        let(:pipeline_created_at) { 2.days.ago }
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
 end
