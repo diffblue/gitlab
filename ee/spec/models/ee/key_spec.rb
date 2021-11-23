@@ -22,6 +22,29 @@ RSpec.describe Key do
         end
       end
     end
+
+    describe '#expires_at_before_max_expiry_date' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:key, :max_ssh_key_lifetime, :valid) do
+        build(:personal_key, expires_at: 20.days.from_now) | 10 | false
+        build(:personal_key, expires_at: 7.days.from_now) | 10 | true
+        build(:personal_key, expires_at: 20.days.from_now) | nil | true
+        build(:personal_key, expires_at: nil) | 20 | false
+        build(:personal_key, expires_at: nil) | nil | true
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(ssh_key_expiration_policy: true)
+          stub_application_setting(max_ssh_key_lifetime: max_ssh_key_lifetime)
+        end
+
+        it 'checks if ssh key expiration is valid' do
+          expect(key.valid?).to eq(valid)
+        end
+      end
+    end
   end
 
   describe 'only_expired_and_enforced?' do

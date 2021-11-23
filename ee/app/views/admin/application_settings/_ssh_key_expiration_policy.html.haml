@@ -1,0 +1,7 @@
+- return unless ssh_key_expiration_policy_licensed?
+- form = local_assigns.fetch(:form)
+
+.form-group
+  = form.label :max_ssh_key_lifetime, _('Maximum allowable lifetime for SSH keys (days)'), class: 'label-light'
+  = form.number_field :max_ssh_key_lifetime, class: 'form-control gl-form-input input-xs'
+  %span.form-text.text-muted#max_ssh_key_lifetime= _('When enabled, existing SSH keys may be revoked. Leave blank for no limit.')

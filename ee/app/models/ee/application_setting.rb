@@ -116,6 +116,10 @@ module EE
                 presence: true,
                 numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10080 }
 
+      validates :max_ssh_key_lifetime,
+                allow_blank: true,
+                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
@@ -155,6 +159,7 @@ module EE
           lock_memberships_to_ldap: false,
           maintenance_mode: false,
           max_personal_access_token_lifetime: nil,
+          max_ssh_key_lifetime: nil,
           mirror_capacity_threshold: Settings.gitlab['mirror_capacity_threshold'],
           mirror_max_capacity: Settings.gitlab['mirror_max_capacity'],
           mirror_max_delay: Settings.gitlab['mirror_max_delay'],
@@ -365,6 +370,10 @@ module EE
 
     def max_personal_access_token_lifetime_from_now
       max_personal_access_token_lifetime&.days&.from_now
+    end
+
+    def max_ssh_key_lifetime_from_now
+      max_ssh_key_lifetime&.days&.from_now
     end
 
     def compliance_frameworks=(values)

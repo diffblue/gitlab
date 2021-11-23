@@ -5,6 +5,7 @@ module EE
     extend ActiveSupport::Concern
 
     include Auditable
+    include ProfilesHelper
 
     prepended do
       include UsageStatistics
@@ -12,6 +13,10 @@ module EE
       scope :ldap, -> { where(type: 'LDAPKey') }
 
       validate :expiration, if: -> { ::Key.expiration_enforced? }
+
+      with_options if: :ssh_key_expiration_policy_enabled? do
+        validate :expires_at_before_max_expiry_date
+      end
 
       def expiration
         errors.add(:key, :expired_and_enforced, message: 'has expired and the instance administrator has enforced expiration') if expired?
@@ -25,6 +30,12 @@ module EE
         return false unless ::Key.expiration_enforced? && expired?
 
         errors.map(&:type).reject { |t| t.eql?(:expired_and_enforced) }.empty?
+      end
+
+      def expires_at_before_max_expiry_date
+        return errors.add(:key, message: 'does not have an expiry date but maximum allowable lifetime for SSH keys is enforced by the instance administrator') if expires_at.blank?
+
+        errors.add(:key, message: 'has greater than the maximum allowable lifetime for SSH keys enforced by the instance administrator') if expires_at > ssh_key_max_expiry_date
       end
     end
 
