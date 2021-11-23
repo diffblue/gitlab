@@ -4,6 +4,7 @@ import {
   initEmojiMock,
   validEmoji,
   invalidEmoji,
+  clearEmojiMock,
 } from 'helpers/emoji';
 import { trimText } from 'helpers/text_helper';
 import {
@@ -14,6 +15,7 @@ import {
   initEmojiMap,
   getAllEmoji,
 } from '~/emoji';
+
 import isEmojiUnicodeSupported, {
   isFlagEmoji,
   isRainbowFlagEmoji,
@@ -43,14 +45,12 @@ const emptySupportMap = {
 };
 
 describe('emoji', () => {
-  let mock;
-
   beforeEach(async () => {
-    mock = await initEmojiMock();
+    await initEmojiMock();
   });
 
   afterEach(() => {
-    mock.restore();
+    clearEmojiMock();
   });
 
   describe('initEmojiMap', () => {
@@ -69,6 +69,29 @@ describe('emoji', () => {
       const allEmoji = Object.keys(getAllEmoji());
       Object.keys(invalidEmoji).forEach((key) => {
         expect(allEmoji.includes(key)).toBe(false);
+      });
+    });
+
+    it('fixes broken pride emoji', async () => {
+      clearEmojiMock();
+      await initEmojiMock({
+        gay_pride_flag: {
+          c: 'flags',
+          // Without a zero-width joiner
+          e: '🏳🌈',
+          name: 'gay_pride_flag',
+          u: '6.0',
+        },
+      });
+
+      expect(getAllEmoji()).toEqual({
+        gay_pride_flag: {
+          c: 'flags',
+          // With a zero-width joiner
+          e: '🏳️‍🌈',
+          name: 'gay_pride_flag',
+          u: '6.0',
+        },
       });
     });
   });

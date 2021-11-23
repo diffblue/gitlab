@@ -1,6 +1,5 @@
-import MockAdapter from 'axios-mock-adapter';
 import { initEmojiMap, EMOJI_VERSION } from '~/emoji';
-import axios from '~/lib/utils/axios_utils';
+import { CACHE_VERSION_KEY, CACHE_KEY } from '~/emoji/constants';
 
 export const validEmoji = {
   atom: {
@@ -91,11 +90,14 @@ export const mockEmojiData = Object.keys(emojiFixtureMap).reduce((acc, k) => {
   return acc;
 }, {});
 
+export function clearEmojiMock() {
+  localStorage.clear();
+  initEmojiMap.promise = null;
+}
+
 export async function initEmojiMock(mockData = mockEmojiData) {
-  const mock = new MockAdapter(axios);
-  mock.onGet(`/-/emojis/${EMOJI_VERSION}/emojis.json`).reply(200, JSON.stringify(mockData));
-
+  clearEmojiMock();
+  localStorage.setItem(CACHE_VERSION_KEY, EMOJI_VERSION);
+  localStorage.setItem(CACHE_KEY, JSON.stringify(mockData));
   await initEmojiMap();
-
-  return mock;
 }
