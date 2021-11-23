@@ -881,6 +881,9 @@ Plan.default.actual_limits.update!(pypi_max_file_size: 100.megabytes)
 # For Debian Packages
 Plan.default.actual_limits.update!(debian_max_file_size: 100.megabytes)
 
+# For Helm Charts
+Plan.default.actual_limits.update!(helm_max_file_size: 100.megabytes)
+
 # For Generic Packages
 Plan.default.actual_limits.update!(generic_packages_max_file_size: 100.megabytes)
 ```

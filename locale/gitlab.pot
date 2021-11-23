@@ -21412,6 +21412,9 @@ msgstr ""
 msgid "Maximum Conan package file size in bytes"
 msgstr ""
 
+msgid "Maximum Helm chart file size in bytes"
+msgstr ""
+
 msgid "Maximum Maven package file size in bytes"
 msgstr ""
 
