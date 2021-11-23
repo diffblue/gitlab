@@ -15,6 +15,8 @@ module EE
 
           expose :override,
                  if: ->(member, _) { member.source_type == 'Namespace' && member.ldap? }
+
+          expose :human_state_name, as: :membership_state
         end
       end
     end

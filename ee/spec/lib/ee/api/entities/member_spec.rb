@@ -51,4 +51,11 @@ RSpec.describe API::Entities::Member do
       expect(entity_representation.keys).not_to include(:email)
     end
   end
+
+  context 'with state' do
+    it 'exposes human_state_name as membership_state' do
+      expect(entity_representation.keys).to include(:membership_state)
+      expect(entity_representation[:membership_state]).to eq member.human_state_name
+    end
+  end
 end
