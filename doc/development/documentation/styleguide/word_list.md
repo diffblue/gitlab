@@ -148,6 +148,13 @@ If you must refer to the checkbox, you can say it is selected or cleared. For ex
 - Ensure the **Protect environment** checkbox is cleared.
 - Ensure the **Protect environment** checkbox is selected.
 
+## checkout, check out
+
+Use **check out** as a verb. For the Git command, use `checkout`.
+
+- Use `git checkout` to check out a branch locally.
+- Check out the files you want to edit.
+
 ## CI/CD
 
 CI/CD is always uppercase. No need to spell it out on first use.
