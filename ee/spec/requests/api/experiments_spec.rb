@@ -160,18 +160,17 @@ RSpec.describe API::Experiments do
           end
 
           it 'publishes into a collection of experiments that have been run in the request' do
-            pending 'requires gitlab-experiment >= 0.5.4 -- resolved in a follow up MR'
-
-            get api('/experiments', user)
-
-            expect(ApplicationExperiment.published_experiments).to eq(
-              'null_hypothesis' => {
+            expect(RequestStore).to receive(:clear!).and_wrap_original do |clear|
+              expect(ApplicationExperiment.published_experiments['null_hypothesis']).to include(
                 excluded: false,
                 experiment: 'null_hypothesis',
-                key: 'abc123',
                 variant: 'candidate'
-              }
-            )
+              )
+
+              clear.call
+            end
+
+            get api('/experiments', user)
           end
         end
       end
