@@ -62,9 +62,9 @@ RSpec.describe ::SystemNotes::IssuablesService do
   end
 
   describe '#cross_reference' do
-    let(:mentioner) { create(:issue, project: project) }
+    let(:mentioned_in) { create(:issue, project: project) }
 
-    subject { service.cross_reference(mentioner) }
+    subject { service.cross_reference(mentioned_in) }
 
     context 'when noteable is an epic' do
       let(:noteable) { epic }
