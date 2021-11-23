@@ -2,13 +2,13 @@
 import { GlAlert, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { keyBy } from 'lodash';
-import { __ } from '~/locale';
 import {
   USAGE_BY_PROJECT,
   X_AXIS_PROJECT_LABEL,
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
   NO_CI_MINUTES_MSG,
+  MONTHS,
 } from '../constants';
 
 export default {
@@ -17,20 +17,6 @@ export default {
   X_AXIS_CATEGORY,
   Y_AXIS_LABEL,
   NO_CI_MINUTES_MSG,
-  i18n: {
-    january: __('January'),
-    february: __('February'),
-    march: __('March'),
-    april: __('April'),
-    may: __('May'),
-    june: __('June'),
-    july: __('July'),
-    august: __('August'),
-    september: __('September'),
-    october: __('October'),
-    november: __('November'),
-    december: __('December'),
-  },
   components: {
     GlAlert,
     GlColumnChart,
@@ -90,7 +76,7 @@ export default {
       [this.selectedMonth] = this.months;
     },
     getTranslatedMonthName(month) {
-      return this.$options.i18n[month.toLowerCase()] ?? month;
+      return MONTHS[month.toLowerCase()] ?? month;
     },
   },
 };
