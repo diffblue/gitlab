@@ -15,6 +15,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { BASE_TABS_TABLE_FIELDS, PIPELINES_POLL_INTERVAL } from 'ee/on_demand_scans/constants';
 
 jest.mock('~/lib/utils/common_utils');
 
@@ -41,9 +42,18 @@ describe('BaseTab', () => {
     return createMockApollo([[onDemandScansQuery, requestHandler]]);
   };
 
-  const navigateToPage = (direction) => {
-    findPagination().vm.$emit(direction);
+  const navigateToPage = (direction, cursor = '') => {
+    findPagination().vm.$emit(direction, cursor);
     return wrapper.vm.$nextTick();
+  };
+
+  const setActiveState = (isActive) => {
+    wrapper.setProps({ isActive });
+    return wrapper.vm.$nextTick();
+  };
+
+  const advanceToNextFetch = () => {
+    jest.advanceTimersByTime(PIPELINES_POLL_INTERVAL);
   };
 
   const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
@@ -56,35 +66,11 @@ describe('BaseTab', () => {
           apolloProvider: createMockApolloProvider(),
           router,
           propsData: {
+            isActive: true,
             title: 'All',
             query: onDemandScansQuery,
             itemsCount: 0,
-            fields: [
-              {
-                label: 'Status',
-                key: 'detailedStatus',
-              },
-              {
-                label: 'Name',
-                key: 'dastProfile.name',
-              },
-              {
-                label: 'OnDemandScans|Scan type',
-                key: 'scanType',
-              },
-              {
-                label: 'OnDemandScans|Target',
-                key: 'dastProfile.dastSiteProfile.targetUrl',
-              },
-              {
-                label: 'Start date',
-                key: 'createdAt',
-              },
-              {
-                label: 'Pipeline',
-                key: 'id',
-              },
-            ],
+            fields: BASE_TABS_TABLE_FIELDS,
           },
           provide: {
             projectPath,
@@ -134,6 +120,27 @@ describe('BaseTab', () => {
         fullPath: projectPath,
         last: null,
       });
+    });
+
+    it('polls for pipelines as long as the tab is active', async () => {
+      createComponent();
+
+      expect(requestHandler).toHaveBeenCalledTimes(1);
+
+      await wrapper.vm.$nextTick();
+      advanceToNextFetch();
+
+      expect(requestHandler).toHaveBeenCalledTimes(2);
+
+      await setActiveState(false);
+      advanceToNextFetch();
+
+      expect(requestHandler).toHaveBeenCalledTimes(2);
+
+      await setActiveState(true);
+      advanceToNextFetch();
+
+      expect(requestHandler).toHaveBeenCalledTimes(3);
     });
 
     it('puts the table in the busy state until the request resolves', async () => {
@@ -205,6 +212,29 @@ describe('BaseTab', () => {
       expect(Object.keys(router.currentRoute.query)).not.toContain('after');
       expect(Object.keys(router.currentRoute.query)).toContain('before');
       expect(requestHandler).toHaveBeenCalledTimes(3);
+    });
+
+    it('when navigating to the next page, leaving the tab and coming back to it, the cursor is reset', async () => {
+      const { endCursor } = allPipelinesWithPipelinesMock.data.project.pipelines.pageInfo;
+      await navigateToPage('next', endCursor);
+
+      expect(requestHandler).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          after: endCursor,
+        }),
+      );
+
+      await setActiveState(false);
+      await setActiveState(true);
+      advanceToNextFetch();
+
+      expect(requestHandler).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          after: null,
+        }),
+      );
     });
   });
 

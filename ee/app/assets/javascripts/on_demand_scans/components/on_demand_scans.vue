@@ -2,8 +2,21 @@
 import { GlButton, GlLink, GlSprintf, GlTabs } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import { HELP_PAGE_PATH } from '../constants';
+import {
+  getQueryHeaders,
+  toggleQueryPollingByVisibility,
+} from '~/pipelines/components/graph/utils';
+import onDemandScanCounts from '../graphql/on_demand_scan_counts.query.graphql';
+import {
+  HELP_PAGE_PATH,
+  PIPELINE_TABS_KEYS,
+  PIPELINES_COUNT_POLL_INTERVAL,
+  PIPELINES_SCOPE_RUNNING,
+  PIPELINES_SCOPE_FINISHED,
+} from '../constants';
 import AllTab from './tabs/all.vue';
+import RunningTab from './tabs/running.vue';
+import FinishedTab from './tabs/finished.vue';
 import EmptyState from './empty_state.vue';
 
 export default {
@@ -15,14 +28,39 @@ export default {
     GlTabs,
     ConfigurationPageLayout,
     AllTab,
+    RunningTab,
+    FinishedTab,
     EmptyState,
   },
-  inject: ['newDastScanPath'],
+  inject: ['newDastScanPath', 'projectPath', 'projectOnDemandScanCountsEtag'],
+  apollo: {
+    liveOnDemandScanCounts: {
+      query: onDemandScanCounts,
+      variables() {
+        return {
+          fullPath: this.projectPath,
+          runningScope: PIPELINES_SCOPE_RUNNING,
+          finishedScope: PIPELINES_SCOPE_FINISHED,
+        };
+      },
+      context() {
+        return getQueryHeaders(this.projectOnDemandScanCountsEtag);
+      },
+      update(data) {
+        return Object.fromEntries(
+          PIPELINE_TABS_KEYS.map((key) => {
+            const { count } = data[key].pipelines;
+            return [key, count];
+          }),
+        );
+      },
+      pollInterval: PIPELINES_COUNT_POLL_INTERVAL,
+    },
+  },
   props: {
-    pipelinesCount: {
-      type: Number,
-      required: false,
-      default: 0,
+    initialOnDemandScanCounts: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -31,14 +69,25 @@ export default {
     };
   },
   computed: {
+    onDemandScanCounts() {
+      return this.liveOnDemandScanCounts ?? this.initialOnDemandScanCounts;
+    },
     hasData() {
-      return this.pipelinesCount > 0;
+      return this.onDemandScanCounts.all > 0;
     },
     tabs() {
       return {
         all: {
           component: AllTab,
-          itemsCount: this.pipelinesCount,
+          itemsCount: this.onDemandScanCounts.all,
+        },
+        running: {
+          component: RunningTab,
+          itemsCount: this.onDemandScanCounts.running,
+        },
+        finished: {
+          component: FinishedTab,
+          itemsCount: this.onDemandScanCounts.finished,
         },
       };
     },
@@ -60,6 +109,12 @@ export default {
     if (tabIndex !== -1) {
       this.activeTabIndex = tabIndex;
     }
+  },
+  mounted() {
+    toggleQueryPollingByVisibility(
+      this.$apollo.queries.liveOnDemandScanCounts,
+      PIPELINES_COUNT_POLL_INTERVAL,
+    );
   },
   i18n: {
     title: s__('OnDemandScans|On-demand scans'),
@@ -93,9 +148,10 @@ export default {
     <gl-tabs v-model="activeTab">
       <component
         :is="tab.component"
-        v-for="(tab, key) in tabs"
+        v-for="(tab, key, index) in tabs"
         :key="key"
         :items-count="tab.itemsCount"
+        :is-active="activeTab === index"
       />
     </gl-tabs>
   </configuration-page-layout>
