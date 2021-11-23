@@ -99,10 +99,6 @@ RSpec.describe Members::CreateService do
       }
     end
 
-    before do
-      stub_experiments(invite_members_for_task: true)
-    end
-
     context 'when passing many user ids' do
       it 'creates 2 task issues', :aggregate_failures, :sidekiq_inline do
         expect(TasksToBeDone::CreateWorker)
