@@ -30101,6 +30101,9 @@ msgstr ""
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
 msgstr ""
 
+msgid "Runners|active"
+msgstr ""
+
 msgid "Runners|group"
 msgstr ""
 
