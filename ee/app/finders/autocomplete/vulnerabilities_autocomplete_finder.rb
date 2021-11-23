@@ -20,7 +20,7 @@ module Autocomplete
     DEFAULT_AUTOCOMPLETE_LIMIT = 5
 
     def execute
-      return ::Vulnerability.none unless vulnerable.feature_available?(:security_dashboard)
+      return ::Vulnerability.none unless current_user && vulnerable.feature_available?(:security_dashboard)
 
       ::Security::VulnerabilitiesFinder # rubocop: disable CodeReuse/Finder
         .new(vulnerable)
