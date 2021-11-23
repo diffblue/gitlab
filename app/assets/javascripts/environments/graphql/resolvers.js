@@ -66,8 +66,7 @@ export const resolvers = (endpoint) => ({
       }));
     },
     isLastDeployment(_, { environment }) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      return environment?.lastDeployment?.['last?'];
+      return environment?.lastDeployment?.isLast;
     },
   },
   Mutation: {

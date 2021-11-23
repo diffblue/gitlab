@@ -9,11 +9,13 @@ import environmentToStopQuery from '../graphql/queries/environment_to_stop.query
 import EnvironmentFolder from './new_environment_folder.vue';
 import EnableReviewAppModal from './enable_review_app_modal.vue';
 import StopEnvironmentModal from './stop_environment_modal.vue';
+import EnvironmentItem from './new_environment_item.vue';
 
 export default {
   components: {
     EnvironmentFolder,
     EnableReviewAppModal,
+    EnvironmentItem,
     GlBadge,
     GlPagination,
     GlTab,
@@ -71,7 +73,10 @@ export default {
       return this.environmentApp?.reviewApp?.canSetupReviewApp;
     },
     folders() {
-      return this.environmentApp?.environments.filter((e) => e.size > 1) ?? [];
+      return this.environmentApp?.environments?.filter((e) => e.size > 1) ?? [];
+    },
+    environments() {
+      return this.environmentApp?.environments?.filter((e) => e.size === 1) ?? [];
     },
     availableCount() {
       return this.environmentApp?.availableCount;
@@ -194,6 +199,12 @@ export default {
       :key="folder.name"
       class="gl-mb-3"
       :nested-environment="folder"
+    />
+    <environment-item
+      v-for="environment in environments"
+      :key="environment.name"
+      class="gl-mb-3 gl-border-gray-100 gl-border-1 gl-border-b-solid"
+      :environment="environment.latest"
     />
     <gl-pagination
       align="center"

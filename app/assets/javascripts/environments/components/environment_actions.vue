@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlIcon, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlDropdown, GlDropdownItem, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { formatTime } from '~/lib/utils/datetime_utility';
 import { __, s__, sprintf } from '~/locale';
 import eventHub from '../event_hub';
@@ -13,7 +13,6 @@ export default {
     GlDropdown,
     GlDropdownItem,
     GlIcon,
-    GlLoadingIcon,
   },
   props: {
     actions: {
@@ -80,18 +79,16 @@ export default {
 <template>
   <gl-dropdown
     v-gl-tooltip
+    :text="title"
     :title="title"
+    :loading="isLoading"
     :aria-label="title"
-    :disabled="isLoading"
+    icon="play"
+    text-sr-only
     right
     data-container="body"
     data-testid="environment-actions-button"
   >
-    <template #button-content>
-      <gl-icon name="play" />
-      <gl-icon name="chevron-down" />
-      <gl-loading-icon v-if="isLoading" size="sm" />
-    </template>
     <gl-dropdown-item
       v-for="(action, i) in actions"
       :key="i"
