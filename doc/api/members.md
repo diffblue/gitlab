@@ -129,7 +129,7 @@ Example response:
     "expires_at": "2012-10-22T14:13:35Z",
     "access_level": 30,
     "group_saml_identity": null,
-    "member_stateship": "active"
+    "membership_state": "active"
   },
   {
     "id": 2,
@@ -146,7 +146,7 @@ Example response:
       "provider": "group_saml",
       "saml_provider_id": 10
     },
-    "member_stateship": "active"
+    "membership_state": "active"
   },
   {
     "id": 3,
@@ -158,7 +158,7 @@ Example response:
     "expires_at": "2012-11-22T14:13:35Z",
     "access_level": 30,
     "group_saml_identity": null,
-    "member_stateship": "active"
+    "membership_state": "active"
   }
 ]
 ```
@@ -197,7 +197,7 @@ Example response:
   "created_at": "2012-10-22T14:13:35Z",
   "expires_at": null,
   "group_saml_identity": null,
-  "member_stateship": "active"
+  "membership_state": "active"
 }
 ```
 
@@ -236,7 +236,7 @@ Example response:
   "email": "john@example.com",
   "expires_at": null,
   "group_saml_identity": null,
-  "member_stateship": "active"
+  "membership_state": "active"
 }
 ```
 
