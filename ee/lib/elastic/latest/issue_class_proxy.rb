@@ -60,7 +60,6 @@ module Elastic
       def should_use_project_ids_filter?(options)
         options[:project_ids] == :any ||
         options[:group_ids].blank? ||
-        Feature.disabled?(:elasticsearch_use_group_level_optimization) ||
         !Elastic::DataMigrationService.migration_has_finished?(:redo_backfill_namespace_ancestry_ids_for_issues)
       end
 

@@ -206,24 +206,8 @@ RSpec.describe Search::GroupService do
         permission_table_for_guest_feature_access
       end
 
-      context 'elasticsearch_use_group_level_optimization is enabled' do
-        before do
-          stub_feature_flags(elasticsearch_use_group_level_optimization: true)
-        end
-
-        with_them do
-          it_behaves_like 'search respects visibility'
-        end
-      end
-
-      context 'elasticsearch_use_group_level_optimization is disabled' do
-        before do
-          stub_feature_flags(elasticsearch_use_group_level_optimization: false)
-        end
-
-        with_them do
-          it_behaves_like 'search respects visibility'
-        end
+      with_them do
+        it_behaves_like 'search respects visibility'
       end
     end
 
@@ -319,21 +303,7 @@ RSpec.describe Search::GroupService do
         ensure_elasticsearch_index!
       end
 
-      context 'elasticsearch_use_group_level_optimization is enabled' do
-        before do
-          stub_feature_flags(elasticsearch_use_group_level_optimization: true)
-        end
-
-        include_examples 'search results sorted'
-      end
-
-      context 'elasticsearch_use_group_level_optimization is disabled' do
-        before do
-          stub_feature_flags(elasticsearch_use_group_level_optimization: false)
-        end
-
-        include_examples 'search results sorted'
-      end
+      include_examples 'search results sorted'
     end
 
     context 'merge requests' do
