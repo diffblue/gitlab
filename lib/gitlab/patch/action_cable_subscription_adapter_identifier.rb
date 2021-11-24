@@ -8,7 +8,7 @@ module Gitlab
   module Patch
     module ActionCableSubscriptionAdapterIdentifier
       def identifier
-        @server.config.cable.has_key?(:id) ? @server.config.cable[:id] : "ActionCable-PID-#{$$}" # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @server.config.cable.has_key?(:id) ? @server.config.cable[:id] : super # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
     end
   end
