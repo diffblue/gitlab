@@ -1,0 +1,8 @@
+---
+name: saas_user_caps_auto_approve_pending_users_on_cap_increase
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74842
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/346156
+milestone: '14.6'
+type: development
+group: group::utilization
+default_enabled: false
