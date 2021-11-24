@@ -26,7 +26,7 @@ export default {
 <template>
   <div class="gl-display-inline-block">
     <gl-badge ref="badge" variant="info">
-      <gl-icon name="admin" />
+      <gl-icon name="check-circle-dashed" />
     </gl-badge>
     <gl-popover
       ref="popover"

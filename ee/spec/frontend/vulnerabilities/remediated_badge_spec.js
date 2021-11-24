@@ -23,7 +23,7 @@ describe('Remediated badge component', () => {
   afterEach(() => wrapper.destroy());
 
   it('should display the correct icon', () => {
-    expect(findIcon().props('name')).toBe('admin');
+    expect(findIcon().props('name')).toBe('check-circle-dashed');
   });
 
   it('should link the badge and the popover', () => {
