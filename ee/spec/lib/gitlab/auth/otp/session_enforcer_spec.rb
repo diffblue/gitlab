@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_sessions do
   let_it_be(:key) { create(:key)}
 
   describe '#update_session' do
@@ -13,12 +13,12 @@ RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_shared_st
     end
 
     it 'registers a session in Redis' do
-      expect(Gitlab::Redis::SharedState).to receive(:with).and_yield(redis)
+      expect(Gitlab::Redis::Sessions).to receive(:with).and_yield(redis)
       session_expiry_in_seconds = Gitlab::CurrentSettings.git_two_factor_session_expiry.minutes.to_i
 
       expect(redis).to(
         receive(:setex)
-          .with("#{described_class::OTP_SESSIONS_NAMESPACE}:#{key.id}",
+          .with("#{::Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}",
                 session_expiry_in_seconds,
                 true)
           .once)
@@ -48,8 +48,8 @@ RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_shared_st
 
     context 'with existing session' do
       before do
-        Gitlab::Redis::SharedState.with do |redis|
-          redis.set("#{described_class::OTP_SESSIONS_NAMESPACE}:#{key.id}", true )
+        Gitlab::Redis::Sessions.with do |redis|
+          redis.set("#{::Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true )
         end
       end
 

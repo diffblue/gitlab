@@ -8,14 +8,14 @@ RSpec.describe Gitlab::Auth::Smartcard::Session do
 
     subject { described_class.new.active?(user) }
 
-    context 'with a smartcard session', :clean_gitlab_redis_shared_state do
+    context 'with a smartcard session', :clean_gitlab_redis_sessions do
       let(:session_id) { '42' }
       let(:stored_session) do
         { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
       end
 
       before do
-        Gitlab::Redis::SharedState.with do |redis|
+        Gitlab::Redis::Sessions.with do |redis|
           redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
           redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
         end

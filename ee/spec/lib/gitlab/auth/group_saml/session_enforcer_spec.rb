@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
         allow(saml_provider).to receive(:git_check_enforced?).and_return(true)
       end
 
-      context 'with an active session', :clean_gitlab_redis_shared_state do
+      context 'with an active session', :clean_gitlab_redis_sessions do
         let(:session_id) { '42' }
         let(:session_time) { 5.minutes.ago }
         let(:stored_session) do
@@ -35,7 +35,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
         end
 
         before do
-          Gitlab::Redis::SharedState.with do |redis|
+          Gitlab::Redis::Sessions.with do |redis|
             redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
             redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
           end
@@ -63,14 +63,14 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           end
         end
 
-        context 'with two active sessions', :clean_gitlab_redis_shared_state do
+        context 'with two active sessions', :clean_gitlab_redis_sessions do
           let(:second_session_id) { '52' }
           let(:second_stored_session) do
             { 'active_group_sso_sign_ins' => { create(:saml_provider, enforced_sso: true).id => session_time } }
           end
 
           before do
-            Gitlab::Redis::SharedState.with do |redis|
+            Gitlab::Redis::Sessions.with do |redis|
               redis.set("session:gitlab:#{second_session_id}", Marshal.dump(second_stored_session))
               redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id, second_session_id])
             end
@@ -79,7 +79,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           it_behaves_like 'not enforced'
         end
 
-        context 'with two active sessions for the same provider and one pre-sso', :clean_gitlab_redis_shared_state do
+        context 'with two active sessions for the same provider and one pre-sso', :clean_gitlab_redis_sessions do
           let(:second_session_id) { '52' }
           let(:third_session_id) { '62' }
           let(:second_stored_session) do
@@ -87,7 +87,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           end
 
           before do
-            Gitlab::Redis::SharedState.with do |redis|
+            Gitlab::Redis::Sessions.with do |redis|
               redis.set("session:gitlab:#{second_session_id}", Marshal.dump(second_stored_session))
               redis.set("session:gitlab:#{third_session_id}", Marshal.dump({}))
               redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id, second_session_id, third_session_id])
@@ -192,14 +192,14 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
         allow(saml_provider).to receive(:git_check_enforced?).and_return(false)
       end
 
-      context 'with an active session', :clean_gitlab_redis_shared_state do
+      context 'with an active session', :clean_gitlab_redis_sessions do
         let(:session_id) { '42' }
         let(:stored_session) do
           { 'active_group_sso_sign_ins' => { saml_provider.id => 5.minutes.ago } }
         end
 
         before do
-          Gitlab::Redis::SharedState.with do |redis|
+          Gitlab::Redis::Sessions.with do |redis|
             redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
             redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
           end

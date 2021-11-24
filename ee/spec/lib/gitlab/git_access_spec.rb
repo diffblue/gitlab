@@ -712,14 +712,14 @@ RSpec.describe Gitlab::GitAccess do
       project.add_developer(user)
     end
 
-    context 'user with a smartcard session', :clean_gitlab_redis_shared_state do
+    context 'user with a smartcard session', :clean_gitlab_redis_sessions do
       let(:session_id) { '42' }
       let(:stored_session) do
         { 'smartcard_signins' => { 'last_signin_at' => 5.minutes.ago } }
       end
 
       before do
-        Gitlab::Redis::SharedState.with do |redis|
+        Gitlab::Redis::Sessions.with do |redis|
           redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
           redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
         end
@@ -772,10 +772,10 @@ RSpec.describe Gitlab::GitAccess do
       stub_licensed_features(git_two_factor_enforcement: true)
     end
 
-    context 'with an OTP session', :clean_gitlab_redis_shared_state do
+    context 'with an OTP session', :clean_gitlab_redis_sessions do
       before do
-        Gitlab::Redis::SharedState.with do |redis|
-          redis.set("#{Gitlab::Auth::Otp::SessionEnforcer::OTP_SESSIONS_NAMESPACE}:#{key.id}", true)
+        Gitlab::Redis::Sessions.with do |redis|
+          redis.set("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true)
         end
       end
 
@@ -803,11 +803,11 @@ RSpec.describe Gitlab::GitAccess do
 
         def stub_redis
           redis = double(:redis)
-          expect(Gitlab::Redis::SharedState).to receive(:with).at_most(:twice).and_yield(redis)
+          expect(Gitlab::Redis::Sessions).to receive(:with).at_most(:twice).and_yield(redis)
 
           expect(redis).to(
             receive(:get)
-              .with("#{Gitlab::Auth::Otp::SessionEnforcer::OTP_SESSIONS_NAMESPACE}:#{key.id}"))
+              .with("#{Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}"))
                        .at_most(:twice)
                        .and_return(value_of_key)
         end

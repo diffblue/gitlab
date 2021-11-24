@@ -45,7 +45,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
           expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        context 'with an active session', :clean_gitlab_redis_shared_state do
+        context 'with an active session', :clean_gitlab_redis_sessions do
           let(:session_id) { '42' }
           let(:session_time) { 5.minutes.ago }
           let(:stored_session) do
@@ -53,7 +53,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
           end
 
           before do
-            Gitlab::Redis::SharedState.with do |redis|
+            Gitlab::Redis::Sessions.with do |redis|
               redis.set("session:gitlab:#{session_id}", Marshal.dump(stored_session))
               redis.sadd("session:lookup:user:gitlab:#{user.id}", [session_id])
             end

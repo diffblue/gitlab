@@ -85,7 +85,7 @@ RSpec.describe 'Login' do
           expect(page.body).to have_link('Register now', href: new_user_registration_path)
         end
 
-        describe 'with two-factor authentication required', :clean_gitlab_redis_shared_state do
+        describe 'with two-factor authentication required', :clean_gitlab_redis_sessions do
           let_it_be(:user) { create(:user) }
           let_it_be(:smartcard_identity) { create(:smartcard_identity, user: user) }
 
