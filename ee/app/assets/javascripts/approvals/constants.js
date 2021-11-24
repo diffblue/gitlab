@@ -70,7 +70,7 @@ export const APPROVAL_SETTINGS_I18N = {
     'ApprovalSettings|This setting is configured at the instance level and can only be changed by an administrator.',
   ),
   lockedByGroupOwner: s__(
-    'ApprovalSettings|This setting is configured in %{groupName} and can only be changed by an administrator or group owner.',
+    'ApprovalSettings|This setting is configured in %{groupName} and can only be changed in the group settings by an administrator or group owner.',
   ),
 };
 
