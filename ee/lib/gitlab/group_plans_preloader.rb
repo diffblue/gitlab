@@ -15,7 +15,9 @@ module Gitlab
     # plans.
     # rubocop: disable CodeReuse/ActiveRecord
     def preload(groups)
-      groups_and_ancestors = groups_and_ancestors_for(groups)
+      groups_and_ancestors = groups_and_ancestors_for(
+        activerecord_relation(groups)
+      )
       # A Hash mapping group IDs to their corresponding Group instances.
       groups_map = groups_and_ancestors.each_with_object({}) do |group, hash|
         hash[group.id] = group
@@ -52,7 +54,6 @@ module Gitlab
         group.memoized_plans = plans_map[group.id].map { |id| plans[id] }
       end
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     # Returns an ActiveRecord::Relation that includes the given groups, and all
     # their (recursive) ancestors.
@@ -62,5 +63,16 @@ module Gitlab
        .join_gitlab_subscription
        .select('namespaces.id', 'namespaces.parent_id', 'gitlab_subscriptions.hosted_plan_id')
     end
+
+    private
+
+    def activerecord_relation(groups)
+      if groups.is_a?(ActiveRecord::Relation)
+        groups
+      else
+        Group.where(id: groups)
+      end
+    end
+    # rubocop: enable CodeReuse/ActiveRecord
   end
 end

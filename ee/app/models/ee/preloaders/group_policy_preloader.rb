@@ -5,11 +5,18 @@ module EE
     module GroupPolicyPreloader
       extend ::Gitlab::Utils::Override
 
+      override :execute
+      def execute
+        super
+
+        ::Preloaders::GroupRootAncestorPreloader.new(groups, root_ancestor_preloads).execute
+        ::Gitlab::GroupPlansPreloader.new.preload(groups) if ::Gitlab::CurrentSettings.should_check_namespace_plan?
+      end
+
       private
 
-      override :root_ancestor_preloads
       def root_ancestor_preloads
-        [*super, :ip_restrictions, :saml_provider]
+        [:ip_restrictions, :saml_provider]
       end
     end
   end

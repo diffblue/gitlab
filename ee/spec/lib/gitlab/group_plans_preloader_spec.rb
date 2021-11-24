@@ -4,16 +4,12 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::GroupPlansPreloader, :saas do
   describe '#preload' do
-    let!(:plan1) { create(:free_plan, name: 'plan-1') }
-    let!(:plan2) { create(:free_plan, name: 'plan-2') }
+    let_it_be(:plan1) { create(:free_plan, name: 'plan-1') }
+    let_it_be(:plan2) { create(:free_plan, name: 'plan-2') }
 
-    let(:preloaded_groups) do
-      # We don't use the factory objects here because they might have the plan
-      # loaded already (as we specify the plan when creating them).
-      described_class.new.preload(Group.order(id: :asc))
-    end
+    let(:preloaded_groups) { described_class.new.preload(pristine_groups) }
 
-    before do
+    before_all do
       group1 = create(:group, name: 'group-1')
       create(:gitlab_subscription, namespace: group1, hosted_plan_id: plan1.id)
 
@@ -51,6 +47,16 @@ RSpec.describe Gitlab::GroupPlansPreloader, :saas do
       end
     end
 
-    it_behaves_like 'preloading cases'
+    context 'when an ActiveRecord relationship is provided' do
+      let(:pristine_groups) { Group.order(id: :asc) }
+
+      it_behaves_like 'preloading cases'
+    end
+
+    context 'when an array of groups is provided' do
+      let(:pristine_groups) { Group.order(id: :asc).to_a }
+
+      it_behaves_like 'preloading cases'
+    end
   end
 end
