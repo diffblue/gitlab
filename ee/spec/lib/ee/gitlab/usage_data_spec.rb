@@ -711,43 +711,62 @@ RSpec.describe Gitlab::UsageData do
       )
     end
 
-    it 'has to resort to 0 for counting license scan' do
-      for_defined_days_back do
-        create(:security_scan)
+    context 'when count fails' do
+      subject { described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params) }
+
+      before do
+        allow(Gitlab::Database::BatchCount).to receive(:batch_distinct_count).and_raise(ActiveRecord::StatementInvalid)
+        allow(Gitlab::Database::BatchCount).to receive(:batch_count).and_raise(ActiveRecord::StatementInvalid)
+        allow(Gitlab::Database::PostgresHll::BatchDistinctCounter).to receive(:new).and_raise(ActiveRecord::StatementInvalid)
+        allow(::Ci::Build).to receive(:distinct_count_by).and_raise(ActiveRecord::StatementInvalid)
+        allow(Gitlab::ErrorTracking).to receive(:should_raise_for_dev?).and_return(should_raise_for_dev)
       end
 
-      allow(Gitlab::Database::BatchCount).to receive(:batch_distinct_count).and_raise(ActiveRecord::StatementInvalid)
-      allow(Gitlab::Database::BatchCount).to receive(:batch_count).and_raise(ActiveRecord::StatementInvalid)
-      allow(Gitlab::Database::PostgresHll::BatchDistinctCounter).to receive(:new).and_raise(ActiveRecord::StatementInvalid)
-      allow(::Ci::Build).to receive(:distinct_count_by).and_raise(ActiveRecord::StatementInvalid)
+      context 'with should_raise_for_dev? true' do
+        let(:should_raise_for_dev) { true }
 
-      expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_preferences_group_overview_security_dashboard: -1,
-        user_api_fuzzing_jobs: -1,
-        user_api_fuzzing_dnd_jobs: -1,
-        user_container_scanning_jobs: -1,
-        user_coverage_fuzzing_jobs: -1,
-        user_dast_jobs: -1,
-        user_dependency_scanning_jobs: -1,
-        user_license_management_jobs: -1,
-        user_sast_jobs: -1,
-        user_secret_detection_jobs: -1,
-        sast_pipeline: -1,
-        sast_scans: -1,
-        dependency_scanning_pipeline: -1,
-        dependency_scanning_scans: -1,
-        container_scanning_pipeline: -1,
-        container_scanning_scans: -1,
-        dast_pipeline: -1,
-        dast_scans: -1,
-        secret_detection_pipeline: -1,
-        secret_detection_scans: -1,
-        coverage_fuzzing_pipeline: -1,
-        coverage_fuzzing_scans: -1,
-        api_fuzzing_pipeline: -1,
-        api_fuzzing_scans: -1,
-        user_unique_users_all_secure_scanners: -1
-      )
+        it 'raises an error' do
+          expect { subject }.to raise_error(ActiveRecord::StatementInvalid)
+        end
+      end
+
+      context 'with should_raise_for_dev? false' do
+        let(:should_raise_for_dev) { false }
+
+        it 'has to resort to 0 for counting license scan' do
+          for_defined_days_back do
+            create(:security_scan)
+          end
+
+          expect(subject).to include(
+            user_preferences_group_overview_security_dashboard: -1,
+            user_api_fuzzing_jobs: -1,
+            user_api_fuzzing_dnd_jobs: -1,
+            user_container_scanning_jobs: -1,
+            user_coverage_fuzzing_jobs: -1,
+            user_dast_jobs: -1,
+            user_dependency_scanning_jobs: -1,
+            user_license_management_jobs: -1,
+            user_sast_jobs: -1,
+            user_secret_detection_jobs: -1,
+            sast_pipeline: -1,
+            sast_scans: -1,
+            dependency_scanning_pipeline: -1,
+            dependency_scanning_scans: -1,
+            container_scanning_pipeline: -1,
+            container_scanning_scans: -1,
+            dast_pipeline: -1,
+            dast_scans: -1,
+            secret_detection_pipeline: -1,
+            secret_detection_scans: -1,
+            coverage_fuzzing_pipeline: -1,
+            coverage_fuzzing_scans: -1,
+            api_fuzzing_pipeline: -1,
+            api_fuzzing_scans: -1,
+            user_unique_users_all_secure_scanners: -1
+          )
+        end
+      end
     end
 
     it 'deprecates count for users who have run scans' do
