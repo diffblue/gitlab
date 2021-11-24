@@ -102,6 +102,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       it { expect(subject.dig(:scan_execution_policy, 0, :name)).to eq('Run DAST in every pipeline') }
     end
 
+    context 'when policy has invalid YAML format' do
+      let(:policy_yaml) do
+        'cadence: * 1 2 3'
+      end
+
+      it { expect(subject).to be_nil }
+    end
+
     context 'when policy is nil' do
       let(:policy_yaml) { nil }
 

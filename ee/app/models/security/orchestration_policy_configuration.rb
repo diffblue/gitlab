@@ -35,6 +35,8 @@ module Security
 
         Gitlab::Config::Loader::Yaml.new(policy_blob).load!
       end
+    rescue Gitlab::Config::Loader::FormatError
+      nil
     end
 
     def policy_configuration_exists?
