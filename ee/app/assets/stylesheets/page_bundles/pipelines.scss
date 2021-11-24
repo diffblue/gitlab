@@ -22,7 +22,9 @@
     @include mini-pipeline-item();
     display: inline-block;
     transition: margin 0.2s linear;
-    margin: 2px 7px 3px -14px;
+    margin-top: 2px;
+    margin-right: 7px;
+    margin-left: -14px;
 
     svg {
       height: $ci-action-icon-size;
@@ -32,6 +34,15 @@
       left: -1px;
       z-index: 2;
       overflow: visible;
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+      svg {
+        top: -2px;
+        left: -2px;
+      }
     }
 
     &:first-of-type:last-of-type {
