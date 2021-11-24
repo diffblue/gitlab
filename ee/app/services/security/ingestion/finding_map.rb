@@ -13,7 +13,7 @@ module Security
       attr_reader :security_finding, :report_finding
       attr_accessor :finding_id, :vulnerability_id, :new_record, :identifier_ids
 
-      delegate :uuid, :scanner_id, to: :security_finding
+      delegate :uuid, :scanner_id, :severity, to: :security_finding
       delegate :scan, to: :security_finding, private: true
       delegate :project, to: :scan, private: true
       delegate :project_fingerprint, to: :report_finding, private: true

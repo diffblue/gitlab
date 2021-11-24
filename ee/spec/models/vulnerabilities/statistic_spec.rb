@@ -47,6 +47,56 @@ RSpec.describe Vulnerabilities::Statistic do
     end
   end
 
+  describe '.letter_grade_sql_for' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:target_critical, :target_unknown, :target_high, :target_medium, :target_low, :excluded_critical, :excluded_unknown, :excluded_high, :excluded_medium, :excluded_low) do
+      0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+
+      0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1
+      0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0
+      0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 1
+
+      0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 | 1
+      0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 1
+      0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 1 | 1
+
+      0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 1
+      0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 1 | 1
+      0 | 0 | 1 | 1 | 1 | 0 | 0 | 1 | 1 | 1
+
+      0 | 0 | 1 | 1 | 1 | 0 | 1 | 1 | 1 | 1
+      0 | 1 | 1 | 1 | 1 | 0 | 0 | 1 | 1 | 1
+      0 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 1 | 1
+
+      0 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
+      1 | 1 | 1 | 1 | 1 | 0 | 1 | 1 | 1 | 1
+      1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
+    end
+
+    with_them do
+      let(:target) { "(#{target_critical}, #{target_unknown}, #{target_high}, #{target_medium}, #{target_low})" }
+      let(:excluded) { "(#{excluded_critical}, #{excluded_unknown}, #{excluded_high}, #{excluded_medium}, #{excluded_low})" }
+      let(:object) do
+        {
+          critical: target_critical + excluded_critical,
+          uknown:   target_unknown + excluded_unknown,
+          high:     target_high + excluded_high,
+          medium:   target_medium + excluded_medium,
+          low:      target_low + excluded_low
+        }.stringify_keys
+      end
+
+      let(:letter_grade_sql) { described_class.letter_grade_sql_for(target, excluded) }
+      let(:letter_grade_on_db) { described_class.connection.execute(letter_grade_sql).first['letter_grade'] }
+      let(:letter_grade_on_app) { described_class.letter_grade_for(object) }
+
+      it 'matches the application layer logic' do
+        expect(letter_grade_on_db).to eq(letter_grade_on_app)
+      end
+    end
+  end
+
   describe '.set_latest_pipeline_with' do
     let_it_be(:pipeline) { create(:ci_pipeline) }
     let_it_be(:project) { pipeline.project }
