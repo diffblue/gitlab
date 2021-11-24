@@ -4,6 +4,8 @@ module AppSec
   module Dast
     module ScanConfigs
       class BuildService < BaseContainerService
+        STAGE_NAME = 'dast'
+
         include Gitlab::Utils::StrongMemoize
 
         def execute
@@ -41,7 +43,7 @@ module AppSec
 
         def ci_configuration
           {
-            'stages' => ['dast'],
+            'stages' => [STAGE_NAME],
             'include' => [{ 'template' => 'Security/DAST-On-Demand-Scan.gitlab-ci.yml' }],
             'dast' => {
               'dast_configuration' => { 'site_profile' => dast_site_profile.name, 'scanner_profile' => dast_scanner_profile&.name }.compact

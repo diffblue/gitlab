@@ -7,8 +7,8 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:outsider) { create(:user) }
 
-  let(:builds) { [] }
-  let(:pipeline) { create(:ci_pipeline, project: project, user: user, builds: builds) }
+  let!(:pipeline) { create(:ci_pipeline, project: project, user: user) }
+  let!(:stage) { create(:ci_stage_entity, project: project, pipeline: pipeline, name: :dast) }
 
   subject do
     command = Gitlab::Ci::Pipeline::Chain::Command.new(project: project, current_user: user)
@@ -34,9 +34,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
       let(:dast_site_profile_name) { dast_site_profile.name }
       let(:dast_scanner_profile_name) { dast_scanner_profile.name }
 
-      let(:stage) { :dast }
-      let(:dast_build) { create(:ci_build, project: project, user: user, stage: stage, options: { dast_configuration: { site_profile: dast_site_profile_name, scanner_profile: dast_scanner_profile_name } }) }
-      let(:builds) { [dast_build] }
+      let!(:dast_build) { create(:ci_build, project: project, user: user, pipeline: pipeline, stage_id: stage.id, options: { dast_configuration: { site_profile: dast_site_profile_name, scanner_profile: dast_scanner_profile_name } }) }
 
       context 'when the feature is not licensed' do
         before do
@@ -55,7 +53,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
         end
 
         shared_examples 'it attempts to associate the profile' do |dast_profile_name_key|
-          let(:association) { dast_build.association(profile.class.underscore.to_sym).target }
+          let(:association) { dast_build.public_send(profile.class.underscore.to_sym) }
           let(:profile_name) { public_send(dast_profile_name_key) }
 
           context 'when the profile exists' do
@@ -77,7 +75,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::CreateCrossDatabaseAssociations do
           end
 
           context 'when the stage is not dast' do
-            let(:stage) { :test }
+            let!(:stage) { create(:ci_stage_entity, project: project, pipeline: pipeline, name: :test) }
 
             it_behaves_like 'it has no effect'
           end
