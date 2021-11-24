@@ -78,8 +78,8 @@ Geo secondary sites have a [Geo tracking database](https://gitlab.com/gitlab-org
           t.boolean :missing_on_primary, default: false, null: false
           t.binary :verification_checksum
           t.binary :verification_checksum_mismatched
-          t.string :verification_failure, limit: 255 # rubocop:disable Migration/PreventStrings see https://gitlab.com/gitlab-org/gitlab/-/issues/323806
-          t.string :last_sync_failure, limit: 255 # rubocop:disable Migration/PreventStrings see https://gitlab.com/gitlab-org/gitlab/-/issues/323806
+          t.text :verification_failure, limit: 255
+          t.text :last_sync_failure, limit: 255
 
           t.index :cool_widget_id, name: :index_cool_widget_registry_on_cool_widget_id, unique: true
           t.index :retry_at
