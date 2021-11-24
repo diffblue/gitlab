@@ -170,7 +170,9 @@ export default {
     <div v-if="isUploading" data-testid="upload-status" class="gl-mt-2">
       <gl-loading-icon inline size="sm" />
       {{ progressText }}
-      <gl-button size="small" @click="cancelUpload"> {{ __('Cancel') }} </gl-button>
+      <gl-button size="small" data-testid="cancel-upload" @click="cancelUpload">
+        {{ __('Cancel') }}
+      </gl-button>
     </div>
   </gl-form>
 </template>

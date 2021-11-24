@@ -1,12 +1,7 @@
-import { createLocalVue, mount } from '@vue/test-utils';
-import VueApollo from 'vue-apollo';
+import { mount } from '@vue/test-utils';
 import CorpusUploadForm from 'ee/security_configuration/corpus_management/components/corpus_upload_form.vue';
-import createMockApollo from 'helpers/mock_apollo_helper';
 
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
-
-const localVue = createLocalVue();
-localVue.use(VueApollo);
 
 describe('Corpus upload modal', () => {
   let wrapper;
@@ -15,12 +10,12 @@ describe('Corpus upload modal', () => {
   const findUploadAttachment = () => wrapper.find('[data-testid="upload-attachment-button"]');
   const findUploadCorpus = () => wrapper.find('[data-testid="upload-corpus"]');
   const findUploadStatus = () => wrapper.find('[data-testid="upload-status"]');
+  const findFileInput = () => wrapper.find({ ref: 'fileUpload' });
+  const findCancelButton = () => wrapper.find('[data-testid="cancel-upload"]');
 
   const createComponent = (propsData, options = {}) => {
     wrapper = mount(CorpusUploadForm, {
-      localVue,
       propsData,
-      apolloProvider: createMockApollo(),
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
       },
@@ -46,10 +41,6 @@ describe('Corpus upload modal', () => {
 
         const props = {
           states: {
-            mockedPackages: {
-              totalSize: 0,
-              data: [],
-            },
             uploadState: {
               isUploading: false,
               progress: 0,
@@ -75,6 +66,15 @@ describe('Corpus upload modal', () => {
       it('does not show the upload progress', () => {
         expect(findUploadStatus().exists()).toBe(false);
       });
+
+      describe('selecting a file', () => {
+        it('transitions to selected state', async () => {
+          jest.spyOn(wrapper.vm, 'onFileUploadChange').mockImplementation(() => {});
+          await wrapper.vm.$forceUpdate();
+          findFileInput().trigger('change');
+          expect(wrapper.vm.onFileUploadChange).toHaveBeenCalled();
+        });
+      });
     });
 
     describe('file selected state', () => {
@@ -87,16 +87,11 @@ describe('Corpus upload modal', () => {
             attachmentName,
             corpusName,
             files: [attachmentName],
-            uploadTimeout: null,
           };
         };
 
         const props = {
           states: {
-            mockedPackages: {
-              totalSize: 0,
-              data: [],
-            },
             uploadState: {
               isUploading: false,
               progress: 0,
@@ -122,6 +117,15 @@ describe('Corpus upload modal', () => {
       it('does not show the upload progress', () => {
         expect(findUploadStatus().exists()).toBe(false);
       });
+
+      describe('clicking upload file', () => {
+        it('begins the file upload', async () => {
+          jest.spyOn(wrapper.vm, 'beginFileUpload').mockImplementation(() => {});
+          await wrapper.vm.$forceUpdate();
+          findUploadCorpus().trigger('click');
+          expect(wrapper.vm.beginFileUpload).toHaveBeenCalled();
+        });
+      });
     });
 
     describe('uploading state', () => {
@@ -134,16 +138,11 @@ describe('Corpus upload modal', () => {
             attachmentName,
             corpusName,
             files: [attachmentName],
-            uploadTimeout: null,
           };
         };
 
         const props = {
           states: {
-            mockedPackages: {
-              totalSize: 0,
-              data: [],
-            },
             uploadState: {
               isUploading: true,
               progress: 25,
@@ -171,6 +170,13 @@ describe('Corpus upload modal', () => {
         expect(findUploadStatus().exists()).toBe(true);
         expect(findUploadStatus().element).toMatchSnapshot();
       });
+
+      describe('clicking cancel button', () => {
+        it('emits the reset corpus event', () => {
+          findCancelButton().trigger('click');
+          expect(wrapper.emitted().resetCorpus).toBeTruthy();
+        });
+      });
     });
 
     describe('file uploaded state', () => {
@@ -183,16 +189,11 @@ describe('Corpus upload modal', () => {
             attachmentName,
             corpusName,
             files: [attachmentName],
-            uploadTimeout: null,
           };
         };
 
         const props = {
           states: {
-            mockedPackages: {
-              totalSize: 0,
-              data: [],
-            },
             uploadState: {
               isUploading: false,
               progress: 100,
