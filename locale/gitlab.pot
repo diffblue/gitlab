@@ -29037,6 +29037,15 @@ msgstr ""
 msgid "Registration Features include:"
 msgstr ""
 
+msgid "RegistrationFeatures|Enable Service Ping and register for this feature."
+msgstr ""
+
+msgid "RegistrationFeatures|Read more about the %{linkStart}Registration Features Program%{linkEnd}."
+msgstr ""
+
+msgid "RegistrationFeatures|Want to use this feature for free?"
+msgstr ""
+
 msgid "Registration|Checkout"
 msgstr ""
 
@@ -32672,9 +32681,6 @@ msgid "Signing in using your %{label} account without a pre-existing GitLab acco
 msgstr ""
 
 msgid "Similar issues"
-msgstr ""
-
-msgid "Simply %{linkStart}enable Service Ping and select Registration Features%{linkEnd} in your admin settings."
 msgstr ""
 
 msgid "Simulate a pipeline created for the default branch"
@@ -39221,9 +39227,6 @@ msgid "Waiting for performance data"
 msgstr ""
 
 msgid "Want to see the data? Please ask an administrator for access."
-msgstr ""
-
-msgid "Want to use this feature for free? The %{linkStart}Registration Features Program%{linkEnd} does just that."
 msgstr ""
 
 msgid "Warning"
