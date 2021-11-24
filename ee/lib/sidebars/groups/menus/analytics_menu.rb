@@ -8,6 +8,7 @@ module Sidebars
 
         override :configure_menu_items
         def configure_menu_items
+          add_item(cycle_analytics_menu_item)
           add_item(ci_cd_analytics_menu_item)
           add_item(contribution_analytics_menu_item)
           add_item(devops_adoption_menu_item)
@@ -16,7 +17,6 @@ module Sidebars
           add_item(merge_request_analytics_menu_item)
           add_item(productivity_analytics_menu_item)
           add_item(repository_analytics_menu_item)
-          add_item(cycle_analytics_menu_item)
 
           true
         end
