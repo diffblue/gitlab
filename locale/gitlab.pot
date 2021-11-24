@@ -25304,6 +25304,9 @@ msgstr ""
 msgid "Pipeline Editor"
 msgstr ""
 
+msgid "Pipeline Editor|Are you sure you want to reset the file to its last committed version?"
+msgstr ""
+
 msgid "Pipeline ID"
 msgstr ""
 
@@ -29536,6 +29539,9 @@ msgid "Reset authorization key"
 msgstr ""
 
 msgid "Reset authorization key?"
+msgstr ""
+
+msgid "Reset file"
 msgstr ""
 
 msgid "Reset filters"
