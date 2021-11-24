@@ -3,11 +3,8 @@
 module Projects
   module Security
     class ConfigurationPresenter < Gitlab::View::Presenter::Delegated
-      include Gitlab::Utils::StrongMemoize
       include AutoDevopsHelper
       include ::Security::LatestPipelineInformation
-
-      delegator_override_with Gitlab::Utils::StrongMemoize # TODO: Remove `Gitlab::Utils::StrongMemoize` inclusion as it's duplicate
 
       presents ::Project, as: :project
 
