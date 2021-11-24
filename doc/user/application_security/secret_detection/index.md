@@ -226,6 +226,139 @@ To create a custom ruleset:
          value = "config/gitleaks.toml"
      ```
 
+Every passhtrough section (also referred to as a passthrough) defines a custom configuration source that is passed through to an analyzer (in the example above `secrets`). There are several supported passthrough types:
+
+| Type | Explanation |
+| ------ | ------ |
+| `file` | Use a file that's already available in the Git repository. |
+| `raw` | Provide the configuration inline. |
+| `git` | Pull the configuration from a remote Git repository. |
+| `url` | Fetch the analyzer configuration through HTTP. |
+
+If multiple passthrough sections are defined, the order in which they are listed defines the order in which they are evaluated. 
+
+- Passthroughs listed later in the sequence have a higher precedence. 
+- Passthroughs with a higher precedence overwrite the default and append data yielded by previous passthroughs. This is useful for cases where you need to use or modify an existing configuration. 
+
+In the below example, the `targetdir` entry defines the directory where the final configuration is located. If `targetdir` is empty, 
+a random directory generates automatically. All subsequent passthrough actions take place in the context of this target directory. 
+
+Several passthrough types pass custom configurations to the analyzer:
+
+- Two `git` passthrough sections pull the head of branch `refs/remotes/origin/test` from `myrules` and revision `97f7686` 
+  from `sast-rules` repositories, respectively.   
+  - The `sast` entry has a higher precedence because it appears later in the configuration. 
+  - If there is a filename collision between files in both repositories, files from the `sast` repository overwrite files from the `myrules` repository, as `sast` has higher precedence.  
+- The `raw` entry creates a file named `insecure.yml` under `/sgrules` (the full path being `/sgrules/insecure.yml`). 
+- The `url` entry fetches a configuration made available through a URL, and writes and stores it in the `/sgrules/gosec.yml` file. 
+
+Afterwards, semgrep is invoked with the final configuration.
+
+In this configuration example, the `timeout` to apply all passthroughs is set to 60 seconds. If `timeout` is not set, the timeout is set to 100 seconds. The timeout cannot exceed 300 seconds.
+
+```toml
+[semgrep]
+  description = 'semgrep custom rules configuration'
+  targetdir = "/sgrules"
+  timeout = 60
+
+  [[semgrep.passthrough]]
+    type  = "git"
+    value = "https://gitlab.com/user/myrules"
+    ref = "refs/remotes/origin/test:HEAD"
+
+  [[semgrep.passthrough]]
+    type  = "git"
+    value = "https://gitlab.com/gitlab-org/secure/gsoc-sast-vulnerability-rules/playground/sast-rules"
+    ref = "97f7686db058e2141c0806a477c1e04835c4f395:"
+
+  [[semgrep.passthrough]]
+    type  = "raw"
+    target = "insecure.yml"
+    value = """
+rules:
+- id: "insecure"
+  patterns:
+  - pattern: "func insecure() {...}"
+  message: |
+    Insecure function insecure detected
+  metadata:
+    cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+  severity: "ERROR"
+  languages:
+  - "go"
+    """
+
+  [[semgrep.passthrough]]
+    type  = "url"
+    value = "https://semgrep.dev/c/p/gosec"
+    target = "gosec.yml"
+```
+
+You can also use CI variables in the configuration file if variable interpolation (`interpolate`) is set to true. The code snippet below shows an example configuration that uses an environment variable `$GITURL`. 
+
+You can use this approach to access private repositories with a Git URL that contains username and token in the `value` field (for example `https://user:token@url`), without explicitly storing credentials in the configuration file.
+
+```toml
+[semgrep]
+  description = 'semgrep custom rules configuration'
+  targetdir = "/sgrules"
+  interpolate = true
+
+  [[semgrep.passthrough]]
+    type  = "git"
+    value = "$GITURL"
+    ref = "refs/remotes/origin/master:HEAD"
+```
+
+To append data to previous passthroughs, use the `append` mode in the passthrough types `file`, `url`, and `raw`. 
+
+By default, passthroughs operate with the `override` mode to overwrite files of its predecessor when a naming collision occurs. 
+If `mode` is set to `append`, a passthrough appends data to the files of its predecessor instead of overwriting. 
+
+In the sample configuration below, two passthroughs are assembled in the semgrep configuration 
+`/sgrules/insecure.yml` with the rules `insecure` and `Insecure`.
+
+```toml
+[semgrep]
+  description = 'semgrep custom rules configuration'
+  targetdir = "/sgrules"
+
+  [[semgrep.passthrough]]
+    type  = "raw"
+    target = "insecure.yml"
+    value = """
+rules:
+- id: "insecure"
+  patterns:
+  - pattern: "func insecure() {...}"
+  message: |
+    Insecure function insecure detected
+  metadata:
+    cwe: "...
+  severity: "ERROR"
+  languages:
+  - "go"
+"""
+
+  [[semgrep.passthrough]]
+    type  = "raw"
+    mode  = "append"
+    target = "insecure.yml"
+    value = """
+- id: "Insecure"
+  patterns:
+  - pattern: "func Insecure() {...}"
+  message: |
+    Insecure function Insecure detected
+  metadata:
+    cwe: "..."
+  severity: "ERROR"
+  languages:
+  - "go"
+"""
+```
+
 ### Logging level
 
 To control the verbosity of logs set the `SECURE_LOG_LEVEL` CI/CD variable. Messages of this logging level or higher are output. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10880) in GitLab 13.1.
