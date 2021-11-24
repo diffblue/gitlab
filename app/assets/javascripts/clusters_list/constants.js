@@ -65,7 +65,7 @@ export const STATUSES = {
 };
 
 export const I18N_AGENT_MODAL = {
-  register: {
+  agent_registration: {
     registerAgentButton: s__('ClusterAgents|Register Agent'),
     close: __('Close'),
     cancel: __('Cancel'),
@@ -104,7 +104,7 @@ export const I18N_AGENT_MODAL = {
     registrationErrorTitle: __('Failed to register Agent'),
     unknownError: s__('ClusterAgents|An unknown error occurred. Please try again.'),
   },
-  install: {
+  empty_state: {
     modalTitle: s__('ClusterAgents|Install new Agent'),
     modalBody: s__(
       'ClusterAgents|To install an Agent you should create an agent directory in the Repository first. We recommend that you add the Agent configuration to the directory before you start the installation process.',
@@ -236,3 +236,12 @@ export const CLUSTERS_ACTIONS = {
 
 export const AGENT = 'agent';
 export const CERTIFICATE_BASED = 'certificate_based';
+
+export const EVENT_LABEL_MODAL = 'agent_registration_modal';
+export const EVENT_LABEL_TABS = 'kubernetes_section_tabs';
+export const EVENT_ACTIONS = {
+  open: 'open_modal',
+  select: 'select_agent',
+  click: 'click_button',
+  change_tab: 'change_tab',
+};
