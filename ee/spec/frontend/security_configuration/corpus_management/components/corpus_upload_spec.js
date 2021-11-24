@@ -43,7 +43,7 @@ describe('Corpus Upload', () => {
     });
 
     describe('addCorpus mutation', () => {
-      it('called when the add button is clicked from the modal', async () => {
+      it('gets called when the add button is clicked from the modal', async () => {
         createComponent();
         jest.spyOn(wrapper.vm, 'addCorpus').mockImplementation(() => {});
         await wrapper.vm.$forceUpdate();
@@ -53,7 +53,7 @@ describe('Corpus Upload', () => {
     });
 
     describe('resetCorpus mutation', () => {
-      it('called when the cancel button is clicked from the modal', async () => {
+      it('gets called when the cancel button is clicked from the modal', async () => {
         createComponent();
         jest.spyOn(wrapper.vm, 'resetCorpus').mockImplementation(() => {});
         await wrapper.vm.$forceUpdate();
@@ -61,7 +61,7 @@ describe('Corpus Upload', () => {
         expect(wrapper.vm.resetCorpus).toHaveBeenCalled();
       });
 
-      it('called when the upload form triggers a reset', async () => {
+      it('gets called when the upload form triggers a reset', async () => {
         createComponent();
         jest.spyOn(wrapper.vm, 'resetCorpus').mockImplementation(() => {});
         await wrapper.vm.$forceUpdate();
@@ -71,7 +71,7 @@ describe('Corpus Upload', () => {
     });
 
     describe('uploadCorpus mutation', () => {
-      it('called when the upload file is clicked from the modal', async () => {
+      it('gets called when the upload file is clicked from the modal', async () => {
         createComponent();
         jest.spyOn(wrapper.vm, 'beginFileUpload').mockImplementation(() => {});
         await wrapper.vm.$forceUpdate();
