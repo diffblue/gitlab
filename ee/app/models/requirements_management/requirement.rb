@@ -34,21 +34,22 @@ module RequirementsManagement
 
     has_internal_id :iid, scope: :project
 
-    validates :author, :project, presence: true
-
     validate :only_requirement_type_issue
 
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
     delegate :title,
-             :description,
+             :project,
              :project_id,
+             :author,
              :author_id,
+             :description,
              :description_html,
              :title_html,
              :cached_markdown_version,
              to: :requirement_issue,
              allow_nil: true
+
     enum state: { opened: 1, archived: 2 }
 
     scope :for_iid, -> (iid) { where(iid: iid) }
@@ -119,29 +120,25 @@ module RequirementsManagement
       errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
     end
 
-    def requirement_issue_sync_error!(message: '')
-      self.requirement_issue_sync_error = true
-      return if message.blank?
-
-      self.errors.add(:requirement_issue, :invalid, message: message)
+    def requirement_issue_sync_error!(invalid_issue:)
+      self.invalid_requirement_issue = invalid_issue
     end
 
     def state
-      # Do not map state if requirement_issue not present or issue_type != requirement
-      return super unless requirement_issue&.requirement?
+      return unless requirement_issue&.requirement?
 
       STATE_MAP[requirement_issue.state]
     end
 
     private
 
-    attr_accessor :requirement_issue_sync_error
+    attr_accessor :invalid_requirement_issue # Used to retrieve error messages
 
     def invalidate_if_sync_error
-      return unless requirement_issue_sync_error
+      return unless invalid_requirement_issue
 
       # Mirror errors from requirement issue so that users can adjust accordingly
-      errors = requirement_issue.errors.full_messages.to_sentence if requirement_issue
+      errors = invalid_requirement_issue.errors.full_messages.to_sentence if invalid_requirement_issue
 
       errors = errors.presence || "Associated issue was invalid and changes could not be applied."
       self.errors.add(:base, errors)

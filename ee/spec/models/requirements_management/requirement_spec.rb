@@ -18,20 +18,33 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe 'delegate' do
-    it { is_expected.to delegate_method(:title).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:description).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:project_id).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:author_id).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:description_html).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:title_html).to(:requirement_issue).allow_nil }
-    it { is_expected.to delegate_method(:cached_markdown_version).to(:requirement_issue).allow_nil }
+    subject { build(:requirement) }
+
+    delegated_attributes = %i[
+      project project_id author author_id title title_html
+      description description_html cached_markdown_version
+    ]
+
+    delegated_attributes.each do |attr_name|
+      it { is_expected.to delegate_method(attr_name).to(:requirement_issue).allow_nil }
+    end
+
+    context 'with nil attributes' do
+      let_it_be(:requirement) { create(:requirement, project: project, author: user, description: 'Test', state: 'archived') }
+
+      (delegated_attributes - %i[project project_id title]).each do |attr_name|
+        it "returns delegated #{attr_name} value" do
+          requirement.update_attribute(attr_name, nil)
+
+          expect(requirement.send(attr_name)).not_to be_nil
+          expect(requirement.send(attr_name)).to eq(requirement.requirement_issue.send(attr_name))
+        end
+      end
+    end
   end
 
   describe 'validations' do
     subject { build(:requirement) }
-
-    it { is_expected.to validate_presence_of(:project) }
-    it { is_expected.to validate_presence_of(:author) }
 
     context 'with requirement issue' do
       let(:ri) { create(:requirement_issue) }
@@ -218,8 +231,8 @@ RSpec.describe RequirementsManagement::Requirement do
         requirement.requirement_issue = nil
       end
 
-      it 'returns the requirement stored state' do
-        expect(requirement.state).to eq('archived')
+      it 'returns nil' do
+        expect(requirement.state).to be_nil
       end
     end
 

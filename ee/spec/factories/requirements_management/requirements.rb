@@ -7,13 +7,8 @@ FactoryBot.define do
     title { generate(:title) }
     title_html { "<h2>#{title}</h2>" }
     requirement_issue do
-      association(:issue, issue_type: :requirement, project: project, author: author, title: title, description: description)
-    end
-
-    after(:create) do |requirement, evaluator|
-      if evaluator.state.to_sym == :archived
-        requirement.requirement_issue.update!(state: "closed")
-      end
+      issue_state = state.to_s == 'archived' ? 'closed' : 'opened'
+      association(:issue, issue_type: :requirement, project: project, author: author, title: title, description: description, state: issue_state)
     end
   end
 end

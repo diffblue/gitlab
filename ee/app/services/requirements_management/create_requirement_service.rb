@@ -28,10 +28,8 @@ module RequirementsManagement
       requirement = project.requirements.new(attributes)
 
       requirement.requirement_issue ||= sync_issue_for(requirement)
-      sync_errors = requirement.errors.messages_for(:requirement_issue).to_sentence
-
       requirement.save
-      requirement.errors.add(:requirement_issue, sync_errors) if sync_errors
+
       requirement
     end
 

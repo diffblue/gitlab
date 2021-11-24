@@ -17,12 +17,6 @@ module EE
           super
         end
       end
-
-      override :create_note
-      def create_note(issue, current_commit)
-        state = issue.requirement? ? 'closed' : issue.state
-        ::SystemNoteService.change_status(issue, issue.project, current_user, state, current_commit)
-      end
     end
   end
 end

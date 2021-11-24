@@ -32,7 +32,7 @@ shared_examples 'sync requirement with issue state' do
         subject
 
         expect(issue.reload.state).to eq(issue_expected_state)
-        expect(requirement.reload.state).to eq(requirement_initial_state)
+        expect(requirement.reload.state).to be_nil
       end
     end
 

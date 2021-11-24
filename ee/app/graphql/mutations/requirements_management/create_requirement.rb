@@ -18,11 +18,10 @@ module Mutations
           current_user: context[:current_user],
           params: args
         ).execute
-        error_message = requirement.errors.messages_for(:requirement_issue).to_sentence
 
         {
           requirement: requirement.valid? ? requirement : nil,
-          errors: error_message.present? ? Array.wrap(error_message) : []
+          errors: errors_on_object(requirement)
         }
       end
     end

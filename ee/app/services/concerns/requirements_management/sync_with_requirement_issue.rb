@@ -17,17 +17,18 @@ module RequirementsManagement
         synced_issue = perform_sync(requirement, attributes)
         return synced_issue if synced_issue.valid?
 
-        log_sync_error(requirement, synced_issue)
+        requirement.requirement_issue_sync_error!(invalid_issue: synced_issue)
+
+        ::Gitlab::AppLogger.info(
+          message: "Requirement-Issue Sync: Associated issue could not be saved",
+          project_id: project.id,
+          user_id: current_user.id,
+          params: params
+        )
+
+        nil
       end
     end
-
-    # Overriden on subclasses
-    # To sync on create or on update
-    def perform_sync(requirement, attributes)
-      raise NotImplementedError, "#{self.class} does not implement #{__method__}"
-    end
-
-    private
 
     def attrs_to_sync(requirement)
       sync_params = RequirementsManagement::Requirement.sync_params
@@ -35,19 +36,10 @@ module RequirementsManagement
       requirement.attributes.with_indifferent_access.slice(*changed_attrs)
     end
 
-    def log_sync_error(requirement, issue)
-      requirement.requirement_issue_sync_error!(
-        message: issue.errors.full_messages.to_sentence
-      )
-
-      ::Gitlab::AppLogger.info(
-        message: "Requirement-Issue Sync: Associated issue could not be saved",
-        project_id: project.id,
-        user_id: current_user.id,
-        params: params
-      )
-
-      nil
+    # Overriden on subclasses
+    # To sync on create or on update
+    def perform_sync(requirement, attributes)
+      raise NotImplementedError, "#{self.class} does not implement #{__method__}"
     end
   end
 end
