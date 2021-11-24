@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Banzai::Filter::IssuableStateFilter do
-  include ActionView::Helpers::UrlHelper
+RSpec.describe Banzai::Filter::IssuableReferenceExpansionFilter do
   include FilterSpecHelper
 
-  let(:user) { create(:user) }
-  let(:context) { { current_user: user, issuable_state_filter_enabled: true, group: group } }
-  let(:epic) { create(:epic, :opened, group: group) }
-  let(:closed_epic) { create(:epic, :closed, group: group) }
-  let(:group) { create(:group) }
-  let(:other_group) { create(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:other_group) { create(:group) }
+  let_it_be(:epic) { create(:epic, :opened, group: group, title: 'Some epic') }
+  let_it_be(:closed_epic) { create(:epic, :closed, group: group) }
+
+  let_it_be(:context) { { current_user: user, issuable_reference_expansion_enabled: true, group: group } }
 
   def create_link(text, data)
-    link_to(text, '', class: 'gfm has-tooltip', data: data)
+    ActionController::Base.helpers.link_to(text, '', class: 'gfm has-tooltip', data: data)
   end
 
   it 'ignores open epic references' do
@@ -40,5 +40,13 @@ RSpec.describe Banzai::Filter::IssuableStateFilter do
     doc = filter(link, context.merge(group: other_group))
 
     expect(doc.css('a').last.text).to eq("#{closed_epic.to_reference(other_group)}")
+  end
+
+  it 'shows title for references with +' do
+    link = create_link(epic.to_reference, epic: epic.id, reference_type: 'epic', reference_format: '+')
+
+    doc = filter(link, context)
+
+    expect(doc.css('a').last.text).to eq("#{epic.title} (#{epic.to_reference})")
   end
 end

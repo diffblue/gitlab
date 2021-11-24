@@ -221,7 +221,7 @@ module EE
           }x
           %r{
             (#{group_regexp})?
-            (?:#{combined_prefix})(?<epic>\d+)
+            (?:#{combined_prefix})(?<epic>\d+)(?<format>\+)?
           }x
         end
       end
