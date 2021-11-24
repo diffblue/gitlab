@@ -34,8 +34,9 @@ class GroupHook < WebHook
     _('Group Hooks')
   end
 
-  def web_hooks_disable_failed?
-    Feature.enabled?(:web_hooks_disable_failed, group)
+  override :application_context
+  def application_context
+    super.merge(namespace: group)
   end
 
   override :rate_limit
@@ -43,8 +44,10 @@ class GroupHook < WebHook
     group.actual_limits.limit_for(:web_hook_calls)
   end
 
-  override :application_context
-  def application_context
-    super.merge(namespace: group)
+  private
+
+  override :web_hooks_disable_failed?
+  def web_hooks_disable_failed?
+    Feature.enabled?(:web_hooks_disable_failed, group)
   end
 end
