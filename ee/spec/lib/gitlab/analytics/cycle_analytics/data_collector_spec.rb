@@ -138,6 +138,15 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
           resource_2_end_time.utc.to_date => 5,
           resource_3_end_time.utc.to_date => 15
         })
+
+        if aggregated_data_collector_enabled
+          data = aggregated_data_collector.duration_chart_average_data.map { |item| [item.date, round_to_days(item.average_duration_in_seconds)] }
+          expect(Hash[data]).to eq({
+            resource_1_end_time.utc.to_date => 10,
+            resource_2_end_time.utc.to_date => 5,
+            resource_3_end_time.utc.to_date => 15
+          })
+        end
       end
     end
 

@@ -6,8 +6,12 @@ module EE
       module CycleAnalytics
         module DataCollector
           def duration_chart_average_data
-            strong_memoize(:duration_chart_average_data) do
-              duration_chart.average_by_day
+            strong_memoize(:records_fetcher) do
+              if use_aggregated_data_collector?
+                aggregated_data_collector.duration_chart_average_data
+              else
+                duration_chart.average_by_day
+              end
             end
           end
 

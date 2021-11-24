@@ -280,7 +280,12 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
 
       it 'matches the response schema' do
         fake_result = [double(MergeRequest, average_duration_in_seconds: 10, date: Time.current.to_date)]
-        expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
+
+        if Feature.enabled?(:use_vsa_aggregated_tables)
+          expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
+        else
+          expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
+        end
 
         subject
 
