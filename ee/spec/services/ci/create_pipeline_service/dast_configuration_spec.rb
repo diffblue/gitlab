@@ -50,7 +50,9 @@ RSpec.describe Ci::CreatePipelineService do
       .to_runner_variables
   end
 
-  subject { described_class.new(project, user, ref: 'refs/heads/master').execute(:push).payload }
+  let(:service) { described_class.new(project, user, ref: 'refs/heads/master') }
+
+  subject { service.execute(:push).payload }
 
   before do
     stub_ci_pipeline_yaml_file(config)
@@ -118,7 +120,7 @@ RSpec.describe Ci::CreatePipelineService do
         let_it_be(:exception) { ActiveRecord::ConnectionTimeoutError }
 
         before do
-          allow(error_tracking).to receive(:track_exception).and_call_original
+          allow(error_tracking).to receive(:track_and_raise_for_dev_exception)
 
           allow_next_instance_of(AppSec::Dast::Profiles::BuildConfigService) do |instance|
             allow(instance).to receive(:execute).and_raise(exception)
@@ -128,13 +130,57 @@ RSpec.describe Ci::CreatePipelineService do
         it 'handles the error', :aggregate_failures do
           expect(subject.errors.full_messages).to include('Failed to associate DAST profiles')
 
-          expect(error_tracking).to have_received(:track_exception).with(exception, extra: { pipeline_id: subject.id })
+          expect(error_tracking).to have_received(:track_and_raise_for_dev_exception).with(exception, extra: { pipeline_id: subject.id })
         end
       end
     end
 
     context 'when the stage is not dast' do
       it_behaves_like 'it does not expand the dast variables'
+    end
+
+    it_behaves_like 'pipelines are created without N+1 SQL queries' do
+      let_it_be(:config1) do
+        <<~YAML
+        include:
+          - template: Security/DAST.gitlab-ci.yml
+        stages:
+          - dast
+        dast:
+          dast_configuration:
+            site_profile: #{dast_site_profile.name}
+            scanner_profile: #{dast_scanner_profile.name}
+        YAML
+      end
+
+      let_it_be(:config2) do
+        <<~YAML
+        include:
+          - template: Security/DAST.gitlab-ci.yml
+        stages:
+          - dast
+        dast:
+          dast_configuration:
+            site_profile: #{dast_site_profile.name}
+            scanner_profile: #{dast_scanner_profile.name}
+        dast2:
+          stage: dast
+          script:
+            - exit 0
+        YAML
+      end
+
+      let(:accepted_n_plus_ones) do
+        1 + # SELECT "ci_instance_variables"
+        1 + # SELECT "ci_builds".* FROM "ci_builds"
+        1 + # INSERT INTO "ci_builds_metadata"
+        1 + # SELECT "taggings".* FROM "taggings"
+        1   # SELECT "ci_pipelines"."id" FROM
+      end
+
+      def execute_service
+        service.execute(:push)
+      end
     end
   end
 end
