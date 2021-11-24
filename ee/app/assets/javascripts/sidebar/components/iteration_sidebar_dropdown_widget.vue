@@ -8,8 +8,8 @@ import {
 } from '@gitlab/ui';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
+import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issue_show/constants';
-import { getIterationPeriod } from 'ee/iterations/utils';
 import { IssuableAttributeType } from '../constants';
 
 export default {
@@ -51,26 +51,8 @@ export default {
     getIterationPeriod(iteration) {
       return getIterationPeriod({ startDate: iteration?.startDate, dueDate: iteration?.dueDate });
     },
-    getIterationCadences(iterations) {
-      const cadences = [];
-      iterations.forEach((iteration) => {
-        if (!iteration.iterationCadence) {
-          return;
-        }
-        const { title } = iteration.iterationCadence;
-        const cadenceIteration = {
-          id: iteration.id,
-          title: iteration.title,
-          period: this.getIterationPeriod(iteration),
-        };
-        const cadence = cadences.find((cad) => cad.title === title);
-        if (cadence) {
-          cadence.iterations.push(cadenceIteration);
-        } else {
-          cadences.push({ title, iterations: [cadenceIteration] });
-        }
-      });
-      return cadences;
+    groupByIterationCadences(iterations) {
+      return groupByIterationCadences(iterations);
     },
   },
 };
@@ -101,7 +83,7 @@ export default {
       </gl-link>
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
-      <template v-for="(cadence, index) in getIterationCadences(attributesList)">
+      <template v-for="(cadence, index) in groupByIterationCadences(attributesList)">
         <gl-dropdown-divider v-if="index !== 0" :key="index" />
         <gl-dropdown-section-header :key="cadence.title">
           {{ cadence.title }}

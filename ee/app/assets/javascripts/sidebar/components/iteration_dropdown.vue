@@ -8,10 +8,10 @@ import {
   GlTooltipDirective,
   GlLoadingIcon,
 } from '@gitlab/ui';
+import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
+import { groupByIterationCadences } from 'ee/iterations/utils';
 import { __ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import IterationPeriod from 'ee/iterations/components/iteration_period.vue';
-import { getIterationPeriod } from 'ee/iterations/utils';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
 import groupIterationsQuery from '../queries/iterations.query.graphql';
 
@@ -70,25 +70,7 @@ export default {
       return this.currentIteration?.iterationCadence?.title;
     },
     iterationCadences() {
-      const cadences = [];
-      this.iterations.forEach((iteration) => {
-        if (!iteration.iterationCadence) {
-          return;
-        }
-        const { title } = iteration.iterationCadence;
-        const cadenceIteration = {
-          id: iteration.id,
-          title: iteration.title,
-          period: getIterationPeriod(iteration),
-        };
-        const cadence = cadences.find((cad) => cad.title === title);
-        if (cadence) {
-          cadence.iterations.push(cadenceIteration);
-        } else {
-          cadences.push({ title, iterations: [cadenceIteration] });
-        }
-      });
-      return cadences;
+      return groupByIterationCadences(this.iterations);
     },
     title() {
       return this.currentIteration?.title || __('Select iteration');

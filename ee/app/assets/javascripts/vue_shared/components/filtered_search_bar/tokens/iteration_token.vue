@@ -1,9 +1,9 @@
 <script>
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
+import { groupByIterationCadences } from 'ee/iterations/utils';
 import createFlash from '~/flash';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { formatDate } from '~/lib/utils/datetime_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { DEFAULT_ITERATIONS } from '../constants';
 
@@ -45,25 +45,7 @@ export default {
       return iterations.find((iteration) => iteration.id === data);
     },
     groupIterationsByCadence(iterations) {
-      const cadences = [];
-      iterations.forEach((iteration) => {
-        if (!iteration.iterationCadence) {
-          return;
-        }
-        const { title } = iteration.iterationCadence;
-        const cadenceIteration = {
-          id: iteration.id,
-          title: iteration.title,
-          period: this.getIterationPeriod(iteration),
-        };
-        const cadence = cadences.find((cad) => cad.title === title);
-        if (cadence) {
-          cadence.iterations.push(cadenceIteration);
-        } else {
-          cadences.push({ title, iterations: [cadenceIteration] });
-        }
-      });
-      return cadences;
+      return groupByIterationCadences(iterations);
     },
     fetchIterations(searchTerm) {
       this.loading = true;
@@ -78,16 +60,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    /**
-     * TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/344619
-     * This method also exists as a utility function in ee/../iterations/utils.js
-     * Remove the duplication when iteration token is moved to EE.
-     */
-    getIterationPeriod({ startDate, dueDate }) {
-      const start = formatDate(startDate, 'mmm d, yyyy', true);
-      const due = formatDate(dueDate, 'mmm d, yyyy', true);
-      return `${start} - ${due}`;
     },
   },
 };
