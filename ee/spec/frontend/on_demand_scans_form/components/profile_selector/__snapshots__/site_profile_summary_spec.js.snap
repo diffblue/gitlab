@@ -8,7 +8,7 @@ exports[`DastSiteProfileSummary renders properly profile 0 1`] = `
     <profile-selector-summary-cell-stub
       class=""
       label="Target URL"
-      value="http://example5.test"
+      value="http://pending.test"
     />
      
     <profile-selector-summary-cell-stub
@@ -22,7 +22,7 @@ exports[`DastSiteProfileSummary renders properly profile 0 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Authentication URL"
-      value="http://example5.test/sign-in"
+      value="http://pending.test/sign-in"
     />
   </div>
    
@@ -59,7 +59,7 @@ exports[`DastSiteProfileSummary renders properly profile 0 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Excluded URLs"
-      value="http://example5.test/sign-out,http://example5.test/hidden"
+      value="http://pending.test/sign-out,http://pending.test/hidden"
     />
      
     <profile-selector-summary-cell-stub
@@ -87,7 +87,7 @@ exports[`DastSiteProfileSummary renders properly profile 1 1`] = `
     <profile-selector-summary-cell-stub
       class=""
       label="Target URL"
-      value="http://example6.test"
+      value="http://inprogress.test"
     />
      
     <profile-selector-summary-cell-stub
@@ -101,7 +101,7 @@ exports[`DastSiteProfileSummary renders properly profile 1 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Authentication URL"
-      value="http://example6.test/sign-in"
+      value="http://inprogress.test/sign-in"
     />
   </div>
    
@@ -138,7 +138,7 @@ exports[`DastSiteProfileSummary renders properly profile 1 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Excluded URLs"
-      value="http://example6.test/sign-out,http://example6.test/hidden"
+      value="http://inprogress.test/sign-out,http://inprogress.test/hidden"
     />
      
     <profile-selector-summary-cell-stub
@@ -166,7 +166,7 @@ exports[`DastSiteProfileSummary renders properly profile 2 1`] = `
     <profile-selector-summary-cell-stub
       class=""
       label="Target URL"
-      value="http://example7.test"
+      value="http://passed.test"
     />
      
     <profile-selector-summary-cell-stub
@@ -180,7 +180,7 @@ exports[`DastSiteProfileSummary renders properly profile 2 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Authentication URL"
-      value="http://example7.test/sign-in"
+      value="http://passed.test/sign-in"
     />
   </div>
    
@@ -217,7 +217,7 @@ exports[`DastSiteProfileSummary renders properly profile 2 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Excluded URLs"
-      value="http://example7.test/sign-out,http://example7.test/hidden"
+      value="http://passed.test/sign-out,http://passed.test/hidden"
     />
      
     <profile-selector-summary-cell-stub
@@ -245,7 +245,7 @@ exports[`DastSiteProfileSummary renders properly profile 3 1`] = `
     <profile-selector-summary-cell-stub
       class=""
       label="Target URL"
-      value="http://example8.test"
+      value="http://failed.test"
     />
      
     <profile-selector-summary-cell-stub
@@ -259,7 +259,7 @@ exports[`DastSiteProfileSummary renders properly profile 3 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Authentication URL"
-      value="http://example8.test/sign-in"
+      value="http://failed.test/sign-in"
     />
   </div>
    
@@ -296,7 +296,7 @@ exports[`DastSiteProfileSummary renders properly profile 3 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Excluded URLs"
-      value="http://example8.test/sign-out,http://example8.test/hidden"
+      value="http://failed.test/sign-out,http://failed.test/hidden"
     />
      
     <profile-selector-summary-cell-stub
@@ -324,7 +324,7 @@ exports[`DastSiteProfileSummary renders properly profile 4 1`] = `
     <profile-selector-summary-cell-stub
       class=""
       label="Target URL"
-      value="http://example9.test"
+      value="http://none.test"
     />
      
     <profile-selector-summary-cell-stub
@@ -338,7 +338,7 @@ exports[`DastSiteProfileSummary renders properly profile 4 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Authentication URL"
-      value="http://example9.test/sign-in"
+      value="http://none.test/sign-in"
     />
   </div>
    
@@ -375,7 +375,7 @@ exports[`DastSiteProfileSummary renders properly profile 4 1`] = `
   >
     <profile-selector-summary-cell-stub
       label="Excluded URLs"
-      value="http://example9.test/sign-out,http://example9.test/hidden"
+      value="http://none.test/sign-out,http://none.test/hidden"
     />
      
     <profile-selector-summary-cell-stub

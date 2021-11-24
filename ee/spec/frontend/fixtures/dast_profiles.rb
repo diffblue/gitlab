@@ -57,11 +57,50 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
     end
 
     # DAST sites
-    let_it_be(:dast_site_pending) { create(:dast_site, project: project, dast_site_validation: dast_site_validation_pending) }
-    let_it_be(:dast_site_inprogress) { create(:dast_site, project: project, dast_site_validation: dast_site_validation_inprogress) }
-    let_it_be(:dast_site_passed) { create(:dast_site, project: project, dast_site_validation: dast_site_validation_passed) }
-    let_it_be(:dast_site_failed) { create(:dast_site, project: project, dast_site_validation: dast_site_validation_failed) }
-    let_it_be(:dast_site_none) { create(:dast_site, project: project, dast_site_validation: nil) }
+    let_it_be(:dast_site_pending) do
+      create(
+        :dast_site,
+        project: project,
+        url: 'http://pending.test',
+        dast_site_validation: dast_site_validation_pending
+      )
+    end
+
+    let_it_be(:dast_site_inprogress) do
+      create(
+        :dast_site,
+        project: project,
+        url: 'http://inprogress.test',
+        dast_site_validation: dast_site_validation_inprogress
+      )
+    end
+
+    let_it_be(:dast_site_passed) do
+      create(
+        :dast_site,
+        project: project,
+        url: 'http://passed.test',
+        dast_site_validation: dast_site_validation_passed
+      )
+    end
+
+    let_it_be(:dast_site_failed) do
+      create(
+        :dast_site,
+        project: project,
+        url: 'http://failed.test',
+        dast_site_validation: dast_site_validation_failed
+      )
+    end
+
+    let_it_be(:dast_site_none) do
+      create(
+        :dast_site,
+        project: project,
+        url: 'http://none.test',
+        dast_site_validation: nil
+      )
+    end
 
     before do
       stub_licensed_features(security_on_demand_scans: true)
