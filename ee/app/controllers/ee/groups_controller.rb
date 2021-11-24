@@ -13,6 +13,10 @@ module EE
       before_action :ee_authorize_admin_group!, only: [:restore]
       before_action :check_subscription!, only: [:destroy]
 
+      before_action do
+        push_frontend_feature_flag(:saas_user_caps_auto_approve_pending_users_on_cap_increase, @group, default_enabled: :yaml)
+      end
+
       feature_category :subgroups, [:restore]
     end
 

@@ -7,7 +7,7 @@ RSpec.describe 'Edit group settings' do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:developer) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'Foo bar', path: 'foo') }
+  let_it_be(:group, refind: true) { create(:group, name: 'Foo bar', path: 'foo') }
 
   before_all do
     group.add_owner(user)
@@ -454,8 +454,6 @@ RSpec.describe 'Edit group settings' do
     end
 
     describe 'form submit button', :js do
-      let_it_be(:pending_user) { create(:user) }
-
       def fill_in_new_user_signups_cap(new_user_signups_cap_value)
         page.within('#js-permissions-settings') do
           fill_in 'group[new_user_signups_cap]', with: new_user_signups_cap_value
@@ -480,44 +478,94 @@ RSpec.describe 'Edit group settings' do
         end
       end
 
-      before_all do
+      before do
         stub_feature_flags(saas_user_caps: true)
         group.namespace_settings.update!(new_user_signups_cap: group.group_members.count)
       end
 
-      before do
-        visit edit_group_path(group, anchor: 'js-permissions-settings')
+      context 'when the auto approve pending users feature flag is enabled' do
+        before do
+          stub_feature_flags(saas_user_caps_auto_approve_pending_users_on_cap_increase: true)
+          visit edit_group_path(group, anchor: 'js-permissions-settings')
+        end
+
+        it 'shows correct helper text' do
+          expect(page).to have_content 'When the number of active users exceeds this number, additional users must be approved by an owner'
+          expect(page).not_to have_content 'Increasing the user cap will not automatically approve pending users'
+        end
+
+        context 'should show confirmation modal' do
+          context 'if user cap increases' do
+            it_behaves_like 'confirmation modal before submit' do
+              let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
+            end
+          end
+
+          context 'if user cap changes from limited to unlimited' do
+            it_behaves_like 'confirmation modal before submit' do
+              let(:new_user_signups_cap_value) { nil }
+            end
+          end
+        end
+
+        context 'should not show confirmation modal' do
+          context 'if user cap decreases' do
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap - 1 }
+            end
+          end
+
+          context 'if user cap changes from unlimited to limited' do
+            before do
+              group.namespace_settings.update!(new_user_signups_cap: nil)
+              visit edit_group_path(group, anchor: 'js-permissions-settings')
+            end
+
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { 1 }
+            end
+          end
+        end
       end
 
-      context 'should show confirmation modal' do
-        context 'if user cap increases' do
-          it_behaves_like 'confirmation modal before submit' do
-            let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
-          end
+      context 'when the auto approve pending users feature flag is disabled' do
+        before do
+          stub_feature_flags(saas_user_caps_auto_approve_pending_users_on_cap_increase: false)
+          visit edit_group_path(group, anchor: 'js-permissions-settings')
         end
 
-        context 'if user cap changes from limited to unlimited' do
-          it_behaves_like 'confirmation modal before submit' do
-            let(:new_user_signups_cap_value) { nil }
-          end
-        end
-      end
-
-      context 'should not show confirmation modal' do
-        context 'if user cap decreases' do
-          it_behaves_like 'successful form submit' do
-            let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap - 1 }
-          end
+        it 'shows correct helper text' do
+          expect(page).to have_content 'Increasing the user cap will not automatically approve pending users'
         end
 
-        context 'if user cap changes from unlimited to limited' do
-          before do
-            group.namespace_settings.update!(new_user_signups_cap: nil)
-            visit edit_group_path(group, anchor: 'js-permissions-settings')
+        context 'should not show confirmation modal' do
+          context 'if user cap increases' do
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap + 1 }
+            end
           end
 
-          it_behaves_like 'successful form submit' do
-            let(:new_user_signups_cap_value) { 1 }
+          context 'if user cap changes from limited to unlimited' do
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { nil }
+            end
+          end
+
+          context 'if user cap decreases' do
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { group.namespace_settings.new_user_signups_cap - 1 }
+            end
+          end
+
+          context 'if user cap changes from unlimited to limited' do
+            before do
+              group.namespace_settings.update!(new_user_signups_cap: nil)
+              visit edit_group_path(group, anchor: 'js-permissions-settings')
+            end
+
+            it_behaves_like 'successful form submit' do
+              let(:new_user_signups_cap_value) { 1 }
+            end
           end
         end
       end

@@ -16854,6 +16854,12 @@ msgstr ""
 msgid "GroupSettings|What are badges?"
 msgstr ""
 
+msgid "GroupSettings|When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don't want to enforce approvals."
+msgstr ""
+
+msgid "GroupSettings|When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don't want to enforce approvals. Increasing the user cap will not automatically approve pending users."
+msgstr ""
+
 msgid "GroupSettings|You can only transfer the group to a group you manage."
 msgstr ""
 
@@ -39105,9 +39111,6 @@ msgid "When merge requests and commits in the default branch close, any issues t
 msgstr ""
 
 msgid "When paused, GitLab still tracks the changes. This is useful for cluster/index migrations."
-msgstr ""
-
-msgid "When the number of active users exceeds this number, additional users must be %{user_cap_docs_link_start}approved by an owner%{user_cap_docs_link_end}. Leave empty if you don't want to enforce approvals."
 msgstr ""
 
 msgid "When this merge request is accepted"
