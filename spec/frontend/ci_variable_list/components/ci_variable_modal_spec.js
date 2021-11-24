@@ -1,9 +1,10 @@
 import { GlButton, GlFormInput } from '@gitlab/ui';
 import { createLocalVue, shallowMount, mount } from '@vue/test-utils';
 import Vuex from 'vuex';
+import { mockTracking } from 'helpers/tracking_helper';
 import CiEnvironmentsDropdown from '~/ci_variable_list/components/ci_environments_dropdown.vue';
 import CiVariableModal from '~/ci_variable_list/components/ci_variable_modal.vue';
-import { AWS_ACCESS_KEY_ID } from '~/ci_variable_list/constants';
+import { AWS_ACCESS_KEY_ID, EVENT_LABEL, EVENT_ACTION } from '~/ci_variable_list/constants';
 import createStore from '~/ci_variable_list/store';
 import mockData from '../services/mock_data';
 import ModalStub from '../stubs';
@@ -14,6 +15,7 @@ localVue.use(Vuex);
 describe('Ci variable modal', () => {
   let wrapper;
   let store;
+  let trackingSpy;
 
   const createComponent = (method, options = {}) => {
     store = createStore({ isGroup: options.isGroup });
@@ -124,10 +126,10 @@ describe('Ci variable modal', () => {
   });
 
   describe.each`
-    value           | secret            | rendered
-    ${'value'}      | ${'secret_value'} | ${false}
-    ${'dollar$ign'} | ${'dollar$ign'}   | ${true}
-  `('Adding a new variable', ({ value, secret, rendered }) => {
+    value           | secret            | rendered | event_sent
+    ${'value'}      | ${'secret_value'} | ${false} | ${0}
+    ${'dollar$ign'} | ${'dollar$ign'}   | ${true}  | ${1}
+  `('Adding a new variable', ({ value, secret, rendered, event_sent }) => {
     beforeEach(() => {
       const [variable] = mockData.mockVariables;
       const invalidKeyVariable = {
@@ -138,11 +140,16 @@ describe('Ci variable modal', () => {
       };
       createComponent(mount);
       store.state.variable = invalidKeyVariable;
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
     });
 
     it(`${rendered ? 'renders' : 'does not render'} the variable reference warning`, () => {
       const warning = wrapper.find(`[data-testid='contains-variable-reference']`);
       expect(warning.exists()).toBe(rendered);
+    });
+
+    it(`${rendered ? 'sends' : 'does not send'} the variable reference tracking event`, () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(event_sent);
     });
   });
 
@@ -226,6 +233,7 @@ describe('Ci variable modal', () => {
         };
         createComponent(mount);
         store.state.variable = invalidMaskVariable;
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       });
 
       it('disables the submit button', () => {
@@ -234,6 +242,13 @@ describe('Ci variable modal', () => {
 
       it('shows the correct error text', () => {
         expect(findModal().text()).toContain(maskError);
+      });
+
+      it('sends the correct tracking event', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTION, {
+          label: EVENT_LABEL,
+          property: 'displaysMaskedError',
+        });
       });
     });
 
