@@ -86,6 +86,36 @@ RSpec.describe AuditEvent, type: :model do
         stub_licensed_features(external_audit_events: true)
       end
 
+      context 'entity is a project' do
+        let_it_be(:group) { create(:group, :nested) }
+        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+
+        context 'when ff_external_audit_events_namespace is enabled' do
+          before do
+            stub_feature_flags(ff_external_audit_events_namespace: group.root_ancestor)
+          end
+
+          it 'enqueues one worker' do
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+
+            event.stream_to_external_destinations
+          end
+        end
+
+        context 'when ff_external_audit_events_namespace is disabled' do
+          before do
+            stub_feature_flags(ff_external_audit_events_namespace: false)
+          end
+
+          it 'enqueues no workers' do
+            expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+            event.stream_to_external_destinations
+          end
+        end
+      end
+
       it 'enqueues one worker' do
         expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
 

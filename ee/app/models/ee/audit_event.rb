@@ -56,8 +56,8 @@ module EE
 
     def stream_to_external_destinations
       return if entity.nil?
-      return unless ::Feature.enabled?(:ff_external_audit_events_namespace, entity)
-      return unless entity.licensed_feature_available?(:external_audit_events)
+      return unless ::Feature.enabled?(:ff_external_audit_events_namespace, group_entity)
+      return unless group_entity.licensed_feature_available?(:external_audit_events)
 
       AuditEvents::AuditEventStreamingWorker.perform_async(id)
     end
@@ -67,6 +67,19 @@ module EE
     end
 
     private
+
+    def group_entity
+      case entity_type
+      when 'Group'
+        entity
+      when 'Project'
+        # Project events should be sent to the root ancestor's streaming destinations
+        # Projects without a group root ancestor should be ignored.
+        entity.group&.root_ancestor
+      else
+        nil
+      end
+    end
 
     def truncate_fields
       TRUNCATED_FIELDS.each do |name, limit|
