@@ -25,7 +25,7 @@ store = if Gitlab::Utils.to_boolean(ENV['GITLAB_USE_REDIS_SESSIONS_STORE'], defa
           )
         else
           Gitlab::Redis::SharedState.store(
-            namespace: Gitlab::Redis::SharedState::SESSION_NAMESPACE
+            namespace: Gitlab::Redis::Sessions::SESSION_NAMESPACE
           )
         end
 

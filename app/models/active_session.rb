@@ -125,15 +125,15 @@ class ActiveSession
   end
 
   def self.rack_key_name(session_id)
-    "#{redis_store_class::SESSION_NAMESPACE}:#{session_id}"
+    "#{Gitlab::Redis::Sessions::SESSION_NAMESPACE}:#{session_id}"
   end
 
   def self.key_name(user_id, session_id = '*')
-    "#{redis_store_class::USER_SESSIONS_NAMESPACE}:#{user_id}:#{session_id}"
+    "#{Gitlab::Redis::Sessions::USER_SESSIONS_NAMESPACE}:#{user_id}:#{session_id}"
   end
 
   def self.lookup_key_name(user_id)
-    "#{redis_store_class::USER_SESSIONS_LOOKUP_NAMESPACE}:#{user_id}"
+    "#{Gitlab::Redis::Sessions::USER_SESSIONS_LOOKUP_NAMESPACE}:#{user_id}"
   end
 
   def self.list_sessions(user)

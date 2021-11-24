@@ -102,7 +102,7 @@ namespace :gitlab do
       task active_sessions_lookup_keys: :gitlab_environment do
         use_redis_session_store = Gitlab::Utils.to_boolean(ENV['GITLAB_USE_REDIS_SESSIONS_STORE'], default: true)
         redis_store_class = use_redis_session_store ? Gitlab::Redis::Sessions : Gitlab::Redis::SharedState
-        session_key_pattern = "#{redis_store_class::USER_SESSIONS_LOOKUP_NAMESPACE}:*"
+        session_key_pattern = "#{Gitlab::Redis::Sessions::USER_SESSIONS_LOOKUP_NAMESPACE}:*"
         last_save_check = Time.at(0)
         wait_time = 10.seconds
         cursor = 0
