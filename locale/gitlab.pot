@@ -9710,6 +9710,9 @@ msgstr ""
 msgid "Create %{workspace} label"
 msgstr ""
 
+msgid "Create Google Cloud project"
+msgstr ""
+
 msgid "Create New Directory"
 msgstr ""
 
@@ -15276,6 +15279,9 @@ msgstr ""
 msgid "Generate site and private keys at"
 msgstr ""
 
+msgid "Generated service account is linked to the selected environment"
+msgstr ""
+
 msgid "Generic"
 msgstr ""
 
@@ -15825,6 +15831,9 @@ msgstr ""
 msgid "GitLab account request rejected"
 msgstr ""
 
+msgid "GitLab and Google Cloud configuration seems to be incomplete. This probably can be fixed by your GitLab administration team. You may share these logs with them:"
+msgstr ""
+
 msgid "GitLab commit"
 msgstr ""
 
@@ -16213,6 +16222,15 @@ msgid "Google Cloud Project"
 msgstr ""
 
 msgid "Google Cloud authorizations required"
+msgstr ""
+
+msgid "Google Cloud project"
+msgstr ""
+
+msgid "Google Cloud project misconfigured"
+msgstr ""
+
+msgid "Google Cloud project required"
 msgstr ""
 
 msgid "Google authentication is not %{link_start}properly configured%{link_end}. Ask your GitLab administrator if you want to use this service."
@@ -23263,6 +23281,9 @@ msgid "New runners registration token has been generated!"
 msgstr ""
 
 msgid "New schedule"
+msgstr ""
+
+msgid "New service account is generated for the selected Google Cloud project"
 msgstr ""
 
 msgid "New snippet"
@@ -37091,6 +37112,9 @@ msgstr ""
 msgid "Unknown response text"
 msgstr ""
 
+msgid "Unknown root"
+msgstr ""
+
 msgid "Unknown user"
 msgstr ""
 
@@ -39734,6 +39758,9 @@ msgid "You can’t edit files directly in this project. Fork this project and su
 msgstr ""
 
 msgid "You could not create a new trigger."
+msgstr ""
+
+msgid "You do not have any Google Cloud projects. Please create a Google Cloud project and then reload this page."
 msgstr ""
 
 msgid "You do not have any subscriptions yet"
