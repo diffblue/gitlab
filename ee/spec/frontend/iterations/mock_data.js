@@ -111,3 +111,57 @@ export const readCadenceSuccess = {
     },
   },
 };
+
+export const mockIterationsWithoutCadences = [
+  {
+    id: 1,
+    title: 'iteration 1',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+  },
+  {
+    id: 2,
+    title: 'iteration 2',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+  },
+];
+
+export const mockIterationsWithCadences = [
+  {
+    id: 1,
+    title: 'iteration 1',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+    iterationCadence: {
+      title: 'cadence 1',
+    },
+  },
+  {
+    id: 2,
+    title: 'iteration 2',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+    iterationCadence: {
+      title: 'cadence 2',
+    },
+  },
+  {
+    id: 3,
+    title: 'iteration 3',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+    iterationCadence: {
+      title: 'cadence 2',
+    },
+  },
+  {
+    id: 4,
+    title: 'iteration 4',
+    startDate: '2021-11-23T12:34:56',
+    dueDate: '2021-11-30T12:34:56',
+    iterationCadence: {
+      title: 'cadence 1',
+    },
+  },
+];

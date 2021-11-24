@@ -12,3 +12,31 @@ export function getIterationPeriod({ startDate, dueDate }) {
   const due = formatDate(dueDate, PERIOD_DATE_FORMAT, true);
   return `${start} - ${due}`;
 }
+
+/**
+ * Group a list of iterations by cadence.
+ *
+ * @param iterations A list of iterations
+ * @return {Array} A list of cadences
+ */
+export function groupByIterationCadences(iterations) {
+  const cadences = [];
+  iterations.forEach((iteration) => {
+    if (!iteration.iterationCadence) {
+      return;
+    }
+    const { title } = iteration.iterationCadence;
+    const cadenceIteration = {
+      id: iteration.id,
+      title: iteration.title,
+      period: getIterationPeriod(iteration),
+    };
+    const cadence = cadences.find((c) => c.title === title);
+    if (cadence) {
+      cadence.iterations.push(cadenceIteration);
+    } else {
+      cadences.push({ title, iterations: [cadenceIteration] });
+    }
+  });
+  return cadences;
+}
