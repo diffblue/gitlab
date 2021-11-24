@@ -24,6 +24,10 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu do
     end
 
     context 'when Value Stream is not visible' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: false, group_ci_cd_analytics: true)
+      end
+
       it 'returns link to the the first visible menu item' do
         allow(menu).to receive(:cycle_analytics_menu_item).and_return(double(render?: false))
 
