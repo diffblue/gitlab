@@ -1,9 +1,13 @@
 import { IssuableType } from '~/issue_show/constants';
-import { s__, __ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 import {
   IssuableAttributeType as IssuableAttributeTypeFoss,
   IssuableAttributeState as IssuableAttributeStateFoss,
   issuableAttributesQueries as issuableAttributesQueriesFoss,
+  dropdowni18nText as dropdowni18nTextFoss,
+  Tracking,
+  defaultEpicSort,
+  epicIidPattern,
 } from '~/sidebar/constants';
 import updateStatusMutation from '~/sidebar/queries/updateStatus.mutation.graphql';
 import epicAncestorsQuery from './queries/epic_ancestors.query.graphql';
@@ -16,6 +20,8 @@ import projectIssueEpicQuery from './queries/project_issue_epic.query.graphql';
 import projectIssueIterationMutation from './queries/project_issue_iteration.mutation.graphql';
 import projectIssueIterationQuery from './queries/project_issue_iteration.query.graphql';
 import updateIssueWeightMutation from './queries/update_issue_weight.mutation.graphql';
+
+export { Tracking, defaultEpicSort, epicIidPattern };
 
 export const healthStatus = {
   ON_TRACK: 'onTrack',
@@ -150,3 +156,18 @@ export const healthStatusQueries = {
     query: issueHealthStatusQuery,
   },
 };
+
+export function dropdowni18nText(issuableAttribute, issuableType) {
+  let noAttributesFound = s__('DropdownWidget|No %{issuableAttribute} found');
+
+  if (issuableAttribute === IssuableAttributeType.Iteration) {
+    noAttributesFound = s__('DropdownWidget|No open %{issuableAttribute} found');
+  }
+
+  return {
+    ...dropdowni18nTextFoss(issuableAttribute, issuableType),
+    noAttributesFound: sprintf(noAttributesFound, {
+      issuableAttribute,
+    }),
+  };
+}
