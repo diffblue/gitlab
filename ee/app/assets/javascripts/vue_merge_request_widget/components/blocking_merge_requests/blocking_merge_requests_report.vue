@@ -82,7 +82,11 @@ export default {
       );
 
       return this.closedCount > 0
-        ? `${mainText} <strong>${n__('(%d closed)', '(%d closed)', this.closedCount)}</strong>`
+        ? `${mainText} %{strongStart}${n__(
+            '(%d closed)',
+            '(%d closed)',
+            this.closedCount,
+          )}%{strongEnd}`
         : mainText;
     },
     status() {

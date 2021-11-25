@@ -87,7 +87,7 @@ describe('BlockingMergeRequestsReport', () => {
       createComponent();
 
       expect(wrapper.vm.blockedByText).toBe(
-        'Depends on 2 merge requests being merged <strong>(1 closed)</strong>',
+        'Depends on 2 merge requests being merged %{strongStart}(1 closed)%{strongEnd}',
       );
     });
 
