@@ -45,7 +45,7 @@ describe('EpicFilteredSearch', () => {
         {
           icon: 'labels',
           title: __('Label'),
-          type: 'label_name',
+          type: 'label',
           operators: [
             { value: '=', description: 'is' },
             { value: '!=', description: 'is not' },
@@ -58,7 +58,7 @@ describe('EpicFilteredSearch', () => {
         {
           icon: 'pencil',
           title: __('Author'),
-          type: 'author_username',
+          type: 'author',
           operators: [
             { value: '=', description: 'is' },
             { value: '!=', description: 'is not' },

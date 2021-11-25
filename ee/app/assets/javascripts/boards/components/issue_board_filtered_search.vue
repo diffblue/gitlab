@@ -36,7 +36,7 @@ export default {
       return [
         ...this.tokensCE,
         {
-          type: 'epic_id',
+          type: 'epic',
           title: epic,
           icon: 'epic',
           token: EpicToken,
