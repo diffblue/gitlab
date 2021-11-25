@@ -33,56 +33,78 @@ module QA
         Flow::Saml.logout_from_idp(saml_idp_service)
       end
 
-      it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1845' do
-        # When the user signs in via IDP for the first time
+      shared_examples 'group membership actions' do
+        it 'creates a new account automatically and allows to leave group and join again', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/1845' do
+          # When the user signs in via IDP for the first time
 
-        visit_group_sso_url
+          visit_group_sso_url
 
-        EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
+          EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
 
-        Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
+          Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-        expect(page).to have_text("Please confirm your email address")
+          expect(page).to have_text("Please confirm your email address")
 
-        QA::Flow::User.confirm_user(user)
+          QA::Flow::User.confirm_user(user)
 
-        visit_group_sso_url
+          visit_group_sso_url
 
-        EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
+          EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
 
-        expect(page).to have_text("Signed in with SAML")
+          expect(page).to have_text("Signed in with SAML")
 
-        Page::Group::Show.perform(&:leave_group)
+          Page::Group::Show.perform(&:leave_group)
 
-        expect(page).to have_text("You left")
+          expect(page).to have_text("You left")
 
-        Page::Main::Menu.perform(&:sign_out)
+          Page::Main::Menu.perform(&:sign_out)
 
-        Flow::Saml.logout_from_idp(saml_idp_service)
+          Flow::Saml.logout_from_idp(saml_idp_service)
 
-        # When the user exists with a linked identity
+          # When the user exists with a linked identity
 
-        visit_group_sso_url
+          visit_group_sso_url
 
-        EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
+          EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
 
-        Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
+          Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-        expect(page).to have_text("Login to a GitLab account to link with your SAML identity")
+          expect(page).to have_text("Login to a GitLab account to link with your SAML identity")
 
-        Flow::Saml.logout_from_idp(saml_idp_service)
+          Flow::Saml.logout_from_idp(saml_idp_service)
 
-        # When the user is removed and so their linked identity is also removed
+          # When the user is removed and so their linked identity is also removed
 
-        user.remove_via_api!
+          user.remove_via_api!
 
-        visit_group_sso_url
+          visit_group_sso_url
 
-        EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
+          EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
 
-        Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
+          Flow::Saml.login_to_idp_if_required(idp_user.username, idp_user.password)
 
-        expect(page).to have_text("Please confirm your email address")
+          expect(page).to have_text("Please confirm your email address")
+        end
+      end
+
+      context 'with Snowplow tracking enabled' do
+        before do
+          Flow::Settings.enable_snowplow
+        end
+
+        it_behaves_like 'group membership actions'
+
+        after do
+          Flow::Settings.disable_snowplow
+        end
+      end
+
+      context 'with Snowplow tracking disabled' do
+        before do
+          Flow::Settings.disable_snowplow
+        end
+
+        it_behaves_like 'group membership actions'
       end
 
       after do
