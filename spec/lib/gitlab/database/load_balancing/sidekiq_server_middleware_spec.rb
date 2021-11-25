@@ -114,19 +114,6 @@ RSpec.describe Gitlab::Database::LoadBalancing::SidekiqServerMiddleware, :clean_
         it_behaves_like 'replica is up to date', 'replica'
       end
 
-      context 'when legacy wal location is set' do
-        let(:job) { { 'job_id' => 'a180b47c-3fd6-41b8-81e9-34da61c3400e', 'database_write_location' => '0/D525E3A8' } }
-
-        before do
-          allow(ActiveRecord::Base.load_balancer)
-            .to receive(:select_up_to_date_host)
-            .with('0/D525E3A8')
-            .and_return(true)
-        end
-
-        it_behaves_like 'replica is up to date', 'replica'
-      end
-
       context 'when database location is not set' do
         let(:job) { { 'job_id' => 'a180b47c-3fd6-41b8-81e9-34da61c3400e' } }
 
