@@ -247,10 +247,10 @@ class ApprovalState
 
   def wrapped_rules
     strong_memoize(:wrapped_rules) do
-      merge_request_rules = merge_request.approval_rules.applicable_to_branch(target_branch)
+      grouped_merge_request_rules = merge_request.approval_rules.applicable_to_branch(target_branch).group_by(&:report_type)
 
-      merge_request_rules.map! do |rule|
-        ApprovalWrappedRule.wrap(merge_request, rule)
+      grouped_merge_request_rules.flat_map do |report_type, merge_request_rules|
+        Approvals::WrappedRuleSet.wrap(merge_request, merge_request_rules, report_type).wrapped_rules
       end
     end
   end

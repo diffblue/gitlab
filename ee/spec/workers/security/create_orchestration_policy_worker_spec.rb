@@ -63,9 +63,9 @@ RSpec.describe Security::CreateOrchestrationPolicyWorker do
           end
         end
 
-        active_policies[:scan_result_policy].each do |policy|
+        active_policies[:scan_result_policy].each_with_index do |policy, policy_index|
           expect_next_instance_of(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
-                                  policy_configuration: configuration, policy: policy) do |service|
+                                  policy_configuration: configuration, policy: policy, policy_index: policy_index) do |service|
             expect(service).to receive(:execute)
           end
         end

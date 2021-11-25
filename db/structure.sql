@@ -10547,6 +10547,7 @@ CREATE TABLE approval_merge_request_rules (
     report_type smallint,
     section text,
     modified_from_project_rule boolean DEFAULT false NOT NULL,
+    orchestration_policy_idx smallint,
     CONSTRAINT check_6fca5928b2 CHECK ((char_length(section) <= 255))
 );
 
@@ -10616,7 +10617,8 @@ CREATE TABLE approval_project_rules (
     vulnerabilities_allowed smallint DEFAULT 0 NOT NULL,
     severity_levels text[] DEFAULT '{}'::text[] NOT NULL,
     report_type smallint,
-    vulnerability_states text[] DEFAULT '{newly_detected}'::text[] NOT NULL
+    vulnerability_states text[] DEFAULT '{newly_detected}'::text[] NOT NULL,
+    orchestration_policy_idx smallint
 );
 
 CREATE TABLE approval_project_rules_groups (

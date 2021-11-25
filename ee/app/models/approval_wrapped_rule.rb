@@ -23,7 +23,7 @@ class ApprovalWrappedRule
 
   def_delegators(:@approval_rule,
                  :regular?, :any_approver?, :code_owner?, :report_approver?,
-                 :overridden?, :id, :name, :users, :groups, :code_owner,
+                 :overridden?, :id, :users, :groups, :code_owner,
                  :source_rule, :rule_type, :approvals_required, :section, :to_global_id)
 
   def self.wrap(merge_request, rule)
@@ -107,6 +107,12 @@ class ApprovalWrappedRule
 
   def unactioned_approvers
     approvers - approved_approvers
+  end
+
+  def name
+    return approval_rule.name unless approval_rule.scan_finding?
+
+    approval_rule.name.gsub(/\s\d+\z/, '')
   end
 
   private
