@@ -6,19 +6,27 @@ import {
 
 const falsePositiveMessage = s__('VulnerabilityManagement|Will not fix or a false-positive');
 
+export const VULNERABILITY_STATES = {
+  detected: s__('VulnerabilityStatusTypes|Needs triage'),
+  confirmed: s__('VulnerabilityStatusTypes|Confirmed'),
+  dismissed: s__('VulnerabilityStatusTypes|Dismissed'),
+  resolved: s__('VulnerabilityStatusTypes|Resolved'),
+};
+
 export const VULNERABILITY_STATE_OBJECTS = {
   detected: {
     action: 'revert',
     state: 'detected',
-    statusBoxStyle: 'expired',
-    displayName: s__('VulnerabilityManagement|Detected'),
-    description: s__('VulnerabilityManagement|Needs triage'),
+    buttonText: VULNERABILITY_STATES.detected,
+    dropdownText: s__('VulnerabilityManagement|Needs triage'),
+    dropdownDescription: s__('VulnerabilityManagement|Requires assessment'),
   },
   dismissed: {
     action: 'dismiss',
     state: 'dismissed',
-    displayName: __('Dismiss'),
-    description: falsePositiveMessage,
+    buttonText: VULNERABILITY_STATES.dismissed,
+    dropdownText: __('Dismiss'),
+    dropdownDescription: falsePositiveMessage,
     payload: {
       comment: falsePositiveMessage,
     },
@@ -26,22 +34,17 @@ export const VULNERABILITY_STATE_OBJECTS = {
   confirmed: {
     action: 'confirm',
     state: 'confirmed',
-    displayName: __('Confirm'),
-    description: s__('VulnerabilityManagement|A true-positive and will fix'),
+    buttonText: VULNERABILITY_STATES.confirmed,
+    dropdownText: __('Confirm'),
+    dropdownDescription: s__('VulnerabilityManagement|A true-positive and will fix'),
   },
   resolved: {
     action: 'resolve',
     state: 'resolved',
-    displayName: __('Resolve'),
-    description: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
+    buttonText: VULNERABILITY_STATES.resolved,
+    dropdownText: __('Resolve'),
+    dropdownDescription: s__('VulnerabilityManagement|Verified as fixed or mitigated'),
   },
-};
-
-export const VULNERABILITY_STATES = {
-  detected: s__('VulnerabilityStatusTypes|Detected'),
-  confirmed: s__('VulnerabilityStatusTypes|Confirmed'),
-  dismissed: s__('VulnerabilityStatusTypes|Dismissed'),
-  resolved: s__('VulnerabilityStatusTypes|Resolved'),
 };
 
 export const HEADER_ACTION_BUTTONS = {

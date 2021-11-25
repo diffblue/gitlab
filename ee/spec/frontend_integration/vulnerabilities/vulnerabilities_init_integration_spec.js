@@ -1,6 +1,7 @@
 import { screen, within } from '@testing-library/dom';
 import initVulnerabilities from 'ee/vulnerabilities/vulnerabilities_init';
 import { waitForText } from 'helpers/wait_for_text';
+import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 import { mockIssueLink } from '../test_helpers/mock_data/vulnerabilities_mock_data';
 import { mockVulnerability } from './mock_data';
 
@@ -38,8 +39,9 @@ describe('Vulnerability Report', () => {
 
   it("displays the vulnerability's status", () => {
     const headerBody = screen.getByTestId('vulnerability-detail-body');
+    const stateName = VULNERABILITY_STATES[mockVulnerability.state];
 
-    expect(within(headerBody).getByText(mockVulnerability.state)).toBeInstanceOf(HTMLElement);
+    expect(within(headerBody).getByText(stateName)).toBeInstanceOf(HTMLElement);
   });
 
   it("displays the vulnerability's severity", () => {

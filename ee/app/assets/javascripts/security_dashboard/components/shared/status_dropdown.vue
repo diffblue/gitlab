@@ -18,7 +18,7 @@ export default {
   computed: {
     dropdownPlaceholderText() {
       return this.selectedKey
-        ? this.$options.states[this.selectedKey].displayName
+        ? this.$options.states[this.selectedKey].dropdownText
         : this.$options.i18n.defaultPlaceholder;
     },
   },
@@ -46,8 +46,8 @@ export default {
       is-check-item
       @click="setSelectedKey(state)"
     >
-      <div class="gl-font-weight-bold">{{ state.displayName }}</div>
-      <div>{{ state.description }}</div>
+      <div class="gl-font-weight-bold">{{ state.dropdownText }}</div>
+      <div>{{ state.dropdownDescription }}</div>
     </gl-dropdown-item>
   </gl-dropdown>
 </template>
