@@ -51,7 +51,7 @@ module Gitlab
             project_id: project.id,
             pipeline_id: pipeline.id,
             persisted: pipeline.persisted?,
-            source: pipeline.source,
+            pipeline_source: pipeline.source,
             duration_s: age
           }.stringify_keys.merge(observations_hash)
 

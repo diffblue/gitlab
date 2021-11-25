@@ -28,7 +28,7 @@ RSpec.describe Ci::CreatePipelineService do
     let(:loggable_data) do
       {
         'caller' => 'Ci::CreatePipelineService',
-        'source' => 'push',
+        'pipeline_source' => 'push',
         'pipeline_id' => a_kind_of(Numeric),
         'persisted' => true,
         'project_id' => project.id,
@@ -80,7 +80,7 @@ RSpec.describe Ci::CreatePipelineService do
         let(:loggable_data) do
           {
             'caller' => 'Ci::CreatePipelineService',
-            'source' => 'push',
+            'pipeline_source' => 'push',
             'pipeline_id' => nil,
             'persisted' => false,
             'project_id' => project.id,

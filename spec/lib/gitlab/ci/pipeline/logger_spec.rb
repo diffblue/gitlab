@@ -76,7 +76,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Logger do
           'project_id' => project.id,
           'duration_s' => a_kind_of(Numeric),
           'caller' => 'source',
-          'source' => pipeline.source,
+          'pipeline_source' => pipeline.source,
           'pipeline_save_duration_s' => {
             'avg' => 60, 'count' => 1, 'max' => 60, 'min' => 60
           },
