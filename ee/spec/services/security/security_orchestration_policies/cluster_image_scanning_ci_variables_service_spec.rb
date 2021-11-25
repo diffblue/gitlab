@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ClusterImageScanningCiVariablesService do
   describe '#execute' do
-    let_it_be_with_reload(:project) { create(:project) }
+    let_it_be_with_refind(:project) { create(:project) }
     let(:service) { described_class.new(project: project) }
 
     let_it_be(:ci_variables) do
@@ -55,15 +55,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ClusterImageScanningCiVa
       end
     end
 
-    context 'when cluster was not found' do
-      it_behaves_like 'with cluster image scanning resource filters'
-      it_behaves_like 'without variable attributes'
-    end
-
-    context 'when cluster was found' do
-      let_it_be(:cluster) { create(:cluster, :with_environments, :provided_by_user, name: 'production') }
-      let_it_be(:project) { cluster.kubernetes_namespaces.first.project }
-
+    shared_examples 'for created cluster' do
       context 'when cluster with requested name does not exist' do
         let(:requested_cluster) { 'gilab-managed-apps' }
 
@@ -80,6 +72,32 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ClusterImageScanningCiVa
           expect(variable_attributes).to include(hash_including(key: 'CIS_KUBECONFIG', variable_type: :file))
         end
       end
+    end
+
+    context 'when cluster was not found' do
+      it_behaves_like 'with cluster image scanning resource filters'
+      it_behaves_like 'without variable attributes'
+    end
+
+    context 'when cluster was found for the group' do
+      let_it_be_with_refind(:cluster) { create(:cluster, :group, :provided_by_user, name: 'production') }
+      let_it_be_with_refind(:project) { create(:project, group: cluster.groups.first) }
+
+      include_examples 'for created cluster'
+    end
+
+    context 'when cluster was found for the instance' do
+      let_it_be_with_refind(:cluster) { create(:cluster, :instance, :provided_by_user, name: 'production') }
+      let_it_be_with_refind(:project) { create(:project) }
+
+      include_examples 'for created cluster'
+    end
+
+    context 'when cluster was found for the project' do
+      let_it_be_with_refind(:cluster) { create(:cluster, :project, :provided_by_user, name: 'production') }
+      let_it_be_with_refind(:project) { cluster.projects.first }
+
+      include_examples 'for created cluster'
     end
   end
 end
