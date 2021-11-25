@@ -27,6 +27,11 @@ RSpec.describe 'Update an external audit event destination' do
       expect { post_graphql_mutation(mutation, current_user: owner) }
         .not_to change { destination.reload.destination_url }
     end
+
+    it 'does not audit the update' do
+      expect { post_graphql_mutation(mutation, current_user: owner) }
+        .not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
@@ -62,6 +67,13 @@ RSpec.describe 'Update an external audit event destination' do
       it 'updates the destination' do
         expect { post_graphql_mutation(mutation, current_user: owner) }
           .to change { destination.reload.destination_url }.to("https://example.com/test")
+      end
+
+      it 'audits the update' do
+        expect { post_graphql_mutation(mutation, current_user: owner) }
+          .to change { AuditEvent.count }.by(1)
+
+        expect(AuditEvent.last.details[:custom_message]).to match(/Updated event streaming destination from .* to .*/)
       end
     end
 

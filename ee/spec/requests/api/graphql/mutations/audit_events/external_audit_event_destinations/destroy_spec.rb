@@ -26,6 +26,11 @@ RSpec.describe 'Destroy an external audit event destination' do
       expect { post_graphql_mutation(mutation, current_user: owner) }
         .not_to change { AuditEvents::ExternalAuditEventDestination.count }
     end
+
+    it 'does not audit the destruction' do
+      expect { post_graphql_mutation(mutation, current_user: owner) }
+        .not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
@@ -61,6 +66,13 @@ RSpec.describe 'Destroy an external audit event destination' do
       it 'destroys the destination' do
         expect { post_graphql_mutation(mutation, current_user: owner) }
           .to change { AuditEvents::ExternalAuditEventDestination.count }.by(-1)
+      end
+
+      it 'audits the destruction' do
+        expect { post_graphql_mutation(mutation, current_user: owner) }
+          .to change { AuditEvent.count }.by(1)
+
+        expect(AuditEvent.last.details[:custom_message]).to match /Destroy event streaming destination/
       end
     end
 

@@ -3,7 +3,7 @@
 module Mutations
   module AuditEvents
     module ExternalAuditEventDestinations
-      class Destroy < BaseMutation
+      class Destroy < Base
         graphql_name 'ExternalAuditEventDestinationDestroy'
 
         authorize :admin_external_audit_events
@@ -15,7 +15,9 @@ module Mutations
         def resolve(id:)
           destination = authorized_find!(id)
 
-          destination.destroy if destination
+          if destination.destroy
+            audit(destination, action: :destroy)
+          end
 
           {
             external_audit_event_destination: nil,
