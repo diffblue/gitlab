@@ -33,6 +33,13 @@ module EE
       scope :with_csv_entity_associations, -> do
         includes(:user, source: [:route, :parent])
       end
+
+      scope :awaiting_or_invited_for_group, -> (group) do
+        awaiting
+        .or(::Member.invite)
+        .in_hierarchy(group)
+        .includes(:user)
+      end
     end
 
     override :notification_service

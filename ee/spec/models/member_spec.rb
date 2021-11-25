@@ -245,4 +245,23 @@ RSpec.describe Member, type: :model do
       end
     end
   end
+
+  describe '.awaiting_or_invited_for_group' do
+    let_it_be(:active_group_member) { create(:group_member, group: group) }
+    let_it_be(:awaiting_group_member) { create(:group_member, :awaiting, group: group) }
+    let_it_be(:awaiting_subgroup_member) { create(:group_member, :awaiting, group: sub_group) }
+    let_it_be(:awaiting_project_member) { create(:project_member, :awaiting, project: project) }
+    let_it_be(:awaiting_invited_member) { create(:group_member, :awaiting, :invited, group: group) }
+    let_it_be(:active_invited_member) { create(:group_member, :invited, group: group) }
+
+    it 'returns the correct members' do
+      expect(described_class.awaiting_or_invited_for_group(group)).to match_array [
+        awaiting_group_member,
+        awaiting_subgroup_member,
+        awaiting_project_member,
+        awaiting_invited_member,
+        active_invited_member
+      ]
+    end
+  end
 end
