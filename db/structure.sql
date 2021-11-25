@@ -16355,7 +16355,7 @@ CREATE TABLE namespaces (
     owner_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    type character varying,
+    type character varying DEFAULT 'User'::character varying,
     description character varying DEFAULT ''::character varying NOT NULL,
     avatar character varying,
     membership_lock boolean DEFAULT false,

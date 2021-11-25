@@ -4,8 +4,10 @@ require 'spec_helper'
 RSpec.describe Ci::Minutes::RefreshCachedDataService do
   include AfterNextHelpers
 
-  let_it_be(:project_1) { create(:project) }
-  let_it_be(:root_namespace) { project_1.root_namespace }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
+  let_it_be(:project_1) { create(:project, group: group) }
+  let_it_be(:root_namespace) { group }
   let_it_be(:build_1) { create(:ci_build, :pending, project: project_1) }
   let_it_be(:build_2) { create(:ci_build, :pending) }
   let_it_be(:pending_build_1) { create(:ci_pending_build, build: build_1, project: build_1.project, minutes_exceeded: true) }

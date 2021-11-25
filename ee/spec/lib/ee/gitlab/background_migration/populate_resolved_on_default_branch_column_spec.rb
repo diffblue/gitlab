@@ -15,7 +15,7 @@ RSpec.describe ::Gitlab::BackgroundMigration::PopulateResolvedOnDefaultBranchCol
   let(:scanners) { table(:vulnerability_scanners) }
   let(:vulnerability_identifiers) { table(:vulnerability_identifiers) }
 
-  let(:namespace) { namespaces.create!(name: "foo", path: "bar") }
+  let(:namespace) { namespaces.create!(name: "foo", path: "bar", type: "Group") }
 
   describe '#perform' do
     let!(:project_1) { projects.create!(namespace_id: namespace.id) }
