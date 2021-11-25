@@ -2,8 +2,6 @@
 
 module Gitlab
   module Tracking
-    SNOWPLOW_NAMESPACE = 'gl'
-
     class << self
       def enabled?
         snowplow_micro_enabled? || Gitlab::CurrentSettings.snowplow_enabled?
