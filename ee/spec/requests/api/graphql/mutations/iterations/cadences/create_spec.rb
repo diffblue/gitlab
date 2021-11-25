@@ -78,6 +78,16 @@ RSpec.describe 'Creating an iteration cadence' do
         end
       end
 
+      context 'when creating a manual iteration cadence' do
+        context 'when start date is not provided' do
+          let(:attributes) { { title: 'automatic cadence', duration_in_weeks: 1, active: true, automatic: false } }
+
+          it 'creates an iteration cadence' do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Iterations::Cadence, :count).by(1)
+          end
+        end
+      end
+
       context 'when iteration_cadences feature flag is disabled' do
         before do
           stub_feature_flags(iteration_cadences: false)
@@ -87,10 +97,10 @@ RSpec.describe 'Creating an iteration cadence' do
       end
 
       context 'when there are ActiveRecord validation errors' do
-        let(:attributes) { { title: '', duration_in_weeks: 1, active: false, automatic: false } }
+        let(:attributes) { { title: '', duration_in_weeks: 1, active: false, automatic: true } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-                        errors: ["Start date can't be blank", "Title can't be blank"]
+                        errors: ["Iterations in advance can't be blank", "Start date can't be blank", "Title can't be blank"]
 
         it 'does not create the iteration cadence' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iterations::Cadence, :count)

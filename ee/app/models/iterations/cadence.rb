@@ -13,7 +13,7 @@ module Iterations
     has_many :iterations, foreign_key: :iterations_cadence_id, inverse_of: :iterations_cadence
 
     validates :title, presence: true
-    validates :start_date, presence: true
+    validates :start_date, presence: true, if: :automatic?
     validates :group_id, presence: true
     validates :duration_in_weeks, inclusion: { in: 0..4 }, allow_nil: true
     validates :duration_in_weeks, presence: true, if: :automatic?
