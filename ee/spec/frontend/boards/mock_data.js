@@ -7,6 +7,7 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
+import ReleaseToken from '~/vue_shared/components/filtered_search_bar/tokens/release_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
 export const mockEpicBoardResponse = {
@@ -468,6 +469,13 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, fetchIter
       { icon: 'issue-type-issue', value: 'ISSUE', title: 'Issue' },
       { icon: 'issue-type-incident', value: 'INCIDENT', title: 'Incident' },
     ],
+  },
+  {
+    type: 'release',
+    title: __('Release'),
+    icon: 'rocket',
+    token: ReleaseToken,
+    fetchReleases: expect.any(Function),
   },
   {
     type: 'epic_id',
