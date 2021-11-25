@@ -20,6 +20,10 @@ module EE
           params :optional_filter_params_ee do
             optional :with_saml_identity, type: Grape::API::Boolean, desc: "List only members with linked SAML identity"
           end
+
+          params :optional_state_filter_ee do
+            optional :state, type: String, desc: 'Filter results by member state', values: %w(awaiting active created)
+          end
         end
 
         # rubocop: disable CodeReuse/ActiveRecord
@@ -34,6 +38,8 @@ module EE
               members = members.with_saml_identity(source.saml_provider)
             end
           end
+
+          members = members.with_state(params[:state]) if params[:state].present?
 
           members
         end
