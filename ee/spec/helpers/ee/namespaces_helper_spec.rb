@@ -175,7 +175,9 @@ RSpec.describe EE::NamespacesHelper do
   describe '#buy_additional_minutes_path' do
     subject { helper.buy_additional_minutes_path(namespace) }
 
-    let_it_be(:namespace) { create(:group) }
+    let(:namespace) { build_stubbed(:group) }
+
+    it { is_expected.to eq buy_minutes_subscriptions_path(selected_group: namespace.id) }
 
     context 'new_route_ci_minutes_purchase' do
       context 'when is disabled' do
@@ -183,16 +185,11 @@ RSpec.describe EE::NamespacesHelper do
           stub_feature_flags(new_route_ci_minutes_purchase: false)
         end
 
-        it { is_expected.to be EE::SUBSCRIPTIONS_MORE_MINUTES_URL }
+        it { is_expected.to eq EE::SUBSCRIPTIONS_MORE_MINUTES_URL }
       end
 
-      context 'when is enabled' do
-        it { is_expected.to eq buy_minutes_subscriptions_path(selected_group: namespace.id) }
-      end
-
-      context 'when is enabled only for a specific namespace' do
-        let_it_be(:enabled_namespace) { create(:group) }
-        let_it_be(:disabled_namespace) { create(:group) }
+      context 'when new_route_ci_minutes_purchase is enabled only for a specific namespace' do
+        let(:enabled_namespace) { build_stubbed(:group) }
 
         before do
           stub_feature_flags(new_route_ci_minutes_purchase: false)
@@ -200,7 +197,7 @@ RSpec.describe EE::NamespacesHelper do
         end
 
         it 'returns the default purchase path for the disabled namespace' do
-          expect(helper.buy_additional_minutes_path(disabled_namespace)).to be EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+          expect(helper.buy_additional_minutes_path(namespace)).to eq EE::SUBSCRIPTIONS_MORE_MINUTES_URL
         end
 
         it 'returns GitLab purchase path for the disabled namespace' do
@@ -209,11 +206,55 @@ RSpec.describe EE::NamespacesHelper do
       end
 
       context 'when called for a personal namespace' do
-        let_it_be(:user) { create(:user) }
-        let_it_be(:personal_namespace) { user.namespace }
+        let(:user) { create(:user) }
+        let(:personal_namespace) { build_stubbed(:user_namespace) }
 
         it 'returns the default purchase' do
-          expect(helper.buy_additional_minutes_path(personal_namespace)).to be EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+          expect(helper.buy_additional_minutes_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+        end
+      end
+    end
+  end
+
+  describe '#buy_storage_path' do
+    subject { helper.buy_storage_path(namespace) }
+
+    let(:namespace) { build_stubbed(:group) }
+
+    it { is_expected.to eq buy_storage_subscriptions_path(selected_group: namespace.id) }
+
+    context 'new_route_storage_purchase' do
+      context 'when is disabled' do
+        before do
+          stub_feature_flags(new_route_storage_purchase: false)
+        end
+
+        it { is_expected.to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL }
+      end
+
+      context 'when new_route_storage_purchase is enabled only for a specific namespace' do
+        let(:enabled_namespace) { build_stubbed(:group) }
+
+        before do
+          stub_feature_flags(new_route_storage_purchase: false)
+          stub_feature_flags(new_route_storage_purchase: enabled_namespace)
+        end
+
+        it 'returns the default purchase path for the disabled namespace' do
+          expect(helper.buy_storage_path(namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
+        end
+
+        it 'returns GitLab purchase path for the disabled namespace' do
+          expect(helper.buy_storage_path(enabled_namespace)).to eq buy_storage_subscriptions_path(selected_group: enabled_namespace.id)
+        end
+      end
+
+      context 'when called for a personal namespace' do
+        let(:user) { create(:user) }
+        let(:personal_namespace) { build_stubbed(:user_namespace) }
+
+        it 'returns the default purchase' do
+          expect(helper.buy_storage_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
         end
       end
     end
@@ -222,7 +263,7 @@ RSpec.describe EE::NamespacesHelper do
   describe '#buy_additional_minutes_target' do
     subject { helper.buy_additional_minutes_target(namespace) }
 
-    let_it_be(:namespace) { create(:group) }
+    let(:namespace) { create(:group) }
 
     context 'new_route_ci_minutes_purchase' do
       context 'when is disabled' do
@@ -230,7 +271,7 @@ RSpec.describe EE::NamespacesHelper do
           stub_feature_flags(new_route_ci_minutes_purchase: false)
         end
 
-        it { is_expected.to be '_blank' }
+        it { is_expected.to eq '_blank' }
       end
 
       context 'when is enabled' do
@@ -238,8 +279,7 @@ RSpec.describe EE::NamespacesHelper do
       end
 
       context 'when is enabled only for a specific namespace' do
-        let_it_be(:enabled_namespace) { create(:group) }
-        let_it_be(:disabled_namespace) { create(:group) }
+        let(:enabled_namespace) { build_stubbed(:group) }
 
         before do
           stub_feature_flags(new_route_ci_minutes_purchase: false)
@@ -247,7 +287,7 @@ RSpec.describe EE::NamespacesHelper do
         end
 
         it 'returns _blank for the disabled namespace' do
-          expect(helper.buy_additional_minutes_target(disabled_namespace)).to be '_blank'
+          expect(helper.buy_additional_minutes_target(namespace)).to eq '_blank'
         end
 
         it 'returns _self for the disabled namespace' do
@@ -256,11 +296,11 @@ RSpec.describe EE::NamespacesHelper do
       end
 
       context 'when called for a personal namespace' do
-        let_it_be(:user) { create(:user) }
-        let_it_be(:personal_namespace) { user.namespace }
+        let(:user) { create(:user) }
+        let(:personal_namespace) { build_stubbed(:user_namespace) }
 
         it 'returns _blank' do
-          expect(helper.buy_additional_minutes_target(personal_namespace)).to be '_blank'
+          expect(helper.buy_additional_minutes_target(personal_namespace)).to eq '_blank'
         end
       end
     end
