@@ -34218,10 +34218,10 @@ msgstr ""
 msgid "Terraform|Terraform init command"
 msgstr ""
 
-msgid "Terraform|The report %{name} failed to generate."
+msgid "Terraform|The job %{name} failed to generate a report."
 msgstr ""
 
-msgid "Terraform|The report %{name} was generated in your pipelines."
+msgid "Terraform|The job %{name} generated a report."
 msgstr ""
 
 msgid "Terraform|To get access to this terraform state from your local computer, run the following command at the command line. The first line requires a personal access token with API read and write access. %{linkStart}How do I create a personal access token?%{linkEnd}."
