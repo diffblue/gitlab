@@ -49,7 +49,7 @@ module Gitlab
       # rubocop:disable GitlabSecurity/PublicSend
       READ_COMMANDS.each do |name|
         define_method(name) do |*args, &block|
-          if multi_store_enabled?
+          if use_primary_and_secondary_stores?
             read_command(name, *args, &block)
           else
             default_store.send(name, *args, &block)
@@ -59,7 +59,7 @@ module Gitlab
 
       WRITE_COMMANDS.each do |name|
         define_method(name) do |*args, &block|
-          if multi_store_enabled?
+          if use_primary_and_secondary_stores?
             write_command(name, *args, &block)
           else
             default_store.send(name, *args, &block)
@@ -91,29 +91,21 @@ module Gitlab
       alias_method :kind_of?, :is_a?
 
       def to_s
-        if multi_store_enabled?
-          primary_store.to_s
-        else
-          default_store.to_s
-        end
+        use_primary_and_secondary_stores? ? primary_store.to_s : default_store.to_s
       end
 
-      def multi_store_enabled?
-        Feature.enabled?("#{instance_name.underscore}_use_multi_store", default_enabled: :yaml) && !same_redis_store?
+      def use_primary_and_secondary_stores?
+        Feature.enabled?("use_primary_and_secondary_stores_for_#{instance_name.underscore}", default_enabled: :yaml) && !same_redis_store?
       end
 
-      def primary_store_enabled?
-        Feature.enabled?("#{instance_name.underscore}_use_primary_store", default_enabled: :yaml) && !same_redis_store?
+      def use_primary_store_as_default?
+        Feature.enabled?("use_primary_store_as_default_for_#{instance_name.underscore}", default_enabled: :yaml) && !same_redis_store?
       end
 
       private
 
       def default_store
-        if primary_store_enabled?
-          primary_store
-        else
-          secondary_store
-        end
+        use_primary_store_as_default? ? primary_store : secondary_store
       end
 
       def log_method_missing(command_name, *_args)
