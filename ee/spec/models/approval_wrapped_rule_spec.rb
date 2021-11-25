@@ -201,4 +201,27 @@ RSpec.describe ApprovalWrappedRule do
       expect(subject.approvals_required).to eq(19)
     end
   end
+
+  describe '#name' do
+    let(:rule_name) { 'approval rule 2' }
+    let(:rule) { create(:approval_merge_request_rule, report_type: report_type, name: rule_name) }
+
+    context 'with report_type set to scan_finding' do
+      let(:report_type) { :scan_finding }
+      let(:expected_rule_name) { 'approval rule' }
+
+      it 'returns rule name without the sequential notation' do
+        expect(subject.name).not_to eq(rule_name)
+        expect(subject.name).to eq(expected_rule_name)
+      end
+    end
+
+    context 'with report_type other than scan_finding' do
+      let(:report_type) { :vulnerability }
+
+      it 'returns rule name as is' do
+        expect(subject.name).to eq(rule_name)
+      end
+    end
+  end
 end

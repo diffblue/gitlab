@@ -10,7 +10,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
     let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:project) { policy_configuration.project }
-    let(:service) { described_class.new(policy_configuration: policy_configuration, policy: policy) }
+    let(:service) { described_class.new(policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
 
     before do
       allow(policy_configuration).to receive(:policy_last_updated_by).and_return(project.owner)

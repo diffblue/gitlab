@@ -173,6 +173,24 @@ RSpec.describe ApprovalState do
       end
     end
 
+    context 'with multiple scan_finding rules' do
+      before do
+        2.times {create_rule({ rule_type: :report_approver, report_type: :scan_finding })}
+        2.times {create_rule({ rule_type: :report_approver, report_type: :scan_finding, orchestration_policy_idx: 1 })}
+      end
+
+      it 'returns one rule for each orchestration_policy_idx' do
+        approval_rules = subject.wrapped_approval_rules
+
+        expect(approval_rules.count).to be(2)
+        expect(approval_rules).to all(be_instance_of(ApprovalWrappedRule))
+
+        policy_indices = approval_rules.map { |rule| rule.approval_rule.orchestration_policy_idx }
+
+        expect(policy_indices).to contain_exactly(nil, 1)
+      end
+    end
+
     describe '#approval_needed?' do
       context 'when feature not available' do
         it 'returns false' do

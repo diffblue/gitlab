@@ -5,9 +5,10 @@ module Security
     class ProcessScanResultPolicyService
       MAX_LENGTH = 25
 
-      def initialize(policy_configuration:, policy:)
+      def initialize(policy_configuration:, policy:, policy_index:)
         @policy_configuration = policy_configuration
         @policy = policy
+        @policy_index = policy_index
         @project = policy_configuration.project
         @author = policy_configuration.policy_last_updated_by
       end
@@ -20,7 +21,7 @@ module Security
 
       private
 
-      attr_reader :policy_configuration, :policy, :project, :author
+      attr_reader :policy_configuration, :policy, :project, :author, :policy_index
 
       def create_new_approval_rules
         action_info = policy[:actions].find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
@@ -43,12 +44,13 @@ module Security
           severity_levels: rule[:severity_levels],
           user_ids: project.users.get_ids_by_username(action_info[:approvers]),
           vulnerabilities_allowed: rule[:vulnerabilities_allowed],
-          report_type: :scan_finding
+          report_type: :scan_finding,
+          orchestration_policy_idx: policy_index
         }
       end
 
       def rule_name(policy_name, rule_index)
-        truncated = policy_name.truncate(MAX_LENGTH, omission: '')
+        truncated = policy_name.truncate(MAX_LENGTH)
         return truncated if rule_index == 0
 
         "#{truncated} #{rule_index + 1}"
