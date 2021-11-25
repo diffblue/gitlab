@@ -1,5 +1,9 @@
 import isPlainObject from 'lodash/isPlainObject';
-import { REPORT_TYPES, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
+import {
+  REPORT_TYPES,
+  REPORT_TYPES_NO_CLUSTER_IMAGE,
+  SEVERITY_LEVELS,
+} from 'ee/security_dashboard/store/constants';
 import { BASE_FILTERS } from 'ee/security_dashboard/store/modules/filters/constants';
 import convertReportType from 'ee/vue_shared/security_reports/store/utils/convert_report_type';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
@@ -55,12 +59,30 @@ export const simpleScannerFilter = {
   defaultOptions: [],
 };
 
+export const simpleScannerFilterNoClusterImage = {
+  name: s__('SecurityReports|Tool'),
+  id: 'reportType',
+  options: parseOptions(REPORT_TYPES_NO_CLUSTER_IMAGE),
+  allOption: BASE_FILTERS.report_type,
+  defaultOptions: [],
+};
+
 // This is used on the project-level report. It's used by the scanner filter that shows a list of
 // scan types (DAST, SAST, etc) that's grouped by vendor.
 export const vendorScannerFilter = {
   name: s__('SecurityReports|Tool'),
   id: 'scanner',
   options: Object.keys(REPORT_TYPES).map((x) => createScannerOption(DEFAULT_SCANNER, x)),
+  allOption: BASE_FILTERS.report_type,
+  defaultOptions: [],
+};
+
+export const vendorScannerFilterNoClusterImage = {
+  name: s__('SecurityReports|Tool'),
+  id: 'scanner',
+  options: Object.keys(REPORT_TYPES_NO_CLUSTER_IMAGE).map((x) =>
+    createScannerOption(DEFAULT_SCANNER, x),
+  ),
   allOption: BASE_FILTERS.report_type,
   defaultOptions: [],
 };
