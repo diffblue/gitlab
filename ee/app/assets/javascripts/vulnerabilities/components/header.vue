@@ -11,7 +11,12 @@ import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
-import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
+import {
+  VULNERABILITY_STATES,
+  VULNERABILITY_STATE_OBJECTS,
+  FEEDBACK_TYPES,
+  HEADER_ACTION_BUTTONS,
+} from '../constants';
 import { normalizeGraphQLVulnerability } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
@@ -53,6 +58,9 @@ export default {
   },
 
   computed: {
+    stateName() {
+      return VULNERABILITY_STATES[this.vulnerability.state];
+    },
     stateVariant() {
       return this.$options.badgeVariants[this.vulnerability.state] || 'neutral';
     },
@@ -223,8 +231,8 @@ export default {
         data-testid="vulnerability-detail-body"
       >
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="mr-2" />
-        <gl-badge v-else class="gl-mr-4 text-capitalize" :variant="stateVariant">
-          {{ vulnerability.state }}
+        <gl-badge v-else class="gl-mr-4" :variant="stateVariant">
+          {{ stateName }}
         </gl-badge>
 
         <status-description

@@ -9,7 +9,11 @@ import Header from 'ee/vulnerabilities/components/header.vue';
 import ResolutionAlert from 'ee/vulnerabilities/components/resolution_alert.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import VulnerabilityStateDropdown from 'ee/vulnerabilities/components/vulnerability_state_dropdown.vue';
-import { FEEDBACK_TYPES, VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
+import {
+  FEEDBACK_TYPES,
+  VULNERABILITY_STATE_OBJECTS,
+  VULNERABILITY_STATES,
+} from 'ee/vulnerabilities/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -305,7 +309,7 @@ describe('Vulnerability Header', () => {
         createWrapper({ vulnerability: { state } });
 
         expect(findBadge().props('variant')).toBe(variant);
-        expect(findBadge().text()).toBe(state);
+        expect(findBadge().text()).toBe(VULNERABILITY_STATES[state]);
       },
     );
   });

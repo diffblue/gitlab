@@ -24,7 +24,6 @@ describe('Status Dropdown component', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
   it('renders the correct placeholder', () => {
@@ -38,7 +37,7 @@ describe('Status Dropdown component', () => {
 
       it(`renders ${state}`, () => {
         expect(findDropdownItems().at(index).text()).toBe(
-          `${status.displayName} ${status.description}`,
+          `${status.dropdownText} ${status.dropdownDescription}`,
         );
       });
 
