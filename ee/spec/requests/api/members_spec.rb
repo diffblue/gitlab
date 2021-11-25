@@ -1103,6 +1103,72 @@ RSpec.describe API::Members do
         end
       end
     end
+
+    describe 'GET /groups/:id/pending_members' do
+      let(:url) { "/groups/#{group.id}/pending_members" }
+
+      context 'when the current user is not authorized' do
+        it 'returns a bad request response' do
+          get api(url, not_an_owner)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when the current user is authorized' do
+        let_it_be(:pending_group_member) { create(:group_member, :awaiting, group: group) }
+        let_it_be(:pending_subgroup_member) { create(:group_member, :awaiting, group: subgroup) }
+        let_it_be(:pending_project_member) { create(:project_member, :awaiting, project: project) }
+        let_it_be(:pending_invited_member) { create(:group_member, :awaiting, :invited, group: group) }
+
+        it 'returns only pending members' do
+          create(:group_member, group: group)
+
+          get api(url, owner)
+
+          expect(json_response.map { |m| m['id'] }).to match_array [
+            pending_group_member.id,
+            pending_subgroup_member.id,
+            pending_project_member.id,
+            pending_invited_member.id
+          ]
+        end
+
+        it 'includes activated invited members' do
+          pending_invited_member.activate!
+
+          get api(url, owner)
+
+          expect(json_response.map { |m| m['id'] }).to match_array [
+            pending_group_member.id,
+            pending_subgroup_member.id,
+            pending_project_member.id,
+            pending_invited_member.id
+          ]
+        end
+
+        it 'paginates the response' do
+          get api(url, owner)
+
+          expect_paginated_array_response(*[
+            pending_group_member.id,
+            pending_subgroup_member.id,
+            pending_project_member.id,
+            pending_invited_member.id
+          ])
+        end
+
+        context 'when the group ID is a subgroup' do
+          let(:url) { "/groups/#{subgroup.id}/pending_members" }
+
+          it 'returns a bad request response' do
+            get api(url, owner)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+    end
   end
 
   context 'filtering project and group members' do
