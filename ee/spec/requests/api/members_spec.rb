@@ -1104,4 +1104,69 @@ RSpec.describe API::Members do
       end
     end
   end
+
+  context 'filtering project and group members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:owner) { create(:user) }
+
+    let(:params) { { state: state } }
+
+    before do
+      group.add_owner(owner)
+    end
+
+    subject do
+      get api("/#{source_type}/#{source.id}/members/all", owner), params: params
+      json_response
+    end
+
+    shared_examples 'filtered results' do
+      context 'for active members' do
+        let(:state) { 'active' }
+
+        it 'returns only active members' do
+          expect(subject.map { |u| u['id'] }).to match_array [active_member.user_id, owner.id]
+        end
+      end
+
+      context 'for awaiting members' do
+        let(:state) { 'awaiting' }
+
+        it 'returns only awaiting members' do
+          expect(subject.map { |u| u['id'] }).to match_array [awaiting_member.user_id]
+        end
+      end
+
+      context 'for created members' do
+        let(:state) { 'created' }
+
+        it 'returns only created members' do
+          expect(subject.map { |u| u['id'] }).to match_array [created_member.user_id]
+        end
+      end
+    end
+
+    context 'for group sources' do
+      let(:source_type) { 'groups' }
+      let(:source) { group }
+
+      it_behaves_like 'filtered results' do
+        let_it_be(:awaiting_member) { create(:group_member, :awaiting, group: group) }
+        let_it_be(:active_member)   { create(:group_member, :active, group: group) }
+        let_it_be(:created_member)  { create(:group_member, :created, group: group) }
+      end
+    end
+
+    context 'for project sources' do
+      let(:source_type) { 'projects' }
+      let(:source) { project }
+
+      it_behaves_like 'filtered results' do
+        let_it_be(:awaiting_member) { create(:project_member, :awaiting, project: project) }
+        let_it_be(:active_member)   { create(:project_member, :active, project: project) }
+        let_it_be(:created_member)  { create(:project_member, :created, project: project) }
+      end
+    end
+  end
 end
