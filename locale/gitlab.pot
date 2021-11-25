@@ -11174,6 +11174,9 @@ msgstr ""
 msgid "Delete Key"
 msgstr ""
 
+msgid "Delete Selected"
+msgstr ""
+
 msgid "Delete Value Stream"
 msgstr ""
 
