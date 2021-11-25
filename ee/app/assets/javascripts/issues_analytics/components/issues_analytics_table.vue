@@ -1,6 +1,6 @@
 <script>
 import {
-  GlTable,
+  GlTableLite,
   GlLoadingIcon,
   GlLink,
   GlIcon,
@@ -30,7 +30,7 @@ const TH_TEST_ID = { 'data-testid': 'header' };
 export default {
   name: 'IssuesAnalyticsTable',
   components: {
-    GlTable,
+    GlTableLite,
     GlLoadingIcon,
     GlLink,
     GlIcon,
@@ -147,7 +147,7 @@ export default {
 </script>
 <template>
   <gl-loading-icon v-if="isLoading" size="md" />
-  <gl-table
+  <gl-table-lite
     v-else-if="shouldDisplayTable"
     :fields="$options.tableHeaderFields"
     :items="issues"
@@ -229,5 +229,5 @@ export default {
         <gl-avatar :size="$options.avatarSize" :src="value.avatar_url" :entity-name="value.name" />
       </gl-avatar-link>
     </template>
-  </gl-table>
+  </gl-table-lite>
 </template>
