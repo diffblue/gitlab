@@ -9,6 +9,8 @@ RSpec.describe 'Create an external audit event destination' do
   let_it_be(:owner) { create(:user) }
 
   let(:current_user) { owner }
+  let(:mutation) { graphql_mutation(:external_audit_event_destination_create, input) }
+  let(:mutation_response) { graphql_mutation_response(:external_audit_event_destination_create) }
 
   let(:input) do
     {
@@ -17,18 +19,28 @@ RSpec.describe 'Create an external audit event destination' do
     }
   end
 
-  let(:mutation) { graphql_mutation(:external_audit_event_destination_create, input) }
-
-  let(:mutation_response) { graphql_mutation_response(:external_audit_event_destination_create) }
+  let(:invalid_input) do
+    {
+      'groupPath': group.full_path,
+      'destinationUrl': 'ftp://gitlab.com/example/testendpoint'
+    }
+  end
 
   shared_examples 'a mutation that does not create a destination' do
     it 'does not destroy the destination' do
       expect { post_graphql_mutation(mutation, current_user: owner) }
         .not_to change { AuditEvents::ExternalAuditEventDestination.count }
     end
+
+    it 'does not audit the creation' do
+      expect { post_graphql_mutation(mutation, current_user: owner) }
+        .not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
+    subject { post_graphql_mutation(mutation, current_user: owner) }
+
     before do
       stub_licensed_features(external_audit_events: true)
     end
@@ -39,19 +51,28 @@ RSpec.describe 'Create an external audit event destination' do
       end
 
       it 'creates the destination' do
-        expect { post_graphql_mutation(mutation, current_user: owner) }
+        expect { subject }
           .to change { AuditEvents::ExternalAuditEventDestination.count }.by(1)
       end
-    end
 
-    context 'when current user is a group owner' do
-      before do
-        group.add_owner(owner)
+      it 'audits the creation' do
+        expect { subject }
+          .to change { AuditEvent.count }.by(1)
+
+        expect(AuditEvent.last.details[:custom_message]).to eq("Create event streaming destination https://gitlab.com/example/testendpoint")
       end
 
-      it 'creates the destination' do
-        expect { post_graphql_mutation(mutation, current_user: owner) }
-          .to change { AuditEvents::ExternalAuditEventDestination.count }.by(1)
+      context 'when destination is invalid' do
+        let(:mutation) { graphql_mutation(:external_audit_event_destination_create, invalid_input) }
+
+        it 'returns correct errors' do
+          post_graphql_mutation(mutation, current_user: owner)
+
+          expect(mutation_response['externalAuditEventDestination']).to be_nil
+          expect(mutation_response['errors']).to contain_exactly('Destination url is blocked: Only allowed schemes are http, https')
+        end
+
+        it_behaves_like 'a mutation that does not create a destination'
       end
     end
 

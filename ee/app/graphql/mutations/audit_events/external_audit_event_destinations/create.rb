@@ -3,7 +3,7 @@
 module Mutations
   module AuditEvents
     module ExternalAuditEventDestinations
-      class Create < BaseMutation
+      class Create < Base
         graphql_name 'ExternalAuditEventDestinationCreate'
 
         authorize :admin_external_audit_events
@@ -22,12 +22,11 @@ module Mutations
 
         def resolve(destination_url:, group_path:)
           group = authorized_find!(group_path)
-          destination = ::AuditEvents::ExternalAuditEventDestination.create(group: group, destination_url: destination_url)
+          destination = ::AuditEvents::ExternalAuditEventDestination.new(group: group, destination_url: destination_url)
 
-          {
-            external_audit_event_destination: destination&.persisted? ? destination : nil,
-            errors: Array(destination.errors)
-          }
+          audit(destination, action: :create) if destination.save
+
+          { external_audit_event_destination: (destination if destination.persisted?), errors: Array(destination.errors) }
         end
 
         private
