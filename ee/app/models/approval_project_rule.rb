@@ -27,9 +27,9 @@ class ApprovalProjectRule < ApplicationRecord
   scope :distinct_scanners, -> { scan_finding.select(:scanners).distinct }
 
   alias_method :code_owner, :code_owner?
-  validate :validate_default_license_report_name, on: :update, if: :report_approver?
 
   validates :name, uniqueness: { scope: [:project_id, :rule_type] }
+  validate :validate_security_report_approver_name
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
 
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
@@ -93,13 +93,6 @@ class ApprovalProjectRule < ApplicationRecord
       )
   end
 
-  def validate_default_license_report_name
-    return unless name_changed?
-    return unless name_was == ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT
-
-    errors.add(:name, _("cannot be modified"))
-  end
-
   def merge_request_report_approver_rule(merge_request)
     if scan_finding?
       merge_request
@@ -113,6 +106,27 @@ class ApprovalProjectRule < ApplicationRecord
         .approval_rules
         .report_approver
         .find_or_initialize_by(report_type: report_type)
+    end
+  end
+
+  def validate_security_report_approver_name
+    [
+      [DEFAULT_NAME_FOR_VULNERABILITY_REPORT, 'vulnerability'],
+      [DEFAULT_NAME_FOR_LICENSE_REPORT, 'license_scanning'],
+      [DEFAULT_NAME_FOR_COVERAGE, 'code_coverage']
+    ].each do |report|
+      name_type = { name: report[0], type: report[1] }
+
+      validate_name_type(name_type)
+    end
+  end
+
+  def validate_name_type(name_type)
+    if name != name_type[:name] && report_type == name_type[:type]
+      errors.add(:report_type, _("%{type} only supports %{name} name") % name_type)
+
+    elsif name == name_type[:name] && report_type != name_type[:type]
+      errors.add(:name, _("%{name} is reserved for %{type} report type") % name_type)
     end
   end
 end
