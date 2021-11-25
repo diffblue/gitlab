@@ -70,20 +70,6 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
       end
     end
 
-    context 'report_approver rules' do
-      it 'is valid' do
-        expect(build(:report_approver_rule)).to be_valid
-      end
-
-      it 'validates presence of report_type' do
-        rule = build(:report_approver_rule)
-        expect(rule).to be_valid
-
-        rule.report_type = nil
-        expect(rule).not_to be_valid
-      end
-    end
-
     context 'any_approver rules' do
       let(:rule) { build(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver) }
 

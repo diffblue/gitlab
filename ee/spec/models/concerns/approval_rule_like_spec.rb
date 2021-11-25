@@ -77,6 +77,23 @@ RSpec.describe ApprovalRuleLike do
           expect(subject).to be_valid
         end
       end
+
+      context 'with report_type set to report_approver' do
+        before do
+          subject.rule_type = :report_approver
+        end
+
+        it 'is valid' do
+          subject.report_type = :vulnerability
+          subject.name = described_class::DEFAULT_NAME_FOR_VULNERABILITY_REPORT
+          expect(subject).to be_valid
+        end
+
+        it 'is invalid' do
+          subject.report_type = nil
+          expect(subject).not_to be_valid
+        end
+      end
     end
   end
 
