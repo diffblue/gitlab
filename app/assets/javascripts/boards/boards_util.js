@@ -1,5 +1,6 @@
 import { sortBy, cloneDeep } from 'lodash';
 import { isGid } from '~/graphql_shared/utils';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import { ListType, MilestoneIDs, AssigneeFilterType, MilestoneFilterType } from './constants';
 
 export function getMilestone() {
@@ -219,6 +220,10 @@ export const FiltersInfo = {
   },
   types: {
     negatedSupport: true,
+  },
+  confidential: {
+    negatedSupport: false,
+    transform: (val) => parseBoolean(val),
   },
   search: {
     negatedSupport: false,
