@@ -90,7 +90,6 @@ export default {
     isAdditionalStorageFlagEnabled() {
       return this.glFeatures.additionalRepoStorageByNamespace;
     },
-
     formattedNamespaceLimit() {
       return formatUsageSize(this.namespace.limit);
     },

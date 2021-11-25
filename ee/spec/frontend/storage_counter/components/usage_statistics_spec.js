@@ -7,7 +7,7 @@ import { withRootStorageStatistics } from '../mock_data';
 describe('Usage Statistics component', () => {
   let wrapper;
 
-  const createComponent = (props = {}) => {
+  const createComponent = ({ props = {}, newRouteStoragePurchase = false } = {}) => {
     wrapper = shallowMount(UsageStatistics, {
       propsData: {
         rootStorageStatistics: {
@@ -18,6 +18,11 @@ describe('Usage Statistics component', () => {
         },
         ...props,
       },
+      provide: {
+        glFeatures: {
+          newRouteStoragePurchase,
+        },
+      },
       stubs: {
         UsageStatisticsCard,
         GlSprintf,
@@ -26,20 +31,42 @@ describe('Usage Statistics component', () => {
     });
   };
 
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
   const getStatisticsCards = () => wrapper.findAll(UsageStatisticsCard);
   const getStatisticsCard = (testId) => wrapper.find(`[data-testid="${testId}"]`);
   const findGlLinkInCard = (cardName) =>
     getStatisticsCard(cardName).find('[data-testid="statistics-card-footer"]').find(GlLink);
+  const findPurchasedUsageButton = () =>
+    getStatisticsCard('purchased-usage').findComponent(GlButton);
+
+  describe('with purchaseStorageUrl passed and newRouteStoragePurchase flag enabled', () => {
+    beforeEach(() => {
+      createComponent({
+        props: {
+          purchaseStorageUrl: 'some-fancy-url',
+        },
+        newRouteStoragePurchase: true,
+      });
+    });
+
+    it('renders button in purchased usage card footer with correct link', () => {
+      expect(findPurchasedUsageButton().attributes()).toMatchObject({
+        href: 'some-fancy-url',
+        target: '_self',
+      });
+    });
+  });
 
   describe('with purchaseStorageUrl passed', () => {
     beforeEach(() => {
       createComponent({
-        purchaseStorageUrl: 'some-fancy-url',
+        props: {
+          purchaseStorageUrl: 'some-fancy-url',
+        },
       });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('renders three statistics cards', () => {
@@ -58,20 +85,21 @@ describe('Usage Statistics component', () => {
       expect(url.attributes('href')).toBe('/help/user/usage_quotas#excess-storage-usage');
     });
 
-    it('renders button in purchased usage card footer', () => {
-      expect(getStatisticsCard('purchased-usage').find(GlButton).exists()).toBe(true);
+    it('renders button in purchased usage card footer with correct link', () => {
+      expect(findPurchasedUsageButton().attributes()).toMatchObject({
+        href: 'some-fancy-url',
+        target: '_blank',
+      });
     });
   });
 
   describe('with no purchaseStorageUrl', () => {
     beforeEach(() => {
       createComponent({
-        purchaseStorageUrl: null,
+        props: {
+          purchaseStorageUrl: null,
+        },
       });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('does not render purchased usage card if purchaseStorageUrl is not provided', () => {
