@@ -1,26 +1,29 @@
 <script>
-// This is a false violation of @gitlab/no-runtime-template-compiler, since it
-// extends a valid Vue single file component.
-/* eslint-disable @gitlab/no-runtime-template-compiler */
 import { __ } from '~/locale';
-import SidebarDropdownWidgetFoss from '~/sidebar/components/sidebar_dropdown_widget.vue';
+import SidebarDropdownWidget from '~/sidebar/components/sidebar_dropdown_widget.vue';
+import { IssuableType } from '~/issue_show/constants';
 import {
-  IssuableAttributeState,
   IssuableAttributeType,
+  IssuableAttributeState,
   issuableAttributesQueries,
 } from '../constants';
 
+const widgetTitleText = {
+  [IssuableAttributeType.Milestone]: __('Milestone'),
+  [IssuableAttributeType.Iteration]: __('Iteration'),
+  [IssuableAttributeType.Epic]: __('Epic'),
+  none: __('None'),
+  expired: __('(expired)'),
+};
+
 export default {
-  extends: SidebarDropdownWidgetFoss,
-  IssuableAttributeState,
-  issuableAttributesQueries,
-  i18n: {
-    [IssuableAttributeType.Milestone]: __('Milestone'),
-    [IssuableAttributeType.Iteration]: __('Iteration'),
-    [IssuableAttributeType.Epic]: __('Epic'),
-    none: __('None'),
-    expired: __('(expired)'),
+  components: { SidebarDropdownWidget },
+  provide: {
+    issuableAttributesQueries,
+    widgetTitleText,
+    issuableAttributesState: IssuableAttributeState,
   },
+  inheritAttrs: false,
   props: {
     issuableAttribute: {
       type: String,
@@ -33,6 +36,46 @@ export default {
         ].includes(value);
       },
     },
+    workspacePath: {
+      required: true,
+      type: String,
+    },
+    iid: {
+      required: true,
+      type: String,
+    },
+    attrWorkspacePath: {
+      required: true,
+      type: String,
+    },
+    issuableType: {
+      type: String,
+      required: true,
+      validator(value) {
+        return [IssuableType.Issue, IssuableType.MergeRequest].includes(value);
+      },
+    },
+    icon: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
   },
 };
 </script>
+<template>
+  <sidebar-dropdown-widget
+    :icon="icon"
+    :issuable-type="issuableType"
+    :attr-workspace-path="attrWorkspacePath"
+    :issuable-attribute="issuableAttribute"
+    :iid="iid"
+    :workspace-path="workspacePath"
+    v-bind="$attrs"
+    v-on="$listeners"
+  >
+    <template v-for="(_, name) in $scopedSlots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData"></slot>
+    </template>
+  </sidebar-dropdown-widget>
+</template>
