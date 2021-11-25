@@ -1,0 +1,8 @@
+---
+name: epic_board_total_weight
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76440
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/353450
+milestone: '14.7'
+type: development
+group: group::product planning
+default_enabled: false
