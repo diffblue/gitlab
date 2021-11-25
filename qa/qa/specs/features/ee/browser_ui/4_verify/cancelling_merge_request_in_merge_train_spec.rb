@@ -30,7 +30,7 @@ module QA
                     tags:
                       - #{executor}
                     script:
-                      - sleep 3
+                      - sleep 10
                       - echo 'OK!'
                     only:
                       - merge_requests
