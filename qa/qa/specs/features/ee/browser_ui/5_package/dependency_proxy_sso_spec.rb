@@ -45,6 +45,7 @@ module QA
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
       let(:gitlab_host_with_port) { "#{uri.host}:#{uri.port}" }
       let(:dependency_proxy_url) { "#{gitlab_host_with_port}/#{project.group.full_path}/dependency_proxy/containers" }
+      let(:image_sha) { 'alpine@sha256:c3d45491770c51da4ef58318e3714da686bc7165338b7ab5ac758e75c7455efb' }
 
       before do
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
@@ -90,10 +91,10 @@ module QA
                                         - apk add curl jq grep
                                         - docker login -u "$CI_DEPENDENCY_PROXY_USER" -p "$CI_DEPENDENCY_PROXY_PASSWORD" "$CI_DEPENDENCY_PROXY_SERVER"
                                       script:
-                                        - docker pull #{dependency_proxy_url}/alpine:latest
+                                        - docker pull #{dependency_proxy_url}/#{image_sha}
                                         - TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq --raw-output .token)
                                         - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
-                                        - docker pull #{dependency_proxy_url}/alpine:latest
+                                        - docker pull #{dependency_proxy_url}/#{image_sha}
                                         - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
                                       tags:
                                       - "runner-for-#{project.name}"
