@@ -4,7 +4,7 @@ all_changed_files = helper.all_changed_files
 
 def get_ci_config_files(files)
   files.select do |file|
-    file.include?('lib/gitlab/ci') 
+    file.include?('lib/gitlab/ci')
   end
 end
 
@@ -12,7 +12,7 @@ schema_path = 'app/assets/javascripts/editor/schema/ci.json'
 ci_config_files = get_ci_config_files(all_changed_files)
 has_schema_update = all_changed_files.include?(schema_path)
 
-return if ci_config_files.empty? || has_schema_update;
+return if ci_config_files.empty? || has_schema_update
 
 file_list = "- #{ci_config_files.map { |path| "`#{path}`" }.join("\n- ")}"
 
