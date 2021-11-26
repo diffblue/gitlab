@@ -17,6 +17,11 @@ class Groups::UsageQuotasController < Groups::ApplicationController
     @projects = @group.all_projects.with_shared_runners.page(params[:page])
   end
 
+  def pending_members
+    render_404 unless ::Feature.enabled?(:saas_user_caps, @group.root_ancestor, default_enabled: :yaml)
+    @hide_search_settings = true
+  end
+
   private
 
   def verify_usage_quotas_enabled!
