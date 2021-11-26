@@ -52,9 +52,16 @@ export const scanExecutionPolicies = (nodes) =>
     },
   });
 
-export const mockAssignSecurityPolicyProjectResponses = {
+export const mockLinkSecurityPolicyProjectResponses = {
   success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: [] } } }),
   failure: jest
     .fn()
     .mockResolvedValue({ data: { securityPolicyProjectAssign: { errors: ['mutation failed'] } } }),
+};
+
+export const mockUnlinkSecurityPolicyProjectResponses = {
+  success: jest.fn().mockResolvedValue({ data: { securityPolicyProjectUnassign: { errors: [] } } }),
+  failure: jest.fn().mockResolvedValue({
+    data: { securityPolicyProjectUnassign: { errors: ['mutation failed'] } },
+  }),
 };

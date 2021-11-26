@@ -1,0 +1,5 @@
+mutation linkSecurityPolicyProject($input: SecurityPolicyProjectAssignInput!) {
+  securityPolicyProjectAssign(input: $input) {
+    errors
+  }
+}
