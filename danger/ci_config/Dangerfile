@@ -4,7 +4,7 @@ all_changed_files = helper.all_changed_files
 
 def get_ci_config_files(files)
   files.select do |file|
-    file.include?('lib/gitlab/ci')
+    file.include?('gitlab/ci/config/entry')
   end
 end
 
