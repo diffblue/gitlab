@@ -30,15 +30,15 @@ module Gitlab
           }.transform_keys! { |key| key.to_s.camelize(:lower).to_sym }
         end
 
+        def enabled?
+          Gitlab::CurrentSettings.snowplow_enabled?
+        end
+
         def hostname
           Gitlab::CurrentSettings.snowplow_collector_hostname
         end
 
         private
-
-        def enabled?
-          Gitlab::CurrentSettings.snowplow_enabled?
-        end
 
         def app_id
           Gitlab::CurrentSettings.snowplow_app_id
