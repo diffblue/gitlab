@@ -1,0 +1,5 @@
+mutation securityPolicyProjectUnassign($input: SecurityPolicyProjectUnassignInput!) {
+  securityPolicyProjectUnassign(input: $input) {
+    errors
+  }
+}
