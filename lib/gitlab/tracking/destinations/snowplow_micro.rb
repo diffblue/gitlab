@@ -33,6 +33,11 @@ module Gitlab
 
         private
 
+        override :enabled?
+        def enabled?
+          true
+        end
+
         override :cookie_domain
         def cookie_domain
           '.gitlab.com'

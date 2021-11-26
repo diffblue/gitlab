@@ -37,7 +37,7 @@ module Gitlab
         private
 
         def enabled?
-          Gitlab::Tracking.enabled?
+          Gitlab::CurrentSettings.snowplow_enabled?
         end
 
         def app_id
