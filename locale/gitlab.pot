@@ -32549,9 +32549,6 @@ msgstr ""
 msgid "Something went wrong while fetching the environments for this merge request. Please try again."
 msgstr ""
 
-msgid "Something went wrong while fetching the package."
-msgstr ""
-
 msgid "Something went wrong while fetching the packages list."
 msgstr ""
 
