@@ -1,0 +1,5 @@
+mutation CorpusCreate($input: CorpusCreateInput!) {
+  corpusCreate(input: $input) {
+    errors
+  }
+}

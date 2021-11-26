@@ -2,8 +2,12 @@ import produce from 'immer';
 import { corpuses } from 'ee_jest/security_configuration/corpus_management/mock_data';
 import { publishPackage } from '~/api/packages_api';
 import axios from '~/lib/utils/axios_utils';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_PACKAGES_PACKAGE } from '~/graphql_shared/constants';
 import getCorpusesQuery from '../queries/get_corpuses.query.graphql';
 import updateProgress from '../mutations/update_progress.mutation.graphql';
+import uploadComplete from '../mutations/upload_complete.mutation.graphql';
+import corpusCreate from '../mutations/corpus_create.mutation.graphql';
 
 export default {
   Query: {
@@ -22,12 +26,13 @@ export default {
         isUploading: false,
         progress: 0,
         cancelSource: null,
+        uploadedPackageId: null,
         __typename: 'UploadState',
       };
     },
   },
   Mutation: {
-    addCorpus: (_, { name, projectPath }, { cache }) => {
+    addCorpus: (_, { name, projectPath, packageId }, { cache, client }) => {
       const sourceData = cache.readQuery({
         query: getCorpusesQuery,
         variables: { projectPath },
@@ -54,6 +59,16 @@ export default {
       });
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+
+      client.mutate({
+        mutation: corpusCreate,
+        variables: {
+          input: {
+            fullPath: projectPath,
+            packageId: convertToGraphQLId(TYPE_PACKAGES_PACKAGE, packageId),
+          },
+        },
+      });
     },
     deleteCorpus: (_, { name, projectPath }, { cache }) => {
       const sourceData = cache.readQuery({
@@ -91,19 +106,43 @@ export default {
         variables: { projectPath },
       });
 
-      const data = produce(sourceData, (draftState) => {
+      const targetData = produce(sourceData, (draftState) => {
         const { uploadState } = draftState;
         uploadState.isUploading = true;
         uploadState.cancelSource = source;
       });
 
-      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
+      cache.writeQuery({ query: getCorpusesQuery, data: targetData, variables: { projectPath } });
 
       publishPackage(
         { projectPath, name, version: 0, fileName: name, files },
         { status: 'hidden', select: 'package_file' },
         { onUploadProgress, cancelToken: source.token },
-      );
+      )
+        .then(({ data }) => {
+          client.mutate({
+            mutation: uploadComplete,
+            variables: { projectPath, packageId: data.package_id },
+          });
+        })
+        .catch((e) => {
+          /* TODO: Error handling */
+        });
+    },
+    uploadComplete: (_, { projectPath, packageId }, { cache }) => {
+      const sourceData = cache.readQuery({
+        query: getCorpusesQuery,
+        variables: { projectPath },
+      });
+
+      const data = produce(sourceData, (draftState) => {
+        const { uploadState } = draftState;
+        uploadState.isUploading = false;
+        uploadState.cancelSource = null;
+        uploadState.uploadedPackageId = packageId;
+      });
+
+      cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });
     },
     updateProgress: (_, { projectPath, progress }, { cache }) => {
       const sourceData = cache.readQuery({
@@ -115,11 +154,6 @@ export default {
         const { uploadState } = draftState;
         uploadState.isUploading = true;
         uploadState.progress = progress;
-
-        if (progress >= 100) {
-          uploadState.isUploading = false;
-          uploadState.cancelSource = null;
-        }
       });
 
       cache.writeQuery({ query: getCorpusesQuery, data, variables: { projectPath } });

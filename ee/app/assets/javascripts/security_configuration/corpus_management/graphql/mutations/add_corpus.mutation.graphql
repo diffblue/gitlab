@@ -1,5 +1,5 @@
-mutation addCorpus($projectPath: ID!, $name: String!) {
-  addCorpus(projectPath: $projectPath, name: $name) @client {
+mutation addCorpus($projectPath: ID!, $name: String!, $packageId: Int!) {
+  addCorpus(projectPath: $projectPath, name: $name, packageId: $packageId) @client {
     errors
   }
 }

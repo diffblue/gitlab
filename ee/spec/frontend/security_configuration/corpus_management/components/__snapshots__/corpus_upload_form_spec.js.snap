@@ -18,6 +18,7 @@ exports[`Corpus upload modal corpus modal uploading state does show the upload p
     
   <button
     class="btn btn-default btn-sm gl-button"
+    data-testid="cancel-upload"
     type="button"
   >
     <!---->
@@ -27,7 +28,9 @@ exports[`Corpus upload modal corpus modal uploading state does show the upload p
     <span
       class="gl-button-text"
     >
-       Cancel 
+      
+      Cancel
+    
     </span>
   </button>
 </div>

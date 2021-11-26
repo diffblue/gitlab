@@ -30,7 +30,7 @@ export default {
     corpusName: s__('CorpusManagement|Corpus name'),
     uploadButtonText: __('Choose File...'),
     uploadMessage: s__(
-      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 10GB',
+      'CorpusManagement|New corpus needs to be a upload in *.zip format. Maximum 5GB',
     ),
   },
   data() {
@@ -170,7 +170,9 @@ export default {
     <div v-if="isUploading" data-testid="upload-status" class="gl-mt-2">
       <gl-loading-icon inline size="sm" />
       {{ progressText }}
-      <gl-button size="small" @click="cancelUpload"> {{ __('Cancel') }} </gl-button>
+      <gl-button size="small" data-testid="cancel-upload" @click="cancelUpload">
+        {{ __('Cancel') }}
+      </gl-button>
     </div>
   </gl-form>
 </template>
