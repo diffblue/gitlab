@@ -20,7 +20,7 @@ module ServicePing
         metrics.slice(*DevOpsReport::Metric::METRICS)
       )
 
-      Gitlab::ErrorTracking.track_and_raise_for_dev_exception(ActiveRecord::RecordInvalid.new(report)) if !report.persisted?
+      Gitlab::ErrorTracking.track_and_raise_for_dev_exception(ActiveRecord::RecordInvalid.new(report)) unless report.persisted?
     end
   end
 end
