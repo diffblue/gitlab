@@ -22,7 +22,7 @@ RSpec.describe Issue do
     context 'for an issue with associated test report' do
       let_it_be(:requirement_issue) do
         ri = create(:requirement_issue)
-        create(:test_report, requirement_issue: ri, requirement: nil)
+        create(:test_report, requirement_issue: ri, requirement: create(:requirement))
         ri
       end
 

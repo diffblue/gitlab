@@ -10,8 +10,13 @@ module RequirementsManagement
     belongs_to :build, class_name: 'Ci::Build'
     belongs_to :requirement_issue, class_name: 'Issue', foreign_key: :issue_id
 
+    # RequirementsManagement::Requirement object is going to be deprecated
+    # and replaced with Issue of type requirement.
+    # For now we need to keep both columns in sync until Requirement object is removed.
+    # More information in: https://gitlab.com/groups/gitlab-org/-/epics/7148
+    validates :requirement, presence: true
+
     validates :state, presence: true
-    validate :only_one_requirement_association
     validate :only_requirement_type_issue
 
     enum state: { passed: 1, failed: 2 }
@@ -36,6 +41,7 @@ module RequirementsManagement
       def build_report(author: nil, state:, requirement:, build: nil, timestamp: Time.current)
         new(
           requirement_id: requirement.id,
+          issue_id: requirement.issue_id,
           build_id: build&.id,
           author_id: build&.user_id || author&.id,
           created_at: timestamp,
@@ -47,7 +53,7 @@ module RequirementsManagement
 
       def passed_reports_for_all_requirements(build, timestamp)
         [].tap do |reports|
-          build.project.requirements.opened.select(:id).find_each do |requirement|
+          build.project.requirements.opened.select(:id, :issue_id).find_each do |requirement|
             reports << build_report(state: :passed, requirement: requirement, build: build, timestamp: timestamp)
           end
         end
@@ -58,7 +64,7 @@ module RequirementsManagement
           iids = ci_report.requirements.keys
           break [] if iids.empty?
 
-          build.project.requirements.opened.select(:id, :iid).where(iid: iids).each do |requirement|
+          build.project.requirements.opened.select(:id, :iid, :issue_id).where(iid: iids).each do |requirement|
             # ignore anything with any unexpected state
             new_state = ci_report.requirements[requirement.iid.to_s]
             next unless states.key?(new_state)
@@ -67,10 +73,6 @@ module RequirementsManagement
           end
         end
       end
-    end
-
-    def only_one_requirement_association
-      errors.add(:base, 'Must be associated with either a RequirementsManagement::Requirement OR an Issue of type `requirement`, but not both') unless !!requirement ^ !!requirement_issue
     end
 
     def only_requirement_type_issue
