@@ -1,4 +1,11 @@
-import { GlAlert, GlLoadingIcon, GlTable, GlIcon, GlAvatarsInline, GlPagination } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlLoadingIcon,
+  GlTableLite,
+  GlIcon,
+  GlAvatarsInline,
+  GlPagination,
+} from '@gitlab/ui';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import ThroughputTable from 'ee/analytics/merge_request_analytics/components/throughput_table.vue';
@@ -66,7 +73,7 @@ describe('ThroughputTable', () => {
     });
   };
 
-  const findTable = () => wrapper.find(GlTable);
+  const findTable = () => wrapper.find(GlTableLite);
 
   const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
 
@@ -104,7 +111,7 @@ describe('ThroughputTable', () => {
     });
 
     it('does not display the table', () => {
-      displaysComponent(GlTable, false);
+      displaysComponent(GlTableLite, false);
     });
 
     it('does not display the pagination', () => {
@@ -130,7 +137,7 @@ describe('ThroughputTable', () => {
     });
 
     it('does not display the table', () => {
-      displaysComponent(GlTable, false);
+      displaysComponent(GlTableLite, false);
     });
 
     it('does not display the no data message', () => {
@@ -150,7 +157,7 @@ describe('ThroughputTable', () => {
     });
 
     it('displays the table', () => {
-      displaysComponent(GlTable, true);
+      displaysComponent(GlTableLite, true);
     });
 
     it('does not display a loading icon', () => {
@@ -429,7 +436,7 @@ describe('ThroughputTable', () => {
     });
 
     it('does not display the table', () => {
-      displaysComponent(GlTable, false);
+      displaysComponent(GlTableLite, false);
     });
 
     it('does not display a loading icon', () => {

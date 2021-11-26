@@ -1,6 +1,6 @@
 <script>
 import {
-  GlTable,
+  GlTableLite,
   GlLink,
   GlAvatarLink,
   GlAvatar,
@@ -42,7 +42,7 @@ const initialPaginationState = {
 export default {
   name: 'ThroughputTable',
   components: {
-    GlTable,
+    GlTableLite,
     GlLink,
     GlAvatarLink,
     GlAvatar,
@@ -264,7 +264,7 @@ export default {
 <template>
   <gl-loading-icon v-if="tableDataLoading" size="md" />
   <div v-else-if="tableDataAvailable">
-    <gl-table
+    <gl-table-lite
       :fields="$options.tableHeaderFields"
       :items="throughputTableData.list"
       stacked="sm"
@@ -376,7 +376,7 @@ export default {
           </gl-avatars-inline>
         </div>
       </template>
-    </gl-table>
+    </gl-table-lite>
     <gl-pagination
       v-if="showPaginationControls"
       :value="pagination.currentPage"
