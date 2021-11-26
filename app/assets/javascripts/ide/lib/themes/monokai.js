@@ -165,5 +165,6 @@ export default {
     'editorWhitespace.foreground': '#3B3A32',
     'editorIndentGuide.activeBackground': '#9D550FB0',
     'editor.selectionHighlightBorder': '#222218',
+    'editorWhitespace.foreground': '#75715e',
   },
 };
