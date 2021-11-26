@@ -70,28 +70,10 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
           stub_licensed_features(iterations: true)
         end
 
-        context 'with group iterations feature flag enabled' do
-          before do
-            stub_feature_flags(group_iterations: true)
-          end
+        it 'is visible' do
+          render
 
-          it 'is visible' do
-            render
-
-            expect(rendered).to have_text 'Iterations'
-          end
-        end
-
-        context 'with iterations feature flag disabled' do
-          before do
-            stub_feature_flags(group_iterations: false)
-          end
-
-          it 'is not visible' do
-            render
-
-            expect(rendered).not_to have_text 'Iterations'
-          end
+          expect(rendered).to have_text 'Iterations'
         end
       end
 

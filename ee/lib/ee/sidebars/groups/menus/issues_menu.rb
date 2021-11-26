@@ -32,7 +32,7 @@ module EE
           end
 
           def iterations_enabled?
-            ::Feature.enabled?(:group_iterations, context.group, default_enabled: true) && context.group.licensed_feature_available?(:iterations)
+            context.group.licensed_feature_available?(:iterations)
           end
 
           def user_can_access_iterations?

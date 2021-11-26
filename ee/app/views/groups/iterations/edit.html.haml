@@ -2,9 +2,8 @@
 - breadcrumb_title params[:id]
 - page_title s_("Iterations|Edit iteration")
 
-- if Feature.enabled?(:group_iterations, @group, default_enabled: true)
-  .js-iteration{ data: { full_path: @group.full_path,
-    iterations_list_path: group_iterations_path(@group),
-    can_edit: can?(current_user, :admin_iteration, @group).to_s,
-    iteration_id: params[:id],
-    preview_markdown_path: preview_markdown_path(@group) } }
+.js-iteration{ data: { full_path: @group.full_path,
+  iterations_list_path: group_iterations_path(@group),
+  can_edit: can?(current_user, :admin_iteration, @group).to_s,
+  iteration_id: params[:id],
+  preview_markdown_path: preview_markdown_path(@group) } }
