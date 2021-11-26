@@ -4,7 +4,7 @@ module QA
   include QA::Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
-    context 'Purchase CI minutes' do
+    context 'Purchase Storage' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }
       let(:hash) { SecureRandom.hex(4) }
@@ -24,11 +24,11 @@ module QA
       end
 
       before do
+        Runtime::Feature.enable(:new_route_storage_purchase)
         group.add_member(user, Resource::Members::AccessLevel::OWNER)
 
-        # A group project is required for additional CI Minutes to show up
         Resource::Project.fabricate_via_api! do |project|
-          project.name = 'ci-minutes'
+          project.name = 'storage'
           project.group = group
           project.initialize_with_readme = true
           project.api_client = Runtime::API::Client.as_admin
@@ -39,45 +39,46 @@ module QA
       end
 
       after do |example|
+        Runtime::Feature.disable(:new_route_storage_purchase)
         user.remove_via_api!
         group.remove_via_api! unless example.exception
       end
 
-      it 'adds additional minutes to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2260' do
+      it 'adds additional storage to group namespace', testcase: 'https://gitlab.com/gitlab-org/quality/testcases/-/quality/test_cases/2424' do
         Page::Group::Menu.perform(&:go_to_usage_quotas)
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-          usage_quota.pipeline_tab
-          usage_quota.buy_ci_minutes
+          usage_quota.storage_tab
+          usage_quota.buy_storage
         end
 
-        Gitlab::Page::Subscriptions::New.perform do |ci_minutes|
-          ci_minutes.quantity = purchase_quantity
-          ci_minutes.continue_to_billing
+        Gitlab::Page::Subscriptions::New.perform do |storage|
+          storage.quantity = purchase_quantity
+          storage.continue_to_billing
 
-          ci_minutes.country = user_billing_info[:country]
-          ci_minutes.street_address_1 = user_billing_info[:address_1]
-          ci_minutes.street_address_2 = user_billing_info[:address_2]
-          ci_minutes.city = user_billing_info[:city]
-          ci_minutes.state = user_billing_info[:state]
-          ci_minutes.zip_code = user_billing_info[:zip]
-          ci_minutes.continue_to_payment
+          storage.country = user_billing_info[:country]
+          storage.street_address_1 = user_billing_info[:address_1]
+          storage.street_address_2 = user_billing_info[:address_2]
+          storage.city = user_billing_info[:city]
+          storage.state = user_billing_info[:state]
+          storage.zip_code = user_billing_info[:zip]
+          storage.continue_to_payment
 
-          ci_minutes.name_on_card = credit_card_info[:name]
-          ci_minutes.card_number = credit_card_info[:number]
-          ci_minutes.expiration_month = credit_card_info[:month]
-          ci_minutes.expiration_year = credit_card_info[:year]
-          ci_minutes.cvv = credit_card_info[:cvv]
-          ci_minutes.review_your_order
+          storage.name_on_card = credit_card_info[:name]
+          storage.card_number = credit_card_info[:number]
+          storage.expiration_month = credit_card_info[:month]
+          storage.expiration_year = credit_card_info[:year]
+          storage.cvv = credit_card_info[:cvv]
+          storage.review_your_order
 
-          ci_minutes.confirm_purchase
+          storage.confirm_purchase
         end
 
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-          expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
+          expected_storage = STORAGE[:storage] * purchase_quantity
 
-          expect { usage_quota.ci_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-          expect { usage_quota.additional_minutes? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-          expect(usage_quota.additional_limits).to eq(expected_minutes.to_s)
+          expect { usage_quota.storage_purchase_successful_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
+          expect { usage_quota.purchased_storage_available? }.to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+          expect { usage_quota.total_purchased_storage }.to eventually_eq(expected_storage.to_f).within(max_duration: 120, max_attempts: 60, reload_page: page)
         end
       end
 
