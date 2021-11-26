@@ -52,7 +52,7 @@ module Ci
     # Add shared runner build tracking entry (used for queuing).
     #
     def track(build, transition)
-      return unless Feature.enabled?(:ci_track_shared_runner_builds, build.project, default_enabled: :yaml)
+      return unless maintain_pending_builds_queue?(build)
       return unless build.shared_runner_build?
 
       raise InvalidQueueTransition unless transition.to == 'running'
@@ -73,7 +73,7 @@ module Ci
     # queuing).
     #
     def untrack(build, transition)
-      return unless Feature.enabled?(:ci_untrack_shared_runner_builds, build.project, default_enabled: :yaml)
+      return unless maintain_pending_builds_queue?(build)
       return unless build.shared_runner_build?
 
       raise InvalidQueueTransition unless transition.from == 'running'
@@ -114,7 +114,7 @@ module Ci
     end
 
     def maintain_pending_builds_queue?(build)
-      Feature.enabled?(:ci_pending_builds_queue_maintain, build.project, default_enabled: :yaml)
+      ::Gitlab::Ci::Features.pending_builds_maintain_denormalized_data?(build.project)
     end
   end
 end

@@ -42,15 +42,9 @@ module Ci
           namespace: project.namespace
         }
 
-        if Feature.enabled?(:ci_pending_builds_maintain_tags_data, type: :development, default_enabled: :yaml)
+        if ::Gitlab::Ci::Features.pending_builds_maintain_denormalized_data?(project)
           args.store(:tag_ids, build.tags_ids)
-        end
-
-        if Feature.enabled?(:ci_pending_builds_maintain_shared_runners_data, type: :development, default_enabled: :yaml)
           args.store(:instance_runners_enabled, shared_runners_enabled?(project))
-        end
-
-        if Feature.enabled?(:ci_pending_builds_maintain_namespace_traversal_ids, type: :development, default_enabled: :yaml)
           args.store(:namespace_traversal_ids, project.namespace.traversal_ids) if group_runners_enabled?(project)
         end
 

@@ -14,12 +14,7 @@ module EE
 
         override :args_from_build
         def args_from_build(build)
-          return super unless ::Feature.enabled?(
-            :ci_pending_builds_maintain_ci_minutes_data,
-            build&.project&.root_namespace,
-            type: :development,
-            default_enabled: :yaml
-          )
+          return super unless ::Gitlab::Ci::Features.pending_builds_maintain_denormalized_data?(build&.project&.root_namespace)
 
           super.merge(minutes_exceeded: minutes_exceeded?(build.project))
         end

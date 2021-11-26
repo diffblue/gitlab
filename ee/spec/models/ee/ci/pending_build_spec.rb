@@ -59,13 +59,13 @@ RSpec.describe Ci::PendingBuild do
           allow(::Ci::Runner).to receive(:any_shared_runners_with_enabled_cost_factor?).and_return(true)
         end
 
-        context 'when ci_pending_builds_maintain_ci_minutes_data is enabled' do
+        context 'when ci_pending_builds_maintain_denormalized_data is enabled' do
           it_behaves_like 'ci minutes not available'
         end
 
-        context 'when ci_pending_builds_maintain_ci_minutes_data is disabled' do
+        context 'when ci_pending_builds_maintain_denormalized_data is disabled' do
           before do
-            stub_feature_flags(ci_pending_builds_maintain_ci_minutes_data: false)
+            stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
           end
 
           it_behaves_like 'ci minutes available'
@@ -73,13 +73,13 @@ RSpec.describe Ci::PendingBuild do
       end
 
       context 'when project does not matches shared runners with cost factor enabled' do
-        context 'when ci_pending_builds_maintain_ci_minutes_data is enabled' do
+        context 'when ci_pending_builds_maintain_denormalized_data is enabled' do
           it_behaves_like 'ci minutes available'
         end
 
-        context 'when ci_pending_builds_maintain_ci_minutes_data is disabled' do
+        context 'when ci_pending_builds_maintain_denormalized_data is disabled' do
           before do
-            stub_feature_flags(ci_pending_builds_maintain_ci_minutes_data: false)
+            stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
           end
 
           it_behaves_like 'ci minutes available'
@@ -88,13 +88,13 @@ RSpec.describe Ci::PendingBuild do
     end
 
     context 'when ci minutes are available' do
-      context 'when ci_pending_builds_maintain_ci_minutes_data is enabled' do
+      context 'when ci_pending_builds_maintain_denormalized_data is enabled' do
         it_behaves_like 'ci minutes available'
       end
 
-      context 'when ci_pending_builds_maintain_ci_minutes_data is disabled' do
+      context 'when ci_pending_builds_maintain_denormalized_data is disabled' do
         before do
-          stub_feature_flags(ci_pending_builds_maintain_ci_minutes_data: false)
+          stub_feature_flags(ci_pending_builds_maintain_denormalized_data: false)
         end
 
         it_behaves_like 'ci minutes available'
