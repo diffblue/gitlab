@@ -7,13 +7,20 @@ module ServicePing
     end
 
     def execute
-      metrics = @data['conv_index'] || @data['dev_ops_score'] # leaving dev_ops_score here, as the data comes from the gitlab-version-com
+      # `conv_index` was previously named `dev_ops_score` in
+      # gitlab-version-com, so we check both for backwards compatibility.
+      metrics = @data['conv_index'] || @data['dev_ops_score']
 
-      return unless metrics.except('usage_data_id').present?
+      # Do not attempt to save a report for the first Service Ping
+      # response for a given GitLab instance, which comes without
+      # metrics.
+      return if metrics.keys == ['usage_data_id']
 
-      DevOpsReport::Metric.create!(
+      report = DevOpsReport::Metric.create(
         metrics.slice(*DevOpsReport::Metric::METRICS)
       )
+
+      Gitlab::ErrorTracking.track_and_raise_for_dev_exception(ActiveRecord::RecordInvalid.new(report)) if !report.persisted?
     end
   end
 end
