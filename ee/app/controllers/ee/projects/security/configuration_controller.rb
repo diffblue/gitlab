@@ -15,6 +15,7 @@ module EE
           before_action only: [:show] do
             push_frontend_feature_flag(:security_auto_fix, project, default_enabled: false)
             push_frontend_feature_flag(:corpus_management, project, default_enabled: :yaml)
+            push_frontend_feature_flag(:secure_vulnerability_training, project, default_enabled: :yaml)
           end
 
           before_action only: [:auto_fix] do

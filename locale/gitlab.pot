@@ -30836,6 +30836,9 @@ msgstr ""
 msgid "SecurityConfiguration|Security testing"
 msgstr ""
 
+msgid "SecurityConfiguration|Security training"
+msgstr ""
+
 msgid "SecurityConfiguration|The status of the tools only applies to the default branch and is based on the %{linkStart}latest pipeline%{linkEnd}."
 msgstr ""
 
@@ -30843,6 +30846,9 @@ msgid "SecurityConfiguration|Upgrade or start a free trial"
 msgstr ""
 
 msgid "SecurityConfiguration|Using custom settings. You won't receive automatic updates on this variable. %{anchorStart}Restore to default%{anchorEnd}"
+msgstr ""
+
+msgid "SecurityConfiguration|Vulnerability Management"
 msgstr ""
 
 msgid "SecurityConfiguration|Vulnerability details and statistics in the merge request"
