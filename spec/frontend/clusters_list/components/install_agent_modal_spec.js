@@ -9,7 +9,8 @@ import {
   I18N_AGENT_MODAL,
   MAX_LIST_COUNT,
   EVENT_LABEL_MODAL,
-  EVENT_ACTIONS,
+  EVENT_ACTIONS_OPEN,
+  EVENT_ACTIONS_SELECT,
 } from '~/clusters_list/constants';
 import getAgentsQuery from '~/clusters_list/graphql/queries/get_agents.query.graphql';
 import getAgentConfigurations from '~/clusters_list/graphql/queries/agent_configurations.query.graphql';
@@ -161,7 +162,7 @@ describe('InstallAgentModal', () => {
 
       it('sends the event with the modalType', () => {
         findModal().vm.$emit('show');
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS.open, {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_OPEN, {
           label: EVENT_LABEL_MODAL,
           property: 'agent_registration',
         });
@@ -179,7 +180,7 @@ describe('InstallAgentModal', () => {
       });
 
       it('sends the correct tracking event', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS.select, {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_SELECT, {
           label: EVENT_LABEL_MODAL,
         });
       });
@@ -297,7 +298,7 @@ describe('InstallAgentModal', () => {
 
     it('sends the event with the modalType', () => {
       findModal().vm.$emit('show');
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS.open, {
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_OPEN, {
         label: EVENT_LABEL_MODAL,
         property: 'empty_state',
       });

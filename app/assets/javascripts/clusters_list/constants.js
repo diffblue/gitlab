@@ -239,9 +239,7 @@ export const CERTIFICATE_BASED = 'certificate_based';
 
 export const EVENT_LABEL_MODAL = 'agent_registration_modal';
 export const EVENT_LABEL_TABS = 'kubernetes_section_tabs';
-export const EVENT_ACTIONS = {
-  open: 'open_modal',
-  select: 'select_agent',
-  click: 'click_button',
-  change_tab: 'change_tab',
-};
+export const EVENT_ACTIONS_OPEN = 'open_modal';
+export const EVENT_ACTIONS_SELECT = 'select_agent';
+export const EVENT_ACTIONS_CLICK = 'click_button';
+export const EVENT_ACTIONS_CHANGE = 'change_tab';

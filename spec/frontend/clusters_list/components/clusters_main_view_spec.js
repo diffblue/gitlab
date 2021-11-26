@@ -10,7 +10,7 @@ import {
   MAX_CLUSTERS_LIST,
   MAX_LIST_COUNT,
   EVENT_LABEL_TABS,
-  EVENT_ACTIONS,
+  EVENT_ACTIONS_CHANGE,
 } from '~/clusters_list/constants';
 
 const defaultBranchName = 'default-branch';
@@ -87,7 +87,7 @@ describe('ClustersMainViewComponent', () => {
 
     it('sends the correct tracking event', () => {
       findTabs().vm.$emit('input', 1);
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS.change_tab, {
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, EVENT_ACTIONS_CHANGE, {
         label: EVENT_LABEL_TABS,
         property: AGENT,
       });

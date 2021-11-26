@@ -18,7 +18,9 @@ import {
   I18N_AGENT_MODAL,
   KAS_DISABLED_ERROR,
   EVENT_LABEL_MODAL,
-  EVENT_ACTIONS,
+  EVENT_ACTIONS_OPEN,
+  EVENT_ACTIONS_SELECT,
+  EVENT_ACTIONS_CLICK,
 } from '../constants';
 import { addAgentToStore, addAgentConfigToStore } from '../graphql/cache_update';
 import createAgent from '../graphql/mutations/create_agent.mutation.graphql';
@@ -31,7 +33,8 @@ const trackingMixin = Tracking.mixin({ label: EVENT_LABEL_MODAL });
 
 export default {
   modalId: INSTALL_AGENT_MODAL_ID,
-  EVENT_ACTIONS,
+  EVENT_ACTIONS_OPEN,
+  EVENT_ACTIONS_CLICK,
   EVENT_LABEL_MODAL,
   components: {
     AvailableAgentsDropdown,
@@ -146,7 +149,7 @@ export default {
   methods: {
     setAgentName(name) {
       this.agentName = name;
-      this.track(EVENT_ACTIONS.select);
+      this.track(EVENT_ACTIONS_SELECT);
     },
     closeModal() {
       this.$refs.modal.hide();
@@ -257,7 +260,7 @@ export default {
     static
     lazy
     @hidden="resetModal"
-    @show="track($options.EVENT_ACTIONS.open, { property: modalType })"
+    @show="track($options.EVENT_ACTIONS_OPEN, { property: modalType })"
   >
     <template v-if="isAgentRegistrationModal">
       <template v-if="!registered">
@@ -365,7 +368,7 @@ export default {
     <template #modal-footer>
       <gl-button
         v-if="canCancel"
-        :data-track-action="$options.EVENT_ACTIONS.click"
+        :data-track-action="$options.EVENT_ACTIONS_CLICK"
         :data-track-label="$options.EVENT_LABEL_MODAL"
         data-track-property="cancel"
         @click="closeModal"
@@ -376,7 +379,7 @@ export default {
         v-if="registered"
         variant="confirm"
         category="primary"
-        :data-track-action="$options.EVENT_ACTIONS.click"
+        :data-track-action="$options.EVENT_ACTIONS_CLICK"
         :data-track-label="$options.EVENT_LABEL_MODAL"
         data-track-property="close"
         @click="closeModal"
@@ -388,7 +391,7 @@ export default {
         :disabled="!nextButtonDisabled"
         variant="confirm"
         category="primary"
-        :data-track-action="$options.EVENT_ACTIONS.click"
+        :data-track-action="$options.EVENT_ACTIONS_CLICK"
         :data-track-label="$options.EVENT_LABEL_MODAL"
         data-track-property="register"
         @click="registerAgent"
@@ -408,7 +411,7 @@ export default {
         v-if="isEmptyStateModal"
         variant="confirm"
         category="primary"
-        :data-track-action="$options.EVENT_ACTIONS.click"
+        :data-track-action="$options.EVENT_ACTIONS_CLICK"
         :data-track-label="$options.EVENT_LABEL_MODAL"
         data-track-property="done"
         @click="closeModal"

@@ -7,7 +7,7 @@ import {
   MAX_LIST_COUNT,
   AGENT,
   EVENT_LABEL_TABS,
-  EVENT_ACTIONS,
+  EVENT_ACTIONS_CHANGE,
 } from '../constants';
 import Agents from './agents.vue';
 import InstallAgentModal from './install_agent_modal.vue';
@@ -49,7 +49,7 @@ export default {
     },
     trackTabChange(tab) {
       const tabName = CLUSTERS_TABS[tab].queryParamValue;
-      this.track(EVENT_ACTIONS.change_tab, { property: tabName });
+      this.track(EVENT_ACTIONS_CHANGE, { property: tabName });
     },
   },
 };
