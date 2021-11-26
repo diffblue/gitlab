@@ -1,2 +1,2 @@
-- if Feature.enabled?(:group_iterations, @project.group, default_enabled: true) && @project.group.licensed_feature_available?(:iterations)
+- if @project.group.licensed_feature_available?(:iterations)
   .js-iteration-select{ data: { can_edit: can_edit, group_path: group_path, project_path: project_path, issue_iid: issue_iid } }

@@ -14,7 +14,6 @@ RSpec.describe 'Group navbar' do
 
   before do
     group.add_maintainer(user)
-    stub_feature_flags(group_iterations: false)
     stub_feature_flags(customer_relations: false)
     stub_group_wikis(false)
     sign_in(user)
@@ -208,13 +207,6 @@ RSpec.describe 'Group navbar' do
   context 'when iterations are available' do
     before do
       stub_licensed_features(iterations: true)
-      stub_feature_flags(group_iterations: true)
-
-      insert_after_sub_nav_item(
-        _('Milestones'),
-        within: _('Issues'),
-        new_sub_nav_item_name: _('Iterations')
-      )
 
       visit group_path(group)
     end

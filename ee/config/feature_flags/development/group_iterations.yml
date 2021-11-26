@@ -1,8 +1,0 @@
----
-name: group_iterations
-introduced_by_url:
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/221047
-milestone:
-type: development
-group: group::project management
-default_enabled: true
