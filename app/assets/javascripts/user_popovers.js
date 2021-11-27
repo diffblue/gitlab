@@ -57,41 +57,35 @@ const populateUserInfo = (user) => {
   );
 };
 
-const initializedPopovers = new Map();
-let domObservedForChanges = false;
+function initPopover(el, user, mountPopover) {
+  const preloadedUserInfo = getPreloadedUserInfo(el.dataset);
 
-const addPopoversToModifiedTree = new MutationObserver(() => {
-  const userLinks = document?.querySelectorAll('.js-user-link, .gfm-project_member');
+  Object.assign(user, preloadedUserInfo);
 
-  if (userLinks) {
-    addPopovers(userLinks); /* eslint-disable-line no-use-before-define */
+  if (preloadedUserInfo.userId) {
+    populateUserInfo(user);
   }
-});
-
-function observeBody() {
-  if (!domObservedForChanges) {
-    addPopoversToModifiedTree.observe(document.body, {
-      subtree: true,
-      childList: true,
-    });
-
-    domObservedForChanges = true;
-  }
+  const UserPopoverComponent = Vue.extend(UserPopover);
+  const popoverInstance = new UserPopoverComponent({
+    propsData: {
+      target: el,
+      user,
+    },
+  });
+  mountPopover(popoverInstance);
+  // wait for component to actually mount
+  setTimeout(() => {
+    // trigger an event to force tooltip to show
+    const event = new MouseEvent('mouseenter');
+    event.isSelfTriggered = true;
+    el.dispatchEvent(event);
+  });
 }
 
-export default function addPopovers(elements = document.querySelectorAll('.js-user-link')) {
-  const userLinks = Array.from(elements);
-  const UserPopoverComponent = Vue.extend(UserPopover);
-
-  observeBody();
-
-  return userLinks
-    .filter(({ dataset }) => dataset.user || dataset.userId)
-    .map((el) => {
-      if (initializedPopovers.has(el)) {
-        return initializedPopovers.get(el);
-      }
-
+function initPopovers(userLinks, mountPopover) {
+  userLinks
+    .filter(({ dataset, user }) => !user && (dataset.user || dataset.userId))
+    .forEach((el) => {
       const user = {
         location: null,
         bio: null,
@@ -99,31 +93,52 @@ export default function addPopovers(elements = document.querySelectorAll('.js-us
         status: null,
         loaded: false,
       };
-      const renderedPopover = new UserPopoverComponent({
-        propsData: {
-          target: el,
-          user,
-        },
-      });
-
-      initializedPopovers.set(el, renderedPopover);
-
-      renderedPopover.$mount();
-
-      el.addEventListener('mouseenter', ({ target }) => {
+      el.user = user;
+      const init = initPopover.bind(null, el, user, mountPopover);
+      el.addEventListener('mouseenter', init, { once: true });
+      el.addEventListener('mouseenter', ({ target, isSelfTriggered }) => {
+        if (!isSelfTriggered) return;
         removeTitle(target);
-        const preloadedUserInfo = getPreloadedUserInfo(target.dataset);
-
-        Object.assign(user, preloadedUserInfo);
-
-        if (preloadedUserInfo.userId) {
-          populateUserInfo(user);
-        }
       });
       el.addEventListener('mouseleave', ({ target }) => {
         target.removeAttribute('aria-describedby');
       });
-
-      return renderedPopover;
     });
+}
+
+const isUserLinkNode = (node) =>
+  node.nodeType === 1 &&
+  (node.classList.contains('js-user-link') || node.classList.contains('gfm-project_member'));
+
+let observer;
+
+export default function addPopovers(
+  elements = document.querySelectorAll('.js-user-link'),
+  mountPopover = (popoverInstance) => popoverInstance.$mount(),
+) {
+  const userLinks = Array.from(elements);
+
+  initPopovers(userLinks, mountPopover);
+
+  if (!observer) {
+    observer = new MutationObserver((mutationsList) => {
+      mutationsList.filter((mutation) => mutation.type === 'childList' && mutation.addedNodes);
+
+      const newUserLinks = mutationsList.flatMap((mutation) =>
+        Array.from(mutation.addedNodes).filter(isUserLinkNode),
+      );
+
+      if (newUserLinks.length !== 0) {
+        initPopovers(newUserLinks, mountPopover);
+      }
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+    });
+
+    document.addEventListener('beforeunload', () => {
+      observer.disconnect();
+    });
+  }
 }
