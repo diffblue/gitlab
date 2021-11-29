@@ -29,4 +29,10 @@ RSpec.describe 'Sidekiq::Worker' do
       end
     end
   end
+
+  it 'forbids queue sidekiq worker in a Ci::ApplicationRecord transaction' do
+    Ci::Pipeline.transaction do
+      expect { worker_class.perform_async }.to raise_error(Sidekiq::Worker::EnqueueFromTransactionError)
+    end
+  end
 end
