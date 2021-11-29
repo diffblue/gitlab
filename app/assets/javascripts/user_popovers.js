@@ -106,9 +106,13 @@ function initPopovers(userLinks, mountPopover) {
     });
 }
 
-const isUserLinkNode = (node) =>
-  node.nodeType === 1 &&
-  (node.classList.contains('js-user-link') || node.classList.contains('gfm-project_member'));
+const userLinkSelector = 'a.js-user-link, a.gfm-project_member';
+
+const getUserLinkNodes = (node) => {
+  if (!('matches' in node)) return null;
+  if (node.matches(userLinkSelector)) return [node];
+  return Array.from(node.querySelectorAll(userLinkSelector));
+};
 
 let observer;
 
@@ -122,11 +126,15 @@ export default function addPopovers(
 
   if (!observer) {
     observer = new MutationObserver((mutationsList) => {
-      mutationsList.filter((mutation) => mutation.type === 'childList' && mutation.addedNodes);
-
-      const newUserLinks = mutationsList.flatMap((mutation) =>
-        Array.from(mutation.addedNodes).filter(isUserLinkNode),
-      );
+      const newUserLinks = mutationsList
+        .filter((mutation) => mutation.type === 'childList' && mutation.addedNodes)
+        .reduce((acc, mutation) => {
+          const userLinkNodes = Array.from(mutation.addedNodes)
+            .flatMap(getUserLinkNodes)
+            .filter(Boolean);
+          acc.push(...userLinkNodes);
+          return acc;
+        }, []);
 
       if (newUserLinks.length !== 0) {
         initPopovers(newUserLinks, mountPopover);

@@ -1,5 +1,4 @@
 import UsersCache from '~/lib/utils/users_cache';
-import waitUsingRealTimer from 'helpers/wait_using_real_timer';
 import initUserPopovers from '~/user_popovers';
 
 describe('User Popovers', () => {
@@ -73,7 +72,7 @@ describe('User Popovers', () => {
         document.body.appendChild(link);
       });
 
-      await waitUsingRealTimer();
+      await Promise.resolve();
 
       addedLinks.forEach((link) => {
         triggerEvent('mouseenter', link);

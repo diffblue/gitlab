@@ -18,11 +18,9 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
-import initUserPopovers from '~/user_popovers';
 import { addTypenamesToDiscussion, generateNote } from './mock_data';
 
 jest.mock('~/flash');
-jest.mock('~/user_popovers');
 
 Vue.use(VueApollo);
 
@@ -136,13 +134,6 @@ describe('Vulnerability Footer', () => {
           notes: [normalizeGraphQLNote(discussion2.notes.nodes[0])],
         },
       });
-    });
-
-    it('calls initUserPopovers when the component is updated', async () => {
-      createWrapper({ queryHandler: discussionsHandler({ discussions: [] }) });
-      expect(initUserPopovers).not.toHaveBeenCalled();
-      await waitForPromises();
-      expect(initUserPopovers).toHaveBeenCalled();
     });
 
     it('shows an error the discussions could not be retrieved', async () => {

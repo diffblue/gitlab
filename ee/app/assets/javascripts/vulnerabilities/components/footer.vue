@@ -10,7 +10,6 @@ import createFlash from '~/flash';
 import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';
-import initUserPopovers from '~/user_popovers';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { normalizeGraphQLNote } from '../helpers';
 import GenericReportSection from './generic_report/report_section.vue';
@@ -116,11 +115,6 @@ export default {
   beforeDestroy() {
     this.stopPolling();
     this.unbindVisibilityListener();
-  },
-  updated() {
-    this.$nextTick(() => {
-      initUserPopovers(this.$el.querySelectorAll('.js-user-link'));
-    });
   },
   methods: {
     startPolling() {
