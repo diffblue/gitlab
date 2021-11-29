@@ -51,7 +51,7 @@ RSpec.describe ProfilesHelper do
     using RSpec::Parameterized::TableSyntax
 
     where(:expiration_enforced, :result) do
-      true  | "Key will be deleted on this date."
+      true  | "Key becomes invalid on this date."
       false | "Key can still be used after expiration."
     end
 

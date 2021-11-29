@@ -33,9 +33,11 @@ module EE
       end
 
       def expires_at_before_max_expiry_date
-        return errors.add(:key, message: 'does not have an expiry date but maximum allowable lifetime for SSH keys is enforced by the instance administrator') if expires_at.blank?
+        return errors.add(:key, message: 'has no expiry date but an expiry date is required for SSH keys on this instance. Contact the instance administrator.') if expires_at.blank?
 
-        errors.add(:key, message: 'has greater than the maximum allowable lifetime for SSH keys enforced by the instance administrator') if expires_at > ssh_key_max_expiry_date
+        # when the key is not yet persisted the `created_at` field is nil
+        key_creation_date = created_at.presence || Time.current
+        errors.add(:key, message: 'has an invalid expiry date. Set a shorter lifetime for the key or contact the instance administrator.') if expires_at > key_creation_date + ::Gitlab::CurrentSettings.max_ssh_key_lifetime.days
       end
     end
 
