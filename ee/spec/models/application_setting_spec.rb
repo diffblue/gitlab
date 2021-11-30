@@ -440,25 +440,13 @@ RSpec.describe ApplicationSetting do
           let!(:child_group) { create(:group, parent: groups.first) }
           let!(:child_group_indexed_through_parent) { create(:group, parent: groups.last) }
 
-          shared_examples 'returns groups that are allowed to be indexed' do
-            specify do
-              create(:elasticsearch_indexed_namespace, namespace: child_group)
+          specify do
+            create(:elasticsearch_indexed_namespace, namespace: child_group)
 
-              expect(setting.elasticsearch_limited_namespaces).to match_array(
-                [groups.last, child_group, child_group_indexed_through_parent])
-              expect(setting.elasticsearch_limited_namespaces(true)).to match_array(
-                [groups.last, child_group])
-            end
-          end
-
-          it_behaves_like 'returns groups that are allowed to be indexed'
-
-          context 'when feature flag :linear_application_settings_elasticsearch_limited_namespaces is disabled' do
-            before do
-              stub_feature_flags(linear_application_settings_elasticsearch_limited_namespaces: false)
-            end
-
-            it_behaves_like 'returns groups that are allowed to be indexed'
+            expect(setting.elasticsearch_limited_namespaces).to match_array(
+              [groups.last, child_group, child_group_indexed_through_parent])
+            expect(setting.elasticsearch_limited_namespaces(true)).to match_array(
+              [groups.last, child_group])
           end
         end
 
