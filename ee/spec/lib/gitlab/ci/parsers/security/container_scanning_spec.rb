@@ -3,18 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
-  let(:project) { artifact.project }
-  let(:pipeline) { artifact.job.pipeline }
+  let(:project) { create(:project, :repository) }
+  let(:current_branch) { project.default_branch }
+  let(:pipeline) { create(:ci_pipeline, ref: current_branch, project: project) }
+  let(:job) { create(:ci_build, pipeline: pipeline)}
+  let(:artifact) { create(:ee_ci_job_artifact, :container_scanning, job: job) }
   let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
+  let(:image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e' }
+  let(:default_branch_image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest' }
 
-  before do
-    artifact.each_blob { |blob| described_class.parse!(blob, report) }
-  end
-
-  describe '#parse!' do
-    let(:artifact) { create(:ee_ci_job_artifact, :container_scanning) }
-    let(:image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e' }
-
+  shared_examples 'report' do
     it "parses all identifiers and findings for unapproved vulnerabilities" do
       expect(report.findings.length).to eq(8)
       expect(report.identifiers.length).to eq(8)
@@ -40,6 +38,68 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
 
     it "adds report image's name to raw_metadata" do
       expect(Gitlab::Json.parse(report.findings.first.raw_metadata).dig('location', 'image')).to eq(image)
+    end
+  end
+
+  describe '#parse!' do
+    context 'when improved_container_scan_matching is disabled' do
+      before do
+        stub_feature_flags(improved_container_scan_matching: false)
+        artifact.each_blob { |blob| described_class.parse!(blob, report) }
+      end
+
+      it_behaves_like 'report'
+
+      context 'when not on default branch' do
+        let(:current_branch) { 'not-default' }
+
+        it 'does not include default_branch_image' do
+          location = report.findings.first.location
+
+          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
+          expect(location).to have_attributes(
+            default_branch_image: nil,
+            improved_container_scan_matching_enabled?: false
+          )
+        end
+      end
+    end
+
+    context 'when improved_container_scan_matching is enabled' do
+      before do
+        stub_feature_flags(improved_container_scan_matching: true)
+        artifact.each_blob { |blob| described_class.parse!(blob, report) }
+      end
+
+      it_behaves_like 'report'
+
+      context 'when on default branch' do
+        let(:current_branch) { project.default_branch }
+
+        it 'does not include default_branch_image in location' do
+          location = report.findings.first.location
+
+          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
+          expect(location).to have_attributes(
+            default_branch_image: nil,
+            improved_container_scan_matching_enabled?: true
+          )
+        end
+      end
+
+      context 'when not on default branch' do
+        let(:current_branch) { 'not-default' }
+
+        it 'includes default_branch_image in location' do
+          location = report.findings.first.location
+
+          expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::ContainerScanning)
+          expect(location).to have_attributes(
+            default_branch_image: default_branch_image,
+            improved_container_scan_matching_enabled?: true
+          )
+        end
+      end
     end
   end
 end

@@ -21,7 +21,8 @@
           "version": "2.24-11+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -57,7 +58,8 @@
           "version": "2.24-11+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -92,7 +94,8 @@
           "version": "2.24-11+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -127,7 +130,8 @@
           "version": "2.24-11+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -162,7 +166,8 @@
           "version": "0.168-1"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -197,7 +202,8 @@
           "version": "2.24-11+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -232,7 +238,8 @@
           "version": "3.3-1"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
@@ -268,7 +275,8 @@
           "version": "5.24.1-3+deb9u3"
         },
         "operating_system": "debian:9",
-        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e"
+        "image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e",
+        "default_branch_image": "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest"
       },
       "identifiers": [
         {
