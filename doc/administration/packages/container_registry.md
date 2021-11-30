@@ -484,6 +484,12 @@ storage:
 
 #### Migrate to object storage without downtime
 
+WARNING:
+Using [AWS DataSync](https://aws.amazon.com/datasync/)
+to copy the registry data to or between S3 buckets creates invalid metadata objects in the bucket.
+For additional details, see [Tags with an empty name](#tags-with-an-empty-name).
+To move data to and between S3 buckets, the AWS CLI `sync` operation is recommended.
+
 To migrate storage without stopping the Container Registry, set the Container Registry
 to read-only mode. On large instances, this may require the Container Registry
 to be in read-only mode for a while. During this time,
@@ -1500,6 +1506,28 @@ Follow the [steps that Docker recommends to upgrade v1 images](https://docs.dock
 The most straightforward option is to pull those images and push them once again to the registry,
 using a Docker client version above v1.12. Docker converts images automatically before pushing them
 to the registry. Once done, all your v1 images should now be available as v2 images.
+
+### Tags with an empty name
+
+If using [AWS DataSync](https://aws.amazon.com/datasync/)
+to copy the registry data to or between S3 buckets, an empty metadata object is created in the root
+path of each container repository in the destination bucket. This causes the registry to interpret
+such files as a tag that appears with no name in the GitLab UI and API. For more information, see
+[this issue](https://gitlab.com/gitlab-org/container-registry/-/issues/341).
+
+To fix this you can do one of two things:
+
+- Use the AWS CLI [`rm`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/rm.html)
+  command to remove the empty objects from the root of **each** affected repository. Pay special
+  attention to the trailing `/` and make sure **not** to use the `--recursive` option:
+
+  ```shell
+  aws s3 rm s3://<bucket>/docker/registry/v2/repositories/<path to repository>/
+  ```
+
+- Use the AWS CLI [`sync`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/sync.html)
+  command to copy the registry data to a new bucket and configure the registry to use it. This
+  leaves the empty objects behind.
 
 ### Advanced Troubleshooting
 
