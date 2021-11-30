@@ -6,7 +6,8 @@ module Security
       SCAN_TEMPLATES = {
         'secret_detection' => 'Jobs/Secret-Detection',
         'cluster_image_scanning' => 'Security/Cluster-Image-Scanning',
-        'container_scanning' => 'Security/Container-Scanning'
+        'container_scanning' => 'Security/Container-Scanning',
+        'sast' => 'Security/SAST'
       }.freeze
 
       def execute(action, ci_variables)
@@ -15,6 +16,8 @@ module Security
           secret_detection_configuration(ci_variables)
         when 'container_scanning', 'cluster_image_scanning'
           scan_configuration(action[:scan], ci_variables)
+        when 'sast'
+          child_pipeline_configuration(action[:scan])
         else
           error_script('Invalid Scan type')
         end
@@ -42,6 +45,17 @@ module Security
         ci_configuration[template.to_sym]
           .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
           .except(:rules)
+      end
+
+      def child_pipeline_configuration(template)
+        {
+          inherit: {
+            variables: false
+          },
+          trigger: {
+            include: [{ template: "#{SCAN_TEMPLATES[template.to_s]}.gitlab-ci.yml" }]
+          }
+        }
       end
 
       def error_script(error_message)
