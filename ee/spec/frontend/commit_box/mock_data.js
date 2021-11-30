@@ -1,15 +1,18 @@
 export const mockDownstreamQueryResponse = {
   data: {
     project: {
+      id: '1',
       pipeline: {
         path: '/root/ci-project/-/pipelines/790',
+        id: 'pipeline-1',
         downstream: {
           nodes: [
             {
               id: 'gid://gitlab/Ci::Pipeline/612',
               path: '/root/job-log-sections/-/pipelines/612',
-              project: { name: 'job-log-sections', __typename: 'Project' },
+              project: { id: '1', name: 'job-log-sections', __typename: 'Project' },
               detailedStatus: {
+                id: 'status-1',
                 group: 'success',
                 icon: 'status_success',
                 label: 'passed',
@@ -30,7 +33,9 @@ export const mockDownstreamQueryResponse = {
 export const mockUpstreamQueryResponse = {
   data: {
     project: {
+      id: '1',
       pipeline: {
+        id: 'pipeline-1',
         path: '/root/ci-project/-/pipelines/790',
         downstream: {
           nodes: [],
@@ -39,8 +44,9 @@ export const mockUpstreamQueryResponse = {
         upstream: {
           id: 'gid://gitlab/Ci::Pipeline/610',
           path: '/root/trigger-downstream/-/pipelines/610',
-          project: { name: 'trigger-downstream', __typename: 'Project' },
+          project: { id: '1', name: 'trigger-downstream', __typename: 'Project' },
           detailedStatus: {
+            id: 'status-1',
             group: 'success',
             icon: 'status_success',
             label: 'passed',
@@ -57,15 +63,18 @@ export const mockUpstreamQueryResponse = {
 export const mockUpstreamDownstreamQueryResponse = {
   data: {
     project: {
+      id: '1',
       pipeline: {
+        id: 'pipeline-1',
         path: '/root/ci-project/-/pipelines/790',
         downstream: {
           nodes: [
             {
               id: 'gid://gitlab/Ci::Pipeline/612',
               path: '/root/job-log-sections/-/pipelines/612',
-              project: { name: 'job-log-sections', __typename: 'Project' },
+              project: { id: '1', name: 'job-log-sections', __typename: 'Project' },
               detailedStatus: {
+                id: 'status-1',
                 group: 'success',
                 icon: 'status_success',
                 label: 'passed',
@@ -79,8 +88,9 @@ export const mockUpstreamDownstreamQueryResponse = {
         upstream: {
           id: 'gid://gitlab/Ci::Pipeline/610',
           path: '/root/trigger-downstream/-/pipelines/610',
-          project: { name: 'trigger-downstream', __typename: 'Project' },
+          project: { id: '1', name: 'trigger-downstream', __typename: 'Project' },
           detailedStatus: {
+            id: 'status-1',
             group: 'success',
             icon: 'status_success',
             label: 'passed',
@@ -96,9 +106,11 @@ export const mockUpstreamDownstreamQueryResponse = {
 
 export const mockStages = [
   {
+    id: 'stage-1',
     name: 'build',
     title: 'build: passed',
     status: {
+      id: 'status-1',
       icon: 'status_success',
       text: 'passed',
       label: 'passed',
@@ -114,9 +126,11 @@ export const mockStages = [
     dropdown_path: '/root/ci-project/-/pipelines/611/stage.json?stage=build',
   },
   {
+    id: 'stage-2',
     name: 'test',
     title: 'test: passed',
     status: {
+      id: 'status-2',
       icon: 'status_success',
       text: 'passed',
       label: 'passed',
@@ -132,9 +146,11 @@ export const mockStages = [
     dropdown_path: '/root/ci-project/-/pipelines/611/stage.json?stage=test',
   },
   {
+    id: 'stage-3',
     name: 'test_two',
     title: 'test_two: passed',
     status: {
+      id: 'status-3',
       icon: 'status_success',
       text: 'passed',
       label: 'passed',
@@ -150,9 +166,11 @@ export const mockStages = [
     dropdown_path: '/root/ci-project/-/pipelines/611/stage.json?stage=test_two',
   },
   {
+    id: 'stage-4',
     name: 'manual',
     title: 'manual: skipped',
     status: {
+      id: 'status-4',
       icon: 'status_skipped',
       text: 'skipped',
       label: 'skipped',
@@ -164,6 +182,7 @@ export const mockStages = [
       favicon:
         '/assets/ci_favicons/favicon_status_skipped-0b9c5e543588945e8c4ca57786bbf2d0c56631959c9f853300392d0315be829b.png',
       action: {
+        id: 'action-4',
         icon: 'play',
         title: 'Play all manual',
         path: '/root/ci-project/-/pipelines/611/stages/manual/play_manual',
@@ -175,9 +194,11 @@ export const mockStages = [
     dropdown_path: '/root/ci-project/-/pipelines/611/stage.json?stage=manual',
   },
   {
+    id: 'stage-5',
     name: 'deploy',
     title: 'deploy: passed',
     status: {
+      id: 'status-5',
       icon: 'status_success',
       text: 'passed',
       label: 'passed',
@@ -193,9 +214,11 @@ export const mockStages = [
     dropdown_path: '/root/ci-project/-/pipelines/611/stage.json?stage=deploy',
   },
   {
+    id: 'stage-6',
     name: 'qa',
     title: 'qa: passed',
     status: {
+      id: 'status-6',
       icon: 'status_success',
       text: 'passed',
       label: 'passed',

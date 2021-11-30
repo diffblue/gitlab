@@ -2,7 +2,9 @@
 
 query boardListEpics($fullPath: ID!, $boardId: BoardsEpicBoardID!, $filters: EpicFilters) {
   group(fullPath: $fullPath) {
+    id
     board: epicBoard(id: $boardId) {
+      id
       lists(epicFilters: $filters) {
         nodes {
           ...EpicBoardListFragment

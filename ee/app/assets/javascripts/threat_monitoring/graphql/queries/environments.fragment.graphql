@@ -1,6 +1,7 @@
 fragment Environments on NetworkPolicy {
   environments {
     nodes {
+      id
       name
     }
   }

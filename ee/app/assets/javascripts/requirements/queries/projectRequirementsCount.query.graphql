@@ -1,5 +1,6 @@
 query projectRequirements($projectPath: ID!) {
   project(fullPath: $projectPath) {
+    id
     requirementStatesCount {
       opened
       archived

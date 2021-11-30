@@ -108,7 +108,9 @@ describe('Codequality report app', () => {
       const emptyResponse = {
         data: {
           project: {
+            id: '1',
             pipeline: {
+              id: 'pipeline-1',
               codeQualityReports: {
                 ...codeQualityViolations,
                 nodes: [],

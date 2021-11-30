@@ -14,6 +14,7 @@ export const getHealthStatusQueryResponse = ({ state = 'opened', healthStatus = 
   return {
     data: {
       workspace: {
+        id: '1',
         issuable: { id: 'gid://gitlab/Issue/1', state, healthStatus, __typename: 'Issue' },
         __typename: 'Project',
       },

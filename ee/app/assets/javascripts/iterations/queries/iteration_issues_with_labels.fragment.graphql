@@ -8,6 +8,7 @@ fragment IterationIssuesWithLabels on IssueConnection {
     ...PageInfo
   }
   nodes {
+    id
     iid
     labels {
       nodes {

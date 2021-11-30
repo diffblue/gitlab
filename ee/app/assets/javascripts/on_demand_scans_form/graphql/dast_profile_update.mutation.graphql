@@ -1,6 +1,7 @@
 mutation dastProfileUpdate($input: DastProfileUpdateInput!) {
   dastProfileUpdate(input: $input) {
     dastProfile {
+      id
       editPath
     }
     pipelineUrl

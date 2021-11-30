@@ -1,5 +1,6 @@
 query getProjectsTestCoverage($groupFullPath: ID!, $projectIds: [ID!]) {
   group(fullPath: $groupFullPath) {
+    id
     projects(hasCodeCoverage: true, ids: $projectIds) {
       nodes {
         fullPath

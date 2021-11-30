@@ -2,6 +2,7 @@
 
 query getEscalationPolicies($projectPath: ID!) {
   project(fullPath: $projectPath) {
+    id
     incidentManagementEscalationPolicies {
       nodes {
         ...EscalationPolicy

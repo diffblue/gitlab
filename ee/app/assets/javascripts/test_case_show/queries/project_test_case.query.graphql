@@ -2,6 +2,7 @@
 
 query projectTestCase($projectPath: ID!, $testCaseId: String) {
   project(fullPath: $projectPath) {
+    id
     name
     issue(iid: $testCaseId) {
       ...TestCase

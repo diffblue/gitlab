@@ -186,7 +186,7 @@ export const mockNetworkPoliciesResponse = [
     fromAutoDevops: false,
     updatedAt: '2021-06-08T04:01:11Z',
     environments: {
-      nodes: [{ name: 'production', __typename: 'Environment' }],
+      nodes: [{ id: 'env-1', name: 'production', __typename: 'Environment' }],
     },
   },
 ];
@@ -251,7 +251,13 @@ export const mockAlerts = [
     status: 'TRIGGERED',
     startedAt: '2020-11-19T18:36:23Z',
     eventCount: '1',
-    issue: { iid: '5', state: 'opened', title: 'Issue 01', webUrl: 'http://test.com/05' },
+    issue: {
+      id: 'issue-1',
+      iid: '5',
+      state: 'opened',
+      title: 'Issue 01',
+      webUrl: 'http://test.com/05',
+    },
     assignees: {
       nodes: [
         {
@@ -271,7 +277,13 @@ export const mockAlerts = [
     status: 'ACKNOWLEDGED',
     startedAt: '2020-11-16T21:59:28Z',
     eventCount: '2',
-    issue: { iid: '6', state: 'closed', title: 'Issue 02', webUrl: 'http://test.com/06' },
+    issue: {
+      id: 'issue-2',
+      iid: '6',
+      state: 'closed',
+      title: 'Issue 02',
+      webUrl: 'http://test.com/06',
+    },
     assignees: { nodes: [] },
   },
   {

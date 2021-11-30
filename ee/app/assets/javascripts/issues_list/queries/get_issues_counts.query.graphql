@@ -20,6 +20,7 @@ query getIssuesCountEE(
   $not: NegatedIssueFilterInput
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
+    id
     openedIssues: issues(
       includeSubepics: true
       includeSubgroups: true
@@ -88,6 +89,7 @@ query getIssuesCountEE(
     }
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
+    id
     openedIssues: issues(
       includeSubepics: true
       state: opened

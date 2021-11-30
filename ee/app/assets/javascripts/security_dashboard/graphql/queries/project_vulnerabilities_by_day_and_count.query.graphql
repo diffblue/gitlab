@@ -4,6 +4,7 @@ query projectVulnerabilitiesCount(
   $endDate: ISO8601Date!
 ) {
   project(fullPath: $fullPath) {
+    id
     vulnerabilitiesCountByDay(startDate: $startDate, endDate: $endDate) {
       nodes {
         date

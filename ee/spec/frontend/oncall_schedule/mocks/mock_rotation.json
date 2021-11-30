@@ -12,6 +12,7 @@
     "participants": {
       "nodes": [
         {
+          "id": "49",
           "user": {
             "id": "gid://gitlab/IncidentManagement::OncallParticipant/49",
             "username": "nora.schaden",
@@ -27,6 +28,7 @@
       "nodes": [
         {
           "participant": {
+            "id": "1",
             "colorWeight": "500",
             "colorPalette": "blue",
             "user": {
@@ -41,6 +43,7 @@
         },
         {
           "participant": {
+            "id": "2",
             "colorWeight": "500",
             "colorPalette": "orange",
             "user": {
@@ -70,6 +73,7 @@
     "participants": {
       "nodes": [
         {
+          "id": "99",
           "user": {
             "id": "gid://gitlab/IncidentManagement::OncallParticipant/99",
             "username": "david.oregan",
@@ -85,6 +89,7 @@
       "nodes": [
         {
           "participant": {
+            "id": "38",
             "colorWeight": "500",
             "colorPalette": "aqua",
             "user": {
@@ -99,6 +104,7 @@
         },
         {
           "participant": {
+            "id": "39",
             "colorWeight": "500",
             "colorPalette": "green",
             "user": {
@@ -128,6 +134,7 @@
     "participants": {
       "nodes": [
         {
+          "id": "48",
           "user": {
             "id": "gid://gitlab/IncidentManagement::OncallParticipant/48",
             "username": "root",
@@ -143,6 +150,7 @@
       "nodes": [
         {
           "participant": {
+            "id": "40",
             "colorWeight": "500",
             "colorPalette": "magenta",
             "user": {
@@ -157,6 +165,7 @@
         },
         {
           "participant": {
+            "id": "41",
             "colorWeight": "600",
             "colorPalette": "blue",
             "user": {
@@ -186,6 +195,7 @@
   "participants": {
     "nodes": [
       {
+        "id": "51",
         "user": {
           "id": "gid://gitlab/IncidentManagement::OncallParticipant/51",
           "username": "oregand",
@@ -201,6 +211,7 @@
     "nodes": [
       {
         "participant": {
+          "id": "43",
           "colorWeight": "600",
           "colorPalette": "orange",
           "user": {
@@ -215,6 +226,7 @@
       },
       {
         "participant": {
+          "id": "44",
           "colorWeight": "600",
           "colorPalette": "aqua",
           "user": {

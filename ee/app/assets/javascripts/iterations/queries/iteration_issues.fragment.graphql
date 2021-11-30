@@ -7,6 +7,7 @@ fragment IterationIssues on IssueConnection {
     ...PageInfo
   }
   nodes {
+    id
     iid
     title
     webUrl

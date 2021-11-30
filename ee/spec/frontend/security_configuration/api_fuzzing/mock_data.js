@@ -1,6 +1,7 @@
 export const apiFuzzingConfigurationQueryResponse = {
   data: {
     project: {
+      id: '1',
       apiFuzzingCiConfiguration: {
         scanModes: ['HAR', 'OPENAPI'],
         scanProfiles: [

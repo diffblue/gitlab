@@ -4,6 +4,7 @@ export const generateVulnerabilities = () => [
     detectedAt: '2020-07-29T15:36:54Z',
     hasSolutions: true,
     mergeRequest: {
+      id: 'mr-1',
       webUrl: 'www.testmr.com/1',
       state: 'status_warning',
       securityAutoFix: true,
@@ -29,16 +30,18 @@ export const generateVulnerabilities = () => [
         'registry.gitlab.com/groulot/container-scanning-test/main:5f21de6956aee99ddb68ae49498662d9872f50ff',
     },
     project: {
+      id: 'project-1',
       nameWithNamespace: 'Administrator / Security reports',
     },
     scanner: {
+      id: 'scanner-1',
       vendor: 'GitLab',
     },
     issueLinks: {
-      nodes: [{ issue: { iid: 15 } }],
+      nodes: [{ id: 'issue-1', issue: { id: 'issue-1', iid: 15 } }],
     },
     externalIssueLinks: {
-      nodes: [{ issue: { iid: 15, externalTracker: 'jira' } }],
+      nodes: [{ id: 'issue-1', issue: { iid: 15, externalTracker: 'jira' } }],
     },
   },
   {
@@ -62,9 +65,11 @@ export const generateVulnerabilities = () => [
         '/gitlab-org/security-reports2/-/blob/e5c61e4d5d0b8418011171def04ca0aa36532621/src/main/java/com/gitlab/security_products/tests/App.java',
     },
     project: {
+      id: 'project-2',
       nameWithNamespace: 'Administrator / Vulnerability reports',
     },
     scanner: {
+      id: 'scanner-2',
       vendor: 'GitLab',
     },
   },
@@ -80,9 +85,11 @@ export const generateVulnerabilities = () => [
       file: 'src/main/java/com/gitlab/security_products/tests/App.java',
     },
     project: {
+      id: 'project-3',
       nameWithNamespace: 'Mixed Vulnerabilities / Dependency List Test 01',
     },
     scanner: {
+      id: 'scanner-3',
       vendor: 'My Custom Scanner',
     },
   },
@@ -95,6 +102,7 @@ export const generateVulnerabilities = () => [
       file: 'yarn.lock',
     },
     project: {
+      id: 'project-4',
       nameWithNamespace: 'Mixed Vulnerabilities / Rails App',
     },
     scanner: {},
@@ -106,6 +114,7 @@ export const generateVulnerabilities = () => [
     state: 'DISMISSED',
     location: {},
     project: {
+      id: 'project-5',
       nameWithNamespace: 'Administrator / Security reports',
     },
     scanner: {},
@@ -119,6 +128,7 @@ export const generateVulnerabilities = () => [
       path: '/v1/trees',
     },
     project: {
+      id: 'project-6',
       nameWithNamespace: 'Administrator / Security reports',
     },
     scanner: {},

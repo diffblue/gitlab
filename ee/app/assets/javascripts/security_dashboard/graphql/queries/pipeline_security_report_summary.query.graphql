@@ -7,6 +7,7 @@ query pipelineSecuritySummary(
   $reportTypes: [SecurityReportTypeEnum!]
 ) {
   project(fullPath: $fullPath) {
+    id
     pipeline(iid: $pipelineIid) {
       id
       ...JobArtifacts

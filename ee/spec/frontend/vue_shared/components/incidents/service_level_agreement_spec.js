@@ -27,7 +27,7 @@ const MINUTES = {
 };
 
 const issueStateResponse = (state = 'opened') => ({
-  data: { project: { issue: { state, id: '1' } } },
+  data: { project: { id: 'project-1', issue: { state, id: '1' } } },
 });
 
 describe('Service Level Agreement', () => {

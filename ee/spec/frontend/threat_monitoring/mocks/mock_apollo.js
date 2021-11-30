@@ -1,12 +1,15 @@
 import { mockAlertDetails, mockAlerts, mockPageInfo } from './mock_data';
 
 export const getAlertsQuerySpy = jest.fn().mockResolvedValue({
-  data: { project: { alertManagementAlerts: { nodes: mockAlerts, pageInfo: mockPageInfo } } },
+  data: {
+    project: { id: '1', alertManagementAlerts: { nodes: mockAlerts, pageInfo: mockPageInfo } },
+  },
 });
 
 export const emptyGetAlertsQuerySpy = jest.fn().mockResolvedValue({
   data: {
     project: {
+      id: '1',
       alertManagementAlerts: {
         nodes: [],
         pageInfo: { endCursor: '', hasNextPage: false, hasPreviousPage: false, startCursor: '' },
@@ -20,7 +23,7 @@ export const loadingQuerySpy = jest.fn().mockReturnValue(new Promise(() => {}));
 export const apolloFailureResponse = jest.fn().mockRejectedValue();
 
 export const getAlertDetailsQuerySpy = jest.fn().mockResolvedValue({
-  data: { project: { alertManagementAlerts: { nodes: [mockAlertDetails] } } },
+  data: { project: { id: '1', alertManagementAlerts: { nodes: [mockAlertDetails] } } },
 });
 
 export const getAlertDetailsQueryErrorMessage =
@@ -34,6 +37,7 @@ export const networkPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
       project: {
+        id: '1',
         networkPolicies: {
           nodes,
         },
@@ -45,6 +49,7 @@ export const scanExecutionPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
       project: {
+        id: '3',
         scanExecutionPolicies: {
           nodes,
         },

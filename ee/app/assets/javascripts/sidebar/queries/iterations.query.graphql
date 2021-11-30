@@ -2,6 +2,7 @@
 
 query issueIterations($fullPath: ID!, $title: String, $state: IterationState) {
   group(fullPath: $fullPath) {
+    id
     iterations(title: $title, state: $state) {
       nodes {
         ...IterationFragment

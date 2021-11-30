@@ -16,6 +16,7 @@ query projectIssues(
   $nextPageCursor: String = ""
 ) {
   project(fullPath: $projectPath) {
+    id
     name
     issueStatusCounts(
       types: $types
@@ -40,6 +41,7 @@ query projectIssues(
       before: $prevPageCursor
     ) {
       nodes {
+        id
         iid
         title
         description

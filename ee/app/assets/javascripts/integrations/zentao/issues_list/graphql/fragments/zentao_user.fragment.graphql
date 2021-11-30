@@ -1,4 +1,5 @@
 fragment ZentaoUser on UserCore {
+  id
   avatarUrl
   name
   webUrl

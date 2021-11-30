@@ -106,9 +106,11 @@ export const savedScans = [
 
 export const failedSiteValidations = [
   {
+    id: '1',
     normalizedTargetUrl: 'http://example.com:80',
   },
   {
+    id: '2',
     normalizedTargetUrl: 'https://example.com:443',
   },
 ];

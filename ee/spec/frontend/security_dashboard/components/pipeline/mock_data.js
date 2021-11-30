@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 export const pipelineSecurityReportSummary = {
   data: {
     project: {
+      id: 'project-1',
       pipeline: {
         id: 'gid://gitlab/Ci::Pipeline/99',
         securityReportSummary: {
@@ -69,6 +70,7 @@ export const pipelineSecurityReportSummary = {
         jobs: {
           nodes: [
             {
+              id: 'job-1',
               name: 'api_fuzzing',
               artifacts: {
                 nodes: [
@@ -86,6 +88,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-2',
               name: 'coverage_fuzzing',
               artifacts: {
                 nodes: [
@@ -103,6 +106,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-3',
               name: 'sast-tslint',
               artifacts: {
                 nodes: [
@@ -120,6 +124,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-4',
               name: 'sast-spotbugs',
               artifacts: {
                 nodes: [
@@ -137,6 +142,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-5',
               name: 'sast-sobelow',
               artifacts: {
                 nodes: [
@@ -154,6 +160,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-6',
               name: 'sast-pmd-apex',
               artifacts: {
                 nodes: [
@@ -171,6 +178,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-7',
               name: 'sast-eslint',
               artifacts: {
                 nodes: [
@@ -188,6 +196,7 @@ export const pipelineSecurityReportSummary = {
               },
             },
             {
+              id: 'job-8',
               name: 'secrets',
               artifacts: {
                 nodes: [
@@ -216,7 +225,9 @@ export const scansWithErrors = [{ errors: ['error description'], name: 'scan-nam
 export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurityReportSummary, {
   data: {
     project: {
+      id: 'project-1',
       pipeline: {
+        id: 'pipeline-1',
         securityReportSummary: {
           dast: {
             scans: {
@@ -232,7 +243,9 @@ export const pipelineSecurityReportSummaryWithErrors = merge({}, pipelineSecurit
 export const pipelineSecurityReportSummaryEmpty = merge({}, pipelineSecurityReportSummary, {
   data: {
     project: {
+      id: 'project-1',
       pipeline: {
+        id: 'pipeline-1',
         securityReportSummary: null,
       },
     },

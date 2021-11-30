@@ -19,6 +19,7 @@ fragment TestCase on Issue {
   confidential
   moved
   movedTo {
+    id
     webUrl
   }
   author {

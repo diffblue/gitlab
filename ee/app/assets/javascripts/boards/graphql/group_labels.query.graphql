@@ -1,5 +1,6 @@
 query EpicLabels($fullPath: ID!, $search: String) {
   group(fullPath: $fullPath) {
+    id
     labels(
       includeAncestorGroups: true
       includeDescendantGroups: true

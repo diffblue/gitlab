@@ -2,6 +2,7 @@
 
 query ProjectBoardIterations($fullPath: ID!, $title: String) {
   project(fullPath: $fullPath) {
+    id
     iterations(includeAncestors: true, title: $title) {
       nodes {
         ...IterationFragment

@@ -8,6 +8,7 @@ export const mockZentaoIssue1 = {
   status: 'Selected for Development',
   labels: [
     {
+      id: 'label-1',
       title: 'backend',
       name: 'backend',
       color: '#0052CC',
@@ -15,12 +16,14 @@ export const mockZentaoIssue1 = {
     },
   ],
   author: {
+    id: 0,
     name: 'jhope',
     web_url: 'https://gitlab-zentao.atlassian.net/people/5e32f803e127810e82875bc1',
     avatar_url: null,
   },
   assignees: [
     {
+      id: 'user-2',
       name: 'Kushal Pandya',
       web_url: 'https://gitlab-zentao.atlassian.net/people/1920938475',
       avatar_url: null,
@@ -40,6 +43,7 @@ export const mockZentaoIssue2 = {
   status: 'Backlog',
   labels: [],
   author: {
+    id: 1,
     name: 'Gabe Weaver',
     web_url: 'https://gitlab-zentao.atlassian.net/people/5e320a31fe03e20c9d1dccde',
     avatar_url: null,
@@ -59,6 +63,7 @@ export const mockZentaoIssue3 = {
   status: 'Backlog',
   labels: [],
   author: {
+    id: 2,
     name: 'Gabe Weaver',
     web_url: 'https://gitlab-zentao.atlassian.net/people/5e320a31fe03e20c9d1dccde',
     avatar_url: null,
