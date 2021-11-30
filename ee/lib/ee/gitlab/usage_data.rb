@@ -306,6 +306,7 @@ module EE
         # Omitted because no user, creator or author associated: `campaigns_imported_from_github`, `ldap_group_links`
         override :usage_activity_by_stage_manage
         def usage_activity_by_stage_manage(time_period)
+          time_frame = metric_time_period(time_period)
           super.merge({
             ldap_keys: distinct_count(::LDAPKey.where(time_period), :user_id),
             ldap_users: distinct_count(::GroupMember.of_ldap_type.where(time_period), :user_id),
@@ -316,7 +317,9 @@ module EE
             ldap_servers: ldap_available_servers.size,
             ldap_group_sync_enabled: ldap_config_present_for_any_provider?(:group_base),
             ldap_admin_sync_enabled: ldap_config_present_for_any_provider?(:admin_group),
-            group_saml_enabled: omniauth_provider_names.include?('group_saml')
+            group_saml_enabled: omniauth_provider_names.include?('group_saml'),
+            audit_event_destinations: add_metric('CountEventStreamingDestinationsMetric', time_frame: time_frame),
+            groups_with_event_streaming_destinations: add_metric('CountGroupsWithEventStreamingDestinationsMetric', time_frame: time_frame)
           })
         end
 
